@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6DEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA2CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238655AbiGEMhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
+        id S238699AbiGEMhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236595AbiGEM0x (ORCPT
+        with ESMTP id S237988AbiGEM0w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:26:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372F119281;
-        Tue,  5 Jul 2022 05:19:22 -0700 (PDT)
+        Tue, 5 Jul 2022 08:26:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4756E1903A;
+        Tue,  5 Jul 2022 05:19:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6A8EB817D3;
-        Tue,  5 Jul 2022 12:19:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CB6DC341C7;
-        Tue,  5 Jul 2022 12:19:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEB1FB817C7;
+        Tue,  5 Jul 2022 12:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C624C341C7;
+        Tue,  5 Jul 2022 12:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023559;
-        bh=11OHJIBZ3fG8MxkMGl4D4AZSGHT2IQhGDgeosFtCU9o=;
+        s=korg; t=1657023551;
+        bh=uH5hwoUgvFMaW/KRDM26xR9+SlNqEoaBUR7HfMngWTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qPpAF5W4JLaf9guefXYU/K1qmhy4F5jbujeNKbduWe2+LbAikVV7mXl944MyqsCQ2
-         GHjweCf/WzKPJd4Bqw8s7pMbfIw5Pf9jQINUdhVQcl0ffDHTYVbHyqCRGJQ7pxjJe1
-         FLp8U/ftiklTxs9bVwbMbKM7kMuCXVxE00e7pnhQ=
+        b=APZh4ll5yMSj+GU8rK3LCAi3n29ZoDMQn59j8tb3SF/7Z41SSl5VSrYOozlPm93vQ
+         E5kujKQHPSGdP/aV6h6FQnkgP5NUVbrLZFwn5vZxHdtWUWKMYZq/b9kFFszqTeiJ5D
+         egVdavfnKuJo0Ny0gjS9W+hEIkX3XD8zUfe27Drs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 083/102] platform/x86: ideapad-laptop: Add allow_v4_dytc module parameter
-Date:   Tue,  5 Jul 2022 13:58:49 +0200
-Message-Id: <20220705115620.767892150@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Beulich <jbeulich@suse.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.18 101/102] xen-netfront: restore __skb_queue_tail() positioning in xennet_get_responses()
+Date:   Tue,  5 Jul 2022 13:59:07 +0200
+Message-Id: <20220705115621.284687032@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,63 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Jan Beulich <jbeulich@suse.com>
 
-[ Upstream commit a27a1e35f5c87463ba7c12d5b7d7cbafbefc9213 ]
+commit f63c2c2032c2e3caad9add3b82cc6e91c376fd26 upstream.
 
-Add an allow_v4_dytc module parameter to allow users to easily test if
-DYTC version 4 platform-profiles work on their laptop.
+The commit referenced below moved the invocation past the "next" label,
+without any explanation. In fact this allows misbehaving backends undue
+control over the domain the frontend runs in, as earlier detected errors
+require the skb to not be freed (it may be retained for later processing
+via xennet_move_rx_slot(), or it may simply be unsafe to have it freed).
 
-Fixes: 599482c58ebd ("platform/x86: ideapad-laptop: Add platform support for Ideapad 5 Pro 16ACH6-82L5")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213297
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220623115914.103001-1-hdegoede@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This is CVE-2022-33743 / XSA-405.
+
+Fixes: 6c5aa6fc4def ("xen networking: add basic XDP support for xen-netfront")
+Signed-off-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/ideapad-laptop.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ drivers/net/xen-netfront.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/ideapad-laptop.c b/drivers/platform/x86/ideapad-laptop.c
-index 6b472fd431d0..abd0c81d62c4 100644
---- a/drivers/platform/x86/ideapad-laptop.c
-+++ b/drivers/platform/x86/ideapad-laptop.c
-@@ -152,6 +152,10 @@ static bool no_bt_rfkill;
- module_param(no_bt_rfkill, bool, 0444);
- MODULE_PARM_DESC(no_bt_rfkill, "No rfkill for bluetooth.");
- 
-+static bool allow_v4_dytc;
-+module_param(allow_v4_dytc, bool, 0444);
-+MODULE_PARM_DESC(allow_v4_dytc, "Enable DYTC version 4 platform-profile support.");
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -1094,8 +1094,10 @@ static int xennet_get_responses(struct n
+ 			}
+ 		}
+ 		rcu_read_unlock();
+-next:
 +
- /*
-  * ACPI Helpers
-  */
-@@ -907,13 +911,16 @@ static int ideapad_dytc_profile_init(struct ideapad_private *priv)
- 
- 	dytc_version = (output >> DYTC_QUERY_REV_BIT) & 0xF;
- 
--	if (dytc_version < 5) {
--		if (dytc_version < 4 || !dmi_check_system(ideapad_dytc_v4_allow_table)) {
--			dev_info(&priv->platform_device->dev,
--				 "DYTC_VERSION is less than 4 or is not allowed: %d\n",
--				 dytc_version);
--			return -ENODEV;
--		}
-+	if (dytc_version < 4) {
-+		dev_info(&priv->platform_device->dev, "DYTC_VERSION < 4 is not supported\n");
-+		return -ENODEV;
-+	}
+ 		__skb_queue_tail(list, skb);
 +
-+	if (dytc_version < 5 &&
-+	    !(allow_v4_dytc || dmi_check_system(ideapad_dytc_v4_allow_table))) {
-+		dev_info(&priv->platform_device->dev,
-+			 "DYTC_VERSION 4 support may not work. Pass ideapad_laptop.allow_v4_dytc=Y on the kernel commandline to enable\n");
-+		return -ENODEV;
- 	}
++next:
+ 		if (!(rx->flags & XEN_NETRXF_more_data))
+ 			break;
  
- 	priv->dytc = kzalloc(sizeof(*priv->dytc), GFP_KERNEL);
--- 
-2.35.1
-
 
 
