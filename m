@@ -2,64 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8648BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiGEOqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41364 "EHLO
+        id S230189AbiGEOrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiGEOqO (ORCPT
+        with ESMTP id S229492AbiGEOrd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:46:14 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9473E02B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 07:46:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657032372; x=1688568372;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=M/L99HgahfyNcfrwfI4x4soJM3zmpnAzKt5aLIhYXUc=;
-  b=BXevqm91FfUzAVXrwTidnkd7lCmeiXfnJoJKAPm0zWdewvT+H+hxc5Yh
-   My7EhD1PLp21h1zRRH0elITO1WCMPqWytRSkogQDpdYa340iTgJyFC3R2
-   oIIpLQN38s36w4qcMKjEv4MPUAUeZgQihCuXObCKONy54PLs7xVcOCcfd
-   P3L6dAc7s8dGTqa5b0BqlMM+LNSYFZbOipzAzKvkibWW5MiPXwbWSvmgV
-   SUQe+B0dstzAUZzbqpa0rNoPII0dO5FMYuHXl3wZeyFTqJaypXqaw7tIo
-   HJCpadmcsB2vJnDc9U5dy39wDCfB28EwWNw0m8x/5i8FCXRLSDb/h+Nc/
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="284104417"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="284104417"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 07:46:12 -0700
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="619857497"
-Received: from achaudh2-mobl.amr.corp.intel.com (HELO [10.213.177.126]) ([10.213.177.126])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 07:46:10 -0700
-Message-ID: <38cf149a-6238-241c-8ddd-4e4d10ca1f73@linux.intel.com>
-Date:   Tue, 5 Jul 2022 09:42:46 -0500
+        Tue, 5 Jul 2022 10:47:33 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4B24E02B;
+        Tue,  5 Jul 2022 07:47:32 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 60604D6E;
+        Tue,  5 Jul 2022 07:47:32 -0700 (PDT)
+Received: from [10.57.8.239] (unknown [10.57.8.239])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2D9943F66F;
+        Tue,  5 Jul 2022 07:47:30 -0700 (PDT)
+Message-ID: <75eb1aff-6aa9-b393-efe4-c8559d5a2701@arm.com>
+Date:   Tue, 5 Jul 2022 15:47:28 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.10.0
-Subject: Re: [PATCH v1 1/1] ASoC: SOF: Intel: bdw: remove duplicating driver
- data retrieval
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 05/12] thermal/core: Remove unneeded EXPORT_SYMBOLS
 Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-References: <20220703143533.62173-1-andriy.shevchenko@linux.intel.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220703143533.62173-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Alexandre Bailon <abailon@baylibre.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, Todd Kjos <tkjos@google.com>,
+        Wei Wang <wvw@google.com>,
+        Daniel Lezcano <daniel.lezcano@linexp.org>
+References: <20220703183059.4133659-1-daniel.lezcano@linexp.org>
+ <20220703183059.4133659-6-daniel.lezcano@linexp.org>
+ <ad8dd950-9260-16b3-2134-72984e2ba261@arm.com>
+ <e2d81210-a969-fe9d-a4fb-1826c991fbce@linexp.org>
+ <f1cd08de-e8cb-18c2-9f92-01436810bc20@arm.com>
+ <CAJZ5v0iKcLM--L4ecoPDWpQ=8zgfeMxCku4zJt7hzVxSszgSNQ@mail.gmail.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <CAJZ5v0iKcLM--L4ecoPDWpQ=8zgfeMxCku4zJt7hzVxSszgSNQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -67,42 +54,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 7/3/22 09:35, Andy Shevchenko wrote:
-> device_get_match_data() in ACPI case calls similar to acpi_match_device().
-> Hence there is no need to duplicate the call. Just assign what is in
-> the id->driver_data.
+On 7/5/22 15:20, Rafael J. Wysocki wrote:
+> On Tue, Jul 5, 2022 at 9:30 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
+>>
+>>
+>>
+>> On 7/4/22 22:14, Daniel Lezcano wrote:
+>>> On 04/07/2022 09:35, Lukasz Luba wrote:
+>>>> Hi Daniel,
+>>>>
+>>>> (+Todd and Wei on CC)
+>>>>
+>>>>
+>>>> On 7/3/22 19:30, Daniel Lezcano wrote:
+>>>
+>>> [ ... ]
+>>>
+>>>>>    }
+>>>>> -EXPORT_SYMBOL(get_tz_trend);
+>>>
+>>> [ ... ]
+>>>
+>>>>>    }
+>>>>> -EXPORT_SYMBOL(thermal_cdev_update);
+>>>>
+>>>> I wouldn't remove that export. I can see in my Pixel6 modules dir, that
+>>>> it's called in 7 places.
+>>>>
+>>>> I assume that in Android world this is common use.
+>>>
+>>> It is not possible to do changes taking into consideration out of tree
+>>> code. Moreover there is logically no good reason to use the
+>>> thermal_cdev_update() function from outside of the thermal core code.
+>>>
+>>
+>> I see your point which is 'upstream'. On the other hand the mostly
+>> deployed kernel is in Android devices and that brings a lot to the
+>> community.
+>>
+>> This symbol might also be used by other distros which might have
+>> modules for some accelerators, which also support tricky cooling.
+>>
+>> I would keep it as is...
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  sound/soc/sof/intel/bdw.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/sound/soc/sof/intel/bdw.c b/sound/soc/sof/intel/bdw.c
-> index 26df780c702e..346813aa3768 100644
-> --- a/sound/soc/sof/intel/bdw.c
-> +++ b/sound/soc/sof/intel/bdw.c
-> @@ -674,6 +674,7 @@ static int sof_broadwell_probe(struct platform_device *pdev)
->  	id = acpi_match_device(dev->driver->acpi_match_table, dev);
->  	if (!id)
->  		return -ENODEV;
-> +	desc = (const struct sof_dev_desc *)id->driver_data;
->  
->  	ret = snd_intel_acpi_dsp_driver_probe(dev, id->id);
->  	if (ret != SND_INTEL_DSP_DRIVER_ANY && ret != SND_INTEL_DSP_DRIVER_SOF) {
-> @@ -681,11 +682,7 @@ static int sof_broadwell_probe(struct platform_device *pdev)
->  		return -ENODEV;
->  	}
->  
-> -	desc = device_get_match_data(dev);
-> -	if (!desc)
-> -		return -ENODEV;
-> -
-> -	return sof_acpi_probe(pdev, device_get_match_data(dev));
-> +	return sof_acpi_probe(pdev, desc);
+> I think that the long-term goal is to reduce differences between the
+> mainline kernel and Android.  From this angle, it would be good if
+> Android was aware that the mainline did stuff especially for them and
+> making them carry an extra patch would go a long way towards that
+> purpose.
 
-Thanks Andy, we have the same code pattern in sound/soc/sof/intel/byt.c,
-can we change it as part of the series to keep the two files aligned?
-
->  }
->  
->  /* acpi_driver definition */
+It's hard to judge sometimes especially on those small bits.
+I've just pointed out and shared the info that this symbol is used.
+What you will do with this it's up to you. You and Daniel are the
+maintainers of this subsystems and have long-term plans for it.
+Todd and Wei are on CC, so they will know about this change.
+My job finishes here.
