@@ -2,103 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22384CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C637CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236767AbiGEMSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
+        id S236916AbiGEMSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233969AbiGEMJN (ORCPT
+        with ESMTP id S231980AbiGEMJT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:13 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9230418374;
-        Tue,  5 Jul 2022 05:09:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657022952; x=1688558952;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=kQsY5dppdnct/ZNtz2heoo4zsfgJCzMJGLniMhE5u8c=;
-  b=Sg4VJt7UF0VTTDbWCyGdk4JNVYCXZS6AiZ+niFKpK+iAnBIp9tztGktf
-   eTNA7SQ2vn6aFJh2EaDX5y9Udv9P1ESj0ofS/rPrw2tCt5O/kv0eteYwe
-   73hVrCxV97SOKBVbZiM4OUxEmww2pgHRmB4AHlSXHRHr+v61clolLHKjK
-   s=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 05 Jul 2022 05:09:12 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:08:57 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:56 -0700
-Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:53 -0700
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-To:     <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
-        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <konrad.dybcio@somainline.org>,
-        Siddharth Gupta <sidgup@codeaurora.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [V3 5/7] remoteproc: q6v5: Set q6 state to offline on receiving wdog irq
-Date:   Tue, 5 Jul 2022 17:38:18 +0530
-Message-ID: <1657022900-2049-6-git-send-email-quic_sibis@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
-References: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+        Tue, 5 Jul 2022 08:09:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D6D18345;
+        Tue,  5 Jul 2022 05:09:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6531861965;
+        Tue,  5 Jul 2022 12:09:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F349C385A5;
+        Tue,  5 Jul 2022 12:09:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022957;
+        bh=fb5507BRvRaLsnk6R3xvXMZucIZUqeaGpwagamhkkw8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UyziBGTTJWJbvyJXLNj2rsek7E0QlxLJxQjqYSeAf15Usn9qnKnWN5xxX27sRdsHG
+         SbR0ozu/4cvdtstEkezYJi9tbJh3O2FhCb1yYNs0Vr0EPM9lFrHJr6KReacXKr/RP5
+         jNSm3kMYgsUOY0yctgf9jEGdPD2I/UnfBoSTgQs8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.10 70/84] selftests/rseq: Fix warnings about #if checks of undefined tokens
+Date:   Tue,  5 Jul 2022 13:58:33 +0200
+Message-Id: <20220705115617.365840873@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddharth Gupta <sidgup@codeaurora.org>
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-Due to firmware bugs on the Q6 the hardware watchdog irq can be triggered
-multiple times. As the remoteproc framework schedules work items for the
-recovery process, if the other threads do not get a chance to run before
-recovery is completed the proceeding threads will see the state of the
-remoteproc as running and kill the remoteproc while it is running. This
-can result in various SMMU and NOC errors. This change sets the state of
-the remoteproc to offline whenever a watchdog irq is received.
+commit d7ed99ade3e62b755584eea07b4e499e79240527 upstream.
 
-Signed-off-by: Siddharth Gupta <sidgup@codeaurora.org>
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220124171253.22072-12-mathieu.desnoyers@efficios.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/remoteproc/qcom_q6v5.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ tools/testing/selftests/rseq/param_test.c |    2 +-
+ tools/testing/selftests/rseq/rseq-x86.h   |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_q6v5.c b/drivers/remoteproc/qcom_q6v5.c
-index 5280ec9b5449..497acfb33f8f 100644
---- a/drivers/remoteproc/qcom_q6v5.c
-+++ b/drivers/remoteproc/qcom_q6v5.c
-@@ -112,6 +112,7 @@ static irqreturn_t q6v5_wdog_interrupt(int irq, void *data)
- 	else
- 		dev_err(q6v5->dev, "watchdog without message\n");
+--- a/tools/testing/selftests/rseq/param_test.c
++++ b/tools/testing/selftests/rseq/param_test.c
+@@ -161,7 +161,7 @@ unsigned int yield_mod_cnt, nr_abort;
+ 	"	cbnz	" INJECT_ASM_REG ", 222b\n"			\
+ 	"333:\n"
  
-+	q6v5->running = false;
- 	rproc_report_crash(q6v5->rproc, RPROC_WATCHDOG);
+-#elif __PPC__
++#elif defined(__PPC__)
  
- 	return IRQ_HANDLED;
-@@ -123,6 +124,9 @@ static irqreturn_t q6v5_fatal_interrupt(int irq, void *data)
- 	size_t len;
- 	char *msg;
+ #define RSEQ_INJECT_INPUT \
+ 	, [loop_cnt_1]"m"(loop_cnt[1]) \
+--- a/tools/testing/selftests/rseq/rseq-x86.h
++++ b/tools/testing/selftests/rseq/rseq-x86.h
+@@ -600,7 +600,7 @@ int rseq_cmpeqv_trymemcpy_storev_release
  
-+	if (!q6v5->running)
-+		return IRQ_HANDLED;
-+
- 	msg = qcom_smem_get(QCOM_SMEM_HOST_ANY, q6v5->crash_reason, &len);
- 	if (!IS_ERR(msg) && len > 0 && msg[0])
- 		dev_err(q6v5->dev, "fatal error received: %s\n", msg);
--- 
-2.7.4
+ #endif /* !RSEQ_SKIP_FASTPATH */
+ 
+-#elif __i386__
++#elif defined(__i386__)
+ 
+ #define rseq_smp_mb()	\
+ 	__asm__ __volatile__ ("lock; addl $0,-128(%%esp)" ::: "memory", "cc")
+
 
