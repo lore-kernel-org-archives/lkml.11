@@ -2,91 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C44C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232186AbiGEKio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60726 "EHLO
+        id S232432AbiGEKjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiGEKim (ORCPT
+        with ESMTP id S230499AbiGEKjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:38:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0B2C24;
-        Tue,  5 Jul 2022 03:38:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38D6761A3D;
-        Tue,  5 Jul 2022 10:38:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18CA8C341C7;
-        Tue,  5 Jul 2022 10:38:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657017520;
-        bh=z1GqxMIwtmun/u1tj/pwcRt5NAZl8SZdFgsjlbLxAlk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rJKQ7WAmD2TzLUHrHcm77qh5JTv1SeM/6ZN4w/jjFPT8kBLaJayUYai8Y/0mPsrqv
-         4tc9uz183UNWDGkjq1pM8BUIqx49/xTprWdqJu6abkV9eR0jMVj6gQLMxEG3G6et9E
-         ljmGLgZ2uofbAZqt78npuydbsDyZTZ2qJeWldV90=
-Date:   Tue, 5 Jul 2022 12:38:37 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Thierry Strudel <tstrudel@google.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Pin-yen Lin <treapking@chromium.org>
-Subject: Re: [PATCH] PM: domains: Ensure genpd_debugfs_dir exists before
- remove
-Message-ID: <YsQUrXfugKT1IV75@kroah.com>
-References: <20220705094946.827697-1-hsinyi@chromium.org>
+        Tue, 5 Jul 2022 06:39:18 -0400
+Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 949EFC24;
+        Tue,  5 Jul 2022 03:39:17 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id 836A1FF9BF;
+        Tue,  5 Jul 2022 10:39:16 +0000 (UTC)
+Date:   Tue, 5 Jul 2022 12:39:12 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org,
+        Vincent Mailhol <vincent.mailhol@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: Re: [PATCH v9] can, tty: can327 CAN/ldisc driver for ELM327 based
+ OBD-II adapters
+Message-ID: <20220705123912.1dfc6242.max@enpas.org>
+In-Reply-To: <CAMuHMdW5tTVP6cQ6a8KtgYAxb_g1Y52a9+hHwEtNLV3xYpWsVA@mail.gmail.com>
+References: <20220618195031.10975-1-max@enpas.org>
+        <20220627150557.qluqtejrddj5nfif@pengutronix.de>
+        <20220627190126.4eb57a2b.max@enpas.org>
+        <CAMuHMdUYCiRC+9UnQB6-2XGp+wOjYq1U_J3bDQT+WNm==mS4qg@mail.gmail.com>
+        <20220705094927.vgtxcjh4klw6dcg3@pengutronix.de>
+        <20220705115613.69d32b22.max@enpas.org>
+        <CAMuHMdW5tTVP6cQ6a8KtgYAxb_g1Y52a9+hHwEtNLV3xYpWsVA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705094946.827697-1-hsinyi@chromium.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 05:49:47PM +0800, Hsin-Yi Wang wrote:
-> genpd_debug_remove() may be indirectly called from others while
-> genpd_debugfs_dir is not yet set. Make sure genpd_debugfs_dir exists
-> before remove the sub components, otherwise components under
-> /sys/kernel/debug may be accidentally removed.
+On Tue, 5 Jul 2022 12:16:08 +0200
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+
+> > > > I had a quick glance through the various revisions posted, and
+> > > > it doesn't seem like anyone mentioned the serial bus.  Would
+> > > > there be any advantage in migrating to the serial bus?  
+> > >
+> > > Does serial bus work with hot plug devices like USB Serial
+> > > Adapters and/or devices that are not described in the device
+> > > tree?  
 > 
-> Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> ---
-> An example:
-> scpsys_probe() in drivers/soc/mediatek/mtk-pm-domains.c indirectly calls
-> genpd_debug_remove() on probe fail, causing /sys/kernel/debug/usb to be
-> removed.
-> ---
->  drivers/base/power/domain.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> index 3e86772d5fac5..5a2e0232862e0 100644
-> --- a/drivers/base/power/domain.c
-> +++ b/drivers/base/power/domain.c
-> @@ -222,6 +222,9 @@ static void genpd_debug_remove(struct generic_pm_domain *genpd)
->  {
->  	struct dentry *d;
->  
-> +	if (!genpd_debugfs_dir)
-> +		return;
-> +
->  	d = debugfs_lookup(genpd->name, genpd_debugfs_dir);
->  	debugfs_remove(d);
+> Probably it cannot work with hot-plug devices yet.
+> And devices must be described in some way (DT, ACPI), it does not
+> support auto-detect.
 
-Why not just change this to be:
-	debugfs_remove(debugfs_lookup(genpd->name, debugfs_lookup("pm_genpd", NULL)));
+Correct!
 
-thanks,
 
-greg k-h
+> So far I've seen serial bus used with e.g. bluetooth and DT.
+> I'm wondering if/how people use it with bluetooth connected to a
+> hot-pluggable device like usb-serial.
+
+They don't :)
+
+serdev is (currently, still, AFAIK) only for devices permanently
+attached to a platform - hence they can be reliably described as part
+of the platform itself, be it via DT or ACPI or whatever. So the fact,
+say, that the "Nokia N900" has a BT module permanently soldered to "UART
+2", that's something you can encode in its DT, because it applies to
+this device, and this device only.
+
+The ELM327 and clones are merely naked USB/BT-UART bridges with default
+VID/PID to the computer, and some variants are classic RS232 devices.
+No way to identify them, as they can appear/disappear on any UART,
+anywhere. So you need to attach them manually - and to my knowledge,
+such a manual mechanism is still missing from serdev. So we have to use
+a line discipline, as that has an API to attach from userspace.
+
+This also explains how to use Bluetooth via USB: Either it's a VID/PID
+known to some driver speaking native USB, or... well, for UARTs there's
+btattach and hciattach (both part of BlueZ), and both use the N_HCI
+line discipline. No serdev involved. I don't know if any USB-UART-BT
+device with a unique VID/PID exists, and I don't know whether serdev
+could be attached kernel-side in this case.
+
+
+Max
