@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81673CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 21:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD60FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 21:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232602AbiGEVwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 17:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
+        id S229655AbiGEVwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 17:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiGEVw1 (ORCPT
+        with ESMTP id S232243AbiGEVw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 17:52:27 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA83A462
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 14:52:25 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id v14so19385754wra.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 14:52:25 -0700 (PDT)
+        Tue, 5 Jul 2022 17:52:29 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14224766A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 14:52:28 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id a5so4697962wrx.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 14:52:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jToajnsA4DU5smbwrysnmFLqWjh8sTt0F9m0x429/q4=;
-        b=XmxSBKEpjSnQARyzuVYMJKjypQCp5lKnVdlxVzwpWMB1XPSS5Jnbf89SFyjabdDH/I
-         S5WYH7VXCVTuW5KVlHLalRqyOmGh7iwze5Q4WVyyREJjwcydIx7m9+tvt+KXpcXrQnSt
-         JjPnqwlaWCTT+BOzLzTFtUofPCiZ3EUYjGkURzUr+/XHlH0BrcvB5gX5/BP/l8ubykLq
-         U95Hj0mIPRMnGY1xr70iImh+U0NTZpK8XpOaT541iaSW41WZBQ8qzp4ArM2piFfOy0OV
-         HhSBRZt5V0kQNYvK2cUUXhwHfJTU0HUH1LFEZYKZBlNeD+MB4lI/FNyrn89QgIihkw6X
-         5QJQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8/fojUw0EeEcK+rqcJSp3I2q4GoLWZt/YWa+Regpf2w=;
+        b=Jr18FWZSzSRSneVObsSjnVJxBEUXAHsbqU/4W10bboXeXN2L2pGC6VHQ4lgo/UBYrp
+         J0CMP0GRKp8dUKbMzK9I1qdn1rq3wK26lnd4XTIQ0sX7h71LptFUbULc6iaAnW6WGhm/
+         okjirNplhv/WA9IcoywKUcGHw+BXG46zwI2GDKyZOkmqjyOn04Z5BJhC7yJplgdtIB49
+         wuTwK1SUud924+xRGcyrhru3Yn2If8/5ynnTC895rXmhv7F9KKS2ySwpJDiF/o/a0tk6
+         AVZPaubBcC4eXqg35e2ngXfchcbpzRQnzCgaBYEME++JqIp0fl9txiaPCPAGuTEtjsUi
+         YJFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jToajnsA4DU5smbwrysnmFLqWjh8sTt0F9m0x429/q4=;
-        b=xcUV3UhSLhgcQRQS1ru7tvtPRpt5GgAM5DoqFanqMiJ1IhXJx0h1o2Z27qZ1uNtDy1
-         13daJNFHWxfLiD21HVOFexuoboRHtzMrBGRB1emQ/ocnNOFfF3vJ7UgZ0YbivsA6wen/
-         vpAqG7LtsMlpZRZ62sAdIkncbApR9nc3KmxBYc8KhVp8UnlSbhDZpf1hAj9A4QErFUIU
-         4z5XdbVFthMG5SfFTq4DAGRaTZ7ctfqfxP7BkeCXOATjQLs7JZ9FqtqSpQV2kE2+yB46
-         tAQImOe+5rY0fd5ALKVaxqug3GBWXQQAxvQZk2x1bCXNPNHw1d4wL/GvjoAjrmMvfQQW
-         gm/w==
-X-Gm-Message-State: AJIora8K7yvm2QPZ2yb5RqPHZ5HHjNsm9hp7CpmBJB9LJD/VMhg1vRn9
-        sGOhkLf/j2OzWeUHKCTk1+rJLQ==
-X-Google-Smtp-Source: AGRyM1vyBLDyP4wKhE8IVBi2uODjJWvmtgPZ8crZRHD5rVX2f2UGPFzr5mMHIM4YLdqq6OGo2l9xyQ==
-X-Received: by 2002:adf:ef47:0:b0:21d:6a93:9de8 with SMTP id c7-20020adfef47000000b0021d6a939de8mr11946273wrp.326.1657057943782;
-        Tue, 05 Jul 2022 14:52:23 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8/fojUw0EeEcK+rqcJSp3I2q4GoLWZt/YWa+Regpf2w=;
+        b=JGXlCxm9ztWx/G8fnHirDBuAUXg7YpSQwGkYZ2x2fY2u6CXq+GFr98YNtPP4RdVW1z
+         /our0DxM2Xq+bbEo5asSaETW5GBOYjAbO782ljj32Y6HdYPh5RGDFaaBwhifIXdlz5QT
+         mREjcNMIri1j/T95CGfupF18DJ2TuVRtlGfGx43rdnhJurtMZTNZXeMO9kOLIk/dwvJi
+         IsTl3GSxamA1BFQLrMNar44+YZH5/MLRODnVFMxC4rL4L46fZQbkYoGG6EFXEaJLIIcc
+         DAzx8TnUsKpFClrm57m2xhHkkDiAso0oljvZLOFxtOshwt+immwxAHRPYS1uRwNOZeb+
+         uJzw==
+X-Gm-Message-State: AJIora/NzFGff1iX0LudWrZeM9tzJKzHV/9K4p0DzvGIXSCyB/vdlPir
+        xoGVuBYs8TtaclyYmWsOGSwZQw==
+X-Google-Smtp-Source: AGRyM1tX5bERlh6TaveO6GrgyXdZI+WLqirgKBhUqp4y28CVn8caA9+OntupBTJIPlHx+MDpz9T9Gg==
+X-Received: by 2002:a5d:5985:0:b0:21b:c74b:5a7 with SMTP id n5-20020a5d5985000000b0021bc74b05a7mr31952683wri.242.1657057946655;
+        Tue, 05 Jul 2022 14:52:26 -0700 (PDT)
 Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id g34-20020a05600c4ca200b0039c7dbafa7asm18353920wmp.19.2022.07.05.14.52.22
+        by smtp.gmail.com with ESMTPSA id g34-20020a05600c4ca200b0039c7dbafa7asm18353920wmp.19.2022.07.05.14.52.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 14:52:23 -0700 (PDT)
+        Tue, 05 Jul 2022 14:52:26 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         Rob Herring <robh+dt@kernel.org>,
@@ -70,11 +70,13 @@ Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
         Dillon Min <dillon.minfei@gmail.com>,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v5 00/13] Canaan devicetree fixes
-Date:   Tue,  5 Jul 2022 22:52:01 +0100
-Message-Id: <20220705215213.1802496-1-mail@conchuod.ie>
+        linux-riscv@lists.infradead.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 02/13] dt-bindings: display: ili9341: document canaan kd233's lcd
+Date:   Tue,  5 Jul 2022 22:52:03 +0100
+Message-Id: <20220705215213.1802496-3-mail@conchuod.ie>
 X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705215213.1802496-1-mail@conchuod.ie>
+References: <20220705215213.1802496-1-mail@conchuod.ie>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -83,80 +85,27 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Hey all,
-This series should rid us of dtbs_check errors for the RISC-V Canaan k210
-based boards. To make keeping it that way a little easier, I changed the
-Canaan devicetree Makefile so that it would build all of the devicetrees
-in the directory if SOC_CANAAN.
+The Canaan KD233 development board has a built in LCD.
+Add a specific compatible for it.
 
-I *DO NOT* have any Canaan hardware so I have not tested any of this in
-action. Since I sent v1, I tried to buy some since it's cheap - but could
-out of the limited stockists none seemed to want to deliver to Ireland :(
-I based the series on next-20220617.
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ .../devicetree/bindings/display/panel/ilitek,ili9341.yaml        | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-Conor.
-
-Changes since v4:
-- add Rob's tags from v3
-- sram: rephrase the binding description
-- ASoC: dropped the applied binding
-
-Changes since v3:
-- dts: drop the bogus "regs" property pointed out by Niklas
-- dma/timer: add Serge's reviews (and expand on the dma interrupt
-  description)
-- dts: add Niklas' T-b where I felt it was suitable. lmk if you think it
-  applies more broadly
-- spi: drop the applied spi dt-binding change. Thanks Mark.
-
-Changes since v2:
-- i2s: added clocks maxItems
-- dma: unconditionally extended the interrupts & dropped canaan
-  compatible
-- timer: as per Sergey, split the timer dts nodes in 2 & drop the
-  binding patch
-- ili9341: add a canaan specific compatible to the binding and dts
-
-Changes since v1:
-- I added a new dt node & compatible for the SRAM memory controller due
-  Damien's wish to preserve the inter-op with U-Boot.
-- The dw-apb-ssi binding now uses the default rx/tx widths
-- A new patch fixes bus {ranges,reg} warnings
-- Rearranged the patches in a slightly more logical order
-
-Conor Dooley (13):
-  dt-bindings: display: convert ilitek,ili9341.txt to dt-schema
-  dt-bindings: display: ili9341: document canaan kd233's lcd
-  dt-bindings: dma: dw-axi-dmac: extend the number of interrupts
-  dt-bindings: memory-controllers: add canaan k210 sram controller
-  riscv: dts: canaan: fix the k210's memory node
-  riscv: dts: canaan: fix the k210's timer nodes
-  riscv: dts: canaan: fix mmc node names
-  riscv: dts: canaan: fix kd233 display spi frequency
-  riscv: dts: canaan: use custom compatible for k210 i2s
-  riscv: dts: canaan: remove spi-max-frequency from controllers
-  riscv: dts: canaan: fix bus {ranges,reg} warnings
-  riscv: dts: canaan: add specific compatible for kd233's LCD
-  riscv: dts: canaan: build all devicetress if SOC_CANAAN
-
- .../bindings/display/ilitek,ili9341.txt       | 27 -------
- .../display/panel/ilitek,ili9341.yaml         | 49 +++++++++----
- .../bindings/dma/snps,dw-axi-dmac.yaml        |  7 +-
- .../memory-controllers/canaan,k210-sram.yaml  | 52 +++++++++++++
- arch/riscv/boot/dts/canaan/Makefile           | 10 ++-
- arch/riscv/boot/dts/canaan/canaan_kd233.dts   |  6 +-
- arch/riscv/boot/dts/canaan/k210.dtsi          | 73 +++++++++++++------
- .../riscv/boot/dts/canaan/sipeed_maix_bit.dts |  2 +-
- .../boot/dts/canaan/sipeed_maix_dock.dts      |  2 +-
- arch/riscv/boot/dts/canaan/sipeed_maix_go.dts |  2 +-
- .../boot/dts/canaan/sipeed_maixduino.dts      |  2 +-
- 11 files changed, 159 insertions(+), 73 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/display/ilitek,ili9341.txt
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/canaan,k210-sram.yaml
-
-
-base-commit: b6f1f2fa2bddd69ff46a190b8120bd440fd50563
+diff --git a/Documentation/devicetree/bindings/display/panel/ilitek,ili9341.yaml b/Documentation/devicetree/bindings/display/panel/ilitek,ili9341.yaml
+index c5571391ca28..99e0cb9440cf 100644
+--- a/Documentation/devicetree/bindings/display/panel/ilitek,ili9341.yaml
++++ b/Documentation/devicetree/bindings/display/panel/ilitek,ili9341.yaml
+@@ -24,6 +24,7 @@ properties:
+           - adafruit,yx240qv29
+           # ili9341 240*320 Color on stm32f429-disco board
+           - st,sf-tc240t-9370-t
++          - canaan,kd233-tft
+       - const: ilitek,ili9341
+ 
+   reg: true
 -- 
 2.37.0
 
