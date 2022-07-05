@@ -2,103 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FDBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA64CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231756AbiGEMCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
+        id S233030AbiGEMC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiGEMBY (ORCPT
+        with ESMTP id S232954AbiGEMBZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:01:24 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FDA1834F;
-        Tue,  5 Jul 2022 05:01:22 -0700 (PDT)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o8hEp-000Eyk-No; Tue, 05 Jul 2022 14:01:07 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o8hEp-000Uzq-CA; Tue, 05 Jul 2022 14:01:07 +0200
-Subject: Re: [PATCH] MAINTAINERS: adjust XDP SOCKETS after file movement
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220701042810.26362-1-lukas.bulwahn@gmail.com>
- <Yr7mcjRq57laZGEY@boxer>
- <CAJ8uoz16yGJqYX2xOcczTGKFnG4joh8+f1uPGMAP4rmm3feYDQ@mail.gmail.com>
- <Yr78Md1Nqpj+peO0@boxer>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c9c2d7b3-7d29-252d-6070-77d562ee4c3b@iogearbox.net>
-Date:   Tue, 5 Jul 2022 14:01:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Tue, 5 Jul 2022 08:01:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4745A17E32;
+        Tue,  5 Jul 2022 05:01:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB513617F7;
+        Tue,  5 Jul 2022 12:01:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D72E3C341C7;
+        Tue,  5 Jul 2022 12:01:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022483;
+        bh=tAOL+DzPK9I8lxGvKJA0eAmciffreLwLn+mtGUgEUmc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lAXpLPt+SYvFs9uAL28QqyNSQFpCE6Auajb/FfTWyJYmAn2hc1tUr2yviUvHLE5on
+         YPmy17ZmaJx/486irZvbVOgXGSACllu+buNS/8VI1vzli7CNAwaNVWSS/of9EPJVSR
+         V8zNeeB6Gvp4N7IWJo4NV/eItJFx3AmWN4UbWd/8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ilya Lesokhin <ilyal@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 22/29] net: Rename and export copy_skb_header
+Date:   Tue,  5 Jul 2022 13:58:10 +0200
+Message-Id: <20220705115606.998499842@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
+References: <20220705115606.333669144@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <Yr78Md1Nqpj+peO0@boxer>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26594/Tue Jul  5 09:24:14 2022)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/1/22 3:52 PM, Maciej Fijalkowski wrote:
-> On Fri, Jul 01, 2022 at 03:13:36PM +0200, Magnus Karlsson wrote:
->> On Fri, Jul 1, 2022 at 2:38 PM Maciej Fijalkowski
->> <maciej.fijalkowski@intel.com> wrote:
->>>
->>> On Fri, Jul 01, 2022 at 06:28:10AM +0200, Lukas Bulwahn wrote:
->>>> Commit f36600634282 ("libbpf: move xsk.{c,h} into selftests/bpf") moves
->>>> files tools/{lib => testing/selftests}/bpf/xsk.[ch], but misses to adjust
->>>> the XDP SOCKETS (AF_XDP) section in MAINTAINERS.
->>>>
->>>> Adjust the file entry after this file movement.
->>>>
->>>> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
->>>> ---
->>>> Andrii, please ack.
->>>>
->>>> Alexei, please pick this minor non-urgent clean-up on top of the commit above.
->>>>
->>>>   MAINTAINERS | 2 +-
->>>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>> index fa4bfa3d10bf..27d9e65b9a85 100644
->>>> --- a/MAINTAINERS
->>>> +++ b/MAINTAINERS
->>>> @@ -22042,7 +22042,7 @@ F:    include/uapi/linux/xdp_diag.h
->>>>   F:   include/net/netns/xdp.h
->>>>   F:   net/xdp/
->>>>   F:   samples/bpf/xdpsock*
->>>> -F:   tools/lib/bpf/xsk*
->>>> +F:   tools/testing/selftests/bpf/xsk*
->>>
->>> Magnus, this doesn't cover xdpxceiver.
->>> How about we move the lib part and xdpxceiver part to a dedicated
->>> directory? Or would it be too nested from main dir POV?
->>
->> Or we can just call everything we add xsk* something?
-> 
-> No strong feelings. test_xsk.sh probably also needs to be addressed.
-> That's why I proposed dedicated dir.
+From: Ilya Lesokhin <ilyal@mellanox.com>
 
-Could one of you follow-up on this for bpf-next tree? Maybe for selftests something
-similar as in case of the XDP entry could work.
+commit 08303c189581c985e60f588ad92a041e46b6e307 upstream.
 
-Thanks,
-Daniel
+[ jgross@suse.com: added as needed by XSA-403 mitigation ]
+
+copy_skb_header is renamed to skb_copy_header and
+exported. Exposing this function give more flexibility
+in copying SKBs.
+skb_copy and skb_copy_expand do not give enough control
+over which parts are copied.
+
+Signed-off-by: Ilya Lesokhin <ilyal@mellanox.com>
+Signed-off-by: Boris Pismenny <borisp@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/skbuff.h |    1 +
+ net/core/skbuff.c      |    9 +++++----
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1025,6 +1025,7 @@ static inline struct sk_buff *alloc_skb_
+ struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src);
+ int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask);
+ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t priority);
++void skb_copy_header(struct sk_buff *new, const struct sk_buff *old);
+ struct sk_buff *skb_copy(const struct sk_buff *skb, gfp_t priority);
+ struct sk_buff *__pskb_copy_fclone(struct sk_buff *skb, int headroom,
+ 				   gfp_t gfp_mask, bool fclone);
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1314,7 +1314,7 @@ static void skb_headers_offset_update(st
+ 	skb->inner_mac_header += off;
+ }
+ 
+-static void copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
++void skb_copy_header(struct sk_buff *new, const struct sk_buff *old)
+ {
+ 	__copy_skb_header(new, old);
+ 
+@@ -1322,6 +1322,7 @@ static void copy_skb_header(struct sk_bu
+ 	skb_shinfo(new)->gso_segs = skb_shinfo(old)->gso_segs;
+ 	skb_shinfo(new)->gso_type = skb_shinfo(old)->gso_type;
+ }
++EXPORT_SYMBOL(skb_copy_header);
+ 
+ static inline int skb_alloc_rx_flag(const struct sk_buff *skb)
+ {
+@@ -1365,7 +1366,7 @@ struct sk_buff *skb_copy(const struct sk
+ 	if (skb_copy_bits(skb, -headerlen, n->head, headerlen + skb->len))
+ 		BUG();
+ 
+-	copy_skb_header(n, skb);
++	skb_copy_header(n, skb);
+ 	return n;
+ }
+ EXPORT_SYMBOL(skb_copy);
+@@ -1429,7 +1430,7 @@ struct sk_buff *__pskb_copy_fclone(struc
+ 		skb_clone_fraglist(n);
+ 	}
+ 
+-	copy_skb_header(n, skb);
++	skb_copy_header(n, skb);
+ out:
+ 	return n;
+ }
+@@ -1609,7 +1610,7 @@ struct sk_buff *skb_copy_expand(const st
+ 			  skb->len + head_copy_len))
+ 		BUG();
+ 
+-	copy_skb_header(n, skb);
++	skb_copy_header(n, skb);
+ 
+ 	skb_headers_offset_update(n, newheadroom - oldheadroom);
+ 
+
+
