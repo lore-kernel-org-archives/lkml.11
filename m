@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CF6CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C743BCCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238854AbiGEM3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
+        id S238894AbiGEM3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237580AbiGEMTY (ORCPT
+        with ESMTP id S237592AbiGEMT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9A41D320;
-        Tue,  5 Jul 2022 05:15:22 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD44F1D324;
+        Tue,  5 Jul 2022 05:15:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79336619E2;
-        Tue,  5 Jul 2022 12:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A4B0C341C8;
-        Tue,  5 Jul 2022 12:15:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 926B7B817AC;
+        Tue,  5 Jul 2022 12:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 002A2C341C8;
+        Tue,  5 Jul 2022 12:15:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023321;
-        bh=6vtMtvnMKcOp3rLFFzFcjg0nyVIUE85PXXLARnqvPeM=;
+        s=korg; t=1657023327;
+        bh=PFhbweEncxSZIfwG7OMdvxCwMAgzwjrfOLaj2s0aC5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jCMeA8+fTj7Dl86BKaNvvKWA6cZhpiqtX5OF0x0E3hp1nzbNYQPnXEh0aI+boNQur
-         ENgE/ipUnYshHfjug1PGpvuah72L39uuQICTm+R5P0xqWVD+dTcPWfsW4a5fdBmPWB
-         ELY55UblcPmQmHkAm2opH0gv+Yq7AcKRsOEc0pFs=
+        b=1ty92MRAGTK5Tudu8/knEBj3tOWsMfEfoN4Tq4/qRkhVBim6/i6Xhwhg2KC7PBS99
+         CyITcPshZivZzSbmo1bcVIgl1qXCnEVHSpQ/ge5TP+JMnu1pJKtJ87egjXOOmQ+Vya
+         RoXQkr+ojLAekV1bnmS7N5yLdR+J1J1Z3SJUhyqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jinzhou Su <Jinzhou.Su@amd.com>,
-        Huang Rui <ray.huang@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.18 019/102] cpufreq: amd-pstate: Add resume and suspend callbacks
-Date:   Tue,  5 Jul 2022 13:57:45 +0200
-Message-Id: <20220705115618.964128291@linuxfoundation.org>
+        stable@vger.kernel.org, Heinz Mauelshagen <heinzm@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.18 020/102] dm raid: fix accesses beyond end of raid member array
+Date:   Tue,  5 Jul 2022 13:57:46 +0200
+Message-Id: <20220705115618.991988078@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,66 +48,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinzhou Su <Jinzhou.Su@amd.com>
+From: Heinz Mauelshagen <heinzm@redhat.com>
 
-commit b376471fb47d4905e72fe73e9eeed228f8f2f230 upstream.
+commit 332bd0778775d0cf105c4b9e03e460b590749916 upstream.
 
-When system resumes from S3, the CPPC enable register will be
-cleared and reset to 0.
+On dm-raid table load (using raid_ctr), dm-raid allocates an array
+rs->devs[rs->raid_disks] for the raid device members. rs->raid_disks
+is defined by the number of raid metadata and image tupples passed
+into the target's constructor.
 
-So enable the CPPC interface by writing 1 to this register on
-system resume and disable it during system suspend.
+In the case of RAID layout changes being requested, that number can be
+different from the current number of members for existing raid sets as
+defined in their superblocks. Example RAID layout changes include:
+- raid1 legs being added/removed
+- raid4/5/6/10 number of stripes changed (stripe reshaping)
+- takeover to higher raid level (e.g. raid5 -> raid6)
 
-Signed-off-by: Jinzhou Su <Jinzhou.Su@amd.com>
-Signed-off-by: Jinzhou Su <Jinzhou.Su@amd.com>
-Acked-by: Huang Rui <ray.huang@amd.com>
-[ rjw: Subject and changelog edits ]
-Cc: All applicable <stable@vger.kernel.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+When accessing array members, rs->raid_disks must be used in control
+loops instead of the potentially larger value in rs->md.raid_disks.
+Otherwise it will cause memory access beyond the end of the rs->devs
+array.
+
+Fix this by changing code that is prone to out-of-bounds access.
+Also fix validate_raid_redundancy() to validate all devices that are
+added. Also, use braces to help clean up raid_iterate_devices().
+
+The out-of-bounds memory accesses was discovered using KASAN.
+
+This commit was verified to pass all LVM2 RAID tests (with KASAN
+enabled).
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Heinz Mauelshagen <heinzm@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/cpufreq/amd-pstate.c |   24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/md/dm-raid.c |   34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
 
---- a/drivers/cpufreq/amd-pstate.c
-+++ b/drivers/cpufreq/amd-pstate.c
-@@ -566,6 +566,28 @@ static int amd_pstate_cpu_exit(struct cp
- 	return 0;
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -1001,12 +1001,13 @@ static int validate_region_size(struct r
+ static int validate_raid_redundancy(struct raid_set *rs)
+ {
+ 	unsigned int i, rebuild_cnt = 0;
+-	unsigned int rebuilds_per_group = 0, copies;
++	unsigned int rebuilds_per_group = 0, copies, raid_disks;
+ 	unsigned int group_size, last_group_start;
+ 
+-	for (i = 0; i < rs->md.raid_disks; i++)
+-		if (!test_bit(In_sync, &rs->dev[i].rdev.flags) ||
+-		    !rs->dev[i].rdev.sb_page)
++	for (i = 0; i < rs->raid_disks; i++)
++		if (!test_bit(FirstUse, &rs->dev[i].rdev.flags) &&
++		    ((!test_bit(In_sync, &rs->dev[i].rdev.flags) ||
++		      !rs->dev[i].rdev.sb_page)))
+ 			rebuild_cnt++;
+ 
+ 	switch (rs->md.level) {
+@@ -1046,8 +1047,9 @@ static int validate_raid_redundancy(stru
+ 		 *	    A	 A    B	   B	C
+ 		 *	    C	 D    D	   E	E
+ 		 */
++		raid_disks = min(rs->raid_disks, rs->md.raid_disks);
+ 		if (__is_raid10_near(rs->md.new_layout)) {
+-			for (i = 0; i < rs->md.raid_disks; i++) {
++			for (i = 0; i < raid_disks; i++) {
+ 				if (!(i % copies))
+ 					rebuilds_per_group = 0;
+ 				if ((!rs->dev[i].rdev.sb_page ||
+@@ -1070,10 +1072,10 @@ static int validate_raid_redundancy(stru
+ 		 * results in the need to treat the last (potentially larger)
+ 		 * set differently.
+ 		 */
+-		group_size = (rs->md.raid_disks / copies);
+-		last_group_start = (rs->md.raid_disks / group_size) - 1;
++		group_size = (raid_disks / copies);
++		last_group_start = (raid_disks / group_size) - 1;
+ 		last_group_start *= group_size;
+-		for (i = 0; i < rs->md.raid_disks; i++) {
++		for (i = 0; i < raid_disks; i++) {
+ 			if (!(i % copies) && !(i > last_group_start))
+ 				rebuilds_per_group = 0;
+ 			if ((!rs->dev[i].rdev.sb_page ||
+@@ -1588,7 +1590,7 @@ static sector_t __rdev_sectors(struct ra
+ {
+ 	int i;
+ 
+-	for (i = 0; i < rs->md.raid_disks; i++) {
++	for (i = 0; i < rs->raid_disks; i++) {
+ 		struct md_rdev *rdev = &rs->dev[i].rdev;
+ 
+ 		if (!test_bit(Journal, &rdev->flags) &&
+@@ -3771,13 +3773,13 @@ static int raid_iterate_devices(struct d
+ 	unsigned int i;
+ 	int r = 0;
+ 
+-	for (i = 0; !r && i < rs->md.raid_disks; i++)
+-		if (rs->dev[i].data_dev)
+-			r = fn(ti,
+-				 rs->dev[i].data_dev,
+-				 0, /* No offset on data devs */
+-				 rs->md.dev_sectors,
+-				 data);
++	for (i = 0; !r && i < rs->raid_disks; i++) {
++		if (rs->dev[i].data_dev) {
++			r = fn(ti, rs->dev[i].data_dev,
++			       0, /* No offset on data devs */
++			       rs->md.dev_sectors, data);
++		}
++	}
+ 
+ 	return r;
  }
- 
-+static int amd_pstate_cpu_resume(struct cpufreq_policy *policy)
-+{
-+	int ret;
-+
-+	ret = amd_pstate_enable(true);
-+	if (ret)
-+		pr_err("failed to enable amd-pstate during resume, return %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static int amd_pstate_cpu_suspend(struct cpufreq_policy *policy)
-+{
-+	int ret;
-+
-+	ret = amd_pstate_enable(false);
-+	if (ret)
-+		pr_err("failed to disable amd-pstate during suspend, return %d\n", ret);
-+
-+	return ret;
-+}
-+
- /* Sysfs attributes */
- 
- /*
-@@ -636,6 +658,8 @@ static struct cpufreq_driver amd_pstate_
- 	.target		= amd_pstate_target,
- 	.init		= amd_pstate_cpu_init,
- 	.exit		= amd_pstate_cpu_exit,
-+	.suspend	= amd_pstate_cpu_suspend,
-+	.resume		= amd_pstate_cpu_resume,
- 	.set_boost	= amd_pstate_set_boost,
- 	.name		= "amd-pstate",
- 	.attr           = amd_pstate_attr,
 
 
