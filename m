@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2473ACCA480
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDC2CCA499
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239152AbiGEMaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
+        id S238367AbiGEM27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237692AbiGEMTh (ORCPT
+        with ESMTP id S237444AbiGEMTM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791851AF26;
-        Tue,  5 Jul 2022 05:16:06 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10CE1D0C0;
+        Tue,  5 Jul 2022 05:14:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D7D88CE1A40;
-        Tue,  5 Jul 2022 12:16:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E869DC341C7;
-        Tue,  5 Jul 2022 12:16:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EA25B817DA;
+        Tue,  5 Jul 2022 12:14:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF3CC341C7;
+        Tue,  5 Jul 2022 12:14:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023363;
-        bh=0R3xF/u6QllQD4opIKzBhCiHP/mcSqA9/m+EQC51hyE=;
+        s=korg; t=1657023272;
+        bh=x/IDELvTa4xJKD9nI0H2rtXaDNslqcP7j0W+y3CwilQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VtcMQmuYfUk1H2wns0PZPpPlla44QmkIw1Bv/GP+xT+skl6R1o8upDLwt1U2MeiXg
-         oY8OyG0tgow5xqwyyYWsGIRDAc4ZVyi0s05P0tAFLQEa5ofHDsQYEEPuKreMobnbVg
-         e07+XS5EG3lyj9XnZIk/vXzh+nrWWJMDdTzobzhU=
+        b=J1vOe86gMDvnAf++XtwM317no5dGD0Ll3AreLsS1q2OlcEZDDghunuZnGrNpDn+IM
+         pbhRYv3Q2mjG9D946ZRJkycZPd7Vxrv53G0MEbCsk8G4uxci8h44zRtquZJ1TNdhma
+         PskYeUb/qMp426J7udKCceF/fwUQ1kLD6N7t6+CQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 032/102] net: dp83822: disable rx error interrupt
-Date:   Tue,  5 Jul 2022 13:57:58 +0200
-Message-Id: <20220705115619.327071385@linuxfoundation.org>
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.15 80/98] xen/netfront: force data bouncing when backend is untrusted
+Date:   Tue,  5 Jul 2022 13:58:38 +0200
+Message-Id: <20220705115619.843035055@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
-References: <20220705115618.410217782@linuxfoundation.org>
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
+References: <20220705115617.568350164@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +49,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+From: Roger Pau Monne <roger.pau@citrix.com>
 
-commit 0e597e2affb90d6ea48df6890d882924acf71e19 upstream.
+commit 4491001c2e0fa69efbb748c96ec96b100a5cdb7e upstream.
 
-Some RX errors, notably when disconnecting the cable, increase the RCSR
-register. Once half full (0x7fff), an interrupt flood is generated. I
-measured ~3k/s interrupts even after the RX errors transfer was
-stopped.
+Bounce all data on the skbs to be transmitted into zeroed pages if the
+backend is untrusted. This avoids leaking data present in the pages
+shared with the backend but not part of the skb fragments.  This
+requires introducing a new helper in order to allocate skbs with a
+size multiple of XEN_PAGE_SIZE so we don't leak contiguous data on the
+granted pages.
 
-Since we don't read and clear the RCSR register, we should disable this
-interrupt.
+Reporting whether the backend is to be trusted can be done using a
+module parameter, or from the xenstore frontend path as set by the
+toolstack when adding the device.
 
-Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
-Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This is CVE-2022-33741, part of XSA-403.
+
+Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/dp83822.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/xen-netfront.c |   49 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 47 insertions(+), 2 deletions(-)
 
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -228,8 +228,7 @@ static int dp83822_config_intr(struct ph
- 		if (misr_status < 0)
- 			return misr_status;
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -66,6 +66,10 @@ module_param_named(max_queues, xennet_ma
+ MODULE_PARM_DESC(max_queues,
+ 		 "Maximum number of queues per virtual interface");
  
--		misr_status |= (DP83822_RX_ERR_HF_INT_EN |
--				DP83822_LINK_STAT_INT_EN |
-+		misr_status |= (DP83822_LINK_STAT_INT_EN |
- 				DP83822_ENERGY_DET_INT_EN |
- 				DP83822_LINK_QUAL_INT_EN);
++static bool __read_mostly xennet_trusted = true;
++module_param_named(trusted, xennet_trusted, bool, 0644);
++MODULE_PARM_DESC(trusted, "Is the backend trusted");
++
+ #define XENNET_TIMEOUT  (5 * HZ)
  
+ static const struct ethtool_ops xennet_ethtool_ops;
+@@ -175,6 +179,9 @@ struct netfront_info {
+ 	/* Is device behaving sane? */
+ 	bool broken;
+ 
++	/* Should skbs be bounced into a zeroed buffer? */
++	bool bounce;
++
+ 	atomic_t rx_gso_checksum_fixup;
+ };
+ 
+@@ -668,6 +675,33 @@ static int xennet_xdp_xmit(struct net_de
+ 	return nxmit;
+ }
+ 
++struct sk_buff *bounce_skb(const struct sk_buff *skb)
++{
++	unsigned int headerlen = skb_headroom(skb);
++	/* Align size to allocate full pages and avoid contiguous data leaks */
++	unsigned int size = ALIGN(skb_end_offset(skb) + skb->data_len,
++				  XEN_PAGE_SIZE);
++	struct sk_buff *n = alloc_skb(size, GFP_ATOMIC | __GFP_ZERO);
++
++	if (!n)
++		return NULL;
++
++	if (!IS_ALIGNED((uintptr_t)n->head, XEN_PAGE_SIZE)) {
++		WARN_ONCE(1, "misaligned skb allocated\n");
++		kfree_skb(n);
++		return NULL;
++	}
++
++	/* Set the data pointer */
++	skb_reserve(n, headerlen);
++	/* Set the tail pointer and length */
++	skb_put(n, skb->len);
++
++	BUG_ON(skb_copy_bits(skb, -headerlen, n->head, headerlen + skb->len));
++
++	skb_copy_header(n, skb);
++	return n;
++}
+ 
+ #define MAX_XEN_SKB_FRAGS (65536 / XEN_PAGE_SIZE + 1)
+ 
+@@ -721,9 +755,13 @@ static netdev_tx_t xennet_start_xmit(str
+ 
+ 	/* The first req should be at least ETH_HLEN size or the packet will be
+ 	 * dropped by netback.
++	 *
++	 * If the backend is not trusted bounce all data to zeroed pages to
++	 * avoid exposing contiguous data on the granted page not belonging to
++	 * the skb.
+ 	 */
+-	if (unlikely(PAGE_SIZE - offset < ETH_HLEN)) {
+-		nskb = skb_copy(skb, GFP_ATOMIC);
++	if (np->bounce || unlikely(PAGE_SIZE - offset < ETH_HLEN)) {
++		nskb = bounce_skb(skb);
+ 		if (!nskb)
+ 			goto drop;
+ 		dev_consume_skb_any(skb);
+@@ -2247,6 +2285,10 @@ static int talk_to_netback(struct xenbus
+ 
+ 	info->netdev->irq = 0;
+ 
++	/* Check if backend is trusted. */
++	info->bounce = !xennet_trusted ||
++		       !xenbus_read_unsigned(dev->nodename, "trusted", 1);
++
+ 	/* Check if backend supports multiple queues */
+ 	max_queues = xenbus_read_unsigned(info->xbdev->otherend,
+ 					  "multi-queue-max-queues", 1);
+@@ -2413,6 +2455,9 @@ static int xennet_connect(struct net_dev
+ 		return err;
+ 	if (np->netback_has_xdp_headroom)
+ 		pr_info("backend supports XDP headroom\n");
++	if (np->bounce)
++		dev_info(&np->xbdev->dev,
++			 "bouncing transmitted data to zeroed pages\n");
+ 
+ 	/* talk_to_netback() sets the correct number of queues */
+ 	num_queues = dev->real_num_tx_queues;
 
 
