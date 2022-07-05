@@ -2,78 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDECC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233383AbiGERJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        id S231266AbiGERJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233203AbiGERJM (ORCPT
+        with ESMTP id S233210AbiGERJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 13:09:12 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EEB561F2C0;
-        Tue,  5 Jul 2022 10:08:59 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AC9841576;
-        Tue,  5 Jul 2022 10:08:59 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C44503F66F;
-        Tue,  5 Jul 2022 10:08:57 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org
-Cc:     will@kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
-        suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
-        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 09/15] iommu/exynos: Clean up bus_set_iommu()
-Date:   Tue,  5 Jul 2022 18:08:32 +0100
-Message-Id: <364a8eb027398bb25a925fbe9bb14fe4dda757cb.1657034828.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
-In-Reply-To: <cover.1657034827.git.robin.murphy@arm.com>
-References: <cover.1657034827.git.robin.murphy@arm.com>
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D4F1F2C3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:08:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=LRxepLtU3tlx+iQf/9hQqxrfajocnvVd/JJZgo+pBRQ=; b=wRtNMblBRkQjskTja0WzTeVuaA
+        tcinC5+573x/fQ1Of7EKeDKarHeuz6CdN/44SF7h8II/kjpIFMnq2FsJ4j5whtzxWIKEhI8LILBcd
+        DJh+XzPtyVcEPOaQiUjNPa0VPpZwyxhtjlvSj89vRIeAYJM8RLz6HdeMn5h0zwLunsd1KS1B6dYIj
+        KBu8Grxi45JPQrhm2W+/Q+3mszgefv+0yXMml47u3P9t8BkVeHvchKfBi8qXQPzRndUvq6dMnMgBk
+        H0Sc1o/LsWuY5RlnbGZyFv8iyNsPBFNL5euZc9gY+iIGUmuR4/BDobGzb9a5n25/7AtFzUcWI6M7G
+        I6QBShtw==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8m2f-000lWR-Ki; Tue, 05 Jul 2022 17:08:53 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 35777980059; Tue,  5 Jul 2022 19:08:53 +0200 (CEST)
+Date:   Tue, 5 Jul 2022 19:08:53 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Nicholas Piggin <npiggin@gmail.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 05/13] locking/qspinlock: be less clever with the
+ preprocessor
+Message-ID: <YsRwJdjJqpXEFTnO@worktop.programming.kicks-ass.net>
+References: <20220704143820.3071004-1-npiggin@gmail.com>
+ <20220704143820.3071004-6-npiggin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704143820.3071004-6-npiggin@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stop calling bus_set_iommu() since it's now unnecessary, and simplify
-the init failure path accordingly.
+On Tue, Jul 05, 2022 at 12:38:12AM +1000, Nicholas Piggin wrote:
+> Stop qspinlock.c including itself and avoid most of the function
+> renaming with the preprocessor.
+> 
+> This is mostly done by having the common slowpath code take a 'bool
+> paravirt' argument and adjusting code based on that.
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+What does code-gen do? Is it clever enough to constant fold the lot?
 
-v3: No change
-
- drivers/iommu/exynos-iommu.c | 9 ---------
- 1 file changed, 9 deletions(-)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 71f2018e23fe..359b255b3924 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1356,16 +1356,7 @@ static int __init exynos_iommu_init(void)
- 		goto err_zero_lv2;
- 	}
- 
--	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
--	if (ret) {
--		pr_err("%s: Failed to register exynos-iommu driver.\n",
--								__func__);
--		goto err_set_iommu;
--	}
--
- 	return 0;
--err_set_iommu:
--	kmem_cache_free(lv2table_kmem_cache, zero_lv2_table);
- err_zero_lv2:
- 	platform_driver_unregister(&exynos_sysmmu_driver);
- err_reg_driver:
--- 
-2.36.1.dirty
-
+Should we be using __always_inline to ensure the compiler doesn't decide
+against inlining because $raisin and then emitting extra condtionals?
