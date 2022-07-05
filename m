@@ -2,90 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A308CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7794EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiGEH5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 03:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
+        id S230013AbiGEH7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 03:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiGEH5g (ORCPT
+        with ESMTP id S229578AbiGEH7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 03:57:36 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0CD13D7A;
-        Tue,  5 Jul 2022 00:57:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657007855; x=1688543855;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YK0kaz1WbxoXkKe6+U4yLt7BCkOqmxG4giXSM0IjVos=;
-  b=LVuFC88ttXxNTGR92UskyTpS87fN6e5iPG7p9/mfFT2y76+pIdCB8AhA
-   EeETnekP8Z3KEBc82c1uFiY/RPKnadcweQASAfMrbLOzSkk8ZKvPz7T4b
-   6XQuAKGfu2SXZ8sMaNyUQknqcvNkxU/1iTSsQ02zeEwM3AXu6F21f1MFw
-   F89OaXx70hR+ecePf3ppmi2lITN35b+0RPDjDBejPuWkgiY7CgKHrMyYZ
-   RRvnzsaTZFK+zNHQG3o9GRsA3PNgDJ4UU+NjLOcsOLW6rHlRRfF++gvgD
-   LZsDIDL4I2oaNHL8Fx+GbzVY0HdjUGS21EOSO3rYJFxjSQ8BpE9k7jryU
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="283312296"
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="283312296"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 00:57:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="567505661"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 05 Jul 2022 00:57:33 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8dR6-000IrL-Js;
-        Tue, 05 Jul 2022 07:57:32 +0000
-Date:   Tue, 5 Jul 2022 15:56:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Isaku Yamahata <isaku.yamahata@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [intel-tdx:kvm-upstream-workaround 306/442] htmldocs:
- Documentation/virt/kvm/tdx-legacy-mmu.rst:49: WARNING: Unexpected
- indentation.
-Message-ID: <202207051551.z6X8ExZg-lkp@intel.com>
+        Tue, 5 Jul 2022 03:59:38 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3676710B0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 00:59:37 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id i18so19178405lfu.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 00:59:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YcN1CPbmsq+eEhYjUJ7QBLV8GN1X0/sFN2j6K0a9zG4=;
+        b=iw4NBiQOX4K3Ririme7ECgzl4I04HgdDVWOEeWYPqQ8IiYs6mkMElUvvBtt+s+FKAL
+         eKt1zaL7fqMZdpObugl8x7i416zzFvKruigQ7vkp0vqvhR8xLSeJ2ZdNxWpDBDYYuuxZ
+         5TLdPK8uC2gDJK37f6+36JcEbG4HT2DYuJL1qbDIxebGDzJhd+OuQQvLo5PZrTfoSx2G
+         9pW6AI6HJGSHDREneZAc6DAXmwIcPyh26Fste/U1Md1veg4ezDaL8l2obCMDFuseDBF/
+         3DSJhCS2bJkldZ+GefaLZlaTFugcKMVa14sUb1QoyDJwaGDJpTKRmFIEx4lu6QikP2zs
+         bDsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YcN1CPbmsq+eEhYjUJ7QBLV8GN1X0/sFN2j6K0a9zG4=;
+        b=vJgmp2mn/Zo7bhlV8I5oX5e9b7xhB3Oq0FLDVwn6O2JmCG+aiejPbtaQ+1gkPrvgaq
+         gefuHwvOgVYpxGIPJBRfGjAUxyCIY9lpr2coQar3qEqgE2hzmW6QxS5e40betuWP0aU4
+         TMPF0NIBvyVeDWb/OVwpjK+dpmPFutN148hU5gKdj6gFonHNr8sZBSbrOHG/go/M+dBa
+         DJyab8qZR/4EXRFs9tjL0AYBZA/xqSI8yEAG3d5Lpx+m+dYyzxw43qE65Z/lBAgYIGwJ
+         S7WlTjH83/oYldzVK788A+1FpwjYL1Eoc3yeRENCSciQXEHP+n2VqmPR4WYxkWcQ7AB4
+         IQWg==
+X-Gm-Message-State: AJIora860Yu0gxCFS4Z6Mf49wiO6oTuSnsw4mlCv3miju8hYA3ASGBZI
+        izOph8qmTDAGjnqUBPGQvD2Z6ANcSWijgWdECMzgJA==
+X-Google-Smtp-Source: AGRyM1ud60pjA0M3K5/bIk7ihBO2au6KTpyzZIavlIZWqjsvbSdJHBmZqGBnuJStBS5IrUD55IqtO2K1zFZCF+OE6XU=
+X-Received: by 2002:a05:6512:10c3:b0:47f:a97e:35c with SMTP id
+ k3-20020a05651210c300b0047fa97e035cmr21330261lfg.417.1657007975375; Tue, 05
+ Jul 2022 00:59:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <0000000000008f6f7405e2f81ce9@google.com> <YsLHQCvp8W5oObv2@casper.infradead.org>
+ <CACT4Y+ZvK0Oxf=Hw7mznmFU=x_zCwC4Ev_Zxo2N0p79DNNi-jw@mail.gmail.com> <YsL2gTVwHL0wFvmI@casper.infradead.org>
+In-Reply-To: <YsL2gTVwHL0wFvmI@casper.infradead.org>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 5 Jul 2022 09:59:24 +0200
+Message-ID: <CACT4Y+bUtBuhD7_BAN+NavEfhBNOavqF0CJkrZ+Gc4pYeLiy+g@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in mark_buffer_dirty (4)
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     syzbot <syzbot+2af3bc9585be7f23f290@syzkaller.appspotmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
+        syzkaller <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   8af973ebaf30642129fc1ca63f155a469f9615ed
-commit: b3b66d4ef5e175da9ce1ed41277130fee7cbdd84 [306/442] KVM: x86: design documentation on TDX support of x86 legacy KVM MMU
-reproduce: make htmldocs
+On Mon, 4 Jul 2022 at 16:17, Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Mon, Jul 04, 2022 at 03:13:13PM +0200, Dmitry Vyukov wrote:
+> > On Mon, 4 Jul 2022 at 12:56, Matthew Wilcox <willy@infradead.org> wrote:
+> > > It's clearly none of those commits.  This is a bug in minix, afaict.
+> > > Judging by the earlier errors, I'd say that it tried to read something,
+> > > failed, then marked it dirty, at which point we hit an assertion that
+> > > you shouldn't mark a !uptodate buffer as dirty.  Given that this is
+> > > minix, I have no interest in pursuing this bug further.  Why is syzbot
+> > > even testing with minix?
+> >
+> > Shouldn't it? Why? It does not seem to depend on BROKEN.
+>
+> There is no entry for minix in MAINTAINERS.  Nobody cares about it.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Humm... but it is also enabled in real distros (debian, ubuntu, my
+current one) and 32 kernel defconfigs...
+Subject to auto-mounting when anything is inserted into usb, right?
 
-All warnings (new ones prefixed by >>):
-
->> Documentation/virt/kvm/tdx-legacy-mmu.rst:49: WARNING: Unexpected indentation.
->> Documentation/virt/kvm/tdx-legacy-mmu.rst:50: WARNING: Block quote ends without a blank line; unexpected unindent.
->> Documentation/virt/kvm/tdx-legacy-mmu.rst:52: WARNING: Definition list ends without a blank line; unexpected unindent.
->> Documentation/virt/kvm/tdx-legacy-mmu.rst: WARNING: document isn't included in any toctree
-
-vim +49 Documentation/virt/kvm/tdx-legacy-mmu.rst
-
-    44	
-    45	(private EPT entry, shared EPT entry) =
-    46	        (non-present, non-present):             private mapping is allowed
-    47	        (present, non-present):                 private mapping is mapped
-    48	        (non-present | SPTE_SHARED_MASK, non-present):
-  > 49	                                                shared mapping is allowed
-  > 50	        (non-present | SPTE_SHARED_MASK, present):
-    51	                                                shared mapping is mapped
-  > 52	        (present, present):                     invalid combination
-    53	
-    54	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+In this situation it's good to test it at least to know the state.
+Otherwise few kernel devs may know it's broken and unmaintained, but
+the rest of the world assumes it's all good and solid and happily
+enables it :)
