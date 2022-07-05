@@ -2,174 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2279EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 06:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21247C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 06:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230004AbiGEGw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 02:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
+        id S230017AbiGEGxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 02:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiGEGw0 (ORCPT
+        with ESMTP id S229935AbiGEGxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 02:52:26 -0400
-X-Greylist: delayed 1199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Jul 2022 23:52:23 PDT
-Received: from spam.unicloud.com (unknown [220.194.70.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFC162F2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 23:52:22 -0700 (PDT)
-Received: from spam.unicloud.com (localhost [127.0.0.2] (may be forged))
-        by spam.unicloud.com with ESMTP id 2656WPwS083309
-        for <linux-kernel@vger.kernel.org>; Tue, 5 Jul 2022 14:32:25 +0800 (GMT-8)
-        (envelope-from luofei@unicloud.com)
-Received: from eage.unicloud.com ([220.194.70.35])
-        by spam.unicloud.com with ESMTP id 2656W1qk083104;
-        Tue, 5 Jul 2022 14:32:01 +0800 (GMT-8)
-        (envelope-from luofei@unicloud.com)
-Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
- (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Tue, 5
- Jul 2022 14:32:01 +0800
-From:   luofei <luofei@unicloud.com>
-To:     <mike.kravetz@oracle.com>, <songmuchun@bytedance.com>,
-        <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        luofei <luofei@unicloud.com>
-Subject: [PATCH] mm,hwpoison,hugetlb: defer dissolve hwpoison hugepage when allocating vmemmap failed
-Date:   Tue, 5 Jul 2022 02:29:53 -0400
-Message-ID: <20220705062953.914256-1-luofei@unicloud.com>
-X-Mailer: git-send-email 2.27.0
+        Tue, 5 Jul 2022 02:53:36 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807212641
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 23:53:35 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id 67so1036712pfy.5
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 23:53:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0eNaY7c0YwJ/R0zBgjZVAVLdZXo+kCXJ/VuomQlDevs=;
+        b=f4PP3EBCNydITxRlaj9nRNf92/D2xYVaxMBKIUs0w+w4J9Z2bgxCcqhXMSIPhmF7pX
+         hHk2rVW8C9AOKc27TCe67oF3HiQvOuB/+4mNZxjxVZm7ptvTHw3UJZVewf3TpOc2dwno
+         o808WuuSpjLZ4nFIeH02X8q4iW0312jfRhY8w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0eNaY7c0YwJ/R0zBgjZVAVLdZXo+kCXJ/VuomQlDevs=;
+        b=RIdPulLP0C6UMrgcjkaXoo3S5jPG9IxYWEhuj4IRtiMayi/H5dqnCibuJyhdAyjrhQ
+         KhY3jKZRv3gNS5GLckTCNxi/i8nBFW3xjJ1YHcvaHaUU627Mn1anwV5t5ZF0LCQECCvl
+         5/oxwATc7bSk7iL6ecO9kUZy1RC11gyWCvBpMZ0sAJMK0bSKid+aUc6Pa5eElldK2lGO
+         dJ1PqacmYCn6bjTkg4Q2Dh8USwdZ6EEK/8shIUoXN9EN4T++MiG5+6EM6cia5HIbiq64
+         WYnUx3nF5SMTkWJMvQHJ2ZH+uz6j0pdhjWdUUVA3uKDnXDv8kjXm15EMTcgxwpx/yGvt
+         n0MQ==
+X-Gm-Message-State: AJIora+I9ZiJPPbuPpU74P9iTEl3ntV4q+C86qTBJKmLg/r2yMsQoQVy
+        p13NygzrqyW8sdLDeDzWvd+EwA==
+X-Google-Smtp-Source: AGRyM1vqPCOIa3mDo2BSwVN7PTIYIhI1Wgv1WavR9Z0i5FMx3CdSBqP8R+vMqOhXe2ypQzXNGbuoNA==
+X-Received: by 2002:a05:6a00:1687:b0:518:6c6b:6a9a with SMTP id k7-20020a056a00168700b005186c6b6a9amr40044531pfc.81.1657004014947;
+        Mon, 04 Jul 2022 23:53:34 -0700 (PDT)
+Received: from dlunevwfh.roam.corp.google.com (n122-107-196-14.sbr2.nsw.optusnet.com.au. [122.107.196.14])
+        by smtp.gmail.com with ESMTPSA id a15-20020a631a4f000000b00408a9264b36sm21611610pgm.3.2022.07.04.23.53.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 23:53:34 -0700 (PDT)
+From:   Daniil Lunev <dlunev@chromium.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Daniil Lunev <dlunev@chromium.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bean Huo <beanhuo@micron.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: [PATCH v2] scsi: ufs: ufs-pci: Enable WriteBooster capability on ADL
+Date:   Tue,  5 Jul 2022 16:53:26 +1000
+Message-Id: <20220705165316.v2.1.Ib5ebec952d9a59f5c69c89b694777f517d22466d@changeid>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.10.1.7]
-X-ClientProxiedBy: zgys-ex-mb10.Unicloud.com (10.10.0.6) To
- zgys-ex-mb09.Unicloud.com (10.10.0.24)
-X-DNSRBL: 
-X-MAIL: spam.unicloud.com 2656WPwS083309
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When dissolving hwpoison hugepage, if the allocation of vmemmap page
-failed, the faulty page should not be put back on the hugepage free
-list, which will cause the faulty pages to be reused. It's better to
-postpone the reexecution of dissolve operation.
+Sets the WriteBooster capability flag when ADL's UFS controller is used.
 
-Meanwhile when the page fault handling program calls
-dissolve_free_huge_page() to dissolve the faulty page, the basic page
-fault processing operation(such as migration pages and unmap etc)
-has actually completed. There is no need to return -ENOMEM error code
-to the upper layer for temporarily vmemmap page allocation failure,
-which will cause the caller to make a wrong judgment. So just defer
-dissolve and return success.
+Signed-off-by: Daniil Lunev <dlunev@chromium.org>
 
-Signed-off-by: luofei <luofei@unicloud.com>
 ---
- mm/hugetlb.c | 34 +++++++++++++++++++++-------------
- 1 file changed, 21 insertions(+), 13 deletions(-)
 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index ca081078e814..db25458eb0a5 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -90,6 +90,9 @@ struct mutex *hugetlb_fault_mutex_table ____cacheline_aligned_in_smp;
- 
- /* Forward declaration */
- static int hugetlb_acct_memory(struct hstate *h, long delta);
-+static LLIST_HEAD(hpage_freelist);
-+static void free_hpage_workfn(struct work_struct *work);
-+static DECLARE_DELAYED_WORK(free_hpage_work, free_hpage_workfn);
- 
- static inline bool subpool_is_free(struct hugepage_subpool *spool)
+Changes in v2:
+- Fixed typo in commit message
+
+ drivers/scsi/ufs/ufshcd-pci.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/scsi/ufs/ufshcd-pci.c b/drivers/scsi/ufs/ufshcd-pci.c
+index e892b9feffb11..fb7285a756969 100644
+--- a/drivers/scsi/ufs/ufshcd-pci.c
++++ b/drivers/scsi/ufs/ufshcd-pci.c
+@@ -425,6 +425,7 @@ static int ufs_intel_adl_init(struct ufs_hba *hba)
  {
-@@ -1535,15 +1538,21 @@ static void __update_and_free_page(struct hstate *h, struct page *page)
- 	if (hstate_is_gigantic(h) && !gigantic_page_runtime_supported())
- 		return;
- 
--	if (hugetlb_vmemmap_restore(h, page))
-+	if (hugetlb_vmemmap_restore(h, page)) {
-+		if (unlikely(PageHWPoison(page))) {
-+			llist_add((struct llist_node *)&page->mapping, &hpage_freelist);
-+			schedule_delayed_work(&free_hpage_work, HZ);
-+			goto out;
-+		}
- 		goto fail;
-+	}
- 
- 	/*
- 	 * Move PageHWPoison flag from head page to the raw error pages,
- 	 * which makes any healthy subpages reusable.
- 	 */
- 	if (unlikely(PageHWPoison(page) && hugetlb_clear_page_hwpoison(page)))
--		goto fail;
-+		goto out;
- 
- 	for (i = 0; i < pages_per_huge_page(h);
- 	     i++, subpage = mem_map_next(subpage, page, i)) {
-@@ -1574,6 +1583,8 @@ static void __update_and_free_page(struct hstate *h, struct page *page)
- 	 */
- 	add_hugetlb_page(h, page, true);
- 	spin_unlock_irq(&hugetlb_lock);
-+out:
-+	return;
+ 	hba->nop_out_timeout = 200;
+ 	hba->quirks |= UFSHCD_QUIRK_BROKEN_AUTO_HIBERN8;
++	hba->caps |= UFSHCD_CAP_WB_EN;
+ 	return ufs_intel_common_init(hba);
  }
  
- /*
-@@ -1587,8 +1598,6 @@ static void __update_and_free_page(struct hstate *h, struct page *page)
-  * to be cleared in free_hpage_workfn() anyway, it is reused as the llist_node
-  * structure of a lockless linked list of huge pages to be freed.
-  */
--static LLIST_HEAD(hpage_freelist);
--
- static void free_hpage_workfn(struct work_struct *work)
- {
- 	struct llist_node *node;
-@@ -1616,12 +1625,11 @@ static void free_hpage_workfn(struct work_struct *work)
- 		cond_resched();
- 	}
- }
--static DECLARE_WORK(free_hpage_work, free_hpage_workfn);
- 
- static inline void flush_free_hpage_work(struct hstate *h)
- {
- 	if (hugetlb_vmemmap_optimizable(h))
--		flush_work(&free_hpage_work);
-+		flush_delayed_work(&free_hpage_work);
- }
- 
- static void update_and_free_page(struct hstate *h, struct page *page,
-@@ -1634,13 +1642,9 @@ static void update_and_free_page(struct hstate *h, struct page *page,
- 
- 	/*
- 	 * Defer freeing to avoid using GFP_ATOMIC to allocate vmemmap pages.
--	 *
--	 * Only call schedule_work() if hpage_freelist is previously
--	 * empty. Otherwise, schedule_work() had been called but the workfn
--	 * hasn't retrieved the list yet.
- 	 */
--	if (llist_add((struct llist_node *)&page->mapping, &hpage_freelist))
--		schedule_work(&free_hpage_work);
-+	llist_add((struct llist_node *)&page->mapping, &hpage_freelist);
-+	schedule_delayed_work(&free_hpage_work, 0);
- }
- 
- static void update_and_free_pages_bulk(struct hstate *h, struct list_head *list)
-@@ -2118,11 +2122,15 @@ int dissolve_free_huge_page(struct page *page)
- 		rc = hugetlb_vmemmap_restore(h, head);
- 		if (!rc) {
- 			update_and_free_page(h, head, false);
--		} else {
-+		} else if (!PageHWPoison(head)) {
- 			spin_lock_irq(&hugetlb_lock);
- 			add_hugetlb_page(h, head, false);
- 			h->max_huge_pages++;
- 			spin_unlock_irq(&hugetlb_lock);
-+		} else {
-+			llist_add((struct llist_node *)&head->mapping, &hpage_freelist);
-+			schedule_delayed_work(&free_hpage_work, HZ);
-+			rc = 0;
- 		}
- 
- 		return rc;
 -- 
-2.27.0
+2.31.0
 
