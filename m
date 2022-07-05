@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB901CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B03BCCA486
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236993AbiGEMWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
+        id S237191AbiGEMXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:23:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235384AbiGEMO0 (ORCPT
+        with ESMTP id S235547AbiGEMPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:14:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618AB18E3E;
-        Tue,  5 Jul 2022 05:11:38 -0700 (PDT)
+        Tue, 5 Jul 2022 08:15:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFE81B7B0;
+        Tue,  5 Jul 2022 05:11:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB23D6199F;
-        Tue,  5 Jul 2022 12:11:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034D2C341CB;
-        Tue,  5 Jul 2022 12:11:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAEB5619AF;
+        Tue,  5 Jul 2022 12:11:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2B24C341C8;
+        Tue,  5 Jul 2022 12:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023097;
-        bh=DLG/8mYl4w6sHKTDWLygZTML8XM51Y+PdumRohmFhVI=;
+        s=korg; t=1657023111;
+        bh=aU7xevwdcsgc1FxHM6tkEy7/F3+cx1LOgRhmccuPO5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M8lLBhG3LzSbk8CFlFslkIKjyuY8lIo1O5LOPlwc4pJZgpXc9HEcxmopmrV7jS09R
-         eY1BjjUEf87UcYu64R8baZzKYscHqp0lNh1QOkej+R1t+7tb2wewLiTn18XcbID9wK
-         czQasVcuRruLbX6C1HddfA4HYOMNfgZ1pt5/6QAY=
+        b=iFb52dKRoYCCpb+V1K6OrW2qB1ygDmuGPV9eUffE/lyDRc4nkVGTj/KM2vSrSrx0a
+         s3i3RhlwZQOX7ggk8fTQMYxpqK0TdUBsDsS1DmGk0LL7x4TALvSbFquW0C8hqLApoO
+         EnfjfEtBrRz4rqnmkLbkegCSaS71t10xwekMtPO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        David Forster <dforster@brocade.com>,
-        Siwar Zitouni <siwar.zitouni@6wind.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 06/98] ipv6: take care of disable_policy when restoring routes
-Date:   Tue,  5 Jul 2022 13:57:24 +0200
-Message-Id: <20220705115617.756868512@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.15 34/98] NFSD: restore EINVAL error translation in nfsd_commit()
+Date:   Tue,  5 Jul 2022 13:57:52 +0200
+Message-Id: <20220705115618.560140080@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -52,63 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-commit 3b0dc529f56b5f2328244130683210be98f16f7f upstream.
+commit 8a9ffb8c857c2c99403bd6483a5a005fed5c0773 upstream.
 
-When routes corresponding to addresses are restored by
-fixup_permanent_addr(), the dst_nopolicy parameter was not set.
-The typical use case is a user that configures an address on a down
-interface and then put this interface up.
+commit 555dbf1a9aac ("nfsd: Replace use of rwsem with errseq_t")
+incidentally broke translation of -EINVAL to nfserr_notsupp.
+The patch restores that.
 
-Let's take care of this flag in addrconf_f6i_alloc(), so that every callers
-benefit ont it.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-CC: stable@kernel.org
-CC: David Forster <dforster@brocade.com>
-Fixes: df789fe75206 ("ipv6: Provide ipv6 version of "disable_policy" sysctl")
-Reported-by: Siwar Zitouni <siwar.zitouni@6wind.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220623120015.32640-1-nicolas.dichtel@6wind.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: 555dbf1a9aac ("nfsd: Replace use of rwsem with errseq_t")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/addrconf.c |    4 ----
- net/ipv6/route.c    |    9 ++++++++-
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ fs/nfsd/vfs.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1111,10 +1111,6 @@ ipv6_add_addr(struct inet6_dev *idev, st
- 		goto out;
- 	}
- 
--	if (net->ipv6.devconf_all->disable_policy ||
--	    idev->cnf.disable_policy)
--		f6i->dst_nopolicy = true;
--
- 	neigh_parms_data_state_setall(idev->nd_parms);
- 
- 	ifa->addr = *cfg->pfx;
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -4590,8 +4590,15 @@ struct fib6_info *addrconf_f6i_alloc(str
- 	}
- 
- 	f6i = ip6_route_info_create(&cfg, gfp_flags, NULL);
--	if (!IS_ERR(f6i))
-+	if (!IS_ERR(f6i)) {
- 		f6i->dst_nocount = true;
-+
-+		if (!anycast &&
-+		    (net->ipv6.devconf_all->disable_policy ||
-+		     idev->cnf.disable_policy))
-+			f6i->dst_nopolicy = true;
-+	}
-+
- 	return f6i;
- }
- 
+--- a/fs/nfsd/vfs.c
++++ b/fs/nfsd/vfs.c
+@@ -1142,6 +1142,7 @@ nfsd_commit(struct svc_rqst *rqstp, stru
+ 						nfsd_net_id));
+ 			err2 = filemap_check_wb_err(nf->nf_file->f_mapping,
+ 						    since);
++			err = nfserrno(err2);
+ 			break;
+ 		case -EINVAL:
+ 			err = nfserr_notsupp;
+@@ -1149,8 +1150,8 @@ nfsd_commit(struct svc_rqst *rqstp, stru
+ 		default:
+ 			nfsd_reset_boot_verifier(net_generic(nf->nf_net,
+ 						 nfsd_net_id));
++			err = nfserrno(err2);
+ 		}
+-		err = nfserrno(err2);
+ 	} else
+ 		nfsd_copy_boot_verifier(verf, net_generic(nf->nf_net,
+ 					nfsd_net_id));
 
 
