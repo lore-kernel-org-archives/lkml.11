@@ -2,123 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43CFBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 08:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1925EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 08:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbiGEIoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 04:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
+        id S230095AbiGEIos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 04:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiGEIoU (ORCPT
+        with ESMTP id S229954AbiGEIop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 04:44:20 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36461034
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 01:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657010659; x=1688546659;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XAdgFKI91yLdNA/2RVNY+qkaB/6LuZCuxN9UEX+97FI=;
-  b=UHZCjxccbY46CMgm/OScz2njVNk0eMTMo1ZyXL90/h15rU5/rw+3LyVc
-   2eS8Lw7sFFqIYGbJf6Ip+QnWWxFIpY+xFsGSIDm4rEjh2LVMlnF8X/+fk
-   VRYtbU9Q/Y660LXhiEvzlnUMcFAOVrgPlAW6tMnbnoMJ8traGUlGH0W0i
-   f7xxYCmClqcsnxFaBlZQuo61bK1rZtmN2qDMxYttWn+oigUV0hp1fZC/U
-   bdn1FUUAsJtv0fpbAdXglxf2l0ugqHc/hAKzuUXeXB+kfwxVPZVPQ4hs3
-   jIGib6nXDIkP/dBuGnDukn18iMlCwVcrgSBh3IEihW5HGmkE3BEQgXyDU
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="166387716"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jul 2022 01:44:18 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 5 Jul 2022 01:44:17 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 5 Jul 2022 01:44:13 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <arnd@arndb.de>, <olof@lixom.net>, <arm@kernel.org>,
-        <soc@kernel.org>
-CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] AT91 device tree changes for v5.20
-Date:   Tue, 5 Jul 2022 11:46:37 +0300
-Message-ID: <20220705084637.818216-1-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Tue, 5 Jul 2022 04:44:45 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933B363E7
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 01:44:44 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id i14so895286yba.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 01:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2nqg94hUDjf5VEy31mCYebRLyQWKOgGJpJElSft6kJk=;
+        b=oVdJFaZLt6iik+gYVPoDhE3E0/T/qMpp81wNqUxEUTmekiaqU9ynpZ0mDpnp2WD8cV
+         1XxBK2Tr40GZWioBld+i2V2kPexOZDXUouMVZ8Ta2CmvZ6vewWiUjnGTEovIbce1WKpR
+         nRulH13G0QJpSAV8IrG/vyGQL8xWb2qk/6ax3FTz3YAu5ngRNie2xDTdyn/3wo8LdI4n
+         4XMCNJA3C+XzvqbqeIqouGJjzVPFaCYGN7b0gBNrXW2dEfwZAh5IeAKq/qf7jDjP6DxQ
+         sJuscQX3dxs/MUyavOF2DrQo82K7EPd+OrV7QEVmkdbS/+lXRLFYmWGyqUhmElgGNChc
+         XHOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2nqg94hUDjf5VEy31mCYebRLyQWKOgGJpJElSft6kJk=;
+        b=eEL4Pcq2LRRfhdDU0gMIGVFSVdxGtSkDoBvwpaatla1Agegx8Gi6H80+CganrXXUzZ
+         jymgCLn0mLqAgdZ1T1bNbExc0Hc2KGZDICg2rsDiQ46bLxFsVR1zk/FmQe8s+jDVyPyN
+         wvExUhUr2cYohGbZayDqzQoc6bsRRnlad9iiPzDfmKMOk/b9wgJD6NFkj38pt06VY2ZL
+         8BAP5vcxEINmjxu05U3GwwaJaNaiAiDiN1343Wnmf7eXU1fqP3q4yZiPSBjcOuxjieDg
+         SQReYDU87MnZwIXcz3lNcpqku/gdjrxNpIqcls5V0WmUeA0TRwDh5EG5TOKhzhG03/0Y
+         oCdA==
+X-Gm-Message-State: AJIora8URnCrSL8BzDENtOkok1/9b7Lb+NXqAensfcuq7WX4NQHApU96
+        w3HWWAjIS65Yzqa/NnhSw+mj39U+rWUUTlrs5fNPXw==
+X-Google-Smtp-Source: AGRyM1s3KR9timt0Nv154BBVjZtVup9YxTIdAuMg5rdc0L5tuSQBdw4qLUFuMUr86cFiFJimYkgebSO//Pbzv6BbJEU=
+X-Received: by 2002:a25:abce:0:b0:66e:38e8:d286 with SMTP id
+ v72-20020a25abce000000b0066e38e8d286mr12961807ybi.447.1657010683689; Tue, 05
+ Jul 2022 01:44:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <YrQP3OZbe8aCQxKU@atomide.com> <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
+ <Yrlz/P6Un2fACG98@atomide.com> <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
+ <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
+ <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
+ <Yr6HQOtS4ctUYm9m@atomide.com> <Yr6QUzdoFWv/eAI6@atomide.com>
+ <CAGETcx-0bStPx8sF3BtcJFiu74NwiB0btTQ+xx_B=8B37TEb8w@mail.gmail.com>
+ <CAGETcx-Yp2JKgCNfaGD0SzZg9F2Xnu8A3zXmV5=WX1hY7uR=0g@mail.gmail.com>
+ <20220701150848.75eeprptmb5beip7@bogus> <CAGETcx_Y-9WBeRwf22v3NSuY8PGpPrTxtx_uBqe_Q7rD6mEQMQ@mail.gmail.com>
+In-Reply-To: <CAGETcx_Y-9WBeRwf22v3NSuY8PGpPrTxtx_uBqe_Q7rD6mEQMQ@mail.gmail.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 5 Jul 2022 01:44:07 -0700
+Message-ID: <CAGETcx8hECfU9-rXpXnnB5m4HcTBJVKNuG77FjhpqRcBkOOotw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Tony Lindgren <tony@atomide.com>, Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Arnd, Olof, ARM SoC maintainers,
+On Fri, Jul 1, 2022 at 12:13 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Fri, Jul 1, 2022 at 8:08 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> >
+> > Hi, Saravana,
+> >
+> > On Fri, Jul 01, 2022 at 01:26:12AM -0700, Saravana Kannan wrote:
+> >
+> > [...]
+> >
+> > > Can you check if this hack helps? If so, then I can think about
+> > > whether we can pick it up without breaking everything else. Copy-paste
+> > > tab mess up warning.
+> >
+> > Sorry for jumping in late and not even sure if this is right thread.
+> > I have not bisected anything yet, but I am seeing issues on my Juno R2
+> > with SCMI enabled power domains and Coresight AMBA devices.
+> >
+> > OF: amba_device_add() failed (-19) for /etf@20010000
+> > OF: amba_device_add() failed (-19) for /tpiu@20030000
+> > OF: amba_device_add() failed (-19) for /funnel@20040000
+> > OF: amba_device_add() failed (-19) for /etr@20070000
+> > OF: amba_device_add() failed (-19) for /stm@20100000
+> > OF: amba_device_add() failed (-19) for /replicator@20120000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@22010000
+> > OF: amba_device_add() failed (-19) for /etm@22040000
+> > OF: amba_device_add() failed (-19) for /cti@22020000
+> > OF: amba_device_add() failed (-19) for /funnel@220c0000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@22110000
+> > OF: amba_device_add() failed (-19) for /etm@22140000
+> > OF: amba_device_add() failed (-19) for /cti@22120000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23010000
+> > OF: amba_device_add() failed (-19) for /etm@23040000
+> > OF: amba_device_add() failed (-19) for /cti@23020000
+> > OF: amba_device_add() failed (-19) for /funnel@230c0000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23110000
+> > OF: amba_device_add() failed (-19) for /etm@23140000
+> > OF: amba_device_add() failed (-19) for /cti@23120000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23210000
+> > OF: amba_device_add() failed (-19) for /etm@23240000
+> > OF: amba_device_add() failed (-19) for /cti@23220000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23310000
+> > OF: amba_device_add() failed (-19) for /etm@23340000
+> > OF: amba_device_add() failed (-19) for /cti@23320000
+> > OF: amba_device_add() failed (-19) for /cti@20020000
+> > OF: amba_device_add() failed (-19) for /cti@20110000
+> > OF: amba_device_add() failed (-19) for /funnel@20130000
+> > OF: amba_device_add() failed (-19) for /etf@20140000
+> > OF: amba_device_add() failed (-19) for /funnel@20150000
+> > OF: amba_device_add() failed (-19) for /cti@20160000
+> >
+> > These are working fine with deferred probe in the mainline.
+> > I tried the hack you have suggested here(rather Tony's version),
+>
+> Thanks for trying that.
+>
+> > also
+> > tried with fw_devlink=0 and fw_devlink=1
+>
+> 0 and 1 aren't valid input to fw_devlink. But yeah, I don't expect
+> disabling it to make anything better.
+>
+> > && fw_devlink.strict=0
+> > No change in the behaviour.
+> >
+> > The DTS are in arch/arm64/boot/dts/arm/juno-*-scmi.dts and there
+> > coresight devices are mostly in juno-cs-r1r2.dtsi
+>
+> Thanks
+>
+> > Let me know if there is anything obvious or you want me to bisect which
+> > means I need more time. I can do that next week.
+>
+> I'll let you know once I poke at the DTS. We need to figure out why
+> fw_devlink wasn't blocking these from getting to the error (same as in
+> Tony's case). But since these are amba devices, I think I have some
+> guesses.
+>
+> This is an old series that had some issues in some cases and I haven't
+> gotten around to looking at it. You can give that a shot if you can
+> apply it to a recent tree.
+> https://lore.kernel.org/lkml/20210304195101.3843496-1-saravanak@google.com/
 
-Please pull the following AT91 fixes for v5.20.
+I rebased it to driver-core-next and tested the patch  (for
+correctness, not with your issue though). I'm fairly sure it should
+help with your issue. Can you give it a shot please?
 
-Thank you,
-Claudiu Beznea
+https://lore.kernel.org/lkml/20220705083934.3974140-1-saravanak@google.com/T/#u
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+-Saravana
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/at91-dt-5.20
-
-for you to fetch changes up to 4dd1a613e464e9036d5163fc8ec5f7dc6e394b53:
-
-  ARM: dts: lan966x: Add UDPHS support (2022-07-05 10:42:18 +0300)
-
-----------------------------------------------------------------
-AT91 DT for v5.20
-
-It contains:
-- compilation warning fixes for SAMA5D2
-- updates for all AT91 device tree to use generic name for reset
-  controller
-- reset controller node for SAMA7G5
-- MCAN1 and UDPHS nodes for LAN966 SoCs
-- Flexcom3 bindings were updated for lan966x-pcb8291.dts board to cope
-  with reality
-
-----------------------------------------------------------------
-Claudiu Beznea (4):
-      ARM: dts: at91: sama5d2: fix compilation warning
-      ARM: dts: at91: sama5d2: fix compilation warning
-      ARM: dts: at91: use generic name for reset controller
-      ARM: dts: at91: sama7g5: add reset-controller node
-
-Herve Codina (2):
-      dt-bindings: usb: atmel: Add Microchip LAN9662 compatible string
-      ARM: dts: lan966x: Add UDPHS support
-
-Kavyasree Kotagiri (2):
-      ARM: dts: lan966x: Add mcan1 node.
-      ARM: dts: lan966x: Cleanup flexcom3 usart pinctrl settings.
-
- .../devicetree/bindings/usb/atmel-usb.txt          |  3 +++
- arch/arm/boot/dts/at91-sama5d27_som1.dtsi          |  2 ++
- arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi        |  2 ++
- arch/arm/boot/dts/at91-sama5d2_ptc_ek.dts          |  2 ++
- arch/arm/boot/dts/at91-sama5d2_xplained.dts        |  2 ++
- arch/arm/boot/dts/at91sam9260.dtsi                 |  2 +-
- arch/arm/boot/dts/at91sam9261.dtsi                 |  2 +-
- arch/arm/boot/dts/at91sam9263.dtsi                 |  2 +-
- arch/arm/boot/dts/at91sam9g45.dtsi                 |  2 +-
- arch/arm/boot/dts/at91sam9n12.dtsi                 |  2 +-
- arch/arm/boot/dts/at91sam9rl.dtsi                  |  2 +-
- arch/arm/boot/dts/at91sam9x5.dtsi                  |  2 +-
- arch/arm/boot/dts/lan966x-pcb8291.dts              | 18 ++++-----------
- arch/arm/boot/dts/lan966x.dtsi                     | 26 ++++++++++++++++++++++
- arch/arm/boot/dts/sam9x60.dtsi                     |  2 +-
- arch/arm/boot/dts/sama5d2.dtsi                     | 24 +++++++++-----------
- arch/arm/boot/dts/sama5d3.dtsi                     |  2 +-
- arch/arm/boot/dts/sama5d4.dtsi                     |  2 +-
- arch/arm/boot/dts/sama7g5.dtsi                     |  7 ++++++
- 19 files changed, 69 insertions(+), 37 deletions(-)
+>
+> After looking at that old patch again, I think I know what's going on.
+> For normal devices, the pm domain attach happens AFTER the device is
+> added and fw_devlink has had a chance to set up device links. And if
+> the suppliers aren't ready, really_probe() won't get as far as
+> dev_pm_domain_attach(). But for amba, the clock and pm domain
+> suppliers are "grabbed" before adding the device.
+>
+> So with that old patch + always returning -EPROBE_DEFER in
+> amba_device_add() if amba_read_periphid() fails should fix your issue.
+>
+> -Saravana
