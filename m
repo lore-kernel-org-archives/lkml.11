@@ -2,94 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BF8CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22384CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236883AbiGEMSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
+        id S236767AbiGEMSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233834AbiGEMJR (ORCPT
+        with ESMTP id S233969AbiGEMJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAC7183BC;
-        Tue,  5 Jul 2022 05:09:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28367B817CC;
-        Tue,  5 Jul 2022 12:09:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A71C341C7;
-        Tue,  5 Jul 2022 12:09:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657022953;
-        bh=gMe2Ijaw82c09SO8FL5eAqBwiWmmaGC/sirYUVrjV4w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Yyp5yggKgTaqkE3lKk9P7EyIRKmhnydHYGEKpT+MqyxZJQ/CDFnMtAOjK8Nhd68pB
-         Np0ekJIh+/4WXcKN6nhGefi7JeHoKEtjvP60/xM75utygTBLSRiz1jf0pNXmwOdvl/
-         lT/rN4D0Mdj8g4d0nHX8jUd4P8ruSZaE9RUBQm9u563I2RBWey14BmVcLMifixTjUe
-         kf6XI33rwEobfKyAK/ZaxoJVByJdldyFyDIYsmCO3SWt55taFfWUphpDdxa4Vlx9Yg
-         8w+MKa+jqvZKSe5jJnZ8QVLL422psnJki1MBMMcFNyfSPOkr2Y0da8WUwRzWLHW7Rh
-         nUeAmjNMkuaTQ==
-Date:   Tue, 5 Jul 2022 13:09:07 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH 0/8] arm64/perf: Enable branch stack sampling
-Message-ID: <20220705120907.GA1012@willie-the-truck>
-References: <20220613100119.684673-1-anshuman.khandual@arm.com>
- <20220627110105.GF22095@willie-the-truck>
- <967c0a4f-c864-21ec-33f1-5e3943a42409@arm.com>
+        Tue, 5 Jul 2022 08:09:13 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9230418374;
+        Tue,  5 Jul 2022 05:09:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657022952; x=1688558952;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=kQsY5dppdnct/ZNtz2heoo4zsfgJCzMJGLniMhE5u8c=;
+  b=Sg4VJt7UF0VTTDbWCyGdk4JNVYCXZS6AiZ+niFKpK+iAnBIp9tztGktf
+   eTNA7SQ2vn6aFJh2EaDX5y9Udv9P1ESj0ofS/rPrw2tCt5O/kv0eteYwe
+   73hVrCxV97SOKBVbZiM4OUxEmww2pgHRmB4AHlSXHRHr+v61clolLHKjK
+   s=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 05 Jul 2022 05:09:12 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:08:57 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:08:56 -0700
+Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:08:53 -0700
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+To:     <bjorn.andersson@linaro.org>
+CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
+        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <konrad.dybcio@somainline.org>,
+        Siddharth Gupta <sidgup@codeaurora.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [V3 5/7] remoteproc: q6v5: Set q6 state to offline on receiving wdog irq
+Date:   Tue, 5 Jul 2022 17:38:18 +0530
+Message-ID: <1657022900-2049-6-git-send-email-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+References: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <967c0a4f-c864-21ec-33f1-5e3943a42409@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 01:10:05PM +0530, Anshuman Khandual wrote:
-> 
-> 
-> On 6/27/22 16:31, Will Deacon wrote:
-> > On Mon, Jun 13, 2022 at 03:31:11PM +0530, Anshuman Khandual wrote:
-> >> This series enables perf branch stack sampling support on arm64 platform
-> >> via a new arch feature called Branch Record Buffer Extension (BRBE). All
-> >> relevant register definitions could be accessed here.
-> >>
-> >> https://developer.arm.com/documentation/ddi0601/2021-12/AArch64-Registers
-> >>
-> >> This series applies on v5.19-rc2 after the BRBE related perf ABI changes series
-> >> (V6) that was posted earlier.
-> >>
-> >> https://lore.kernel.org/linux-arm-kernel/20220610035101.424112-1-anshuman.khandual@arm.com/
-> >>
-> >> Following issues remain inconclusive
-> >>
-> >> - Jame's concerns regarding permission inadequacy related to perfmon_capable()
-> >> - Jame's concerns regarding using perf_event_paranoid along with perfmon_capable()
-> > 
-> > afaict, the capability stuff remains unresolved with the SPE driver, so I'd
-> > really like to see it fixed there first before we add more broken drivers.
-> > 
-> > https://lore.kernel.org/r/20220118100702.GB16547@willie-the-truck
-> 
-> Hello Will,
-> 
-> I did go through the above mentioned thread, but could not understand (clear
-> enough) - what needs to be done. Could you please help summerize the problem
-> and possible solutions which I can start looking into. Thank you.
+From: Siddharth Gupta <sidgup@codeaurora.org>
 
-I don't recall any details beyond what was discussed in the thread. Your
-best bet is probably to talk to James (Clark) and German, as they reported
-the issue initially and you all work for the same company...
+Due to firmware bugs on the Q6 the hardware watchdog irq can be triggered
+multiple times. As the remoteproc framework schedules work items for the
+recovery process, if the other threads do not get a chance to run before
+recovery is completed the proceeding threads will see the state of the
+remoteproc as running and kill the remoteproc while it is running. This
+can result in various SMMU and NOC errors. This change sets the state of
+the remoteproc to offline whenever a watchdog irq is received.
 
-Will
+Signed-off-by: Siddharth Gupta <sidgup@codeaurora.org>
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+---
+ drivers/remoteproc/qcom_q6v5.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/remoteproc/qcom_q6v5.c b/drivers/remoteproc/qcom_q6v5.c
+index 5280ec9b5449..497acfb33f8f 100644
+--- a/drivers/remoteproc/qcom_q6v5.c
++++ b/drivers/remoteproc/qcom_q6v5.c
+@@ -112,6 +112,7 @@ static irqreturn_t q6v5_wdog_interrupt(int irq, void *data)
+ 	else
+ 		dev_err(q6v5->dev, "watchdog without message\n");
+ 
++	q6v5->running = false;
+ 	rproc_report_crash(q6v5->rproc, RPROC_WATCHDOG);
+ 
+ 	return IRQ_HANDLED;
+@@ -123,6 +124,9 @@ static irqreturn_t q6v5_fatal_interrupt(int irq, void *data)
+ 	size_t len;
+ 	char *msg;
+ 
++	if (!q6v5->running)
++		return IRQ_HANDLED;
++
+ 	msg = qcom_smem_get(QCOM_SMEM_HOST_ANY, q6v5->crash_reason, &len);
+ 	if (!IS_ERR(msg) && len > 0 && msg[0])
+ 		dev_err(q6v5->dev, "fatal error received: %s\n", msg);
+-- 
+2.7.4
+
