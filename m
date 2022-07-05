@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89309C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B80ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235720AbiGEMOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
+        id S235086AbiGEMOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234956AbiGEMIN (ORCPT
+        with ESMTP id S234982AbiGEMIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4411A05E;
-        Tue,  5 Jul 2022 05:07:21 -0700 (PDT)
+        Tue, 5 Jul 2022 08:08:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54CABFB;
+        Tue,  5 Jul 2022 05:07:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAD85B817D6;
-        Tue,  5 Jul 2022 12:07:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDC11C341CB;
-        Tue,  5 Jul 2022 12:07:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82CEE61876;
+        Tue,  5 Jul 2022 12:07:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88AEBC341CB;
+        Tue,  5 Jul 2022 12:07:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022838;
-        bh=I6nBQjLM1/cAfalksFjC0yxm4pri54FIPYoqdUEPRDo=;
+        s=korg; t=1657022843;
+        bh=6bvRQgKM8o4blQnkTyXNbT0gjJ66CoJpNC1JpGEAqeE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cjwi123TzYXbdmApYeIqEFghvb5VkcPesLqKIr8G+ujPSZ9SPKDSJi//u1fswAZWC
-         lgHUEFKzYjDAxMV6HJMy9euVOJXPlOd7zqR+kr3oBAKkNTxMR389g4kIOifSAU6t7w
-         Dm4lqLtGHU7gbwnIDpU8cVn/lmc/OYEr/HMsA3JQ=
+        b=qewEhHqJk2oWzcbvZy1GZF4Mn9J1SE+ZoBJhx4PK1QwM97MA0zuTyfQ2eedIXixk8
+         b+1ieayNVZO+46fIHxQeWvzYFIayHHbbQGFk5sYbVz9EShWcHS7GJeqblqeFuVzjG4
+         bILI6s26ZxLQArQiqnTdUG5p22ktLTTBxH0Zj6Fk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCH 5.10 28/84] PM / devfreq: exynos-ppmu: Fix refcount leak in of_get_devfreq_events
-Date:   Tue,  5 Jul 2022 13:57:51 +0200
-Message-Id: <20220705115616.147314835@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Greco <pgreco@centosproject.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.10 03/84] nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA XPG SX6000LNP (AKA SPECTRIX S40G)
+Date:   Tue,  5 Jul 2022 13:57:26 +0200
+Message-Id: <20220705115615.427196550@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -48,47 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Pablo Greco <pgreco@centosproject.org>
 
-commit f44b799603a9b5d2e375b0b2d54dd0b791eddfc2 upstream.
+commit 1629de0e0373e04d68e88e6d9d3071fbf70b7ea8 upstream.
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-This function only calls of_node_put() in normal path,
-missing it in error paths.
-Add missing of_node_put() to avoid refcount leak.
+ADATA XPG SPECTRIX S40G drives report bogus eui64 values that appear to
+be the same across drives in one system. Quirk them out so they are
+not marked as "non globally unique" duplicates.
 
-Fixes: f262f28c1470 ("PM / devfreq: event: Add devfreq_event class")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Before:
+[    2.258919] nvme nvme1: pci function 0000:06:00.0
+[    2.264898] nvme nvme2: pci function 0000:05:00.0
+[    2.323235] nvme nvme1: failed to set APST feature (2)
+[    2.326153] nvme nvme2: failed to set APST feature (2)
+[    2.333935] nvme nvme1: allocated 64 MiB host memory buffer.
+[    2.336492] nvme nvme2: allocated 64 MiB host memory buffer.
+[    2.339611] nvme nvme1: 7/0/0 default/read/poll queues
+[    2.341805] nvme nvme2: 7/0/0 default/read/poll queues
+[    2.346114]  nvme1n1: p1
+[    2.347197] nvme nvme2: globally duplicate IDs for nsid 1
+After:
+[    2.427715] nvme nvme1: pci function 0000:06:00.0
+[    2.427771] nvme nvme2: pci function 0000:05:00.0
+[    2.488154] nvme nvme2: failed to set APST feature (2)
+[    2.489895] nvme nvme1: failed to set APST feature (2)
+[    2.498773] nvme nvme2: allocated 64 MiB host memory buffer.
+[    2.500587] nvme nvme1: allocated 64 MiB host memory buffer.
+[    2.504113] nvme nvme2: 7/0/0 default/read/poll queues
+[    2.507026] nvme nvme1: 7/0/0 default/read/poll queues
+[    2.509467] nvme nvme2: Ignoring bogus Namespace Identifiers
+[    2.512804] nvme nvme1: Ignoring bogus Namespace Identifiers
+[    2.513698]  nvme1n1: p1
+
+Signed-off-by: Pablo Greco <pgreco@centosproject.org>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/devfreq/event/exynos-ppmu.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/nvme/host/pci.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/devfreq/event/exynos-ppmu.c
-+++ b/drivers/devfreq/event/exynos-ppmu.c
-@@ -514,15 +514,19 @@ static int of_get_devfreq_events(struct
- 
- 	count = of_get_child_count(events_np);
- 	desc = devm_kcalloc(dev, count, sizeof(*desc), GFP_KERNEL);
--	if (!desc)
-+	if (!desc) {
-+		of_node_put(events_np);
- 		return -ENOMEM;
-+	}
- 	info->num_events = count;
- 
- 	of_id = of_match_device(exynos_ppmu_id_match, dev);
- 	if (of_id)
- 		info->ppmu_type = (enum exynos_ppmu_type)of_id->data;
--	else
-+	else {
-+		of_node_put(events_np);
- 		return -EINVAL;
-+	}
- 
- 	j = 0;
- 	for_each_child_of_node(events_np, node) {
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3245,7 +3245,8 @@ static const struct pci_device_id nvme_i
+ 	{ PCI_DEVICE(0x1d1d, 0x2601),	/* CNEX Granby */
+ 		.driver_data = NVME_QUIRK_LIGHTNVM, },
+ 	{ PCI_DEVICE(0x10ec, 0x5762),   /* ADATA SX6000LNP */
+-		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
++				NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1cc1, 0x8201),   /* ADATA SX8200PNP 512GB */
+ 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
 
 
