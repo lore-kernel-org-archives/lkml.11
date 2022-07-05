@@ -2,107 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 394F5CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42673C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbiGENtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
+        id S231721AbiGENtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiGENsk (ORCPT
+        with ESMTP id S232238AbiGENsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:48:40 -0400
-Received: from out199-16.us.a.mail.aliyun.com (out199-16.us.a.mail.aliyun.com [47.90.199.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C7B21832
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 06:17:56 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VISKJA4_1657027069;
-Received: from 30.225.28.170(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VISKJA4_1657027069)
-          by smtp.aliyun-inc.com;
-          Tue, 05 Jul 2022 21:17:50 +0800
-Message-ID: <51f7c840-f892-fa98-632b-4c06b76fb32a@linux.alibaba.com>
-Date:   Tue, 5 Jul 2022 21:17:48 +0800
+        Tue, 5 Jul 2022 09:48:46 -0400
+X-Greylist: delayed 3343 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Jul 2022 06:19:49 PDT
+Received: from mailgate.ics.forth.gr (mailgate.ics.forth.gr [139.91.1.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529F320BD9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 06:19:49 -0700 (PDT)
+Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
+        by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 265CO2rC031251
+        for <linux-kernel@vger.kernel.org>; Tue, 5 Jul 2022 15:24:02 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
+        q=dns/txt; i=@ics.forth.gr; t=1657023837; x=1659615837;
+        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=t/A2bhKqXek2hWtLd3vlQT20t22w8cXN/y/jBkLVg3Q=;
+        b=PTBtCmubCBSI5gv1/8wQA8PNoiq06p3LQHpEvhH8pb4aoMP7vIDEQ95eospPgImM
+        tDJnpWdPMFFBs/BYTNvWAbKN5GZ1vlj3Lo1aF/BEU+p3q9oTEQqrmMHZcxm2lkzn
+        Kk6vDliJSH7WodeTI+dLA7zkKA+n/e8lJ68e/LomFEwYxdDWWipQMImgXw1tsrUc
+        kj06zeqZUvVmS8ShjEBxSOAsaVdhMDf/fbSoNC7jDL10uMBsS4EpNuj6KIqZMru6
+        AMIfz5dsoWWpO5oLI6A4wbgVVBaBuhbNQFxAJ6Dgb4AWA/tMmPo4aJBnN5oEnhHZ
+        HSXBdEvd366IfunvIZKVgQ==;
+X-AuditID: 8b5b014d-f2ab27000000641e-68-62c42d5da359
+Received: from enigma.ics.forth.gr (enigma.ics.forth.gr [139.91.151.35])
+        by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id D0.AF.25630.D5D24C26; Tue,  5 Jul 2022 15:23:57 +0300 (EEST)
+X-ICS-AUTH-INFO: Authenticated user: mick at ics.forth.gr
+Message-ID: <75409de5-2351-3ab2-5162-33ebd8d30749@ics.forth.gr>
+Date:   Tue, 5 Jul 2022 15:23:56 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
- degradation
-To:     Mike Rapoport <rppt@kernel.org>, Will Deacon <will@kernel.org>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, baolin.wang@linux.alibaba.com,
-        catalin.marinas@arm.com, akpm@linux-foundation.org,
-        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
-        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
-        jonathan@marek.ca, mark.rutland@arm.com,
-        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        geert+renesas@glider.be, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-References: <4accaeda-572f-f72d-5067-2d0999e4d00a@linux.alibaba.com>
- <20220704131516.GC31684@willie-the-truck>
- <2ae1cae0-ee26-aa59-7ed9-231d67194dce@linux.alibaba.com>
- <20220704142313.GE31684@willie-the-truck>
- <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
- <20220704163815.GA32177@willie-the-truck>
- <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
- <20220705095231.GB552@willie-the-truck>
- <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
- <20220705121115.GB1012@willie-the-truck> <YsQ07kvZX5sO2ov2@kernel.org>
-From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <YsQ07kvZX5sO2ov2@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: RISC-V: patched kexec-tools on github for review/testing
+Content-Language: el-GR
+To:     Yixun Lan <yixun.lan@gmail.com>
+Cc:     Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        ebiederm@xmission.com, kexec@lists.infradead.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Alexandre ghiti <alex@ghiti.fr>,
+        Mike Rapoport <rppt@kernel.org>, geert+renesas@glider.be,
+        Stephano Cetola <scetola@linuxfoundation.org>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>
+References: <00c521b5b872b06c9350145c7d39fe7c@mailhost.ics.forth.gr>
+ <CA+zEjCs0n8KA_oaFKJbaP6kNohDA=qJHvUKhePUK+hDFJSbHig@mail.gmail.com>
+ <CA+zEjCscL1dWASm7u20p1B7-JeJaGTXiWG=K1XiWtZj=VFX+WQ@mail.gmail.com>
+ <d75edc49681473bf8b88e474ae61b524@mailhost.ics.forth.gr>
+ <CA+zEjCsc60mxPynL7DDGxfaUz7uif3uXPx3atnHbvM3ei_TETA@mail.gmail.com>
+ <2ec74f4bd0e7b7cb4b579e9e042fc035@mailhost.ics.forth.gr>
+ <CALecT5gdqW9Na_s9PiFAZt0u=_uPCu0zYdUCb4UfuSV6fM_Q+w@mail.gmail.com>
+From:   Nick Kossifidis <mick@ics.forth.gr>
+In-Reply-To: <CALecT5gdqW9Na_s9PiFAZt0u=_uPCu0zYdUCb4UfuSV6fM_Q+w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprBIsWRmVeSWpSXmKPExsXSHT1dWTdW90iSwaNrChbP7nxltVi36AKr
+        xZMPE9ksFq34zmLxf1sLu8Xc2ZMYLXaf/spkcXnXHDaLbZ9b2CxeXu5htuheWW1xZP12JovZ
+        H5awWHzdNpfZgc9jVkMvm8ebly9ZPO6dmMbqMfGsrsfOWXfZPTat6mTz2D93DbvH5iX1Hp83
+        yXnsvP2QyaP9QDeTx5RD7SwBPFFcNimpOZllqUX6dglcGX39DawFO1gq/raZNzDuYe5i5OSQ
+        EDCRaN99ir2LkYtDSOAoo8SJ7kOsEAlLic2fXrKA2LwC9hKdi+4xgdgsAioSH39uY4SIC0qc
+        nPkErEZUIELizKszYLawgKvEzt17wRYwC4hLHDn/G8wWEVCW+LzpCwvIMmaB/SwS+6c9ARsk
+        JHCNWaLjfAKIzSagKTH/0kGwQZwCgRIXJx5ngxhkJtG1tYsRwpaX2P52DvMERoFZSO6YhWTf
+        LCQts5C0LGBkWcUokFhmrJeZXKyXll9UkqGXXrSJERx5jL47GG9vfqt3iJGJg/EQowQHs5II
+        76pJB5OEeFMSK6tSi/Lji0pzUosPMUpzsCiJ865kbEoSEkhPLEnNTk0tSC2CyTJxcEo1MO1v
+        7bjysb79Ybfm1/g7aSw9hleM18zh4HkXdPd56IeDy4y3TxLzrT9quG7bT3Gn4mpD9/v63zTO
+        pVyaH7d5t0CL3jQ5vT0Hi7o/9V49tbrlv/HrVOMw27Z/cxheitxuZFnddP7gecbWme6flEI2
+        fLmvvG7zjearJUdWWV45mTtV53TInMd1rAc3iAj+bRWVTk7gq2w8tvpVMuttidKlU+31Zm52
+        ra5hk+fICubtmn8urbz/oLz4+tYwAds2d574NsPI1N9qxcmPnba9Mmxas+6ghsPxHzPfSmz7
+        3fnQ3LT8E19BQ4GHBP8CsdAo1/Y9+z8bbz95uZ3r3K+6IplMhYUJvpG9ARdCeRYE+uzlU2Ip
+        zkg01GIuKk4EANnNypArAwAA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello Yixun,
 
+On 7/2/22 14:35, Yixun Lan wrote:
+> hi Nick
+> 
+> ping, any update for this? any new patch for kexec-tools?
+> 
+> I'd also like to try kexec on unmatched board, and encounter the same error
+> as Alexandre Ghiti reported, generally I'm using almost same cmdline
+> 
+> Yixun Lan
 
-在 2022/7/5 20:56, Mike Rapoport 写道:
-> On Tue, Jul 05, 2022 at 01:11:16PM +0100, Will Deacon wrote:
->> On Tue, Jul 05, 2022 at 08:07:07PM +0800, guanghui.fgh wrote:
->>>
->>> 1.The rodata full is harm to the performance and has been disabled in-house.
->>>
->>> 2.When using crashkernel with rodata non full, the kernel also will use non
->>> block/section mapping which cause high d-TLB miss and degrade performance
->>> greatly.
->>> This patch fix it to use block/section mapping as far as possible.
->>>
->>> bool can_set_direct_map(void)
->>> {
->>> 	return rodata_full || debug_pagealloc_enabled();
->>> }
->>>
->>> map_mem:
->>> if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
->>> 	flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
->>>
->>> 3.When rodata full is disabled, crashkernel also need protect(keep
->>> arch_kexec_[un]protect_crashkres using).
->>> I think crashkernel should't depend on radata full(Maybe other architecture
->>> don't support radata full now).
->>
->> I think this is going round in circles :/
->>
->> As a first step, can we please leave the crashkernel mapped unless
->> rodata=full? It should be a much simpler patch to write, review and maintain
->> and it gives you the performance you want when crashkernel is being used.
-> 
-> Since we are talking about large systems, what do you think about letting
-> them set CRASH_ALIGN to PUD_SIZE, then
-> 
-> 	unmap(crashkernel);
-> 	__create_pgd_mapping(crashkernel, NO_BLOCK_MAPPINGS);
-> 
-> should be enough to make crash kernel mapped with base pages.
->   
->> Will
-> 
-Thanks.
+The kernel-side patches have already been merged upstream, for 
+kexec-tools there are some people working on fixes, I'm expecting pull 
+requests on the github before I do a pull request upstream. You should 
+be able to use kexec without initrd.
 
-1.When kernel boots with crashkernel, the crashkernel parameters format is:
-0M-2G:0M,2G-256G:256M,256G-1024G:320M,1024G-:384M which is self-adaption 
-to multiple system.
-
-2.As mentioned above, the crashkernel mem size maybe less than 
-PUD_SIZE(Not multiple time to PUD_SIZE).
-So, maybe we also need use some non block/section mappings.
+Regards,
+Nick
