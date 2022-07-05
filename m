@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD81CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 544E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231171AbiGEJtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
+        id S230514AbiGEJtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiGEJtE (ORCPT
+        with ESMTP id S231154AbiGEJtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 05:49:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54186266B;
-        Tue,  5 Jul 2022 02:49:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8DADFB9;
+        Tue,  5 Jul 2022 02:49:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C855561912;
-        Tue,  5 Jul 2022 09:49:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29831C341D1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBB56191C;
+        Tue,  5 Jul 2022 09:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D140C341E1;
         Tue,  5 Jul 2022 09:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657014542;
-        bh=PRWF0dxD1eXxpPCxf2RrBgIGlcN0HFetPfQNjqW6hVY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AID+pfdcyTF9puV9smoekOeujTxZItnvAW8tiIHIpKy5zpbSoSh1TGtKgyuvokq38
-         muyKEZmytORg7XJujwIQ/IUayRyPB0vHyoiBjx64I+1Rap9UeZSmPuC9PSt5vzUm6M
-         70b5MSa1CDT4b+2YovO8NscM0UQRgbstOqh+kdYKTsC8yt8gh3oNdpY/y70lFQmv6w
-         gxP8ZX6+xn/iPtbXKu3JGY8Uav19ohF7IRYKB6YhlodehgqLvX40yHWGdwJwwgZi3v
-         vhTGeWCitD/hQ81aZ1pp32+HX7W3jPXTrYSGl083FaDvyrkHVVUTLPnzAz4OfyGTFk
-         +CkS4e3PVUc0A==
+        bh=5IEFwvykKWpluWYXuOvfZ01fDmcJ5NrUbb4Qf56H6+g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fvKR8YLNh6OgoPX2GLks3m2adddWQtdVdc/rNcRL0ZkIEzfSO0DHlLGw/fGPEM4AC
+         Qc7Thw9QZhHLpEAVo7pCxBFHAb70VESP6/F+vDykawvtTudUwOVIDIRrNaZJsWGvhS
+         7ml2Ug1lQzFexSGVHeZTfGeR+8DO7twQm57/Z6Ic+f1Qx3n5DXwWuFEXsMUmaQ8kLK
+         YD1RI/Bl8MYxgzwrwFmAPD0bLa2ZR+OyeU5kCuzdZ8Evbk6GMV5/vLdqUvFhfhF+9N
+         iw+7RI9FpJNDocQYt4twpUoYbWrvPBdLItla/zVqosHlX3tEJqLwk+HZD3V6no1iSs
+         7/tMu+eL9tQaA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8fB0-0004Wr-GB; Tue, 05 Jul 2022 11:49:02 +0200
+        id 1o8fB1-0004X9-46; Tue, 05 Jul 2022 11:49:03 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,109 +44,129 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 00/43] phy: qcom,qmp: fix dt-bindings and deprecate lane suffix
-Date:   Tue,  5 Jul 2022 11:41:56 +0200
-Message-Id: <20220705094239.17174-1-johan+linaro@kernel.org>
+Subject: [PATCH 07/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: clean up constraints
+Date:   Tue,  5 Jul 2022 11:42:03 +0200
+Message-Id: <20220705094239.17174-8-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220705094239.17174-1-johan+linaro@kernel.org>
+References: <20220705094239.17174-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When adding support for SC8280XP to the QMP PHY driver I noticed that
-the PHY provider child node was not described by the current DT schema.
+Drop the compatible conditional and tighten the property constraints.
 
-The SC8280XP PHYs also need a second fixed-divider PIPE clock
-("pipediv2") and I didn't want to have to add a bogus "lane" suffix to
-the clock name just to match the current "pipe0" name so I decided to
-deprecate the unnecessary suffix in the current binding instead.
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 65 +++++--------------
+ 1 file changed, 18 insertions(+), 47 deletions(-)
 
-To be able to add the missing child-node schema and handle device
-specifics like additional PIPE clocks, it quickly became obvious that
-the binding needs to be split up.
-
-This series fixes some issue with the current schema before splitting
-it up in separate schemas for PCIe, UFS and USB, which are then cleaned
-up further before adding missing parts like the child PHY provider
-nodes and examples.
-
-The MSM8996 PCIe PHY gets its own schema as this is the only non-combo
-PHY that actually provides more than one PHY per IP block. Note that the
-"lane" suffix is still unnecessary and misleading.
-
-The final patches adds support for the new resource names to the
-(recently split up) PHY drivers. Included is also a related combo PHY
-cleanup.
-
-I'll post a separate series with related DTS fixes caught while
-developing this series.
-
-Johan
-
-
-Johan Hovold (43):
-  dt-bindings: phy: qcom,qmp: fix bogus clock-cells property
-  dt-bindings: phy: qcom,qmp: sort compatible strings
-  dt-bindings: phy: qcom,qmp: clean up descriptions
-  dt-bindings: phy: qcom,qmp: clean up example
-  dt-bindings: phy: qcom,qmp: drop child-node comment
-  dt-bindings: phy: qcom,qmp: split out msm8996-qmp-pcie-phy
-  dt-bindings: phy: qcom,msm8996-qmp-pcie: clean up constraints
-  dt-bindings: phy: qcom,msm8996-qmp-pcie: add missing child node schema
-  dt-bindings: phy: qcom,msm8996-qmp-pcie: add example node
-  dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate PIPE clock names
-  dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate reset names
-  dt-bindings: phy: qcom,qmp: split out PCIe PHY binding
-  dt-bindings: phy: qcom,qmp-pcie: clean up register constraints
-  dt-bindings: phy: qcom,qmp-pcie: clean up clock constraints
-  dt-bindings: phy: qcom,qmp-pcie: clean up reset constraints
-  dt-bindings: phy: qcom,qmp-pcie: drop unused vddp-ref-clk supply
-  dt-bindings: phy: qcom,qmp-pcie: add missing child node schema
-  dt-bindings: phy: qcom,qmp-pcie: add example node
-  dt-bindings: phy: qcom,qmp-pcie: deprecate PIPE clock name
-  dt-bindings: phy: qcom,qmp: split out UFS PHY binding
-  dt-bindings: phy: qcom,qmp-ufs: clean up supplies
-  dt-bindings: phy: qcom,qmp-ufs: clean up reset providers
-  dt-bindings: phy: qcom,qmp-ufs: clean up clock constraints
-  dt-bindings: phy: qcom,qmp-ufs: clean up register constraints
-  dt-bindings: phy: qcom,qmp-ufs: add missing SM8450 clock
-  dt-bindings: phy: qcom,qmp-ufs: add missing SM8150 power domain
-  dt-bindings: phy: qcom,qmp-ufs: add missing child node schema
-  dt-bindings: phy: qcom,qmp-ufs: add example node
-  dt-bindings: phy: qcom,qmp: split out USB binding
-  dt-bindings: phy: qcom,qmp-usb: clean up clock constraints
-  dt-bindings: phy: qcom,qmp-usb: clean up supplies
-  dt-bindings: phy: qcom,qmp-usb: drop unused vddp-ref-clk supply
-  dt-bindings: phy: qcom,qmp-usb: clean up reset providers
-  dt-bindings: phy: qcom,qmp-usb: add missing child node schema
-  dt-bindings: phy: qcom,qmp-usb: deprecate PIPE clock name
-  dt-bindings: phy: qcom,qmp-usb3-dp: fix bogus clock-cells property
-  dt-bindings: phy: qcom,qmp-usb3-dp: deprecate USB PIPE clock name
-  phy: qcom-qmp-pcie: drop pipe clock lane suffix
-  phy: qcom-qmp-combo: drop unused lane reset
-  phy: qcom-qmp-combo: drop pipe clock lane suffix
-  phy: qcom-qmp-pcie-msm8996: drop pipe clock lane suffix
-  phy: qcom-qmp-pcie-msm8996: drop reset lane suffix
-  phy: qcom-qmp-usb: drop pipe clock lane suffix
-
- .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 212 ++++++++
- .../bindings/phy/qcom,qmp-pcie-phy.yaml       | 309 +++++++++++
- .../devicetree/bindings/phy/qcom,qmp-phy.yaml | 500 ------------------
- .../bindings/phy/qcom,qmp-ufs-phy.yaml        | 249 +++++++++
- .../bindings/phy/qcom,qmp-usb-phy.yaml        | 417 +++++++++++++++
- .../bindings/phy/qcom,qmp-usb3-dp-phy.yaml    |  15 +-
- drivers/phy/qualcomm/phy-qcom-qmp-combo.c     |  10 +-
- .../phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c  |  17 +-
- drivers/phy/qualcomm/phy-qcom-qmp-pcie.c      |   8 +-
- drivers/phy/qualcomm/phy-qcom-qmp-usb.c       |   8 +-
- 10 files changed, 1224 insertions(+), 521 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
- create mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
- delete mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
- create mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
- create mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
-
+diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+index 14fd86fd91ec..b73bf5c06358 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+@@ -19,10 +19,8 @@ properties:
+     const: qcom,msm8996-qmp-pcie-phy
+ 
+   reg:
+-    minItems: 1
+     items:
+       - description: Address and length of PHY's common serdes block.
+-      - description: Address and length of PHY's DP_COM control block.
+ 
+   "#address-cells":
+     enum: [ 1, 2 ]
+@@ -33,20 +31,28 @@ properties:
+   ranges: true
+ 
+   clocks:
+-    minItems: 1
+-    maxItems: 4
++    items:
++      - description: PHY aux clock.
++      - description: PHY config clock.
++      - description: 19.2 MHz ref clock.
+ 
+   clock-names:
+-    minItems: 1
+-    maxItems: 4
++    items:
++      - const: aux
++      - const: cfg_ahb
++      - const: ref
+ 
+   resets:
+-    minItems: 1
+-    maxItems: 3
++    items:
++      - description: Reset of PHY block.
++      - description: PHY common block reset.
++      - description: PHY's ahb cfg block reset.
+ 
+   reset-names:
+-    minItems: 1
+-    maxItems: 3
++    items:
++      - const: phy
++      - const: common
++      - const: cfg
+ 
+   vdda-phy-supply:
+     description:
+@@ -56,10 +62,6 @@ properties:
+     description:
+       Phandle to 1.8V regulator supply to PHY refclk pll block.
+ 
+-  vddp-ref-clk-supply:
+-    description:
+-      Phandle to a regulator supply to any specific refclk pll block.
+-
+ patternProperties:
+   "^phy@[0-9a-f]+$":
+     type: object
+@@ -77,38 +79,7 @@ required:
+   - clock-names
+   - resets
+   - reset-names
++  - vdda-phy-supply
++  - vdda-pll-supply
+ 
+ additionalProperties: false
+-
+-allOf:
+-  - if:
+-      properties:
+-        compatible:
+-          contains:
+-            enum:
+-              - qcom,msm8996-qmp-pcie-phy
+-    then:
+-      properties:
+-        clocks:
+-          items:
+-            - description: PHY aux clock.
+-            - description: PHY config clock.
+-            - description: 19.2 MHz ref clock.
+-        clock-names:
+-          items:
+-            - const: aux
+-            - const: cfg_ahb
+-            - const: ref
+-        resets:
+-          items:
+-            - description: Reset of PHY block.
+-            - description: PHY common block reset.
+-            - description: PHY's ahb cfg block reset.
+-        reset-names:
+-          items:
+-            - const: phy
+-            - const: common
+-            - const: cfg
+-      required:
+-        - vdda-phy-supply
+-        - vdda-pll-supply
 -- 
 2.35.1
 
