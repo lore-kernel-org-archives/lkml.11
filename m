@@ -2,103 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1297C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BECE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232825AbiGERCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        id S230427AbiGERDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbiGERC0 (ORCPT
+        with ESMTP id S229482AbiGERDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:02:26 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E351F2F1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:02:16 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-232.nat.spd-mgts.ru [109.252.119.232])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id F238A660166D;
-        Tue,  5 Jul 2022 18:02:11 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657040532;
-        bh=l3lVYraeVRjfudV5BktsYjuOavhLJKEFAe1rgIjHK58=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=mWg/MwfgtEriDXF2t98MRae4d5bqs3kk7Js+amAsZGsV6Ctdl6bGY1cpzpl+C4IPN
-         PGzD493+kFEltUPLTV9RQFLOf3G7jZf/9eTxosnWS8/Vlu9LMt8RJFIentc/p8hnH8
-         RjYB6oNaba4T5dh++v6AIuwpWcX9Dh61kglQ06dHR6i7/X9EKzaLQh5nTTAMCBzoTI
-         LOoax3z6f5YnwXzPFvuxi8L9x9UQCDpS2WpBNR/rIINOOiLBfAki3t28B0CDXL7w03
-         Pc352NJgO6eOyoOVWrcPjN26G0/gaw100OTLvr3yLiXjZyFkg35PeqvjvYMDenn0iq
-         IrMEg7wGfO68A==
-Message-ID: <1380526d-17fb-6eb2-0fd5-5cddbdf0a92e@collabora.com>
-Date:   Tue, 5 Jul 2022 20:02:09 +0300
+        Tue, 5 Jul 2022 13:03:46 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265E618E05;
+        Tue,  5 Jul 2022 10:03:45 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265H3gih079921;
+        Tue, 5 Jul 2022 12:03:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657040622;
+        bh=DLRqHH9OY7cPnqUUpAZRs3gZjGYSOUsDZ1PR6GKyV0w=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=yr+PWhfjeTeiPRiEyYa+KKtt3v9gEGfbHnxBTxA1mJaxCIRrkxVKp77AGknWGaFTj
+         mXw501F7XLbe4SyQsuMtuYCTTD3b0K59ZUTOZW/xklKe7HzmwLREyUhtTEkvOACk0S
+         pdpOQhyJqGu4yBXWpFAWjg7FCjSGeQ8dHown51qA=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265H3grN083627
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Jul 2022 12:03:42 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Jul 2022 12:03:42 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Jul 2022 12:03:42 -0500
+Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265H3e08118192;
+        Tue, 5 Jul 2022 12:03:41 -0500
+From:   Andrew Davis <afd@ti.com>
+To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Andrew Davis <afd@ti.com>
+Subject: [PATCH 3/6] arm64: dts: ti: k3-am65-main: Disable RNG node
+Date:   Tue, 5 Jul 2022 12:03:37 -0500
+Message-ID: <20220705170340.26719-3-afd@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220705170340.26719-1-afd@ti.com>
+References: <20220705170340.26719-1-afd@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v7 7/9] drm/virtio: Improve DMA API usage for shmem BOs
-Content-Language: en-US
-To:     Gerd Hoffmann <kraxel@redhat.com>
-Cc:     kernel@collabora.com, David Airlie <airlied@linux.ie>,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        virtualization@lists.linux-foundation.org,
-        Robin Murphy <robin.murphy@arm.com>
-References: <20220630200726.1884320-1-dmitry.osipenko@collabora.com>
- <20220630200726.1884320-8-dmitry.osipenko@collabora.com>
- <20220705135323.emr4gdbcxoisdcxe@sirius.home.kraxel.org>
- <d2c64d09-c4bb-9aed-069d-a9b4d07a1f66@collabora.com>
- <20220705154507.67ovlun4m26xzppn@sirius.home.kraxel.org>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <20220705154507.67ovlun4m26xzppn@sirius.home.kraxel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/5/22 18:45, Gerd Hoffmann wrote:
->   Hi,
-> 
->>> Also note that pci is not the only virtio transport we have.
->>
->> The VirtIO indeed has other transports, but only PCI is really supported
->> in case of the VirtIO-GPU in kernel and in Qemu/crosvm, AFAICT. Hence
->> only the PCI transport was tested.
-> 
-> qemu -M microvm \
->   -global virtio-mmio.force-legacy=false \
->   -device virtio-gpu-device
-> 
-> Gives you a functional virtio-gpu device on virtio-mmio.
-> 
-> aarch64 virt machines support both pci and mmio too.
-> s390x has virtio-gpu-ccw ...
+The hardware random number generator is used by OP-TEE and is access is
+denied to other users with SoC level bus firewalls. Any access to this
+device from Linux will result in firewall errors. Disable this node.
 
-Gerd, thank you very much! It's was indeed unclear to me how to test the
-MMIO GPU, but yours variant with microvm works! I was looking for trying
-aarch64 in the past, but it also was unclear how to do it since there is
-no DT support for the VirtIO-GPU, AFAICS.
+Signed-off-by: Andrew Davis <afd@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-am65-main.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-I booted kernel with this patchset applied and everything is okay, Xorg
-works.
-
- [drm] Initialized virtio_gpu 0.1.0 0 for LNRO0005:01 on minor 0
- virtio-mmio LNRO0005:01: [drm] drm_plane_enable_fb_damage_clips() not
-called
- virtio-mmio LNRO0005:01: [drm] fb0: virtio_gpudrmfb frame buffer device
-
-There is no virgl support because it's a virtio-gpu-device and not
-virtio-gpu-device-gl that is PCI-only in Qemu. Hence everything seems good.
-
-I'd appreciate if you could give s390x a test.. I never touched s390x
-and it will probably take some extra effort to get into it.
-
+diff --git a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+index e749343accedd..113e959ba06d0 100644
+--- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+@@ -127,6 +127,7 @@ rng: rng@4e10000 {
+ 			reg = <0x0 0x4e10000 0x0 0x7d>;
+ 			interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&k3_clks 136 1>;
++			status = "disabled";
+ 		};
+ 	};
+ 
 -- 
-Best regards,
-Dmitry
+2.36.1
+
