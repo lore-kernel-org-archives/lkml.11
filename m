@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AF7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B45FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235646AbiGEMQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S236050AbiGEMQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235278AbiGEMIt (ORCPT
+        with ESMTP id S235276AbiGEMIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE786B10;
+        Tue, 5 Jul 2022 08:08:48 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E14310;
         Tue,  5 Jul 2022 05:08:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FD196185C;
-        Tue,  5 Jul 2022 12:08:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 608ADC341CB;
-        Tue,  5 Jul 2022 12:08:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022918;
-        bh=aK5Im9BX4lkHtYiwc01Ts6IANuvRpCwTJ+sN2EWbzDo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JJZ29JECjrVtz3ZeLu0rNT6a/riMY7NqZJEl0X83FfF9N5uxIqA9Ps4BPxGSr4mr0
-         KN7mgKv/KjWe1lhtVKFzS3OrERi2Rd5get3razSKDNzEptVB9CrFQRATPmoSTk0RKF
-         Rt3PL6pxloM2BgJ6sM2H2EXDjp7CAwtFpIgxQGEc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Denis Efremov <efremov@linux.com>,
-        kernel test robot <lkp@intel.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 57/84] sit: use min
-Date:   Tue,  5 Jul 2022 13:58:20 +0200
-Message-Id: <20220705115616.987225723@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
-References: <20220705115615.323395630@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657022919; x=1688558919;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=JX4CqpG131f0B16O13AOq1/dT80ue2EUWs1TLwPquUY=;
+  b=ZMPqufs8mnni+HSUvbhQ93KsIeFtwKgXdEqpmUE59hrLpQw3sMu41mrG
+   AXiJrWi+7GOVyjutg6ZxGco2VSBRUUGyN2RCORDJCvOsbXmi/psBqkDF9
+   YkERp/hqivfzG1Nd7J2KcPHvp5Rp5JE2Q1NsuJXtpIdSxsWcuQ9ZZ2N+T
+   A=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 05:08:39 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:08:39 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:08:38 -0700
+Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:08:35 -0700
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+To:     <bjorn.andersson@linaro.org>
+CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
+        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <konrad.dybcio@somainline.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [V3 0/7] Miscellaneous PAS fixes
+Date:   Tue, 5 Jul 2022 17:38:13 +0530
+Message-ID: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+A collection of misc. fixes for the remoteproc PAS and sysmon driver.
 
-[ Upstream commit 284fda1eff8a8b27d2cafd7dc8fb423d13720f21 ]
+V3:
+ * Fixup misc. suggestions and rename to adsp_shutdown_poll_decrypt() [Bjorn]
+ * Pick up another lone sysmon fix from the list with R-b.
 
-Opportunity for min()
+V2:
+ * Add misc. sysmon fix.
+ * Dropping patch 1 and 6 from V1.
 
-Generated by: scripts/coccinelle/misc/minmax.cocci
+Sibi Sankar (2):
+  remoteproc: qcom: pas: Add decrypt shutdown support for modem
+  remoteproc: sysmon: Wait for SSCTL service to come up
 
-CC: Denis Efremov <efremov@linux.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv6/sit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Siddharth Gupta (5):
+  remoteproc: qcom: pas: Mark va as io memory
+  remoteproc: qcom: pas: Mark devices as wakeup capable
+  remoteproc: qcom: pas: Check if coredump is enabled
+  remoteproc: q6v5: Set q6 state to offline on receiving wdog irq
+  remoteproc: sysmon: Send sysmon state only for running rprocs
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index bab0e99f6e35..0be82586ce32 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -323,7 +323,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ifreq *ifr)
- 
- 	rcu_read_lock();
- 
--	ca = t->prl_count < cmax ? t->prl_count : cmax;
-+	ca = min(t->prl_count, cmax);
- 
- 	if (!kp) {
- 		/* We don't try hard to allocate much memory for
+ drivers/remoteproc/qcom_q6v5.c     |  4 +++
+ drivers/remoteproc/qcom_q6v5_pas.c | 53 ++++++++++++++++++++++++++++++++++++--
+ drivers/remoteproc/qcom_sysmon.c   | 16 ++++++++++--
+ 3 files changed, 69 insertions(+), 4 deletions(-)
+
 -- 
-2.35.1
-
-
+2.7.4
 
