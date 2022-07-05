@@ -2,142 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01FDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbiGEP05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
+        id S231583AbiGEP1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiGEP0z (ORCPT
+        with ESMTP id S229507AbiGEP1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:26:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F229518E28;
-        Tue,  5 Jul 2022 08:26:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A39E7B81809;
-        Tue,  5 Jul 2022 15:26:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13211C341C7;
-        Tue,  5 Jul 2022 15:26:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657034811;
-        bh=7eBjk9mDSgvIzpkiH7EvCzwk2kRbUpj6AGdrebCGPsE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FrJ29z6/8tSoAac0Iw9JLiLKpX+XxqLisd902MEyW70oQCIog8kSErx+FBzVsrEr7
-         ikicV0YDar37GDPyAMOs6NAITPwJyLBFSSCTipAedm9RVyYpSKtE2DpKQxrDlPHV7j
-         6euhgqrfmp/Y4w3KfAjYI017mpLtqwnY1Ak1aJxu1InZlhqXVBEMVpqKFzwdDydZ1z
-         Mns5hBoVdcLaq52ETra9WPNEcsQVleo61PH3Ul8BpnURGU2JxEj78AE+po0EWxIT5Y
-         9fnY++PexO1rorGyJ/7H6z3krPk24c8/xhDGeuZZzeAmmaGhkbnrRUUVTGV5BCIheE
-         Kr6f7PWbK98Ow==
-Date:   Tue, 5 Jul 2022 08:26:49 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Add a general "kernel hardening" section
-Message-ID: <YsRYORcovwCGvztR@dev-arch.thelio-3990X>
-References: <20220702004638.2486003-1-keescook@chromium.org>
+        Tue, 5 Jul 2022 11:27:17 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DAF18E28
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:27:15 -0700 (PDT)
+Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LcmgP2Y0mz67Zy6;
+        Tue,  5 Jul 2022 23:24:33 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 5 Jul 2022 17:27:12 +0200
+Received: from [10.126.171.232] (10.126.171.232) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2375.24; Tue, 5 Jul 2022 16:27:11 +0100
+Message-ID: <5cd65a67-4289-23f7-3bec-c166e96aa9e2@huawei.com>
+Date:   Tue, 5 Jul 2022 16:27:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220702004638.2486003-1-keescook@chromium.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v1 4/4] bus: hisi_lpc: Don't guard ACPI IDs with
+ ACPI_PTR()
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220705114312.86164-1-andriy.shevchenko@linux.intel.com>
+ <20220705114312.86164-4-andriy.shevchenko@linux.intel.com>
+ <f85d13df-b3b9-5cde-6f4c-a68507cedee9@huawei.com>
+ <CAHp75Ves4VZHRWGW9hP1cz-Cytx_c2GsK3BHuNiCyRqCufB1Hg@mail.gmail.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <CAHp75Ves4VZHRWGW9hP1cz-Cytx_c2GsK3BHuNiCyRqCufB1Hg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.171.232]
+X-ClientProxiedBy: lhreml703-chm.china.huawei.com (10.201.108.52) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 05:46:38PM -0700, Kees Cook wrote:
-> While many large subsystems related to kernel hardening have their own
-> distinct MAINTAINERS entries, there are some smaller collections that
-> don't, but are maintained/reviewed by linux-hardening@vger.kernel.org.
-> Add a section to capture these, add (or replace defunct) trees that are
-> now all carried in the hardening tree.
-> 
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+On 05/07/2022 16:15, Andy Shevchenko wrote:
 
-Acked-by: Nathan Chancellor <nathan@kernel.org>
+With a change to the commit message along the line below:
 
-> ---
->  MAINTAINERS | 21 +++++++++++++++++----
->  1 file changed, 17 insertions(+), 4 deletions(-)
+Acked-by: John Garry <john.garry@huawei.com>
+
+> On Tue, Jul 5, 2022 at 5:02 PM John Garry<john.garry@huawei.com>  wrote:
+>> On 05/07/2022 12:43, Andy Shevchenko wrote:
+>>> The OF is not guarded, neither ACPI needs.
+>> This doesn't read well.
+> "The OF is not guarded, neither ACPI needs it."
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 3cf9842d9233..2702b29e922f 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -4873,7 +4873,7 @@ R:	Nick Desaulniers <ndesaulniers@google.com>
->  L:	llvm@lists.linux.dev
->  S:	Supported
->  B:	https://github.com/ClangBuiltLinux/linux/issues
-> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/clang/features
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
->  F:	include/linux/cfi.h
->  F:	kernel/cfi.c
->  
-> @@ -7783,6 +7783,7 @@ FORTIFY_SOURCE
->  M:	Kees Cook <keescook@chromium.org>
->  L:	linux-hardening@vger.kernel.org
->  S:	Supported
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
->  F:	include/linux/fortify-string.h
->  F:	lib/test_fortify/*
->  F:	scripts/test_fortify.sh
-> @@ -8225,6 +8226,7 @@ GCC PLUGINS
->  M:	Kees Cook <keescook@chromium.org>
->  L:	linux-hardening@vger.kernel.org
->  S:	Maintained
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
->  F:	Documentation/kbuild/gcc-plugins.rst
->  F:	scripts/Makefile.gcc-plugins
->  F:	scripts/gcc-plugins/
-> @@ -10742,6 +10744,17 @@ F:	scripts/mk*
->  F:	scripts/mod/
->  F:	scripts/package/
->  
-> +KERNEL HARDENING (not covered by other areas)
-> +M:	Kees Cook <keescook@chromium.org>
-> +L:	linux-hardening@vger.kernel.org
-> +S:	Supported
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
-> +F:	include/linux/overflow.h
-> +F:	include/linux/randomize_kstack.h
-> +F:	mm/usercopy.c
-> +K:	\b(add|choose)_random_kstack_offset\b
-> +K:	\b__check_(object_size|heap_object)\b
-> +
->  KERNEL JANITORS
->  L:	kernel-janitors@vger.kernel.org
->  S:	Odd Fixes
-> @@ -11542,7 +11555,7 @@ F:	drivers/media/usb/dvb-usb-v2/lmedm04*
->  LOADPIN SECURITY MODULE
->  M:	Kees Cook <keescook@chromium.org>
->  S:	Supported
-> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git lsm/loadpin
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
->  F:	Documentation/admin-guide/LSM/LoadPin.rst
->  F:	security/loadpin/
->  
-> @@ -17857,7 +17870,7 @@ M:	Kees Cook <keescook@chromium.org>
->  R:	Andy Lutomirski <luto@amacapital.net>
->  R:	Will Drewry <wad@chromium.org>
->  S:	Supported
-> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git seccomp
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/seccomp
->  F:	Documentation/userspace-api/seccomp_filter.rst
->  F:	include/linux/seccomp.h
->  F:	include/uapi/linux/seccomp.h
-> @@ -21993,7 +22006,7 @@ F:	include/linux/yam.h
->  YAMA SECURITY MODULE
->  M:	Kees Cook <keescook@chromium.org>
->  S:	Supported
-> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git yama/tip
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
->  F:	Documentation/admin-guide/LSM/Yama.rst
->  F:	security/yama/
->  
-> -- 
-> 2.32.0
+> Better? Otherwise please propose how it can be amended here.
+
+How about "The OF ID table is not guarded, and the ACPI table does not 
+needs it either."?
+
 > 
+>>> The IDs do not depend
+>>> to the configuration. Hence drop ACPI_PTR() from the code and
+>>> move ID table closer to its user.
+>> Do you need to explicitly include mod_devicetable.h, which has the
+>> definition of acpi_device_id?
+>>
+>> I saw a similar change for another driver and it was claimed that
+>> including mod_devicetable.h was required.
+> Strictly speaking, yes we need mod_devicetable.h. But of.h and acpi.h
+> include it.
+
+acpi.h does not include it for !CONFIG_ACPI, which is the only one which 
+I had checked. But now I see that of.h always includes it, so what you 
+are doing is ok.
+
+> 
+> What you have seen is probably dropping of.h and/or acpi.h completely
+> from the user.
+
+Right
+
+> In such cases the mod_devicetable.h is compulsory.
+
+Sure
+
+Thanks,
+John
