@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD74C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4587CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:20:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236365AbiGEMUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53720 "EHLO
+        id S236419AbiGEMU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235955AbiGEMN1 (ORCPT
+        with ESMTP id S235956AbiGEMN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:13:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEECA18B1D;
-        Tue,  5 Jul 2022 05:10:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F8B18B19;
+        Tue,  5 Jul 2022 05:10:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 268F6CE0B30;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B99AD619AF;
+        Tue,  5 Jul 2022 12:10:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C771EC341C7;
         Tue,  5 Jul 2022 12:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 195F2C341D0;
-        Tue,  5 Jul 2022 12:10:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023055;
-        bh=tBysG5slX1gmz22KZWHuypWFecdUfpb8HUCfdcMG+6Y=;
+        s=korg; t=1657023058;
+        bh=GpAELpXa6Ga52L9rDUJkSFouJ4QBEHX3NS8TB3eieoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w5s85MHCuRHt6ufN0sbzvQkCc9Caxe3v/w+QZy8FA3m59VEFy/CkN9TaillfLlG2u
-         NGl67/4ilP5Et6yBa+sA+pfwyWA6Sx1kP6gbHH2m0g9sCGn3ECPKHUkbRG77R7yqh6
-         /HnTw9rQqsnheJvfK5u3ut95P3VuXGQyzZjszAAI=
+        b=YbkxpoV5xGt7JtakyxJehFDnZkRuts3MUzubBbzB+oi+YX5c1UgFIzKkBhTZpk1V4
+         PphaAUnp0DA62T2Y3u03YwhvGbGGgmfDwIdAaDcasgigahDPLr8JI3zphlVuwMAi3R
+         m2t20FwfS1bDT7febtvJW+6dv0o2aisDQOkNFln0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, willemb@google.com,
-        Dimitris Michailidis <dmichail@fungible.com>,
+        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 21/98] selftests/net: pass ipv6_args to udpgso_benchs IPv6 TCP test
-Date:   Tue,  5 Jul 2022 13:57:39 +0200
-Message-Id: <20220705115618.190420612@linuxfoundation.org>
+Subject: [PATCH 5.15 22/98] net: dsa: bcm_sf2: force pause link settings
+Date:   Tue,  5 Jul 2022 13:57:40 +0200
+Message-Id: <20220705115618.221068131@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -49,34 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dimitris Michailidis <d.michailidis@fungible.com>
+From: Doug Berger <opendmb@gmail.com>
 
-commit b968080808f7f28b89aa495b7402ba48eb17ee93 upstream.
+commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
 
-udpgso_bench.sh has been running its IPv6 TCP test with IPv4 arguments
-since its initial conmit. Looks like a typo.
+The pause settings reported by the PHY should also be applied to the GMII port
+status override otherwise the switch will not generate pause frames towards the
+link partner despite the advertisement saying otherwise.
 
-Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-Cc: willemb@google.com
-Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/r/20220623000234.61774-1-dmichail@fungible.com
+Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/udpgso_bench.sh |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/bcm_sf2.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/tools/testing/selftests/net/udpgso_bench.sh
-+++ b/tools/testing/selftests/net/udpgso_bench.sh
-@@ -120,7 +120,7 @@ run_all() {
- 	run_udp "${ipv4_args}"
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -865,6 +865,11 @@ static void bcm_sf2_sw_mac_link_up(struc
+ 		if (duplex == DUPLEX_FULL)
+ 			reg |= DUPLX_MODE;
  
- 	echo "ipv6"
--	run_tcp "${ipv4_args}"
-+	run_tcp "${ipv6_args}"
- 	run_udp "${ipv6_args}"
- }
++		if (tx_pause)
++			reg |= TXFLOW_CNTL;
++		if (rx_pause)
++			reg |= RXFLOW_CNTL;
++
+ 		core_writel(priv, reg, offset);
+ 	}
  
 
 
