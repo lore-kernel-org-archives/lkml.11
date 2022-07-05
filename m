@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27ACFC2BBE5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C7FCCA49E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237673AbiGEMTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
+        id S237559AbiGEMTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235494AbiGEMM3 (ORCPT
+        with ESMTP id S235175AbiGEMLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:12:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AEA193ED;
-        Tue,  5 Jul 2022 05:10:21 -0700 (PDT)
+        Tue, 5 Jul 2022 08:11:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF39310;
+        Tue,  5 Jul 2022 05:10:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B135E61876;
-        Tue,  5 Jul 2022 12:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B894BC36AE2;
-        Tue,  5 Jul 2022 12:10:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4391F6185C;
+        Tue,  5 Jul 2022 12:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1F9C341CB;
+        Tue,  5 Jul 2022 12:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023020;
-        bh=qgwxdVO/HM/raQbr8pI20444W5XTMtXNLil76eb/GuQ=;
+        s=korg; t=1657023008;
+        bh=PXnYC5Q5J8r1ipXlW9fyoi7kFwV9c2wah0J2rCfcv6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pZOSQ4/6vadcetBMUkxVwifwdW9FiZm2hVDdOdOxtd9BfnAdpKK22bBaqRA7OFr3p
-         ZExNu/qxJkN36DFVEpz2IgsFFcDTJF6cq4PEmEbvfKY/3PWgrNcwiVqvz8l2DShvvZ
-         tQ777JI7z13Kz8ilO9+NMg6v7tUxd2ABYKjabmCI=
+        b=Krz5NzTgPvZPEzCUrdu4halsI0/DQowgKOWVzRGUwk+isUbioyKEG7DMMr/53snja
+         2bwx7srYsLtgoFyIwpspIKZAjpZ1+eqAjgcBHXQ5EYrbynJrH222SLXH+xVBR7jArb
+         dsgl+P3vRmRTPNMz8q83mc1Au4yHvvBGB7Ci9iaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Subject: [PATCH 5.15 01/98] Revert "drm/amdgpu/display: set vblank_disable_immediate for DC"
-Date:   Tue,  5 Jul 2022 13:57:19 +0200
-Message-Id: <20220705115617.613236383@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.10 81/84] xen/arm: Fix race in RB-tree based P2M accounting
+Date:   Tue,  5 Jul 2022 13:58:44 +0200
+Message-Id: <20220705115617.683179375@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,48 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-commit a775e4e4941bf2f326aa36c58f67bd6c96cac717 upstream.
+commit b75cd218274e01d026dc5240e86fdeb44bbed0c8 upstream.
 
-This reverts commit 92020e81ddbeac351ea4a19bcf01743f32b9c800.
+During the PV driver life cycle the mappings are added to
+the RB-tree by set_foreign_p2m_mapping(), which is called from
+gnttab_map_refs() and are removed by clear_foreign_p2m_mapping()
+which is called from gnttab_unmap_refs(). As both functions end
+up calling __set_phys_to_machine_multi() which updates the RB-tree,
+this function can be called concurrently.
 
-This causes stuttering and timeouts with DMCUB for some users
-so revert it until we understand why and safely enable it
-to save power.
+There is already a "p2m_lock" to protect against concurrent accesses,
+but the problem is that the first read of "phys_to_mach.rb_node"
+in __set_phys_to_machine_multi() is not covered by it, so this might
+lead to the incorrect mappings update (removing in our case) in RB-tree.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1887
-Acked-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Cc: stable@vger.kernel.org
+In my environment the related issue happens rarely and only when
+PV net backend is running, the xen_add_phys_to_mach_entry() claims
+that it cannot add new pfn <-> mfn mapping to the tree since it is
+already exists which results in a failure when mapping foreign pages.
+
+But there might be other bad consequences related to the non-protected
+root reads such use-after-free, etc.
+
+While at it, also fix the similar usage in __pfn_to_mfn(), so
+initialize "struct rb_node *n" with the "p2m_lock" held in both
+functions to avoid possible bad consequences.
+
+This is CVE-2022-33744 / XSA-406.
+
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c           |    1 +
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    3 ---
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ arch/arm/xen/p2m.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
-@@ -333,6 +333,7 @@ int amdgpu_irq_init(struct amdgpu_device
- 	if (!amdgpu_device_has_dc_support(adev)) {
- 		if (!adev->enable_virtual_display)
- 			/* Disable vblank IRQs aggressively for power-saving */
-+			/* XXX: can this be enabled for DC? */
- 			adev_to_drm(adev)->vblank_disable_immediate = true;
+--- a/arch/arm/xen/p2m.c
++++ b/arch/arm/xen/p2m.c
+@@ -62,11 +62,12 @@ out:
  
- 		r = drm_vblank_init(adev_to_drm(adev), adev->mode_info.num_crtc);
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -3838,9 +3838,6 @@ static int amdgpu_dm_initialize_drm_devi
- 	}
- #endif
+ unsigned long __pfn_to_mfn(unsigned long pfn)
+ {
+-	struct rb_node *n = phys_to_mach.rb_node;
++	struct rb_node *n;
+ 	struct xen_p2m_entry *entry;
+ 	unsigned long irqflags;
  
--	/* Disable vblank IRQs aggressively for power-saving. */
--	adev_to_drm(adev)->vblank_disable_immediate = true;
--
- 	/* loops over all connectors on the board */
- 	for (i = 0; i < link_cnt; i++) {
- 		struct dc_link *link = NULL;
+ 	read_lock_irqsave(&p2m_lock, irqflags);
++	n = phys_to_mach.rb_node;
+ 	while (n) {
+ 		entry = rb_entry(n, struct xen_p2m_entry, rbnode_phys);
+ 		if (entry->pfn <= pfn &&
+@@ -153,10 +154,11 @@ bool __set_phys_to_machine_multi(unsigne
+ 	int rc;
+ 	unsigned long irqflags;
+ 	struct xen_p2m_entry *p2m_entry;
+-	struct rb_node *n = phys_to_mach.rb_node;
++	struct rb_node *n;
+ 
+ 	if (mfn == INVALID_P2M_ENTRY) {
+ 		write_lock_irqsave(&p2m_lock, irqflags);
++		n = phys_to_mach.rb_node;
+ 		while (n) {
+ 			p2m_entry = rb_entry(n, struct xen_p2m_entry, rbnode_phys);
+ 			if (p2m_entry->pfn <= pfn &&
 
 
