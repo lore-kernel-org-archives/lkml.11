@@ -2,134 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6522AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA13CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:09:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230342AbiGETHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        id S231765AbiGETJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiGETHe (ORCPT
+        with ESMTP id S229872AbiGETJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:07:34 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C453020BE2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:07:32 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id t25so22160967lfg.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 12:07:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DnKgC9sCIW8SXV8tcHv5kUM+QyY61ZZmZlUgZGKqW+Q=;
-        b=f/FCG8yL4VOOTwO2rnIiAtzXPtS2mVuAe+XTDCGyoCaarSkKazd9ayjVL9aKwDZEip
-         Hge9vP9wx1uromYafvl/X1WbtDWoqQwJnSDDRxWvUYlJk7/IIEJgwqm6L3kqIUNJRVXX
-         uH/+Gtcyq+X8WA/OER4Gr1j9Xrklt89C6BCC/GQWhxSjmXDltPe22Ol/338WWA7Fl5+g
-         XFQXG7OOJrZXEVFAN9NOP0/LHeBthQ6EAglyrN8O6uI49AJsVBkOrwzfWnK7nEum83As
-         Xz4GajFeK/h1ezkCi5IQaNzhJeYb6oFeg8EpZXxgwaPX2TaoAoop/DKEfKssARrc3hJ2
-         r2hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DnKgC9sCIW8SXV8tcHv5kUM+QyY61ZZmZlUgZGKqW+Q=;
-        b=WryaZbJfuwLKpE9i1E9eL3+NthrRZOi5ryVBA2vMTMvnXvr6peJXOn/v0qlP4MT/F2
-         E0kb4YCIMJn1hS+P7WphSSdFrKUuXEywd5MouHwlBJxgC6h5PI0cY/xush+GK+aUmxNc
-         hyThWje4fQZSBlo4eOxmjaa2KKg311UFPPvRTi3vZ/lRkicju/pTUiwHp0KlVU3KIMIZ
-         CfjDpJOyPRurG17vLRgJxDfAxbKwZXPYJ2naK7UxvIm7Ez1KlE8fmzSl23xtX2IpSow3
-         v4GM1WdurjgdBybuvwz/E7zh6LorGtybQtsx+0r++XpUJXu00v0lFpQ+kWs7ASEf/0A+
-         TOMA==
-X-Gm-Message-State: AJIora/TWhyjnS7mvuCrmdtOvZ/zhqt5OpYnKEioT+mVCmfjPpdy6e2R
-        xpwesBDJoUJDRP+eDDR+TXlimg==
-X-Google-Smtp-Source: AGRyM1t0tljF3Ij4/4tcLOFFrqAsln9WIHlzzxsMkGOGWMfiIex4lo9Ypf2AWIcnRF1E4mgEv9Udkw==
-X-Received: by 2002:a05:6512:22c3:b0:47f:9396:861a with SMTP id g3-20020a05651222c300b0047f9396861amr24766566lfu.230.1657048051185;
-        Tue, 05 Jul 2022 12:07:31 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id bj11-20020a2eaa8b000000b0025a72db0cf1sm5733629ljb.118.2022.07.05.12.07.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 12:07:30 -0700 (PDT)
-Message-ID: <14283b06-d8d3-aa4c-6db8-eb34e597bef8@linaro.org>
-Date:   Tue, 5 Jul 2022 22:07:30 +0300
+        Tue, 5 Jul 2022 15:09:08 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403C515FE8;
+        Tue,  5 Jul 2022 12:09:07 -0700 (PDT)
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o8nuc-000GK3-BY; Tue, 05 Jul 2022 21:08:42 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o8nub-000Vkd-MV; Tue, 05 Jul 2022 21:08:41 +0200
+Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce
+ and use Generic Hints/metadata
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        brouer@redhat.com, John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-hints@xdp-project.net
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+ <62bbedf07f44a_2181420830@john.notmuch> <87iloja8ly.fsf@toke.dk>
+ <20220704154440.7567-1-alexandr.lobakin@intel.com>
+ <0cd3fd67-e179-7c27-a74f-255a05359941@redhat.com>
+ <20220705143838.19500-1-alexandr.lobakin@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <dac999ed-be85-1e3b-138c-d31ef674d5d9@iogearbox.net>
+Date:   Tue, 5 Jul 2022 21:08:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 6/7] drm/msm/disp/dpu1: use atomic enable/disable
- callbacks for encoder functions
-Content-Language: en-GB
-To:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, swboyd@chromium.org,
-        quic_kalyant@quicinc.com, quic_khsieh@quicinc.com,
-        quic_vproddut@quicinc.com, bjorn.andersson@linaro.org,
-        quic_aravindh@quicinc.com, quic_abhinavk@quicinc.com,
-        quic_sbillaka@quicinc.com
-References: <1657040445-13067-1-git-send-email-quic_vpolimer@quicinc.com>
- <1657040445-13067-7-git-send-email-quic_vpolimer@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <1657040445-13067-7-git-send-email-quic_vpolimer@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20220705143838.19500-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26594/Tue Jul  5 09:24:14 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 20:00, Vinod Polimera wrote:
-> Use atomic variants for encoder callback functions such that
-> certain states like self-refresh can be accessed as part of
-> enable/disable sequence.
+On 7/5/22 4:38 PM, Alexander Lobakin wrote:
+> From: Jesper Dangaard Brouer <jbrouer@redhat.com>
+> Date: Mon, 4 Jul 2022 19:13:53 +0200
+[...]
+>> I have looked at the code in your GitHub tree, and decided that it was
+>> an over-engineered approach IMHO.  Also simply being 52 commits deep
+>> without having posted this incrementally upstream were also a
+>> non-starter for me, as this isn't the way-to-work upstream.
 > 
-> Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
-> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
-> 
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> So Ingo announced recently that he has a series of 2300+ patches
+> to try to fix include hell. Now he's preparing to submit them by
+> batches/series. Look at this RFC as at an announce. "Hey folks,
+> I have a bunch of stuff and will be submitting it soon, but I'm
+> posting the whole changeset here, so you could take a look or
+> give it a try before it's actually started being posted".
+> All this is mentioned in the cover letter as well. What is the
+> problem? Ok, next time I can not do any announces and just start
+> posting series if it made such misunderstandings.
 
-No. Your sign off should be the last tag here. Also there should be no 
-blank lines between tags.
+I would suggest to please calm down first. No offense, but above example
+with the 2300+ patches is not a great one. There is no way any mortal
+would be able to review them, not even thinking about the cycles spent
+around rebasing, merge conflict resolution or bugs they may contain.
+Anyway, that aside..
 
-> ---
->   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 10 ++++++----
->   1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> index 5629c0b..f01a976 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> @@ -1130,7 +1130,8 @@ void dpu_encoder_virt_runtime_resume(struct drm_encoder *drm_enc)
->   	mutex_unlock(&dpu_enc->enc_lock);
->   }
->   
-> -static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
-> +static void dpu_encoder_virt_atomic_enable(struct drm_encoder *drm_enc,
-> +					struct drm_atomic_state *state)
->   {
->   	struct dpu_encoder_virt *dpu_enc = NULL;
->   	int ret = 0;
-> @@ -1166,7 +1167,8 @@ static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
->   	mutex_unlock(&dpu_enc->enc_lock);
->   }
->   
-> -static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc)
-> +static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
-> +					struct drm_atomic_state *state)
->   {
->   	struct dpu_encoder_virt *dpu_enc = NULL;
->   	int i = 0;
-> @@ -2320,8 +2322,8 @@ static void dpu_encoder_frame_done_timeout(struct timer_list *t)
->   
->   static const struct drm_encoder_helper_funcs dpu_encoder_helper_funcs = {
->   	.atomic_mode_set = dpu_encoder_virt_atomic_mode_set,
-> -	.disable = dpu_encoder_virt_disable,
-> -	.enable = dpu_encoder_virt_enable,
-> +	.atomic_disable = dpu_encoder_virt_atomic_disable,
-> +	.atomic_enable = dpu_encoder_virt_atomic_enable,
->   	.atomic_check = dpu_encoder_virt_atomic_check,
->   };
->   
+Your series essentially starts out with ...
 
+   The series adds ability to pass different frame
+   details/parameters/parameters used by most of NICs and the kernel
+   stack (in skbs), not essential, but highly wanted, such as:
 
--- 
-With best wishes
-Dmitry
+   * checksum value, status (Rx) or command (Tx);
+   * hash value and type/level (Rx);
+   * queue number (Rx);
+   * timestamps;
+   * and so on.
+
+... so my initial question would be whether in this context there has
+been done research / analysis of how this can speed up /real world/
+production applications such as Katran L4LB [0], for example? What is
+the speedup you observed with it by utilizing the fields from meta data?
+
+Thanks,
+Daniel
+
+   [0] https://github.com/facebookincubator/katran
