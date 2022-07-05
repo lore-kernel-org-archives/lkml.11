@@ -2,85 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52138C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C18C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbiGENF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47854 "EHLO
+        id S232245AbiGENGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235009AbiGENDR (ORCPT
+        with ESMTP id S237818AbiGENFf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:03:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585D62AC78;
-        Tue,  5 Jul 2022 05:31:46 -0700 (PDT)
-X-UUID: b47b8c0e8af3446ca1d2a4029a9205af-20220705
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:9fb27c49-caf4-4b52-8985-2862c6f30b17,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:0f94e32,CLOUDID:486a9a86-57f0-47ca-ba27-fe8c57fbf305,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: b47b8c0e8af3446ca1d2a4029a9205af-20220705
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2054660002; Tue, 05 Jul 2022 20:26:31 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 5 Jul 2022 20:26:30 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Tue, 5 Jul 2022 20:26:30 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Xiandong Wang <xiandong.wang@mediatek.com>
-Subject: [PATCH 1/2] dt-bindings: soc: mediatek: add mdp3 mutex support for mt8186
-Date:   Tue, 5 Jul 2022 20:26:26 +0800
-Message-ID: <20220705122627.2273-2-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220705122627.2273-1-allen-kh.cheng@mediatek.com>
-References: <20220705122627.2273-1-allen-kh.cheng@mediatek.com>
+        Tue, 5 Jul 2022 09:05:35 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75462DA97
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:32:50 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id bk26so2272152wrb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:32:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=3h8IwJb/X5yrsXPZtVPE+zLoArglTBKDiVaZV8Tb8Ys=;
+        b=O8JZXQkQru+6Hqi3SMebkFGvcbgn25KO75WaDQGcmIQhQnOoP9pP6XBkIK5c9RcHZy
+         HKOE9w5PNv+zPdK3ZE/RxVgWREZH69/ZdsSdJ/UsJp+CVkHUBpy4jLsrN7hTiOLYEcoY
+         aB6Qo9tEsOPEUeB76j8rhTPK2qJ1Nbz3yQNl80BGgBrsGcFMW4+SRZ6kEPJ0XtmVWcij
+         sFPEVPoPnfoKb5x3YR+iR2uApdKzZgt1d3JMvpKx4BSr9Ccf/F4TIpWOYPmkWH/Qp1Nt
+         A/YWOovHCsjGWSq0jLdxSZJWKZ/g9cEW3TeWZwAfXjjde1HtPh5slnPR3LF9LJ76a6Qc
+         88Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=3h8IwJb/X5yrsXPZtVPE+zLoArglTBKDiVaZV8Tb8Ys=;
+        b=Kxvq+8/1LIsy2Y+0TaETkVNYIkgCwF1B2RumTZsZ6hJVDpmhtjg1+WMc4uKzEhMwHU
+         caTad29UngnA//sq8nSJQodh+UB5aVjuYwv8CkzQk77i5BzAW8U08yLmBRO7j5nZXY9m
+         uecpzbO5JdRom0QO6hprTrLPKza6HMVuxe1r/2O61rNVz6SCb+dsTHZFjL+1mCVq8avD
+         y2CMJSQRoSpxQh5QD4DNp0Jwyn85zhZXcxbHdV+X/BgiK8egCbDTVLn/dhG8HUEtcEAP
+         u/JaFIM9iif5m1ker75VrdEhfYWuw1MtryyMA97woBEUJlHadqyGYCraFfYIUmcBqLLt
+         Oivg==
+X-Gm-Message-State: AJIora+zrh/ErZGsHuXGQ89VDOKUnuas+RzRUlfaEnV/GDuoBK5Nef9z
+        4Se7j24BAkGmN2lkrI5FYRnFVw==
+X-Google-Smtp-Source: AGRyM1sGW8Pl/DwqS8c+Bs0FDAR2JcJiL7UdVqHIgFGkVWx1F+zQl0fPY1XSaAPAFVPMN+NnfQIZdQ==
+X-Received: by 2002:adf:f44e:0:b0:21d:6eed:bd0b with SMTP id f14-20020adff44e000000b0021d6eedbd0bmr5466121wrp.216.1657024369204;
+        Tue, 05 Jul 2022 05:32:49 -0700 (PDT)
+Received: from google.com ([2.26.241.96])
+        by smtp.gmail.com with ESMTPSA id z6-20020a05600c0a0600b0039c747a1e8fsm19728277wmp.7.2022.07.05.05.32.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 05:32:48 -0700 (PDT)
+Date:   Tue, 5 Jul 2022 13:32:46 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the mfd tree
+Message-ID: <YsQvbia3TXHe/CYS@google.com>
+References: <20220705115439.5a189cde@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220705115439.5a189cde@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mdp3 mutex compatible for mt8186 SoC.
+On Tue, 05 Jul 2022, Stephen Rothwell wrote:
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Signed-off-by: Xiandong Wang <xiandong.wang@mediatek.com>
----
- .../devicetree/bindings/soc/mediatek/mediatek,mutex.yaml         | 1 +
- 1 file changed, 1 insertion(+)
+> Hi all,
+> 
+> After merging the mfd tree, today's linux-next build (arm
+> multi_v7_defconfig) failed like this:
+> 
+> drivers/mfd/axp20x.c:634:35: error: initialization of 'unsigned int (*)(struct regmap_irq_chip_data *, unsigned int,  int)' from incompatible pointer type 'int (*)(unsigned int,  int)' [-Werror=incompatible-pointer-types]
+>   634 |         .get_irq_reg            = axp192_get_irq_reg,
+>       |                                   ^~~~~~~~~~~~~~~~~~
+> drivers/mfd/axp20x.c:634:35: note: (near initialization for 'axp192_regmap_irq_chip.get_irq_reg')
+> 
+> Caused by commit
+> 
+>   8c7d8aa029a3 ("mfd: axp20x: Add support for AXP192")
+> 
+> I have used the mfd tree from next-20220704 for today.
 
-diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-index 627dcc3e8b32..234fa5dc07c2 100644
---- a/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-+++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-@@ -30,6 +30,7 @@ properties:
-       - mediatek,mt8173-disp-mutex
-       - mediatek,mt8183-disp-mutex
-       - mediatek,mt8186-disp-mutex
-+      - mediatek,mt8186-mdp3-mutex
-       - mediatek,mt8192-disp-mutex
-       - mediatek,mt8195-disp-mutex
- 
+Aidan, what are your plans?
+
 -- 
-2.18.0
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
