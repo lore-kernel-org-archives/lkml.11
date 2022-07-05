@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81616CCA49A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6A1CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239768AbiGEMfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
+        id S239887AbiGEMfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237704AbiGEMZx (ORCPT
+        with ESMTP id S232812AbiGEM0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:25:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324D6DE;
-        Tue,  5 Jul 2022 05:18:19 -0700 (PDT)
+        Tue, 5 Jul 2022 08:26:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BD665BE;
+        Tue,  5 Jul 2022 05:18:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E269BB816A4;
-        Tue,  5 Jul 2022 12:18:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5691EC341C7;
-        Tue,  5 Jul 2022 12:18:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A2A2B816A4;
+        Tue,  5 Jul 2022 12:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBA2BC341C7;
+        Tue,  5 Jul 2022 12:18:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023496;
-        bh=iFzlqXbDqvDXj3pGPGtn3Sba10HjY8FU59MvO3aWhm0=;
+        s=korg; t=1657023513;
+        bh=t+jAMUHlwRXalBDL3MFKIWQzbrorRRuqCTlbXnSuoew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0V7Jc1fIGHLoW4aCPe6FgAt9iYPayvJWkRhkcCzw2Xs2MaMuANbHshXK7U3lgEbd
-         rOo5LhSOnWDJb3D/+cJauVY4UXcE6UsTERGGAe5Lb0szX8PeruGYfzQRnAejOaNzQ0
-         doRML9tI8nclLLPGfh1uTRJQHczxr43wxN2nFnoc=
+        b=0wT1eglxkCWhR5dZYaatcGq/DTKqM6CHB2m1sMyY2jM7wmx+Ipnn8t+dzUQ1atqCT
+         aBtMBQ3TdTLL3YHT5DtL9LKyE2L7VJFDaAvhDAtxmOyhp15eNYV8ae5iODS82UTf2T
+         GBWp518+ZZqMaQWvCCthlS/Zhh5X3p67b0vwvyC8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ossama Othman <ossama.othman@intel.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 040/102] mptcp: fix conflict with <netinet/in.h>
-Date:   Tue,  5 Jul 2022 13:58:06 +0200
-Message-Id: <20220705115619.549502710@linuxfoundation.org>
+Subject: [PATCH 5.18 080/102] net: tun: avoid disabling NAPI twice
+Date:   Tue,  5 Jul 2022 13:58:46 +0200
+Message-Id: <20220705115620.681778566@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,57 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ossama Othman <ossama.othman@intel.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit 06e445f740c1a0fe5d16b3dff8a4ef18e124e54e upstream.
+commit ff1fa2081d173b01cebe2fbf0a2d0f1cee9ce4b5 upstream.
 
-Including <linux/mptcp.h> before the C library <netinet/in.h> header
-causes symbol redefinition errors at compile-time due to duplicate
-declarations and definitions in the <linux/in.h> header included by
-<linux/mptcp.h>.
+Eric reports that syzbot made short work out of my speculative
+fix. Indeed when queue gets detached its tfile->tun remains,
+so we would try to stop NAPI twice with a detach(), close()
+sequence.
 
-Explicitly include <netinet/in.h> before <linux/in.h> in
-<linux/mptcp.h> when __KERNEL__ is not defined so that the C library
-compatibility logic in <linux/libc-compat.h> is enabled when including
-<linux/mptcp.h> in user space code.
+Alternative fix would be to move tun_napi_disable() to
+tun_detach_all() and let the NAPI run after the queue
+has been detached.
 
-Fixes: c11c5906bc0a ("mptcp: add MPTCP_SUBFLOW_ADDRS getsockopt support")
-Signed-off-by: Ossama Othman <ossama.othman@intel.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Fixes: a8fc8cb5692a ("net: tun: stop NAPI when detaching queues")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220629181911.372047-1-kuba@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/mptcp.h | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/tun.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
-index 921963589904..dfe19bf13f4c 100644
---- a/include/uapi/linux/mptcp.h
-+++ b/include/uapi/linux/mptcp.h
-@@ -2,16 +2,17 @@
- #ifndef _UAPI_MPTCP_H
- #define _UAPI_MPTCP_H
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -641,7 +641,8 @@ static void __tun_detach(struct tun_file
+ 	tun = rtnl_dereference(tfile->tun);
  
-+#ifndef __KERNEL__
-+#include <netinet/in.h>		/* for sockaddr_in and sockaddr_in6	*/
-+#include <sys/socket.h>		/* for struct sockaddr			*/
-+#endif
-+
- #include <linux/const.h>
- #include <linux/types.h>
- #include <linux/in.h>		/* for sockaddr_in			*/
- #include <linux/in6.h>		/* for sockaddr_in6			*/
- #include <linux/socket.h>	/* for sockaddr_storage and sa_family	*/
+ 	if (tun && clean) {
+-		tun_napi_disable(tfile);
++		if (!tfile->detached)
++			tun_napi_disable(tfile);
+ 		tun_napi_del(tfile);
+ 	}
  
--#ifndef __KERNEL__
--#include <sys/socket.h>		/* for struct sockaddr			*/
--#endif
--
- #define MPTCP_SUBFLOW_FLAG_MCAP_REM		_BITUL(0)
- #define MPTCP_SUBFLOW_FLAG_MCAP_LOC		_BITUL(1)
- #define MPTCP_SUBFLOW_FLAG_JOIN_REM		_BITUL(2)
--- 
-2.37.0
-
 
 
