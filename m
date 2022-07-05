@@ -2,109 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBCFCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B9FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233003AbiGESjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        id S231766AbiGESkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232804AbiGESjP (ORCPT
+        with ESMTP id S229849AbiGESkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:39:15 -0400
-Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806A21CFCA
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:39:02 -0700 (PDT)
-Received: (wp-smtpd smtp.tlen.pl 8985 invoked from network); 5 Jul 2022 20:38:58 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
-          t=1657046338; bh=WWwtFu5inTGYYHR/P6xpZs+1V1TpiM1KVqGs6QWQJP4=;
-          h=Subject:To:Cc:From;
-          b=r0ig7VGT6CmM+AW0kQSIPZOUUY77GPXcRzY9cQdeZwaExr8ASpSw++z4W5Unf3viy
-           CLf5mkqTzrRMI38RuY14xKAhN68AZj60y1VKq9h0U00kTHtEGbtc9HBP8iPtJ20BPr
-           9QjNzQh3HO288IrQ18p9/CLeXcx69+NezqM3jLl0=
-Received: from aafi210.neoplus.adsl.tpnet.pl (HELO [192.168.1.22]) (mat.jonczyk@o2.pl@[83.4.138.210])
-          (envelope-sender <mat.jonczyk@o2.pl>)
-          by smtp.tlen.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <vasyl.vavrychuk@opensynergy.com>; 5 Jul 2022 20:38:58 +0200
-Message-ID: <494b21fb-896e-5c80-ff53-b5f914663736@o2.pl>
-Date:   Tue, 5 Jul 2022 20:38:48 +0200
+        Tue, 5 Jul 2022 14:40:42 -0400
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBFE1EED0;
+        Tue,  5 Jul 2022 11:40:42 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id e80so16159611ybb.4;
+        Tue, 05 Jul 2022 11:40:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IqMD43+h/87sPcXJb6GKl/p0e47Kr5belhpvXQpn74s=;
+        b=4oKz4NzIf0rd5c6TetCJQyRSyEqcJ6iJnmhtELdzJcYp3fIHKcIAfd+k1r1IFuCt0A
+         /LEu1oQg2r2J5fmSoXhHPE4fIrviq7xogJY9f13LNVBCVPq+Jgi/EmZsFgFUhtN9aB68
+         0i37lpENNH2NO1hcgOLgR9FS/1Wkbm1/mmpd5OCGSkB6VyNW4Mx3hErx3ad+Ldw8z40h
+         CYL0MOZWVhwRY6p58jo5nbv773uO506zKj3dROiifCxIqMTZDi9ndh/Dh87gXUgUnnAZ
+         3ZgvtDdaEr6nxGySDdUqZ/wZawudZXArFgyjdcRCfpEOAA9wZYDvgHZBegfN33oJNLYx
+         LjAw==
+X-Gm-Message-State: AJIora+JTFNuhW1Ic4IKyaOUxl8KG6i3N/6INyGWnG3ImPmh02G9E2Nl
+        3RDT+tbnp4IHh7ZfK0rcByLvydc/2HdzfOJBZfs=
+X-Google-Smtp-Source: AGRyM1tbU/Q+q1ShqafHYay3V0ImixKEkCcZMfKVWC5BCMMJBAokfuIlMUsuMGcKwepW0ljsXp1WT9XSsRibnwbpG2A=
+X-Received: by 2002:a25:6b50:0:b0:64f:4b33:664 with SMTP id
+ o16-20020a256b50000000b0064f4b330664mr41056762ybm.153.1657046441354; Tue, 05
+ Jul 2022 11:40:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH] Bluetooth: core: Fix deadlock due to
- `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
-Content-Language: en-GB
-To:     Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        Max Krummenacher <max.oss.09@gmail.com>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        max.krummenacher@toradex.com
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20220614181706.26513-1-max.oss.09@gmail.com>
- <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
-From:   =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>
-In-Reply-To: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-WP-MailID: ea507a630c026762668487bc76baf600
-X-WP-AV: skaner antywirusowy Poczty o2
-X-WP-SPAM: NO 000000A [IRNk]                               
+References: <20220630212819.42958-1-andriy.shevchenko@linux.intel.com> <Yr6KcPlC/3rYAtKE@lahna>
+In-Reply-To: <Yr6KcPlC/3rYAtKE@lahna>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 5 Jul 2022 20:40:30 +0200
+Message-ID: <CAJZ5v0ht6hfaBsifhr=M_htHh6uHohwgcab2dFR5hqq4rO+xFQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/5] ACPI: utils: Introduce acpi_match_video_device_handle()
+ helper
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        ibm-acpi-devel@lists.sourceforge.net,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        Mark Gross <markgross@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-W dniu 5.07.2022 o 14:59, Vasyl Vavrychuk pisze:
-> `cancel_work_sync(&hdev->power_on)` was moved to hci_dev_close_sync in
-> commit [1] to ensure that power_on work is canceled after HCI interface
-> down.
+On Fri, Jul 1, 2022 at 7:47 AM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
 >
-> But, in certain cases power_on work function may call hci_dev_close_sync
-> itself: hci_power_on -> hci_dev_do_close -> hci_dev_close_sync ->
-> cancel_work_sync(&hdev->power_on), causing deadlock. In particular, this
-> happens when device is rfkilled on boot. To avoid deadlock, move
-> power_on work canceling out of hci_dev_do_close/hci_dev_close_sync.
+> Hi Andy,
 >
-> Deadlock introduced by commit [1] was reported in [2,3] as broken
-> suspend. Suspend did not work because `hdev->req_lock` held as result of
-> `power_on` work deadlock. In fact, other BT features were not working.
-> It was not observed when testing [1] since it was verified without
-> rfkill in place.
+> On Fri, Jul 01, 2022 at 12:28:15AM +0300, Andy Shevchenko wrote:
+> >  extern long acpi_is_video_device(acpi_handle handle);
+> > +extern bool acpi_match_video_device_handle(acpi_handle handle);
 >
-> NOTE: It is not needed to cancel power_on work from other places where
-> hci_dev_do_close/hci_dev_close_sync is called in case:
-> * Requests were serialized due to `hdev->req_workqueue`. The power_on
-> work is first in that workqueue.
-> * hci_rfkill_set_block which won't close device anyway until HCI_SETUP
-> is on.
-> * hci_sock_release which runs after hci_sock_bind which ensures
-> HCI_SETUP was cleared.
+> I think we can do slightly better here. The only caller of
+> acpi_is_video_device() is in drivers/acpi/video_detect.c so we can move
+> it there and make it static (is_video_device()).
 >
-> As result, behaviour is the same as in pre-dd06ed7 commit, except
-> power_on work cancel added to hci_dev_close.
->
-> [1]: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
-> [2]: https://lore.kernel.org/lkml/20220614181706.26513-1-max.oss.09@gmail.com/
-> [2]: https://lore.kernel.org/lkml/1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl/
->
-> Fixes: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
-> Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-> Reported-by: Max Krummenacher <max.krummenacher@toradex.com>
-> Reported-by: Mateusz Jonczyk <mat.jonczyk@o2.pl>
+> Then we can name this one acpi_is_video_device() instead and in addition
+> make it take struct acpi_device as parameter instead of acpi_handle (I
+> think we should not use acpi_handles in drivers if possible).
 
-Works well: suspend (with bluetooth on and also off), hibernation, sending files, rfkill.
-
-Thank you.
-
-Reported-and-tested-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-
-Greetings,
-
-Mateusz Jończyk
-
+Agreed.
