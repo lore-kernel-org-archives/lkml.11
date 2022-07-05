@@ -2,210 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E66C6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3680C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbiGEPOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
+        id S229739AbiGEPO6 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiGEPOj (ORCPT
+        with ESMTP id S229617AbiGEPOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:14:39 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2061.outbound.protection.outlook.com [40.107.21.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE483165A6;
-        Tue,  5 Jul 2022 08:14:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Cttt+bIb6yUEhcZDlXryeFAwjx09MsWE17++kL2Uc38QqiAw8yOsj83cTyCf1nwjGN+k0LTl0DVg1MFfEDvGgb6bquhB2S45FfV7eCvZ0TGzaVv6jWKNS6yCbQoJdGN+V6xkB359+8arwbaRBWeHLn6YKGTwQPlYqXPHjOiwZU9SA9hz/9CRygSBMyGfUTXPHWNgx1TSYnlHIjXo/Lem4owNpDZcqq7aNkS/3Rqw1q0cj+jzB7e/AENwVH5XmmeVK/HupskD2LQa5RHz60HewglbuNibxtnS0IHKy1LmctfgGK9TRivRauKdx8KBy1td4Zwssn7gRGPVGVAsnyjQ+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uxVqL5a3UVmd3eD16K4e+TgFSTJiRU6clFYCP1of8NI=;
- b=HdqUVyvtbzKbBywfifbpdHmA+GDwhFb9B1ZzOiDVfR51oplTJ0FhIDrgxbtfdtiIfUezkCV7nv1ujG28ZexrHMG6qy81oqbiKvrm9TBayEKbWZRwuPDbKgIQkdHM59d3YBgu2y7He1G1JTTR7TYQMh5HNIawkMoHtfLN3/Uq4Db5nfg3lrxzYw+SStmGbZxV9+zJeHQIICLt3ylvJhPBY8VqGl8cWlcW0pYkBehZn//QGyHBXAGoZAYnL8GKsiXb2IkUOZvIfsQchwMTph0lsbPow12EE42JR7ZsNkDg17L47Rf0wtfakbdf9eevnu25Hojid1NoR+drY6wdneW2+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uxVqL5a3UVmd3eD16K4e+TgFSTJiRU6clFYCP1of8NI=;
- b=Yc3wJAPHHwlbFHAzIMm8zGfESR/SwiYm3HA21p7d8tzyshelk7D5La28c5XiqguwpCf/53G373H2qgOCfKeO4ZOWL5sGFnZGNhiiZg/4peV7bB6n2VOk2w2dYXDDecGRAj0CLI9fkwF3TCVDGvp4LMUM2iSfUaOyrzY6NIOpNto=
-Received: from PAXPR04MB9186.eurprd04.prod.outlook.com (2603:10a6:102:232::18)
- by VI1PR04MB4205.eurprd04.prod.outlook.com (2603:10a6:803:42::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Tue, 5 Jul
- 2022 15:14:34 +0000
-Received: from PAXPR04MB9186.eurprd04.prod.outlook.com
- ([fe80::e945:8bde:54e5:d83e]) by PAXPR04MB9186.eurprd04.prod.outlook.com
- ([fe80::e945:8bde:54e5:d83e%6]) with mapi id 15.20.5395.020; Tue, 5 Jul 2022
- 15:14:34 +0000
-From:   Frank Li <frank.li@nxp.com>
-To:     Tom Rix <trix@redhat.com>, "kishon@ti.com" <kishon@ti.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "jdmason@kudzu.us" <jdmason@kudzu.us>
-CC:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] [PATCH v3] PCI: endpoint: pci-epf-vntb: reduce several
- globals to statics
-Thread-Topic: [EXT] [PATCH v3] PCI: endpoint: pci-epf-vntb: reduce several
- globals to statics
-Thread-Index: AQHYj6mjuRnEAzekOE6wUpPspghcC61v5Fnw
-Date:   Tue, 5 Jul 2022 15:14:33 +0000
-Message-ID: <PAXPR04MB918658D6AC3A0A341E4260FC88819@PAXPR04MB9186.eurprd04.prod.outlook.com>
-References: <20220704132559.2859918-1-trix@redhat.com>
-In-Reply-To: <20220704132559.2859918-1-trix@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6e0e53b6-a66b-4ec4-c0ec-08da5e99114e
-x-ms-traffictypediagnostic: VI1PR04MB4205:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Tz5WgyhwkhD+c8FnNsRrjfbv/NuJp6WIZOdHEGvgL1GE8uiCvzvuY7Xgpl/IkeQWF3jJJl3QI2x4NQ9DtvgJwR2DVxjwVVZ8m7aWeblMSgix7d8X8kGYzSueg7Mmd+di1Bt2K6fmNshbnjmnghCLXgloOOBcBiMmrwy7rXfVZkpsOhq8oj6BHu4UXscGEkgboecSbgm938R1jVO1F70E0HfLzEflMo6LemwaJ5Vu2pCD+svK+173ISVYVeMgB+LQKpa1KFBp/AKdDZ51R+ryezKqlRzVxh0j2pA7lt6xSBi8k49exvhZPUzivtLx5/8OXpwjicMA8E4UpVHC2r2pX7QdS6ODDy0kCMt6Fz+zT/VReLPgssKGKBJDgsRaE3nxhNUWWJEC+7T2pOphtoyrnkDqfUO/m3x9vOzwfkJb+iTOD2vaOFXjMwNBB8BkDs6yXa1VfZ1Y3USXHJnUFEjf3PZwkXA4tiDgREzk5LYxeqWEzwPGJndof/dO3yde2j3RBtrjf/jk9zuiN+VsZnQZC27A5sJsi6ZDW9KOgzL3XB3mHspqVjKa4am11jQYGZEDELhXo5MMSpAckDF/K7xSuo4s75NAJumAJ9MrLsUA63MyztkWOoh+nQig0rf4AxNFPhtwNHX+jKbKppMs1D2kapjSAfTVF40ZRSE75bMmPm4++SU3Lg3q8Prvt0ayRDdSssnHk4LC7OJm1j0KydplJcCqJF1/o0FkOxH8G7r7rtkImKX6tSrIYrluGRdhK9R/w7r+iti9SECU7soonld5+CWolf8oUoarTst+eOxoDV9E1fxZBxjTgAeghSSOiw5R
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9186.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(396003)(39860400002)(136003)(346002)(2906002)(8936002)(83380400001)(52536014)(186003)(76116006)(66946007)(44832011)(64756008)(5660300002)(66556008)(66446008)(8676002)(66476007)(4326008)(33656002)(478600001)(55236004)(55016003)(71200400001)(26005)(316002)(7696005)(9686003)(6506007)(53546011)(38100700002)(38070700005)(86362001)(41300700001)(110136005)(54906003)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9Y07bZhrU7vY68lWy7zGfEyCchwH8JDsIjc/F1i3C/0okoTP5x3kbLL79r7q?=
- =?us-ascii?Q?/rqg7tVTt8oV2V1KNvwZdUll61ngTeaTdE/eB96ik5nR8O8LBT4/bwKqtd7y?=
- =?us-ascii?Q?+1j1eNLeMzsjdkKfHf4R7EdsVmHemqdfdV9z0vWFTIqgO+ho3t+Lu2OEE5Iw?=
- =?us-ascii?Q?BEWc7wHWbIDtCmTOlctD0Njzd9aK//5X1HOt1Q5/yCMF8/70Ky3e+tGVWTnp?=
- =?us-ascii?Q?2hnjGkeMEwKKusEiAVdgWPE9OzwFBlRfCLrPi5P9Md3GmsBsGrTbiA1clXPm?=
- =?us-ascii?Q?rtgRloZhlRh9nnioh6Kg+RsKXEALkee1zE7Qk4kzbHqmq06dqIn6MoLjKffO?=
- =?us-ascii?Q?6JsXH1sW966VRoMUQ3BdaiL5Q/z8DsZspDlJ/pcH4q879FiYqnKAYAbIjIHg?=
- =?us-ascii?Q?pA2jg5TO3xlqvkAxCaHXD1ilJwpiHkCaBN5ZcdfRWnFfm3rfoqp/JqW9kv21?=
- =?us-ascii?Q?CjND9GyRMSrUeA1G69Zx09/WJA46RGt7KbrJ+JI6PhGnOHSJ59ED0Jlt9b93?=
- =?us-ascii?Q?A7yaTXPUfyN7HJiyMXjo+lRK9ajawGhZbOrvTfVU3VAn/SvEpRK8DbR071Us?=
- =?us-ascii?Q?D5NZjeQhKSvO5BlboaLo1Djh+lVcc1hdzNf/4uioiaq1pg60ge081pHhK+Yy?=
- =?us-ascii?Q?p62W9TQbtowdEJ41nkzfFV/IbVcu8Iy5ROJDwyifmOQngc7nJDyfZXc40LXx?=
- =?us-ascii?Q?bblUNk5f4YLq8fLsXbrmm538j2qbHuExRjhhVa2K1srPrAH5ykkc2pGns6v7?=
- =?us-ascii?Q?bC88+FBSBJENvzdsefjlCbBqSKMdFgEQcAw8x0seCnAGXfrmsqNZIeiV5UgS?=
- =?us-ascii?Q?WDzXeuaJPejCWuvDe5ZomY02dUeskZxQI9U8AB+kpa8zfRT5Pxxn8LZ8EgmO?=
- =?us-ascii?Q?VVFE9AggosrfKMYfy2mZB6AX4ZqW6Nh5YUuTpJeTr6vpi+OKGVDixzbHvPLW?=
- =?us-ascii?Q?gEb95gtT0yMWSTzhOTMPYcEaQGxO8JX+SRwUCz9tVsQ5EO5nQsXuCH0tS1lw?=
- =?us-ascii?Q?xuIlgTEhCeUb7L/daxgW+1/lrfQpcBqLvDBcOMZW6r/IDO2aE7C5L1YfX0C2?=
- =?us-ascii?Q?n9yQfNr9cUKlcchIH2JT472quuw9mPQYtUdXGXAD+gu8i0kcgG2KF7OVSVKC?=
- =?us-ascii?Q?HHf02T3Vk0jLsxOjw9TIzRhR/HWIIPePh7tKIbhpdptkA1fIKQPjXMV8Q5jx?=
- =?us-ascii?Q?D1fHMhpduPlzJkD/+aEpHOVvgNG67xzAvbTY+yzISAv0r7wOrvU9iqZEBdrL?=
- =?us-ascii?Q?vkaoHj5N+a7YWMg95RMdBEhoxy6rhkSr4wtwVCXaciJ5hGqTFuIMZiDS78Qs?=
- =?us-ascii?Q?0jXHwfqBi14cyHY4+792Qj4zAZ1Lc2Ugtoo1O3EQnJzbleRxJjdWZ1yNDeZN?=
- =?us-ascii?Q?FdNHAySHSvbq3Ts9lNjgbPyira0HCsiZ0N8egkmpNaaDj67RLqcwCSUGtyVX?=
- =?us-ascii?Q?poIBrCw9d8QyLeI3ZHAYC7y8n0Ulg7j/K4ZIyVbW+bno0s7+Plojpdh7yv2l?=
- =?us-ascii?Q?9/h/BqXHmqbcRG+Uz6MYQyKLVVOS7kS43v2n/VOQk2oOfp2AAowGLMYb2DWk?=
- =?us-ascii?Q?mlK/kh5X2YAgb5qNfgo=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 5 Jul 2022 11:14:55 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6AEE917074
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:14:54 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2041.outbound.protection.outlook.com [104.47.22.41]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-4-erKWQ-9oMoSGUEqhZ8hKsw-2; Tue, 05 Jul 2022 17:14:48 +0200
+X-MC-Unique: erKWQ-9oMoSGUEqhZ8hKsw-2
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ GVAP278MB0632.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:4b::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5395.14; Tue, 5 Jul 2022 15:14:47 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3d:ca30:8c24:1a95]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3d:ca30:8c24:1a95%6]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
+ 15:14:47 +0000
+Date:   Tue, 5 Jul 2022 17:14:46 +0200
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org,
+        Max Krummenacher <max.oss.09@gmail.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Mateusz =?utf-8?Q?Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        max.krummenacher@toradex.com,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH] Bluetooth: core: Fix deadlock due to
+ `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
+Message-ID: <20220705151446.GA28605@francesco-nb.int.toradex.com>
+References: <20220614181706.26513-1-max.oss.09@gmail.com>
+ <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+In-Reply-To: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+X-ClientProxiedBy: ZR0P278CA0117.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:20::14) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0e9daa80-8352-4c24-42be-08da5e991919
+X-MS-TrafficTypeDiagnostic: GVAP278MB0632:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: V3w1MYmZ3tqntHl3/QyOpjsoid/PWoeelT2LGrFFs3FgumTcURdnJ56Xt2kExedgmrdlViBuV/aFgF9yMwsPeql//NMgbMXwi1MUsURd5bBt2MewZJf3wjkTpyBPDQfom1CJp0tU9xnSTL7H1FcwckLkRSzKQLE3D9UxDHC+EH14dmMYJQ975dfQmlpd4mCCiBSr25jen89DS3HC3JGU7pe+WbrXeOhIu6P8UJkiGv0Me8d19Xlewjvfs7Sr1Xf8QK4nFsDlAWN6lpwd2/ob7x8besE6YJL2oX4LGk/FV+Fik4qDOQSiI9DBlZQdiLk1cLIDWguaf3YFfDuCeweaKNi9jo0HvqpIE9LtWlhJaiHJuHJyP3wN1zM1qI1mS2b7YxTAqtFaBN05QAA96Ub7A1xSEsoTGN/jp8kLiN0wIqhJ/F3adw8GsxxtOB7+25EqnUyerKVs8AviTzdZqRGHe+KvuO8yhUeKLBfCSqPBzvNj/HYXCREUx9qRPZnhNt5uphPJyOHAYvcxilmB3omXCoX0VlhkB43H+f5cOaDcknKiwy/47NCg4fcsehywBOLiCcthVmAb8F0CsMNgwPzBwd+k+6GuK9j19D34AB8kdGnwJF6DkkBLWCxu3hGyuOVQ8pMkpYGcsRmYk8N8uvHULpmPvyPObe0ayLqORxTEQkXDhLIi7LJNUfpJVYZrFGEhUr4Aw+q1p3DSmYSEIX53P8KekciOxiICDjrZgimbjwnF3Hu9N+VLyNvA1Bt1ixdmjNj2QVKmiCRRoIj1nWeUXr9d9lN32lAJ4uV+1aP/cxsOoH70iyspkHVm6FpWrthl8Po4GMcgA6TRkRzxvfW6Ag==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(366004)(396003)(39850400004)(4744005)(7416002)(83380400001)(6486002)(44832011)(2906002)(86362001)(478600001)(52116002)(1076003)(186003)(6506007)(38100700002)(26005)(66476007)(66556008)(66946007)(6512007)(8676002)(4326008)(38350700002)(33656002)(316002)(41300700001)(8936002)(54906003)(5660300002)(6916009)(81973001);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TVTtcVwNvDEp9xQVvuUk5h/DD9jT/J9o4DHuLr7+5nYqdcTedQ4YsyRvJKu1?=
+ =?us-ascii?Q?I1s7hYwsptCiyPyvKERzSRo0HjIghvW3PeCMcU41CWGUnjhtKB9f8ultfwrP?=
+ =?us-ascii?Q?E3I/ujNUp89u5YMfefUP4CeRS+9pSJHoKVFfvrXUTCQN6OZ7GZJUbEnNOEaN?=
+ =?us-ascii?Q?tLIBHIXwV5HCKGJk7/+wU3CtkY+aMjnxR+RbB7EYZFGpr6dCeIK560blyNax?=
+ =?us-ascii?Q?F+jkCr7kYwpq0sLQMpViRDzvzOpP/7bmCtnM09TqQHhkVjkEFlbmbMdyoWu7?=
+ =?us-ascii?Q?gd4D2d6qcUo3bhrvdce5f6fF5wwVwcQCuIqBUgz1nV+i+kXzuX1Xk5V10hn0?=
+ =?us-ascii?Q?z/BganvTXOYdIubKHTwq+l9pVX7KefrfZNPxR4Xto2tS/YNMMvqCjGasFSng?=
+ =?us-ascii?Q?R5sfiYNo9VRkKiOO0PhJ13Z/nzb5HsyRynbeYP/B/pv9dIL0se/gfprzuQb7?=
+ =?us-ascii?Q?QoIKB6129juqon+WLmD1cj7jPYAvHFBOzDLseMpqIp2uGIEJQoqAynCpB94r?=
+ =?us-ascii?Q?8DkTbV1MK92Ouo0mkTQc4YRDVlYzvLsKCFk9IiFyjDbBlstXaVq9K4DfvJ6z?=
+ =?us-ascii?Q?fTVHwZ58EjkQbKJkk1GJGwnxIbifOEQFaBBp1RST7ev4+KKEEvFkQmm7i1kz?=
+ =?us-ascii?Q?jVK3NsCSIK/3hEQPcasAdqy/mIAwxKUkKpJjsxrVFJ2DaLiLjtuwmQtqQrVn?=
+ =?us-ascii?Q?TTPqqD0wVf9fkqQu7r5B4A6kK+X2iRw6EARLFywKMtc1gj/MQ01TxMsV8ZTl?=
+ =?us-ascii?Q?NtP5sRv89YsqHGCN+MShoWKBhea/jSNjDNLPGvnfRvLSOfwcpVy6QWzZ1vNl?=
+ =?us-ascii?Q?D9/anNVftRE6seqB/QTpR7ZWHadwUGpfXk4K9kJr3JRPnOUbzZPLxrf8QcwR?=
+ =?us-ascii?Q?7ANkkGBfxy6tQXV4kJsjYdiX+OD/3lmQY3vlw4GdOCT1gkN1HDeEUk4tBXQ/?=
+ =?us-ascii?Q?T+D/KUDjJp6uHthW/Bxi+Vbt/OWtgdsNJxtEc3X5F0rnftBWSykK55LMswEJ?=
+ =?us-ascii?Q?U2U6RAAmxF+92rN4FvjXuJ8LyJ+ifACy5sUqvSwIerL+fdlaFUy8F1xEClFQ?=
+ =?us-ascii?Q?hcoIZaLrDWTCdwWjWtHcnar+tH0ZcQIOQQ0HFCwiO1Gi7kLH7B/oNbQJrHkR?=
+ =?us-ascii?Q?e33AxW84MDH/B622RHFbFktKw9w/RLnHtl7qGplu94/cDsrrcsX88VmPb09t?=
+ =?us-ascii?Q?wH0Z48+IeiUR35jyvy1Vo/2lBlGnktxyKJkV8w1+smy/ZMsJj+AskPz/dzf+?=
+ =?us-ascii?Q?gjvGjVPkLiTUAEfpQESp8ERt4IZgNV6+vy7wWxyPv+g3sW10MOyEcW8NJtQ9?=
+ =?us-ascii?Q?r20UcrNfhBxSSMexdMG/TsfxLnXQcyrji/w1+OSOROBzBLb+tHjdIVxkShzn?=
+ =?us-ascii?Q?T3iU9uMtKcwNktnd/O87C10YQW8jd7ripUWrlUT3LkQ67K+m13tlI5e/6xN/?=
+ =?us-ascii?Q?HhzWgVTRhr+Rh3CVvzVj6fncFX9YrK/plBWkCJBQfRk9w4Xv19MDe2Y1qMj2?=
+ =?us-ascii?Q?UpDmxnPZY0t8G581TfgvyK8/gWpu8olbWWk8SJ7fOUOkpDwMKs2knEt5wRX2?=
+ =?us-ascii?Q?5RoyoT1NhKD+R4FbQWdywkb6l1GTXQER+Ujebv1tbsn90yvv6IJvtsIpM541?=
+ =?us-ascii?Q?yN5OovEDqXU475G2poLRDTk=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e9daa80-8352-4c24-42be-08da5e991919
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9186.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e0e53b6-a66b-4ec4-c0ec-08da5e99114e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2022 15:14:33.9102
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 15:14:47.1220
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7GZHyztKxvj48Jkc9cCio0nZeuSkbyq/ou66Vh9dOEkEtd5DN+JGfgxiEi+qTQBh0Ql9YyyRPOjmgf6Xp+ZAlQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4205
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eB8wDdlm+feHRFH6Gl4UxFkUAmYjw45nI+0u72SSIw9ChSpMUuERzIOvzXG8wOeqC2wjHV2w5pN4C2/E1Yo/c37OicSCXIVF5ZCPaABqgQA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0632
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello Vasyl,
+
+On Tue, Jul 05, 2022 at 03:59:31PM +0300, Vasyl Vavrychuk wrote:
+> Fixes: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+
+This fixes tag is broken, dd06ed7ad057 does not exist on
+torvalds/master, and the `commit` word should be removed.
+
+Should be:
+
+Fixes: ff7f2926114d ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
 
 
-> -----Original Message-----
-> From: Tom Rix <trix@redhat.com>
-> Sent: Monday, July 4, 2022 8:26 AM
-> To: kishon@ti.com; lpieralisi@kernel.org; kw@linux.com;
-> bhelgaas@google.com; jdmason@kudzu.us; Frank Li <frank.li@nxp.com>
-> Cc: linux-pci@vger.kernel.org; linux-kernel@vger.kernel.org; Tom Rix
-> <trix@redhat.com>
-> Subject: [EXT] [PATCH v3] PCI: endpoint: pci-epf-vntb: reduce several glo=
-bals
-> to statics
->=20
-> Caution: EXT Email
->=20
-> sparse reports
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:956:10: warning: symbol
-> 'pci_space' was not declared. Should it be static?
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:975:5: warning: symbol
-> 'pci_read' was not declared. Should it be static?
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:984:5: warning: symbol
-> 'pci_write' was not declared. Should it be static?
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:989:16: warning: symbol
-> 'vpci_ops' was not declared. Should it be static?
->=20
-> These functions and variables are only used in pci-epf-vntb.c, so their s=
-torage
-> class specifiers should be static.
->=20
-> Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and E=
-P
-> connection")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-
-Acked-by: Frank Li <Frank.Li@nxp.com>
-
-> ---
-> v2,3 : Change commit prefix
->=20
-> ---
->  drivers/pci/endpoint/functions/pci-epf-vntb.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c
-> b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-> index ebf7e243eefa..6f0775b1fec3 100644
-> --- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
-> +++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-> @@ -953,7 +953,7 @@ static struct config_group *epf_ntb_add_cfs(struct
-> pci_epf *epf,
->=20
->  #define VPCI_BUS_NUM 0x10
->=20
-> -uint32_t pci_space[] =3D {
-> +static uint32_t pci_space[] =3D {
->         (VNTB_VID | (VNTB_PID << 16)),  //DeviceID, Vendor ID
->         0,              // status, Command
->         0xffffffff,     // Class code, subclass, prog if, revision id
-> @@ -972,7 +972,7 @@ uint32_t pci_space[] =3D {
->         0,              //Max Lat, Min Gnt, interrupt pin, interrupt line
->  };
->=20
-> -int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int siz=
-e, u32
-> *val)
-> +static int pci_read(struct pci_bus *bus, unsigned int devfn, int where, =
-int
-> size, u32 *val)
->  {
->         if (devfn =3D=3D 0) {
->                 memcpy(val, ((uint8_t *)pci_space) + where, size);
-> @@ -981,12 +981,12 @@ int pci_read(struct pci_bus *bus, unsigned int
-> devfn, int where, int size, u32 *
->         return -1;
->  }
->=20
-> -int pci_write(struct pci_bus *bus, unsigned int devfn, int where, int si=
-ze, u32
-> val)
-> +static int pci_write(struct pci_bus *bus, unsigned int devfn, int where,=
- int
-> size, u32 val)
->  {
->         return 0;
->  }
->=20
-> -struct pci_ops vpci_ops =3D {
-> +static struct pci_ops vpci_ops =3D {
->         .read =3D pci_read,
->         .write =3D pci_write,
->  };
-> --
-> 2.27.0
+Francesco
 
