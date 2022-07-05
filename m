@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F179ACCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F9ACCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239361AbiGEMad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
+        id S239047AbiGEMaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237481AbiGEMTQ (ORCPT
+        with ESMTP id S237654AbiGEMTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269181D0D8;
-        Tue,  5 Jul 2022 05:14:44 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6631D331;
+        Tue,  5 Jul 2022 05:15:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F468619E2;
-        Tue,  5 Jul 2022 12:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B36D6C341C7;
-        Tue,  5 Jul 2022 12:14:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43132B817CC;
+        Tue,  5 Jul 2022 12:15:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98B86C341C7;
+        Tue,  5 Jul 2022 12:15:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023283;
-        bh=7Ga/AdGZnlemb80d3NNtI8z2J+9BZxSFFNZvpZcsvTY=;
+        s=korg; t=1657023355;
+        bh=hT7n2waLKXkXqL0BWi/NCBJbGAMUgXPDLfsH4iSWDPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nGdmS33sFvYFrRud4J4R5SpR4qrWkXQ8Cx0KPxWLrfed10ZKe1FoKn6qcPmZsaYIf
-         iBCiyx3T9Udc1a0NyuiPWkpTg9gwPldMPlhdz1+JY4ofhn1M9rPi6Of0FZb2I2/3g7
-         JokpsRpKCOD5FYbhchz4edEewYVYbJkXi2xt9QVc=
+        b=MmB4TOg8Z0T0H0efvT7S7m/LuoBFa+OVtywY7yp4QyDkeSEYPvWLffD01MmejtPgJ
+         J8VhFThA/SpCSFfApRsMkxgfG14A+Nsra1W3hHjixEsK+yuz9Zg9imm8uosFik95zZ
+         P79uhDtefzgvB5lJZPRl8Kus1nfMWkwt6180vjns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabio Porcedda <fabio.porcedda@gmail.com>
-Subject: [PATCH 5.15 84/98] net: usb: qmi_wwan: add Telit 0x1070 composition
-Date:   Tue,  5 Jul 2022 13:58:42 +0200
-Message-Id: <20220705115619.956582740@linuxfoundation.org>
+        stable@vger.kernel.org, Ruili Ji <ruiliji2@amd.com>,
+        Philip Yang <philip.yang@amd.com>,
+        Aaron Liu <aaron.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.18 003/102] drm/amdgpu: To flush tlb for MMHUB of RAVEN series
+Date:   Tue,  5 Jul 2022 13:57:29 +0200
+Message-Id: <20220705115618.511231301@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
+References: <20220705115618.410217782@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Ruili Ji <ruiliji2@amd.com>
 
-commit 94f2a444f28a649926c410eb9a38afb13a83ebe0 upstream.
+commit 5cb0e3fb2c54eabfb3f932a1574bff1774946bc0 upstream.
 
-Add the following Telit FN990 composition:
+amdgpu: [mmhub0] no-retry page fault (src_id:0 ring:40 vmid:8 pasid:32769, for process test_basic pid 3305 thread test_basic pid 3305)
+amdgpu: in page starting at address 0x00007ff990003000 from IH client 0x12 (VMC)
+amdgpu: VM_L2_PROTECTION_FAULT_STATUS:0x00840051
+amdgpu: Faulty UTCL2 client ID: MP1 (0x0)
+amdgpu: MORE_FAULTS: 0x1
+amdgpu: WALKER_ERROR: 0x0
+amdgpu: PERMISSION_FAULTS: 0x5
+amdgpu: MAPPING_ERROR: 0x0
+amdgpu: RW: 0x1
 
-0x1070: tty, adb, rmnet, tty, tty, tty, tty
+When memory is allocated by kfd, no one triggers the tlb flush for MMHUB0.
+There is page fault from MMHUB0.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Link: https://lore.kernel.org/r/20211210095722.22269-1-dnlplm@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
+v2:fix indentation
+v3:change subject and fix indentation
+
+Signed-off-by: Ruili Ji <ruiliji2@amd.com>
+Reviewed-by: Philip Yang <philip.yang@amd.com>
+Reviewed-by: Aaron Liu <aaron.liu@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/qmi_wwan.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1355,6 +1355,7 @@ static const struct usb_device_id produc
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1070, 2)},	/* Telit FN990 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
+@@ -703,7 +703,8 @@ int amdgpu_amdkfd_flush_gpu_tlb_pasid(st
+ {
+ 	bool all_hub = false;
+ 
+-	if (adev->family == AMDGPU_FAMILY_AI)
++	if (adev->family == AMDGPU_FAMILY_AI ||
++	    adev->family == AMDGPU_FAMILY_RV)
+ 		all_hub = true;
+ 
+ 	return amdgpu_gmc_flush_gpu_tlb_pasid(adev, pasid, flush_type, all_hub);
 
 
