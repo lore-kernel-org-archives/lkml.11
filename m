@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 065D4CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D807CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238871AbiGEMdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44948 "EHLO
+        id S238924AbiGEMd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231266AbiGEMYw (ORCPT
+        with ESMTP id S236704AbiGEMZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:24:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B2C1F60D;
-        Tue,  5 Jul 2022 05:17:24 -0700 (PDT)
+        Tue, 5 Jul 2022 08:25:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B5D1B795;
+        Tue,  5 Jul 2022 05:17:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1C67B817AC;
-        Tue,  5 Jul 2022 12:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A2FBC341CB;
-        Tue,  5 Jul 2022 12:17:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27D79B816A4;
+        Tue,  5 Jul 2022 12:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 920F9C341C7;
+        Tue,  5 Jul 2022 12:17:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023441;
-        bh=4wrempK14aI2Lwl5s7i72OMdEzbm8xpeW9Zz4Lk8IKY=;
+        s=korg; t=1657023446;
+        bh=81SZrL4AZzjPMj0AWmvyapy6rKSrJNXgVKvmT/d/C2g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PchrN6eqVUq8LoveQG/s4Ayrl3ZpD+vl2Lsh2k9i75Cus2SVm0Fk8HtYap8VWhQFB
-         hUaqkSjwX5B/QDHiKjstQaCmGSqS8gGva4eppP17g2V3m/wVkX5G/tUuVTpzmXkBmu
-         CbUP+TAZ9/5ZWxi58Pq4d9Wzwg2830oYf/n709yc=
+        b=wp2O/7FAXyailzcxtvKGrMtyNjcgOZAacKyfsaJacqgRkf9uxkholX1uu3gkT1CDo
+         K2KjKvLWWxSr1KgAs7V4ol1YR70PM0zkUID2JNSY5+GKsU4SQz7VgIoU0hiCKpxLgq
+         sfFp4alVsldt6XpbCyPuYUBOK7xTxjYQ0LMkFCHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 061/102] net: bonding: fix use-after-free after 802.3ad slave unbind
-Date:   Tue,  5 Jul 2022 13:58:27 +0200
-Message-Id: <20220705115620.139254675@linuxfoundation.org>
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 063/102] powerpc/memhotplug: Add add_pages override for PPC
+Date:   Tue,  5 Jul 2022 13:58:29 +0200
+Message-Id: <20220705115620.195642512@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -51,63 +50,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevhen Orlov <yevhen.orlov@plvision.eu>
+From: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 
-commit 050133e1aa2cb49bb17be847d48a4431598ef562 upstream.
+commit ac790d09885d36143076e7e02825c541e8eee899 upstream.
 
-commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection"),
-resolve case, when there is several aggregation groups in the same bond.
-bond_3ad_unbind_slave will invalidate (clear) aggregator when
-__agg_active_ports return zero. So, ad_clear_agg can be executed even, when
-num_of_ports!=0. Than bond_3ad_unbind_slave can be executed again for,
-previously cleared aggregator. NOTE: at this time bond_3ad_unbind_slave
-will not update slave ports list, because lag_ports==NULL. So, here we
-got slave ports, pointing to freed aggregator memory.
+With commit ffa0b64e3be5 ("powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit")
+the kernel now validate the addr against high_memory value. This results
+in the below BUG_ON with dax pfns.
 
-Fix with checking actual number of ports in group (as was before
-commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection") ),
-before ad_clear_agg().
+[  635.798741][T26531] kernel BUG at mm/page_alloc.c:5521!
+1:mon> e
+cpu 0x1: Vector: 700 (Program Check) at [c000000007287630]
+    pc: c00000000055ed48: free_pages.part.0+0x48/0x110
+    lr: c00000000053ca70: tlb_finish_mmu+0x80/0xd0
+    sp: c0000000072878d0
+   msr: 800000000282b033
+  current = 0xc00000000afabe00
+  paca    = 0xc00000037ffff300   irqmask: 0x03   irq_happened: 0x05
+    pid   = 26531, comm = 50-landscape-sy
+kernel BUG at :5521!
+Linux version 5.19.0-rc3-14659-g4ec05be7c2e1 (kvaneesh@ltc-boston8) (gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, GNU ld (GNU Binutils for Ubuntu) 2.34) #625 SMP Thu Jun 23 00:35:43 CDT 2022
+1:mon> t
+[link register   ] c00000000053ca70 tlb_finish_mmu+0x80/0xd0
+[c0000000072878d0] c00000000053ca54 tlb_finish_mmu+0x64/0xd0 (unreliable)
+[c000000007287900] c000000000539424 exit_mmap+0xe4/0x2a0
+[c0000000072879e0] c00000000019fc1c mmput+0xcc/0x210
+[c000000007287a20] c000000000629230 begin_new_exec+0x5e0/0xf40
+[c000000007287ae0] c00000000070b3cc load_elf_binary+0x3ac/0x1e00
+[c000000007287c10] c000000000627af0 bprm_execve+0x3b0/0xaf0
+[c000000007287cd0] c000000000628414 do_execveat_common.isra.0+0x1e4/0x310
+[c000000007287d80] c00000000062858c sys_execve+0x4c/0x60
+[c000000007287db0] c00000000002c1b0 system_call_exception+0x160/0x2c0
+[c000000007287e10] c00000000000c53c system_call_common+0xec/0x250
 
-The KASAN logs are as follows:
+The fix is to make sure we update high_memory on memory hotplug.
+This is similar to what x86 does in commit 3072e413e305 ("mm/memory_hotplug: introduce add_pages")
 
-[  767.617392] ==================================================================
-[  767.630776] BUG: KASAN: use-after-free in bond_3ad_state_machine_handler+0x13dc/0x1470
-[  767.638764] Read of size 2 at addr ffff00011ba9d430 by task kworker/u8:7/767
-[  767.647361] CPU: 3 PID: 767 Comm: kworker/u8:7 Tainted: G           O 5.15.11 #15
-[  767.655329] Hardware name: DNI AmazonGo1 A7040 board (DT)
-[  767.660760] Workqueue: lacp_1 bond_3ad_state_machine_handler
-[  767.666468] Call trace:
-[  767.668930]  dump_backtrace+0x0/0x2d0
-[  767.672625]  show_stack+0x24/0x30
-[  767.675965]  dump_stack_lvl+0x68/0x84
-[  767.679659]  print_address_description.constprop.0+0x74/0x2b8
-[  767.685451]  kasan_report+0x1f0/0x260
-[  767.689148]  __asan_load2+0x94/0xd0
-[  767.692667]  bond_3ad_state_machine_handler+0x13dc/0x1470
-
-Fixes: 0622cab0341c ("bonding: fix 802.3ad aggregator reselection")
-Co-developed-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Link: https://lore.kernel.org/r/20220629012914.361-1-yevhen.orlov@plvision.eu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ffa0b64e3be5 ("powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit")
+Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220629050925.31447-1-aneesh.kumar@linux.ibm.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_3ad.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/powerpc/Kconfig  |    4 ++++
+ arch/powerpc/mm/mem.c |   33 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 36 insertions(+), 1 deletion(-)
 
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2228,7 +2228,8 @@ void bond_3ad_unbind_slave(struct slave
- 				temp_aggregator->num_of_ports--;
- 				if (__agg_active_ports(temp_aggregator) == 0) {
- 					select_new_active_agg = temp_aggregator->is_active;
--					ad_clear_agg(temp_aggregator);
-+					if (temp_aggregator->num_of_ports == 0)
-+						ad_clear_agg(temp_aggregator);
- 					if (select_new_active_agg) {
- 						slave_info(bond->dev, slave->dev, "Removing an active aggregator\n");
- 						/* select new active aggregator */
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -358,6 +358,10 @@ config ARCH_SUSPEND_NONZERO_CPU
+ 	def_bool y
+ 	depends on PPC_POWERNV || PPC_PSERIES
+ 
++config ARCH_HAS_ADD_PAGES
++	def_bool y
++	depends on ARCH_ENABLE_MEMORY_HOTPLUG
++
+ config PPC_DCR_NATIVE
+ 	bool
+ 
+--- a/arch/powerpc/mm/mem.c
++++ b/arch/powerpc/mm/mem.c
+@@ -103,6 +103,37 @@ void __ref arch_remove_linear_mapping(u6
+ 	vm_unmap_aliases();
+ }
+ 
++/*
++ * After memory hotplug the variables max_pfn, max_low_pfn and high_memory need
++ * updating.
++ */
++static void update_end_of_memory_vars(u64 start, u64 size)
++{
++	unsigned long end_pfn = PFN_UP(start + size);
++
++	if (end_pfn > max_pfn) {
++		max_pfn = end_pfn;
++		max_low_pfn = end_pfn;
++		high_memory = (void *)__va(max_pfn * PAGE_SIZE - 1) + 1;
++	}
++}
++
++int __ref add_pages(int nid, unsigned long start_pfn, unsigned long nr_pages,
++		    struct mhp_params *params)
++{
++	int ret;
++
++	ret = __add_pages(nid, start_pfn, nr_pages, params);
++	if (ret)
++		return ret;
++
++	/* update max_pfn, max_low_pfn and high_memory */
++	update_end_of_memory_vars(start_pfn << PAGE_SHIFT,
++				  nr_pages << PAGE_SHIFT);
++
++	return ret;
++}
++
+ int __ref arch_add_memory(int nid, u64 start, u64 size,
+ 			  struct mhp_params *params)
+ {
+@@ -113,7 +144,7 @@ int __ref arch_add_memory(int nid, u64 s
+ 	rc = arch_create_linear_mapping(nid, start, size, params);
+ 	if (rc)
+ 		return rc;
+-	rc = __add_pages(nid, start_pfn, nr_pages, params);
++	rc = add_pages(nid, start_pfn, nr_pages, params);
+ 	if (rc)
+ 		arch_remove_linear_mapping(start, size);
+ 	return rc;
 
 
