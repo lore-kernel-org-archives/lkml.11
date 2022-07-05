@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57685C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F42EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiGEMAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
+        id S232821AbiGEMAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232700AbiGEMAE (ORCPT
+        with ESMTP id S232682AbiGEMAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:00:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC5517E1B;
-        Tue,  5 Jul 2022 04:59:53 -0700 (PDT)
+        Tue, 5 Jul 2022 08:00:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A635817E02;
+        Tue,  5 Jul 2022 04:59:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CD96617B1;
-        Tue,  5 Jul 2022 11:59:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19755C341C7;
-        Tue,  5 Jul 2022 11:59:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 433996174B;
+        Tue,  5 Jul 2022 11:59:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56841C341CD;
+        Tue,  5 Jul 2022 11:59:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022392;
-        bh=edsKe0FVOvsRAYwbS5XjA2Hdnp3PFY86vrBZUlfMG/g=;
+        s=korg; t=1657022389;
+        bh=nH/iHHTgnKhb3862t/o5lYm7uKzkZ4FjTsdDg0b0vZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZtOJqFpoR3naKG3/umhGm7DDnU+GUiDE8pN2OmSRwjv1jGpKPgDKAfiO9TlgSbzo4
-         p4Od0PGzEI+Uu8+hdQPxx6Bw2owtyMq9GrM+9oq+Fcy34fJNSwmndDeIeNhuSnXmwI
-         kZLTVe8Xjq2panhlbLRombNA1XX7qNZ+KYADTok8=
+        b=LomNs9icWo6Ir/bCREsK1cDpFkM5EW+qBNP5hiSrhInU2+LAz5KxOazOVEcf6kmsJ
+         yeDO+1bQqt6zZqY4o8ovY97eCw2Wcn7p3PmuzirZJ1WT2EAzNP3MNGlmmu4h/qR4O6
+         jmLnKBAaZ0hKnfWrukvt890gj0lXKjDC1RNlkbZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bruce Fields <bfields@fieldses.org>,
-        Zorro Lang <zlang@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 4.9 02/29] SUNRPC: Fix READ_PLUS crasher
-Date:   Tue,  5 Jul 2022 13:57:43 +0200
-Message-Id: <20220705115605.816369937@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Lesokhin <ilyal@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 19/29] net: Rename and export copy_skb_header
+Date:   Tue,  5 Jul 2022 13:58:00 +0200
+Message-Id: <20220705115606.315387213@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115605.742248854@linuxfoundation.org>
 References: <20220705115605.742248854@linuxfoundation.org>
@@ -49,34 +49,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Ilya Lesokhin <ilyal@mellanox.com>
 
-commit a23dd544debcda4ee4a549ec7de59e85c3c8345c upstream.
+commit 08303c189581c985e60f588ad92a041e46b6e307 upstream.
 
-Looks like there are still cases when "space_left - frag1bytes" can
-legitimately exceed PAGE_SIZE. Ensure that xdr->end always remains
-within the current encode buffer.
+[ jgross@suse.com: added as needed by XSA-403 mitigation ]
 
-Reported-by: Bruce Fields <bfields@fieldses.org>
-Reported-by: Zorro Lang <zlang@redhat.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216151
-Fixes: 6c254bf3b637 ("SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+copy_skb_header is renamed to skb_copy_header and
+exported. Exposing this function give more flexibility
+in copying SKBs.
+skb_copy and skb_copy_expand do not give enough control
+over which parts are copied.
+
+Signed-off-by: Ilya Lesokhin <ilyal@mellanox.com>
+Signed-off-by: Boris Pismenny <borisp@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/xdr.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/skbuff.h |    1 +
+ net/core/skbuff.c      |    9 +++++----
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
---- a/net/sunrpc/xdr.c
-+++ b/net/sunrpc/xdr.c
-@@ -544,7 +544,7 @@ static __be32 *xdr_get_next_encode_buffe
- 	 */
- 	xdr->p = (void *)p + frag2bytes;
- 	space_left = xdr->buf->buflen - xdr->buf->len;
--	if (space_left - nbytes >= PAGE_SIZE)
-+	if (space_left - frag1bytes >= PAGE_SIZE)
- 		xdr->end = (void *)p + PAGE_SIZE;
- 	else
- 		xdr->end = (void *)p + space_left - frag1bytes;
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -975,6 +975,7 @@ static inline struct sk_buff *alloc_skb_
+ struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src);
+ int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask);
+ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t priority);
++void skb_copy_header(struct sk_buff *new, const struct sk_buff *old);
+ struct sk_buff *skb_copy(const struct sk_buff *skb, gfp_t priority);
+ struct sk_buff *__pskb_copy_fclone(struct sk_buff *skb, int headroom,
+ 				   gfp_t gfp_mask, bool fclone);
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1071,7 +1071,7 @@ static void skb_headers_offset_update(st
+ 	skb->inner_mac_header += off;
+ }
+ 
+-static void copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
++void skb_copy_header(struct sk_buff *new, const struct sk_buff *old)
+ {
+ 	__copy_skb_header(new, old);
+ 
+@@ -1079,6 +1079,7 @@ static void copy_skb_header(struct sk_bu
+ 	skb_shinfo(new)->gso_segs = skb_shinfo(old)->gso_segs;
+ 	skb_shinfo(new)->gso_type = skb_shinfo(old)->gso_type;
+ }
++EXPORT_SYMBOL(skb_copy_header);
+ 
+ static inline int skb_alloc_rx_flag(const struct sk_buff *skb)
+ {
+@@ -1122,7 +1123,7 @@ struct sk_buff *skb_copy(const struct sk
+ 	if (skb_copy_bits(skb, -headerlen, n->head, headerlen + skb->len))
+ 		BUG();
+ 
+-	copy_skb_header(n, skb);
++	skb_copy_header(n, skb);
+ 	return n;
+ }
+ EXPORT_SYMBOL(skb_copy);
+@@ -1185,7 +1186,7 @@ struct sk_buff *__pskb_copy_fclone(struc
+ 		skb_clone_fraglist(n);
+ 	}
+ 
+-	copy_skb_header(n, skb);
++	skb_copy_header(n, skb);
+ out:
+ 	return n;
+ }
+@@ -1356,7 +1357,7 @@ struct sk_buff *skb_copy_expand(const st
+ 			  skb->len + head_copy_len))
+ 		BUG();
+ 
+-	copy_skb_header(n, skb);
++	skb_copy_header(n, skb);
+ 
+ 	skb_headers_offset_update(n, newheadroom - oldheadroom);
+ 
 
 
