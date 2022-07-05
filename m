@@ -2,94 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FF4CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3ED9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236084AbiGEMQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
+        id S235701AbiGEMQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235289AbiGEMIv (ORCPT
+        with ESMTP id S235285AbiGEMIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:51 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA9E10B8;
-        Tue,  5 Jul 2022 05:08:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657022930; x=1688558930;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=YRsVqKY1FP8GB58R3OD493uBwRt0/4HsIz06TH1IPTg=;
-  b=yDR7LzRkvFDpNmBlhdPqLj+249WDf+BKk8msN1AZpWK5hDXBfFkuckcT
-   tfPXt64DAafMTCc8D+gi1KKAzTRnWwXkN0WXvazs5HH/aReGqFM5aIiA0
-   lSQ83wgOyO6wqVzheuCWJbhv7YllwqdSuEh2Vfw4JJS7HEaMfeh5Qyeyc
-   A=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 05:08:50 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:08:49 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:49 -0700
-Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:45 -0700
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-To:     <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
-        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <konrad.dybcio@somainline.org>,
-        Siddharth Gupta <sidgup@codeaurora.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [V3 3/7] remoteproc: qcom: pas: Mark devices as wakeup capable
-Date:   Tue, 5 Jul 2022 17:38:16 +0530
-Message-ID: <1657022900-2049-4-git-send-email-quic_sibis@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
-References: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+        Tue, 5 Jul 2022 08:08:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200D6E07;
+        Tue,  5 Jul 2022 05:08:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B71EAB817D2;
+        Tue,  5 Jul 2022 12:08:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 077FEC341CB;
+        Tue,  5 Jul 2022 12:08:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022924;
+        bh=gDNm9VkZhtxww4I2NnBeE9/UzhtLtDxB4AKiTkuqLKY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VY9ow9+R3Pj6Elnzras0eOl9Sv2Jg0WU95SM9ZmK6ENF+BuVnBUdK6zPoY0alqPQA
+         NY60VBjYxMP9E6iI7pJK22ziISLs/cBCnkdWgSRfhNcuCptJcRvytYVhmjKq2E2tjh
+         KW/CLKFmmoKqiL/ii0c3Zf+o5L9wv/xRIxnoUzc4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 59/84] hwmon: (ibmaem) dont call platform_device_del() if platform_device_add() fails
+Date:   Tue,  5 Jul 2022 13:58:22 +0200
+Message-Id: <20220705115617.045351103@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddharth Gupta <sidgup@codeaurora.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-device_wakeup_enable() on its own is not capable of setting
-device as wakeup capable, it needs to be used in conjunction
-with device_set_wakeup_capable(). The device_init_wakeup()
-calls both these functions on the device passed.
+[ Upstream commit d0e51022a025ca5350fafb8e413a6fe5d4baf833 ]
 
-Fixes: a781e5aa5911 ("remoteproc: core: Prevent system suspend during remoteproc recovery")
-Signed-off-by: Siddharth Gupta <sidgup@codeaurora.org>
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+If platform_device_add() fails, it no need to call platform_device_del(), split
+platform_device_unregister() into platform_device_del/put(), so platform_device_put()
+can be called separately.
+
+Fixes: 8808a793f052 ("ibmaem: new driver for power/energy/temp meters in IBM System X hardware")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220701074153.4021556-1-yangyingliang@huawei.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_q6v5_pas.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/hwmon/ibmaem.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
-index df13cfc3aeb8..43dde151120f 100644
---- a/drivers/remoteproc/qcom_q6v5_pas.c
-+++ b/drivers/remoteproc/qcom_q6v5_pas.c
-@@ -486,7 +486,9 @@ static int adsp_probe(struct platform_device *pdev)
- 	adsp->decrypt_shutdown = desc->decrypt_shutdown;
- 	platform_set_drvdata(pdev, adsp);
+diff --git a/drivers/hwmon/ibmaem.c b/drivers/hwmon/ibmaem.c
+index a4ec85207782..2e6d6a5cffa1 100644
+--- a/drivers/hwmon/ibmaem.c
++++ b/drivers/hwmon/ibmaem.c
+@@ -550,7 +550,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
  
--	device_wakeup_enable(adsp->dev);
-+	ret = device_init_wakeup(adsp->dev, true);
-+	if (ret)
-+		goto free_rproc;
+ 	res = platform_device_add(data->pdev);
+ 	if (res)
+-		goto ipmi_err;
++		goto dev_add_err;
  
- 	ret = adsp_alloc_memory_region(adsp);
- 	if (ret)
+ 	platform_set_drvdata(data->pdev, data);
+ 
+@@ -598,7 +598,9 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
+ 	ipmi_destroy_user(data->ipmi.user);
+ ipmi_err:
+ 	platform_set_drvdata(data->pdev, NULL);
+-	platform_device_unregister(data->pdev);
++	platform_device_del(data->pdev);
++dev_add_err:
++	platform_device_put(data->pdev);
+ dev_err:
+ 	ida_simple_remove(&aem_ida, data->id);
+ id_err:
+@@ -690,7 +692,7 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
+ 
+ 	res = platform_device_add(data->pdev);
+ 	if (res)
+-		goto ipmi_err;
++		goto dev_add_err;
+ 
+ 	platform_set_drvdata(data->pdev, data);
+ 
+@@ -738,7 +740,9 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
+ 	ipmi_destroy_user(data->ipmi.user);
+ ipmi_err:
+ 	platform_set_drvdata(data->pdev, NULL);
+-	platform_device_unregister(data->pdev);
++	platform_device_del(data->pdev);
++dev_add_err:
++	platform_device_put(data->pdev);
+ dev_err:
+ 	ida_simple_remove(&aem_ida, data->id);
+ id_err:
 -- 
-2.7.4
+2.35.1
+
+
 
