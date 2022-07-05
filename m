@@ -2,105 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B19C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9075C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232258AbiGEKVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
+        id S232367AbiGEKVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231939AbiGEKVe (ORCPT
+        with ESMTP id S232322AbiGEKVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:21:34 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8773A140E9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 03:21:30 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id j21so19814511lfe.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 03:21:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XGMtHoXKFHUOtxQpfPNqwVcBdt9ZrEo/gnmcHvqCdpI=;
-        b=YNIrcUD68JSfz4ua0vARsk6TgaoUKlrYjTEdQgmnEkSPT76AAHI5ScSd5BhLUmQncP
-         PxSqZQd4Zf7wk3YVjh02mUkxWED4hzjK/aG7I10YER2lfp1uyNaZG1BEcfhuzoPjE2/z
-         vRjqLIi1n6RYKa1eeIA5BsRohf6ay2qEclz6eNybodcy0wz52Y7Nze0/SBZwRMsu0K5w
-         efqEkr8ZXj8k0TG1lyR9loiPGH8zky0K/+mwc6976hi6BesBYSy69NCwF8gZJZpwVkf+
-         hkuIDVWNtGpBikqAJ9EO+xlDL0JXMqBoOJn+SHOVRLRTWfp5+5C0Rn65RCLhu9wl1BQ+
-         I3aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XGMtHoXKFHUOtxQpfPNqwVcBdt9ZrEo/gnmcHvqCdpI=;
-        b=hnnZDFi8owjvbTMa4c1mpuOmrxhbdm8rzMc/GOldy0aGuNIJ7Nfcem64riL+udrXeH
-         TgEqNjtxWY351iUg8eGFps01zCPCBf4akLYoaBqnE+b6MJXfmIpIZT4YofDoEdxTdxnd
-         AcPt6vm9IiSA7a+Juk9aK77XYZeM3CNGw0hVa4ci/84+A4T8VZOdmlPEI0zxrwcysPr5
-         PKRaj4Jrq/1SWk2m4WO7e3ySnwkNjbyoOCbDR7Kciaooe6agEHvV8pgJvmBcxzkcoxQ6
-         fSiQShH+671jtUjBGOGTACw117l3ujGIe/uVb7GVx3aYl6Ddhb06+9lgi66T7V0yKlVM
-         p4PQ==
-X-Gm-Message-State: AJIora+q3SNbIF80Odp/Zm5flDT7Pe0fMeC4cG3jOeDbfSHUwylJzJoP
-        42qxNaj+oSsTv5Ruc8Nywt2C/A==
-X-Google-Smtp-Source: AGRyM1t/KkEuOwtyTNFstSAVsdiyHggD1Bgiz4900nTcmTdD0yCoOwliE6uS35rh/DkDuzlfnTKIIQ==
-X-Received: by 2002:a05:6512:3503:b0:481:4470:4128 with SMTP id h3-20020a056512350300b0048144704128mr20257291lfs.303.1657016488650;
-        Tue, 05 Jul 2022 03:21:28 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id z7-20020ac24187000000b0047f943112e3sm5601954lfh.285.2022.07.05.03.21.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 03:21:28 -0700 (PDT)
-Message-ID: <1fc88380-1960-6ed7-0933-d97bfa820dcb@linaro.org>
-Date:   Tue, 5 Jul 2022 12:21:27 +0200
+        Tue, 5 Jul 2022 06:21:35 -0400
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Jul 2022 03:21:32 PDT
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6147E140C7;
+        Tue,  5 Jul 2022 03:21:32 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 804B728C44;
+        Tue,  5 Jul 2022 13:06:01 +0300 (EEST)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 1D85628BBA;
+        Tue,  5 Jul 2022 13:05:58 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 23C2E3C0437;
+        Tue,  5 Jul 2022 13:05:56 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 265A5tFs007839;
+        Tue, 5 Jul 2022 13:05:56 +0300
+Date:   Tue, 5 Jul 2022 13:05:54 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: Re: [PATCH] netfilter: ipvs: Use the bitmap API to allocate
+ bitmaps
+In-Reply-To: <420d8b70560e8711726ff639f0a55364e212ff26.1656962678.git.christophe.jaillet@wanadoo.fr>
+Message-ID: <b69d7ba1-22f8-80c3-c870-debd7aaf4cea@ssi.bg>
+References: <420d8b70560e8711726ff639f0a55364e212ff26.1656962678.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 42/43] phy: qcom-qmp-pcie-msm8996: drop reset lane suffix
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-43-johan+linaro@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220705094239.17174-43-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 11:42, Johan Hovold wrote:
-> The lane reset is defined in the "lane" node so there's no need to keep
-> adding a redundant lane-number suffix to the reset name.
+
+	Hello,
+
+On Mon, 4 Jul 2022, Christophe JAILLET wrote:
+
+> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 > 
-> Drop the lane-number suffix from the lane reset name, but continue
-> supporting the legacy name as a fall back.
+> It is less verbose and it improves the semantic.
 > 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+
+	Looks good to me for -next! Thanks!
+
+Acked-by: Julian Anastasov <ja@ssi.bg>
+
 > ---
->  drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+>  net/netfilter/ipvs/ip_vs_mh.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-> index b8481dab54db..9ddb42fa5f7a 100644
-> --- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-> +++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-> @@ -915,9 +915,12 @@ int qcom_qmp_phy_pcie_msm8996_create(struct device *dev, struct device_node *np,
->  				     "failed to get lane%d pipe clock\n", id);
+> diff --git a/net/netfilter/ipvs/ip_vs_mh.c b/net/netfilter/ipvs/ip_vs_mh.c
+> index da0280cec506..e3d7f5c879ce 100644
+> --- a/net/netfilter/ipvs/ip_vs_mh.c
+> +++ b/net/netfilter/ipvs/ip_vs_mh.c
+> @@ -174,8 +174,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
+>  		return 0;
 >  	}
 >  
-> -	/* Get lane reset, if any */
-> -	snprintf(prop_name, sizeof(prop_name), "lane%d", id);
-> -	qphy->lane_rst = of_reset_control_get_exclusive(np, prop_name);
-> +	qphy->lane_rst = of_reset_control_get_exclusive(np, "lane");
+> -	table = kcalloc(BITS_TO_LONGS(IP_VS_MH_TAB_SIZE),
+> -			sizeof(unsigned long), GFP_KERNEL);
+> +	table = bitmap_zalloc(IP_VS_MH_TAB_SIZE, GFP_KERNEL);
+>  	if (!table)
+>  		return -ENOMEM;
+>  
+> @@ -227,7 +226,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
+>  	}
+>  
+>  out:
+> -	kfree(table);
+> +	bitmap_free(table);
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.34.1
 
-As well, just grab first entry and ABI is kept stable.
+Regards
 
-Best regards,
-Krzysztof
+--
+Julian Anastasov <ja@ssi.bg>
+
