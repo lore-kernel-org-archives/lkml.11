@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89649C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C1EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237985AbiGEMgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
+        id S238072AbiGEMgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236543AbiGEM0s (ORCPT
+        with ESMTP id S236486AbiGEM0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:26:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DC11902F;
-        Tue,  5 Jul 2022 05:19:06 -0700 (PDT)
+        Tue, 5 Jul 2022 08:26:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D837C19029;
+        Tue,  5 Jul 2022 05:19:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAB1AB817C7;
-        Tue,  5 Jul 2022 12:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FE16C341C7;
-        Tue,  5 Jul 2022 12:19:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57725619A6;
+        Tue,  5 Jul 2022 12:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65579C341C7;
+        Tue,  5 Jul 2022 12:19:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023543;
-        bh=/NrK7TAForsqDNMywqJK8GoptfroW+Cz4lcwd33z3JI=;
+        s=korg; t=1657023540;
+        bh=pyhdauLBoqSjSiGXmzPG8RWnckzy4jcB2XZZJLH8K1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dAXq/Fux9nQx2Dn2pIK4fkxNnBtnSeUR39ndfJuf6/8yyqoEgb/rwzdkKrB83alK3
-         tNdIM6OV055Q093BadaHcP/XIbGDg546iT9P1nBVHqCeOEZNx/FGN/ABRvpVzXi7K/
-         Twd8UO0/aWBwBfE+wE44sxN9p4dLfp6pvgYC1E34=
+        b=hCYfO4Lj18bsox+Nbdr/ZGRd1MKrHQO3C8/YZD2CS6e3VeL9uLLd70/IQJRGaNs1c
+         7RQAWBtJIa1CWDloaE/j9SsUPkD3mT4xlxckNbGBt0VR1x5zDjvH6xsC12jnlHLbRI
+         N8kQKSm5108Zn6+nvOiQCi78IbcPX7XYBj+9N0Yk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steve French <stfrench@microsoft.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.18 081/102] cifs: fix minor compile warning
-Date:   Tue,  5 Jul 2022 13:58:47 +0200
-Message-Id: <20220705115620.709940288@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jan Beulich <jbeulich@suse.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.18 098/102] xen/netfront: fix leaking data in shared pages
+Date:   Tue,  5 Jul 2022 13:59:04 +0200
+Message-Id: <20220705115621.199811906@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,32 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Roger Pau Monne <roger.pau@citrix.com>
 
-commit 93ed91c020aa4f021600a633f1f87790a5e50b91 upstream.
+commit 307c8de2b02344805ebead3440d8feed28f2f010 upstream.
 
-Add ifdef around nodfs variable from patch:
-  "cifs: don't call cifs_dfs_query_info_nonascii_quirk() if nodfs was set"
-which is unused when CONFIG_DFS_UPCALL is not set.
+When allocating pages to be used for shared communication with the
+backend always zero them, this avoids leaking unintended data present
+on the pages.
 
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+This is CVE-2022-33740, part of XSA-403.
+
+Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/connect.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/xen-netfront.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -3423,7 +3423,9 @@ static int is_path_remote(struct mount_c
- 	struct cifs_tcon *tcon = mnt_ctx->tcon;
- 	struct smb3_fs_context *ctx = mnt_ctx->fs_ctx;
- 	char *full_path;
-+#ifdef CONFIG_CIFS_DFS_UPCALL
- 	bool nodfs = cifs_sb->mnt_cifs_flags & CIFS_MOUNT_NO_DFS;
-+#endif
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -273,7 +273,8 @@ static struct sk_buff *xennet_alloc_one_
+ 	if (unlikely(!skb))
+ 		return NULL;
  
- 	if (!server->ops->is_path_accessible)
- 		return -EOPNOTSUPP;
+-	page = page_pool_dev_alloc_pages(queue->page_pool);
++	page = page_pool_alloc_pages(queue->page_pool,
++				     GFP_ATOMIC | __GFP_NOWARN | __GFP_ZERO);
+ 	if (unlikely(!page)) {
+ 		kfree_skb(skb);
+ 		return NULL;
 
 
