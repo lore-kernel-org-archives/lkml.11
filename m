@@ -2,83 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1367CCA497
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A9FCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237120AbiGEMa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
+        id S238570AbiGEM3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237739AbiGEMTo (ORCPT
+        with ESMTP id S237522AbiGEMTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D031DA5C;
-        Tue,  5 Jul 2022 05:16:11 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF591D301;
+        Tue,  5 Jul 2022 05:14:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21784B817CC;
-        Tue,  5 Jul 2022 12:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A0E6C341C8;
-        Tue,  5 Jul 2022 12:16:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023368;
-        bh=N4W8MqS03GqdSCzZcs5qa007DfigsM15g5FYh63Tv8Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w2uwU+UgUW08DbgRPMwfkd58j9ElZxl8rbzW2oGIBtqp4M3CGpmLYIKJm2XKBpUNH
-         R4eLD6hGCzWV7Pdsqxxyr+E26cQL2SjXRXNBBzc3RzxniPg82OIbw4fBLAnNWHKU+7
-         wYr+ukAlWbLFC6FAWFJ/Har7py6v9oJRlMCniQiA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.18 034/102] RDMA/cm: Fix memory leak in ib_cm_insert_listen
-Date:   Tue,  5 Jul 2022 13:58:00 +0200
-Message-Id: <20220705115619.382298693@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
-References: <20220705115618.410217782@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08AB3619A6;
+        Tue,  5 Jul 2022 12:14:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67EB3C341C7;
+        Tue,  5 Jul 2022 12:14:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657023296;
+        bh=aLQZfrDM31ozGifv0mYlP/DyenjNLWBGnOgZJDGlVT8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=he/uxbDIQ6fWWKA1hja3r9GYlQ3Lq1c2ri8Pu6het+AFtdNo2nMZol5QV0wTjX9eW
+         flevcHdytpywKNMHJ4F7wkq6+8Bx3rhmd37lmXUnvmZtXC3y1ycBFjlnKK6tkmNho4
+         awonQ27J4vOs34K6Xk7W3kFLifXba6wMif6pdQ5Ew9uWcciUzUUQiIsyyE+gOnecu9
+         VgnOPoXUlmC3YpPnjvxDhsFhONtcxi1ZJS9khqUHhhnGv93Y9rMTw0CFAXn2wNr/Fj
+         y0jigs/3kyAZocJWcgJJIgvDmRDT6jahb/MTt3a0KMB/WQtyDJiHAFUTP+gruO8Yut
+         G98uwK0Uo5o2w==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o8hSD-0006Dv-Dm; Tue, 05 Jul 2022 14:14:57 +0200
+Date:   Tue, 5 Jul 2022 14:14:57 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 11/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate
+ reset names
+Message-ID: <YsQrQfvxauIGy6Ug@hovoldconsulting.com>
+References: <20220705094239.17174-1-johan+linaro@kernel.org>
+ <20220705094239.17174-12-johan+linaro@kernel.org>
+ <2a5fec43-352c-b304-e0c9-761e1d2b67ec@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2a5fec43-352c-b304-e0c9-761e1d2b67ec@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+On Tue, Jul 05, 2022 at 12:12:25PM +0200, Krzysztof Kozlowski wrote:
+> On 05/07/2022 11:42, Johan Hovold wrote:
+> > Drop the unnecessary "lane" suffix from the PHY reset names and mark the
+> > old names as deprecated.
+> > 
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > ---
+> >  .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 20 +++++++++++--------
+> >  1 file changed, 12 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+> > index 7931b1fd1476..0bea8270b37e 100644
+> > --- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+> > +++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+> > @@ -94,11 +94,15 @@ patternProperties:
+> >            - description: PHY (lane) reset
+> >  
+> >        reset-names:
+> > -        items:
+> > -          - enum:
+> > -              - lane0
+> > -              - lane1
+> > -              - lane2
+> > +        oneOf:
+> > +          - items:
+> > +              - const: lane
+> > +          - items:
+> > +              - enum:
+> > +                  - lane0
+> > +                  - lane1
+> > +                  - lane2
+> > +            deprecated: true
+> >  
+> 
+> How about just dropping reset-names entirely? Marking entire field
+> deprecated and removing from DTS? The same in the previous patch.
+> 
+> Usually one-item xxx-names do not bring any useful information.
 
-commit 2990f223ffa7bb25422956b9f79f9176a5b38346 upstream.
+Yeah, I agree, that's better.
 
-cm_alloc_id_priv() allocates resource for the cm_id_priv. When
-cm_init_listen() fails it doesn't free it, leading to memory leak.
-
-Add the missing error unwind.
-
-Fixes: 98f67156a80f ("RDMA/cm: Simplify establishing a listen cm_id")
-Link: https://lore.kernel.org/r/20220621052546.4821-1-linmq006@gmail.com
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/infiniband/core/cm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
---- a/drivers/infiniband/core/cm.c
-+++ b/drivers/infiniband/core/cm.c
-@@ -1252,8 +1252,10 @@ struct ib_cm_id *ib_cm_insert_listen(str
- 		return ERR_CAST(cm_id_priv);
- 
- 	err = cm_init_listen(cm_id_priv, service_id, 0);
--	if (err)
-+	if (err) {
-+		ib_destroy_cm_id(&cm_id_priv->id);
- 		return ERR_PTR(err);
-+	}
- 
- 	spin_lock_irq(&cm_id_priv->lock);
- 	listen_id_priv = cm_insert_listen(cm_id_priv, cm_handler);
-
-
+Johan
