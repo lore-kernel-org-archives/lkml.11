@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0992C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1508DCCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239334AbiGEMab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
+        id S239391AbiGEMaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236722AbiGEMSF (ORCPT
+        with ESMTP id S237528AbiGEMTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24A318B00;
-        Tue,  5 Jul 2022 05:13:28 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6FE1D30A;
+        Tue,  5 Jul 2022 05:14:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94A8FB8170A;
-        Tue,  5 Jul 2022 12:13:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8DEEC341C7;
-        Tue,  5 Jul 2022 12:13:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB341619F6;
+        Tue,  5 Jul 2022 12:14:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A11C341C8;
+        Tue,  5 Jul 2022 12:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023206;
-        bh=Re8s28P1byiwhi9zFf438s/wOl1yD4U+xdQBclhNQVc=;
+        s=korg; t=1657023297;
+        bh=kc+6aJbmgo+xF3hKG4l3Fhv8uf3p425bh0XgsmdxSuE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sju6G0y8XXZsjXJeMYZypgxd2PjU4jhc4fHGqD2HyM/QuHjbckJ4E7G+JZkUGVsr/
-         PIeb+DMI+1m0RvYkmlyG9KEVbxuw1/oMy8BWd0EWNDYC+TwRTWw7Fl2pxjb0HoCKsP
-         L9kU4LV48vbj/gykLqdSQYw6YUmPkn16hwAAtIyE=
+        b=oIINMHSnLus7SKckGcyZ7wl1lKrdEGUjD/7JVnMuRNSgmnhrJXhQ3VUZLdVDql1PM
+         /5oPO+ZsX33+jftp/iH05OtNvtsYV/ZOfId9TBZME/lHu1OMTQppL2Sse04mLTyGSY
+         wh0+m6UySBUv9rcmD1vCw6mpAC17wOF5i1ICc5Zc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 73/98] selftests/rseq: Remove arm/mips asm goto compiler work-around
-Date:   Tue,  5 Jul 2022 13:58:31 +0200
-Message-Id: <20220705115619.648246040@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Greco <pgreco@centosproject.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.18 010/102] nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA XPG SX6000LNP (AKA SPECTRIX S40G)
+Date:   Tue,  5 Jul 2022 13:57:36 +0200
+Message-Id: <20220705115618.708454802@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
+References: <20220705115618.410217782@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,435 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Pablo Greco <pgreco@centosproject.org>
 
-commit 94c5cf2a0e193afffef8de48ddc42de6df7cac93 upstream.
+commit 1629de0e0373e04d68e88e6d9d3071fbf70b7ea8 upstream.
 
-The arm and mips work-around for asm goto size guess issues are not
-properly documented, and lack reference to specific compiler versions,
-upstream compiler bug tracker entry, and reproducer.
+ADATA XPG SPECTRIX S40G drives report bogus eui64 values that appear to
+be the same across drives in one system. Quirk them out so they are
+not marked as "non globally unique" duplicates.
 
-I can only find a loosely documented patch in my original LKML rseq post
-refering to gcc < 7 on ARM, but it does not appear to be sufficient to
-track the exact issue. Also, I am not sure MIPS really has the same
-limitation.
+Before:
+[    2.258919] nvme nvme1: pci function 0000:06:00.0
+[    2.264898] nvme nvme2: pci function 0000:05:00.0
+[    2.323235] nvme nvme1: failed to set APST feature (2)
+[    2.326153] nvme nvme2: failed to set APST feature (2)
+[    2.333935] nvme nvme1: allocated 64 MiB host memory buffer.
+[    2.336492] nvme nvme2: allocated 64 MiB host memory buffer.
+[    2.339611] nvme nvme1: 7/0/0 default/read/poll queues
+[    2.341805] nvme nvme2: 7/0/0 default/read/poll queues
+[    2.346114]  nvme1n1: p1
+[    2.347197] nvme nvme2: globally duplicate IDs for nsid 1
+After:
+[    2.427715] nvme nvme1: pci function 0000:06:00.0
+[    2.427771] nvme nvme2: pci function 0000:05:00.0
+[    2.488154] nvme nvme2: failed to set APST feature (2)
+[    2.489895] nvme nvme1: failed to set APST feature (2)
+[    2.498773] nvme nvme2: allocated 64 MiB host memory buffer.
+[    2.500587] nvme nvme1: allocated 64 MiB host memory buffer.
+[    2.504113] nvme nvme2: 7/0/0 default/read/poll queues
+[    2.507026] nvme nvme1: 7/0/0 default/read/poll queues
+[    2.509467] nvme nvme2: Ignoring bogus Namespace Identifiers
+[    2.512804] nvme nvme1: Ignoring bogus Namespace Identifiers
+[    2.513698]  nvme1n1: p1
 
-Therefore, remove the work-around until we can properly document this.
-
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/lkml/20171121141900.18471-17-mathieu.desnoyers@efficios.com/
+Signed-off-by: Pablo Greco <pgreco@centosproject.org>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/rseq/rseq-arm.h  |   37 -------------------------------
- tools/testing/selftests/rseq/rseq-mips.h |   37 -------------------------------
- 2 files changed, 74 deletions(-)
+ drivers/nvme/host/pci.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/rseq/rseq-arm.h
-+++ b/tools/testing/selftests/rseq/rseq-arm.h
-@@ -147,14 +147,11 @@ do {									\
- 		teardown						\
- 		"b %l[" __rseq_str(cmpfail_label) "]\n\t"
- 
--#define rseq_workaround_gcc_asm_size_guess()	__asm__ __volatile__("")
--
- static inline __attribute__((always_inline))
- int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -198,14 +195,11 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -221,7 +215,6 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -270,14 +263,11 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -292,7 +282,6 @@ int rseq_addv(intptr_t *v, intptr_t coun
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- #ifdef RSEQ_COMPARE_TWICE
-@@ -328,10 +317,8 @@ int rseq_addv(intptr_t *v, intptr_t coun
- 		  , error1
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
-@@ -347,7 +334,6 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -398,14 +384,11 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -422,7 +405,6 @@ int rseq_cmpeqv_trystorev_storev_release
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -474,14 +456,11 @@ int rseq_cmpeqv_trystorev_storev_release
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -498,7 +477,6 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -554,14 +532,11 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- 		  , error1, error2, error3
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -582,7 +557,6 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -678,21 +652,16 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -706,7 +675,6 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -803,21 +771,16 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
---- a/tools/testing/selftests/rseq/rseq-mips.h
-+++ b/tools/testing/selftests/rseq/rseq-mips.h
-@@ -154,14 +154,11 @@ do {									\
- 		teardown \
- 		"b %l[" __rseq_str(cmpfail_label) "]\n\t"
- 
--#define rseq_workaround_gcc_asm_size_guess()	__asm__ __volatile__("")
--
- static inline __attribute__((always_inline))
- int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -203,14 +200,11 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -226,7 +220,6 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -273,14 +266,11 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -295,7 +285,6 @@ int rseq_addv(intptr_t *v, intptr_t coun
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- #ifdef RSEQ_COMPARE_TWICE
-@@ -331,10 +320,8 @@ int rseq_addv(intptr_t *v, intptr_t coun
- 		  , error1
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
-@@ -350,7 +337,6 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -399,14 +385,11 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -423,7 +406,6 @@ int rseq_cmpeqv_trystorev_storev_release
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -473,14 +455,11 @@ int rseq_cmpeqv_trystorev_storev_release
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -497,7 +476,6 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -549,14 +527,11 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- 		  , error1, error2, error3
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -577,7 +552,6 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -670,21 +644,16 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -698,7 +667,6 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -792,21 +760,16 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3437,7 +3437,8 @@ static const struct pci_device_id nvme_i
+ 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE(0x10ec, 0x5762),   /* ADATA SX6000LNP */
+-		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
++				NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1cc1, 0x8201),   /* ADATA SX8200PNP 512GB */
+ 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
 
 
