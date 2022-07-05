@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98191CCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43FFCCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239126AbiGEMaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        id S239253AbiGEMaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237657AbiGEMTd (ORCPT
+        with ESMTP id S236489AbiGEMRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:33 -0400
+        Tue, 5 Jul 2022 08:17:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11D41D332;
-        Tue,  5 Jul 2022 05:15:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE892192A7;
+        Tue,  5 Jul 2022 05:12:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DF9A61985;
-        Tue,  5 Jul 2022 12:15:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E7BC341C8;
-        Tue,  5 Jul 2022 12:15:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A57B61988;
+        Tue,  5 Jul 2022 12:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73757C341C7;
+        Tue,  5 Jul 2022 12:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023357;
-        bh=eMgQAijeT18dC49W4cKDYQ9S19R4cwyj5ZWYofwazjE=;
+        s=korg; t=1657023158;
+        bh=t+jAMUHlwRXalBDL3MFKIWQzbrorRRuqCTlbXnSuoew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sEAr1Evm8lPzXvwesgaSNNIAaQsyZzZ2Sg1rFMpUmZ1eECK/QSI7eWbGy2mo1mALs
-         4bHhuU+TggLhEuVUY2cz4OjC1IQiGPgJZ0OceLKe2SBFopfNJDmgVtA6ceCokve4Ga
-         y6SDRNdIZF4kvmtUdJAOs47RG6Z6evuwObnbOJXM=
+        b=lxZXKj9gruYlo+RX6nnMRmKYam24VgfCRfikKignkdQiKtnxzjL5kdQ4UwzmOXSW+
+         5B6prZLVU7pgwkuKfrqKZT8hG0dYOHnuxb9wYlMbfyeL4cXa7RrrKbA6Ud+qT83eWX
+         u7addeTf+18ApSXXMJdhWpyuzuVXHom1uGgmPfjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 030/102] net: fix IFF_TX_SKB_NO_LINEAR definition
-Date:   Tue,  5 Jul 2022 13:57:56 +0200
-Message-Id: <20220705115619.271174544@linuxfoundation.org>
+Subject: [PATCH 5.15 58/98] net: tun: avoid disabling NAPI twice
+Date:   Tue,  5 Jul 2022 13:58:16 +0200
+Message-Id: <20220705115619.229845920@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
-References: <20220705115618.410217782@linuxfoundation.org>
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
+References: <20220705115617.568350164@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit 3b89b511ea0c705cc418440e2abf9d692a556d84 upstream.
+commit ff1fa2081d173b01cebe2fbf0a2d0f1cee9ce4b5 upstream.
 
-The "1<<31" shift has a sign extension bug so IFF_TX_SKB_NO_LINEAR is
-0xffffffff80000000 instead of 0x0000000080000000.
+Eric reports that syzbot made short work out of my speculative
+fix. Indeed when queue gets detached its tfile->tun remains,
+so we would try to stop NAPI twice with a detach(), close()
+sequence.
 
-Fixes: c2ff53d8049f ("net: Add priv_flags for allow tx skb without linear")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Link: https://lore.kernel.org/r/YrRrcGttfEVnf85Q@kili
+Alternative fix would be to move tun_napi_disable() to
+tun_detach_all() and let the NAPI run after the queue
+has been detached.
+
+Fixes: a8fc8cb5692a ("net: tun: stop NAPI when detaching queues")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220629181911.372047-1-kuba@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/netdevice.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/tun.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1653,7 +1653,7 @@ enum netdev_priv_flags {
- 	IFF_FAILOVER_SLAVE		= 1<<28,
- 	IFF_L3MDEV_RX_HANDLER		= 1<<29,
- 	IFF_LIVE_RENAME_OK		= 1<<30,
--	IFF_TX_SKB_NO_LINEAR		= 1<<31,
-+	IFF_TX_SKB_NO_LINEAR		= BIT_ULL(31),
- 	IFF_CHANGE_PROTO_DOWN		= BIT_ULL(32),
- };
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -641,7 +641,8 @@ static void __tun_detach(struct tun_file
+ 	tun = rtnl_dereference(tfile->tun);
+ 
+ 	if (tun && clean) {
+-		tun_napi_disable(tfile);
++		if (!tfile->detached)
++			tun_napi_disable(tfile);
+ 		tun_napi_del(tfile);
+ 	}
  
 
 
