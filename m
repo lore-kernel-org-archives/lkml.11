@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97588C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 572BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbiGEMJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
+        id S233260AbiGEMJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233822AbiGEMEf (ORCPT
+        with ESMTP id S233604AbiGEMEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:04:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0936418B1C;
-        Tue,  5 Jul 2022 05:04:20 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA8EB10;
+        Tue,  5 Jul 2022 05:04:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5B4D7CE1B86;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7B1CB817D6;
+        Tue,  5 Jul 2022 12:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A40C341C7;
         Tue,  5 Jul 2022 12:04:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5697DC341C7;
-        Tue,  5 Jul 2022 12:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022656;
-        bh=4r/lnZsmlmpO0BQfSAkzvfd7sMwi3ZNjPndOr1+bnlk=;
+        s=korg; t=1657022659;
+        bh=re5Wn/xk178YJ83mwsFNrjU0QkkAsrlDr4J0Cv/IOHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ksiBslnzFAZs0qj8ETYlhcsomcdLlwjKvOY3QX7lSHcdsg+epPythc0aV4lmIu5QP
-         8RbEnd3zk/P1J1GTCfEchRhzA66FagBY7unEKQyqM8Keuqyf5c9mfjS1ffIo0htKz6
-         KJwtIEgPPTyyTkzzyxTL6CKFHxTtbbo3rznyBkQc=
+        b=ZYVdF0WzngFcQXsToNrTTW0X5f1C99Iv7wZTiqabpnVtxNB5iGLsyv8PWiGdLURQI
+         d0kUxfLaY7FjRe5TFUwCvcpBfaUILjRizN3igadCqVcBMBiditeEs7Vhe/JVlsyffA
+         /gWNo2/EUAAv/tlcjIdcjlPvjXL1TDxZq7ohSwCY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>
-Subject: [PATCH 5.4 21/58] s390: remove unneeded select BUILD_BIN2C
-Date:   Tue,  5 Jul 2022 13:57:57 +0200
-Message-Id: <20220705115610.874402162@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.4 22/58] netfilter: nft_dynset: restore set element counter when failing to update
+Date:   Tue,  5 Jul 2022 13:57:58 +0200
+Message-Id: <20220705115610.903947620@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 References: <20220705115610.236040773@linuxfoundation.org>
@@ -48,33 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 25deecb21c18ee29e3be8ac6177b2a9504c33d2d upstream.
+commit 05907f10e235680cc7fb196810e4ad3215d5e648 upstream.
 
-Since commit 4c0f032d4963 ("s390/purgatory: Omit use of bin2c"),
-s390 builds the purgatory without using bin2c.
+This patch fixes a race condition.
 
-Remove 'select BUILD_BIN2C' to avoid the unneeded build of bin2c.
+nft_rhash_update() might fail for two reasons:
 
-Fixes: 4c0f032d4963 ("s390/purgatory: Omit use of bin2c")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Link: https://lore.kernel.org/r/20220613170902.1775211-1-masahiroy@kernel.org
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+- Element already exists in the hashtable.
+- Another packet won race to insert an entry in the hashtable.
+
+In both cases, new() has already bumped the counter via atomic_add_unless(),
+therefore, decrement the set element counter.
+
+Fixes: 22fe54d5fefc ("netfilter: nf_tables: add support for dynamic set updates")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/Kconfig |    1 -
- 1 file changed, 1 deletion(-)
+ net/netfilter/nft_set_hash.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/s390/Kconfig
-+++ b/arch/s390/Kconfig
-@@ -541,7 +541,6 @@ config KEXEC
- config KEXEC_FILE
- 	bool "kexec file based system call"
- 	select KEXEC_CORE
--	select BUILD_BIN2C
- 	depends on CRYPTO
- 	depends on CRYPTO_SHA256
- 	depends on CRYPTO_SHA256_S390
+--- a/net/netfilter/nft_set_hash.c
++++ b/net/netfilter/nft_set_hash.c
+@@ -142,6 +142,7 @@ static bool nft_rhash_update(struct nft_
+ 	/* Another cpu may race to insert the element with the same key */
+ 	if (prev) {
+ 		nft_set_elem_destroy(set, he, true);
++		atomic_dec(&set->nelems);
+ 		he = prev;
+ 	}
+ 
+@@ -151,6 +152,7 @@ out:
+ 
+ err2:
+ 	nft_set_elem_destroy(set, he, true);
++	atomic_dec(&set->nelems);
+ err1:
+ 	return false;
+ }
 
 
