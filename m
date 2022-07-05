@@ -2,120 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC843C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:39:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C91CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239512AbiGEMhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
+        id S240086AbiGEMjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237998AbiGEM0y (ORCPT
+        with ESMTP id S237580AbiGEMbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:26:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D5218B30;
-        Tue,  5 Jul 2022 05:19:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2CEC61A3D;
-        Tue,  5 Jul 2022 12:19:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE4E0C341CB;
-        Tue,  5 Jul 2022 12:19:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023576;
-        bh=qdd5LhemVJpkIKRTjx/m2JL5J9QYtLjcJ48EPcaVsEo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FwOflWiU+siwbhbjsBWBbZmQ0QZaN0Yp7juWybxj1KGGUJ8CWxEijo3Y+/eZKkVtv
-         VqRpbXVEO4auVq2umXHmIOoHmY677BRaRaw//3C3TXIyf+HK34arsbhxWcL8j6APSP
-         wPft8Em+ergoe4HKRyv761LxyCFzvu9TbPjI0a1g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.18 079/102] mlxsw: spectrum_router: Fix rollback in tunnel next hop init
-Date:   Tue,  5 Jul 2022 13:58:45 +0200
-Message-Id: <20220705115620.653529683@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
-References: <20220705115618.410217782@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:31:13 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13206201AF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:23:08 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id z19so15007672edb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:23:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x9SEXfxmbq3oaLoJpaZMHa0I5XU73gWib47dKMECVig=;
+        b=MPC7uKOHBGhXoxQ7KL4OLy9MH+UwM9DEQU9ot0hig/UBXF8xJwRKc3u7kdP+kmF6su
+         q04zdeyvh+SQ2GwkYoWuXsTJaQUmoVMUw79cJkaldka5oWoO840MPXy7xVqgsnU7MpDZ
+         rFHT7+9190pUnCy9VNHQ6HucrBygdIVd0SqZjEp65K/NqZEwWnOXMyslzcDRmFqqVlfo
+         PX74foBtiLBgH4B8tn/6P2AkpT1jvSGSK2K6H28ncI9RionHAX8zxkrefd42CmBfsVJo
+         jzHTORRdflhncVbhTHMNjdlhDnI+M6KTRkNbsNJ+XIsCse8XRttflqkp1FMC6mQj52H4
+         ikHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x9SEXfxmbq3oaLoJpaZMHa0I5XU73gWib47dKMECVig=;
+        b=IGyvq5s2Qpky/xTc6jVqW918jtfkAqe4SPMnoRto/uXNGx6/GrHMI3cJfQy8q+oJDt
+         el9kLF7V702BuYmX0l/btxrARNMQFWJ5NSwELoxbRjuDmT6nmqBAoDuuB6rmM3erorVW
+         E+qH0sQHC+A6Zkfv4M1e9NBIbn7FHKymA3DpzMKki37Vxi3B+B7rcs8ehfNDu5R9ITdg
+         2DTGKdpHAJHx1EwFDRQwgmgX7wW6gqcKPm0Iu/YXwwEwQBb4b6qpoY1CdWWSNlOXTJth
+         116JIAYJOwRXQFYilpB1WTFeA66X+9cML+nG0Z/yv3tkXQ+ROL/2b5eqv1WMWD9DDFFv
+         Eq5w==
+X-Gm-Message-State: AJIora/xrupWSt4myB0ou6FVXCQV5Pv8p6hdLX6+sVCAbv2luAkpEMk1
+        L0dJf57qpG0G/P9ed3VYHQ9T4gnpnk55Qw==
+X-Google-Smtp-Source: AGRyM1uPd7DoKvt97zd0EGbYw4S53t2roABdJuEnLJVSwC84Ir/eXJXqc9pEu7vKrQmqyzv13C/Uaw==
+X-Received: by 2002:a05:6402:298a:b0:43a:76f8:a75c with SMTP id eq10-20020a056402298a00b0043a76f8a75cmr4453436edb.216.1657023786287;
+        Tue, 05 Jul 2022 05:23:06 -0700 (PDT)
+Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
+        by smtp.gmail.com with ESMTPSA id f15-20020a1709062c4f00b007081282cbd8sm15764758ejh.76.2022.07.05.05.23.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 05:23:05 -0700 (PDT)
+From:   Naresh Solanki <naresh.solanki@9elements.com>
+X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
+To:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Cc:     Marcello Sylvester Bauer <sylv@sylv.io>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Naresh Solanki <Naresh.Solanki@9elements.com>
+Subject: [PATCH 1/5] dt-bindings: mfd: Add bindings for MAX5970 and MAX5978
+Date:   Tue,  5 Jul 2022 14:22:39 +0200
+Message-Id: <20220705122244.472894-2-Naresh.Solanki@9elements.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Marcello Sylvester Bauer <sylv@sylv.io>
 
-commit 665030fd0c1ed9f505932e6e73e7a2c788787a0a upstream.
+The MAX597x is a hot swap controller with configurable fault protection.
+It also has 10bit ADC for current & voltage measurements.
 
-In mlxsw_sp_nexthop6_init(), a next hop is always added to the router
-linked list, and mlxsw_sp_nexthop_type_init() is invoked afterwards. When
-that function results in an error, the next hop will not have been removed
-from the linked list. As the error is propagated upwards and the caller
-frees the next hop object, the linked list ends up holding an invalid
-object.
-
-A similar issue comes up with mlxsw_sp_nexthop4_init(), where rollback
-block does exist, however does not include the linked list removal.
-
-Both IPv6 and IPv4 next hops have a similar issue with next-hop counter
-rollbacks. As these were introduced in the same patchset as the next hop
-linked list, include the cleanup in this patch.
-
-Fixes: dbe4598c1e92 ("mlxsw: spectrum_router: Keep nexthops in a linked list")
-Fixes: a5390278a5eb ("mlxsw: spectrum: Add support for setting counters on nexthops")
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220629070205.803952-1-idosch@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+Signed-off-by: Naresh Solanki <Naresh.Solanki@9elements.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/mfd/max5970.yaml      | 164 ++++++++++++++++++
+ 1 file changed, 164 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/max5970.yaml
 
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -4418,6 +4418,8 @@ static int mlxsw_sp_nexthop4_init(struct
- 	return 0;
- 
- err_nexthop_neigh_init:
-+	list_del(&nh->router_list_node);
-+	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
- 	mlxsw_sp_nexthop_remove(mlxsw_sp, nh);
- 	return err;
- }
-@@ -6743,6 +6745,7 @@ static int mlxsw_sp_nexthop6_init(struct
- 				  const struct fib6_info *rt)
- {
- 	struct net_device *dev = rt->fib6_nh->fib_nh_dev;
-+	int err;
- 
- 	nh->nhgi = nh_grp->nhgi;
- 	nh->nh_weight = rt->fib6_nh->fib_nh_weight;
-@@ -6758,7 +6761,16 @@ static int mlxsw_sp_nexthop6_init(struct
- 		return 0;
- 	nh->ifindex = dev->ifindex;
- 
--	return mlxsw_sp_nexthop_type_init(mlxsw_sp, nh, dev);
-+	err = mlxsw_sp_nexthop_type_init(mlxsw_sp, nh, dev);
-+	if (err)
-+		goto err_nexthop_type_init;
+diff --git a/Documentation/devicetree/bindings/mfd/max5970.yaml b/Documentation/devicetree/bindings/mfd/max5970.yaml
+new file mode 100644
+index 000000000000..a0cc6a7543b5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/max5970.yaml
+@@ -0,0 +1,164 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/max5970.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	return 0;
++title: Regulator driver for MAX5970 smart switch from Maxim Integrated.
 +
-+err_nexthop_type_init:
-+	list_del(&nh->router_list_node);
-+	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
-+	return err;
- }
- 
- static void mlxsw_sp_nexthop6_fini(struct mlxsw_sp *mlxsw_sp,
-
++maintainers:
++  - Patrick Rudolph <patrick.rudolph@9elements.com>
++
++description: |
++  The smart switch provides no output regulation, but independent fault protection
++  and voltage and current sensing.
++  Programming is done through I2C bus.
++
++  Datasheets:
++    https://datasheets.maximintegrated.com/en/ds/MAX5970.pdf
++    https://datasheets.maximintegrated.com/en/ds/MAX5978.pdf
++
++properties:
++  compatible:
++    enum:
++      - maxim,max5970
++      - maxim,max5978
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  leds:
++    type: object
++    description:
++      Properties for single channel.
++
++    patternProperties:
++      "^led@[0-3]$":
++        $ref: /schemas/leds/common.yaml#
++        type: object
++
++    additionalProperties: true
++
++  vss1-supply:
++    description: Supply of the first channel.
++
++  "#io-channel-cells":
++    const: 1
++
++  regulators:
++    type: object
++    description:
++      Properties for single channel.
++
++    patternProperties:
++      "^(sw[0-1])$":
++        $ref: /schemas/regulator/regulator.yaml#
++        type: object
++
++      shunt-resistor-micro-ohms:
++        description: |
++          The value of curent sense resistor in microohms.
++          Must be specified for each channel.
++
++    additionalProperties: true
++
++required:
++  - compatible
++  - reg
++  - regulators
++  - vss1-supply
++
++allOf:
++  - $ref: /schemas/regulator/regulator.yaml#
++  - if:
++      properties:
++        compatible:
++          enum:
++            - maxim,max5970
++    then:
++      properties:
++        vss2-supply:
++          description: Supply of the second channel.
++
++        io-channels:
++          items:
++            - description: voltage first channel
++            - description: current first channel
++            - description: voltage second channel
++            - description: current second channel
++          description: |
++            Voltage and current for first and second channel.
++      required:
++        - vss2-supply
++
++    else:
++      properties:
++        io-channels:
++          items:
++            - description: voltage first channel
++            - description: current first channel
++          description: |
++            Voltage and current for first channel.
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++            #address-cells = <1>;
++            #size-cells = <0>;
++            leds {
++                #address-cells = <1>;
++                #size-cells = <0>;
++                led@0 {
++                        reg = <0>;
++                        label = "led0";
++                        default-state = "on";
++                };
++                led@1 {
++                        reg = <1>;
++                        label = "led1";
++                        default-state = "on";
++                };
++            };
++            regulator@3a {
++                    reg = <0x3a>;
++                    vss1-supply = <&p3v3>;
++                    compatible = "maxim,max5978";
++
++                    regulators {
++                            sw0_ref_0: SW0 {
++                                   regulator-compatible = "SW0";
++                                   shunt-resistor-micro-ohms = <12000>;
++                            };
++                    };
++            };
++    };
++
++  - |
++    i2c {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            regulator@3a {
++                    reg = <0x3a>;
++                    vss1-supply = <&p3v3>;
++                    vss2-supply = <&p5v>;
++                    compatible = "maxim,max5970";
++
++                    regulators {
++                            sw0_ref_1: SW0 {
++                                   regulator-compatible = "SW0";
++                                   shunt-resistor-micro-ohms = <12000>;
++                            };
++                            sw1_ref_1: SW1 {
++                                   regulator-compatible = "SW1";
++                                   shunt-resistor-micro-ohms = <10000>;
++                            };
++                    };
++            };
++    };
++...
+-- 
+2.35.3
 
