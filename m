@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 643C2C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC30CCA47B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiGEONz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
+        id S233570AbiGEOOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233746AbiGEOMz (ORCPT
+        with ESMTP id S233749AbiGEOM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:12:55 -0400
+        Tue, 5 Jul 2022 10:12:56 -0400
 Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CD2F8;
-        Tue,  5 Jul 2022 07:07:14 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id lw20so21864179ejb.4;
-        Tue, 05 Jul 2022 07:07:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA5DE48;
+        Tue,  5 Jul 2022 07:07:29 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id lg18so2043138ejb.0;
+        Tue, 05 Jul 2022 07:07:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6L8UfFjo10Ytj/Vnf3NYMNU4nswAMDcGGzfbLleINo4=;
-        b=dVcIeVTR2JUcsz0ANwKoL7CTHQocQNkIkUN0Imi8/XAArzODsyI/HYKEW/TFWEQEmj
-         lVlZLEKpb/JSvNo4ik3Vt/xIHn83QKQiIEDITjxZ49V5/vnSErKFpvwun4T7otGV0qT6
-         7ov8ZdArIn0INofy+CoWBU9g0/9rUM43r0l7Q6keaDAJ5KsWXvqagO1V3VoYGHDQAItO
-         36MtK7O8kQoJHXMffIUvWhMkQYN8327fMFmHH5/gW7v8czJAf0QgkSHqoqZq9TCgc/hf
-         Hasvwbi/nNHn9VP/p3CrZy8SRA8bIfGhGFDj+WfXw7JxIjkjc9frX+bqzcO3lDcthmGY
-         Lg+w==
+        bh=Z2qvagdvkgzEk1isMwjSllduix1zdSWNV4qccAdh7FU=;
+        b=MHB5VmF3QPSByPVfjCgSZc56+o8mUHXfTuCp7kQtL/iPdihjtOvFZiYyQSIQ81RyZC
+         FDiRmcaK6lUTZkEJvSVDyi0P0BXWRwBy4DLpMNUVakM8J4vvqC9Y58lu/6yTXZYXJlGl
+         WxwMQTXcbgC8rztR8/4KRJn66HFBUu81BAnw9PZT1/O4yjQolLOF3fPM2vbvXAq7qxqi
+         XGuIyFvKP92I5AE4zzq+Sn2CZ4FKgYlc1XhyVo1WBhpZGB2sWHCoaCj/mzHFphwj+mSA
+         WtMTfzwMCuG3xh7wyZqj3GT+75gIrUXwMHQ4lBNAzeMQeH11fCueDQOny8IS5hDdVa1P
+         X7/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6L8UfFjo10Ytj/Vnf3NYMNU4nswAMDcGGzfbLleINo4=;
-        b=ZG62z9Gdgt/Y/EXynlttzopvyQKJYc0z7RwClR6i8DbYJrq3te15aThtkdMvlYsKlA
-         bkI4Svsjfm6zbT103wmRCrBG1hHqWPeKfmAxxOPGzTf865Z9Nov7AAoiuR0MnWd8FHEl
-         ss8VANaSHDIQIlp5/Xl3yHxbZXweeg7CmdwCE/XUI9XMEKauGvNWozDRn8VyraP7w+td
-         vvpx7tCf1Sb3VfIgjVdjTM28ON5U8c8AOubMhZaAl8I8OYu+mnpIG55vj790Q4CjC7Mq
-         MGmNSI747Mxuv+15Gq5itjxcvIMF0+VFFt9rLtwSMYCH4D9YP7789AHxgFMwoYVhK0rB
-         Cvyg==
-X-Gm-Message-State: AJIora+kch2iNmKzKwxnmJ4OsbIQHWcM1BVd+CeVm0v1YYEK1dludtYB
-        BZe+ENb+1qgioKlbQymtOt56FuIm1H4=
-X-Google-Smtp-Source: AGRyM1uMalPW+lwEU2G98wsYFw0/UoTRS6FpUTta8Z5JyPRwgd8MRIrdhTi14h+QX1xRjNahhSu9Ng==
-X-Received: by 2002:a17:907:a079:b0:72a:b46b:529a with SMTP id ia25-20020a170907a07900b0072ab46b529amr15883098ejc.313.1657029996992;
-        Tue, 05 Jul 2022 07:06:36 -0700 (PDT)
+        bh=Z2qvagdvkgzEk1isMwjSllduix1zdSWNV4qccAdh7FU=;
+        b=ss+6ZW0jdnQ6Hfs27kcPWr22xJBH2Baqc8lWvi1YxfT6x1NP+otdOVTLLwIeAz/6RK
+         NLY1PBepgvsVhjU3rDfdksCB14TVejRkoCWXob4L4SIDQWzEBwECRf2MfCqW0mK8azaE
+         DsSw1xyQeX8MmWwUSAZVMjzCCO2q2LrpCNSSMTK6r3C5NIMP/g7F5wX4eQkdjSbWqf92
+         AACxv4a1dB+FaIUPI8+vB1/qA7/qyOBLmhghpBQxefH1hKhY+4WV+xYlC1IkYwuyaEp4
+         Qu+v39HlYwiec2BXTUvLm3BYqPWWti02eRXSpHsWwBoOR4klj4q62GTLYsauyfLhi5pm
+         3mEA==
+X-Gm-Message-State: AJIora8Kh+/dngi23OqG/BaaVB1tI/jwSFKb6or/q1eySgQKqeVfP2sT
+        4uaQ7oBus5YUlakVtIoSDqA=
+X-Google-Smtp-Source: AGRyM1uVnZt77Nz5XJHxfF/ncLPsn3z75y9uk+m/MH3SSnPAYLwmUFcI4OfzGa1ar5cQfNwXZohRGw==
+X-Received: by 2002:a17:906:6545:b0:722:7c99:1ad7 with SMTP id u5-20020a170906654500b007227c991ad7mr33843952ejn.325.1657030001845;
+        Tue, 05 Jul 2022 07:06:41 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id ku5-20020a170907788500b0072aee605e0esm399709ejc.60.2022.07.05.07.06.35
+        by smtp.googlemail.com with ESMTPSA id ku5-20020a170907788500b0072aee605e0esm399709ejc.60.2022.07.05.07.06.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 07:06:36 -0700 (PDT)
+        Tue, 05 Jul 2022 07:06:41 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-kernel@vger.kernel.org
 Cc:     Christian Marangi <ansuelsmth@gmail.com>,
         Jonathan McDowell <noodles@earth.li>
-Subject: [PATCH 08/13] ARM: dts: qcom: fix dtc warning for missing #address-cells for ipq8064
-Date:   Tue,  5 Jul 2022 15:39:12 +0200
-Message-Id: <20220705133917.8405-9-ansuelsmth@gmail.com>
+Subject: [PATCH 12/13] ARM: dts: qcom: add speedbin efuse nvmem binding
+Date:   Tue,  5 Jul 2022 15:39:16 +0200
+Message-Id: <20220705133917.8405-13-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220705133917.8405-1-ansuelsmth@gmail.com>
 References: <20220705133917.8405-1-ansuelsmth@gmail.com>
@@ -70,34 +70,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix dtc warning for missing #address-cells for ipq8064.
+Add speedbin efuse nvmem binding needed for the opp table for the CPU
+freqs.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 Tested-by: Jonathan McDowell <noodles@earth.li>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index e13f6ae92e05..b5aede3d7ccf 100644
+index 777851bed95a..45e713387deb 100644
 --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -352,6 +352,7 @@ qcom_pinmux: pinmux@800000 {
- 			gpio-ranges = <&qcom_pinmux 0 0 69>;
- 			#gpio-cells = <2>;
- 			interrupt-controller;
-+			#address-cells = <0>;
- 			#interrupt-cells = <2>;
- 			interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
+@@ -862,6 +862,9 @@ tsens_calib: calib@400 {
+ 			tsens_calib_backup: calib_backup@410 {
+ 				reg = <0x410 0xb>;
+ 			};
++			speedbin_efuse: speedbin@c0 {
++				reg = <0xc0 0x4>;
++			};
+ 		};
  
-@@ -473,6 +474,7 @@ mux {
- 		intc: interrupt-controller@2000000 {
- 			compatible = "qcom,msm-qgic2";
- 			interrupt-controller;
-+			#address-cells = <0>;
- 			#interrupt-cells = <3>;
- 			reg = <0x02000000 0x1000>,
- 			      <0x02002000 0x1000>;
+ 		gcc: clock-controller@900000 {
 -- 
 2.36.1
 
