@@ -2,127 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A06CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04816CCA48A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236558AbiGEMRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        id S236705AbiGEMSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235342AbiGEMJB (ORCPT
+        with ESMTP id S233756AbiGEMJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:01 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D1F17E17;
-        Tue,  5 Jul 2022 05:09:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657022940; x=1688558940;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=fwRrMl9p2riRRQyGmmFyrVjyUvagNctJ2fZDM2FI/A4=;
-  b=KhcGk4UbcRg6dqGj4UzNaAqQ4+bZ4gRkatMadLQqGIYtqpTOUpJDZU4q
-   D9U2Sa6z2SDCbQrP0holqCO4izuExr6QRAbnSpjmB7viacjqGYiTzu8QV
-   FL+ZTmgRa0SE0rNWh8Hu0KelM18tC2O6YKief6cm6ntA7iJre1Pz2y19w
-   4=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 05:09:00 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:09:00 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:59 -0700
-Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:56 -0700
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-To:     <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
-        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <konrad.dybcio@somainline.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [V3 6/7] remoteproc: sysmon: Wait for SSCTL service to come up
-Date:   Tue, 5 Jul 2022 17:38:19 +0530
-Message-ID: <1657022900-2049-7-git-send-email-quic_sibis@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
-References: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+        Tue, 5 Jul 2022 08:09:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27133897;
+        Tue,  5 Jul 2022 05:09:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12FF3B817CE;
+        Tue,  5 Jul 2022 12:09:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 515CCC341C7;
+        Tue,  5 Jul 2022 12:09:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022946;
+        bh=/tWmGCqwNuBv2ZFBAZMFfrnGTqFYVqZFwG8JGBoUnSk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=r4y4XZNryMATqKq2fvfY5Wzd+sOkO5Pdli2tg/mpD2QSBIsyfcevSFjha5kY0VQui
+         zW3fBDzHwu3HyNGJcV75HO/wDFsKrFinNzNXjvOb2rf/Sk/2Wcjtd12CgATHZHZ//8
+         4BesQDzwQh2cBt4gaojRhhy4l3Gp6P/+HZQz38ck=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.10 66/84] selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
+Date:   Tue,  5 Jul 2022 13:58:29 +0200
+Message-Id: <20220705115617.250441897@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SSCTL service comes up after a finite time when the remote Q6 comes
-out of reset. Any graceful shutdowns requested during this period will
-be a NOP and abrupt tearing down of the glink channel might lead to pending
-transactions on the remote Q6 side and will ultimately lead to a fatal
-error. Fix this by waiting for the SSCTL service when a graceful shutdown
-is requested.
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-Fixes: 1fb82ee806d1 ("remoteproc: qcom: Introduce sysmon")
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+commit 233e667e1ae3e348686bd9dd0172e62a09d852e1 upstream.
+
+glibc-2.35 (upcoming release date 2022-02-01) exposes the rseq per-thread
+data in the TCB, accessible at an offset from the thread pointer, rather
+than through an actual Thread-Local Storage (TLS) variable, as the
+Linux kernel selftests initially expected.
+
+The __rseq_abi TLS and glibc-2.35's ABI for per-thread data cannot
+actively coexist in a process, because the kernel supports only a single
+rseq registration per thread.
+
+Here is the scheme introduced to ensure selftests can work both with an
+older glibc and with glibc-2.35+:
+
+- librseq exposes its own "rseq_offset, rseq_size, rseq_flags" ABI.
+
+- librseq queries for glibc rseq ABI (__rseq_offset, __rseq_size,
+  __rseq_flags) using dlsym() in a librseq library constructor. If those
+  are found, copy their values into rseq_offset, rseq_size, and
+  rseq_flags.
+
+- Else, if those glibc symbols are not found, handle rseq registration
+  from librseq and use its own IE-model TLS to implement the rseq ABI
+  per-thread storage.
+
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220124171253.22072-8-mathieu.desnoyers@efficios.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/remoteproc/qcom_sysmon.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ tools/testing/selftests/rseq/Makefile |    2 
+ tools/testing/selftests/rseq/rseq.c   |  161 ++++++++++++++++------------------
+ tools/testing/selftests/rseq/rseq.h   |   13 ++
+ 3 files changed, 88 insertions(+), 88 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_sysmon.c b/drivers/remoteproc/qcom_sysmon.c
-index 9fca81492863..a9f04dd83ab6 100644
---- a/drivers/remoteproc/qcom_sysmon.c
-+++ b/drivers/remoteproc/qcom_sysmon.c
-@@ -41,6 +41,7 @@ struct qcom_sysmon {
- 	struct completion comp;
- 	struct completion ind_comp;
- 	struct completion shutdown_comp;
-+	struct completion ssctl_comp;
- 	struct mutex lock;
+--- a/tools/testing/selftests/rseq/Makefile
++++ b/tools/testing/selftests/rseq/Makefile
+@@ -6,7 +6,7 @@ endif
  
- 	bool ssr_ack;
-@@ -445,6 +446,8 @@ static int ssctl_new_server(struct qmi_handle *qmi, struct qmi_service *svc)
+ CFLAGS += -O2 -Wall -g -I./ -I../../../../usr/include/ -L$(OUTPUT) -Wl,-rpath=./ \
+ 	  $(CLANG_FLAGS)
+-LDLIBS += -lpthread
++LDLIBS += -lpthread -ldl
  
- 	svc->priv = sysmon;
+ # Own dependencies because we only want to build against 1st prerequisite, but
+ # still track changes to header files and depend on shared object.
+--- a/tools/testing/selftests/rseq/rseq.c
++++ b/tools/testing/selftests/rseq/rseq.c
+@@ -26,103 +26,113 @@
+ #include <assert.h>
+ #include <signal.h>
+ #include <limits.h>
++#include <dlfcn.h>
  
-+	complete(&sysmon->ssctl_comp);
+ #include "../kselftest.h"
+ #include "rseq.h"
+ 
+-__thread struct rseq_abi __rseq_abi = {
+-	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
+-};
++static const int *libc_rseq_offset_p;
++static const unsigned int *libc_rseq_size_p;
++static const unsigned int *libc_rseq_flags_p;
 +
- 	return 0;
++/* Offset from the thread pointer to the rseq area.  */
++int rseq_offset;
++
++/* Size of the registered rseq area.  0 if the registration was
++   unsuccessful.  */
++unsigned int rseq_size = -1U;
+ 
+-/*
+- * Shared with other libraries. This library may take rseq ownership if it is
+- * still 0 when executing the library constructor. Set to 1 by library
+- * constructor when handling rseq. Set to 0 in destructor if handling rseq.
+- */
+-int __rseq_handled;
++/* Flags used during rseq registration.  */
++unsigned int rseq_flags;
+ 
+-/* Whether this library have ownership of rseq registration. */
+ static int rseq_ownership;
+ 
+-static __thread volatile uint32_t __rseq_refcount;
++static
++__thread struct rseq_abi __rseq_abi __attribute__((tls_model("initial-exec"))) = {
++	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
++};
+ 
+-static void signal_off_save(sigset_t *oldset)
++static int sys_rseq(struct rseq_abi *rseq_abi, uint32_t rseq_len,
++		    int flags, uint32_t sig)
+ {
+-	sigset_t set;
+-	int ret;
+-
+-	sigfillset(&set);
+-	ret = pthread_sigmask(SIG_BLOCK, &set, oldset);
+-	if (ret)
+-		abort();
++	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
  }
  
-@@ -501,6 +504,7 @@ static int sysmon_start(struct rproc_subdev *subdev)
- 		.ssr_event = SSCTL_SSR_EVENT_AFTER_POWERUP
- 	};
+-static void signal_restore(sigset_t oldset)
++int rseq_available(void)
+ {
+-	int ret;
++	int rc;
  
-+	reinit_completion(&sysmon->ssctl_comp);
- 	mutex_lock(&sysmon->state_lock);
- 	sysmon->state = SSCTL_SSR_EVENT_AFTER_POWERUP;
- 	blocking_notifier_call_chain(&sysmon_notifiers, 0, (void *)&event);
-@@ -545,6 +549,11 @@ static void sysmon_stop(struct rproc_subdev *subdev, bool crashed)
- 	if (crashed)
- 		return;
- 
-+	if (sysmon->ssctl_instance) {
-+		if (!wait_for_completion_timeout(&sysmon->ssctl_comp, HZ / 2))
-+			dev_err(sysmon->dev, "timeout waiting for ssctl service\n");
+-	ret = pthread_sigmask(SIG_SETMASK, &oldset, NULL);
+-	if (ret)
++	rc = sys_rseq(NULL, 0, 0, 0);
++	if (rc != -1)
+ 		abort();
+-}
+-
+-static int sys_rseq(volatile struct rseq_abi *rseq_abi, uint32_t rseq_len,
+-		    int flags, uint32_t sig)
+-{
+-	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
++	switch (errno) {
++	case ENOSYS:
++		return 0;
++	case EINVAL:
++		return 1;
++	default:
++		abort();
 +	}
-+
- 	if (sysmon->ssctl_version)
- 		sysmon->shutdown_acked = ssctl_request_shutdown(sysmon);
- 	else if (sysmon->ept)
-@@ -631,6 +640,7 @@ struct qcom_sysmon *qcom_add_sysmon_subdev(struct rproc *rproc,
- 	init_completion(&sysmon->comp);
- 	init_completion(&sysmon->ind_comp);
- 	init_completion(&sysmon->shutdown_comp);
-+	init_completion(&sysmon->ssctl_comp);
- 	mutex_init(&sysmon->lock);
- 	mutex_init(&sysmon->state_lock);
+ }
  
--- 
-2.7.4
+ int rseq_register_current_thread(void)
+ {
+-	int rc, ret = 0;
+-	sigset_t oldset;
++	int rc;
+ 
+-	if (!rseq_ownership)
++	if (!rseq_ownership) {
++		/* Treat libc's ownership as a successful registration. */
+ 		return 0;
+-	signal_off_save(&oldset);
+-	if (__rseq_refcount == UINT_MAX) {
+-		ret = -1;
+-		goto end;
+ 	}
+-	if (__rseq_refcount++)
+-		goto end;
+ 	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), 0, RSEQ_SIG);
+-	if (!rc) {
+-		assert(rseq_current_cpu_raw() >= 0);
+-		goto end;
+-	}
+-	if (errno != EBUSY)
+-		RSEQ_WRITE_ONCE(__rseq_abi.cpu_id, RSEQ_ABI_CPU_ID_REGISTRATION_FAILED);
+-	ret = -1;
+-	__rseq_refcount--;
+-end:
+-	signal_restore(oldset);
+-	return ret;
++	if (rc)
++		return -1;
++	assert(rseq_current_cpu_raw() >= 0);
++	return 0;
+ }
+ 
+ int rseq_unregister_current_thread(void)
+ {
+-	int rc, ret = 0;
+-	sigset_t oldset;
++	int rc;
+ 
+-	if (!rseq_ownership)
++	if (!rseq_ownership) {
++		/* Treat libc's ownership as a successful unregistration. */
+ 		return 0;
+-	signal_off_save(&oldset);
+-	if (!__rseq_refcount) {
+-		ret = -1;
+-		goto end;
+ 	}
+-	if (--__rseq_refcount)
+-		goto end;
+-	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi),
+-		      RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
+-	if (!rc)
+-		goto end;
+-	__rseq_refcount = 1;
+-	ret = -1;
+-end:
+-	signal_restore(oldset);
+-	return ret;
++	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
++	if (rc)
++		return -1;
++	return 0;
++}
++
++static __attribute__((constructor))
++void rseq_init(void)
++{
++	libc_rseq_offset_p = dlsym(RTLD_NEXT, "__rseq_offset");
++	libc_rseq_size_p = dlsym(RTLD_NEXT, "__rseq_size");
++	libc_rseq_flags_p = dlsym(RTLD_NEXT, "__rseq_flags");
++	if (libc_rseq_size_p && libc_rseq_offset_p && libc_rseq_flags_p) {
++		/* rseq registration owned by glibc */
++		rseq_offset = *libc_rseq_offset_p;
++		rseq_size = *libc_rseq_size_p;
++		rseq_flags = *libc_rseq_flags_p;
++		return;
++	}
++	if (!rseq_available())
++		return;
++	rseq_ownership = 1;
++	rseq_offset = (void *)&__rseq_abi - rseq_thread_pointer();
++	rseq_size = sizeof(struct rseq_abi);
++	rseq_flags = 0;
++}
++
++static __attribute__((destructor))
++void rseq_exit(void)
++{
++	if (!rseq_ownership)
++		return;
++	rseq_offset = 0;
++	rseq_size = -1U;
++	rseq_ownership = 0;
+ }
+ 
+ int32_t rseq_fallback_current_cpu(void)
+@@ -136,20 +146,3 @@ int32_t rseq_fallback_current_cpu(void)
+ 	}
+ 	return cpu;
+ }
+-
+-void __attribute__((constructor)) rseq_init(void)
+-{
+-	/* Check whether rseq is handled by another library. */
+-	if (__rseq_handled)
+-		return;
+-	__rseq_handled = 1;
+-	rseq_ownership = 1;
+-}
+-
+-void __attribute__((destructor)) rseq_fini(void)
+-{
+-	if (!rseq_ownership)
+-		return;
+-	__rseq_handled = 0;
+-	rseq_ownership = 0;
+-}
+--- a/tools/testing/selftests/rseq/rseq.h
++++ b/tools/testing/selftests/rseq/rseq.h
+@@ -43,12 +43,19 @@
+ #define RSEQ_INJECT_FAILED
+ #endif
+ 
+-extern __thread struct rseq_abi __rseq_abi;
+-extern int __rseq_handled;
++#include "rseq-thread-pointer.h"
++
++/* Offset from the thread pointer to the rseq area.  */
++extern int rseq_offset;
++/* Size of the registered rseq area.  0 if the registration was
++   unsuccessful.  */
++extern unsigned int rseq_size;
++/* Flags used during rseq registration.  */
++extern unsigned int rseq_flags;
+ 
+ static inline struct rseq_abi *rseq_get_abi(void)
+ {
+-	return &__rseq_abi;
++	return (struct rseq_abi *) ((uintptr_t) rseq_thread_pointer() + rseq_offset);
+ }
+ 
+ #define rseq_likely(x)		__builtin_expect(!!(x), 1)
+
 
