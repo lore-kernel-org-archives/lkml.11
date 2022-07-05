@@ -2,61 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75574C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbiGERJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
+        id S233314AbiGERJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233210AbiGERJM (ORCPT
+        with ESMTP id S233318AbiGERJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:09:12 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D4F1F2C3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:08:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=LRxepLtU3tlx+iQf/9hQqxrfajocnvVd/JJZgo+pBRQ=; b=wRtNMblBRkQjskTja0WzTeVuaA
-        tcinC5+573x/fQ1Of7EKeDKarHeuz6CdN/44SF7h8II/kjpIFMnq2FsJ4j5whtzxWIKEhI8LILBcd
-        DJh+XzPtyVcEPOaQiUjNPa0VPpZwyxhtjlvSj89vRIeAYJM8RLz6HdeMn5h0zwLunsd1KS1B6dYIj
-        KBu8Grxi45JPQrhm2W+/Q+3mszgefv+0yXMml47u3P9t8BkVeHvchKfBi8qXQPzRndUvq6dMnMgBk
-        H0Sc1o/LsWuY5RlnbGZyFv8iyNsPBFNL5euZc9gY+iIGUmuR4/BDobGzb9a5n25/7AtFzUcWI6M7G
-        I6QBShtw==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o8m2f-000lWR-Ki; Tue, 05 Jul 2022 17:08:53 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 35777980059; Tue,  5 Jul 2022 19:08:53 +0200 (CEST)
-Date:   Tue, 5 Jul 2022 19:08:53 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Nicholas Piggin <npiggin@gmail.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/13] locking/qspinlock: be less clever with the
- preprocessor
-Message-ID: <YsRwJdjJqpXEFTnO@worktop.programming.kicks-ass.net>
-References: <20220704143820.3071004-1-npiggin@gmail.com>
- <20220704143820.3071004-6-npiggin@gmail.com>
+        Tue, 5 Jul 2022 13:09:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AED61F2E7;
+        Tue,  5 Jul 2022 10:09:01 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 717221595;
+        Tue,  5 Jul 2022 10:09:01 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 90A0B3F66F;
+        Tue,  5 Jul 2022 10:08:59 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org
+Cc:     will@kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+        suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 10/15] iommu/ipmmu-vmsa: Clean up bus_set_iommu()
+Date:   Tue,  5 Jul 2022 18:08:33 +0100
+Message-Id: <52d6d0ce3b2d51a67bd9d9fa6f41fd87ab28f417.1657034828.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.36.1.dirty
+In-Reply-To: <cover.1657034827.git.robin.murphy@arm.com>
+References: <cover.1657034827.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220704143820.3071004-6-npiggin@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 12:38:12AM +1000, Nicholas Piggin wrote:
-> Stop qspinlock.c including itself and avoid most of the function
-> renaming with the preprocessor.
-> 
-> This is mostly done by having the common slowpath code take a 'bool
-> paravirt' argument and adjusting code based on that.
+Stop calling bus_set_iommu() since it's now unnecessary. This also
+leaves the custom initcall effectively doing nothing but register
+the driver, which no longer needs to happen early either, so convert
+it to builtin_platform_driver().
 
-What does code-gen do? Is it clever enough to constant fold the lot?
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
 
-Should we be using __always_inline to ensure the compiler doesn't decide
-against inlining because $raisin and then emitting extra condtionals?
+v3: No change
+
+ drivers/iommu/ipmmu-vmsa.c | 35 +----------------------------------
+ 1 file changed, 1 insertion(+), 34 deletions(-)
+
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 8fdb84b3642b..2549d32f0ddd 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1090,11 +1090,6 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 		ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
+ 		if (ret)
+ 			return ret;
+-
+-#if defined(CONFIG_IOMMU_DMA)
+-		if (!iommu_present(&platform_bus_type))
+-			bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+-#endif
+ 	}
+ 
+ 	/*
+@@ -1168,32 +1163,4 @@ static struct platform_driver ipmmu_driver = {
+ 	.probe = ipmmu_probe,
+ 	.remove	= ipmmu_remove,
+ };
+-
+-static int __init ipmmu_init(void)
+-{
+-	struct device_node *np;
+-	static bool setup_done;
+-	int ret;
+-
+-	if (setup_done)
+-		return 0;
+-
+-	np = of_find_matching_node(NULL, ipmmu_of_ids);
+-	if (!np)
+-		return 0;
+-
+-	of_node_put(np);
+-
+-	ret = platform_driver_register(&ipmmu_driver);
+-	if (ret < 0)
+-		return ret;
+-
+-#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+-	if (!iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+-#endif
+-
+-	setup_done = true;
+-	return 0;
+-}
+-subsys_initcall(ipmmu_init);
++builtin_platform_driver(ipmmu_driver);
+-- 
+2.36.1.dirty
+
