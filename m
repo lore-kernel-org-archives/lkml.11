@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10045CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236672AbiGEMY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        id S236742AbiGEMZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236551AbiGEMRy (ORCPT
+        with ESMTP id S236557AbiGEMRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:17:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65C1193C1;
-        Tue,  5 Jul 2022 05:12:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A772193C8;
+        Tue,  5 Jul 2022 05:12:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73659B817AC;
-        Tue,  5 Jul 2022 12:12:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7BA5C341C7;
-        Tue,  5 Jul 2022 12:12:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 265816199F;
+        Tue,  5 Jul 2022 12:12:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F88C341C7;
+        Tue,  5 Jul 2022 12:12:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023167;
-        bh=uzRC/hRe6ZD7cyfAlmeU39REdzxYcv4TgtR2Md0X5FY=;
+        s=korg; t=1657023172;
+        bh=SxEx45m+FeN+Ug2bbYW0UuEaNfwSzL2M/Kss9ZJVAfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=veGzMFuD7ogjD1IuexBBAB2TAHOEKCHR4BSbU/uZgCT9bsNvcihuN6HptRrg44Z94
-         2zzl06vAWz5vViuaDewbrnmojcCvyA98I6U7Dy742TQqorOyuVG3OJ6wvj8nBl/AsP
-         bXl6U6Slxcz84KXErzzVdHPsQKak4V0lwy3w//4g=
+        b=Vl2Hxo742WULJnkMpGcddesgLPw8x7KaPAtK4R1SZt4GStA0Z1n7Whvtlr/xgWfQU
+         calPWlTwIxzAKXC6VNOC7DbevonHESCdE2TSVRbc8WVDz0kbdTMvmo0kb3Ocd0jTzd
+         YFYsAUOk+hTciJR5ZNC+XBlm22BgRzUEEuGKSPxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>
-Subject: [PATCH 5.15 61/98] selftests/bpf: Add test_verifier support to fixup kfunc call insns
-Date:   Tue,  5 Jul 2022 13:58:19 +0200
-Message-Id: <20220705115619.313589787@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.15 36/98] caif_virtio: fix race between virtio_device_ready() and ndo_open()
+Date:   Tue,  5 Jul 2022 13:57:54 +0200
+Message-Id: <20220705115618.615667154@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -49,88 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Jason Wang <jasowang@redhat.com>
 
-commit 0201b80772ac2b712bbbfe783cdb731fdfb4247e upstream.
+commit 11a37eb66812ce6a06b79223ad530eb0e1d7294d upstream.
 
-This allows us to add tests (esp. negative tests) where we only want to
-ensure the program doesn't pass through the verifier, and also verify
-the error. The next commit will add the tests making use of this.
+We currently depend on probe() calling virtio_device_ready() -
+which happens after netdev
+registration. Since ndo_open() can be called immediately
+after register_netdev, this means there exists a race between
+ndo_open() and virtio_device_ready(): the driver may start to use the
+device (e.g. TX) before DRIVER_OK which violates the spec.
 
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220114163953.1455836-9-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-[PHLin: backport due to lack of fixup_map_timer]
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+Fix this by switching to use register_netdevice() and protect the
+virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
+only be called after virtio_device_ready().
+
+Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Message-Id: <20220620051115.3142-3-jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/bpf/test_verifier.c |   28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/net/caif/caif_virtio.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -31,6 +31,7 @@
- #include <linux/if_ether.h>
- #include <linux/btf.h>
+--- a/drivers/net/caif/caif_virtio.c
++++ b/drivers/net/caif/caif_virtio.c
+@@ -721,13 +721,21 @@ static int cfv_probe(struct virtio_devic
+ 	/* Carrier is off until netdevice is opened */
+ 	netif_carrier_off(netdev);
  
-+#include <bpf/btf.h>
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
- 
-@@ -63,6 +64,11 @@ static bool unpriv_disabled = false;
- static int skips;
- static bool verbose = false;
- 
-+struct kfunc_btf_id_pair {
-+	const char *kfunc;
-+	int insn_idx;
-+};
++	/* serialize netdev register + virtio_device_ready() with ndo_open() */
++	rtnl_lock();
 +
- struct bpf_test {
- 	const char *descr;
- 	struct bpf_insn	insns[MAX_INSNS];
-@@ -88,6 +94,7 @@ struct bpf_test {
- 	int fixup_map_event_output[MAX_FIXUPS];
- 	int fixup_map_reuseport_array[MAX_FIXUPS];
- 	int fixup_map_ringbuf[MAX_FIXUPS];
-+	struct kfunc_btf_id_pair fixup_kfunc_btf_id[MAX_FIXUPS];
- 	/* Expected verifier log output for result REJECT or VERBOSE_ACCEPT.
- 	 * Can be a tab-separated sequence of expected strings. An empty string
- 	 * means no log verification.
-@@ -718,6 +725,7 @@ static void do_test_fixup(struct bpf_tes
- 	int *fixup_map_event_output = test->fixup_map_event_output;
- 	int *fixup_map_reuseport_array = test->fixup_map_reuseport_array;
- 	int *fixup_map_ringbuf = test->fixup_map_ringbuf;
-+	struct kfunc_btf_id_pair *fixup_kfunc_btf_id = test->fixup_kfunc_btf_id;
- 
- 	if (test->fill_helper) {
- 		test->fill_insns = calloc(MAX_TEST_INSNS, sizeof(struct bpf_insn));
-@@ -903,6 +911,26 @@ static void do_test_fixup(struct bpf_tes
- 			fixup_map_ringbuf++;
- 		} while (*fixup_map_ringbuf);
+ 	/* register Netdev */
+-	err = register_netdev(netdev);
++	err = register_netdevice(netdev);
+ 	if (err) {
++		rtnl_unlock();
+ 		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
+ 		goto err;
  	}
-+
-+	/* Patch in kfunc BTF IDs */
-+	if (fixup_kfunc_btf_id->kfunc) {
-+		struct btf *btf;
-+		int btf_id;
-+
-+		do {
-+			btf_id = 0;
-+			btf = btf__load_vmlinux_btf();
-+			if (btf) {
-+				btf_id = btf__find_by_name_kind(btf,
-+								fixup_kfunc_btf_id->kfunc,
-+								BTF_KIND_FUNC);
-+				btf_id = btf_id < 0 ? 0 : btf_id;
-+			}
-+			btf__free(btf);
-+			prog[fixup_kfunc_btf_id->insn_idx].imm = btf_id;
-+			fixup_kfunc_btf_id++;
-+		} while (fixup_kfunc_btf_id->kfunc);
-+	}
- }
  
- struct libcap {
++	virtio_device_ready(vdev);
++
++	rtnl_unlock();
++
+ 	debugfs_init(cfv);
+ 
+ 	return 0;
 
 
