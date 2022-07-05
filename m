@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFA5CCA48D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7611CCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237574AbiGEMXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
+        id S237853AbiGEMYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236191AbiGEMRS (ORCPT
+        with ESMTP id S236314AbiGEMRd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:17:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6651C108;
-        Tue,  5 Jul 2022 05:12:09 -0700 (PDT)
+        Tue, 5 Jul 2022 08:17:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEDE1C904;
+        Tue,  5 Jul 2022 05:12:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85F2F619E9;
-        Tue,  5 Jul 2022 12:12:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92413C341C7;
-        Tue,  5 Jul 2022 12:12:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80CCF619A6;
+        Tue,  5 Jul 2022 12:12:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91002C341C8;
+        Tue,  5 Jul 2022 12:12:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023127;
-        bh=e5mcciVgW1C+/q37f4/+fFKAhTA1T2u0ZfsCKlYxsEE=;
+        s=korg; t=1657023138;
+        bh=Zvrqgx3TWHUPdHczpbHvYScItmS0flh1Wg5GahmqYxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sUPiy5G+mVEmJK4qrU9Ckkb14iOZjGyf77b1RgbQyqqGI3ApfBPzIarvbxICaF8Vl
-         X/kgbKfFkZ8HMwUrcuIn1eu+FGQHY1YxUh1HDwmtz8CKJ1NkiOFCo5lTvokK6Y2/Sw
-         +wIxNhW6Ab94oWoL03pycV8U/Li/wafGury8lq4c=
+        b=xN66xuqmC+14N6+OuvUuFcNUpaKoMKWIGu3mNnVBj7OUeqk0ZutEQv+vAy6pk41qW
+         5RGH9hRipH3kkcYG7UAPhZ7N89tg6FqLmCyrgGC7+Jad5R+vTwS2+736ecnv81I4Mk
+         9tcLIMcPdYBwGL0/wiYAF/KhPyU+y7i7RvSizG+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 48/98] nfc: nfcmrvl: Fix irq_of_parse_and_map() return value
-Date:   Tue,  5 Jul 2022 13:58:06 +0200
-Message-Id: <20220705115618.950032040@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 52/98] io_uring: ensure that send/sendmsg and recv/recvmsg check sqe->ioprio
+Date:   Tue,  5 Jul 2022 13:58:10 +0200
+Message-Id: <20220705115619.061142527@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -49,52 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 5a478a653b4cca148d5c89832f007ec0809d7e6d upstream.
+commit 73911426aaaadbae54fa72359b33a7b6a56947db upstream.
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+All other opcodes correctly check if this is set and -EINVAL if it is
+and they don't support that field, for some reason the these were
+forgotten.
 
-Reported-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Fixes: caf6e49bf6d0 ("NFC: nfcmrvl: add spi driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220627124048.296253-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This was unified a bit differently in the upstream tree, but had the
+same effect as making sure we error on this field. Rather than have
+a painful backport of the upstream commit, just fixup the mentioned
+opcodes.
+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nfcmrvl/i2c.c |    6 +++---
- drivers/nfc/nfcmrvl/spi.c |    6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ fs/io_uring.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/nfc/nfcmrvl/i2c.c
-+++ b/drivers/nfc/nfcmrvl/i2c.c
-@@ -167,9 +167,9 @@ static int nfcmrvl_i2c_parse_dt(struct d
- 		pdata->irq_polarity = IRQF_TRIGGER_RISING;
- 
- 	ret = irq_of_parse_and_map(node, 0);
--	if (ret < 0) {
--		pr_err("Unable to get irq, error: %d\n", ret);
--		return ret;
-+	if (!ret) {
-+		pr_err("Unable to get irq\n");
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -4788,6 +4788,8 @@ static int io_sendmsg_prep(struct io_kio
+ 		return -EINVAL;
+ 	if (unlikely(sqe->addr2 || sqe->file_index))
+ 		return -EINVAL;
++	if (unlikely(sqe->addr2 || sqe->file_index || sqe->ioprio))
 +		return -EINVAL;
- 	}
- 	pdata->irq = ret;
  
---- a/drivers/nfc/nfcmrvl/spi.c
-+++ b/drivers/nfc/nfcmrvl/spi.c
-@@ -115,9 +115,9 @@ static int nfcmrvl_spi_parse_dt(struct d
- 	}
- 
- 	ret = irq_of_parse_and_map(node, 0);
--	if (ret < 0) {
--		pr_err("Unable to get irq, error: %d\n", ret);
--		return ret;
-+	if (!ret) {
-+		pr_err("Unable to get irq\n");
+ 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+ 	sr->len = READ_ONCE(sqe->len);
+@@ -5011,6 +5013,8 @@ static int io_recvmsg_prep(struct io_kio
+ 		return -EINVAL;
+ 	if (unlikely(sqe->addr2 || sqe->file_index))
+ 		return -EINVAL;
++	if (unlikely(sqe->addr2 || sqe->file_index || sqe->ioprio))
 +		return -EINVAL;
- 	}
- 	pdata->irq = ret;
  
+ 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+ 	sr->len = READ_ONCE(sqe->len);
 
 
