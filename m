@@ -2,317 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CB4CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4669C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbiGEPwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
+        id S232756AbiGEPwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232583AbiGEPwN (ORCPT
+        with ESMTP id S230000AbiGEPwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:52:13 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CA41ADA7;
-        Tue,  5 Jul 2022 08:51:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657036260; x=1688572260;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MrUkDRSD1Y6mEq3225D3Q5VxySFsvbxA4NqScTaux9w=;
-  b=Agmen2Wv0/Fl2Fmu/12WPAMQTvpTmslSKPIiCx3PukwYVIlB6KLsXA+p
-   BpRyBstHnhq7QhKSUMCvVJKVL6lPfZKaTCCaABcIr3ATTqOqLVgkoRBdL
-   2/uFZejzbXhNWvfU8rsHGktgyMZMT4x6OE/e4ge/cSUg9Dq4Q6Ku/LsHZ
-   9sJ1p+Vyu4PwzfpCnd28BmSbcYsaXkeyDs7j3ddoWLzoyAG9KihD6+ohY
-   hyxNHsFbxPH//oomA8LuzqmYMcMpHcIS9Rqtz7hjg1a0iOqaAlNmkq/w5
-   6WvMvLustQoABnQNfEZazlnNB5zdSNK1WI4UyLXkyIEhl4CUrTkk+BTFf
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="283414943"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="283414943"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 08:50:37 -0700
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="597333673"
-Received: from amangla-mobl.amr.corp.intel.com (HELO localhost) ([10.255.0.184])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 08:50:12 -0700
-From:   ira.weiny@intel.com
-To:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>, Lukas Wunner <lukas@wunner.de>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: [PATCH V13 9/9] cxl/port: Parse out DSMAS data from CDAT table
-Date:   Tue,  5 Jul 2022 08:49:32 -0700
-Message-Id: <20220705154932.2141021-10-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220705154932.2141021-1-ira.weiny@intel.com>
-References: <20220705154932.2141021-1-ira.weiny@intel.com>
+        Tue, 5 Jul 2022 11:52:10 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9869E1EEFD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:50:53 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id t25so21271185lfg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:50:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CcjULYMpr+QHdI3JsNhjzwImTiYpQuBvwJ8lHs69eYs=;
+        b=IpCNknScKIJXSEUwWGsF+SrFTJNmtDNa372+AiVdo/2fZ5eA1uMADg419eOcaIk4SE
+         C37tZ2Oz9Gesq1pYOAzUQjBu3a3mUFNE9BlufU/QaiUcOlZCCw8WPBpUW44PDJaSqcx6
+         cL3XI/vWE8FeIWUneTrmuZ0YBs9w8P87e7hcx30SInjkkCCGZBpyZE6ho0Q0YX44M+rc
+         EvUH6kIlydrPhHlj15TIAUKgekCxn2GV+BTl+tanDK8fXAzSN+B4p8bY8OukaXZNnITn
+         OKeTK9f8En+YmG5P4Xoa14yL0fskYwg2cvuYTlrBSBLFlGDt5QVI073k5EkRlii3TzK5
+         V38w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CcjULYMpr+QHdI3JsNhjzwImTiYpQuBvwJ8lHs69eYs=;
+        b=2fR0YvSOdYptSLy0QhF/zjLauLXBkitzSe2R7jjxwbcw/MFCGr6YTssg+0O7QipJEl
+         sjpfbROgwbijwxAg8n25lv6z5sdmiJD8E0g4mlBEfJiDGJNXMxTUIYzl70LBMJQal+wc
+         Sz/IZtGWrf/jojxNzjO/bmcOPd59k2WoS7iteeQDUySDAWRHp49BaN5/RPCqoDrxnAAc
+         +VWKwX0bMh8EVqqWF8c7xxn8aK+eMKWLnTaVzhmYAHlVd0sgawaNo/TQT6Vsicb69HNN
+         Po0WgRopojbA9+SEx6397shpufj7Vik6Yum6xgsZZISjm0kMcod6R6jUFGFwuYJp2VWl
+         9TKw==
+X-Gm-Message-State: AJIora+EYzhiKDmk1fG6MSZHLsBQAP34Mz8ApEQRfcC91xuWXMggkglL
+        IVHqGqma8jYFcpmw/qprSVokuQ==
+X-Google-Smtp-Source: AGRyM1veCggYbDR4uBoTxkp4gmYxE1f/2yXS96puPSrWecpOdrcqmdtbS/t46m6wVikXX5MKd1DN8w==
+X-Received: by 2002:a05:6512:2a91:b0:47f:6e1d:d22c with SMTP id dt17-20020a0565122a9100b0047f6e1dd22cmr24346725lfb.550.1657036252021;
+        Tue, 05 Jul 2022 08:50:52 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id b6-20020a056512070600b0047f6b4f82d1sm2347341lfs.250.2022.07.05.08.50.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 08:50:51 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: hwinfo: renesas,prr: move from soc directory
+Date:   Tue,  5 Jul 2022 17:50:38 +0200
+Message-Id: <20220705155038.454251-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+Group devices like Chip ID or SoC information under "hwinfo" directory.
 
-CXL Ports with memory devices attached need the information from the
-Device Scoped Memory Affinity Structure (DSMAS).  This information is
-contained within the CDAT table buffer which is cached in the port
-device.
-
-If CDAT data is available, parse and cache DSMAS data from the table.
-Store this data in unmarshaled struct dsmas data structures for ease of
-use later.  Ensure DSMAS headers are not malicious or ill formed so as
-to cause buffer overflow errors.
-
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 ---
-Changes from V10
-	From Ben Widawsky
-		Check data lengths to protect against malicious devices
 
-Changes from V8
-	Adjust to the cdat data being in cxl_port
+This should go via Renesas tree because of changes around soc/renesas/renesas,prr.yaml.
 
-Changes from V7
-	Rebased on cxl-pending
-
-Changes from V6
-	Move to port.c
-	It is not an error if no DSMAS data is found
-
-Changes from V5
-	Fix up sparse warnings
-	Split out cdat_hdr_valid()
-	Update cdat_hdr_valid()
-		Remove revision and cs field parsing
-			There is no point in these
-		Add seq check and debug print.
-	From Jonathan
-		Add spaces around '+' and '/'
-		use devm_krealloc() for dmas_ary
+Changes since v1:
+1. Split from https://lore.kernel.org/all/20220705154613.453096-1-krzysztof.kozlowski@linaro.org/
 ---
- drivers/cxl/cdat.h     | 23 ++++++++++++++
- drivers/cxl/core/pci.c | 72 ++++++++++++++++++++++++++++++++++++++++++
- drivers/cxl/cxl.h      |  2 ++
- drivers/cxl/cxlmem.h   |  4 +++
- drivers/cxl/cxlpci.h   |  1 +
- drivers/cxl/mem.c      |  1 +
- 6 files changed, 103 insertions(+)
+ .../bindings/{soc/renesas => hwinfo}/renesas,prr.yaml           | 2 +-
+ MAINTAINERS                                                     | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+ rename Documentation/devicetree/bindings/{soc/renesas => hwinfo}/renesas,prr.yaml (92%)
 
-diff --git a/drivers/cxl/cdat.h b/drivers/cxl/cdat.h
-index 39eb561081f2..ca1f55762416 100644
---- a/drivers/cxl/cdat.h
-+++ b/drivers/cxl/cdat.h
-@@ -51,6 +51,7 @@
- #define CDAT_DSMAS_DPA_OFFSET(entry) ((u64)((entry)[3]) << 32 | (entry)[2])
- #define CDAT_DSMAS_DPA_LEN(entry) ((u64)((entry)[5]) << 32 | (entry)[4])
- #define CDAT_DSMAS_NON_VOLATILE(flags)  ((flags & 0x04) >> 2)
-+#define CDAT_DSMAS_ENTRY_SIZE		(6 * sizeof(u32))
+diff --git a/Documentation/devicetree/bindings/soc/renesas/renesas,prr.yaml b/Documentation/devicetree/bindings/hwinfo/renesas,prr.yaml
+similarity index 92%
+rename from Documentation/devicetree/bindings/soc/renesas/renesas,prr.yaml
+rename to Documentation/devicetree/bindings/hwinfo/renesas,prr.yaml
+index 654c96638e75..792f371cec03 100644
+--- a/Documentation/devicetree/bindings/soc/renesas/renesas,prr.yaml
++++ b/Documentation/devicetree/bindings/hwinfo/renesas,prr.yaml
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: http://devicetree.org/schemas/soc/renesas/renesas,prr.yaml#
++$id: http://devicetree.org/schemas/hwinfo/renesas,prr.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
- /* Device Scoped Latency and Bandwidth Information Structure */
- #define CDAT_DSLBIS_DW1_HANDLE		0x000000ff
-@@ -60,22 +61,26 @@
- #define CDAT_DSLBIS_DW4_ENTRY_0		0x0000ffff
- #define CDAT_DSLBIS_DW4_ENTRY_1		0xffff0000
- #define CDAT_DSLBIS_DW5_ENTRY_2		0x0000ffff
-+#define CDAT_DSLBIS_ENTRY_SIZE		(6 * sizeof(u32))
- 
- /* Device Scoped Memory Side Cache Information Structure */
- #define CDAT_DSMSCIS_DW1_HANDLE		0x000000ff
- #define CDAT_DSMSCIS_MEMORY_SIDE_CACHE_SIZE(entry) \
- 	((u64)((entry)[3]) << 32 | (entry)[2])
- #define CDAT_DSMSCIS_DW4_MEMORY_SIDE_CACHE_ATTRS 0xffffffff
-+#define CDAT_DSMSCIS_ENTRY_SIZE		(5 * sizeof(u32))
- 
- /* Device Scoped Initiator Structure */
- #define CDAT_DSIS_DW1_FLAGS		0x000000ff
- #define CDAT_DSIS_DW1_HANDLE		0x0000ff00
-+#define CDAT_DSIS_ENTRY_SIZE		(2 * sizeof(u32))
- 
- /* Device Scoped EFI Memory Type Structure */
- #define CDAT_DSEMTS_DW1_HANDLE		0x000000ff
- #define CDAT_DSEMTS_DW1_EFI_MEMORY_TYPE_ATTR	0x0000ff00
- #define CDAT_DSEMTS_DPA_OFFSET(entry)	((u64)((entry)[3]) << 32 | (entry)[2])
- #define CDAT_DSEMTS_DPA_LENGTH(entry)	((u64)((entry)[5]) << 32 | (entry)[4])
-+#define CDAT_DSEMTS_ENTRY_SIZE		(6 * sizeof(u32))
- 
- /* Switch Scoped Latency and Bandwidth Information Structure */
- #define CDAT_SSLBIS_DW1_DATA_TYPE	0x000000ff
-@@ -83,9 +88,27 @@
- #define CDAT_SSLBIS_ENTRY_PORT_X(entry, i) ((entry)[4 + (i) * 2] & 0x0000ffff)
- #define CDAT_SSLBIS_ENTRY_PORT_Y(entry, i) (((entry)[4 + (i) * 2] & 0xffff0000) >> 16)
- #define CDAT_SSLBIS_ENTRY_LAT_OR_BW(entry, i) ((entry)[4 + (i) * 2 + 1] & 0x0000ffff)
-+#define CDAT_SSLBIS_HEADER_SIZE		(6 * sizeof(u32))
- 
- #define CXL_DOE_PROTOCOL_TABLE_ACCESS 2
- 
-+/**
-+ * struct cxl_dsmas - host unmarshaled version of DSMAS data
-+ *
-+ * As defined in the Coherent Device Attribute Table (CDAT) specification this
-+ * represents a single DSMAS entry in that table.
-+ *
-+ * @dpa_base: The lowest Device Physical Address associated with this DSMAD
-+ * @length: Length in bytes of this DSMAD
-+ * @non_volatile: If set, the memory region represents Non-Volatile memory
-+ */
-+struct cxl_dsmas {
-+	u64 dpa_base;
-+	u64 length;
-+	/* Flags */
-+	u8 non_volatile:1;
-+};
-+
- /**
-  * struct cxl_cdat - CXL CDAT data
-  *
-diff --git a/drivers/cxl/core/pci.c b/drivers/cxl/core/pci.c
-index 0853885c5767..1b931542d345 100644
---- a/drivers/cxl/core/pci.c
-+++ b/drivers/cxl/core/pci.c
-@@ -684,3 +684,75 @@ void read_cdat_data(struct cxl_port *port)
- 		retries);
- }
- EXPORT_SYMBOL_NS_GPL(read_cdat_data, CXL);
-+
-+void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port)
-+{
-+	struct device *dev = &port->dev;
-+	struct cxl_dsmas *dsmas_ary = NULL;
-+	u32 *data = port->cdat.table;
-+	int bytes_left = port->cdat.length;
-+	int nr_dsmas = 0;
-+
-+	if (!data) {
-+		dev_info(dev, "No CDAT data available for DSMAS\n");
-+		return;
-+	}
-+
-+	/* Skip header */
-+	data += CDAT_HEADER_LENGTH_DW;
-+	bytes_left -= CDAT_HEADER_LENGTH_BYTES;
-+
-+	while (bytes_left > 0) {
-+		u32 *cur_rec = data;
-+		u8 type = FIELD_GET(CDAT_STRUCTURE_DW0_TYPE, cur_rec[0]);
-+		u16 length = FIELD_GET(CDAT_STRUCTURE_DW0_LENGTH, cur_rec[0]);
-+
-+		if (type == CDAT_STRUCTURE_DW0_TYPE_DSMAS) {
-+			struct cxl_dsmas *new_ary;
-+			u8 flags;
-+
-+			/* Protect against malicious devices */
-+			if (bytes_left < CDAT_DSMAS_ENTRY_SIZE ||
-+			    length != CDAT_DSMAS_ENTRY_SIZE) {
-+				dev_err(dev, "Invalid DSMAS data detected\n");
-+				return;
-+			}
-+
-+			new_ary = devm_krealloc(dev, dsmas_ary,
-+					   sizeof(*dsmas_ary) * (nr_dsmas + 1),
-+					   GFP_KERNEL);
-+			if (!new_ary) {
-+				dev_err(dev,
-+					"Failed to allocate memory for DSMAS data (nr_dsmas %d)\n",
-+					nr_dsmas);
-+				return;
-+			}
-+			dsmas_ary = new_ary;
-+
-+			flags = FIELD_GET(CDAT_DSMAS_DW1_FLAGS, cur_rec[1]);
-+
-+			dsmas_ary[nr_dsmas].dpa_base = CDAT_DSMAS_DPA_OFFSET(cur_rec);
-+			dsmas_ary[nr_dsmas].length = CDAT_DSMAS_DPA_LEN(cur_rec);
-+			dsmas_ary[nr_dsmas].non_volatile = CDAT_DSMAS_NON_VOLATILE(flags);
-+
-+			dev_dbg(dev, "DSMAS %d: %llx:%llx %s\n",
-+				nr_dsmas,
-+				dsmas_ary[nr_dsmas].dpa_base,
-+				dsmas_ary[nr_dsmas].dpa_base +
-+					dsmas_ary[nr_dsmas].length,
-+				(dsmas_ary[nr_dsmas].non_volatile ?
-+					"Persistent" : "Volatile")
-+				);
-+
-+			nr_dsmas++;
-+		}
-+
-+		data += (length / sizeof(u32));
-+		bytes_left -= length;
-+	}
-+
-+	dev_dbg(dev, "Found %d DSMAS entries\n", nr_dsmas);
-+	cxlmd->dsmas_ary = dsmas_ary;
-+	cxlmd->nr_dsmas = nr_dsmas;
-+}
-+EXPORT_SYMBOL_NS_GPL(parse_dsmas, CXL);
-diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-index 9a08379000a0..5332b4d52d55 100644
---- a/drivers/cxl/cxl.h
-+++ b/drivers/cxl/cxl.h
-@@ -10,6 +10,8 @@
- #include <linux/io.h>
- #include "cdat.h"
- 
-+#include "cdat.h"
-+
- /**
-  * DOC: cxl objects
-  *
-diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
-index 360f282ef80c..54231c26470c 100644
---- a/drivers/cxl/cxlmem.h
-+++ b/drivers/cxl/cxlmem.h
-@@ -36,6 +36,8 @@
-  * @cxlds: The device state backing this device
-  * @detach_work: active memdev lost a port in its ancestry
-  * @id: id number of this memdev instance.
-+ * @dsmas_ary: Array of DSMAS entries as parsed from the CDAT table
-+ * @nr_dsmas: Number of entries in dsmas_ary
-  */
- struct cxl_memdev {
- 	struct device dev;
-@@ -43,6 +45,8 @@ struct cxl_memdev {
- 	struct cxl_dev_state *cxlds;
- 	struct work_struct detach_work;
- 	int id;
-+	struct cxl_dsmas *dsmas_ary;
-+	int nr_dsmas;
- };
- 
- static inline struct cxl_memdev *to_cxl_memdev(struct device *dev)
-diff --git a/drivers/cxl/cxlpci.h b/drivers/cxl/cxlpci.h
-index eec597dbe763..3e68804d8935 100644
---- a/drivers/cxl/cxlpci.h
-+++ b/drivers/cxl/cxlpci.h
-@@ -75,4 +75,5 @@ int devm_cxl_port_enumerate_dports(struct cxl_port *port);
- struct cxl_dev_state;
- int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm);
- void read_cdat_data(struct cxl_port *port);
-+void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port);
- #endif /* __CXL_PCI_H__ */
-diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
-index c310f1fd3db0..a8768df4ae38 100644
---- a/drivers/cxl/mem.c
-+++ b/drivers/cxl/mem.c
-@@ -35,6 +35,7 @@ static int create_endpoint(struct cxl_memdev *cxlmd,
- 	if (IS_ERR(endpoint))
- 		return PTR_ERR(endpoint);
- 
-+	parse_dsmas(cxlmd, endpoint);
- 	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
- 
- 	if (!endpoint->dev.driver) {
+ title: Renesas Product Register
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 392e59e9a03e..d32d724d33da 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2630,6 +2630,7 @@ Q:	http://patchwork.kernel.org/project/linux-renesas-soc/list/
+ C:	irc://irc.libera.chat/renesas-soc
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-devel.git next
+ F:	Documentation/devicetree/bindings/arm/renesas.yaml
++F:	Documentation/devicetree/bindings/hwinfo/renesas,prr.yaml
+ F:	Documentation/devicetree/bindings/soc/renesas/
+ F:	arch/arm64/boot/dts/renesas/
+ F:	drivers/soc/renesas/
 -- 
-2.35.3
+2.34.1
 
