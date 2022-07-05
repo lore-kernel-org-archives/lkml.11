@@ -2,221 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 05:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321D6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 05:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiGEFN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 01:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39146 "EHLO
+        id S229687AbiGEFRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 01:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiGEFMw (ORCPT
+        with ESMTP id S229461AbiGEFRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 01:12:52 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C71B13D3D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 22:12:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656997956; x=1688533956;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2PIRrxrWkqooSJD1BFX6QzuVGWWS7p2CUAaeu4XMy5U=;
-  b=E2otksIYBIXE5pIg3/EzXVJAPafK5Le5kDCmqCldgJV6k38R96LejWxi
-   YrR1Y6G2fjSecaDQKz2p5pUT55lrnhEKJx6ZFFEV+EO0+UrL4KBdyO/pM
-   lJ7J/vUofi0hh3od0c1jmKUIyOsqJzTa0LPzBJGTpcZzyomrJmS/9aR61
-   6hhXRMjGcfC/qf5MalucPDuKlccLBz9PSGbCOG56VwYBE4WbqbnpmRP0l
-   qdCKGxMvlMy0w70U43lLyHlBLYHkeBqVUuuB3XNv/xYO0W0QLRm8y+Xwq
-   SlQp7U4f4qlNzp31+qnvcthcSEsxwcQ6nKvoAhjTjGJdgaqtIbTwWQHSg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="282011531"
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="282011531"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:12:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="542807653"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:12:31 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v10 12/12] iommu: Rename iommu-sva-lib.{c,h}
-Date:   Tue,  5 Jul 2022 13:07:10 +0800
-Message-Id: <20220705050710.2887204-13-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+        Tue, 5 Jul 2022 01:17:37 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D795BD9D;
+        Mon,  4 Jul 2022 22:17:36 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 44B635C009A;
+        Tue,  5 Jul 2022 01:17:36 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 05 Jul 2022 01:17:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1656998256; x=
+        1657084656; bh=l06hKa8FX6f2rc48K0AkRV8GNe0TgQght/OVF4ypUag=; b=V
+        U/kgryCJ6yVCm81ZS+aci+Bl4bPdaRa0dCkHHQFHPZo1e3Yg14Eiv7tQfGuZeKHS
+        q8wZPUqdlNgf2BzJ677d2k9nieISzpWkkASyirapBforOYn6KboTQb2jZT+rqsR3
+        3JV4Ifte7daxvxxHlqAWoFzG1XHxWXoZuP0vI4WfmCI23N0KcIfL6i5AidUBbFzB
+        u4xOSHklUkLEDx68ycfz8fa++amjoOdCQAjpUubkU468zeHkfGrNMVrpCJBl+Wtj
+        aCi734X4cXcvi5Vve6d4YdinMcGQinP75vPo7c/5KQRMPCT477HYaXJBSv5n22LQ
+        YtL6gxE+/hQJR0kbVIF9Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656998256; x=
+        1657084656; bh=l06hKa8FX6f2rc48K0AkRV8GNe0TgQght/OVF4ypUag=; b=m
+        ZSqr8TEq53pUAE2WPhGKf8d4RTZ0tbR6UkPXL5/jEbdeJrhtfS9NcfKQ3XeiKx7x
+        rnK/D+osPhuhiJBPxatOucmsI70/jmL8NZqrinkzZONPR937B4k2WaZbZx2+LLdW
+        grtR4P84xKMRJ6j1qq2Oll45kTyjcTt2dp/oDnXb/BnCQTh+YVxBKX+dVBrhDFIm
+        UxyEt8bXF7ub8XH6woXRWwfi67VFm7b8FZW1zcNHnPMsb2D/nYvHCaiF6P9VHcd5
+        kg7LvDXILIcIzEq2B2mYDQ8Zn3VjU+rPug5YkQ+wcM4nOuxB42tFJpsYFcU+3aYN
+        vuMK+1A9oIx3CiA1km0VA==
+X-ME-Sender: <xms:b8nDYlokvJ97rwqdNGNj8mabFwVK-2Vv1r_OnUhmSjc4VQldzGFi6w>
+    <xme:b8nDYnpysuJaFUQT5HELXBk98__VU2Fy_VENxPGxlnXVEGqeBFE6_SVjQAtkBLoj9
+    I05X7gYsheYbN3uMQ>
+X-ME-Received: <xmr:b8nDYiOyrCSe_nzQMH4vJqfqzWGqTIR38Zbi5IffjNnH2Qns5uB8gWoebIfuXudmEJ9LugKC3ecBEzJ0Q0P2sC5VlwpN-DvlU9-oroxZ6Mc1RHqlH4Fduj0yoA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeitddgledvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpefftdevkedvgeekueeutefgteffieelvedukeeuhfehledvhfei
+    tdehudfhudehhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:b8nDYg63upzuEj5QuqmvXbJdJWEVDCoK1Z1cVnXFW67B5rxtOb8N7Q>
+    <xmx:b8nDYk5JIp0uKlRlqUFRRNlxfmrpD0fBjwSkiLnkq3SzgNBATwow5A>
+    <xmx:b8nDYojmQ277RnZBZY7oLtnKQOsi4ZeP49C582t0fSeRBoyZEZPi0Q>
+    <xmx:cMnDYjaP5YXuMF9o9sY_5_yoBa3rxd2Qd5_-Ytv_8BT1hpUmqy7bWQ>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 5 Jul 2022 01:17:34 -0400 (EDT)
+Subject: Re: [PATCH v2 1/1] arm64: dts: allwinner: h6: Enable CPU opp tables
+ for OrangePi One Plus
+To:     Chukun Pan <amadeus@jmu.edu.cn>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220510153006.279233-1-amadeus@jmu.edu.cn>
+ <20220510153006.279233-2-amadeus@jmu.edu.cn>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <93bbf82c-5868-e5ad-6325-7c4e6ba50907@sholland.org>
+Date:   Tue, 5 Jul 2022 00:17:34 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220510153006.279233-2-amadeus@jmu.edu.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
+On 5/10/22 10:30 AM, Chukun Pan wrote:
+> Enable CPU opp tables for OrangePi One Plus.
+> 
+> This needs to change the CPU regulator max voltage to fit
+> the OPP table.
+> 
+> Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+> ---
+>  arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
+> index 92745128fcfe..7773c51438ce 100644
+> --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
+> +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 6 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (95%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+Putting the changes in this file also applies them to the OrangePi Lite2 and
+OrangePi 3.
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 95%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-index 1b3ace4b5863..7215a761b962 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -2,8 +2,8 @@
- /*
-  * SVA library for IOMMU drivers
-  */
--#ifndef _IOMMU_SVA_LIB_H
--#define _IOMMU_SVA_LIB_H
-+#ifndef _IOMMU_SVA_H
-+#define _IOMMU_SVA_H
- 
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
-@@ -72,4 +72,4 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 	return IOMMU_PAGE_RESP_INVALID;
- }
- #endif /* CONFIG_IOMMU_SVA */
--#endif /* _IOMMU_SVA_LIB_H */
-+#endif /* _IOMMU_SVA_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index e36c689f56c5..b33bc592ccfa 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -10,7 +10,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 8b9b78c7a67d..79e8991e9181 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 37d68eda1889..d16ab6d1cc05 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- #include <linux/tboot.h>
- 
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index db55b06cafdf..58656a93b201 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -25,7 +25,7 @@
- 
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index d1c522f4ab34..7a60b123e6b9 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index 536d34855c74..21ffbf1ac39e 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -6,7 +6,7 @@
- #include <linux/sched/mm.h>
- #include <linux/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c6e9c8e82771..8b9350e10d0b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -29,7 +29,7 @@
- #include <trace/events/iommu.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
--- 
-2.25.1
+Did you test OrangePi Lite2? They both use the same PMIC with a similar
+configuration, so it may be safe to assume that what works on OrangePi One Plus
+also works there, but I am not sure.
+
+OrangePi 3 already includes the OPP header and these changes, so it is safe but
+redundant.
+
+Either these changes need to be made in sun50i-h6-orangepi-one-plus.dts, or we
+need to remove the duplicate changes from sun50i-h6-orangepi-3.dts.
+
+Regards,
+Samuel
+
+> @@ -5,6 +5,7 @@
+>  /dts-v1/;
+>  
+>  #include "sun50i-h6.dtsi"
+> +#include "sun50i-h6-cpu-opp.dtsi"
+>  
+>  #include <dt-bindings/gpio/gpio.h>
+>  
+> @@ -64,6 +65,10 @@ reg_vcc5v: vcc5v {
+>  	};
+>  };
+>  
+> +&cpu0 {
+> +	cpu-supply = <&reg_dcdca>;
+> +};
+> +
+>  &de {
+>  	status = "okay";
+>  };
+> @@ -208,7 +213,7 @@ reg_cldo3: cldo3 {
+>  			reg_dcdca: dcdca {
+>  				regulator-always-on;
+>  				regulator-min-microvolt = <810000>;
+> -				regulator-max-microvolt = <1080000>;
+> +				regulator-max-microvolt = <1160000>;
+>  				regulator-name = "vdd-cpu";
+>  			};
+>  
+> 
 
