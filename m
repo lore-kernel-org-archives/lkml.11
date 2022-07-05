@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84407C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:28:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8775C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232824AbiGEO2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
+        id S232238AbiGEO26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232238AbiGEO2m (ORCPT
+        with ESMTP id S232918AbiGEO2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:28:42 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645B21122;
-        Tue,  5 Jul 2022 07:28:41 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id bi22-20020a05600c3d9600b003a04de22ab6so7372160wmb.1;
-        Tue, 05 Jul 2022 07:28:41 -0700 (PDT)
+        Tue, 5 Jul 2022 10:28:51 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CC42180
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 07:28:50 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id y18so3881656ljj.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 07:28:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=EXGRsUwQV8pvCL3786uZw0zAn6EurTKPfXnceiDNHOg=;
-        b=RITL+RwED/KE5IlUrS9wwoEoYkndhIaAJm7NNIo1bdNtKgyqBPH4m1ceJOG6CO4uoq
-         w02d9O+i7I6dOCAIIFYCGcEUVbwV41GZrynCay8YOIO73ZeaGAF8uFGfnXRPntEN+Xfs
-         ZUPR5EEuOzqbkkS8OoUKQ6OxKhywkKQTRToZqmG7BIUyE3hx9AGG/2+da6KJ6n3NwRCP
-         zi+qVbUj8tzyA/ylYrUP8Y/+snBG6kMvRqnTftMg1sgbVyAM2iJpycUE3xiz3inYanh/
-         mjdI9z73qWpwSXktH8FResKy8QZ+d7kR/rEsvhMBg/sk6J6Cxqr9Tvhll8kVaQuP7Qgh
-         IL8Q==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=zlsNRm2X6MLPImZjQVBD4LQfVI28AfW4RyaLrq540Ig=;
+        b=VyU9l7p3EytYWgY6C0c3ZWXTzJeb04M6alOtJc9BLR+BgTI27wjjOjjoKvBBLc/y5B
+         UzLmVKUHIoTbD+c1uvcpX7ZykpZEb2oriNmU0DG+o2Qm7E4tVHki18tF8cROHNBV5Bd1
+         UFhV3Lah4xrSyW2grgM4NoUA5+mR/1HKv7LoT/A1bQC/ew3yITwSPKpjHgKf6ArjqCUe
+         mowf23xRm5og0F2ET24nHuti+AMxyNtnPyNBYO705LDquYvz2d21G/TUV2yJcLLPu9Ti
+         HkmsEqagcQldEJozmHFYALyd11VAT/MSlnqLLqoYZSSA49fbPZMStx+uK4kAk0TG/2PH
+         h56A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=EXGRsUwQV8pvCL3786uZw0zAn6EurTKPfXnceiDNHOg=;
-        b=zpw+vagDF3v1YsEdsf+yXxsiyJKnofn5N8tFSihllomMOBv4l4iiY40KUP324sP4j5
-         hVXjCa6zweQNNIPKaQUGa/ReedCJJxt/gb8OFDAVYkUHp81zO7LWt17u4J+NpBTtj2Ob
-         OOyYzWQ+bJfo6pUsBpqDEXQ04L0WuSvRkxP/C5/McTqr49tt0D31oO7q/FgQArFZdPZr
-         dpvmd1ejJCsG8LbAXWA4ibZEOz/fOdPa79BBV9YGujuXdO9AWDdbO9oTOAMQ2bGe8beE
-         n4FH4aEOgyO4IzZm1g9YC1jV1o6FW/ItNM3Cxz6A94AZkr6mQvUWAa2ZDkdqSFenKORE
-         FMGw==
-X-Gm-Message-State: AJIora9NpqQpwL9AhbEMNAAwRxcptK0tUEzfQEepYV3x9yNIgSQte40j
-        M+C5CWuXn90SsXqMc0sK/J8=
-X-Google-Smtp-Source: AGRyM1sGJ2QZk0b8/Vdrhrq+x/YHFQY1wrT7fYYTeW2gA0XPN5xJWZxYgHf1cRt0ML9q/4LugxeBEg==
-X-Received: by 2002:a7b:ce8a:0:b0:3a1:8ead:2ae5 with SMTP id q10-20020a7bce8a000000b003a18ead2ae5mr23325867wmj.100.1657031319889;
-        Tue, 05 Jul 2022 07:28:39 -0700 (PDT)
-Received: from localhost (92.40.203.109.threembb.co.uk. [92.40.203.109])
-        by smtp.gmail.com with ESMTPSA id f18-20020adfb612000000b002185631adf0sm34394500wre.23.2022.07.05.07.28.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 07:28:39 -0700 (PDT)
-References: <20220705115439.5a189cde@canb.auug.org.au>
- <YsQvbia3TXHe/CYS@google.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the mfd tree
-Date:   Tue, 05 Jul 2022 15:26:59 +0100
-In-reply-to: <YsQvbia3TXHe/CYS@google.com>
-Message-ID: <KkVMxAUKFH8DtV5pcfrzcMIPidvJj2Ei@localhost>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zlsNRm2X6MLPImZjQVBD4LQfVI28AfW4RyaLrq540Ig=;
+        b=1ZXznSbKChXm9AhJSeTkhhwJZk1pXLuMv10lSFc/0Jv6KsERYR+zkl6gg6UfeXmTCh
+         Vc4jTMh29+aYtD+p/FtSZrJXAIoAYJflXnWNxD0GdK3NiX/30srcGt2xspup4VZqz0Ps
+         lEhXwnhTLVEi6zjPefyf6bhtn/VdByyMTCs41V3AZFx4spenUVVGuvlkM5mr7ZM96qy+
+         yanukfUK2PsKT278RvoAtjCbQjOhxeWvRfvW6VF2y6V2wobi9SJcmVe/hlkQxe+PLdNe
+         ONgboGpDfOeiGHEJObF7z3yBY1/eT7i2+zcgvytW8NI6an3m9UuIOyuBlq1d7IPWJQuL
+         FwBg==
+X-Gm-Message-State: AJIora/qn28ReAROa899CZFQwP9TlNG385xR0JZpV6SRXvdwEl0dHwew
+        orCo9jk2x7YdHlEBDWwMzOwO1Q==
+X-Google-Smtp-Source: AGRyM1tCyGcsny1RJepiIU6HQgUv3ZnyQnh+0PZjq3tARwJ642YpS3/ECcELuDy2rQjTlq5j4/L1Hg==
+X-Received: by 2002:a2e:594:0:b0:25d:30fa:eaa5 with SMTP id 142-20020a2e0594000000b0025d30faeaa5mr2392706ljf.86.1657031328532;
+        Tue, 05 Jul 2022 07:28:48 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id b21-20020ac247f5000000b0047f642dd78csm5726321lfp.17.2022.07.05.07.28.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 07:28:48 -0700 (PDT)
+Message-ID: <e84bb14b-a3a5-728d-e3a4-9d2e898a7aca@linaro.org>
+Date:   Tue, 5 Jul 2022 16:28:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 00/13] Add ipq806x missing bindings
+Content-Language: en-US
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220705133917.8405-1-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/07/2022 15:39, Christian Marangi wrote:
+> This series try to add some of the missing bindings for ipq806x.
+> 
+> This still lacks of the cpu bindings and all the bindings required
+> to scale cpu clk or L2. These will come later as the driver and
+> documentation require some changes.
+> 
+> So for now we try to add bindings that can directly applied without
+> making changes to any drivers.
 
-Lee Jones <lee.jones@linaro.org> writes:
+You mention here and in subject bindings, but your patchset does not
+have any bindings.
 
-> On Tue, 05 Jul 2022, Stephen Rothwell wrote:
->
->> Hi all,
->> 
->> After merging the mfd tree, today's linux-next build (arm
->> multi_v7_defconfig) failed like this:
->> 
->> drivers/mfd/axp20x.c:634:35: error: initialization of 'unsigned int (*)(struct regmap_irq_chip_data *, unsigned int,  int)' from incompatible pointer type 'int (*)(unsigned int,  int)' [-Werror=incompatible-pointer-types]
->>   634 |         .get_irq_reg            = axp192_get_irq_reg,
->>       |                                   ^~~~~~~~~~~~~~~~~~
->> drivers/mfd/axp20x.c:634:35: note: (near initialization for 'axp192_regmap_irq_chip.get_irq_reg')
->> 
->> Caused by commit
->> 
->>   8c7d8aa029a3 ("mfd: axp20x: Add support for AXP192")
->> 
->> I have used the mfd tree from next-20220704 for today.
->
-> Aidan, what are your plans?
-
-This is missing the prerequisite regmap-irq patches, sorry if it wasn't
-clear from the cover letter.
-
-Link: https://lore.kernel.org/lkml/20220623211420.918875-1-aidanmacdonald.0x0@gmail.com/
+Best regards,
+Krzysztof
