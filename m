@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B2CCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4439C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:05:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234045AbiGEMFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S233369AbiGEMFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233551AbiGEMDX (ORCPT
+        with ESMTP id S233159AbiGEMBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:03:23 -0400
+        Tue, 5 Jul 2022 08:01:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4345B25;
-        Tue,  5 Jul 2022 05:03:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8131839A;
+        Tue,  5 Jul 2022 05:01:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BCDF61830;
-        Tue,  5 Jul 2022 12:03:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F454C341C7;
-        Tue,  5 Jul 2022 12:03:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49E52617C9;
+        Tue,  5 Jul 2022 12:01:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CF68C341C7;
+        Tue,  5 Jul 2022 12:01:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022601;
-        bh=IWKfm8F1cPA6juHn4lr3qCQxyVHdxkVKzToPP41rfm4=;
+        s=korg; t=1657022499;
+        bh=/wYvsUJnxuTUS1B4t+EWOKud8Tk4NduNwwo9s+mmy08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xn6U8MVLoC5rFciavy86A93gWZBTc5Tlt6pjsfEwsbizZGNPhze/DsCLTGG6p79Fz
-         Ny/jo/bE6EN6ijEloRNBpAmjufPjt7BSbsIE3IS8rSvE6oXe41mmkKo8FSGy6hGAXR
-         euMYG06ZGhggjEs+bOQ5/c5L/PRr9Vi3bzBQjzqE=
+        b=Vf+PY2mSo8J9DmGsMztP9yYc/ydDnW1CjcmLrXnCSiOvW0A+6rsaN9tM5LyDVvVmG
+         p8Nq9U+EcNTQSfHFE1or7cEkQfneFA80syP+loX78h1TfL2K3Al1QzuseLZotqOPKO
+         QSSWM7CUX1OfPHm8RiDZzdWOm8K8qcQjIVxOhWbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
-        Jan Beulich <jbeulich@suse.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 4.19 27/33] xen/blkfront: fix leaking data in shared pages
-Date:   Tue,  5 Jul 2022 13:58:19 +0200
-Message-Id: <20220705115607.508870288@linuxfoundation.org>
+        stable@vger.kernel.org, Carlo Lobrano <c.lobrano@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Porcedda <fabio.porcedda@gmail.com>
+Subject: [PATCH 4.14 28/29] net: usb: qmi_wwan: add Telit 0x1060 composition
+Date:   Tue,  5 Jul 2022 13:58:16 +0200
+Message-Id: <20220705115607.173990178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
-References: <20220705115606.709817198@linuxfoundation.org>
+In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
+References: <20220705115606.333669144@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,54 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roger Pau Monne <roger.pau@citrix.com>
+From: Carlo Lobrano <c.lobrano@gmail.com>
 
-commit 2f446ffe9d737e9a844b97887919c4fda18246e7 upstream.
+commit 8d17a33b076d24aa4861f336a125c888fb918605 upstream.
 
-When allocating pages to be used for shared communication with the
-backend always zero them, this avoids leaking unintended data present
-on the pages.
+This patch adds support for Telit LN920 0x1060 composition
 
-This is CVE-2022-26365, part of XSA-403.
+0x1060: tty, adb, rmnet, tty, tty, tty, tty
 
-Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/xen-blkfront.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/usb/qmi_wwan.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -301,7 +301,7 @@ static int fill_grant_buffer(struct blkf
- 			goto out_of_memory;
- 
- 		if (info->feature_persistent) {
--			granted_page = alloc_page(GFP_NOIO);
-+			granted_page = alloc_page(GFP_NOIO | __GFP_ZERO);
- 			if (!granted_page) {
- 				kfree(gnt_list_entry);
- 				goto out_of_memory;
-@@ -1744,7 +1744,7 @@ static int setup_blkring(struct xenbus_d
- 	for (i = 0; i < info->nr_ring_pages; i++)
- 		rinfo->ring_ref[i] = GRANT_INVALID_REF;
- 
--	sring = alloc_pages_exact(ring_size, GFP_NOIO);
-+	sring = alloc_pages_exact(ring_size, GFP_NOIO | __GFP_ZERO);
- 	if (!sring) {
- 		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
- 		return -ENOMEM;
-@@ -2283,7 +2283,8 @@ static int blkfront_setup_indirect(struc
- 
- 		BUG_ON(!list_empty(&rinfo->indirect_pages));
- 		for (i = 0; i < num; i++) {
--			struct page *indirect_page = alloc_page(GFP_KERNEL);
-+			struct page *indirect_page = alloc_page(GFP_KERNEL |
-+			                                        __GFP_ZERO);
- 			if (!indirect_page)
- 				goto out_of_memory;
- 			list_add(&indirect_page->lru, &rinfo->indirect_pages);
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1307,6 +1307,7 @@ static const struct usb_device_id produc
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1031, 3)}, /* Telit LE910C1-EUX */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
++	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
 
 
