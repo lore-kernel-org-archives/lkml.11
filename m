@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A90CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD512CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238105AbiGEM1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
+        id S238134AbiGEM2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237120AbiGEMSp (ORCPT
+        with ESMTP id S237176AbiGEMSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758C31CB05;
-        Tue,  5 Jul 2022 05:14:00 -0700 (PDT)
+        Tue, 5 Jul 2022 08:18:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9DF1A813;
+        Tue,  5 Jul 2022 05:14:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0E4661988;
-        Tue,  5 Jul 2022 12:13:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 093F3C341CE;
-        Tue,  5 Jul 2022 12:13:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AB5B61988;
+        Tue,  5 Jul 2022 12:14:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65284C341C7;
+        Tue,  5 Jul 2022 12:14:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023239;
-        bh=H3cHElZmakp099udMmM81wk3z1IGrNHj4eQl9BFqUvM=;
+        s=korg; t=1657023244;
+        bh=HAHKvqO6ddqdbzuzqoWJr1Py4+nmgdEASbuixESpxY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kHjAuxZl5uthb0rq/qeVU52VJo4jQ3Zw5+6FvZUG9uzi1lAfjoT5VeVMd0gER47Sn
-         OztZcRh30qnJUhqd5W4Hqo2Dx5W8p1ZY685nLVAJLC2sl7rNC4SEEe9+7ro8C+jhDM
-         yloAdoryAu59T6um7G/wjU/p6O12/+RBXXSBLxiY=
+        b=S5mZUiZRweR0oK76eelLLGY8usQ5OB3HHbV3tRPeZelHwqNzlLzMBjAsF6pV3oQF5
+         NzAGZQrp6rFNqmFdyD0bdVLPscl5+v6eKsTWBKBEB68cULW0vexEcxlxf/acb8022/
+         Vb7P9OQAxDs+CRU5Ohz26c9M7UPXdYYsbntH5mQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org,
+        Stefan Seyfried <seife+kernel@b1-systems.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 88/98] drm/msm/gem: Fix error return on fence id alloc fail
-Date:   Tue,  5 Jul 2022 13:58:46 +0200
-Message-Id: <20220705115620.068116635@linuxfoundation.org>
+Subject: [PATCH 5.15 90/98] platform/x86: panasonic-laptop: de-obfuscate button codes
+Date:   Tue,  5 Jul 2022 13:58:48 +0200
+Message-Id: <20220705115620.124592430@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -49,35 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Stefan Seyfried <seife+kernel@b1-systems.com>
 
-[ Upstream commit 08de214138cdea438a0dfcb10d355a6650c6017c ]
+[ Upstream commit 65a3e6c8d3f7c346813a05f3d76fc46b640d76d6 ]
 
-This was a typo, we didn't actually want to return zero.
+In the definition of panasonic_keymap[] the key codes are given in
+decimal, later checks are done with hexadecimal values, which does
+not help in understanding the code.
+Additionally use two helper variables to shorten the code and make
+the logic more obvious.
 
-Fixes: a61acbbe9cf8 ("drm/msm: Track "seqno" fences by idr")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/491145/
-Link: https://lore.kernel.org/r/20220624184528.4036837-1-robdclark@gmail.com
+Fixes: ed83c9171829 ("platform/x86: panasonic-laptop: Resolve hotkey double trigger bug")
+Signed-off-by: Stefan Seyfried <seife+kernel@b1-systems.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20220624112340.10130-3-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_gem_submit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/panasonic-laptop.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_submit.c b/drivers/gpu/drm/msm/msm_gem_submit.c
-index 7fb7ff043bcd..1f74bab9e231 100644
---- a/drivers/gpu/drm/msm/msm_gem_submit.c
-+++ b/drivers/gpu/drm/msm/msm_gem_submit.c
-@@ -889,7 +889,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
- 	submit->fence_id = idr_alloc_cyclic(&queue->fence_idr,
- 			submit->user_fence, 1, INT_MAX, GFP_KERNEL);
- 	if (submit->fence_id < 0) {
--		ret = submit->fence_id = 0;
-+		ret = submit->fence_id;
- 		submit->fence_id = 0;
- 		goto out;
+diff --git a/drivers/platform/x86/panasonic-laptop.c b/drivers/platform/x86/panasonic-laptop.c
+index d4f444401496..84c16d9d9f8e 100644
+--- a/drivers/platform/x86/panasonic-laptop.c
++++ b/drivers/platform/x86/panasonic-laptop.c
+@@ -762,6 +762,8 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
+ 	struct input_dev *hotk_input_dev = pcc->input_dev;
+ 	int rc;
+ 	unsigned long long result;
++	unsigned int key;
++	unsigned int updown;
+ 
+ 	rc = acpi_evaluate_integer(pcc->handle, METHOD_HKEY_QUERY,
+ 				   NULL, &result);
+@@ -770,18 +772,22 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
+ 		return;
  	}
+ 
++	key = result & 0xf;
++	updown = result & 0x80; /* 0x80 == key down; 0x00 = key up */
++
+ 	/* hack: some firmware sends no key down for sleep / hibernate */
+-	if ((result & 0xf) == 0x7 || (result & 0xf) == 0xa) {
+-		if (result & 0x80)
++	if (key == 7 || key == 10) {
++		if (updown)
+ 			sleep_keydown_seen = 1;
+ 		if (!sleep_keydown_seen)
+ 			sparse_keymap_report_event(hotk_input_dev,
+-					result & 0xf, 0x80, false);
++					key, 0x80, false);
+ 	}
+ 
+-	if ((result & 0xf) == 0x7 || (result & 0xf) == 0x9 || (result & 0xf) == 0xa) {
++	/* for the magic values, see panasonic_keymap[] above */
++	if (key == 7 || key == 9 || key == 10) {
+ 		if (!sparse_keymap_report_event(hotk_input_dev,
+-						result & 0xf, result & 0x80, false))
++						key, updown, false))
+ 			pr_err("Unknown hotkey event: 0x%04llx\n", result);
+ 	}
+ }
 -- 
 2.35.1
 
