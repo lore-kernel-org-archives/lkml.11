@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D3DCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A90CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238120AbiGEM1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
+        id S238105AbiGEM1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237160AbiGEMSu (ORCPT
+        with ESMTP id S237120AbiGEMSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:50 -0400
+        Tue, 5 Jul 2022 08:18:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246A81A810;
-        Tue,  5 Jul 2022 05:14:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758C31CB05;
+        Tue,  5 Jul 2022 05:14:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A99EA61988;
-        Tue,  5 Jul 2022 12:14:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B73B7C341C7;
-        Tue,  5 Jul 2022 12:14:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0E4661988;
+        Tue,  5 Jul 2022 12:13:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 093F3C341CE;
+        Tue,  5 Jul 2022 12:13:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023242;
-        bh=xL9dQRPN4zdH0w5rxZ6Brj37J5MkQpsogia5Wn8fOkI=;
+        s=korg; t=1657023239;
+        bh=H3cHElZmakp099udMmM81wk3z1IGrNHj4eQl9BFqUvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ae3CEmg7b/Y+og6Vd8l4K+QZFRtXMjvu92RJQOTUsy0LxUUwTpnft2nj/M8sonbTX
-         nWj6yUlTpaMkG49ygEpXewJjPhfqAJo7TV91VVE+K3M6gsPDOn2JL/pLbuzILk+9Tc
-         FSSGCgQMJgU4HEWWUodhQZgYIWYYULSsXTWeLwV4=
+        b=kHjAuxZl5uthb0rq/qeVU52VJo4jQ3Zw5+6FvZUG9uzi1lAfjoT5VeVMd0gER47Sn
+         OztZcRh30qnJUhqd5W4Hqo2Dx5W8p1ZY685nLVAJLC2sl7rNC4SEEe9+7ro8C+jhDM
+         yloAdoryAu59T6um7G/wjU/p6O12/+RBXXSBLxiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 89/98] drivers: cpufreq: Add missing of_node_put() in qoriq-cpufreq.c
-Date:   Tue,  5 Jul 2022 13:58:47 +0200
-Message-Id: <20220705115620.096287667@linuxfoundation.org>
+Subject: [PATCH 5.15 88/98] drm/msm/gem: Fix error return on fence id alloc fail
+Date:   Tue,  5 Jul 2022 13:58:46 +0200
+Message-Id: <20220705115620.068116635@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -49,34 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 4ff5a9b6d95f3524bf6d27147df497eb21968300 ]
+[ Upstream commit 08de214138cdea438a0dfcb10d355a6650c6017c ]
 
-In qoriq_cpufreq_probe(), of_find_matching_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+This was a typo, we didn't actually want to return zero.
 
-Fixes: 157f527639da ("cpufreq: qoriq: convert to a platform driver")
-[ Viresh: Fixed Author's name in commit log ]
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fixes: a61acbbe9cf8 ("drm/msm: Track "seqno" fences by idr")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/491145/
+Link: https://lore.kernel.org/r/20220624184528.4036837-1-robdclark@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/qoriq-cpufreq.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/msm/msm_gem_submit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/cpufreq/qoriq-cpufreq.c b/drivers/cpufreq/qoriq-cpufreq.c
-index 6b6b20da2bcf..573b417e1483 100644
---- a/drivers/cpufreq/qoriq-cpufreq.c
-+++ b/drivers/cpufreq/qoriq-cpufreq.c
-@@ -275,6 +275,7 @@ static int qoriq_cpufreq_probe(struct platform_device *pdev)
- 
- 	np = of_find_matching_node(NULL, qoriq_cpufreq_blacklist);
- 	if (np) {
-+		of_node_put(np);
- 		dev_info(&pdev->dev, "Disabling due to erratum A-008083");
- 		return -ENODEV;
+diff --git a/drivers/gpu/drm/msm/msm_gem_submit.c b/drivers/gpu/drm/msm/msm_gem_submit.c
+index 7fb7ff043bcd..1f74bab9e231 100644
+--- a/drivers/gpu/drm/msm/msm_gem_submit.c
++++ b/drivers/gpu/drm/msm/msm_gem_submit.c
+@@ -889,7 +889,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
+ 	submit->fence_id = idr_alloc_cyclic(&queue->fence_idr,
+ 			submit->user_fence, 1, INT_MAX, GFP_KERNEL);
+ 	if (submit->fence_id < 0) {
+-		ret = submit->fence_id = 0;
++		ret = submit->fence_id;
+ 		submit->fence_id = 0;
+ 		goto out;
  	}
 -- 
 2.35.1
