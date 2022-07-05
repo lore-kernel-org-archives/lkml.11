@@ -2,170 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A399AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66239C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233743AbiGEDtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 23:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
+        id S234014AbiGEDtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 23:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiGEDtO (ORCPT
+        with ESMTP id S231394AbiGEDtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 23:49:14 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C7112748
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 20:49:10 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id q82so3151691pgq.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 20:49:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v8W5VXSsMR9SIWfIFdd/+qIMKQzpXYNtEC9shhUXWyA=;
-        b=yTwRafuNQfMiOZKlJUe3g3ODrRNEvzMm28lOhNj1X0MgwQODD9lPwqJ5LYMSEnuVwD
-         K8bV07NN4UeyNpGqBlKha/cGRnSuFHQU0g4Wu0Iackun2GyW5x7h1KvMO4dQzhQif9fS
-         ZBsrWVnb4EMtA+LecCu7h0U0AuR0WQIX9ywup/Sb8UXLwuA8A3HPibNgriXtYKqRiwAc
-         xxfl291CLwWlJIFmy6V+dnHkf6wW2iJ6sIou6jyo/m8Vtt6ueqFrlJHpey2yfGn1xXqw
-         AYQDPvPoL/5yl/t8aBv6lpWeF0oLjTps0AYVCqrHL58Ce6pUj1ZltI6MpdyvVJttCqeE
-         446Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v8W5VXSsMR9SIWfIFdd/+qIMKQzpXYNtEC9shhUXWyA=;
-        b=oBg411ahmXy3JgzVZmrbonxZxxMK9v/psZK7b5rO9V94vjSxRJX55JDlOqadQml8BA
-         r3/Lgzt8H4aCx84JMR6XZ0cpf/z53uSgj/Dlc4l1ijbrCr0hrJhoZTLe7yDbTAP/3AKE
-         H0b/xPxb9iC5mTpAMJNcFWGFMAwaEbN1THgsnIZ9ZCt+l8Uyme+b6pa+MZ46uChW7J9E
-         FhgFK6AmF/m5fE0shTMD/0siRVll/6wOqPC5RS5YNVfP3QIrcr8D5vKCnDeuJUv3zvis
-         2y2fHYae3zugRZ+gWaisDtMiN6gDbnopTHmObifAG30eAKAdfJoIeiGUQDw1y02O0Yts
-         fAIw==
-X-Gm-Message-State: AJIora/hag23BYH2iwkOBi+ozwklkxz7xeOh8SfvoCKENvW8DpWscfm/
-        U/yTR529vwRKiu693DZM8JFX0A==
-X-Google-Smtp-Source: AGRyM1uKg1CAEOtf50oeywo6H4iwYYQyg4ajAsUic6maJyQPqlo+e65AJ5ML4Y2oBCkIVlDDQwz3hw==
-X-Received: by 2002:a63:64c1:0:b0:411:e736:a790 with SMTP id y184-20020a6364c1000000b00411e736a790mr16838370pgb.45.1656992949862;
-        Mon, 04 Jul 2022 20:49:09 -0700 (PDT)
-Received: from C02FT5A6MD6R.bytedance.net ([61.120.150.78])
-        by smtp.gmail.com with ESMTPSA id p5-20020aa78605000000b0052527ca27b2sm22484842pfn.143.2022.07.04.20.49.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 20:49:09 -0700 (PDT)
-From:   Gang Li <ligang.bdlg@bytedance.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Gang Li <ligang.bdlg@bytedance.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] mm, hugetlb: skip irrelevant nodes in show_free_areas()
-Date:   Tue,  5 Jul 2022 11:48:40 +0800
-Message-Id: <20220705034841.40931-1-ligang.bdlg@bytedance.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 4 Jul 2022 23:49:41 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C4C10FEB;
+        Mon,  4 Jul 2022 20:49:40 -0700 (PDT)
+X-UUID: 2a6831c38c2a41b8a51a4984f1fa66c4-20220705
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:024001bc-b4c3-4759-b139-709d77edd7ca,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:0f94e32,CLOUDID:fa2e6b63-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 2a6831c38c2a41b8a51a4984f1fa66c4-20220705
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 650608357; Tue, 05 Jul 2022 11:49:35 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 5 Jul 2022 11:49:33 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 5 Jul 2022 11:49:33 +0800
+Message-ID: <7847ac7e438d8c8544d88c960eca3af00d5f3520.camel@mediatek.com>
+Subject: Re: [PATCH v15 05/16] drm/mediatek: dpi: Add support for
+ quantization range
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <xinlei.lee@mediatek.com>, <liangxu.xu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 5 Jul 2022 11:49:33 +0800
+In-Reply-To: <20220701035845.16458-6-rex-bc.chen@mediatek.com>
+References: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
+         <20220701035845.16458-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-show_free_areas() allows to filter out node specific data which is
-irrelevant to the allocation request. But hugetlb_show_meminfo() still
-show hugetlb on all nodes, which is redundant and unnecessary.
+Hi, Bo-Chen:
 
-Use show_mem_node_skip() to skip irrelevant nodes. And replace
-hugetlb_show_meminfo() with hugetlb_show_meminfo_node(nid).
+On Fri, 2022-07-01 at 11:58 +0800, Bo-Chen Chen wrote:
+> For RGB colorimetry, CTA-861 support both limited and full range data
+> when receiving video with RGB color space.
+> We use drm_default_rgb_quant_range() to determine the correct
+> setting.
 
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
----
-v2: replace hugetlb_show_meminfo() with hugetlb_show_meminfo_node(nid) to avoid
-    exporting show_mem_node_skip.
----
- include/linux/hugetlb.h |  4 ++--
- mm/hugetlb.c            | 21 ++++++++-------------
- mm/page_alloc.c         | 10 ++++++++--
- 3 files changed, 18 insertions(+), 17 deletions(-)
+Applied to mediatek-drm-next [1], thanks.
 
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index 29c4d0883d36..21795e62398b 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -155,7 +155,7 @@ void __unmap_hugepage_range_final(struct mmu_gather *tlb,
- 			  struct page *ref_page, zap_flags_t zap_flags);
- void hugetlb_report_meminfo(struct seq_file *);
- int hugetlb_report_node_meminfo(char *buf, int len, int nid);
--void hugetlb_show_meminfo(void);
-+void hugetlb_show_meminfo_node(int nid);
- unsigned long hugetlb_total_pages(void);
- vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
- 			unsigned long address, unsigned int flags);
-@@ -301,7 +301,7 @@ static inline int hugetlb_report_node_meminfo(char *buf, int len, int nid)
- 	return 0;
- }
- 
--static inline void hugetlb_show_meminfo(void)
-+static inline void hugetlb_show_meminfo_node(int nid)
- {
- }
- 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index ca081078e814..c87049c4126e 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4490,22 +4490,17 @@ int hugetlb_report_node_meminfo(char *buf, int len, int nid)
- 			     nid, h->surplus_huge_pages_node[nid]);
- }
- 
--void hugetlb_show_meminfo(void)
-+void hugetlb_show_meminfo_node(int nid)
- {
- 	struct hstate *h;
--	int nid;
- 
--	if (!hugepages_supported())
--		return;
--
--	for_each_node_state(nid, N_MEMORY)
--		for_each_hstate(h)
--			pr_info("Node %d hugepages_total=%u hugepages_free=%u hugepages_surp=%u hugepages_size=%lukB\n",
--				nid,
--				h->nr_huge_pages_node[nid],
--				h->free_huge_pages_node[nid],
--				h->surplus_huge_pages_node[nid],
--				huge_page_size(h) / SZ_1K);
-+	for_each_hstate(h)
-+		pr_info("Node %d hugepages_total=%u hugepages_free=%u hugepages_surp=%u hugepages_size=%lukB\n",
-+			nid,
-+			h->nr_huge_pages_node[nid],
-+			h->free_huge_pages_node[nid],
-+			h->surplus_huge_pages_node[nid],
-+			huge_page_size(h) / SZ_1K);
- }
- 
- void hugetlb_report_usage(struct seq_file *m, struct mm_struct *mm)
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 2eb6ad5a650a..684c2e410923 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6014,7 +6014,7 @@ static void show_migration_types(unsigned char type)
- void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- {
- 	unsigned long free_pcp = 0;
--	int cpu;
-+	int cpu, nid;
- 	struct zone *zone;
- 	pg_data_t *pgdat;
- 
-@@ -6202,7 +6202,13 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 		printk(KERN_CONT "= %lukB\n", K(total));
- 	}
- 
--	hugetlb_show_meminfo();
-+	if (hugepages_supported()) {
-+		for_each_node_state(nid, N_MEMORY) {
-+			if (show_mem_node_skip(filter, nid, nodemask))
-+				continue;
-+			hugetlb_show_meminfo_node(nid);
-+		}
-+	}
- 
- 	printk("%ld total pagecache pages\n", global_node_page_state(NR_FILE_PAGES));
- 
--- 
-2.20.1
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/log/?h=mediatek-drm-next
+
+Regards,
+CK
+
+> 
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: CK Hu <ck.hu@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 34 ++++++++++++++++++--------
+> ----
+>  1 file changed, 21 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 3473ee18ad97..0855bbdfe4e1 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -238,16 +238,30 @@ static void mtk_dpi_config_fb_size(struct
+> mtk_dpi *dpi, u32 width, u32 height)
+>  	mtk_dpi_mask(dpi, DPI_SIZE, height << VSIZE, VSIZE_MASK);
+>  }
+>  
+> -static void mtk_dpi_config_channel_limit(struct mtk_dpi *dpi,
+> -					 struct mtk_dpi_yc_limit
+> *limit)
+> +static void mtk_dpi_config_channel_limit(struct mtk_dpi *dpi)
+>  {
+> -	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit->y_bottom << Y_LIMINT_BOT,
+> +	struct mtk_dpi_yc_limit limit;
+> +
+> +	if (drm_default_rgb_quant_range(&dpi->mode) ==
+> +	    HDMI_QUANTIZATION_RANGE_LIMITED) {
+> +		limit.y_bottom = 0x10;
+> +		limit.y_top = 0xfe0;
+> +		limit.c_bottom = 0x10;
+> +		limit.c_top = 0xfe0;
+> +	} else {
+> +		limit.y_bottom = 0;
+> +		limit.y_top = 0xfff;
+> +		limit.c_bottom = 0;
+> +		limit.c_top = 0xfff;
+> +	}
+> +
+> +	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit.y_bottom << Y_LIMINT_BOT,
+>  		     Y_LIMINT_BOT_MASK);
+> -	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit->y_top << Y_LIMINT_TOP,
+> +	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit.y_top << Y_LIMINT_TOP,
+>  		     Y_LIMINT_TOP_MASK);
+> -	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit->c_bottom << C_LIMIT_BOT,
+> +	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit.c_bottom << C_LIMIT_BOT,
+>  		     C_LIMIT_BOT_MASK);
+> -	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit->c_top << C_LIMIT_TOP,
+> +	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit.c_top << C_LIMIT_TOP,
+>  		     C_LIMIT_TOP_MASK);
+>  }
+>  
+> @@ -439,7 +453,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
+>  static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+>  				    struct drm_display_mode *mode)
+>  {
+> -	struct mtk_dpi_yc_limit limit;
+>  	struct mtk_dpi_polarities dpi_pol;
+>  	struct mtk_dpi_sync_param hsync;
+>  	struct mtk_dpi_sync_param vsync_lodd = { 0 };
+> @@ -474,11 +487,6 @@ static int mtk_dpi_set_display_mode(struct
+> mtk_dpi *dpi,
+>  	dev_dbg(dpi->dev, "Got  PLL %lu Hz, pixel clock %lu Hz\n",
+>  		pll_rate, vm.pixelclock);
+>  
+> -	limit.c_bottom = 0x0010;
+> -	limit.c_top = 0x0FE0;
+> -	limit.y_bottom = 0x0010;
+> -	limit.y_top = 0x0FE0;
+> -
+>  	dpi_pol.ck_pol = MTK_DPI_POLARITY_FALLING;
+>  	dpi_pol.de_pol = MTK_DPI_POLARITY_RISING;
+>  	dpi_pol.hsync_pol = vm.flags & DISPLAY_FLAGS_HSYNC_HIGH ?
+> @@ -526,7 +534,7 @@ static int mtk_dpi_set_display_mode(struct
+> mtk_dpi *dpi,
+>  	else
+>  		mtk_dpi_config_fb_size(dpi, vm.hactive, vm.vactive);
+>  
+> -	mtk_dpi_config_channel_limit(dpi, &limit);
+> +	mtk_dpi_config_channel_limit(dpi);
+>  	mtk_dpi_config_bit_num(dpi, dpi->bit_num);
+>  	mtk_dpi_config_channel_swap(dpi, dpi->channel_swap);
+>  	mtk_dpi_config_yc_map(dpi, dpi->yc_map);
 
