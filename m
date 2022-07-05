@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44780C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C84CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232359AbiGEJvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
+        id S232380AbiGEJvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231670AbiGEJtV (ORCPT
+        with ESMTP id S231659AbiGEJtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 05:49:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D725713CCB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9491010FD3;
         Tue,  5 Jul 2022 02:49:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39EC9B81717;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FF42B81729;
         Tue,  5 Jul 2022 09:49:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE814C341F8;
-        Tue,  5 Jul 2022 09:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D495C36B1D;
+        Tue,  5 Jul 2022 09:49:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657014542;
-        bh=VVkT3WcSuYWVhQCR5RYlLLnDzsESZO8fObMK2FSVjIw=;
+        s=k20201202; t=1657014543;
+        bh=wTKx6W4Z5/SzoW6B7e1sclkQeLott98hZJzN8+cbLRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n1j6b08PGs9riVz6Uho/gf8VDJURhfQhgNoAt0IC24NPR6pPpOg76DjNhuZj87gqP
-         fPkA9kLDgD0vwqcjfHy0A5E/jDIthd99ZcpbR9uXxbNhV9gtcVNS6DTq+qb3nScIP2
-         +2ba23ZN72lqJ8fsjOaQTotNkQ9RMvlmiX/ZH6O09bkcWueFd41HqOENr3JrAujrF2
-         oKCMZBzy1GoZeH8mIIAy7oPhXXluEx361bTP/INi+66L5ZCQHbeBDUgqs2bpO7I3vb
-         +getCMVp853N34x/DAA4ge3l4vZb1cx/AQyYA+hV7YCVeW0dpn6p0ImP+2wtWoJhZM
-         B1hOHRC2ofQlw==
+        b=a1UDkjhpJ1LiiTnUQPuLSaqHWqYQFRlsJGrzkibKBYJ4jCreF8eurpVYBJjp3nTv2
+         W75AZYLhkemjAHPBqoDHSiFkCNiWyq6jpB2+9KYWXC9VWd1oOBW1ieA0SbOYOa2OaM
+         5eGBgE45DC2Y+B1I4X4XNPZhtiQEOso3CPRUSI/txEWXQiZ5752KB4+xnJ78Spove5
+         pZpUDaKBDPA2/HRzgYQTF9JNl96Stzrlc1nzYe0Ww1HzSiBUjHoBH4YH2jChjg6VLV
+         trwQFK8BszFRFovHoIg3DBS9QP5ZyeM7YPw5qzlB+wQ7lVdrXyy31arMbk+ceHriVh
+         DT/JFSbh3mhNw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8fB1-0004XU-P4; Tue, 05 Jul 2022 11:49:03 +0200
+        id 1o8fB2-0004Xj-7H; Tue, 05 Jul 2022 11:49:04 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,9 +44,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 14/43] dt-bindings: phy: qcom,qmp-pcie: clean up clock constraints
-Date:   Tue,  5 Jul 2022 11:42:10 +0200
-Message-Id: <20220705094239.17174-15-johan+linaro@kernel.org>
+Subject: [PATCH 19/43] dt-bindings: phy: qcom,qmp-pcie: deprecate PIPE clock name
+Date:   Tue,  5 Jul 2022 11:42:15 +0200
+Message-Id: <20220705094239.17174-20-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220705094239.17174-1-johan+linaro@kernel.org>
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
@@ -56,31 +56,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PCIe PHY binding requires two, three or four clocks.
+Drop the bogus "lane" suffix from the PHY PIPE clock name and mark the
+old name as deprecated.
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml     | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
-index 7cdc1cce06cf..0486b2b48d72 100644
+index 3fc08af41144..32f872de8f4b 100644
 --- a/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
 +++ b/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
-@@ -43,11 +43,11 @@ properties:
-   ranges: true
+@@ -80,8 +80,12 @@ patternProperties:
+           - description: PIPE clock
  
-   clocks:
--    minItems: 1
-+    minItems: 2
-     maxItems: 4
+       clock-names:
+-        items:
+-          - const: pipe0
++        oneOf:
++          - items:
++              - const: pipe
++          - items:
++              - const: pipe0
++            deprecated: true
  
-   clock-names:
--    minItems: 1
-+    minItems: 2
-     maxItems: 4
+       "#clock-cells":
+         const: 0
+@@ -295,7 +299,7 @@ examples:
+                   <0xe00 0xf4>;
  
-   resets:
+             clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
+-            clock-names = "pipe0";
++            clock-names = "pipe";
+ 
+             #clock-cells = <0>;
+             clock-output-names = "pcie_1_pipe_clk";
 -- 
 2.35.1
 
