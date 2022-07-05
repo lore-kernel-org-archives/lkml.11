@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7287CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:04:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5538C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiGEMEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
+        id S233675AbiGEME6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiGEMCv (ORCPT
+        with ESMTP id S232577AbiGEMCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:02:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA0C1091;
-        Tue,  5 Jul 2022 05:02:51 -0700 (PDT)
+        Tue, 5 Jul 2022 08:02:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF98E17E28;
+        Tue,  5 Jul 2022 05:02:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC53DB817CC;
-        Tue,  5 Jul 2022 12:02:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3143BC341C7;
-        Tue,  5 Jul 2022 12:02:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C43161840;
+        Tue,  5 Jul 2022 12:02:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CACC341C7;
+        Tue,  5 Jul 2022 12:02:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022568;
-        bh=zKBhc+JcZSs1Vi0bBzDnLQe1tRnaW45vFC1cLNXiYTs=;
+        s=korg; t=1657022574;
+        bh=edsKe0FVOvsRAYwbS5XjA2Hdnp3PFY86vrBZUlfMG/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dFh5I+bmMHUqmDbA+aIipQh/neahbf0ICchV9Ubt+FIlizELJkVmNHW4TUKHd1BCR
-         Q3oo+FhdR+vH+PEQxQkY6gg+BJsDRnvIDmz8/mrlFA5EqR3tgLs9ckCKHM4sLzlLnf
-         mjrTBFcTv6GZnhRmiQPW5mLjROeH4o9uFVz/BB7c=
+        b=qVTW77NAgPUkGmDxTMV2wm1/CuwG4uqXziTk2npJ9Q0sQV0dGr3BQGnlKa2bKx9qG
+         tvdnUJakLlsF4avu0hjXhvNw1EjtvR6tVdE5UDJ1RMS7GwzykTkG60RHCAnDjxUydR
+         t8U8oJ0AvAv1EVqFDKL0ROKvWz7gTAnoaucIid9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.19 03/33] dm raid: fix KASAN warning in raid5_add_disks
-Date:   Tue,  5 Jul 2022 13:57:55 +0200
-Message-Id: <20220705115606.811852146@linuxfoundation.org>
+        stable@vger.kernel.org, Bruce Fields <bfields@fieldses.org>,
+        Zorro Lang <zlang@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 4.19 05/33] SUNRPC: Fix READ_PLUS crasher
+Date:   Tue,  5 Jul 2022 13:57:57 +0200
+Message-Id: <20220705115606.868578059@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
 References: <20220705115606.709817198@linuxfoundation.org>
@@ -48,32 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 617b365872a247480e9dcd50a32c8d1806b21861 upstream.
+commit a23dd544debcda4ee4a549ec7de59e85c3c8345c upstream.
 
-There's a KASAN warning in raid5_add_disk when running the LVM testsuite.
-The warning happens in the test
-lvconvert-raid-reshape-linear_to_raid6-single-type.sh. We fix the warning
-by verifying that rdev->saved_raid_disk is within limits.
+Looks like there are still cases when "space_left - frag1bytes" can
+legitimately exceed PAGE_SIZE. Ensure that xdr->end always remains
+within the current encode buffer.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Reported-by: Bruce Fields <bfields@fieldses.org>
+Reported-by: Zorro Lang <zlang@redhat.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216151
+Fixes: 6c254bf3b637 ("SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid5.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/sunrpc/xdr.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -7716,6 +7716,7 @@ static int raid5_add_disk(struct mddev *
+--- a/net/sunrpc/xdr.c
++++ b/net/sunrpc/xdr.c
+@@ -544,7 +544,7 @@ static __be32 *xdr_get_next_encode_buffe
  	 */
- 	if (rdev->saved_raid_disk >= 0 &&
- 	    rdev->saved_raid_disk >= first &&
-+	    rdev->saved_raid_disk <= last &&
- 	    conf->disks[rdev->saved_raid_disk].rdev == NULL)
- 		first = rdev->saved_raid_disk;
- 
+ 	xdr->p = (void *)p + frag2bytes;
+ 	space_left = xdr->buf->buflen - xdr->buf->len;
+-	if (space_left - nbytes >= PAGE_SIZE)
++	if (space_left - frag1bytes >= PAGE_SIZE)
+ 		xdr->end = (void *)p + PAGE_SIZE;
+ 	else
+ 		xdr->end = (void *)p + space_left - frag1bytes;
 
 
