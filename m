@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43CDCCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48ABACCA499
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239309AbiGEMeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
+        id S239717AbiGEMe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237339AbiGEMZd (ORCPT
+        with ESMTP id S237942AbiGEM0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:25:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6E3B10;
-        Tue,  5 Jul 2022 05:17:55 -0700 (PDT)
+        Tue, 5 Jul 2022 08:26:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB244E8E;
+        Tue,  5 Jul 2022 05:18:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 675C561983;
-        Tue,  5 Jul 2022 12:17:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FDEFC341C7;
-        Tue,  5 Jul 2022 12:17:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A17A61983;
+        Tue,  5 Jul 2022 12:18:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89099C341C7;
+        Tue,  5 Jul 2022 12:18:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023474;
-        bh=rsVKk2lESA91fg3Gj3C/Wvb3ZqWorPFEk5GCBGeD4Nc=;
+        s=korg; t=1657023504;
+        bh=wraxMTguvxnPG3GTR6lwBTzZrcj2j30x7J86fvpGx5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZ7N0iJ+yjeCt7wJQqd6KSfLdCH9r9ep4Ix/KVhbcxQB5Ze6D60uDlkIQp2uOrSuC
-         31lpg3zbfaN3RhY+EsYopl2Omoc8kC+hH7pF+JDAHcmp+TCsXMaon3wD7dDcEDSVWM
-         aNqM0YhQjbjboVN7fJ63sDIKn1Us0tvQLovZN7b4=
+        b=V7kQhz5EUFSLRdHZl/JTfAZbcrpIeb1PzTTQrQnY/VtRcGDnkOLjFc0pjeiW6soHb
+         tmFPVsmjULUqdehB2y9gXIf9IN2bbbR7xsIcLB2R3IIyC+c3eFDzRBx6CNGXQOXLIF
+         nq8Q1EAKgb8pBjAEMzcoS3XmzzkZMA/RlxJ8W16Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.18 072/102] nvmet-tcp: fix regression in data_digest calculation
-Date:   Tue,  5 Jul 2022 13:58:38 +0200
-Message-Id: <20220705115620.452354110@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 043/102] net: ipv6: unexport __init-annotated seg6_hmac_net_init()
+Date:   Tue,  5 Jul 2022 13:58:09 +0200
+Message-Id: <20220705115619.633615794@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,81 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: YueHaibing <yuehaibing@huawei.com>
 
-commit ed0691cf55140ce0f3fb100225645d902cce904b upstream.
+commit 53ad46169fe2996fe1b623ba6c9c4fa33847876f upstream.
 
-Data digest calculation iterates over command mapped iovec. However
-since commit bac04454ef9f we unmap the iovec before we handle the data
-digest, and since commit 69b85e1f1d1d we clear nr_mapped when we unmap
-the iov.
+As of commit 5801f064e351 ("net: ipv6: unexport __init-annotated seg6_hmac_init()"),
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Instead of open-coding the command iov traversal, simply call
-crypto_ahash_digest with the command sg that is already allocated (we
-already do that for the send path). Rename nvmet_tcp_send_ddgst to
-nvmet_tcp_calc_ddgst and call it from send and recv paths.
+This remove the EXPORT_SYMBOL to fix modpost warning:
 
-Fixes: 69b85e1f1d1d ("nvmet-tcp: add an helper to free the cmd buffers")
-Fixes: bac04454ef9f ("nvmet-tcp: fix kmap leak when data digest in use")
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+WARNING: modpost: vmlinux.o(___ksymtab+seg6_hmac_net_init+0x0): Section mismatch in reference from the variable __ksymtab_seg6_hmac_net_init to the function .init.text:seg6_hmac_net_init()
+The symbol seg6_hmac_net_init is exported and annotated __init
+Fix this by removing the __init annotation of seg6_hmac_net_init or drop the export.
+
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Link: https://lore.kernel.org/r/20220628033134.21088-1-yuehaibing@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/target/tcp.c |   23 +++--------------------
- 1 file changed, 3 insertions(+), 20 deletions(-)
+ net/ipv6/seg6_hmac.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/nvme/target/tcp.c
-+++ b/drivers/nvme/target/tcp.c
-@@ -405,7 +405,7 @@ err:
- 	return NVME_SC_INTERNAL;
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -406,7 +406,6 @@ int __net_init seg6_hmac_net_init(struct
+ 
+ 	return rhashtable_init(&sdata->hmac_infos, &rht_params);
  }
+-EXPORT_SYMBOL(seg6_hmac_net_init);
  
--static void nvmet_tcp_send_ddgst(struct ahash_request *hash,
-+static void nvmet_tcp_calc_ddgst(struct ahash_request *hash,
- 		struct nvmet_tcp_cmd *cmd)
+ void seg6_hmac_exit(void)
  {
- 	ahash_request_set_crypt(hash, cmd->req.sg,
-@@ -413,23 +413,6 @@ static void nvmet_tcp_send_ddgst(struct
- 	crypto_ahash_digest(hash);
- }
- 
--static void nvmet_tcp_recv_ddgst(struct ahash_request *hash,
--		struct nvmet_tcp_cmd *cmd)
--{
--	struct scatterlist sg;
--	struct kvec *iov;
--	int i;
--
--	crypto_ahash_init(hash);
--	for (i = 0, iov = cmd->iov; i < cmd->nr_mapped; i++, iov++) {
--		sg_init_one(&sg, iov->iov_base, iov->iov_len);
--		ahash_request_set_crypt(hash, &sg, NULL, iov->iov_len);
--		crypto_ahash_update(hash);
--	}
--	ahash_request_set_crypt(hash, NULL, (void *)&cmd->exp_ddgst, 0);
--	crypto_ahash_final(hash);
--}
--
- static void nvmet_setup_c2h_data_pdu(struct nvmet_tcp_cmd *cmd)
- {
- 	struct nvme_tcp_data_pdu *pdu = cmd->data_pdu;
-@@ -454,7 +437,7 @@ static void nvmet_setup_c2h_data_pdu(str
- 
- 	if (queue->data_digest) {
- 		pdu->hdr.flags |= NVME_TCP_F_DDGST;
--		nvmet_tcp_send_ddgst(queue->snd_hash, cmd);
-+		nvmet_tcp_calc_ddgst(queue->snd_hash, cmd);
- 	}
- 
- 	if (cmd->queue->hdr_digest) {
-@@ -1137,7 +1120,7 @@ static void nvmet_tcp_prep_recv_ddgst(st
- {
- 	struct nvmet_tcp_queue *queue = cmd->queue;
- 
--	nvmet_tcp_recv_ddgst(queue->rcv_hash, cmd);
-+	nvmet_tcp_calc_ddgst(queue->rcv_hash, cmd);
- 	queue->offset = 0;
- 	queue->left = NVME_TCP_DIGEST_LENGTH;
- 	queue->rcv_state = NVMET_TCP_RECV_DDGST;
 
 
