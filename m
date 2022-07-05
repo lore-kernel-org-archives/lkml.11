@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 965FCCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A89C9CCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239055AbiGEMeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
+        id S239096AbiGEMeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236791AbiGEMZZ (ORCPT
+        with ESMTP id S236909AbiGEMZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:25:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2891B7AE;
-        Tue,  5 Jul 2022 05:17:33 -0700 (PDT)
+        Tue, 5 Jul 2022 08:25:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33991902E;
+        Tue,  5 Jul 2022 05:17:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47E1D61AC4;
-        Tue,  5 Jul 2022 12:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FA6FC341C7;
-        Tue,  5 Jul 2022 12:17:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71D1BB817D1;
+        Tue,  5 Jul 2022 12:17:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAEA0C341C7;
+        Tue,  5 Jul 2022 12:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023452;
-        bh=5qoD6UHc/fsEDBxkPUURqSUA8zaiEj7hQnecIHLEC2Y=;
+        s=korg; t=1657023461;
+        bh=jzkFDmSMQEdcCXzeN1VJevw4S6A6EmA4JQDB+UhsubQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zMnBfjffQ0ePuWqwxmLVrxHNAnXLiZSb47pjxDKTC/y54pwgGot/uDAifKg3GmSx7
-         YZ/xYBqsxdSzvuHcCt6XfKE0edCu0R6BDiurd4oZo/5zY62+be+FN1E7nzFmp+nlMm
-         7wfgKTPxIMMvg91GngvPVgoMhQKmY2Zmm4RWufEY=
+        b=vsLmreln28ZdQIwwR5OQrzqVG2XBw+61r3CX4fkHBCkA2YP0AMITgU5GT+/DJ3NuT
+         wxHTVlEHWDdxFvY4fCPhPJPxAqwNy8nw1u/t3qcRRVFvwxou+3npll4S3LVdK60UMa
+         aYewrG+eHkyMLUk315oounDberwzQYI9pT4uRjX4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 038/102] mptcp: fix race on unaccepted mptcp sockets
-Date:   Tue,  5 Jul 2022 13:58:04 +0200
-Message-Id: <20220705115619.494220072@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 067/102] NFC: nxp-nci: Dont issue a zero length i2c_master_read()
+Date:   Tue,  5 Jul 2022 13:58:33 +0200
+Message-Id: <20220705115620.308295445@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,129 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Michael Walle <michael@walle.cc>
 
-commit 6aeed9045071f2252ff4e98fc13d1e304f33e5b0 upstream.
+commit eddd95b9423946aaacb55cac6a9b2cea8ab944fc upstream.
 
-When the listener socket owning the relevant request is closed,
-it frees the unaccepted subflows and that causes later deletion
-of the paired MPTCP sockets.
+There are packets which doesn't have a payload. In that case, the second
+i2c_master_read() will have a zero length. But because the NFC
+controller doesn't have any data left, it will NACK the I2C read and
+-ENXIO will be returned. In case there is no payload, just skip the
+second i2c master read.
 
-The mptcp socket's worker can run in the time interval between such delete
-operations. When that happens, any access to msk->first will cause an UaF
-access, as the subflow cleanup did not cleared such field in the mptcp
-socket.
-
-Address the issue explicitly traversing the listener socket accept
-queue at close time and performing the needed cleanup on the pending
-msk.
-
-Note that the locking is a bit tricky, as we need to acquire the msk
-socket lock, while still owning the subflow socket one.
-
-Fixes: 86e39e04482b ("mptcp: keep track of local endpoint still available for each msk")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mptcp/protocol.c |    5 ++++
- net/mptcp/protocol.h |    2 +
- net/mptcp/subflow.c  |   52 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 59 insertions(+)
+ drivers/nfc/nxp-nci/i2c.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2305,6 +2305,11 @@ static void __mptcp_close_ssk(struct soc
- 		kfree_rcu(subflow, rcu);
- 	} else {
- 		/* otherwise tcp will dispose of the ssk and subflow ctx */
-+		if (ssk->sk_state == TCP_LISTEN) {
-+			tcp_set_state(ssk, TCP_CLOSE);
-+			mptcp_subflow_queue_clean(ssk);
-+			inet_csk_listen_stop(ssk);
-+		}
- 		__tcp_close(ssk, 0);
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -162,6 +162,9 @@ static int nxp_nci_i2c_nci_read(struct n
  
- 		/* close acquired an extra ref */
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -286,6 +286,7 @@ struct mptcp_sock {
+ 	skb_put_data(*skb, (void *)&header, NCI_CTRL_HDR_SIZE);
  
- 	u32 setsockopt_seq;
- 	char		ca_name[TCP_CA_NAME_MAX];
-+	struct mptcp_sock	*dl_next;
- };
- 
- #define mptcp_data_lock(sk) spin_lock_bh(&(sk)->sk_lock.slock)
-@@ -585,6 +586,7 @@ void mptcp_close_ssk(struct sock *sk, st
- 		     struct mptcp_subflow_context *subflow);
- void mptcp_subflow_send_ack(struct sock *ssk);
- void mptcp_subflow_reset(struct sock *ssk);
-+void mptcp_subflow_queue_clean(struct sock *ssk);
- void mptcp_sock_graft(struct sock *sk, struct socket *parent);
- struct socket *__mptcp_nmpc_socket(const struct mptcp_sock *msk);
- 
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1688,6 +1688,58 @@ static void subflow_state_change(struct
- 	}
- }
- 
-+void mptcp_subflow_queue_clean(struct sock *listener_ssk)
-+{
-+	struct request_sock_queue *queue = &inet_csk(listener_ssk)->icsk_accept_queue;
-+	struct mptcp_sock *msk, *next, *head = NULL;
-+	struct request_sock *req;
++	if (!header.plen)
++		return 0;
 +
-+	/* build a list of all unaccepted mptcp sockets */
-+	spin_lock_bh(&queue->rskq_lock);
-+	for (req = queue->rskq_accept_head; req; req = req->dl_next) {
-+		struct mptcp_subflow_context *subflow;
-+		struct sock *ssk = req->sk;
-+		struct mptcp_sock *msk;
-+
-+		if (!sk_is_mptcp(ssk))
-+			continue;
-+
-+		subflow = mptcp_subflow_ctx(ssk);
-+		if (!subflow || !subflow->conn)
-+			continue;
-+
-+		/* skip if already in list */
-+		msk = mptcp_sk(subflow->conn);
-+		if (msk->dl_next || msk == head)
-+			continue;
-+
-+		msk->dl_next = head;
-+		head = msk;
-+	}
-+	spin_unlock_bh(&queue->rskq_lock);
-+	if (!head)
-+		return;
-+
-+	/* can't acquire the msk socket lock under the subflow one,
-+	 * or will cause ABBA deadlock
-+	 */
-+	release_sock(listener_ssk);
-+
-+	for (msk = head; msk; msk = next) {
-+		struct sock *sk = (struct sock *)msk;
-+		bool slow;
-+
-+		slow = lock_sock_fast_nested(sk);
-+		next = msk->dl_next;
-+		msk->first = NULL;
-+		msk->dl_next = NULL;
-+		unlock_sock_fast(sk, slow);
-+	}
-+
-+	/* we are still under the listener msk socket lock */
-+	lock_sock_nested(listener_ssk, SINGLE_DEPTH_NESTING);
-+}
-+
- static int subflow_ulp_init(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
+ 	if (r != header.plen) {
+ 		nfc_err(&client->dev,
 
 
