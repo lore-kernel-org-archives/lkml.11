@@ -2,253 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC91C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C49CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237866AbiGEMjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36936 "EHLO
+        id S229512AbiGEMqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238443AbiGEMc5 (ORCPT
+        with ESMTP id S240378AbiGEMp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:32:57 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920EC25C3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:23:35 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id k30so6916336edk.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:23:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VwrBJ0dMhYH4iU1iltI7/ub2I6M2+H+n4WuU9Trcwnc=;
-        b=Av46x6bZn8dwY7dMBCUZf/XYBY65it79NvzeJKkM6qlbOoV7v7WlmmSmSi5moXO4Bq
-         lnHcy+44e1XCqc9r30vm6hTFRaRLojk/CYGx7zGJxI4yIJZJtFDEfTt1koc542k2bfyK
-         RtZc8UNDReWMf1yZdBeyTDRKmNsFZCwvh81baBbsp1KNJLEJrFFLp5YmiDVSD2t6iDgV
-         Afkds0IyZRgZOKTVRXhLBcb4wy6QHxhb6a9WN60q3HAKYccLgYc4DiWEPc5e10mQNvlM
-         2dwraPz6bvHO4aLcy9m9aRE+x7ZNRaxd6+XSE7n/d8uohTUjirH3Xcr+YBWDGrIa/eyL
-         NoYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VwrBJ0dMhYH4iU1iltI7/ub2I6M2+H+n4WuU9Trcwnc=;
-        b=yDCsEy+6H6jYhn7xGEjaMO6d4tFFWszs5J9dr/ArhygezxiNamP5x5gFDb1CIIP4Im
-         4b8dk/7wf+9vEeqKvsJ6wCttbPQEuXgnR1VCvJPyG0JHxQbVGcDZgUwc5rUtUaCwMOcn
-         GZ30Q/ZTrDtlTDDidXGFdbWsWEw82YW0OF0bB0SEnLN8J5E0u7KiRfRWz5f5qbENZD8l
-         hXGpgAV4PhXLWzBmV11HJ76u+iEslBl/Y/SAub4K7N1jSySN7+GfwF11DYzA3ob141Pn
-         Y+CPkq65InMOHL3+CqLFfDewCGON+zMkddtOJNDMzoCacy+jHb+Raq1QCD+5Xttu7gTg
-         DBHA==
-X-Gm-Message-State: AJIora/xvR7M7xZyjTtqb+Cq75SYjVyVtOZ3IiSRuI3QI9UisK0Hi9dR
-        ZHKbrL7gRdw9I4HrjEky/m4DX6JNZSa/UnBO
-X-Google-Smtp-Source: AGRyM1s5p7Gv9Al4cwk7OhQk984dZUeggZ/Dit1km5l9UJa4LHmqREx/swvVsLvzbbxklG63iDnQlg==
-X-Received: by 2002:aa7:d30b:0:b0:43a:4bea:75c6 with SMTP id p11-20020aa7d30b000000b0043a4bea75c6mr15141000edq.12.1657023813819;
-        Tue, 05 Jul 2022 05:23:33 -0700 (PDT)
-Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id f15-20020a1709062c4f00b007081282cbd8sm15764758ejh.76.2022.07.05.05.23.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 05:23:33 -0700 (PDT)
-From:   Naresh Solanki <naresh.solanki@9elements.com>
-X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
-To:     linux-kernel@vger.kernel.org, Pavel Machek <pavel@ucw.cz>
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Naresh Solanki <Naresh.Solanki@9elements.com>
-Subject: [PATCH 5/5] leds: max597x: Add support for max597x
-Date:   Tue,  5 Jul 2022 14:22:43 +0200
-Message-Id: <20220705122244.472894-6-Naresh.Solanki@9elements.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220705122244.472894-2-Naresh.Solanki@9elements.com>
-References: <20220705122244.472894-2-Naresh.Solanki@9elements.com>
+        Tue, 5 Jul 2022 08:45:58 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5701C24094
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:26:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=TiBigXGxnG4jz95bnnzIvPwDJCWGHlezgBtGY8U3MtM=; b=mUa1/m/nzg0wcTSJT/DEzvSU4c
+        buJrAjL8Dj5zo8n0ddo7S7dOYAZG8f7u5iyz6y8H66oeTZ09mNH+xkq3scp8F3bdqwDxhyt/nnJS0
+        jyAvURL4sonvnC8gMcy06A86b0bsE8iWpBbZ2DtEYuUElLLtrpVraJLAOofiYVtS9H8fX63iHG0r7
+        AjFeLN7ORTs0boaxAtb2UPAx+5P3ymKaouZ/Zzv2Rkq49mt/chkPOliy+RK8poflHM0h3NGdIPxPJ
+        HCaWs4VlPRSTvC/1CKAP62vgWpFBL7RuZ6fNH3nbnE6SZ5aiShi9JDJ2bzKKFvgENyILF0aEGewhk
+        ExBA03Zw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8hcy-000YoO-PF; Tue, 05 Jul 2022 12:26:04 +0000
+Date:   Tue, 5 Jul 2022 13:26:04 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Valdis =?utf-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: next-20220616 - repeated crashes in  zap_pmd_range
+Message-ID: <YsQt3IHbJnAhsSWl@casper.infradead.org>
+References: <11765.1657004484@turing-police>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <11765.1657004484@turing-police>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Rudolph <patrick.rudolph@9elements.com>
+On Tue, Jul 05, 2022 at 03:01:24AM -0400, Valdis Klētnieks wrote:
+> I've had multiple crashes with the same kernel stack trace on my x86_64
+> laptop.. There doesn't seem to be any matching reports in my linux-kernel mail
+> folder or where Google can find them.
 
-max597x is hot swap controller with indication led support.
-This driver uses DT property to configure led during boot time &
-also provide the led control in sysfs.
+New to me.  BTW, the crash is in zap_pte_range() (the RIP line), not
+zap_pmd_range().  It's tripping over:
 
-Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
-Signed-off-by: Naresh Solanki <Naresh.Solanki@9elements.com>
----
- drivers/leds/Kconfig        |  10 +++
- drivers/leds/Makefile       |   1 +
- drivers/leds/leds-max597x.c | 130 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 141 insertions(+)
- create mode 100644 drivers/leds/leds-max597x.c
+        BUG_ON(is_migration_entry(entry) && !PageLocked(p));
 
-diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
-index a49979f41eee..682748097276 100644
---- a/drivers/leds/Kconfig
-+++ b/drivers/leds/Kconfig
-@@ -598,6 +598,16 @@ config LEDS_ADP5520
- 	  To compile this driver as a module, choose M here: the module will
- 	  be called leds-adp5520.
- 
-+config LEDS_MAX597X
-+	tristate "Maxim 597x leds"
-+	depends on I2C
-+	depends on OF
-+	depends on LEDS_CLASS
-+	select MFD_MAX597X
-+	help
-+	  This driver controls a Maxim 5970/5978 indication led via I2C bus.
-+	  The MAX5970/5978 is a smart switch with 4 indication leds
-+
- config LEDS_MC13783
- 	tristate "LED Support for MC13XXX PMIC"
- 	depends on LEDS_CLASS
-diff --git a/drivers/leds/Makefile b/drivers/leds/Makefile
-index 4fd2f92cd198..c44b0e9559ab 100644
---- a/drivers/leds/Makefile
-+++ b/drivers/leds/Makefile
-@@ -54,6 +54,7 @@ obj-$(CONFIG_LEDS_LP8501)		+= leds-lp8501.o
- obj-$(CONFIG_LEDS_LP8788)		+= leds-lp8788.o
- obj-$(CONFIG_LEDS_LP8860)		+= leds-lp8860.o
- obj-$(CONFIG_LEDS_LT3593)		+= leds-lt3593.o
-+obj-$(CONFIG_LEDS_MAX597X)		+= leds-max597x.o
- obj-$(CONFIG_LEDS_MAX77650)		+= leds-max77650.o
- obj-$(CONFIG_LEDS_MAX8997)		+= leds-max8997.o
- obj-$(CONFIG_LEDS_MC13783)		+= leds-mc13783.o
-diff --git a/drivers/leds/leds-max597x.c b/drivers/leds/leds-max597x.c
-new file mode 100644
-index 000000000000..645d6cdcfa34
---- /dev/null
-+++ b/drivers/leds/leds-max597x.c
-@@ -0,0 +1,130 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device driver for regulators in MAX5970 and MAX5978 IC
-+ *
-+ * Copyright (c) 2022 9elements GmbH
-+ *
-+ * Author: Patrick Rudolph <patrick.rudolph@9elements.com>
-+ */
-+
-+#include <linux/bitops.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/leds.h>
-+#include <linux/module.h>
-+#include <linux/io.h>
-+#include <linux/of.h>
-+#include <linux/i2c.h>
-+#include <linux/mfd/max597x.h>
-+#include <linux/regmap.h>
-+#include <linux/version.h>
-+#include <linux/platform_device.h>
-+
-+struct max597x_led {
-+	struct regmap *regmap;
-+	struct led_classdev led;
-+	unsigned int index;
-+};
-+
-+static int max597x_led_set_brightness(struct led_classdev *cdev,
-+				      enum led_brightness brightness)
-+{
-+	struct max597x_led *led = cdev->driver_data;
-+	int ret;
-+
-+	if (!led || !led->regmap)
-+		return -1;
-+
-+	ret = regmap_update_bits(led->regmap, MAX5970_REG_LED_FLASH,
-+				 1 << led->index, ~brightness << led->index);
-+	if (ret < 0)
-+		dev_err(cdev->dev, "failed to set brightness %d\n", ret);
-+	return ret;
-+}
-+
-+static int max597x_led(struct max597x_data *max597x, struct device_node *nc, u32 reg)
-+{
-+	struct max597x_led *led;
-+	const char *state;
-+	int ret = 0;
-+
-+	led = devm_kzalloc(max597x->dev, sizeof(struct max597x_led),
-+				   GFP_KERNEL);
-+	if (!led)
-+		return -ENOMEM;
-+
-+	if (of_property_read_string(nc, "label", &led->led.name))
-+		led->led.name = nc->name;
-+
-+	led->led.max_brightness = 1;
-+	led->led.brightness_set_blocking = max597x_led_set_brightness;
-+	led->led.default_trigger = "none";
-+	led->index = reg;
-+	led->regmap = max597x->regmap;
-+	ret = led_classdev_register(max597x->dev, &led->led);
-+	if (ret) {
-+		dev_err(max597x->dev, "Error in initializing led %s", led->led.name);
-+		devm_kfree(max597x->dev, led);
-+		return ret;
-+	}
-+	led->led.driver_data = led;
-+	led->led.dev = max597x->dev;
-+	if (!of_property_read_string(nc, "default-state", &state)) {
-+		if (!strcmp(state, "on")) {
-+			led->led.brightness = 1;
-+			led_set_brightness(&led->led, led->led.brightness);
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int max597x_led_probe(struct platform_device *pdev)
-+{
-+
-+
-+	struct max597x_data *max597x = dev_get_drvdata(pdev->dev.parent);
-+	struct device_node *np = dev_of_node(pdev->dev.parent);
-+	struct device_node *led_node;
-+	struct device_node *child;
-+	int ret = 0;
-+
-+
-+	led_node = of_get_child_by_name(np, "leds");
-+	if (!led_node)
-+		return -ENODEV;
-+
-+	for_each_available_child_of_node(led_node, child) {
-+		u32 reg;
-+
-+		if (of_property_read_u32(child, "reg", &reg))
-+			continue;
-+
-+		if (reg >= MAX597X_NUM_LEDS) {
-+			dev_err(max597x->dev, "invalid LED (%u >= %d)\n", reg,
-+				MAX597X_NUM_LEDS);
-+			continue;
-+		}
-+
-+		ret = max597x_led(max597x, child, reg);
-+		if (ret < 0) {
-+			of_node_put(child);
-+			return ret;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static struct platform_driver max597x_led_driver = {
-+	.driver = {
-+		.name = "max597x-led",
-+	},
-+	.probe = max597x_led_probe,
-+};
-+
-+module_platform_driver(max597x_led_driver);
-+
-+
-+MODULE_AUTHOR("Patrick Rudolph <patrick.rudolph@9elements.com>");
-+MODULE_DESCRIPTION("MAX5970_hot-swap controller driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.35.3
+It's not immediately clear to me which patch might be producing this
+problem.
 
+> I've hit it with different processes running:
+
+You could hit it with any process doing anything.  What's happening is
+that there's a migration entry, presumably inserted by kcompactd (since
+this is a laptop, I assume it's not NUMA).  The page that it's referring
+to isn't locked for some reason.
+
+You seem to have hit it a few times; how easy is it to reproduce?  I
+will say that 20220616 was almost three weeks ago; does it still happen
+with 20220704?  I'd hate to spend time chasing a ghost.
+
+> [142037.910871][T92126] ------------[ cut here ]------------
+> [142037.990897][T92126] kernel BUG at include/linux/swapops.h:378!
+> [142038.070921][T92126] invalid opcode: 0000 [#1] PREEMPT SMP
+> [142038.150973][T92126] CPU: 0 PID: 92126 Comm: gnome-mahjongg Tainted: G        W       T 5.19.0-rc2-next-20220616-dirty #41 cda14773dff3831fc10ae1073ec183115d31a4be
+> [142038.311018][T92126] RIP: 0010:zap_pte_range+0xb71/0xba0
+> [142038.391046][T92126] Code: ff e9 74 fb ff ff 48 8d 49 ff e9 4c fb ff ff 49 8b 56 10 49 8b 76 08 e8 ad dc 04 00 e9 6d
+> fc ff ff 4c 8d 41 ff e9 6c fb ff ff <0f> 0b 48 8d 49 ff e9 f3 fa ff ff e8 af 37 d4 00 48 83 e2 f7 e9 20
+> [142038.471068][T92126] RSP: 0018:ffffaeca836d3a70 EFLAGS: 00010246
+> [142038.631101][T92126] RAX: 0000000000000000 RBX: 0000563818dc4000 RCX: 0000000000000000
+> [142038.711121][T92126] RDX: efffffffdca33600 RSI: efffffffdca33600 RDI: ffffe37b046b9900
+> [142038.791142][T92126] RBP: ffffaeca836d3b00 R08: ffffe37b046b9900 R09: 000000003b13b0a2
+> [142038.871162][T92126] R10: 000000009127bdcc R11: 0000000000000000 R12: ffffaeca836d3c18
+> [142038.951182][T92126] R13: ffff88914584be18 R14: eff0000000000600 R15: ffffaeca836d3ce0
+> [142039.031202][T92126] FS:  00007f2b5492b200(0000) GS:ffff889276a00000(0000) knlGS:0000000000000000
+> [142039.111223][T92126] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [142039.191243][T92126] CR2: 0000563818de0000 CR3: 0000000110dfa000 CR4: 00000000001006f0
+> [142039.271263][T92126] Call Trace:
+> [142039.351283][T92126]  <TASK>
+> [142039.431309][T92126]  zap_pmd_range.isra.0+0x136/0x320
+> [142039.511337][T92126]  unmap_page_range+0x18a/0x2f0
+> [142039.591362][T92126]  ? debug_smp_processor_id+0x1b/0x20
+> [142039.671389][T92126]  unmap_single_vma+0x5c/0x100
+> [142039.751499][T92126]  ? __this_cpu_preempt_check+0x17/0x20
+> [142039.831525][T92126]  unmap_vmas+0x147/0x1e0
+> [142039.911548][T92126]  ? unmap_vmas+0x4/0x1e0
+> [142039.991579][T92126]  unmap_region+0x10e/0x170
+> [142040.071610][T92126]  do_brk_munmap+0x2b8/0x370
+> [142040.151641][T92126]  __do_sys_brk+0x2ec/0x3a0
+> [142040.231670][T92126]  __x64_sys_brk+0x11/0x20
+> [142040.311693][T92126]  do_syscall_64+0x3e/0x90
+> [142040.391718][T92126]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> [142040.471740][T92126] RIP: 0033:0x7f2b5592450b
+> [142040.551764][T92126] Code: ff ff 0f 1f 44 00 00 64 83 3b 0d 75 07 64 c7 03 01 00 00 00 5b b8 ff ff ff ff 5d 41 5c c3
+> 90 f3 0f 1e fa b8 0c 00 00 00 0f 05 <48> 8b 15 3e 19 0d 00 48 89 02 48 39 f8 72 06 31 c0 c3 0f 1f 00 48
+> [142040.631785][T92126] RSP: 002b:00007ffe9ae558a8 EFLAGS: 00000206 ORIG_RAX: 000000000000000c
+> [142040.791817][T92126] RAX: ffffffffffffffda RBX: fffffffffffbb000 RCX: 00007f2b5592450b
+> [142040.871837][T92126] RDX: fffffffffffff000 RSI: 00007f2b559f6ce0 RDI: 0000563818dbd000
+> [142040.951856][T92126] RBP: 0000563818e02000 R08: 00007f2b559f74a0 R09: 00007f2b559f74a0
+> [142041.031876][T92126] R10: 0000000000000000 R11: 0000000000000206 R12: 00007f2b559fe358
+> [142041.111895][T92126] R13: 0000000000000000 R14: 0000563818de1f50 R15: 00000000000200b0
+> [142041.191922][T92126]  </TASK>
+> [142041.271941][T92126] Modules linked in: snd_hrtimer tls bnep ts_bm nft_limit xt_string xt_LOG nf_log_syslog nft_compa
+> t nf_tables sunrpc binfmt_misc ath3k btusb btrtl btbcm btintel bluetooth vfat fat ecdh_generic ecc intel_rapl_msr rtsx_p
+> ci_sdmmc intel_rapl_common intel_soc_dts_thermal intel_soc_dts_iosf intel_powerclamp crct10dif_pclmul crc32_pclmul crc32
+> c_intel polyval_generic ghash_clmulni_intel uas joydev cryptd ath9k serio_raw ath9k_common ath9k_hw rtsx_pci ath snd_hda
+> _codec_realtek snd_hda_codec_hdmi mei_txe toshiba_acpi fan industrialio toshiba_bluetooth rfkill_gpio pwm_lpss_platform
+> pwm_lpss bfq fuse
+> [142045.672581][T92126] Unloaded tainted modules: polyval_clmulni():1 polyval_clmulni():1 pcc_cpufreq():1 pcc_cpufreq():
+> 1 pcc_cpufreq():1 pcc_cpufreq():1
+> 
