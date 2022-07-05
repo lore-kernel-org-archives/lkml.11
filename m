@@ -2,92 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A512C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B90C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232828AbiGEOG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
+        id S232859AbiGEOHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232633AbiGEOGZ (ORCPT
+        with ESMTP id S230256AbiGEOG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:06:25 -0400
+        Tue, 5 Jul 2022 10:06:26 -0400
 Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04139237EF;
-        Tue,  5 Jul 2022 06:54:40 -0700 (PDT)
-Received: by mail-io1-f44.google.com with SMTP id p69so11132696iod.10;
-        Tue, 05 Jul 2022 06:54:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B959E5585;
+        Tue,  5 Jul 2022 06:54:41 -0700 (PDT)
+Received: by mail-io1-f44.google.com with SMTP id r133so11161107iod.3;
+        Tue, 05 Jul 2022 06:54:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=C0Erhk9To/7rIjjiO+9MuSp924KsHFPnMjsP3V7msnQ=;
-        b=py5ruxiv5LHEpm1Oq3v+y+btfJf1wI/QCHFEMuaBei11VJeHNVXLeYgLMe8lRLCsYD
-         o9rLyIM0eldgC/K8uKW1jMuK8MjwFHdKGlAfy2jtTnomRlm7YYwyacLo+fDgxwwPkTCZ
-         ynmCh0LrNtAGmu91KNGDb3vHWssKegcNEVSdbN9SMi8VHu3dph8jDkcQ5azu/6xDearr
-         GDP94u0HMunH7MFDAQ3yBukxjjpN11RQdfi7hihAmiLA12+JrfBBlEbK4piykEjPAt00
-         AMg+d4xQJnqYgxmR4Y+IOY2rc5lO2DGMqaWjBGJVK4r73H4cd/HSPVoFLD+dzOu29to6
-         2rTQ==
-X-Gm-Message-State: AJIora/0qk6RKtP8JAq5n3qC3E1LM24Q5gM2OZyRcp4/tdR46xZ8Xq2u
-        huL65NPqrjh75gnkz9YLBQ==
-X-Google-Smtp-Source: AGRyM1seMsK4ptpqLHhWfEoLMLQgP0++6s7fhJZFk+zA/SDMjQenWTm0BiPdQRIK/XyX+gBz4/C5BA==
-X-Received: by 2002:a6b:fb05:0:b0:657:655e:a287 with SMTP id h5-20020a6bfb05000000b00657655ea287mr19384229iog.211.1657029279231;
-        Tue, 05 Jul 2022 06:54:39 -0700 (PDT)
+        bh=wSbi+Yapsg0IfPzaUY/hIFJoyEdtAo+MMIudhobPdvQ=;
+        b=b2Gh5MbgB8EXzM4Ih/qrGlxcLcd4vYyRUvtC4Cti+xqAL7O3hZ+SwtE8HGihglKFKa
+         Y7Zk4ESYC+eSpkuFCjMVx7rBNP+gx8Cm8HBAbViy5W/4T1WSZFldz7wZHjqKwiY5GKN1
+         B2dz96q6/fEAFySMuH50TbAe37Fd35nOgo5eezyI2mSAX5+bLXPiHg2dLmNlglNoJia/
+         BiMf82KqcV9bEqg8KrZewYV65MfI8PZ0X1J2ULn1zCbgzyuB4fgEnI6S35OW7ZVZOQes
+         OcwhI8siJtPB/Hq1voBRplBPISVXHzrJJfqPTb3pBbXKn/R52TFP6Z4CTP1XHuF/npCR
+         5jNA==
+X-Gm-Message-State: AJIora83Pswjo3ILGOKy00EDKTfOqWT3Z/3eZr/ZcN3paQxY7ZhdSFbB
+        5rfOMjttIK4207htc+2Q6w==
+X-Google-Smtp-Source: AGRyM1ul79hg6w7JBKvpSn59jpa12141EBVpo5YfxCgbhC8ntMWQRS2E7XSrs3NNh6bgwEFvvPBCRQ==
+X-Received: by 2002:a05:6638:160f:b0:33c:ad8e:bcc0 with SMTP id x15-20020a056638160f00b0033cad8ebcc0mr21840034jas.299.1657029280958;
+        Tue, 05 Jul 2022 06:54:40 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id o27-20020a02a1db000000b00339ef592279sm14613515jah.127.2022.07.05.06.54.38
+        by smtp.gmail.com with ESMTPSA id r14-20020a92cd8e000000b002d11397f4f9sm13195229ilb.74.2022.07.05.06.54.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 06:54:38 -0700 (PDT)
-Received: (nullmailer pid 1999999 invoked by uid 1000);
+        Tue, 05 Jul 2022 06:54:40 -0700 (PDT)
+Received: (nullmailer pid 1999986 invoked by uid 1000);
         Tue, 05 Jul 2022 13:54:31 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Sibi Sankar <quic_sibis@quicinc.com>
-Cc:     linux-remoteproc@vger.kernel.org, konrad.dybcio@somainline.org,
-        mka@chromium.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, bjorn.andersson@linaro.org,
-        robh+dt@kernel.org, swboyd@chromium.org,
-        mathieu.poirier@linaro.org, agross@kernel.org
-In-Reply-To: <1657020721-24939-2-git-send-email-quic_sibis@quicinc.com>
-References: <1657020721-24939-1-git-send-email-quic_sibis@quicinc.com> <1657020721-24939-2-git-send-email-quic_sibis@quicinc.com>
-Subject: Re: [V5 1/2] dt-bindings: remoteproc: qcom: Convert SC7280 MSS bindings to YAML
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        jli@analogixsemi.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        qwen@analogixsemi.com, bliang@analogixsemi.com
+In-Reply-To: <20220705053657.2340274-2-xji@analogixsemi.com>
+References: <20220705053657.2340274-1-xji@analogixsemi.com> <20220705053657.2340274-2-xji@analogixsemi.com>
+Subject: Re: [PATCH v13 2/3] dt-bindings: usb: Add analogix anx7411 PD binding
 Date:   Tue, 05 Jul 2022 07:54:31 -0600
-Message-Id: <1657029271.238790.1999998.nullmailer@robh.at.kernel.org>
+Message-Id: <1657029271.166880.1999984.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Jul 2022 17:02:00 +0530, Sibi Sankar wrote:
-> Add a separate YAML binding to act as a superset of the PAS and non-PAS
-> compatible for SC7280 MSS PIL. This also serves as a way to increase
-> readability.
+On Tue, 05 Jul 2022 13:36:55 +0800, Xin Ji wrote:
+> Add analogix PD chip anx7411 device binding
 > 
-> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> 
 > ---
-> 
-> Depends on Krzysztof's remoteproc cleanups and improvements:
-> https://patchwork.kernel.org/project/linux-arm-msm/cover/20220517070113.18023-1-krzysztof.kozlowski@linaro.org/
-> 
-> Previous discussions on PAS vs non-PAS bindings:
-> https://lore.kernel.org/lkml/YUps1JfGtf6JdbCx@ripper/ [Bjorn]
-> https://lore.kernel.org/lkml/CAE-0n51KBYjZvwGNy06_okmEWjEfRLQO54CYaY6-JnbBk6kOhA@mail.gmail.com/ [Stephen]
-> 
-> v5:
->  * Improve phandle-array schemas [Stephen/Rob/Krzysztof]
->  * Add more details to the firmware-name/memory region string array [Stephen/Rob]
->  * Drop 'items' from label [Rob]
-> 
-> v4:
->  * Remove older bindings [Matthias/Krzysztof]
->  * Misc. Fixes [Krzysztof]
->  * Rebased on v2 of Krzysztof's bindings cleanups
-> 
-> v3:
->  * Re-ordered clock list, fixed pdc_sync typo [Rob/Matthias]
-> 
->  .../devicetree/bindings/remoteproc/qcom,q6v5.txt   |  31 +--
->  .../bindings/remoteproc/qcom,sc7280-mss-pil.yaml   | 266 +++++++++++++++++++++
->  2 files changed, 268 insertions(+), 29 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+> v12 -> v13 :
+>     1. Drop the quotes for "$id" and "$schema"
+>     2. Remove "allOf" label
+>     3. Change node name from "i2c1" to "i2c"
+>     4. Change node name from "typec" to "usb-typec"
+> ---
+>  .../bindings/usb/analogix,anx7411.yaml        | 76 +++++++++++++++++++
+>  1 file changed, 76 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -96,9 +80,11 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/remoteproc/qcom,glink-edge.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.example.dtb: remoteproc@4080000: glink-edge: False schema does not allow {'interrupts-extended': [[4294967295, 2, 0, 1]], 'mboxes': [[4294967295, 2, 0]], 'label': ['modem'], 'qcom,remote-pid': [[1]]}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+Error: Documentation/devicetree/bindings/usb/analogix,anx7411.example.dts:26.22-23 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:383: Documentation/devicetree/bindings/usb/analogix,anx7411.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1404: dt_binding_check] Error 2
 
 doc reference errors (make refcheckdocs):
 
