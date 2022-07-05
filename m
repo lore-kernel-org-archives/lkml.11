@@ -2,279 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF80C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235885AbiGEMPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
+        id S235898AbiGEMPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235147AbiGEMIh (ORCPT
+        with ESMTP id S235148AbiGEMIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:08:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23AA186F3;
-        Tue,  5 Jul 2022 05:07:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 666C8B817DA;
-        Tue,  5 Jul 2022 12:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B65A6C341C7;
-        Tue,  5 Jul 2022 12:07:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022874;
-        bh=OvnhGOcUqjoChuGDNgWAkekn3mPvdrJyY3fxt/tWztw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pspwmvBb01EJyQ919WMamR0WP96eJe9LYSg+0T/ng4YcEaBy6yTfU/xKMz+fHBoHf
-         VfBsQdVUU/81RfvV72FBa9wj/yCWDbld7hJ8qGl77jnEZ/ofvRVVi9VHg68W86fGfA
-         OhafwfRilcKqvu8godzgReyEp7BwkXiLlB8Vi2qQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Sandeen <sandeen@redhat.com>,
-        Pavel Reichl <preichl@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Carlos Maiolino <cmaiolino@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 42/84] xfs: rename variable mp to parsing_mp
-Date:   Tue,  5 Jul 2022 13:58:05 +0200
-Message-Id: <20220705115616.550135317@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
-References: <20220705115615.323395630@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 008AD186EC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:07:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657022874;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rtU/kjgULaXwcfy8e9s7Yd/T+aye61K0bMduomyl2x8=;
+        b=ET8aILWa/kDf21auaaZsqvrfavaQc+pcj4IOjSzXbtR5VtSQS4O2Dphs5zfApiwu5f6un7
+        GylpZWdDNnUQJ9jdE03EnjhQ+gprUo2F8LXR7Gk1Ohz4DSm9oZCpummFGgI6N2U0pshxrA
+        cmjTpZ5dP8nzvRlqbfqrnUT7kqseHcE=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-5-5GbvSFoFO-KWzGGYvGs_Qg-1; Tue, 05 Jul 2022 08:07:52 -0400
+X-MC-Unique: 5GbvSFoFO-KWzGGYvGs_Qg-1
+Received: by mail-ed1-f71.google.com with SMTP id y6-20020a056402270600b00433940d207eso5734646edd.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:07:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rtU/kjgULaXwcfy8e9s7Yd/T+aye61K0bMduomyl2x8=;
+        b=FAfk5SsjJwetQfXq3VMal78cU0f3O1Amc5LtHOkeJs1SzF13Rdgqk0OjfTrstiLhfP
+         EmgK4ay7PSwFhPm41VU9t8evtaWh9YLO9dZ+58dYQVev1MRVYjHqFYc68yFEJa/NfZgj
+         gjr9rywnmEqpINr8Kryq3dI1k6Bj6117qrsivKGWgQD1PT789W2eR9+uYscKMJ9kcrOQ
+         ab0SeMXdkzVW7dmm6ueADvSYNRmxW0gJjUuGRz/x6eP8zZhcvQmCC/fkWFJk9JjpzBDL
+         662+ITYIRePNrxyzhjHAtfgTsERUgy5dSoYKY2VmBmi0Sl0PAMOJy5X8+P/YiwlxCY1G
+         R+ig==
+X-Gm-Message-State: AJIora/Z5LCSCVRL1HzkpsIP1Ifz/kfdNAGj4YmbhSc0WTmWEqJjfl58
+        azeh00c8mqRNGuuQnyn3PimVvkl2SYrt8aX6tBiN+F8/2J5vFvAUn6UIZpcbijKKM3KJH528iNw
+        LVcgeTlYtLcyaoWT8sqxXhTuRq9KW+eRT21O3WDrz
+X-Received: by 2002:a17:907:60cb:b0:726:a69a:c7a with SMTP id hv11-20020a17090760cb00b00726a69a0c7amr34652269ejc.156.1657022871632;
+        Tue, 05 Jul 2022 05:07:51 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uhvLESVkJqLMUVkS1+sqRcYMDYYv/DpSqkaUqCJgY9nCI7teVnX7sRGbX5NjXfak1s0+Cw2DXmD+gxM4e1w/E=
+X-Received: by 2002:a17:907:60cb:b0:726:a69a:c7a with SMTP id
+ hv11-20020a17090760cb00b00726a69a0c7amr34652242ejc.156.1657022871395; Tue, 05
+ Jul 2022 05:07:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220704191535.76006-1-vdronov@redhat.com> <YsOKj/GE2Mb2UsYa@zx2c4.com>
+ <YsOY/eWq7gRjXJK1@zx2c4.com>
+In-Reply-To: <YsOY/eWq7gRjXJK1@zx2c4.com>
+From:   Vlad Dronov <vdronov@redhat.com>
+Date:   Tue, 5 Jul 2022 14:07:40 +0200
+Message-ID: <CAMusb+RLB6-oz10yp9Cdigt0TeJ_85M30bH8snZaeM2CyvUiYA@mail.gmail.com>
+Subject: Re: [PATCH] wireguard: Kconfig: select CRYPTO_CHACHA_S390
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Reichl <preichl@redhat.com>
+Hi,
 
-commit 0f98b4ece18da9d8287bb4cc4e8f78b8760ea0d0 upstream.
+On Tue, Jul 5, 2022 at 3:51 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> On Tue, Jul 05, 2022 at 02:49:19AM +0200, Jason A. Donenfeld wrote:
+> > Hi Vladis,
+> >
+> > On Mon, Jul 04, 2022 at 09:15:35PM +0200, Vladis Dronov wrote:
+> > > Select the new implementation of CHACHA20 for S390 when available,
+> > > it is faster than the generic software implementation.
+> > >
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Link: https://lore.kernel.org/linux-kernel/202207030630.6SZVkrWf-lkp@intel.com/
+> > > Signed-off-by: Vladis Dronov <vdronov@redhat.com>
+> > > ... skip ...
+> >
+> > Thanks for the patch. Queued up as:
+> > https://git.zx2c4.com/wireguard-linux/commit/?id=1b4ab028730cd00c144eaa51160865504b780961
+> >
+> > I'll include this in my series to net.git soon.
 
-Rename mp variable to parsisng_mp so it is easy to distinguish
-between current mount point handle and handle for mount point
-which mount options are being parsed.
+Thanks a ton, Jason!
+Most appreciated.
 
-Suggested-by: Eric Sandeen <sandeen@redhat.com>
-Signed-off-by: Pavel Reichl <preichl@redhat.com>
+> This actually leads to a minor problem:
+>
+>   WARNING: unmet direct dependencies detected for CRYPTO_CHACHA_S390
+>     Depends on [n]: CRYPTO [=y] && CRYPTO_HW [=n] && S390 [=y]
+>
+> This is of course harmless, since this doesn't *actually* depend on
+> CRYPTO_HW. In fact, the dependency on CRYPTO_HW is entirely a mistake
+> here that was repeated a few times. I cleaned this up and fixed it in
+> this patch:
+>
+>     https://lore.kernel.org/linux-crypto/20220705014653.111335-1-Jason@zx2c4.com/
+>
+> So hopefully Herbert will take that for 5.19 and then we'll be all set
+> here.
+>
+> Jason
 
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Carlos Maiolino <cmaiolino@redhat.com>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/xfs/xfs_super.c |  102 ++++++++++++++++++++++++++---------------------------
- 1 file changed, 51 insertions(+), 51 deletions(-)
+Whoa, that's... funny. Honestly, I was always wondering why CRYPTO_CHACHA_S390
+and friends live in drivers/crypto/Kconfig. Now I know why. The patch
+looks great, thank you.
 
---- a/fs/xfs/xfs_super.c
-+++ b/fs/xfs/xfs_super.c
-@@ -1165,7 +1165,7 @@ xfs_fc_parse_param(
- 	struct fs_context	*fc,
- 	struct fs_parameter	*param)
- {
--	struct xfs_mount	*mp = fc->s_fs_info;
-+	struct xfs_mount	*parsing_mp = fc->s_fs_info;
- 	struct fs_parse_result	result;
- 	int			size = 0;
- 	int			opt;
-@@ -1176,142 +1176,142 @@ xfs_fc_parse_param(
- 
- 	switch (opt) {
- 	case Opt_logbufs:
--		mp->m_logbufs = result.uint_32;
-+		parsing_mp->m_logbufs = result.uint_32;
- 		return 0;
- 	case Opt_logbsize:
--		if (suffix_kstrtoint(param->string, 10, &mp->m_logbsize))
-+		if (suffix_kstrtoint(param->string, 10, &parsing_mp->m_logbsize))
- 			return -EINVAL;
- 		return 0;
- 	case Opt_logdev:
--		kfree(mp->m_logname);
--		mp->m_logname = kstrdup(param->string, GFP_KERNEL);
--		if (!mp->m_logname)
-+		kfree(parsing_mp->m_logname);
-+		parsing_mp->m_logname = kstrdup(param->string, GFP_KERNEL);
-+		if (!parsing_mp->m_logname)
- 			return -ENOMEM;
- 		return 0;
- 	case Opt_rtdev:
--		kfree(mp->m_rtname);
--		mp->m_rtname = kstrdup(param->string, GFP_KERNEL);
--		if (!mp->m_rtname)
-+		kfree(parsing_mp->m_rtname);
-+		parsing_mp->m_rtname = kstrdup(param->string, GFP_KERNEL);
-+		if (!parsing_mp->m_rtname)
- 			return -ENOMEM;
- 		return 0;
- 	case Opt_allocsize:
- 		if (suffix_kstrtoint(param->string, 10, &size))
- 			return -EINVAL;
--		mp->m_allocsize_log = ffs(size) - 1;
--		mp->m_flags |= XFS_MOUNT_ALLOCSIZE;
-+		parsing_mp->m_allocsize_log = ffs(size) - 1;
-+		parsing_mp->m_flags |= XFS_MOUNT_ALLOCSIZE;
- 		return 0;
- 	case Opt_grpid:
- 	case Opt_bsdgroups:
--		mp->m_flags |= XFS_MOUNT_GRPID;
-+		parsing_mp->m_flags |= XFS_MOUNT_GRPID;
- 		return 0;
- 	case Opt_nogrpid:
- 	case Opt_sysvgroups:
--		mp->m_flags &= ~XFS_MOUNT_GRPID;
-+		parsing_mp->m_flags &= ~XFS_MOUNT_GRPID;
- 		return 0;
- 	case Opt_wsync:
--		mp->m_flags |= XFS_MOUNT_WSYNC;
-+		parsing_mp->m_flags |= XFS_MOUNT_WSYNC;
- 		return 0;
- 	case Opt_norecovery:
--		mp->m_flags |= XFS_MOUNT_NORECOVERY;
-+		parsing_mp->m_flags |= XFS_MOUNT_NORECOVERY;
- 		return 0;
- 	case Opt_noalign:
--		mp->m_flags |= XFS_MOUNT_NOALIGN;
-+		parsing_mp->m_flags |= XFS_MOUNT_NOALIGN;
- 		return 0;
- 	case Opt_swalloc:
--		mp->m_flags |= XFS_MOUNT_SWALLOC;
-+		parsing_mp->m_flags |= XFS_MOUNT_SWALLOC;
- 		return 0;
- 	case Opt_sunit:
--		mp->m_dalign = result.uint_32;
-+		parsing_mp->m_dalign = result.uint_32;
- 		return 0;
- 	case Opt_swidth:
--		mp->m_swidth = result.uint_32;
-+		parsing_mp->m_swidth = result.uint_32;
- 		return 0;
- 	case Opt_inode32:
--		mp->m_flags |= XFS_MOUNT_SMALL_INUMS;
-+		parsing_mp->m_flags |= XFS_MOUNT_SMALL_INUMS;
- 		return 0;
- 	case Opt_inode64:
--		mp->m_flags &= ~XFS_MOUNT_SMALL_INUMS;
-+		parsing_mp->m_flags &= ~XFS_MOUNT_SMALL_INUMS;
- 		return 0;
- 	case Opt_nouuid:
--		mp->m_flags |= XFS_MOUNT_NOUUID;
-+		parsing_mp->m_flags |= XFS_MOUNT_NOUUID;
- 		return 0;
- 	case Opt_largeio:
--		mp->m_flags |= XFS_MOUNT_LARGEIO;
-+		parsing_mp->m_flags |= XFS_MOUNT_LARGEIO;
- 		return 0;
- 	case Opt_nolargeio:
--		mp->m_flags &= ~XFS_MOUNT_LARGEIO;
-+		parsing_mp->m_flags &= ~XFS_MOUNT_LARGEIO;
- 		return 0;
- 	case Opt_filestreams:
--		mp->m_flags |= XFS_MOUNT_FILESTREAMS;
-+		parsing_mp->m_flags |= XFS_MOUNT_FILESTREAMS;
- 		return 0;
- 	case Opt_noquota:
--		mp->m_qflags &= ~XFS_ALL_QUOTA_ACCT;
--		mp->m_qflags &= ~XFS_ALL_QUOTA_ENFD;
--		mp->m_qflags &= ~XFS_ALL_QUOTA_ACTIVE;
-+		parsing_mp->m_qflags &= ~XFS_ALL_QUOTA_ACCT;
-+		parsing_mp->m_qflags &= ~XFS_ALL_QUOTA_ENFD;
-+		parsing_mp->m_qflags &= ~XFS_ALL_QUOTA_ACTIVE;
- 		return 0;
- 	case Opt_quota:
- 	case Opt_uquota:
- 	case Opt_usrquota:
--		mp->m_qflags |= (XFS_UQUOTA_ACCT | XFS_UQUOTA_ACTIVE |
-+		parsing_mp->m_qflags |= (XFS_UQUOTA_ACCT | XFS_UQUOTA_ACTIVE |
- 				 XFS_UQUOTA_ENFD);
- 		return 0;
- 	case Opt_qnoenforce:
- 	case Opt_uqnoenforce:
--		mp->m_qflags |= (XFS_UQUOTA_ACCT | XFS_UQUOTA_ACTIVE);
--		mp->m_qflags &= ~XFS_UQUOTA_ENFD;
-+		parsing_mp->m_qflags |= (XFS_UQUOTA_ACCT | XFS_UQUOTA_ACTIVE);
-+		parsing_mp->m_qflags &= ~XFS_UQUOTA_ENFD;
- 		return 0;
- 	case Opt_pquota:
- 	case Opt_prjquota:
--		mp->m_qflags |= (XFS_PQUOTA_ACCT | XFS_PQUOTA_ACTIVE |
-+		parsing_mp->m_qflags |= (XFS_PQUOTA_ACCT | XFS_PQUOTA_ACTIVE |
- 				 XFS_PQUOTA_ENFD);
- 		return 0;
- 	case Opt_pqnoenforce:
--		mp->m_qflags |= (XFS_PQUOTA_ACCT | XFS_PQUOTA_ACTIVE);
--		mp->m_qflags &= ~XFS_PQUOTA_ENFD;
-+		parsing_mp->m_qflags |= (XFS_PQUOTA_ACCT | XFS_PQUOTA_ACTIVE);
-+		parsing_mp->m_qflags &= ~XFS_PQUOTA_ENFD;
- 		return 0;
- 	case Opt_gquota:
- 	case Opt_grpquota:
--		mp->m_qflags |= (XFS_GQUOTA_ACCT | XFS_GQUOTA_ACTIVE |
-+		parsing_mp->m_qflags |= (XFS_GQUOTA_ACCT | XFS_GQUOTA_ACTIVE |
- 				 XFS_GQUOTA_ENFD);
- 		return 0;
- 	case Opt_gqnoenforce:
--		mp->m_qflags |= (XFS_GQUOTA_ACCT | XFS_GQUOTA_ACTIVE);
--		mp->m_qflags &= ~XFS_GQUOTA_ENFD;
-+		parsing_mp->m_qflags |= (XFS_GQUOTA_ACCT | XFS_GQUOTA_ACTIVE);
-+		parsing_mp->m_qflags &= ~XFS_GQUOTA_ENFD;
- 		return 0;
- 	case Opt_discard:
--		mp->m_flags |= XFS_MOUNT_DISCARD;
-+		parsing_mp->m_flags |= XFS_MOUNT_DISCARD;
- 		return 0;
- 	case Opt_nodiscard:
--		mp->m_flags &= ~XFS_MOUNT_DISCARD;
-+		parsing_mp->m_flags &= ~XFS_MOUNT_DISCARD;
- 		return 0;
- #ifdef CONFIG_FS_DAX
- 	case Opt_dax:
--		xfs_mount_set_dax_mode(mp, XFS_DAX_ALWAYS);
-+		xfs_mount_set_dax_mode(parsing_mp, XFS_DAX_ALWAYS);
- 		return 0;
- 	case Opt_dax_enum:
--		xfs_mount_set_dax_mode(mp, result.uint_32);
-+		xfs_mount_set_dax_mode(parsing_mp, result.uint_32);
- 		return 0;
- #endif
- 	/* Following mount options will be removed in September 2025 */
- 	case Opt_ikeep:
--		xfs_warn(mp, "%s mount option is deprecated.", param->key);
--		mp->m_flags |= XFS_MOUNT_IKEEP;
-+		xfs_warn(parsing_mp, "%s mount option is deprecated.", param->key);
-+		parsing_mp->m_flags |= XFS_MOUNT_IKEEP;
- 		return 0;
- 	case Opt_noikeep:
--		xfs_warn(mp, "%s mount option is deprecated.", param->key);
--		mp->m_flags &= ~XFS_MOUNT_IKEEP;
-+		xfs_warn(parsing_mp, "%s mount option is deprecated.", param->key);
-+		parsing_mp->m_flags &= ~XFS_MOUNT_IKEEP;
- 		return 0;
- 	case Opt_attr2:
--		xfs_warn(mp, "%s mount option is deprecated.", param->key);
--		mp->m_flags |= XFS_MOUNT_ATTR2;
-+		xfs_warn(parsing_mp, "%s mount option is deprecated.", param->key);
-+		parsing_mp->m_flags |= XFS_MOUNT_ATTR2;
- 		return 0;
- 	case Opt_noattr2:
--		xfs_warn(mp, "%s mount option is deprecated.", param->key);
--		mp->m_flags &= ~XFS_MOUNT_ATTR2;
--		mp->m_flags |= XFS_MOUNT_NOATTR2;
-+		xfs_warn(parsing_mp, "%s mount option is deprecated.", param->key);
-+		parsing_mp->m_flags &= ~XFS_MOUNT_ATTR2;
-+		parsing_mp->m_flags |= XFS_MOUNT_NOATTR2;
- 		return 0;
- 	default:
--		xfs_warn(mp, "unknown mount option [%s].", param->key);
-+		xfs_warn(parsing_mp, "unknown mount option [%s].", param->key);
- 		return -EINVAL;
- 	}
- 
-
+Best regards,
+Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
 
