@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB90C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA3FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233960AbiGEMFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46026 "EHLO
+        id S233996AbiGEMFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233403AbiGEMDO (ORCPT
+        with ESMTP id S233413AbiGEMDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:03:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD7418374;
-        Tue,  5 Jul 2022 05:03:13 -0700 (PDT)
+        Tue, 5 Jul 2022 08:03:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EE118378;
+        Tue,  5 Jul 2022 05:03:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC283B817D4;
-        Tue,  5 Jul 2022 12:03:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2750AC385A2;
-        Tue,  5 Jul 2022 12:03:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5D886173E;
+        Tue,  5 Jul 2022 12:03:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2671C385A5;
+        Tue,  5 Jul 2022 12:03:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022590;
-        bh=QbrYS/RU5R8iMp2wKanbvTD0Py0IUdqsvNxuUk9AJB4=;
+        s=korg; t=1657022593;
+        bh=+n5TxLBg33L0Ng3gImkPeSt6IK8dHW9730F7EhY42SM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AaMWpRZglWL5Zs1L2KiPI4ui63yVr52qlLRMoWHTlIo7qFqesJ4YJ5iwoyVuKvRiK
-         3uaX52BvbusZtlgdB9miaMJqt+nc9M58Xpt8QaY6RB/x3YQUK1vqJmQq8rih58vl9Z
-         XXQhAOKBypOpUAhQht1oMz++cu/fpP4t0FNmFsHc=
+        b=OQH+Qz2HY4DJx82RzAm6LdnjUB2WfFiN8N4rzyDxZ5FBqPcpil0hlgEK7Z4kO9IeM
+         8nvHCIuFOBMhYTo750cpKfZBSuUqZi0fqNUm0ZGLgDEgSu3/rHa857AxwRrG68j4/G
+         YOUzkd9JLkrW2AcSDNTji7+vPzEM6MeANs+rzqaY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 24/33] net: dsa: bcm_sf2: force pause link settings
-Date:   Tue,  5 Jul 2022 13:58:16 +0200
-Message-Id: <20220705115607.421454267@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabio Porcedda <fabio.porcedda@gmail.com>
+Subject: [PATCH 4.19 33/33] net: usb: qmi_wwan: add Telit 0x1070 composition
+Date:   Tue,  5 Jul 2022 13:58:25 +0200
+Message-Id: <20220705115607.683448383@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
 References: <20220705115606.709817198@linuxfoundation.org>
@@ -49,37 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
+commit 94f2a444f28a649926c410eb9a38afb13a83ebe0 upstream.
 
-The pause settings reported by the PHY should also be applied to the GMII port
-status override otherwise the switch will not generate pause frames towards the
-link partner despite the advertisement saying otherwise.
+Add the following Telit FN990 composition:
 
-Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+0x1070: tty, adb, rmnet, tty, tty, tty, tty
+
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20211210095722.22269-1-dnlplm@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/bcm_sf2.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/usb/qmi_wwan.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -599,6 +599,11 @@ force_link:
- 		reg |= LINK_STS;
- 	if (state->duplex == DUPLEX_FULL)
- 		reg |= DUPLX_MODE;
-+	if (state->pause & MLO_PAUSE_TXRX_MASK) {
-+		if (state->pause & MLO_PAUSE_TX)
-+			reg |= TXFLOW_CNTL;
-+		reg |= RXFLOW_CNTL;
-+	}
- 
- 	core_writel(priv, reg, offset);
- }
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1319,6 +1319,7 @@ static const struct usb_device_id produc
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
++	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1070, 2)},	/* Telit FN990 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
 
 
