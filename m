@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F66CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27AE6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235794AbiGEMO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
+        id S235813AbiGEMO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235044AbiGEMIY (ORCPT
+        with ESMTP id S235082AbiGEMIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C4C18B23;
-        Tue,  5 Jul 2022 05:07:32 -0700 (PDT)
+        Tue, 5 Jul 2022 08:08:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B89186D3;
+        Tue,  5 Jul 2022 05:07:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 24585CE0B30;
-        Tue,  5 Jul 2022 12:07:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 150DBC341C7;
-        Tue,  5 Jul 2022 12:07:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E7796185C;
+        Tue,  5 Jul 2022 12:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22895C341CB;
+        Tue,  5 Jul 2022 12:07:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022849;
-        bh=GFOw2R84yg4QcKnn41alywsiSA7JiGvxuKNGWf0T9sA=;
+        s=korg; t=1657022860;
+        bh=kiwQyK9ntmVW3hHr9CAFTxn6uTKHmMpvRSP1nqt2+4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ry0IEvgDtMb5JLBQo6EJnWxwuB9tKnAtmNpW6WACaseexGD6bJyKy2luWjuX9iRx/
-         OU6e95OReaijiMkrYOJzEVQiUvV+FCrZQ9zvO6wCfzdPS54JOJkw4B8pZiCFvVApvo
-         wpGlxxrGgKoVSB17CUhcXVgwB9X/ueuUmure1DP8=
+        b=n1+tp1AxZb7PfwERRywVSjmu+AaaKxFDs1BM2dMMSGymUK7Y2BRVu1t2ki0Opl4tR
+         hReQ82nwqnONy1N+TswxZT8aIdVhj61uTKT6PZehg2KFrYn8OjsmGz+GI+D3hbMHi4
+         LN9yGzW526kZEhbpm8QqnOuxD6yxYGhhnCm2/eBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Ye <chris.ye@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 5.10 04/84] nvdimm: Fix badblocks clear off-by-one error
-Date:   Tue,  5 Jul 2022 13:57:27 +0200
-Message-Id: <20220705115615.455517172@linuxfoundation.org>
+        stable@vger.kernel.org, Heinz Mauelshagen <heinzm@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.10 08/84] dm raid: fix accesses beyond end of raid member array
+Date:   Tue,  5 Jul 2022 13:57:31 +0200
+Message-Id: <20220705115615.572161247@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -49,38 +48,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Ye <chris.ye@intel.com>
+From: Heinz Mauelshagen <heinzm@redhat.com>
 
-commit ef9102004a87cb3f8b26e000a095a261fc0467d3 upstream.
+commit 332bd0778775d0cf105c4b9e03e460b590749916 upstream.
 
-nvdimm_clear_badblocks_region() validates badblock clearing requests
-against the span of the region, however it compares the inclusive
-badblock request range to the exclusive region range. Fix up the
-off-by-one error.
+On dm-raid table load (using raid_ctr), dm-raid allocates an array
+rs->devs[rs->raid_disks] for the raid device members. rs->raid_disks
+is defined by the number of raid metadata and image tupples passed
+into the target's constructor.
 
-Fixes: 23f498448362 ("libnvdimm: rework region badblocks clearing")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Chris Ye <chris.ye@intel.com>
-Reviewed-by: Vishal Verma <vishal.l.verma@intel.com>
-Link: https://lore.kernel.org/r/165404219489.2445897.9792886413715690399.stgit@dwillia2-xfh
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+In the case of RAID layout changes being requested, that number can be
+different from the current number of members for existing raid sets as
+defined in their superblocks. Example RAID layout changes include:
+- raid1 legs being added/removed
+- raid4/5/6/10 number of stripes changed (stripe reshaping)
+- takeover to higher raid level (e.g. raid5 -> raid6)
+
+When accessing array members, rs->raid_disks must be used in control
+loops instead of the potentially larger value in rs->md.raid_disks.
+Otherwise it will cause memory access beyond the end of the rs->devs
+array.
+
+Fix this by changing code that is prone to out-of-bounds access.
+Also fix validate_raid_redundancy() to validate all devices that are
+added. Also, use braces to help clean up raid_iterate_devices().
+
+The out-of-bounds memory accesses was discovered using KASAN.
+
+This commit was verified to pass all LVM2 RAID tests (with KASAN
+enabled).
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Heinz Mauelshagen <heinzm@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvdimm/bus.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/md/dm-raid.c |   34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
 
---- a/drivers/nvdimm/bus.c
-+++ b/drivers/nvdimm/bus.c
-@@ -187,8 +187,8 @@ static int nvdimm_clear_badblocks_region
- 	ndr_end = nd_region->ndr_start + nd_region->ndr_size - 1;
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -1002,12 +1002,13 @@ static int validate_region_size(struct r
+ static int validate_raid_redundancy(struct raid_set *rs)
+ {
+ 	unsigned int i, rebuild_cnt = 0;
+-	unsigned int rebuilds_per_group = 0, copies;
++	unsigned int rebuilds_per_group = 0, copies, raid_disks;
+ 	unsigned int group_size, last_group_start;
  
- 	/* make sure we are in the region */
--	if (ctx->phys < nd_region->ndr_start
--			|| (ctx->phys + ctx->cleared) > ndr_end)
-+	if (ctx->phys < nd_region->ndr_start ||
-+	    (ctx->phys + ctx->cleared - 1) > ndr_end)
- 		return 0;
+-	for (i = 0; i < rs->md.raid_disks; i++)
+-		if (!test_bit(In_sync, &rs->dev[i].rdev.flags) ||
+-		    !rs->dev[i].rdev.sb_page)
++	for (i = 0; i < rs->raid_disks; i++)
++		if (!test_bit(FirstUse, &rs->dev[i].rdev.flags) &&
++		    ((!test_bit(In_sync, &rs->dev[i].rdev.flags) ||
++		      !rs->dev[i].rdev.sb_page)))
+ 			rebuild_cnt++;
  
- 	sector = (ctx->phys - nd_region->ndr_start) / 512;
+ 	switch (rs->md.level) {
+@@ -1047,8 +1048,9 @@ static int validate_raid_redundancy(stru
+ 		 *	    A	 A    B	   B	C
+ 		 *	    C	 D    D	   E	E
+ 		 */
++		raid_disks = min(rs->raid_disks, rs->md.raid_disks);
+ 		if (__is_raid10_near(rs->md.new_layout)) {
+-			for (i = 0; i < rs->md.raid_disks; i++) {
++			for (i = 0; i < raid_disks; i++) {
+ 				if (!(i % copies))
+ 					rebuilds_per_group = 0;
+ 				if ((!rs->dev[i].rdev.sb_page ||
+@@ -1071,10 +1073,10 @@ static int validate_raid_redundancy(stru
+ 		 * results in the need to treat the last (potentially larger)
+ 		 * set differently.
+ 		 */
+-		group_size = (rs->md.raid_disks / copies);
+-		last_group_start = (rs->md.raid_disks / group_size) - 1;
++		group_size = (raid_disks / copies);
++		last_group_start = (raid_disks / group_size) - 1;
+ 		last_group_start *= group_size;
+-		for (i = 0; i < rs->md.raid_disks; i++) {
++		for (i = 0; i < raid_disks; i++) {
+ 			if (!(i % copies) && !(i > last_group_start))
+ 				rebuilds_per_group = 0;
+ 			if ((!rs->dev[i].rdev.sb_page ||
+@@ -1589,7 +1591,7 @@ static sector_t __rdev_sectors(struct ra
+ {
+ 	int i;
+ 
+-	for (i = 0; i < rs->md.raid_disks; i++) {
++	for (i = 0; i < rs->raid_disks; i++) {
+ 		struct md_rdev *rdev = &rs->dev[i].rdev;
+ 
+ 		if (!test_bit(Journal, &rdev->flags) &&
+@@ -3732,13 +3734,13 @@ static int raid_iterate_devices(struct d
+ 	unsigned int i;
+ 	int r = 0;
+ 
+-	for (i = 0; !r && i < rs->md.raid_disks; i++)
+-		if (rs->dev[i].data_dev)
+-			r = fn(ti,
+-				 rs->dev[i].data_dev,
+-				 0, /* No offset on data devs */
+-				 rs->md.dev_sectors,
+-				 data);
++	for (i = 0; !r && i < rs->raid_disks; i++) {
++		if (rs->dev[i].data_dev) {
++			r = fn(ti, rs->dev[i].data_dev,
++			       0, /* No offset on data devs */
++			       rs->md.dev_sectors, data);
++		}
++	}
+ 
+ 	return r;
+ }
 
 
