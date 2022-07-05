@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 304CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CD2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbiGEL5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
+        id S231165AbiGEL6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbiGEL5u (ORCPT
+        with ESMTP id S231129AbiGEL6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:57:50 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E3817A8E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:57:48 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id t24so20161013lfr.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:57:48 -0700 (PDT)
+        Tue, 5 Jul 2022 07:58:14 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FD017AA3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:58:13 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id j21so20193115lfe.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:58:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qaINgCuKuJ+N1ufby3FpYQHPfvNiLqvgxHa2OLQIWmA=;
-        b=blPdvfpnWXyoiDUEJ9FHfyni319pJqlaWVzo1nq7TQcChhXpSglNj11BGyisTYFms8
-         CBvniqM1PHfW2gzYrI9J8YLf4LCwHz96O8zMB8MflAGuIELaaudTtfbcJzLFdAkawfJt
-         bQN+hPH02uNSb/N/B3xkwLuQbOsRrk8dV+cdpUbX7p1DMnhkcZw5D3YNUvpoEKzLC+o6
-         GD1juKKyGXdSW7/rjn8SAT+TAxOc/EcKi+yqFstvaZo2nyh6bHKGR6Y0cPJTuC16tbNu
-         rXO+jAsswGptF+ICLapCVVqqaDcP/Orv9P2hA/mfeuqakkJsKG1yyanQbna4qr28R+uH
-         EOKg==
+        bh=+LXRh8XLo5TTKatqai8h5sgh5sYynVOMyrVjObwxb1E=;
+        b=s6g6Q0DLjnlJCnTkpPlNJvE2I/RDfbKgLPupJBpng4B8yoQ2x3GzJnOzGkvBEo0NaB
+         gliGYhLOHuQW1EvxVW+8AMQYuAgx4Wf8SAJa1o2OhLwhxRXrAHxNGpPltHEK2SbsS6+Z
+         J0+QUX/OnHdkXUOfBR1a2kcMaOTQsB062PI8kL4Pb162hluHi+6kgJb2T0/rckWqdWQ6
+         n+fZubPlZOAVejJYuUdz/lBPx53WyBu2d5pf0gecLiq12pMVsU5PSMNIrRP+ykqjej74
+         GTGOpj001daiiGv5PB4KOVhgzd7qB+pxEaRRfLJYc85HFXM1DR/hJQNYwOTChS2RoIGh
+         azAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=qaINgCuKuJ+N1ufby3FpYQHPfvNiLqvgxHa2OLQIWmA=;
-        b=DhhNjbbqRZil2zVhiaF9E8QPaQ5TopGTS/+7epHgWTnj+OrjFRCuzL96b3l+xN6Ysy
-         tVQWPbP9MPY3muXV/nxbyqH+j2oHz4hJ7s/bqMStnrT1pkjzQCICuJMgFIQK66q0suQz
-         UFVMcYErZdgZ+wSUX83a9GkenVcw/DfElEzCxaJ38R0Lnj9F3oDVgdJoLL+9iV1BtNct
-         dKUl/KUAuZvDtCu2cNLoTPMI8M9W0gIq2CnBTUxvYoLNEbnkU6bEJMmGnbX7BCG7HLPE
-         +VX+JgTjqJS1l51bc79/SRi34ojlKQf7pNrey98lrZc4w11RXhXHyYQfg04RCJZg/0Rq
-         bFvA==
-X-Gm-Message-State: AJIora8e6wGlKB8vQWmEdRiuEW+9kyu2SMDAf2QgJyRuEmAiUl2nwCWw
-        VgfF70kTkxdkdqTSM4B+Sf1oUw==
-X-Google-Smtp-Source: AGRyM1vw8JHN23QBD8OFiC77SIfwW/1Akm5wiorwWgqYv9VlDNfxj97acoUnG0qh8x29vNFdD21hmw==
-X-Received: by 2002:ac2:5f7c:0:b0:47f:993c:49f2 with SMTP id c28-20020ac25f7c000000b0047f993c49f2mr21194682lfc.189.1657022267360;
-        Tue, 05 Jul 2022 04:57:47 -0700 (PDT)
+        bh=+LXRh8XLo5TTKatqai8h5sgh5sYynVOMyrVjObwxb1E=;
+        b=LKXXxQPTu+vo/TCfZFo9wAa5bGXW4BY73L1Qb9mnLOphDCiDmmgfRtpZMXlXhdQ9bi
+         N8fSsSWydNr4xveaDS0YHA+fr5nIzVqA1YVtsHBwMWoPNCWz/VjWMgjpns0sB1088JS2
+         7XB0y8ViVkQTHB7QVSDFf+BE7KyyeBi1qCa4aFiEhcBcoyrS0iK2jDK9h2hIofjKXufU
+         xq1KT3mWbLGn0vBlmrdHbN2M2/L9YOX17BwMxLKtxAMswBInZC4EE1jzKrfwGMOpTHdc
+         mdGpAzlzYiqXZVuDikxVAiHyPG8RjaIQUX3KFoR7yyzPk9odxaAAd7XmChAmk9vAKtVd
+         JDwQ==
+X-Gm-Message-State: AJIora84gTk6RCIbEfWTQiSmcoZ+S9jcWdyZHtc28RiTNFrbogGLcPd3
+        v2w/tZlOLXY1VWqub/+2uNT/Vw==
+X-Google-Smtp-Source: AGRyM1sp3XM6fmWLRp/zHlsY3yInJaCeushGtHM0lOg7pgLySV80H65Af1eQ2ZUwxSt/1iIcfm7kvQ==
+X-Received: by 2002:a05:6512:22c3:b0:47f:704b:3820 with SMTP id g3-20020a05651222c300b0047f704b3820mr21778416lfu.411.1657022291566;
+        Tue, 05 Jul 2022 04:58:11 -0700 (PDT)
 Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id t6-20020a056512208600b0047f79487758sm5660680lfr.133.2022.07.05.04.57.46
+        by smtp.gmail.com with ESMTPSA id n10-20020a0565120aca00b0047f77c979f3sm5656848lfu.235.2022.07.05.04.58.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 04:57:46 -0700 (PDT)
-Message-ID: <e0433a4a-475c-7a4b-29b6-461d04356084@linaro.org>
-Date:   Tue, 5 Jul 2022 14:57:46 +0300
+        Tue, 05 Jul 2022 04:58:11 -0700 (PDT)
+Message-ID: <ce4b0c8e-8cc6-4157-652a-25e50da033c3@linaro.org>
+Date:   Tue, 5 Jul 2022 14:58:10 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH 01/14] arm64: dts: qcom: sc7280: drop PCIe PHY clock index
+Subject: Re: [PATCH 02/14] arm64: dts: qcom: sm8250: add missing PCIe PHY
+ clock-cells
 Content-Language: en-GB
 To:     Johan Hovold <johan+linaro@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
@@ -63,9 +64,9 @@ Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20220705114032.22787-1-johan+linaro@kernel.org>
- <20220705114032.22787-2-johan+linaro@kernel.org>
+ <20220705114032.22787-3-johan+linaro@kernel.org>
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220705114032.22787-2-johan+linaro@kernel.org>
+In-Reply-To: <20220705114032.22787-3-johan+linaro@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -73,16 +74,16 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 05/07/2022 14:40, Johan Hovold wrote:
-> The QMP PCIe PHY provides a single clock so drop the redundant clock
-> index.
+> Add the missing '#clock-cells' properties to the PCIe QMP PHY nodes.
 > 
 > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
 > ---
->   arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+>   arch/arm64/boot/dts/qcom/sm8250.dtsi | 6 ++++++
+>   1 file changed, 6 insertions(+)
+
 
 -- 
 With best wishes
