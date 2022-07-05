@@ -2,65 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 779E8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38994C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231135AbiGENkT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
+        id S229635AbiGENkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbiGENkG (ORCPT
+        with ESMTP id S229565AbiGENkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:40:06 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85E99B186;
-        Tue,  5 Jul 2022 06:01:06 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 9E3252223E;
-        Tue,  5 Jul 2022 15:00:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657026060;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w5IGhtBFhLHpkdv9OtcqSGseM9bhkDJbnjN/ntQxlYs=;
-        b=t9nwjhY8s9jAk7CNa/duLCuzHRA/nhIPm9PvgFf+Rfgeu89yi17PrZhKOy0Q6zvXsbMyJA
-        Gagd32VpKHjt2gM4k+f7rQnCmCjv5nLZbDfz4BvYPv+n0rs24Bc7UjO7zNUzD1UX1OHwwz
-        gF5bhdg6Ga20DSC2S9XsQoHaRKVoWxM=
-From:   Michael Walle <michael@walle.cc>
-To:     herve.codina@bootlin.com
-Cc:     alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
-        horatiu.vultur@microchip.com, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        mturquette@baylibre.com, nicolas.ferre@microchip.com,
-        robh+dt@kernel.org, sboyd@kernel.org, thomas.petazzoni@bootlin.com,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v5 1/3] clk: lan966x: Fix the lan966x clock gate register address
-Date:   Tue,  5 Jul 2022 15:00:36 +0200
-Message-Id: <20220705130036.1384656-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220704102845.168438-2-herve.codina@bootlin.com>
-References: <20220704102845.168438-2-herve.codina@bootlin.com>
+        Tue, 5 Jul 2022 09:40:20 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2638B9FE03;
+        Tue,  5 Jul 2022 06:01:27 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id h23so21446499ejj.12;
+        Tue, 05 Jul 2022 06:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uXbdRIl5DzPqCBpkjfmAYzOPOvQhWBeO3fgrDd46Stc=;
+        b=RSLvcXnZdh41tMK3A2h1Y+CAwnI5xlcprV5yeyh/tOU6V7KGfWqaaXJk3fHHk4AViG
+         9/pmvB50xQzC35QJyyu75tLydGjD/0lxmjTLuKk0gvBBXsM7grav0+KBve22d9wIY28c
+         MedTuHfMaMky6Gz5fpIYanN3scLauCwM4VlfQaCbBwb1uctqn7OoPESE1gNQLyOgdio4
+         jdmvr39SGgo1c6GTsL6Z7p2/BvAays06D1r55mCrMs8k6zjbDNNCmul+Ai55AArRRAdn
+         Ba9dYvYVBmBA3WumR6Xk4VIQIenn7pzEspXlLgAx53kExAWYYi0hBVgzHs10xjzOrVSc
+         R6tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uXbdRIl5DzPqCBpkjfmAYzOPOvQhWBeO3fgrDd46Stc=;
+        b=bGIcIf7cI/3+aC/ECUzSoKNbQVRGnVn12tM0uNQzykCl9eCxrbMM2SoSGnTsVLO0yh
+         O3spEfMuF631xVHRCDnoQ2vpHsTgWs2HOEFm91FQZ+4Rdh+bNcdjQPHVg2H2Ny+2tMsi
+         7TbJh5alDnv2Ai08z+w9mElgX8aMHVEKMLcyjvlbwlr9W8NEHqWwNnBWp35s2zxR9g0F
+         DL0lMU/pnE3F10xxMgKEqDLgDzbkVhE84Lsf+tODv6fybPyVoeORzsDuJh5h2MqQ8Ax1
+         B5IwC3wg/JucunJ8WBUx4bMhbskf6lfE1VvbmfKh2/y90btHXt/24jVlFyepsxdGiyDV
+         AeSg==
+X-Gm-Message-State: AJIora/t1acQT8efZETR/ec65ZNNQZQ0DFa7EVA3xJhQscQ0GimSQH3a
+        b3sb4CNJylCJfilejxgOSzU=
+X-Google-Smtp-Source: AGRyM1tyXt75C0imlO+ODXhX4VOUWgsDA8ADYBrg8+NFoNxS3ufFXHp7GbNPqFefRLS3p1AKYawfBg==
+X-Received: by 2002:a17:907:60cc:b0:722:e564:eb11 with SMTP id hv12-20020a17090760cc00b00722e564eb11mr33325255ejc.736.1657026086139;
+        Tue, 05 Jul 2022 06:01:26 -0700 (PDT)
+Received: from ?IPV6:2a04:241e:502:a09c:8f3:2ee8:92a4:9ada? ([2a04:241e:502:a09c:8f3:2ee8:92a4:9ada])
+        by smtp.gmail.com with ESMTPSA id p5-20020a17090653c500b00722e8c47cc9sm8072612ejo.181.2022.07.05.06.01.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 06:01:25 -0700 (PDT)
+Message-ID: <324c9844-1ecb-60c0-c976-16627dff1815@gmail.com>
+Date:   Tue, 5 Jul 2022 16:01:23 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] net: Shrink sock.sk_err sk_err_soft to u16 from int
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Joanne Koong <joannelkoong@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <74c6f54cd3869258f4c83b46d9e5b95f7f0dab4b.1656878516.git.cdleonard@gmail.com>
+ <248071bc915140d8c58669b288c15c731407fa76.camel@redhat.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+In-Reply-To: <248071bc915140d8c58669b288c15c731407fa76.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> The register address used for the clock gate register is the base
-> register address coming from first reg map (ie. the generic
-> clock registers) instead of the second reg map defining the clock
-> gate register.
+On 7/5/22 13:31, Paolo Abeni wrote:
+> On Sun, 2022-07-03 at 23:06 +0300, Leonard Crestez wrote:
+>> These fields hold positive errno values which are limited by
+>> ERRNO_MAX=4095 so 16 bits is more than enough.
+>>
+>> They are also always positive; setting them to a negative errno value
+>> can result in falsely reporting a successful read/write of incorrect
+>> size.
+>>
+>> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+>> ---
+>>   include/net/sock.h | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> I ran some relatively complex tests without noticing issues but some corner
+>> case where this breaks might exist.
 > 
-> Use the correct clock gate register address.
+> Could you please explain in length the rationale behind this change?
 > 
-> Fixes: 5ad5915dea00 ("clk: lan966x: Extend lan966x clock driver for clock gating support")
-> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+> Note that this additionally changes the struct sock binary layout,
+> which in turn in quite relevant for high speed data transfer.
 
-Tested-by: Michael Walle <michael@walle.cc>
+The rationale is that shrinking structs is almost always better. I know 
+that due to various roundings it likely won't actually impact memory 
+consumption unless accumulated with other size reductions.
+
+These sk_err fields don't seem to be in a particularly "hot" area so I 
+don't think it will impact performance.
+
+My expectation is that after a socket error is reported the socket will 
+likely be closed so that there will be very few writes to this field.
+
+--
+Regards,
+Leonard
