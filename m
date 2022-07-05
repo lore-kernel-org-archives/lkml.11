@@ -2,92 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D46DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F216C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiGEPQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43840 "EHLO
+        id S230119AbiGEPRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiGEPQ0 (ORCPT
+        with ESMTP id S229843AbiGEPRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:16:26 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC35165B5
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:16:25 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id g4so22383894ybg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:16:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6DSbvTo7+AL83tbYmZRcTVuzyAaPVRXPMpXm5zUKzjk=;
-        b=DXXktTlSBaSyfyP5PANcVvKzhRMpDyVurssqm2mmRBDqKjJbpHscEfmzRjHSlSiqv7
-         9GJYPvBTn4aOz0RSeVzzNEmzL6Ym2kQRQLk13ROzVmq22KD1atjP/SXrCk1nL/4H/Hvu
-         bbNl+UxcjxkpOY5q/m+oOg5TD4KT4KZj8PXvkb0TU5CiuIBpzy5EBhj2f/1sEHaXk44K
-         0YqRc2KZo+ERa6MCSza3L8WMJ8Ut467Cu0AcRN6uOdgmoMhGayTcUiBHPvGCLPeGSgpG
-         MNHmxo9fTllpluBp1IrbUy/3UaXpH1JYDfiTGhHYbgjQCpLrwgsdVf8qnlIyeETEjKP8
-         dQ7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6DSbvTo7+AL83tbYmZRcTVuzyAaPVRXPMpXm5zUKzjk=;
-        b=sbedAOqBZlvcMtM8vpR91TLaGO/OLrnJwLA6uMaOdgDIsckHL/JMKYbFRmAmJPRf9P
-         RUHlkHtrb7L79gWe4hj341fKpKd/L7lzkTCPyf/rnOIZJsl5KzKx4by6vAi6uFAI65bT
-         +gNYN6Gz0ewEFYGSfm0SanlLpXeNvBKx0Ek6FHyH1ctCkS145uBpfhono5y/DpR+GyMR
-         0GHZt0/l/OsyoLGCFl/w554l1UUeRG4L5XzHzRfmyy2vuF3aBOqC2RyyNzgf+/mcaKcO
-         cIRM/XHh19ab3WTSWLAnbXc7vXVsaHIlUsrZs3EL/OpxkhqATWUDCY3h10XzkxVZ4I7M
-         ra0A==
-X-Gm-Message-State: AJIora/wPUVIgRjUQSxsQ2v6xBJFuEDAC9f3SPS2Cpt4IhkhrBjJvb4q
-        zU/GiS0cGUP3FjV4N+CecaU9fEb9nakCcSyUuPOlUlSKTBUdMqNM
-X-Google-Smtp-Source: AGRyM1v8sVLFzmodnC5Lowuu33TseCdut1qCR3nApuLoc6/xH3rU99PEbvOt6MqJivA1C4rFSAIB+WAisMBBV8fHsjE=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr1596326ybg.460.1657034184561; Tue, 05
- Jul 2022 08:16:24 -0700 (PDT)
+        Tue, 5 Jul 2022 11:17:01 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DFE17A93;
+        Tue,  5 Jul 2022 08:17:00 -0700 (PDT)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LcmRZ3VJ8z67xFD;
+        Tue,  5 Jul 2022 23:14:18 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 5 Jul 2022 17:16:57 +0200
+Received: from [10.126.171.232] (10.126.171.232) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2375.24; Tue, 5 Jul 2022 16:16:57 +0100
+Message-ID: <752f92ba-4957-545c-51f7-7e71648d92e4@huawei.com>
+Date:   Tue, 5 Jul 2022 16:16:56 +0100
 MIME-Version: 1.0
-References: <20220705114312.86164-1-andriy.shevchenko@linux.intel.com>
- <20220705114312.86164-4-andriy.shevchenko@linux.intel.com> <f85d13df-b3b9-5cde-6f4c-a68507cedee9@huawei.com>
-In-Reply-To: <f85d13df-b3b9-5cde-6f4c-a68507cedee9@huawei.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 Jul 2022 17:15:48 +0200
-Message-ID: <CAHp75Ves4VZHRWGW9hP1cz-Cytx_c2GsK3BHuNiCyRqCufB1Hg@mail.gmail.com>
-Subject: Re: [PATCH v1 4/4] bus: hisi_lpc: Don't guard ACPI IDs with ACPI_PTR()
-To:     John Garry <john.garry@huawei.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3] hisi_lpc: Use acpi_dev_for_each_child()
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Yang Yingliang <yangyingliang@huawei.com>
+References: <12026357.O9o76ZdvQC@kreacher> <2657553.mvXUDI8C0e@kreacher>
+ <5606189.DvuYhMxLoT@kreacher>
+ <e9666883-3285-36a6-6278-ace219b88f3c@huawei.com>
+ <CAHp75Ve-Cm43HhqqxxfmKTbC_Gkx=0aAcj0jJmA=-Nr-NT1FqQ@mail.gmail.com>
+ <CAHp75VdT1YZUQbdHupA2RmucUBSzypcPwKBgSa4=sVQAhC+Vsw@mail.gmail.com>
+ <61fbd71b-9c36-345c-7aed-561b81c34259@huawei.com>
+ <CAHp75VdxaBG8Sj3j7Wa7BrZOrn1j2eAtJMw0N8z255HwMSohYw@mail.gmail.com>
+ <df8c0a5d-e950-1726-5d30-80dcc8b20ff9@huawei.com>
+ <CAJZ5v0hv7nm57QrCYX+aX=fVoE0s0BxEpJfz+a8bsPzzSZt7+g@mail.gmail.com>
+ <71dfc3cd-c2ae-8096-9280-67e77c21055e@huawei.com>
+ <CAHp75VfqJwF4YypH3QE0MRgZAyjEMKche-4czUuiC=aTYoYwig@mail.gmail.com>
+ <CAHp75VfpQfBYD-AmVhbxm4tp_1EVv8xqCChYpuuRKOC=P_Y_og@mail.gmail.com>
+ <050e5a2f-42b9-f851-ec6e-e2a9d3fdbe1c@huawei.com>
+ <CAJZ5v0j++HZJfL2+0uWgDRqVeZPviaZSWyL3Yn7T2Ky=bcRQMQ@mail.gmail.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <CAJZ5v0j++HZJfL2+0uWgDRqVeZPviaZSWyL3Yn7T2Ky=bcRQMQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.171.232]
+X-ClientProxiedBy: lhreml703-chm.china.huawei.com (10.201.108.52) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 5:02 PM John Garry <john.garry@huawei.com> wrote:
-> On 05/07/2022 12:43, Andy Shevchenko wrote:
-> > The OF is not guarded, neither ACPI needs.
->
-> This doesn't read well.
+> Next, I'd look at introducing something like
+> 
+> acpi_create_platform_device_ops(struct acpi_device *adev, const struct
+> property_entry *properties, const struct *platform_device_create_ops
+> *ops);
+> 
+> where ops would be a set of callbacks to invoke as a matter of customization.
+> 
+> Then, acpi_create_platform_device() can be defined as a wrapper around
+> the above.
+> .
 
-"The OF is not guarded, neither ACPI needs it."
+ok, that seems easiest. But alternatively do you see any scope to have 
+that platform_device_create_ops * ops in the acpi_device struct (so that 
+we don't need to create this new API)?
 
-Better? Otherwise please propose how it can be amended here.
+Thanks,
+John
 
-> > The IDs do not depend
-> > to the configuration. Hence drop ACPI_PTR() from the code and
-> > move ID table closer to its user.
->
-> Do you need to explicitly include mod_devicetable.h, which has the
-> definition of acpi_device_id?
->
-> I saw a similar change for another driver and it was claimed that
-> including mod_devicetable.h was required.
 
-Strictly speaking, yes we need mod_devicetable.h. But of.h and acpi.h
-include it.
-
-What you have seen is probably dropping of.h and/or acpi.h completely
-from the user. In such cases the mod_devicetable.h is compulsory.
-
--- 
-With Best Regards,
-Andy Shevchenko
