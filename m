@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB966CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB0DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbiGEKDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56764 "EHLO
+        id S232258AbiGEKDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbiGEKDF (ORCPT
+        with ESMTP id S232146AbiGEKDS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:03:05 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02F213F00
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 03:03:02 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id a11so13868196ljb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 03:03:02 -0700 (PDT)
+        Tue, 5 Jul 2022 06:03:18 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF83D13F21
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 03:03:16 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id y16so19646494lfb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 03:03:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=w9+SQsY/NLl9h6xMjjbnzFOp0g9U5sIW1EUYanyyw+c=;
-        b=HxGx8j+pPyygvzH4xlqJHqV6m1QNJxV4cPrs2F+AGjML6Y/2hCEL0JqlTSxgBqw1uF
-         ObIdy/JmJaNkNCR0ccJCZXrdwJr5hitpKZHHiabgYKkcfEWr+sFr83PBScyKmcJDNhXF
-         LNuOPmpjJvgTkQ9JS0tBwA0RsodAOTXEvM1w9xEXHzjzZ0gXx/AkzN9HVYGm92vJmUBW
-         0omqDIVJhHeR/O0jgt/X0qDJicb6IGh1H/dTXVw1MYSiwuprvc/8dd3l4KQl1uexv/xf
-         0PKX9REU3os1TA811cdPExcyH/+9RhDzWFOCGVu+IkKoGWTsmtmhnSyDKZmN/C8EKyU7
-         hJyg==
+        bh=isi6a7fVq8cWarGbVpE2RdlMD/1CV/69s/y//iHVXgs=;
+        b=lkTAbTZnFM/J04wdmLCi+WJEQrC9Kdq8gMF+MXDyk+9UAJN/1oRub4OJC3TaQPVMXe
+         V0YpeC9wmJc7NPXdjK1YrsRCMe+XmEQbRX4SDZ2Me5MDOxiiTSJhTjXL+NNTpSGaj7JC
+         DUx866L0jqXOJ9xStlA3wyt9lDDlb6eT5wOMQEOg8VCz3JaTSGy7CyxXgy/kxghmuWWh
+         DoZSLBOKZcaNQHWaF9k2XSBVTvujdCRZOAGWiwmGnpNLYWZcKrhfKTwALDaYsq6haRQn
+         PwEWvzW5kr74bRmASWAlOKHY8dpBQA1Qm4709e2A/VVJfAZh652maYxEWfCxUf7zV+AW
+         S8nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=w9+SQsY/NLl9h6xMjjbnzFOp0g9U5sIW1EUYanyyw+c=;
-        b=hk5Ns1IdCZpCTomvaBqxTjDCKrxqR4hNlhPDNYYYWToP7WwAosBdOlYFpPB+f4TPG3
-         t92CfL/TRPb6+eNv0nEJGwRrxGZiYdN0F/2QxokPZ/jsPh2tScHTU/Xc3ovag8p6RF/w
-         ka93nApmCq7LtaiH435JMsykTqTKO1fngGNMKajIR7Sj7APZDGNhfZvyc4CKnjIxjlIY
-         YbtjGUFHfHTj/87svFKgfw7QsdtbfmeLOY5KWKlZz/VNaK5JnC14Z3WM19U+2WH9N0/s
-         /JvH75S9lAyWBQ5Eevn+PJC7Trsn0gnS43peYwTjMP2cgYewfwQIAdY/ypa0xptcWIP1
-         nQlg==
-X-Gm-Message-State: AJIora8m66GkKaZtNBfL6PiCqi88owWkEZsusGnyJZMxJazJZhC3j8f9
-        5VTlCNcUTZfYz26I7g8TothStQ==
-X-Google-Smtp-Source: AGRyM1uwnvOcoQafM3SLYRmg5cf9HHvDJs0sgnpJ9Zzs28wWHyGPma2Rftkuh+3aPkH5nmdGjaunTA==
-X-Received: by 2002:a2e:8958:0:b0:25a:852a:c302 with SMTP id b24-20020a2e8958000000b0025a852ac302mr19530866ljk.130.1657015381066;
-        Tue, 05 Jul 2022 03:03:01 -0700 (PDT)
+        bh=isi6a7fVq8cWarGbVpE2RdlMD/1CV/69s/y//iHVXgs=;
+        b=RYnmM2U8D/Z/pWD7sYfSfn6t1gS8mzLVS6SnVu3hoNnGLbYYk6cfj6uXVS9TZSVshk
+         ZORqbuhhxOohHDUStgYdLk+vdWyIh90UVgKz5RkL91hbxUFCdSkqsZxFf25tbFBl+qKX
+         H6zTW4qDQI/lqVFbxaI1UlErpmADHpSFEto52iNlA/XMQhSRq8zcchCFTrx2l5P5hmi5
+         TvzLId/RHZiA91blXs6l14kdKqq/x9L4rrEpzEJAuewdGZvPHklvF/nPce90TopxkFq0
+         uyso8gZvvrXgFLrk+eKse4mNB6feeOEG8tNOJnybghz+pWee+YSnQusBMussmjfy7PO9
+         0rMw==
+X-Gm-Message-State: AJIora8/ukkUASN0OEcUUM1V0qZGtpM2UdfwdGzswr854AtTJQgzjfLn
+        EtqKlm7QzqxgUs5XIWeobtDb2A==
+X-Google-Smtp-Source: AGRyM1t/CCm8GtXgy4LjtshxePwKKSBsv2Rl+OeKnOAvbq3eR7yiOZ0pCoxKokhIen4sDGJEJr3WCA==
+X-Received: by 2002:a05:6512:281d:b0:47f:ac1c:fcf5 with SMTP id cf29-20020a056512281d00b0047fac1cfcf5mr22921572lfb.197.1657015395138;
+        Tue, 05 Jul 2022 03:03:15 -0700 (PDT)
 Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id u16-20020ac258d0000000b0047f6f675ea1sm5610685lfo.161.2022.07.05.03.02.59
+        by smtp.gmail.com with ESMTPSA id o4-20020a056512050400b004785b66a9a4sm1923266lfb.126.2022.07.05.03.03.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 03:03:00 -0700 (PDT)
-Message-ID: <7f418618-a40f-9ada-629a-6d6b08a29fd3@linaro.org>
-Date:   Tue, 5 Jul 2022 12:02:59 +0200
+        Tue, 05 Jul 2022 03:03:14 -0700 (PDT)
+Message-ID: <f8a9e839-4a0c-238b-802e-b289e5a1e9b5@linaro.org>
+Date:   Tue, 5 Jul 2022 12:03:13 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH 03/43] dt-bindings: phy: qcom,qmp: clean up descriptions
+Subject: Re: [PATCH 04/43] dt-bindings: phy: qcom,qmp: clean up example
 Content-Language: en-US
 To:     Johan Hovold <johan+linaro@kernel.org>,
         Vinod Koul <vkoul@kernel.org>,
@@ -66,21 +66,24 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-4-johan+linaro@kernel.org>
+ <20220705094239.17174-5-johan+linaro@kernel.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220705094239.17174-4-johan+linaro@kernel.org>
+In-Reply-To: <20220705094239.17174-5-johan+linaro@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 11:41, Johan Hovold wrote:
-> Clean up the descriptions somewhat by using uppercase "PHY" consistently
-> and spelling out "clock".
+On 05/07/2022 11:42, Johan Hovold wrote:
+> Clean up the example node somewhat by grouping consumer and provider
+> properties in the child node.
 > 
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
 Best regards,
