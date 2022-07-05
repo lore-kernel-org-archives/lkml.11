@@ -2,96 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BD5CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:40:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232432AbiGEKjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
+        id S232410AbiGEKkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiGEKjS (ORCPT
+        with ESMTP id S230082AbiGEKkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:39:18 -0400
-Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 949EFC24;
-        Tue,  5 Jul 2022 03:39:17 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id 836A1FF9BF;
-        Tue,  5 Jul 2022 10:39:16 +0000 (UTC)
-Date:   Tue, 5 Jul 2022 12:39:12 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org,
-        Vincent Mailhol <vincent.mailhol@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: Re: [PATCH v9] can, tty: can327 CAN/ldisc driver for ELM327 based
- OBD-II adapters
-Message-ID: <20220705123912.1dfc6242.max@enpas.org>
-In-Reply-To: <CAMuHMdW5tTVP6cQ6a8KtgYAxb_g1Y52a9+hHwEtNLV3xYpWsVA@mail.gmail.com>
-References: <20220618195031.10975-1-max@enpas.org>
-        <20220627150557.qluqtejrddj5nfif@pengutronix.de>
-        <20220627190126.4eb57a2b.max@enpas.org>
-        <CAMuHMdUYCiRC+9UnQB6-2XGp+wOjYq1U_J3bDQT+WNm==mS4qg@mail.gmail.com>
-        <20220705094927.vgtxcjh4klw6dcg3@pengutronix.de>
-        <20220705115613.69d32b22.max@enpas.org>
-        <CAMuHMdW5tTVP6cQ6a8KtgYAxb_g1Y52a9+hHwEtNLV3xYpWsVA@mail.gmail.com>
+        Tue, 5 Jul 2022 06:40:45 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62B3E15727;
+        Tue,  5 Jul 2022 03:40:44 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1o8fz0-0002Jv-03; Tue, 05 Jul 2022 12:40:42 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 095BEC0230; Tue,  5 Jul 2022 12:24:43 +0200 (CEST)
+Date:   Tue, 5 Jul 2022 12:24:42 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] MIPS: Loongson64: Fix section mismatch warning
+Message-ID: <20220705102442.GG9951@alpha.franken.de>
+References: <1656313633-1713-1-git-send-email-yangtiezhu@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1656313633-1713-1-git-send-email-yangtiezhu@loongson.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Jul 2022 12:16:08 +0200
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-
-> > > > I had a quick glance through the various revisions posted, and
-> > > > it doesn't seem like anyone mentioned the serial bus.  Would
-> > > > there be any advantage in migrating to the serial bus?  
-> > >
-> > > Does serial bus work with hot plug devices like USB Serial
-> > > Adapters and/or devices that are not described in the device
-> > > tree?  
+On Mon, Jun 27, 2022 at 03:07:13PM +0800, Tiezhu Yang wrote:
+> prom_init_numa_memory() is annotated __init and not used by any module,
+> thus don't export it.
 > 
-> Probably it cannot work with hot-plug devices yet.
-> And devices must be described in some way (DT, ACPI), it does not
-> support auto-detect.
+> Remove not needed EXPORT_SYMBOL for prom_init_numa_memory() to fix the
+> following section mismatch warning:
+> 
+>   LD      vmlinux.o
+>   MODPOST vmlinux.symvers
+> WARNING: modpost: vmlinux.o(___ksymtab+prom_init_numa_memory+0x0): Section mismatch in reference
+> from the variable __ksymtab_prom_init_numa_memory to the function .init.text:prom_init_numa_memory()
+> The symbol prom_init_numa_memory is exported and annotated __init
+> Fix this by removing the __init annotation of prom_init_numa_memory or drop the export.
+> 
+> This is build on Linux 5.19-rc4.
+> 
+> Fixes: 6fbde6b492df ("MIPS: Loongson64: Move files to the top-level directory")
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+> 
+> v2: update the commit message and add Fixes tag
+> 
+>  arch/mips/loongson64/numa.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/arch/mips/loongson64/numa.c b/arch/mips/loongson64/numa.c
+> index 69a5331..8f61e93 100644
+> --- a/arch/mips/loongson64/numa.c
+> +++ b/arch/mips/loongson64/numa.c
+> @@ -196,7 +196,6 @@ void __init prom_init_numa_memory(void)
+>  	pr_info("CP0_PageGrain: CP0 5.1 (0x%x)\n", read_c0_pagegrain());
+>  	prom_meminit();
+>  }
+> -EXPORT_SYMBOL(prom_init_numa_memory);
+>  
+>  pg_data_t * __init arch_alloc_nodedata(int nid)
+>  {
+> -- 
+> 2.1.0
 
-Correct!
+applied to mips-next.
 
+Thomas.
 
-> So far I've seen serial bus used with e.g. bluetooth and DT.
-> I'm wondering if/how people use it with bluetooth connected to a
-> hot-pluggable device like usb-serial.
-
-They don't :)
-
-serdev is (currently, still, AFAIK) only for devices permanently
-attached to a platform - hence they can be reliably described as part
-of the platform itself, be it via DT or ACPI or whatever. So the fact,
-say, that the "Nokia N900" has a BT module permanently soldered to "UART
-2", that's something you can encode in its DT, because it applies to
-this device, and this device only.
-
-The ELM327 and clones are merely naked USB/BT-UART bridges with default
-VID/PID to the computer, and some variants are classic RS232 devices.
-No way to identify them, as they can appear/disappear on any UART,
-anywhere. So you need to attach them manually - and to my knowledge,
-such a manual mechanism is still missing from serdev. So we have to use
-a line discipline, as that has an API to attach from userspace.
-
-This also explains how to use Bluetooth via USB: Either it's a VID/PID
-known to some driver speaking native USB, or... well, for UARTs there's
-btattach and hciattach (both part of BlueZ), and both use the N_HCI
-line discipline. No serdev involved. I don't know if any USB-UART-BT
-device with a unique VID/PID exists, and I don't know whether serdev
-could be attached kernel-side in this case.
-
-
-Max
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
