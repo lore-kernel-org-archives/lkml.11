@@ -2,104 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 983A4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E267AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231637AbiGEU4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 16:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33664 "EHLO
+        id S232024AbiGEU4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 16:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231238AbiGEU4H (ORCPT
+        with ESMTP id S231703AbiGEU42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 16:56:07 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF0915A09;
-        Tue,  5 Jul 2022 13:56:05 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id x10so9489390edd.13;
-        Tue, 05 Jul 2022 13:56:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n1pkrcMQjBz/FRxe7ar3hA0ekF4WVND5LanMRiZumKU=;
-        b=Cktgf5jOYaT0/fJ4U/vliL1vCroasJ1MYYEkoQjd5JUv8UDT+EFyINLQQctotsDc1Z
-         Gzxgy5nbB+HS2Wft2gk1d+MLm4L0iZwFV/I3LFZ/mvXr8o/X2ioqeMMLtEo/yQMcNikU
-         dtLBLeebRJpyTZ5M+GeHMgJJ2acji1jHpTo1tUobdA54W17LdnBo6/jyBd1e+PfA21gv
-         yBC+Ogj5PB0L5p923hExgZ2aJMsGGCjMEApbK7gnvBGCYZrccHl0w+7s+7j0WNuUZ4gA
-         3Eg3leVDbQimeyeqtTk4zVHh+ljUaienm86hw98jPxPctMn9FESF6rNl5/77mCSH8V0f
-         uuTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n1pkrcMQjBz/FRxe7ar3hA0ekF4WVND5LanMRiZumKU=;
-        b=F8PHBdHybxXbSRWfdZkQdwJzEde6rJsavadmU/Mf6mT0y8ZfNisCxmH9aJjWcghR2C
-         9B/sLyMjcHgTllwchtGyJFVvQdJ9uwBROtlENQrXVbRbDwtIpRk4O8PqDPEGho5pLVWX
-         xgBE8rKROvHcEU/zkFa5htZLYCsshfJYPG98DZ73v2m2VX71tazS+eONVQtD4fBzGik8
-         jt2ER2MaAyT1LG3GNFaF7mqmfZckhOm/XMo+OITMhD68mmLIL+gHP2r8PGrSrXcjGvLK
-         dS4onD0/vhFMFE0oJG848X12N0+liEfMC8DLEASUUqbyM0ucJDpOAR/Mubx772hVFIba
-         6Zbg==
-X-Gm-Message-State: AJIora9yKsJKvqfIoFtl3OPsWRy3fJ8/8xw7HUYe5EniI+Rllf9oGPkA
-        SmSpf/3aNP+WPVAaD9r5hN3ptIxYlyg=
-X-Google-Smtp-Source: AGRyM1tLFqjqxPY+jlqMoptKtwWGGw2zkxjJbSsgeRR7luOINLMKNJPz3To1K/2QbVw6uV+coOAZsA==
-X-Received: by 2002:aa7:d542:0:b0:43a:875:64d3 with SMTP id u2-20020aa7d542000000b0043a087564d3mr24938401edr.139.1657054564380;
-        Tue, 05 Jul 2022 13:56:04 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id dm3-20020a05640222c300b0043a70c51470sm3836956edb.55.2022.07.05.13.56.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 13:56:04 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [PATCH 4/5] ARM: dts: qcom: add pxo/cxo clock-output-names for ipq8064
-Date:   Tue,  5 Jul 2022 22:28:36 +0200
-Message-Id: <20220705202837.667-5-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220705202837.667-1-ansuelsmth@gmail.com>
-References: <20220705202837.667-1-ansuelsmth@gmail.com>
+        Tue, 5 Jul 2022 16:56:28 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBC720BC0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 13:56:24 -0700 (PDT)
+Received: from arch-x1c3 (cpc92308-cmbg19-2-0-cust99.5-4.cable.virginm.net [82.24.248.100])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: evelikov)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1FA2D66015B5;
+        Tue,  5 Jul 2022 21:56:21 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657054581;
+        bh=NGQDvaVmdIquGOuzDM5Sp6an5+EZmtRa+tIGw27pvH8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FlxkgauVNjOvx3H0gXYe5RcSLYYK08u4UK8GIHX6opp4EGTFQhd1cRxFaikKDLlbU
+         gB7o2mAKtL77VBpQhqLWACR85JPO8Ch3dk6c3NbZUabwZLkChHPj+PAJRyFXnScVSH
+         LhRovuODfN6tCCVhpU4NPGbcGyRXzzD5+DRP6nAUNcgKI4saVyx1RDo0Aj8ltNcq2X
+         OnJ9cvokOxjcZ3cXoELUz4f4H1Jhm3JlVa4gtcBB/vgTIlQXjwG6YuZOXTTAB/GI/I
+         dWCcfc4FYlE5RGRgvPgVP7Pk8B1d6tB0csAYitFGSOnkn5ZJCURKBgxnJD+74vGmxO
+         Hi8I1/cwo8aLg==
+Date:   Tue, 5 Jul 2022 21:56:17 +0100
+From:   Emil Velikov <emil.velikov@collabora.com>
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Laszlo Ersek <lersek@redhat.com>
+Cc:     Gerd Hoffmann <kraxel@redhat.com>, kernel@collabora.com,
+        David Airlie <airlied@linux.ie>,
+        Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas_os@shipmail.org>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        virtualization@lists.linux-foundation.org,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v7 7/9] drm/virtio: Improve DMA API usage for shmem BOs
+Message-ID: <YsSlcStOXz2fnlON@arch-x1c3>
+References: <20220630200726.1884320-1-dmitry.osipenko@collabora.com>
+ <20220630200726.1884320-8-dmitry.osipenko@collabora.com>
+ <20220705135323.emr4gdbcxoisdcxe@sirius.home.kraxel.org>
+ <d2c64d09-c4bb-9aed-069d-a9b4d07a1f66@collabora.com>
+ <20220705154507.67ovlun4m26xzppn@sirius.home.kraxel.org>
+ <1380526d-17fb-6eb2-0fd5-5cddbdf0a92e@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1380526d-17fb-6eb2-0fd5-5cddbdf0a92e@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drivers expect to call pxo/cxo_board clock as pxo/cxo.
-Use clock-output-names to set the correct naming for these fixed clock
-to save drivers that are migrating to parent_data and still use
-parent_names.
+On 2022/07/05, Dmitry Osipenko wrote:
+> On 7/5/22 18:45, Gerd Hoffmann wrote:
+> >   Hi,
+> > 
+> >>> Also note that pci is not the only virtio transport we have.
+> >>
+> >> The VirtIO indeed has other transports, but only PCI is really supported
+> >> in case of the VirtIO-GPU in kernel and in Qemu/crosvm, AFAICT. Hence
+> >> only the PCI transport was tested.
+> > 
+> > qemu -M microvm \
+> >   -global virtio-mmio.force-legacy=false \
+> >   -device virtio-gpu-device
+> > 
+> > Gives you a functional virtio-gpu device on virtio-mmio.
+> > 
+> > aarch64 virt machines support both pci and mmio too.
+> > s390x has virtio-gpu-ccw ...
+> 
+> Gerd, thank you very much! It's was indeed unclear to me how to test the
+> MMIO GPU, but yours variant with microvm works! I was looking for trying
+> aarch64 in the past, but it also was unclear how to do it since there is
+> no DT support for the VirtIO-GPU, AFAICS.
+> 
+> I booted kernel with this patchset applied and everything is okay, Xorg
+> works.
+> 
+>  [drm] Initialized virtio_gpu 0.1.0 0 for LNRO0005:01 on minor 0
+>  virtio-mmio LNRO0005:01: [drm] drm_plane_enable_fb_damage_clips() not
+> called
+>  virtio-mmio LNRO0005:01: [drm] fb0: virtio_gpudrmfb frame buffer device
+> 
+> There is no virgl support because it's a virtio-gpu-device and not
+> virtio-gpu-device-gl that is PCI-only in Qemu. Hence everything seems good.
+> 
+> I'd appreciate if you could give s390x a test.. I never touched s390x
+> and it will probably take some extra effort to get into it.
+> 
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+Adding Laszlo Ersek, who debugged and tested this the last time.
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 1425a4e4283f..720e27e29627 100644
---- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -302,12 +302,14 @@ cxo_board: cxo_board {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
- 			clock-frequency = <25000000>;
-+			clock-output-names = "cxo";
- 		};
- 
- 		pxo_board: pxo_board {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
- 			clock-frequency = <25000000>;
-+			clock-output-names = "pxo";
- 		};
- 
- 		sleep_clk: sleep_clk {
--- 
-2.36.1
+Laszlo Ersek do ypu have some tips for Dmitry? Xorg seems to be
+working on his end with the drm_drv_set_unique(... "pci:...") call
+removed.
 
+Original patch can be found at:
+https://lore.kernel.org/dri-devel/1380526d-17fb-6eb2-0fd5-5cddbdf0a92e@collabora.com/T/#mbc1a1bedc91d1855007188a725c5c75bbc771cf0
+
+HTH
+Emil
