@@ -2,128 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F67C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235052AbiGEMME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
+        id S235058AbiGEMMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234406AbiGEMH3 (ORCPT
+        with ESMTP id S234417AbiGEMHb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:07:29 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98C019028
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:06:21 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id j21so20231452lfe.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:06:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gvtOfLV3w59vkjhPXB0CKmZQUz8ZCCnh+m5pi29Tltw=;
-        b=yFdGK76H7d4g5yVTH1z9XzJSMKrOBP5Ci49MiYAH0TuB7cE+gPlNguzCfd3wJ0pKLl
-         1K6PftX9gDQJIlSINsgzlhjDcgpaVukKG3BK62aU62hpfbCYDXxPekbgz6+Jv9YwnQmK
-         l8X9EVsPxj5hdCcjO1uHVz+Fohe1PopxxxDDhVIBQFlqaTNoMG8SW2EKYPp/vbe/ovqo
-         zYsJmRKbfH1+ktLNjiKQc12nvv/YzQigrSLWoF3NwsPV6u5NSEVz06YXhnmIjW4cOkCa
-         iRh3SYBE+FINTDQIHDYzN/sSC40SeXmLLy1ieg/joupZJsIPvmaZfMaEbn1ix66A8XO9
-         Km0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gvtOfLV3w59vkjhPXB0CKmZQUz8ZCCnh+m5pi29Tltw=;
-        b=dwUQrRW6fKeqmz1M2Ng4fNozbXZYm3R2BQWpFKDt/6GoCPC8OuCVC470xAZ9rwVWYg
-         6kS7T32i8MrZPOT/lwGeGkaNWeN4gfkyJzJXSrXLG6lCYUiIUErd+jjYP6ythsZ6QCzj
-         n9Z53yFm5LXFwCGMn16rbn631qZG6oLo0Dve6o4+WFmY3FQzOOwmo7q43GDVKWuNSDDQ
-         yi4ZeLAOGYEXQZY5YeGvCvqUOGJq8UpAN/agnF989HSlM1BGHSHME1bQ4tXj9CYO8bsT
-         fVA9Mwh7mB7Lh+ipp39EDtYMq/oOsfFWnXpFezzBgFwPiJWmwfBSgWN+9ZRBaDJ2zq6l
-         8huQ==
-X-Gm-Message-State: AJIora/4l6x92Ph8gAW+dGxI8+1Q3pUjziLPMcfTZvpRX/4X6RYir5ie
-        7LkFszCAVN2OqvDCzMAs9B1Dog==
-X-Google-Smtp-Source: AGRyM1tFtOB9fCIFQFFawJmwGngdoWCCZhwVtxeWNIqGg2x+SUbrZ0W7sfdj4st5IB40TYuKaFpRAA==
-X-Received: by 2002:a05:6512:21d2:b0:47f:9f53:f729 with SMTP id d18-20020a05651221d200b0047f9f53f729mr22789851lft.378.1657022780340;
-        Tue, 05 Jul 2022 05:06:20 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id r25-20020ac25a59000000b0048355942defsm389424lfn.249.2022.07.05.05.06.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 05:06:18 -0700 (PDT)
-Message-ID: <6907ac7d-4970-b287-1ac6-1e47dae52949@linaro.org>
-Date:   Tue, 5 Jul 2022 14:06:17 +0200
+        Tue, 5 Jul 2022 08:07:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30DB18E37;
+        Tue,  5 Jul 2022 05:06:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E797B817D6;
+        Tue,  5 Jul 2022 12:06:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6285C341CD;
+        Tue,  5 Jul 2022 12:06:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022781;
+        bh=eWhg2Htyke+OsaZs7/m9A1zorj1Ngbbnj7Lp253PPtg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RlGhsr6RVpI6o5eCVRxMAmOEGzBcWx6o3hc16PzOIX5LBW3JjD9l6Zl3fAJnKvL+i
+         PRTZbLECxmGbU7jxFd3FY+thGImSFvSoObinjJSCy9WjIXrcD3EPgVZCuDyleCBFnc
+         JzbOWW1CDZZT6UM0uRYEDb1cayfnN1/GW2etnEW4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 26/58] nfc: nfcmrvl: Fix irq_of_parse_and_map() return value
+Date:   Tue,  5 Jul 2022 13:58:02 +0200
+Message-Id: <20220705115611.018632184@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
+References: <20220705115610.236040773@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 38/43] phy: qcom-qmp-pcie: drop pipe clock lane suffix
-Content-Language: en-US
-To:     Johan Hovold <johan@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-39-johan+linaro@kernel.org>
- <dcff330c-92ec-2302-8e2a-4ac124e72942@linaro.org>
- <76508b56-6733-b65c-d81c-31ac173780c0@linaro.org>
- <YsQnW2o4eCU8PlWl@hovoldconsulting.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YsQnW2o4eCU8PlWl@hovoldconsulting.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 13:58, Johan Hovold wrote:
-> On Tue, Jul 05, 2022 at 02:13:04PM +0300, Dmitry Baryshkov wrote:
->> On 05/07/2022 13:20, Krzysztof Kozlowski wrote:
->>> On 05/07/2022 11:42, Johan Hovold wrote:
->>>> The pipe clock is defined in the "lane" node so there's no need to keep
->>>> adding a redundant lane-number suffix to the clock name.
->>>>
->>>> Drop the lane suffix from the pipe clock name, but continue supporting
->>>> the legacy name as a fall back.
->>>>
->>>> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
->>>> ---
->>>>   drivers/phy/qualcomm/phy-qcom-qmp-pcie.c | 8 ++++++--
->>>>   1 file changed, 6 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
->>>> index 385ea3d8de08..254ad25591b9 100644
->>>> --- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
->>>> +++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
->>>> @@ -2210,8 +2210,12 @@ int qcom_qmp_phy_pcie_create(struct device *dev, struct device_node *np, int id,
->>>>   	if (!qphy->pcs_misc)
->>>>   		dev_vdbg(dev, "PHY pcs_misc-reg not used\n");
->>>>   
->>>> -	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
->>>> -	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
->>>> +	qphy->pipe_clk = devm_get_clk_from_child(dev, np, "pipe");
->>>
->>> Just get first clock and no need for handling any deprecation.
-> 
-> I still want to deprecate the current name as it makes no sense and
-> risks introducing inconsistencies when adding new resources (e.g. should
-> they also get a bogus suffix).
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-And it was suggested to you to deprecate entire property... There is no
-need to handle anything in the driver.
+commit 5a478a653b4cca148d5c89832f007ec0809d7e6d upstream.
 
-> 
->> If I got it correctly, passing NULL instead of the name would do the trick.
-> 
-> Ah, thanks for spotting that. I feared this would require adding a host
-> of new devres wrappers otherwise.
-> 
-> Would still be needed for the upcoming second pipediv2 clock though...
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+
+Reported-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Fixes: caf6e49bf6d0 ("NFC: nfcmrvl: add spi driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220627124048.296253-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/nfc/nfcmrvl/i2c.c |    6 +++---
+ drivers/nfc/nfcmrvl/spi.c |    6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+--- a/drivers/nfc/nfcmrvl/i2c.c
++++ b/drivers/nfc/nfcmrvl/i2c.c
+@@ -186,9 +186,9 @@ static int nfcmrvl_i2c_parse_dt(struct d
+ 		pdata->irq_polarity = IRQF_TRIGGER_RISING;
+ 
+ 	ret = irq_of_parse_and_map(node, 0);
+-	if (ret < 0) {
+-		pr_err("Unable to get irq, error: %d\n", ret);
+-		return ret;
++	if (!ret) {
++		pr_err("Unable to get irq\n");
++		return -EINVAL;
+ 	}
+ 	pdata->irq = ret;
+ 
+--- a/drivers/nfc/nfcmrvl/spi.c
++++ b/drivers/nfc/nfcmrvl/spi.c
+@@ -129,9 +129,9 @@ static int nfcmrvl_spi_parse_dt(struct d
+ 	}
+ 
+ 	ret = irq_of_parse_and_map(node, 0);
+-	if (ret < 0) {
+-		pr_err("Unable to get irq, error: %d\n", ret);
+-		return ret;
++	if (!ret) {
++		pr_err("Unable to get irq\n");
++		return -EINVAL;
+ 	}
+ 	pdata->irq = ret;
+ 
 
 
-Best regards,
-Krzysztof
