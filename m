@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA55CCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7504C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239976AbiGEMfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
+        id S236898AbiGEMf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237971AbiGEM0l (ORCPT
+        with ESMTP id S237970AbiGEM0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:26:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EDFA389E;
-        Tue,  5 Jul 2022 05:18:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788DE18B0F;
+        Tue,  5 Jul 2022 05:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50D3EB817C7;
-        Tue,  5 Jul 2022 12:18:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4EAC341C7;
-        Tue,  5 Jul 2022 12:18:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F6C9619A6;
+        Tue,  5 Jul 2022 12:18:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20889C341C8;
+        Tue,  5 Jul 2022 12:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023526;
-        bh=OYpYXUIwxm70zT8gpt/gdGEt6Te47cQXCvwyPR79rMk=;
+        s=korg; t=1657023521;
+        bh=7eSYT7N3ayyrH9XNJ1R/bpLYGxNrzCHEYGnIXXeS2Mc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JSG+CIWuoOO0yDokD4bFw2LCGjqGNpIEcErf83FlRcjHQhPd8BBcBgfxig8/2d1ju
-         wcHh72b9t3ijZcX42fZ4Z0giZ3PTZsGLknZUKsPZWMrRKy7f6SffpiZW2TDO19mYXK
-         E6EfzE4sY3TOdyRB5MVj8qAtHYSgBuWuN+q0Xds0=
+        b=y/VLBsDjFKyx5oeIl7oHLGHY2rOMmnzffyQvM8/R7iajjC7J3qNLtdK67Ilx8i7Ii
+         Xq2vkIqKpxYYobC7pV4VZ/N3MC3cWt/85xYvD/i9r4T05KIPIvBqcUhkh1ldiYXA4O
+         msEanKL7HN7JH4WmOr88gBaKiFGTJm/Fwn83djM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
-        Simon Ser <contact@emersion.fr>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 093/102] drm/fourcc: fix integer type usage in uapi header
-Date:   Tue,  5 Jul 2022 13:58:59 +0200
-Message-Id: <20220705115621.060858752@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Stefan Seyfried <seife+kernel@b1-systems.com>,
+        Kenneth Chan <kenneth.t.chan@gmail.com>
+Subject: [PATCH 5.18 091/102] platform/x86: panasonic-laptop: dont report duplicate brightness key-presses
+Date:   Tue,  5 Jul 2022 13:58:57 +0200
+Message-Id: <20220705115621.005354496@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -50,60 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carlos Llamas <cmllamas@google.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 20b8264394b33adb1640a485a62a84bc1388b6a3 ]
+[ Upstream commit 1f2c9de83a50447a2d7166f6273ab0c0e97cd68e ]
 
-Kernel uapi headers are supposed to use __[us]{8,16,32,64} types defined
-by <linux/types.h> as opposed to 'uint32_t' and similar. See [1] for the
-relevant discussion about this topic. In this particular case, the usage
-of 'uint64_t' escaped headers_check as these macros are not being called
-here. However, the following program triggers a compilation error:
+The brightness key-presses might also get reported by the ACPI video bus,
+check for this and in this case don't report the presses to avoid reporting
+2 presses for a single key-press.
 
-  #include <drm/drm_fourcc.h>
-
-  int main()
-  {
-  	unsigned long x = AMD_FMT_MOD_CLEAR(RB);
-  	return 0;
-  }
-
-gcc error:
-  drm.c:5:27: error: ‘uint64_t’ undeclared (first use in this function)
-      5 |         unsigned long x = AMD_FMT_MOD_CLEAR(RB);
-        |                           ^~~~~~~~~~~~~~~~~
-
-This patch changes AMD_FMT_MOD_{SET,CLEAR} macros to use the correct
-integer types, which fixes the above issue.
-
-  [1] https://lkml.org/lkml/2019/6/5/18
-
-Fixes: 8ba16d599374 ("drm/fourcc: Add AMD DRM modifiers.")
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
-Reviewed-by: Simon Ser <contact@emersion.fr>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: ed83c9171829 ("platform/x86: panasonic-laptop: Resolve hotkey double trigger bug")
+Reported-and-tested-by: Stefan Seyfried <seife+kernel@b1-systems.com>
+Reported-and-tested-by: Kenneth Chan <kenneth.t.chan@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20220624112340.10130-6-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/drm/drm_fourcc.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/Kconfig            | 1 +
+ drivers/platform/x86/panasonic-laptop.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
-index fc0c1454d275..7b9e3f9a0f00 100644
---- a/include/uapi/drm/drm_fourcc.h
-+++ b/include/uapi/drm/drm_fourcc.h
-@@ -1375,11 +1375,11 @@ drm_fourcc_canonicalize_nvidia_format_mod(__u64 modifier)
- #define AMD_FMT_MOD_PIPE_MASK 0x7
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index 5d9dd70e4e0f..634a6c1eb2d3 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -945,6 +945,7 @@ config PANASONIC_LAPTOP
+ 	tristate "Panasonic Laptop Extras"
+ 	depends on INPUT && ACPI
+ 	depends on BACKLIGHT_CLASS_DEVICE
++	depends on ACPI_VIDEO=n || ACPI_VIDEO
+ 	select INPUT_SPARSEKMAP
+ 	help
+ 	  This driver adds support for access to backlight control and hotkeys
+diff --git a/drivers/platform/x86/panasonic-laptop.c b/drivers/platform/x86/panasonic-laptop.c
+index 2e6531dd15f9..d65e6c2372ca 100644
+--- a/drivers/platform/x86/panasonic-laptop.c
++++ b/drivers/platform/x86/panasonic-laptop.c
+@@ -132,6 +132,7 @@
+ #include <linux/slab.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
++#include <acpi/video.h>
  
- #define AMD_FMT_MOD_SET(field, value) \
--	((uint64_t)(value) << AMD_FMT_MOD_##field##_SHIFT)
-+	((__u64)(value) << AMD_FMT_MOD_##field##_SHIFT)
- #define AMD_FMT_MOD_GET(field, value) \
- 	(((value) >> AMD_FMT_MOD_##field##_SHIFT) & AMD_FMT_MOD_##field##_MASK)
- #define AMD_FMT_MOD_CLEAR(field) \
--	(~((uint64_t)AMD_FMT_MOD_##field##_MASK << AMD_FMT_MOD_##field##_SHIFT))
-+	(~((__u64)AMD_FMT_MOD_##field##_MASK << AMD_FMT_MOD_##field##_SHIFT))
+ MODULE_AUTHOR("Hiroshi Miura <miura@da-cha.org>");
+ MODULE_AUTHOR("David Bronaugh <dbronaugh@linuxboxen.org>");
+@@ -783,6 +784,13 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
+ 					key, 0x80, false);
+ 	}
  
- #if defined(__cplusplus)
++	/*
++	 * Don't report brightness key-presses if they are also reported
++	 * by the ACPI video bus.
++	 */
++	if ((key == 1 || key == 2) && acpi_video_handles_brightness_key_presses())
++		return;
++
+ 	if (!sparse_keymap_report_event(hotk_input_dev, key, updown, false))
+ 		pr_err("Unknown hotkey event: 0x%04llx\n", result);
  }
 -- 
 2.35.1
