@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF9DCCA491
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B97C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236936AbiGEMSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
+        id S237150AbiGEMSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232197AbiGEMJX (ORCPT
+        with ESMTP id S234570AbiGEMJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:23 -0400
+        Tue, 5 Jul 2022 08:09:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75091186E8;
-        Tue,  5 Jul 2022 05:09:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE1D18E03;
+        Tue,  5 Jul 2022 05:09:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1251861968;
-        Tue,  5 Jul 2022 12:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21691C36AE2;
-        Tue,  5 Jul 2022 12:09:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E5AD61965;
+        Tue,  5 Jul 2022 12:09:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25067C341CE;
+        Tue,  5 Jul 2022 12:09:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022960;
-        bh=jzkFDmSMQEdcCXzeN1VJevw4S6A6EmA4JQDB+UhsubQ=;
+        s=korg; t=1657022977;
+        bh=YMVr9fZPQq1V9/lhdWidHBImzFSQEEi0DyhJerbTpmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kDZYnXzFOio32WHkCLTRbToJ65Afe89Ir5mfxwPNurvJ5xJv2Ts39fV01nakQSAh1
-         eNvi44VDlpgNYvJfIw8Qcz+x+2B49rW5qGsDGMSADM6a5H5k6ErmNpWS0kHNQcQRKM
-         G+1qiGkOKZQF1kcciyUqYgghyHEwFgKSZChwEMsY=
+        b=mAe7J7HE2yyjkPtMXCTra3LaSiAjInlCMBwB24ZnnxNW8UeZb+s05RBmaoJbzLzCd
+         wGbwE7Hjkxj+dGc++Y2a7Wb2ETMNU0YPe7VTcKxPzt2dariMhO4XhU2cXURNZaWklg
+         z62DoubgOY5bTxpyCJwCmKJX4Tu/4h0tlhmCLZ8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 35/84] NFC: nxp-nci: Dont issue a zero length i2c_master_read()
-Date:   Tue,  5 Jul 2022 13:57:58 +0200
-Message-Id: <20220705115616.348329371@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 38/84] io_uring: ensure that send/sendmsg and recv/recvmsg check sqe->ioprio
+Date:   Tue,  5 Jul 2022 13:58:01 +0200
+Message-Id: <20220705115616.433740062@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -49,36 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit eddd95b9423946aaacb55cac6a9b2cea8ab944fc upstream.
+commit 73911426aaaadbae54fa72359b33a7b6a56947db upstream.
 
-There are packets which doesn't have a payload. In that case, the second
-i2c_master_read() will have a zero length. But because the NFC
-controller doesn't have any data left, it will NACK the I2C read and
--ENXIO will be returned. In case there is no payload, just skip the
-second i2c master read.
+All other opcodes correctly check if this is set and -EINVAL if it is
+and they don't support that field, for some reason the these were
+forgotten.
 
-Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This was unified a bit differently in the upstream tree, but had the
+same effect as making sure we error on this field. Rather than have
+a painful backport of the upstream commit, just fixup the mentioned
+opcodes.
+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nxp-nci/i2c.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/io_uring.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -162,6 +162,9 @@ static int nxp_nci_i2c_nci_read(struct n
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -4366,6 +4366,8 @@ static int io_sendmsg_prep(struct io_kio
  
- 	skb_put_data(*skb, (void *)&header, NCI_CTRL_HDR_SIZE);
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
++	if (unlikely(sqe->addr2 || sqe->splice_fd_in || sqe->ioprio))
++		return -EINVAL;
  
-+	if (!header.plen)
-+		return 0;
-+
- 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
- 	if (r != header.plen) {
- 		nfc_err(&client->dev,
+ 	sr->msg_flags = READ_ONCE(sqe->msg_flags);
+ 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+@@ -4601,6 +4603,8 @@ static int io_recvmsg_prep(struct io_kio
+ 
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
++	if (unlikely(sqe->addr2 || sqe->splice_fd_in || sqe->ioprio))
++		return -EINVAL;
+ 
+ 	sr->msg_flags = READ_ONCE(sqe->msg_flags);
+ 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
 
 
