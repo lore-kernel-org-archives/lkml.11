@@ -2,178 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDD6CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3D7CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbiGER2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        id S232949AbiGER2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232954AbiGER1v (ORCPT
+        with ESMTP id S233243AbiGER1x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:27:51 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745A6205F7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:27:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657042069; x=1688578069;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zybgc9bSkn/aCSOb4a3jN3PrFsxboVpHXDzSFUMtco4=;
-  b=UYluno192eH2VAxGuNIACdcT4snDPvdHWgUZvmnvioTHwTpe3Dn0Zhjw
-   5wkClK9ELOB5R2X8AagtHUcR4SXSqpwsYOxqyBAHWAn85SNF/wQiJoBEO
-   PJ4CveIhgzcber/5y8nRu30yCkdkRbZsjcIFGs2YzD14sWCEMLZ5Zqk/q
-   U3axaF926YPUXLUx9IG5T0SomSiD9C7RC3bV56700LsHCf35RRbMphr5a
-   TcWeWJOg/W6hqG7AfOJ0tXU0eDBJOQkjK0wVFdY1CWe2FBdMXMN50L6CJ
-   RHkjYcjSvSzQF9itslKwYXWmA1BF2Jhl612PCfeQEzhdmUGjEnAsmju5c
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="345094491"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="345094491"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 10:27:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="650258696"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 05 Jul 2022 10:27:47 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8mKx-000JQH-7I;
-        Tue, 05 Jul 2022 17:27:47 +0000
-Date:   Wed, 6 Jul 2022 01:26:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Coly Li <colyli@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [colyli-bcache:nvdimm-meta 16/16] drivers/md/bcache/alloc.c:488:9:
- warning: argument 1 null where non-null expected
-Message-ID: <202207060104.rBjNku9y-lkp@intel.com>
+        Tue, 5 Jul 2022 13:27:53 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B96D20BC1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:27:50 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id z7so9214801qko.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 10:27:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=54e5hmIPHsdssWs0rT4jNAiHI7hOIkxgUA9ME0oyWmg=;
+        b=MEoe1ZrHsvUivAXIceLGz59ExrkoIaEVjMr7VlzlYDi10nrmqVpLBIdVfZvaNgvEjd
+         T1uL24wRDKFusnLFc3mlUYofY/pKO5zY95ifNHVx5DxH1hrc1h60dWN2vREfzdUPwCJ5
+         2pzyKoxaAfGgl3utjIBHtM1LTCDvRz9f79Ujg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=54e5hmIPHsdssWs0rT4jNAiHI7hOIkxgUA9ME0oyWmg=;
+        b=VA1v3PO+HlYgee/XhXNWwJW0xbSM2K62Ympa7XDC9NrHnKwQEekquCrmcW98wMVaVB
+         yPL32vs9EC/3BgIu+tBT+EaSXnZL/PIm95GecW8rXkw/KUP9E7GfdchaC7KvbAXaO4cu
+         qePxqqLp8RgcgCbkAu9qDa0LTOJTEFPPnBGupeCwzpEj1hISTVsXAdmagMOQQywwJPnc
+         bOUUtnDD7TWB8dlKFP0hikhiEY1xfShjumr52QMeYRPq4lgdPoleGpEhmby3pWMFKFJX
+         AVnZKVfFUn+OqqvUf/9Miz+UXk4Ja2EisXi6RwG/cGSCc2W9LQ8BNHsPkr+jdC6WDYRI
+         KOvA==
+X-Gm-Message-State: AJIora9u72tXxHw1+f6Y/IWuHxxcfcoc1trDFroBL2APzRMPgK7igMM0
+        bOn+n+qbQudhY4j1gJbQYsJisQ==
+X-Google-Smtp-Source: AGRyM1tICpJBWTpJluwVWgvr/SiLOtLEOfN8aYULIVJ2nAnAkDYsCqqAiCqdyZRxsnO8pWoWjjJEXw==
+X-Received: by 2002:a05:620a:c1b:b0:6af:1f8c:d73d with SMTP id l27-20020a05620a0c1b00b006af1f8cd73dmr24124048qki.536.1657042069366;
+        Tue, 05 Jul 2022 10:27:49 -0700 (PDT)
+Received: from ubuntu-22.localdomain ([192.19.222.250])
+        by smtp.gmail.com with ESMTPSA id d8-20020ac85ac8000000b00304e70585f9sm24439851qtd.72.2022.07.05.10.27.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 10:27:48 -0700 (PDT)
+From:   William Zhang <william.zhang@broadcom.com>
+To:     Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     joel.peshkin@broadcom.com, kursad.oney@broadcom.com,
+        f.fainelli@gmail.com, anand.gore@broadcom.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        philippe.reynes@softathome.com, dan.beygelman@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jan Dabros <jsd@semihalf.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Jie Deng <jie.deng@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matt Mackall <mpm@selenic.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Vinod Koul <vkoul@kernel.org>, Wolfram Sang <wsa@kernel.org>,
+        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: [PATCH 5/9] arm: bcmbca: Replace ARCH_BCM_63XX with ARCH_BCMBCA
+Date:   Tue,  5 Jul 2022 10:26:09 -0700
+Message-Id: <20220705172613.21152-6-william.zhang@broadcom.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220705172613.21152-1-william.zhang@broadcom.com>
+References: <20220705172613.21152-1-william.zhang@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000f18efe05e3122bc3"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git nvdimm-meta
-head:   5c8259ab2129816fc49fd6d060206ba61b0594d1
-commit: 5c8259ab2129816fc49fd6d060206ba61b0594d1 [16/16] bcache: support storing bcache btree nodes into NVDIMM meta device
-config: parisc-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207060104.rBjNku9y-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git/commit/?id=5c8259ab2129816fc49fd6d060206ba61b0594d1
-        git remote add colyli-bcache https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git
-        git fetch --no-tags colyli-bcache nvdimm-meta
-        git checkout 5c8259ab2129816fc49fd6d060206ba61b0594d1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/md/
+--000000000000f18efe05e3122bc3
+Content-Transfer-Encoding: 8bit
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Update ARCH_BCM_63XX in all sources to use ARCHB_BCMBCA instead.
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: William Zhang <william.zhang@broadcom.com>
+---
 
-   In file included from drivers/md/bcache/nvmpg.h:8,
-                    from drivers/md/bcache/alloc.c:66:
-   drivers/md/bcache/nvmpg_format.h:132:19: warning: 'bch_nvmpg_recs_magic' defined but not used [-Wunused-const-variable=]
-     132 | static const __u8 bch_nvmpg_recs_magic[] = {
-         |                   ^~~~~~~~~~~~~~~~~~~~
-   drivers/md/bcache/nvmpg_format.h:129:19: warning: 'bch_nvmpg_magic' defined but not used [-Wunused-const-variable=]
-     129 | static const __u8 bch_nvmpg_magic[] = {
-         |                   ^~~~~~~~~~~~~~~
-   In function '__bch_nvmpg_bucket_free',
-       inlined from 'bch_bucket_free' at drivers/md/bcache/alloc.c:497:3:
->> drivers/md/bcache/alloc.c:488:9: warning: argument 1 null where non-null expected [-Wnonnull]
-     488 |         memset(bch_nvmpg_offset_to_ptr(nvmpg_offset), 0, 1<<order);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/string.h:20,
-                    from include/linux/uuid.h:12,
-                    from include/linux/mod_devicetable.h:13,
-                    from arch/parisc/include/asm/hardware.h:5,
-                    from arch/parisc/include/asm/processor.h:17,
-                    from arch/parisc/include/asm/spinlock.h:7,
-                    from arch/parisc/include/asm/atomic.h:22,
-                    from include/linux/atomic.h:7,
-                    from arch/parisc/include/asm/bitops.h:13,
-                    from include/linux/bitops.h:33,
-                    from include/linux/kernel.h:22,
-                    from arch/parisc/include/asm/bug.h:5,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/parisc/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/wait.h:9,
-                    from include/linux/mempool.h:8,
-                    from include/linux/bio.h:8,
-                    from drivers/md/bcache/bcache.h:181,
-                    from drivers/md/bcache/alloc.c:64:
-   drivers/md/bcache/alloc.c: In function 'bch_bucket_free':
-   arch/parisc/include/asm/string.h:6:15: note: in a call to function 'memset' declared 'nonnull'
-       6 | extern void * memset(void *, int, size_t);
-         |               ^~~~~~
---
-   In file included from drivers/md/bcache/nvmpg.h:8,
-                    from drivers/md/bcache/btree.c:29:
-   drivers/md/bcache/nvmpg_format.h:132:19: warning: 'bch_nvmpg_recs_magic' defined but not used [-Wunused-const-variable=]
-     132 | static const __u8 bch_nvmpg_recs_magic[] = {
-         |                   ^~~~~~~~~~~~~~~~~~~~
-   drivers/md/bcache/nvmpg_format.h:129:19: warning: 'bch_nvmpg_magic' defined but not used [-Wunused-const-variable=]
-     129 | static const __u8 bch_nvmpg_magic[] = {
-         |                   ^~~~~~~~~~~~~~~
-   In function '__bch_nvmpg_btree_node_read',
-       inlined from 'bch_btree_node_read' at drivers/md/bcache/btree.c:308:3:
->> drivers/md/bcache/btree.c:295:9: warning: argument 2 null where non-null expected [-Wnonnull]
-     295 |         memcpy(b->keys.set[0].data, ptr, KEY_SIZE(&b->key) << 9);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/string.h:20,
-                    from include/linux/uuid.h:12,
-                    from include/linux/mod_devicetable.h:13,
-                    from arch/parisc/include/asm/hardware.h:5,
-                    from arch/parisc/include/asm/processor.h:17,
-                    from arch/parisc/include/asm/spinlock.h:7,
-                    from arch/parisc/include/asm/atomic.h:22,
-                    from include/linux/atomic.h:7,
-                    from arch/parisc/include/asm/bitops.h:13,
-                    from include/linux/bitops.h:33,
-                    from include/linux/kernel.h:22,
-                    from arch/parisc/include/asm/bug.h:5,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/parisc/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/wait.h:9,
-                    from include/linux/mempool.h:8,
-                    from include/linux/bio.h:8,
-                    from drivers/md/bcache/bcache.h:181,
-                    from drivers/md/bcache/btree.c:24:
-   drivers/md/bcache/btree.c: In function 'bch_btree_node_read':
-   arch/parisc/include/asm/string.h:9:8: note: in a call to function 'memcpy' declared 'nonnull'
-       9 | void * memcpy(void * dest,const void *src,size_t count);
-         |        ^~~~~~
+ arch/arm/Kconfig.debug         | 2 +-
+ drivers/ata/Kconfig            | 2 +-
+ drivers/char/hw_random/Kconfig | 2 +-
+ drivers/clk/bcm/Kconfig        | 4 ++--
+ drivers/i2c/busses/Kconfig     | 2 +-
+ drivers/phy/broadcom/Kconfig   | 2 +-
+ drivers/spi/Kconfig            | 2 +-
+ drivers/tty/serial/Kconfig     | 4 ++--
+ 8 files changed, 10 insertions(+), 10 deletions(-)
 
-
-vim +488 drivers/md/bcache/alloc.c
-
-   480	
-   481	static void __bch_nvmpg_bucket_free(struct cache_set *c, struct bkey *k)
-   482	{
-   483		int order;
-   484		unsigned long nvmpg_offset;
-   485	
-   486		order = ilog2(c->cache->sb.bucket_size / PAGE_SECTORS);
-   487		nvmpg_offset = bkey_offset_to_nvmpg_offset(PTR_OFFSET(k, 0));
- > 488		memset(bch_nvmpg_offset_to_ptr(nvmpg_offset), 0, 1<<order);
-   489		bch_nvmpg_free_pages(nvmpg_offset, order, c->set_uuid);
-   490	}
-   491	
-
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 9b0aa4822d69..792796a348c3 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -271,7 +271,7 @@ choice
+ 
+ 	config DEBUG_BCM63XX_UART
+ 		bool "Kernel low-level debugging on BCM63XX UART"
+-		depends on ARCH_BCM_63XX
++		depends on ARCH_BCMBCA
+ 
+ 	config DEBUG_BERLIN_UART
+ 		bool "Marvell Berlin SoC Debug UART"
+diff --git a/drivers/ata/Kconfig b/drivers/ata/Kconfig
+index bb45a9c00514..1c9f4fb2595d 100644
+--- a/drivers/ata/Kconfig
++++ b/drivers/ata/Kconfig
+@@ -148,7 +148,7 @@ config SATA_AHCI_PLATFORM
+ config AHCI_BRCM
+ 	tristate "Broadcom AHCI SATA support"
+ 	depends on ARCH_BRCMSTB || BMIPS_GENERIC || ARCH_BCM_NSP || \
+-		   ARCH_BCM_63XX || COMPILE_TEST
++		   ARCH_BCMBCA || COMPILE_TEST
+ 	select SATA_HOST
+ 	help
+ 	  This option enables support for the AHCI SATA3 controller found on
+diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+index b3f2d55dc551..3da8e85f8aae 100644
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -87,7 +87,7 @@ config HW_RANDOM_BA431
+ config HW_RANDOM_BCM2835
+ 	tristate "Broadcom BCM2835/BCM63xx Random Number Generator support"
+ 	depends on ARCH_BCM2835 || ARCH_BCM_NSP || ARCH_BCM_5301X || \
+-		   ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
++		   ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
+ 	default HW_RANDOM
+ 	help
+ 	  This driver provides kernel-side support for the Random Number
+diff --git a/drivers/clk/bcm/Kconfig b/drivers/clk/bcm/Kconfig
+index ec738f74a026..77266afb1c79 100644
+--- a/drivers/clk/bcm/Kconfig
++++ b/drivers/clk/bcm/Kconfig
+@@ -22,9 +22,9 @@ config CLK_BCM2835
+ 
+ config CLK_BCM_63XX
+ 	bool "Broadcom BCM63xx clock support"
+-	depends on ARCH_BCM_63XX || COMPILE_TEST
++	depends on ARCH_BCMBCA || COMPILE_TEST
+ 	select COMMON_CLK_IPROC
+-	default ARCH_BCM_63XX
++	default ARCH_BCMBCA
+ 	help
+ 	  Enable common clock framework support for Broadcom BCM63xx DSL SoCs
+ 	  based on the ARM architecture
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index b1d7069dd377..acf2a393bd56 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -486,7 +486,7 @@ config I2C_BCM_KONA
+ 
+ config I2C_BRCMSTB
+ 	tristate "BRCM Settop/DSL I2C controller"
+-	depends on ARCH_BCM2835 || ARCH_BCM4908 || ARCH_BCM_63XX || \
++	depends on ARCH_BCM2835 || ARCH_BCM4908 || ARCH_BCMBCA || \
+ 		   ARCH_BRCMSTB || BMIPS_GENERIC || COMPILE_TEST
+ 	default y
+ 	help
+diff --git a/drivers/phy/broadcom/Kconfig b/drivers/phy/broadcom/Kconfig
+index 849c4204f550..93a6a8ee4716 100644
+--- a/drivers/phy/broadcom/Kconfig
++++ b/drivers/phy/broadcom/Kconfig
+@@ -83,7 +83,7 @@ config PHY_NS2_USB_DRD
+ config PHY_BRCM_SATA
+ 	tristate "Broadcom SATA PHY driver"
+ 	depends on ARCH_BRCMSTB || ARCH_BCM_IPROC || BMIPS_GENERIC || \
+-		   ARCH_BCM_63XX || COMPILE_TEST
++		   ARCH_BCMBCA || COMPILE_TEST
+ 	depends on OF
+ 	select GENERIC_PHY
+ 	default ARCH_BCM_IPROC
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index 2d034459e79f..8e550269d488 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -183,7 +183,7 @@ config SPI_BCM63XX
+ 
+ config SPI_BCM63XX_HSSPI
+ 	tristate "Broadcom BCM63XX HS SPI controller driver"
+-	depends on BCM63XX || BMIPS_GENERIC || ARCH_BCM_63XX || COMPILE_TEST
++	depends on BCM63XX || BMIPS_GENERIC || ARCH_BCMBCA || COMPILE_TEST
+ 	help
+ 	  This enables support for the High Speed SPI controller present on
+ 	  newer Broadcom BCM63XX SoCs.
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 8a3ee1525d80..e3279544b03c 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1100,8 +1100,8 @@ config SERIAL_TIMBERDALE
+ config SERIAL_BCM63XX
+ 	tristate "Broadcom BCM63xx/BCM33xx UART support"
+ 	select SERIAL_CORE
+-	depends on ARCH_BCM4908 || ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
+-	default ARCH_BCM4908 || ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC
++	depends on ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
++	default ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC
+ 	help
+ 	  This enables the driver for the onchip UART core found on
+ 	  the following chipsets:
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
+--000000000000f18efe05e3122bc3
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
+fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
+BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
+YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
+BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
+MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
+YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
+Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
+HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
+BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
++EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
+abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
+ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
+W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
+1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
+MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
+VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
+SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPgYZPgWW4RYqL7NYCmuLdm1S+Ge
+H/PcUJV33ZnfqGh6MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
+MDcwNTE3Mjc0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
+AwQCATANBgkqhkiG9w0BAQEFAASCAQBW0XC9tAcuZ1pP9F2RiNgMTvLp130Q17o7uHM4h/0RdZT0
+CciFab65Efjb4MHR4/uVx3CHcwlnpoG1O/8A7BoEtk73kLP4rcGscR2NHuUtvxS0Cs9osf+mUKiP
+RcQfjOTKBKsr0o8agx6U1+XkbQBpHgKnCrJhasMeE5HgtcKNjmFApxiPHPlqFQmne1DZr4ubeDHs
+jzmTZ6kKNd6Eqiwh7om6T2u0vAk613nOpnxffhxgqrxkgsuKW1TuKbHvwgig0dIKoNom99Kk3Thg
+TZ7K/Y1CZiX92+evGTHNyycM2vjW8/xE3/IQGRJhrS7vE3S3YWUbNNB6geVPXpRbB+TL
+--000000000000f18efe05e3122bc3--
