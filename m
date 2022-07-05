@@ -2,124 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9633CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231332AbiGESyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
+        id S231971AbiGESyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiGESyB (ORCPT
+        with ESMTP id S232380AbiGESyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:54:01 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B84C1658C;
-        Tue,  5 Jul 2022 11:54:01 -0700 (PDT)
+        Tue, 5 Jul 2022 14:54:10 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B42E1ADB4
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:54:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657047241; x=1688583241;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=jy5NhYWnWv4OHjHj7j8+j/6G/mQekzx7zQG7r8h8CYw=;
-  b=ME7rBK8vJiDaySGt1QdyXQetd/62Q2ftUp9igrUWf7d3N5SV36+3k+rI
-   eoH3kjwx7HcyIzIwzb7cd8pO/UQUlATDT0s9kVYn3wqfmUcv0MfLxM+FI
-   +3wV2ls8RFCCBbWFXZ8xYdz6mND3uhqF9OoztTQWiwMK6+1qh/Rkpbd74
-   JC9j2Y6GY/5eN3r5YpxoL/JywDvmfZ8xrug7CmrzVajOqcTKdXM0KSgNs
-   VcZiIc5hLN6bW7YpS6RR+FIEIsa/w6lpgwWhsR8UO4Hh6QxUXcNDQbU7p
-   sxC6/dmB5rbmEEB2srSWFoMdcFxVbzShxw62ApXg+5pa2/Ly6tH4/ZStF
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="282201901"
+  t=1657047248; x=1688583248;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bM0ABJX0qGEyGQRZ6VO/v3KuV7TXXVDZ98ArQud1930=;
+  b=Pf8XHU9e3KMVnEkKitLEpcONpREWJutbFdVtRmQm//lTj7hNRe7grZ07
+   kFCo4xPcglnFAOdIbCIO8mCMq0+NM4IVayClHrC/qZq4Enk1sfuxl5geB
+   B0bF6Akf7N5bd75vPkkYrgnn/BeeWDOdmCPFd6hHxr6JMCUr3MC9Gm0k9
+   XXTUWQdv8JoGDkncLv6zPXsUqugMx8eJ18g1wfVvghnZPp8I9rYxx9m8x
+   XTi/1bGkvBMvUho5W1CyKx+p/jp/tXharrP2FOpD3JITT+ekvzkEJtD8l
+   S+olUjd5I3Ep9w7zrV3xN2YHYahVSGF42qLZUQ6lRpvrocjPmSnMJKEoW
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284180221"
 X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="282201901"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:54:00 -0700
+   d="scan'208";a="284180221"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:54:08 -0700
 X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="695775841"
-Received: from atongsak-mobl1.amr.corp.intel.com ([10.209.113.116])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:54:00 -0700
-Date:   Tue, 5 Jul 2022 11:54:00 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Geliang Tang <geliangtang@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        MPTCP Upstream <mptcp@lists.linux.dev>
-Subject: Re: [PATCH 5.10 51/84] selftests: mptcp: add ADD_ADDR timeout test
- case
-In-Reply-To: <YsRnZ/wmcqGiYzOt@kroah.com>
-Message-ID: <86b7155-839d-381e-4927-dd607366c7e6@linux.intel.com>
-References: <20220705115615.323395630@linuxfoundation.org> <20220705115616.814163273@linuxfoundation.org> <a2260559-86af-74ff-ca95-d494688d5ea7@tessares.net> <YsRnZ/wmcqGiYzOt@kroah.com>
+   d="scan'208";a="839237437"
+Received: from tdisanx-mobl.amr.corp.intel.com (HELO [10.209.16.32]) ([10.209.16.32])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:54:08 -0700
+Message-ID: <8b6f3f9f-71c8-2b6f-20a3-5e9c259a1b9a@intel.com>
+Date:   Tue, 5 Jul 2022 11:52:10 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v8 1/5] x86/tdx: Add TDX Guest attestation interface
+ driver
+Content-Language: en-US
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <0f6bedbb-14cc-bf93-5d9f-bfd2c49dc7b2@intel.com>
+ <48b9d807-2d9e-016f-bada-906911d6ecb0@linux.intel.com>
+ <f26f88ee-1226-3e32-77cc-fc86bc65e0b7@intel.com>
+ <ca73d2bd-5d40-d385-aeb0-8c04811690ff@linux.intel.com>
+ <331abea18e728061979301772a9d0d61543f59fb.camel@intel.com>
+ <0b5884b8-9240-63b2-ca4c-20c86fd2e8c1@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <0b5884b8-9240-63b2-ca4c-20c86fd2e8c1@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Jul 2022, Greg Kroah-Hartman wrote:
+On 7/5/22 11:45, Sathyanarayanan Kuppuswamy wrote:
+> Yes, there are many ways to design this. But I still think IOCTL is a better fit
+> for the request/response kind of use case.
 
-> On Tue, Jul 05, 2022 at 05:59:22PM +0200, Matthieu Baerts wrote:
->> Hi Greg, Sasha,
->>
->> (+ MPTCP upstream ML)
->>
->> First, thank you again for maintaining the stable branches!
->>
->> On 05/07/2022 13:58, Greg Kroah-Hartman wrote:
->>> From: Geliang Tang <geliangtang@gmail.com>
->>>
->>> [ Upstream commit 8d014eaa9254a9b8e0841df40dd36782b451579a ]
->>>
->>> This patch added the test case for retransmitting ADD_ADDR when timeout
->>> occurs. It set NS1's add_addr_timeout to 1 second, and drop NS2's ADD_ADDR
->>> echo packets.
->> TL;DR: Could it be possible to drop all selftests MPTCP patches from
->> v5.10 queue please?
->>
->>
->> I was initially reacting on this patch because it looks like it depends on:
->>
->>   93f323b9cccc ("mptcp: add a new sysctl add_addr_timeout")
->>
->> and indirectly to:
->>
->>   9ce7deff92e8 ("docs: networking: mptcp: Add MPTCP sysctl entries")
->>
->> to have "net.mptcp.add_addr_timeout" sysctl knob needed for this new
->> selftest.
->>
->> But then I tried to understand why this current patch ("selftests:
->> mptcp: add ADD_ADDR timeout test case") has been selected for 5.10. I
->> guess it was to ease the backport of another one, right?
->> Looking at the 'series' file in 5.10 queue, it seems the new
->> "selftests-mptcp-more-stable-diag-tests" patch requires 5 other patches:
->>
->> -> selftests-mptcp-more-stable-diag-tests.patch
->>  -> selftests-mptcp-fix-diag-instability.patch
->>   -> selftests-mptcp-launch-mptcp_connect-with-timeout.patch
->>    -> selftests-mptcp-add-add_addr-ipv6-test-cases.patch
->>     -> selftests-mptcp-add-link-failure-test-case.patch
->>      -> selftests-mptcp-add-add_addr-timeout-test-case.patch
->>
->>
->> When looking at these patches in more detail, it looks like "selftests:
->> mptcp: add ADD_ADDR IPv6 test cases" depends on a new feature only
->> available from v5.11: ADD_ADDR for IPv6.
->>
->>
->> Could it be possible to drop all these patches from v5.10 then please?
->
-> Sure, but leave them in for 5.15.y and 5.18.y?
->
-
-Hi Greg -
-
-I'm the other MPTCP maintainer, jumping in here due to Matt's time zone.
-
-Yes: leave selftests-mptcp-more-stable-diag-tests.patch in 5.15.y and 
-5.18.y
-
---
-Mat Martineau
-Intel
+Are there any other similar ABIs in the kernel?  What kind of mechanism
+do they use?
