@@ -2,159 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 221B8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E13C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233331AbiGEOR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39136 "EHLO
+        id S233349AbiGEOSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232908AbiGEORR (ORCPT
+        with ESMTP id S233726AbiGEORf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:17:17 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE319235;
-        Tue,  5 Jul 2022 07:12:55 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id f39so20791615lfv.3;
-        Tue, 05 Jul 2022 07:12:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oyeclLFZhGs7UcPSZg23Ramue8jnRUpUIOwptQLH1Io=;
-        b=VGlelE8yDbqD+DKIKudaPJvE+DeQMn3wB93n5X+mEpDz6bzLthw17F18OJE7U/oP0D
-         DRoOiiPWe4toIuvS5cXGksNfMOPMeb3m3HN9YDVQ1LaW1ldaIbKDOgu36tUcvUZh6/+u
-         Zz1uQdHkEJIdRR0cIcYXdICuNyyrzoiytw1DBSPmhiLH8oAFJsRFceWafDEnFMZ5FOeF
-         +FZF3eyFDn8ZaMg6d6f5/11gZ9/4BsJeGr9Qqc4j4GjagTVV2A9iLGOUcQ5pCyQiHVnm
-         N4cDffKQlEEIu49zR31b3aA7cqRM3Z/kSZe+Q3B9kTSP+VTTvzSMe2ZbMTw0yuKN5b3Y
-         7goA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oyeclLFZhGs7UcPSZg23Ramue8jnRUpUIOwptQLH1Io=;
-        b=zCUGBvSvkCIYVrq63dKA+KkvgTtO1wQdNySAU0rrXmkBMoSkfFy3vk6K1T1rx9Cpf1
-         jm6U7etUoY5viZFihiYOd8kw96dp3dszUH59x5it2SlUp/3yRyFj+HNzvK5f9gzAkZlh
-         oVDboVvkbri0UUqYhVphCl8gnYthiSjO32y2POWlnrHtng25xVYpvLcmpsvx7NBtogTj
-         dRhDVQD7nyqrpcShcPEI+YUvCify3CNcoxcstvCA0Ur1TOQsCT440PPIY/HMLg2JYpGE
-         WItAkS+orYO5hICfLtC3unYXfBRld92y9DtXF6EzKrYzyNZjM+exJgT9n0i6Kh8rrx4y
-         ZGHg==
-X-Gm-Message-State: AJIora81HViDBEsCDu0xdNpIyKTr5BJ2FR+DVyi2PpYL9CcMQy6tK42x
-        pQMTV2jypWdBRdYxsx7MeuzlAyLYqkGvhxERF0U=
-X-Google-Smtp-Source: AGRyM1vH3GybcpyJQODfunZbTC1eaVMg/RZHlTCu27cJXX7YAwLol2URLo0KM+OLvegbCy4h7bRwHLhdDpR0v38M0a8=
-X-Received: by 2002:a05:6512:12c9:b0:480:3b03:a0bc with SMTP id
- p9-20020a05651212c900b004803b03a0bcmr22184083lfg.381.1657030372741; Tue, 05
- Jul 2022 07:12:52 -0700 (PDT)
+        Tue, 5 Jul 2022 10:17:35 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1244C13E28;
+        Tue,  5 Jul 2022 07:13:27 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lcl2Y1cN8z1L8g4;
+        Tue,  5 Jul 2022 22:11:01 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 5 Jul 2022 22:13:25 +0800
+Received: from huawei.com (10.175.112.208) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Jul
+ 2022 22:13:24 +0800
+From:   Guo Mengqi <guomengqi3@huawei.com>
+To:     <alexs@kernel.org>, <siyanteng@loongson.cn>, <corbet@lwn.net>,
+        <tangyizhou@huawei.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <xuqiang36@huawei.com>, <zhouguanghui1@huawei.com>,
+        <guomengqi3@huawei.com>, <zhoubinbin@loongson.cn>,
+        <bobwxc@email.cn>
+Subject: [PATCH -next v2] docs/zh_CN: add mm transhuge translation
+Date:   Tue, 5 Jul 2022 22:11:21 +0800
+Message-ID: <20220705141121.73711-1-guomengqi3@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220628133742.91966-1-guomengqi3@huawei.com>
+References: <20220628133742.91966-1-guomengqi3@huawei.com>
 MIME-Version: 1.0
-References: <20220614181706.26513-1-max.oss.09@gmail.com> <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
-In-Reply-To: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
-From:   Max Krummenacher <max.oss.09@gmail.com>
-Date:   Tue, 5 Jul 2022 16:12:41 +0200
-Message-ID: <CAEHkU3XGEgRzG8pRW30BJhw6CMTPNJX1K8bLiEkoXpp19A6FHA@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: core: Fix deadlock due to `cancel_work_sync(&hdev->power_on)`
- from hci_power_on_sync.
-To:     Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        =?UTF-8?Q?Mateusz_Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 3:00 PM Vasyl Vavrychuk
-<vasyl.vavrychuk@opensynergy.com> wrote:
->
-> `cancel_work_sync(&hdev->power_on)` was moved to hci_dev_close_sync in
-> commit [1] to ensure that power_on work is canceled after HCI interface
-> down.
->
-> But, in certain cases power_on work function may call hci_dev_close_sync
-> itself: hci_power_on -> hci_dev_do_close -> hci_dev_close_sync ->
-> cancel_work_sync(&hdev->power_on), causing deadlock. In particular, this
-> happens when device is rfkilled on boot. To avoid deadlock, move
-> power_on work canceling out of hci_dev_do_close/hci_dev_close_sync.
->
-> Deadlock introduced by commit [1] was reported in [2,3] as broken
-> suspend. Suspend did not work because `hdev->req_lock` held as result of
-> `power_on` work deadlock. In fact, other BT features were not working.
-> It was not observed when testing [1] since it was verified without
-> rfkill in place.
->
-> NOTE: It is not needed to cancel power_on work from other places where
-> hci_dev_do_close/hci_dev_close_sync is called in case:
-> * Requests were serialized due to `hdev->req_workqueue`. The power_on
-> work is first in that workqueue.
-> * hci_rfkill_set_block which won't close device anyway until HCI_SETUP
-> is on.
-> * hci_sock_release which runs after hci_sock_bind which ensures
-> HCI_SETUP was cleared.
->
-> As result, behaviour is the same as in pre-dd06ed7 commit, except
-> power_on work cancel added to hci_dev_close.
->
-> [1]: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
-> [2]: https://lore.kernel.org/lkml/20220614181706.26513-1-max.oss.09@gmail.com/
-> [2]: https://lore.kernel.org/lkml/1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl/
->
-> Fixes: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
-> Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-> Reported-by: Max Krummenacher <max.krummenacher@toradex.com>
-> Reported-by: Mateusz Jonczyk <mat.jonczyk@o2.pl>
-> ---
->  net/bluetooth/hci_core.c | 3 +++
->  net/bluetooth/hci_sync.c | 1 -
->  2 files changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 59a5c1341c26..a0f99baafd35 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -571,6 +571,7 @@ int hci_dev_close(__u16 dev)
->                 goto done;
->         }
->
-> +       cancel_work_sync(&hdev->power_on);
->         if (hci_dev_test_and_clear_flag(hdev, HCI_AUTO_OFF))
->                 cancel_delayed_work(&hdev->power_off);
->
-> @@ -2675,6 +2676,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
->         list_del(&hdev->list);
->         write_unlock(&hci_dev_list_lock);
->
-> +       cancel_work_sync(&hdev->power_on);
-> +
->         hci_cmd_sync_clear(hdev);
->
->         if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index 286d6767f017..1739e8cb3291 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -4088,7 +4088,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
->
->         bt_dev_dbg(hdev, "");
->
-> -       cancel_work_sync(&hdev->power_on);
->         cancel_delayed_work(&hdev->power_off);
->         cancel_delayed_work(&hdev->ncmd_timer);
->
-> --
-> 2.30.2
->
+Translate .../mm/transhuge.rst into Chinese.
 
-This fixes the issue I described in [1]. I.e. The kernel no longer
-freezes while going to suspend.
-Tested-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+---
+ Documentation/translations/zh_CN/mm/index.rst |   2 +-
+ .../translations/zh_CN/mm/transhuge.rst       | 153 ++++++++++++++++++
+ 2 files changed, 154 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/translations/zh_CN/mm/transhuge.rst
 
-Thanks!
-Max
+diff --git a/Documentation/translations/zh_CN/mm/index.rst b/Documentation/translations/zh_CN/mm/index.rst
+index 2f53e37b8049..d0c80025c3ce 100644
+--- a/Documentation/translations/zh_CN/mm/index.rst
++++ b/Documentation/translations/zh_CN/mm/index.rst
+@@ -56,6 +56,7 @@ Linux内存管理文档
+    page_table_check
+    remap_file_pages
+    split_page_table_lock
++   transhuge
+    vmalloced-kernel-stacks
+    z3fold
+    zsmalloc
+@@ -65,5 +66,4 @@ TODOLIST:
+ * free_page_reporting
+ * hugetlbfs_reserv
+ * slub
+-* transhuge
+ * unevictable-lru
+diff --git a/Documentation/translations/zh_CN/mm/transhuge.rst b/Documentation/translations/zh_CN/mm/transhuge.rst
+new file mode 100644
+index 000000000000..5204b1113fbf
+--- /dev/null
++++ b/Documentation/translations/zh_CN/mm/transhuge.rst
+@@ -0,0 +1,153 @@
++.. SPDX-License-Identifier: GPL-2.0
++.. include:: ../disclaimer-zh_CN.rst
++
++:Original: Documentation/vm/transhuge.rst
++
++:翻译:
++
++ 郭梦琪 Guo Mengqi <guomengqi3@huawei.com>
++
++:校译:
++
++ 司延腾 Yanteng Si <siyanteng@loongson.cn>
++ 唐艺舟 Tang Yizhou <tangyeechou@gmail.com>
++ 时奎亮 Alex Shi <alexs@kernel.org>
++
++==============
++透明巨页机制
++==============
++
++本文档描述透明巨页（THP）的设计理念，以及它是如何与内存管理系统的其它部分交互的。
++
++设计原则
++========
++
++- “优雅回退”：有些mm组件不感知透明巨页，它们的回退方法是将PMD页表项拆分成PTE
++  页表项。必要时还需要拆分透明巨页。这样就可以在常规大小的页或页表项上继续工作。
++
++- 如果内存碎片化导致巨页分配失败，则分配常规页作为替代放入原vma中，此期间不会
++  产生任何失败或明显延迟，也不会引起用户态的注意。
++
++- 如果一些进程退出后释放了空闲的巨页（不论在伙伴系统还是在VM），由常规页支持的
++  guest物理内存应该自动重新申请为巨页。(通过khugepaged进程)
++
++- 透明巨页不需要预留内存，而是尽可能使用已经存在的巨页。（为避免不可移动的页
++  将整个内存碎片化，唯一可能的预留是在kernelcore=的设置中。不过这个调整并不仅
++  针对透明巨页，而对内核中所有动态的多级页面申请都适用。）
++
++get_user_pages和follow_page
++===========================
++
++不论对单个巨页还是hugetlbfs，使用get_user_pages(GUP)和follow_page时，返回的会是
++首页或尾页。大多数情况下调用GUP功能的人不关心页的大小，只关心页的真实物理地址
++以及暂时将页固定，好在I/O结束后将页释放。但在驱动中，在某些情况下有可能访问尾页
++的page_struct（如检查page->mapping字段），这时应该转而检查首页。一旦首页或者尾页
++被引用，巨页就不能再被拆分了。
++
++.. note::
++   以上不是针对GUP API的新增限制，它们和hugetlbfs的限制保持一致。因此，如果任何
++   驱动能够在hugetlbfs中处理GUP，它们也能在基于透明巨页的映射中很好的工作。
++
++优雅回退
++============
++
++遍历页表但又不需感知巨页pmd的代码可以这样简单处理：对pmd_offset返回的pmd添加一行
++split_huge_pmd(vma, pmd, addr)调用。只需grep搜索"pmd_offset"，并将
++split_huge_pmd添加到所有返回的pmd后面，代码就能够自己处理透明巨页了，非常简单。
++这短短一行的回退函数很巧妙，为我们省去了成百上千行额外的适配代码。
++
++如果你不是在遍历页表，而是遇到了一个无法直接处理的巨物理页，可以使用
++split_huge_page(page)把它拆分成小页。linux VM就是通过这种方式将巨页换出。
++如果页面被pin住了，split_huge_page就会失败。
++
++例子：添加一行代码使mremap.c支持透明巨页::
++
++        diff --git a/mm/mremap.c b/mm/mremap.c
++        --- a/mm/mremap.c
++        +++ b/mm/mremap.c
++        @@ -41,6 +41,7 @@ static pmd_t *get_old_pmd(struct mm_stru
++                return NULL;
++
++                pmd = pmd_offset(pud, addr);
++        +       split_huge_pmd(vma, pmd, addr);
++                if (pmd_none_or_clear_bad(pmd))
++                    return NULL;
++
++巨页支持中的锁使用
++==================
++
++我们还是希望尽可能多的代码能感知透明巨页，因为调用split_huge_page()和
++split_huge_pmd()还是有开销的。
++
++要使遍历页表流程能够感知巨页pmd，只需对pmd_offset返回的pmd调用pmd_trans_huge()。
++一定要持有mmap_lock读锁，以避免khugepaged在此期间申请新的巨页pmd
++（khugepaged collapse_huge_page会持有mmap_lock写锁而非anon_vma lock）。
++如果pmd_trans_huge返回结果为假，那就回到原来的流程。如果pmd_trans_huge返回结果
++为真，就需要先持有页表锁(pmd_lock())，然后再进行一次pmd_trans_huge判断。持页表锁
++是为了防止巨页pmd被转换成小页（split_huge_pmd是可以跟遍历页表操作同时进行的）。
++如果第二次pmd_trans_huge返回结果为假,那就释放页表锁，依然回到原有流程。如果返回
++结果继续为真，那就按照巨页pmd和巨页来处理，处理完毕再释放页表锁。
++
++引用计数和透明巨页
++==================
++
++THP的计数跟其他复合页的计数大致相同：
++
++ - get_page()/put_page()和GUP都在首页上进行计数（修改head page->_refcount）
++
++ - 尾页的_refcount永远是0. get_page_unless_zero()永远无法get到尾页。
++
++ - 映射/解映射特定PTE entry时，增减的是复合页中相应子页的_mapcount.
++
++ - 映射/解映射整个复合页时，增减的是compound_mapcount属性。该属性保存在第一个
++   尾页中。对于文件中的巨页，还要增加所有子页中的_mapcount，这样是为了在检测
++   子页的解映射时不需考虑竞争问题。
++
++PageDoubleMap() 表明巨页 *可能* 被映射为了PTE.
++
++对匿名页，PageDoubleMap()也表示所有子页的_mapcount都偏移了1.
++在页被同时映射为了PMD和PTE的情况下，这个额外的引用可以避免子页解映射时的竞争。
++
++这个优化也可以追踪每个子页mapcount所带来的性能开销。另一种解决方法是在每次
++映射/解映射整个复合页时更改所有子页的_mapcount.
++
++对于匿名页，如果页面的PMD在首次被拆分时同时还具有PMD映射，则设置PG_double_map;
++当compound_mapcount值降为0时，取消设置。
++
++对于映射到文件的页，在其首次映射PTE时，设置PG_double_map; 在页面从页缓存中
++移除时，取消设置。
++
++split_huge_page中，在清除page struct中所有PG_head/tail位之前，需要先将首页中的
++引用计数refcount分发到所有其他尾页中。页表项PTE占用的引用计数很好处理，但剩下的
++引用计数来源难以确定（如通过get_user_pages的pin页）。如果巨页被pin住，
++split_huge_page()会失败。页的引用计数必须等于所有子页mapcount之和再加一（因为
++split_huge_page的调用者也必须对首页持有一个引用）。
++
++对匿名页，split_huge_page用页表项迁移（migration entries）来保持page->_refcount
++和page->_mapcount稳定。对文件页则会直接解映射。
++
++这套机制对物理内存扫描（physical memory scanners）也安全，scanner唯一合法引用页
++的途径就是get_page_unless_zero().
++
++没调atomic_add()时，所有尾页的_refcount都为0. 这时scanner无法获取尾页的引用。
++调了atomic_add()后，我们也不在乎页的_refcount是多少了。只要知道应该从首页的引用
++计数减去多少即可。
++
++对首页进行get_page_unless_zero()是可以成功的。此时引用计数的再分配非常明了：
++引用计数将会留在首页中。
++
++split_huge_pmd()对引用计数没有任何限制，在任何时候都可以拆分PMD，而且永远不会
++失败。
++
++局部解映射和deferred_split_huge_page()函数
++==========================================
++
++透明巨页通过munmap()或其他方式解映射时，并不会立即释放内存。在page_remove_rmap()
++中检查透明巨页的某个子页是否还在使用，并将透明巨页加入一个预备队列，当内存
++使用需求变大时，把透明巨页拆分，释放已经不用的子页。
++
++检测到局部解映射时，由于处在锁中，无法立即进行拆页。而且在很多情况下，如果透明
++巨页是跨VMA的, 那么会在exit(2)中进行局部解映射。这时拆页效果适得其反。
++
++deferred_split_huge_page函数就是用来进行上文所说的将页排队以预备后续的拆分。真正
++的拆页操作是通过内存压力导致的shrinker接口来触发的。
+-- 
+2.17.1
+
