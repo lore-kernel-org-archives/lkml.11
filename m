@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074F8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42807C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235665AbiGEMOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        id S234925AbiGEMOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234920AbiGEMIK (ORCPT
+        with ESMTP id S234931AbiGEMIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BEC1A041;
-        Tue,  5 Jul 2022 05:07:13 -0700 (PDT)
+        Tue, 5 Jul 2022 08:08:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C791A04B;
+        Tue,  5 Jul 2022 05:07:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A51E6B817DB;
-        Tue,  5 Jul 2022 12:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA530C341C7;
-        Tue,  5 Jul 2022 12:07:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39024B817C7;
+        Tue,  5 Jul 2022 12:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF44C341CE;
+        Tue,  5 Jul 2022 12:07:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022830;
-        bh=x6BDyryQCFqo3ZUIxuSGN5zkc2/bOcwtUaTikChJAhg=;
+        s=korg; t=1657022832;
+        bh=9WvpGQQ/zRN3VI0MvCJkXgQF7F+69TafaWbWVm5Uy4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=StQUbkkC+rOrNGZj0VzjGtvlQcmb/QjR9pi0dY7OpDsA9k1ajYaXeRs7oIg25LVVQ
-         spKfM4QjQRdcD1uma3Vgxjh7xp1ihW12VPEi2Tx/HOJMJr2VawnuiueU6cugLt5+Vt
-         w8MaQcVYZCsZ4MuI4Rq6Z5Mi8LYidccZgf8D28sQ=
+        b=Gnyho8FZCqVX9LP9+fMrQE+mfP72NOamO9X4nfIyq7sn8h4ysKJSx+BjzZat6tOIT
+         6LQ9AonS523ciRwzcBeEbD/kV4Fx+LcdvgyJQblX7fZ1a+GE3PNGKHxtD/cAPZ1PJw
+         iOroMzhxTuI8aA5qDQvgh8mtwJAgI7BQNfeWt7GQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 25/84] net: ipv6: unexport __init-annotated seg6_hmac_net_init()
-Date:   Tue,  5 Jul 2022 13:57:48 +0200
-Message-Id: <20220705115616.060898094@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.10 26/84] NFSD: restore EINVAL error translation in nfsd_commit()
+Date:   Tue,  5 Jul 2022 13:57:49 +0200
+Message-Id: <20220705115616.089890830@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -49,41 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-commit 53ad46169fe2996fe1b623ba6c9c4fa33847876f upstream.
+commit 8a9ffb8c857c2c99403bd6483a5a005fed5c0773 upstream.
 
-As of commit 5801f064e351 ("net: ipv6: unexport __init-annotated seg6_hmac_init()"),
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+commit 555dbf1a9aac ("nfsd: Replace use of rwsem with errseq_t")
+incidentally broke translation of -EINVAL to nfserr_notsupp.
+The patch restores that.
 
-This remove the EXPORT_SYMBOL to fix modpost warning:
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-WARNING: modpost: vmlinux.o(___ksymtab+seg6_hmac_net_init+0x0): Section mismatch in reference from the variable __ksymtab_seg6_hmac_net_init to the function .init.text:seg6_hmac_net_init()
-The symbol seg6_hmac_net_init is exported and annotated __init
-Fix this by removing the __init annotation of seg6_hmac_net_init or drop the export.
-
-Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Link: https://lore.kernel.org/r/20220628033134.21088-1-yuehaibing@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: 555dbf1a9aac ("nfsd: Replace use of rwsem with errseq_t")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/seg6_hmac.c |    1 -
- 1 file changed, 1 deletion(-)
+ fs/nfsd/vfs.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/ipv6/seg6_hmac.c
-+++ b/net/ipv6/seg6_hmac.c
-@@ -409,7 +409,6 @@ int __net_init seg6_hmac_net_init(struct
- 
- 	return 0;
- }
--EXPORT_SYMBOL(seg6_hmac_net_init);
- 
- void seg6_hmac_exit(void)
- {
+--- a/fs/nfsd/vfs.c
++++ b/fs/nfsd/vfs.c
+@@ -1156,6 +1156,7 @@ nfsd_commit(struct svc_rqst *rqstp, stru
+ 						nfsd_net_id));
+ 			err2 = filemap_check_wb_err(nf->nf_file->f_mapping,
+ 						    since);
++			err = nfserrno(err2);
+ 			break;
+ 		case -EINVAL:
+ 			err = nfserr_notsupp;
+@@ -1163,8 +1164,8 @@ nfsd_commit(struct svc_rqst *rqstp, stru
+ 		default:
+ 			nfsd_reset_boot_verifier(net_generic(nf->nf_net,
+ 						 nfsd_net_id));
++			err = nfserrno(err2);
+ 		}
+-		err = nfserrno(err2);
+ 	} else
+ 		nfsd_copy_boot_verifier(verf, net_generic(nf->nf_net,
+ 					nfsd_net_id));
 
 
