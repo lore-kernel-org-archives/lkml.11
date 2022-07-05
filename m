@@ -2,81 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E62C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiGEWQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 18:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        id S231919AbiGEWUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 18:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230370AbiGEWQQ (ORCPT
+        with ESMTP id S230001AbiGEWUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 18:16:16 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7001815719;
-        Tue,  5 Jul 2022 15:16:15 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 5 Jul 2022 18:20:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D953186F8;
+        Tue,  5 Jul 2022 15:20:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LcxpN51RMz4xMW;
-        Wed,  6 Jul 2022 08:16:12 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657059373;
-        bh=XZxqfOoJqyHaxb2ijCfs64RrqwV15vWJl3ot42lwO5E=;
-        h=Date:From:To:Cc:Subject:From;
-        b=N+xo3zw7pGFNp+nvr1Z/pozu+e3LelshytKYgYTeyorSrkFiACdSWNWOWJndMB6V2
-         4Y1HhdLpIGlbDhwKvIhhuBV1AinBA+yKDK9NXrboqPF2vKRuWq/daI5deJqXnZKsrS
-         tutQhSx6mVMB/Pz27YHLbopzgnIL0xEJ0IIeWS1Rrgzuc36h42LuYnJA+6qnYpFPae
-         ScQPybuyJTuMWHHdEfvGrNltRkufP0KwPWQ+pKt6Acu5T6bFmMNVLvAbPZO4/2Pgrz
-         2aEaw60ZLwcDPw5WLv/73Xi8QsSUxJrdhGaPD3pwP4K/i63s357L3D7gSLougpeDko
-         TpJiOADHZjBIQ==
-Date:   Wed, 6 Jul 2022 08:11:08 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Jianqun Xu <jay.xu@rock-chips.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the gpio-brgl tree
-Message-ID: <20220706081108.347e3ffb@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFA4461D3A;
+        Tue,  5 Jul 2022 22:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 34CBFC341C8;
+        Tue,  5 Jul 2022 22:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657059613;
+        bh=hO8W+SqlzzWY0MFtfKjDaAWoxPd/3Fuy/QNL1MwRuIE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JCf3iPcDRemhVC3u0Q27/2BNmFjpu9gOf0/gcmnejIZw2xdL6dx2bDX6QO8TiUnaC
+         O55QGvx0NxQFrbFyZbsIPalOrABMufYV+zG6040DspJ20CyRavsAOtnYRQ+FbgR5EA
+         O7K0S6iqBq/syZByyHy2ePJSlephfbStUWzw/DWmI93naV88L8DXpXnpjQT+9ydAQI
+         HFNkFVzlp6GTVc2kgrz+dUWG+eKz0uwQ/kY6QPvHrKQHocL8TEJ7NSgmzenBVILa8u
+         BsUT8bNRKuD/0kz8GSbaZn7/2+NZqylKQ5x2DGddKFDPVUneVQtkrbW2oH0VHibgxu
+         oESy+gYD/nC5A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 16F3BE45BDB;
+        Tue,  5 Jul 2022 22:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/zntH_Oz1rarvsF4xbamw6=m";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] dt-bindings: net: dsa: mediatek,mt7530: Add missing 'reg'
+ property
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165705961309.16452.8847094115538179465.git-patchwork-notify@kernel.org>
+Date:   Tue, 05 Jul 2022 22:20:13 +0000
+References: <20220701222240.1706272-1-robh@kernel.org>
+In-Reply-To: <20220701222240.1706272-1-robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sean.wang@mediatek.com, Landen.Chao@mediatek.com, dqfext@gmail.com,
+        frank-w@public-files.de, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/zntH_Oz1rarvsF4xbamw6=m
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hello:
 
-Hi all,
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Commit
+On Fri,  1 Jul 2022 16:22:40 -0600 you wrote:
+> The 'reg' property is missing from the mediatek,mt7530 schema which
+> results in the following warning once 'unevaluatedProperties' is fixed:
+> 
+> Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.example.dtb: switch@0: Unevaluated properties are not allowed ('reg' was unexpected)
+> 
+> Fixes: e0dda3119741 ("dt-bindings: net: dsa: convert binding for mediatek switches")
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> 
+> [...]
 
-  1fde565c5593 ("gpio: rockchip: add support for rk3588")
+Here is the summary with links:
+  - dt-bindings: net: dsa: mediatek,mt7530: Add missing 'reg' property
+    https://git.kernel.org/netdev/net-next/c/3359619a6ea5
 
-is missing a Signed-off-by from its committer.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---=20
-Cheers,
-Stephen Rothwell
 
---Sig_/zntH_Oz1rarvsF4xbamw6=m
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLEtvwACgkQAVBC80lX
-0Gx1tggAgiZ5+gU2UnMUw71gMV1jHv7yjIL6Xa8Azfz9WzDFs3FqDywwhgpnEV/B
-rAQIHyDL/PzBmerKjKG/6E7soWavxUoHNfpBeje+Iis+8zqAHxTohY9ZzDC1Ut39
-31hQw+CxGxsf8ZrHW6l92TNHcJTWE0NzNaEffgYOc2fVPKsIoXcA0x2DSJGzzF+T
-d+EfCUYcjLVTSw2R1uvb7wLuUKNtEeq1dS7DYjGDRFi6LsODAE1Q2Ex0ciZ2J5id
-lK2JOsfNZRnP1l4hKnoQXu/owIxCl05phxWb0l7lVnxP01o2qJFX2imozdUaUaSw
-Kkq0EIgdufRegLRA2aLsHXEe84DoNQ==
-=3yeE
------END PGP SIGNATURE-----
-
---Sig_/zntH_Oz1rarvsF4xbamw6=m--
