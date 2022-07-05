@@ -2,125 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 065C3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D213CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbiGERHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S232489AbiGERIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbiGERHK (ORCPT
+        with ESMTP id S229790AbiGERIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:07:10 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37571C911
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:07:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657040829; x=1688576829;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BcNobYgcJ8hrerWlwpr0trD3hV3HIbQTtEEdQGBF4Jk=;
-  b=OIKllflDZ/icNmVeX4M0yTdcV/8r/UpZVLyY572p01PCD/0clc0qSt++
-   ojDlRBjxIrtMcNBvHoibZHiptuwbMXgfuQl9g7cLNkYBmENiLQj8SbFMm
-   EPy7kgegEVTk3vJ6xCG5EeFtVjJZriCYV9qyuLLHi9+Ofi1KrBczz3OgM
-   Y0Vqz2RUVDGjQdqVL/GFkowoXKRpoROzLD38m71mfyYfVqq2hG82I4/wt
-   Bp8G78o6hSNoA0gG0oikmS+iZVPNoR1Ion8TaiOLGL7LjTWjuamMqjHei
-   SMOaDF4B482GLWv60Xod+uJqa7IwHBXTIhUEoZdfexYXhTBmRugw1+pJQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="308948697"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="308948697"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 10:06:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="719799246"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 05 Jul 2022 10:06:47 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8m0c-000JP4-AY;
-        Tue, 05 Jul 2022 17:06:46 +0000
-Date:   Wed, 6 Jul 2022 01:06:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:brauner/linux/fs.idmapped.overlay.acl.fix 1/1]
- fs/overlayfs/overlayfs.h:273:58: error: passing 'const void *' to parameter
- of type 'void *' discards qualifiers
-Message-ID: <202207060052.GNVFHePq-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Tue, 5 Jul 2022 13:08:15 -0400
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F441CB3E;
+        Tue,  5 Jul 2022 10:08:12 -0700 (PDT)
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 265H7Vjn005429;
+        Tue, 5 Jul 2022 19:07:37 +0200
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id AA5521208B1;
+        Tue,  5 Jul 2022 19:07:27 +0200 (CEST)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1657040848; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uGknwfi4mUIiVYFG08ndrGES0RIjrZCfTG6jqpQqgRY=;
+        b=xBw2n77HWtkLu0JTOI/QgjTst019m9LojXkvuTraHswS+s4tnjzulF6UW4OJcCJcDfwuZZ
+        6QWUvXiHW2AnovBw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1657040848; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uGknwfi4mUIiVYFG08ndrGES0RIjrZCfTG6jqpQqgRY=;
+        b=HS9hvTOi81xchdZ2mg65uPIyE2ADuS1ePP8GpwzhRuSGGX5Y52d+rkxv9IcaL1fUDhgSE2
+        7eE4Mv1TgN4tobRQnnRwpha8+xD+FKqgKm4dkFGL9/BceTKIv/SJhEZvoTjl6mRAZHNleu
+        TqmsyDiislLSgwclGH0Ozxntgw9Q7tvFfaDv8e7Kn0c6tL+VQxfeL8kQRiJ+YsebkgPMEn
+        AyeAuemFR28ZuqlsnRT6hUyWpuvCq/dIwP9GhWvUvWCFDlmThMtlsCfiYqtFDWW1cV/5T2
+        ivVOwOyw/RzbUN83DaSq2n/tN1HgbZ5zWzAsQ0ERyzLKMZm95blEZbyTMVHOmQ==
+Date:   Tue, 5 Jul 2022 19:07:27 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Anton Makarov <anton.makarov11235@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [net-next v4 1/4] seg6: add support for SRv6 H.Encaps.Red
+ behavior
+Message-Id: <20220705190727.69d532417be7438b15404ee1@uniroma2.it>
+In-Reply-To: <cd046e93a9783be5944cf15974afa534c94fb15e.camel@redhat.com>
+References: <20220701150152.24103-1-andrea.mayer@uniroma2.it>
+        <20220701150152.24103-2-andrea.mayer@uniroma2.it>
+        <cd046e93a9783be5944cf15974afa534c94fb15e.camel@redhat.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block brauner/linux/fs.idmapped.overlay.acl.fix
-head:   05bde3ad56201ff691db6d95ea1316983ea82a9c
-commit: 05bde3ad56201ff691db6d95ea1316983ea82a9c [1/1] acl: report correct ownership in some ovl use-cases
-config: hexagon-randconfig-r045-20220703 (https://download.01.org/0day-ci/archive/20220706/202207060052.GNVFHePq-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 142aca7741d5b06207e87bf4880fbe308c8d6823)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/05bde3ad56201ff691db6d95ea1316983ea82a9c
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block brauner/linux/fs.idmapped.overlay.acl.fix
-        git checkout 05bde3ad56201ff691db6d95ea1316983ea82a9c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/
+Hi Paolo,
+please see my answers inline, thanks.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Tue, 05 Jul 2022 09:33:16 +0200
+Paolo Abeni <pabeni@redhat.com> wrote:
 
-All errors (new ones prefixed by >>):
+> On Fri, 2022-07-01 at 17:01 +0200, Andrea Mayer wrote:
+> > The SRv6 H.Encaps.Red behavior described in [1] is an optimization of
+> > the SRv6 H.Encaps behavior [2].
+> > 
+> > H.Encaps.Red reduces the length of the SRH by excluding the first
+> > segment (SID) in the SRH of the pushed IPv6 header. The first SID is
+> > only placed in the IPv6 Destination Address field of the pushed IPv6
+> > header.
+> > When the SRv6 Policy only contains one SID the SRH is omitted, unless
+> > there is an HMAC TLV to be carried.
+> > 
+> > [1] - https://datatracker.ietf.org/doc/html/rfc8986#section-5.2
+> > [2] - https://datatracker.ietf.org/doc/html/rfc8986#section-5.1
+> > 
+> > Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> > Signed-off-by: Anton Makarov <anton.makarov11235@gmail.com>
+> > ---
+> >  include/uapi/linux/seg6_iptunnel.h |   1 +
+> >  net/ipv6/seg6_iptunnel.c           | 126 ++++++++++++++++++++++++++++-
+> >  2 files changed, 126 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/uapi/linux/seg6_iptunnel.h b/include/uapi/linux/seg6_iptunnel.h
+> > index eb815e0d0ac3..538152a7b2c3 100644
+> > --- a/include/uapi/linux/seg6_iptunnel.h
+> > +++ b/include/uapi/linux/seg6_iptunnel.h
+> > @@ -35,6 +35,7 @@ enum {
+> >  	SEG6_IPTUN_MODE_INLINE,
+> >  	SEG6_IPTUN_MODE_ENCAP,
+> >  	SEG6_IPTUN_MODE_L2ENCAP,
+> > +	SEG6_IPTUN_MODE_ENCAP_RED,
+> >  };
+> >  
+> >  #endif
+> > diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+> > index d64855010948..4942073650d3 100644
+> > --- a/net/ipv6/seg6_iptunnel.c
+> > +++ b/net/ipv6/seg6_iptunnel.c
+> > @@ -36,6 +36,7 @@ static size_t seg6_lwt_headroom(struct seg6_iptunnel_encap *tuninfo)
+> >  	case SEG6_IPTUN_MODE_INLINE:
+> >  		break;
+> >  	case SEG6_IPTUN_MODE_ENCAP:
+> > +	case SEG6_IPTUN_MODE_ENCAP_RED:
+> >  		head = sizeof(struct ipv6hdr);
+> >  		break;
+> >  	case SEG6_IPTUN_MODE_L2ENCAP:
+> > @@ -195,6 +196,122 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
+> >  }
+> >  EXPORT_SYMBOL_GPL(seg6_do_srh_encap);
+> >  
+> > +/* encapsulate an IPv6 packet within an outer IPv6 header with reduced SRH */
+> > +static int seg6_do_srh_encap_red(struct sk_buff *skb,
+> > +				 struct ipv6_sr_hdr *osrh, int proto)
+> > +{
+> > +	__u8 first_seg = osrh->first_segment;
+> > +	struct dst_entry *dst = skb_dst(skb);
+> > +	struct net *net = dev_net(dst->dev);
+> > +	struct ipv6hdr *hdr, *inner_hdr;
+> > +	int hdrlen = ipv6_optlen(osrh);
+> > +	int red_tlv_offset, tlv_offset;
+> > +	struct ipv6_sr_hdr *isrh;
+> > +	bool skip_srh = false;
+> > +	__be32 flowlabel;
+> > +	int tot_len, err;
+> > +	int red_hdrlen;
+> > +	int tlvs_len;
+> > +
+> > +	if (first_seg > 0) {
+> > +		red_hdrlen = hdrlen - sizeof(struct in6_addr);
+> > +	} else {
+> > +		/* NOTE: if tag/flags and/or other TLVs are introduced in the
+> > +		 * seg6_iptunnel infrastructure, they should be considered when
+> > +		 * deciding to skip the SRH.
+> > +		 */
+> > +		skip_srh = !sr_has_hmac(osrh);
+> > +
+> > +		red_hdrlen = skip_srh ? 0 : hdrlen;
+> > +	}
+> > +
+> > +	tot_len = red_hdrlen + sizeof(struct ipv6hdr);
+> > +
+> > +	err = skb_cow_head(skb, tot_len + skb->mac_len);
+> > +	if (unlikely(err))
+> > +		return err;
+> > +
+> > +	inner_hdr = ipv6_hdr(skb);
+> > +	flowlabel = seg6_make_flowlabel(net, skb, inner_hdr);
+> > +
+> > +	skb_push(skb, tot_len);
+> > +	skb_reset_network_header(skb);
+> > +	skb_mac_header_rebuild(skb);
+> > +	hdr = ipv6_hdr(skb);
+> > +
+> > +	/* based on seg6_do_srh_encap() */
+> > +	if (skb->protocol == htons(ETH_P_IPV6)) {
+> > +		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr)),
+> > +			     flowlabel);
+> > +		hdr->hop_limit = inner_hdr->hop_limit;
+> > +	} else {
+> > +		ip6_flow_hdr(hdr, 0, flowlabel);
+> > +		hdr->hop_limit = ip6_dst_hoplimit(skb_dst(skb));
+> > +
+> > +		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
+> > +		IP6CB(skb)->iif = skb->skb_iif;
+> > +	}
+> > +
+> > +	/* no matter if we have to skip the SRH or not, the first segment
+> > +	 * always comes in the pushed IPv6 header.
+> > +	 */
+> > +	hdr->daddr = osrh->segments[first_seg];
+> > +
+> > +	if (skip_srh) {
+> > +		hdr->nexthdr = proto;
+> > +
+> > +		set_tun_src(net, dst->dev, &hdr->daddr, &hdr->saddr);
+> > +		goto out;
+> > +	}
+> > +
+> > +	/* we cannot skip the SRH, slow path */
+> > +
+> > +	hdr->nexthdr = NEXTHDR_ROUTING;
+> > +	isrh = (void *)hdr + sizeof(struct ipv6hdr);
+> > +
+> > +	if (unlikely(!first_seg)) {
+> > +		/* this is a very rare case; we have only one SID but
+> > +		 * we cannot skip the SRH since we are carrying some
+> > +		 * other info.
+> > +		 */
+> > +		memcpy(isrh, osrh, hdrlen);
+> > +		goto srcaddr;
+> > +	}
+> > +
+> > +	tlv_offset = sizeof(*osrh) + (first_seg + 1) * sizeof(struct in6_addr);
+> > +	red_tlv_offset = tlv_offset - sizeof(struct in6_addr);
+> > +
+> > +	memcpy(isrh, osrh, red_tlv_offset);
+> > +
+> > +	tlvs_len = hdrlen - tlv_offset;
+> > +	if (unlikely(tlvs_len > 0)) {
+> > +		const void *s = (const void *)osrh + tlv_offset;
+> > +		void *d = (void *)isrh + red_tlv_offset;
+> > +
+> > +		memcpy(d, s, tlvs_len);
+> > +	}
+> > +
+> > +	--isrh->first_segment;
+> > +	isrh->hdrlen -= 2;
+> > +
+> > +srcaddr:
+> > +	isrh->nexthdr = proto;
+> > +	set_tun_src(net, dst->dev, &hdr->daddr, &hdr->saddr);
+> > +
+> > +#ifdef CONFIG_IPV6_SEG6_HMAC
+> > +	if (unlikely(!skip_srh && sr_has_hmac(isrh))) {
+> > +		err = seg6_push_hmac(net, &hdr->saddr, isrh);
+> > +		if (unlikely(err))
+> > +			return err;
+> > +	}
+> > +#endif
+> > +
+> > +out:
+> > +	skb_postpush_rcsum(skb, hdr, tot_len);
+> 
+> It looks like, at this point hdr->payload_len is not initialized yet -
+> it will be set later by the caller. So the above will corrupt the
+> checksum complete.
+> 
 
-   In file included from fs/overlayfs/super.c:18:
->> fs/overlayfs/overlayfs.h:273:58: error: passing 'const void *' to parameter of type 'void *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-           return ovl_do_setxattr(ofs, dentry, ovl_xattr(ofs, ox), value, size, 0);
-                                                                   ^~~~~
-   fs/overlayfs/overlayfs.h:259:31: note: passing argument to parameter 'value' here
-                                     const char *name, void *value,
-                                                             ^
-   1 error generated.
---
-   In file included from fs/overlayfs/inode.c:17:
->> fs/overlayfs/overlayfs.h:273:58: error: passing 'const void *' to parameter of type 'void *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-           return ovl_do_setxattr(ofs, dentry, ovl_xattr(ofs, ox), value, size, 0);
-                                                                   ^~~~~
-   fs/overlayfs/overlayfs.h:259:31: note: passing argument to parameter 'value' here
-                                     const char *name, void *value,
-                                                             ^
->> fs/overlayfs/inode.c:378:48: error: passing 'const void *' to parameter of type 'void *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-                   err = ovl_do_setxattr(ofs, realdentry, name, value, size,
-                                                                ^~~~~
-   fs/overlayfs/overlayfs.h:259:31: note: passing argument to parameter 'value' here
-                                     const char *name, void *value,
-                                                             ^
-   2 errors generated.
+very good catch, thanks.
 
+> I think the solution is moving 'payload_len' initialization before the
+> csum update. Note that 'seg6_do_srh_encap' has a similar issue.
+> 
 
-vim +273 fs/overlayfs/overlayfs.h
+Yes, but for doing this, we need to fix an issue which is pre-existing to my
+patch.
 
-c914c0e27eb084 Amir Goldstein 2022-04-04  268  
-c914c0e27eb084 Amir Goldstein 2022-04-04  269  static inline int ovl_setxattr(struct ovl_fs *ofs, struct dentry *dentry,
-43d193f8440d67 Miklos Szeredi 2020-09-02  270  			       enum ovl_xattr ox, const void *value,
-610afc0bd40882 Miklos Szeredi 2020-09-02  271  			       size_t size)
-e9be9d5e76e348 Miklos Szeredi 2014-10-24  272  {
-c914c0e27eb084 Amir Goldstein 2022-04-04 @273  	return ovl_do_setxattr(ofs, dentry, ovl_xattr(ofs, ox), value, size, 0);
-e9be9d5e76e348 Miklos Szeredi 2014-10-24  274  }
-e9be9d5e76e348 Miklos Szeredi 2014-10-24  275  
+Taking a look at the code, I saw that the function 'seg6_do_srh_inline()'
+is also affected by the same problem.
+Specifically, it looks like this issue is present from the beginning, i.e.:
+commit 6c8702c60b88 ("ipv6: sr: add support for SRH encapsulation and injection
+with lwtunnels").
 
-:::::: The code at line 273 was first introduced by commit
-:::::: c914c0e27eb0843b7cf3bec71d6f34d53a3a671e ovl: use wrappers to all vfs_*xattr() calls
+Therefore in a different patch, I will fix the 'seg6_do_srh()' code by moving
+the 'payload_len' initialization inside both seg6_do_srh_{encap,inline}
+functions (and before updating the csum, as you suggested).
+Since these functions are exported globally, we should also take
+care of the callers that will no longer have to initialize the 'payload_len' on
+their own.
 
-:::::: TO: Amir Goldstein <amir73il@gmail.com>
-:::::: CC: Miklos Szeredi <mszeredi@redhat.com>
+In the new patch, I will credit you for having caught this bug (i.e.
+Reported-by tag) as well as I will add the link to this thread (i.e. Link tag)
+for documentation purposes.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Once we have fixed this issue, I will send an up-to-date v5; do you agree with
+this plan?
+
+Ciao,
+Andrea
