@@ -2,180 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E49EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E04C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiGENgC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
+        id S232145AbiGENga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiGENfq (ORCPT
+        with ESMTP id S230129AbiGENgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:35:46 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1525E6EEA0;
-        Tue,  5 Jul 2022 05:57:35 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B95BD66019D1;
-        Tue,  5 Jul 2022 13:56:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657025814;
-        bh=mmPoxIRR9ChlnYGyGbRq7S9ABg48kE//DWKGRNjh5Ro=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XwGOvaVxerCStoz0xLNMGU+RIiNH3JC1aj01myuSPataEtZUNi8XagF0yQM8EMZSU
-         YKSWFuNtgsG/uMRF6hKryUZQjcHiRXkuZCJ95jIZ/O2vswv6EbpFesC/ODEWsLYF+/
-         oFfFX33Jz3pSjrYQ6qwCIVNGKhJtwkqhG1t9iCUXer5rMxuLz1b3d94KYCrGeTPi7N
-         rABSpZtJFdl1SJojdPzNt6mlcL5rINuKHZ4NrBhHBAGEtuMSiEn+qTW05O19tsaYlj
-         wWdaOoKTFPK1gYW8dj0J5/awWfftDTzwVr5Qc7ISMwwn5ArKIbFaFy/45eSw3NlZbS
-         A2cQEc8lXFO8w==
-Message-ID: <b12d2df4-73e8-a558-582f-200236bd6560@collabora.com>
-Date:   Tue, 5 Jul 2022 14:56:51 +0200
+        Tue, 5 Jul 2022 09:36:17 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051B771260
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:58:05 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id q16so13460553qtn.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qMiUEOKk9r77VMVVPa8z6NBhDHlBwjJXvsubB7Baxfc=;
+        b=XZkg/spioxcX8d4p0KVTXf2AzZ+QZdxO5jRoERcJDRn+wYuBLyyF0qXMrGurDsjXJ3
+         Cwxh7oa+Tg3jd9appJk2J5mgUwI0zYSI49nCEv9ZvJorCWddYfje/ZA46AwPmDriGZX2
+         SCFTLWTbDb0f6iVSgCfwSZ2JkcJGiG7ZudIIPn2Ky0Qvun2YS+6JteCNtOZVYabpn9AH
+         kDm7ecpxsQsEPXKSPEMdNm4mAznc8UDoepnUl+tPQEfsSTUZY/T6YUD0pUjhIeg/pAkU
+         TIHzzqROEXOCQy+qVc28s2NZDhufhVqxvag0R40IhJBS9NAd8QPr/V/Ps88g+ZHM3IeQ
+         KaBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qMiUEOKk9r77VMVVPa8z6NBhDHlBwjJXvsubB7Baxfc=;
+        b=Ctq4YBaN0vwaoRUhz57nf2IFkNiz0dSPWeQTBJpFf3eUg4UYaQMzk7SwIEIDB3sJbm
+         o3n3Ah9J/5K2pGw3Zw0YhCV4bmywuhhd+QrVpweSLUdI57z/yN+PDb5dMBxTVPXTEceM
+         Dl4RLdv3meHHtu1yU8yjgemjCWvcE42E3sUOcWv7F+WWIgCrBmUw2jMYkp/4+8xc7bi7
+         UWp9ZpPiZK27u/Zkqi/njAGmBh8kjnc0ty1d9Edjd4qLYzO7pJHyLRy4SuA5UwNI531K
+         k+ixaz5sQsGAdToUMbyw6qH3xlNd9LImA8CvzJ0f4boGfiUhLdREbfuIXyBTojILZS4E
+         TrzQ==
+X-Gm-Message-State: AJIora9LJE5nU0UJ1MBDLyjgtcxPYo1Qs7jEBFAnBCq6L6yJcs9iSrb2
+        cEwBWTU6Fx9o9HxhHGJ5VUo9+ChCDbQv5wBoyv5on6OYwyQ=
+X-Google-Smtp-Source: AGRyM1ssdGXVsDEnncHVzsnICuUkRzm3oDpktel2aLTMIiD9A0pZ5wNtjnGOM8AVX4r9KvV3eFAob7pightug7CfKbo=
+X-Received: by 2002:ac8:5956:0:b0:31d:28dc:17c with SMTP id
+ 22-20020ac85956000000b0031d28dc017cmr26185913qtz.295.1657025876136; Tue, 05
+ Jul 2022 05:57:56 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [V10,0/7] Enable two hardware jpeg encoder for MT8195
-Content-Language: en-US
-To:     Irui Wang <irui.wang@mediatek.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+References: <20220705114032.22787-1-johan+linaro@kernel.org>
+ <20220705114032.22787-2-johan+linaro@kernel.org> <e3b344e7-4100-e0d4-0dcd-aeef4893ad43@linaro.org>
+ <YsQztl9KHS5csu4A@hovoldconsulting.com>
+In-Reply-To: <YsQztl9KHS5csu4A@hovoldconsulting.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Tue, 5 Jul 2022 15:57:45 +0300
+Message-ID: <CAA8EJppskvGeccyxAE7U3O+e_g4r-UhzwK=x1TSF-fZF-Yn67A@mail.gmail.com>
+Subject: Re: [PATCH 01/14] arm64: dts: qcom: sc7280: drop PCIe PHY clock index
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        nicolas.dufresne@collabora.com, wenst@chromium.org
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Tomasz Figa <tfiga@chromium.org>, xia.jiang@mediatek.com,
-        maoguang.meng@mediatek.com, kyrie wu <kyrie.wu@mediatek.com>,
-        srv_heupstream@mediatek.com
-References: <20220627025625.8956-1-irui.wang@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220627025625.8956-1-irui.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 27/06/22 04:56, Irui Wang ha scritto:
-> From: kyrie wu <kyrie.wu@mediatek.com>
-> 
-> This series adds support for multi hardware jpeg encoding, by first
-> adding use of_platform_populate to manage each hardware information:
-> interrupt, clock, register bases and power. Secondly add encoding
-> work queue to deal with the encoding requestsof multi-hardware
-> at the same time. Lastly, add output picture reorder function
-> interface to eliminate the out of order images.
-> 
-> This series has been tested with MT8195 Gstreamer.
-> Encoding worked for this chip.
-> 
+On Tue, 5 Jul 2022 at 15:51, Johan Hovold <johan@kernel.org> wrote:
+>
+> On Tue, Jul 05, 2022 at 03:42:08PM +0300, Dmitry Baryshkov wrote:
+> > On 05/07/2022 14:40, Johan Hovold wrote:
+> > > The QMP PCIe PHY provides a single clock so drop the redundant clock
+> > > index.
+> > >
+> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> >
+> > Hmm. After checking the source code, the clocks entry of the phy@1c0e000
+> > node also needs to be fixed.
+>
+> I assume you meant pci@1c08000 here? Thanks for catching that!
+>
+> > And also maybe:
+> >
+> > Fixes: bd7d507935ca ("arm64: dts: qcom: sc7280: Add pcie clock support")
+> > Fixes: 92e0ee9f83b3 ("arm64: dts: qcom: sc7280: Add PCIe and PHY related
+> > nodes")
+>
+> Maybe, I'm a bit reluctant to add a Fixes tags for these even if they do
+> violate the binding. But sure, why not.
 
-Hello Irui,
+Yep, I'm also in doubt here. In this case this is more logical. I'd
+allow you to decide then.
 
-Unfortunately, I can't reproduce your successful test with gstreamer: when
-I try to encode a jpeg with videotestsrc input, I get a kernel panic.
-
-To reproduce this behavior, please run the following:
-
-gst-launch-1.0 videotestsrc ! v4l2jpegenc ! filesink location=hwenctest.jpg
-
-
-Here's the panic log:
-
-[  342.567211] Unable to handle kernel NULL pointer dereference at virtual address 
-0000000000000108
-
-[  342.576014] Mem abort info:
-
-[  342.578805]   ESR = 0x0000000096000004
-
-[  342.582552]   EC = 0x25: DABT (current EL), IL = 32 bits
-
-[  342.587863]   SET = 0, FnV = 0
-
-[  342.590919]   EA = 0, S1PTW = 0
-
-[  342.594062]   FSC = 0x04: level 0 translation fault
-
-[  342.598941] Data abort info:
-
-[  342.601826]   ISV = 0, ISS = 0x00000004
-
-[  342.605668]   CM = 0, WnR = 0
-
-[  342.608643] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000119029000
-
-[  342.615094] [0000000000000108] pgd=0000000000000000, p4d=0000000000000000
-
-[  342.621907] Internal error: Oops: 96000004 [#1] SMP
-
-[  342.626800] Modules linked in: cdc_ether usbnet r8152 af_alg qrtr mt7921e 
-mt7921_common mt76_connac_lib mt76 mac80211 btusb btrtl btintel btmtk btbcm 
-bluetooth cfg80211 mtk_vcodec_dec_hw uvcvideo snd_sof_mt8195 ecdh_generic 
-mtk_vcodec_dec ecc mtk_adsp_common videobuf2_vmalloc snd_sof_xtensa_dsp rfkill 
-snd_sof_of v4l2_vp9 panfrost mtk_jpeg snd_sof v4l2_h264 mtk_jpeg_enc_hw 8021q 
-mtk_vcodec_common cros_ec_sensors gpu_sched cros_ec_lid_angle mtk_jpeg_dec_hw 
-hid_multitouch snd_sof_utils cros_ec_sensors_core crct10dif_ce garp 
-cros_usbpd_logger sbs_battery mrp stp llc ipmi_devintf ipmi_msghandler fuse ipv6
-
-[  342.680332] CPU: 3 PID: 180 Comm: kworker/u16:6 Tainted: G        W 
-5.19.0-rc3-next-20220622+ #814
-
-[  342.689982] Hardware name: MediaTek Tomato (rev2) board (DT)
-
-[  342.695637] Workqueue: mtk-jpeg mtk_jpegenc_worker [mtk_jpeg]
-
-[  342.701402] pstate: 604000c9 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-
-[  342.708360] pc : mtk_jpegenc_worker+0x6c/0x3e0 [mtk_jpeg]
-
-[  342.713763] lr : mtk_jpegenc_worker+0x64/0x3e0 [mtk_jpeg]
-
-[  342.719166] sp : ffff8000093cbcd0
-
-[  342.722478] x29: ffff8000093cbcd0 x28: ffffb1f341cdb000 x27: ffff6089885d0505
-
-[  342.729618] x26: ffffb1f341ce1ee0 x25: ffffb1f341d0a2d0 x24: ffff60899078d000
-
-[  342.736758] x23: ffffb1f2e869c590 x22: ffff608990785458 x21: ffff60898a0ea120
-
-[  342.743898] x20: ffff60898a0ea080 x19: ffff60898a0ea080 x18: 0000000000000000
-
-[  342.751038] x17: 0000000000000000 x16: ffffb1f3405a58c0 x15: 0000aaaac092a3d0
-
-[  342.758178] x14: 0000000000000000 x13: 0000000000000c5f x12: 071c71c71c71c71c
-
-[  342.765318] x11: 0000000000000c5f x10: 00000000000027a0 x9 : ffffb1f33f32ce9c
-
-[  342.772458] x8 : fefefefefefefeff x7 : 0000000000000018 x6 : ffffb1f2e8699804
-
-[  342.779597] x5 : 0000000000000000 x4 : 0000000000000001 x3 : ffff608985d3c570
-
-[  342.786737] x2 : 0000000000000000 x1 : 0000000000000000 x0 : 0000000000000000
-
-[  342.793876] Call trace:
-
-[  342.796319]  mtk_jpegenc_worker+0x6c/0x3e0 [mtk_jpeg]
-
-[  342.801376]  process_one_work+0x294/0x664
-
-[  342.805392]  worker_thread+0x7c/0x45c
-
-[  342.809055]  kthread+0x104/0x110
-
-[  342.812283]  ret_from_fork+0x10/0x20
-
-[  342.815863] Code: aa1503e0 9400037e f9415662 aa0003e1 (b9410840)
-
-[  342.821956] ---[ end trace 0000000000000000 ]---
+>
+> > > ---
+> > >   arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 ++--
+> > >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> > > index e66fc67de206..b0ae2dbba50f 100644
+> > > --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> > > +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> > > @@ -818,7 +818,7 @@ gcc: clock-controller@100000 {
+> > >                     reg = <0 0x00100000 0 0x1f0000>;
+> > >                     clocks = <&rpmhcc RPMH_CXO_CLK>,
+> > >                              <&rpmhcc RPMH_CXO_CLK_A>, <&sleep_clk>,
+> > > -                            <0>, <&pcie1_lane 0>,
+> > > +                            <0>, <&pcie1_lane>,
+> > >                              <0>, <0>, <0>, <0>;
+> > >                     clock-names = "bi_tcxo", "bi_tcxo_ao", "sleep_clk",
+> > >                                   "pcie_0_pipe_clk", "pcie_1_pipe_clk",
+> > > @@ -2110,7 +2110,7 @@ pcie1_lane: phy@1c0e200 {
+> > >                             clock-names = "pipe0";
+> > >
+> > >                             #phy-cells = <0>;
+> > > -                           #clock-cells = <1>;
+> > > +                           #clock-cells = <0>;
+> > >                             clock-output-names = "pcie_1_pipe_clk";
+> > >                     };
+> > >             };
+>
+> Johan
 
 
-Regards,
-Angelo
+
+-- 
+With best wishes
+Dmitry
