@@ -2,141 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B463AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8535BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbiGEUqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 16:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
+        id S231714AbiGEUr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 16:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiGEUqH (ORCPT
+        with ESMTP id S230344AbiGEUr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 16:46:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9574265F2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 13:46:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C163361C5B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 20:46:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 131BDC341C7;
-        Tue,  5 Jul 2022 20:45:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657053961;
-        bh=vV5sEaKKx1MzkRfFumfYYlM3/ThLTBn8xX32cScp1ro=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PrrYt2wokC2svFhtJCfa8Has+IZKh3ZUcO2lXuaN+RetPSUDog6AtzHWnGNdgJxyR
-         7c9EjwQfrti5rGmyrlmJ4cFIVN5Nixqf5UIYh6q5w2JlauC4ir+8m1yeVrbw5BhF+0
-         XLPCp52MVK6dkKxdFQp+0pyXSkqkcFR5FSSoq0hHb9+8/ApZ1+mgqrifoqdNz0jOzh
-         h5AP8QGxlMbjL4GOjRU3IVGVcye4gSEAdkGhkti092PnurdP8XwzBWWtuMUcLDOL1D
-         1K9awSBbQEWgKecLJmRI1lTMYL9LXnIDZcsQcrrog6ZHvKqV7sMUI8kohF4A9x0MSo
-         w8A/Xk78JeccA==
-Date:   Tue, 5 Jul 2022 23:45:40 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Will Deacon <will@kernel.org>,
-        "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
-        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
-        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
-        jonathan@marek.ca, mark.rutland@arm.com,
-        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        geert+renesas@glider.be, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
- degradation
-Message-ID: <YsSi9HAOOzbPYN+w@kernel.org>
-References: <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
- <20220704163815.GA32177@willie-the-truck>
- <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
- <20220705095231.GB552@willie-the-truck>
- <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
- <20220705121115.GB1012@willie-the-truck>
- <YsRSajyMxahXe7ZS@kernel.org>
- <YsRZ8V8mQ+HM31D6@arm.com>
- <YsRfgX7FFZLxQU50@kernel.org>
- <YsRvPTORdvIwzShL@arm.com>
+        Tue, 5 Jul 2022 16:47:56 -0400
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B0C65F2;
+        Tue,  5 Jul 2022 13:47:55 -0700 (PDT)
+Received: by mail-io1-f52.google.com with SMTP id v185so12263164ioe.11;
+        Tue, 05 Jul 2022 13:47:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V+XcxBRAS1mz+WkIhxFyoiIAgbqevA33KfLSpuEfKmo=;
+        b=Mfrk/S4wb8ab69Imp3ostxCUrA/4HF8xvp6dUYtfsMr6UF//h0t6qxp11Cu8cFT0Qz
+         Sj/ETCyn01Xrel1RiPp9FirCzvrS5pMtuuY9hDL/YmOP5tGU9PUXWe3iFgE3Y2abuB2S
+         JXN3aXfhSYtB3EFuIRHHa+gd46cX6fVkPoqBlLh6dGwXErprGkwAwhJPkkHmkZf9RXAD
+         314kjhhHgRaDeMKbuYVjtnUmycrmkZ5o1hCdthXu3/NNUV09Af1+jchO8KeyfuUZvVaT
+         4IRU//AER2+30HG+YUsfypqK79ZbfrB06EZoihiqt+8lynlXiVvRZHkxkb9dCQXfUVOj
+         5ZJA==
+X-Gm-Message-State: AJIora8sgHh4DqB5JVX08Z45yiUU0DgKQJ/GRw0Gwbv3iU7LONx+173I
+        MyioY8VHZylr3sPxQ4wysQ==
+X-Google-Smtp-Source: AGRyM1tXYIHXEzjBvr7vu8fSw4g70ad2L3Bw0HWDQoXBWQAFZBa2TCEo3M5zE7dTdne8Zg/6ARw94g==
+X-Received: by 2002:a05:6638:dc1:b0:33e:f8ab:e8cb with SMTP id m1-20020a0566380dc100b0033ef8abe8cbmr2160001jaj.245.1657054074282;
+        Tue, 05 Jul 2022 13:47:54 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id c28-20020a02331c000000b0033eabfa117fsm5458016jae.106.2022.07.05.13.47.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 13:47:53 -0700 (PDT)
+Received: (nullmailer pid 2596639 invoked by uid 1000);
+        Tue, 05 Jul 2022 20:47:51 -0000
+Date:   Tue, 5 Jul 2022 14:47:51 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Kartik <kkartik@nvidia.com>
+Cc:     thierry.reding@gmail.com, devicetree@vger.kernel.org,
+        akhilrajeev@nvidia.com, tglx@linutronix.de, sumitg@nvidia.com,
+        rgumasta@nvidia.com, pshete@nvidia.com, vidyas@nvidia.com,
+        krzysztof.kozlowski+dt@linaro.org, jonathanh@nvidia.com,
+        linux-tegra@vger.kernel.org, amhetre@nvidia.com,
+        daniel.lezcano@linaro.org, robh+dt@kernel.org, spujar@nvidia.com,
+        linux-kernel@vger.kernel.org, mperttunen@nvidia.com
+Subject: Re: [PATCH v3 1/6] dt-bindings: timer: Add Tegra186 & Tegra234 Timer
+Message-ID: <20220705204751.GA2596558-robh@kernel.org>
+References: <1656922422-25823-1-git-send-email-kkartik@nvidia.com>
+ <1656922422-25823-2-git-send-email-kkartik@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YsRvPTORdvIwzShL@arm.com>
+In-Reply-To: <1656922422-25823-2-git-send-email-kkartik@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 06:05:01PM +0100, Catalin Marinas wrote:
-> On Tue, Jul 05, 2022 at 06:57:53PM +0300, Mike Rapoport wrote:
-> > On Tue, Jul 05, 2022 at 04:34:09PM +0100, Catalin Marinas wrote:
-> > > On Tue, Jul 05, 2022 at 06:02:02PM +0300, Mike Rapoport wrote:
-> > > > +void __init remap_crashkernel(void)
-> > > > +{
-> > > > +#ifdef CONFIG_KEXEC_CORE
-> > > > +	phys_addr_t start, end, size;
-> > > > +	phys_addr_t aligned_start, aligned_end;
-> > > > +
-> > > > +	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
-> > > > +	    return;
-> > > > +
-> > > > +	if (!crashk_res.end)
-> > > > +	    return;
-> > > > +
-> > > > +	start = crashk_res.start & PAGE_MASK;
-> > > > +	end = PAGE_ALIGN(crashk_res.end);
-> > > > +
-> > > > +	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
-> > > > +	aligned_end = ALIGN(end, PUD_SIZE);
-> > > > +
-> > > > +	/* Clear PUDs containing crash kernel memory */
-> > > > +	unmap_hotplug_range(__phys_to_virt(aligned_start),
-> > > > +			    __phys_to_virt(aligned_end), false, NULL);
-> > > 
-> > > What I don't understand is what happens if there's valid kernel data
-> > > between aligned_start and crashk_res.start (or the other end of the
-> > > range).
-> > 
-> > Data shouldn't go anywhere :)
-> > 
-> > There is 
-> > 
-> > +	/* map area from PUD start to start of crash kernel with large pages */
-> > +	size = start - aligned_start;
-> > +	__create_pgd_mapping(swapper_pg_dir, aligned_start,
-> > +			     __phys_to_virt(aligned_start),
-> > +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
-> > 
-> > and 
-> > 
-> > +	/* map area from end of crash kernel to PUD end with large pages */
-> > +	size = aligned_end - end;
-> > +	__create_pgd_mapping(swapper_pg_dir, end, __phys_to_virt(end),
-> > +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
-> > 
-> > after the unmap, so after we tear down a part of a linear map we
-> > immediately recreate it, just with a different page size.
-> > 
-> > This all happens before SMP, so there is no concurrency at that point.
+On Mon, 04 Jul 2022 13:43:37 +0530, Kartik wrote:
+> The Tegra186 timer provides ten 29-bit timer counters and one 32-bit
+> timestamp counter. The Tegra234 timer provides sixteen 29-bit timer
+> counters and one 32-bit timestamp counter. Each NV timer selects its
+> timing reference signal from the 1 MHz reference generated by USEC,
+> TSC or either clk_m or OSC. Each TMR can be programmed to generate
+> one-shot, periodic, or watchdog interrupts.
 > 
-> That brief period of unmap worries me. The kernel text, data and stack
-> are all in the vmalloc space but any other (memblock) allocation to this
-> point may be in the unmapped range before and after the crashkernel
-> reservation. The interrupts are off, so I think the only allocation and
-> potential access that may go in this range is the page table itself. But
-> it looks fragile to me.
+> Signed-off-by: Kartik <kkartik@nvidia.com>
+> ---
+>  .../bindings/timer/nvidia,tegra186-timer.yaml | 109 ++++++++++++++++++
+>  1 file changed, 109 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/timer/nvidia,tegra186-timer.yaml
+> 
 
-I agree there are chances there will be an allocation from the unmapped
-range. 
-
-We can make sure this won't happen, though. We can cap the memblock
-allocations with memblock_set_current_limit(aligned_end) or
-memblock_reserve(algined_start, aligned_end) until the mappings are
-restored. 
- 
-> -- 
-> Catalin
-
--- 
-Sincerely yours,
-Mike.
+Reviewed-by: Rob Herring <robh@kernel.org>
