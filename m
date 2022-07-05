@@ -2,83 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F2B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbiGEHu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 03:50:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45050 "EHLO
+        id S231165AbiGEHvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 03:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbiGEHu4 (ORCPT
+        with ESMTP id S230510AbiGEHvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 03:50:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED90A1116C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 00:50:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657007454;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3mhVFlgimWg9LuZoozj/WO4OkyYlpDttySH5oyPfnFA=;
-        b=c8MYZqUbpajF6TFoyLXAxUGB2asmPpNF5TSQlX1G3KBOpttki1Y5wi8cZC1tIwOJiY9nLJ
-        qdZyh8qt5lVjN4fVu9TN0d5UCXIozhLa/YSLp/cvpe1s4t08TCpKjRpzFm8VjGzdTfIUIp
-        RCKVgwZPsiFtHFF/oTRsd0cQaXy5NhQ=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-444--WFdSJK1MYaliCCgbMhWpg-1; Tue, 05 Jul 2022 03:50:52 -0400
-X-MC-Unique: -WFdSJK1MYaliCCgbMhWpg-1
-Received: by mail-wm1-f69.google.com with SMTP id r128-20020a1c4486000000b003a2b44d876aso1697651wma.2
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 00:50:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=3mhVFlgimWg9LuZoozj/WO4OkyYlpDttySH5oyPfnFA=;
-        b=YsqOcyjwFwJ+zpZnLz1EVUuhMR9neNSiP3Spm0uYqZGjJUh+xUXR4mHRhL4BLYUpng
-         luHmPcPHd++GRkKR1NTwqb1h0XE0dl2hP07w65kAZKs5WhqUkW3XMRSHiA91SDyykR2l
-         7jsX30tHuPBMbkxCjdAYOGypIPjzY6WUNcFQBERuTvXssqgd81/hqex4pFTKPzVVlCJd
-         jqcUMn+EAJmdzX9ytq7Lwjfipkf1uu1T97VZX3iYMeM+Pyw+k3wK2G0m8ZwfG29XZXWu
-         xP5R5FZ8jVH9kYqybNUKeEx7SggeumeRExt0a/F+953jMnvQHUhoWHkkGLT8X2BS7wb7
-         zSYQ==
-X-Gm-Message-State: AJIora99SRebAxXippc2zF2Okat6N4+24eD489cvY4HvfaX0CYdA9OEq
-        phL4lOgREpOE9OyY9EChvO6P2emi7XcjfnGq0Jm7dfBOahxeYNAYBJVj/mzRXi76oQPvKDv2UgM
-        sVwWtqOoTOkXKCJPok0/c5uHz
-X-Received: by 2002:adf:d1eb:0:b0:21b:dbb5:fe05 with SMTP id g11-20020adfd1eb000000b0021bdbb5fe05mr30859888wrd.651.1657007450938;
-        Tue, 05 Jul 2022 00:50:50 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t/AiVteUgJHbi4Khx9nn8ixsMgPTlFIsRDPciRkUJUbx+Zg1KwJrbM0hr/EOuQW8za8zLOng==
-X-Received: by 2002:adf:d1eb:0:b0:21b:dbb5:fe05 with SMTP id g11-20020adfd1eb000000b0021bdbb5fe05mr30859864wrd.651.1657007450761;
-        Tue, 05 Jul 2022 00:50:50 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id e22-20020a05600c4e5600b003973435c517sm22460305wmq.0.2022.07.05.00.50.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 00:50:50 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: Re: [PATCH] sched/fair: move nohz definition to where it's used
-In-Reply-To: <20220623130325.49813-1-zhouchengming@bytedance.com>
-References: <20220623130325.49813-1-zhouchengming@bytedance.com>
-Date:   Tue, 05 Jul 2022 08:50:49 +0100
-Message-ID: <xhsmhwncsf15y.mognet@vschneid.remote.csb>
+        Tue, 5 Jul 2022 03:51:15 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0C5DF4B;
+        Tue,  5 Jul 2022 00:51:14 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 7CBB668AA6; Tue,  5 Jul 2022 09:51:08 +0200 (CEST)
+Date:   Tue, 5 Jul 2022 09:51:08 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Logan Gunthorpe <logang@deltatee.com>,
+        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-mm@kvack.org,
+        iommu@lists.linux-foundation.org,
+        Stephen Bates <sbates@raithlin.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
+Message-ID: <20220705075108.GB17451@lst.de>
+References: <20220615161233.17527-1-logang@deltatee.com> <20220615161233.17527-21-logang@deltatee.com> <20220629064854.GD17576@lst.de> <99242789-66a6-bbd2-b56a-e47891f4522e@deltatee.com> <20220629175906.GU23621@ziepe.ca>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629175906.GU23621@ziepe.ca>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/06/22 21:03, Chengming Zhou wrote:
-> The nohz definition is too far from where it's used, just move it
-> to the right place. No functional change.
->
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+On Wed, Jun 29, 2022 at 02:59:06PM -0300, Jason Gunthorpe wrote:
+> I've tried in the past, this is not a good idea. There is no way to
+> handle failures when a VMA is dup'd and if you rely on private_data
+> you almost certainly have to alloc here.
+> 
+> Then there is the issue of making the locking work on invalidation
+> which is crazy ugly.
+> 
+> > I was not a fan of the extra code for this either, but I was given to
+> > understand that it was the standard way to collect and cleanup VMAs.
+> 
+> Christoph you tried tried to clean it once globally, what happened to
+> that?
 
-Standalone cosmetic changes are very unlikely to get anywhere, I'd suggest
-bundling this with some other non-cosmetic patches hitting the area.
+Al pointed out that there are various places that rely on having a
+separate file system.  I might be able to go back to it and see
+if we could at least do it for some users.
 
+But what also really matters here:  I don't want every user that
+wants to be able to mmap a character device to do all this work.
+The layering is simply wrong, it needs some character device
+based helpers, not be open code everywhere.
+
+In fact I'm not even sure this should be a character device, it seems
+to fit it way better with the PCI sysfs hierchacy, just like how we
+map MMIO resources, which these are anyway.  And once it is on sysfs
+we do have a uniqueue inode and need none of the pseudofs stuff, and
+don't need all the glue code in nvme either.
