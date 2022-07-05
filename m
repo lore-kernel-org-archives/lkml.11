@@ -2,62 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiGEKXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
+        id S230493AbiGEKY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231953AbiGEKXn (ORCPT
+        with ESMTP id S231965AbiGEKWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:23:43 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F41714D32
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 03:23:35 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id y16so19726427lfb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 03:23:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=D5siEQlI9XeniTKofv/2Ej6WMzqEAvwWpsCPDQ5Kx7k=;
-        b=RGrEAp7zvLo7CTBtpOOl5wiObpP8CTfkfXlUAXMlhsoqFhctrsSeGyQvtum9CIMClQ
-         T2ionu2utuPpEtPp8pEJ1SrdUwt2orU2kEVDrs+3cuzWyq/aWS8d8HJ1BODLE3gLG/HQ
-         RBUoCV972pvReTzlL93EsOl9qCj7Q0tfHPFaOGFNAc11JkQgLqlPVzTqZU0rPwrcPWPM
-         zqah7tRBSuz0NI3lQ0TFfXPoX1D5qN8bfxwKApd5EefSfCQaNvTQxv8fRbZDoiTJmfhX
-         MqhY2392OhqhTie0d3Dt2sfN2AmOf8QjBFhWFMU/jXuVt2SwDcxGluCbmyzT1H/m4MVZ
-         aNlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=D5siEQlI9XeniTKofv/2Ej6WMzqEAvwWpsCPDQ5Kx7k=;
-        b=rJlhWbcOMU7noU0jfqwRo3ZjWRYbYDurlpkjdRjMzohZVfr+f0aSZhy3nCAVzq5nhJ
-         xZDj5Y/63JegcEe86cgqgHNEaoe9majlPGF4XI0sA1RvUuBhltRUlwxXz83NU0Wphd6J
-         WEWTbUIMIxNfRXIxmkbS+9VG35KxxRNhjsF+Mx2bA5tbctsJrH0M9UU5LJrcc4lRcF1I
-         qDHCRjXR4PJB1TiyLMef966G7jgfWaglG3UMZKelh7qnAYrE9XwF8DbTueTCvGp27Ez+
-         7ghN1ixhTyljXY1DZuyPGDirXSoD7wXjwRajvCgB/+pGkEXzb1c2LD/zQPC6sMkxhAv9
-         Yaiw==
-X-Gm-Message-State: AJIora8HJLjjBJnpiXxODxDSPFwEsVTBVLNQkptc0llYVChLmUJ/LR+m
-        l5S3r1onOJZZYlxQSpD0ALP5YQ==
-X-Google-Smtp-Source: AGRyM1u/5ekv4E6MjvZ4URSOmp1X5JoJIqCjqdBiA5tEuuxuPaVwWaOw4MHCavNj71iNDl2hB3U8ng==
-X-Received: by 2002:a05:6512:260e:b0:47d:ae43:62b3 with SMTP id bt14-20020a056512260e00b0047dae4362b3mr23834973lfb.77.1657016613842;
-        Tue, 05 Jul 2022 03:23:33 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id s6-20020a056512214600b0047b0f2d7650sm5622474lfr.271.2022.07.05.03.23.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 03:23:33 -0700 (PDT)
-Message-ID: <b1a14a8d-489c-6871-332d-230811baace3@linaro.org>
-Date:   Tue, 5 Jul 2022 12:23:32 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 07/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: clean up
- constraints
-Content-Language: en-US
-To:     Johan Hovold <johan@kernel.org>
+        Tue, 5 Jul 2022 06:22:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BABA14D15;
+        Tue,  5 Jul 2022 03:22:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E65E0B81737;
+        Tue,  5 Jul 2022 10:22:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE68C341C7;
+        Tue,  5 Jul 2022 10:22:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657016537;
+        bh=e+WVKuABy3B4xWh28IvAUjhEPi40vu/COnqPvOhrMoI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZDtUtxSoYssZ9G/EseASqj9GalQsG0zIeMjglYle0ekV91V4RO7GlrBvlHZ4aRWGN
+         6OytFcdCF91f6rJwujR2muRmGPeqZRE9i7HZrJYuXAl4Hi9AuU/GgPZkWXepkwDUZL
+         XOxy8VJfjAVmBug9ZydUs1AOOIRwbIjuxFpIsK4U/re1lEbIgEmdyGZiDZKpECB/O2
+         VnVvXktULpOC4ZSiE1P/Eq9Dso7mDAanlrECGpvpCtzZoqHb2Jxgn12E2pmsbAPhHx
+         YTB14FCn+Xcu56wRsd8Q1YUyi9LpQx5ZvJYEIGHNjl2E2uZq/0EObUP0Fmrnyoa3W5
+         s7HfRM38xyy9g==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o8fhC-00056D-2U; Tue, 05 Jul 2022 12:22:18 +0200
+Date:   Tue, 5 Jul 2022 12:22:18 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     Johan Hovold <johan+linaro@kernel.org>,
         Vinod Koul <vkoul@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -67,32 +47,28 @@ Cc:     Johan Hovold <johan+linaro@kernel.org>,
         Kishon Vijay Abraham I <kishon@ti.com>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: add
+ example node
+Message-ID: <YsQQ2o8aYJnnWuNa@hovoldconsulting.com>
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-8-johan+linaro@kernel.org>
- <4b1a9ded-24b1-faf1-e105-f18afef57682@linaro.org>
- <YsQQnT5ixHtSo+vk@hovoldconsulting.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YsQQnT5ixHtSo+vk@hovoldconsulting.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <20220705094239.17174-10-johan+linaro@kernel.org>
+ <8271f4d5-e12e-ddf0-46ab-86a39577755a@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8271f4d5-e12e-ddf0-46ab-86a39577755a@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 12:21, Johan Hovold wrote:
-> On Tue, Jul 05, 2022 at 12:09:19PM +0200, Krzysztof Kozlowski wrote:
->> On 05/07/2022 11:42, Johan Hovold wrote:
->>> Drop the compatible conditional and tighten the property constraints.
->>>
->>> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
->>
->> Squash it with previous patch. Does not make sense to add new file and a
->> patch later change it.
+On Tue, Jul 05, 2022 at 12:10:29PM +0200, Krzysztof Kozlowski wrote:
+> On 05/07/2022 11:42, Johan Hovold wrote:
+> > Add an example node based on a cleaned up version of msm8996.dtsi.
+> > 
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > 
-> I beg to differ, for the reasons I just spelled out in my previous
-> reply.
+> Squash it, please.
 
-So let's keep the discussion there.
+Why? It's a new addition to the schema.
 
-Best regards,
-Krzysztof
+Johan
