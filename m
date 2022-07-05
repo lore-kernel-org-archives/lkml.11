@@ -2,159 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB20FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A414AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234283AbiGEDt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 23:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
+        id S234412AbiGEDuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 23:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234235AbiGEDtz (ORCPT
+        with ESMTP id S231820AbiGEDut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 23:49:55 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7C012AB7;
-        Mon,  4 Jul 2022 20:49:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=WiklvS9k0el8XhEQTp2AsFsJfZTmp2j5g87JdjG5LuY=; b=A6t/lG34n3OcVFs5zHW4rDAgZU
-        dB25v6MxiCdWY7bmdH/wWMwaUIjPEoO1NWhXrC7y6CSmgLDL6bimS/XngJ2GfM7RDrgo98UN/Hj5w
-        phxCr6dVDxHMO5OyImVJNe+pBY/kpdH+uHILtmM5FEJN5dminDlfCj7TB7tUgjynMeYgPLR9ZJLg6
-        5iq4kIYJ9iFtlCfW/XX9hM6JjSG8RfvMehgbWUy1/mO7jhrbxMHwv6wuVdX66t8kIJebaxLKtFSpY
-        JUWGP8LidNDDQzx7AI81vdD7vBuNViIZtGOuVxRemJ+Jh/b9pHi+7NtjZp1cROsoB+T5lnwoKjDFA
-        yiZQuu/A==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o8ZYY-008EUH-Gz;
-        Tue, 05 Jul 2022 03:48:58 +0000
-Date:   Tue, 5 Jul 2022 04:48:58 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Vitaly Buka <vitalybuka@google.com>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH 1/7] __follow_mount_rcu(): verify that mount_lock remains
- unchanged
-Message-ID: <YsO0qu97PYZos2G1@ZenIV>
-References: <YsM5XHy4RZUDF8cR@ZenIV>
- <CAHk-=wjeEre7eeWSwCRy2+ZFH8js4u22+3JTm6n+pY-QHdhbYw@mail.gmail.com>
- <YsNFoH0+N+KCt5kg@ZenIV>
- <CAHk-=whp8Npc+vMcgbpM9mrPEXkhV4YnhsPxbPXSu9gfEhKWmA@mail.gmail.com>
- <YsNRsgOl04r/RCNe@ZenIV>
- <CAHk-=wih_JHVPvp1qyW4KNK0ctTc6e+bDj4wdTgNkyND6tuFoQ@mail.gmail.com>
- <YsNVyLxrNRFpufn8@ZenIV>
- <YsN0GURKuaAqXB/e@ZenIV>
- <YsN1kfBsfMdH+eiU@ZenIV>
- <CAHk-=wjmD7BgykuZYDOH-fmvfE3VMXm3qSoRjGShjKKdiiPDtA@mail.gmail.com>
+        Mon, 4 Jul 2022 23:50:49 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BD210FEB;
+        Mon,  4 Jul 2022 20:50:47 -0700 (PDT)
+X-UUID: 7aba407e5d3b4efe840c944da8075a85-20220705
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:bb865ede-3122-4077-bea8-be160ff1df21,OB:0,LO
+        B:10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:50
+X-CID-INFO: VERSION:1.1.8,REQID:bb865ede-3122-4077-bea8-be160ff1df21,OB:0,LOB:
+        10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:50
+X-CID-META: VersionHash:0f94e32,CLOUDID:f9d48d86-57f0-47ca-ba27-fe8c57fbf305,C
+        OID:afb3c8819ce9,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 7aba407e5d3b4efe840c944da8075a85-20220705
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 928466703; Tue, 05 Jul 2022 11:50:44 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 5 Jul 2022 11:50:42 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 5 Jul 2022 11:50:42 +0800
+Message-ID: <ceadf7dd8f0fe518f5615f9cc69c6f0b47b1b7d8.camel@mediatek.com>
+Subject: Re: [PATCH v15 06/16] drm/mediatek: dpi: implement a CK/DE pol
+ toggle in SoC config
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <xinlei.lee@mediatek.com>, <liangxu.xu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 5 Jul 2022 11:50:42 +0800
+In-Reply-To: <20220701035845.16458-7-rex-bc.chen@mediatek.com>
+References: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
+         <20220701035845.16458-7-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjmD7BgykuZYDOH-fmvfE3VMXm3qSoRjGShjKKdiiPDtA@mail.gmail.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 05:06:17PM -0700, Linus Torvalds wrote:
+Hi, Bo-Chen:
 
-> I wonder if the solution might not be to create a new structure like
+On Fri, 2022-07-01 at 11:58 +0800, Bo-Chen Chen wrote:
+> From: Guillaume Ranquet <granquet@baylibre.com>
 > 
->         struct rcu_dentry {
->                 struct dentry *dentry;
->                 unsigned seq;
->         };
-> 
-> and in fact then we could make __d_lookup_rcu() return one of these
-> things (we already rely on that "returning a two-word structure is
-> efficient" elsewhere).
->
-> That would then make that "this dentry goes with this sequence number"
-> be a very clear thing, and I actually thjink that it would make
-> __d_lookup_rcu() have a cleaner calling convention too, ie we'd go
-> from
-> 
->         dentry = __d_lookup_rcu(parent, &nd->last, &nd->next_seq);
-> 
-> rto
-> 
->        dseq = __d_lookup_rcu(parent, &nd->last);
-> 
-> and it would even improve code generation because it now returns the
-> dentry and the sequence number in registers, instead of returning one
-> in a register and one in memory.
-> 
-> I did *not* look at how it would change some of the other places, but
-> I do like the notion of "keep the dentry and the sequence number that
-> goes with it together".
-> 
-> That "keep dentry as a local, keep the sequence number that goes with
-> it as a field in the 'nd'" really does seem an odd thing. So I'm
-> throwing the above out as a "maybe we could do this instead..".
+> Dp_intf does not support CK/DE polarity because the polarity
+> information
+> is not used for eDP and DP while dp_intf is only for eDP and DP.
+> Therefore, we add a bit of flexibility to support SoCs without CK/DE
+> pol
+> support.
 
-I looked into that; turns out to be quite messy, unfortunately.  For one
-thing, the distance between the places where we get the seq count and
-the place where we consume it is large; worse, there's a bunch of paths
-where we are in non-RCU mode converging to the same consumer and those
-need a 0/1/-1/whatever paired with dentry.  Gets very clumsy...
+Applied to mediatek-drm-next [1], thanks.
 
-There might be a clever way to deal with pairs cleanly, but I don't see it
-at the moment.  I'll look into that some more, but...
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/log/?h=mediatek-drm-next
 
-BTW, how good gcc and clang are at figuring out that e.g.
+Regards,
+CK
 
-static int foo(int n)
-{
-	if (likely(n >= 0))
-		return 0;
-	....
-}
+> 
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: CK Hu <ck.hu@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 23 ++++++++++++++++++-----
+>  1 file changed, 18 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 0855bbdfe4e1..b89ad9f38396 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -120,6 +120,7 @@ struct mtk_dpi_yc_limit {
+>   * @edge_sel_en: Enable of edge selection.
+>   * @output_fmts: Array of supported output formats.
+>   * @num_output_fmts: Quantity of supported output formats.
+> + * @is_ck_de_pol: Support CK/DE polarity.
+>   */
+>  struct mtk_dpi_conf {
+>  	unsigned int (*cal_factor)(int clock);
+> @@ -128,6 +129,7 @@ struct mtk_dpi_conf {
+>  	bool edge_sel_en;
+>  	const u32 *output_fmts;
+>  	u32 num_output_fmts;
+> +	bool is_ck_de_pol;
+>  };
+>  
+>  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val,
+> u32 mask)
+> @@ -213,13 +215,20 @@ static void mtk_dpi_config_pol(struct mtk_dpi
+> *dpi,
+>  			       struct mtk_dpi_polarities *dpi_pol)
+>  {
+>  	unsigned int pol;
+> +	unsigned int mask;
+>  
+> -	pol = (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ? 0 : CK_POL)
+> |
+> -	      (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ? 0 : DE_POL)
+> |
+> -	      (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 :
+> HSYNC_POL) |
+> +	mask = HSYNC_POL | VSYNC_POL;
+> +	pol = (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 :
+> HSYNC_POL) |
+>  	      (dpi_pol->vsync_pol == MTK_DPI_POLARITY_RISING ? 0 :
+> VSYNC_POL);
+> -	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol,
+> -		     CK_POL | DE_POL | HSYNC_POL | VSYNC_POL);
+> +	if (dpi->conf->is_ck_de_pol) {
+> +		mask |= CK_POL | DE_POL;
+> +		pol |= (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ?
+> +			0 : CK_POL) |
+> +		       (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ?
+> +			0 : DE_POL);
+> +	}
+> +
+> +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol, mask);
+>  }
+>  
+>  static void mtk_dpi_config_3d(struct mtk_dpi *dpi, bool en_3d)
+> @@ -794,6 +803,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+>  	.max_clock_khz = 300000,
+>  	.output_fmts = mt8173_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> +	.is_ck_de_pol = true,
+>  };
+>  
+>  static const struct mtk_dpi_conf mt2701_conf = {
+> @@ -803,6 +813,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+>  	.max_clock_khz = 150000,
+>  	.output_fmts = mt8173_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> +	.is_ck_de_pol = true,
+>  };
+>  
+>  static const struct mtk_dpi_conf mt8183_conf = {
+> @@ -811,6 +822,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+>  	.max_clock_khz = 100000,
+>  	.output_fmts = mt8183_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+> +	.is_ck_de_pol = true,
+>  };
+>  
+>  static const struct mtk_dpi_conf mt8192_conf = {
+> @@ -819,6 +831,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+>  	.max_clock_khz = 150000,
+>  	.output_fmts = mt8183_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+> +	.is_ck_de_pol = true,
+>  };
+>  
+>  static int mtk_dpi_probe(struct platform_device *pdev)
 
-....
-	if (foo(n))
-		whatever();
-
-should be treated as
-	if (unlikely(foo(n)))
-		whatever();
-
-They certainly do it just fine if the damn thing is inlined (e.g.
-all those unlikely(read_seqcount_retry(....)) can and should lose
-unlikely), but do they manage that for non-inlined functions in
-the same compilation unit?  Relatively recent gcc seems to...
