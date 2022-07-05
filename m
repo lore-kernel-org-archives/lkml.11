@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B539CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07650C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:41:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231717AbiGELlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
+        id S231793AbiGELlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230513AbiGELk6 (ORCPT
+        with ESMTP id S231181AbiGELk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:40:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDAA167CD;
-        Tue,  5 Jul 2022 04:40:57 -0700 (PDT)
+        Tue, 5 Jul 2022 07:40:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4EB140B6;
+        Tue,  5 Jul 2022 04:40:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 030C461636;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8475E6146B;
         Tue,  5 Jul 2022 11:40:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56A1BC341CB;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62377C341D1;
         Tue,  5 Jul 2022 11:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657021256;
-        bh=zgtRvHIdwN3LeKsmN27laCCayvfj4Yk/UJaOE/TGy6k=;
+        bh=mjxgl4rw9ggFIkwq3+nZ4cvTPFPaWX7xtaE5VM/7aNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pG4SiZzXwoZ7ZNq8Sozzq3v6fPr63ZZKjLwKKO5t8JX2iqgfyJynP9adWVZDFVQM5
-         /tldxkYOIERfMv6IzjjHQIYmBBrsoXgK3sMdG5007Qoi1ag/zgoGrSnLMz+sZGl47A
-         3FVPLJ2/98aUuPw26uPBJ4T+W/hn+n/AKNlbgwlf2xDQFXb3vqIvSTKvp48/A3XC3X
-         f90Kw+6j2/M9kYEEv+QBljZsZu8YmJmZXrjXQjiNku4HU1GS1kcsuMXDNcb5dCjlSl
-         M9muvmC4KoEZhJGF11II2cvwsrVNIemHP6CX1nlRI+Qnoo4l2VCCcPsB1LWRKSmj0i
-         9nKtxH50HTY7w==
+        b=qv3KDCVIE8BmoS6JdSd9QZyinU3sMUVvgX7QILhmiHufqGaAX5tquIZ3JFmeS+vdk
+         oxkQ8ppJF7xjBp5OD1w5QWv/YbVpLB60Wkzp0qCMDEo29BM+7pSe34MMl5RWYXz5Qg
+         PGGYBt+s8h69Vf+/zbkkf3fWX7hqg78+C2ii3IN3dOFTMH1oKTlCR3GX8JjWgKjwr5
+         8j3VD/cqDPXrhXgoaXq8LQQLekfi7Q/fJWEyNeeXMKEj3IZkATJvXy1YNu8kknVaj7
+         WvpMtCTtLVdZWTgP+8SdsiNrl/WZlywot9/il1eQOCIZE1Yc+p7Xqkqpb7gi/P7Wkj
+         qGHKlPmmDWnXQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8gvJ-0005xS-4p; Tue, 05 Jul 2022 13:40:57 +0200
+        id 1o8gvJ-0005xc-Fe; Tue, 05 Jul 2022 13:40:57 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
@@ -42,9 +42,9 @@ Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 01/14] arm64: dts: qcom: sc7280: drop PCIe PHY clock index
-Date:   Tue,  5 Jul 2022 13:40:19 +0200
-Message-Id: <20220705114032.22787-2-johan+linaro@kernel.org>
+Subject: [PATCH 05/14] arm64: dts: qcom: msm8996: drop USB PHY clock index
+Date:   Tue,  5 Jul 2022 13:40:23 +0200
+Message-Id: <20220705114032.22787-6-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220705114032.22787-1-johan+linaro@kernel.org>
 References: <20220705114032.22787-1-johan+linaro@kernel.org>
@@ -54,36 +54,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The QMP PCIe PHY provides a single clock so drop the redundant clock
+The QMP USB PHY provides a single clock so drop the redundant clock
 index.
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8996.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index e66fc67de206..b0ae2dbba50f 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -818,7 +818,7 @@ gcc: clock-controller@100000 {
- 			reg = <0 0x00100000 0 0x1f0000>;
- 			clocks = <&rpmhcc RPMH_CXO_CLK>,
- 				 <&rpmhcc RPMH_CXO_CLK_A>, <&sleep_clk>,
--				 <0>, <&pcie1_lane 0>,
-+				 <0>, <&pcie1_lane>,
- 				 <0>, <0>, <0>, <0>;
- 			clock-names = "bi_tcxo", "bi_tcxo_ao", "sleep_clk",
- 				      "pcie_0_pipe_clk", "pcie_1_pipe_clk",
-@@ -2110,7 +2110,7 @@ pcie1_lane: phy@1c0e200 {
- 				clock-names = "pipe0";
- 
+diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+index 9932186f7ceb..34fd0c68b6e8 100644
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -2769,7 +2769,7 @@ ssusb_phy_0: phy@7410200 {
+ 				      <0x07410600 0x1a8>;
  				#phy-cells = <0>;
+ 
 -				#clock-cells = <1>;
 +				#clock-cells = <0>;
- 				clock-output-names = "pcie_1_pipe_clk";
- 			};
- 		};
+ 				clock-output-names = "usb3_phy_pipe_clk_src";
+ 				clocks = <&gcc GCC_USB3_PHY_PIPE_CLK>;
+ 				clock-names = "pipe0";
 -- 
 2.35.1
 
