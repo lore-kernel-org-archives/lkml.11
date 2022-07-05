@@ -2,186 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48896C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CB4CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbiGEPwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
+        id S232355AbiGEPwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiGEPvs (ORCPT
+        with ESMTP id S232583AbiGEPwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:51:48 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2053.outbound.protection.outlook.com [40.107.21.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF351E3CF;
-        Tue,  5 Jul 2022 08:50:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TaFOGMI6+RvSN33pShQYA0bZ8U6MGBLp5RH5QDba1q7qmnOoCTqoGl2xB6KkzTDYmhxW8aFDK7Ao0q+2UX6B61TvZAZWlFzoyiFhfvsBlmY0W3QUo6W2LyheSRV/ymT3ALflkuzGmEIYDs1DN4f1T+ljK2vyyES9HyPAnjppTjwjvi/3RmDagbKBBet723rYV+tkDf6fxuseWOVZT+OvM9OwfS6MovUIC9ufZcebsBnBxSPzVto+cpfkfeVtGsDawctoOGsO9L0SP+K1ueIsMN25wFFEMoel20HPBJLj6HnIPgINlWITu03aB6IqIcatx1exf1CprYYSXmxaUJvoFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ew1u1ODITEMy6g8Dy8clqRvrkYxspm6QD3C86Cx7Vxk=;
- b=Vv5mYGbwQKsAkxh3cd/rD+CTxVm2tSje++2KC6+6EXw2VaFOVbcitKO3qkvwDa8CDehaHm+P0MGmkhehODqyX2yGZdq0uQYXmoKwU/mjaireZNSohvv1VMQh3yv0v4vrAYfxzj5yrqAIYrKWfCZ9emzqQQvbegVyurvq95tLyBuOXaJzr7pNTyqyjiAGEYGCLTqaYJgNV5XUR7IFGq+KNXmnpkl/jQ50A3iiUr60XorYzCabW+uFOA57I3aI9o4DwhGPT6LM3TPOPPEqyFuQ9lowAfW5gbIRjJ4dJeD3qXx7AQYHmbr3GA5ksOOhTAKOuTOOpe6yrPoU/hIcxWlZwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ew1u1ODITEMy6g8Dy8clqRvrkYxspm6QD3C86Cx7Vxk=;
- b=krhq+vuXj0HDzCI0LyxfKiShAuG0OQQdzH1W0+U7fpKsKciVkvKvGIzvxkM2Cjl2giXtuKtiUXeKfExOqB+l8WY+pbOLOtVrBfX5W8y7mdlVyqlob9LLlxM0kyNvZlbdDuG3uwbNpC10kYPsNfIB77WlwC64SP4MVD1lPqmWJ2A=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DU2PR04MB8774.eurprd04.prod.outlook.com (2603:10a6:10:2e1::21)
- by DB7PR04MB4442.eurprd04.prod.outlook.com (2603:10a6:5:35::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Tue, 5 Jul
- 2022 15:50:38 +0000
-Received: from DU2PR04MB8774.eurprd04.prod.outlook.com
- ([fe80::5c49:dd85:a8d0:2907]) by DU2PR04MB8774.eurprd04.prod.outlook.com
- ([fe80::5c49:dd85:a8d0:2907%3]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
- 15:50:38 +0000
-Date:   Tue, 5 Jul 2022 10:50:31 -0500
-From:   Han Xu <han.xu@nxp.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Michael Walle <michael@walle.cc>, Bough Chen <haibo.chen@nxp.com>,
-        ashish.kumar@nxp.com, yogeshgaur.83@gmail.com, broonie@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        singh.kuldeep87k@gmail.com, tudor.ambarus@microchip.com,
-        p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mtd@lists.infradead.org, festevam@gmail.com,
-        dl-linux-imx <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, zhengxunli@mxic.com.tw
-Subject: Re: [PATCH 07/11] dt-bindings: spi: spi-nxp-fspi: add a new property
- nxp,fspi-dll-slvdly
-Message-ID: <20220705155031.zk36jsq4q2ac2ow4@umbrella>
-References: <ef676df1-77e0-b8ee-3950-97eade8ddd5b@linaro.org>
- <VI1PR04MB40167A70FBE772DF91047A4190819@VI1PR04MB4016.eurprd04.prod.outlook.com>
- <59d360ef-5374-c7a7-2995-854ab3715b25@linaro.org>
- <DU2PR04MB87747C9A8F18D8300461D6B197819@DU2PR04MB8774.eurprd04.prod.outlook.com>
- <f33ad190-f5c7-d9fa-088b-5538ab1f4d59@linaro.org>
- <DU2PR04MB877492F346BAA10B2AA7428497819@DU2PR04MB8774.eurprd04.prod.outlook.com>
- <62f113a0cdb0d58bf04ab0b274912eb7@walle.cc>
- <be521f90-97ce-c61d-d7d6-8f2bde24d824@linaro.org>
- <20220705145226.tarpvub6bh67tj63@umbrella>
- <0bd271e9-8d9b-7388-2d9b-65cc39a54f8c@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0bd271e9-8d9b-7388-2d9b-65cc39a54f8c@linaro.org>
-User-Agent: NeoMutt/20171215
-X-ClientProxiedBy: SJ0PR13CA0175.namprd13.prod.outlook.com
- (2603:10b6:a03:2c7::30) To DU2PR04MB8774.eurprd04.prod.outlook.com
- (2603:10a6:10:2e1::21)
+        Tue, 5 Jul 2022 11:52:13 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CA41ADA7;
+        Tue,  5 Jul 2022 08:51:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657036260; x=1688572260;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=MrUkDRSD1Y6mEq3225D3Q5VxySFsvbxA4NqScTaux9w=;
+  b=Agmen2Wv0/Fl2Fmu/12WPAMQTvpTmslSKPIiCx3PukwYVIlB6KLsXA+p
+   BpRyBstHnhq7QhKSUMCvVJKVL6lPfZKaTCCaABcIr3ATTqOqLVgkoRBdL
+   2/uFZejzbXhNWvfU8rsHGktgyMZMT4x6OE/e4ge/cSUg9Dq4Q6Ku/LsHZ
+   9sJ1p+Vyu4PwzfpCnd28BmSbcYsaXkeyDs7j3ddoWLzoyAG9KihD6+ohY
+   hyxNHsFbxPH//oomA8LuzqmYMcMpHcIS9Rqtz7hjg1a0iOqaAlNmkq/w5
+   6WvMvLustQoABnQNfEZazlnNB5zdSNK1WI4UyLXkyIEhl4CUrTkk+BTFf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="283414943"
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="283414943"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 08:50:37 -0700
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="597333673"
+Received: from amangla-mobl.amr.corp.intel.com (HELO localhost) ([10.255.0.184])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 08:50:12 -0700
+From:   ira.weiny@intel.com
+To:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>, Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: [PATCH V13 9/9] cxl/port: Parse out DSMAS data from CDAT table
+Date:   Tue,  5 Jul 2022 08:49:32 -0700
+Message-Id: <20220705154932.2141021-10-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220705154932.2141021-1-ira.weiny@intel.com>
+References: <20220705154932.2141021-1-ira.weiny@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 59b41f85-7619-4b19-8dca-08da5e9e1b2d
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4442:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oeH28k31DTubtUw2pOoFxIk1qgHeBXEe1GEHyQAmi2uIIFkKa5NSUqdXR3Inod3moePwvOn/ui5EeRCcjkAei7hkWtISvn6UjRkr82ZAnybWZuuwczKe1XarcUP08jwqP0BCsyvCNbmXHA9cagws04qOMqvp8NlGIJ9F0CO6+Ivx2Sn2EMjNE4wGTBZ5Si0t9Vu4JyCFFKw1SCFX7N9qYMDY5KP36Jxs9zlwrA8Gtkt1s5b5ta/c1hTfBNh+dEFfsh9pIGmuTvxi7r/2MFbzfzhKufdcKcgnLNNV5JHgKJx9aDa2V+JTLmrF98jDYd7vncyD0fSTVBqAJNKQiJNdidzh5iGZYwN3GfVkVv0A0xyLj3nKIhInHXdLM44+oX962MVgQUp2LKpJcpkXZxb6hfcYWIe7tkW9/LIAvgFR7mg2PcEQOo2kbOeTynvTFz8W/nD3HNDposNDxcz1hewR5/ZN+K85551v84m7qO6Rl1qAMXaFq9vdur1NWDwegyPqukOj/nySYpZVdrvjUdKOINBoMip9pTvpN52ORJQV4UjX12q4KeGaTf06oYE8wwXwM1VpzfXgCsSZjjy4r4ySqLRdEPPTriNvts9ZD0L9IasV+9IKidwgZvusk8OxZVkTEUNWsnQNFEwb1cw/ZGmwkeZgIrsh7S4IDSBmZBfI+JXY2QmfaNTLp+KfakjpjEDEo4afFXHcxc1MKih9I0Bd9rQUkR4om4S+rIKA8yQbbSOWkQw3aqaudwM9RX1ycqXA/V5C8dH0Q2tfeMb2MYUbDpDARellR9/XQRs7pdeQrBd1CuAy9gX8EBOqCABK+Uj1
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8774.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(39860400002)(366004)(396003)(376002)(346002)(136003)(9686003)(6486002)(86362001)(53546011)(6512007)(26005)(316002)(33716001)(66946007)(66476007)(4326008)(8676002)(6666004)(6916009)(54906003)(478600001)(66556008)(52116002)(41300700001)(6506007)(186003)(1076003)(83380400001)(38350700002)(7416002)(8936002)(44832011)(2906002)(38100700002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?izpXDcYcb5pnfdx9miKPYlPfaDhoxXFXBQ+GryqtXb1aU4FUdMLsLvkrCKg+?=
- =?us-ascii?Q?84JEwpWAkOgRICT0ETg7fLDfoKcgpFYmAY5hwNKeJc414hnm88KE/3kqNP59?=
- =?us-ascii?Q?LEJ44JRTdkSFLMYR9z9nu0S2Q86STCI0POKONoBBWQT5JH3XrlW0Yn/ktToc?=
- =?us-ascii?Q?5OvXFzGmEGJosanqSZhphQUp/THhjHe8yb+p9Wls1CrlCS4TnWJ1wrhOg1eG?=
- =?us-ascii?Q?5lgNQ78Muypk0kG06redSwae8qs/ELkBaOmY0XjickO+DkW2lqPGjy2yCaC9?=
- =?us-ascii?Q?iOlv1y74jc8r9JW3GoUZKG4s9BRJ8JT7Wpi3OHKtjQOQgt2swp/j1d7vvhFU?=
- =?us-ascii?Q?qtFnmopLzIyqDkYCOrZzgtCH7zJ6gKrWLBVQJoGpkZAdI2hCKsHk0tdbCjIB?=
- =?us-ascii?Q?ioHzXcGj2OTLIpI6dqW1NdYWIAZqXvv4FyB8EJCME/1+2WqR8ZuOnnrIBt6n?=
- =?us-ascii?Q?7bchuNRfq/Gw9hvSLwtT+WKtHW6rIh8YSrXVoJz6/NJswAFhejUbaDVXsN8w?=
- =?us-ascii?Q?KtqWNXEGZlj2EAHSCVwwDW6iSZTym8miCu4EmjVSYrhI85qpBcYFOmkDfpjX?=
- =?us-ascii?Q?pOhNVBLf+u9AlTH/ZsYJRRRQNYvcHoPgapFxHjp5pi8BETitK95CByKq9Eq5?=
- =?us-ascii?Q?5/g+h9UvY9lAk7IxG8ggOp+QLXKEy55RsxII8/zMfYObpnujJ0oaluutFjQn?=
- =?us-ascii?Q?D+m2Y5C9oXt2mc9q1ngicT5uBbwhTM8rpIVWb2FszFRNqiGX5tLhyj0hEAXq?=
- =?us-ascii?Q?cSNlqsN5QD3AhYIU80yfIO45B667c9cFd0u1aJdJtSRrEpRK7axfYpBx2Y2K?=
- =?us-ascii?Q?MtwOfdazSshrdh+KX9AgINk/NnFqdNeJC60mDMk03UizTwO4jh+YQxogyAC0?=
- =?us-ascii?Q?KPPel/EiZqImqT6is8vIF/biy5FPBBykO1z+I/Hcl76HU6BInOS9OHuzhaDg?=
- =?us-ascii?Q?HbLNUbL8op8anYng6hyYxsPjcr8TEBBOvzht59xCUu8nFJbLENIfsclxCbVb?=
- =?us-ascii?Q?+b8XhtdcvS5MDOhNxdisS6zV+wmdJFCAGIQzBZzaMtmvbT18OTXMW3ptqVN0?=
- =?us-ascii?Q?rTqbtfeFmgYtaelBNf5qC/DDvGbMgrB0dnl56t1ypmz88gCDN7fOqrTg1kJ9?=
- =?us-ascii?Q?G12fAQBWSTGlfldykC69Zr+5tRPS4IBt+xW07q8tPKu1bhm02qJbUADpcpoC?=
- =?us-ascii?Q?ykq6bRRV5cXz1Tf6phMwsb3nZb/aAZ9s35Hzj6iSiPFBMOOEJo9oy2pKWbsi?=
- =?us-ascii?Q?bQZr3UmppsR2kkX9BmhAYpKJC0+WkRqn5mTh2rPapLMFBAm+OvewAJLgkYNw?=
- =?us-ascii?Q?Iute7873BqxNtqNO5Pyc0FgpTIrZWL3yOM+oZhIkSg0rhsHLnwUsDvpN4r/p?=
- =?us-ascii?Q?XcwNHmY7nwknYiSLpnMkgJhJuQKmELFshPsdLjDGMdCEg9jaErCGhUo6yIrz?=
- =?us-ascii?Q?Pq/9XEI7CXWxzmh7qrLO6gWt85aTZlgzGf272/2F9hQFNPMvNf5hM2TNizwl?=
- =?us-ascii?Q?cGlCDOckJCaBGwwkXZ6SPuqNCyoc1BTiuITWAGhGn0HXiyGejHx6GCVcTlLC?=
- =?us-ascii?Q?raEJZ2zvKvG6/ErNzFpqTSEBNAPO6RqZ95E2Npxg?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59b41f85-7619-4b19-8dca-08da5e9e1b2d
-X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8774.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 15:50:38.2820
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7beKaNqnieQRfX/zz8df9Cb7yVA9J3OpwIcH0aGNfYL+6j4k2yySazGJ+GM2bwTK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4442
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/07/05 05:38PM, Krzysztof Kozlowski wrote:
-> On 05/07/2022 16:52, Han Xu wrote:
-> > On 22/07/05 04:12PM, Krzysztof Kozlowski wrote:
-> >> On 05/07/2022 16:06, Michael Walle wrote:
-> >>>
-> >>>>>
-> >>>>> I think you could use here clock cycles or clock phase, but then it 
-> >>>>> has to be obvious
-> >>>>> it is that unit.
-> >>>>
-> >>>> Hi Krzysztof,
-> >>>>
-> >>>> Let me clarify it, in the document a term "delay cell" was used to
-> >>>> descript this register bit. Each delay cell equals "1/32 clock phase",
-> >>>> so the unit of delay cell is clock phase. The value user need set in
-> >>>> DT just number to define how many delay cells needed.
-> >>>
-> >>> Then should the unit be "-degrees" and the possible range 0-180?
-> >>
-> >> Thanks. We don't have it documented currently, but the unit seems
-> >> reasonable.
-> > 
-> > IMO, use the unit "-degrees" makes it more complicate. Personaly I would
-> > calculate how many clock cycle delay needed, such as 1/4 clock cycle or half
-> > clock cycle. Using degree brings extra calculation.
-> 
-> And what if the next device uses a bit different divider? Like 1/16?
-> This is why we have standard units so people won't push register values
-> into the bindings.
-> 
-> > 
-> > The granularity of the clock phase change is 1/32 of 180 degree, but the range
-> > 0-180 make people feel it can be set in any degree in range.
-> 
-> Yes, because that's how the bindings are being written - allowing any
-> reasonable value, not register-specific value, to be used because it is
-> the most flexible, hardware-independent and allows further customization
-> of bindings (e.g. new devices). Embedding device programming model into
-> the bindings contradicts it.
-> 
-> Second, nothing stops you from narrowing the acceptable values with an
-> enum. This still allows extension. Your 1/32 does not.
-> 
-> > 
-> > If I describe all details of the relation between "nxp,fspi-dll-slvdly" and
-> > "delay cell" in patch v2, do you think it's clear for users?
-> 
-> 1/32 could be a nice unit, but degrees is better. Just like uV is better
-> than 1/32 of V. Like 1 us is better than 1/32 of ms.
-> 
-> Do you see  in the bindings many other values like time, potential,
-> current or power described in 1/32 units?
+From: Ira Weiny <ira.weiny@intel.com>
 
-That make sense. I will use degree as the unit and round to register proper
-value in driver as Michael suggested. Thanks for all comments.
+CXL Ports with memory devices attached need the information from the
+Device Scoped Memory Affinity Structure (DSMAS).  This information is
+contained within the CDAT table buffer which is cached in the port
+device.
 
-> 
-> Best regards,
-> Krzysztof
+If CDAT data is available, parse and cache DSMAS data from the table.
+Store this data in unmarshaled struct dsmas data structures for ease of
+use later.  Ensure DSMAS headers are not malicious or ill formed so as
+to cause buffer overflow errors.
+
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+
+---
+Changes from V10
+	From Ben Widawsky
+		Check data lengths to protect against malicious devices
+
+Changes from V8
+	Adjust to the cdat data being in cxl_port
+
+Changes from V7
+	Rebased on cxl-pending
+
+Changes from V6
+	Move to port.c
+	It is not an error if no DSMAS data is found
+
+Changes from V5
+	Fix up sparse warnings
+	Split out cdat_hdr_valid()
+	Update cdat_hdr_valid()
+		Remove revision and cs field parsing
+			There is no point in these
+		Add seq check and debug print.
+	From Jonathan
+		Add spaces around '+' and '/'
+		use devm_krealloc() for dmas_ary
+---
+ drivers/cxl/cdat.h     | 23 ++++++++++++++
+ drivers/cxl/core/pci.c | 72 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/cxl/cxl.h      |  2 ++
+ drivers/cxl/cxlmem.h   |  4 +++
+ drivers/cxl/cxlpci.h   |  1 +
+ drivers/cxl/mem.c      |  1 +
+ 6 files changed, 103 insertions(+)
+
+diff --git a/drivers/cxl/cdat.h b/drivers/cxl/cdat.h
+index 39eb561081f2..ca1f55762416 100644
+--- a/drivers/cxl/cdat.h
++++ b/drivers/cxl/cdat.h
+@@ -51,6 +51,7 @@
+ #define CDAT_DSMAS_DPA_OFFSET(entry) ((u64)((entry)[3]) << 32 | (entry)[2])
+ #define CDAT_DSMAS_DPA_LEN(entry) ((u64)((entry)[5]) << 32 | (entry)[4])
+ #define CDAT_DSMAS_NON_VOLATILE(flags)  ((flags & 0x04) >> 2)
++#define CDAT_DSMAS_ENTRY_SIZE		(6 * sizeof(u32))
+ 
+ /* Device Scoped Latency and Bandwidth Information Structure */
+ #define CDAT_DSLBIS_DW1_HANDLE		0x000000ff
+@@ -60,22 +61,26 @@
+ #define CDAT_DSLBIS_DW4_ENTRY_0		0x0000ffff
+ #define CDAT_DSLBIS_DW4_ENTRY_1		0xffff0000
+ #define CDAT_DSLBIS_DW5_ENTRY_2		0x0000ffff
++#define CDAT_DSLBIS_ENTRY_SIZE		(6 * sizeof(u32))
+ 
+ /* Device Scoped Memory Side Cache Information Structure */
+ #define CDAT_DSMSCIS_DW1_HANDLE		0x000000ff
+ #define CDAT_DSMSCIS_MEMORY_SIDE_CACHE_SIZE(entry) \
+ 	((u64)((entry)[3]) << 32 | (entry)[2])
+ #define CDAT_DSMSCIS_DW4_MEMORY_SIDE_CACHE_ATTRS 0xffffffff
++#define CDAT_DSMSCIS_ENTRY_SIZE		(5 * sizeof(u32))
+ 
+ /* Device Scoped Initiator Structure */
+ #define CDAT_DSIS_DW1_FLAGS		0x000000ff
+ #define CDAT_DSIS_DW1_HANDLE		0x0000ff00
++#define CDAT_DSIS_ENTRY_SIZE		(2 * sizeof(u32))
+ 
+ /* Device Scoped EFI Memory Type Structure */
+ #define CDAT_DSEMTS_DW1_HANDLE		0x000000ff
+ #define CDAT_DSEMTS_DW1_EFI_MEMORY_TYPE_ATTR	0x0000ff00
+ #define CDAT_DSEMTS_DPA_OFFSET(entry)	((u64)((entry)[3]) << 32 | (entry)[2])
+ #define CDAT_DSEMTS_DPA_LENGTH(entry)	((u64)((entry)[5]) << 32 | (entry)[4])
++#define CDAT_DSEMTS_ENTRY_SIZE		(6 * sizeof(u32))
+ 
+ /* Switch Scoped Latency and Bandwidth Information Structure */
+ #define CDAT_SSLBIS_DW1_DATA_TYPE	0x000000ff
+@@ -83,9 +88,27 @@
+ #define CDAT_SSLBIS_ENTRY_PORT_X(entry, i) ((entry)[4 + (i) * 2] & 0x0000ffff)
+ #define CDAT_SSLBIS_ENTRY_PORT_Y(entry, i) (((entry)[4 + (i) * 2] & 0xffff0000) >> 16)
+ #define CDAT_SSLBIS_ENTRY_LAT_OR_BW(entry, i) ((entry)[4 + (i) * 2 + 1] & 0x0000ffff)
++#define CDAT_SSLBIS_HEADER_SIZE		(6 * sizeof(u32))
+ 
+ #define CXL_DOE_PROTOCOL_TABLE_ACCESS 2
+ 
++/**
++ * struct cxl_dsmas - host unmarshaled version of DSMAS data
++ *
++ * As defined in the Coherent Device Attribute Table (CDAT) specification this
++ * represents a single DSMAS entry in that table.
++ *
++ * @dpa_base: The lowest Device Physical Address associated with this DSMAD
++ * @length: Length in bytes of this DSMAD
++ * @non_volatile: If set, the memory region represents Non-Volatile memory
++ */
++struct cxl_dsmas {
++	u64 dpa_base;
++	u64 length;
++	/* Flags */
++	u8 non_volatile:1;
++};
++
+ /**
+  * struct cxl_cdat - CXL CDAT data
+  *
+diff --git a/drivers/cxl/core/pci.c b/drivers/cxl/core/pci.c
+index 0853885c5767..1b931542d345 100644
+--- a/drivers/cxl/core/pci.c
++++ b/drivers/cxl/core/pci.c
+@@ -684,3 +684,75 @@ void read_cdat_data(struct cxl_port *port)
+ 		retries);
+ }
+ EXPORT_SYMBOL_NS_GPL(read_cdat_data, CXL);
++
++void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port)
++{
++	struct device *dev = &port->dev;
++	struct cxl_dsmas *dsmas_ary = NULL;
++	u32 *data = port->cdat.table;
++	int bytes_left = port->cdat.length;
++	int nr_dsmas = 0;
++
++	if (!data) {
++		dev_info(dev, "No CDAT data available for DSMAS\n");
++		return;
++	}
++
++	/* Skip header */
++	data += CDAT_HEADER_LENGTH_DW;
++	bytes_left -= CDAT_HEADER_LENGTH_BYTES;
++
++	while (bytes_left > 0) {
++		u32 *cur_rec = data;
++		u8 type = FIELD_GET(CDAT_STRUCTURE_DW0_TYPE, cur_rec[0]);
++		u16 length = FIELD_GET(CDAT_STRUCTURE_DW0_LENGTH, cur_rec[0]);
++
++		if (type == CDAT_STRUCTURE_DW0_TYPE_DSMAS) {
++			struct cxl_dsmas *new_ary;
++			u8 flags;
++
++			/* Protect against malicious devices */
++			if (bytes_left < CDAT_DSMAS_ENTRY_SIZE ||
++			    length != CDAT_DSMAS_ENTRY_SIZE) {
++				dev_err(dev, "Invalid DSMAS data detected\n");
++				return;
++			}
++
++			new_ary = devm_krealloc(dev, dsmas_ary,
++					   sizeof(*dsmas_ary) * (nr_dsmas + 1),
++					   GFP_KERNEL);
++			if (!new_ary) {
++				dev_err(dev,
++					"Failed to allocate memory for DSMAS data (nr_dsmas %d)\n",
++					nr_dsmas);
++				return;
++			}
++			dsmas_ary = new_ary;
++
++			flags = FIELD_GET(CDAT_DSMAS_DW1_FLAGS, cur_rec[1]);
++
++			dsmas_ary[nr_dsmas].dpa_base = CDAT_DSMAS_DPA_OFFSET(cur_rec);
++			dsmas_ary[nr_dsmas].length = CDAT_DSMAS_DPA_LEN(cur_rec);
++			dsmas_ary[nr_dsmas].non_volatile = CDAT_DSMAS_NON_VOLATILE(flags);
++
++			dev_dbg(dev, "DSMAS %d: %llx:%llx %s\n",
++				nr_dsmas,
++				dsmas_ary[nr_dsmas].dpa_base,
++				dsmas_ary[nr_dsmas].dpa_base +
++					dsmas_ary[nr_dsmas].length,
++				(dsmas_ary[nr_dsmas].non_volatile ?
++					"Persistent" : "Volatile")
++				);
++
++			nr_dsmas++;
++		}
++
++		data += (length / sizeof(u32));
++		bytes_left -= length;
++	}
++
++	dev_dbg(dev, "Found %d DSMAS entries\n", nr_dsmas);
++	cxlmd->dsmas_ary = dsmas_ary;
++	cxlmd->nr_dsmas = nr_dsmas;
++}
++EXPORT_SYMBOL_NS_GPL(parse_dsmas, CXL);
+diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
+index 9a08379000a0..5332b4d52d55 100644
+--- a/drivers/cxl/cxl.h
++++ b/drivers/cxl/cxl.h
+@@ -10,6 +10,8 @@
+ #include <linux/io.h>
+ #include "cdat.h"
+ 
++#include "cdat.h"
++
+ /**
+  * DOC: cxl objects
+  *
+diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
+index 360f282ef80c..54231c26470c 100644
+--- a/drivers/cxl/cxlmem.h
++++ b/drivers/cxl/cxlmem.h
+@@ -36,6 +36,8 @@
+  * @cxlds: The device state backing this device
+  * @detach_work: active memdev lost a port in its ancestry
+  * @id: id number of this memdev instance.
++ * @dsmas_ary: Array of DSMAS entries as parsed from the CDAT table
++ * @nr_dsmas: Number of entries in dsmas_ary
+  */
+ struct cxl_memdev {
+ 	struct device dev;
+@@ -43,6 +45,8 @@ struct cxl_memdev {
+ 	struct cxl_dev_state *cxlds;
+ 	struct work_struct detach_work;
+ 	int id;
++	struct cxl_dsmas *dsmas_ary;
++	int nr_dsmas;
+ };
+ 
+ static inline struct cxl_memdev *to_cxl_memdev(struct device *dev)
+diff --git a/drivers/cxl/cxlpci.h b/drivers/cxl/cxlpci.h
+index eec597dbe763..3e68804d8935 100644
+--- a/drivers/cxl/cxlpci.h
++++ b/drivers/cxl/cxlpci.h
+@@ -75,4 +75,5 @@ int devm_cxl_port_enumerate_dports(struct cxl_port *port);
+ struct cxl_dev_state;
+ int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm);
+ void read_cdat_data(struct cxl_port *port);
++void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port);
+ #endif /* __CXL_PCI_H__ */
+diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
+index c310f1fd3db0..a8768df4ae38 100644
+--- a/drivers/cxl/mem.c
++++ b/drivers/cxl/mem.c
+@@ -35,6 +35,7 @@ static int create_endpoint(struct cxl_memdev *cxlmd,
+ 	if (IS_ERR(endpoint))
+ 		return PTR_ERR(endpoint);
+ 
++	parse_dsmas(cxlmd, endpoint);
+ 	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
+ 
+ 	if (!endpoint->dev.driver) {
+-- 
+2.35.3
+
