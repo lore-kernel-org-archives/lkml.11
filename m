@@ -2,210 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B055CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79BFBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:30:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbiGEJ1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
+        id S230013AbiGEJaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiGEJ1P (ORCPT
+        with ESMTP id S229575AbiGEJ30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:27:15 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BBBE0D1;
-        Tue,  5 Jul 2022 02:27:08 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8F0B31A0AE4;
-        Tue,  5 Jul 2022 11:27:06 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id EE2DF1A08BC;
-        Tue,  5 Jul 2022 11:27:05 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 8CA151802204;
-        Tue,  5 Jul 2022 17:27:03 +0800 (+08)
-From:   haibo.chen@nxp.com
-To:     ashish.kumar@nxp.com, yogeshgaur.83@gmail.com, broonie@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        han.xu@nxp.com, singh.kuldeep87k@gmail.com,
-        tudor.ambarus@microchip.com, p.yadav@ti.com, michael@walle.cc,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
-        festevam@gmail.com, linux-imx@nxp.com,
-        linux-arm-kernel@lists.infradead.org, haibo.chen@nxp.com,
-        zhengxunli@mxic.com.tw
-Subject: [PATCH 11/11] arm64: dts: imx8qm/imx8qxp: add flexspi support
-Date:   Tue,  5 Jul 2022 17:11:43 +0800
-Message-Id: <1657012303-6464-11-git-send-email-haibo.chen@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657012303-6464-1-git-send-email-haibo.chen@nxp.com>
-References: <1657012303-6464-1-git-send-email-haibo.chen@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 5 Jul 2022 05:29:26 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBA912D38
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 02:28:52 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id q8so1321858ljj.10
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 02:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6KsRcwBEuUzrOwyM/pW4cN1uOT0jToSb3abL+hcUjTA=;
+        b=L52O7ne+YsZHSQr4O9CTInvLdgqN2P1KiVwtPWECgESIE3KMCako5cycNBEW5CWuQ2
+         r8rc5ACELpd4JWR42AWIFqQt9BAjRgXE/DnF8YvRbq2mVFj7/CdYxiCYzXEaUqZXJfRZ
+         7UXCucsKNNNzXwkgIfQCoAxZiRI7zTxlwBfhJwp3i90i49s0Tt70GuYu4cNt5i9Ljsln
+         Er6qtba/oNMGza0F2vHvrVhTPeUv3Qboc9K1PaCzDQjXG53GHxV9fnB2NdRedqGQgMlP
+         Rr5fielx6JNFVKbZPDzupDmSCfL6KRLbf/1XWFHZ6kBBtgysX1S78vv11dDnih42Hc4x
+         vGRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6KsRcwBEuUzrOwyM/pW4cN1uOT0jToSb3abL+hcUjTA=;
+        b=y4zw98VXxeTdJu5mqudJt/bKUn8saW6mhUGrhb+P5fR6MDRF2GtqFgrwrq6RKYFVEJ
+         z7KzWuJd2nUe1elR90snm9H9nhp5iTEPnMo6zUSlvbrU1KjbqR1OwoIwo9hP87gIacqN
+         Jzj9KYfFGt1yT11L83pCjvCmC98ElyCeEzFh2tyYallBm4wyO+lS0ZKmml+BBV3O7RSR
+         ktMDz1YhFhRnqpHLVHD7F6fzzhXR1qXwumvZhZBX1dR3X2QmjDs65Y6tBzhQLRnIiKv3
+         8FkiwhrAL9WtYe2cQaNGLTFssIT6b4+kZj9T9rW9y0QjJN8EDNRanfR6AOdcdNMQZHgV
+         1O8A==
+X-Gm-Message-State: AJIora84Uwz2Yuel8GFpXtbgLELOUYpvEv6C/5uOuR6q0bQp+zIZMnFz
+        4oUxlhXjL4SrwpcFpvpAvqIZmXJBb6C6GA==
+X-Google-Smtp-Source: AGRyM1usDWmVbxVfjlaZTBtWCtVGyX0HI5PkRhGau5FDtcBb/Xv5j4yVVZ7Qmirc3OWyh+8T802Ucw==
+X-Received: by 2002:a2e:9657:0:b0:25d:30c3:9ba with SMTP id z23-20020a2e9657000000b0025d30c309bamr1687782ljh.350.1657013330096;
+        Tue, 05 Jul 2022 02:28:50 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id v19-20020ac258f3000000b00483f8c40c14sm154249lfo.243.2022.07.05.02.28.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 02:28:49 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Subject: [PATCH v3] dt-bindings: qcom: document preferred compatible naming
+Date:   Tue,  5 Jul 2022 11:28:46 +0200
+Message-Id: <20220705092846.66731-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+Compatibles can come in two formats.  Either "vendor,ip-soc" or
+"vendor,soc-ip".  Qualcomm bindings were mixing both of usages, so add a
+DT schema file documenting preferred policy and enforcing it for all new
+compatibles, except few existing patterns.
 
-Add flexspi support, and enable the 8 bit TX/RX for the
-spi-nor device.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
 ---
- .../boot/dts/freescale/imx8-ss-lsio.dtsi      | 17 ++++++++-
- arch/arm64/boot/dts/freescale/imx8qm-mek.dts  | 38 +++++++++++++++++++
- arch/arm64/boot/dts/freescale/imx8qxp-mek.dts | 38 +++++++++++++++++++
- 3 files changed, 92 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi b/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
-index 6446e6df7a9a..1f3d225e64ec 100644
---- a/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
-@@ -11,7 +11,8 @@ lsio_subsys: bus@5d000000 {
- 	compatible = "simple-bus";
- 	#address-cells = <1>;
- 	#size-cells = <1>;
--	ranges = <0x5d000000 0x0 0x5d000000 0x1000000>;
-+	ranges = <0x5d000000 0x0 0x5d000000 0x1000000>,
-+		 <0x08000000 0x0 0x08000000 0x10000000>;
- 
- 	lsio_mem_clk: clock-lsio-mem {
- 		compatible = "fixed-clock";
-@@ -107,6 +108,20 @@ lsio_gpio7: gpio@5d0f0000 {
- 		power-domains = <&pd IMX_SC_R_GPIO_7>;
- 	};
- 
-+	flexspi0: spi@5d120000 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "nxp,imx8qxp-fspi";
-+		reg = <0x5d120000 0x10000>, <0x08000000 0x10000000>;
-+		reg-names = "fspi_base", "fspi_mmap";
-+		interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&clk IMX_SC_R_FSPI_0 IMX_SC_PM_CLK_PER>,
-+			 <&clk IMX_SC_R_FSPI_0 IMX_SC_PM_CLK_PER>;
-+		clock-names = "fspi", "fspi_en";
-+		power-domains = <&pd IMX_SC_R_FSPI_0>;
-+		status = "disabled";
-+	};
+Changes since v2:
+1. Narrow the expected pattern to be followed by dash '-' after model
+   number (msm8996-) or by two letters and a dash (sc8280xp-).
+2. Add qcom,apss-wdt-xxx to list of exceptions.
+3. Use comment instead of description in the oneOf list.
+
+Changes since v1:
+1. Add schema instead of readme (Rob).
+
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Alex Elder <elder@linaro.org>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+---
+ .../devicetree/bindings/arm/qcom-soc.yaml     | 57 +++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/qcom-soc.yaml
+
+diff --git a/Documentation/devicetree/bindings/arm/qcom-soc.yaml b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+new file mode 100644
+index 000000000000..6307c925335d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+@@ -0,0 +1,57 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/qcom-soc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	lsio_mu0: mailbox@5d1b0000 {
- 		reg = <0x5d1b0000 0x10000>;
- 		interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
-diff --git a/arch/arm64/boot/dts/freescale/imx8qm-mek.dts b/arch/arm64/boot/dts/freescale/imx8qm-mek.dts
-index ce9d3f0b98fc..ce78f494c7d8 100644
---- a/arch/arm64/boot/dts/freescale/imx8qm-mek.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8qm-mek.dts
-@@ -67,6 +67,23 @@ ethphy1: ethernet-phy@1 {
- 	};
- };
- 
-+&flexspi0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_flexspi0>;
-+	nxp,fspi-dll-slvdly = <4>;
-+	status = "okay";
++title: Qualcomm SoC compatibles naming convention
 +
-+	flash0: mt35xu512aba@0 {
-+		reg = <0>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		compatible = "jedec,spi-nor";
-+		spi-max-frequency = <133000000>;
-+		spi-tx-bus-width = <8>;
-+		spi-rx-bus-width = <8>;
-+	};
-+};
++maintainers:
++  - Bjorn Andersson <bjorn.andersson@linaro.org>
 +
- &usdhc1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_usdhc1>;
-@@ -107,6 +124,27 @@ IMX8QM_ENET0_RGMII_RXD3_CONN_ENET0_RGMII_RXD3		0x06000020
- 		>;
- 	};
- 
-+	pinctrl_flexspi0: flexspi0grp {
-+		fsl,pins = <
-+			IMX8QM_QSPI0A_DATA0_LSIO_QSPI0A_DATA0     0x06000021
-+			IMX8QM_QSPI0A_DATA1_LSIO_QSPI0A_DATA1     0x06000021
-+			IMX8QM_QSPI0A_DATA2_LSIO_QSPI0A_DATA2     0x06000021
-+			IMX8QM_QSPI0A_DATA3_LSIO_QSPI0A_DATA3     0x06000021
-+			IMX8QM_QSPI0A_DQS_LSIO_QSPI0A_DQS         0x06000021
-+			IMX8QM_QSPI0A_SS0_B_LSIO_QSPI0A_SS0_B     0x06000021
-+			IMX8QM_QSPI0A_SS1_B_LSIO_QSPI0A_SS1_B     0x06000021
-+			IMX8QM_QSPI0A_SCLK_LSIO_QSPI0A_SCLK       0x06000021
-+			IMX8QM_QSPI0B_SCLK_LSIO_QSPI0B_SCLK       0x06000021
-+			IMX8QM_QSPI0B_DATA0_LSIO_QSPI0B_DATA0     0x06000021
-+			IMX8QM_QSPI0B_DATA1_LSIO_QSPI0B_DATA1     0x06000021
-+			IMX8QM_QSPI0B_DATA2_LSIO_QSPI0B_DATA2     0x06000021
-+			IMX8QM_QSPI0B_DATA3_LSIO_QSPI0B_DATA3     0x06000021
-+			IMX8QM_QSPI0B_DQS_LSIO_QSPI0B_DQS         0x06000021
-+			IMX8QM_QSPI0B_SS0_B_LSIO_QSPI0B_SS0_B     0x06000021
-+			IMX8QM_QSPI0B_SS1_B_LSIO_QSPI0B_SS1_B     0x06000021
-+		>;
-+	};
++description: |
++  Guidelines for new compatibles for SoC blocks/components.
++  When adding new compatibles in new bindings, use the format::
++    qcom,SoC-IP
 +
- 	pinctrl_lpuart0: lpuart0grp {
- 		fsl,pins = <
- 			IMX8QM_UART0_RX_DMA_UART0_RX				0x06000020
-diff --git a/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts b/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts
-index 07d8dd8160f6..15d13a9d545f 100644
---- a/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts
-@@ -53,6 +53,23 @@ ethphy0: ethernet-phy@0 {
- 	};
- };
- 
-+&flexspi0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_flexspi0>;
-+	nxp,fspi-dll-slvdly = <4>;
-+	status = "okay";
++  For example::
++   qcom,sdm845-llcc-bwmon
 +
-+	flash0: mt35xu512aba@0 {
-+		reg = <0>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		compatible = "jedec,spi-nor";
-+		spi-max-frequency = <133000000>;
-+		spi-tx-bus-width = <8>;
-+		spi-rx-bus-width = <8>;
-+	};
-+};
++  When adding new compatibles to existing bindings, use the format in the
++  existing binding, even if it contradicts the above.
 +
- &i2c1 {
- 	#address-cells = <1>;
- 	#size-cells = <0>;
-@@ -241,6 +258,27 @@ IMX8QXP_ENET0_RGMII_RXD3_CONN_ENET0_RGMII_RXD3		0x06000020
- 		>;
- 	};
- 
-+	pinctrl_flexspi0: flexspi0grp {
-+		fsl,pins = <
-+			IMX8QXP_QSPI0A_DATA0_LSIO_QSPI0A_DATA0     0x06000021
-+			IMX8QXP_QSPI0A_DATA1_LSIO_QSPI0A_DATA1     0x06000021
-+			IMX8QXP_QSPI0A_DATA2_LSIO_QSPI0A_DATA2     0x06000021
-+			IMX8QXP_QSPI0A_DATA3_LSIO_QSPI0A_DATA3     0x06000021
-+			IMX8QXP_QSPI0A_DQS_LSIO_QSPI0A_DQS         0x06000021
-+			IMX8QXP_QSPI0A_SS0_B_LSIO_QSPI0A_SS0_B     0x06000021
-+			IMX8QXP_QSPI0A_SS1_B_LSIO_QSPI0A_SS1_B     0x06000021
-+			IMX8QXP_QSPI0A_SCLK_LSIO_QSPI0A_SCLK       0x06000021
-+			IMX8QXP_QSPI0B_SCLK_LSIO_QSPI0B_SCLK       0x06000021
-+			IMX8QXP_QSPI0B_DATA0_LSIO_QSPI0B_DATA0     0x06000021
-+			IMX8QXP_QSPI0B_DATA1_LSIO_QSPI0B_DATA1     0x06000021
-+			IMX8QXP_QSPI0B_DATA2_LSIO_QSPI0B_DATA2     0x06000021
-+			IMX8QXP_QSPI0B_DATA3_LSIO_QSPI0B_DATA3     0x06000021
-+			IMX8QXP_QSPI0B_DQS_LSIO_QSPI0B_DQS         0x06000021
-+			IMX8QXP_QSPI0B_SS0_B_LSIO_QSPI0B_SS0_B     0x06000021
-+			IMX8QXP_QSPI0B_SS1_B_LSIO_QSPI0B_SS1_B     0x06000021
-+		>;
-+	};
++select:
++  properties:
++    compatible:
++      pattern: "^qcom,.*(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
++  required:
++    - compatible
 +
- 	pinctrl_ioexp_rst: ioexprstgrp {
- 		fsl,pins = <
- 			IMX8QXP_SPI2_SDO_LSIO_GPIO1_IO01			0x06000021
++properties:
++  compatible:
++    oneOf:
++      # Preferred naming style for compatibles of SoC components:
++      - pattern: "^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$"
++      - pattern: "^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$"
++
++      # Legacy namings - variations of existing patterns/compatibles are OK,
++      # but do not add completely new entries to these:
++      - pattern: "^qcom,apss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
++      - pattern: "^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
++      - pattern: "^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
++      - pattern: "^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
++      - pattern: "^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
++      - pattern: "^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
++      - enum:
++          - qcom,gpucc-sdm630
++          - qcom,gpucc-sdm660
++          - qcom,lcc-apq8064
++          - qcom,lcc-ipq8064
++          - qcom,lcc-mdm9615
++          - qcom,lcc-msm8960
++          - qcom,lpass-cpu-apq8016
++          - qcom,usb-ss-ipq4019-phy
++          - qcom,usb-hs-ipq4019-phy
++          - qcom,vqmmc-ipq4019-regulator
++
++additionalProperties: true
 -- 
-2.25.1
+2.34.1
 
