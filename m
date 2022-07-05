@@ -2,93 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C60E3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiGEPIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
+        id S231880AbiGEPIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiGEPHv (ORCPT
+        with ESMTP id S230259AbiGEPIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:07:51 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4A0220FA
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:04:51 -0700 (PDT)
-Received: from zn.tnic (p200300ea970ff682329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:f682:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 7299F1EC0513;
-        Tue,  5 Jul 2022 17:04:36 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1657033476;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=A3o83DD+B1z/6kiI4KQQIPd6dtqOA5pz/dpE36h38W8=;
-        b=jkN8Vw62hc7iKa88OPl2ClVxqDZZcTXMySFImEcGL0S8nJorx7CDCmqDTQMJnayaw9xIzk
-        LHjGDPZOSaxrCRUZSFFMFEyCqqMiIRerKV2/mupELKxAl+F8Ac8RaI6qFg84cYP+XxKbP1
-        sYaLNFoWAfyJuXvx/Ucp4B3UoyvyWmI=
-Date:   Tue, 5 Jul 2022 17:04:32 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Jan Beulich <jbeulich@suse.com>
-Cc:     Andrew Lutomirski <luto@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-Subject: Re: [PATCH] x86/PAT: have pat_enabled() properly reflect state when
- running on e.g. Xen
-Message-ID: <YsRTAGI2PhfZ5V7M@zn.tnic>
-References: <9385fa60-fa5d-f559-a137-6608408f88b0@suse.com>
+        Tue, 5 Jul 2022 11:08:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15DCA22BC8;
+        Tue,  5 Jul 2022 08:05:21 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D3AE7152B;
+        Tue,  5 Jul 2022 08:05:21 -0700 (PDT)
+Received: from e127744.cambridge.arm.com (e127744.cambridge.arm.com [10.1.26.123])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1E9833F66F;
+        Tue,  5 Jul 2022 08:05:18 -0700 (PDT)
+From:   German Gomez <german.gomez@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, irogers@google.com
+Cc:     German Gomez <german.gomez@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: [PATCH v2 0/1] perf test: Add test for branch stack sampling
+Date:   Tue,  5 Jul 2022 16:05:10 +0100
+Message-Id: <20220705150511.473919-1-german.gomez@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <9385fa60-fa5d-f559-a137-6608408f88b0@suse.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 04:50:29PM +0200, Jan Beulich wrote:
-> --- a/arch/x86/mm/pat/memtype.c
-> +++ b/arch/x86/mm/pat/memtype.c
-> @@ -62,6 +62,7 @@
->  
->  static bool __read_mostly pat_bp_initialized;
->  static bool __read_mostly pat_disabled = !IS_ENABLED(CONFIG_X86_PAT);
-> +static bool __initdata pat_force_disabled = !IS_ENABLED(CONFIG_X86_PAT);
->  static bool __read_mostly pat_bp_enabled;
->  static bool __read_mostly pat_cm_initialized;
+Hi,
 
-Why yet another boolean var?
+While testing Anshuman Khandual's branch stack sampling ABI, and BRBE
+driver ([1] and [2] respectively) I've been using this test to check the
+consistency between arches (x86 and Arm64).
 
-Why not extend pat_enabled() to reflect the Xen case and explain it
-properly above it?
+We will extend it with Arm64-specific tests once the BRBE driver has
+been reviewed and merged, but for now I think this is generic enough to
+also be useful for x86.
 
-My comment is likely wrong because I don't know what the Xen HV hides or
-doesn't but you get the idea...
+Thanks,
+German
 
-diff --git a/arch/x86/mm/pat/memtype.c b/arch/x86/mm/pat/memtype.c
-index d5ef64ddd35e..a8f1a02f9bc2 100644
---- a/arch/x86/mm/pat/memtype.c
-+++ b/arch/x86/mm/pat/memtype.c
-@@ -92,6 +92,13 @@ early_param("nopat", nopat);
- 
- bool pat_enabled(void)
- {
-+	/*
-+	 * Xen PV doesn't expose the PAT MSR to dom0 so the proper init path
-+	 * there cannot be exercised. Announce PAT is enabled in that case too.
-+	 */
-+	if (cpu_feature_enabled(X86_FEATURE_XENPV) && !pat_disabled)
-+		return true;
-+
- 	return pat_bp_enabled;
- }
- EXPORT_SYMBOL_GPL(pat_enabled);
+[1] https://lore.kernel.org/linux-arm-kernel/20220610035101.424112-1-anshuman.khandual@arm.com/
+[2] https://lore.kernel.org/all/20220613100119.684673-1-anshuman.khandual@arm.com/
+
+---
+
+v2
+  - (Ian Rogers) Include C test program in the shell script.
+  - Drop references to Anshuman's ABI ext (FAULT_DATA and FAULT_INST).
+    We will track and update this later if necessary.
+
+German Gomez (1):
+  perf test: Add test for branch stack sampling
+
+ tools/perf/tests/shell/test_brstack.sh | 114 +++++++++++++++++++++++++
+ 1 file changed, 114 insertions(+)
+ create mode 100755 tools/perf/tests/shell/test_brstack.sh
 
 -- 
-Regards/Gruss,
-    Boris.
+2.25.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
