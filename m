@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 394EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7BAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235025AbiGEMK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        id S235051AbiGEMLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233466AbiGEMF6 (ORCPT
+        with ESMTP id S233346AbiGEMGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:05:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26630186F5;
-        Tue,  5 Jul 2022 05:05:23 -0700 (PDT)
+        Tue, 5 Jul 2022 08:06:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2705C18E35;
+        Tue,  5 Jul 2022 05:05:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ABE6AB817CC;
-        Tue,  5 Jul 2022 12:05:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAE9C341CB;
-        Tue,  5 Jul 2022 12:05:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C87C4B817C7;
+        Tue,  5 Jul 2022 12:05:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 397AFC341C7;
+        Tue,  5 Jul 2022 12:05:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022720;
-        bh=wQ9jqvqxdCSyauW0dyP00+syI+DWg0HVsGbiqf7qvcg=;
+        s=korg; t=1657022723;
+        bh=0bluImkZpCzaYQZjKlD4t1mEqrwXpo6gaWJYtmqZ4uM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xs/U85kSXRSHr94Q8QII8ak4TMiioo/WGiKU4efi9kuYwR4bwLN6i2DnimyI6BZK3
-         j/Me/sOUkSW6T+Jx6ZciBXGbWMD/cczQSfdGOg+lhpbcdVRO1Nnz/MyxAKyTXNoSOq
-         7HWwlF1FPXWTHPNdiL1rIePq7HD1k0K3hYie+DRQ=
+        b=tBKthNQ22j1qUhvSjxw52n96R/yLWrJxy7pOuBhTsfrBZIl9lQADAiFqjXGi34Qmi
+         n0IW0CVMpS6/0DiFukHYr8YdCI4oPvrFLO7XchYOonj9A9jDLQkmAUNMtnDg3MdJCg
+         paWNYgoM8JDU1vN38iEUD3woZqDb7VjxM1gtzXcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.4 45/58] selftests/rseq: Fix warnings about #if checks of undefined tokens
-Date:   Tue,  5 Jul 2022 13:58:21 +0200
-Message-Id: <20220705115611.566216635@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 28/58] net: tun: avoid disabling NAPI twice
+Date:   Tue,  5 Jul 2022 13:58:04 +0200
+Message-Id: <20220705115611.074797102@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 References: <20220705115610.236040773@linuxfoundation.org>
@@ -49,40 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit d7ed99ade3e62b755584eea07b4e499e79240527 upstream.
+commit ff1fa2081d173b01cebe2fbf0a2d0f1cee9ce4b5 upstream.
 
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-12-mathieu.desnoyers@efficios.com
+Eric reports that syzbot made short work out of my speculative
+fix. Indeed when queue gets detached its tfile->tun remains,
+so we would try to stop NAPI twice with a detach(), close()
+sequence.
+
+Alternative fix would be to move tun_napi_disable() to
+tun_detach_all() and let the NAPI run after the queue
+has been detached.
+
+Fixes: a8fc8cb5692a ("net: tun: stop NAPI when detaching queues")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220629181911.372047-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/rseq/param_test.c |    2 +-
- tools/testing/selftests/rseq/rseq-x86.h   |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/tun.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/rseq/param_test.c
-+++ b/tools/testing/selftests/rseq/param_test.c
-@@ -159,7 +159,7 @@ unsigned int yield_mod_cnt, nr_abort;
- 	"	cbnz	" INJECT_ASM_REG ", 222b\n"			\
- 	"333:\n"
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -696,7 +696,8 @@ static void __tun_detach(struct tun_file
+ 	tun = rtnl_dereference(tfile->tun);
  
--#elif __PPC__
-+#elif defined(__PPC__)
+ 	if (tun && clean) {
+-		tun_napi_disable(tfile);
++		if (!tfile->detached)
++			tun_napi_disable(tfile);
+ 		tun_napi_del(tfile);
+ 	}
  
- #define RSEQ_INJECT_INPUT \
- 	, [loop_cnt_1]"m"(loop_cnt[1]) \
---- a/tools/testing/selftests/rseq/rseq-x86.h
-+++ b/tools/testing/selftests/rseq/rseq-x86.h
-@@ -600,7 +600,7 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 
- #endif /* !RSEQ_SKIP_FASTPATH */
- 
--#elif __i386__
-+#elif defined(__i386__)
- 
- #define rseq_smp_mb()	\
- 	__asm__ __volatile__ ("lock; addl $0,-128(%%esp)" ::: "memory", "cc")
 
 
