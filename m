@@ -2,131 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339AEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0907BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232679AbiGESIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
+        id S233055AbiGESI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiGESIe (ORCPT
+        with ESMTP id S229729AbiGESIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:08:34 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D334B1DC;
-        Tue,  5 Jul 2022 11:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657044510; x=1688580510;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IEFt1EjrRztOccUEkjfY+bs8M0akMX+TErxhSQ5fFHQ=;
-  b=UKX7lrbabtFpjxG8eeDlDV5CRd43uqWlk2kxZ0ej5/uQGHdW9FRTEAur
-   c920FtxchnHq1BYvFAUHvGOhBQkFdeWxKj9r6wvgu8WaAQsArUzjeYu/e
-   rC8mKizx2nTgRXSxzRmY/aCv0HW58Upilrqnze101AtK2no51+pdEdHIL
-   w9kwD6Ohxzrs7lh96rxvucLXemRR6R+/yxvnS/ijHdSLBem/A4uYNlurP
-   2B981uTeNk3WqIqqZlyKshN/urvF+YDwgKHlMiN69V+B+RVC7rMFosXsl
-   ooDekgEhxnXyoh4QXXDvpXDVjsOf27spbETg0ROnroQjiWCffs+4NEyRU
-   A==;
+        Tue, 5 Jul 2022 14:08:54 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EA81A3A9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657044532; x=1688580532;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Jy4z5L1AMPmQZNqgpGnOFnR1D0ToD/t+WqxkpPwMTq4=;
+  b=JbIaSLhX3k4pc27Lpiefgxw9SNbGTAqZ89w4JZWuuSNSyLLbLDG8BG1Z
+   z2cyOmWAnEVymRJnkkk1RnZqVcK5p5ydaOrPjciD6YgSxklX5oWPgd8s6
+   Wyiyy2YJ0WFzKh+ZyJ6YAxh9rSLFVzV5JWrF5FfdScM10spmBI0f618hI
+   y1FBEtmJBnHjqJVoVzhvuoFCOPAtKZoz7qV1/vak7yDeGA3iP7MJaUK4s
+   ZodxnCGIxHHNBImXvKlXNYKUhAPiw3hnDWLcI5vQvW5gUtcoMVzUVMFVe
+   8QKKCPa/dgPjjtx/B7JpfYFKLbZ8yWxHHlYuts8hM14twwZpTvKbptoFX
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="345115843"
 X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="170857307"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jul 2022 11:08:30 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 5 Jul 2022 11:08:29 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 5 Jul 2022 11:08:29 -0700
-Date:   Tue, 5 Jul 2022 20:12:26 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Michael Walle <michael@walle.cc>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <olteanv@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v2] net: lan966x: hardcode the number of external
- ports
-Message-ID: <20220705181226.jcnwjqcmfsypr4q6@soft-dev3-1.localhost>
-References: <20220704153654.1167886-1-michael@walle.cc>
+   d="scan'208";a="345115843"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:08:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="567726914"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 05 Jul 2022 11:08:50 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8myf-000JSP-PY;
+        Tue, 05 Jul 2022 18:08:49 +0000
+Date:   Wed, 6 Jul 2022 02:07:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:brauner/linux/fs.idmapped.overlay.acl.fix 1/1]
+ include/linux/posix_acl_xattr.h:55: multiple definition of
+ `posix_acl_getxattr_idmapped_mnt';
+ mm/shmem.o:include/linux/posix_acl_xattr.h:55: first defined here
+Message-ID: <202207060249.m0AwQCFQ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220704153654.1167886-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 07/04/2022 17:36, Michael Walle wrote:
-> 
-> Instead of counting the child nodes in the device tree, hardcode the
-> number of ports in the driver itself.  The counting won't work at all
-> if an ethernet port is marked as disabled, e.g. because it is not
-> connected on the board at all.
-> 
-> It turns out that the LAN9662 and LAN9668 use the same switching IP
-> with the same synthesis parameters. The only difference is that the
-> output ports are not connected. Thus, we can just hardcode the
-> number of physical ports to 8.
-> 
-> Fixes: db8bcaad5393 ("net: lan966x: add the basic lan966x driver")
-> Signed-off-by: Michael Walle <michael@walle.cc>
+tree:   https://github.com/ammarfaizi2/linux-block brauner/linux/fs.idmapped.overlay.acl.fix
+head:   05bde3ad56201ff691db6d95ea1316983ea82a9c
+commit: 05bde3ad56201ff691db6d95ea1316983ea82a9c [1/1] acl: report correct ownership in some ovl use-cases
+config: microblaze-randconfig-r013-20220703 (https://download.01.org/0day-ci/archive/20220706/202207060249.m0AwQCFQ-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/05bde3ad56201ff691db6d95ea1316983ea82a9c
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block brauner/linux/fs.idmapped.overlay.acl.fix
+        git checkout 05bde3ad56201ff691db6d95ea1316983ea82a9c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash
 
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> ---
-> changes since v1:
->  - add fixes tag since the fix is simple
->  - switch from new specific compatible to "just use 8 for all"
-> 
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 8 ++------
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.h | 1 +
->  2 files changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> index 5784c4161e5e..1d6e3b641b2e 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> @@ -994,7 +994,7 @@ static int lan966x_probe(struct platform_device *pdev)
->         struct fwnode_handle *ports, *portnp;
->         struct lan966x *lan966x;
->         u8 mac_addr[ETH_ALEN];
-> -       int err, i;
-> +       int err;
-> 
->         lan966x = devm_kzalloc(&pdev->dev, sizeof(*lan966x), GFP_KERNEL);
->         if (!lan966x)
-> @@ -1025,11 +1025,7 @@ static int lan966x_probe(struct platform_device *pdev)
->         if (err)
->                 return dev_err_probe(&pdev->dev, err, "Reset failed");
-> 
-> -       i = 0;
-> -       fwnode_for_each_available_child_node(ports, portnp)
-> -               ++i;
-> -
-> -       lan966x->num_phys_ports = i;
-> +       lan966x->num_phys_ports = NUM_PHYS_PORTS;
->         lan966x->ports = devm_kcalloc(&pdev->dev, lan966x->num_phys_ports,
->                                       sizeof(struct lan966x_port *),
->                                       GFP_KERNEL);
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-> index 3b86ddddc756..2787055c1847 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-> @@ -34,6 +34,7 @@
->  /* Reserved amount for (SRC, PRIO) at index 8*SRC + PRIO */
->  #define QSYS_Q_RSRV                    95
-> 
-> +#define NUM_PHYS_PORTS                 8
->  #define CPU_PORT                       8
-> 
->  /* Reserved PGIDs */
-> --
-> 2.30.2
-> 
+All errors (new ones prefixed by >>):
+
+   microblaze-linux-ld: fs/xattr.o: in function `posix_acl_getxattr_idmapped_mnt':
+>> include/linux/posix_acl_xattr.h:55: multiple definition of `posix_acl_getxattr_idmapped_mnt'; mm/shmem.o:include/linux/posix_acl_xattr.h:55: first defined here
+   microblaze-linux-ld: fs/xattr.o: in function `posix_acl_setxattr_idmapped_mnt':
+>> include/linux/posix_acl_xattr.h:55: multiple definition of `posix_acl_setxattr_idmapped_mnt'; mm/shmem.o:include/linux/posix_acl_xattr.h:55: first defined here
+   microblaze-linux-ld: fs/overlayfs/super.o: in function `posix_acl_getxattr_idmapped_mnt':
+>> include/linux/posix_acl_xattr.h:55: multiple definition of `posix_acl_getxattr_idmapped_mnt'; mm/shmem.o:include/linux/posix_acl_xattr.h:55: first defined here
+   microblaze-linux-ld: fs/overlayfs/super.o: in function `posix_acl_setxattr_idmapped_mnt':
+>> include/linux/posix_acl_xattr.h:55: multiple definition of `posix_acl_setxattr_idmapped_mnt'; mm/shmem.o:include/linux/posix_acl_xattr.h:55: first defined here
+   microblaze-linux-ld: fs/overlayfs/dir.o: in function `posix_acl_getxattr_idmapped_mnt':
+>> include/linux/posix_acl_xattr.h:55: multiple definition of `posix_acl_getxattr_idmapped_mnt'; mm/shmem.o:include/linux/posix_acl_xattr.h:55: first defined here
+   microblaze-linux-ld: fs/overlayfs/dir.o: in function `posix_acl_setxattr_idmapped_mnt':
+>> include/linux/posix_acl_xattr.h:55: multiple definition of `posix_acl_setxattr_idmapped_mnt'; mm/shmem.o:include/linux/posix_acl_xattr.h:55: first defined here
+
+
+vim +55 include/linux/posix_acl_xattr.h
+
+^1da177e4c3f41 Linus Torvalds    2005-04-16  34  
+2f6f0654ab6196 Eric W. Biederman 2012-02-07  35  #ifdef CONFIG_FS_POSIX_ACL
+05bde3ad56201f Christian Brauner 2022-07-04  36  void posix_acl_fix_xattr_from_user(void *value, size_t size);
+05bde3ad56201f Christian Brauner 2022-07-04  37  void posix_acl_fix_xattr_to_user(void *value, size_t size);
+05bde3ad56201f Christian Brauner 2022-07-04  38  void posix_acl_getxattr_idmapped_mnt(struct user_namespace *mnt_userns,
+05bde3ad56201f Christian Brauner 2022-07-04  39  				     const struct inode *inode,
+e65ce2a50cf6af Christian Brauner 2021-01-21  40  				     void *value, size_t size);
+05bde3ad56201f Christian Brauner 2022-07-04  41  void posix_acl_setxattr_idmapped_mnt(struct user_namespace *mnt_userns,
+05bde3ad56201f Christian Brauner 2022-07-04  42  				     const struct inode *inode,
+e65ce2a50cf6af Christian Brauner 2021-01-21  43  				     void *value, size_t size);
+2f6f0654ab6196 Eric W. Biederman 2012-02-07  44  #else
+05bde3ad56201f Christian Brauner 2022-07-04  45  static inline void posix_acl_fix_xattr_from_user(void *value, size_t size)
+05bde3ad56201f Christian Brauner 2022-07-04  46  {
+05bde3ad56201f Christian Brauner 2022-07-04  47  }
+05bde3ad56201f Christian Brauner 2022-07-04  48  static inline void posix_acl_fix_xattr_to_user(void *value, size_t size)
+05bde3ad56201f Christian Brauner 2022-07-04  49  {
+05bde3ad56201f Christian Brauner 2022-07-04  50  }
+05bde3ad56201f Christian Brauner 2022-07-04  51  void posix_acl_getxattr_idmapped_mnt(struct user_namespace *mnt_userns,
+05bde3ad56201f Christian Brauner 2022-07-04  52  				     const struct inode *inode,
+e65ce2a50cf6af Christian Brauner 2021-01-21  53  				     void *value, size_t size)
+2f6f0654ab6196 Eric W. Biederman 2012-02-07  54  {
+2f6f0654ab6196 Eric W. Biederman 2012-02-07 @55  }
+05bde3ad56201f Christian Brauner 2022-07-04  56  void posix_acl_setxattr_idmapped_mnt(struct user_namespace *mnt_userns,
+05bde3ad56201f Christian Brauner 2022-07-04  57  				     const struct inode *inode,
+e65ce2a50cf6af Christian Brauner 2021-01-21  58  				     void *value, size_t size)
+2f6f0654ab6196 Eric W. Biederman 2012-02-07  59  {
+2f6f0654ab6196 Eric W. Biederman 2012-02-07  60  }
+2f6f0654ab6196 Eric W. Biederman 2012-02-07  61  #endif
+2f6f0654ab6196 Eric W. Biederman 2012-02-07  62  
+
+:::::: The code at line 55 was first introduced by commit
+:::::: 2f6f0654ab61961fd0f7701fe3be89ea111f0cda userns: Convert vfs posix_acl support to use kuids and kgids
+
+:::::: TO: Eric W. Biederman <ebiederm@xmission.com>
+:::::: CC: Eric W. Biederman <ebiederm@xmission.com>
 
 -- 
-/Horatiu
+0-DAY CI Kernel Test Service
+https://01.org/lkp
