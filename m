@@ -2,83 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BEFAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FC6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbiGEKlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33738 "EHLO
+        id S232629AbiGEKlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231980AbiGEKkq (ORCPT
+        with ESMTP id S231869AbiGEKkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 06:40:46 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6436C15733;
-        Tue,  5 Jul 2022 03:40:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4E0315802;
+        Tue,  5 Jul 2022 03:40:45 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o8fyz-0002Jv-01; Tue, 05 Jul 2022 12:40:41 +0200
+        id 1o8fz0-0002Jv-04; Tue, 05 Jul 2022 12:40:42 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 2413EC0230; Tue,  5 Jul 2022 12:21:32 +0200 (CEST)
-Date:   Tue, 5 Jul 2022 12:21:32 +0200
+        id 8DCB0C0230; Tue,  5 Jul 2022 12:25:27 +0200 (CEST)
+Date:   Tue, 5 Jul 2022 12:25:27 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MIPS: mscc: ocelot: enable FDMA usage
-Message-ID: <20220705102132.GB9951@alpha.franken.de>
-References: <20220624152548.128700-1-clement.leger@bootlin.com>
+To:     Zhang Jiaming <jiaming@nfschina.com>
+Cc:     rdunlap@infradead.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        renyu@nfschina.com
+Subject: Re: [PATCH v2] MIPS: Fix some typos
+Message-ID: <20220705102527.GH9951@alpha.franken.de>
+References: <20220622090713.24370-1-jiaming@nfschina.com>
+ <20220622102720.30450-1-jiaming@nfschina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220624152548.128700-1-clement.leger@bootlin.com>
+In-Reply-To: <20220622102720.30450-1-jiaming@nfschina.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 05:25:48PM +0200, Clément Léger wrote:
-> From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+On Wed, Jun 22, 2022 at 06:27:20PM +0800, Zhang Jiaming wrote:
+> Change 'modifed' to 'modified'.
+> Change 'relys' to 'relies'.
 > 
-> Enable FDMA usage by adding "fdma" resource in regs and interrupts.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
 > ---
->  arch/mips/boot/dts/mscc/ocelot.dtsi | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/mips/boot/dts/mscc/ocelot.dtsi b/arch/mips/boot/dts/mscc/ocelot.dtsi
-> index cfc219a72bdd..6bd8a1ad94da 100644
-> --- a/arch/mips/boot/dts/mscc/ocelot.dtsi
-> +++ b/arch/mips/boot/dts/mscc/ocelot.dtsi
-> @@ -136,13 +136,14 @@ switch@1010000 {
->  			      <0x1880000 0x10000>,
->  			      <0x1040000 0x10000>,
->  			      <0x1050000 0x10000>,
-> -			      <0x1060000 0x10000>;
-> +			      <0x1060000 0x10000>,
-> +			      <0x1a0 0x1c4>;
->  			reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
->  				    "port2", "port3", "port4", "port5", "port6",
->  				    "port7", "port8", "port9", "port10", "qsys",
-> -				    "ana", "s0", "s1", "s2";
-> -			interrupts = <18 21 22>;
-> -			interrupt-names = "ptp_rdy", "xtr", "inj";
-> +				    "ana", "s0", "s1", "s2", "fdma";
-> +			interrupts = <18 21 22 16>;
-> +			interrupt-names = "ptp_rdy", "xtr", "inj", "fdma";
->  
->  			ethernet-ports {
->  				#address-cells = <1>;
-> -- 
-> 2.36.1
+>  .../mips/cavium-octeon/executive/cvmx-helper-board.c |  4 ++--
+>  arch/mips/include/asm/octeon/cvmx-helper-board.h     | 12 ++++++------
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 
 applied to mips-next.
 
