@@ -2,210 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02A9CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50419CCA488
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237031AbiGEMWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
+        id S237288AbiGEMXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235656AbiGEMO1 (ORCPT
+        with ESMTP id S236012AbiGEMP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:14:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0161900E;
-        Tue,  5 Jul 2022 05:11:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BECFA61988;
-        Tue,  5 Jul 2022 12:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3E39C341C7;
-        Tue,  5 Jul 2022 12:11:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023100;
-        bh=iBqu9UWOI3z5TXlrYoZ4yuHuCxo6e6nY0WZn15Qddac=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=03J3gZnsaJubsj0uLMVsgJJZMKIbss4j7WfGxaKaOpCycSo1/8450gm2nAJlk+0t6
-         5xrYPDCMoWLLzb3jogbsdjHoibW7I2kUMKIDSfQeOgjGhLxGOxxlsAYeHli7hU7g5K
-         TCpy+b/g8BijCh39RnqarAM/sNupRvlSHkMGOqpI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 07/98] net: phy: Dont trigger state machine while in suspend
-Date:   Tue,  5 Jul 2022 13:57:25 +0200
-Message-Id: <20220705115617.785722709@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:15:59 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F9F1B7B9;
+        Tue,  5 Jul 2022 05:11:55 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBXV6048829;
+        Tue, 5 Jul 2022 07:11:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657023093;
+        bh=nlB1w+i7QT4hulVQci7NeKDsS6OG13fU0TgYxnWSh0s=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=Nil2GTedYOqT48LoGl29NE6lR9dbFU3eno/XZmarwnPvGObdEyCw6vj0Fun8mIE7m
+         UHW2iLuUa9eCQp4jSeBAp41wu18zyn46FajMdrVD5emSgoJPmWM/pAKY1ut2Y3xOqc
+         2DlJBzeLP1y2saxq4i5AYd6eOiF/iJZKyQFF6xtc=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBXYf083983
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Jul 2022 07:11:33 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Jul 2022 07:11:33 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Jul 2022 07:11:32 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBVhj023381;
+        Tue, 5 Jul 2022 07:11:32 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
+        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
+        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
+        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
+        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH v4 3/5] drm/bridge: cdns-dsi: Move to drm/bridge/cadence
+Date:   Tue, 5 Jul 2022 17:41:14 +0530
+Message-ID: <20220705121116.24121-4-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220705121116.24121-1-r-ravikumar@ti.com>
+References: <20220705121116.24121-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+Move the cadence dsi bridge under drm/bridge/cadence
+directory, to prepare for adding j721e wrapper
+support
 
-commit 1758bde2e4aa5ff188d53e7d9d388bbb7e12eebb upstream.
-
-Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
-but subsequent interrupts may retrigger it:
-
-They may have been left enabled to facilitate wakeup and are not
-quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
-hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
-as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
-
-Retriggering the phy_state_machine() through an interrupt is not only
-undesirable for the reason given in mdio_bus_phy_suspend() (freezing it
-midway with phydev->lock held), but also because the PHY may be
-inaccessible after it's suspended:  Accesses to USB-attached PHYs are
-blocked once usb_suspend_both() clears the can_submit flag and PHYs on
-PCI network cards may become inaccessible upon suspend as well.
-
-Amend phy_interrupt() to avoid triggering the state machine if the PHY
-is suspended.  Signal wakeup instead if the attached net_device or its
-parent has been configured as a wakeup source.  (Those conditions are
-identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
-interrupt until the PHY has resumed.
-
-Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
-wait for a concurrent phy_interrupt() to run to completion.  That is
-necessary because phy_interrupt() may have checked the PHY's suspend
-status before the system sleep transition commenced and it may thus
-retrigger the state machine after it was stopped.
-
-Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
-wait for a concurrent phy_interrupt() to complete to ensure that
-interrupts which it postponed are properly rerun.
-
-The issue was exposed by commit 1ce8b37241ed ("usbnet: smsc95xx: Forward
-PHY interrupts to PHY driver to avoid polling"), but has existed since
-forever.
-
-Fixes: 541cd3ee00a4 ("phylib: Fix deadlock on resume")
-Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: stable@vger.kernel.org # v2.6.33+
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/b7f386d04e9b5b0e2738f0125743e30676f309ef.1656410895.git.lukas@wunner.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
 ---
- drivers/net/phy/phy.c        |   23 +++++++++++++++++++++++
- drivers/net/phy/phy_device.c |   23 +++++++++++++++++++++++
- include/linux/phy.h          |    6 ++++++
- 3 files changed, 52 insertions(+)
+ drivers/gpu/drm/bridge/Kconfig                       | 11 -----------
+ drivers/gpu/drm/bridge/Makefile                      |  1 -
+ drivers/gpu/drm/bridge/cadence/Kconfig               | 12 ++++++++++++
+ drivers/gpu/drm/bridge/cadence/Makefile              |  2 ++
+ .../bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c}   |  0
+ 5 files changed, 14 insertions(+), 12 deletions(-)
+ rename drivers/gpu/drm/bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c} (100%)
 
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -31,6 +31,7 @@
- #include <linux/io.h>
- #include <linux/uaccess.h>
- #include <linux/atomic.h>
-+#include <linux/suspend.h>
- #include <net/netlink.h>
- #include <net/genetlink.h>
- #include <net/sock.h>
-@@ -972,6 +973,28 @@ static irqreturn_t phy_interrupt(int irq
- 	struct phy_driver *drv = phydev->drv;
- 	irqreturn_t ret;
+diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
+index 57946d80b02d..8b2226f72b24 100644
+--- a/drivers/gpu/drm/bridge/Kconfig
++++ b/drivers/gpu/drm/bridge/Kconfig
+@@ -15,17 +15,6 @@ config DRM_PANEL_BRIDGE
+ menu "Display Interface Bridges"
+ 	depends on DRM && DRM_BRIDGE
  
-+	/* Wakeup interrupts may occur during a system sleep transition.
-+	 * Postpone handling until the PHY has resumed.
-+	 */
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) && phydev->irq_suspended) {
-+		struct net_device *netdev = phydev->attached_dev;
+-config DRM_CDNS_DSI
+-	tristate "Cadence DPI/DSI bridge"
+-	select DRM_KMS_HELPER
+-	select DRM_MIPI_DSI
+-	select DRM_PANEL_BRIDGE
+-	select GENERIC_PHY_MIPI_DPHY
+-	depends on OF
+-	help
+-	  Support Cadence DPI to DSI bridge. This is an internal
+-	  bridge and is meant to be directly embedded in a SoC.
+-
+ config DRM_CHIPONE_ICN6211
+ 	tristate "Chipone ICN6211 MIPI-DSI/RGB Converter bridge"
+ 	depends on OF
+diff --git a/drivers/gpu/drm/bridge/Makefile b/drivers/gpu/drm/bridge/Makefile
+index 1884803c6860..52f6e8b4a821 100644
+--- a/drivers/gpu/drm/bridge/Makefile
++++ b/drivers/gpu/drm/bridge/Makefile
+@@ -1,5 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+-obj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o
+ obj-$(CONFIG_DRM_CHIPONE_ICN6211) += chipone-icn6211.o
+ obj-$(CONFIG_DRM_CHRONTEL_CH7033) += chrontel-ch7033.o
+ obj-$(CONFIG_DRM_CROS_EC_ANX7688) += cros-ec-anx7688.o
+diff --git a/drivers/gpu/drm/bridge/cadence/Kconfig b/drivers/gpu/drm/bridge/cadence/Kconfig
+index 1d06182bea71..e4d3415df2a0 100644
+--- a/drivers/gpu/drm/bridge/cadence/Kconfig
++++ b/drivers/gpu/drm/bridge/cadence/Kconfig
+@@ -25,3 +25,15 @@ config DRM_CDNS_MHDP8546_J721E
+ 	  initializes the J721E Display Port and sets up the
+ 	  clock and data muxes.
+ endif
 +
-+		if (netdev) {
-+			struct device *parent = netdev->dev.parent;
++config DRM_CDNS_DSI
++	tristate "Cadence DPI/DSI bridge"
++	select DRM_KMS_HELPER
++	select DRM_MIPI_DSI
++	select DRM_PANEL_BRIDGE
++	select GENERIC_PHY_MIPI_DPHY
++	depends on OF
++	help
++	  Support Cadence DPI to DSI bridge. This is an internal
++	  bridge and is meant to be directly embedded in a SoC.
 +
-+			if (netdev->wol_enabled)
-+				pm_system_wakeup();
-+			else if (device_may_wakeup(&netdev->dev))
-+				pm_wakeup_dev_event(&netdev->dev, 0, true);
-+			else if (parent && device_may_wakeup(parent))
-+				pm_wakeup_dev_event(parent, 0, true);
-+		}
-+
-+		phydev->irq_rerun = 1;
-+		disable_irq_nosync(irq);
-+		return IRQ_HANDLED;
-+	}
-+
- 	mutex_lock(&phydev->lock);
- 	ret = drv->handle_interrupt(phydev);
- 	mutex_unlock(&phydev->lock);
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -277,6 +277,15 @@ static __maybe_unused int mdio_bus_phy_s
- 	if (phydev->mac_managed_pm)
- 		return 0;
- 
-+	/* Wakeup interrupts may occur during the system sleep transition when
-+	 * the PHY is inaccessible. Set flag to postpone handling until the PHY
-+	 * has resumed. Wait for concurrent interrupt handler to complete.
-+	 */
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 1;
-+		synchronize_irq(phydev->irq);
-+	}
-+
- 	/* We must stop the state machine manually, otherwise it stops out of
- 	 * control, possibly with the phydev->lock held. Upon resume, netdev
- 	 * may call phy routines that try to grab the same lock, and that may
-@@ -314,6 +323,20 @@ static __maybe_unused int mdio_bus_phy_r
- 	if (ret < 0)
- 		return ret;
- no_resume:
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 0;
-+		synchronize_irq(phydev->irq);
-+
-+		/* Rerun interrupts which were postponed by phy_interrupt()
-+		 * because they occurred during the system sleep transition.
-+		 */
-+		if (phydev->irq_rerun) {
-+			phydev->irq_rerun = 0;
-+			enable_irq(phydev->irq);
-+			irq_wake_thread(phydev->irq, phydev);
-+		}
-+	}
-+
- 	if (phydev->attached_dev && phydev->adjust_link)
- 		phy_start_machine(phydev);
- 
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -536,6 +536,10 @@ struct macsec_ops;
-  * @mdix: Current crossover
-  * @mdix_ctrl: User setting of crossover
-  * @interrupts: Flag interrupts have been enabled
-+ * @irq_suspended: Flag indicating PHY is suspended and therefore interrupt
-+ *                 handling shall be postponed until PHY has resumed
-+ * @irq_rerun: Flag indicating interrupts occurred while PHY was suspended,
-+ *             requiring a rerun of the interrupt handler after resume
-  * @interface: enum phy_interface_t value
-  * @skb: Netlink message for cable diagnostics
-  * @nest: Netlink nest used for cable diagnostics
-@@ -590,6 +594,8 @@ struct phy_device {
- 
- 	/* Interrupts are enabled */
- 	unsigned interrupts:1;
-+	unsigned irq_suspended:1;
-+	unsigned irq_rerun:1;
- 
- 	enum phy_state state;
- 
-
+diff --git a/drivers/gpu/drm/bridge/cadence/Makefile b/drivers/gpu/drm/bridge/cadence/Makefile
+index 4d2db8df1bc6..e3d8e9a40784 100644
+--- a/drivers/gpu/drm/bridge/cadence/Makefile
++++ b/drivers/gpu/drm/bridge/cadence/Makefile
+@@ -2,3 +2,5 @@
+ obj-$(CONFIG_DRM_CDNS_MHDP8546) += cdns-mhdp8546.o
+ cdns-mhdp8546-y := cdns-mhdp8546-core.o cdns-mhdp8546-hdcp.o
+ cdns-mhdp8546-$(CONFIG_DRM_CDNS_MHDP8546_J721E) += cdns-mhdp8546-j721e.o
++obj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o
++cdns-dsi-y := cdns-dsi-core.o
+diff --git a/drivers/gpu/drm/bridge/cdns-dsi.c b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+similarity index 100%
+rename from drivers/gpu/drm/bridge/cdns-dsi.c
+rename to drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+-- 
+2.36.1
 
