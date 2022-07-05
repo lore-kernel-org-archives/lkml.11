@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F51C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232964AbiGERBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        id S231372AbiGERBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiGERBY (ORCPT
+        with ESMTP id S229486AbiGERBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 13:01:24 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CB11C915;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F0F1C911;
         Tue,  5 Jul 2022 10:01:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657040484; x=1688576484;
+  t=1657040483; x=1688576483;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=qxfVrDaCDuskuhnHaD48bAjAcwUP0f9Vqaw/vpqssR8=;
-  b=NUt2KkZl4usSBGHINGSErUcKDOK/QzpGjOz3vSwRHGA/rwgqAdseLO1T
-   K2/L5VkxK6ITYEVs16QXjOP6m2lbCFo3tkfSuCDNiEijJld1CI/P/vMj3
-   CQeUqtY6FE/mBMAfTqXuuSOX+0Q7Xz4H9gyi757G2aG6lJ1AniWogBNu6
-   A=;
+  bh=jeChhiyWoLcjAegHXqh/rf8PudXtR1Yc73pLcMWtrq0=;
+  b=tlN75nk0XWbKtBWOXad+7t5du1l6YzgQPQy38bHO3WyQo3P9j+FVchlO
+   QUQMpT2Mv76CK8nSw6F0e1OUuPjJKzwRd4t9FxORiSw84hNn8GdutZwgF
+   Zmde1gC92CQmCLes2uMrNZiPN4Icj3hOiwYchfuo1IK2+QM01eL13Xsi5
+   I=;
 Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
   by alexa-out.qualcomm.com with ESMTP; 05 Jul 2022 10:01:23 -0700
 X-QCInternal: smtphost
@@ -32,9 +32,9 @@ Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
   by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 05 Jul 2022 10:01:21 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 05 Jul 2022 22:30:57 +0530
+  by ironmsg01-blr.qualcomm.com with ESMTP; 05 Jul 2022 22:31:07 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 0429F3CC2; Tue,  5 Jul 2022 22:30:55 +0530 (IST)
+        id 1D9E73CBE; Tue,  5 Jul 2022 22:31:06 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
@@ -45,9 +45,9 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
         bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
         quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
-Subject: [PATCH v4 1/7] drm/msm/disp/dpu1: clear dpu_assign_crtc and get crtc from drm_enc instead of dpu_enc
-Date:   Tue,  5 Jul 2022 22:30:39 +0530
-Message-Id: <1657040445-13067-2-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [PATCH v4 5/7] drm/bridge: Add psr support for panel bridge callbacks
+Date:   Tue,  5 Jul 2022 22:30:43 +0530
+Message-Id: <1657040445-13067-6-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1657040445-13067-1-git-send-email-quic_vpolimer@quicinc.com>
 References: <1657040445-13067-1-git-send-email-quic_vpolimer@quicinc.com>
@@ -55,101 +55,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update crtc retrieval from dpu_enc to drm_enc, since new links get set
-as part of the update legacy mode set. The dpu_enc->crtc cache is no
-more needed, hence cleaning it as part of this change.
+This change will handle the psr entry exit cases in the panel
+bridge atomic callback functions. For example, the panel power
+should not turn off if the panel is entering psr.
 
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  4 ----
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 18 +++---------------
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  8 --------
- 3 files changed, 3 insertions(+), 27 deletions(-)
+ drivers/gpu/drm/bridge/panel.c | 48 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-index b56f777..f91e3d1 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-@@ -972,7 +972,6 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
- 		 */
- 		if (dpu_encoder_get_intf_mode(encoder) == INTF_MODE_VIDEO)
- 			release_bandwidth = true;
--		dpu_encoder_assign_crtc(encoder, NULL);
- 	}
- 
- 	/* wait for frame_event_done completion */
-@@ -1042,9 +1041,6 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
- 	trace_dpu_crtc_enable(DRMID(crtc), true, dpu_crtc);
- 	dpu_crtc->enabled = true;
- 
--	drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state->encoder_mask)
--		dpu_encoder_assign_crtc(encoder, crtc);
--
- 	/* Enable/restore vblank irq handling */
- 	drm_crtc_vblank_on(crtc);
- }
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 52516eb..5629c0b 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -1254,8 +1254,8 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
- 	dpu_enc = to_dpu_encoder_virt(drm_enc);
- 
- 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
--	if (dpu_enc->crtc)
--		dpu_crtc_vblank_callback(dpu_enc->crtc);
-+	if (drm_enc->crtc)
-+		dpu_crtc_vblank_callback(drm_enc->crtc);
- 	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
- 
- 	atomic_inc(&phy_enc->vsync_cnt);
-@@ -1280,18 +1280,6 @@ static void dpu_encoder_underrun_callback(struct drm_encoder *drm_enc,
- 	DPU_ATRACE_END("encoder_underrun_callback");
- }
- 
--void dpu_encoder_assign_crtc(struct drm_encoder *drm_enc, struct drm_crtc *crtc)
--{
--	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
--	unsigned long lock_flags;
--
--	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
--	/* crtc should always be cleared before re-assigning */
--	WARN_ON(crtc && dpu_enc->crtc);
--	dpu_enc->crtc = crtc;
--	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
--}
--
- void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder *drm_enc,
- 					struct drm_crtc *crtc, bool enable)
+diff --git a/drivers/gpu/drm/bridge/panel.c b/drivers/gpu/drm/bridge/panel.c
+index eeb9546..9770b8c 100644
+--- a/drivers/gpu/drm/bridge/panel.c
++++ b/drivers/gpu/drm/bridge/panel.c
+@@ -112,6 +112,18 @@ static void panel_bridge_atomic_pre_enable(struct drm_bridge *bridge,
+ 				struct drm_bridge_state *old_bridge_state)
  {
-@@ -1302,7 +1290,7 @@ void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder *drm_enc,
- 	trace_dpu_enc_vblank_cb(DRMID(drm_enc), enable);
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
++	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
++	struct drm_encoder *encoder = bridge->encoder;
++	struct drm_crtc *crtc;
++	struct drm_crtc_state *old_crtc_state;
++
++	crtc = drm_atomic_get_new_crtc_for_encoder(atomic_state, encoder);
++	if (!crtc)
++		return;
++
++	old_crtc_state = drm_atomic_get_old_crtc_state(atomic_state, crtc);
++	if (old_crtc_state && old_crtc_state->self_refresh_active)
++		return;
  
- 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
--	if (dpu_enc->crtc != crtc) {
-+	if (drm_enc->crtc != crtc) {
- 		spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
- 		return;
- 	}
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-index 781d41c..edba815 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-@@ -39,14 +39,6 @@ struct msm_display_info {
- };
+ 	drm_panel_prepare(panel_bridge->panel);
+ }
+@@ -120,6 +132,18 @@ static void panel_bridge_atomic_enable(struct drm_bridge *bridge,
+ 				struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
++	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
++	struct drm_encoder *encoder = bridge->encoder;
++	struct drm_crtc *crtc;
++	struct drm_crtc_state *old_crtc_state;
++
++	crtc = drm_atomic_get_new_crtc_for_encoder(atomic_state, encoder);
++	if (!crtc)
++		return;
++
++	old_crtc_state = drm_atomic_get_old_crtc_state(atomic_state, crtc);
++	if (old_crtc_state && old_crtc_state->self_refresh_active)
++		return;
  
- /**
-- * dpu_encoder_assign_crtc - Link the encoder to the crtc it's assigned to
-- * @encoder:	encoder pointer
-- * @crtc:	crtc pointer
-- */
--void dpu_encoder_assign_crtc(struct drm_encoder *encoder,
--			     struct drm_crtc *crtc);
--
--/**
-  * dpu_encoder_toggle_vblank_for_crtc - Toggles vblank interrupts on or off if
-  *	the encoder is assigned to the given crtc
-  * @encoder:	encoder pointer
+ 	drm_panel_enable(panel_bridge->panel);
+ }
+@@ -128,6 +152,18 @@ static void panel_bridge_atomic_disable(struct drm_bridge *bridge,
+ 				struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
++	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
++	struct drm_encoder *encoder = bridge->encoder;
++	struct drm_crtc *crtc;
++	struct drm_crtc_state *new_crtc_state;
++
++	crtc = drm_atomic_get_old_crtc_for_encoder(atomic_state, encoder);
++	if (!crtc)
++		return;
++
++	new_crtc_state = drm_atomic_get_new_crtc_state(atomic_state, crtc);
++	if (new_crtc_state && new_crtc_state->self_refresh_active)
++		return;
+ 
+ 	drm_panel_disable(panel_bridge->panel);
+ }
+@@ -136,6 +172,18 @@ static void panel_bridge_atomic_post_disable(struct drm_bridge *bridge,
+ 				struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
++	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
++	struct drm_encoder *encoder = bridge->encoder;
++	struct drm_crtc *crtc;
++	struct drm_crtc_state *new_crtc_state;
++
++	crtc = drm_atomic_get_old_crtc_for_encoder(atomic_state, encoder);
++	if (!crtc)
++		return;
++
++	new_crtc_state = drm_atomic_get_new_crtc_state(atomic_state, crtc);
++	if (new_crtc_state && new_crtc_state->self_refresh_active)
++		return;
+ 
+ 	drm_panel_unprepare(panel_bridge->panel);
+ }
 -- 
 2.7.4
 
