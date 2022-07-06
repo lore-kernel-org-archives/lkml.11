@@ -2,92 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E56BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:07:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289C9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233691AbiGFPHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
+        id S233466AbiGFPH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232445AbiGFPHi (ORCPT
+        with ESMTP id S233678AbiGFPHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:07:38 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC0925592
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 08:07:33 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id x10so12315686edd.13
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 08:07:33 -0700 (PDT)
+        Wed, 6 Jul 2022 11:07:43 -0400
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137CE2611C
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 08:07:41 -0700 (PDT)
+Received: by mail-ua1-x933.google.com with SMTP id x31so569443uaf.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 08:07:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BpcbsEw/20xy+czFl3NKN5RfG+F04MUU4xLklx2RkdY=;
-        b=CAvY5156Pd1hW8HjRa+SbS77+QIlmJ/aqV11spi0db19nP+RAi7RtWtooJIj/uX/Se
-         DWYeNgfzHB4FOLkYeGjRph2dszxVR0ABUofJffAAn8/GAiWJHyK92fFUO43t7x94K91p
-         nWQWMLPSfdtUIChpFdPAwHA2zKPMZNZTUJSrb4gMRml3VrzDKrXvDMX+PLyf1iDFHyoS
-         tg4CFvrLcfN8uUBhOVz/b155e6dw/Djpke/zpHOnNTsxsMtIE8gq0qteoZq/vUvQTBfB
-         McKpzl8tmPOCe+bqTfeW8I54EYkS5SwtdTz2CCm3GBzn29v/WUYWOTlCmp5wirnhJz20
-         cvmw==
+        bh=Zfcy3m2aUEnWeUHn5XfX6u8AAnHVyZsNCC+cc8UeCsE=;
+        b=le4jtK2QSjWURfVESc5K7w8QK2lwcPWnZWbLUUO5UuMF9/35xMgYsUlcS8EoJblZfS
+         2HLA4JCYWWpa8fawH5oFR/7yHQVoeSVnVWi0ibMvNwlJaTV6k7WPA90fWRuq0LSivG+r
+         uuVxQdQ0iuGfT+ao/jFhsgyrxsXM4YBEaOF8/TVlOom9nT9kvIhoJ53MuHloR4dzJ66l
+         zsbbvO596XWQF9CUWoehgIJ414gSGLnYzHtIZgrKcz9Fxc648RDB09C/Kb5kjZ4IfskQ
+         X1myZp1L6dcOveSxUwxkpOZ0nCqiqKjugJ0E+cqlLCuTQNctl8HNc9MBQjZTUwgEnPR0
+         SNtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BpcbsEw/20xy+czFl3NKN5RfG+F04MUU4xLklx2RkdY=;
-        b=ybs9TMZBIo59Wq98XtR52r6MdEwqd6n0QhmgdeKDEIwnzrmVFoUVhZlCh7AFx8b1KQ
-         IFAAA4dgmMyZSboKQCqbB2sLDqkSO2fSNPq8Jdzi5ThLe3ptaKi4CoiFrLvDIe06zUFx
-         fSdR6DxHhNibNE2PJPWp98/RnhVZUjiwYM2CZtJCbc4V6flsaCJKVD/nNY2kTm73lfRy
-         Dg9Yab4qclRYUGe6SlaUNEpaa+67+nTKHqpElK8dcTST82gG2qR9ztICx6bKkt9Tz8F8
-         A2wCvMrGVodLmpls6VkDe4fYRzc8V4ci8YlnPkhDF3ehbWjoIdz4xLv+JpJFx80VCUw4
-         xBQA==
-X-Gm-Message-State: AJIora8EvCAcycctsMyiZ6tUVFzFDb5p6bZws5EpJsPzRk3EXBtJcssB
-        OHoQovZtgZqM0Sy4gsLKDE4OvG/P3FLeTgNwWXvPQg==
-X-Google-Smtp-Source: AGRyM1toIUwU2hQGy73CKB+mVxb4qKDrzlrhNmnsT46t+aRA8c854vbii67QfBYKQMCf50W7y/jQJ8Jrdqy0Wyvjcuc=
-X-Received: by 2002:a05:6402:150:b0:437:b93c:3a9 with SMTP id
- s16-20020a056402015000b00437b93c03a9mr52926716edu.82.1657120051888; Wed, 06
- Jul 2022 08:07:31 -0700 (PDT)
+        bh=Zfcy3m2aUEnWeUHn5XfX6u8AAnHVyZsNCC+cc8UeCsE=;
+        b=qC2XMoEDb9v70tQHI0B47ppg2FbfyiD3hV3wUILaRa1P28hFJRrKwKBPGlGVZxXKfN
+         HzBd40lbjB8v/nswFv626xEeqXtf18oL7pNv58a8OvviAHTrOMRl3JiNEXQIfKbzj8ph
+         geOV65+wbJ++ChV8dJY2CP4T/DQhhvyfhyOxr/m1lJAH3fU5NuaxxTB7oLi/NGhD9X1Z
+         gyZiBKsazd88NI8IzHU88XbmPDdt5kElZ+KpeFQF/mxyB6Cxd2hInCMsK11cfzPvSdId
+         3alko2hUuUafo4z85pbncfkvel8mqKdB/JYBWs/IRINL54eFwKfHz23qLMeuYF+2puYU
+         Y8Zw==
+X-Gm-Message-State: AJIora/oWgFi780uul9hXKweP9HcJwaozYiHnhmeM6U26Xd2hPU9Ysw7
+        lUOi8FpLOnwdN82QxZWwoOCs5PCRDufyataufzUusQ==
+X-Google-Smtp-Source: AGRyM1s48ooDVEVNaeipULKJ2uDLBt3vYCsJKr6Eh7LXVrZLaUsYil8k83ks7YpwaJ30mf1NQKDBiHb0MxOt/ut8QD8=
+X-Received: by 2002:a9f:3155:0:b0:382:9191:6c4d with SMTP id
+ n21-20020a9f3155000000b0038291916c4dmr8314242uab.98.1657120060698; Wed, 06
+ Jul 2022 08:07:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220705171835.4923-1-brgl@bgdev.pl> <CAHp75Ve3sPhFOZhL=_2p+1avuo96CP995KD+bi+Pn3gyj1F9TA@mail.gmail.com>
- <CAMRc=MekRvEVjRKJn6CWpbk9GJWS0Y+kB9MYpGFSN9WSSzWC7A@mail.gmail.com> <CAHp75VdepbidJWgLZFk3ns13boZXRYvMqvLvXF_xYw=2ahZMgw@mail.gmail.com>
-In-Reply-To: <CAHp75VdepbidJWgLZFk3ns13boZXRYvMqvLvXF_xYw=2ahZMgw@mail.gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 6 Jul 2022 17:07:21 +0200
-Message-ID: <CAMRc=MfQgVD3VkY+Pq7UxV8WB-2GSpsSgU9N8djdkK99ycg4Uw@mail.gmail.com>
-Subject: Re: [PATCH] gpio: pxa: schedule a devm action for the clock struct
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hulk Robot <hulkci@huawei.com>, Yuan Can <yuancan@huawei.com>
+References: <20220701165045.4074471-1-juew@google.com> <20220701165045.4074471-2-juew@google.com>
+ <181c484aa33.6db8a9c7835812.4939150843849434525@siddh.me>
+In-Reply-To: <181c484aa33.6db8a9c7835812.4939150843849434525@siddh.me>
+From:   Jue Wang <juew@google.com>
+Date:   Wed, 6 Jul 2022 08:07:29 -0700
+Message-ID: <CAPcxDJ51EQwTZzNOzckRGXgE9s6X+rpDWFxvb8JZpAQQVjm1iQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] KVM: x86: Fix access to vcpu->arch.apic when the
+ irqchip is not in kernel
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        Xiaoyao Li <xiaoyao.li@intel.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Matlack <dmatlack@google.com>,
+        Tony Luck <tony.luck@intel.com>, kvm <kvm@vger.kernel.org>,
+        Jiaqi Yan <jiaqiyan@google.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 2:32 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Wed, Jul 6, 2022 at 2:11 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> > On Wed, Jul 6, 2022 at 1:49 PM Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
-> > > On Tue, Jul 5, 2022 at 7:29 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
->
-> ...
->
-> > > > Reported-by: Signed-off-by: Yuan Can <yuancan@huawei.com>
-> > >
-> > > Me puzzled.
-> >
-> > Yuan Can sent the following patch:
-> > https://patchwork.ozlabs.org/project/linux-gpio/patch/20220704130323.104294-1-yuancan@huawei.com/
-> >
-> > I responded that it was not complete and sent this instead.
->
-> I understand that, I am puzzled with Reported-by: followed by SoB.
-> What is this format? Is it something new and documented?
->
+Hi Siddh,
 
-Ah! No, it's just my brain on not enough coffee I suppose. Thanks, I'll fix it.
+Thanks for the note.
 
-Bart
+I've sent out an updated v2 patch:
+https://lore.kernel.org/kvm/20220706145957.32156-2-juew@google.com/T/#u
+
+Thanks,
+-Jue
+
+
+On Sun, Jul 3, 2022 at 7:44 AM Siddh Raman Pant <code@siddh.me> wrote:
+>
+> On Fri, 01 Jul 2022 22:20:45 +0530  Jue Wang <juew@google.com> wrote
+> > Fix an access to vcpu->arch.apic when KVM_X86_SETUP_MCE is called
+> > without KVM_CREATE_IRQCHIP called or KVM_CAP_SPLIT_IRQCHIP is
+> > enabled.
+> >
+> > Fixes: 4b903561ec49 ("KVM: x86: Add Corrected Machine Check Interrupt (CMCI) emulation to lapic.")
+> > Signed-off-by: Jue Wang <juew@google.com>
+> > ---
+> >  arch/x86/kvm/x86.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index 4322a1365f74..d81020dd0fea 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -4820,8 +4820,9 @@ static int kvm_vcpu_ioctl_x86_setup_mce(struct kvm_vcpu *vcpu,
+> >          if (mcg_cap & MCG_CMCI_P)
+> >              vcpu->arch.mci_ctl2_banks[bank] = 0;
+> >      }
+> > -    vcpu->arch.apic->nr_lvt_entries =
+> > -        KVM_APIC_MAX_NR_LVT_ENTRIES - !(mcg_cap & MCG_CMCI_P);
+> > +    if (vcpu->arch.apic)
+> > +        vcpu->arch.apic->nr_lvt_entries =
+> > +            KVM_APIC_MAX_NR_LVT_ENTRIES - !(mcg_cap & MCG_CMCI_P);
+> >
+> >      static_call(kvm_x86_setup_mce)(vcpu);
+> >  out:
+> > --
+> > 2.37.0.rc0.161.g10f37bed90-goog
+> >
+> >
+>
+> Hello Jue,
+>
+> There is a syzkaller bug regarding null ptr dereference which is caused by
+> vcpu->arch.apic being NULL, first reported on 27th June. You might want to
+> add it's reported-by line so that it can be marked as fixed.
+>
+> Link: https://syzkaller.appspot.com/bug?id=10b9b238e087a6c9bef2cc48bee2375f58fabbfc
+>
+> I was looking at this bug too and fixed it (i.e. reproducer won't crash)
+> using lapic_in_kernel(vcpu) as a condition instead of null ptr check on
+> vcpu->arch.apic, as it makes more sense to the code reader (the lapic is
+> not there since during kvm_arch_vcpu_create(), it isn't created due to
+> irqchip_in_kernel() check being false).
+>
+> May I suggest that lapic_in_kernel(vcpu) be used instead of the null ptr
+> check?
+>
+> Thanks,
+> Siddh
