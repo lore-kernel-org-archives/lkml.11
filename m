@@ -2,150 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB652C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E15A4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:36:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231718AbiGFIgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
+        id S232377AbiGFIgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232377AbiGFIgU (ORCPT
+        with ESMTP id S232372AbiGFIgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:36:20 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CE5248DF
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:36:15 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id bf13so421154pgb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:36:15 -0700 (PDT)
+        Wed, 6 Jul 2022 04:36:36 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22AAD24949
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:36:35 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id bu42so4825738lfb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ozlabs-ru.20210112.gappssmtp.com; s=20210112;
+        d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3rzfxOGSqbmsMXygj1P/cqh2Us2vss/rVotjH7eOiew=;
-        b=dk2nJfeFYSbNNmJ7tfrqvCIB0euid3h5zOgKmeIekOTSjhv32mCcyofMLQzJOxVoHK
-         aRq8F2c7iJUjCTd7Y/R57xcY2bQaG6ioi6kv+TLcL+BJXAejshlsS8xum/OPiXvWATUT
-         vdpXbQt44L+uRaYXT/JYB1kPPRa5y4RCwgzLVcx6cO8cxsxhXpGhmN3kN09lXKVIZ1EV
-         2RM/eb4YmuKY00crYGVaIq/BcRRUuz6NJ06G7GmqQXyCv3np8UGtERkM6G7D8uEfqBjH
-         kNj56D5Yll5Oi4SUi1xuGmI0nMVIO/WeFD/kdtiHRvSGSaLJFJ39dLB9U3M7/SenAMsI
-         7e5g==
+        bh=P97RgFCmNV942tctqpn0OBJg9vJcOtiyZezQH2Fw3y0=;
+        b=AtdGW6jfzD/zyGOlMQXFUoK+i7IgFxR9NelxXFHL7rCJMB2nAnOE6hbJWykEcnX9aa
+         8pXFU2A9UbF9XCrE9Tyk3EbeE1RERHv+P5gFb0BVvLXhGAu3CzJlrWiIJB6O2eT0GLKo
+         cx8OkcnsnRuOCSeMVYsrHnevbHP1nv5fcurFoEdmpesZRxA3fVRBIAnT9jlE8PTmHPen
+         WjNzTYmHX1xsa1dUalkHHc2aIHrZNV9kAVsvbdMV7PxfgHrAPENzgLh/uMM/Dat5XAQC
+         Z5DXu2hxL8DYvN8ZILYH90NOdJBEdrOsvdTJSeea0BqSWz09EVRhXRfMvUzesf10QS+/
+         WDBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=3rzfxOGSqbmsMXygj1P/cqh2Us2vss/rVotjH7eOiew=;
-        b=qA8P1WImQrgkr3EP2YbE3SEeSEmr41W9XjpUhQy8U8Z9LrFrLNBl6USxNOQhpRKoXh
-         Y0/cI+y+4ehNfm3TXcZGnXeaMfKacQ13M5siu60ACzFljv1n2UqA7q51H9EEt4NJLMUS
-         EMNIFWwowgl0/V/gmEuVujM29pUbMaIxIX1vUmQcYy4c7bm4fDIpxNukNgL5k969NLtP
-         GPiytVOK2YM7dGSIVJkxcwymJDe/HrmNlsI61uV5XxD+KEch0QUlj2ushJMGxiUkMP9K
-         BtJqo7g6J5gWASYMtKoqqg/gHTf3QWIChEakdd+FpJCDZ4ixabp1NMp8Re0ufhSIVDw/
-         5Mkg==
-X-Gm-Message-State: AJIora/RvupaIO5llVzwiTPBgVaGzjRDqhAowzK+Qed/0uOEg+v+9hXy
-        E1w8KrRWN+vOqyubXJGRW4mB8g==
-X-Google-Smtp-Source: AGRyM1tFhqz+nKiml8dYdUjMlqXU6Xc6JmbRL/P4emD0Q/E95wuRF7UkZpzP0rKmsb8rD5oZaq+n2Q==
-X-Received: by 2002:a05:6a00:17a7:b0:525:4306:72ad with SMTP id s39-20020a056a0017a700b00525430672admr45748510pfg.42.1657096575284;
-        Wed, 06 Jul 2022 01:36:15 -0700 (PDT)
-Received: from [192.168.10.153] (203-7-124-83.dyn.iinet.net.au. [203.7.124.83])
-        by smtp.gmail.com with ESMTPSA id m14-20020a056a00080e00b00525b61f4792sm19405754pfk.109.2022.07.06.01.36.10
+        bh=P97RgFCmNV942tctqpn0OBJg9vJcOtiyZezQH2Fw3y0=;
+        b=sifVM3YbUsTvga0uBbcxXiluhpjz+i2pZhWpsRPb5/H2kMn9lKN21ycOM0hjlXU2bs
+         OZfSuUjMYOdm6wajOrermmJXhMxkQ3KJJddcXSE8LS6HxqMDuHv5EJG+T6Ll2ayWTZYk
+         9LIvSV/QVfL9r0XxqhUrGc/vfFYQuYITMwJz76rL6WQOQh6p4v9AWjVEfMjinAyeL06j
+         QmmmlVOH/uqL14Wdwo2wr23w09lGi+OL6jO4is0VOdlUOTfxGbgmIsirgi5zb9f8y3lK
+         o+QnKH7a+H86AFVQQaUO1wNbor8uTCarwSSKlavAItVQLcjAD7ctHLJLC3v3wa1WzFLM
+         Q6AQ==
+X-Gm-Message-State: AJIora9aVW/izA4xH15FMLX2fUsxzJaXNStMz8qjPNuoAOiJcZ0hneIL
+        n+bkLTrKCrCf7oI67dzu1L+uwg==
+X-Google-Smtp-Source: AGRyM1vI6+gYVywu/DuF0fgyKCxnUJ512MxR6y5v2Risw6pNlpeBZRBAlmqd01KbPYPBEgr6Fdi4vQ==
+X-Received: by 2002:a05:6512:360d:b0:480:d14a:20ef with SMTP id f13-20020a056512360d00b00480d14a20efmr25206205lfs.508.1657096593541;
+        Wed, 06 Jul 2022 01:36:33 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id q185-20020a2e5cc2000000b0025a891f7b8dsm6029436ljb.32.2022.07.06.01.36.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 01:36:14 -0700 (PDT)
-Message-ID: <aef1d470-e8a0-4ba8-2a55-adf05b836684@ozlabs.ru>
-Date:   Wed, 6 Jul 2022 18:38:09 +1000
+        Wed, 06 Jul 2022 01:36:32 -0700 (PDT)
+Message-ID: <6c67a90a-510d-a3e7-4d04-66038395379d@linaro.org>
+Date:   Wed, 6 Jul 2022 10:36:31 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH v2 09/14] iommu/ipmmu-vmsa: Clean up bus_set_iommu()
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 06/13] ARM: dts: qcom: enable usb phy by default for
+ ipq8064
 Content-Language: en-US
-To:     Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
-        will@kernel.org
-Cc:     jean-philippe@linaro.org, zhang.lyra@gmail.com,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org,
-        gerald.schaefer@linux.ibm.com
-References: <cover.1650890638.git.robin.murphy@arm.com>
- <01a58dcc9c70836b7556d54dbdac6a340f206781.1650890638.git.robin.murphy@arm.com>
-From:   Alexey Kardashevskiy <aik@ozlabs.ru>
-In-Reply-To: <01a58dcc9c70836b7556d54dbdac6a340f206781.1650890638.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan McDowell <noodles@earth.li>
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-7-ansuelsmth@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220705133917.8405-7-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 28/04/2022 23:18, Robin Murphy wrote:
-> Stop calling bus_set_iommu() since it's now unnecessary. This also
-> leaves the custom initcall effectively doing nothing but register
-> the driver, which no longer needs to happen early either, so convert
-> it to builtin_platform_driver().
+On 05/07/2022 15:39, Christian Marangi wrote:
+> Enable usb phy by default. When the usb phy were pushed, half of them
+> were flagged as disabled by mistake. Fix this to correctly init dwc3
+> node on any ipq8064 based SoC.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> Tested-by: Jonathan McDowell <noodles@earth.li>
 > ---
->   drivers/iommu/ipmmu-vmsa.c | 35 +----------------------------------
->   1 file changed, 1 insertion(+), 34 deletions(-)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 8fdb84b3642b..2549d32f0ddd 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -1090,11 +1090,6 @@ static int ipmmu_probe(struct platform_device *pdev)
->   		ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
->   		if (ret)
->   			return ret;
-> -
-> -#if defined(CONFIG_IOMMU_DMA)
-> -		if (!iommu_present(&platform_bus_type))
-> -			bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> -#endif
->   	}
->   
->   	/*
-
-The comment which starts here did not make it to the patch but it should 
-have as it mentions bus_set_iommu() which is gone by the end of the series.
 
 
-More general question/request - could you please include the exact sha1 
-the patchset is based on? It did not apply to any current trees and 
-while it was trivial, it was slightly annoying to resolve the conflicts 
-:)  Thanks,
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
-> @@ -1168,32 +1163,4 @@ static struct platform_driver ipmmu_driver = {
->   	.probe = ipmmu_probe,
->   	.remove	= ipmmu_remove,
->   };
-> -
-> -static int __init ipmmu_init(void)
-> -{
-> -	struct device_node *np;
-> -	static bool setup_done;
-> -	int ret;
-> -
-> -	if (setup_done)
-> -		return 0;
-> -
-> -	np = of_find_matching_node(NULL, ipmmu_of_ids);
-> -	if (!np)
-> -		return 0;
-> -
-> -	of_node_put(np);
-> -
-> -	ret = platform_driver_register(&ipmmu_driver);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
-> -	if (!iommu_present(&platform_bus_type))
-> -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> -#endif
-> -
-> -	setup_done = true;
-> -	return 0;
-> -}
-> -subsys_initcall(ipmmu_init);
-> +builtin_platform_driver(ipmmu_driver);
-
--- 
-Alexey
+Best regards,
+Krzysztof
