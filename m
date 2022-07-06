@@ -2,183 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C32C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 300E5CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbiGFG4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 02:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49258 "EHLO
+        id S230403AbiGFG4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 02:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiGFG4G (ORCPT
+        with ESMTP id S229530AbiGFG4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 02:56:06 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9691B79C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 23:56:05 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id m14so5896462iln.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 23:56:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YFNQb7b1KCsmQRzxr93CIXPIla3KWLn6zmSX1Y0R8fU=;
-        b=chEdrQ2KkUcPSmiE2c06PqmFRcX/+J/ozDM3YotO8fOVVIZqIyVSxNFhq29PwUY0Em
-         ThOXuJ8axs5pxRxZWcRECV+zwOLllRql7f3spnr/BMvT88PuL8bVexOkVkLTMUs5rTv9
-         ekT05iDkTxWG8l0eFUAlDcdvvYrahBBMDNyINXiZMUzdGu83qbZ2gTeL5Y0fnNa7wRpi
-         l2FYNTJrGz58RjSYLzKfQOAPX0bvALteMfrWpqOfe+1mNs1ROS94Fh7n8DpYY07UBICG
-         5UQvKebkK8goHufdaC+qFxsF2tgPcPIcubD/UuqyeL2+Epz7oLoxR2Uc6BtaGMUTYBMN
-         0twQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YFNQb7b1KCsmQRzxr93CIXPIla3KWLn6zmSX1Y0R8fU=;
-        b=dm3Q1yN3m2W+Nc1yzBFd93wOVxT6UHdWAYmGdCRbZ8XvGPkiF62iZs6FiREd6W/DG9
-         dsMI2NS0jm3E/4n9qECkv0Am/0dIs5NL+1mtzODZX51pxedH7k4+1snk9/9IUwmrGRAg
-         hR7V/pAJQFN7DWO7pq6SuwMk/leuqaiDNp4B+up/TvlQN9xeUvEgNQjOqZ3r16BnRoMP
-         LGMdmXAcV0dCra6lAQIBR6RznvD7rBhLtCVvu/2LUKZAwSd027DvfjM3IBDNHoaqA8Ja
-         m8Vw831nG8ueWici9vo/qhaSkvW8zH7IJM6Z+peWS6DtKGjOguzX5SsFE/umuqtAyyPN
-         Zmzg==
-X-Gm-Message-State: AJIora8rbPIHjye8a6miTINJq5nmTGaLrf3qt8+bhldpjdLmSIEfd8RY
-        IH02zdrgkX2SiHbvDVjLk5kW3luJpU/n/HE0PEcA3A==
-X-Google-Smtp-Source: AGRyM1soHgVS48kFwmmwTHhWAsyaq8JZdKD0yeOo508CIlLAH/onAdt/4q+JwrPyk3J4PH3vhtrqOaDDZ8QlBJTxAs4=
-X-Received: by 2002:a92:cb0e:0:b0:2dc:240a:3149 with SMTP id
- s14-20020a92cb0e000000b002dc240a3149mr4326727ilo.55.1657090565135; Tue, 05
- Jul 2022 23:56:05 -0700 (PDT)
+        Wed, 6 Jul 2022 02:56:38 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3653F1CB0A;
+        Tue,  5 Jul 2022 23:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/m24PsaB4Cz1aJpY2Cyju0n6At9XHWz5aCK5PGbqU1o=; b=X7/FBvhB9T2/CRNeMUuvEypKFb
+        mD4tslMhbVmzWVE7SzYN0fXxNPgmANxnjxT2D6qxg2jDjE0bROkrGdpPBFAyPSO8FHnKUCIG/tgPV
+        CMNagu0OUPgBs64PQS7P4nXbZgGlxj5VjAJ6nM6zqV7hQjSC6sKfZLLO0RJ0VL4NobI37zolQJAUN
+        cAgI2u0JmXW32Dyx1G0/S+Yv9wxomqBEfcd4FRBh8980GD/IG+cC0BSRiZbJJO4/EubgDPvK8J0WA
+        zOJSX/xDYsjpPpiNWA8VsEiOYtCIsjsjimpF4ualAySYR/TX0H9EHbt+3pK55aWBcTupeb+etyics
+        m5+ajWhg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8yxV-006rmp-Lm; Wed, 06 Jul 2022 06:56:25 +0000
+Date:   Tue, 5 Jul 2022 23:56:25 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Nicolin Chen <nicolinc@nvidia.com>
+Cc:     kwankhede@nvidia.com, corbet@lwn.net, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        mjrosato@linux.ibm.com, pasic@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com,
+        akrowiak@linux.ibm.com, jjherne@linux.ibm.com,
+        alex.williamson@redhat.com, cohuck@redhat.com, jgg@nvidia.com,
+        kevin.tian@intel.com, hch@infradead.org, jchrist@linux.ibm.com,
+        kvm@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: Re: [RFT][PATCH v2 4/9] vfio: Pass in starting IOVA to
+ vfio_pin/unpin_pages API
+Message-ID: <YsUyGS7kct2BbiS8@infradead.org>
+References: <20220706062759.24946-1-nicolinc@nvidia.com>
+ <20220706062759.24946-5-nicolinc@nvidia.com>
 MIME-Version: 1.0
-References: <20220705115610.236040773@linuxfoundation.org>
-In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 6 Jul 2022 12:25:54 +0530
-Message-ID: <CA+G9fYtXD=L3JaBVDMoVg8ChmqcewOr+rJDy=G-wdegUs0JYcQ@mail.gmail.com>
-Subject: Re: [PATCH 5.4 00/58] 5.4.204-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706062759.24946-5-nicolinc@nvidia.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Jul 2022 at 17:34, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.4.204 release.
-> There are 58 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 07 Jul 2022 11:55:56 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.4.204-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.4.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> -		vfio_unpin_pages(&q->matrix_mdev->vdev, &q->saved_pfn, 1);
+> +		vfio_unpin_pages(&q->matrix_mdev->vdev, q->saved_pfn << PAGE_SHIFT, 1);
 
+Overly long line here.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Otherwise looks good:
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-## Build
-* kernel: 5.4.204-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.4.y
-* git commit: 0f4cd7014f4101204454b404e03101579ef33481
-* git describe: v5.4.203-59-g0f4cd7014f41
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.2=
-03-59-g0f4cd7014f41
-
-## Test Regressions (compared to v5.4.203)
-No test regressions found.
-
-## Metric Regressions (compared to v5.4.203)
-No metric regressions found.
-
-## Test Fixes (compared to v5.4.203)
-No test fixes found.
-
-## Metric Fixes (compared to v5.4.203)
-No metric fixes found.
-
-## Test result summary
-total: 122576, pass: 108899, fail: 260, skip: 12381, xfail: 1036
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 307 total, 307 passed, 0 failed
-* arm64: 61 total, 59 passed, 2 failed
-* i386: 28 total, 25 passed, 3 failed
-* mips: 48 total, 48 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 54 total, 54 passed, 0 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 12 total, 12 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 55 total, 54 passed, 1 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecap[
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+Reviewed-by: Christoph Hellwig <hch@lst.de>
