@@ -2,85 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 449EEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B13C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232579AbiGFMJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43956 "EHLO
+        id S233467AbiGFMLB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiGFMJy (ORCPT
+        with ESMTP id S231190AbiGFMK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:09:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A8C2408D;
-        Wed,  6 Jul 2022 05:09:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93E6161F31;
-        Wed,  6 Jul 2022 12:09:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6035AC3411C;
-        Wed,  6 Jul 2022 12:09:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657109392;
-        bh=qGwN/Osl4fxpIQQvZpgh3wCz7h3Up/LNCIfiPY3lvlM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m9f+BFkFSrsHBFx0v8VZqSzNQYlAOXxYuLu1/pIFEq1YuzFxpVyQRQ1aryj2VAHLU
-         p0CvDGuSExAcrJc3StcW2DKOB5FfJ1TXLSUWB0oFubdoxktCJa+X7krMUY3sc9Gcx1
-         /wKNooJrw4iWvi1xhPHjtLFMtaafmISpi3vuXGS+n9rK1foIEIk563Zx9rSpni/wso
-         s0FIe/YIh8MqsyTNpYvwC1AmQ82cModgaAq8kWTBLkxYZD+hRRXEWZLYOTBqWRv2rA
-         5nXrEQsDT5IfV0qdUsM+nVNj1cKU6/W4u4gb7Tt6pA+2KMROzoEvOmYty3B32dAZx4
-         1UGYdC7iSK29Q==
-Date:   Wed, 6 Jul 2022 13:09:48 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Amadeusz =?utf-8?B?U8WCYXdpxYRza2k=?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the sound-asoc tree
-Message-ID: <YsV7jC2eoEx6G3qH@sirena.org.uk>
-References: <20220706115529.7deea289@canb.auug.org.au>
+        Wed, 6 Jul 2022 08:10:57 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57FB28E11;
+        Wed,  6 Jul 2022 05:10:56 -0700 (PDT)
+Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LdJJF2PH9z6GDCP;
+        Wed,  6 Jul 2022 20:09:49 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Jul 2022 14:10:54 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Jul 2022 13:10:48 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
+        <bvanassche@acm.org>, <hch@lst.de>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <hare@suse.de>, <satishkh@cisco.com>,
+        <sebaddel@cisco.com>, <kartilak@cisco.com>
+CC:     <linux-doc@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <linux-nvme@lists.infradead.org>,
+        <linux-s390@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <mpi3mr-linuxdrv.pdl@broadcom.com>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <nbd@other.debian.org>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v3 0/6] blk-mq: Add a flag for reserved requests series
+Date:   Wed, 6 Jul 2022 20:03:48 +0800
+Message-ID: <1657109034-206040-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="196TmJSXXeN3u3L9"
-Content-Disposition: inline
-In-Reply-To: <20220706115529.7deea289@canb.auug.org.au>
-X-Cookie: Only God can make random selections.
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Jens,
 
---196TmJSXXeN3u3L9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Can you please consider this series? Thanks
 
-On Wed, Jul 06, 2022 at 11:55:29AM +1000, Stephen Rothwell wrote:
+---
 
-> After merging the sound-asoc tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
+In [0] I included "blk-mq: Add a flag for reserved requests" to identify
+if a request is 'reserved' for special handling. Doing this is easier than
+passing a 'reserved' arg to the blk_mq_ops callbacks. Indeed, only 1x
+timeout implementation or blk-mq iter function actually uses the
+'reserved' arg (or 3x if you count SCSI core and FNIC SCSI driver). So
+this series drops the 'reserved' arg for these timeout and iter functions.
+Christoph suggested that I try to upstream now.
 
-Which toolchain do you use?  I've been using GCC 10 since it seems to be
-what Linus is using, anything else I try has tended to get spurious
-failures in from his tree.
+Differences to v2:
+- Rebase
+- Apply more RB tags (thanks!)
 
---196TmJSXXeN3u3L9
-Content-Type: application/pgp-signature; name="signature.asc"
+Differences to v1:
+- Use "scsi_timeout" as name for SCSI timeout function and update docs
+- Add RB tags (thanks!)
+- Split out patch to drop local variables for 'reserved', as requested by
+  Bart
 
------BEGIN PGP SIGNATURE-----
+Based on following:
+e55cf7981405 (block/for-5.20/block) blk-cgroup: factor out blkcg_free_all_cpd()
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLFe4sACgkQJNaLcl1U
-h9CCfgf+Mwj55S0OYiY53YIzPMbl3WtAcnQDUXM8MemEx4kCMT51geLasqc67gwE
-XiDlL6GKXMC84VBfyyIHV+KXXMop5OlJJPN7zktS8DKH5rBWrWINpaZDEHkBbmYI
-h/cKWMQIx9VveKMYmq/gRaQ9/4r4qVEgvtuwQGVtrpIfhnJBrpVUnyHSC67MZwlZ
-uTqKJCcNhhNMrqVs8DZlW8BagRMb7U1syMPtPULT5uYuowzQLETnesLApXS9vqtV
-wPx52a0dXeodISAWRKyxdLyU0Jlr2HwmNS8rzOMGRpLL/DDr2sHtJaVwz/c8Fywv
-u4yg+jRrV8tUBJBQq2bTcTCQrxqBww==
-=k4c0
------END PGP SIGNATURE-----
+[0] https://lore.kernel.org/linux-scsi/1654770559-101375-1-git-send-email-john.garry@huawei.com/T/#m22aa9f89e55835edc2e650d43f7e3219a3a1a324
 
---196TmJSXXeN3u3L9--
+John Garry (6):
+  scsi: core: Remove reserved request time-out handling
+  blk-mq: Add a flag for reserved requests
+  blk-mq: Drop blk_mq_ops.timeout 'reserved' arg
+  scsi: fnic: Drop reserved request handling
+  blk-mq: Drop 'reserved' arg of busy_tag_iter_fn
+  blk-mq: Drop local variable for reserved tag
+
+ Documentation/scsi/scsi_eh.rst          |  3 +--
+ Documentation/scsi/scsi_mid_low_api.rst |  2 +-
+ block/blk-mq-debugfs.c                  |  2 +-
+ block/blk-mq-tag.c                      | 13 +++++--------
+ block/blk-mq.c                          | 22 +++++++++++++---------
+ block/bsg-lib.c                         |  2 +-
+ drivers/block/mtip32xx/mtip32xx.c       |  9 ++++-----
+ drivers/block/nbd.c                     |  5 ++---
+ drivers/block/null_blk/main.c           |  2 +-
+ drivers/infiniband/ulp/srp/ib_srp.c     |  3 +--
+ drivers/mmc/core/queue.c                |  3 +--
+ drivers/nvme/host/apple.c               |  3 +--
+ drivers/nvme/host/core.c                |  2 +-
+ drivers/nvme/host/fc.c                  |  6 ++----
+ drivers/nvme/host/nvme.h                |  2 +-
+ drivers/nvme/host/pci.c                 |  2 +-
+ drivers/nvme/host/rdma.c                |  3 +--
+ drivers/nvme/host/tcp.c                 |  3 +--
+ drivers/s390/block/dasd.c               |  2 +-
+ drivers/s390/block/dasd_int.h           |  2 +-
+ drivers/scsi/aacraid/comminit.c         |  2 +-
+ drivers/scsi/aacraid/linit.c            |  2 +-
+ drivers/scsi/fnic/fnic_scsi.c           | 14 ++++----------
+ drivers/scsi/hosts.c                    | 14 ++++++--------
+ drivers/scsi/mpi3mr/mpi3mr_os.c         | 16 ++++------------
+ drivers/scsi/scsi_error.c               |  6 +++---
+ drivers/scsi/scsi_lib.c                 |  8 --------
+ drivers/scsi/scsi_priv.h                |  2 +-
+ include/linux/blk-mq.h                  | 10 ++++++++--
+ include/scsi/scsi_host.h                |  2 +-
+ 30 files changed, 70 insertions(+), 97 deletions(-)
+
+-- 
+2.35.3
+
