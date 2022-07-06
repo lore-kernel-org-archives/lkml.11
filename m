@@ -2,121 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE34CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE99CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233633AbiGFNhk convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
+        id S233726AbiGFNhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiGFNhi (ORCPT
+        with ESMTP id S233573AbiGFNhj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:37:38 -0400
-X-Greylist: delayed 2351 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 06:37:38 PDT
-Received: from astra4050.startdedicated.net (mail.wseas.org [62.138.2.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C39D22B0D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:37:38 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by astra4050.startdedicated.net (Postfix) with ESMTP id E765D6E11F91
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:46:06 +0200 (CEST)
-Received: from astra4050.startdedicated.net ([127.0.0.1])
-        by localhost (astra4050.startdedicated.net [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 4a2V45plkNWb for <linux-kernel@vger.kernel.org>;
-        Wed,  6 Jul 2022 14:46:06 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by astra4050.startdedicated.net (Postfix) with ESMTP id 4CA296DCD5C0
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 13:47:28 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at wseas.org
-Received: from astra4050.startdedicated.net ([127.0.0.1])
-        by localhost (astra4050.startdedicated.net [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id eXprhhW55kmZ for <linux-kernel@vger.kernel.org>;
-        Wed,  6 Jul 2022 13:47:28 +0200 (CEST)
-Received: from 10.0.2.15 (astra4050.startdedicated.net [62.138.2.54])
-        by astra4050.startdedicated.net (Postfix) with SMTP id EF5026D86415
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 12:54:35 +0200 (CEST)
-From:   "MCSI 2022 - with IEEE" <info@mcsi-conf.org>
-To:     <linux-kernel@vger.kernel.org>
-Subject: IEEE Proceedings and Journals (indexed in ISI Web of Science, Scopus, EI Compendex, etc for our MCSI Conference
-Sender: "MCSI 2022 - with IEEE" <info@mcsi-conf.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Date:   Wed, 6 Jul 2022 13:53:36 +0300
-Reply-To: "MCSI 2022 - with IEEE" <info@mcsi-conf.org>
-Message-Id: <20220706105436.EF5026D86415@astra4050.startdedicated.net>
-Content-Transfer-Encoding: 8BIT
+        Wed, 6 Jul 2022 09:37:39 -0400
+Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [5.144.164.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B37022B0D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:37:39 -0700 (PDT)
+Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 221B13F715;
+        Wed,  6 Jul 2022 15:37:37 +0200 (CEST)
+Message-ID: <43572937-8505-ddf0-1fe0-99ddfe486c11@somainline.org>
+Date:   Wed, 6 Jul 2022 15:37:36 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 04/13] ARM: dts: qcom: disable smb208 regulators for
+ ipq8064-rb3011
+Content-Language: en-US
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-5-ansuelsmth@gmail.com>
+ <8a394fa3-92fb-d162-b4ee-df010a09aed0@somainline.org>
+ <62c58a60.1c69fb81.25b26.e72a@mx.google.com>
+ <36a68a0b-0c18-deb5-609c-2128aa3fc21f@somainline.org>
+ <62c58fca.1c69fb81.76f6a.15f4@mx.google.com>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <62c58fca.1c69fb81.76f6a.15f4@mx.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Professor,
-
-You are invited to participate with an Invited Lecture in the
-7th International Conference on Mathematics and Computers in Sciences and
-Industry 
-
-http: // mcsi-conf. org/
-Marathon Beach, Athens, Greece, August 22-24, 2022
-
-Upload your paper now
-
-IEEE Proceedings and Journals (indexed in ISI Web of Science, Scopus, EI Compendex, etc
-for our MCSI Conference 
 
 
-Plenary Speakers
-===================
-Prof. Joel Chaskalovic
-Institut Jean Le Rond d’Alembert Sorbonne University,
-Paris, France
+On 6.07.2022 15:19, Christian Marangi wrote:
+> On Wed, Jul 06, 2022 at 03:31:55PM +0200, Konrad Dybcio wrote:
+>>
+>>
+>> On 6.07.2022 14:56, Christian Marangi wrote:
+>>> On Wed, Jul 06, 2022 at 03:03:32PM +0200, Konrad Dybcio wrote:
+>>>>
+>>>>
+>>>> On 5.07.2022 15:39, Christian Marangi wrote:
+>>>>> Mikrotik RB3011 have a special configuration where the regulators are
+>>>>> not the common smb208 controlled by RPM but they use a TPS563900
+>>>>> controlled via i2c. Disable the smb208 for this specific device.
+>>>> Ok, so that answers my question from the previous email.
+>>>> Please define the SMB208 regulators only in the DTs of
+>>>> boards that actually use it, as it is not a SoC component as
+>>>> far as I can tell.
+>>>>
+>>>> Konrad
+>>>
+>>> This was already discuessed,
+>> Yeah sorry, I didn't notice earlier and started reviewing patches
+>> that were already reviewed by others.
+>>
+> 
+> Np, thanks for the review.
+> 
+>>
+>> rb3011 is the exception, qcom for ipq8064
+>>> recommends to use smb208 but gives the option to implement it in their
+>>> own way. So again we have 28 device with smb208 and 1 device that use
+>>> its own special way...
+>>>
+>>> Wonder if a separate dtsi can be used for this if we really can't put
+>>> smb208 in ipq8064 dtsi?
+>> There's msm8916-pm8916.dtsi. You can follow.
+> 
+> Ok, will put the smb208 definition to a separate dtsi, something like
+> ipq8064-smb208.dtsi? or ipq8064-rpm-smb208.dtsi? Looks also cleaner that
+> way.
+You can create ipq8064-smb208.dtsi that will also contain every ipq8064-plus-smb208-specific
+configuration, such as regulator assignemnts to in-SoC components (like PHYs, SDHCIs etc.).
 
-Prof. Elias C. Aifantis
-Mercator Fellow, Friedrich-Alexander University, Erlangen-Nuremberg,
-90762 Fürth, Germany
-
-Prof. Aristides D. Zdetsis
-Molecular Engineering Laboratory, Department of Physics, University of Patras,
-Patras 26500 GR, Greece
-
-Prof. Michael Gr. Voskoglou
-Mathematical Sciences, School of Technological Applications
-University of Peloponnese (ex T.E.I. of Western Greece) Meg. Alexandrou 1,
-26334 Patras, Greece
-
-Prof. George J. Tsekouras
-University of West Attica, Egaleo, Athens, Greece
-
-Prof. Imre J. Rudas
-Óbuda University, Budapest, Hungary
-
-Prof. Dimitrios A. Karras, PhD
-National and Kapodistrian University of Athens (NKUA),
-Dept. General, Greece
-
-Prof. Abdel-Badeeh. M. Salem
-Computer Science Departement, Faculty of Computer and Information Sciences,
-Ain Shams University, Cairo, Egypt
-
-Prof. Badea Lepadatescu
-Transylvania University of Brasov,
-Brasov, Romania
-
-Thanks
-
-
-If August is not convenient for you, we have a similar conference in September
-
-Other Similar Conference: 
-6th International Conference on Mathematical Models & Computational Techniques in Science
-& Engineering, Marathon Beach, Athens, Greece, September 20-22, 2022
-http: // mmctse. org/
-
-IEEE Proceedings and Journals (indexed in ISI Web of Science, Scopus, EI Compendex, etc
-for our MMCTSE Conference 
-
-Best Regards
-
-Dr. George Petrakis
-MCSI 2022, MMCTSE 2022
-info@mcsi-conf.orgdor
-
+Konrad
+> 
+>>
+>> Konrad
+>>
+>> [...]
+> 
