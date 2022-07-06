@@ -2,205 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 547ECC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0687C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233991AbiGFXdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44424 "EHLO
+        id S234127AbiGFXdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231312AbiGFXdj (ORCPT
+        with ESMTP id S234036AbiGFXdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:33:39 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E2D2C13F;
-        Wed,  6 Jul 2022 16:33:38 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-fe023ab520so23275476fac.10;
-        Wed, 06 Jul 2022 16:33:38 -0700 (PDT)
+        Wed, 6 Jul 2022 19:33:45 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A73A2C659;
+        Wed,  6 Jul 2022 16:33:44 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id q82so8229139pgq.6;
+        Wed, 06 Jul 2022 16:33:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dzOHVv+XbHrZsgZSc3OOkERaguxtxPA+pM05lL+6VEQ=;
-        b=TP6mmgadAGE06un4m7cHhzx09Aza0OFLYZrPwuVrd+U5Il94rd+JBQQulyK3OvzSFB
-         QD/fryC7srd5WiUkne7pSs+ZiY4gG5eyP7bmoRE3w43DSRhflWl1F0XmqQXlzibTm4NL
-         7jWxpT4UvTah1DZxv4XSGjXjdjywgMVCQtDd7dZIvqj6MZ5vl7+YooKPZEd9aFmEhUjI
-         3KEqpFYL7pCLFE0uXW1Rw1qY6rJxsSGm3Rcnc9Jr+kB+k3T7LpC692ib6zHcl0X/I0+y
-         kOYoZGdmdqcQlseB8QLuH8RbmMViP52kjUrgK7BBn5b0l9ELA9FIL814V8dU3tWA86tV
-         MEvA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=q8RDTkB3VF0pgClV/p2M6N17iiEnC2cE1WV3SlVJSA0=;
+        b=FIlpUuQ9LaMQxhJBFRnqT+jVe4QY6P+S5rJuiaR9tGtvCKuZyGJNZEDsVt6pIt9Jtw
+         C+0nI6BMDWq3J5p3/htA/T1K1aAbE2HQm6T3ajyjcEm/vNF08HuDxKHWbRjUcyxqxUKr
+         6JgOzszqV0TWTTlcHLtma+edwyfnz+FFttLJnPvgEgg19UQa29wLvKOHwN4IrdM0Fq6E
+         BAcWK1kDWsQhM8ATrdyyJTYyACmYN7FLjPDLTvYbItiHbriEBOAqe1elWLF2KxlaQQ9T
+         FaGdAINE0SW/n+UcXxUDL/oPPhoHszJnRBJL04X/JOVzhsDEcX5R+z1vENNHm3S3mB8t
+         Fx6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dzOHVv+XbHrZsgZSc3OOkERaguxtxPA+pM05lL+6VEQ=;
-        b=6GmkNOry4qLAGW6WvXKmjIj3eJunKTGYjgNpFus8kl/ujFu42mb7LbyxDJXNHRU3+v
-         Qrxp8N3xkmCHN6z7cfgGJGG65ZmLYZho4VfDFeablZRtMcqbzw1DRGb9qUUFHezzJE+l
-         A4IR8MX3P6z/Z9HkDmt7YGrzH04j75qLQRm/HzxpQ9JEMCwCikuO9kHEvNN91AMJ5/CC
-         052dYvrQW0hXFXfTXMhOSv1bcFCM2Iz8Eo8qXS8QFTRgPj1BnR/J9eeOgRWEGkmo3H3w
-         2HwQUUK2HY2BpgBDzUqFmSgGrrR2ziaArnkqd/EFHO1+cHERcUtPNQ7hz+64+MZZGF+/
-         Kv9w==
-X-Gm-Message-State: AJIora+opnPDGYVyRE1WZomZ2yn/LZg60CsyTHk/7T7YI7oIDe5+ONBA
-        vdfzYWihHbbwD3Kropouybo=
-X-Google-Smtp-Source: AGRyM1uAlBkPBvG9rksI3+esyDpbN2qye6njZ6On8tiP2U/lcinWRfHTouianYxDWxwy6R7mWpKQYA==
-X-Received: by 2002:a05:6870:a70c:b0:10c:3bb7:ea15 with SMTP id g12-20020a056870a70c00b0010c3bb7ea15mr104203oam.69.1657150417374;
-        Wed, 06 Jul 2022 16:33:37 -0700 (PDT)
-Received: from localhost.localdomain (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
-        by smtp.gmail.com with ESMTPSA id f19-20020a056830057300b0060bd2d06a1csm17583363otc.47.2022.07.06.16.33.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q8RDTkB3VF0pgClV/p2M6N17iiEnC2cE1WV3SlVJSA0=;
+        b=HDORgh+TmdDIGt9GKLR5eRnmYFli0OVme1L/CVYjuuZZqZucCju/mdXy51Hf40+Ogb
+         MNSJXuSUlCTGiVQxwv6fopmJ1obcwG5jUwhNNLCtk3WaxyAB1UZye8bXuVAZlp9EnG2R
+         f+KPeVGJivE8ISLe6t4STAzOhy+slGdxWksvNrS4eEvpXVcKwePepxp2jps72HIvj2oL
+         +yPcqLhaB+a65Krst4hEYcKDot+JynNlXsEuP+9i4vpkC5lXqsQVfiGMQy7jzRTxSLrC
+         cIVs3CyZVkx5PvUJqOr2U4jsjZew6+o86yMwcCpg0hFTmmaTp43tZzIbkBrRU9C39hT2
+         0jKA==
+X-Gm-Message-State: AJIora+XkwO2mclQM+1B5HbYGiEj+4FJz1+pk3HRhJ6HIVHccsB/5XJ5
+        zTGTkfq9InikcWjyhe4HAxg=
+X-Google-Smtp-Source: AGRyM1uj5JNZdwlNSFPppS5J6cDP80PVhRj9doksttKjBMI0kkdJ4K3vKUnIbXyAaBuaWJdqQkMeFw==
+X-Received: by 2002:a17:90b:4b8e:b0:1ed:3a07:caad with SMTP id lr14-20020a17090b4b8e00b001ed3a07caadmr1424455pjb.194.1657150423930;
+        Wed, 06 Jul 2022 16:33:43 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:9d70:ed48:26b7:35fc])
+        by smtp.gmail.com with ESMTPSA id q10-20020a635c0a000000b0040c40b022fbsm23980491pgb.94.2022.07.06.16.33.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 16:33:36 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Benjamin LaHaise <bcrl@kvack.org>,
-        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: [PATCH] aio: Replace kmap{,_atomic}() with kmap_local_page()
-Date:   Thu,  7 Jul 2022 01:33:28 +0200
-Message-Id: <20220706233328.18582-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 06 Jul 2022 16:33:42 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 16:33:40 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bastien Nocera <hadess@hadess.net>
+Subject: Re: [PATCH v1 1/1] Input: goodix - switch use of
+ acpi_gpio_get_*_resource() APIs
+Message-ID: <YsYb1AqZk0nK/Hd9@google.com>
+References: <20220705180252.963-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705180252.963-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() and kmap_atomic() are being deprecated in favor of
-kmap_local_page().
+On Tue, Jul 05, 2022 at 09:02:51PM +0300, Andy Shevchenko wrote:
+> No need to open code functionality that is provided by the
+> acpi_gpio_get_irq_resource() and acpi_gpio_get_io_resource().
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-With kmap_local_page(), the mappings are per thread, CPU local and not
-globally visible. Furthermore, the mappings can be acquired from any
-context (including interrupts).
+Applied, thank you.
 
-Therefore, use kmap_local_page() in aio.c because these mappings are per
-thread, CPU local, and not globally visible.
-
-Tested with xfstests on a QEMU + KVM 32-bits VM booting a kernel with
-HIGHMEM64GB enabled.
-
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
-
-I've tested with "./check -g aio". The tests in this group fail 3/26
-times, with and without my patch. Therefore, these changes don't introduce
-further errors.
-
- fs/aio.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/fs/aio.c b/fs/aio.c
-index 3c249b938632..343fea0c6d1a 100644
---- a/fs/aio.c
-+++ b/fs/aio.c
-@@ -567,7 +567,7 @@ static int aio_setup_ring(struct kioctx *ctx, unsigned int nr_events)
- 	ctx->user_id = ctx->mmap_base;
- 	ctx->nr_events = nr_events; /* trusted copy */
- 
--	ring = kmap_atomic(ctx->ring_pages[0]);
-+	ring = kmap_local_page(ctx->ring_pages[0]);
- 	ring->nr = nr_events;	/* user copy */
- 	ring->id = ~0U;
- 	ring->head = ring->tail = 0;
-@@ -575,7 +575,7 @@ static int aio_setup_ring(struct kioctx *ctx, unsigned int nr_events)
- 	ring->compat_features = AIO_RING_COMPAT_FEATURES;
- 	ring->incompat_features = AIO_RING_INCOMPAT_FEATURES;
- 	ring->header_length = sizeof(struct aio_ring);
--	kunmap_atomic(ring);
-+	kunmap_local(ring);
- 	flush_dcache_page(ctx->ring_pages[0]);
- 
- 	return 0;
-@@ -678,9 +678,9 @@ static int ioctx_add_table(struct kioctx *ctx, struct mm_struct *mm)
- 					 * we are protected from page migration
- 					 * changes ring_pages by ->ring_lock.
- 					 */
--					ring = kmap_atomic(ctx->ring_pages[0]);
-+					ring = kmap_local_page(ctx->ring_pages[0]);
- 					ring->id = ctx->id;
--					kunmap_atomic(ring);
-+					kunmap_local(ring);
- 					return 0;
- 				}
- 
-@@ -1024,9 +1024,9 @@ static void user_refill_reqs_available(struct kioctx *ctx)
- 		 * against ctx->completed_events below will make sure we do the
- 		 * safe/right thing.
- 		 */
--		ring = kmap_atomic(ctx->ring_pages[0]);
-+		ring = kmap_local_page(ctx->ring_pages[0]);
- 		head = ring->head;
--		kunmap_atomic(ring);
-+		kunmap_local(ring);
- 
- 		refill_reqs_available(ctx, head, ctx->tail);
- 	}
-@@ -1132,12 +1132,12 @@ static void aio_complete(struct aio_kiocb *iocb)
- 	if (++tail >= ctx->nr_events)
- 		tail = 0;
- 
--	ev_page = kmap_atomic(ctx->ring_pages[pos / AIO_EVENTS_PER_PAGE]);
-+	ev_page = kmap_local_page(ctx->ring_pages[pos / AIO_EVENTS_PER_PAGE]);
- 	event = ev_page + pos % AIO_EVENTS_PER_PAGE;
- 
- 	*event = iocb->ki_res;
- 
--	kunmap_atomic(ev_page);
-+	kunmap_local(ev_page);
- 	flush_dcache_page(ctx->ring_pages[pos / AIO_EVENTS_PER_PAGE]);
- 
- 	pr_debug("%p[%u]: %p: %p %Lx %Lx %Lx\n", ctx, tail, iocb,
-@@ -1151,10 +1151,10 @@ static void aio_complete(struct aio_kiocb *iocb)
- 
- 	ctx->tail = tail;
- 
--	ring = kmap_atomic(ctx->ring_pages[0]);
-+	ring = kmap_local_page(ctx->ring_pages[0]);
- 	head = ring->head;
- 	ring->tail = tail;
--	kunmap_atomic(ring);
-+	kunmap_local(ring);
- 	flush_dcache_page(ctx->ring_pages[0]);
- 
- 	ctx->completed_events++;
-@@ -1214,10 +1214,10 @@ static long aio_read_events_ring(struct kioctx *ctx,
- 	mutex_lock(&ctx->ring_lock);
- 
- 	/* Access to ->ring_pages here is protected by ctx->ring_lock. */
--	ring = kmap_atomic(ctx->ring_pages[0]);
-+	ring = kmap_local_page(ctx->ring_pages[0]);
- 	head = ring->head;
- 	tail = ring->tail;
--	kunmap_atomic(ring);
-+	kunmap_local(ring);
- 
- 	/*
- 	 * Ensure that once we've read the current tail pointer, that
-@@ -1249,10 +1249,10 @@ static long aio_read_events_ring(struct kioctx *ctx,
- 		avail = min(avail, nr - ret);
- 		avail = min_t(long, avail, AIO_EVENTS_PER_PAGE - pos);
- 
--		ev = kmap(page);
-+		ev = kmap_local_page(page);
- 		copy_ret = copy_to_user(event + ret, ev + pos,
- 					sizeof(*ev) * avail);
--		kunmap(page);
-+		kunmap_local(ev);
- 
- 		if (unlikely(copy_ret)) {
- 			ret = -EFAULT;
-@@ -1264,9 +1264,9 @@ static long aio_read_events_ring(struct kioctx *ctx,
- 		head %= ctx->nr_events;
- 	}
- 
--	ring = kmap_atomic(ctx->ring_pages[0]);
-+	ring = kmap_local_page(ctx->ring_pages[0]);
- 	ring->head = head;
--	kunmap_atomic(ring);
-+	kunmap_local(ring);
- 	flush_dcache_page(ctx->ring_pages[0]);
- 
- 	pr_debug("%li  h%u t%u\n", ret, head, tail);
 -- 
-2.36.1
-
+Dmitry
