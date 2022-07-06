@@ -2,214 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CFFCCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234097AbiGFSXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
+        id S233739AbiGFSZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233519AbiGFSXJ (ORCPT
+        with ESMTP id S230400AbiGFSZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:23:09 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9A62A428
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:23:07 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id l14so19446401qtx.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:23:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1hhqdc2x+kkGFSuuHDeERWD84qOn+LrQwMR/CrzMYCA=;
-        b=ncJa0bbsY+ADs51/B7IPMBI5jZWHnw1auM0/zB0TVloBNSAhkr+fEWFFYikqeSmgJS
-         5STn7hps64Hfd8wMGa2yVr0H8MOUMs/lePVZx9gaXvgN8YKgP4rMFqOjN5bEUrX2xRYD
-         p+7aDMLStNe/af2b4loTfOCSYfQH+i9l3xQUj3PDb73qQqoAbh7LHYrIEbL8wYkIBXuf
-         9UGhQUCdjLimslM/24w24qs4ONlci3+PpnQB9oX0a1AGpQtGU9BYZXExgwjUzGat3IFn
-         W+ydV+JCcWKndye8Ie2Yxb6csdupMh6OJ+Dm50tynm/1iqplz9ljRpkVTZmBoo/O1tH4
-         pHIA==
+        Wed, 6 Jul 2022 14:25:45 -0400
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01164C0B;
+        Wed,  6 Jul 2022 11:25:44 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id r14so17425784wrg.1;
+        Wed, 06 Jul 2022 11:25:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1hhqdc2x+kkGFSuuHDeERWD84qOn+LrQwMR/CrzMYCA=;
-        b=ASJdiIWYxwZqlIZFjz0GBddWwu9BeoNiZTXI2NK6pqEdBiG/46VRB6HgDzYgBe1c7r
-         iFHXq1ExQagyltya1MR8uMZ0YtcayO64upwXGMsx58q8RrXnHEmjLMhr18pMi187QBJV
-         3s+I1v4pomDzHB2N9gEMl78gdA5X9dVrOPktIbjE3kOb+1ZZmL1cDd3Dl4VeTrxY781J
-         ZNXceeIH0r7BRCGNnapAnhQixuDjz87pInLGUYa/bTPaJRRmqRy+yk8WwYPcfEhBnUXW
-         7CkpGtBgvoGScrD/LvOFXJ9epaPtex1WYRsaavEUUmtiixXmgCBrUvoN++NfjaCMNtof
-         +NOw==
-X-Gm-Message-State: AJIora/DO7+6eiYFF+GQ5FWWuRrfs8en/7cY3ns0POb0FegjOgeIccNt
-        8MiqBSud0oAOnOK2xT1X8O6za/f+ixXROg==
-X-Google-Smtp-Source: AGRyM1v6owxWrcp9XaQYZwsUgPkipgCazU6XPpChMM/D/s0UTByGci2ze0poMpZmFKcFgOHaGy8iRQ==
-X-Received: by 2002:ac8:5bd4:0:b0:31a:faa2:f639 with SMTP id b20-20020ac85bd4000000b0031afaa2f639mr33715592qtb.487.1657131786757;
-        Wed, 06 Jul 2022 11:23:06 -0700 (PDT)
-Received: from localhost (c-69-254-185-160.hsd1.ar.comcast.net. [69.254.185.160])
-        by smtp.gmail.com with ESMTPSA id y17-20020a05620a25d100b006a6a5d1e240sm33304238qko.34.2022.07.06.11.23.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TIOB9IrtLnqFf4KPQh9ItO5Gaokkdn7VSUsHLdejGLY=;
+        b=F99/DD4PUqwSp5su9sXgvfnL2FI137VvBJQ5F9nCDfGmFZzdt4+49DxF9ONdw0PXHH
+         2P7IvJmgGPkv4ZAfNBjd0NBFEiJ3bRqF8dvywNBoey9TLd/poZ0GDmetydKUa+NkSszb
+         Mf3NJEmuaz8bzpAgzmBQ74m54ryvV7ej31Haf8LEBMy8xeRKXNCepS2yKc0TyY/GlJFn
+         PM/EQ+3YLQUnrsTn6wNJ8WQGJkbX1Brt2mgJdi+Yk+RicgqIGPB4nwH4A0ZTpT/fElF0
+         d17KHHLhLZB8fVhxVZ+rDlb7ohCIloSYJBAxgtu2dJdWzAxtKU0AKu4PK0NjTj0ozpcl
+         OVXQ==
+X-Gm-Message-State: AJIora+AQqF21USnv2PALAPm09H8Q5uHF48vk4S5ltA5bFuFkg8pBGO0
+        ohWfQbqP2Z+G7FmUYXyCoV5GU0q5uzg=
+X-Google-Smtp-Source: AGRyM1vzLWCAi6yfOQV8RQeZC4m18r7v7kCpv4ISozeEehSZliLjv0JJUt12KNR1sffkZdMH6kQ1Bw==
+X-Received: by 2002:a5d:44d1:0:b0:21d:7471:2094 with SMTP id z17-20020a5d44d1000000b0021d74712094mr9742793wrr.374.1657131942608;
+        Wed, 06 Jul 2022 11:25:42 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id m1-20020a056000008100b0021d7ff34df7sm1690160wrx.117.2022.07.06.11.25.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 11:23:06 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, David Gow <davidgow@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        Kees Cook <keescook@chromium.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 5/5] lib/nodemask: inline next_node_in() and node_random()
-Date:   Wed,  6 Jul 2022 11:23:00 -0700
-Message-Id: <20220706182300.70862-6-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220706182300.70862-1-yury.norov@gmail.com>
-References: <20220706182300.70862-1-yury.norov@gmail.com>
+        Wed, 06 Jul 2022 11:25:42 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 18:25:34 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, corbet@lwn.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH 3/3] Documentation: hyperv: Add overview of clocks and
+ timers
+Message-ID: <20220706182534.kh2f4qmjss4635bf@liuwe-devbox-debian-v2>
+References: <1657035822-47950-1-git-send-email-mikelley@microsoft.com>
+ <1657035822-47950-4-git-send-email-mikelley@microsoft.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1657035822-47950-4-git-send-email-mikelley@microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The functions are pretty thin wrappers around find_bit engine, and
-keeping them in c-file prevents compiler from small_const_nbits()
-optimization, which must take place for all systems with MAX_NUMNODES
-less than BITS_PER_LONG (default is 16 for me).
+On Tue, Jul 05, 2022 at 08:43:42AM -0700, Michael Kelley wrote:
+> Add documentation topic for clocks and timers when running as a
+> guest on Hyper-V.
+> 
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> ---
+>  Documentation/virt/hyperv/clocks.rst | 73 ++++++++++++++++++++++++++++++++++++
+>  Documentation/virt/hyperv/index.rst  |  1 +
+>  2 files changed, 74 insertions(+)
+>  create mode 100644 Documentation/virt/hyperv/clocks.rst
+> 
+> diff --git a/Documentation/virt/hyperv/clocks.rst b/Documentation/virt/hyperv/clocks.rst
+> new file mode 100644
+> index 0000000..e4ba2890
+> --- /dev/null
+> +++ b/Documentation/virt/hyperv/clocks.rst
+> @@ -0,0 +1,73 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +Clocks and Timers
+> +-----------------
 
-Moving them in header file doesn't blow up the kernel size:
-add/remove: 1/2 grow/shrink: 9/5 up/down: 968/-88 (880)
+This seems to be inconsistent with regard to the other two files -- they
+use "=" signs for the title.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- MAINTAINERS              |  1 -
- include/linux/nodemask.h | 27 ++++++++++++++++++++++-----
- lib/Makefile             |  2 +-
- lib/nodemask.c           | 30 ------------------------------
- 4 files changed, 23 insertions(+), 37 deletions(-)
- delete mode 100644 lib/nodemask.c
+> +
+> +arm64
+> +~~~~~
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f808826509e5..314dd1054246 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3540,7 +3540,6 @@ F:	lib/bitmap.c
- F:	lib/cpumask.c
- F:	lib/find_bit.c
- F:	lib/find_bit_benchmark.c
--F:	lib/nodemask.c
- F:	lib/test_bitmap.c
- F:	tools/include/linux/bitmap.h
- F:	tools/include/linux/find.h
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index 0f233b76c9ce..48ebe4007955 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -94,6 +94,7 @@
- #include <linux/bitmap.h>
- #include <linux/minmax.h>
- #include <linux/numa.h>
-+#include <linux/random.h>
- 
- typedef struct { DECLARE_BITMAP(bits, MAX_NUMNODES); } nodemask_t;
- extern nodemask_t _unused_nodemask_arg_;
-@@ -276,7 +277,14 @@ static inline unsigned int __next_node(int n, const nodemask_t *srcp)
-  * the first node in src if needed.  Returns MAX_NUMNODES if src is empty.
-  */
- #define next_node_in(n, src) __next_node_in((n), &(src))
--unsigned int __next_node_in(int node, const nodemask_t *srcp);
-+static inline unsigned int __next_node_in(int node, const nodemask_t *srcp)
-+{
-+	unsigned int ret = __next_node(node, srcp);
-+
-+	if (ret == MAX_NUMNODES)
-+		ret = __first_node(srcp);
-+	return ret;
-+}
- 
- static inline void init_nodemask_of_node(nodemask_t *mask, int node)
- {
-@@ -493,14 +501,23 @@ static inline int num_node_state(enum node_states state)
- 
- #endif
- 
-+/*
-+ * Return the bit number of a random bit set in the nodemask.
-+ * (returns NUMA_NO_NODE if nodemask is empty)
-+ */
-+static inline int node_random(const nodemask_t *maskp)
-+{
- #if defined(CONFIG_NUMA) && (MAX_NUMNODES > 1)
--extern int node_random(const nodemask_t *maskp);
-+	int w, bit = NUMA_NO_NODE;
-+
-+	w = nodes_weight(*maskp);
-+	if (w)
-+		bit = find_nth_bit(maskp->bits, MAX_NUMNODES, get_random_int() % w + 1);
-+	return bit;
- #else
--static inline int node_random(const nodemask_t *mask)
--{
- 	return 0;
--}
- #endif
-+}
- 
- #define node_online_map 	node_states[N_ONLINE]
- #define node_possible_map 	node_states[N_POSSIBLE]
-diff --git a/lib/Makefile b/lib/Makefile
-index f99bf61f8bbc..731cea0342d1 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -33,7 +33,7 @@ lib-y := ctype.o string.o vsprintf.o cmdline.o \
- 	 flex_proportions.o ratelimit.o show_mem.o \
- 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
- 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
--	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \
-+	 nmi_backtrace.o win_minmax.o memcat_p.o \
- 	 buildid.o
- 
- lib-$(CONFIG_PRINTK) += dump_stack.o
-diff --git a/lib/nodemask.c b/lib/nodemask.c
-deleted file mode 100644
-index 7dad4ce8ff59..000000000000
---- a/lib/nodemask.c
-+++ /dev/null
-@@ -1,30 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include <linux/nodemask.h>
--#include <linux/module.h>
--#include <linux/random.h>
--
--unsigned int __next_node_in(int node, const nodemask_t *srcp)
--{
--	unsigned int ret = __next_node(node, srcp);
--
--	if (ret == MAX_NUMNODES)
--		ret = __first_node(srcp);
--	return ret;
--}
--EXPORT_SYMBOL(__next_node_in);
--
--#ifdef CONFIG_NUMA
--/*
-- * Return the bit number of a random bit set in the nodemask.
-- * (returns NUMA_NO_NODE if nodemask is empty)
-- */
--int node_random(const nodemask_t *maskp)
--{
--	int w, bit = NUMA_NO_NODE;
--
--	w = nodes_weight(*maskp);
--	if (w)
--		bit = find_nth_bit(maskp->bits, MAX_NUMNODES, get_random_int() % w + 1);
--	return bit;
--}
--#endif
--- 
-2.34.1
+And the other files use "-" for this (second?) level.
 
+Thanks,
+Wei.
