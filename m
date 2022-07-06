@@ -2,131 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCAB9CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E65C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232606AbiGFI5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        id S232347AbiGFI7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231959AbiGFI5q (ORCPT
+        with ESMTP id S230428AbiGFI7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:57:46 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687D124BEE;
-        Wed,  6 Jul 2022 01:57:45 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id 3so3669483pfx.3;
-        Wed, 06 Jul 2022 01:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9bOXUBsbXZmaBYzdut2n91pd8GDpqQDkHHTCpALSOcI=;
-        b=WbD1If6fFhm+DWvJ31AEQrrcggmBAVShmCuXjXNLR/EVZnRJUDmLjPBezh+u8N3upE
-         GXKjZxORcv3nTuTsXheqqTeRS4skn7EUMwPYGKEcKo3ObhN6T6QIWqvqxX6Jr8F8QElY
-         /FFM0dQQSlpothQOx+YeobkCdnpTL1e0JIO9lvz1yIw30dwxN0fdT4a7Kza3H9j4qj6X
-         xkNgj8iH/9xz6YGbQQGnLUiRk7GZcv/bnxehkOG5U5RMwAvat4EhTh1NTM/tC6yV7UUl
-         l/1BXoGHW0yM0j0TcLjhlJm98q9lR4zh/p+boW25L80TLyb3fhDy9DvPsO/ZJQjltXZE
-         u58g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9bOXUBsbXZmaBYzdut2n91pd8GDpqQDkHHTCpALSOcI=;
-        b=3tyE3cz2re6g7D14fKZd/H+Q76R52jkAQIuJdgU6zCnU0WrfvZGFErC18cN0lfLelO
-         0eTLU08/2gyLmZI53VaFLR+yFX9AXKv9UYOmk32jHmWo/5I242aeWjRjC+PTd+nnk5CS
-         7UkrNTsxNcwIZjAFmNy7Ltk5iCloOGDnKoNKW+IfLtyH5RWBS8B+Uf5lslWCcSObES8N
-         k3lqFuUMiBmTrQX9O3reEAAVgAaG2VkwFcMtaHNzRgS41+AN8IG3fUHxdapVswIsriyz
-         vJEndRKqkL5eRaXP2dVzA1DQLiHaukfjpdFYl/8kVzKpjmNx10j81p55PGYbQZc186EI
-         cFLg==
-X-Gm-Message-State: AJIora+g3bwc+phzOW9iejv6A+30SfjHOW2tz5NaqGyZt0kfRUw/gKtq
-        1fImLsu+S7JX5zvFSCO5VvI=
-X-Google-Smtp-Source: AGRyM1sYGXX9loS3JRKD0954hjKimsXBBNwAgBw0D8WiC3yUj6I/JN7LKTG9QaIQg312XdOckDYv7w==
-X-Received: by 2002:a05:6a00:1303:b0:528:2ed8:7e86 with SMTP id j3-20020a056a00130300b005282ed87e86mr29108564pfu.4.1657097864729;
-        Wed, 06 Jul 2022 01:57:44 -0700 (PDT)
-Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:18:efec::75b])
-        by smtp.gmail.com with ESMTPSA id d18-20020a170903231200b0016bf7981d0bsm2501495plh.86.2022.07.06.01.57.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 01:57:43 -0700 (PDT)
-Message-ID: <10062b7d-f0a6-6724-4ccb-506da09a8533@gmail.com>
-Date:   Wed, 6 Jul 2022 16:57:33 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 2/2] x86/ACPI: Set swiotlb area according to the number of
- lapic entry in MADT
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     corbet@lwn.net, rafael@kernel.org, len.brown@intel.com,
-        pavel@ucw.cz, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        m.szyprowski@samsung.com, robin.murphy@arm.com, paulmck@kernel.org,
-        akpm@linux-foundation.org, keescook@chromium.org,
-        songmuchun@bytedance.com, rdunlap@infradead.org,
-        damien.lemoal@opensource.wdc.com, michael.h.kelley@microsoft.com,
-        kys@microsoft.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        vkuznets@redhat.com, wei.liu@kernel.org, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
-        kirill.shutemov@intel.com, andi.kleen@intel.com,
-        Andi Kleen <ak@linux.intel.com>
-References: <20220627153150.106995-1-ltykernel@gmail.com>
- <20220627153150.106995-3-ltykernel@gmail.com>
- <YrxcCZKvFYjxLf9n@infradead.org>
- <a876f862-c005-108d-e6f9-68336a8d89f0@gmail.com>
- <YsVBKgxiQKfnCjvn@infradead.org>
-From:   Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <YsVBKgxiQKfnCjvn@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 6 Jul 2022 04:59:31 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E612C397;
+        Wed,  6 Jul 2022 01:59:29 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0VIXd7j9_1657097961;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VIXd7j9_1657097961)
+          by smtp.aliyun-inc.com;
+          Wed, 06 Jul 2022 16:59:22 +0800
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org
+Cc:     rppt@linux.ibm.com, willy@infradead.org, will@kernel.org,
+        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
+        peterz@infradead.org, catalin.marinas@arm.com,
+        chenhuacai@kernel.org, kernel@xen0n.name,
+        tsbogend@alpha.franken.de, dave.hansen@linux.intel.com,
+        luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, hpa@zytor.com, arnd@arndb.de, guoren@kernel.org,
+        monstr@monstr.eu, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
+        baolin.wang@linux.alibaba.com, x86@kernel.org,
+        linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        loongarch@lists.linux.dev, linux-mips@vger.kernel.org,
+        linux-csky@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] Add PUD and kernel PTE level pagetable account
+Date:   Wed,  6 Jul 2022 16:59:14 +0800
+Message-Id: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/6/2022 4:00 PM, Christoph Hellwig wrote:
-> On Fri, Jul 01, 2022 at 01:02:21AM +0800, Tianyu Lan wrote:
->>> Can we reorder that initialization?  Because I really hate having
->>> to have an arch hook in every architecture.
->>
->> How about using "flags" parameter of swiotlb_init() to pass area number
->> or add new parameter for area number?
->>
->> I just reposted patch 1 since there is just some coding style issue and area
->> number may also set via swiotlb kernel parameter. We still need figure out a
->> good solution to pass area number from architecture code.
-> 
-> What is the problem with calling swiotlb_init after nr_possible_cpus()
-> works?
+Hi,
 
-Swiotlb_init() is called in the mem_init() of different architects and
-memblock free pages are released to the buddy allocator just after
-calling swiotlb_init() via memblock_free_all().
+Now we will miss to account the PUD level pagetable and kernel PTE level
+pagetable, as well as missing to set the PG_table flags for these pagetable
+pages, which will get an inaccurate pagetable accounting, and miss
+PageTable() validation in some cases. So this patch set introduces new
+helpers to help to account PUD and kernel PTE pagetable pages.
 
-The mem_init() is called before smp_init(). If calling swiotlb_init()
-after smp_init(), that means we can't allocate large chunk low end
-memory via memblock_alloc() in the swiotlb(). Swiotlb_init() needs
-to rework to allocate memory from the buddy allocator and just like
-swiotlb_init_late() does. This will limit the bounce buffer size.
-Otherwise We need to do the reorder for all achitectures and there maybe
-some other unknown issues.
+Note there are still some architectures specific pagetable allocation
+that need to account the pagetable pages, which need more investigation
+and cleanup in future.
 
-swiotlb flags parameter of swiotlb_init() seems to be a good place to
-pass the area number in current code. If not set the swiotlb_area
-number/flag, the area number will be one and keep the original behavior
-of one single global spinlock protecting io tlb data structure.
+Changes from RFC v3:
+ - Rebased on 20220706 linux-next.
+ - Introduce new pgtable_pud_page_ctor/dtor() and rename the helpers.
+ - Change back to use inc_lruvec_page_state()/dec_lruvec_page_state().
+ - Update some commit message.
+link: https://lore.kernel.org/all/cover.1656586863.git.baolin.wang@linux.alibaba.com/
 
+Changes from RFC v2:
+ - Convert to use mod_lruvec_page_state() for non-order-0 case.
+ - Rename the helpers.
+ - Update some commit messages.
+ - Remove unnecessary __GFP_HIGHMEM clear.
+link: https://lore.kernel.org/all/cover.1655887440.git.baolin.wang@linux.alibaba.com/
 
+Changes from RFC v1:
+ - Update some commit message.
+ - Add missing pgtable_clear_and_dec() on X86 arch.
+ - Use __free_page() to free pagetable which can avoid duplicated virt_to_page().
+link: https://lore.kernel.org/all/cover.1654271618.git.baolin.wang@linux.alibaba.com/
 
+Baolin Wang (3):
+  mm: Factor out the pagetable pages account into new helper function
+  mm: Add PUD level pagetable account
+  mm: Add kernel PTE level pagetable pages account
 
+ arch/arm64/include/asm/tlb.h         |  5 ++++-
+ arch/csky/include/asm/pgalloc.h      |  2 +-
+ arch/loongarch/include/asm/pgalloc.h | 12 +++++++++---
+ arch/microblaze/mm/pgtable.c         |  2 +-
+ arch/mips/include/asm/pgalloc.h      | 12 +++++++++---
+ arch/openrisc/mm/ioremap.c           |  2 +-
+ arch/x86/mm/pgtable.c                |  7 +++++--
+ include/asm-generic/pgalloc.h        | 26 ++++++++++++++++++++++----
+ include/linux/mm.h                   | 34 ++++++++++++++++++++++++++--------
+ 9 files changed, 78 insertions(+), 24 deletions(-)
 
-
-
-
-
-
-
-
-
+-- 
+1.8.3.1
 
