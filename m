@@ -2,92 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E15A4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2BCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232377AbiGFIgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
+        id S232434AbiGFIg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiGFIgg (ORCPT
+        with ESMTP id S230436AbiGFIgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:36:36 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22AAD24949
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:36:35 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id bu42so4825738lfb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:36:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=P97RgFCmNV942tctqpn0OBJg9vJcOtiyZezQH2Fw3y0=;
-        b=AtdGW6jfzD/zyGOlMQXFUoK+i7IgFxR9NelxXFHL7rCJMB2nAnOE6hbJWykEcnX9aa
-         8pXFU2A9UbF9XCrE9Tyk3EbeE1RERHv+P5gFb0BVvLXhGAu3CzJlrWiIJB6O2eT0GLKo
-         cx8OkcnsnRuOCSeMVYsrHnevbHP1nv5fcurFoEdmpesZRxA3fVRBIAnT9jlE8PTmHPen
-         WjNzTYmHX1xsa1dUalkHHc2aIHrZNV9kAVsvbdMV7PxfgHrAPENzgLh/uMM/Dat5XAQC
-         Z5DXu2hxL8DYvN8ZILYH90NOdJBEdrOsvdTJSeea0BqSWz09EVRhXRfMvUzesf10QS+/
-         WDBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=P97RgFCmNV942tctqpn0OBJg9vJcOtiyZezQH2Fw3y0=;
-        b=sifVM3YbUsTvga0uBbcxXiluhpjz+i2pZhWpsRPb5/H2kMn9lKN21ycOM0hjlXU2bs
-         OZfSuUjMYOdm6wajOrermmJXhMxkQ3KJJddcXSE8LS6HxqMDuHv5EJG+T6Ll2ayWTZYk
-         9LIvSV/QVfL9r0XxqhUrGc/vfFYQuYITMwJz76rL6WQOQh6p4v9AWjVEfMjinAyeL06j
-         QmmmlVOH/uqL14Wdwo2wr23w09lGi+OL6jO4is0VOdlUOTfxGbgmIsirgi5zb9f8y3lK
-         o+QnKH7a+H86AFVQQaUO1wNbor8uTCarwSSKlavAItVQLcjAD7ctHLJLC3v3wa1WzFLM
-         Q6AQ==
-X-Gm-Message-State: AJIora9aVW/izA4xH15FMLX2fUsxzJaXNStMz8qjPNuoAOiJcZ0hneIL
-        n+bkLTrKCrCf7oI67dzu1L+uwg==
-X-Google-Smtp-Source: AGRyM1vI6+gYVywu/DuF0fgyKCxnUJ512MxR6y5v2Risw6pNlpeBZRBAlmqd01KbPYPBEgr6Fdi4vQ==
-X-Received: by 2002:a05:6512:360d:b0:480:d14a:20ef with SMTP id f13-20020a056512360d00b00480d14a20efmr25206205lfs.508.1657096593541;
-        Wed, 06 Jul 2022 01:36:33 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id q185-20020a2e5cc2000000b0025a891f7b8dsm6029436ljb.32.2022.07.06.01.36.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 01:36:32 -0700 (PDT)
-Message-ID: <6c67a90a-510d-a3e7-4d04-66038395379d@linaro.org>
-Date:   Wed, 6 Jul 2022 10:36:31 +0200
+        Wed, 6 Jul 2022 04:36:45 -0400
+Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35E0F24954
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=g4Xr+
+        M8f7iFLiepv2AynXK5I1Rg75EOr7E+xZ6cYTpA=; b=ihe3wgefSEnqSXfwERG/F
+        djTbWspyfNpllI4eK7MVicqkcHVk8EQ+G4shA18mPl5cfiQbVFAIJf73I49Z4wKn
+        toRP8eucI8EhkfkQF1Zv+41NAGgKE2gsrLTZeIp2zmfzA3fLSx48qG77f/tIbghT
+        8avi6GGPB+r3BUUQgImzgQ=
+Received: from localhost.localdomain (unknown [111.48.58.12])
+        by smtp1 (Coremail) with SMTP id C8mowACXz9_aSMViAIZgGA--.38248S2;
+        Wed, 06 Jul 2022 16:33:32 +0800 (CST)
+From:   Bing Huang <huangbing775@126.com>
+To:     rostedt@goodmis.org, dietmar.eggemann@arm.com
+Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
+        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
+        mgorman@suse.de, mingo@redhat.com, peterz@infradead.org,
+        vincent.guittot@linaro.org
+Subject: [PATCH v4] sched/fair: Make per-cpu cpumasks static
+Date:   Wed,  6 Jul 2022 16:33:30 +0800
+Message-Id: <20220706083330.27944-1-huangbing775@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 06/13] ARM: dts: qcom: enable usb phy by default for
- ipq8064
-Content-Language: en-US
-To:     Christian Marangi <ansuelsmth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jonathan McDowell <noodles@earth.li>
-References: <20220705133917.8405-1-ansuelsmth@gmail.com>
- <20220705133917.8405-7-ansuelsmth@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220705133917.8405-7-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8mowACXz9_aSMViAIZgGA--.38248S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJw1xCF4DGr43JF4DKFWktFb_yoW5CFyUpr
+        WDK3yUW395tF1vq392y34kCr9Yg3s3CwsxJanYvF95JF9rt3W8KrnYqF17urW0gFWkGF4f
+        KFZYqrW2qw1jyw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UNL0OUUUUU=
+X-Originating-IP: [111.48.58.12]
+X-CM-SenderInfo: xkxd0w5elqwlixv6ij2wof0z/1tbijB02r1pEIeKRoAAAsk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 15:39, Christian Marangi wrote:
-> Enable usb phy by default. When the usb phy were pushed, half of them
-> were flagged as disabled by mistake. Fix this to correctly init dwc3
-> node on any ipq8064 based SoC.
-> 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> Tested-by: Jonathan McDowell <noodles@earth.li>
-> ---
+From: Bing Huang <huangbing@kylinos.cn>
 
+load_balance_mask and select_idle_mask are only used in fair.c. Make
+them static and move their allocation into init_sched_fair_class().
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Replace kzalloc_node() with zalloc_cpumask_var_node() to get rid of the
+CONFIG_CPUMASK_OFFSTACK #ifdef and to align with per-cpu cpumask
+allocation for RT (local_cpu_mask in init_sched_rt_class()) and DL
+class (local_cpu_mask_dl in init_sched_dl_class()).
 
+Signed-off-by: Bing Huang <huangbing@kylinos.cn>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+---
 
-Best regards,
-Krzysztof
+ v1->v2:
+   move load_balance_mask and select_idle_mask allocation from
+   sched_init() to init_sched_fair_class()
+ v2->v3:
+   fixup by Dietmar Eggemann <dietmar.eggemann@arm.com>
+ v3->v4:
+   change the patch title and commit message
+
+ kernel/sched/core.c | 11 -----------
+ kernel/sched/fair.c | 13 +++++++++++--
+ 2 files changed, 11 insertions(+), 13 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index da0bf6fe9ecd..2feff25fd905 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -9530,9 +9530,6 @@ LIST_HEAD(task_groups);
+ static struct kmem_cache *task_group_cache __read_mostly;
+ #endif
+ 
+-DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
+-DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
+-
+ void __init sched_init(void)
+ {
+ 	unsigned long ptr = 0;
+@@ -9576,14 +9573,6 @@ void __init sched_init(void)
+ 
+ #endif /* CONFIG_RT_GROUP_SCHED */
+ 	}
+-#ifdef CONFIG_CPUMASK_OFFSTACK
+-	for_each_possible_cpu(i) {
+-		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
+-			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+-		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+-			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+-	}
+-#endif /* CONFIG_CPUMASK_OFFSTACK */
+ 
+ 	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
+ 
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 77b2048a9326..61ae0853721e 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5843,8 +5843,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ #ifdef CONFIG_SMP
+ 
+ /* Working cpumask for: load_balance, load_balance_newidle. */
+-DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
+-DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
++static DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
++static DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
+ 
+ #ifdef CONFIG_NO_HZ_COMMON
+ 
+@@ -11841,6 +11841,15 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
+ __init void init_sched_fair_class(void)
+ {
+ #ifdef CONFIG_SMP
++	int i;
++
++	for_each_possible_cpu(i) {
++		zalloc_cpumask_var_node(&per_cpu(load_balance_mask, i),
++					GFP_KERNEL, cpu_to_node(i));
++		zalloc_cpumask_var_node(&per_cpu(select_idle_mask, i),
++					GFP_KERNEL, cpu_to_node(i));
++	}
++
+ 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
+ 
+ #ifdef CONFIG_NO_HZ_COMMON
+-- 
+2.25.1
+
