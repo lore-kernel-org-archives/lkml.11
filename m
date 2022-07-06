@@ -2,102 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32586C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA4FCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231187AbiGFHAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 03:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
+        id S231171AbiGFHB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 03:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbiGFHAY (ORCPT
+        with ESMTP id S229592AbiGFHBV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 03:00:24 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F18D1F2C2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 00:00:23 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id g4so25835867ybg.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 00:00:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fP9UL96cxJNu+e/w1ZAS0SabjOjSeie47tNUCSGsUoc=;
-        b=bInBYldfUKoDTJgam4jbKqa+UaD8EA8WAlBbf3FnOC4E50CpfP8GkcYd+oT8YoNZce
-         jEaHOJ5DcEI5VMT/pCfcH847uP5MbHL6gLoCuevejao+xJxQiLAmM4TAiLFEIHjZFZsn
-         sUFOErAxxxRrJTktcR+YDboQkteP4+At0xLApZ5Md/uSwKQUMbjUfkWxLHbbzL3oP28S
-         zbQHnkZpcb7HwiIZ0zGYVbbG0e70enGSkiJaX/jfe7FSoRtsghLgPd8vIY5vCD855Vzw
-         Qpy3wIqI/3r8EJVjVzAfTT4qSTaurvTTTKgrKveJkVzawr+kJhAYC5YdbIIrv7VIZfvA
-         pTfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fP9UL96cxJNu+e/w1ZAS0SabjOjSeie47tNUCSGsUoc=;
-        b=foGZQsi/4PvZ4h+ZW+ZvOc809GtoRnNnV5Hl6PbV1tGQcR/n+k4V8rQYTtWMDzsHmq
-         0rVjM4qjCQ+fIXD3aHGa7UEGcsdVSGDRwKSTZQRgPgr78qg10BQT9B1G5amng5DwlkcG
-         cifwgfJMC016mJZD3S7qs5Gx9Gbot5fWGd7ZVaPQBl690ZMqDo4NQrrmiVWqLCYx01iM
-         s4zX1h5DfwOaiavcLG1M5RNjzIlqWGAXeKp49wDyd41+RZt16WYsem1IFc8rPjTGXF46
-         xxxBzH6ek5mgSHHhwQbkUvuaP7pPiSZVNvHYkCDrfoR4Wvtz9EmYbzVm+S1LmUnjLzpl
-         +a4g==
-X-Gm-Message-State: AJIora9bg606WXMy7oMoR9tSLkYt1ovnQk/w3JagRrW6QnAh7STRNDZ7
-        G3bQqT8ubzirsa5U0mE5a5vDoJOOEufm+dR4xcAJFw==
-X-Google-Smtp-Source: AGRyM1t+ZEQAVYtPCYHNF4OZvBPyldFzJskniQgVQGjAGnFo0ZI7Xdr+ZZT9n9u7lmcJSCmUhj7Qj2EvQYLapYoBwzM=
-X-Received: by 2002:a25:7455:0:b0:66e:2daf:8924 with SMTP id
- p82-20020a257455000000b0066e2daf8924mr22469402ybc.427.1657090822296; Wed, 06
- Jul 2022 00:00:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220706052130.16368-1-kuniyu@amazon.com> <20220706052130.16368-4-kuniyu@amazon.com>
-In-Reply-To: <20220706052130.16368-4-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 6 Jul 2022 09:00:11 +0200
-Message-ID: <CANn89i+mJCN=4h5-MM5jUQN8Hv=NdyTmQQb7Oeop+DyYVcEWUg@mail.gmail.com>
-Subject: Re: [PATCH v1 net 03/16] sysctl: Add proc_dointvec_lockless().
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 6 Jul 2022 03:01:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB3D1EAFC;
+        Wed,  6 Jul 2022 00:01:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F093B81AE8;
+        Wed,  6 Jul 2022 07:01:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C463C3411C;
+        Wed,  6 Jul 2022 07:01:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657090878;
+        bh=+cM9fbXgghc45VgTmM6OgjrtFCbCpn//QrK67G8SxMw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=t+PGTy4NrxmmE4XEqgl/Ogpy+Cnfpimwnc0xiX8KVK0JUyww/ppKs89RePW/5uzsp
+         giOTLrbd8L++9gPSsDPtEC3M6tluCPSlyCCcLvjX8xqZfqVBXFA5RfkzQbMjiKRqUh
+         7vekQaK6qNdaFFVjg6KMbWlxXrAKjnEDv21PuY5E6IJ1B2aWdVIBcSBVuYpqcUosHp
+         n8brPLCgqQRjgE6Yrnb96dpnuWvmjYmtYrHMZYtaFlvgBdI2Wz8XlLb29Ccpgg13X/
+         w13ynAMiJofDLsjBj9ODtCoE+s5FPkKffWpzGYQ/fzzQlFmfN1cJIej0kyZIfPlf2L
+         g25PaWGEGZJqg==
+Received: from ip-185-104-136-29.ptr.icomera.net ([185.104.136.29] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o8z2A-005YBP-E3;
+        Wed, 06 Jul 2022 08:01:16 +0100
+Date:   Wed, 06 Jul 2022 08:01:08 +0100
+Message-ID: <87iloan2rv.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v7 3/5] gpio: gpiolib: Allow free() callback to be overridden
+In-Reply-To: <CA+V-a8vua6t5wDNc2CT_XWhoy6OjmzCXyaJ1FtGaqeG5g-qS-w@mail.gmail.com>
+References: <20220703194020.78701-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <20220703194020.78701-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <CAHp75VfFZ146p1sZ2=Ec-F-9zYJZHPWyvgYQeVsG=2TzssaPmA@mail.gmail.com>
+        <CA+V-a8vua6t5wDNc2CT_XWhoy6OjmzCXyaJ1FtGaqeG5g-qS-w@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.104.136.29
+X-SA-Exim-Rcpt-To: prabhakar.csengg@gmail.com, andy.shevchenko@gmail.com, tglx@linutronix.de, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, geert+renesas@glider.be, linus.walleij@linaro.org, brgl@bgdev.pl, p.zabel@pengutronix.de, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, biju.das.jz@bp.renesas.com, prabhakar.mahadev-lad.rj@bp.renesas.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 7:22 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> A sysctl variable is accessed concurrently, and there is always a chance of
-> data-race.  So, all readers and writers need some basic protection to avoid
-> load/store-tearing.
->
-> This patch changes proc_dointvec() to use READ_ONCE()/WRITE_ONCE()
-> internally to fix a data-race on the sysctl side.  For now, proc_dointvec()
-> itself is tolerant to a data-race, but we still need to add annotations on
-> the other subsystem's side.
->
-> In case we miss such fixes, this patch converts proc_dointvec() to a
-> wrapper of proc_dointvec_lockless().  When we fix a data-race in the other
-> subsystem, we can explicitly set it as a handler.
->
-> Also, this patch removes proc_dointvec()'s document and adds
-> proc_dointvec_lockless()'s one so that no one will use proc_dointvec()
-> anymore.
->
-> While we are on it, we remove some trailing spaces.
+On Tue, 05 Jul 2022 05:53:03 +0100,
+"Lad, Prabhakar" <prabhakar.csengg@gmail.com> wrote:
+> 
+> On Mon, Jul 4, 2022 at 5:16 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> >
+> > On Sun, Jul 3, 2022 at 9:43 PM Lad Prabhakar <prabhakar.csengg@gmail.com> wrote:
+> > >
+> > > Allow free() callback to be overridden from irq_domain_ops for
+> > > hierarchical chips.
+> > >
+> > > This allows drivers to free up resources which are allocated during
+> > > child_to_parent_hwirq()/populate_parent_alloc_arg() callbacks.
+> > >
+> > > On Renesas RZ/G2L platform a bitmap is maintained for TINT slots, a slot
+> > > is allocated in child_to_parent_hwirq() callback which is freed up in free
+> > > callback hence this override.
+> >
+> > Hmm... To me this sounds asymmetrical. We alloc something in another
+> > callback, which is not what this free is for. Perhaps it should be an
+> > optional
+> >
+> > free_populated_parent_arg() or alike?
+> >
+> @Marc your thoughts?
 
+I think there are enough optional callbacks, and we don't currently
+have a clear picture of how this may be used in the future, specially
+based on a sample of *one*.
 
-I do not see why you add more functions.
+Let's get it in as is, and tweak things as we go, should another user
+require a slightly different behaviour. This also saves us the debate
+around the naming, which is always pretty useless.
 
-Really all sysctls can change locklessly by nature, as I pointed out.
+Thanks,
 
-So I would simply add WRITE_ONCE() whenever they are written, and
-READ_ONCE() when they are read.
+	M.
 
-If stable teams care enough, they will have to backport these changes,
-so I would rather not have to change
-proc_dointvec() to proc_dointvec_lockless() in many files, with many
-conflicts, that ultimately will either
-add bugs, or ask extra work for maintainers.
+-- 
+Without deviation from the norm, progress is not possible.
