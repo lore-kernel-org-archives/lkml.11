@@ -2,82 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BC7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234406AbiGFW2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 18:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        id S233908AbiGFW3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 18:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234207AbiGFW2B (ORCPT
+        with ESMTP id S230412AbiGFW3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 18:28:01 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE902B1B5;
-        Wed,  6 Jul 2022 15:28:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657146480; x=1688682480;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Vleb0k6acAvZjo7qEApfQ8FJmwV6hNoP1hTpCH2VGUk=;
-  b=P4tcQC/SuS6YykZByJzTQh9PdHsYugrIYk0xPzs56gdJqYqhNPZHIxXE
-   RZoglXc5mwwZqTciTiOs1yFlLfjS2xLbwZ8TxC5lPaqC0qa06iXUq2Nfp
-   NJcGxK9WT0eXlrRxJmZOfNK0SB4Aq7WhfRwCwYrM1j4puxa5UWE5hexEp
-   d17aXVeJ/Na4SHpKEgiOF97ml2yVVfTl5JMOTPVEhtlWZERVpmLqaebq+
-   mNbCe7+PoWHhsIICGX/erIi0ghpam7xkcojee4stK95NUXD8QXTzGj7HM
-   +LhWnVOR3+VQKyMstaK0DqsX9LjfDwOrOqmWKTaElL0Z3YDcf45kp/SEe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="347866390"
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="347866390"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 15:27:59 -0700
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="696286196"
-Received: from ffsotto-mobl.amr.corp.intel.com (HELO [10.209.100.19]) ([10.209.100.19])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 15:27:58 -0700
-Message-ID: <842b718f-8207-1565-3373-61098a4c2d33@intel.com>
-Date:   Wed, 6 Jul 2022 15:25:51 -0700
+        Wed, 6 Jul 2022 18:29:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E5614D17;
+        Wed,  6 Jul 2022 15:29:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E175B61CFA;
+        Wed,  6 Jul 2022 22:29:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE56C3411C;
+        Wed,  6 Jul 2022 22:29:33 +0000 (UTC)
+Date:   Wed, 6 Jul 2022 18:29:31 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 5/5] bpf: trampoline: support
+ FTRACE_OPS_FL_SHARE_IPMODIFY
+Message-ID: <20220706182931.06cb0e20@gandalf.local.home>
+In-Reply-To: <ECD336F1-A130-47BA-8FBB-E3573445380F@fb.com>
+References: <20220602193706.2607681-1-song@kernel.org>
+        <20220602193706.2607681-6-song@kernel.org>
+        <20220706153843.37584b5b@gandalf.local.home>
+        <DC04E081-8320-4A39-A058-D0E33F202625@fb.com>
+        <20220706174049.6c60250f@gandalf.local.home>
+        <ECD336F1-A130-47BA-8FBB-E3573445380F@fb.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] x86/Kconfig: Fix CONFIG_CC_HAS_SANE_STACKPROTECTOR when
- cross compiling with clang
-Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H. Peter Anvin" <hpa@zytor.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Daniel Kolesa <daniel@octaforge.org>,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        llvm@lists.linux.dev, stable@vger.kernel.org
-References: <20220617180845.2788442-1-nathan@kernel.org>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220617180845.2788442-1-nathan@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/17/22 11:08, Nathan Chancellor wrote:
-> When clang is invoked without a '--target' flag, code is generated for
-> the default target, which is usually the host (it is configurable via
-> cmake). As a result, the has-stack-protector scripts will generate code
-> for the default target but check for x86 specific segment registers,
-> which cannot succeed if the default target is not x86.
+On Wed, 6 Jul 2022 22:15:47 +0000
+Song Liu <songliubraving@fb.com> wrote:
 
-I guess the real root cause here is the direct use of '$(CC)' without
-any other flags.  Adding '$(CLANG_FLAGS)' seems like a pretty normal
-fix, like in scripts/Kconfig.include.
+> > On Jul 6, 2022, at 2:40 PM, Steven Rostedt <rostedt@goodmis.org> wrote:
+> > 
+> > On Wed, 6 Jul 2022 21:37:52 +0000
+> > Song Liu <songliubraving@fb.com> wrote:
+> >   
+> >>> Can you comment here that returning -EAGAIN will not cause this to repeat.
+> >>> That it will change things where the next try will not return -EGAIN?    
+> >> 
+> >> Hmm.. this is not the guarantee here. This conflict is a real race condition 
+> >> that an IPMODIFY function (i.e. livepatch) is being registered at the same time 
+> >> when something else, for example bpftrace, is updating the BPF trampoline. 
+> >> 
+> >> This EAGAIN will propagate to the user of the IPMODIFY function (i.e. livepatch),
+> >> and we need to retry there. In the case of livepatch, the retry is initiated 
+> >> from user space.   
+> > 
+> > We need to be careful here then. If there's a userspace application that
+> > runs at real-time and does a:
+> > 
+> > 	do {
+> > 		errno = 0;
+> > 		regsiter_bpf();
+> > 	} while (errno != -EAGAIN);  
+> 
+> Actually, do you mean:
+> 
+> 	do {
+> 		errno = 0;
+> 		regsiter_bpf();
+> 	} while (errno == -EAGAIN);
+> 
+> (== -EAGAIN) here?
 
-I suspect there's another one of these here:
+Yeah, of course.
 
-	arch/x86/um/vdso/Makefile:      cmd_vdso = $(CC) -nostdlib -o $@
+> 
+> In this specific race condition, register_bpf() will succeed, as it already
+> got tr->mutex. But the IPMODIFY (livepatch) side will fail and retry. 
 
-but I wouldn't be surprised if UML doesn't work with clang in the first
-place.
+What else takes the tr->mutex ?
+
+If it preempts anything else taking that mutex, when this runs, then it
+needs to be careful.
+
+You said this can happen when the live patch came first. This isn't racing
+against live patch, it's racing against anything that takes the tr->mutex
+and then adds a bpf trampoline to a location that has a live patch.
+
+> 
+> Since both livepatch and bpf trampoline changes are rare operations, I think 
+> the chance of the race condition is low enough. 
+> 
+> Does this make sense?
+> 
+
+It's low, and if it is also a privileged operation then there's less to be
+concern about. As if it is not, then we could have a way to deadlock the
+system. I'm more concerned that this will lead to a CVE than it just
+happening randomly. In other words, it only takes something that can run at
+a real-time priority to connect to a live patch location, and something
+that runs at a low priority to take a tr->mutex. If an attacker has both,
+then it can pin both to a CPU and then cause the deadlock to the system.
+
+One hack to fix this is to add a msleep(1) in the failed case of the
+trylock. This will at least give the owner of the lock a millisecond to
+release it. This was what the RT patch use to do with spin_trylock() that
+was converted to a mutex (and we worked hard to remove all of them).
+
+-- Steve
