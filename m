@@ -2,118 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 543C0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233573AbiGFMMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
+        id S233692AbiGFMNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233629AbiGFMME (ORCPT
+        with ESMTP id S233594AbiGFMNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:12:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0032A721
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:11:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05B9C61F8C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 12:11:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 376C8C341C0;
-        Wed,  6 Jul 2022 12:11:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657109512;
-        bh=SeP+pP9PIpzAPPpJhtZkpan835Qsg2jX4rok4kM3sRg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lwCf+b5YlgzovcNzoC+4ZeUraeGLv/Sw51y8rFKv9x+kKwiJzJeQm3AGRaDNAfIQv
-         OZkf3j+7FfcaTNwmuL58WhUHcLKLnhHBMsSHzmBC3+YsWeK9tZefF3y26C151bH7Qd
-         U9svzLMEdPsnlalg7nkHuu2oQnIZRgC1UixyybKFENWTDazFKxTMX5+Q8OqQn1RzdP
-         FO2fT6zuwhcTs16IMELy73gL8TPupxG45MRzCuJtz6XWXI4kESHjGGg5dTH709IqA9
-         F/QNjICHhh25JoTHiOa8f1KbF4TMtTetdpOhxYgARTqjEAvdUYoTDOT5qVQVipf8fS
-         sjAEvTC+KzK7A==
-Date:   Wed, 6 Jul 2022 13:11:44 +0100
-From:   Will Deacon <will@kernel.org>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     John Garry <john.garry@huawei.com>, joro@8bytes.org,
-        robin.murphy@arm.com, mst@redhat.com, jasowang@redhat.com,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        chenxiang66@hisilicon.com, jean-philippe@linaro.org,
-        linuxarm@huawei.com
-Subject: Re: [PATCH RESEND v5 2/5] iova: Allow rcache range upper limit to be
- flexible
-Message-ID: <20220706121144.GG2403@willie-the-truck>
-References: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
- <1649071634-188535-3-git-send-email-john.garry@huawei.com>
- <834447a0-675a-5978-8ffe-285ce09f4213@huawei.com>
+        Wed, 6 Jul 2022 08:13:04 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EF72A711
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:12:31 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266BQ75L018264;
+        Wed, 6 Jul 2022 07:10:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=UTJnSSDUEI+29dgN/4uw14bwJA/Uw+o1U/M+iJlv/YA=;
+ b=VrwpfPGfB6+Fijo3yXRJWrjL8cRmfZUDUvhS94aPx1m9XJ7/4bQnqKJC6EYbwslKUAKF
+ TH5ykBPkXK/433+EVuFoA50Gu44FGPAtBV69QQ08Oe32yqx1+j5LtcaGmPeULwlFPLCS
+ un6zeNSx4wvWoktCeW4VlHzBx3xYpq63CYbl6AVFcSCiilxuO4vc/svM5h78EQmwKe5S
+ psxPjnGQS72zlsoFuVpwA91WNyDWQ3tSTMGHcT3z3Pi3pcH2N25lepmJEiKKS9qysaKB
+ OkHPCwc16zxltQ5OXTR9FIDk/ZE6E1mKGV0yTo8SavspvHdxSNRdWeTqI+0gidf9Rt/i Dg== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3h4ucmgu1q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 06 Jul 2022 07:10:41 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 6 Jul
+ 2022 13:10:39 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Wed, 6 Jul 2022 13:10:39 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 2F5AC2A9;
+        Wed,  6 Jul 2022 12:10:33 +0000 (UTC)
+Date:   Wed, 6 Jul 2022 12:10:33 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v2 1/1] ASoC: madera: Replace kernel.h with the necessary
+ inclusions
+Message-ID: <20220706121033.GK38351@ediswmail.ad.cirrus.com>
+References: <20220705155239.75736-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <834447a0-675a-5978-8ffe-285ce09f4213@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220705155239.75736-1-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-GUID: J05WHjQZBWbgpVqqhArI88J6wBFFXUMv
+X-Proofpoint-ORIG-GUID: J05WHjQZBWbgpVqqhArI88J6wBFFXUMv
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 03:52:53PM +0800, Leizhen (ThunderTown) wrote:
-> On 2022/4/4 19:27, John Garry wrote:
-> > Some low-level drivers may request DMA mappings whose IOVA length exceeds
-> > that of the current rcache upper limit.
-> > 
-> > This means that allocations for those IOVAs will never be cached, and
-> > always must be allocated and freed from the RB tree per DMA mapping cycle.
-> > This has a significant effect on performance, more so since commit
-> > 4e89dce72521 ("iommu/iova: Retry from last rb tree node if iova search
-> > fails"), as discussed at [0].
-> > 
-> > As a first step towards allowing the rcache range upper limit be
-> > configured, hold this value in the IOVA rcache structure, and allocate
-> > the rcaches separately.
-> > 
-> > Delete macro IOVA_RANGE_CACHE_MAX_SIZE in case it's reused by mistake.
-> > 
-> > [0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
-> > 
-> > Signed-off-by: John Garry <john.garry@huawei.com>
-> > ---
-> >  drivers/iommu/iova.c | 20 ++++++++++----------
-> >  include/linux/iova.h |  3 +++
-> >  2 files changed, 13 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> > index db77aa675145..5c22b9187b79 100644
-> > --- a/drivers/iommu/iova.c
-> > +++ b/drivers/iommu/iova.c
-> > @@ -15,8 +15,6 @@
-> >  /* The anchor node sits above the top of the usable address space */
-> >  #define IOVA_ANCHOR	~0UL
-> >  
-> > -#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
-> > -
-> >  static bool iova_rcache_insert(struct iova_domain *iovad,
-> >  			       unsigned long pfn,
-> >  			       unsigned long size);
-> > @@ -443,7 +441,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
-> >  	 * rounding up anything cacheable to make sure that can't happen. The
-> >  	 * order of the unadjusted size will still match upon freeing.
-> >  	 */
-> > -	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-> > +	if (size < (1 << (iovad->rcache_max_size - 1)))
-> >  		size = roundup_pow_of_two(size);
-> >  
-> >  	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
-> > @@ -713,13 +711,15 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
-> >  	unsigned int cpu;
-> >  	int i, ret;
-> >  
-> > -	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
-> > +	iovad->rcache_max_size = 6; /* Arbitrarily high default */
+On Tue, Jul 05, 2022 at 06:52:39PM +0300, Andy Shevchenko wrote:
+> When kernel.h is used in the headers it adds a lot into dependency hell,
+> especially when there are circular dependencies are involved.
 > 
-> It would be better to assign this constant value to iovad->rcache_max_size
-> in init_iova_domain().
+> Replace kernel.h inclusion with the list of what is really being used.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+> ---
 
-I think it's fine where it is as it's a meaningless number outside of the
-rcache code.
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-Will
+Thanks,
+Charles
