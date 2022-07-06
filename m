@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D54C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2510FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233867AbiGFPbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
+        id S233872AbiGFPb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233784AbiGFPbJ (ORCPT
+        with ESMTP id S233796AbiGFPbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:31:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE6F2611B;
-        Wed,  6 Jul 2022 08:31:05 -0700 (PDT)
+        Wed, 6 Jul 2022 11:31:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5B61EEE6;
+        Wed,  6 Jul 2022 08:31:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CEB1B81D95;
-        Wed,  6 Jul 2022 15:31:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6C7EC341CE;
-        Wed,  6 Jul 2022 15:31:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA0AC61FDD;
+        Wed,  6 Jul 2022 15:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3270C385A5;
+        Wed,  6 Jul 2022 15:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121462;
-        bh=2s+Qy8PAT+eFTqzOukEbXvmcPXQSWYaLsQ5kNH32U4c=;
+        s=k20201202; t=1657121469;
+        bh=ZWyNL/PLV0KBvNJrAWbcNjFGF/dSsbZ4x/okfB1xgSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gLmpnbvwWfZxphHiLjvDPeHFIH2RFvLUcK+eOilhnP5E9BBUHOq/ThBXLoGqgagi0
-         RG86K3WvfIXG6ePNQey85qPOmk+Up9Try73vcsU7sDQzV2Yb4qUXf7HVwaYscezCEG
-         Ev5EAkfCZ8ySjh7wGr4AxEm7GkNPXZ6yCKadY/ETkWGQDeWhQczxzNZMJKntSxwpzt
-         FXQg9S1hbuWPaa/lnPuGm7zDUk09AA5Hm+EBOgC85I/yfgN1RdbFa1KHeznmBVpfLq
-         gDBnbOtUoh7n0SL8p/gpaFgn33Y2ct+NHpBEvRgQZHwjoroTHGU61WQkmrbqQNepLG
-         mf6AxpOVJUtjA==
+        b=EKR8OejCcF+4qjF7yC1r8uvZuBpI568iyRQKP3fcJcnksfQSTUO7ap52V6DnkS56a
+         rat1ijcttwnK0McpfGLmi3dCghxk61Vf6F2Be1gAmEJ4pKpl8K+Jhnj2JjX8/bPGZD
+         knurJdv3v6ZBFy3ZWTyee19XZNJ3XGl4PztrSwz7tQyjQ89m9ekhlNKehHxg5S5RSM
+         V83wB3yPshFmT0nxpXWktlsRsqLcAqzgZJsrqI31NANLu2k28x0QJHvMEtJUWuTK9a
+         CtEFa5yu910lciWuBultyvhD/uobXYisNB7PNbCFe4nVSC2c6+/fHYo4F9vrV7gnZz
+         MY7lj8HVV7yBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gayatri Kammela <gayatri.kammela@linux.intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David E . Box" <david.e.box@linux.intel.com>,
-        Rajneesh Bhardwaj <irenic.rajneesh@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, david.e.box@intel.com,
-        markgross@kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 05/22] platform/x86: intel/pmc: Add Alder Lake N support to PMC core driver
-Date:   Wed,  6 Jul 2022 11:30:23 -0400
-Message-Id: <20220706153041.1597639-5-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Radim Hrazdil <rhrazdil@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        roopa@nvidia.com, razor@blackwall.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 09/22] netfilter: br_netfilter: do not skip all hooks with 0 priority
+Date:   Wed,  6 Jul 2022 11:30:27 -0400
+Message-Id: <20220706153041.1597639-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220706153041.1597639-1-sashal@kernel.org>
 References: <20220706153041.1597639-1-sashal@kernel.org>
@@ -56,38 +56,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gayatri Kammela <gayatri.kammela@linux.intel.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit d63eae6747eb8b3192e89712f6553c6aa162f872 ]
+[ Upstream commit c2577862eeb0be94f151f2f1fff662b028061b00 ]
 
-Add Alder Lake N (ADL-N) to the list of the platforms that Intel's
-PMC core driver supports. Alder Lake N reuses all the TigerLake PCH IPs.
+When br_netfilter module is loaded, skbs may be diverted to the
+ipv4/ipv6 hooks, just like as if we were routing.
 
-Cc: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: David E. Box <david.e.box@linux.intel.com>
-Signed-off-by: Gayatri Kammela <gayatri.kammela@linux.intel.com>
-Reviewed-by: Rajneesh Bhardwaj <irenic.rajneesh@gmail.com>
-Link: https://lore.kernel.org/r/20220615002751.3371730-1-gayatri.kammela@linux.intel.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Unfortunately, bridge filter hooks with priority 0 may be skipped
+in this case.
+
+Example:
+1. an nftables bridge ruleset is loaded, with a prerouting
+   hook that has priority 0.
+2. interface is added to the bridge.
+3. no tcp packet is ever seen by the bridge prerouting hook.
+4. flush the ruleset
+5. load the bridge ruleset again.
+6. tcp packets are processed as expected.
+
+After 1) the only registered hook is the bridge prerouting hook, but its
+not called yet because the bridge hasn't been brought up yet.
+
+After 2), hook order is:
+   0 br_nf_pre_routing // br_netfilter internal hook
+   0 chain bridge f prerouting // nftables bridge ruleset
+
+The packet is diverted to br_nf_pre_routing.
+If call-iptables is off, the nftables bridge ruleset is called as expected.
+
+But if its enabled, br_nf_hook_thresh() will skip it because it assumes
+that all 0-priority hooks had been called previously in bridge context.
+
+To avoid this, check for the br_nf_pre_routing hook itself, we need to
+resume directly after it, even if this hook has a priority of 0.
+
+Unfortunately, this still results in different packet flow.
+With this fix, the eval order after in 3) is:
+1. br_nf_pre_routing
+2. ip(6)tables (if enabled)
+3. nftables bridge
+
+but after 5 its the much saner:
+1. nftables bridge
+2. br_nf_pre_routing
+3. ip(6)tables (if enabled)
+
+Unfortunately I don't see a solution here:
+It would be possible to move br_nf_pre_routing to a higher priority
+so that it will be called later in the pipeline, but this also impacts
+ebtables evaluation order, and would still result in this very ordering
+problem for all nftables-bridge hooks with the same priority as the
+br_nf_pre_routing one.
+
+Searching back through the git history I don't think this has
+ever behaved in any other way, hence, no fixes-tag.
+
+Reported-by: Radim Hrazdil <rhrazdil@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/intel/pmc/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/bridge/br_netfilter_hooks.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/platform/x86/intel/pmc/core.c b/drivers/platform/x86/intel/pmc/core.c
-index 8ee15a7252c7..c3ec5dc88bbf 100644
---- a/drivers/platform/x86/intel/pmc/core.c
-+++ b/drivers/platform/x86/intel/pmc/core.c
-@@ -1911,6 +1911,7 @@ static const struct x86_cpu_id intel_pmc_core_ids[] = {
- 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_L,	&icl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&tgl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&tgl_reg_map),
-+	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_N,		&tgl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P,        &tgl_reg_map),
- 	{}
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index 4fd882686b04..ff4779036649 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -1012,9 +1012,24 @@ int br_nf_hook_thresh(unsigned int hook, struct net *net,
+ 		return okfn(net, sk, skb);
+ 
+ 	ops = nf_hook_entries_get_hook_ops(e);
+-	for (i = 0; i < e->num_hook_entries &&
+-	      ops[i]->priority <= NF_BR_PRI_BRNF; i++)
+-		;
++	for (i = 0; i < e->num_hook_entries; i++) {
++		/* These hooks have already been called */
++		if (ops[i]->priority < NF_BR_PRI_BRNF)
++			continue;
++
++		/* These hooks have not been called yet, run them. */
++		if (ops[i]->priority > NF_BR_PRI_BRNF)
++			break;
++
++		/* take a closer look at NF_BR_PRI_BRNF. */
++		if (ops[i]->hook == br_nf_pre_routing) {
++			/* This hook diverted the skb to this function,
++			 * hooks after this have not been run yet.
++			 */
++			i++;
++			break;
++		}
++	}
+ 
+ 	nf_hook_state_init(&state, hook, NFPROTO_BRIDGE, indev, outdev,
+ 			   sk, net, okfn);
 -- 
 2.35.1
 
