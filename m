@@ -2,98 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E03C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F11BCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234860AbiGFXn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56550 "EHLO
+        id S232370AbiGFXq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234849AbiGFXnl (ORCPT
+        with ESMTP id S234255AbiGFXqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:43:41 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD4F2D1E3;
-        Wed,  6 Jul 2022 16:43:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657151021; x=1688687021;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AvvrK8qrOu12cbubhLZfU/X+OByykQFjHxBineAuT5M=;
-  b=iOcUqYCBYRxd8ja/YLdzrDQXe95nZnPTvTuCDNLXg30Kuj1gnbYUelqD
-   GCVhf40ywLRRJv89WeVv3NF2pxHSRF2/GdmxjC9oFHMIIOB893Z+iAP13
-   ADn1dDxPSWMjWhcbp4B9SnwgDsApD5L960EIn8bMe/JM+35JFnveMXiX4
-   U=;
-X-IronPort-AV: E=Sophos;i="5.92,251,1650931200"; 
-   d="scan'208";a="105569596"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 06 Jul 2022 23:43:24 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com (Postfix) with ESMTPS id C335222015B;
-        Wed,  6 Jul 2022 23:43:20 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 6 Jul 2022 23:43:19 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.106) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Wed, 6 Jul 2022 23:43:16 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net 11/12] icmp: Fix data-races around sysctl.
-Date:   Wed, 6 Jul 2022 16:40:02 -0700
-Message-ID: <20220706234003.66760-12-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220706234003.66760-1-kuniyu@amazon.com>
-References: <20220706234003.66760-1-kuniyu@amazon.com>
-MIME-Version: 1.0
+        Wed, 6 Jul 2022 19:46:25 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2073.outbound.protection.outlook.com [40.107.21.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C0D199;
+        Wed,  6 Jul 2022 16:46:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S/4qHU+Ql7i7o//bCcSEOTkYsrZiXMi0QrP3iWCP54hsZzMiS7MFGAjuUqs8SEZjWKopyo3QEGkpQmn52TXmxl4gY29koaaDaBCRtq5JcYenzSsiJZI/oygRsazhmwLRrRWuM9+q/UWRFhb9JX1i9F5GuVPHdx/wzM58Kzg/ikep3igWy2L5eBT+NEz0pYdJtgisMenrDWgHvL0sM1bAkyssXaP5qLCx8nlASlwDnLm0WI4zz6bv2xO7IF+SR3bq7azk5PLcDQprOzw34Wvrr0TyBXk8wOO4myD+RbDqESxRGLptl7j8uIVxx23q7bnJ+rrwu14mry2YYceeDCqWag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jK3VakMIZ7+oThnl16wZSlcAvK/bkSlFa+KYrmiYYjw=;
+ b=IThO5OvhX5bQVC2weYEECr+te4vVAiH7/IR06r5u83LGbaLfHUNk8N6/KijBK5LhGR1mCEcpRZHvd8F4HpiT+ocuZJTuoLbfOIlmARNEB4nel7ehjscmKjPNAuF2fHK/RcJ1wYX7cAz1tBTGIkniEf+gQE8TTpLYyxxyBWHL92CaFBVZq7hmvnwKBeGKKupa0lhcP15pvxWyJqJI1jRW03j7coVx3R+MxmFsFoQAYaZ8XyEKqD5J/ejNsSjGzPpyjVseibZvwHyyYiB7ztJP+YTEVJjk7pATE2ZHksjlOtU641KxJkxLrK4N8BQ6xH2LbymT9L0BTNElyd58hiQ3yA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jK3VakMIZ7+oThnl16wZSlcAvK/bkSlFa+KYrmiYYjw=;
+ b=TdcIG19uTD5AZwDwl9vqnjbFNEJ6dzwRXCynT6PeLLmLwna35HTPDywkT7a8IoxA/AXQ+kssSvqOlRaT2Q1UShrhuooOknCe1tFdq4DPyXFxE020GnP7e9//2KsZDBH/W2ZHQ9YFSvl1ut/l//RwMvAUEQkc/0FSlYvC6KKWes4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
+ by HE1PR0401MB2601.eurprd04.prod.outlook.com (2603:10a6:3:86::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 6 Jul
+ 2022 23:46:19 +0000
+Received: from PA4PR04MB9416.eurprd04.prod.outlook.com
+ ([fe80::6da9:774d:eb1d:9ad5]) by PA4PR04MB9416.eurprd04.prod.outlook.com
+ ([fe80::6da9:774d:eb1d:9ad5%6]) with mapi id 15.20.5395.020; Wed, 6 Jul 2022
+ 23:46:19 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     djakov@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        festevam@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, abel.vesa@nxp.com,
+        abailon@baylibre.com, l.stach@pengutronix.de,
+        laurent.pinchart@ideasonboard.com, marex@denx.de,
+        paul.elder@ideasonboard.com, Markus.Niebel@ew.tq-group.com,
+        aford173@gmail.com
+Cc:     kernel@pengutronix.de, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        abelvesa@kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V4] arm64: dts: imx8mp: add NoC node
+Date:   Thu,  7 Jul 2022 07:47:57 +0800
+Message-Id: <20220706234757.3162307-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.106]
-X-ClientProxiedBy: EX13D36UWB001.ant.amazon.com (10.43.161.84) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-ClientProxiedBy: SG2PR02CA0104.apcprd02.prod.outlook.com
+ (2603:1096:4:92::20) To PA4PR04MB9416.eurprd04.prod.outlook.com
+ (2603:10a6:102:2ab::21)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1cd1b91b-e8a2-48cd-788d-08da5fa9b91b
+X-MS-TrafficTypeDiagnostic: HE1PR0401MB2601:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xcfMJxNlTlcdEHQWiLRfAODFYmtXGcVbPT70PH6vUU7EQETJpcT0erLyWsFKVGqiLNM8kgaLqPo3WZKJNRGXuXJQd1DmEcrt1poQZrA9toZ4ZdfvEZyGdZdK5pYGyTIZ8nJqh75rbRLeNGQxVBg3y8YY/vwoGReMrX5dyKYo0/rNuWYND8lcddaoMukT5P1HRvsCml+8FJLXVWxjc6n2KPXCPYG77SoLKLd3IrGPR/4KfmTqW/YNCUVR7sY776VDiEL2JajMD0EPO2aRR30Qp00TMuJ5QaWeXQE7aBDZbC8BG9pEmmSrXAiSOVPJx3X+8k5zX3IpJMC6aJxcCR3trRDZdRckCFryT6s3nl77xp6e9Nb2zKMxSovm7SbnHBwEYXMews55cY+qKnJ/33HnBV1Bh9NG6FLD+4AAQ2tFuTxJbdXedeAkP3Ziyl5Q+jBIsOfwImqB41o1/CaNCz3J8wueoxxqTr6loFHH+hNbGWLxc4PBHNQLQfiDma+x5T7QroDleTeCD6SR80dhS45Sx7d9fZ4ex+0YYrk7rne6K+gUTqJjD1lZapPsT64Hemo7M7dbRcmRIWgYc3uGyTu8MpJO478PAwrijd67Oi6w3y1sOV7awSnBWQnWRVUI9Ut0zXqMLuA82ji1XDN/2HdBmZR1sPuy17EL+fl/oy21rcWMokSrWmj57DraAURPivo5k2g3DiMNhp1uOyF1MAcahh1waXEPY4xneMvD/zEzPBVf1+F/2lBpdloMPvqoBWwfZ5XDcc1toAHJp/cfG+WSwH6fCqnR1LaeDJh9jGJKL477+lbeMZJkoOsHpyAZ7pdLJrq3D9HbhUwKLQXthn/p99SDI3BsQBnzeakm2BGDtKokBIz2vWkSzZFIHxWX6hAS
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB9416.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(2616005)(66476007)(186003)(66556008)(66946007)(1076003)(26005)(6512007)(52116002)(921005)(6506007)(83380400001)(4326008)(8676002)(6666004)(478600001)(86362001)(966005)(41300700001)(38100700002)(38350700002)(316002)(6486002)(7416002)(5660300002)(2906002)(8936002)(32563001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3jXrc+UvOA4/EA8NCz6WcHRQFJrZwwvn11YVr7aKZ4HKB5JWXyM3arwonRyV?=
+ =?us-ascii?Q?3GI7hXjKz75GoCFQtKMD+qn7voluTxqPELQaI+WhjT0tvCUJZ3oh61ERCQIv?=
+ =?us-ascii?Q?kfNnDe1UJmR9Sh4g2+rRsGjXLIZhUqNSdIdMVR3CqDEeODsF49rd8UM/9CUd?=
+ =?us-ascii?Q?Jhs8qRwgHOUUS1vDfwNrog1YeJCsgu0BzFDXO3ybVqlWrIyhkSBBoC7ZTk5J?=
+ =?us-ascii?Q?95mBywfmBYflk68/ENQSFdjN9q60yPZJuSvZ6JLaFwepn1ihrlExz56Lt8Sw?=
+ =?us-ascii?Q?t/j/Vak8RJ+jK9IdPnLPomSvIu9zgr393MNuVRoH8M350CCxB+v4TAiJZtmS?=
+ =?us-ascii?Q?Orc7mJdZTr2nrNwiWNTxLpY0Wb8DP7MtUgMeNb+IL69sY2VhwpmmiQ31PF+F?=
+ =?us-ascii?Q?pZwtvIAARLJJjlifnHG7kYv1ic08suBnfqLV1U0+CLWGx/ydKumxwf1E5yg+?=
+ =?us-ascii?Q?bSEakjxTQ5EV46wubvFEgZX4suUK8pavGzBttgnlbsHmM7rfk+8UYoOnrzpE?=
+ =?us-ascii?Q?pNSExoLm9BElVxNt0K/tylCvsdEG4HQQfGTSUhmJCYrhbNs+cOxEfAZZI2n9?=
+ =?us-ascii?Q?TqK473LFP0WeGfFt5WST019YMSv23otgStFEnidFsireFOwxZBfzaiXQ0HAB?=
+ =?us-ascii?Q?FH6rf0BdDz9lZvS/x8w4Jn7+m9VbIE018NxiTe6lp5zaHvZNVkG4ztf4r7s/?=
+ =?us-ascii?Q?76cZjpwhkItZCfJoSvCcIPbm61m/a9Fy11hzCY2N7L4OErqoLcfpMV5F02bR?=
+ =?us-ascii?Q?qb6NX6T9xLarZ+/azvmspMvLfBUWtr/4JNyNS6hKR/U0mTtN2favX19i7IOM?=
+ =?us-ascii?Q?DenWhRkkDxU42YN6IvmZuYxKO37LM+qITMwGg+yoQHJw9jCMb0U3EtBKsObN?=
+ =?us-ascii?Q?f8w042Ni17oy9zpJ+gd20jkKxLF4Nif4wpoTKBrbXDPefI4zW1HNcdKWnPvd?=
+ =?us-ascii?Q?KNUffN7v5Tjmwt/3zitVucfX5RcIDPYUt7euPFSobRNQ4oVAd+vfCJGYWSwK?=
+ =?us-ascii?Q?8Ut8D4TES8v3XP/n9/NqjpMr4gI/VjC1COF1rkFI4alLSA6SUX1PgGJHOuIP?=
+ =?us-ascii?Q?ixqXl9hAazbzUnd6yNTlxugSSeR1sNVlXsK19Jg0zhOD0GUqbhM+noRW/e29?=
+ =?us-ascii?Q?nQ9F5QU8ansrZ4SUefYAbaD+k03T1tVAvM5AXd+AoId4uFZtZcj7fmArmIJb?=
+ =?us-ascii?Q?25mJ5XGvkvQlI8LFYGYvHg+v3zGfONItLWgcLOXGF1wOyI3S/i4Xrr00b5fK?=
+ =?us-ascii?Q?mn7Mq5nF8ZDiH3OGpSgWQHkvoBirmoKhYfFxqKMy0F/ZQgjKUD9sdQhz+zOH?=
+ =?us-ascii?Q?Coy/0ZU4p9cUFQiYVxoH2cFImgHXHVdOE3bfTQr9Kxyn1cFC0EcgvqpqcSFD?=
+ =?us-ascii?Q?Q1C+v5gOPtSuZHo/Jp15IuB1JGl1d9oTeDIC3p1HLE3au/v/k/3bIWMtdQYK?=
+ =?us-ascii?Q?ajrqUAu2MpqndDTT1JWRL7NmNzXPck5ufTGRPM9Pd0nzfD6c0FTcupzr9Zch?=
+ =?us-ascii?Q?o5+VAPu3ZVOI9zL9OV7ri6k6vaOpqe+Ea3UKAFQPLD3t7Lwh78GfEs4LT23N?=
+ =?us-ascii?Q?sNodVzlVNy+LfwdNqkR36UdG2n4LCtF89HIvRZcq?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1cd1b91b-e8a2-48cd-788d-08da5fa9b91b
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB9416.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 23:46:18.9649
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WO0B3czP8BopSXCHWBF5ar13U9+2XNA4a4mm6VJ6ed/F9oHTBn2NkPmL74gwsd99KC/s0vHmYdc18AbhxBQP7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0401MB2601
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While reading icmp sysctl variables, they can be changed concurrently.
-So, we need to add READ_ONCE() to avoid data-races.
+From: Peng Fan <peng.fan@nxp.com>
 
-Fixes: 4cdf507d5452 ("icmp: add a global rate limitation")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Add i.MX8MP NoC node to make the interconnect i.MX8MP driver could work.
+Currently dynamic frequency scaling of the i.MX8MP NoC has not been
+supported, only NoC initial settings are configured by interconnect
+driver.
+
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
- net/ipv4/icmp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index efea0e796f06..0f9e61d29f73 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -253,11 +253,12 @@ bool icmp_global_allow(void)
- 	spin_lock(&icmp_global.lock);
- 	delta = min_t(u32, now - icmp_global.stamp, HZ);
- 	if (delta >= HZ / 50) {
--		incr = sysctl_icmp_msgs_per_sec * delta / HZ ;
-+		incr = READ_ONCE(sysctl_icmp_msgs_per_sec) * delta / HZ;
- 		if (incr)
- 			WRITE_ONCE(icmp_global.stamp, now);
- 	}
--	credit = min_t(u32, icmp_global.credit + incr, sysctl_icmp_msgs_burst);
-+	credit = min_t(u32, icmp_global.credit + incr,
-+		       READ_ONCE(sysctl_icmp_msgs_burst));
- 	if (credit) {
- 		/* We want to use a credit of one in average, but need to randomize
- 		 * it for security reasons.
+V4:
+ Georgi has merged the V3 driver and bindings patches. So only resend
+ this patch. Per Georgi's comments:
+  - Drop syscon from compatbile
+  - Drop the header inclusion
+
+ Seems I not see this patch in patchwork or mailist, maybe sent failed.
+ So gave a resend of V4.
+
+ V3:
+  https://lore.kernel.org/linux-arm-kernel/20220703091132.1412063-1-peng.fan@oss.nxp.com/
+
+ I not list the full change log, since this is only a minor patch
+
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+index eb2d516278eb..42ed8ee08548 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+@@ -1019,6 +1019,27 @@ eqos: ethernet@30bf0000 {
+ 			};
+ 		};
+ 
++		noc: interconnect@32700000 {
++			compatible = "fsl,imx8mp-noc", "fsl,imx8m-noc";
++			reg = <0x32700000 0x100000>;
++			clocks = <&clk IMX8MP_CLK_NOC>;
++			#interconnect-cells = <1>;
++
++			operating-points-v2 = <&noc_opp_table>;
++
++			noc_opp_table: opp-table {
++				compatible = "operating-points-v2";
++
++				opp-200M {
++					opp-hz = /bits/ 64 <200000000>;
++				};
++
++				opp-1000M {
++					opp-hz = /bits/ 64 <1000000000>;
++				};
++			};
++		};
++
+ 		aips4: bus@32c00000 {
+ 			compatible = "fsl,aips-bus", "simple-bus";
+ 			reg = <0x32c00000 0x400000>;
 -- 
-2.30.2
+2.25.1
 
