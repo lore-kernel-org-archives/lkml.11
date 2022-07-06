@@ -2,141 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFF2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E131C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiGFNhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
+        id S233691AbiGFNin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233709AbiGFNhq (ORCPT
+        with ESMTP id S231576AbiGFNik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:37:46 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0276A22B0D;
-        Wed,  6 Jul 2022 06:37:44 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id sb34so27110991ejc.11;
-        Wed, 06 Jul 2022 06:37:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dKKydK5tKzNauOSLwuMbV7i2MBJlb9QQ2YCYOCrDsp0=;
-        b=RCOcZ/hoR/jOgEOOmG7sVY3Cwwm5J3af33LdQfjNdAmlIsJKjRu5c+DZyyN/x6vvKr
-         6DkFdOIjKTjWW1hrfSJf91OFXO9fVs71YIg1NkAWTG6muLnHQeRL0vB2VGafhf/0b4eP
-         jRgl6534p614z/2XJ+d08Aa6rJcqnIz0vCOca5xBVJALxjW+Su2osASE2YgSTd6aX9qX
-         XhebzEWfi3DCB/ZVJ1k/aSBPZ0/If5kdmBDg2aVnqOLn9YQHBRdFBz1XG8EOFfY7lBge
-         UnmnLhuVMSxzHhl9F4jHbo10yT2b2NH3tPIaMCHrCCsMkCDzx15cUU8dyEe0iPrwdKKn
-         rbLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dKKydK5tKzNauOSLwuMbV7i2MBJlb9QQ2YCYOCrDsp0=;
-        b=l+TO3TFqNZObD0ki9LRqGRYiykzUvybX1yLWouAucDDUh5DA+QmlY9VwveoWb3vfUa
-         UH0p5+FuIHblCzqn4nobmec/a+eUlbi+fHYItTTJR3WQBd0oKw2iiW6DlVJWgM6REmyt
-         4VVmWkBsgUITIakngAOhF9pVeY/cekLDfVgObuY+hUl5c/2TaaTU2lAfgje/FsQj821L
-         TdhIbfoJtiLZNAtYBSZxzuYGBVpe56j5a7ExD/3JcdJ9kGo2hUQMvo5aCd2edxoaITJ0
-         Who/4P83NXo14BsIsy9Wrc7CZlVRc6x7LbUeq1RBiJjgP4sROgbhTIvBqk//F0X7XhqG
-         Zp8Q==
-X-Gm-Message-State: AJIora9ykDm41wLtfqcMwmGIxBnpfDptonRr+BWYe6Iu9Ut0nSgbYCco
-        1XmglC2LQnF6npSLSxvwQ94=
-X-Google-Smtp-Source: AGRyM1sZY9e/JHjxCK1nAL99G44PCfL49v1xRwoanY5pRQH9Q23XUfZdE9rTVuYAMi7NFDmhqJB8Gw==
-X-Received: by 2002:a17:907:a428:b0:726:c9f6:cb72 with SMTP id sg40-20020a170907a42800b00726c9f6cb72mr38200703ejc.663.1657114662366;
-        Wed, 06 Jul 2022 06:37:42 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id fi9-20020a170906da0900b00722e5b234basm17492148ejb.179.2022.07.06.06.37.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 06:37:27 -0700 (PDT)
-Message-ID: <62c59017.1c69fb81.a08b4.f18c@mx.google.com>
-X-Google-Original-Message-ID: <YsWMMULRVCaNe9Fe@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 15:20:49 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
-Subject: Re: [PATCH 06/13] ARM: dts: qcom: enable usb phy by default for
- ipq8064
-References: <20220705133917.8405-1-ansuelsmth@gmail.com>
- <20220705133917.8405-7-ansuelsmth@gmail.com>
- <eadf03c4-7e4c-e2a0-b20d-6e2dff3af1e3@somainline.org>
- <62c58b03.1c69fb81.527d5.ecc6@mx.google.com>
- <837c6cd8-72d9-e7c8-dfd9-e171d809f0bf@somainline.org>
+        Wed, 6 Jul 2022 09:38:40 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5B71F601;
+        Wed,  6 Jul 2022 06:38:38 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id B8A7466019A9;
+        Wed,  6 Jul 2022 14:38:36 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657114717;
+        bh=qOtVS41pFz0Cve8LG+rZ2GhjzM5M5kZoqRvDnnf0RBk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=fmP6bXbo4NwE3MRbQ27Ib9ENErWkf3QTl7Z28jEeOLe1o/C29AscjQJhM4P5kWJRD
+         RfewV9nXGULjUsuoB08jqa1bJhqa9mJEZSXOWvvR0EcfC00hNO04eBfnqYeFvKW0MX
+         DYDlmYguGCfGcGeV0cXZfBe1ti7YDySZ+5ywsICO2ryDZ4uQjXE19SM8wgyK4i9ScQ
+         C3+p0Pk3IddEr/NCcs2JACVysqr6Xno1O/LDjEGwz1dWszeuvBIV83IAVrSEQ9Gapt
+         SOgHc5ECUR3inWCl/95IVAJU59iVWklvznwdlf2CnLxvhQdfWjXol/o1lx6acc81rc
+         c1iK12Jxu3Tgg==
+Message-ID: <82736173-b3b8-1e1a-3e2e-25d9ca3287eb@collabora.com>
+Date:   Wed, 6 Jul 2022 15:38:34 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <837c6cd8-72d9-e7c8-dfd9-e171d809f0bf@somainline.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 RESEND 0/4] MediaTek Helio X10 MT6795 - MT6331/6332
+ Regulators
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     lgirdwood@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220706100912.200698-1-angelogioacchino.delregno@collabora.com>
+ <YsV9IerWCoa/xtwM@sirena.org.uk>
+ <57367b11-f2d4-476b-b92d-16c1726316c0@collabora.com>
+ <YsWG0jfqAf4EqojE@sirena.org.uk>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <YsWG0jfqAf4EqojE@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 03:33:25PM +0200, Konrad Dybcio wrote:
+Il 06/07/22 14:57, Mark Brown ha scritto:
+> On Wed, Jul 06, 2022 at 02:49:56PM +0200, AngeloGioacchino Del Regno wrote:
+>> Il 06/07/22 14:16, Mark Brown ha scritto:
 > 
+>>> This previously got 0day failures due to missing dependencies which
+>>> need would need a merge with IIRC MFD, I see no reference in the cover
+>>> letter to dependencies?
 > 
-> On 6.07.2022 14:59, Christian Marangi wrote:
-> > On Wed, Jul 06, 2022 at 03:04:44PM +0200, Konrad Dybcio wrote:
-> >>
-> >>
-> >> On 5.07.2022 15:39, Christian Marangi wrote:
-> >>> Enable usb phy by default. When the usb phy were pushed, half of them
-> >>> were flagged as disabled by mistake. Fix this to correctly init dwc3
-> >>> node on any ipq8064 based SoC.
-> >> Are you sure they are used on *all* devices? If not, you will
-> >> lose power by enabling unused hw..
-> >>
-> >> Konrad
-> > 
-> > Well there could be device that have no usb at all... so honestly
-> > enabling one of them is also wrong. Should I disable the other and
-> > enable it for the upstream device?
-> We generally disable everything that's not obviously being used by the
-> SoC internally or is required for components like these for function
-> (think clock controllers etc) and enable peripherals on a per-device
-> basis.
+>> The only blocker for this series was the MFD patch, which got picked and
+>> it's present in next-20220706 (as you suggested me to resend when things
+>> were picked... I decided to wait until they actually landed on -next...)
 > 
+> Right, I also said I'd need a pull request - if I apply the patches
+> without having the MFD bits they depend on in my tree then it will fail
+> to build.
 
-Will change this to disable the other usb and push another commit to
-enable usb on the upstream device.
+I remember writing that to Lee... how do we proceed in this case?
+Should we add him to the Cc's of this patch to notify him or..?
 
-> Konrad
-> > 
-> > Also it's all handled by dummy vbus so i think we can ignore the losing
-> > power thing. (this thing is old)
-> > 
-> >>>
-> >>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> >>> Tested-by: Jonathan McDowell <noodles@earth.li>
-> >>> ---
-> >>>  arch/arm/boot/dts/qcom-ipq8064.dtsi | 4 ----
-> >>>  1 file changed, 4 deletions(-)
-> >>>
-> >>> diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> >>> index b2faa4a067e9..9c32c637ea46 100644
-> >>> --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> >>> +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> >>> @@ -1177,8 +1177,6 @@ hs_phy_0: phy@100f8800 {
-> >>>  			clocks = <&gcc USB30_0_UTMI_CLK>;
-> >>>  			clock-names = "ref";
-> >>>  			#phy-cells = <0>;
-> >>> -
-> >>> -			status = "disabled";
-> >>>  		};
-> >>>  
-> >>>  		ss_phy_0: phy@100f8830 {
-> >>> @@ -1187,8 +1185,6 @@ ss_phy_0: phy@100f8830 {
-> >>>  			clocks = <&gcc USB30_0_MASTER_CLK>;
-> >>>  			clock-names = "ref";
-> >>>  			#phy-cells = <0>;
-> >>> -
-> >>> -			status = "disabled";
-> >>>  		};
-> >>>  
-> >>>  		usb3_0: usb3@100f8800 {
-> > 
-
--- 
-	Ansuel
+P.S.: Sorry, this is the first time that I deal with MFD...
