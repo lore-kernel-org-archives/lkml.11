@@ -2,102 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B15ECCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234342AbiGFXOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59938 "EHLO
+        id S234255AbiGFXP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234351AbiGFXN4 (ORCPT
+        with ESMTP id S229768AbiGFXPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:13:56 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEDE2BB05
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657149226; x=1688685226;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MsH9VfZ6s5BBxdiYFO1xXZm3xVBgILtliRATJrH+FVI=;
-  b=dAUi/dSFMUqofWzUUR98KwSecIZanummffzuBDzXro1RSQF/jRLeorgA
-   Qsn90W3mFo62zEpSkifugJ/EBA4Ktd1xfqVTw1mDdbQZEYiaGqCyV87pY
-   UCivTkvDCbEkY6ltVrS5H2yzWOpnBz2lHye87MoxGY/Vf5gkuJtTklBk4
-   NhmFVuZfpLwPAs295cefOsehCReoMKoXhDJlkP/xn7eenc7Ydsx4iZDmL
-   CBT4ROJbpp/NC6FMpGTEfr/DZNkBdu4eAoiRTAtSYa3lUeCd+CCPsXP8G
-   51OoVHrpnFkIh04nV7Wh2E9HomQLcGCLaCnaCYfbRQwlbRS10JCdr20vt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="272680677"
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="272680677"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 16:13:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="770216669"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 06 Jul 2022 16:13:42 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id A5F0E11D; Thu,  7 Jul 2022 02:13:49 +0300 (EEST)
-Date:   Thu, 7 Jul 2022 02:13:49 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCHv4 3/8] mm: Pass down mm_struct to untagged_addr()
-Message-ID: <20220706231349.4ghhewbfpzjln56u@black.fi.intel.com>
-References: <20220622162230.83474-1-kirill.shutemov@linux.intel.com>
- <20220622162230.83474-4-kirill.shutemov@linux.intel.com>
- <CAG_fn=WgyitSd9h2ni2xpBBvgnoGTcwZOpWyNE5QRSRn+PcC=A@mail.gmail.com>
+        Wed, 6 Jul 2022 19:15:55 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856B6DD8;
+        Wed,  6 Jul 2022 16:15:53 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1o9EFD-0002yn-C5; Thu, 07 Jul 2022 01:15:43 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     palmer@dabbelt.com, paul.walmsley@sifive.com
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, guoren@kernel.org, cmuellner@linux.com,
+        philipp.tomsich@vrull.eu, hch@lst.de, samuel@sholland.org,
+        atishp@atishpatra.org, anup@brainfault.org, mick@ics.forth.gr,
+        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
+        drew@beagleboard.org, rdunlap@infradead.org,
+        Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v7 1/4] of: also handle dma-noncoherent in of_dma_is_coherent()
+Date:   Thu,  7 Jul 2022 01:15:33 +0200
+Message-Id: <20220706231536.2041855-2-heiko@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220706231536.2041855-1-heiko@sntech.de>
+References: <20220706231536.2041855-1-heiko@sntech.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG_fn=WgyitSd9h2ni2xpBBvgnoGTcwZOpWyNE5QRSRn+PcC=A@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 05:42:21PM +0200, Alexander Potapenko wrote:
-> Kirill,
-> 
-> 
-> > diff --git a/lib/strnlen_user.c b/lib/strnlen_user.c
-> > index feeb935a2299..abc096a68f05 100644
-> > --- a/lib/strnlen_user.c
-> > +++ b/lib/strnlen_user.c
-> > @@ -97,7 +97,7 @@ long strnlen_user(const char __user *str, long count)
-> >                 return 0;
-> >
-> >         max_addr = TASK_SIZE_MAX;
-> > -       src_addr = (unsigned long)untagged_addr(str);
-> > +       src_addr = (unsigned long)untagged_addr(current->mm, str);
-> 
-> In a downstream kernel with LAM disabled I'm seeing current->mm being
-> NULL at this point, because strnlen_user() is being called by
-> kdevtmpfs.
-> IIUC current->mm is only guaranteed to be non-NULL in the userspace
-> process context, whereas untagged_addr() may get called in random
-> places.
-> 
-> Am I missing something?
+of_dma_is_coherent() currently expects the architecture to be
+non-coherent and some devices being coherent getting marked
+as such with the dma-coherent devicetree property.
 
-Hm. Could you show a traceback?
+For PowerPC CONFIG_OF_DMA_DEFAULT_COHERENT was added which currently
+makes of_dma_is_coherent() always return true but doesn't handle
+the case of the architecture being coherent but some devices not.
 
-As strnlen_user() intended to be used on an user string I expected it to
-be called from a process context. I guess I'm wrong, but I don't yet
-understand why.
+So modify the function to also check for dma-noncoherent and
+set a suitable default return value. If CONFIG_OF_DMA_DEFAULT_COHERENT
+is set the value starts with true and finding dma-noncoherent will
+set it to false and without CONFIG_OF_DMA_DEFAULT_COHERENT, the
+behaviour is reversed.
 
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ drivers/of/address.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 94f017d808c4..96f0a12e507c 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -1045,26 +1045,29 @@ phys_addr_t __init of_dma_get_max_cpu_address(struct device_node *np)
+  *
+  * It returns true if "dma-coherent" property was found
+  * for this device in the DT, or if DMA is coherent by
+- * default for OF devices on the current platform.
++ * default for OF devices on the current platform and no
++ * "dma-noncoherent" property was found for this device.
+  */
+ bool of_dma_is_coherent(struct device_node *np)
+ {
+ 	struct device_node *node;
+-
+-	if (IS_ENABLED(CONFIG_OF_DMA_DEFAULT_COHERENT))
+-		return true;
++	bool is_coherent = IS_ENABLED(CONFIG_OF_DMA_DEFAULT_COHERENT);
+ 
+ 	node = of_node_get(np);
+ 
+ 	while (node) {
+ 		if (of_property_read_bool(node, "dma-coherent")) {
+-			of_node_put(node);
+-			return true;
++			is_coherent = true;
++			break;
++		}
++		if (of_property_read_bool(node, "dma-noncoherent")) {
++			is_coherent = false;
++			break;
+ 		}
+ 		node = of_get_next_dma_parent(node);
+ 	}
+ 	of_node_put(node);
+-	return false;
++	return is_coherent;
+ }
+ EXPORT_SYMBOL_GPL(of_dma_is_coherent);
+ 
 -- 
- Kirill A. Shutemov
+2.35.1
+
