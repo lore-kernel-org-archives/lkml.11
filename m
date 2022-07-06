@@ -2,161 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 063AFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233680AbiGFRGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 13:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59270 "EHLO
+        id S232042AbiGFRJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233088AbiGFRF6 (ORCPT
+        with ESMTP id S230243AbiGFRJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 13:05:58 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2074.outbound.protection.outlook.com [40.107.96.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BB72A700;
-        Wed,  6 Jul 2022 10:05:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d4bGOIb7VrnTuCUL9Yv0GNUIjp4eB6gU60DxnPq1tjdmBhoN4aGeQlpCF3a99qZq2eoBVdQmQOhucFXiW8t835oFULRCTYAnTHlLMcodEk9N2xqpkAHhKalzqj8exjFGMpOpU+sP0QSEGymNXZQ1CX43/DIpKMKKTr3SNlFnFavoCCRs6nvggHdcckrFKjss831RJz/lbkTsGw4g9niSwKPy1wvs6Ksdgl5kIiCMtauDaf8oLAvl1D3KTjF1K/fkFVL/bZ/JtlNfICF1ZR/SPFfwSOmhxOndikn0utCl2HUZraALZ1U1m/GBHTGMSbKlxWCd8PU2zIB3vsRkTeAk7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HAbWpD5CJOJvzysXSSJ2RQv2wM/6KghQ1ASRtvVljvE=;
- b=CUfm4YfSoFdOLXKpLTSFpbdsZHsuaOTLSyQCssppLoWLcgNsmg2UhaNnaEzBscwV0oHhe/CTwsq27to37JocIOtKG4hTyTOiat+SHYDa/isvBp/g7ChxgFCtKZWzHLlJqSIOeU2b53Lb1GGMHhP/J4Li+VWT6kB1JeGAu2J0W8IFZUy0u4BPKuuUmMV6rvYRIMcHgLovN2dvd/bTBi9ZMlx4dgnAAlRCo38/RCeREp/9eXUjuJNNnPRVTWkiJiCbfpB/3M8IbXUweO5bJ4RLgbY1fgVixf9uwVwTKBGnwUNLYrG5sVe3+YVa3DOvL1a0nXLIsWjrQa1IfbYCrMeswA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HAbWpD5CJOJvzysXSSJ2RQv2wM/6KghQ1ASRtvVljvE=;
- b=iCctWF59r58iKiu7YUVC63xcNmAulrvg/qojH6xtyD8DET0BNt9qMANX2hiCH64R7dZ7wHnbnfCrL9IVk3UQY7h0tfa81kTp1s02QwWxE0QEkkYsf2a9DvEg/BkumvF6CIeO/dHqg17fZHDkfTTB1oMkC5EfA49Yae+njsF8xsqknm1M/3t2FW7NvPBtDSpqxCGJeowvLJ6PR8e0s7hThjx72zi34puWVzavjejeB38PJpiAdXPycJmmHJcZ4EszYzzhjRv8+SLbWGxE9kVVMzl1q3Mrxcx6kpRybaJfRaBpaIhWaOvYpYpKeCDKMftWi4g8E8V8ZBPO2XV83OFLow==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MW4PR12MB5643.namprd12.prod.outlook.com (2603:10b6:303:188::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Wed, 6 Jul
- 2022 17:05:55 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 17:05:55 +0000
-Date:   Wed, 6 Jul 2022 14:05:53 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Nicolin Chen <nicolinc@nvidia.com>
-Cc:     kwankhede@nvidia.com, corbet@lwn.net, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com,
-        akrowiak@linux.ibm.com, jjherne@linux.ibm.com,
-        alex.williamson@redhat.com, cohuck@redhat.com,
-        kevin.tian@intel.com, hch@infradead.org, jchrist@linux.ibm.com,
-        kvm@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: Re: [RFT][PATCH v2 3/9] vfio/ccw: Only pass in contiguous pages
-Message-ID: <20220706170553.GK693670@nvidia.com>
-References: <20220706062759.24946-1-nicolinc@nvidia.com>
- <20220706062759.24946-4-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706062759.24946-4-nicolinc@nvidia.com>
-X-ClientProxiedBy: MN2PR02CA0020.namprd02.prod.outlook.com
- (2603:10b6:208:fc::33) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Wed, 6 Jul 2022 13:09:26 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311A21EAF3
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:09:24 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so9335872wmb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 10:09:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=5LUOM8ZYJNqDNXNRkK8SW6v1KeODGn/t/tSrSeB93Hg=;
+        b=FWxQ9w9QQNjX8fhNNM4ShlZTIrizS+PKUFTG21pr1iRgQ7Vf64He23QLE9Bp6vZC9d
+         QZu2/gYfSpYUu+IGln2mRJLyYTBfq/2oQnalM/9l2402od6QikiGfzuLSKyyHtUvM0ND
+         H8c1Ve5FE8EFWb3V5w4SgEjotxtGfnYtzZH/0u8do8Ur8T0RcZirfEQuMgVoNg6hEjJl
+         IFvuFdAFs7G+vCfMwzF+R9e5ptnM53k9g6vDUW9c9MrHQ6945QoFT/IiVHoXUxXm909V
+         DfjWv/xGi1nJsBJDn0frsfD/P79LZl9yDkDVyV2rDWgVln6fVNSHmzJB+nvuFcX8uCDE
+         vGYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=5LUOM8ZYJNqDNXNRkK8SW6v1KeODGn/t/tSrSeB93Hg=;
+        b=SpJflemDQ07vzGH75OJjQfPVtDftNoDi1hzRpqJ50CIzRkgF1GmKyao4vxuKpyN4+W
+         d/Bvli4FU85HgjEARxLNUP56SmjGUIfbGkhV4jaYveV2fF0YoVu51EjlTNi4AUXvtJSi
+         rcmwdswQ062dwaNZgaJ5bEeRfl5QZQIY5LibbIk61yGKfgLre5B/b4KNCmdthNeNlv1/
+         585l4kFeRFVSRu6ucnj5XQ6mvyQtAC5yzRHU9FQnJUeD8f2VXinXDILiXnLRs4x7PzdA
+         VI9NYZWxydJOB52JDVkyEtJjaxSl1xIzr0MIwAtekq8IiLX/QfqflymsU7OBmttDmqzx
+         EulA==
+X-Gm-Message-State: AJIora9YQoXH8uBeQ6ECvDVzTlqzlok0lXbg3Mar9OhUABs7VLDSV7GP
+        HbRg28gEQPcIrJsq6Qs4Kk4hzw==
+X-Google-Smtp-Source: AGRyM1tDs+r809drkm9fTo8mDedQDX5NO3elMnVmkCGdj1wZQpsTYCLXuaPJsjJ/fdV04pS7uHNxFg==
+X-Received: by 2002:a05:600c:1e14:b0:3a0:2bba:4b2e with SMTP id ay20-20020a05600c1e1400b003a02bba4b2emr42964111wmb.196.1657127362770;
+        Wed, 06 Jul 2022 10:09:22 -0700 (PDT)
+Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
+        by smtp.gmail.com with ESMTPSA id m16-20020adfe950000000b0021d70a871cbsm5605291wrn.32.2022.07.06.10.09.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 10:09:22 -0700 (PDT)
+References: <20220705142444.17063-1-pboos@baylibre.com>
+ <f756b2d5-56e7-6e52-2739-eca4bb33508b@baylibre.com>
+ <1jmtdnwd7y.fsf@starbuckisacylon.baylibre.com>
+ <20220706124139.GB492220@roeck-us.net>
+ <1j8rp6z720.fsf@starbuckisacylon.baylibre.com>
+ <20220706164325.GA776177@roeck-us.net>
+User-agent: mu4e 1.8.3; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Philippe Boos <pboos@baylibre.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] watchdog: meson: keep running if already active
+Date:   Wed, 06 Jul 2022 19:00:39 +0200
+In-reply-to: <20220706164325.GA776177@roeck-us.net>
+Message-ID: <1j4jzuyxq8.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 304915a4-a3b3-46dd-8de8-08da5f71c9cf
-X-MS-TrafficTypeDiagnostic: MW4PR12MB5643:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PucM7TtUSEr0BcCoFSp+1008lUFmNqRHkrCk44oKpjCckqYkkKxtXEHgNmSEFZRK+Dl+pYFlYMINuMx8X8iMi4P4UJmRig6eMakbtScW4IOPnjB0lxQFOI2azY3clO1ZO4oTB/wf7vtk3Vzg1T+rns0Ua1NJBxeTNAuF0g8jnEM7Er0F7FArh2DhwZa+Hz+CygczNFPjA9GYet4EyhbBVCh+Q7LaCw4suQdab0hQ87el1+UIUn/uhD8PVPBn+y59ERIzu1Zd1Mjb/EwGy0fYGOl4c4RzXfh4iiYDDSCA4AWwwMxSCb1A5PukkM33/tH9pphktalBQt9Fl8CTPtwYPipJaBpBQLTHisM+KlQXBVjchegTGgAFuO4vJswqbQsDsB4vHNHEkzWp/LLux936lPJOj9AT0jj50LG3QuKYyw/OjyQ+MR4fvPYFl/iijH1qCXN3zQI7w6QI0Psaxskx5O8xFM1oMg5SpuQoQKBpeWV29I1YrFWHIp1FGR+VodMJqs9aYsX5jXJSg9bvMRlaoQ8KT4MtKhD1o/XUPE5UXAWhGAEngk4ky6g2+IrLNgMh0R/mYqeNvu3NqmeTNh2hQXDCgH02eUYLPx7BH3zuQWsxW4YuJtcVCFFiTRliqVjqgwu1EER01c8TS1LNUXdFs5rLatE8zPB3nFRKjneYOmNV+lgty4C+I9N7bTpBQp295htj4H/kFrEp2q7szpEgwqLArOPbzvcJTH92CtSZB+b51eQRwYEc/hDT7/qpN8lyrXziUz7IGo81OQrxu4/QbJLWBYSucH2WIjKDgWRC1pScc7LVVy9O1IuC6a6hybOQ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(39860400002)(396003)(376002)(136003)(346002)(8676002)(4326008)(478600001)(66946007)(66556008)(1076003)(66476007)(6486002)(186003)(41300700001)(6506007)(2616005)(6636002)(37006003)(83380400001)(316002)(26005)(86362001)(2906002)(6512007)(38100700002)(8936002)(6862004)(36756003)(7406005)(7416002)(5660300002)(33656002)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NLxmbqXRv3rr0GSNGOvXMHrJL5qC3g815C7cDXyIJsbQQFAUX4TyCYLVJXrV?=
- =?us-ascii?Q?R3Ap2sGDvHVutcr0UxvOrMeydcYryET/cNXqitz7y5TdDc2X18GVBw5dPWEj?=
- =?us-ascii?Q?XMrvkN08rEmSCBnFbZwjYExflIK2I7Q8deiCHqvlOBJFP3EDmaehc2gUsdpx?=
- =?us-ascii?Q?CI0hCqc9jsskC0FTAntRDriKQ+SciSktcDwTNS/rwvyXCxSoYreidw79u5TX?=
- =?us-ascii?Q?QAUCxv4xpb3nSQ2FA6CeX49xtFlx3Egs2vg+ueTBM4IEFJ4V8Ho0sOWqdrCK?=
- =?us-ascii?Q?b72Tm0i526ok4u80UvX90z7qy61YYstCYNgkZLiC+WuYNdq+00i3aq8/cegy?=
- =?us-ascii?Q?nn8LdOP8FCAft2QKMnd3Z73vz7zDo1ZeJ/nfRvOHZtBnWs8+Q8YsriRvAwyn?=
- =?us-ascii?Q?1nrwPgGOT9IwHrmnHGNQEaXMn4dsgEAawkVtgdzr/bdwXNx1oD167CT5pwaM?=
- =?us-ascii?Q?kHiKB0DVWnA/yEGnrNH+f273MgzFpS84ycJmUAh7XofpU3NxgwJ/h3lknOVl?=
- =?us-ascii?Q?4QA1YKYiczt7Ykd3Z2b5RWvcimsO78OFEjyJLa9qBbRPQffkj+Qiroft7yJN?=
- =?us-ascii?Q?6HkwXZnnjnEJ/0hw4R5diW1IiwXNO4FrtJDgdTxWod0twpjqmy/BzKghrCtS?=
- =?us-ascii?Q?qQnXseSAKCn5PexAGoKJojGEQjENyabDJUFO53qNaurAML7iIG1/nMDXeWeW?=
- =?us-ascii?Q?C+kfnX87s0ak92Edi6X3A5+O2Idse0tZAFcmco1qSMvzeWsOH1kxlpEtSIoX?=
- =?us-ascii?Q?WxWxL9e4lPnwVqW4z37Uacg8GJEzXD0JAp9aIsCpeC2DAxVPVWPzm8gS8UmC?=
- =?us-ascii?Q?DnTSZjgz+SsU1w6TXTTrP2BR8hBUaMlWzhOlnJf5OCVWp1BkT2u9yi6ZfbMB?=
- =?us-ascii?Q?4MnSrMkpX7iYLyajJfgd3bXUGUuqpWAs753rN7ji+e9ZPpdq5pOuaerEtz4e?=
- =?us-ascii?Q?Ugb+NvfjsnIg9TueuwaxxbS/el7lw6juteyx7DFWOKXIlltcgzkMrDfPR2d6?=
- =?us-ascii?Q?SojdhyhEk7thBmEh4RsTfIEUBhFAjac57Uv/z60dIe0lOJYDapMaeFk8b/Qk?=
- =?us-ascii?Q?j7CKxqn1dCIVXEfjUjLfKO9Vabt97sr1Po0v6F6pa72vyIwtdwGiCUZrmKJc?=
- =?us-ascii?Q?eNM3KqLi4E+YtcyaQHWGACkE+ah6WoT0F56PpVVTsMLo6ThNma7Q8Y8vsheC?=
- =?us-ascii?Q?mT4hdBBb33kLd9eWrOsx4sWHjfcWHPeuPBFmQF1kC5koqdLXt8sQ9O9MzeVL?=
- =?us-ascii?Q?YPqh+5KCWMuMkmvE31WEMEeaafu+kdp2Mpkn73zhG3ZvWwe6wABAvPMpu/NX?=
- =?us-ascii?Q?+Y9bSIUDRwFFpyQCO8qNzYaj8w9fd13f5gzj7AtyUA1HkwIRfcB8e79Wr/8l?=
- =?us-ascii?Q?SEY4rXYaW4/58tOWBbfKIXAcV5qiSVAsmtXBq+EkEQBO7g8/FQyQi6sGy8wn?=
- =?us-ascii?Q?lk/jfoWT1E8pVYSW9vPB9m4XsAUjFv3N7yrjIahDEjDmPwFBDOtIa9+AvlFc?=
- =?us-ascii?Q?J5g9D7nMMrvLChYdkudIJ4hNrfRG+W3Ljl3/vVJW2uWc5Acxw/ii9To9Ld7a?=
- =?us-ascii?Q?SnLPACzIA1i0p5Ru1NDNm12pSHhZ7hTSqjxBei0A?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 304915a4-a3b3-46dd-8de8-08da5f71c9cf
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 17:05:54.9830
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JZfRcwtynMltMjOJ6h/4HPw33pgBa2bF5CjhLq/WDC5KTHfLIVtMThnkKJsZIP3l
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5643
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 11:27:53PM -0700, Nicolin Chen wrote:
-> This driver is the only caller of vfio_pin/unpin_pages that might pass
-> in a non-contiguous PFN list, but in many cases it has a contiguous PFN
-> list to process. So letting VFIO API handle a non-contiguous PFN list
-> is actually counterproductive.
-> 
-> Add a pair of simple loops to pass in contiguous PFNs only, to have an
-> efficient implementation in VFIO.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/s390/cio/vfio_ccw_cp.c | 70 +++++++++++++++++++++++++++-------
->  1 file changed, 56 insertions(+), 14 deletions(-)
 
-I think this is fine as-is for this series, but someone who knows and
-can test ccw should go in and fix things so that pfn_array_alloc()
-doesn't exist. Allocating memory and filling it with consecutive
-integers is kind of silly given we can just call vfio_pin_pages() with
-pa_nr directly.
+On Wed 06 Jul 2022 at 09:43, Guenter Roeck <linux@roeck-us.net> wrote:
 
-	pa->pa_iova_pfn[0] = pa->pa_iova >> PAGE_SHIFT;
-	pa->pa_pfn[0] = -1ULL;
-	for (i = 1; i < pa->pa_nr; i++) {
-		pa->pa_iova_pfn[i] = pa->pa_iova_pfn[i - 1] + 1;
+> On Wed, Jul 06, 2022 at 03:24:27PM +0200, Jerome Brunet wrote:
+>> 
+> [ ... ]
+>
+>> 
+>> No worries. That being said, I have gone over 
+>> 
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/submitting-patches.rst
+>> 
+>> It just says that Reviewed-by sent on the list should be collected for
+>> the following version. Nothing against adding the tag if the job has
+>> been done, on or off list. Same goes for Suggested-by, Tested-by, etc.
+>> 
+>> If I missed something or it is non-written rule, please let me know.
+>
+> Your interpretation is quite a strict one. I don't think there is a rule
+> that states that tags not sent to a list must not be collected.
+>
+> Anyway, I would have called it common sense, especially since it does
+> happen that someone accidentally hits "reply" instead of "reply all"
+> and replies end up not being sent to the list. If you expect me to dig
+> through e-mail headers to determine if you meant your tags to be published
+> or not, sorry, that won't happen. Do not send me e-mails with any tags
+> unless you accept that they may be published.
+>
+> Guenter
 
-It looks like only the 'ccw_is_idal' flow can actually create
-non-continuities. Also the loop in copy_from_iova() should ideally be
-using the much faster 'rw' interface, and not a pin/unpin cycle just
-to memcpy.
+Exactly. Not expecting anything. I'm 100% aligned with you.
+Maybe this is where is misunderstanding is.
 
-If I guess right these changes would significantly speed this driver
-up.
+The Reviewed-by was there when Philippe sent his mail.
+I was meant to be there and taken. Plain and simple.
+No other expectation whatsoever.
 
-Anyhow,
-
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
+I'm not asking for the tag to dropped, quite the opposite actually.
