@@ -2,85 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EECB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD13C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233505AbiGFPQP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
+        id S229870AbiGFPSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231552AbiGFPQJ (ORCPT
+        with ESMTP id S231552AbiGFPSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:16:09 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A28723151;
-        Wed,  6 Jul 2022 08:16:08 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 6BD662223A;
-        Wed,  6 Jul 2022 17:16:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657120565;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=AlO8fxYi1tcYG3PxFb6I4+tm+M3TQCtA0dFAdu++K04=;
-        b=LQ/Dx3Qx6igB9fnrGf0DI5PEx38/eHhrJOG/hlwE+hR8svh+D4u7n59GutX2kRQGvITCWx
-        HXwnzOVzK46ug6zMsUOm4wABz9M/s/JOdS1WCOR9Z/XqU4H0doAURob5br/jJWL917dZc6
-        n+7up2XgIEB3e+LWFccaJfYdeaFcCCg=
-From:   Michael Walle <michael@walle.cc>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH 1/2] genirq: allow irq_set_chip_handler_name_locked() to take a const irq_chip
-Date:   Wed,  6 Jul 2022 17:15:52 +0200
-Message-Id: <20220706151553.1580790-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        Wed, 6 Jul 2022 11:18:34 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB3855AE
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 08:18:31 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VIYaV52_1657120703;
+Received: from 30.225.28.170(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VIYaV52_1657120703)
+          by smtp.aliyun-inc.com;
+          Wed, 06 Jul 2022 23:18:24 +0800
+Message-ID: <9974bea5-4db9-0104-c9c9-d9b49c390f1b@linux.alibaba.com>
+Date:   Wed, 6 Jul 2022 23:18:22 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
+ degradation
+To:     Mike Rapoport <rppt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Will Deacon <will@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+        baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
+        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
+        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
+        jonathan@marek.ca, mark.rutland@arm.com,
+        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        geert+renesas@glider.be, linux-mm@kvack.org,
+        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
+References: <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
+ <20220705095231.GB552@willie-the-truck>
+ <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+ <20220705121115.GB1012@willie-the-truck> <YsRSajyMxahXe7ZS@kernel.org>
+ <YsRZ8V8mQ+HM31D6@arm.com> <YsRfgX7FFZLxQU50@kernel.org>
+ <YsRvPTORdvIwzShL@arm.com> <YsSi9HAOOzbPYN+w@kernel.org>
+ <YsVeKPzaO0SJdwFW@arm.com> <YsWULnvZZxoHtyRo@kernel.org>
+From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
+In-Reply-To: <YsWULnvZZxoHtyRo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to commit 393e1280f765 ("genirq: Allow irq_chip registration
-functions to take a const irq_chip"), allow the
-irq_set_chip_handler_name_locked() function to take a const irq_chip
-argument.
+Thanks.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-Given this is the correct approach, can this go through the pinctrl tree?
-Of not, do we need an immutable tag?
+在 2022/7/6 21:54, Mike Rapoport 写道:
+> On Wed, Jul 06, 2022 at 11:04:24AM +0100, Catalin Marinas wrote:
+>> On Tue, Jul 05, 2022 at 11:45:40PM +0300, Mike Rapoport wrote:
+>>> On Tue, Jul 05, 2022 at 06:05:01PM +0100, Catalin Marinas wrote:
+>>>> On Tue, Jul 05, 2022 at 06:57:53PM +0300, Mike Rapoport wrote:
+>>>>> On Tue, Jul 05, 2022 at 04:34:09PM +0100, Catalin Marinas wrote:
+>>>>>> On Tue, Jul 05, 2022 at 06:02:02PM +0300, Mike Rapoport wrote:
+>>>>>>> +void __init remap_crashkernel(void)
+>>>>>>> +{
+>>>>>>> +#ifdef CONFIG_KEXEC_CORE
+>>>>>>> +	phys_addr_t start, end, size;
+>>>>>>> +	phys_addr_t aligned_start, aligned_end;
+>>>>>>> +
+>>>>>>> +	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+>>>>>>> +	    return;
+>>>>>>> +
+>>>>>>> +	if (!crashk_res.end)
+>>>>>>> +	    return;
+>>>>>>> +
+>>>>>>> +	start = crashk_res.start & PAGE_MASK;
+>>>>>>> +	end = PAGE_ALIGN(crashk_res.end);
+>>>>>>> +
+>>>>>>> +	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
+>>>>>>> +	aligned_end = ALIGN(end, PUD_SIZE);
+>>>>>>> +
+>>>>>>> +	/* Clear PUDs containing crash kernel memory */
+>>>>>>> +	unmap_hotplug_range(__phys_to_virt(aligned_start),
+>>>>>>> +			    __phys_to_virt(aligned_end), false, NULL);
+>>>>>>
+>>>>>> What I don't understand is what happens if there's valid kernel data
+>>>>>> between aligned_start and crashk_res.start (or the other end of the
+>>>>>> range).
+>>>>>
+>>>>> Data shouldn't go anywhere :)
+>>>>>
+>>>>> There is
+>>>>>
+>>>>> +	/* map area from PUD start to start of crash kernel with large pages */
+>>>>> +	size = start - aligned_start;
+>>>>> +	__create_pgd_mapping(swapper_pg_dir, aligned_start,
+>>>>> +			     __phys_to_virt(aligned_start),
+>>>>> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+>>>>>
+>>>>> and
+>>>>>
+>>>>> +	/* map area from end of crash kernel to PUD end with large pages */
+>>>>> +	size = aligned_end - end;
+>>>>> +	__create_pgd_mapping(swapper_pg_dir, end, __phys_to_virt(end),
+>>>>> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+>>>>>
+>>>>> after the unmap, so after we tear down a part of a linear map we
+>>>>> immediately recreate it, just with a different page size.
+>>>>>
+>>>>> This all happens before SMP, so there is no concurrency at that point.
+>>>>
+>>>> That brief period of unmap worries me. The kernel text, data and stack
+>>>> are all in the vmalloc space but any other (memblock) allocation to this
+>>>> point may be in the unmapped range before and after the crashkernel
+>>>> reservation. The interrupts are off, so I think the only allocation and
+>>>> potential access that may go in this range is the page table itself. But
+>>>> it looks fragile to me.
+>>>
+>>> I agree there are chances there will be an allocation from the unmapped
+>>> range.
+>>>
+>>> We can make sure this won't happen, though. We can cap the memblock
+>>> allocations with memblock_set_current_limit(aligned_end) or
+>>> memblock_reserve(algined_start, aligned_end) until the mappings are
+>>> restored.
+>>
+>> We can reserve the region just before unmapping to avoid new allocations
+>> for the page tables but we can't do much about pages already allocated
+>> prior to calling remap_crashkernel().
+> 
+> Right, this was bothering me too after I re-read you previous email.
+> 
+> One thing I can think of is to only remap the crash kernel memory if it is
+> a part of an allocation that exactly fits into one ore more PUDs.
+> 
+> Say, in reserve_crashkernel() we try the memblock_phys_alloc() with
+> PUD_SIZE as alignment and size rounded up to PUD_SIZE. If this allocation
+> succeeds, we remap the entire area that now contains only memory allocated
+> in reserve_crashkernel() and free the extra memory after remapping is done.
+> If the large allocation fails, we fall back to the original size and
+> alignment and don't allow unmapping crash kernel memory in
+> arch_kexec_protect_crashkres().
+>   
+>> -- 
+>> Catalin
+> 
+Thanks.
 
- include/linux/irqdesc.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+There is a new method.
+I think we should use the patch v3(similar but need add some changes)
 
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index a77584593f7d..1cd4e36890fb 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -209,14 +209,15 @@ static inline void irq_set_handler_locked(struct irq_data *data,
-  * Must be called with irq_desc locked and valid parameters.
-  */
- static inline void
--irq_set_chip_handler_name_locked(struct irq_data *data, struct irq_chip *chip,
-+irq_set_chip_handler_name_locked(struct irq_data *data,
-+				 const struct irq_chip *chip,
- 				 irq_flow_handler_t handler, const char *name)
- {
- 	struct irq_desc *desc = irq_data_to_desc(data);
- 
- 	desc->handle_irq = handler;
- 	desc->name = name;
--	data->chip = chip;
-+	data->chip = (struct irq_chip *)chip;
- }
- 
- bool irq_check_status_bit(unsigned int irq, unsigned int bitmask);
--- 
-2.30.2
+1.We can walk crashkernle block/section pagetable,
+[[[(keep the origin block/section mapping valid]]]
+rebuild the pte level page mapping for the crashkernel mem
+rebuild left & right margin mem(which is in same block/section mapping 
+but out of crashkernel mem) with block/section mapping
 
+2.'replace' the origin block/section mapping by new builded mapping 
+iterately
+
+With this method, all the mem mapping keep valid all the time.
+
+3.the patch v3 link:
+https://lore.kernel.org/linux-mm/6dc308db-3685-4df5-506a-71f9e3794ec8@linux.alibaba.com/T/
+(Need some changes)
