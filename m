@@ -2,77 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF04EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5925C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbiGFI1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:27:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36032 "EHLO
+        id S232285AbiGFI2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232300AbiGFI1W (ORCPT
+        with ESMTP id S232426AbiGFI11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:27:22 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6924624962;
-        Wed,  6 Jul 2022 01:26:21 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VIXSr0B_1657095968;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VIXSr0B_1657095968)
-          by smtp.aliyun-inc.com;
-          Wed, 06 Jul 2022 16:26:17 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     olivierdautricourt@gmail.com
-Cc:     sr@denx.de, vkoul@kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH v3] dmaengine: altera-msgdma: Fixed some inconsistent function name descriptions
-Date:   Wed,  6 Jul 2022 16:26:05 +0800
-Message-Id: <20220706082605.114907-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Wed, 6 Jul 2022 04:27:27 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180FF240BF;
+        Wed,  6 Jul 2022 01:26:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657095997; x=1688631997;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XcUkjLL+YpWw11P834waxgWm/NgeT+vT/ACdu5U5CAo=;
+  b=bXM4SmRunfF2UdZ6n2adSVce6ocOAHH1xRPLAz10BV2oKs9zugqpZkDy
+   8i33755KPbazt9wepKm6IEY9asDygjbALi4nVDTUKElkJVhrytr9AY+iK
+   DMtg4aMn8kiGYKQ7RxwoeO+ZVSKw/DE6Sjp0yXxFaFrmSlRLnyJ59JWqW
+   cjfUGgcV7pYTkEupEnsOMoikiq642Z/9e8cVFbFRWfd57+w97Id6rkxlE
+   94y5G41P/YmbhWo6wHoy7WDEtgDB0Kc0o2RORHR3+CCPMpgcTA6faftRQ
+   9/d2CCGhHdmRTsZuRYjZLmND6Cb8Tax3SjIOkgKFBb0QbNGSwZ/WayQXC
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272467402"
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="272467402"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 01:26:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="567968372"
+Received: from chaop.bj.intel.com ([10.240.192.101])
+  by orsmga006.jf.intel.com with ESMTP; 06 Jul 2022 01:26:16 -0700
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v7 14/14] memfd_create.2: Describe MFD_INACCESSIBLE flag
+Date:   Wed,  6 Jul 2022 16:20:16 +0800
+Message-Id: <20220706082016.2603916-15-chao.p.peng@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inconsistent function names describing msgdma_chan_remove() and
-msgdma_dma_remove are modified to msgdma_dev_remove() and msgdma_remove().
-
-Remove some warnings found by running scripts/kernel-doc, which is caused
-by using 'make W=1'.
-
-drivers/dma/altera-msgdma.c:927: warning: expecting prototype for msgdma_dma_remove(). Prototype was for msgdma_remove() instead.
-drivers/dma/altera-msgdma.c:758: warning: expecting prototype for msgdma_chan_remove(). Prototype was for msgdma_dev_remove() instead.
-
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
 ---
-Changes in v3:
-  -Modified the commit title and message.
+ man2/memfd_create.2 | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
- drivers/dma/altera-msgdma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
-index 6f56dfd375e3..4153c2edb049 100644
---- a/drivers/dma/altera-msgdma.c
-+++ b/drivers/dma/altera-msgdma.c
-@@ -749,7 +749,7 @@ static irqreturn_t msgdma_irq_handler(int irq, void *data)
- }
- 
- /**
-- * msgdma_chan_remove - Channel remove function
-+ * msgdma_dev_remove() - Device remove function
-  * @mdev: Pointer to the Altera mSGDMA device structure
-  */
- static void msgdma_dev_remove(struct msgdma_device *mdev)
-@@ -918,7 +918,7 @@ static int msgdma_probe(struct platform_device *pdev)
- }
- 
- /**
-- * msgdma_dma_remove - Driver remove function
-+ * msgdma_remove() - Driver remove function
-  * @pdev: Pointer to the platform_device structure
-  *
-  * Return: Always '0'
+diff --git a/man2/memfd_create.2 b/man2/memfd_create.2
+index 89e9c4136..2698222ae 100644
+--- a/man2/memfd_create.2
++++ b/man2/memfd_create.2
+@@ -101,6 +101,19 @@ meaning that no other seals can be set on the file.
+ .\" FIXME Why is the MFD_ALLOW_SEALING behavior not simply the default?
+ .\" Is it worth adding some text explaining this?
+ .TP
++.BR MFD_INACCESSIBLE
++Disallow userspace access through ordinary MMU accesses via
++.BR read (2),
++.BR write (2)
++and
++.BR mmap (2).
++The file size cannot be changed once initialized.
++This flag cannot coexist with
++.B MFD_ALLOW_SEALING
++and when this flag is set, the initial set of seals will be
++.B F_SEAL_SEAL,
++meaning that no other seals can be set on the file.
++.TP
+ .BR MFD_HUGETLB " (since Linux 4.14)"
+ .\" commit 749df87bd7bee5a79cef073f5d032ddb2b211de8
+ The anonymous file will be created in the hugetlbfs filesystem using
 -- 
-2.20.1.7.g153144c
+2.17.1
 
