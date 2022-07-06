@@ -2,201 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E94CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F45C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233705AbiGFMvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
+        id S233718AbiGFMwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbiGFMvs (ORCPT
+        with ESMTP id S232099AbiGFMwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:51:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8055314090;
-        Wed,  6 Jul 2022 05:51:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16E7CB81CE2;
-        Wed,  6 Jul 2022 12:51:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2632BC341C0;
-        Wed,  6 Jul 2022 12:51:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657111904;
-        bh=RvVF+pX2pQJvhQhl3VwMAq7Yr6W0YSgKG1Uay6bdLjo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XfFiAmi5S0vNcOt2j2FYsW6jko6n9fjj+ir6pftjgIIqnIbhTcuEgIR1GCgifE9nl
-         3Wfxs5XPgLG7vKDGGEoAxr1+B3oGq4MIJrj7Y1X+4Y5u62Z5S0yTXPK9AR961rgg7+
-         WP+MINhmRV+VolBioKdDJYbdvqKsg/apqn6ykPPA=
-Date:   Wed, 6 Jul 2022 14:51:41 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Varad Gautam <varadgautam@google.com>
-Cc:     Zhang Rui <rui.zhang@intel.com>, linux-kernel@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, linux-pm@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] thermal: sysfs: Perform bounds check when storing
- thermal states
-Message-ID: <YsWFXVALpyedoeYt@kroah.com>
-References: <20220705150002.2016207-1-varadgautam@google.com>
- <YsRkPUcrMj+JU0Om@kroah.com>
- <CAOLDJOJ_v75WqGt2mZa0h-GgF+NThFBY5DvasH+9LLVgLrrvog@mail.gmail.com>
- <YsUvgWmrk+ZfUy3t@kroah.com>
- <CAOLDJOJug5jYpaSjY1tAYWNo0QRM4NB+wM2Vd2=Lf_O7TRjVCg@mail.gmail.com>
- <6eed01c90fafe681cccba2f227d65f2e9bfb8348.camel@intel.com>
- <YsVUB76c2b0EkRBb@kroah.com>
- <CAOLDJOJLvSUMqF37H13aiH59Pm4_t6esRxy7Ej3Grhr4fmSGQA@mail.gmail.com>
- <YsViJpAnkqW1QTwW@kroah.com>
- <CAOLDJOK0Ti2hyskS68LRrd=G5opMz4fnzduj5-d3MF0JLwxS6w@mail.gmail.com>
+        Wed, 6 Jul 2022 08:52:21 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18632125E
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:52:19 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id 5so7693693plk.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 05:52:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=eoGuZazZt/0EeqeMlL7HIZZ5ZS3+Jp4x1OJVaifQZgI=;
+        b=zHye5Lu/f8z+OaiRL7Im0V+Dc4RbC3r3Ahwyi3l2A8ZNQnADz0pU0wek8ogaXYaqk6
+         qGxDOH0UgJ0IDQsGFX4KPf7jXUgPZA2k+sQcj+ktLrNEZCGIT1/Da3tC6mbZNqWCqSEJ
+         ViF9QhGmy0d/7F7ziAOCzav+LOC3po0Ao7CVw4jhtBXWUVSbGrome9ooZkiRGvm+kbnw
+         XbbFL+XGlMVztUsTrtvsafrrghaiyDWc1f3JPxBugWfoIumyAwFuKntF4tF7XMahXZi2
+         dKzLKpWPQwLdoXoGldEi6JQN0PK8TrIQSTKYI6rjJRmhRrpcODutEHOVyXZBFmNyk4EC
+         /wKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=eoGuZazZt/0EeqeMlL7HIZZ5ZS3+Jp4x1OJVaifQZgI=;
+        b=vmtubLluIMGWtMm2JuXZdvCPecQafT2xMEb+r062bOaPm99dCDEpXpnPAQIZ/HbRTo
+         whA+Knf5FOlYlTeUeZD7W5IhQTGHq4Dd6xBudnStD9NkyNoah7XduzPczQn/peYulUyO
+         V4W5h8ufWu1A0+VOtxdSyKcNSA7YvixEIds/bi7ZtRDEnV0MEpkX3YOfbmV39/S3bgmN
+         ATBVQB1uTIVCzMB+rbSpJX6RnUtjqF1Zaor77nXvgmAgEUatmms7hi4lyGBmml8+CXB+
+         WIuU9Tzf07HyBnOYts7sk0fDnViMyAL+nDv/QMR3EbnxLzf3Qsr752PstwWxM9EkNReh
+         wISA==
+X-Gm-Message-State: AJIora+RkEMzh1Yl2jIrSr2n3tCec7HBtS4tHX1233VBvhHUjBKmmCtr
+        3o7gWs7sI1K0sBY/iDL2GeFe
+X-Google-Smtp-Source: AGRyM1uq7M5HT00nmhH2W5TGieARitgSBzSweDfbxTCHYXb39Vr226B5eNFWAaVhFPTnaaKfToRA9Q==
+X-Received: by 2002:a17:902:8689:b0:14e:f1a4:d894 with SMTP id g9-20020a170902868900b0014ef1a4d894mr47578859plo.65.1657111939398;
+        Wed, 06 Jul 2022 05:52:19 -0700 (PDT)
+Received: from thinkpad ([117.202.190.202])
+        by smtp.gmail.com with ESMTPSA id mm8-20020a17090b358800b001ef79eb5033sm8938047pjb.11.2022.07.06.05.52.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 05:52:18 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 18:22:14 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Chris Lew <quic_clew@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] soc: qcom: smp2p: Add memory barrier for irq_pending
+Message-ID: <20220706125214.GA2327@thinkpad>
+References: <1657087331-32455-1-git-send-email-quic_clew@quicinc.com>
+ <1657087331-32455-4-git-send-email-quic_clew@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAOLDJOK0Ti2hyskS68LRrd=G5opMz4fnzduj5-d3MF0JLwxS6w@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1657087331-32455-4-git-send-email-quic_clew@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 02:30:21PM +0200, Varad Gautam wrote:
-> On Wed, Jul 6, 2022 at 12:21 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Wed, Jul 06, 2022 at 12:01:19PM +0200, Varad Gautam wrote:
-> > > On Wed, Jul 6, 2022 at 11:21 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > On Wed, Jul 06, 2022 at 04:51:59PM +0800, Zhang Rui wrote:
-> > > > > On Wed, 2022-07-06 at 09:16 +0200, Varad Gautam wrote:
-> > > > > > On Wed, Jul 6, 2022 at 8:45 AM Greg KH <gregkh@linuxfoundation.org>
-> > > > > > wrote:
-> > > > > > >
-> > > > > > > On Tue, Jul 05, 2022 at 11:02:50PM +0200, Varad Gautam wrote:
-> > > > > > > > On Tue, Jul 5, 2022 at 6:18 PM Greg KH <
-> > > > > > > > gregkh@linuxfoundation.org> wrote:
-> > > > > > > > >
-> > > > > > > > > On Tue, Jul 05, 2022 at 03:00:02PM +0000, Varad Gautam wrote:
-> > > > > > > > > > Check that a user-provided thermal state is within the
-> > > > > > > > > > maximum
-> > > > > > > > > > thermal states supported by a given driver before attempting
-> > > > > > > > > > to
-> > > > > > > > > > apply it. This prevents a subsequent OOB access in
-> > > > > > > > > > thermal_cooling_device_stats_update() while performing
-> > > > > > > > > > state-transition accounting on drivers that do not have this
-> > > > > > > > > > check
-> > > > > > > > > > in their set_cur_state() handle.
-> > > > > > > > > >
-> > > > > > > > > > Signed-off-by: Varad Gautam <varadgautam@google.com>
-> > > > > > > > > > Cc: stable@vger.kernel.org
-> > > > > > > > > > ---
-> > > > > > > > > >  drivers/thermal/thermal_sysfs.c | 12 +++++++++++-
-> > > > > > > > > >  1 file changed, 11 insertions(+), 1 deletion(-)
-> > > > > > > > > >
-> > > > > > > > > > diff --git a/drivers/thermal/thermal_sysfs.c
-> > > > > > > > > > b/drivers/thermal/thermal_sysfs.c
-> > > > > > > > > > index 1c4aac8464a7..0c6b0223b133 100644
-> > > > > > > > > > --- a/drivers/thermal/thermal_sysfs.c
-> > > > > > > > > > +++ b/drivers/thermal/thermal_sysfs.c
-> > > > > > > > > > @@ -607,7 +607,7 @@ cur_state_store(struct device *dev,
-> > > > > > > > > > struct device_attribute *attr,
-> > > > > > > > > >               const char *buf, size_t count)
-> > > > > > > > > >  {
-> > > > > > > > > >       struct thermal_cooling_device *cdev =
-> > > > > > > > > > to_cooling_device(dev);
-> > > > > > > > > > -     unsigned long state;
-> > > > > > > > > > +     unsigned long state, max_state;
-> > > > > > > > > >       int result;
-> > > > > > > > > >
-> > > > > > > > > >       if (sscanf(buf, "%ld\n", &state) != 1)
-> > > > > > > > > > @@ -618,10 +618,20 @@ cur_state_store(struct device *dev,
-> > > > > > > > > > struct device_attribute *attr,
-> > > > > > > > > >
-> > > > > > > > > >       mutex_lock(&cdev->lock);
-> > > > > > > > > >
-> > > > > > > > > > +     result = cdev->ops->get_max_state(cdev, &max_state);
-> > > > > > > > > > +     if (result)
-> > > > > > > > > > +             goto unlock;
-> > > > > > > > > > +
-> > > > > > > > > > +     if (state > max_state) {
-> > > > > > > > > > +             result = -EINVAL;
-> > > > > > > > > > +             goto unlock;
-> > > > > > > > > > +     }
-> > > > > > > > > > +
-> > > > > > > > > >       result = cdev->ops->set_cur_state(cdev, state);
-> > > > > > > > >
-> > > > > > > > > Why doesn't set_cur_state() check the max state before setting
-> > > > > > > > > it?  Why
-> > > > > > > > > are the callers forced to always check it before?  That feels
-> > > > > > > > > wrong...
-> > > > > > > > >
-> > > > > > > >
-> > > > > > > > The problem lies in thermal_cooling_device_stats_update(), not
-> > > > > > > > set_cur_state().
-> > > > > > > >
-> > > > > > > > If ->set_cur_state() doesn't error out on invalid state,
-> > > > > > > > thermal_cooling_device_stats_update() does a:
-> > > > > > > >
-> > > > > > > > stats->trans_table[stats->state * stats->max_states +
-> > > > > > > > new_state]++;
-> > > > > > > >
-> > > > > > > > stats->trans_table reserves space depending on max_states, but
-> > > > > > > > we'd end up
-> > > > > > > > reading/writing outside it. cur_state_store() can prevent this
-> > > > > > > > regardless of
-> > > > > > > > the driver's ->set_cur_state() implementation.
-> > > > > > >
-> > > > > > > Why wouldn't cur_state_store() check for an out-of-bounds condition
-> > > > > > > by
-> > > > > > > calling get_max_state() and then return an error if it is invalid,
-> > > > > > > preventing thermal_cooling_device_stats_update() from ever being
-> > > > > > > called?
-> > > > > > >
-> > > > > >
-> > > > > > That's what this patch does, it adds the out-of-bounds check.
-> > > > >
-> > > > > No, I think Greg' question is
-> > > > > why cdev->ops->set_cur_state() return 0 when setting a cooling state
-> > > > > that exceeds the maximum cooling state?
-> > > >
-> > > > Yes, that is what I am asking, it should not allow a state to be
-> > > > exceeded.
-> > > >
-> > >
-> > > Indeed, it is upto the driver to return !0 from cdev->ops->set_cur_state()
-> > > when setting state > max - and it is a driver bug for not doing so.
-> > >
-> > > But a buggy driver should not lead to cur_state_store() performing an OOB
-> > > access.
-> >
-> > Agreed, which is why the code that does the access should check before
-> > it does so.  Right now you are relying on the sysfs code to do so, which
-> > seems very wrong.
-> >
+On Tue, Jul 05, 2022 at 11:02:10PM -0700, Chris Lew wrote:
+> There is a very tight race where the irq_retrigger function is run
+> on one cpu and the actual retrigger softirq is running on a second
+> cpu. When this happens, there may be a chance that the second cpu
+> will not see the updated irq_pending value from first cpu.
 > 
-> I see the point.
+> Add a memory barrier to ensure that irq_pending is read correctly.
 > 
-> The OOB access happens in thermal_cooling_device_stats_update().
+> Signed-off-by: Chris Lew <quic_clew@quicinc.com>
+> ---
+>  drivers/soc/qcom/smp2p.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> By placing the check in cur_state_store(), I'm trying to ensure
-> two things for a buggy driver:
+> diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
+> index a94cddcb0298..a1ea5f55c228 100644
+> --- a/drivers/soc/qcom/smp2p.c
+> +++ b/drivers/soc/qcom/smp2p.c
+> @@ -249,6 +249,9 @@ static void qcom_smp2p_notify_in(struct qcom_smp2p *smp2p)
+>  
+>  		status = val ^ entry->last_value;
+>  		entry->last_value = val;
+> +
+> +		/* Ensure irq_pending is read correctly */
+> +		mb();
 
-What in-kernel driver has this problem, and why not just fix it there?
+I don't quite understand why you need a barrier here. mb() makes sure all the
+prior instructions gets executed before executing the later one. But why is it
+needed here?
 
-> 1. The driver's cdev->ops->set_cur_state() doesn't get called if
-> the new state is > max state. This is to prevent the driver
-> from storing the new (invalid) state internally. If the driver
-> didn't realise/reject an invalid state, chances are it will try
-> to propagate it internally and take actions according to that,
-> which can have side effects on system stability.
+>  		status |= *entry->irq_pending;
+>  
+>  		/* No changes of this entry? */
+> @@ -356,6 +359,11 @@ static int smp2p_retrigger_irq(struct irq_data *irqd)
+>  
+>  	set_bit(irq, entry->irq_pending);
+>  
+> +	/* Ensure irq_pending is visible to all cpus that retried interrupt
+> +	 * can run on
+> +	 */
+> +	mb();
+> +
 
-Again, set_cur_state() should check for max values, if not, it is broken
-and that needs to be fixed in the driver.
+Here it makes sense because you want the CPU to set irq_pending before exiting
+from this function. But even then you can use the less strict smp_wmb() that
+serves the exact purpose.
 
-> 2. The kernel doesn't do an OOB access in
-> thermal_cooling_device_stats_update().
+Thanks,
+Mani
 
-Then don't allow thermal_cooling_device_stats_update() to do an out of
-band access by fixing it there too.  But again, your patch does not
-solve that directly.
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.7.4
+> 
 
-thanks,
-
-greg k-h
+-- 
+மணிவண்ணன் சதாசிவம்
