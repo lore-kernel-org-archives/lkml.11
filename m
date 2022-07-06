@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E7AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED58C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234526AbiGFSe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48026 "EHLO
+        id S233383AbiGFSfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234243AbiGFSex (ORCPT
+        with ESMTP id S233823AbiGFSex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 14:34:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5CB2183C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2987A205FB;
         Wed,  6 Jul 2022 11:34:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06000B81E50;
-        Wed,  6 Jul 2022 18:34:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95CDDC3411C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0479B81E83;
+        Wed,  6 Jul 2022 18:34:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39161C341CB;
         Wed,  6 Jul 2022 18:34:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657132489;
-        bh=0kaDjFlQpaNPpt/jh7oUp7rSYdbsRMWmer7H8Dsx7kY=;
+        bh=zdWKypwxKe9RMtSGTkJ1CzZTOGoibtwH4u3hWLAxNhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n2JVBR/edIuG4wlNIPvpHW2OjjhjdxQ8KL9dhhkTOd2laihACA10QNuruugSTBslh
-         e/LdrVmC3suWghwAabxo8NWZZFXkApNCHW/2wzuRMxyo8kHC70FrWCHvWn+vWnAblh
-         1zGDA6HFFACxjwlum2kC29TKVMvTNiHCCs5fo9T7TyoDhVrUZJ9/Hk0+/o+B3ZjKko
-         mIq/9otsHVa4H0rPubAgQHJ34Y+uuSlL7/zVPOQBBeiL8XGSjUWKyAIRL9QIMNDYS0
-         MG72Moug/1Wl8UuH0Ez+s6HB07EzBXg8m1Hei9UUGy2Hu7OlIkemG2k7rfM7z7lzsm
-         pbPwR343fKZ0Q==
+        b=EznejKqR1AaC7CqP/l/kyinGc3w5Fa7BJ5ewgeHTlaNEWXk95GAakURzxE5izbhm9
+         AFiVW9lYteE5Mf5Yd5VJWJQFFDloEoHYm/X7NESUdUCMOvkekL/C3ihq2YGtvDaL7X
+         sXxGYaYEGy1Cyg2IbGpShEZ2rJLVHoNK3eiBkv+MIwMgfWcNxvfOmZXw9YPbKevFdL
+         I2+spOJzm+Yf7PTZH92wbWZy2TAtLaOHw2sRwdWgKzKsAixwZjSqkWOcRUYS7q+PAV
+         PvmGqbZEyLppMb7lRIQhml1Pv45PI1IEkrpL8HuWHCZbhfmFabu/Qcz1AySSes/Twy
+         A0qw8xwRS83zA==
 Received: by pali.im (Postfix)
-        id 4B7867BA; Wed,  6 Jul 2022 20:34:49 +0200 (CEST)
+        id 695557F1; Wed,  6 Jul 2022 20:34:46 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Gregory Clement <gregory.clement@bootlin.com>,
@@ -42,9 +42,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 04/11] ARM: dts: armada-xp-98dx3236.dtsi: Add definitions for PCIe legacy INTx interrupts
-Date:   Wed,  6 Jul 2022 20:31:07 +0200
-Message-Id: <20220706183114.30783-5-pali@kernel.org>
+Subject: [PATCH 01/11] ARM: dts: kirkwood: Add definitions for PCIe legacy INTx interrupts
+Date:   Wed,  6 Jul 2022 20:31:04 +0200
+Message-Id: <20220706183114.30783-2-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220706183114.30783-1-pali@kernel.org>
 References: <20220706183114.30783-1-pali@kernel.org>
@@ -57,33 +57,115 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Pali Rohár <pali@kernel.org>
 ---
- arch/arm/boot/dts/armada-xp-98dx3236.dtsi | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/kirkwood-6192.dtsi     | 14 ++++++++++--
+ arch/arm/boot/dts/kirkwood-6281.dtsi     | 14 ++++++++++--
+ arch/arm/boot/dts/kirkwood-6282.dtsi     | 28 ++++++++++++++++++++----
+ arch/arm/boot/dts/kirkwood-98dx4122.dtsi | 14 ++++++++++--
+ 4 files changed, 60 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/boot/dts/armada-xp-98dx3236.dtsi b/arch/arm/boot/dts/armada-xp-98dx3236.dtsi
-index 38a052a0312d..b21ffb819b1d 100644
---- a/arch/arm/boot/dts/armada-xp-98dx3236.dtsi
-+++ b/arch/arm/boot/dts/armada-xp-98dx3236.dtsi
-@@ -76,16 +76,26 @@
- 				reg = <0x0800 0 0 0 0>;
- 				#address-cells = <3>;
- 				#size-cells = <2>;
-+				interrupt-names = "intx";
-+				interrupts-extended = <&mpic 58>;
- 				#interrupt-cells = <1>;
+diff --git a/arch/arm/boot/dts/kirkwood-6192.dtsi b/arch/arm/boot/dts/kirkwood-6192.dtsi
+index 396bcba08adb..07f4f7f98c0c 100644
+--- a/arch/arm/boot/dts/kirkwood-6192.dtsi
++++ b/arch/arm/boot/dts/kirkwood-6192.dtsi
+@@ -26,12 +26,22 @@
  				ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0
  					  0x81000000 0 0 0x81000000 0x1 0 1 0>;
  				bus-range = <0x00 0xff>;
 -				interrupt-map-mask = <0 0 0 0>;
--				interrupt-map = <0 0 0 0 &mpic 58>;
+-				interrupt-map = <0 0 0 0 &intc 9>;
++				interrupt-names = "intx";
++				interrupts = <9>;
++				interrupt-map-mask = <0 0 0 7>;
++				interrupt-map = <0 0 0 1 &pcie_intc 0>,
++						<0 0 0 2 &pcie_intc 1>,
++						<0 0 0 3 &pcie_intc 2>,
++						<0 0 0 4 &pcie_intc 3>;
+ 				marvell,pcie-port = <0>;
+ 				marvell,pcie-lane = <0>;
+ 				clocks = <&gate_clk 2>;
+ 				status = "disabled";
++
++				pcie_intc: interrupt-controller {
++					interrupt-controller;
++					#interrupt-cells = <1>;
++				};
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm/boot/dts/kirkwood-6281.dtsi b/arch/arm/boot/dts/kirkwood-6281.dtsi
+index faa05849a40d..d08a9a5ecc26 100644
+--- a/arch/arm/boot/dts/kirkwood-6281.dtsi
++++ b/arch/arm/boot/dts/kirkwood-6281.dtsi
+@@ -26,12 +26,22 @@
+ 				ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x1 0 1 0>;
+ 				bus-range = <0x00 0xff>;
+-				interrupt-map-mask = <0 0 0 0>;
+-				interrupt-map = <0 0 0 0 &intc 9>;
++				interrupt-names = "intx";
++				interrupts = <9>;
++				interrupt-map-mask = <0 0 0 7>;
++				interrupt-map = <0 0 0 1 &pcie_intc 0>,
++						<0 0 0 2 &pcie_intc 1>,
++						<0 0 0 3 &pcie_intc 2>,
++						<0 0 0 4 &pcie_intc 3>;
+ 				marvell,pcie-port = <0>;
+ 				marvell,pcie-lane = <0>;
+ 				clocks = <&gate_clk 2>;
+ 				status = "disabled";
++
++				pcie_intc: interrupt-controller {
++					interrupt-controller;
++					#interrupt-cells = <1>;
++				};
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm/boot/dts/kirkwood-6282.dtsi b/arch/arm/boot/dts/kirkwood-6282.dtsi
+index e84c54b77dea..2eea5b304f47 100644
+--- a/arch/arm/boot/dts/kirkwood-6282.dtsi
++++ b/arch/arm/boot/dts/kirkwood-6282.dtsi
+@@ -30,12 +30,22 @@
+ 				ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x1 0 1 0>;
+ 				bus-range = <0x00 0xff>;
+-				interrupt-map-mask = <0 0 0 0>;
+-				interrupt-map = <0 0 0 0 &intc 9>;
++				interrupt-names = "intx";
++				interrupts = <9>;
++				interrupt-map-mask = <0 0 0 7>;
++				interrupt-map = <0 0 0 1 &pcie0_intc 0>,
++						<0 0 0 2 &pcie0_intc 1>,
++						<0 0 0 3 &pcie0_intc 2>,
++						<0 0 0 4 &pcie0_intc 3>;
+ 				marvell,pcie-port = <0>;
+ 				marvell,pcie-lane = <0>;
+ 				clocks = <&gate_clk 2>;
+ 				status = "disabled";
++
++				pcie0_intc: interrupt-controller {
++					interrupt-controller;
++					#interrupt-cells = <1>;
++				};
+ 			};
+ 
+ 			pcie1: pcie@2,0 {
+@@ -48,12 +58,22 @@
+ 				ranges = <0x82000000 0 0 0x82000000 0x2 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x2 0 1 0>;
+ 				bus-range = <0x00 0xff>;
+-				interrupt-map-mask = <0 0 0 0>;
+-				interrupt-map = <0 0 0 0 &intc 10>;
++				interrupt-names = "intx";
++				interrupts = <10>;
 +				interrupt-map-mask = <0 0 0 7>;
 +				interrupt-map = <0 0 0 1 &pcie1_intc 0>,
 +						<0 0 0 2 &pcie1_intc 1>,
 +						<0 0 0 3 &pcie1_intc 2>,
 +						<0 0 0 4 &pcie1_intc 3>;
- 				marvell,pcie-port = <0>;
+ 				marvell,pcie-port = <1>;
  				marvell,pcie-lane = <0>;
- 				clocks = <&gateclk 5>;
+ 				clocks = <&gate_clk 18>;
  				status = "disabled";
 +
 +				pcie1_intc: interrupt-controller {
@@ -92,7 +174,36 @@ index 38a052a0312d..b21ffb819b1d 100644
 +				};
  			};
  		};
- 
+ 	};
+diff --git a/arch/arm/boot/dts/kirkwood-98dx4122.dtsi b/arch/arm/boot/dts/kirkwood-98dx4122.dtsi
+index 299c147298c3..070bc13242b8 100644
+--- a/arch/arm/boot/dts/kirkwood-98dx4122.dtsi
++++ b/arch/arm/boot/dts/kirkwood-98dx4122.dtsi
+@@ -26,12 +26,22 @@
+ 				ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x1 0 1 0>;
+ 				bus-range = <0x00 0xff>;
+-				interrupt-map-mask = <0 0 0 0>;
+-				interrupt-map = <0 0 0 0 &intc 9>;
++				interrupt-names = "intx";
++				interrupts = <9>;
++				interrupt-map-mask = <0 0 0 7>;
++				interrupt-map = <0 0 0 1 &pcie_intc 0>,
++						<0 0 0 2 &pcie_intc 1>,
++						<0 0 0 3 &pcie_intc 2>,
++						<0 0 0 4 &pcie_intc 3>;
+ 				marvell,pcie-port = <0>;
+ 				marvell,pcie-lane = <0>;
+ 				clocks = <&gate_clk 2>;
+ 				status = "disabled";
++
++				pcie_intc: interrupt-controller {
++					interrupt-controller;
++					#interrupt-cells = <1>;
++				};
+ 			};
+ 		};
+ 	};
 -- 
 2.20.1
 
