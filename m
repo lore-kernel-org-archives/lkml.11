@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AACAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4932C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234548AbiGFPj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
+        id S234708AbiGFPkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234615AbiGFPhg (ORCPT
+        with ESMTP id S234412AbiGFPhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:37:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2750D2AC63;
-        Wed,  6 Jul 2022 08:34:03 -0700 (PDT)
+        Wed, 6 Jul 2022 11:37:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6BC29805;
+        Wed,  6 Jul 2022 08:33:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7290EB81D94;
-        Wed,  6 Jul 2022 15:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48623C341CD;
-        Wed,  6 Jul 2022 15:33:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7BE3B81D99;
+        Wed,  6 Jul 2022 15:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AA15C341C8;
+        Wed,  6 Jul 2022 15:33:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121638;
-        bh=86GZffUJNDdRz1Q8/xH57X1zgjufQMhaT9F2jEs4Lh8=;
+        s=k20201202; t=1657121630;
+        bh=P4/m4+k8HrCpAYJh+3t/ikcjeoQhx+QcnM79o21uMYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZ1xOlobG7BOY7YIncGk/NvavX4yMirMLq0NcBbbvLHPd6dg02l9PzUeC7kqMkQWM
-         nWsxlSUZ0QJZ3ulINZOEEHHl4uEiYEV7xCmHr4t/25nIkgcK60qc4m3BdhC0DBqZ6F
-         zkmybmuloR5HvW00xPKdOJJ4tJsk8jSvwSbQT55To+pOFxTDqOwDWvAPacpNJCHsRb
-         Ob2JaCGIFHACRR+VS7VFPgcufzMy7fY0gKSQEU1wW7g9vNcw4B3TcmN/l1lj2pRGVY
-         zY7CJcL8E5DW1NUc8zYAwQO8ZhgLQT+RPtq+jCtS5bFfEInxUAy9mYsUJs2lqGpS8X
-         babchvxNa9gEA==
+        b=qDXZDVHsSKyRXoKvmrahhbswY9zC9XLvlOoc+ZFxU/C4cglN/RkeSPg4DZ6KRWRIw
+         Ju/P5t7VxuamnRNX6upSryD1ritdltp/gXyzmCW2hSERZa6pOzIBP8K+way8ObT92p
+         HBoF9KpELjOeAg/Qz9PLvTTfBiDnE0iMzbCyQBb36dGjBKnEFhh9UNt/ukmcjtPrez
+         0uoPcDVjANb6pwtxhP1XbdV9Dr3ijhlibd6H2ppcwSe/lIRoebfimEtP08wnuU0Q5e
+         qKIigBtPmTKq87DYYXQvgGb4cI5PsqG9jMpQRc+/qsgIZ+geozlHOyEm1DggT+cLKc
+         2E/k4FrT9lUDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>, Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        mpe@ellerman.id.au, linux-pm@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.14 4/8] cpufreq: pmac32-cpufreq: Fix refcount leak bug
-Date:   Wed,  6 Jul 2022 11:33:46 -0400
-Message-Id: <20220706153351.1598805-4-sashal@kernel.org>
+Cc:     Jianglei Nie <niejianglei2021@163.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 8/8] net: sfp: fix memory leak in sfp_probe()
+Date:   Wed,  6 Jul 2022 11:33:35 -0400
+Message-Id: <20220706153335.1598699-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220706153351.1598805-1-sashal@kernel.org>
-References: <20220706153351.1598805-1-sashal@kernel.org>
+In-Reply-To: <20220706153335.1598699-1-sashal@kernel.org>
+References: <20220706153335.1598699-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,36 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit ccd7567d4b6cf187fdfa55f003a9e461ee629e36 ]
+[ Upstream commit 0a18d802d65cf662644fd1d369c86d84a5630652 ]
 
-In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
-of_node_put() for the three node pointers whose refcount have
-been incremented by of_find_node_by_name().
+sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
+devm_add_action() fails, sfp is not freed, which leads to a memory leak.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+We should use devm_add_action_or_reset() instead of devm_add_action().
+
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/20220629075550.2152003-1-niejianglei2021@163.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/phy/sfp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
-index e225edb5c359..ce0dda1a4241 100644
---- a/drivers/cpufreq/pmac32-cpufreq.c
-+++ b/drivers/cpufreq/pmac32-cpufreq.c
-@@ -474,6 +474,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
- 	if (slew_done_gpio_np)
- 		slew_done_gpio = read_gpio(slew_done_gpio_np);
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 71bafc8f5ed0..e7af73ad8a44 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -1811,7 +1811,7 @@ static int sfp_probe(struct platform_device *pdev)
  
-+	of_node_put(volt_gpio_np);
-+	of_node_put(freq_gpio_np);
-+	of_node_put(slew_done_gpio_np);
-+
- 	/* If we use the frequency GPIOs, calculate the min/max speeds based
- 	 * on the bus frequencies
- 	 */
+ 	platform_set_drvdata(pdev, sfp);
+ 
+-	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
++	err = devm_add_action_or_reset(sfp->dev, sfp_cleanup, sfp);
+ 	if (err < 0)
+ 		return err;
+ 
 -- 
 2.35.1
 
