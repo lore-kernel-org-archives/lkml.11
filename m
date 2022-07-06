@@ -2,77 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CAD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C5DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233716AbiGFUg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 16:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
+        id S231500AbiGFUi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 16:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233824AbiGFUgq (ORCPT
+        with ESMTP id S233372AbiGFUi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 16:36:46 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4722494D;
-        Wed,  6 Jul 2022 13:36:45 -0700 (PDT)
-Received: from mail-yb1-f182.google.com ([209.85.219.182]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mspu2-1nKOWZ2Lpg-00tBS9; Wed, 06 Jul 2022 22:36:43 +0200
-Received: by mail-yb1-f182.google.com with SMTP id 64so19923300ybt.12;
-        Wed, 06 Jul 2022 13:36:43 -0700 (PDT)
-X-Gm-Message-State: AJIora+ZHllB0IKw7KRjlFHkfLYo1gKyky/CmHkEAC2R1W/h9LS4hLEB
-        rMxYmoz8FdL3WFuZRMIw74LUfG71UJEk20xvUMs=
-X-Google-Smtp-Source: AGRyM1sqECDY6Ty2JVXKP7IDdD1y1TQ6Py0CtljndDWu3dH5J2zxLu0EXVa9MU25ZG+FhT8oJ3JCsFYoCYm6EiiYqo0=
-X-Received: by 2002:a5b:b47:0:b0:66e:3617:d262 with SMTP id
- b7-20020a5b0b47000000b0066e3617d262mr23033810ybr.106.1657139802201; Wed, 06
- Jul 2022 13:36:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220706163754.33064-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220706163754.33064-1-krzysztof.kozlowski@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 6 Jul 2022 22:36:25 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3rwOBA=Pp+jin7PF4YifoihEyGAUsfuyBy1jFBnhPakg@mail.gmail.com>
-Message-ID: <CAK8P3a3rwOBA=Pp+jin7PF4YifoihEyGAUsfuyBy1jFBnhPakg@mail.gmail.com>
-Subject: Re: [GIT PULL 1/2] arm64: dts: cleanup for v5.20, second round
+        Wed, 6 Jul 2022 16:38:27 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F936222;
+        Wed,  6 Jul 2022 13:38:22 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id m16so5219583edb.11;
+        Wed, 06 Jul 2022 13:38:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lzj4BKwrft3c5BU1ClV/hDkBP+dSx6Tr19/Gf1TGgU8=;
+        b=icUqwG/0vVMdN/r6A7nm84dsxBrS9omrMTkearHOYkfRh2YcCP+LSvH3sNtu1cITM5
+         4Yip53urCrq5u5wYXEfwsotwx1POpz/E/HDg1prnbAIpVB3JdwtPCPgBkxWXF/FH3EM0
+         MKNdUISvpeRNG8WWsab8WUqvpPE7awWI4urkqUL2QOsaodKt0fMiSCMf8dNvLSmN6HTu
+         dFL96bf7rzTCUS0nFpEmxjr+bp85gv0il6HIoS/55tkd4rBffUnNbQx7Bw3qUXhajKRH
+         32p5c/Fb44Cu84NGIPdtFKnmw/RpFRMDD/cIoqpY/h05fWXg8wGxv75uGYyz2QooEwuF
+         IfpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lzj4BKwrft3c5BU1ClV/hDkBP+dSx6Tr19/Gf1TGgU8=;
+        b=Nx+9xPwaDJT3yyFVtz9SJmOBTed34PNwfxeSsZTQ3AuD7Xy1I9eO0ppe+WmnLzTEgy
+         B5MLXrQfwXXdPWyjMLEXQnngxE2LYDSRwo//4TP7Um+xN5rzmi4V7KG8XhASLLrW5tG+
+         buIABSpZE2NEA9vgoqT953S6pS675Vi/O8R3A5GaBi5BpKUXKCu50NB6Mn9fH1tQfpfO
+         fYzH3lK1VEUOxZHMhr496VeZ8Af901eG7B4aN7syvtADzTsEqyDrp/8Nc+R8Ee9awWWl
+         By2M3AumC5CIlecG7nachGEOTKx5AGQQqQlkjuI2PkylgwJHj9CUVFL95WercrikUzt+
+         wCPA==
+X-Gm-Message-State: AJIora9lEwJCBJYfTYrfiwVOc4XFIqNzhis5rPGDpBdIK6o0wb0khVCa
+        jUDr8ENkI+zJLWjLyo3BuEpGWhs+0xY=
+X-Google-Smtp-Source: AGRyM1uxDOb+Rm2+yptTJ52Ii4vEGGlQQ09xk5evqcRzCdX/oTW0/44spaHEX9PSIRJGt976ptsJZw==
+X-Received: by 2002:a05:6402:11cd:b0:439:5cd:1ab7 with SMTP id j13-20020a05640211cd00b0043905cd1ab7mr50402275edw.394.1657139900782;
+        Wed, 06 Jul 2022 13:38:20 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id ew6-20020a056402538600b0043a6dc3c4b0sm6495538edb.41.2022.07.06.13.38.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 13:38:20 -0700 (PDT)
+Message-ID: <62c5f2bc.1c69fb81.90a5.aec9@mx.google.com>
+X-Google-Original-Message-ID: <YsXyulhxHhaYOqtN@Ansuel-xps.>
+Date:   Wed, 6 Jul 2022 22:38:18 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        arm-soc <arm@kernel.org>, SoC Team <soc@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:8ruQVGNm+VxjZ8MbBOCepMoviXtGeqC82khoiTKZ9njXvvzB0KH
- wJT/4ekUupME0Lo7Ptbm4JaJ+sPm6CVBSxmo9VwicXtItKYRQ6xMSH9QP0r3kEdIaN6vyYx
- DfpZEz7hGDU25hn1G1tQQThrHsnEjuhe30EtB4gYmXoIFAf3Z7a5FCU5PDcGZe4VFBW9S3j
- C5LNB1f3a1+s4R2YHmtxg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DNRUZ/ik4ek=:qjU2BibOog/3xpY/NNSzfN
- k5/0fmV93VeB1SXCoSN/SlvSGNgWKLPFl9NsjJT1bhCyA7WocyJTTpnOpkcgDdoqhAfiQYrfV
- OspTDzE/Sof+YNz/vMzLX6KZLPX3eEiiA0Wz0yg40ZrLiIn5zGe6m7vzuRjdtH57HHdrdOlIR
- tJehsuy+IhwrIFeADQRI1ra7oCB30ka6Fz4PewysujJcdR1TqDdPZJkh9m/cBJ/Q2p7N+FeD+
- Y3TGx46LjbYIFSKF7x+/Yhj4RjkNmSVuTcnmCin8zkVRHlPOXpFtYBZ3CmUkCCUnypRJdzpF9
- 1F7HFS+bLRPrudREgPeBWCwfHshqvxZYWX5OOCFuY62FnAXbvJYYk0x7AAAyu5GFjSArexa7J
- gAgJTeJwHUhqWdh7uYfZ85bmPBGXnUTzulb38cvZujA78ay7Yb35+pFVA8bJ9sde6VOeH0eps
- tx5pi5WilXX6tYNUhkpidMAL526kSD4NCs5CNrJUGHU3q+DVbZiLyVwS7bYJ0IFkELKRA/B8U
- u/NnWrcf3sY1l/huWxgvFnc5c5s9Im87KcG3aES1NjGDwdB/x624n5LBaojPKyR/LilavR/ti
- z/6KWREj4QjARXmvkiHjejrIcgkvRcv1gzFi2I7KO+h4G/aK4CUofNQp38BlodnUen50pqq5b
- IQwvNMJfP2XgyejyH4t+hBTrG/RvzXtZveL1+H/shR9QoAb+ALQvtS3dvTNvxEA3kcDmmMICo
- q2XmMIcfcBo2CTyXDzZTysV5if6uQXn91DEMyA==
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/5] ARM: DTS: qcom: fix dtbs_check warning with new
+ rpmcc clocks
+References: <20220705202837.667-1-ansuelsmth@gmail.com>
+ <20220705202837.667-3-ansuelsmth@gmail.com>
+ <18e40247-7151-b50a-97fe-00ee88f47d9b@linaro.org>
+ <62c565dc.1c69fb81.a4566.e9b2@mx.google.com>
+ <bcb64218-2d2b-2f6b-dc79-303bac8c3bd3@linaro.org>
+ <62c5de27.1c69fb81.c73fe.02c5@mx.google.com>
+ <e1fed734-8629-5bf2-60ba-ee62243def6f@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e1fed734-8629-5bf2-60ba-ee62243def6f@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 6:37 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+On Wed, Jul 06, 2022 at 10:09:05PM +0200, Krzysztof Kozlowski wrote:
+> On 06/07/2022 21:10, Christian Marangi wrote:
+> > On Wed, Jul 06, 2022 at 05:07:12PM +0200, Krzysztof Kozlowski wrote:
+> >> On 06/07/2022 12:20, Christian Marangi wrote:
+> >>> On Wed, Jul 06, 2022 at 09:44:04AM +0200, Krzysztof Kozlowski wrote:
+> >>>> On 05/07/2022 22:28, Christian Marangi wrote:
+> >>>>> Fix dtbs_check warning for new rpmcc Documentation changes and add the
+> >>>>> required clocks.
+> >>>>
+> >>>> There is no warning in the kernel, right? So the commit is not correct.
+> >>>>
+> >>>
+> >>> Oh ok, the warning is generated by the new Documentation.
+> >>
+> >> Patches, especially DTS, might go via different trees, so the moment DTS
+> >> is applied there might be no such warning.
+> >>
+> > 
+> > I'm still confused about this topic...
+> > With this kind of change, I notice I sent Documentation change and then
+> > rob bot complain about dtbs_check having warning...
+> > 
+> > So the correct way is to send Documentation change and fix dtbs_check
+> > warning in the same commit OR keep what I'm doing with sending
+> > Documentation changes and fix DTS in a separate commit?
+> 
+> Binding is almost always separate from DTS and always separate from
+> driver. The order depends on what you're doing. If you bring ABI break
+> change to bindings, then the order does not matter, because each order
+> will be non-bisectable. Because you broke ABI. That's the case in this
+> patchset.
+> 
+> For other cases, usually bindings patches should be the first in patchset.
+> 
+> How it goes via maintainer trees is not your problem here. Patches might
+> go together or might go separate.
+> 
+> Anyway it was not the topic of my comment. Comment was about not
+> specific commit msg which does not fit the Linux kernel process and does
+> not fit git history once applied by maintainer. It fits even less when
+> backported to stable kernels, which you commit msg encourages to do.
 >
-> Hi,
->
-> This should conclude my cleanup session for ARM/ARM64.
->
-> On top of previous pull request.
 
-Pulled both, thanks!
+It was a more generic question so sorry for the OT.
 
-        Arnd
+Will reword the commit description, thanks again for the clarification
+about this generic topic.
+
+-- 
+	Ansuel
