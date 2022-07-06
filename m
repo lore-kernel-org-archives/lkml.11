@@ -2,108 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 524E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 02:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADF4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 02:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiGFCri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 22:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43302 "EHLO
+        id S231151AbiGFCsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 22:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiGFCrh (ORCPT
+        with ESMTP id S229648AbiGFCsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 22:47:37 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259EC1A052
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 19:47:36 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id j3so521698pfb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 19:47:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IW/MEisRImp3/lPYkYpqCnuHv6idrwG0D60CzTjNlbg=;
-        b=quxpqfHGltM89OLv0TIHtu7OKPWuWQXFLM4J5R8qY/nAAEfFdhcnS14yGAp7e1n5di
-         0cPJ3TwSSrAVYbIoskwpc480ETBLPHs54TGThC3k8J6KBnpMusgr90miFBdiJXUsgyx6
-         xbcBdflNaQMiKApuZJoTRU7zlZz1DXl+8lm3R3P+HoO978TYfORR5vSSDjUYmLmMp+q2
-         8+aRcqXKO5YpZtPafnyRV4D8vzdXVFr3Rjt474WTm4VlDURJ0P/FMc8TZKJU2Zh/WdmC
-         J5Q75J6DZ33YaXiwTDBD8ENDZbyIyeSUYrwFljyI0x6EjCVPN6pn2bzzWd7Pt1oEpfHk
-         cdSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IW/MEisRImp3/lPYkYpqCnuHv6idrwG0D60CzTjNlbg=;
-        b=hvvfVKF25Smt6Jb1bm3XJ3zOi/GLugM1wWSkPXnr1oYl+5BfXQx6A7OWxwMavJDGsy
-         RFdECRMhQ2AbwhsA8CUhSuh2kOS/tqgVEfTZG6cK6a8rTA8tZbdLPkfjIpqitMeb+cvn
-         bGwCURhz8cIn9vGvL+C2HRZ7OHJJe6vGeSU0MCzSEZAnLsMjyHqrKvajU4TiGid2xjvL
-         0Q1FqfcOslOfcl/kCI90+9iRYiHZkD7e1aNancfzm5hqqchuVfpMq4oc4DMOhBGs1ORB
-         AycyWWjZsC9UtH6F0lsMjATBm2TwVOYWro0SahKSWRk11gpvkgVp1ydL4a9jqwFE4jGN
-         0YCw==
-X-Gm-Message-State: AJIora8lbvLCFReuJKoUW50KN6oJuE9F1YIO95qWILDGHKrLhIzPPkNg
-        R9OM4PINi3rxiO+FycU3B3LUGA==
-X-Google-Smtp-Source: AGRyM1uTdJ3o4LNsP4D1e5S082o3mxjqvUnFNizEKLHJoOTPoitYvcw6+5ewIYS0dZ1OpE+R98mpjQ==
-X-Received: by 2002:aa7:910b:0:b0:524:f8d9:a4c4 with SMTP id 11-20020aa7910b000000b00524f8d9a4c4mr45971995pfh.5.1657075655655;
-        Tue, 05 Jul 2022 19:47:35 -0700 (PDT)
-Received: from localhost ([139.177.225.229])
-        by smtp.gmail.com with ESMTPSA id q13-20020a17090311cd00b0016bdeb58611sm6180279plh.112.2022.07.05.19.47.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 19:47:35 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 10:47:32 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Matthew Wilcox <willy@infradead.org>, jgg@ziepe.ca,
-        jhubbard@nvidia.com, william.kucharski@oracle.com,
-        dan.j.williams@intel.com, jack@suse.cz, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        nvdimm@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH v2] mm: fix missing wake-up event for FSDAX pages
-Message-ID: <YsT3xFSLJonnA2XC@FVFYT0MHHV2J.usts.net>
-References: <20220705123532.283-1-songmuchun@bytedance.com>
- <20220705141819.804eb972d43be3434dc70192@linux-foundation.org>
- <YsTLgQ45ESpsNEGV@casper.infradead.org>
- <20220705164710.9541b5cf0e5819193213ea5c@linux-foundation.org>
+        Tue, 5 Jul 2022 22:48:09 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2971A05C;
+        Tue,  5 Jul 2022 19:48:07 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ld3nl48DhzcftB;
+        Wed,  6 Jul 2022 10:46:03 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Jul 2022 10:48:04 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Jul
+ 2022 10:48:04 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        William Kucharski <william.kucharski@oracle.com>,
+        "Christoph Hellwig" <hch@lst.de>
+CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
+        Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH 5.15] mm/filemap: fix UAF in find_lock_entries
+Date:   Wed, 6 Jul 2022 11:24:34 +0800
+Message-ID: <20220706032434.579610-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705164710.9541b5cf0e5819193213ea5c@linux-foundation.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 04:47:10PM -0700, Andrew Morton wrote:
-> On Wed, 6 Jul 2022 00:38:41 +0100 Matthew Wilcox <willy@infradead.org> wrote:
-> 
-> > On Tue, Jul 05, 2022 at 02:18:19PM -0700, Andrew Morton wrote:
-> > > On Tue,  5 Jul 2022 20:35:32 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
-> > > 
-> > > > FSDAX page refcounts are 1-based, rather than 0-based: if refcount is
-> > > > 1, then the page is freed.  The FSDAX pages can be pinned through GUP,
-> > > > then they will be unpinned via unpin_user_page() using a folio variant
-> > > > to put the page, however, folio variants did not consider this special
-> > > > case, the result will be to miss a wakeup event (like the user of
-> > > > __fuse_dax_break_layouts()).  Since FSDAX pages are only possible get
-> > > > by GUP users, so fix GUP instead of folio_put() to lower overhead.
-> > > > 
-> > > 
-> > > What are the user visible runtime effects of this bug?
-> > 
-> > "missing wake up event" seems pretty obvious to me?  Something goes to
-> > sleep waiting for a page to become unused, and is never woken.
-> 
-> No, missed wakeups are often obscured by another wakeup coming in
-> shortly afterwards.
-> 
+Release refcount after xas_set to fix UAF which may cause panic like this:
 
-I need to clarify the task will never be woken up.
+ page:ffffea000491fa40 refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1247e9
+ head:ffffea000491fa00 order:3 compound_mapcount:0 compound_pincount:0
+ memcg:ffff888104f91091
+ flags: 0x2fffff80010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
+...
+page dumped because: VM_BUG_ON_PAGE(PageTail(page))
+ ------------[ cut here ]------------
+ kernel BUG at include/linux/page-flags.h:632!
+ invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN
+ CPU: 1 PID: 7642 Comm: sh Not tainted 5.15.51-dirty #26
+...
+ Call Trace:
+  <TASK>
+  __invalidate_mapping_pages+0xe7/0x540
+  drop_pagecache_sb+0x159/0x320
+  iterate_supers+0x120/0x240
+  drop_caches_sysctl_handler+0xaa/0xe0
+  proc_sys_call_handler+0x2b4/0x480
+  new_sync_write+0x3d6/0x5c0
+  vfs_write+0x446/0x7a0
+  ksys_write+0x105/0x210
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f52b5733130
+...
 
-> If this wakeup is not one of these, then are there reports from the
-> softlockup detector?
-> 
-> Do we have reports of processes permanently stuck in D state?
->
+This problem has been fixed on mainline by patch 6b24ca4a1a8d ("mm: Use
+multi-index entries in the page cache") since it deletes the related code.
 
-No. The task is in an TASK_INTERRUPTIBLE state (see __fuse_dax_break_layouts). 
-The hung task reporter only reports D task (TASK_UNINTERRUPTIBLE).
+Fixes: 5c211ba29deb ("mm: add and use find_lock_entries")
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ mm/filemap.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Thanks.
-> 
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 00e391e75880..24b5d7ebdc29 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -2087,16 +2087,18 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t start,
+ {
+ 	XA_STATE(xas, &mapping->i_pages, start);
+ 	struct page *page;
++	bool putpage;
+ 
+ 	rcu_read_lock();
+ 	while ((page = find_get_entry(&xas, end, XA_PRESENT))) {
++		putpage = true;
+ 		if (!xa_is_value(page)) {
+ 			if (page->index < start)
+-				goto put;
++				goto next;
+ 			if (page->index + thp_nr_pages(page) - 1 > end)
+-				goto put;
++				goto next;
+ 			if (!trylock_page(page))
+-				goto put;
++				goto next;
+ 			if (page->mapping != mapping || PageWriteback(page))
+ 				goto unlock;
+ 			VM_BUG_ON_PAGE(!thp_contains(page, xas.xa_index),
+@@ -2105,20 +2107,24 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t start,
+ 		indices[pvec->nr] = xas.xa_index;
+ 		if (!pagevec_add(pvec, page))
+ 			break;
++		putpage = false;
+ 		goto next;
+ unlock:
+ 		unlock_page(page);
+-put:
+-		put_page(page);
+ next:
+ 		if (!xa_is_value(page) && PageTransHuge(page)) {
+ 			unsigned int nr_pages = thp_nr_pages(page);
+ 
+ 			/* Final THP may cross MAX_LFS_FILESIZE on 32-bit */
+ 			xas_set(&xas, page->index + nr_pages);
+-			if (xas.xa_index < nr_pages)
++			if (xas.xa_index < nr_pages) {
++				if (putpage)
++					put_page(page);
+ 				break;
++			}
+ 		}
++		if (putpage)
++			put_page(page);
+ 	}
+ 	rcu_read_unlock();
+ 
+-- 
+2.25.1
+
