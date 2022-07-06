@@ -2,269 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C12CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F5DCCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233045AbiGFNuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
+        id S233839AbiGFNv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233812AbiGFNuu (ORCPT
+        with ESMTP id S232625AbiGFNvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:50:50 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E484240A9;
-        Wed,  6 Jul 2022 06:50:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657115448; x=1688651448;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2mYCckx+Sv5EPZOxpPFYyrg57MRKQ3Jw5hfg89nuyck=;
-  b=E5wAzwppWKlGxtTc4AVe5I7SLlWpHbiDKhlbxnZ0LY1Dv+OtCEr0Iuye
-   KB2ftkJr10PeSQNa+ftMHjO7xAu3ufbcf41v+RChHTckRkfm87FKnBVJI
-   KlzFPXQ4zulpbGOonmV9MOt974zgxSC0CYxLzse71vhLbevlzA+0sEtiF
-   YZqclCaln6+ojvNQlDeJekuB3yXinQ8zVuUiokZcBN+X0msfNBn6tztJa
-   0VHE4GssPQs6196zEe8PjJhhKmvqzltfgH10nKGKQvZaL1WFzfPeCm3UE
-   LwdXip1sTJEVKIA29H66Vyln8/RTHaacSvLJchGxlgEOq7SSmnmPzKLWY
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284486898"
-X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
-   d="scan'208";a="284486898"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 06:50:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
-   d="scan'208";a="735572237"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Jul 2022 06:50:41 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 266DodPT015358;
-        Wed, 6 Jul 2022 14:50:39 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xdp-hints@xdp-project.net
-Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce and use Generic Hints/metadata
-Date:   Wed,  6 Jul 2022 15:50:23 +0200
-Message-Id: <20220706135023.1464979-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <87pmij75r1.fsf@toke.dk>
-References: <20220628194812.1453059-1-alexandr.lobakin@intel.com> <62bbedf07f44a_2181420830@john.notmuch> <87iloja8ly.fsf@toke.dk> <20220704154440.7567-1-alexandr.lobakin@intel.com> <87a69o94wz.fsf@toke.dk> <20220705154120.22497-1-alexandr.lobakin@intel.com> <87pmij75r1.fsf@toke.dk>
+        Wed, 6 Jul 2022 09:51:23 -0400
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33E41EAC5;
+        Wed,  6 Jul 2022 06:51:21 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-31c8a1e9e33so88372437b3.5;
+        Wed, 06 Jul 2022 06:51:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5SiPC3jj492VC8TfaG5lxiX62rjLNKysidcQlbSYqow=;
+        b=RLDwLD6hH9OmWaW1T95JbROYMLMb7xdjbhJnjKl+VoGn7jthjm4N9aLa9q15Fx9eZ/
+         CA6a937zC6tinruQLeWS4PJ4W5i5qQG40PiDUa0jYh73ZwbVuGCEY3YPBcZ2DsbEON1G
+         +Wo7mJg4FmWIcM24j8BMbjYtNTPgIfGU+rGkcXxoB8wUoJR4tKv7NCmLEGi31SHxABxG
+         WZ61AF41oNKL69tc+Mwksm5cFQ68w+pQH1/O5TsFWKHLGhp8L/h4T78Tv8pdRCBSKZSe
+         n5yiRN0zKkybhnieQMSJBJdfW7A82ssAiNdnvlEEEAD8YMW5nqH4aMrK2RfPWO2dCRiD
+         PZWQ==
+X-Gm-Message-State: AJIora/r/3OcV7hQlybFWie43YXd9fauNHe6MugywSP5T+F7wTsJZR+K
+        +2FGw4lKo8ul37tlLSXT2nQWc/kkl6Zq4a/vPPo=
+X-Google-Smtp-Source: AGRyM1t2zFLeLAi3TOz/3FKNOaozLIghzMJavy2698E42fvxt6d4SsTob1/anQx1a1kTDZPSEUZEInHEN/JL2sa2rXc=
+X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
+ b145-20020a811b97000000b002db640f49d8mr45075306ywb.326.1657115480888; Wed, 06
+ Jul 2022 06:51:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
+References: <20220608142723.103523089@infradead.org> <20220608144516.109792837@infradead.org>
+In-Reply-To: <20220608144516.109792837@infradead.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 6 Jul 2022 15:51:09 +0200
+Message-ID: <CAJZ5v0jO9+jRSm3d58K15JaO3=kgM2Ueo7W+Smi3WCBPR_VM5Q@mail.gmail.com>
+Subject: Re: [PATCH 03/36] cpuidle/poll: Ensure IRQ state is invariant
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        vgupta@kernel.org,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        ulli.kroll@googlemail.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        bcain@quicinc.com, Huacai Chen <chenhuacai@kernel.org>,
+        kernel@xen0n.name, Geert Uytterhoeven <geert@linux-m68k.org>,
+        sammy@sammy.net, Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        dinguyen@kernel.org, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi,
+        Stafford Horne <shorne@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        David Miller <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        anton.ivanov@cambridgegreys.com,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, acme@kernel.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        jolsa@kernel.org, namhyung@kernel.org,
+        Juergen Gross <jgross@suse.com>, srivatsa@csail.mit.edu,
+        amakhalov@vmware.com, pv-drivers@vmware.com,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chris Zankel <chris@zankel.net>, jcmvbkbc@gmail.com,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Anup Patel <anup@brainfault.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Petr Mladek <pmladek@suse.com>, senozhatsky@chromium.org,
+        John Ogness <john.ogness@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        quic_neeraju@quicinc.com, Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Benjamin Segall <bsegall@google.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        vschneid@redhat.com, jpoimboe@kernel.org,
+        linux-alpha@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-snps-arc@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
+        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        openrisc@lists.librecores.org,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-s390@vger.kernel.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-perf-users@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>, rcu@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
-Date: Tue, 05 Jul 2022 20:51:14 +0200
+On Wed, Jun 8, 2022 at 4:47 PM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> cpuidle_state::enter() methods should be IRQ invariant
+>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-> Alexander Lobakin <alexandr.lobakin@intel.com> writes:
-> 
-> [... snipping a bit of context here ...]
-> 
-> >> >> Yeah, I'd agree this kind of configuration is something that can be
-> >> >> added later, and also it's sort of orthogonal to the consumption of the
-> >> >> metadata itself.
-> >> >> 
-> >> >> Also, tying this configuration into the loading of an XDP program is a
-> >> >> terrible interface: these are hardware configuration options, let's just
-> >> >> put them into ethtool or 'ip link' like any other piece of device
-> >> >> configuration.
-> >> >
-> >> > I don't believe it fits there, especially Ethtool. Ethtool is for
-> >> > hardware configuration, XDP/AF_XDP is 95% software stuff (apart from
-> >> > offload bits which is purely NFP's for now).
-> >> 
-> >> But XDP-hints is about consuming hardware features. When you're
-> >> configuring which metadata items you want, you're saying "please provide
-> >> me with these (hardware) features". So ethtool is an excellent place to
-> >> do that :)
-> >
-> > With Ethtool you configure the hardware, e.g. it won't strip VLAN
-> > tags if you disable rx-cvlan-stripping. With configuring metadata
-> > you only tell what you want to see there, don't you?
-> 
-> Ah, I think we may be getting closer to identifying the disconnect
-> between our way of thinking about this!
-> 
-> In my mind, there's no separate "configuration of the metadata" step.
-> You simply tell the hardware what features you want (say, "enable
-> timestamps and VLAN offload"), and the driver will then provide the
-> information related to these features in the metadata area
-> unconditionally. All XDP hints is about, then, is a way for the driver
-> to inform the rest of the system how that information is actually laid
-> out in the metadata area.
-> 
-> Having a separate configuration knob to tell the driver "please lay out
-> these particular bits of metadata this way" seems like a totally
-> unnecessary (and quite complicated) feature to have when we can just let
-> the driver decide and use CO-RE to consume it?
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Magnus (he's currently on vacation) told me it would be useful for
-AF_XDP to enable/disable particular metadata, at least from perf
-perspective. Let's say, just fetching of one "checksum ok" bit in
-the driver is faster than walking through all the descriptor words
-and driver logics (i.e. there's several hundred locs in ice which
-just parse descriptor data and build an skb or metadata from it).
-But if we would just enable/disable corresponding features through
-Ethtool, that would hurt XDP_PASS. Maybe it's a bad example, but
-what if I want to have only RSS hash in the metadata (and don't
-want to spend cycles on parsing the rest), but at the same time
-still want skb path to have checksum status to not die at CPU
-checksum calculation?
-
-> 
-> >> > I follow that way:
-> >> >
-> >> > 1) you pick a program you want to attach;
-> >> > 2) usually they are written for special needs and usecases;
-> >> > 3) so most likely that program will be tied with metadata/driver/etc
-> >> >    in some way;
-> >> > 4) so you want to enable Hints of a particular format primarily for
-> >> >    this program and usecase, same with threshold and everything
-> >> >    else.
-> >> >
-> >> > Pls explain how you see it, I might be wrong for sure.
-> >> 
-> >> As above: XDP hints is about giving XDP programs (and AF_XDP consumers)
-> >> access to metadata that is not currently available. Tying the lifetime
-> >> of that hardware configuration (i.e., which information to provide) to
-> >> the lifetime of an XDP program is not a good interface: for one thing,
-> >> how will it handle multiple programs? What about when XDP is not used at
-> >
-> > Multiple progs is stuff I didn't cover, but will do later (as you
-> > all say to me, "let's start with something simple" :)). Aaaand
-> > multiple XDP progs (I'm not talking about attaching progs in
-> > differeng modes) is not a kernel feature, rather a libpf feature,
-> > so I believe it should be handled there later...
-> 
-> Right, but even if we don't *implement* it straight away we still need
-> to take it into consideration in the design. And expecting libxdp to
-> arbitrate between different XDP programs' metadata formats sounds like a
-> royal PITA :)
-> 
-> >> all but you still want to configure the same features?
-> >
-> > What's the point of configuring metadata when there are no progs
-> > attached? To configure it once and not on every prog attach? I'm
-> > not saying I don't like it, just want to clarify.
-> 
-> See above: you turn on the features because you want the stack to
-> consume them.
-> 
-> > Maybe I need opinions from some more people, just to have an
-> > overview of how most of folks see it and would like to configure
-> > it. 'Cause I heard from at least one of the consumers that
-> > libpf API is a perfect place for Hints to him :)
-> 
-> Well, as a program author who wants to consume hints, you'd use
-> lib{bpf,xdp} APIs to do so (probably in the form of suitable CO-RE
-> macros)...
-> 
-> >> In addition, in every other case where we do dynamic data access (with
-> >> CO-RE) the BPF program is a consumer that modifies itself to access the
-> >> data provided by the kernel. I get that this is harder to achieve for
-> >> AF_XDP, but then let's solve that instead of making a totally
-> >> inconsistent interface for XDP.
-> >
-> > I also see CO-RE more fitting and convenient way to use them, but
-> > didn't manage to solve two things:
-> >
-> > 1) AF_XDP programs, so what to do with them? Prepare patches for
-> >    LLVM to make it able to do CO-RE on AF_XDP program load? Or
-> >    just hardcode them for particular usecases and NICs? What about
-> >    "general-purpose" programs?
-> 
-> You provide a library to read the fields. Jesper actually already
-> implemented this, did you look at his code?
-> 
-> https://github.com/xdp-project/bpf-examples/tree/master/AF_XDP-interaction
-> 
-> It basically builds a lookup table at load-time using BTF information
-> from the kernel, keyed on BTF ID and field name, resolving them into
-> offsets. It's not quite the zero-overhead of CO-RE, but it's fairly
-> close and can be improved upon (CO-RE for userspace being one way of
-> doing that).
-
-Aaaah, sorry, I completely missed that. I thought of something
-similar as well, but then thought "variable field offsets, that
-would annihilate optimization and performance", and our Xsk team
-is super concerned about performance hits when using Hints.
-
-> 
-> >    And if hardcode, what's the point then to do Generic Hints at
-> >    all? Then all it needs is making driver building some meta in
-> >    front of frames via on-off button and that's it? Why BTF ID in
-> >    the meta then if consumers will access meta hardcoded (via CO-RE
-> >    or literally hardcoded, doesn't matter)?
-> 
-> You're quite right, we could probably implement all the access to
-> existing (fixed) metadata without using any BTF at all - just define a
-> common struct and some flags to designate which fields are set. In my
-> mind, there are a couple of reasons for going the BTF route instead:
-> 
-> - We can leverage CO-RE to get close to optimal efficiency in field
->   access.
-> 
-> and, more importantly:
-> 
-> - It's infinitely extensible. With the infrastructure in place to make
->   it really easy to consume metadata described by BTF, we lower the bar
->   for future innovation in hardware offloads. Both for just adding new
->   fixed-function stuff to hardware, but especially for fully
->   programmable hardware.
-
-Agree :) That libxdp lookup translator fixed lots of stuff in my
-mind.
-
-> 
-> > 2) In-kernel metadata consumers? Also do CO-RE? Otherwise, with no
-> >    generic metadata structure they won't be able to benefit from
-> >    Hints. But I guess we still need to provide kernel with meta?
-> >    Or no?
-> 
-> In the short term, I think the "generic structure" approach is fine for
-> leveraging this in the stack. Both your and Jesper's series include
-> this, and I think that's totally fine. Longer term, if it turns out to
-> be useful to have something more dynamic for the stack consumption as
-> well, we could extend it to be CO-RE based as well (most likely by
-> having the stack load a "translator" BPF program or something along
-> those lines).
-
-Oh, that translator prog sounds nice BTW!
-
-> 
-> >> I'm as excited as you about the prospect of having totally programmable
-> >
-> > But I mostly care about current generation with no programmable
-> > Hints...
-> 
-> Well, see above; we should be able to support both :)
-> 
-> -Toke
-
-Thanks,
-Olek
+> ---
+>  drivers/cpuidle/poll_state.c |    4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> --- a/drivers/cpuidle/poll_state.c
+> +++ b/drivers/cpuidle/poll_state.c
+> @@ -17,7 +17,7 @@ static int __cpuidle poll_idle(struct cp
+>
+>         dev->poll_time_limit = false;
+>
+> -       local_irq_enable();
+> +       raw_local_irq_enable();
+>         if (!current_set_polling_and_test()) {
+>                 unsigned int loop_count = 0;
+>                 u64 limit;
+> @@ -36,6 +36,8 @@ static int __cpuidle poll_idle(struct cp
+>                         }
+>                 }
+>         }
+> +       raw_local_irq_disable();
+> +
+>         current_clr_polling();
+>
+>         return index;
+>
+>
