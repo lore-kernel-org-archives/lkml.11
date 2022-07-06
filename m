@@ -2,103 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69948C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1044CCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233287AbiGFPNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
+        id S232575AbiGFPQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230268AbiGFPNs (ORCPT
+        with ESMTP id S232761AbiGFPQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:13:48 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CC5220F8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 08:13:46 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id a39so18835701ljq.11
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 08:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QPBPWEhV2Vykab+FuRAUO/iMibCW6th1rjVx2QzcAa8=;
-        b=UBbtQKARyXdeKvpy36Jm9Brb7tYCsu9XKOsYXl/ZtvqvVAjIq8VXpxsok1OC1mY2nA
-         6YLnt8juwlycbIx5FPOGcYcwx0EPXnASDpuISFAB2W2ezCsq+r4d0Pj4FvNchlPQfEbk
-         TWpLIDW6JUcN7/zexsDF2KDjsSh7J0SD7G+CC0TuYcn1PDmmwQaD5JiBahL3fYqNEkKW
-         6gULkxdgME0KjGjeQPDevv1RDHFzMdnFhSff58WuP02EMTRkwH2H36/LA2cW6n98exC0
-         voMeuPrAwXFHK9JHTRnLnuTD3v0bm7p+vugqa8MtOFt1vDe6uRc7vbG/6/bIuu7Hbyjk
-         KeQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QPBPWEhV2Vykab+FuRAUO/iMibCW6th1rjVx2QzcAa8=;
-        b=Jiu7Cp/jEG3JhQdORzd2SdC3R9QsWuiFeYOrWNY3enWfg1Zz5J/tp4nsIrLLPO3CT8
-         f3JIF38WX5ezt2pfGJr1S6ROGjX4LviOaqiqc2o5rQOSKbLhRQyTD6DbMOMRyacCEFD3
-         hFOZgrB/rBom1/25sj3fbNqB6miH5nXecn3vy/0er9sdFbYQ7S02EIIvz7VKuNxGbK3Q
-         j70d+I6E464wFToc6GE5lZobz1A5EEp6mrYXn2DgXw8Y94yfrBOtu/dz1EDWryzAvQRJ
-         I3h5pf9mDiQh6d2mWLlnWTk0yN15526wlwGtejaAV0+c34paDsxngO+i+09EcQ6x7sBx
-         fgCA==
-X-Gm-Message-State: AJIora/09TE79oGDDlGtE2WWJERWBE+/X1v62t8HC6jlHRSigt6xz676
-        f6GH7J8OAm8yWlIJaukaUSYQxw==
-X-Google-Smtp-Source: AGRyM1tH2oqsonL2G0A+++kLBn/3Imc+sqCOv8q++5fgWtIHiQlb9L3zrzfCr7LvxU1WmGk40HbeQg==
-X-Received: by 2002:a2e:b55a:0:b0:25d:485e:5d86 with SMTP id a26-20020a2eb55a000000b0025d485e5d86mr1561320ljn.194.1657120425306;
-        Wed, 06 Jul 2022 08:13:45 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id e18-20020ac25472000000b0047fa941066bsm6313329lfn.96.2022.07.06.08.13.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 08:13:44 -0700 (PDT)
-Message-ID: <ceaca6d7-958d-ade6-9ee5-5e70bc57bbd7@linaro.org>
-Date:   Wed, 6 Jul 2022 18:13:43 +0300
+        Wed, 6 Jul 2022 11:16:09 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A906237EF;
+        Wed,  6 Jul 2022 08:16:08 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6B97622248;
+        Wed,  6 Jul 2022 17:16:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1657120566;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u1fHJMZl7JVZVxeg5jiWFWDAPjazuTqXidgDNR+l1Uo=;
+        b=qUclemBVdHEmkD5WOlJeHrjDeWl26LsOZpTtHl6Oer9NZMsIUybGx/uckf3ddAAJVd+58j
+        jvBAR3biT7aKoYBP9ju5hN6pJ1j9S4crhcum3voJ3A8y81aFjp+KOMzCnuz+zLgX7ywyY7
+        qFf77ixPqHdD4DE0Hc8XJmB83GigeC0=
+From:   Michael Walle <michael@walle.cc>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH 2/2] pinctrl: ocelot: make irq_chip immutable
+Date:   Wed,  6 Jul 2022 17:15:53 +0200
+Message-Id: <20220706151553.1580790-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220706151553.1580790-1-michael@walle.cc>
+References: <20220706151553.1580790-1-michael@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 0/2] PCI: Restrict pci transactions after pci suspend
-Content-Language: en-GB
-To:     Krishna chaitanya chundru <quic_krichai@quicinc.com>,
-        helgaas@kernel.org
-Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mka@chromium.org,
-        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
-        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
-        quic_ramkri@quicinc.com, manivannan.sadhasivam@linaro.org,
-        swboyd@chromium.org
-References: <1656684800-31278-1-git-send-email-quic_krichai@quicinc.com>
- <1657118425-10304-1-git-send-email-quic_krichai@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <1657118425-10304-1-git-send-email-quic_krichai@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/07/2022 17:40, Krishna chaitanya chundru wrote:
-> If the endpoint device state is D0 and irq's are not freed, then
-> kernel try to mask interrupts in system suspend path by writing
-> in to the vector table (for MSIX interrupts) and config space (for MSI's).
-> 
-> These transactions are initiated in the pm suspend after pcie clocks got
-> disabled as part of platform driver pm  suspend call. Due to it, these
-> transactions are resulting in un-clocked access and eventually to crashes.
-> 
-> So added a logic in qcom driver to restrict these unclocked access.
-> And updated the logic to check the link state before masking
-> or unmasking the interrupts.
+Since recently, the kernel is nagging about mutable irq_chips:
 
-Please do not send new versions as replies to previous ones. This breaks 
-threading for the reviewers.
+[    2.593426] gpio gpiochip0: (ocelot-gpio): not an immutable chip, please consider fixing it!
 
-> Krishna chaitanya chundru (2):
->    PCI: qcom: Add system PM support
->    PCI: qcom: Restrict pci transactions after pci suspend
-> 
->   drivers/pci/controller/dwc/pcie-designware-host.c |  14 ++-
->   drivers/pci/controller/dwc/pcie-qcom.c            | 121 +++++++++++++++++++++-
->   2 files changed, 131 insertions(+), 4 deletions(-)
+Make it const, flag it as IRQCHIP_IMMUTABLE, add the new helper
+functions and call the appropriate gpiolib functions.
 
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/pinctrl/pinctrl-ocelot.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+index 349e063a04fa..5902a77be5ef 100644
+--- a/drivers/pinctrl/pinctrl-ocelot.c
++++ b/drivers/pinctrl/pinctrl-ocelot.c
+@@ -1761,6 +1761,7 @@ static void ocelot_irq_mask(struct irq_data *data)
+ 
+ 	regmap_update_bits(info->map, REG(OCELOT_GPIO_INTR_ENA, info, gpio),
+ 			   BIT(gpio % 32), 0);
++	gpiochip_disable_irq(chip, gpio);
+ }
+ 
+ static void ocelot_irq_unmask(struct irq_data *data)
+@@ -1769,6 +1770,7 @@ static void ocelot_irq_unmask(struct irq_data *data)
+ 	struct ocelot_pinctrl *info = gpiochip_get_data(chip);
+ 	unsigned int gpio = irqd_to_hwirq(data);
+ 
++	gpiochip_enable_irq(chip, gpio);
+ 	regmap_update_bits(info->map, REG(OCELOT_GPIO_INTR_ENA, info, gpio),
+ 			   BIT(gpio % 32), BIT(gpio % 32));
+ }
+@@ -1790,8 +1792,10 @@ static struct irq_chip ocelot_eoi_irqchip = {
+ 	.irq_mask	= ocelot_irq_mask,
+ 	.irq_eoi	= ocelot_irq_ack,
+ 	.irq_unmask	= ocelot_irq_unmask,
+-	.flags          = IRQCHIP_EOI_THREADED | IRQCHIP_EOI_IF_HANDLED,
++	.flags          = IRQCHIP_EOI_THREADED | IRQCHIP_EOI_IF_HANDLED |
++			  IRQCHIP_IMMUTABLE,
+ 	.irq_set_type	= ocelot_irq_set_type,
++	GPIOCHIP_IRQ_RESOURCE_HELPERS
+ };
+ 
+ static struct irq_chip ocelot_irqchip = {
+@@ -1800,6 +1804,8 @@ static struct irq_chip ocelot_irqchip = {
+ 	.irq_ack	= ocelot_irq_ack,
+ 	.irq_unmask	= ocelot_irq_unmask,
+ 	.irq_set_type	= ocelot_irq_set_type,
++	.flags          = IRQCHIP_IMMUTABLE,
++	GPIOCHIP_IRQ_RESOURCE_HELPERS
+ };
+ 
+ static int ocelot_irq_set_type(struct irq_data *data, unsigned int type)
+@@ -1863,7 +1869,7 @@ static int ocelot_gpiochip_register(struct platform_device *pdev,
+ 	irq = platform_get_irq_optional(pdev, 0);
+ 	if (irq > 0) {
+ 		girq = &gc->irq;
+-		girq->chip = &ocelot_irqchip;
++		gpio_irq_chip_set_chip(girq, &ocelot_irqchip);
+ 		girq->parent_handler = ocelot_irq_handler;
+ 		girq->num_parents = 1;
+ 		girq->parents = devm_kcalloc(&pdev->dev, 1,
 -- 
-With best wishes
-Dmitry
+2.30.2
+
