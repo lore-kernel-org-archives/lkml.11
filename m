@@ -2,169 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27DFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14744CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbiGFKWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32792 "EHLO
+        id S232784AbiGFKWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233192AbiGFKVs (ORCPT
+        with ESMTP id S233150AbiGFKWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:21:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2481825EB0;
-        Wed,  6 Jul 2022 03:21:32 -0700 (PDT)
+        Wed, 6 Jul 2022 06:22:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7732925C70;
+        Wed,  6 Jul 2022 03:22:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF17BB81BD1;
-        Wed,  6 Jul 2022 10:21:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1243CC3411C;
-        Wed,  6 Jul 2022 10:21:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657102889;
-        bh=cGtpdU/SvI9xWtgOfWGAOSHnE9hhzh3DtdPifSULvu8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZzXFpr164ZpZdDLWgqJSQGOIXk8aL7ehM+hG1bHHmRygRA0O529gdfBnST8R08laV
-         P52OT6yw7hFJ70bosoM1vNXT67K1g7KyE7YNPf5pqaejjB41hFIfeobnhdgQTdvXrn
-         vILe1feFkfMYCNpfhm7/5825V4IHHlzd7vijf1tM=
-Date:   Wed, 6 Jul 2022 12:21:26 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Varad Gautam <varadgautam@google.com>
-Cc:     Zhang Rui <rui.zhang@intel.com>, linux-kernel@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, linux-pm@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] thermal: sysfs: Perform bounds check when storing
- thermal states
-Message-ID: <YsViJpAnkqW1QTwW@kroah.com>
-References: <20220705150002.2016207-1-varadgautam@google.com>
- <YsRkPUcrMj+JU0Om@kroah.com>
- <CAOLDJOJ_v75WqGt2mZa0h-GgF+NThFBY5DvasH+9LLVgLrrvog@mail.gmail.com>
- <YsUvgWmrk+ZfUy3t@kroah.com>
- <CAOLDJOJug5jYpaSjY1tAYWNo0QRM4NB+wM2Vd2=Lf_O7TRjVCg@mail.gmail.com>
- <6eed01c90fafe681cccba2f227d65f2e9bfb8348.camel@intel.com>
- <YsVUB76c2b0EkRBb@kroah.com>
- <CAOLDJOJLvSUMqF37H13aiH59Pm4_t6esRxy7Ej3Grhr4fmSGQA@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C07661DFC;
+        Wed,  6 Jul 2022 10:22:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B26C341C0;
+        Wed,  6 Jul 2022 10:22:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657102940;
+        bh=5RJNNFRIVghvmdUSW6GuwgiuwsPcvqMprUl9pG2CXAs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TIRgolfAO2xEEw7akxf7//984YrubOnA0R8bW1OE6XDQJxiyw+77sZBa1fj+WlZv/
+         d/URcRVv6rQHA/wtyn33AP0T/phtAXwwyN7ngWhcLsFwIEGav9gYP8NfrevZb7BoBL
+         UWgm3BUAAFRH4nTqmYvQN8DuJZiq0Vc+L1t4fgQT/ygCtrvDZT7+zYgocVUtPRcA/v
+         JgDC1x558eTV5Nxj+9PGYjGyAGRiZYI/2K3QP9PJ3g3uDJh7sdJwKatBBqd+tItnaG
+         p0vJmPNOcCj2d0DU2FijgNMNRafXxWCVTQyoNfiP8Kd9+MHrdm8e4zJNXUbY4mG5a8
+         oxIF+7fqD69zg==
+Received: by pali.im (Postfix)
+        id C570A7F1; Wed,  6 Jul 2022 12:22:17 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Guowen Shan <gshan@redhat.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/2] powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias
+Date:   Wed,  6 Jul 2022 12:21:48 +0200
+Message-Id: <20220706102148.5060-2-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220706102148.5060-1-pali@kernel.org>
+References: <20220706102148.5060-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOLDJOJLvSUMqF37H13aiH59Pm4_t6esRxy7Ej3Grhr4fmSGQA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 12:01:19PM +0200, Varad Gautam wrote:
-> On Wed, Jul 6, 2022 at 11:21 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Wed, Jul 06, 2022 at 04:51:59PM +0800, Zhang Rui wrote:
-> > > On Wed, 2022-07-06 at 09:16 +0200, Varad Gautam wrote:
-> > > > On Wed, Jul 6, 2022 at 8:45 AM Greg KH <gregkh@linuxfoundation.org>
-> > > > wrote:
-> > > > >
-> > > > > On Tue, Jul 05, 2022 at 11:02:50PM +0200, Varad Gautam wrote:
-> > > > > > On Tue, Jul 5, 2022 at 6:18 PM Greg KH <
-> > > > > > gregkh@linuxfoundation.org> wrote:
-> > > > > > >
-> > > > > > > On Tue, Jul 05, 2022 at 03:00:02PM +0000, Varad Gautam wrote:
-> > > > > > > > Check that a user-provided thermal state is within the
-> > > > > > > > maximum
-> > > > > > > > thermal states supported by a given driver before attempting
-> > > > > > > > to
-> > > > > > > > apply it. This prevents a subsequent OOB access in
-> > > > > > > > thermal_cooling_device_stats_update() while performing
-> > > > > > > > state-transition accounting on drivers that do not have this
-> > > > > > > > check
-> > > > > > > > in their set_cur_state() handle.
-> > > > > > > >
-> > > > > > > > Signed-off-by: Varad Gautam <varadgautam@google.com>
-> > > > > > > > Cc: stable@vger.kernel.org
-> > > > > > > > ---
-> > > > > > > >  drivers/thermal/thermal_sysfs.c | 12 +++++++++++-
-> > > > > > > >  1 file changed, 11 insertions(+), 1 deletion(-)
-> > > > > > > >
-> > > > > > > > diff --git a/drivers/thermal/thermal_sysfs.c
-> > > > > > > > b/drivers/thermal/thermal_sysfs.c
-> > > > > > > > index 1c4aac8464a7..0c6b0223b133 100644
-> > > > > > > > --- a/drivers/thermal/thermal_sysfs.c
-> > > > > > > > +++ b/drivers/thermal/thermal_sysfs.c
-> > > > > > > > @@ -607,7 +607,7 @@ cur_state_store(struct device *dev,
-> > > > > > > > struct device_attribute *attr,
-> > > > > > > >               const char *buf, size_t count)
-> > > > > > > >  {
-> > > > > > > >       struct thermal_cooling_device *cdev =
-> > > > > > > > to_cooling_device(dev);
-> > > > > > > > -     unsigned long state;
-> > > > > > > > +     unsigned long state, max_state;
-> > > > > > > >       int result;
-> > > > > > > >
-> > > > > > > >       if (sscanf(buf, "%ld\n", &state) != 1)
-> > > > > > > > @@ -618,10 +618,20 @@ cur_state_store(struct device *dev,
-> > > > > > > > struct device_attribute *attr,
-> > > > > > > >
-> > > > > > > >       mutex_lock(&cdev->lock);
-> > > > > > > >
-> > > > > > > > +     result = cdev->ops->get_max_state(cdev, &max_state);
-> > > > > > > > +     if (result)
-> > > > > > > > +             goto unlock;
-> > > > > > > > +
-> > > > > > > > +     if (state > max_state) {
-> > > > > > > > +             result = -EINVAL;
-> > > > > > > > +             goto unlock;
-> > > > > > > > +     }
-> > > > > > > > +
-> > > > > > > >       result = cdev->ops->set_cur_state(cdev, state);
-> > > > > > >
-> > > > > > > Why doesn't set_cur_state() check the max state before setting
-> > > > > > > it?  Why
-> > > > > > > are the callers forced to always check it before?  That feels
-> > > > > > > wrong...
-> > > > > > >
-> > > > > >
-> > > > > > The problem lies in thermal_cooling_device_stats_update(), not
-> > > > > > set_cur_state().
-> > > > > >
-> > > > > > If ->set_cur_state() doesn't error out on invalid state,
-> > > > > > thermal_cooling_device_stats_update() does a:
-> > > > > >
-> > > > > > stats->trans_table[stats->state * stats->max_states +
-> > > > > > new_state]++;
-> > > > > >
-> > > > > > stats->trans_table reserves space depending on max_states, but
-> > > > > > we'd end up
-> > > > > > reading/writing outside it. cur_state_store() can prevent this
-> > > > > > regardless of
-> > > > > > the driver's ->set_cur_state() implementation.
-> > > > >
-> > > > > Why wouldn't cur_state_store() check for an out-of-bounds condition
-> > > > > by
-> > > > > calling get_max_state() and then return an error if it is invalid,
-> > > > > preventing thermal_cooling_device_stats_update() from ever being
-> > > > > called?
-> > > > >
-> > > >
-> > > > That's what this patch does, it adds the out-of-bounds check.
-> > >
-> > > No, I think Greg' question is
-> > > why cdev->ops->set_cur_state() return 0 when setting a cooling state
-> > > that exceeds the maximum cooling state?
-> >
-> > Yes, that is what I am asking, it should not allow a state to be
-> > exceeded.
-> >
-> 
-> Indeed, it is upto the driver to return !0 from cdev->ops->set_cur_state()
-> when setting state > max - and it is a driver bug for not doing so.
-> 
-> But a buggy driver should not lead to cur_state_store() performing an OOB
-> access.
+Other Linux architectures use DT property 'linux,pci-domain' for specifying
+fixed PCI domain of PCI controller specified in Device-Tree.
 
-Agreed, which is why the code that does the access should check before
-it does so.  Right now you are relying on the sysfs code to do so, which
-seems very wrong.
+And lot of Freescale powerpc boards have defined numbered pci alias in
+Device-Tree for every PCIe controller which number specify preferred PCI
+domain.
 
-thanks,
+So prefer usage of DT property 'linux,pci-domain' (via function
+of_get_pci_domain_nr()) and DT pci alias (via function of_alias_get_id())
+on powerpc architecture for assigning PCI domain to PCI controller.
 
-greg k-h
+Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on device-tree properties")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+Changes in v2:
+* New patch
+---
+ arch/powerpc/kernel/pci-common.c | 26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
+
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 7f959df34833..0715d74855b3 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -78,10 +78,25 @@ static int get_phb_number(struct device_node *dn)
+ 
+ 	/*
+ 	 * Try fixed PHB numbering first, by checking archs and reading
+-	 * the respective device-tree properties. Firstly, try powernv by
+-	 * reading "ibm,opal-phbid", only present in OPAL environment.
++	 * the respective device-tree properties. Firstly, try reading
++	 * standard "linux,pci-domain", then try reading "ibm,opal-phbid"
++	 * (only present in powernv OPAL environment), then try device-tree
++	 * alias and as the last try to use lower bits of "reg" property
++	 * (only if CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG is enabled).
+ 	 */
+-	ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
++	ret = of_get_pci_domain_nr(dn);
++	if (ret >= 0) {
++		prop = ret;
++		ret = 0;
++	}
++	if (ret)
++		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
++	if (ret)
++		ret = of_alias_get_id(dn, "pci");
++	if (ret >= 0) {
++		prop = ret;
++		ret = 0;
++	}
+ 	if (ret && IS_ENABLED(CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG)) {
+ 		u32 prop_32;
+ 		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
+@@ -95,10 +110,7 @@ static int get_phb_number(struct device_node *dn)
+ 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
+ 		return phb_id;
+ 
+-	/*
+-	 * If not pseries nor powernv, or if fixed PHB numbering tried to add
+-	 * the same PHB number twice, then fallback to dynamic PHB numbering.
+-	 */
++	/* If everything fails then fallback to dynamic PHB numbering. */
+ 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
+ 	BUG_ON(phb_id >= MAX_PHBS);
+ 	set_bit(phb_id, phb_bitmap);
+-- 
+2.20.1
+
