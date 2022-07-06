@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F033DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F1EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234219AbiGFWyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 18:54:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47522 "EHLO
+        id S233917AbiGFWym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 18:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233557AbiGFWy3 (ORCPT
+        with ESMTP id S233881AbiGFWya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 18:54:29 -0400
+        Wed, 6 Jul 2022 18:54:30 -0400
 Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2777C2B1BE;
-        Wed,  6 Jul 2022 15:54:28 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id f23so5227959ejc.4;
-        Wed, 06 Jul 2022 15:54:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB922A26C;
+        Wed,  6 Jul 2022 15:54:29 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id f23so5228057ejc.4;
+        Wed, 06 Jul 2022 15:54:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=m28VOuBTGpNfCnRFT81/8lTctjXJrlSyC2RBUZE6DTA=;
-        b=qB4XMv9Z9mwRIHcOXaeGCzvqHITF3Rr5WZQvVQHZ55xKR1ErgYbyyrAegfAoAZ8qLU
-         VxtDJY64nyBOIuTDMbzQkhEfH3k4c4bRL/taTZ7KKVt+slfv0ipRXABRvK7hKr6YY4cH
-         LpT4Thh8PbcAtYG438L4GPc7QdhJoVAg32txf/L5F/TorCscqAugUvgj+HAJiSX6o9ZF
-         8j7vwuYz+TCv8e1uLQ1B7jYpo8g/FyzBdbNRYJBZqfRLr+PF6izT8ZFzlVFInRvzWRbV
-         Hw5geZs8yqbTNuYx0z7tvY4pMKXv+cDaMFcNjGyiOJyZFkmkaQ/oJZq6Kgud9IvocIni
-         iMUQ==
+        bh=kUlxRQ1of3eu4XW5c6JjZr01Kt72atQDrgao/HtGT8o=;
+        b=Co0ZfwzJmPPNkFd2X0BmEcNP//YqWh2YVZ82PyFVNjtMPNYgg9gFetMF4Eg472r+dp
+         JNAOiVvs2eRLbDSHhHp2ZUeREgSFQqR6nP51zMN5HBng7oH/H//HWfzvN0Fo1HiiWkeb
+         oHEFGfKrYv12/Ovf4uujxQp9ugT8t/t8G5hsqb/KZhquEp3eT2UPptV1F+JV70SUMHIB
+         3vwWflMGn2v4EiWOFoOH8xULKpt06+TCBpFrOc7kVHLE4B7s022Ek2NrjbRWu6vWiZiL
+         4SGBkSJ9Em4sgryn3VLqWBlY6/P5C1UUpI08Eir4w4Q3R91CnWPdr0g5AjLZC7SOg1WD
+         /DjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=m28VOuBTGpNfCnRFT81/8lTctjXJrlSyC2RBUZE6DTA=;
-        b=NSe9j1eCWQHZSg0+NHrzHZ/iubO2gmS7hCuLD+JtR52i7pgPQqyUyl70SjaH4XNzWf
-         oyIR50rJjoTYOX13456RAou2gqGkUJWrHowUgEN3aqxM+5Yy5ErkrcOkwZbbtSTElJ37
-         WbDl88j9gBEwzcL3afbp6p5Tjoa0MDFmjQfQUnshSVdqB8w5S3udLUeo1YKccx1UWjkj
-         Eu76vyBkOoX/XgJvnnvbCP6xoLkc/LrFSGPRryFJBWcNkmDC9caCXFGc6iZReT0FyM0O
-         NiI7Yp2TEDwONSxMHfHVTCcz7KdfrQOWDvmmgbreEbTC0H8R/NKyDBEl2SWbkxbHt8fS
-         Ub1A==
-X-Gm-Message-State: AJIora8IXdR/EbDizb5vZmkiAh6WNGXc2QFhrjecfYzGIOZ6iAkDG+0U
-        n93ManjVB0TPRsxB3bEuTm4=
-X-Google-Smtp-Source: AGRyM1tAISUPgzUk0jqnkPXsXqjqBCW5K0OcYjUxvbGqk7Kziy/5s7SHFSEUD7+BgdkGam0TIVkYnQ==
-X-Received: by 2002:a17:907:a06e:b0:72a:e777:451c with SMTP id ia14-20020a170907a06e00b0072ae777451cmr10298763ejc.41.1657148066666;
-        Wed, 06 Jul 2022 15:54:26 -0700 (PDT)
+        bh=kUlxRQ1of3eu4XW5c6JjZr01Kt72atQDrgao/HtGT8o=;
+        b=oXkkQ6H8LaqVbwD1mTTYiV4uPpv/NFiwfoBD/DqXHW3YSnDUUXP8cUwYFbumwHSaeT
+         OMw6wB60NXaqYZAQpgQtuSVLJshA3Cms+FhCzug7VcOfdrHMmY85oUcOqwC1igatI/h6
+         XIAvnjJyKJnGZ/U9rRcC89pKdCZeQ4+h7gwoO+jN7wl2MpTcQpzPDpX4zJ4j90gGdaF6
+         KzsnCLkDRvI1eFFLcdw9Flv3j7BcTrIzuR+pjLDdwjpn2EiLjTqLeeL/N2VgRuMpsThK
+         yMzuKdlqC2U5m5bhvzAtNLyytD+MbI3CEtBoyVgEdBpRiKUpH95040HZhg0V2UTryXI1
+         7A6g==
+X-Gm-Message-State: AJIora82LrhmUKUWtQ8mEZ9sj00TwJnrqTXahPAmFhPn4+YE8ipXYDYX
+        egETQFxc8JkrpIvykvXgcEU=
+X-Google-Smtp-Source: AGRyM1sl3zn7M5HpfENfgEsJmy2imKNBcKqIyJc0owvAEo+ADQh0QqN5BKbz8QTeOfyfAhgLSgEeDA==
+X-Received: by 2002:a17:907:1608:b0:726:a7b7:cd7a with SMTP id hb8-20020a170907160800b00726a7b7cd7amr40018657ejc.682.1657148068906;
+        Wed, 06 Jul 2022 15:54:28 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id d7-20020a170906304700b006fe921fcb2dsm1767637ejd.49.2022.07.06.15.54.25
+        by smtp.googlemail.com with ESMTPSA id d7-20020a170906304700b006fe921fcb2dsm1767637ejd.49.2022.07.06.15.54.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 15:54:26 -0700 (PDT)
+        Wed, 06 Jul 2022 15:54:28 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Andy Gross <agross@kernel.org>,
@@ -58,11 +58,10 @@ To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH v2 2/4] ARM: DTS: qcom: add rpmcc missing clocks for apq/ipq8064 and msm8660
-Date:   Thu,  7 Jul 2022 00:53:19 +0200
-Message-Id: <20220706225321.26215-3-ansuelsmth@gmail.com>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH v2 4/4] clk: qcom: gcc-ipq806x: remove cc_register_board for pxo and cxo
+Date:   Thu,  7 Jul 2022 00:53:21 +0200
+Message-Id: <20220706225321.26215-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220706225321.26215-1-ansuelsmth@gmail.com>
 References: <20220706225321.26215-1-ansuelsmth@gmail.com>
@@ -72,65 +71,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing rpmcc pxo and cxo clock for apq8064, ipq8064 and
-msm8660 dtsi.
+Now that these clock are defined as fixed clk in dts, we can drop the
+register_board_clk for cxo_board and pxo_board in gcc_ipq806x_probe.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm/boot/dts/qcom-apq8064.dtsi | 2 ++
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 ++
- arch/arm/boot/dts/qcom-msm8660.dtsi | 4 +++-
- 3 files changed, 7 insertions(+), 1 deletion(-)
+ drivers/clk/qcom/gcc-ipq806x.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-apq8064.dtsi b/arch/arm/boot/dts/qcom-apq8064.dtsi
-index 91adcbd54b17..6a88e616ea01 100644
---- a/arch/arm/boot/dts/qcom-apq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-apq8064.dtsi
-@@ -853,6 +853,8 @@ rpm@108000 {
- 			rpmcc: clock-controller {
- 				compatible = "qcom,rpmcc-apq8064", "qcom,rpmcc";
- 				#clock-cells = <1>;
-+				clocks = <&pxo_board>, <&cxo_board>;
-+				clock-names = "pxo", "cxo";
- 			};
+diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
+index 718de17a1e60..883629de2751 100644
+--- a/drivers/clk/qcom/gcc-ipq806x.c
++++ b/drivers/clk/qcom/gcc-ipq806x.c
+@@ -3384,14 +3384,6 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
+ 	struct regmap *regmap;
+ 	int ret;
  
- 			regulators {
-diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 4b475d98343c..1425a4e4283f 100644
---- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -773,6 +773,8 @@ rpm: rpm@108000 {
- 			rpmcc: clock-controller {
- 				compatible = "qcom,rpmcc-ipq806x", "qcom,rpmcc";
- 				#clock-cells = <1>;
-+				clocks = <&pxo_board>;
-+				clock-names = "pxo";
- 			};
- 		};
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8660.dtsi b/arch/arm/boot/dts/qcom-msm8660.dtsi
-index b9cded35b1cc..63a501c63cf8 100644
---- a/arch/arm/boot/dts/qcom-msm8660.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8660.dtsi
-@@ -56,7 +56,7 @@ cxo_board {
- 			clock-frequency = <19200000>;
- 		};
- 
--		pxo_board {
-+		pxo_board: pxo_board {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
- 			clock-frequency = <27000000>;
-@@ -411,6 +411,8 @@ rpm: rpm@104000 {
- 			rpmcc: clock-controller {
- 				compatible = "qcom,rpmcc-msm8660", "qcom,rpmcc";
- 				#clock-cells = <1>;
-+				clocks = <&pxo_board>;
-+				clock-names = "pxo";
- 			};
- 
- 			pm8901-regulators {
+-	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
+-	if (ret)
+-		return ret;
+-
+-	ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
+-	if (ret)
+-		return ret;
+-
+ 	if (of_machine_is_compatible("qcom,ipq8065")) {
+ 		ubi32_core1_src_clk.freq_tbl = clk_tbl_nss_ipq8065;
+ 		ubi32_core2_src_clk.freq_tbl = clk_tbl_nss_ipq8065;
 -- 
 2.36.1
 
