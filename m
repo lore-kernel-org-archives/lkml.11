@@ -2,286 +2,349 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94AF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E26DCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234351AbiGFUeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 16:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
+        id S233818AbiGFUgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 16:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233861AbiGFUeE (ORCPT
+        with ESMTP id S231703AbiGFUgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 16:34:04 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2D363DF;
-        Wed,  6 Jul 2022 13:34:02 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266IWeOv009665;
-        Wed, 6 Jul 2022 20:33:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=1Zsk6IQYJnXc3etZkAgP5C7zvqumVy27zhKwmhQ/H18=;
- b=c7bHg/IW12FsnjXK4VyZW9FW5mFcjVVY2E49MArhokUBUim4hLCmFRF0P282gO5gLeiB
- CujQYpsc6EuYuis1EV1m+I4/MwBy2yc9KLLuE2FMeedpKyKiiBcPLwpAqO98bdSqjCfN
- UaMHaSx7fm99oh9z9cqTtnEkNaYjpeiAZJyzHL7t7GbXzZhBDr1YLWQGgEgs8e/1yk3u
- Eq5NmVz0c175CH1W7xIt/KIY8+kSBwxgX68izcd7z6UtTK8FAzfO6cPnjqqutxw/fRuM
- cMZ/arT8Vw3BxkmHR3EBU0JacOeczxY5gPfVC6rhoByUjAfIfbubqpgt4FpQOIBiVviJ WA== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h4ubybak1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 06 Jul 2022 20:33:19 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 266KLS9S036116;
-        Wed, 6 Jul 2022 20:33:19 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2109.outbound.protection.outlook.com [104.47.55.109])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h4ud8c68v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 06 Jul 2022 20:33:18 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LUl4JoeiTLukmpEMK41UuyPmUHfDCROd7iZKDUDyZQvhYthu/DZpu5BQMDRCBHWb/0E9LQfkATlzs/pw3AbjFA6KSw0vnNEJhp0JAemnjLHu4bMpy/GWN4TEd3memWMh+xOydd+XvoJDy1JOpRxxP1r6MGr7UOle4pdxvvjP5LsXuByDx+lValwopf/ubf6wmsrDehlhBdlCrxUQSCXII9xUu1u1ue8UxAD0X3GjEs7gkMFo3Oqz6lTT1o/9flxVGmMr6wz7tYV27RsiEDMLum0oMW+de/1i6ANvtt0Q23Tf8H6vHZK2fYoFDBzu1GCce9CabpeKV5S9FzpUe12Lyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1Zsk6IQYJnXc3etZkAgP5C7zvqumVy27zhKwmhQ/H18=;
- b=lU99RLcLfGBgPMtfdqgVxNAg9IRsuccAMqs7lD+arjZqnWjm0o8n3aZmb9qA/XZIg9F1mWJIx/Fgl66VHW0PVd2OF/xE0j3lHBowuro3wujlz4KRcxxr5dqaqQO7soYnZU3ekqTdo0Y0J3KrSAxEu0dskJYBPfKYwXWtH0fomJoqX6Pul17G7rJjhWdmJNLew/JO51NnmLSJ9wRKRlmg/TDkzEBYr4DDlWIATkcxLsz/fLSFl2GUughGsF8+3LK3kLzA2gz0nh/DJyxuah9B7l2ZeqbPj30+pauaoPkEo3761MwmwPTXkhyFzllRG7zy6vhuCAdcK8oD3qHeWAdz2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Wed, 6 Jul 2022 16:36:44 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725492494D;
+        Wed,  6 Jul 2022 13:36:42 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id z25so10245728lfr.2;
+        Wed, 06 Jul 2022 13:36:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1Zsk6IQYJnXc3etZkAgP5C7zvqumVy27zhKwmhQ/H18=;
- b=pDQRjEoU5p01KT10rjMyyFCyz72caXm5u/k2b3YjGUIT765jyXQ5yH40Oqy8pa/7Ua9TpXOvaEyYueaxGjUQHJPfOsRqGrvSq/qfzqlqY/42E5qIEEYK3+my42TGl/7AA3XXS1LJS30xqfvPabDBAXUxGK2/xLZZeUSLDk5hplU=
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com (2603:10b6:408:c8::18)
- by IA1PR10MB6123.namprd10.prod.outlook.com (2603:10b6:208:3a9::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 6 Jul
- 2022 20:33:16 +0000
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::71ec:3c08:c336:cc55]) by BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::71ec:3c08:c336:cc55%5]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 20:33:16 +0000
-Message-ID: <a8fce124-149f-ee46-6b23-a1805a32ebc1@oracle.com>
-Date:   Wed, 6 Jul 2022 14:33:09 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1 09/14] mm/mshare: Do not free PTEs for mshare'd PTEs
-Content-Language: en-US
-To:     Andy Lutomirski <luto@kernel.org>, Barry Song <21cnbao@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>, ebiederm@xmission.com,
-        hagen@jauu.net, jack@suse.cz, Kees Cook <keescook@chromium.org>,
-        kirill@shutemov.name, kucharsk@gmail.com, linkinjeon@kernel.org,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, longpeng2@huawei.com,
-        markhemm@googlemail.com, Peter Collingbourne <pcc@google.com>,
-        Mike Rapoport <rppt@kernel.org>, sieberf@amazon.com,
-        sjpark@amazon.de, Suren Baghdasaryan <surenb@google.com>,
-        tst@schoebel-theuer.de, Iurii Zaikin <yzaikin@google.com>
-References: <cover.1649370874.git.khalid.aziz@oracle.com>
- <f96de8e7757aabc8e38af8aacbce4c144133d42d.1649370874.git.khalid.aziz@oracle.com>
- <CAGsJ_4xC0sB0x2orOcKgx4p0fa5Y0bR9qeviq1_Q7VmhMk2d6A@mail.gmail.com>
- <e5bebb34-5858-815c-9c2c-254a95b86b07@oracle.com>
- <48e40b61-f506-72a1-0839-08bc9db483cc@kernel.org>
-From:   Khalid Aziz <khalid.aziz@oracle.com>
-In-Reply-To: <48e40b61-f506-72a1-0839-08bc9db483cc@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SN4PR0401CA0038.namprd04.prod.outlook.com
- (2603:10b6:803:2a::24) To BN8PR10MB3220.namprd10.prod.outlook.com
- (2603:10b6:408:c8::18)
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WQFyosZ//4fE9cfxpwEnHv8Amwxi2kplUQYi7n8KW9Q=;
+        b=niYwTTVJihpLG/ARNnkosYm/g3vfEZV55YysypJI9D9+rIJKb3LQlVY7fJ+IZ6cKvK
+         rw3Z9ic5t31/b8OvYP+3i74oa3SJBkUOVOgegIPWKs3JJmraaGO5x8tO8sizsfp3ei5u
+         MZ9RB+A8yE6ICzdMV4JtIMHxj6w7q7HQSxBIJCf/yI2d5SmCWM+3zUQCYYwkMG7J3+Jk
+         9N5EF1wQHv/JmkhhKMZBUSPre3rN0CdSqP9IWprCZxu81nHPp1m1xEv0Cz0qlm9KPSrH
+         K+PPZ8hOagAc2UsDdwn/sCYIwG0cw5SYo7JgAsYm63sFrYY4XO6gG9kPcKFWoZxjln4i
+         FbwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WQFyosZ//4fE9cfxpwEnHv8Amwxi2kplUQYi7n8KW9Q=;
+        b=KSJfOO+OKksVHOsUg6644qlgFy4aFuUIfm9aMeIyj0NUgJD0xU4PFR4elSX4ursw3H
+         Z/qANS4Ta/nRfonWLsXRTUUm9tfNnWmnsSQ58kS6uN9c1ywdPCJQbK1py0NndUlY6cvG
+         0vfUK7lLb6j2qoXWqSpNUMr5k6jbqz+8vZrLDFPHIxTenNTr2yk4PQsjjhatoONMrsBL
+         NDM6jbSSZ3R7ZCb16cr/drGbBgjVNRdv/HmpaCrGrJ2HFuZs4zkosgAM6Q3mweybI2S0
+         dlSkxuw3rMJNFxZNaAerwm3N6RiSimXSBqM6z/zWsCTkTeMD3on2I08cHR2y9QEZwlTE
+         iHWA==
+X-Gm-Message-State: AJIora/AEqWCCdtyizcuabsv9sxgi+/FljnPaBzXBKuiRQj/xIlsrtkR
+        nQWvT0it7fPp1TPhL1MY+IPaUOTAneqyIBKF3Y8=
+X-Google-Smtp-Source: AGRyM1tZys9UGFxiMKpWglj8zAo4hXc7PIh8pQlTwuxIpr2gpspjznNtWQQR2DLn7uQ2+vN0rgFUMR6abH1xi2xieB4=
+X-Received: by 2002:a05:6512:39ca:b0:47f:a9e1:e3b8 with SMTP id
+ k10-20020a05651239ca00b0047fa9e1e3b8mr25708878lfu.564.1657139800613; Wed, 06
+ Jul 2022 13:36:40 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d3716395-7ddd-48ba-7629-08da5f8ec15b
-X-MS-TrafficTypeDiagnostic: IA1PR10MB6123:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ty1NSxFYuK/vvTNOGh4epoPwohSwxf5HoB6kA4uLqoHnhaHNvY1kUqyq5i804/rB+jhbk7pKsbCPilIfDeTSStAaTrB1KkAWK+OlHZe6hCQWbbA5Au7oh3192kqToIzbglxPHjccNI9yCME+pOEyd+CfkSQ3wNoAa/gPoM4sf9kzIGdahhlTEfK5IqCUo3pr8jhkSbvlBF1Q44KlbG/kVC5BM69fvQKVGdhumwRmARlronrcQzFBrbE9kPFukpTmn8d3KvS507eEz9gpL05hFu3ttuiqnjpaAnsMhqxRa1keZyfzSx0wjgyVU8ibSvDdUANAMjJXL4xT7D9K+0fynR0cT7mUKwUTdYmlLdmaOywQG1SxVypkNaQqVfykcuqn5hNIKKTLY052ko55Je28dgJCIObFQ4EOjeDRdEtFnaVjfVuQltrDXRV3dasdkAv63yKsbalniGVa94hL754uMo9SUcbQbXkhpzQx8y75K1bHdNutmOydcLK1PqQBRdJe6AXtk4rHCKmQc/07ab1bP8uZcfkOqi5CsanZ/Wxj3XzN9vycdV0hVpQJe3BH/kH10T5JfoC4NrpQdRct0BgCJ8LVlKTEHqr7gm/NwMuNv0MSFBD3f5ED0vKtctoqgpjyxcVFx7NLRCEz117UWCTsFNElggYZwnlNViwzF6NOh2sYyAxCFC6CUfjXKcBDnd3jEuWlhBjqSQHIrc1xRMtJFy/rHh6nuK16eCuI144Zf82EJBJKyXh5n0z2tzW+9/dhIOvR1BuugE1j2khr3vtwnKVcO7GXfgGwSYfaRVhal9DTW81Cjkxvf+8Vz/7FHzJid+3OFlL2kbwutQB6UhWNVw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3220.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(39860400002)(396003)(136003)(376002)(31686004)(2616005)(66556008)(110136005)(26005)(6512007)(8676002)(54906003)(66476007)(4326008)(83380400001)(186003)(6486002)(53546011)(66946007)(38100700002)(6666004)(478600001)(7416002)(2906002)(44832011)(36756003)(5660300002)(31696002)(8936002)(316002)(86362001)(41300700001)(6506007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?M0RGQVBEN2NFOUFra3NyME5ndVR0QUFZeXZTdmcwYjBkZzRiRTYwK3BUb3lq?=
- =?utf-8?B?WkVrSG1LR1Q0ejI4WG85OE1ubHp5aVQ3QUZEbHFaakNjeklrQTdQN3RKNSt4?=
- =?utf-8?B?Y2EvLzJ1dW9peXRGb2ZpYjlaelU0cDVEcC9qcS9EbSs4dzRJQ2F2ckZHSmha?=
- =?utf-8?B?WnlpV2dpTTlqM2s2b3QrRmV2MGgzZmMyWHlwMFN4Wnp3Umk1ZEowc2FUNWRM?=
- =?utf-8?B?cnBTZWQwVlZucGQrM1cyMVgwTGJEYnlaWUpRK1MrYVE2eWhzVlZmeVZ5MjA3?=
- =?utf-8?B?N1ZWVWd5YTZHQktlSDdTVXRFVUVMQU05dFY0UmZOTy8yeHJkTzFscFpSWitK?=
- =?utf-8?B?WmJBTjBzRlNib05KaVFlN3dSdWZRdVkvR0hRdU84T1NXNjhjV0RxOGxsanNK?=
- =?utf-8?B?VjhUUFVoRjVGbFAzODlEZzNlQUJvR3pQSkt2bExyNGZhOUZZNUFtaG9RaDFr?=
- =?utf-8?B?UmpZL2ppM1BnYVhkeEQ0MU54eE8zbURRWmtxd00vclBQZDJwdnhsb2c1R2tN?=
- =?utf-8?B?MjFROUFXZGE3VW1TMVgwckxPMVJpU1ZRWEtqWko3dHBIRHBVNkx4ODhycWw0?=
- =?utf-8?B?RStJT3NzWkhFTGM5c2xkdmhyQVpueXV3NnF2ZlRKTHdoZFROVXQzS2ZKNTkw?=
- =?utf-8?B?VHNPV1JJLzkxb240aTBrSTM4THhROEcxMTh5UkpOT1Z0MUlYRkl0U25FQXBN?=
- =?utf-8?B?YUVuVUpXc3RwQjVXMlVOZjdOMmcyb2xmYWN4SXN2RDNwY3RiSkZzOUptbWZC?=
- =?utf-8?B?Y2k1ZXhId09xaGEweUsyZHJibTBQVUozenRJallWclVuUmFrb1ZWUGZtaWU5?=
- =?utf-8?B?czZpZjcwb2tiRSt0RlVxQlVqOW5qWkR1Zzl0QTZXQnU3Y1VGSElHcktERmFC?=
- =?utf-8?B?MDRVRVpHVEJGemV6elZDTExwMCtXclozZmlXS0Q1L2hHMW5TQjc5VWdVZEF3?=
- =?utf-8?B?RDBaaGdBM1huczVvOUVJVEFZUzFTRHZ3VndDcGNKZTdKSFdTbmxqZ3I5VHhK?=
- =?utf-8?B?YmFGZ2pkNGE0Ynp3RDdsN0RTSnFpWjMrSUtRRkFTNzFtTDVTOWJ3Yk1MbzVk?=
- =?utf-8?B?ekRtWkdDODBhNW50Z0VzOTFPZ1kyUUtsR2g1eVlIRkE0Z0wwNDRkeC9LdlhY?=
- =?utf-8?B?WU1tUjdZdFk4K1VBTzFGMVN3SmE4WUNwSm5Ddmt2QXlDc25ObWZXUDFBUzJE?=
- =?utf-8?B?djd1dkF6SWJqOXdyY2cydzhvSHd1SXBjTlBLd1lkVXY5dkZLKzArMWQ0VXBn?=
- =?utf-8?B?UmxCNC9mSCtoc2lTZWtnZWdkUUxNdWI1Y1YvcGluSjc1THMwYmUxMWhPQUkr?=
- =?utf-8?B?ZUxGMW9uMUVVZk40cUc2RlFwRFVBNld0Qms5SDVQcGdlZFltMjRHWHJqQWov?=
- =?utf-8?B?T2c1eHpPTGtxZklVY3ZzVGYvUFZsdWVnd2VlUnpObWJvYUdPR3dBZ2ZhZ1RP?=
- =?utf-8?B?SVkyb2p3dHN0YzAzN3BRalUyVzNPWmJQQkxyU1NkQUF5VnEwVUVpV2FXbisy?=
- =?utf-8?B?UElYSWZJeXBmSWRUTXBXWC82MVFqbS9md0pqaFYrMmRBRDBtek9UaXFDMmVi?=
- =?utf-8?B?c2psUXhJeUpHN01wVm00VUVGK0p3YzhpY0JDT3JDNVk1M2xiNmpWZUo2WWtK?=
- =?utf-8?B?RkZzUHVDbGswR0N4Y24yaWw4NG8xa0VDaXJ4TWM2YVZQeUcyclhDN3k3WUVO?=
- =?utf-8?B?NStxbFJkSkQrVmU0RCt2aDBDWCtkY0M3RDVjR24wSCsrSGtRa29PVXZpcWpy?=
- =?utf-8?B?SkFJdVM4dVVGZHEzR0FScDI0V1M1TWkxaEQ4TjI5ditmSGpBODZYeE9jOXEv?=
- =?utf-8?B?cHNIdElnbjlhUTR1em1nYVBnQnRLeWt6dWRBWGMrS0tNcFZxM1NhSnlpQ3lV?=
- =?utf-8?B?N2NwbW1yMWFySk1QSnZ0czFEODRURTA2bVFyS2wwejNHTDRxcjYwTWE3aG5C?=
- =?utf-8?B?S3dxSDZadkUrdVhyajJrcmpUM1NlTWJwUUFlbWNMUndjNm1SNVh5QzRJVnJD?=
- =?utf-8?B?UytRcEpnNEJyc05wRDBGUTU1RW9GeCtmanJGNG05amtlb3JPZURwZ201L1Bu?=
- =?utf-8?B?MkEyeXFjRkF4c0NKeXJaaVJoWXVlSWNNZ2RvYUlkMFpGNzlVTk4reldBY2Qz?=
- =?utf-8?Q?0PFr7BOC+boSgvZx0D6TYWhjY?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3716395-7ddd-48ba-7629-08da5f8ec15b
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3220.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 20:33:16.2369
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HAMDS6Gy9h4VgAqYh8XrlEkqPBHU20rny4OlweixByL1UPEIE/u3mE68k/xj1Jom95NcQ2gG1LXjuhTjPvXoCg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB6123
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-06_12:2022-06-28,2022-07-06 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 malwarescore=0
- mlxscore=0 spamscore=0 suspectscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207060078
-X-Proofpoint-ORIG-GUID: QQeX6UGIw9DYecu7gdM_-qkOFuroQnKp
-X-Proofpoint-GUID: QQeX6UGIw9DYecu7gdM_-qkOFuroQnKp
+References: <20220622082716.478486-1-lee.jones@linaro.org> <CANn89iK-uFP6Swgc0ZeEC38UsuywJ3wbybSNouH202Wa7X7Tzg@mail.gmail.com>
+ <CABBYNZ+C=MQ7577Fr5_W8tQ4iWRSDBSiC4fkRBY3x=9ph+YAzA@mail.gmail.com>
+ <CABBYNZLysdh3NFK+G8=NUQ=G=hvS8X0PdMp=bVqiwPDPCAokmg@mail.gmail.com>
+ <YrxvgIiWuFVlXBaQ@google.com> <CABBYNZJFSxk9=3Gj7jOj__s=iJGmhrZ=CA7Mb74_-Y0sg+N40g@mail.gmail.com>
+ <YsVptCjpzHjR8Scv@google.com>
+In-Reply-To: <YsVptCjpzHjR8Scv@google.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Wed, 6 Jul 2022 13:36:28 -0700
+Message-ID: <CABBYNZKvVKRRdWnX3uFWdTXJ_S+oAj6z72zgyV148VmFtUnPpA@mail.gmail.com>
+Subject: Re: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole
+ put/destroy invokation
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>, stable@kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="00000000000028d46e05e328ed1e"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/3/22 14:54, Andy Lutomirski wrote:
-> On 6/29/22 10:38, Khalid Aziz wrote:
->> On 5/30/22 22:24, Barry Song wrote:
->>> On Tue, Apr 12, 2022 at 4:07 AM Khalid Aziz <khalid.aziz@oracle.com> wrote:
->>>>
->>>> mshare'd PTEs should not be removed when a task exits. These PTEs
->>>> are removed when the last task sharing the PTEs exits. Add a check
->>>> for shared PTEs and skip them.
->>>>
->>>> Signed-off-by: Khalid Aziz <khalid.aziz@oracle.com>
->>>> ---
->>>>   mm/memory.c | 22 +++++++++++++++++++---
->>>>   1 file changed, 19 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/mm/memory.c b/mm/memory.c
->>>> index c77c0d643ea8..e7c5bc6f8836 100644
->>>> --- a/mm/memory.c
->>>> +++ b/mm/memory.c
->>>> @@ -419,16 +419,25 @@ void free_pgtables(struct mmu_gather *tlb, struct vm_area_struct *vma,
->>>>                  } else {
->>>>                          /*
->>>>                           * Optimization: gather nearby vmas into one call down
->>>> +                        * as long as they all belong to the same mm (that
->>>> +                        * may not be the case if a vma is part of mshare'd
->>>> +                        * range
->>>>                           */
->>>>                          while (next && next->vm_start <= vma->vm_end + PMD_SIZE
->>>> -                              && !is_vm_hugetlb_page(next)) {
->>>> +                              && !is_vm_hugetlb_page(next)
->>>> +                              && vma->vm_mm == tlb->mm) {
->>>>                                  vma = next;
->>>>                                  next = vma->vm_next;
->>>>                                  unlink_anon_vmas(vma);
->>>>                                  unlink_file_vma(vma);
->>>>                          }
->>>> -                       free_pgd_range(tlb, addr, vma->vm_end,
->>>> -                               floor, next ? next->vm_start : ceiling);
->>>> +                       /*
->>>> +                        * Free pgd only if pgd is not allocated for an
->>>> +                        * mshare'd range
->>>> +                        */
->>>> +                       if (vma->vm_mm == tlb->mm)
->>>> +                               free_pgd_range(tlb, addr, vma->vm_end,
->>>> +                                       floor, next ? next->vm_start : ceiling);
->>>>                  }
->>>>                  vma = next;
->>>>          }
->>>> @@ -1551,6 +1560,13 @@ void unmap_page_range(struct mmu_gather *tlb,
->>>>          pgd_t *pgd;
->>>>          unsigned long next;
->>>>
->>>> +       /*
->>>> +        * If this is an mshare'd page, do not unmap it since it might
->>>> +        * still be in use.
->>>> +        */
->>>> +       if (vma->vm_mm != tlb->mm)
->>>> +               return;
->>>> +
->>>
->>> expect unmap, have you ever tested reverse mapping in vmscan, especially
->>> folio_referenced()? are all vmas in those processes sharing page table still
->>> in the rmap of the shared page?
->>> without shared PTE, if 1000 processes share one page, we are reading 1000
->>> PTEs, with it, are we reading just one? or are we reading the same PTE
->>> 1000 times? Have you tested it?
->>>
->>
->> We are treating mshared region same as threads sharing address space. There is one PTE that is being used by all 
->> processes and the VMA maintained in the separate mshare mm struct that also holds the shared PTE is the one that gets 
->> added to rmap. This is a different model with mshare in that it adds an mm struct that is separate from the mm structs 
->> of the processes that refer to the vma and pte in mshare mm struct. Do you see issues with rmap in this model?
-> 
-> I think this patch is actually the most interesting bit of the series by far.  Most of the rest is defining an API 
-> (which is important!) and figuring out semantics.  This patch changes something rather fundamental about how user 
-> address spaces work: what vmas live in them.  So let's figure out its effects.
-> 
-> I admit I'm rather puzzled about what vm_mm is for in the first place. In current kernels (without your patch), I think 
-> it's a pretty hard requirement for vm_mm to equal the mm for all vmas in an mm.  After a quick and incomplete survey, 
-> vm_mm seems to be mostly used as a somewhat lazy way to find the mm.  Let's see:
-> 
-> file_operations->mmap doesn't receive an mm_struct.  Instead it infers the mm from vm_mm.  (Why?  I don't know.)
-> 
-> Some walk_page_range users seem to dig the mm out of vm_mm instead of mm_walk.
-> 
-> Some manual address space walkers start with an mm, don't bother passing it around, and dig it back out of of vm_mm.  
-> For example, unuse_vma() and all its helpers.
-> 
-> The only real exception I've found so far is rmap: AFAICS (on quick inspection -- I could be wrong), rmap can map from a 
-> folio to a bunch of vmas, and the vmas' mms are not stored separately but instead determined by vm_mm.
-> 
-> 
-> 
-> Your patch makes me quite nervous.  You're potentially breaking any kernel code path that assumes that mms only contain 
-> vmas that have vm_mm == mm.  And you're potentially causing rmap to be quite confused.  I think that if you're going to 
-> take this approach, you need to clearly define the new semantics of vm_mm and audit or clean up every user of vm_mm in 
-> the tree.  This may be nontrivial (especially rmap), although a cleanup of everything else to stop using vm_mm might be 
-> valuable.
-> 
-> But I'm wondering if it would be better to attack this from a different direction.  Right now, there's a hardcoded 
-> assumption that an mm owns every page table it references.  That's really the thing you're changing.  To me, it seems 
-> that a magical vma that shares page tables should still be a vma that belongs to its mm_struct -- munmap() and 
-> potentialy other m***() operations should all work on it, existing find_vma() users should work, etc.
-> 
-> So maybe instead there should be new behavior (by a VM_ flag or otherwise) that indicates that a vma owns its PTEs.  It 
-> could even be a vm_operation, although if anyone ever wants regular file mappings to share PTEs, then a vm_operation 
-> doesn't really make sense.
-> 
+--00000000000028d46e05e328ed1e
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Andy,
+Hi Lee,
 
-You are absolutely right. Dragons lie on the path to changing the sense of vm_mm. Dave H pointed out potential issues 
-with rb_tree as well. As I have looked at more code, it seems breaking the assumption that vm_mm always points to 
-containing mm struct opens up the possibility of code breaking in strange ways in odd places. As a result, I have 
-changed the code in v2 patches to not break this assumption about vm_mm and instead I rewrote the code to use the vm 
-flag VM_SHARED_PT and vm_private_data everywhere it needed to find the mshare mm struct. All the vmas belonging to the 
-new mm struct for mshare region also have their vm_mm pointing to the mshare mm_struct and that keeps all vma operations 
-working normally.
+On Wed, Jul 6, 2022 at 3:53 AM Lee Jones <lee.jones@linaro.org> wrote:
+>
+> On Tue, 05 Jul 2022, Luiz Augusto von Dentz wrote:
+>
+> > Hi Lee,
+> >
+> > On Wed, Jun 29, 2022 at 8:28 AM Lee Jones <lee.jones@linaro.org> wrote:
+> > >
+> > > On Tue, 28 Jun 2022, Luiz Augusto von Dentz wrote:
+> > >
+> > > > Hi Eric, Lee,
+> > > >
+> > > > On Mon, Jun 27, 2022 at 4:39 PM Luiz Augusto von Dentz
+> > > > <luiz.dentz@gmail.com> wrote:
+> > > > >
+> > > > > Hi Eric, Lee,
+> > > > >
+> > > > > On Mon, Jun 27, 2022 at 7:41 AM Eric Dumazet <edumazet@google.com> wrote:
+> > > > > >
+> > > > > > On Wed, Jun 22, 2022 at 10:27 AM Lee Jones <lee.jones@linaro.org> wrote:
+> > > > > > >
+> > > > > > > This change prevents a use-after-free caused by one of the worker
+> > > > > > > threads starting up (see below) *after* the final channel reference
+> > > > > > > has been put() during sock_close() but *before* the references to the
+> > > > > > > channel have been destroyed.
+> > > > > > >
+> > > > > > >   refcount_t: increment on 0; use-after-free.
+> > > > > > >   BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
+> > > > > > >   Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
+> > > > > > >
+> > > > > > >   CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
+> > > > > > >   Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
+> > > > > > >   Workqueue: hci0 hci_rx_work
+> > > > > > >   Call trace:
+> > > > > > >    dump_backtrace+0x0/0x378
+> > > > > > >    show_stack+0x20/0x2c
+> > > > > > >    dump_stack+0x124/0x148
+> > > > > > >    print_address_description+0x80/0x2e8
+> > > > > > >    __kasan_report+0x168/0x188
+> > > > > > >    kasan_report+0x10/0x18
+> > > > > > >    __asan_load4+0x84/0x8c
+> > > > > > >    refcount_dec_and_test+0x20/0xd0
+> > > > > > >    l2cap_chan_put+0x48/0x12c
+> > > > > > >    l2cap_recv_frame+0x4770/0x6550
+> > > > > > >    l2cap_recv_acldata+0x44c/0x7a4
+> > > > > > >    hci_acldata_packet+0x100/0x188
+> > > > > > >    hci_rx_work+0x178/0x23c
+> > > > > > >    process_one_work+0x35c/0x95c
+> > > > > > >    worker_thread+0x4cc/0x960
+> > > > > > >    kthread+0x1a8/0x1c4
+> > > > > > >    ret_from_fork+0x10/0x18
+> > > > > > >
+> > > > > > > Cc: stable@kernel.org
+> > > > > >
+> > > > > > When was the bug added ? (Fixes: tag please)
+> > > > > >
+> > > > > > > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > > > > > > Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> > > > > > > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> > > > > > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > > > > > Cc: Eric Dumazet <edumazet@google.com>
+> > > > > > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > > > > > Cc: Paolo Abeni <pabeni@redhat.com>
+> > > > > > > Cc: linux-bluetooth@vger.kernel.org
+> > > > > > > Cc: netdev@vger.kernel.org
+> > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > > > > ---
+> > > > > > >  net/bluetooth/l2cap_core.c | 4 ++--
+> > > > > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > > > >
+> > > > > > > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> > > > > > > index ae78490ecd3d4..82279c5919fd8 100644
+> > > > > > > --- a/net/bluetooth/l2cap_core.c
+> > > > > > > +++ b/net/bluetooth/l2cap_core.c
+> > > > > > > @@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
+> > > > > > >
+> > > > > > >         BT_DBG("chan %p", chan);
+> > > > > > >
+> > > > > > > -       write_lock(&chan_list_lock);
+> > > > > > >         list_del(&chan->global_l);
+> > > > > > > -       write_unlock(&chan_list_lock);
+> > > > > > >
+> > > > > > >         kfree(chan);
+> > > > > > >  }
+> > > > > > > @@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
+> > > > > > >  {
+> > > > > > >         BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
+> > > > > > >
+> > > > > > > +       write_lock(&chan_list_lock);
+> > > > > > >         kref_put(&c->kref, l2cap_chan_destroy);
+> > > > > > > +       write_unlock(&chan_list_lock);
+> > > > > > >  }
+> > > > > > >  EXPORT_SYMBOL_GPL(l2cap_chan_put);
+> > > > > > >
+> > > > > > >
+> > > > > >
+> > > > > > I do not think this patch is correct.
+> > > > > >
+> > > > > > a kref does not need to be protected by a write lock.
+> > > > > >
+> > > > > > This might shuffle things enough to work around a particular repro you have.
+> > > > > >
+> > > > > > If the patch was correct why not protect kref_get() sides ?
+> > > > > >
+> > > > > > Before the &hdev->rx_work is scheduled (queue_work(hdev->workqueue,
+> > > > > > &hdev->rx_work),
+> > > > > > a reference must be taken.
+> > > > > >
+> > > > > > Then this reference must be released at the end of hci_rx_work() or
+> > > > > > when hdev->workqueue
+> > > > > > is canceled.
+> > > > > >
+> > > > > > This refcount is not needed _if_ the workqueue is properly canceled at
+> > > > > > device dismantle,
+> > > > > > in a synchronous way.
+> > > > > >
+> > > > > > I do not see this hdev->rx_work being canceled, maybe this is the real issue.
+> > > > > >
+> > > > > > There is a call to drain_workqueue() but this is not enough I think,
+> > > > > > because hci_recv_frame()
+> > > > > > can re-arm
+> > > > > >    queue_work(hdev->workqueue, &hdev->rx_work);
+> > > > >
+> > > > > I suspect this likely a refcount problem, we do l2cap_get_chan_by_scid:
+> > > > >
+> > > > > /* Find channel with given SCID.
+> > > > >  * Returns locked channel. */
+> > > > > static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn
+> > > > > *conn, u16 cid)
+> > > > >
+> > > > > So we return a locked channel but that doesn't prevent another thread
+> > > > > to call l2cap_chan_put which doesn't care about l2cap_chan_lock so
+> > > > > perhaps we actually need to host a reference while we have the lock,
+> > > > > at least we do something like that on l2cap_sock.c:
+> > > > >
+> > > > > l2cap_chan_hold(chan);
+> > > > > l2cap_chan_lock(chan);
+> > > > >
+> > > > > __clear_chan_timer(chan);
+> > > > > l2cap_chan_close(chan, ECONNRESET);
+> > > > > l2cap_sock_kill(sk);
+> > > > >
+> > > > > l2cap_chan_unlock(chan);
+> > > > > l2cap_chan_put(chan);
+> > > >
+> > > > Perhaps something like this:
+> > >
+> > > I'm struggling to apply this for test:
+> > >
+> > >   "error: corrupt patch at line 6"
+> >
+> > Check with the attached patch.
+>
+> With the patch applied:
+>
+> [  188.825418][   T75] refcount_t: addition on 0; use-after-free.
+> [  188.825418][   T75] refcount_t: addition on 0; use-after-free.
 
-Thanks,
-Khalid
+Looks like the changes just make the issue more visible since we are
+trying to add a refcount when it is already 0 so this proves the
+design is not quite right since it is removing the object from the
+list only when destroying it while we probably need to do it before.
+
+How about we use kref_get_unless_zero as it appears it was introduced
+exactly for such cases (patch attached.)
+
+Luiz Augusto von Dentz
+
+--00000000000028d46e05e328ed1e
+Content-Type: text/x-patch; charset="US-ASCII"; name="0001-Bluetooth-L2CAP-WIP.patch"
+Content-Disposition: attachment; filename="0001-Bluetooth-L2CAP-WIP.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l5a28eaa0>
+X-Attachment-Id: f_l5a28eaa0
+
+RnJvbSAyODA1Mzc0ZTFjMDVjNmJiYTkyZWZiMGI0NzI5NDlkYTFlMDBkY2ZiIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBMdWl6IEF1Z3VzdG8gdm9uIERlbnR6IDxsdWl6LnZvbi5kZW50
+ekBpbnRlbC5jb20+CkRhdGU6IFR1ZSwgMjggSnVuIDIwMjIgMTU6NDY6MDQgLTA3MDAKU3ViamVj
+dDogW1BBVENIXSBCbHVldG9vdGg6IEwyQ0FQOiBXSVAKClNpZ25lZC1vZmYtYnk6IEx1aXogQXVn
+dXN0byB2b24gRGVudHogPGx1aXoudm9uLmRlbnR6QGludGVsLmNvbT4KLS0tCiBpbmNsdWRlL25l
+dC9ibHVldG9vdGgvbDJjYXAuaCB8ICAxICsKIG5ldC9ibHVldG9vdGgvbDJjYXBfY29yZS5jICAg
+IHwgNTIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0KIDIgZmlsZXMgY2hhbmdl
+ZCwgNDMgaW5zZXJ0aW9ucygrKSwgMTAgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVk
+ZS9uZXQvYmx1ZXRvb3RoL2wyY2FwLmggYi9pbmNsdWRlL25ldC9ibHVldG9vdGgvbDJjYXAuaApp
+bmRleCAzYzRmNTUwZTVhOGIuLjJmNzY2ZTM0MzdjZSAxMDA2NDQKLS0tIGEvaW5jbHVkZS9uZXQv
+Ymx1ZXRvb3RoL2wyY2FwLmgKKysrIGIvaW5jbHVkZS9uZXQvYmx1ZXRvb3RoL2wyY2FwLmgKQEAg
+LTg0Nyw2ICs4NDcsNyBAQCBlbnVtIHsKIH07CiAKIHZvaWQgbDJjYXBfY2hhbl9ob2xkKHN0cnVj
+dCBsMmNhcF9jaGFuICpjKTsKK3N0cnVjdCBsMmNhcF9jaGFuICpsMmNhcF9jaGFuX2hvbGRfdW5s
+ZXNzX3plcm8oc3RydWN0IGwyY2FwX2NoYW4gKmMpOwogdm9pZCBsMmNhcF9jaGFuX3B1dChzdHJ1
+Y3QgbDJjYXBfY2hhbiAqYyk7CiAKIHN0YXRpYyBpbmxpbmUgdm9pZCBsMmNhcF9jaGFuX2xvY2so
+c3RydWN0IGwyY2FwX2NoYW4gKmNoYW4pCmRpZmYgLS1naXQgYS9uZXQvYmx1ZXRvb3RoL2wyY2Fw
+X2NvcmUuYyBiL25ldC9ibHVldG9vdGgvbDJjYXBfY29yZS5jCmluZGV4IDA5ZWNhZjU1NmRlNS4u
+ZjliYTU4NDIxN2ZkIDEwMDY0NAotLS0gYS9uZXQvYmx1ZXRvb3RoL2wyY2FwX2NvcmUuYworKysg
+Yi9uZXQvYmx1ZXRvb3RoL2wyY2FwX2NvcmUuYwpAQCAtMTExLDcgKzExMSw4IEBAIHN0YXRpYyBz
+dHJ1Y3QgbDJjYXBfY2hhbiAqX19sMmNhcF9nZXRfY2hhbl9ieV9zY2lkKHN0cnVjdCBsMmNhcF9j
+b25uICpjb25uLAogfQogCiAvKiBGaW5kIGNoYW5uZWwgd2l0aCBnaXZlbiBTQ0lELgotICogUmV0
+dXJucyBsb2NrZWQgY2hhbm5lbC4gKi8KKyAqIFJldHVybnMgYSByZWZlcmVuY2UgbG9ja2VkIGNo
+YW5uZWwuCisgKi8KIHN0YXRpYyBzdHJ1Y3QgbDJjYXBfY2hhbiAqbDJjYXBfZ2V0X2NoYW5fYnlf
+c2NpZChzdHJ1Y3QgbDJjYXBfY29ubiAqY29ubiwKIAkJCQkJCSB1MTYgY2lkKQogewpAQCAtMTE5
+LDE1ICsxMjAsMTkgQEAgc3RhdGljIHN0cnVjdCBsMmNhcF9jaGFuICpsMmNhcF9nZXRfY2hhbl9i
+eV9zY2lkKHN0cnVjdCBsMmNhcF9jb25uICpjb25uLAogCiAJbXV0ZXhfbG9jaygmY29ubi0+Y2hh
+bl9sb2NrKTsKIAljID0gX19sMmNhcF9nZXRfY2hhbl9ieV9zY2lkKGNvbm4sIGNpZCk7Ci0JaWYg
+KGMpCi0JCWwyY2FwX2NoYW5fbG9jayhjKTsKKwlpZiAoYykgeworCQkvKiBPbmx5IGxvY2sgaWYg
+Y2hhbiByZWZlcmVuY2UgaXMgbm90IDAgKi8KKwkJYyA9IGwyY2FwX2NoYW5faG9sZF91bmxlc3Nf
+emVybyhjKTsKKwkJaWYgKGMpCisJCQlsMmNhcF9jaGFuX2xvY2soYyk7CisJfQogCW11dGV4X3Vu
+bG9jaygmY29ubi0+Y2hhbl9sb2NrKTsKIAogCXJldHVybiBjOwogfQogCiAvKiBGaW5kIGNoYW5u
+ZWwgd2l0aCBnaXZlbiBEQ0lELgotICogUmV0dXJucyBsb2NrZWQgY2hhbm5lbC4KKyAqIFJldHVy
+bnMgYSByZWZlcmVuY2UgbG9ja2VkIGNoYW5uZWwuCiAgKi8KIHN0YXRpYyBzdHJ1Y3QgbDJjYXBf
+Y2hhbiAqbDJjYXBfZ2V0X2NoYW5fYnlfZGNpZChzdHJ1Y3QgbDJjYXBfY29ubiAqY29ubiwKIAkJ
+CQkJCSB1MTYgY2lkKQpAQCAtMTM2LDggKzE0MSwxMiBAQCBzdGF0aWMgc3RydWN0IGwyY2FwX2No
+YW4gKmwyY2FwX2dldF9jaGFuX2J5X2RjaWQoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAKIAlt
+dXRleF9sb2NrKCZjb25uLT5jaGFuX2xvY2spOwogCWMgPSBfX2wyY2FwX2dldF9jaGFuX2J5X2Rj
+aWQoY29ubiwgY2lkKTsKLQlpZiAoYykKLQkJbDJjYXBfY2hhbl9sb2NrKGMpOworCWlmIChjKSB7
+CisJCS8qIE9ubHkgbG9jayBpZiBjaGFuIHJlZmVyZW5jZSBpcyBub3QgMCAqLworCQljID0gbDJj
+YXBfY2hhbl9ob2xkX3VubGVzc196ZXJvKGMpOworCQlpZiAoYykKKwkJCWwyY2FwX2NoYW5fbG9j
+ayhjKTsKKwl9CiAJbXV0ZXhfdW5sb2NrKCZjb25uLT5jaGFuX2xvY2spOwogCiAJcmV0dXJuIGM7
+CkBAIC0xNjIsOCArMTcxLDEyIEBAIHN0YXRpYyBzdHJ1Y3QgbDJjYXBfY2hhbiAqbDJjYXBfZ2V0
+X2NoYW5fYnlfaWRlbnQoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAKIAltdXRleF9sb2NrKCZj
+b25uLT5jaGFuX2xvY2spOwogCWMgPSBfX2wyY2FwX2dldF9jaGFuX2J5X2lkZW50KGNvbm4sIGlk
+ZW50KTsKLQlpZiAoYykKLQkJbDJjYXBfY2hhbl9sb2NrKGMpOworCWlmIChjKSB7CisJCS8qIE9u
+bHkgbG9jayBpZiBjaGFuIHJlZmVyZW5jZSBpcyBub3QgMCAqLworCQljID0gbDJjYXBfY2hhbl9o
+b2xkX3VubGVzc196ZXJvKGMpOworCQlpZiAoYykKKwkJCWwyY2FwX2NoYW5fbG9jayhjKTsKKwl9
+CiAJbXV0ZXhfdW5sb2NrKCZjb25uLT5jaGFuX2xvY2spOwogCiAJcmV0dXJuIGM7CkBAIC00OTcs
+NiArNTEwLDE2IEBAIHZvaWQgbDJjYXBfY2hhbl9ob2xkKHN0cnVjdCBsMmNhcF9jaGFuICpjKQog
+CWtyZWZfZ2V0KCZjLT5rcmVmKTsKIH0KIAorc3RydWN0IGwyY2FwX2NoYW4gKmwyY2FwX2NoYW5f
+aG9sZF91bmxlc3NfemVybyhzdHJ1Y3QgbDJjYXBfY2hhbiAqYykKK3sKKwlCVF9EQkcoImNoYW4g
+JXAgb3JpZyByZWZjbnQgJXUiLCBjLCBrcmVmX3JlYWQoJmMtPmtyZWYpKTsKKworCWlmICgha3Jl
+Zl9nZXRfdW5sZXNzX3plcm8oJmMtPmtyZWYpKQorCQlyZXR1cm4gTlVMTDsKKworCXJldHVybiBj
+OworfQorCiB2b2lkIGwyY2FwX2NoYW5fcHV0KHN0cnVjdCBsMmNhcF9jaGFuICpjKQogewogCUJU
+X0RCRygiY2hhbiAlcCBvcmlnIHJlZmNudCAldSIsIGMsIGtyZWZfcmVhZCgmYy0+a3JlZikpOwpA
+QCAtNDQ2NCw2ICs0NDg3LDcgQEAgc3RhdGljIGlubGluZSBpbnQgbDJjYXBfY29uZmlnX3JlcShz
+dHJ1Y3QgbDJjYXBfY29ubiAqY29ubiwKIAogdW5sb2NrOgogCWwyY2FwX2NoYW5fdW5sb2NrKGNo
+YW4pOworCWwyY2FwX2NoYW5fcHV0KGNoYW4pOwogCXJldHVybiBlcnI7CiB9CiAKQEAgLTQ1Nzgs
+NiArNDYwMiw3IEBAIHN0YXRpYyBpbmxpbmUgaW50IGwyY2FwX2NvbmZpZ19yc3Aoc3RydWN0IGwy
+Y2FwX2Nvbm4gKmNvbm4sCiAKIGRvbmU6CiAJbDJjYXBfY2hhbl91bmxvY2soY2hhbik7CisJbDJj
+YXBfY2hhbl9wdXQoY2hhbik7CiAJcmV0dXJuIGVycjsKIH0KIApAQCAtNTMwNSw2ICs1MzMwLDcg
+QEAgc3RhdGljIGlubGluZSBpbnQgbDJjYXBfbW92ZV9jaGFubmVsX3JlcShzdHJ1Y3QgbDJjYXBf
+Y29ubiAqY29ubiwKIAlsMmNhcF9zZW5kX21vdmVfY2hhbl9yc3AoY2hhbiwgcmVzdWx0KTsKIAog
+CWwyY2FwX2NoYW5fdW5sb2NrKGNoYW4pOworCWwyY2FwX2NoYW5fcHV0KGNoYW4pOwogCiAJcmV0
+dXJuIDA7CiB9CkBAIC01Mzk3LDYgKzU0MjMsNyBAQCBzdGF0aWMgdm9pZCBsMmNhcF9tb3ZlX2Nv
+bnRpbnVlKHN0cnVjdCBsMmNhcF9jb25uICpjb25uLCB1MTYgaWNpZCwgdTE2IHJlc3VsdCkKIAl9
+CiAKIAlsMmNhcF9jaGFuX3VubG9jayhjaGFuKTsKKwlsMmNhcF9jaGFuX3B1dChjaGFuKTsKIH0K
+IAogc3RhdGljIHZvaWQgbDJjYXBfbW92ZV9mYWlsKHN0cnVjdCBsMmNhcF9jb25uICpjb25uLCB1
+OCBpZGVudCwgdTE2IGljaWQsCkBAIC01NDI2LDYgKzU0NTMsNyBAQCBzdGF0aWMgdm9pZCBsMmNh
+cF9tb3ZlX2ZhaWwoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sIHU4IGlkZW50LCB1MTYgaWNpZCwK
+IAlsMmNhcF9zZW5kX21vdmVfY2hhbl9jZm0oY2hhbiwgTDJDQVBfTUNfVU5DT05GSVJNRUQpOwog
+CiAJbDJjYXBfY2hhbl91bmxvY2soY2hhbik7CisJbDJjYXBfY2hhbl9wdXQoY2hhbik7CiB9CiAK
+IHN0YXRpYyBpbnQgbDJjYXBfbW92ZV9jaGFubmVsX3JzcChzdHJ1Y3QgbDJjYXBfY29ubiAqY29u
+biwKQEAgLTU0ODksNiArNTUxNyw3IEBAIHN0YXRpYyBpbnQgbDJjYXBfbW92ZV9jaGFubmVsX2Nv
+bmZpcm0oc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAJbDJjYXBfc2VuZF9tb3ZlX2NoYW5fY2Zt
+X3JzcChjb25uLCBjbWQtPmlkZW50LCBpY2lkKTsKIAogCWwyY2FwX2NoYW5fdW5sb2NrKGNoYW4p
+OworCWwyY2FwX2NoYW5fcHV0KGNoYW4pOwogCiAJcmV0dXJuIDA7CiB9CkBAIC01NTI0LDYgKzU1
+NTMsNyBAQCBzdGF0aWMgaW5saW5lIGludCBsMmNhcF9tb3ZlX2NoYW5uZWxfY29uZmlybV9yc3Ao
+c3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAJfQogCiAJbDJjYXBfY2hhbl91bmxvY2soY2hhbik7
+CisJbDJjYXBfY2hhbl9wdXQoY2hhbik7CiAKIAlyZXR1cm4gMDsKIH0KQEAgLTU4OTYsMTIgKzU5
+MjYsMTEgQEAgc3RhdGljIGlubGluZSBpbnQgbDJjYXBfbGVfY3JlZGl0cyhzdHJ1Y3QgbDJjYXBf
+Y29ubiAqY29ubiwKIAlpZiAoY3JlZGl0cyA+IG1heF9jcmVkaXRzKSB7CiAJCUJUX0VSUigiTEUg
+Y3JlZGl0cyBvdmVyZmxvdyIpOwogCQlsMmNhcF9zZW5kX2Rpc2Nvbm5fcmVxKGNoYW4sIEVDT05O
+UkVTRVQpOwotCQlsMmNhcF9jaGFuX3VubG9jayhjaGFuKTsKIAogCQkvKiBSZXR1cm4gMCBzbyB0
+aGF0IHdlIGRvbid0IHRyaWdnZXIgYW4gdW5uZWNlc3NhcnkKIAkJICogY29tbWFuZCByZWplY3Qg
+cGFja2V0LgogCQkgKi8KLQkJcmV0dXJuIDA7CisJCWdvdG8gdW5sb2NrOwogCX0KIAogCWNoYW4t
+PnR4X2NyZWRpdHMgKz0gY3JlZGl0czsKQEAgLTU5MTIsNyArNTk0MSw5IEBAIHN0YXRpYyBpbmxp
+bmUgaW50IGwyY2FwX2xlX2NyZWRpdHMoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAJaWYgKGNo
+YW4tPnR4X2NyZWRpdHMpCiAJCWNoYW4tPm9wcy0+cmVzdW1lKGNoYW4pOwogCit1bmxvY2s6CiAJ
+bDJjYXBfY2hhbl91bmxvY2soY2hhbik7CisJbDJjYXBfY2hhbl9wdXQoY2hhbik7CiAKIAlyZXR1
+cm4gMDsKIH0KQEAgLTc1OTgsNiArNzYyOSw3IEBAIHN0YXRpYyB2b2lkIGwyY2FwX2RhdGFfY2hh
+bm5lbChzdHJ1Y3QgbDJjYXBfY29ubiAqY29ubiwgdTE2IGNpZCwKIAogZG9uZToKIAlsMmNhcF9j
+aGFuX3VubG9jayhjaGFuKTsKKwlsMmNhcF9jaGFuX3B1dChjaGFuKTsKIH0KIAogc3RhdGljIHZv
+aWQgbDJjYXBfY29ubGVzc19jaGFubmVsKHN0cnVjdCBsMmNhcF9jb25uICpjb25uLCBfX2xlMTYg
+cHNtLAotLSAKMi4zNS4zCgo=
+--00000000000028d46e05e328ed1e--
