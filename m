@@ -2,135 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65B7CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E2EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230146AbiGFOBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
+        id S233715AbiGFOBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233210AbiGFOBY (ORCPT
+        with ESMTP id S231454AbiGFOB0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:01:24 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E371AF0E;
-        Wed,  6 Jul 2022 07:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ouRvW6OEP3qkY26xFcBJ9tiIR5hvG8wwzWSrM+uEL/I=; b=r22GQMcjL2cTA+cmoNxVKQaYIQ
-        dwhyEH3B7jMmYNkgOavl/Jkw8ahF4pUqGA50knBcMnA+T7sUrrZ34FNLk4CpwNXFlmdCBQuXuMgC6
-        AwUQVVNBvUsYsvtg7SJXC+mM8yy+m6Yfn9zYum2In+mCHyjoDJoEwkrrZFDQZ6zu2qEi08X4EGXjG
-        nqFhc+W39vckzfBqTLqNhD57KglAOvtgqwC9xCwGrEpzefP77PX2X4XR0rU0k/TUHqxUt8Hfpbgu0
-        VA0+lOt3y9ds9A8wP/CLThg+mPx0CMIJgQ3BWj69BlplgxU6U7cObaHqud6BY2yAxc6mtQbeVyZWS
-        MeY41few==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o95aN-001hHB-5i; Wed, 06 Jul 2022 14:00:59 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 727A9300779;
-        Wed,  6 Jul 2022 16:00:58 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 53F5E201E7FAD; Wed,  6 Jul 2022 16:00:58 +0200 (CEST)
-Date:   Wed, 6 Jul 2022 16:00:58 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Will Deacon <will@kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Kajetan Puchalski <kajetan.puchalski@arm.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        lukasz.luba@arm.com, dietmar.eggemann@arm.com,
-        mark.rutland@arm.com, broonie@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
- Altra
-Message-ID: <YsWVmrMA6aFE8oDr@hirez.programming.kicks-ass.net>
-References: <20220702205651.GB15144@breakpoint.cc>
- <YsKxTAaIgvKMfOoU@e126311.manchester.arm.com>
- <YsLGoU7q5hP67TJJ@e126311.manchester.arm.com>
- <YsQYIoJK3iqJ68Tq@e126311.manchester.arm.com>
- <20220705105749.GA711@willie-the-truck>
- <20220705110724.GB711@willie-the-truck>
- <20220705112449.GA931@willie-the-truck>
- <YsVmbOqzACeo1rO4@e126311.manchester.arm.com>
- <20220706120201.GA7996@breakpoint.cc>
- <20220706122246.GI2403@willie-the-truck>
+        Wed, 6 Jul 2022 10:01:26 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88C1D1D30F;
+        Wed,  6 Jul 2022 07:01:25 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8792D106F;
+        Wed,  6 Jul 2022 07:01:25 -0700 (PDT)
+Received: from bogus (unknown [10.57.39.193])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B460B3F792;
+        Wed,  6 Jul 2022 07:01:22 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 15:00:11 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Conor.Dooley@microchip.com
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, Daire.McNamara@microchip.com,
+        niklas.cassel@wdc.com, damien.lemoal@opensource.wdc.com,
+        geert@linux-m68k.org, zong.li@sifive.com, kernel@esmil.dk,
+        hahnjo@hahnjo.de, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Brice.Goglin@inria.fr
+Subject: Re: [PATCH 0/5] RISC-V: Add cpu-map topology information nodes
+Message-ID: <20220706140011.oow6pswbyct6cwrd@bogus>
+References: <20220705190435.1790466-1-mail@conchuod.ie>
+ <20220705201931.nfwi5rlku7ykmydr@bogus>
+ <8f07796a-d9a2-3301-aafb-7fbec4d5b1a2@microchip.com>
+ <fb7be22c-cf19-0e06-f231-bb5b9167e179@microchip.com>
+ <20220706092126.k6zaknwcwzyg22ak@bogus>
+ <bcc3fc6c-1ff8-3db6-5aa9-beed2d0ea41b@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706122246.GI2403@willie-the-truck>
+In-Reply-To: <bcc3fc6c-1ff8-3db6-5aa9-beed2d0ea41b@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 01:22:50PM +0100, Will Deacon wrote:
+On Wed, Jul 06, 2022 at 01:04:24PM +0000, Conor.Dooley@microchip.com wrote:
+> On 06/07/2022 10:21, Sudeep Holla wrote:
 
-> > @@ -300,6 +300,9 @@ static inline bool nf_ct_is_expired(const struct nf_conn *ct)
-> >  /* use after obtaining a reference count */
-> >  static inline bool nf_ct_should_gc(const struct nf_conn *ct)
-> >  {
-> > +	/* ->status and ->timeout loads must happen after refcount increase */
-> > +	smp_rmb();
+[...]
+
+> > Looks good. Again package id is not cluster. This is what my series is
+> > addressing. So update the log as Package instead of Cluster above. The
+> > cluster id will be -1 unless you can get that for DT.
+> >
 > 
-> Sorry I didn't suggest this earlier, but if all of these smp_rmb()s are
-> for upgrading the ordering from refcount_inc_not_zero() then you should
-> use smp_acquire__after_ctrl_dep() instead. It's the same under the hood,
-> but it illustrates what's going on a bit better.
-
-But in that case if had better also be near an actual condition,
-otherwise things become too murky for words :/
-
-That is, why is this sprinkled all over instead of right after
-an successfull refcount_inc_not_zero() ?
-
-Code like:
-
-	if (!refcount_inc_not_zero())
-		return;
-
-	smp_acquire__after_ctrl_dep();
-
-is fairly self-evident, whereas encountering an
-smp_acquire__after_ctrl_dep() in a different function, completely
-unrelated to any condition is quite crazy.
-
-> > @@ -1775,6 +1784,16 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
-> >  	if (!exp)
-> >  		__nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
-> >  
-> > +	/* Other CPU might have obtained a pointer to this object before it was
-> > +	 * released.  Because refcount is 0, refcount_inc_not_zero() will fail.
-> > +	 *
-> > +	 * After refcount_set(1) it will succeed; ensure that zeroing of
-> > +	 * ct->status and the correct ct->net pointer are visible; else other
-> > +	 * core might observe CONFIRMED bit which means the entry is valid and
-> > +	 * in the hash table, but its not (anymore).
-> > +	 */
-> > +	smp_wmb();
-> > +
-> >  	/* Now it is going to be associated with an sk_buff, set refcount to 1. */
-> >  	refcount_set(&ct->ct_general.use, 1);
+> FYI I took that directly from arm64:
+> arch/arm64/kernel/topology.c:L57 (next-20220706)
 > 
-> Ideally that refcount_set() would be a release, but this is definitely
-> (ab)using refcount_t in way that isn't anticipated by the API! It looks
-> like a similar pattern exists in net/core/sock.c as well, so I wonder if
-> it's worth extending the API.
+> 	pr_debug("CPU%u: cluster %d core %d thread %d mpidr %#016llx\n",
+> 		 cpuid, cpuid_topo->package_id, cpuid_topo->core_id,
+> 		 cpuid_topo->thread_id, mpidr);
 > 
-> Peter, what do you think?
 
-Bah; you have reminded me that I have a fairly sizable amount of
-refcount patches from when Linus complained about it last that don't
-seem to have gone anywhere :/
+Yikes, that needs to change. I will get that updates. Thanks for pointing
+that out.
 
-Anyway, I suppose we could do a refcount_set_release(), but it had
-better get a fairly big comment on how you're on your own if you use it.
+-- 
+Regards,
+Sudeep
