@@ -2,126 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90926C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A60CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233029AbiGFKjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
+        id S232600AbiGFKj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232953AbiGFKjW (ORCPT
+        with ESMTP id S229599AbiGFKjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:39:22 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6E619036;
-        Wed,  6 Jul 2022 03:39:21 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id y4so5360488edc.4;
-        Wed, 06 Jul 2022 03:39:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=430yAFLJrEHI3Rx/2SsFVVThDkyR0pxUFGx2a++8q3I=;
-        b=mHdZ1luLBV1AcVBcm0nq5FtyTuIZz53+0tLTlZY3rsYSvLa7yMj+x2CPTvM0JdhWQN
-         bli0bbawZ6sfiIvWjbo7KEbV5nstk5SuZoGi5KntG8LFhPgp6GgwNzFV94Floq92taHG
-         uOZIQNkG/S+9PkvKFkRbzNwInWx86beXfOUU4Dr2gVZbn7X2UjEwBI2ty+SdkJuoBiG5
-         7LJmf079ba+bjL2kOv/Tf03pg7o11p8f1dW7ZK93NGnImaqBI5rFeiNALcvzt3eFIdmz
-         pQMVepzJ75u/ACOWQC0+DlewdD0JfDmeTDTzS5ZEbLT/VXwinTLXRkhBvAlKJGATIzL3
-         ZCZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=430yAFLJrEHI3Rx/2SsFVVThDkyR0pxUFGx2a++8q3I=;
-        b=wyADctdu2HeM8HufoXhrIHyLlPBKPcte142V/gSTLMkx1lIZUn+LXhOJgFn73iwcBd
-         aKjZqP4TTQjIE+XCpsfqzNgpcIHJu+OKmQliFPzZ9clDgTF5nCAiVrWm0XPbq5VZOXjv
-         +irdEWFkKcO/F8kuefDm+fTFocfrd8Jys434UJqteRgBDMrJqOGlQKiqaB/4jqtk19Dk
-         MUUrKFoGNZ8lu3wRtmegf16MQ8hfgkj+f50TCZeoEAwkbtZfOWyqISSKwJNNPagjE6+0
-         S5ZxyMuddnRSVjAueeBplQVTobFbxp8dSDQOJVIk+uwZNu5Q24L3oEmSV2SBaYvHgLr3
-         8zug==
-X-Gm-Message-State: AJIora8OsM+7oMiRYicbl0zShmTOOlaQhJHDU0H/Kzo+EDq2y2KwOBU9
-        5nkJzBO8PZtpZs/BZHQiLv3I9UM3fxo=
-X-Google-Smtp-Source: AGRyM1sc7SMB5gkjwZdEYxPzDbMrn3QRowjGxNNzpaubJdLP2URu+xdw0K8H2xLZvVqYTMjgQAyn8g==
-X-Received: by 2002:a05:6402:950:b0:43a:5194:174c with SMTP id h16-20020a056402095000b0043a5194174cmr21692441edz.145.1657103960487;
-        Wed, 06 Jul 2022 03:39:20 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id v8-20020aa7d648000000b004377151dfbdsm22344355edr.50.2022.07.06.03.39.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:39:20 -0700 (PDT)
-Message-ID: <62c56658.1c69fb81.87c41.6b07@mx.google.com>
-X-Google-Original-Message-ID: <YsVic8J7VNpBzaWn@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 12:22:43 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] ARM: dts: qcom: add pxo/cxo clock-output-names for
- ipq8064
-References: <20220705202837.667-1-ansuelsmth@gmail.com>
- <20220705202837.667-5-ansuelsmth@gmail.com>
- <CAA8EJppTCZRpi8EqmRSJQiSmaANr=5+q5Rb5KsMYZROSNGpGqA@mail.gmail.com>
+        Wed, 6 Jul 2022 06:39:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AADAE2716B;
+        Wed,  6 Jul 2022 03:39:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8006F1042;
+        Wed,  6 Jul 2022 03:39:52 -0700 (PDT)
+Received: from e126311.manchester.arm.com (unknown [10.57.71.227])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C5EF3F66F;
+        Wed,  6 Jul 2022 03:39:49 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 11:39:40 +0100
+From:   Kajetan Puchalski <kajetan.puchalski@arm.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        lukasz.luba@arm.com, dietmar.eggemann@arm.com,
+        mark.rutland@arm.com, broonie@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, kajetan.puchalski@arm.com
+Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
+ Altra
+Message-ID: <YsVmbOqzACeo1rO4@e126311.manchester.arm.com>
+References: <Yr7WTfd6AVTQkLjI@e126311.manchester.arm.com>
+ <20220701200110.GA15144@breakpoint.cc>
+ <YsAnPhPfWRjpkdmn@e126311.manchester.arm.com>
+ <20220702205651.GB15144@breakpoint.cc>
+ <YsKxTAaIgvKMfOoU@e126311.manchester.arm.com>
+ <YsLGoU7q5hP67TJJ@e126311.manchester.arm.com>
+ <YsQYIoJK3iqJ68Tq@e126311.manchester.arm.com>
+ <20220705105749.GA711@willie-the-truck>
+ <20220705110724.GB711@willie-the-truck>
+ <20220705112449.GA931@willie-the-truck>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAA8EJppTCZRpi8EqmRSJQiSmaANr=5+q5Rb5KsMYZROSNGpGqA@mail.gmail.com>
+In-Reply-To: <20220705112449.GA931@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 11:29:09AM +0300, Dmitry Baryshkov wrote:
-> On Tue, 5 Jul 2022 at 23:56, Christian Marangi <ansuelsmth@gmail.com> wrote:
-> >
-> > Drivers expect to call pxo/cxo_board clock as pxo/cxo.
-> > Use clock-output-names to set the correct naming for these fixed clock
-> > to save drivers that are migrating to parent_data and still use
-> > parent_names.
+On Tue, Jul 05, 2022 at 12:24:49PM +0100, Will Deacon wrote:
+> > > Sorry, but I have absolutely no context here. We have a handy document
+> > > describing the differences between atomic_t and refcount_t:
+> > > 
+> > > 	Documentation/core-api/refcount-vs-atomic.rst
+> > > 
+> > > What else do you need to know?
+> > 
+> > Hmm, and I see a tonne of *_inc_not_zero() conversions in 719774377622
+> > ("netfilter: conntrack: convert to refcount_t api") which mean that you
+> > no longer have ordering to subsequent reads in the absence of an address
+> > dependency.
 > 
-> Please no. There is no reason to add these names. Let's follow the
-> example of other platforms.
->
-
-Okok... just don't like the '_board' suffix but will drop...
-
-> >
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > index 1425a4e4283f..720e27e29627 100644
-> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > @@ -302,12 +302,14 @@ cxo_board: cxo_board {
-> >                         compatible = "fixed-clock";
-> >                         #clock-cells = <0>;
-> >                         clock-frequency = <25000000>;
-> > +                       clock-output-names = "cxo";
-> >                 };
-> >
-> >                 pxo_board: pxo_board {
-> >                         compatible = "fixed-clock";
-> >                         #clock-cells = <0>;
-> >                         clock-frequency = <25000000>;
-> > +                       clock-output-names = "pxo";
-> >                 };
-> >
-> >                 sleep_clk: sleep_clk {
-> > --
-> > 2.36.1
-> >
+> I think the patch above needs auditing with the relaxed behaviour in mind,
+> but for the specific crash reported here possibly something like the diff
+> below?
 > 
+> Will
 > 
-> -- 
-> With best wishes
-> Dmitry
+> --->8
+> 
+> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> index 082a2fd8d85b..5ad9fcc84269 100644
+> --- a/net/netfilter/nf_conntrack_core.c
+> +++ b/net/netfilter/nf_conntrack_core.c
+> @@ -1394,6 +1394,7 @@ static unsigned int early_drop_list(struct net *net,
+>                  * already fired or someone else deleted it. Just drop ref
+>                  * and move to next entry.
+>                  */
+> +               smp_rmb();      /* XXX: Why? */
+>                 if (net_eq(nf_ct_net(tmp), net) &&
+>                     nf_ct_is_confirmed(tmp) &&
+>                     nf_ct_delete(tmp, 0, 0))
+> 
 
--- 
-	Ansuel
+Just to follow up, I think you're right, the patch in question should be
+audited further for other missing memory barrier issues.
+While this one smp_rmb() helps a lot, ie lets the test run for at least
+an hour or two, an overnight 6 hour test still resulted in the same
+crash somewhere along the way so it looks like it's not the only one
+that's needed.
