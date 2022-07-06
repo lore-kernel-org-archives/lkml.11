@@ -2,112 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E8BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D08DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbiGFJAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
+        id S232642AbiGFJAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232642AbiGFJA1 (ORCPT
+        with ESMTP id S231289AbiGFJAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 05:00:27 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABC41A3A1;
-        Wed,  6 Jul 2022 02:00:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Lc1nfuTmRLJC5zrVjNH0l/duy5mbZIyykH5a0W+voY8=; b=i8xduWRVHzPycpj4aYcRorY6TA
-        XTVVYE1I11IukCdv42nkSkB4f3OUjy3AJBnUNvj4TUakkooAJ1n5Jxvz/d11wUl5GqYcIieozQ864
-        B2Kq4qM14Ou6J9CVLN/3LK5EtRqKlxLdn/RmXRZRjVpX8V+q58etmYn1WtdVfrGKd1PjTnLKIclOH
-        a+kaMIxwNo1ZpUXKKhskeM8BfC/efZCZUI/kLzOIUxKfbHx5WlpT/PAfH8HC0Vsd+kQRpn60lp6J6
-        7jOYxvTDvKgYfoTkv2ZeG6LX11dKbzDctVwLJJNREnMQMKg8yLBMcQhZCodE4KYfbJDXW00LAylze
-        g1pP64tw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o90sB-000N9S-20; Wed, 06 Jul 2022 08:59:15 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 875EF980050; Wed,  6 Jul 2022 10:59:00 +0200 (CEST)
-Date:   Wed, 6 Jul 2022 10:59:00 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
-        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
- TASK_STOPPED state
-Message-ID: <YsVO1NU3bXGg9YJ3@worktop.programming.kicks-ass.net>
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
- <20220505182645.497868-12-ebiederm@xmission.com>
- <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
- <877d5ajesi.fsf@email.froward.int.ebiederm.org>
- <YrHgo8GKFPWwoBoJ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
- <20220628191541.34a073fc@gandalf.local.home>
- <yt9d5ykbekn3.fsf@linux.ibm.com>
- <yt9dpmijcvu6.fsf@linux.ibm.com>
- <YsSQRmCZSIQ1ewzo@worktop.programming.kicks-ass.net>
- <yt9dsfneaczk.fsf@linux.ibm.com>
+        Wed, 6 Jul 2022 05:00:33 -0400
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0671B1658B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:00:30 -0700 (PDT)
+Received: by mail-qk1-f179.google.com with SMTP id b125so10540726qkg.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 02:00:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z+A5o8tUrRNDtNylm0pOuZuXmTXA18iZkAubQygVne4=;
+        b=ktQSztUoRKB+qdv5EeIGoLTSMMQdx2NlwFvQIuYLQXuwaz3+x/zVaj+Hz81s7AC1AY
+         8l116GzNcsQQfSQmdhJH7f0xo3pMA8bexqJwBbl6BikJ1riQoSciomS7D7dN7JHvB/X9
+         YzyCoGSkWZx1htimOab1wiYYbqvM0ieCKTndq74wYSJYmw2KGtnmslZtF8+so7KEiyfP
+         SnJW7wxhHhl0hES1rcjekenESIYQjJcSOersRUcxTLveXu80YAb5dUykj79hF6LrvPAn
+         Y7vJTmlL89bPgkWx9N1TJITyN+ImuWooqQ+K/rD1jM6nXCFoLDOUIiYC5O6hFSExdu+c
+         RyYQ==
+X-Gm-Message-State: AJIora/TzsfjU2nH38cZ7Vqj7n6jOQATMDcxBSrfy/IcQ81t9s4dulLZ
+        wwcRtxweg+pdGKEtfLmn7WXZPpmT3dJ1XQ==
+X-Google-Smtp-Source: AGRyM1t9a1yjKoKjgRjEquB8cMasLZH0JofQcx1LWYxmoDPQzF0oRKxFwXp0rsZ8t5tCoSex8Gixiw==
+X-Received: by 2002:a05:620a:2408:b0:6b2:3000:3c39 with SMTP id d8-20020a05620a240800b006b230003c39mr23136524qkn.730.1657098028851;
+        Wed, 06 Jul 2022 02:00:28 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id ay4-20020a05622a228400b002f39b99f69csm23094383qtb.54.2022.07.06.02.00.28
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 02:00:28 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2ef5380669cso133086257b3.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 02:00:28 -0700 (PDT)
+X-Received: by 2002:a81:5404:0:b0:31c:c24d:94b0 with SMTP id
+ i4-20020a815404000000b0031cc24d94b0mr9877031ywb.502.1657098028124; Wed, 06
+ Jul 2022 02:00:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yt9dsfneaczk.fsf@linux.ibm.com>
+References: <Yrg6BzpKIJBTAVmO@zx2c4.com> <20220626111509.330159-1-Jason@zx2c4.com>
+In-Reply-To: <20220626111509.330159-1-Jason@zx2c4.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 6 Jul 2022 11:00:16 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX3WH6ixwGjit6-z8iWe2-9ukeExDc5YWu1degJzcGKzw@mail.gmail.com>
+Message-ID: <CAMuHMdX3WH6ixwGjit6-z8iWe2-9ukeExDc5YWu1degJzcGKzw@mail.gmail.com>
+Subject: Re: [PATCH v2] m68k: virt: use RNG seed from bootinfo block
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Laurent Vivier <laurent@vivier.eu>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 09:58:55AM +0200, Sven Schnelle wrote:
+On Sun, Jun 26, 2022 at 1:15 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> Other virt VMs can pass RNG seeds via the "rng-seed" device tree
+> property or via UEFI, but m68k doesn't have either. Instead it has its
+> own bootinfo protocol. So this commit adds support for receiving a RNG
+> seed from it, which will be used at the earliest possible time in boot,
+> just like device tree.
+>
+> Reviewed-by: Laurent Vivier <laurent@vivier.eu>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-> >> [   86.218551] kill_chi-343805    6d.... 79990141us : ptrace_stop: JOBCTL_TRACED already set, state=0 <------ valid combination of flags?
-> >
-> > Yeah, that's not supposed to be so. JOBCTL_TRACED is supposed to follow
-> > __TASK_TRACED for now. Set when __TASK_TRACED, cleared when
-> > TASK_RUNNING.
-> >
-> > Specifically {ptrace_,}signal_wake_up() in signal.h clear JOBCTL_TRACED
-> > when they would wake a __TASK_TRACED task.
-> 
-> try_to_wake_up() clears TASK_TRACED in this case because a signal
-> (SIGKILL) has to be delivered. As a test I put the following change
-> on top, and it "fixes" the problem:
-> 
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index da0bf6fe9ecd..f2e0f5e70e77 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -4141,6 +4149,9 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
->          * TASK_WAKING such that we can unlock p->pi_lock before doing the
->          * enqueue, such as ttwu_queue_wakelist().
->          */
-> +       if (p->__state & TASK_TRACED)
-> +               trace_printk("clearing TASK_TRACED 2\n");
-> +       p->jobctl &= ~JOBCTL_TRACED;
->         WRITE_ONCE(p->__state, TASK_WAKING);
-> 
->         /*
-> 
-> There are several places where the state is changed from TASK_TRACED to
-> something else without clearing JOBCTL_TRACED.
+> --- a/arch/m68k/include/uapi/asm/bootinfo-virt.h
+> +++ b/arch/m68k/include/uapi/asm/bootinfo-virt.h
+> @@ -13,6 +13,13 @@
+>  #define BI_VIRT_VIRTIO_BASE    0x8004
+>  #define BI_VIRT_CTRL_BASE      0x8005
+>
+> +/* A random seed used to initialize the RNG. Record format:
+> + *
+> + *   - length       [ 2 bytes, 16-bit big endian ]
+> + *   - seed data    [ `length` bytes ]
 
-I'm having difficulty spotting them; I find:
+", padded to preserve 2-byte alignment"
 
-TASK_WAKEKILL: signal_wake_up()
-__TASK_TRACED: ptrace_signal_wake_up(), ptrace_unfreeze_traced(), ptrace_resume()
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+i.e. will queue in the m68k for-v5.20 branch with the above fixed.
+No need to resend.
 
-And all those sites dutifully clear JOBCTL_TRACED.
+Gr{oetje,eeting}s,
 
-I'd be most interested in the calstack for the 'clearing TASK_TRACED 2'
-events to see where we miss a spot.
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
