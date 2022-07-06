@@ -2,123 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65895CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230004AbiGFGkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 02:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
+        id S229921AbiGFGlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 02:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiGFGkN (ORCPT
+        with ESMTP id S230043AbiGFGlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 02:40:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2476315807
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 23:40:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657089611;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gg7lrPC8AiBLlPI2LxojejuxvQek5GgKMPUgGRCFaDA=;
-        b=SZ6S32mTjvNCKr+f6aWpTvviYYsvfEpbBmt1mrDw0BCdKctNdazv1ZjAoiAmVDDVTL92lj
-        b6TPBw04Lingq2Lvs1J/kjJsCUjUYxFeuWALvpBW/3wHZNPjxrfCU6NppUcfKIrg8lDG94
-        ZL+ZJOuk/+M3IA4nKyOMv7ffCwFjPEo=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-390-mURVwcJlMiWDCCwgqAluDg-1; Wed, 06 Jul 2022 02:40:04 -0400
-X-MC-Unique: mURVwcJlMiWDCCwgqAluDg-1
-Received: by mail-qk1-f199.google.com with SMTP id ay43-20020a05620a17ab00b006b25a9bef3dso12691840qkb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 23:40:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gg7lrPC8AiBLlPI2LxojejuxvQek5GgKMPUgGRCFaDA=;
-        b=gEv5GHSK49hgJJ7fOjpl042KWP9N3TnfkjXNUgfmKfstv3pCFfC3ViLfxbDbNnRAe4
-         /mZeV2Gd++HM08dZYq+g+/c3nEOjB0KiEFvdQiVc/46PrfaGpVOsINUfTyHu8DfYUC7B
-         zDVnH2k/s7mKdkodVMyP/FG1Ju4BQMYHm1nRDJ0F/2JpoXVYLUy7yNJnk/lCi1lcxwjJ
-         FELS0D37UGa52dppE8iMOSENn46IKltq/DWeF8XspBIOr9N623gYjn/UknIfQB+UFpy7
-         nGYMGsE1P+kuosTcENufaicYHX69mMdzbNLWEiQgc5ISrjhHzMLazOdu1yQCzSpjyoVQ
-         aIZg==
-X-Gm-Message-State: AJIora/iIMW06jL8a/G8/w8CVXQE9z+uIKfwutXas0foBUmsZb2Yq3aJ
-        lkfedFY7YEG4uJzp/J8V0OYduhsiNydCH45VrHGsbpIcehNYHbU5VLtEm1gbe9D/rHDA1G3iylM
-        HB43G7E33rmHE1PaecNTmbXEN9ApwxKB8qbUX1mKL
-X-Received: by 2002:ac8:5dca:0:b0:31e:85b8:8a18 with SMTP id e10-20020ac85dca000000b0031e85b88a18mr4783331qtx.370.1657089603802;
-        Tue, 05 Jul 2022 23:40:03 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uHo8LhLcUYLcyLarGeDtkLCik+u2tlMP2iVwBjms8B6WDRFn0spIK6vbez0DXgf7cl5sfpGIArQQJVEBrpgKA=
-X-Received: by 2002:ac8:5dca:0:b0:31e:85b8:8a18 with SMTP id
- e10-20020ac85dca000000b0031e85b88a18mr4783322qtx.370.1657089603604; Tue, 05
- Jul 2022 23:40:03 -0700 (PDT)
+        Wed, 6 Jul 2022 02:41:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA28B175A1;
+        Tue,  5 Jul 2022 23:41:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ABBFB810B2;
+        Wed,  6 Jul 2022 06:41:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4558C3411C;
+        Wed,  6 Jul 2022 06:41:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657089676;
+        bh=yRGgIJUHXkz2TXJ4J6jNOpjIOkNNlk8+GJwy5fMiZ+E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UmBMB+TJVrq4Gw9/pfOPUH8FVR53qIvRVpi+/2bZ4Tl0ovU3eWwkhUstZr8i7ntPH
+         sWDra3CbZPk7FcieK4NosMw8F7902e+ydwYQXfv07XZQthiCA/VjT5a1qR9aUOe2LN
+         7Q6owf5BOUsMUFDooZhriCtR5IVyOMFojtZRxed8=
+Date:   Wed, 6 Jul 2022 08:41:13 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2] random: remove CONFIG_ARCH_RANDOM
+Message-ID: <YsUuiSP1VW1ok69g@kroah.com>
+References: <YsTXI3J+ptkN/vb4@zx2c4.com>
+ <20220706003225.335768-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-References: <20220705072249.7867-1-sgarzare@redhat.com>
-In-Reply-To: <20220705072249.7867-1-sgarzare@redhat.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 6 Jul 2022 08:39:27 +0200
-Message-ID: <CAJaqyWfiet+NJ3bBJDeeA2dPkAq7UNoa_bniUktciHu84cvMQA@mail.gmail.com>
-Subject: Re: [PATCH] tools/virtio: fix build
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706003225.335768-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 9:32 AM Stefano Garzarella <sgarzare@redhat.com> wro=
-te:
->
-> Fix the build caused by the following changes:
-> - phys_addr_t is now defined in tools/include/linux/types.h
-> - dev_warn_once() is used in drivers/virtio/virtio_ring.c
-> - linux/uio.h included by vringh.h use INT_MAX defined in limits.h
->
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-
-Acked-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-
+On Wed, Jul 06, 2022 at 02:32:25AM +0200, Jason A. Donenfeld wrote:
+> When RDRAND was introduced, there was much discussion on whether it
+> should be trusted and how the kernel should handle that. Initially, two
+> mechanisms cropped up, CONFIG_ARCH_RANDOM, a compile time switch, and
+> "nordrand", a boot-time switch.
+> 
+> Later the thinking evolved. With a properly designed RNG, using RDRAND
+> values alone won't harm anything, even if the outputs are malicious.
+> Rather, the issue is whether those values are being *trusted* to be good
+> or not. And so a new set of options were introduced as the real
+> ones that people use -- CONFIG_RANDOM_TRUST_CPU and "random.trust_cpu".
+> With these options, RDRAND is used, but it's not always credited. So in
+> the worst case, it does nothing, and in the best case, maybe it helps.
+> 
+> Along the way, CONFIG_ARCH_RANDOM's meaning got sort of pulled into the
+> center and became something certain platforms force-select.
+> 
+> The old options don't really help with much, and it's a bit odd to have
+> special handling for these instructions when the kernel can deal fine
+> with the existence or untrusted existence or broken existence or
+> non-existence of that CPU capability.
+> 
+> So this commit simplifies things down to the two options that are
+> actually used, and removes the confusing old ones that aren't used or
+> useful. It leaves "nordrand" for now, as the removal of that will take a
+> different route.
+> 
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Heiko Carstens <hca@linux.ibm.com>
+> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: H. Peter Anvin <hpa@zytor.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 > ---
->  tools/virtio/linux/kernel.h | 2 +-
->  tools/virtio/linux/vringh.h | 1 +
->  2 files changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/virtio/linux/kernel.h b/tools/virtio/linux/kernel.h
-> index 0b493542e61a..21593bf97755 100644
-> --- a/tools/virtio/linux/kernel.h
-> +++ b/tools/virtio/linux/kernel.h
-> @@ -29,7 +29,6 @@
->  #define READ                    0
->  #define WRITE                   1
->
-> -typedef unsigned long long phys_addr_t;
->  typedef unsigned long long dma_addr_t;
->  typedef size_t __kernel_size_t;
->  typedef unsigned int __wsum;
-> @@ -136,6 +135,7 @@ static inline void *krealloc_array(void *p, size_t ne=
-w_n, size_t new_size, gfp_t
->  #endif
->  #define dev_err(dev, format, ...) fprintf (stderr, format, ## __VA_ARGS_=
-_)
->  #define dev_warn(dev, format, ...) fprintf (stderr, format, ## __VA_ARGS=
-__)
-> +#define dev_warn_once(dev, format, ...) fprintf (stderr, format, ## __VA=
-_ARGS__)
->
->  #define min(x, y) ({                           \
->         typeof(x) _min1 =3D (x);                  \
-> diff --git a/tools/virtio/linux/vringh.h b/tools/virtio/linux/vringh.h
-> index 9348957be56e..e11c6aece734 100644
-> --- a/tools/virtio/linux/vringh.h
-> +++ b/tools/virtio/linux/vringh.h
-> @@ -1 +1,2 @@
-> +#include <limits.h>
->  #include "../../../include/linux/vringh.h"
-> --
-> 2.36.1
->
+>  arch/arm64/Kconfig                                |  8 --------
+>  arch/arm64/include/asm/archrandom.h               | 10 ----------
+>  arch/arm64/kernel/cpufeature.c                    |  2 --
+>  arch/powerpc/Kconfig                              |  3 ---
+>  arch/powerpc/include/asm/archrandom.h             |  3 ---
+>  arch/powerpc/include/asm/machdep.h                |  2 --
+>  arch/powerpc/platforms/microwatt/Kconfig          |  1 -
+>  arch/powerpc/platforms/powernv/Kconfig            |  1 -
+>  arch/powerpc/platforms/pseries/Kconfig            |  1 -
+>  arch/s390/Kconfig                                 | 15 ---------------
+>  arch/s390/configs/zfcpdump_defconfig              |  1 -
+>  arch/s390/crypto/Makefile                         |  2 +-
+>  arch/s390/include/asm/archrandom.h                |  3 ---
+>  arch/x86/Kconfig                                  |  9 ---------
+>  arch/x86/include/asm/archrandom.h                 | 10 +---------
+>  arch/x86/kernel/cpu/rdrand.c                      |  2 --
+>  drivers/char/Kconfig                              |  1 -
+>  drivers/char/hw_random/s390-trng.c                |  9 ---------
+>  include/linux/random.h                            |  9 +--------
+>  .../selftests/wireguard/qemu/kernel.config        |  1 -
+>  20 files changed, 3 insertions(+), 90 deletions(-)
 
+
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
