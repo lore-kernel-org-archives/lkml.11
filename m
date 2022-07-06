@@ -2,97 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F5BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 449B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233870AbiGFVgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 17:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        id S234036AbiGFVgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 17:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231872AbiGFVgD (ORCPT
+        with ESMTP id S233705AbiGFVgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 17:36:03 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FC1E02
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:36:01 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 145so14978733pga.12
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 14:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=E//5ZA8uzfUdBafNOuQKisK6Qx4fv09+u0puRM54Yd4=;
-        b=WYNY3+EZM7O23aAqdPFVrW/DUF8fqtHeku8lTPTokWqu4qo5ihKYdUaHcZWbwvv/uk
-         8pSXVp4lrwvMkWw/I3pmkDXmnaHZGzkKLQfFWknorNkRdOAZ34z44bGUwMJFTFtav0az
-         gm4V27G3TiZgAd6SfIrgB9fz0EOxM2PT3QKrjXYqlTNYE/nVNyiGONlx9/iQi7rRbONh
-         /hlEJz3SBbw/A6hPaYmMguUx2TWyvJ5D43pCulKKsZ+mosv9JeeNvxWS8RbOy2/4uIVU
-         gwHVRrlkgfaDmSmmD1HpaixNY4NrKhE4Mc0jzJ3HGiknRzhAmLsbIGxApWqP6xhzhjwU
-         Sung==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=E//5ZA8uzfUdBafNOuQKisK6Qx4fv09+u0puRM54Yd4=;
-        b=2HEa/VxRW8QYW2w1JqdaCFS5bCuQg35FQaEtIHExx/FhJiv2RkZiR9FeFWymfZ3wtg
-         7veV3bquHK23DCEWP9masAKNLwp+CJpD1azFvhPGaCjI5R+2/1ujWTKAYXtfm5Waj6Q2
-         RWALmQn8sk+xDdS4lcG8OeMaP24Bjnm0dGpDHszwQUOUwatqY33vw4DrfmsIMjn4MFAm
-         ftmdHefoW0TQrho7D/AfFpfLqJbZ0uMn9sQ3JnTRSWi+iJfTslRgpgaSTKiWDpsbQ1Zp
-         EoJUOQvLhqcbui+UXGbqrQfl8ziG+NOjBA2GlldNdCXTuesEKT+3UuFQtS/Xj6+ZShH9
-         OO3w==
-X-Gm-Message-State: AJIora/5rKQEsCmnfEk7KiVCohfP8uI8bEHvBNANbxWyCM+uRonCAIUu
-        SH87qkGXp6i/TjEYFB5rSZefTw==
-X-Google-Smtp-Source: AGRyM1vTi5E2bFkpKPPnm+ygtjra8noxOqMQi4yVuvfE/qj8l2tXrHYCvXKpy5UhaMgSliBROIV24A==
-X-Received: by 2002:a05:6a00:80d:b0:525:520a:1736 with SMTP id m13-20020a056a00080d00b00525520a1736mr48216477pfk.36.1657143361099;
-        Wed, 06 Jul 2022 14:36:01 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id i1-20020a17090a718100b001ef87123615sm7423406pjk.37.2022.07.06.14.36.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 14:36:00 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 21:35:56 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 06/28] KVM: nVMX: Introduce
- KVM_CAP_HYPERV_ENLIGHTENED_VMCS2
-Message-ID: <YsYAPL1UUKJB3/MJ@google.com>
-References: <20220629150625.238286-1-vkuznets@redhat.com>
- <20220629150625.238286-7-vkuznets@redhat.com>
+        Wed, 6 Jul 2022 17:36:35 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66269243
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:36:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657143394; x=1688679394;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=dLbXioWPHahHmJvm0LlbnXLettEnRRGEgB5M2kkP+hk=;
+  b=bpMC7nTGg/rfdUqYL3MZl7dfw0Ac10k2EFeK+LYJvry93RGII2IiZksp
+   fUMu3QWxUu85pkPHBkRXlBKQQycBr0EP0aXGZ8QdHCAJX9QYsfZmkYtco
+   hoW4EcPBjv77j3y5vcOgN50FCNJTJ02cOdFD5jijwGlbtJ2Wn74zRet+j
+   29uZ/7nti7rOhbmdFuG/2wtjey2/Oski8JaKSbDV4LcjAzCk7ftnLh8w6
+   HhpXuTN5cCECv2WWJFpPd2OCMtQZJU/g5s6bBUWWDkRWi6Ew6nSkNAFDk
+   JgWe/Jz1IA1uK2iPeljbz3tGb5kH50kiY41XV9sUSOsRfpvgFi8RRTIPq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="281422110"
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="281422110"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 14:36:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="620501191"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 06 Jul 2022 14:36:26 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9Ch7-000L4A-PV;
+        Wed, 06 Jul 2022 21:36:25 +0000
+Date:   Thu, 7 Jul 2022 05:35:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/tramp_22 20/21] kernel/bpf/syscall.c:3306:7: error:
+ call to undeclared function 'bpf_tramp_id_alloc'; ISO C99 and later do not
+ support implicit function declarations
+Message-ID: <202207070530.sgflrE6n-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220629150625.238286-7-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022, Vitaly Kuznetsov wrote:
-> Turns out Enlightened VMCS can gain new fields without version change
-> and KVM_CAP_HYPERV_ENLIGHTENED_VMCS which KVM currently has cant's
-> handle this reliably. In particular, just updating the current definition
-> of eVMCSv1 with the new fields and adjusting the VMX MSR filtering will
-> inevitably break live migration to older KVMs. Note: enabling eVMCS and
-> setting VMX feature MSR can happen in any order.
-> 
-> Introduce a notion of KVM internal "Enlightened VMCS revision" and add
-> a new capability allowing to add fields to Enlightened VMCS while keeping
-> its version.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_22
+head:   1d891c46bb689a24985cea58f4eddb053d6b1331
+commit: 70d8bfe245ee929757e1dcdf280f9e27786047a9 [20/21] bpf: Add support for tracing multi link
+config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220707/202207070530.sgflrE6n-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f553287b588916de09c66e3e32bf75e5060f967f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=70d8bfe245ee929757e1dcdf280f9e27786047a9
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf bpf/tramp_22
+        git checkout 70d8bfe245ee929757e1dcdf280f9e27786047a9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Bumping a "minor" version number in KVM is going to be a nightmare.  KVM is going
-to be stuck "supporting" old revisions in perpetuity, and userspace will be forced
-to keep track of which features are available with which arbitrary revision (is
-that information even communicated to userspace?).
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-I think a more maintainable approach would be to expose the "filtered" VMX MSRs to
-userspace, e.g. add KVM_GET_EVMCS_VMX_MSRS.  Then KVM just needs to document what
-the "filters" are for KVM versions that don't support KVM_GET_EVMCS_VMX_MSRS.
-KVM itself doesn't need to maintain version information because it's userspace's
-responsibility to ensure that userspace doesn't try to migrate to a KVM that doesn't
-support the desired feature set.
+All errors (new ones prefixed by >>):
 
-That also avoids messes like unnecessarily blocking migration from "incompatible"
-revisions when running on hardware that doesn't even support the control.
+   kernel/bpf/syscall.c:3128:26: error: field has incomplete type 'struct bpf_tramp_attach'
+           struct bpf_tramp_attach attach;
+                                   ^
+   kernel/bpf/syscall.c:3128:9: note: forward declaration of 'struct bpf_tramp_attach'
+           struct bpf_tramp_attach attach;
+                  ^
+   kernel/bpf/syscall.c:3136:15: error: call to undeclared function 'bpf_trampoline_detach'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           WARN_ON_ONCE(bpf_trampoline_detach(&tr_link->attach));
+                        ^
+   kernel/bpf/syscall.c:3136:15: note: did you mean 'bpf_trampoline_get'?
+   include/linux/bpf.h:993:38: note: 'bpf_trampoline_get' declared here
+   static inline struct bpf_trampoline *bpf_trampoline_get(u64 key,
+                                        ^
+>> kernel/bpf/syscall.c:3306:7: error: call to undeclared function 'bpf_tramp_id_alloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           id = bpf_tramp_id_alloc(cnt);
+                ^
+   kernel/bpf/syscall.c:3306:5: warning: incompatible integer to pointer conversion assigning to 'struct bpf_tramp_id *' from 'int' [-Wint-conversion]
+           id = bpf_tramp_id_alloc(cnt);
+              ^ ~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/bpf/syscall.c:3347:8: error: call to undeclared function 'bpf_trampoline_attach'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           err = bpf_trampoline_attach(&link->attach);
+                 ^
+   1 warning and 4 errors generated.
+
+
+vim +/bpf_tramp_id_alloc +3306 kernel/bpf/syscall.c
+
+  3290	
+  3291	static int bpf_tracing_multi_attach(struct bpf_prog *prog,
+  3292					    const union bpf_attr *attr)
+  3293	{
+  3294		void __user *uids = u64_to_user_ptr(attr->link_create.tracing_multi.btf_ids);
+  3295		u32 cnt_size, cnt = attr->link_create.tracing_multi.btf_ids_cnt;
+  3296		struct bpf_tracing_multi_link *link = NULL;
+  3297		struct bpf_link_primer link_primer;
+  3298		struct bpf_tramp_id *id = NULL;
+  3299		int err = -EINVAL;
+  3300	
+  3301		if (check_multi_prog_type(prog))
+  3302			return -EINVAL;
+  3303		if (!cnt || !uids)
+  3304			return -EINVAL;
+  3305	
+> 3306		id = bpf_tramp_id_alloc(cnt);
+  3307		if (!id)
+  3308			return -ENOMEM;
+  3309	
+  3310		err = -EFAULT;
+  3311		cnt_size = cnt * sizeof(id->id[0]);
+  3312		if (copy_from_user(id->id, uids, cnt_size))
+  3313			goto out_free_id;
+  3314	
+  3315		id->cnt = cnt;
+  3316		id->obj_id = btf_obj_id(prog->aux->attach_btf);
+  3317	
+  3318		/* Sort user provided BTF ids, so we can use memcmp
+  3319		 * and bsearch on top of it later.
+  3320		 */
+  3321		sort(id->id, cnt, sizeof(u32), btf_ids_cmp, NULL);
+  3322	
+  3323		err = bpf_tramp_id_resolve(id, prog);
+  3324		if (err)
+  3325			goto out_free_id;
+  3326	
+  3327		link = kzalloc(sizeof(*link), GFP_KERNEL);
+  3328		if (!link) {
+  3329			err = -ENOMEM;
+  3330			goto out_free_id;
+  3331		}
+  3332	
+  3333		bpf_link_init(&link->link, BPF_LINK_TYPE_TRACING_MULTI,
+  3334			      &bpf_tracing_multi_link_lops, prog);
+  3335		link->attach_type = prog->expected_attach_type;
+  3336	
+  3337		err = bpf_link_prime(&link->link, &link_primer);
+  3338		if (err) {
+  3339			kfree(link);
+  3340			goto out_free_id;
+  3341		}
+  3342	
+  3343		link->attach.id = id;
+  3344		link->attach.tp.cookie = 0;
+  3345		link->attach.tp.prog = prog;
+  3346	
+  3347		err = bpf_trampoline_attach(&link->attach);
+  3348		if (err) {
+  3349			bpf_link_cleanup(&link_primer);
+  3350			goto out_free_id;
+  3351		}
+  3352		return bpf_link_settle(&link_primer);
+  3353	out_free_id:
+  3354		kfree(id);
+  3355		return err;
+  3356	}
+  3357	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
