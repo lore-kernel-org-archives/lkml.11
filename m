@@ -2,335 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76498C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 01:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C65CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 02:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbiGFBzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 21:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        id S230298AbiGFCAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 22:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230260AbiGFBzv (ORCPT
+        with ESMTP id S230186AbiGFCAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 21:55:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 013BC192A6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 18:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657072549;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TUxC/Tkc/tS5Ejzg3vN8DgE3TpSu5V1M1qIpJrNhK3w=;
-        b=L4SJNimfLiAQq6bg8hh/cKSYNksnfqSDnPe4UVnYMvclzmUpihfeCCwsbJ8BqK45PNm35d
-        uoYmz1B7/Z6SuMpniBZiZWbLsKFsZ5WCtTZspq5ievKALtBxuvsTosVOfjQ19ofp9jS/R5
-        ZvU0iT9yXUVf7m5eZjgXnVg0xLmw5KU=
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
- [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-1D1ulnE-Mw-IS14Z0oLLiA-1; Tue, 05 Jul 2022 21:55:42 -0400
-X-MC-Unique: 1D1ulnE-Mw-IS14Z0oLLiA-1
-Received: by mail-pj1-f72.google.com with SMTP id mm6-20020a17090b358600b001ef7bd409b0so5354589pjb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 18:55:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TUxC/Tkc/tS5Ejzg3vN8DgE3TpSu5V1M1qIpJrNhK3w=;
-        b=ozAm84T9j5L8KUs5Ng75SiNqUvaL9G7Y633Ewkyhmi6L5eTgOWYjpf8YyFF+ffRoof
-         Z9gQsc6ztFP5e1B/eLSh2gVOVwl6QiPSJdcgql3qntx4KjQkdkSptbSdQ7t9LJ4ku027
-         KJE7eVj6ZLEyux006xOKM3D21TIJ2nmjhFZfvDrSEztOAQq6BNdtGfz7AoxIcUJzdypN
-         Z41SBXOebHi9DAsGgYk2IC7FWeoB9R7TjRL+vJjxL4jGxFrbDo5E4bB4OHGNBpko3ZZh
-         jxrK5g0G4A9GE5fHWKM869SMqGpisoBunVCQ3WveZfM+yDaiVjMqrdK3ohV6jhwugMte
-         4AhQ==
-X-Gm-Message-State: AJIora94q7QPuC8K0Q5o5nkW0eWieDCH/D0MkuBXt2PguSI+1EjFM853
-        ZDRBsJreIXbZrQ/gdPpWt0Rq9jd1z/2FLlYDhwOykDGxb3UHQgQbu6ul+SpJf/6d9Cffi8lS7W2
-        cKHcSFZtCEhLXLaAoxdG7mARO
-X-Received: by 2002:a17:90a:fa4f:b0:1ef:9203:afc3 with SMTP id dt15-20020a17090afa4f00b001ef9203afc3mr11150084pjb.141.1657072540523;
-        Tue, 05 Jul 2022 18:55:40 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sOeTIHXFWdC6DJnwVAFSpJlFM1v3xGZvRPzcBsUnw9L4XTKx1wcPpJpMYWbJwI//00foC13A==
-X-Received: by 2002:a17:90a:fa4f:b0:1ef:9203:afc3 with SMTP id dt15-20020a17090afa4f00b001ef9203afc3mr11150057pjb.141.1657072540185;
-        Tue, 05 Jul 2022 18:55:40 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id c12-20020a621c0c000000b0050dc7628178sm23572853pfc.82.2022.07.05.18.55.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 18:55:39 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 09:53:08 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Baoquan He <bhe@redhat.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Eric Biederman <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org, kexec@lists.infradead.org
-Subject: Re: [PATCH 1/2] kexec_file: Drop weak attribute from functions
-Message-ID: <20220706015308.heynqgictt47r3c5@Rk>
-References: <cover.1656659357.git.naveen.n.rao@linux.vnet.ibm.com>
- <2cd7ca1fe4d6bb6ca38e3283c717878388ed6788.1656659357.git.naveen.n.rao@linux.vnet.ibm.com>
- <YsJoGKribMH77HBQ@MiWiFi-R3L-srv>
+        Tue, 5 Jul 2022 22:00:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE0219030;
+        Tue,  5 Jul 2022 19:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB554618A8;
+        Wed,  6 Jul 2022 02:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0DF48C341CB;
+        Wed,  6 Jul 2022 02:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657072813;
+        bh=ym+Ggjc2Q+HgpMh5Xf/DHbuNAh51S9COLnqD1a4CyiQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YbRTTe2SrxrQNbUhgumraNOTTcTe4EgZGlahUx0ARGm0J0u/OOSvVT0DKraLcy2oy
+         g3WNhuSCdNLgIrVNN7KiJu0EkVbWo35h1CDzadNiFMC7eBvSIC30J+LcCC9e8JXK5O
+         j10Qtzd/Fni90cNs1YECUbx3HoZ2n1+6XEi9xDMMvke9keeFQQymB96KlTZ73JZFMv
+         G/zMcEW1fx13KScMjzdkqKANcayTMeb8FYbVuxLAuoMx4k2xMlaBFeaQKjczCBOvWs
+         jiHwLXp8LHRm+s6KPJ0fTd0VN7+YEr2jR0xge3ESgrBkMF5HLaBjhzCXEnJcH1Qosw
+         XZEiJMy0my3fw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6FB2E45BDC;
+        Wed,  6 Jul 2022 02:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YsJoGKribMH77HBQ@MiWiFi-R3L-srv>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: asix: change the type of asix_set_sw/hw_mii to
+ static
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165707281287.10391.10415762275144014594.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Jul 2022 02:00:12 +0000
+References: <20220704123448.128980-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220704123448.128980-1-shaozhengchao@huawei.com>
+To:     shaozhengchao <shaozhengchao@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        paskripkin@gmail.com, linux@rempel-privat.de, andrew@lunn.ch,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Baoquan and Naveen,
+Hello:
 
-On Mon, Jul 04, 2022 at 12:10:00PM +0800, Baoquan He wrote:
->On 07/01/22 at 01:04pm, Naveen N. Rao wrote:
->> Drop __weak attribute from functions in kexec_file.c:
->> - arch_kexec_kernel_image_probe()
->> - arch_kimage_file_post_load_cleanup()
->> - arch_kexec_kernel_image_load()
->> - arch_kexec_locate_mem_hole()
->> - arch_kexec_kernel_verify_sig()
->>
->> arch_kexec_kernel_image_load() calls into kexec_image_load_default(), so
->> drop the static attribute for the latter.
->>
->> arch_kexec_kernel_verify_sig() is not overridden by any architecture, so
->> drop the __weak attribute.
->
->The dropping of arch_kexec_kernel_verify_sig() conflicts with patch 1 of
->anotherpatchset, and the other patches in the patchset depends on the
->patch 1.
->
->[PATCH v9 0/4] unify the keyrings of arm64 and s390 with x86 to verify kexec'ed kernel signature
->
->Hi, Naveen, Coiby,
->
->Please negotiate how to solve the conflict.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thanks Baoquan for letting me know of this conflict. Naveen, how about
-resolving the conflict based on which patch is merged first? If your
-patch set is going to be merged early, I will resolve the conflict in my
-patch set, and vice versa.
+On Mon, 4 Jul 2022 20:34:48 +0800 you wrote:
+> The functions of asix_set_sw/hw_mii are not called in other files, so
+> change them to static.
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  drivers/net/usb/asix.h        |  3 ---
+>  drivers/net/usb/asix_common.c | 40 ++++++++++++++++++-----------------
+>  2 files changed, 21 insertions(+), 22 deletions(-)
 
->
->Thanks
->Baoquan
->
->>
->> Suggested-by: Eric Biederman <ebiederm@xmission.com>
->> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
->> ---
->>  arch/arm64/include/asm/kexec.h   |  4 ++-
->>  arch/powerpc/include/asm/kexec.h |  9 +++++++
->>  arch/s390/include/asm/kexec.h    |  3 +++
->>  arch/x86/include/asm/kexec.h     |  6 +++++
->>  include/linux/kexec.h            | 44 +++++++++++++++++++++++++++-----
->>  kernel/kexec_file.c              | 35 ++-----------------------
->>  6 files changed, 61 insertions(+), 40 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/kexec.h b/arch/arm64/include/asm/kexec.h
->> index 9839bfc163d714..78d272b26ebd11 100644
->> --- a/arch/arm64/include/asm/kexec.h
->> +++ b/arch/arm64/include/asm/kexec.h
->> @@ -115,7 +115,9 @@ extern const struct kexec_file_ops kexec_image_ops;
->>
->>  struct kimage;
->>
->> -extern int arch_kimage_file_post_load_cleanup(struct kimage *image);
->> +int arch_kimage_file_post_load_cleanup(struct kimage *image);
->> +#define arch_kimage_file_post_load_cleanup arch_kimage_file_post_load_cleanup
->> +
->>  extern int load_other_segments(struct kimage *image,
->>  		unsigned long kernel_load_addr, unsigned long kernel_size,
->>  		char *initrd, unsigned long initrd_len,
->> diff --git a/arch/powerpc/include/asm/kexec.h b/arch/powerpc/include/asm/kexec.h
->> index 2aefe14e144229..1e5e9b6ec78d9d 100644
->> --- a/arch/powerpc/include/asm/kexec.h
->> +++ b/arch/powerpc/include/asm/kexec.h
->> @@ -120,6 +120,15 @@ int setup_purgatory(struct kimage *image, const void *slave_code,
->>  #ifdef CONFIG_PPC64
->>  struct kexec_buf;
->>
->> +int arch_kexec_kernel_image_probe(struct kimage *image, void *buf, unsigned long buf_len);
->> +#define arch_kexec_kernel_image_probe arch_kexec_kernel_image_probe
->> +
->> +int arch_kimage_file_post_load_cleanup(struct kimage *image);
->> +#define arch_kimage_file_post_load_cleanup arch_kimage_file_post_load_cleanup
->> +
->> +int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
->> +#define arch_kexec_locate_mem_hole arch_kexec_locate_mem_hole
->> +
->>  int load_crashdump_segments_ppc64(struct kimage *image,
->>  				  struct kexec_buf *kbuf);
->>  int setup_purgatory_ppc64(struct kimage *image, const void *slave_code,
->> diff --git a/arch/s390/include/asm/kexec.h b/arch/s390/include/asm/kexec.h
->> index 649ecdcc873453..8886aadc11a3a6 100644
->> --- a/arch/s390/include/asm/kexec.h
->> +++ b/arch/s390/include/asm/kexec.h
->> @@ -92,5 +92,8 @@ int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
->>  				     const Elf_Shdr *relsec,
->>  				     const Elf_Shdr *symtab);
->>  #define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
->> +
->> +int arch_kimage_file_post_load_cleanup(struct kimage *image);
->> +#define arch_kimage_file_post_load_cleanup arch_kimage_file_post_load_cleanup
->>  #endif
->>  #endif /*_S390_KEXEC_H */
->> diff --git a/arch/x86/include/asm/kexec.h b/arch/x86/include/asm/kexec.h
->> index 6ad8d946cd3ebf..5ec359c1b50cb3 100644
->> --- a/arch/x86/include/asm/kexec.h
->> +++ b/arch/x86/include/asm/kexec.h
->> @@ -193,6 +193,12 @@ int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
->>  				     const Elf_Shdr *relsec,
->>  				     const Elf_Shdr *symtab);
->>  #define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
->> +
->> +void *arch_kexec_kernel_image_load(struct kimage *image);
->> +#define arch_kexec_kernel_image_load arch_kexec_kernel_image_load
->> +
->> +int arch_kimage_file_post_load_cleanup(struct kimage *image);
->> +#define arch_kimage_file_post_load_cleanup arch_kimage_file_post_load_cleanup
->>  #endif
->>  #endif
->>
->> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
->> index ce6536f1d26997..5e0bc3f9eac3e9 100644
->> --- a/include/linux/kexec.h
->> +++ b/include/linux/kexec.h
->> @@ -188,21 +188,53 @@ int kexec_purgatory_get_set_symbol(struct kimage *image, const char *name,
->>  				   void *buf, unsigned int size,
->>  				   bool get_value);
->>  void *kexec_purgatory_get_symbol_addr(struct kimage *image, const char *name);
->> +void *kexec_image_load_default(struct kimage *image);
->> +
->> +#ifndef arch_kexec_kernel_image_probe
->> +static inline int
->> +arch_kexec_kernel_image_probe(struct kimage *image, void *buf, unsigned long buf_len)
->> +{
->> +	return kexec_image_probe_default(image, buf, buf_len);
->> +}
->> +#endif
->> +
->> +#ifndef arch_kimage_file_post_load_cleanup
->> +static inline int arch_kimage_file_post_load_cleanup(struct kimage *image)
->> +{
->> +	return kexec_image_post_load_cleanup_default(image);
->> +}
->> +#endif
->> +
->> +#ifndef arch_kexec_kernel_image_load
->> +static inline void *arch_kexec_kernel_image_load(struct kimage *image)
->> +{
->> +	return kexec_image_load_default(image);
->> +}
->> +#endif
->>
->> -/* Architectures may override the below functions */
->> -int arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
->> -				  unsigned long buf_len);
->> -void *arch_kexec_kernel_image_load(struct kimage *image);
->> -int arch_kimage_file_post_load_cleanup(struct kimage *image);
->>  #ifdef CONFIG_KEXEC_SIG
->>  int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
->>  				 unsigned long buf_len);
->>  #endif
->> -int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
->>
->>  extern int kexec_add_buffer(struct kexec_buf *kbuf);
->>  int kexec_locate_mem_hole(struct kexec_buf *kbuf);
->>
->> +#ifndef arch_kexec_locate_mem_hole
->> +/**
->> + * arch_kexec_locate_mem_hole - Find free memory to place the segments.
->> + * @kbuf:                       Parameters for the memory search.
->> + *
->> + * On success, kbuf->mem will have the start address of the memory region found.
->> + *
->> + * Return: 0 on success, negative errno on error.
->> + */
->> +static inline int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf)
->> +{
->> +	return kexec_locate_mem_hole(kbuf);
->> +}
->> +#endif
->> +
->>  /* Alignment required for elf header segment */
->>  #define ELF_CORE_HEADER_ALIGN   4096
->>
->> diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
->> index 9b2839775c837b..66e4ce29fc6961 100644
->> --- a/kernel/kexec_file.c
->> +++ b/kernel/kexec_file.c
->> @@ -56,14 +56,7 @@ int kexec_image_probe_default(struct kimage *image, void *buf,
->>  	return ret;
->>  }
->>
->> -/* Architectures can provide this probe function */
->> -int __weak arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
->> -					 unsigned long buf_len)
->> -{
->> -	return kexec_image_probe_default(image, buf, buf_len);
->> -}
->> -
->> -static void *kexec_image_load_default(struct kimage *image)
->> +void *kexec_image_load_default(struct kimage *image)
->>  {
->>  	if (!image->fops || !image->fops->load)
->>  		return ERR_PTR(-ENOEXEC);
->> @@ -74,11 +67,6 @@ static void *kexec_image_load_default(struct kimage *image)
->>  				 image->cmdline_buf_len);
->>  }
->>
->> -void * __weak arch_kexec_kernel_image_load(struct kimage *image)
->> -{
->> -	return kexec_image_load_default(image);
->> -}
->> -
->>  int kexec_image_post_load_cleanup_default(struct kimage *image)
->>  {
->>  	if (!image->fops || !image->fops->cleanup)
->> @@ -87,11 +75,6 @@ int kexec_image_post_load_cleanup_default(struct kimage *image)
->>  	return image->fops->cleanup(image->image_loader_data);
->>  }
->>
->> -int __weak arch_kimage_file_post_load_cleanup(struct kimage *image)
->> -{
->> -	return kexec_image_post_load_cleanup_default(image);
->> -}
->> -
->>  #ifdef CONFIG_KEXEC_SIG
->>  static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
->>  					  unsigned long buf_len)
->> @@ -104,8 +87,7 @@ static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
->>  	return image->fops->verify_sig(buf, buf_len);
->>  }
->>
->> -int __weak arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
->> -					unsigned long buf_len)
->> +int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf, unsigned long buf_len)
->>  {
->>  	return kexec_image_verify_sig_default(image, buf, buf_len);
->>  }
->> @@ -616,19 +598,6 @@ int kexec_locate_mem_hole(struct kexec_buf *kbuf)
->>  	return ret == 1 ? 0 : -EADDRNOTAVAIL;
->>  }
->>
->> -/**
->> - * arch_kexec_locate_mem_hole - Find free memory to place the segments.
->> - * @kbuf:                       Parameters for the memory search.
->> - *
->> - * On success, kbuf->mem will have the start address of the memory region found.
->> - *
->> - * Return: 0 on success, negative errno on error.
->> - */
->> -int __weak arch_kexec_locate_mem_hole(struct kexec_buf *kbuf)
->> -{
->> -	return kexec_locate_mem_hole(kbuf);
->> -}
->> -
->>  /**
->>   * kexec_add_buffer - place a buffer in a kexec segment
->>   * @kbuf:	Buffer contents and memory parameters.
->> --
->> 2.36.1
->>
->
+Here is the summary with links:
+  - [net-next] net: asix: change the type of asix_set_sw/hw_mii to static
+    https://git.kernel.org/netdev/net-next/c/7e40e16e38ba
 
+You are awesome, thank you!
 -- 
-Best regards,
-Coiby
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
