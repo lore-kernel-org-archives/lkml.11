@@ -2,322 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25120C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D5F4CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232062AbiGFRUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 13:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42064 "EHLO
+        id S233721AbiGFRVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231860AbiGFRUp (ORCPT
+        with ESMTP id S232385AbiGFRVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 13:20:45 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E4C193D2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:20:44 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id s206so14532395pgs.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 10:20:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0mAPFLRpf5mKx/F8Hi4SurvzzhTNKba+eu5GuTpXPCo=;
-        b=ELfXB+Bk6HiRh0qy1XL+YhZRyb8jc2FuH7Zdt1AhsMCy6coyNqBSA2anIqt/T/QNZ3
-         cWUIAIvFUO4dlBdvL6yZ+9P0IlHvNS8iVpthlzqp+pE+lMhaJup27yQj5wXk+wX/sv/S
-         /1//gD7zH/TBJDqzQtJKC/tRFJ92Eoe1nHIKs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0mAPFLRpf5mKx/F8Hi4SurvzzhTNKba+eu5GuTpXPCo=;
-        b=E/PGi8FDkTWz0rS19+Qff4e+nyk2BaSFj4bepslUSCWjd/Tpa9lmOEogC1cxCPMMcc
-         v5aXw/xkd8cgv3LRKH0bM5YufmGeESHwZsjCJpDVOx0t0hMme7jj3rn5wOGUb9PHEhf+
-         aAAp7ALuUWoCr7axLJVFCBPVPIlUDZ+wumEqaxMjPAr1fIKQ1gGRrDlpsGjIvfATboac
-         4ftzMhhZHwK0vZIUdJVZWjmApPq1yFZoJCx1djinPBgpEbFT3qRxQiZrTW+190yhVZ0R
-         6Lvpjrk/qIjAthzK3boGEmP5mJZORmdEXEq9SZdtku1lFIkU1q9rbdeQZ0BAupMttdES
-         BvyQ==
-X-Gm-Message-State: AJIora8ZVhEVy2s8c7Xukh9Y26lx7Xc/xtwiX6qkq1adjjmZ+Z3cVnG3
-        TduGuz/EQUYLqaUbr3EVEdECEO4o/K+voA==
-X-Google-Smtp-Source: AGRyM1vTSkdhaYKWUxAlokXtexPiFDBlP2eg/5Y0AX/JR+CovhjdG0ayTLAARfDW68VJUIv8yfdi/g==
-X-Received: by 2002:a63:8341:0:b0:412:a34a:b9d3 with SMTP id h62-20020a638341000000b00412a34ab9d3mr2618813pge.437.1657128044289;
-        Wed, 06 Jul 2022 10:20:44 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h14-20020a170902f7ce00b0016be0d5483asm7514953plw.252.2022.07.06.10.20.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 10:20:43 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH v2 4/9] platform/chrome: cros_typec_switch: Add switch driver
-Date:   Wed,  6 Jul 2022 17:15:08 +0000
-Message-Id: <20220706171601.807042-5-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220706171601.807042-1-pmalani@chromium.org>
-References: <20220706171601.807042-1-pmalani@chromium.org>
+        Wed, 6 Jul 2022 13:21:18 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341241D326
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:21:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657128077; x=1688664077;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LhXrWWvYnUqkX7TzLt9/skPJ6SEYWxFlcnGeYF3kcN0=;
+  b=f3wNavEz04UmvF6pfonC3Geer+ZOkrNbEPeaPMl97H8nBt7/aF4hIQBc
+   6o4ep/wbPwvmBvtkSh2wo5VHOhlxJH1WiHmAyT+dpWm3miNDqXuAb9Qkc
+   K7toDdPLxAnR7lpslsXxh44hAskMBRKDeVSHjFtWWRyMZN7YlTnm5m5wT
+   +Ei9ooV8qlIvDxyXHbOXKNkn3W3f1tsK2NcuPcfUuTE6XmQNOnhrwYmuJ
+   cP6X9Tvx/eJ7eCz4CLJBBJNOB8Qx9JxnhBVnohLjHGkpn73bVOGRLyNAn
+   JLW3wmWXDMyDnsygdav4IX4IkVjIFj71u16gyCN7oBPAN0baoT383obDc
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="347802033"
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="347802033"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 10:21:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="735651861"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 06 Jul 2022 10:21:15 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o98iA-000Kpx-Er;
+        Wed, 06 Jul 2022 17:21:14 +0000
+Date:   Thu, 7 Jul 2022 01:21:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Rob Clark <robdclark@gmail.com>
+Subject: drivers/gpu/drm/msm/dsi/phy/dsi_phy.c:350
+ msm_dsi_dphy_timing_calc_v3() warn: inconsistent indenting
+Message-ID: <202207070115.5JsGmGry-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a driver to configure USB Type-C mode switches and retimers
-which are controlled by the Chrome OS EC (Embedded Controller).
-This allows Type-C port drivers, as well as alternate mode drivers to
-configure their relevant mode switches and retimers according to the
-Type-C state they want to achieve.
+Hi Christian,
 
-ACPI devices with ID GOOG001A will bind to this driver.
+First bad commit (maybe != root cause):
 
-Currently, we only register a retimer switch with a stub set function.
-Subsequent patches will implement the host command set functionality,
-and introduce mode switches.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e35e5b6f695d241ffb1d223207da58a1fbcdff4b
+commit: b3ed524f84f573ece1aa2f26e9db3c34a593e0d1 drm/msm: allow compile_test on !ARM
+date:   9 months ago
+config: csky-randconfig-m031-20220706 (https://download.01.org/0day-ci/archive/20220707/202207070115.5JsGmGry-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.3.0
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Changes since v1:
-- No changes.
+New smatch warnings:
+drivers/gpu/drm/msm/dsi/phy/dsi_phy.c:350 msm_dsi_dphy_timing_calc_v3() warn: inconsistent indenting
+drivers/gpu/drm/msm/dsi/dsi_host.c:2380 msm_dsi_host_power_on() warn: missing error code 'ret'
 
- MAINTAINERS                                 |   1 +
- drivers/platform/chrome/Kconfig             |  11 ++
- drivers/platform/chrome/Makefile            |   1 +
- drivers/platform/chrome/cros_typec_switch.c | 171 ++++++++++++++++++++
- 4 files changed, 184 insertions(+)
- create mode 100644 drivers/platform/chrome/cros_typec_switch.c
+Old smatch warnings:
+drivers/gpu/drm/msm/dsi/phy/dsi_phy.c:812 msm_dsi_phy_enable() warn: variable dereferenced before check 'phy' (see line 809)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7533cb27adc0..35ea91c619b7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4752,6 +4752,7 @@ M:	Prashant Malani <pmalani@chromium.org>
- L:	chrome-platform@lists.linux.dev
- S:	Maintained
- F:	drivers/platform/chrome/cros_ec_typec.c
-+F:	drivers/platform/chrome/cros_typec_switch.c
- 
- CHROMEOS EC USB PD NOTIFY DRIVER
- M:	Prashant Malani <pmalani@chromium.org>
-diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
-index 717299cbccac..c62a514a087f 100644
---- a/drivers/platform/chrome/Kconfig
-+++ b/drivers/platform/chrome/Kconfig
-@@ -265,6 +265,17 @@ config CHROMEOS_PRIVACY_SCREEN
- 	  this should probably always be built into the kernel to avoid or
- 	  minimize drm probe deferral.
- 
-+config CROS_TYPEC_SWITCH
-+	tristate "ChromeOS EC Type-C Switch Control"
-+	depends on MFD_CROS_EC_DEV && TYPEC
-+	default MFD_CROS_EC_DEV
-+	help
-+	  If you say Y here, you get support for configuring the Chrome OS EC Type C
-+	  muxes and retimers.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called cros_typec_switch.
-+
- source "drivers/platform/chrome/wilco_ec/Kconfig"
- 
- endif # CHROMEOS_PLATFORMS
-diff --git a/drivers/platform/chrome/Makefile b/drivers/platform/chrome/Makefile
-index 52f5a2dde8b8..0dcaf6a7ed27 100644
---- a/drivers/platform/chrome/Makefile
-+++ b/drivers/platform/chrome/Makefile
-@@ -12,6 +12,7 @@ obj-$(CONFIG_CHROMEOS_TBMC)		+= chromeos_tbmc.o
- obj-$(CONFIG_CROS_EC)			+= cros_ec.o
- obj-$(CONFIG_CROS_EC_I2C)		+= cros_ec_i2c.o
- obj-$(CONFIG_CROS_EC_ISHTP)		+= cros_ec_ishtp.o
-+obj-$(CONFIG_CROS_TYPEC_SWITCH)		+= cros_typec_switch.o
- obj-$(CONFIG_CROS_EC_RPMSG)		+= cros_ec_rpmsg.o
- obj-$(CONFIG_CROS_EC_SPI)		+= cros_ec_spi.o
- cros_ec_lpcs-objs			:= cros_ec_lpc.o cros_ec_lpc_mec.o
-diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
-new file mode 100644
-index 000000000000..1a795f613543
---- /dev/null
-+++ b/drivers/platform/chrome/cros_typec_switch.c
-@@ -0,0 +1,171 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright 2022 Google LLC
-+ *
-+ * This driver provides the ability to configure Type C muxes and retimers which are controlled by
-+ * the Chrome OS EC.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/module.h>
-+#include <linux/platform_data/cros_ec_commands.h>
-+#include <linux/platform_device.h>
-+#include <linux/usb/typec_retimer.h>
-+
-+#define DRV_NAME "cros-typec-switch"
-+
-+/* Handles and other relevant data required for each port's switches. */
-+struct cros_typec_port {
-+	int port_num;
-+	struct typec_retimer *retimer;
-+	struct cros_typec_switch_data *sdata;
-+};
-+
-+/* Driver-specific data. */
-+struct cros_typec_switch_data {
-+	struct device *dev;
-+	struct cros_ec_device *ec;
-+	struct cros_typec_port *ports[EC_USB_PD_MAX_PORTS];
-+};
-+
-+static int
-+cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
-+{
-+	return 0;
-+}
-+
-+void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
-+{
-+	int i;
-+
-+	for (i = 0; i < EC_USB_PD_MAX_PORTS; i++) {
-+		if (!sdata->ports[i])
-+			continue;
-+		typec_retimer_unregister(sdata->ports[i]->retimer);
-+	}
-+}
-+
-+int cros_typec_register_retimer(struct cros_typec_port *port, struct fwnode_handle *fwnode)
-+{
-+	struct typec_retimer_desc retimer_desc = {
-+		.fwnode = fwnode,
-+		.drvdata = port,
-+		.name = fwnode_get_name(fwnode),
-+		.set = cros_typec_retimer_set,
-+	};
-+
-+	port->retimer = typec_retimer_register(port->sdata->dev, &retimer_desc);
-+	if (IS_ERR(port->retimer))
-+		return PTR_ERR(port->retimer);
-+
-+	return 0;
-+}
-+
-+static int cros_typec_register_switches(struct cros_typec_switch_data *sdata)
-+{
-+	struct cros_typec_port *port = NULL;
-+	struct device *dev = sdata->dev;
-+	struct fwnode_handle *fwnode;
-+	struct acpi_device *adev;
-+	unsigned long long index;
-+	int ret = 0;
-+	int nports;
-+
-+	nports = device_get_child_node_count(dev);
-+	if (nports == 0) {
-+		dev_err(dev, "No switch devices found.\n");
-+		return -ENODEV;
-+	}
-+
-+	device_for_each_child_node(dev, fwnode) {
-+		port = devm_kzalloc(dev, sizeof(*port), GFP_KERNEL);
-+		if (!port) {
-+			ret = -ENOMEM;
-+			goto err_switch;
-+		}
-+
-+		adev = to_acpi_device_node(fwnode);
-+		if (!adev) {
-+			dev_err(fwnode->dev, "Couldn't get ACPI device handle\n");
-+			ret = -ENODEV;
-+			goto err_switch;
-+		}
-+
-+		ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
-+		if (ACPI_FAILURE(ret)) {
-+			dev_err(fwnode->dev, "_ADR wasn't evaluated\n");
-+			ret = -ENODATA;
-+			goto err_switch;
-+		}
-+
-+		if (index < 0 || index >= EC_USB_PD_MAX_PORTS) {
-+			dev_err(fwnode->dev, "Invalid port index number: %llu", index);
-+			ret = -EINVAL;
-+			goto err_switch;
-+		}
-+		port->sdata = sdata;
-+		port->port_num = index;
-+		sdata->ports[index] = port;
-+
-+		ret = cros_typec_register_retimer(port, fwnode);
-+		if (ret) {
-+			dev_err(dev, "Retimer switch register failed\n");
-+			goto err_switch;
-+		}
-+
-+		dev_dbg(dev, "Retimer switch registered for index %llu\n", index);
-+	}
-+
-+	return 0;
-+err_switch:
-+	cros_typec_unregister_switches(sdata);
-+	return ret;
-+}
-+
-+static int cros_typec_switch_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct cros_typec_switch_data *sdata;
-+
-+	sdata = devm_kzalloc(dev, sizeof(*sdata), GFP_KERNEL);
-+	if (!sdata)
-+		return -ENOMEM;
-+
-+	sdata->dev = dev;
-+	sdata->ec = dev_get_drvdata(pdev->dev.parent);
-+
-+	platform_set_drvdata(pdev, sdata);
-+
-+	return cros_typec_register_switches(sdata);
-+}
-+
-+static int cros_typec_switch_remove(struct platform_device *pdev)
-+{
-+	struct cros_typec_switch_data *sdata = platform_get_drvdata(pdev);
-+
-+	cros_typec_unregister_switches(sdata);
-+	return 0;
-+}
-+
-+#ifdef CONFIG_ACPI
-+static const struct acpi_device_id cros_typec_switch_acpi_id[] = {
-+	{ "GOOG001A", 0 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(acpi, cros_typec_switch_acpi_id);
-+#endif
-+
-+static struct platform_driver cros_typec_switch_driver = {
-+	.driver	= {
-+		.name = DRV_NAME,
-+		.acpi_match_table = ACPI_PTR(cros_typec_switch_acpi_id),
-+	},
-+	.probe = cros_typec_switch_probe,
-+	.remove = cros_typec_switch_remove,
-+};
-+
-+module_platform_driver(cros_typec_switch_driver);
-+
-+MODULE_AUTHOR("Prashant Malani <pmalani@chromium.org>");
-+MODULE_DESCRIPTION("Chrome OS EC Type C Switch control");
-+MODULE_LICENSE("GPL");
+vim +350 drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+
+a4df68fa232e97 Hai Li        2017-01-03  260  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  261  int msm_dsi_dphy_timing_calc_v3(struct msm_dsi_dphy_timing *timing,
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  262  	struct msm_dsi_phy_clk_request *clk_req)
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  263  {
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  264  	const unsigned long bit_rate = clk_req->bitclk_rate;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  265  	const unsigned long esc_rate = clk_req->escclk_rate;
+7264af3ed8d409 zhengbin      2019-10-10  266  	s32 ui, ui_x8;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  267  	s32 tmax, tmin;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  268  	s32 pcnt0 = 50;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  269  	s32 pcnt1 = 50;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  270  	s32 pcnt2 = 10;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  271  	s32 pcnt3 = 30;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  272  	s32 pcnt4 = 10;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  273  	s32 pcnt5 = 2;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  274  	s32 coeff = 1000; /* Precision, should avoid overflow */
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  275  	s32 hb_en, hb_en_ckln;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  276  	s32 temp;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  277  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  278  	if (!bit_rate || !esc_rate)
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  279  		return -EINVAL;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  280  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  281  	timing->hs_halfbyte_en = 0;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  282  	hb_en = 0;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  283  	timing->hs_halfbyte_en_ckln = 0;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  284  	hb_en_ckln = 0;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  285  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  286  	ui = mult_frac(NSEC_PER_MSEC, coeff, bit_rate / 1000);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  287  	ui_x8 = ui << 3;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  288  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  289  	temp = S_DIV_ROUND_UP(38 * coeff, ui_x8);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  290  	tmin = max_t(s32, temp, 0);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  291  	temp = (95 * coeff) / ui_x8;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  292  	tmax = max_t(s32, temp, 0);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  293  	timing->clk_prepare = linear_inter(tmax, tmin, pcnt0, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  294  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  295  	temp = 300 * coeff - (timing->clk_prepare << 3) * ui;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  296  	tmin = S_DIV_ROUND_UP(temp, ui_x8) - 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  297  	tmax = (tmin > 255) ? 511 : 255;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  298  	timing->clk_zero = linear_inter(tmax, tmin, pcnt5, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  299  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  300  	tmin = DIV_ROUND_UP(60 * coeff + 3 * ui, ui_x8);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  301  	temp = 105 * coeff + 12 * ui - 20 * coeff;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  302  	tmax = (temp + 3 * ui) / ui_x8;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  303  	timing->clk_trail = linear_inter(tmax, tmin, pcnt3, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  304  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  305  	temp = S_DIV_ROUND_UP(40 * coeff + 4 * ui, ui_x8);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  306  	tmin = max_t(s32, temp, 0);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  307  	temp = (85 * coeff + 6 * ui) / ui_x8;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  308  	tmax = max_t(s32, temp, 0);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  309  	timing->hs_prepare = linear_inter(tmax, tmin, pcnt1, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  310  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  311  	temp = 145 * coeff + 10 * ui - (timing->hs_prepare << 3) * ui;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  312  	tmin = S_DIV_ROUND_UP(temp, ui_x8) - 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  313  	tmax = 255;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  314  	timing->hs_zero = linear_inter(tmax, tmin, pcnt4, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  315  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  316  	tmin = DIV_ROUND_UP(60 * coeff + 4 * ui, ui_x8) - 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  317  	temp = 105 * coeff + 12 * ui - 20 * coeff;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  318  	tmax = (temp / ui_x8) - 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  319  	timing->hs_trail = linear_inter(tmax, tmin, pcnt3, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  320  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  321  	temp = 50 * coeff + ((hb_en << 2) - 8) * ui;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  322  	timing->hs_rqst = S_DIV_ROUND_UP(temp, ui_x8);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  323  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  324  	tmin = DIV_ROUND_UP(100 * coeff, ui_x8) - 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  325  	tmax = 255;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  326  	timing->hs_exit = linear_inter(tmax, tmin, pcnt2, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  327  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  328  	temp = 50 * coeff + ((hb_en_ckln << 2) - 8) * ui;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  329  	timing->hs_rqst_ckln = S_DIV_ROUND_UP(temp, ui_x8);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  330  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  331  	temp = 60 * coeff + 52 * ui - 43 * ui;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  332  	tmin = DIV_ROUND_UP(temp, ui_x8) - 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  333  	tmax = 63;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  334  	timing->shared_timings.clk_post =
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  335  		linear_inter(tmax, tmin, pcnt2, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  336  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  337  	temp = 8 * ui + (timing->clk_prepare << 3) * ui;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  338  	temp += (((timing->clk_zero + 3) << 3) + 11) * ui;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  339  	temp += hb_en_ckln ? (((timing->hs_rqst_ckln << 3) + 4) * ui) :
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  340  		(((timing->hs_rqst_ckln << 3) + 8) * ui);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  341  	tmin = S_DIV_ROUND_UP(temp, ui_x8) - 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  342  	tmax = 63;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  343  	if (tmin > tmax) {
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  344  		temp = linear_inter(tmax << 1, tmin, pcnt2, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  345  		timing->shared_timings.clk_pre = temp >> 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  346  		timing->shared_timings.clk_pre_inc_by_2 = 1;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  347  	} else {
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  348  		timing->shared_timings.clk_pre =
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  349  			linear_inter(tmax, tmin, pcnt2, 0, false);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17 @350  			timing->shared_timings.clk_pre_inc_by_2 = 0;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  351  	}
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  352  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  353  	timing->ta_go = 3;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  354  	timing->ta_sure = 0;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  355  	timing->ta_get = 4;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  356  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  357  	DBG("%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d",
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  358  		timing->shared_timings.clk_pre, timing->shared_timings.clk_post,
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  359  		timing->shared_timings.clk_pre_inc_by_2, timing->clk_zero,
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  360  		timing->clk_trail, timing->clk_prepare, timing->hs_exit,
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  361  		timing->hs_zero, timing->hs_prepare, timing->hs_trail,
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  362  		timing->hs_rqst, timing->hs_rqst_ckln, timing->hs_halfbyte_en,
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  363  		timing->hs_halfbyte_en_ckln, timing->hs_prep_dly,
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  364  		timing->hs_prep_dly_ckln);
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  365  
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  366  	return 0;
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  367  }
+f1fa7ff4405697 Abhinav Kumar 2018-04-17  368  
+
+:::::: The code at line 350 was first introduced by commit
+:::::: f1fa7ff4405697603f5e3901623533c54091f130 drm/msm/dsi: implement auto PHY timing calculator for 10nm PHY
+
+:::::: TO: Abhinav Kumar <abhinavk@codeaurora.org>
+:::::: CC: Rob Clark <robdclark@gmail.com>
+
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
