@@ -2,133 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB37C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F41C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbiGFIq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58804 "EHLO
+        id S231561AbiGFIuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231704AbiGFIqX (ORCPT
+        with ESMTP id S231281AbiGFIub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:46:23 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108811D0EA;
-        Wed,  6 Jul 2022 01:46:22 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2667M8ap008613;
-        Wed, 6 Jul 2022 08:40:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=l3MWD8hQIFQ9/QpMm4hWA643ZTU/ttNO44gzzOp1c0I=;
- b=FcX6Xkk9BOXtgPmP1vshPATskdTvovXszmeyKuA0wboYvwPry/qJ79c4xv/AqDEqcRVr
- CYmRcfoeq0kdiz+g7RCCjmASed334JPMeNOQMvrrt/uDrRpa1iSaee5lXlUh8/uwudxV
- OHC3UfGfKgSaLNbdwruBnpmhgL36cOfosVuU416wdon8q61VIr3dA2Mu3JAgK45GUrKr
- WO+5XYroJ5xLVSnLYZIFfmqdaF+EoFD7T28RvTijkvsnTW63BaonWS30JhmKwdnr+Enb
- hL223wqlOkHIe2auLqGipfzTXBMIDMxFhfP+wtfs7TvY01bDYw0bOV8GQwpJP6db4ANf NQ== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h55xfhm71-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Jul 2022 08:40:44 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2668LiCJ025027;
-        Wed, 6 Jul 2022 08:40:41 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03ams.nl.ibm.com with ESMTP id 3h4ujsgpxk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Jul 2022 08:40:41 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2668ed9M23593384
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Jul 2022 08:40:39 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2EA9411C04C;
-        Wed,  6 Jul 2022 08:40:39 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9903211C04A;
-        Wed,  6 Jul 2022 08:40:38 +0000 (GMT)
-Received: from osiris (unknown [9.145.44.193])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed,  6 Jul 2022 08:40:38 +0000 (GMT)
-Date:   Wed, 6 Jul 2022 10:40:37 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v2] random: remove CONFIG_ARCH_RANDOM
-Message-ID: <YsVKhbiKyuc+vgNO@osiris>
-References: <YsTXI3J+ptkN/vb4@zx2c4.com>
- <20220706003225.335768-1-Jason@zx2c4.com>
+        Wed, 6 Jul 2022 04:50:31 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B67A22B20;
+        Wed,  6 Jul 2022 01:50:30 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id m2so13109799plx.3;
+        Wed, 06 Jul 2022 01:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kviL2OnZm1a3ZgZ6SolZMa8XNSsgN9ztY7oeMbC5TUA=;
+        b=Fs6JQt5j4ge8D8Rt866EbIyUuO9zzF64Y+FfYIpmA4tMP9W56JJCZIyFaUL0sdNKbU
+         BsxZJLybrr0306D6Ho4zZYNcwYo+QnB0RNbgM3b0mpVOJj8XFHa+ir963rRYLUcReULd
+         ll+cvz1BRY0Lah9nY882jZ1pbWK2sjBbPbYdyou1VL/rwUE8Ow+4VTtQZUTFu8K/YIL8
+         l0GE6Blpx1dY2AMyqY3jvXnrPML8ZgsngMzQ3/I5AgM0jut8GzOH/8Sy6VYevqrEGNV/
+         +0YBCuXZ4kYjkccfAGDM0If2LJ+OJCOWS5OYK3m3LrJcW6uVfTTJVYlvfCC3buvsUsTg
+         W6Pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kviL2OnZm1a3ZgZ6SolZMa8XNSsgN9ztY7oeMbC5TUA=;
+        b=VHSP+dUJ0luVl/G/i5WNPe6+owFJNEG3+z48/BU/cEzcEaenxxvkbUuKAK87ULO8Gy
+         JdjTDK7e0EzkqEGxlDxcBU6Fv3pRvR4+VvhNH277oHWHxNYTFW76DWcyXHDBNPXUt5ip
+         xslvd+9D0tRtBHAZvJnubrrCU9kwzdz8SwKh7/nj6jS0j/uL6+Oov3PE12hQRybBTWWE
+         PBhOW++cr6AHZ+wDM5lLT6LmqOCb+fZ6V7ssA4UqM/KWEGo93jOwyd8aubbHxTiZHiL5
+         r7nG7MmvnnryRsGtIv4Mc/3EII9lMlvqvUuG5HrD7VMiYyp+Petncy9zwvIMSord8vIu
+         MMrg==
+X-Gm-Message-State: AJIora/wN3dabp+MEX9A6fMXRkMEe+Ag5nIWCCnFUNSezc/8JwYxNNG7
+        ZWufWbo1ZCht802XGBNLuu9IoNqtLng=
+X-Google-Smtp-Source: AGRyM1tf3JX4+1VZd4+Pq8JMREEr3cxM8ZAqGwRNIL+j5LntKIhPax5qRJBxyJ58/1Cu/cBn9Z9QyQ==
+X-Received: by 2002:a17:902:d48d:b0:16b:f0a8:446c with SMTP id c13-20020a170902d48d00b0016bf0a8446cmr8806272plg.50.1657097429567;
+        Wed, 06 Jul 2022 01:50:29 -0700 (PDT)
+Received: from sol (110-174-58-111.static.tpgi.com.au. [110.174.58.111])
+        by smtp.gmail.com with ESMTPSA id o11-20020a634e4b000000b004118fd18476sm12926027pgl.60.2022.07.06.01.50.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 01:50:29 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 16:50:25 +0800
+From:   Kent Gibson <warthog618@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        brgl@bgdev.pl, linus.walleij@linaro.org
+Subject: Re: [PATCH] gpiolib: cdev: fix null pointer dereference in
+ linereq_free()
+Message-ID: <20220706085025.GA2259579@sol>
+References: <20220706084507.2259415-1-warthog618@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706003225.335768-1-Jason@zx2c4.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: jMZP3hl2mP4unmTL5_U5VeAn3puFmrFQ
-X-Proofpoint-ORIG-GUID: jMZP3hl2mP4unmTL5_U5VeAn3puFmrFQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-06_04,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1011
- impostorscore=0 mlxlogscore=973 mlxscore=0 suspectscore=0 bulkscore=0
- lowpriorityscore=0 priorityscore=1501 malwarescore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207060031
+In-Reply-To: <20220706084507.2259415-1-warthog618@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 02:32:25AM +0200, Jason A. Donenfeld wrote:
-> When RDRAND was introduced, there was much discussion on whether it
-> should be trusted and how the kernel should handle that. Initially, two
-> mechanisms cropped up, CONFIG_ARCH_RANDOM, a compile time switch, and
-> "nordrand", a boot-time switch.
+On Wed, Jul 06, 2022 at 04:45:07PM +0800, Kent Gibson wrote:
+> This patch fixes a kernel NULL pointer dereference that is reported by
+> gpio kselftests.
 > 
-> Later the thinking evolved. With a properly designed RNG, using RDRAND
-> values alone won't harm anything, even if the outputs are malicious.
-> Rather, the issue is whether those values are being *trusted* to be good
-> or not. And so a new set of options were introduced as the real
-> ones that people use -- CONFIG_RANDOM_TRUST_CPU and "random.trust_cpu".
-> With these options, RDRAND is used, but it's not always credited. So in
-> the worst case, it does nothing, and in the best case, maybe it helps.
-> 
-> Along the way, CONFIG_ARCH_RANDOM's meaning got sort of pulled into the
-> center and became something certain platforms force-select.
-> 
-> The old options don't really help with much, and it's a bit odd to have
-> special handling for these instructions when the kernel can deal fine
-> with the existence or untrusted existence or broken existence or
-> non-existence of that CPU capability.
-> 
-> So this commit simplifies things down to the two options that are
-> actually used, and removes the confusing old ones that aren't used or
-> useful. It leaves "nordrand" for now, as the removal of that will take a
-> different route.
-> 
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: H. Peter Anvin <hpa@zytor.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-...
->  arch/s390/Kconfig                                 | 15 ---------------
->  arch/s390/configs/zfcpdump_defconfig              |  1 -
->  arch/s390/crypto/Makefile                         |  2 +-
->  arch/s390/include/asm/archrandom.h                |  3 ---
 
-For s390:
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Should be:
+
+Fix a kernel NULL pointer dereference reported by gpio kselftests.
+
+Sorry - I rushed this one a bit.
+
+Cheers,
+Kent.
+
