@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F66C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1619CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234839AbiGFXnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        id S234854AbiGFXnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234853AbiGFXn0 (ORCPT
+        with ESMTP id S234852AbiGFXnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:43:26 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1A42D1CE;
-        Wed,  6 Jul 2022 16:43:20 -0700 (PDT)
+        Wed, 6 Jul 2022 19:43:42 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8792D1C5;
+        Wed,  6 Jul 2022 16:43:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657151000; x=1688687000;
+  t=1657151021; x=1688687021;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dZbdEudaqSAgySwZHwP+NdzQ1K6SO28Of0fID5u9j00=;
-  b=KTtPl9e4bcMRFAtKPE1G1QN73dGyXaLF+letTw+f2WKieCosw6YJW9qz
-   b6Zt2yiiV/9FYNQ8GZ0a+a5AQDDNvfuP5My3Wlzeu6SrWsFPAfXTjofR7
-   w5CKIgrmAOSY3vVayaEQX11vR8k9sRfRcKj+8997DZsT/r85yk4ni0SSW
-   k=;
-X-IronPort-AV: E=Sophos;i="5.92,251,1650931200"; 
-   d="scan'208";a="218850523"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-8be8ed69.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 06 Jul 2022 23:43:09 +0000
+  bh=gTSC9dkHnErNPeQoDYC86G80+g9Bjz1N0PmHh2qX/hI=;
+  b=va/p6SB0UvtgxIrhBHDizX12KqKIjN0ncHUEfHGpAyQ8UWZNI3+r06cb
+   wJIvkoT+Qq4Q0iLxMya5relNPv8KiDOHbGbtNK2etIwao9w3oKYSYMgYC
+   i3gdab+3osOV57ZfIbwyPktL7NNo5OxEH6d60rghfSxyNtJ8FUDSaG64E
+   0=;
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 06 Jul 2022 23:43:39 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-8be8ed69.us-east-1.amazon.com (Postfix) with ESMTPS id 0E6E3C0881;
-        Wed,  6 Jul 2022 23:43:05 +0000 (UTC)
+        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id 04F33811CF;
+        Wed,  6 Jul 2022 23:43:35 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 6 Jul 2022 23:43:05 +0000
+ id 15.0.1497.36; Wed, 6 Jul 2022 23:43:35 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.160.106) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Wed, 6 Jul 2022 23:43:02 +0000
+ Wed, 6 Jul 2022 23:43:31 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -50,10 +48,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH v2 net 10/12] cipso: Fix data-races around sysctl.
-Date:   Wed, 6 Jul 2022 16:40:01 -0700
-Message-ID: <20220706234003.66760-11-kuniyu@amazon.com>
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH v2 net 12/12] ipv4: Fix a data-race around sysctl_fib_sync_mem.
+Date:   Wed, 6 Jul 2022 16:40:03 -0700
+Message-ID: <20220706234003.66760-13-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220706234003.66760-1-kuniyu@amazon.com>
 References: <20220706234003.66760-1-kuniyu@amazon.com>
@@ -67,88 +65,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While reading cipso sysctl variables, they can be changed concurrently.
-So, we need to add READ_ONCE() to avoid data-races.
+While reading sysctl_fib_sync_mem, it can be changed concurrently.
+So, we need to add READ_ONCE() to avoid a data-race.
 
-Fixes: 446fda4f2682 ("[NetLabel]: CIPSOv4 engine")
+Fixes: 9ab948a91b2c ("ipv4: Allow amount of dirty memory from fib resizing to be controllable")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
-CC: Paul Moore <paul@paul-moore.com>
+CC: David Ahern <dsahern@kernel.org>
 ---
- Documentation/networking/ip-sysctl.rst |  2 +-
- net/ipv4/cipso_ipv4.c                  | 12 +++++++-----
- 2 files changed, 8 insertions(+), 6 deletions(-)
+ net/ipv4/fib_trie.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 9f41961d11d5..0e58001f8580 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1085,7 +1085,7 @@ cipso_cache_enable - BOOLEAN
- cipso_cache_bucket_size - INTEGER
- 	The CIPSO label cache consists of a fixed size hash table with each
- 	hash bucket containing a number of cache entries.  This variable limits
--	the number of entries in each hash bucket; the larger the value the
-+	the number of entries in each hash bucket; the larger the value is, the
- 	more CIPSO label mappings that can be cached.  When the number of
- 	entries in a given hash bucket reaches this limit adding new entries
- 	causes the oldest entry in the bucket to be removed to make room.
-diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
-index 62d5f99760aa..6cd3b6c559f0 100644
---- a/net/ipv4/cipso_ipv4.c
-+++ b/net/ipv4/cipso_ipv4.c
-@@ -239,7 +239,7 @@ static int cipso_v4_cache_check(const unsigned char *key,
- 	struct cipso_v4_map_cache_entry *prev_entry = NULL;
- 	u32 hash;
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index 2734c3af7e24..46e8a5125853 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -498,7 +498,7 @@ static void tnode_free(struct key_vector *tn)
+ 		tn = container_of(head, struct tnode, rcu)->kv;
+ 	}
  
--	if (!cipso_v4_cache_enabled)
-+	if (!READ_ONCE(cipso_v4_cache_enabled))
- 		return -ENOENT;
- 
- 	hash = cipso_v4_map_cache_hash(key, key_len);
-@@ -296,13 +296,14 @@ static int cipso_v4_cache_check(const unsigned char *key,
- int cipso_v4_cache_add(const unsigned char *cipso_ptr,
- 		       const struct netlbl_lsm_secattr *secattr)
- {
-+	int bkt_size = READ_ONCE(cipso_v4_cache_bucketsize);
- 	int ret_val = -EPERM;
- 	u32 bkt;
- 	struct cipso_v4_map_cache_entry *entry = NULL;
- 	struct cipso_v4_map_cache_entry *old_entry = NULL;
- 	u32 cipso_ptr_len;
- 
--	if (!cipso_v4_cache_enabled || cipso_v4_cache_bucketsize <= 0)
-+	if (!READ_ONCE(cipso_v4_cache_enabled) || bkt_size <= 0)
- 		return 0;
- 
- 	cipso_ptr_len = cipso_ptr[1];
-@@ -322,7 +323,7 @@ int cipso_v4_cache_add(const unsigned char *cipso_ptr,
- 
- 	bkt = entry->hash & (CIPSO_V4_CACHE_BUCKETS - 1);
- 	spin_lock_bh(&cipso_v4_cache[bkt].lock);
--	if (cipso_v4_cache[bkt].size < cipso_v4_cache_bucketsize) {
-+	if (cipso_v4_cache[bkt].size < bkt_size) {
- 		list_add(&entry->list, &cipso_v4_cache[bkt].list);
- 		cipso_v4_cache[bkt].size += 1;
- 	} else {
-@@ -1199,7 +1200,8 @@ static int cipso_v4_gentag_rbm(const struct cipso_v4_doi *doi_def,
- 		/* This will send packets using the "optimized" format when
- 		 * possible as specified in  section 3.4.2.6 of the
- 		 * CIPSO draft. */
--		if (cipso_v4_rbm_optfmt && ret_val > 0 && ret_val <= 10)
-+		if (READ_ONCE(cipso_v4_rbm_optfmt) && ret_val > 0 &&
-+		    ret_val <= 10)
- 			tag_len = 14;
- 		else
- 			tag_len = 4 + ret_val;
-@@ -1603,7 +1605,7 @@ int cipso_v4_validate(const struct sk_buff *skb, unsigned char **option)
- 			 * all the CIPSO validations here but it doesn't
- 			 * really specify _exactly_ what we need to validate
- 			 * ... so, just make it a sysctl tunable. */
--			if (cipso_v4_rbm_strictvalid) {
-+			if (READ_ONCE(cipso_v4_rbm_strictvalid)) {
- 				if (cipso_v4_map_lvl_valid(doi_def,
- 							   tag[3]) < 0) {
- 					err_offset = opt_iter + 3;
+-	if (tnode_free_size >= sysctl_fib_sync_mem) {
++	if (tnode_free_size >= READ_ONCE(sysctl_fib_sync_mem)) {
+ 		tnode_free_size = 0;
+ 		synchronize_rcu();
+ 	}
 -- 
 2.30.2
 
