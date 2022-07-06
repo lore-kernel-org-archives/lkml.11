@@ -2,113 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF47C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4EBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234184AbiGFW3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 18:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
+        id S234048AbiGFWaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 18:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233999AbiGFW3m (ORCPT
+        with ESMTP id S233999AbiGFWaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 18:29:42 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11803165A1
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 15:29:40 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g1so13348165edb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 15:29:40 -0700 (PDT)
+        Wed, 6 Jul 2022 18:30:12 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C58624964
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 15:30:11 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id j3so3034137pfb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 15:30:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OGUR4OSSACdoQGymUgb58rO3deGhSo3mmc2zAbWJQeE=;
-        b=MLVtEo7K97RJCHXIRkkYHN7vXWU9zIKn6VxhLksoxNPEadsQYtKR+BmrwV3VaoDKLv
-         sx4xCnoRvDoQA53p4/HfB0RftG9w3QApDYJXuyoRt1iFTSCv93YfmPG3LyZCDFZtMb3b
-         WX5YNtO5QMw081AJgzdbHuJnOdl9ZuSGhb47Y=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iKA8akOzbkf4tNDc6jfn4CUsITOKN9yZnmEgDBs/SyQ=;
+        b=q6a3Irt0falLmlOdgWGFnxHk8Agc+WjZBDzCqkjggQvyzWvyJRYgbbruahzFU3UMAO
+         rijRQsr2J25PLeGwnp+Nykv+fu5KZ8KAIRn2Q00ZTduG2VN33D6+E27CZ57cDZdylV07
+         NGSStd34KnxDkaHKTrMxnFoF4CUspgWJjmiE4D/WBVxvDyAjl2H1FZ6p2AbC8JZY1oYF
+         erHmqIE7H/fr1T38eniUYrxC2g1AMIk390+P4dpRtGWvxFy6wzItDj0zY+M4iJdkYYRY
+         ypV3OPyDukfxEG109qbDOAESZ4G9jHLj7AoAPelNTdiXLGhTOATvm5xkVn0zI6l2OrF3
+         uABQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OGUR4OSSACdoQGymUgb58rO3deGhSo3mmc2zAbWJQeE=;
-        b=zjV/CnhMaU8zLoP01uSjMBh50CAyeqfNHkyBBF4n5wmYo0jir0OnkoT9zVLM/bKqCl
-         F6Kh+XxeVuqoyFpirXYKpWDrHIrtMJVaDH3FtHQ52cTXcF9tCPyVG1a7PbXjCmYnuwOQ
-         a/BP3Gtbq8P617i1dtID5uZIqGZr4Z5YcGD0+iCg2OvHqMrIxsb34MHf0LgGZ3jH2qF9
-         Yvm1d3fp3N9wrz5R9iKM/kWbOHEp53pNuAI1LsGQPO2FALPwdcTPUyJ5AsxU1odmt4sJ
-         ACa1zpJ1/KATvNzE7R2QBQhb3+dzAKbfrP8OZVwJkfwMHKQMAbmxwnFz9/tDoHVL5Z/j
-         +Tfg==
-X-Gm-Message-State: AJIora9ZxKjNkMJ4o+hqZTnj8O4I8mhr/Ssgyj9KURnFgJ/pmHR2CM4v
-        6rNn0tiMQQ3arPj95XXTwKGxR3iqNLbsq3E6
-X-Google-Smtp-Source: AGRyM1voCJyvN+Q1aqx7rCTIjo75ZK2LrbmJF2oXC/EjIhm7jZNLId7LCz0MelOf7f/myTBteIBROg==
-X-Received: by 2002:a05:6402:240a:b0:437:d2b6:3dde with SMTP id t10-20020a056402240a00b00437d2b63ddemr57323134eda.62.1657146579354;
-        Wed, 06 Jul 2022 15:29:39 -0700 (PDT)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
-        by smtp.gmail.com with ESMTPSA id i21-20020a17090639d500b006fe98fb9523sm18056303eje.129.2022.07.06.15.29.38
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 15:29:38 -0700 (PDT)
-Received: by mail-wr1-f42.google.com with SMTP id b26so23921039wrc.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 15:29:38 -0700 (PDT)
-X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
- b13-20020adff90d000000b0020cde324d35mr38500441wrr.583.1657146577575; Wed, 06
- Jul 2022 15:29:37 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iKA8akOzbkf4tNDc6jfn4CUsITOKN9yZnmEgDBs/SyQ=;
+        b=J+FOK7xLiFcOh9gkWUFDV0Sg72MwqbDOv5l2V2FSVOeUbNUXve09T79Xvzew+E/8n0
+         VQp0DugG04RB00PBxfyOKmk0/ZS254drTjJaM/phM0oicRL57nTdSnFIZnqopi8luy33
+         eno1FoN+3qIcGe1nXB8H4E4m1NXwh6ihmHPVmAgDOlzeTbfHuNDOLg/vMcv3HRJxf1ou
+         1mDARz6P85WJxmg05SyONqU0vYuptgE/FHi2KXa/nKX8JdMS06E5hf84Dl2EtVul051R
+         NEwotn1Cp3hialVHp2W0JHD4fw/HWq9U4gPb5FtSG1xVlEfauvFb/5GdZBMt+hr7yy7e
+         naWA==
+X-Gm-Message-State: AJIora/ecqNG3P6LwJoc8TxknGWzTgci5l/BoyT8hWPb2zmiVBF8ME2l
+        dg8aWRoNFoO40IQ237mySaQ/eA==
+X-Google-Smtp-Source: AGRyM1sLT1U7pR8GVCabA1hqq2+btL+DQYe73v4JeLKC365avmWaP7/FZnlh9V7Qy3kZGK00OgD8og==
+X-Received: by 2002:a17:902:dad1:b0:16a:75cb:5d97 with SMTP id q17-20020a170902dad100b0016a75cb5d97mr49535733plx.64.1657146610443;
+        Wed, 06 Jul 2022 15:30:10 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id n11-20020a170902968b00b0016a11b9aeb3sm26092000plp.224.2022.07.06.15.30.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 15:30:09 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 22:30:05 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Jim Mattson <jmattson@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/14] KVM: nVMX: Use vmcs_config for setting up nested
+ VMX MSRs
+Message-ID: <YsYM7VbPRQKflZrZ@google.com>
+References: <20220627160440.31857-1-vkuznets@redhat.com>
+ <CALMp9eQL2a+mStk-cLwVX6NVqwAso2UYxAO7UD=Xi2TSGwUM2A@mail.gmail.com>
+ <87y1xgubot.fsf@redhat.com>
+ <CALMp9eSBLcvuNDquvSfUnaF3S3f4ZkzqDRSsz-v93ZeX=xnssg@mail.gmail.com>
+ <87letgu68x.fsf@redhat.com>
+ <CALMp9eQ35g8GpwObYBJRxjuxZAC8P_HNMMaC0v0uZeC+pMeW_Q@mail.gmail.com>
+ <87czeru9cp.fsf@redhat.com>
+ <CALMp9eQ5Sqv3RP8kipSbpfnvef_Sc1xr1+g53fwr0a=bhzgAhg@mail.gmail.com>
 MIME-Version: 1.0
-References: <cover.1656759988.git.mchehab@kernel.org> <0ae8251f97c642cfd618f2e32eb1e66339e5dfde.1656759989.git.mchehab@kernel.org>
- <CAD=FV=W7gzG4xSsR3HxOv96ytzyNvT5a1oQnmy4F0BqpCOChOw@mail.gmail.com>
-In-Reply-To: <CAD=FV=W7gzG4xSsR3HxOv96ytzyNvT5a1oQnmy4F0BqpCOChOw@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 6 Jul 2022 15:29:25 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XdiDANmGsSmb1RNYyKxcbtZORyDbJFvhKpQG=dbvG14Q@mail.gmail.com>
-Message-ID: <CAD=FV=XdiDANmGsSmb1RNYyKxcbtZORyDbJFvhKpQG=dbvG14Q@mail.gmail.com>
-Subject: Re: [PATCH 11/12] docs: arm: index.rst: add google/chromebook-boot-flow
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALMp9eQ5Sqv3RP8kipSbpfnvef_Sc1xr1+g53fwr0a=bhzgAhg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Jun 29, 2022, Jim Mattson wrote:
+> On Wed, Jun 29, 2022 at 2:06 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
+> 
+> > For PERF_GLOBAL_CTRL errata:
+> > - We can move the filtering to vmx_vmexit_ctrl()/vmx_vmentry_ctrl()
+> > preserving the status quo: KVM doesn't use the feature but it is exposed
+> > to L1 hypervisor (and L1 hypervisor presumably has the same check and
+> > doesn't use the feature. FWIW, the workaround was added in 2011 and the
+> > erratas it references appeared in 2010, this means that the affected
+> > CPUs are quite old, modern proprietary hypervisors won't likely boot
+> > there).
+> Sadly, Nehalem and Westmere are well-supported by KVM today, and we
+> will probably still continue to support them for at least another
+> decade. They both have EPT, unrestricted guest, and other VT-x2
+> features that KVM still considers optional.
 
-On Wed, Jul 6, 2022 at 9:34 AM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Sat, Jul 2, 2022 at 4:07 AM Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
-> >
-> > This document was added without placing it at arm book.
-> >
-> > Fixes: 59228d3b9060 ("dt-bindings: Document how Chromebooks with depthcharge boot")
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> > ---
-> >
-> > To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> > See [PATCH 00/12] at: https://lore.kernel.org/all/cover.1656759988.git.mchehab@kernel.org/
-> >
-> >  Documentation/arm/index.rst | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/Documentation/arm/index.rst b/Documentation/arm/index.rst
-> > index 2bda5461a80b..495ada7915e1 100644
-> > --- a/Documentation/arm/index.rst
-> > +++ b/Documentation/arm/index.rst
-> > @@ -31,6 +31,8 @@ SoC-specific documents
-> >  .. toctree::
-> >     :maxdepth: 1
-> >
-> > +   google/chromebook-boot-flow
-> > +
->
-> Sure, seems reasonable. It's not truly SoC-specific but I guess
-> there's no better place for it.
->
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-
-Just to be clear, this probably should go into the Qualcomm tree.
-
--Doug
+Nehalem doesn't have unrestricted guest.  Nehalem is the only generation with EPT
+but not unrestricted guest.
