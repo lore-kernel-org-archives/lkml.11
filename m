@@ -2,143 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9C8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D49CFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbiGFPGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        id S233259AbiGFPHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbiGFPGX (ORCPT
+        with ESMTP id S232198AbiGFPHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:06:23 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C64F1AF06
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 08:06:21 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id i17so14059913ljj.12
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 08:06:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8AO+J2LE63gF/pEN0vFhWdC06z7hhSAJ2kzbzBHJQYc=;
-        b=Yu53js0MAGepvew3Gnozocl206vgIuj1V+C5/ECHoEY/DsvpqGEjcqt9GF843uMUbq
-         pQ+tva9G6ED+y3/e+AW1/Ps8GTtgDscD/JVWR9FPTXdrGy1qaglB5p2jZT/BklBtWKdB
-         b4f3q9wxnYksxsCI/Qh1Nc2PvsultWSf+E75bmnz+hFZoQCKo93Bp7HMq6ol62rfOzvf
-         Tny/uz1AzSMVNa5L5yvbYaLDLDKxZqQxJ6eRjmA45XDrLad4VXyCyv3ppg9S6vtL89UN
-         0XPd9vLhnjdD+fLgTl4RgVSv19MpSZqBHxwd291COOaZp5Hv4g1Rz9Db2zssJiWuYbVl
-         4XJA==
+        Wed, 6 Jul 2022 11:07:07 -0400
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58001AF06
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 08:07:01 -0700 (PDT)
+Received: by mail-qt1-f181.google.com with SMTP id l14so18599541qtx.2
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 08:07:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8AO+J2LE63gF/pEN0vFhWdC06z7hhSAJ2kzbzBHJQYc=;
-        b=29LoQ2GYPWYCHxiEYq531Ny7IJMMRitxCi7Lbcm7ijfo9rDY9/AdgvZfzL2/deReoB
-         AfVQgy9TXx71K3JwIUnQXveGYfoJvZD61tsrdbs04lhIlhT4sgaetdh8R1UokjRafVop
-         x+w2Xa2w3KMOh4Zb9+ng+xgojDzJo/NKbeG2N7tYF4PuGvTa7W0+qxjQ0ReHaCcEdTth
-         YRcaWypjVrZy8tCrdUEPTP+zOgHzVDhn5vugYGpnAV19BPxohpA4tsyQ/as38CL5+psr
-         l8WhBOGZEhJ68XYp/arihN4AGHPDlnvC1nduxhpXSK4giPGMPsLyvFkp0FDFsny7AgDM
-         l9gA==
-X-Gm-Message-State: AJIora8uNOQkkN0+X7+vczATLBHC6cBQJfQP/pMo0VPowh2DEPWcbwoo
-        Pgk9sNGugEQU96UdsOQJYH9dXQ==
-X-Google-Smtp-Source: AGRyM1vvRukpDW59hhuCkomJfS5xKDFgaLXYid6bqitubs0npzp+fQmvLDn1pZEU+L4JkcWZYMhIxA==
-X-Received: by 2002:a2e:a26c:0:b0:25a:6dad:8bf5 with SMTP id k12-20020a2ea26c000000b0025a6dad8bf5mr23877254ljm.136.1657119979530;
-        Wed, 06 Jul 2022 08:06:19 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id g1-20020a0565123b8100b0047f9d9a4186sm6330501lfv.165.2022.07.06.08.06.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 08:06:18 -0700 (PDT)
-Message-ID: <bce8c598-9075-d643-59b5-c2397a55b52f@linaro.org>
-Date:   Wed, 6 Jul 2022 17:06:16 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=I0RXuzZs3s0id/kcom5gH7O0HmNMUUNPAv91LFO4+a4=;
+        b=thsqiGOm2hw49DgkAwKjxKE9N786KR1TLNJV1w7m/5QEnEk1xz3sZQTmhs3vNGW5qa
+         9snTMjyutcGHDjbEMMMp56hP2yKcpK7lcQ/lu3oHw2XKeZXLqbQOAs1c4lSxwf/WHt1M
+         f+x8k+F98Tlkveo4thxWjJj+UPKTQriPhf1o+EHNZ0uM/yoCIjGhR9RftJUczTZULmRx
+         5VtlnDPg+sHVd6X0StcPw06jHMrI9qBD9y9Qv0WjvMSyx+tHi3ohV1Pm27LZdJQ6XpgM
+         DIZCZSYbSr/Q8R9BrFSOTS5HKGkMOsBMOVvdy8Lm2Ypuev5SaRjJZZ0xIlX1CHD5Prj4
+         fYJw==
+X-Gm-Message-State: AJIora/ni2g7DeUnsIeqWJr8T/NUjIWdUyMvkcIzYys9ThEkLQXieHI5
+        89htEW7BmQxXGX11O+q1WIpNN5aMFYdn
+X-Google-Smtp-Source: AGRyM1syM2piJxHzgzwmYO+2F/M3+bHsRSC/l80bNxbiOkjZ/DCWE9FGy+Tge1oNYwtQpJp5Yz7jXQ==
+X-Received: by 2002:a05:6214:29e6:b0:470:44d9:1ec5 with SMTP id jv6-20020a05621429e600b0047044d91ec5mr36520228qvb.95.1657120020754;
+        Wed, 06 Jul 2022 08:07:00 -0700 (PDT)
+Received: from localhost (pool-68-160-176-52.bstnma.fios.verizon.net. [68.160.176.52])
+        by smtp.gmail.com with ESMTPSA id d3-20020ac81183000000b0031a2cdab5cesm19492709qtj.37.2022.07.06.08.06.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 08:07:00 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 11:06:58 -0400
+From:   Mike Snitzer <snitzer@kernel.org>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Alasdair Kergon <agk@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        linux-kernel@vger.kernel.org, dm-devel@redhat.com,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-raid@vger.kernel.org, Song Liu <song@kernel.org>,
+        linux-security-module@vger.kernel.org,
+        Milan Broz <gmazyland@gmail.com>
+Subject: Re: [PATCH v7 1/3] dm: Add verity helpers for LoadPin
+Message-ID: <YsWlEmaQsIVUiKC0@redhat.com>
+References: <20220627153526.3750341-1-mka@chromium.org>
+ <20220627083512.v7.1.I3e928575a23481121e73286874c4c2bdb403355d@changeid>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V3 02/11] dt-bindings: pci: tegra: Convert to json-schema
-Content-Language: en-US
-To:     Vidya Sagar <vidyas@nvidia.com>, Rob Herring <robh@kernel.org>
-Cc:     bhelgaas@google.com, lorenzo.pieralisi@arm.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, kishon@ti.com,
-        vkoul@kernel.org, kw@linux.com, p.zabel@pengutronix.de,
-        mperttunen@nvidia.com, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        kthota@nvidia.com, mmaddireddy@nvidia.com, sagar.tv@gmail.com,
-        Thierry Reding <treding@nvidia.com>
-References: <20220629060435.25297-1-vidyas@nvidia.com>
- <20220629060435.25297-3-vidyas@nvidia.com>
- <20220630210449.GA3283899-robh@kernel.org>
- <e971a557-3387-efcf-87ec-983b998c5e93@nvidia.com>
- <2829e71b-1769-ce24-f810-d63e619aa5f0@linaro.org>
- <398a9370-6c2d-319c-2e23-038588fbf004@nvidia.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <398a9370-6c2d-319c-2e23-038588fbf004@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627083512.v7.1.I3e928575a23481121e73286874c4c2bdb403355d@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/07/2022 12:46, Vidya Sagar wrote:
+On Mon, Jun 27 2022 at 11:35P -0400,
+Matthias Kaehlcke <mka@chromium.org> wrote:
+
+> LoadPin limits loading of kernel modules, firmware and certain
+> other files to a 'pinned' file system (typically a read-only
+> rootfs). To provide more flexibility LoadPin is being extended
+> to also allow loading these files from trusted dm-verity
+> devices. For that purpose LoadPin can be provided with a list
+> of verity root digests that it should consider as trusted.
 > 
+> Add a bunch of helpers to allow LoadPin to check whether a DM
+> device is a trusted verity device. The new functions broadly
+> fall in two categories: those that need access to verity
+> internals (like the root digest), and the 'glue' between
+> LoadPin and verity. The new file dm-verity-loadpin.c contains
+> the glue functions.
 > 
-> On 7/6/2022 3:36 PM, Krzysztof Kozlowski wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> On 06/07/2022 11:53, Vidya Sagar wrote:
->>>>> +  nvidia,bpmp:
->>>>> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->>>>> +    description: |
->>>>> +      Must contain a pair of phandle to BPMP controller node followed by controller ID. Following
->>>>> +      are the controller IDs for each controller:
->>>>> +
->>>>> +        0: C0
->>>>> +        1: C1
->>>>> +        2: C2
->>>>> +        3: C3
->>>>> +        4: C4
->>>>> +        5: C5
->>>>> +    items:
->>>>> +      - items:
->>>>> +          - minimum: 0
->>>>> +            maximum: 0xffffffff
->>>>
->>>> That's already the limit. Just a description is fine.
->>>>
->>>>> +          - enum: [ 0, 1, 2, 3, 4, 5 ]
->>>>
->>>> maximum: 5
->>>
->>> Setting the maximum to '5' is resulting in the following error.
->>>
->>> pcie-ep@141a0000: nvidia,bpmp:0:0: 4294967295 is greater than the
->>> maximum of 5
->>>
->>> Could you please help me understand why I'm seeing this error?
->>
->> Trim your replies.
->>
->> Why adding minimum:5 to the phandle? Rob said add a description. Nothing
->> about minimum.
-> 
-> I'm sorry I didn't understand the review comment clearly.
-> There is one description added above already. Are you (and Rob) saying 
-> that one more description is needed?
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> Acked-by: Kees Cook <keescook@chromium.org>
 
-You have description of entire property. The property consists of
-phandles ("items", with only one item) and each phandle of two items
-(second nested "items"). The first item in phandle is actual phandle, so
-it does not need any constraints/schema, just a description. This was
-missing.
-
-Something like this:
-https://elixir.bootlin.com/linux/v5.18-rc1/source/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml#L42
-
-except that in your case second item (in the nested items) have actual
-schema, not description, which is good.
-
-
-
-Best regards,
-Krzysztof
+Acked-by: Mike Snitzer <snitzer@kernel.org>
