@@ -2,191 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA617C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2530C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbiGFK0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41246 "EHLO
+        id S231986AbiGFK2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232324AbiGFK0c (ORCPT
+        with ESMTP id S231359AbiGFK2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:26:32 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F0B26AD5
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:26:30 -0700 (PDT)
-Received: from fsav311.sakura.ne.jp (fsav311.sakura.ne.jp [153.120.85.142])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 266AQT3u067488;
-        Wed, 6 Jul 2022 19:26:29 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav311.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp);
- Wed, 06 Jul 2022 19:26:29 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 266AQSCK067485
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 6 Jul 2022 19:26:28 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <a6d98824-56c8-6d92-bb1b-eb065b57cb81@I-love.SAKURA.ne.jp>
-Date:   Wed, 6 Jul 2022 19:26:28 +0900
+        Wed, 6 Jul 2022 06:28:09 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E965B26541;
+        Wed,  6 Jul 2022 03:27:58 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id sb34so26247468ejc.11;
+        Wed, 06 Jul 2022 03:27:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vrf7eRxXaX9GHkQGDtqblfgAf3cTIp7nBk4kt/XYpbg=;
+        b=l7zVez+bUSMxXQaNR1Jwjnqj0xNlULk790ESjdcfTxECiQs524tPYiv6NOTnP8HFFK
+         2rpdiKj9/9Qg5RdbT5fqjkpvMpxp5wqKS+oltGIKXZql/Ohi8Xn3GsZ0zLDP/zD7CZLi
+         homJqMQ8jw+97uG8LR2fVniAP5lWRerCeYC1X/UtegI+LQtG16r6snCzaRXICBKoX2WE
+         svoVAT9OCHPMvuea1wcnLaRbSPlogMYm2NBDt2/xilC4Lnn90Si41uodWVVhAyD3TjXO
+         A6d1foj/NNK9kFRICm38ssz6KdNmb92C0HhkN9+cz9hhG/AX40wThidvLFl9tibhflIh
+         VUvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vrf7eRxXaX9GHkQGDtqblfgAf3cTIp7nBk4kt/XYpbg=;
+        b=JNjI8iym7Q8r0zq60vpZXdn7YHQ4sYFYRo9ASWGBj2BUpGfmEUhL632IIXgp2kg1Hd
+         B5zCcep962xj58xENU9Z1VJRM1f1bbc4p4YNUT9rOPMR/P/Jq76prm/PmWiqCxc1ZdKw
+         P4ytU+hReKq+Jn01V6mpphiwmFxdFZd+IG2oyX3VVGnDpCKWItCSmdkGLMvWiEnNqSsA
+         oQOUaKVs5fdyRhyOTtclw0X3FjqVlC/U7AWMhzbQALLWvJyiu5Z+E1ZTf7ertwkmeSqQ
+         rL/rAHEgTn2Ld+dQ2FSgBL5vsjgr+vEUsl8ySVd4UZjewnDXx5ByurmiN+Osw3zBtqdV
+         lkNA==
+X-Gm-Message-State: AJIora+vNN+2xSGlxRCrYW6XHBVI0zg84/ANd3fkyTtf4o11N8o3KoWA
+        3rdm0GAbPTp+ivbIGOPC7l4=
+X-Google-Smtp-Source: AGRyM1uV8klfxOZtkNXehCupH/7CcG+HJ+DinCI0tfrbaOf1C+ligau7apYkgHDeKVHe75F7rB+6gQ==
+X-Received: by 2002:a17:906:4fc6:b0:722:e739:53cb with SMTP id i6-20020a1709064fc600b00722e73953cbmr38557664ejw.128.1657103277374;
+        Wed, 06 Jul 2022 03:27:57 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id e17-20020a170906505100b006fece722508sm17109947ejk.135.2022.07.06.03.27.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 03:27:56 -0700 (PDT)
+Message-ID: <62c563ac.1c69fb81.d3170.dfa4@mx.google.com>
+X-Google-Original-Message-ID: <YsVfyMySheM7+0TP@Ansuel-xps.>
+Date:   Wed, 6 Jul 2022 12:11:20 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCH 04/13] ARM: dts: qcom: disable smb208 regulators for
+ ipq8064-rb3011
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-5-ansuelsmth@gmail.com>
+ <ad7b4082-fe79-3f01-eaa6-b9809a55aac3@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] char: misc: make misc_open() and misc_register() killable
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Arjan van de Ven <arjan@linux.intel.com>
-References: <YsKW6VvWqvcMRBSl@kroah.com>
- <100f445e-9fa8-4f37-76aa-8359f0008c59@I-love.SAKURA.ne.jp>
- <YsLIepAXeBKT0AF/@kroah.com>
- <01a93294-e323-b9ca-7e95-a33d4b89dc47@I-love.SAKURA.ne.jp>
- <YsL5pUuydMWJ9dSQ@kroah.com>
- <617f64e3-74c8-f98b-3430-bd476867e483@I-love.SAKURA.ne.jp>
- <5665ccb2-b92b-9e1f-8bb5-a950986450ec@I-love.SAKURA.ne.jp>
- <YsRHwy6+5gask+KT@kroah.com>
- <064bbe2a-c18e-203e-9e01-b32fe9baa390@I-love.SAKURA.ne.jp>
- <7ddb25ff-60e5-75be-8080-2a7465cca68c@I-love.SAKURA.ne.jp>
- <YsUtBERm94k/iZTy@kroah.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <YsUtBERm94k/iZTy@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad7b4082-fe79-3f01-eaa6-b9809a55aac3@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/07/06 15:34, Greg KH wrote:
-> On Wed, Jul 06, 2022 at 03:21:15PM +0900, Tetsuo Handa wrote:
->> How should we fix this problem?
+On Wed, Jul 06, 2022 at 10:34:50AM +0200, Krzysztof Kozlowski wrote:
+> On 05/07/2022 15:39, Christian Marangi wrote:
+> > Mikrotik RB3011 have a special configuration where the regulators are
+> > not the common smb208 controlled by RPM but they use a TPS563900
+> > controlled via i2c. Disable the smb208 for this specific device.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > Reviewed-by: Jonathan McDowell <noodles@earth.li>
+> > Tested-by: Jonathan McDowell <noodles@earth.li>
 > 
-> We can decrease the timeout in usb_stor_msg_common().  I imagine that if
-> that timeout is ever hit in this sequence, then all will recover, right?
-> Try decreasing it to a sane number and see what happens.
+> This is the first version of patchset. How did the Rb/Tb tags appear?
+> 
+> Best regards,
+> Krzysztof
 
-Yes, all recovers with below diff.
+Will add in the cover letter where this comes from. Didn't add this as
+this series contains less patch and other changes than the prev series
+but now I will do so we know where these tags comes from.
 
-------------------------------------------------------------
-diff --git a/drivers/usb/storage/transport.c b/drivers/usb/storage/transport.c
-index 1928b3918242..d2a192306e0c 100644
---- a/drivers/usb/storage/transport.c
-+++ b/drivers/usb/storage/transport.c
-@@ -164,7 +164,7 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
-  
- 	/* wait for the completion of the URB */
- 	timeleft = wait_for_completion_interruptible_timeout(
--			&urb_done, timeout ? : MAX_SCHEDULE_TIMEOUT);
-+			&urb_done, timeout ? : 5 * HZ);
-  
- 	clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags);
- 
-------------------------------------------------------------
-
-But
-
->> Anyway,
->>
->>         /*
->>          * Resuming.  We may need to wait for the image device to
->>          * appear.
->>          */
->>         wait_for_device_probe();
->>
->> in snapshot_open() will sleep forever if some device became unresponsive.
->>
-
-wait_for_device_probe() in snapshot_open() was added by commit c751085943362143
-("PM/Hibernate: Wait for SCSI devices scan to complete during resume"), and
-that commit did not take into account possibility of unresponsive hardware.
-
-   "In addition, if the resume from hibernation is userland-driven, it's
-    better to wait for all device probes in the kernel to complete before
-    attempting to open the resume device."
-
-It is trivial to make e.g. atomic_read(&probe_count) == 10, which means that
-acceptable timeout for usb_stor_msg_common() may be no longer acceptable timeout
-for wait_for_device_probe(). Unlike flush_workqueue(), wait_for_device_probe()
-can wait forever if new probe requests keep coming in while waiting for existing
-probe requests to complete. Therefore, I think we should introduce timeout on
-wait_for_device_probe() side as well.
-
-I would like to propose below changes in 3 patches as fixes for this problem.
-Since there are 13 wait_for_device_probe() callers, maybe we want both killable
-and uninterruptible versions and pass timeout as an argument...
-
-------------------------------------------------------------
- drivers/base/dd.c               |    3 ++-
- drivers/char/misc.c             |    9 ++++++---
- drivers/usb/storage/transport.c |    2 +-
- 3 files changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 3fc3b5940bb3..67e08b381ee2 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -723,7 +723,8 @@ void wait_for_device_probe(void)
- 	flush_work(&deferred_probe_work);
- 
- 	/* wait for the known devices to complete their probing */
--	wait_event(probe_waitqueue, atomic_read(&probe_count) == 0);
-+	wait_event_killable_timeout(probe_waitqueue,
-+				    atomic_read(&probe_count) == 0, 60 * HZ);
- 	async_synchronize_full();
- }
- EXPORT_SYMBOL_GPL(wait_for_device_probe);
-diff --git a/drivers/char/misc.c b/drivers/char/misc.c
-index ca5141ed5ef3..6430c534a1cb 100644
---- a/drivers/char/misc.c
-+++ b/drivers/char/misc.c
-@@ -104,7 +104,8 @@ static int misc_open(struct inode *inode, struct file *file)
- 	int err = -ENODEV;
- 	const struct file_operations *new_fops = NULL;
- 
--	mutex_lock(&misc_mtx);
-+	if (mutex_lock_killable(&misc_mtx))
-+		return -EINTR;
- 
- 	list_for_each_entry(c, &misc_list, list) {
- 		if (c->minor == minor) {
-@@ -116,7 +117,8 @@ static int misc_open(struct inode *inode, struct file *file)
- 	if (!new_fops) {
- 		mutex_unlock(&misc_mtx);
- 		request_module("char-major-%d-%d", MISC_MAJOR, minor);
--		mutex_lock(&misc_mtx);
-+		if (mutex_lock_killable(&misc_mtx))
-+			return -EINTR;
- 
- 		list_for_each_entry(c, &misc_list, list) {
- 			if (c->minor == minor) {
-@@ -178,7 +180,8 @@ int misc_register(struct miscdevice *misc)
- 
- 	INIT_LIST_HEAD(&misc->list);
- 
--	mutex_lock(&misc_mtx);
-+	if (mutex_lock_killable(&misc_mtx))
-+		return -EINTR;
- 
- 	if (is_dynamic) {
- 		int i = find_first_zero_bit(misc_minors, DYNAMIC_MINORS);
-diff --git a/drivers/usb/storage/transport.c b/drivers/usb/storage/transport.c
-index 1928b3918242..d2a192306e0c 100644
---- a/drivers/usb/storage/transport.c
-+++ b/drivers/usb/storage/transport.c
-@@ -164,7 +164,7 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
-  
- 	/* wait for the completion of the URB */
- 	timeleft = wait_for_completion_interruptible_timeout(
--			&urb_done, timeout ? : MAX_SCHEDULE_TIMEOUT);
-+			&urb_done, timeout ? : 60 * HZ);
-  
- 	clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags);
- 
-------------------------------------------------------------
-
+-- 
+	Ansuel
