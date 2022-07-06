@@ -2,173 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D0CCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 009D8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbiGFOlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60634 "EHLO
+        id S233543AbiGFOmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233413AbiGFOlg (ORCPT
+        with ESMTP id S232564AbiGFOme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:41:36 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D705237D3;
-        Wed,  6 Jul 2022 07:41:35 -0700 (PDT)
+        Wed, 6 Jul 2022 10:42:34 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6454624BC8
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 07:42:33 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id l7so17987704ljj.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 07:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657118495; x=1688654495;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=Hr9yV/i11+naZBUagnWE5HaqO+SDNFfP01uIpud54bQ=;
-  b=QeontSuISPdiGgRlQ57Pj+KlhZvaz4o+qoWNYD+a6cT8rixGBIAUtvGS
-   DCJqteOCeKTGQGPb1+jRHCI+m6yZ4M9zK1chjQ71J93SAi3gHoMdDK3tP
-   tcRQsuE+PCm//HzVgGvYw9S1mrfI2taetk/hT4iY/q4QxQxpWR3q+pfwB
-   8=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 06 Jul 2022 07:41:35 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 06 Jul 2022 07:40:49 -0700
-X-QCInternal: smtphost
-Received: from hu-krichai-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.37])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 06 Jul 2022 20:10:27 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 4058933)
-        id D6C9642A4; Wed,  6 Jul 2022 20:10:26 +0530 (+0530)
-From:   Krishna chaitanya chundru <quic_krichai@quicinc.com>
-To:     helgaas@kernel.org
-Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mka@chromium.org,
-        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
-        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
-        quic_ramkri@quicinc.com, manivannan.sadhasivam@linaro.org,
-        swboyd@chromium.org, dmitry.baryshkov@linaro.org,
-        Krishna chaitanya chundru <quic_krichai@quicinc.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH v4 2/2] PCI: qcom: Restrict pci transactions after pci suspend
-Date:   Wed,  6 Jul 2022 20:10:25 +0530
-Message-Id: <1657118425-10304-3-git-send-email-quic_krichai@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657118425-10304-1-git-send-email-quic_krichai@quicinc.com>
-References: <1656684800-31278-1-git-send-email-quic_krichai@quicinc.com>
- <1657118425-10304-1-git-send-email-quic_krichai@quicinc.com>
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6Xe30gHq1/bKVOvvpUolv/zq7ZNGoEVUN1+qrlGNB7M=;
+        b=dJUCvaARPZnU/5Wz/bruRjeC5zre5Fkd+rHtbW9xlKXjHpxRqKtrRhJcWNIWfV5fzh
+         pg3javD/nGaSKyy0wWmt2m/46hnr7UXcRv6EDjftRg8+jSKVhzttwvOhs+hJrLXa+Zy4
+         orylxwG+eTdCwvOUj7V0UGvV6BOw7ZcFnOjIxY7/zGkI8PL7c7S+ZxwymH7w5dKU4m6M
+         x7uiNd6N5FxbDzKlX3m3MY7tJEsOEPZHOvWZeAnPQ8xtWQcRjk83ZCareMtKaVvKAO8f
+         d9LjUF34CJAHo0ejzxdwalSneiYiZVkXttsijm4HUh/lrIGUPSHKgDW3jflNv1PPQO41
+         hWeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6Xe30gHq1/bKVOvvpUolv/zq7ZNGoEVUN1+qrlGNB7M=;
+        b=OQJCIFuF0DjMQPJsuIWb6H1jqK4uLfZP+OEN6TOCk8SQDAJoV9Aw/FG08j2flCy3+k
+         BrsCQnKSixS5RLXj2mN9mi4SwmkKvwXnc2q3qx6HEB/h2e5a0Ej+Eiv3xHkyE3pK2WVO
+         2JE/7ojBCJhtR7WUI8ltLIp/Q0Mxa9euocR0fHaQfq1WybELWq8B93Qa45FE+yqi9svg
+         nCIUQRxuNs5aSo7ab6I7REcl3Guw9ZZo/Hc5Zo6TaBjRaOFzurHlz19uok9bWoGQxUlr
+         CqfMgqP10PrIBkp2S0Xl+YALy5jZ0o2DHzs9f13E7DPdl++nXE6b5mjGjk6rG/7KwmIE
+         Zg9A==
+X-Gm-Message-State: AJIora80nernhuS13mVPDQAdf+1r9IwhyH0xM3bwNReeYaAiAxZ3X4r/
+        1tDeVNlMJG/PiR9toBoRIUfwwQ==
+X-Google-Smtp-Source: AGRyM1u9DKYFBoJu0fPNHXOP5UXld700MJ8EcMFqpYaPedDBT5bVOHjcVoKn+YYrzqaUozSqcd4nBg==
+X-Received: by 2002:a2e:99d0:0:b0:25d:33e7:2b01 with SMTP id l16-20020a2e99d0000000b0025d33e72b01mr5207636ljj.146.1657118551635;
+        Wed, 06 Jul 2022 07:42:31 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id s8-20020a056512202800b0047f750ecd8csm6319194lfs.67.2022.07.06.07.42.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 07:42:31 -0700 (PDT)
+Message-ID: <0cbf9425-7fa3-56fa-286e-f9d87424a6f3@linaro.org>
+Date:   Wed, 6 Jul 2022 16:42:30 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 03/13] ARM: dts: qcom: add missing rpm regulators and
+ cells for ipq8064
+Content-Language: en-US
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-4-ansuelsmth@gmail.com>
+ <e81344f6-7da5-a209-2785-d540e41f3958@linaro.org>
+ <62c56348.1c69fb81.d2cad.2584@mx.google.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <62c56348.1c69fb81.d2cad.2584@mx.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the endpoint device state is D0 and irq's are not freed, then
-kernel try to mask interrupts in system suspend path by writing
-in to the vector table (for MSIX interrupts) and config space (for MSI's).
+On 06/07/2022 12:09, Christian Marangi wrote:
+> On Wed, Jul 06, 2022 at 10:34:16AM +0200, Krzysztof Kozlowski wrote:
+>> On 05/07/2022 15:39, Christian Marangi wrote:
+>>> Add cells definition for rpm node and add missing regulators for the 4
+>>> regulator present on ipq8064. There regulators are controlled by rpm and
+>>> to correctly works gsbi4_i2c require to be NEVER disabled or rpm will
+>>> reject any regulator change request.
+>>>
+>>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+>>> Tested-by: Jonathan McDowell <noodles@earth.li>
+>>> ---
+>>>  arch/arm/boot/dts/qcom-ipq8064.dtsi | 36 +++++++++++++++++++++++++++++
+>>>  1 file changed, 36 insertions(+)
+>>>
+>>> diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+>>> index 1b4b72723ead..c0b05d2a2d6d 100644
+>>> --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+>>> +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+>>> @@ -844,10 +844,46 @@ rpm: rpm@108000 {
+>>>  			clocks = <&gcc RPM_MSG_RAM_H_CLK>;
+>>>  			clock-names = "ram";
+>>>  
+>>> +			#address-cells = <1>;
+>>> +			#size-cells = <0>;
+>>
+>> Why adding these?
+>>
+> 
+> Fix dt warning, will split and put it in a separate commit.
+> 
+>>> +
+>>>  			rpmcc: clock-controller {
+>>>  				compatible = "qcom,rpmcc-ipq806x", "qcom,rpmcc";
+>>>  				#clock-cells = <1>;
+>>>  			};
+>>> +
+>>> +			smb208_regulators: regulators {
+>>> +				compatible = "qcom,rpm-smb208-regulators";
+>>> +				status = "okay";
+>>
+>> Was the node disabled?
+>>
+> 
+> smb208 is the normal and advised way to handle regulators on this
+> platform. Some device may want to not follow that and implement their
+> own regulator bypassing rpm so we add a status and on the current device
+> present upstream we set it disabled as it does use different regulators
+> implementation.
 
-These transactions are initiated in the pm suspend after pcie clocks got
-disabled as part of platform driver pm  suspend call. Due to it, these
-transactions are resulting in un-clocked access and eventually to crashes.
+You just added a new node and say we set it as disabled... so the code
+is not correct, because you enabled it. So again my question is valid -
+was the node already existing and was it disabled?
 
-So added a logic in qcom driver to restrict these unclocked access.
-And updated the logic to check the link state before masking
-or unmasking the interrupts.
+> 
 
-Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
----
- drivers/pci/controller/dwc/pcie-designware-host.c | 14 +++++++--
- drivers/pci/controller/dwc/pcie-qcom.c            | 36 +++++++++++++++++++++--
- 2 files changed, 46 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 2fa86f3..2a46b40 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -29,13 +29,23 @@ static void dw_msi_ack_irq(struct irq_data *d)
- 
- static void dw_msi_mask_irq(struct irq_data *d)
- {
--	pci_msi_mask_irq(d);
-+	struct pcie_port *pp = irq_data_get_irq_chip_data(d->parent_data);
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+
-+	if (dw_pcie_link_up(pci))
-+		pci_msi_mask_irq(d);
-+
- 	irq_chip_mask_parent(d);
- }
- 
- static void dw_msi_unmask_irq(struct irq_data *d)
- {
--	pci_msi_unmask_irq(d);
-+	struct pcie_port *pp = irq_data_get_irq_chip_data(d->parent_data);
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+
-+	if (dw_pcie_link_up(pci))
-+		pci_msi_unmask_irq(d);
-+
- 	irq_chip_unmask_parent(d);
- }
- 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index 0a9d1ee..78bc463 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1342,11 +1342,41 @@ static int qcom_pcie_suspend_2_7_0(struct qcom_pcie *pcie)
- 	return 0;
- }
- 
-+static u32 qcom_pcie_read_dbi(struct dw_pcie *pci, void __iomem *base,
-+				u32 reg, size_t size)
-+{
-+	struct qcom_pcie *pcie = to_qcom_pcie(pci);
-+	u32 val;
-+
-+	if (pcie->is_suspended)
-+		return PCIBIOS_BAD_REGISTER_NUMBER;
-+
-+	dw_pcie_read(base + reg, size, &val);
-+	return val;
-+}
-+
-+static void qcom_pcie_write_dbi(struct dw_pcie *pci, void __iomem *base,
-+				u32 reg, size_t size, u32 val)
-+{
-+	struct qcom_pcie *pcie = to_qcom_pcie(pci);
-+
-+	if (pcie->is_suspended)
-+		return;
-+
-+	dw_pcie_write(base + reg, size, val);
-+}
-+
- static int qcom_pcie_link_up(struct dw_pcie *pci)
- {
--	u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
--	u16 val = readw(pci->dbi_base + offset + PCI_EXP_LNKSTA);
-+	struct qcom_pcie *pcie = to_qcom_pcie(pci);
-+	u16 offset;
-+	u16 val;
-+
-+	if (pcie->is_suspended)
-+		return false;
- 
-+	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
-+	val = readw(pci->dbi_base + offset + PCI_EXP_LNKSTA);
- 	return !!(val & PCI_EXP_LNKSTA_DLLLA);
- }
- 
-@@ -1590,6 +1620,8 @@ static const struct qcom_pcie_cfg sc7280_cfg = {
- static const struct dw_pcie_ops dw_pcie_ops = {
- 	.link_up = qcom_pcie_link_up,
- 	.start_link = qcom_pcie_start_link,
-+	.read_dbi = qcom_pcie_read_dbi,
-+	.write_dbi = qcom_pcie_write_dbi,
- };
- 
- static int qcom_pcie_probe(struct platform_device *pdev)
--- 
-2.7.4
-
+Best regards,
+Krzysztof
