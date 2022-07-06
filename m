@@ -2,187 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A27C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B96EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbiGFIYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
+        id S232069AbiGFIYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231917AbiGFIX6 (ORCPT
+        with ESMTP id S231926AbiGFIX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:23:58 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7496C13F23;
-        Wed,  6 Jul 2022 01:23:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657095837; x=1688631837;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+/BgOKNb3dxFVxOORdt/5r5R408fOO4X1WIXgnHGmWI=;
-  b=go6Iv3OfyhYBJiu/mOHx478uJywpkT/8Os1s+yFo5WcTooc5V8x0YuHy
-   jk4S3ruDA+Ks/MjH210WmMcYUuHiFIIEmIN+IX8sBwpjGeG5fe2fxyULb
-   nLjTgphU46nmUBwmm6rxPVM2jEF3aFIsr7qNsnaUk/s8deLEOeKzGh2wI
-   dMUcOiLuWnJPIY0TMQsoK5WyR8i7vfUJSO+W4WVuIqI6Z7cE0nOp7J4+M
-   AZeMry3XkBMj64wdXqRVrbYNsAlky6zj1BJc513mGFePvAvc7AmUwOZ1N
-   +B76Qq3nJTvgt4m0kyZonTJpDWVkb+LM6Iycc6iEKC/ng7r/6ImjA7+k3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="282433172"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="282433172"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 01:23:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="567967821"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga006.jf.intel.com with ESMTP; 06 Jul 2022 01:23:46 -0700
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-Date:   Wed,  6 Jul 2022 16:20:03 +0800
-Message-Id: <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+        Wed, 6 Jul 2022 04:23:59 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1C72127A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:23:58 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id g1so10505978qkl.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1rup06Vco8ni++NHk+fV9QZlwRsoZbZgKQALP9OU2oQ=;
+        b=cv+j4JQb1ISWoJ8z34+l/PMmk8xfXG9cKN8LSWsB85ldibuPnuenR53ZannLlgpZIG
+         QFC89WnyC8qgjzl6vLBd3WoviKmm6AiC1QZfdPWTqazZ2XUQ++kO75BdibuOSJOyJv02
+         3UQahRMUaQFqFbvmNTgRQNm8g7eEQe+SBya47/yv3vDZjupFvcADpI85/Iieky0bYFqX
+         I/rHPcAJnhKtfJs0mzuQCP+Gnx9uc9h+fJ35Ts1CG1KXAeamqbypySdJJqSZ+Ged0WN1
+         pJJOb4qZN5j7oEJDiC7PFkZEY7R/gIXsdS7IIFxmOxg6QL9gNlSz/70nYW2wWUoKqOCV
+         EYPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1rup06Vco8ni++NHk+fV9QZlwRsoZbZgKQALP9OU2oQ=;
+        b=T3vYbph7RxplrPHsqi6Npv/T/OBNNzVC14v1Zy66xf/GE6/Laesjk+mtH4I9ZqyHTG
+         0kBjALN9GRfYRCTvp4Zlfw+H+wTBc2tlg/qW6e3q0FPOIANwVfeQn6e6WuSwpNeQe18U
+         0p937/8qbOvd3dZ/wHs4qyFE6XnTYw+ZYqbcZP85UJ3tBt3AZ/tbCEE4i2I0lsMF66CD
+         jre8RIwjGrTnHVivmARaF/ib3zLpTM2sjCMjX8sFyDcXzxwtoRzUwLv+OY0NKLhuPzc/
+         njQYxX1kInKnt3EUCd1GkXPu9w7dYcDnKGv68FDhD/0diqz+04wY0oq8Q5/qTVvrZ9i9
+         +kQw==
+X-Gm-Message-State: AJIora+kTLsDOsjsImy5kC0w5nzuFKdEEMUyKWshFj4eSucCVuBAzfmK
+        85JqPqAIx0cXeasa9a+T8ypspnEvZPoVtwNUAiafCA==
+X-Google-Smtp-Source: AGRyM1tdB1TNGeTDhjl2mWrO7dYY5lgeSpPZwNnggzjHH2xfv/Copq/oDtv5UzbGKDrdkmU3Mixw5wsgQlFU7i8ZuvU=
+X-Received: by 2002:a05:620a:2409:b0:6b1:4464:e401 with SMTP id
+ d9-20020a05620a240900b006b14464e401mr26117406qkn.30.1657095837223; Wed, 06
+ Jul 2022 01:23:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220705202837.667-1-ansuelsmth@gmail.com> <20220705202837.667-2-ansuelsmth@gmail.com>
+In-Reply-To: <20220705202837.667-2-ansuelsmth@gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 6 Jul 2022 11:23:46 +0300
+Message-ID: <CAA8EJpoXOwooUYic-_G6jG7MBiHo2mfoKfR0jBDmRy0DsmMNEw@mail.gmail.com>
+Subject: Re: [PATCH 1/5] dt-bindings: clock: fix wrong clock documentation for qcom,rpmcc
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Normally, a write to unallocated space of a file or the hole of a sparse
-file automatically causes space allocation, for memfd, this equals to
-memory allocation. This new seal prevents such automatically allocating,
-either this is from a direct write() or a write on the previously
-mmap-ed area. The seal does not prevent fallocate() so an explicit
-fallocate() can still cause allocating and can be used to reserve
-memory.
+On Tue, 5 Jul 2022 at 23:56, Christian Marangi <ansuelsmth@gmail.com> wrote:
+>
+> qcom,rpmcc describe 2 different kind of device.
+> Currently we have definition for rpm-smd based device but we lack
+> Documentation for simple rpm based device.
+>
+> Add the missing clk for ipq806x, apq8060, msm8660 and apq8064 and
+> provide and additional example.
+>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/clock/qcom,rpmcc.yaml | 77 ++++++++++++++++++-
+>  1 file changed, 73 insertions(+), 4 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml b/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml
+> index 9d296b89a8d0..028eb0277495 100644
+> --- a/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml
+> +++ b/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml
+[,,,,]
 
-This is used to prevent unintentional allocation from userspace on a
-stray or careless write and any intentional allocation should use an
-explicit fallocate(). One of the main usecases is to avoid memory double
-allocation for confidential computing usage where we use two memfds to
-back guest memory and at a single point only one memfd is alive and we
-want to prevent memory allocation for the other memfd which may have
-been mmap-ed previously. More discussion can be found at:
+> +
+> +then:
+> +  properties:
+> +    clocks:
+> +      description: pxo clock
+> +
+> +    clock-names:
+> +      const: pxo
+> +
+> +  required:
+> +    - clocks
+> +    - clock-names
 
-  https://lkml.org/lkml/2022/6/14/1255
+I don't think you can not mark these properties as required, older
+schemas do not have them.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
----
- include/uapi/linux/fcntl.h |  1 +
- mm/memfd.c                 |  3 ++-
- mm/shmem.c                 | 16 ++++++++++++++--
- 3 files changed, 17 insertions(+), 3 deletions(-)
+> +
+> +else:
+> +  if:
+> +    properties:
+> +      compatible:
+> +        contains:
+> +          const: qcom,rpmcc-apq8064
+> +  then:
+> +    properties:
+> +      clocks:
+> +        items:
+> +          - description: pxo clock
+> +          - description: cxo clock
+[...]
 
-diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
-index 2f86b2ad6d7e..98bdabc8e309 100644
---- a/include/uapi/linux/fcntl.h
-+++ b/include/uapi/linux/fcntl.h
-@@ -43,6 +43,7 @@
- #define F_SEAL_GROW	0x0004	/* prevent file from growing */
- #define F_SEAL_WRITE	0x0008	/* prevent writes */
- #define F_SEAL_FUTURE_WRITE	0x0010  /* prevent future writes while mapped */
-+#define F_SEAL_AUTO_ALLOCATE	0x0020  /* prevent allocation for writes */
- /* (1U << 31) is reserved for signed error codes */
- 
- /*
-diff --git a/mm/memfd.c b/mm/memfd.c
-index 08f5f8304746..2afd898798e4 100644
---- a/mm/memfd.c
-+++ b/mm/memfd.c
-@@ -150,7 +150,8 @@ static unsigned int *memfd_file_seals_ptr(struct file *file)
- 		     F_SEAL_SHRINK | \
- 		     F_SEAL_GROW | \
- 		     F_SEAL_WRITE | \
--		     F_SEAL_FUTURE_WRITE)
-+		     F_SEAL_FUTURE_WRITE | \
-+		     F_SEAL_AUTO_ALLOCATE)
- 
- static int memfd_add_seals(struct file *file, unsigned int seals)
- {
-diff --git a/mm/shmem.c b/mm/shmem.c
-index a6f565308133..6c8aef15a17d 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -2051,6 +2051,8 @@ static vm_fault_t shmem_fault(struct vm_fault *vmf)
- 	struct vm_area_struct *vma = vmf->vma;
- 	struct inode *inode = file_inode(vma->vm_file);
- 	gfp_t gfp = mapping_gfp_mask(inode->i_mapping);
-+	struct shmem_inode_info *info = SHMEM_I(inode);
-+	enum sgp_type sgp;
- 	int err;
- 	vm_fault_t ret = VM_FAULT_LOCKED;
- 
-@@ -2113,7 +2115,12 @@ static vm_fault_t shmem_fault(struct vm_fault *vmf)
- 		spin_unlock(&inode->i_lock);
- 	}
- 
--	err = shmem_getpage_gfp(inode, vmf->pgoff, &vmf->page, SGP_CACHE,
-+	if (unlikely(info->seals & F_SEAL_AUTO_ALLOCATE))
-+		sgp = SGP_NOALLOC;
-+	else
-+		sgp = SGP_CACHE;
-+
-+	err = shmem_getpage_gfp(inode, vmf->pgoff, &vmf->page, sgp,
- 				  gfp, vma, vmf, &ret);
- 	if (err)
- 		return vmf_error(err);
-@@ -2459,6 +2466,7 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
- 	struct inode *inode = mapping->host;
- 	struct shmem_inode_info *info = SHMEM_I(inode);
- 	pgoff_t index = pos >> PAGE_SHIFT;
-+	enum sgp_type sgp;
- 	int ret = 0;
- 
- 	/* i_rwsem is held by caller */
-@@ -2470,7 +2478,11 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
- 			return -EPERM;
- 	}
- 
--	ret = shmem_getpage(inode, index, pagep, SGP_WRITE);
-+	if (unlikely(info->seals & F_SEAL_AUTO_ALLOCATE))
-+		sgp = SGP_NOALLOC;
-+	else
-+		sgp = SGP_WRITE;
-+	ret = shmem_getpage(inode, index, pagep, sgp);
- 
- 	if (ret)
- 		return ret;
 -- 
-2.25.1
-
+With best wishes
+Dmitry
