@@ -2,96 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A4FFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A46ACCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234456AbiGFScB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
+        id S233780AbiGFSef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233945AbiGFScA (ORCPT
+        with ESMTP id S230431AbiGFSee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:32:00 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD44BE6
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:31:59 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2ef5380669cso148625657b3.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:31:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JqBcZVmZY62+uZaaDsEVHApvk4BPtabj2ze/xYSIKPM=;
-        b=dEPL46gwLY9Xnxeq7C4mX9Slt3nXB1pC1jn5H0CL9VX9G2i8J6+ylsbX1Mgg2ERRjp
-         vlPsgCqXtBs1XZnGQqilXjd5GePb2UO5C6pmc+JN1fk6Wqr+Ol6n1+ETMDRdz1MbpBtX
-         se7qXtyj0/MrUfsRscQXaxQREgk3/B/JhYx7GEriklH1gVdocFajhWPIjV+pRV1sOL1M
-         55HKrnvRjLHyI7UjeoWg73/+uxDsaFlG8k/XgUulVf0AGvgOOL2cjp6zctn+FPub2yuT
-         6Sa9SruHspQVXX5hrICktogXVFwx0I513/4Z7w3NV8jfaVdf3t2TkUdWgnHZFmwAAFKa
-         XZQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JqBcZVmZY62+uZaaDsEVHApvk4BPtabj2ze/xYSIKPM=;
-        b=POW9/jsQuAA/Eihs54LJoiV7iEbV/Dw7xjW4b7s3Ya3gbtlNNOXAMw7OOO4J0M4SWw
-         ylvYAFOsvErDfpQxRTCS/MP2vzuOO3LfMMcvggqHymktSOHurkq+nMWWz4e6e4XrQ8s5
-         lnwEYq7ZQpwq9uQHOxb8spnOeNLfG2m2HZtBbvXsOa+ycBgJrQZ67lUOtdbkaQ66av3x
-         APoHnAH8EA15vLe+8mHz0/Tu8MADsKkdwvzrGrW0ulrlG/kzArqEmOccjNjgf1BL1Io0
-         bQWTfAPYbBQgBcla4qPZbLfUCvHhNTb79IFkQNF1evfxdGgz9SmHiA6LchFiLcBs2h3q
-         TW4Q==
-X-Gm-Message-State: AJIora9ti0HhuI84Uj889MzrhB9zUARrKdG719FAX2cuHAIvMFkcELZF
-        qgc8dmv7Zi9iUW+orhs4JzZg2ZVb3NeCj7+mgVW7/w==
-X-Google-Smtp-Source: AGRyM1vStpSFCTvQoOkYY9pCw67PR2KX2//2Tg5M4w73NRNk7nScyntoWxARzbefU6wlbYJu8sZsAQDLLqSTcibHrBs=
-X-Received: by 2002:a81:4f95:0:b0:31c:9817:90e5 with SMTP id
- d143-20020a814f95000000b0031c981790e5mr20142591ywb.280.1657132318960; Wed, 06
- Jul 2022 11:31:58 -0700 (PDT)
+        Wed, 6 Jul 2022 14:34:34 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84582186F1;
+        Wed,  6 Jul 2022 11:34:32 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 02:35:36 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657132470;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IO11bj6nk+Np3PVqv865QhkFdKjlAqHlVwGCt6I3fOc=;
+        b=OQWWsrwJIl6r1fSKhY4Z9Xt+JTyjL0JxygDTc4oUaCD/ViMTFy2fU7z6QUYPEnSWFCW50e
+        3cE4yeNrZGYHM7EohbouH+Z2sCBeqaLyoWq6MdO/GbNrwWTbagLsxKr84zS8caHrcCY4dL
+        DtAMxtsptEKG96+UhhixtKCfqLbWY4Y=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org, Tao Zhou <tao.zhou@linux.dev>
+Subject: Re: [PATCH V4 03/20] rv/include: Add helper functions for
+ deterministic automata
+Message-ID: <YsXV+KTbOU0E5dU+@geo.homenetwork>
+References: <cover.1655368610.git.bristot@kernel.org>
+ <2b5b14c821ee4b069f68571e7f78fbc2ee4e9626.1655368610.git.bristot@kernel.org>
 MIME-Version: 1.0
-References: <20220706182924.2563058-1-tjmercier@google.com>
-In-Reply-To: <20220706182924.2563058-1-tjmercier@google.com>
-From:   "T.J. Mercier" <tjmercier@google.com>
-Date:   Wed, 6 Jul 2022 11:31:48 -0700
-Message-ID: <CABdmKX2vtT04iPp-BZHRu0DAyXQpLvrtSc4eahNgUVxx+K4Tqg@mail.gmail.com>
-Subject: Re: [PATCH] drm/etnaviv: Remove duplicate call to drm_gem_free_mmap_offset
-To:     "T.J. Mercier" <tjmercier@google.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Russell King <linux+etnaviv@armlinux.org.uk>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b5b14c821ee4b069f68571e7f78fbc2ee4e9626.1655368610.git.bristot@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 11:29 AM T.J. Mercier <tjmercier@google.com> wrote:
->
-> The docs explicitly say the drm_gem_object_release function already calls this,
-> and this does not appear to be a prerequisite for the call to
-> etnaviv_gem_ops.release.
->
-> Signed-off-by: T.J. Mercier <tjmercier@google.com>
-> ---
->  drivers/gpu/drm/etnaviv/etnaviv_gem.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem.c b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-> index cc386f8a7116..ecb828e4e156 100644
-> --- a/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-> +++ b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-> @@ -504,7 +504,6 @@ void etnaviv_gem_free_object(struct drm_gem_object *obj)
->                 kfree(mapping);
->         }
->
-> -       drm_gem_free_mmap_offset(obj);
->         etnaviv_obj->ops->release(etnaviv_obj);
->         drm_gem_object_release(obj);
->
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+On Thu, Jun 16, 2022 at 10:44:45AM +0200, Daniel Bristot de Oliveira wrote:
 
-I don't have a device to test this with, but I believe this is correct
-based on inspecting the code and the drm_gem_free_mmap_offset function
-docs.
+> Formally, a deterministic automaton, denoted by G, is defined as a
+> quintuple:
+> 
+>   G = { X, E, f, x_0, X_m }
+> 
+> where:
+> 	- X is the set of states;
+> 	- E is the finite set of events;
+> 	- x_0 is the initial state;
+> 	- X_m (subset of X) is the set of marked states.
+> 	- f : X x E -> X $ is the transition function. It defines the
+> 	  state transition in the occurrence of a event from E in
+> 	  the state X. In the special case of deterministic automata,
+> 	  the occurrence of the event in E in a state in X has a
+> 	  deterministic next state from X.
+> 
+> An automaton can also be represented using a graphical format of
+> vertices (nodes) and edges. The open-source tool Graphviz can produce
+> this graphic format using the (textual) DOT language as the source code.
+> 
+> The dot2c tool presented in this paper:
+> 
+> DE OLIVEIRA, Daniel Bristot; CUCINOTTA, Tommaso; DE OLIVEIRA, Romulo
+> Silva. Efficient formal verification for the Linux kernel. In:
+> International Conference on Software Engineering and Formal Methods.
+> Springer, Cham, 2019. p. 315-332.
+> 
+> Translates a deterministic automaton in the DOT format into a C
+> surce code representation that to be used for monitoring.
+> 
+> This header file implements helper functions to facilitate the usage
+> of the C output from dot2c for monitoring.
+> 
+> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Marco Elver <elver@google.com>
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Shuah Khan <skhan@linuxfoundation.org>
+> Cc: Gabriele Paoloni <gpaoloni@redhat.com>
+> Cc: Juri Lelli <juri.lelli@redhat.com>
+> Cc: Clark Williams <williams@redhat.com>
+> Cc: linux-doc@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-trace-devel@vger.kernel.org
+> Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+> ---
+>  include/rv/automata.h | 49 +++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+>  create mode 100644 include/rv/automata.h
+> 
+> diff --git a/include/rv/automata.h b/include/rv/automata.h
+> new file mode 100644
+> index 000000000000..0c0aa54bd820
+> --- /dev/null
+> +++ b/include/rv/automata.h
+> @@ -0,0 +1,49 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Deterministic automata helper functions, to be used with the automata
+> + * models in C generated by the dot2k tool.
+> + *
+> + * Copyright (C) 2019-2022 Daniel Bristot de Oliveira <bristot@kernel.org>
+> + */
+> +
+> +#define DECLARE_AUTOMATA_HELPERS(name, type)					\
+> +										\
+> +static inline void *model_get_model_##name(void)				\
+> +{										\
+> +	return (void *) &automaton_##name;					\
+> +}									\
+> +										\
+> +static char *model_get_state_name_##name(enum states_##name state)		\
+> +{										\
+> +	return automaton_##name.state_names[state];				\
+> +}										\
+> +										\
+> +static char *model_get_event_name_##name(enum events_##name event)		\
+> +{										\
+> +	return automaton_##name.event_names[event];				\
+> +}										\
+> +										\
+> +static inline type model_get_init_state_##name(void)				\
+> +{										\
+> +	return automaton_##name.initial_state;					\
+> +}										\
+> +										\
+> +static inline type model_get_next_state_##name(enum states_##name curr_state,	\
+> +					       enum events_##name event)	\
+> +{										\
+> +	if ((curr_state < 0) || (curr_state > state_max_##name))		\
+> +		return -1;							\
+
+curr_state can not be state_max_xxx. curr_state must be not bigger
+than state_max_xxx. Or am I miss something?
+
+> +	if ((event < 0) || (event > event_max_##name))				\
+> +		return -1;							\
+> +										\
+
+Same here for the event boundary check.
+
+> +	return automaton_##name.function[curr_state][event];			\
+> +}										\
+> +										\
+> +static inline bool model_is_final_state_##name(enum states_##name state)	\
+> +{										\
+> +	if ((state < 0) || (state > state_max_##name))				\
+> +		return 0;							\
+> +										\
+
+Same here.
+
+> +	return !!automaton_##name.final_states[state];				\
+
+If the value of .final_states[state] is 0 or 1, can the type of
+.final_states[state] be befined to bool. Or not need to use !! to
+explicitly transfer the type to bool. I remember that you define
+this as char array and the matrix model value of this array is 0 or 1
+see from the next patche. 1 delegate the state it is the initial state.
+0 for others.
+
+> +}
+> -- 
+> 2.35.1
+> 
