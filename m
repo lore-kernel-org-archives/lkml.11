@@ -2,79 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 149C5C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 01:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D199BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 01:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230099AbiGFBwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 21:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        id S230211AbiGFBxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 21:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiGFBwn (ORCPT
+        with ESMTP id S229562AbiGFBxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 21:52:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4045B1838E;
-        Tue,  5 Jul 2022 18:52:41 -0700 (PDT)
-Received: from canpemm100008.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ld2Wz2DWGzTgDQ;
-        Wed,  6 Jul 2022 09:49:03 +0800 (CST)
-Received: from dggpeml500026.china.huawei.com (7.185.36.106) by
- canpemm100008.china.huawei.com (7.192.104.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 09:52:39 +0800
-Received: from dggpeml500026.china.huawei.com ([7.185.36.106]) by
- dggpeml500026.china.huawei.com ([7.185.36.106]) with mapi id 15.01.2375.024;
- Wed, 6 Jul 2022 09:52:38 +0800
-From:   shaozhengchao <shaozhengchao@huawei.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        yuehaibing <yuehaibing@huawei.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIIG5ldC1uZXh0XSBuZXQvc2NoZWQ6IHJlbW92ZSByZXR1?=
- =?gb2312?B?cm4gdmFsdWUgb2YgdW5yZWdpc3Rlcl90Y2ZfcHJvdG9fb3Bz?=
-Thread-Topic: [PATCH net-next] net/sched: remove return value of
- unregister_tcf_proto_ops
-Thread-Index: AQHYj6L3NBuAhRfXIUOUGl4H1lu4uq1wDi8AgACHmPA=
-Date:   Wed, 6 Jul 2022 01:52:38 +0000
-Message-ID: <a92ed8b2b01e499b986ad7b9b0fe93a8@huawei.com>
-References: <20220704124322.355211-1-shaozhengchao@huawei.com>
- <20220705184326.649a4e04@kernel.org>
-In-Reply-To: <20220705184326.649a4e04@kernel.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.178.66]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        Tue, 5 Jul 2022 21:53:47 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603D1F5A7;
+        Tue,  5 Jul 2022 18:53:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657072426; x=1688608426;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=cllxWuAAFHFoBQ2YHklsc1bQWN4Ue9DGBlCsCLtMYVY=;
+  b=DqdcywRBAMvxMouIMH4yS/vJ25gUizGRlA5XXGarFK3DH4GuOsrQxZHp
+   hNsyKv3yfoWDrKnsj0FuaTHQ/2vfaXtAZ1ibldoPtdOxc90Qi32nBIQWh
+   qJiOlpBXYwgXHk8Iy1yYCblScjSQjlI70GS+vhWLMYcsWGZiU9hb/PC/8
+   LiKgHK1H1ODtk0xpx29bO4jR60MCFSRPV6a+hOpod/dx58wa4MSxLFy8Z
+   WRItjMv/vjhjwKNLzQAfKNGh7layD4dO6IRHeLJXpKhxbkzC1sHDPMxwT
+   wGzjAWtEXnZhHXjsFa6lorc7iDr9UZmu17cBujz7aqKKjhHMtxjXiAZO9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="347598260"
+X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
+   d="scan'208";a="347598260"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 18:53:45 -0700
+X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
+   d="scan'208";a="650433945"
+Received: from zhuoliu-mobl1.ccr.corp.intel.com (HELO [10.249.174.206]) ([10.249.174.206])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 18:53:42 -0700
+Message-ID: <1fab4c8a-7bc5-9a50-d48a-0dc590cac7a6@linux.intel.com>
+Date:   Wed, 6 Jul 2022 09:53:40 +0800
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, will@kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 03/15] iommu: Always register bus notifiers
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+References: <cover.1657034827.git.robin.murphy@arm.com>
+ <8c380309f264cd0dfc73ba2ec060adc9515af2f2.1657034828.git.robin.murphy@arm.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <8c380309f264cd0dfc73ba2ec060adc9515af2f2.1657034828.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQotLS0tLdPKvP7Urbz+LS0tLS0NCreivP7IyzogSmFrdWIgS2ljaW5za2kgW21haWx0bzprdWJh
-QGtlcm5lbC5vcmddIA0Kt6LLzcqxvOQ6IDIwMjLE6jfUwjbI1SA5OjQzDQrK1bz+yMs6IHNoYW96
-aGVuZ2NoYW8gPHNoYW96aGVuZ2NoYW9AaHVhd2VpLmNvbT4NCrOty806IGxpbnV4LWtlcm5lbEB2
-Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGpoc0Btb2phdGF0dS5jb207
-IHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbTsgamlyaUByZXNudWxsaS51czsgZGF2ZW1AZGF2ZW1s
-b2Z0Lm5ldDsgZWR1bWF6ZXRAZ29vZ2xlLmNvbTsgcGFiZW5pQHJlZGhhdC5jb207IHdlaXlvbmdq
-dW4gKEEpIDx3ZWl5b25nanVuMUBodWF3ZWkuY29tPjsgeXVlaGFpYmluZyA8eXVlaGFpYmluZ0Bo
-dWF3ZWkuY29tPg0K1vfM4jogUmU6IFtQQVRDSCBuZXQtbmV4dF0gbmV0L3NjaGVkOiByZW1vdmUg
-cmV0dXJuIHZhbHVlIG9mIHVucmVnaXN0ZXJfdGNmX3Byb3RvX29wcw0KDQpPbiBNb24sIDQgSnVs
-IDIwMjIgMjA6NDM6MjIgKzA4MDAgWmhlbmdjaGFvIFNoYW8gd3JvdGU6DQo+IFJldHVybiB2YWx1
-ZSBvZiB1bnJlZ2lzdGVyX3RjZl9wcm90b19vcHMgaXMgdXNlbGVzcywgcmVtb3ZlIGl0Lg0KDQpz
-L3VzZWxlc3MvdW51c2VkLyA/DQoNClNob3VsZCB3ZSBhZGQgYSBXQVJOIGlmIHRoZSBvcHMgZ2V0
-dGluZyByZW1vdmVkIGNhbid0IGJlIGZvdW5kIG9yIHRoZXJlIGFyZSBjYWxsZXJzIHdoaWNoIGRl
-cGVuZCBvbiBoYW5kbGluZyB1bnJlZ2lzdGVyZWQgb3BzIHdpdGhvdXQgYSB3YXJuaW5nPw0KDQpI
-aSBKYWt1YiBLaWNpbnNraToNCglUaGFuayB5b3UgZm9yIHlvdXIgYXBwbHkuIFRoaXMgcGF0Y2gg
-ZG9lcyBqdXN0IHJlbW92ZSB0aGUgcmV0dXJuIHZhbHVlIGFuZCBjaGFuZ2UgdGhlIGZ1bmN0aW9u
-IHR5cGUgZnJvbSBpbnQgdG8gdm9pZC4gSXQgZG9lc24ndCByZW1vdmUgdGhlIGZ1bmN0aW9uLg0K
-DQpaaGVuZ2NoYW8gU2hhbw0K
+On 2022/7/6 01:08, Robin Murphy wrote:
+>   /*
+>    * Use a function instead of an array here because the domain-type is a
+>    * bit-field, so an array would waste memory.
+> @@ -152,6 +172,10 @@ static int __init iommu_subsys_init(void)
+>   			(iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
+>   				"(set via kernel command line)" : "");
+>   
+> +	/* If the system is so broken that this fails, it will WARN anyway */
+
+Can you please elaborate a bit on this? iommu_bus_init() still return
+errors.
+
+> +	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++)
+> +		iommu_bus_init(iommu_buses[i]);
+> +
+>   	return 0;
+
+Best regards,
+baolu
