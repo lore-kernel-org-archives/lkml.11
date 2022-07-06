@@ -2,64 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D08CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F802CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234102AbiGFQyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
+        id S234028AbiGFQy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231454AbiGFQyP (ORCPT
+        with ESMTP id S234137AbiGFQyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:54:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE58FFD;
-        Wed,  6 Jul 2022 09:54:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD99AB81E32;
-        Wed,  6 Jul 2022 16:54:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA11CC3411C;
-        Wed,  6 Jul 2022 16:54:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657126451;
-        bh=9r5Y9Yn5s5SAzlP+sF4PprOxv81oeve51QeGRGMHl3w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DP/6QUw9yVcsXxyrI9IVW/i4PPosw0gBm+2nyH29CspyjWHF7iPLLrXINnbLamU2o
-         oVyq0Znp9zaWZxjd9bSsNkqFJneCj3BYL02kUWWWkSb4klpnHljPlkC63E07HRhvxW
-         72321dZ7DBeTjIFMmZiYg1oQ6g7Gq8tEijYnAUu0cmU/SQvFfRrQjXaz17+OoT4y/y
-         mkdN4Az1sZvKkvu8hyEuEFVbkbPA/hQroF1OxuUXILgYam70XyMLQmPLRxz+6qsRQD
-         qxp9rnV78YSEoGGZpudfCCuRPvL90larrBIv7ri0hqvuUDuBHsVMskrSi5cdA9NVyr
-         5AyFTSk7xEeYg==
-Date:   Wed, 6 Jul 2022 22:24:06 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
-        daniel@ffwll.ch, airlied@linux.ie, agross@kernel.org,
-        dmitry.baryshkov@linaro.org, bjorn.andersson@linaro.org,
-        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
-Message-ID: <YsW+LhSuOUFeuFFc@matsya>
-References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
+        Wed, 6 Jul 2022 12:54:23 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E05123172;
+        Wed,  6 Jul 2022 09:54:20 -0700 (PDT)
+Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 747A51C8117C;
+        Thu,  7 Jul 2022 00:54:18 +0800 (CST)
+Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS01.nuvoton.com
+ (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Thu, 7 Jul 2022
+ 00:54:18 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS03.nuvoton.com
+ (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1847.3; Thu, 7 Jul 2022
+ 00:54:18 +0800
+Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Thu, 7 Jul 2022 00:54:17 +0800
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id 1FF2D62E6B; Wed,  6 Jul 2022 19:54:17 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
+        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
+        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
+        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
+        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v7 01/16] dt-bindings: timer: npcm: Add npcm845 compatible string
+Date:   Wed, 6 Jul 2022 19:53:51 +0300
+Message-ID: <20220706165406.117349-2-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220706165406.117349-1-tmaimon77@gmail.com>
+References: <20220706165406.117349-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05-07-22, 09:29, Kuogee Hsieh wrote:
-> 0) rebase on https://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy.git tree
-> 1) add regulator_set_load() to eDP phy
-> 2) add regulator_set_load() to DP phy
-> 3) remove vdda related function out of eDP/DP controller
+Add a compatible string for Nuvoton BMC NPCM845 timer.
 
-Applied, thanks
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml        | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+index 0cbc26a72151..737af78ad70c 100644
+--- a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
++++ b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+@@ -8,12 +8,14 @@ title: Nuvoton NPCM7xx timer
+ 
+ maintainers:
+   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
++  - Tomer Maimon <tmaimon77@gmail.com>
+ 
+ properties:
+   compatible:
+     enum:
+       - nuvoton,wpcm450-timer  # for Hermon WPCM450
+       - nuvoton,npcm750-timer  # for Poleg NPCM750
++      - nuvoton,npcm845-timer  # for Arbel NPCM845
+ 
+   reg:
+     maxItems: 1
 -- 
-~Vinod
+2.33.0
+
