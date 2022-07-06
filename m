@@ -2,183 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10359C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D9FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiGFM3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
+        id S233406AbiGFMac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbiGFM3m (ORCPT
+        with ESMTP id S231171AbiGFMa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:29:42 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C82252AE;
-        Wed,  6 Jul 2022 05:29:41 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id 128so14201985pfv.12;
-        Wed, 06 Jul 2022 05:29:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Hb++T+TqCvDDSG4SBCoSH1P7Ah+WnHjdFZYreo/Hfko=;
-        b=BbLBe2M3A8AWYlkobJbHlvQGtkIi9eJ1fhKZi72SH5Q2ISxXT7FCisfhD8WM4lH4xn
-         W0CMzEvgH43SmSf7IKjKCnmg/2Zng2dsdDfG0DO6WyudObcH2lWwXFZn438iwngDQTy9
-         9lNAeMttwPLTSdmF32rO0PSm2NM7RttTK/QbVjE9AcaSXlFo/CwbSN7djMsEG32FDk9h
-         YSj2jTqW4IDq6AxxSnDHYlwHdgI4WrUYVmVfTbq4JHR+k7uEkbAt5rIkYXFZSA32SsdC
-         HFoTIk4jjeZsOxecJdOjOhupnXAp6o2zjzZnsywdRclt8yr/Fvg9yEPG+dn5ub7JJq6D
-         KbIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=Hb++T+TqCvDDSG4SBCoSH1P7Ah+WnHjdFZYreo/Hfko=;
-        b=hRNJquQKpeTCKZLo51JgLyfkfRKpuNyFFbOr73gqb6XvhiUuZi8C2Z7QGpOgJZYdti
-         Oru7OLF6THIev3HNwLsq+KNmoH9gRVi5hyjeO/xE2LtDJn2m8jz+ObZ0c/6w22/TAant
-         753pV3PkkZP9oiZccbZa19C1p1lwHSvyhnnn81+n+HtrBb7OrCgMXA0kng+16nv21/KZ
-         jBqQc/TN7HthTz8n4wZfoIpiP25flaYuQYNm88r21VJdVQ9lujKn0nRdsiGdFM8IeA0B
-         2cg4FH7bGVY7XlQJ2cyASK/pviTGaYs2s//ZICfBki53/xg3XSiE+bTFJ91m1kCsEZWI
-         LlFA==
-X-Gm-Message-State: AJIora/h728szld/aQ/DxXvAvUeaAb5qyrODr4unbgIEQk/dVptwmHnj
-        Pj/p57uqTOU97+1TS9nEHt0=
-X-Google-Smtp-Source: AGRyM1uoDB6L35OBcFGnbcqaTY9nnQDgNQnuXvTDk9jhj/6DUZ25v7WIWUrr9kdjfBQjynFmHIdieg==
-X-Received: by 2002:a63:2b84:0:b0:412:5277:99dc with SMTP id r126-20020a632b84000000b00412527799dcmr12015920pgr.208.1657110581088;
-        Wed, 06 Jul 2022 05:29:41 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r13-20020a63d90d000000b0041166bf9ca8sm15810700pgg.34.2022.07.06.05.29.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 05:29:39 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 6 Jul 2022 05:29:37 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Xin Ji <xji@analogixsemi.com>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Wed, 6 Jul 2022 08:30:29 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD5FBCBA;
+        Wed,  6 Jul 2022 05:30:27 -0700 (PDT)
+Received: from zn.tnic (p200300ea970ff625329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:f625:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CC75E1EC0554;
+        Wed,  6 Jul 2022 14:30:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1657110621;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=A8YeipasNUa+nZK2qY6DMG4HWJuyiUL/qtd8MoraKqk=;
+        b=UydwJakmDSfmpaKz40d0a+zNKNFI7iga7v2uaNqZ/4B/8XS8bL/H8k++sM7V/gnhE9Rr1O
+        EcopuNzg9Kg+kVR20v0qEqUqBfhI4vIaJZZ5Yy9UPH7snM78Ii+XZY+bPGmbYoeSEwCXBv
+        s/QKl04EfA0Hi3H2Kcan8PKuQESvmHM=
+Date:   Wed, 6 Jul 2022 14:30:21 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     "H. Peter Anvin" <hpa@zytor.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        bliang@analogixsemi.com, qwen@analogixsemi.com,
-        jli@analogixsemi.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v13 1/3] usb: typec: tcpci: move tcpci.h to
- include/linux/usb/
-Message-ID: <20220706122937.GA492220@roeck-us.net>
-References: <20220705053657.2340274-1-xji@analogixsemi.com>
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] random: remove CONFIG_ARCH_RANDOM and "nordrand"
+Message-ID: <YsWAXYhyuh2WXVuL@zn.tnic>
+References: <20220705190121.293703-1-Jason@zx2c4.com>
+ <YsSStCQQf008hF2F@zn.tnic>
+ <YsSUkapje04MP2a1@zx2c4.com>
+ <YsSXkNBtB6Ciy9iN@zn.tnic>
+ <11C903CC-22A7-48EE-AD63-E71CC8D28B88@zytor.com>
+ <YsTXI3J+ptkN/vb4@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220705053657.2340274-1-xji@analogixsemi.com>
+In-Reply-To: <YsTXI3J+ptkN/vb4@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 01:36:54PM +0800, Xin Ji wrote:
-> USB PD controllers which consisting of a microcontroller (acting as the TCPM)
-> and a port controller (TCPC) - may require that the driver for the PD
-> controller accesses directly also the on-chip port controller in some cases.
+On Wed, Jul 06, 2022 at 02:28:19AM +0200, Jason A. Donenfeld wrote:
+> Maybe you're not grepping the right tree?
 > 
-> Move tcpci.h to include/linux/usb/ is convenience access TCPC registers.
-> 
-> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> zx2c4@thinkpad ~/Projects/random-linux $ grep trust_cpu Documentation/admin-guide/kernel-parameters.txt
+>         random.trust_cpu={on,off}
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+I was looking at the wrong option, sorry about that.
 
-> 
-> ---
-> V9 -> V10: Rebase on the latest code
-> V8 -> V9 : Add more commit message
-> V7 -> V8 : Fix Guanter's comment, remove unnecessary explain
-> 
-> Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> ---
->  drivers/usb/typec/tcpm/tcpci.c                        | 3 +--
->  drivers/usb/typec/tcpm/tcpci_maxim.c                  | 3 +--
->  drivers/usb/typec/tcpm/tcpci_mt6360.c                 | 3 +--
->  drivers/usb/typec/tcpm/tcpci_rt1711h.c                | 2 +-
->  {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h | 1 +
->  5 files changed, 5 insertions(+), 7 deletions(-)
->  rename {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h (99%)
-> 
-> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
-> index f33e08eb7670..812784702d53 100644
-> --- a/drivers/usb/typec/tcpm/tcpci.c
-> +++ b/drivers/usb/typec/tcpm/tcpci.c
-> @@ -13,11 +13,10 @@
->  #include <linux/property.h>
->  #include <linux/regmap.h>
->  #include <linux/usb/pd.h>
-> +#include <linux/usb/tcpci.h>
->  #include <linux/usb/tcpm.h>
->  #include <linux/usb/typec.h>
->  
-> -#include "tcpci.h"
-> -
->  #define	PD_RETRY_COUNT_DEFAULT			3
->  #define	PD_RETRY_COUNT_3_0_OR_HIGHER		2
->  #define	AUTO_DISCHARGE_DEFAULT_THRESHOLD_MV	3500
-> diff --git a/drivers/usb/typec/tcpm/tcpci_maxim.c b/drivers/usb/typec/tcpm/tcpci_maxim.c
-> index df2505570f07..4b6705f3d7b7 100644
-> --- a/drivers/usb/typec/tcpm/tcpci_maxim.c
-> +++ b/drivers/usb/typec/tcpm/tcpci_maxim.c
-> @@ -11,11 +11,10 @@
->  #include <linux/module.h>
->  #include <linux/regmap.h>
->  #include <linux/usb/pd.h>
-> +#include <linux/usb/tcpci.h>
->  #include <linux/usb/tcpm.h>
->  #include <linux/usb/typec.h>
->  
-> -#include "tcpci.h"
-> -
->  #define PD_ACTIVITY_TIMEOUT_MS				10000
->  
->  #define TCPC_VENDOR_ALERT				0x80
-> diff --git a/drivers/usb/typec/tcpm/tcpci_mt6360.c b/drivers/usb/typec/tcpm/tcpci_mt6360.c
-> index 8a952eaf9016..1b7c31278ebb 100644
-> --- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
-> +++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
-> @@ -11,10 +11,9 @@
->  #include <linux/of.h>
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
-> +#include <linux/usb/tcpci.h>
->  #include <linux/usb/tcpm.h>
->  
-> -#include "tcpci.h"
-> -
->  #define MT6360_REG_PHYCTRL1	0x80
->  #define MT6360_REG_PHYCTRL3	0x82
->  #define MT6360_REG_PHYCTRL7	0x86
-> diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
-> index b56a0880a044..3291ca4948da 100644
-> --- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
-> +++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
-> @@ -10,9 +10,9 @@
->  #include <linux/i2c.h>
->  #include <linux/interrupt.h>
->  #include <linux/gpio/consumer.h>
-> +#include <linux/usb/tcpci.h>
->  #include <linux/usb/tcpm.h>
->  #include <linux/regmap.h>
-> -#include "tcpci.h"
->  
->  #define RT1711H_VID		0x29CF
->  #define RT1711H_PID		0x1711
-> diff --git a/drivers/usb/typec/tcpm/tcpci.h b/include/linux/usb/tcpci.h
-> similarity index 99%
-> rename from drivers/usb/typec/tcpm/tcpci.h
-> rename to include/linux/usb/tcpci.h
-> index b2edd45f13c6..20c0bedb8ec8 100644
-> --- a/drivers/usb/typec/tcpm/tcpci.h
-> +++ b/include/linux/usb/tcpci.h
-> @@ -9,6 +9,7 @@
->  #define __LINUX_USB_TCPCI_H
->  
->  #include <linux/usb/typec.h>
-> +#include <linux/usb/tcpm.h>
->  
->  #define TCPC_VENDOR_ID			0x0
->  #define TCPC_PRODUCT_ID			0x2
-> -- 
-> 2.25.1
-> 
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
