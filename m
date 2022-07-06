@@ -2,184 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 248E2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81CE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233475AbiGFSfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48390 "EHLO
+        id S234647AbiGFSgf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:36:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234599AbiGFSfF (ORCPT
+        with ESMTP id S234376AbiGFSgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:35:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD9728E13;
-        Wed,  6 Jul 2022 11:34:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00202B81E83;
-        Wed,  6 Jul 2022 18:34:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62618C3411C;
-        Wed,  6 Jul 2022 18:34:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657132496;
-        bh=gQGas0sgKQVx+dzq33uEPho8EHc+kxq3TgZDJ3os0rA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GgdOFp5wg2X+S6fa+1vTsYbCcDAS9x6qlsT8qSajgoG/QSewy/B2+EWTYmD4rwWfr
-         wYevXT3DAO68z+l4c7LR/FO2Lcg27FjmXjBDwJvFlOaDTKFkdQcNbYWRhaBpSU0EUL
-         sxyysCVrvUFWAAWYqF8y3dhxlf0fSGs6m6iLUoVzzfgVgpeTnzOPQR2GVLMUE7llKx
-         dbZ2uxCseSJ3lu7czKO8GRbHuAE63f8lBc5bLtFKIudjRhm1Mu0NVPCphUFoA8N+fF
-         w/OVkLM/RIRvxpaZ63FCJHjn+O18JeEHB6gRXoI8buXw0DlS120asO35Mr8WNZpquQ
-         hH+//WiwBdJRg==
-Received: by pali.im (Postfix)
-        id 1B67C7BA; Wed,  6 Jul 2022 20:34:56 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Wed, 6 Jul 2022 14:36:20 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF772BB35;
+        Wed,  6 Jul 2022 11:35:29 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266IZQh7060426;
+        Wed, 6 Jul 2022 13:35:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657132526;
+        bh=UWa+6eGg53WL0pKFldMfSM8zfLumeeG5smNx9eICN3A=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=JKzIc3/aZ8q1ohJv6rELYfcMxOFqk6PTcGQAArhlZOJyPSRNmJ2be6PGD/MvT7Uuf
+         SNzG2tgKmz2prKuGJpKHW2MPwMxaRl/qsM7FR1mohDQWremCh30I+P7HrhbOtPD0We
+         ZCCy4k348emi60V5PbPxZzWxuQNJwGRaPcugKFmE=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266IZQmW099203
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Jul 2022 13:35:26 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Jul 2022 13:35:26 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Jul 2022 13:35:26 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266IZQLP120017;
+        Wed, 6 Jul 2022 13:35:26 -0500
+Date:   Wed, 6 Jul 2022 13:35:26 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Andrew Davis <afd@ti.com>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 11/11] ARM: dts: armada-39x.dtsi: Add definitions for PCIe legacy INTx interrupts
-Date:   Wed,  6 Jul 2022 20:31:14 +0200
-Message-Id: <20220706183114.30783-12-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220706183114.30783-1-pali@kernel.org>
-References: <20220706183114.30783-1-pali@kernel.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 6/6] arm64: dts: ti: k3-j7200-mcu-wakeup: Add SA2UL node
+Message-ID: <20220706183526.i6ysrsjgevz3w3ei@masculine>
+References: <20220705170340.26719-1-afd@ti.com>
+ <20220705170340.26719-6-afd@ti.com>
+ <20220706180446.cyzujuasovjvsofk@lively>
+ <16319b56-4b14-6f51-23c6-6b78b87119d7@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <16319b56-4b14-6f51-23c6-6b78b87119d7@ti.com>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- arch/arm/boot/dts/armada-39x.dtsi | 56 ++++++++++++++++++++++++++-----
- 1 file changed, 48 insertions(+), 8 deletions(-)
+On 13:10-20220706, Andrew Davis wrote:
+> > > +	mcu_crypto: crypto@40900000 {
+> > > +		compatible = "ti,j721e-sa2ul";
+> > > +		reg = <0x00 0x40900000 0x00 0x1200>;
+> > > +		power-domains = <&k3_pds 265 TI_SCI_PD_SHARED>;
+> > > +		#address-cells = <2>;
+> > > +		#size-cells = <2>;
+> > > +		ranges = <0x00 0x40900000 0x00 0x40900000 0x00 0x30000>;
+> > > +		dmas = <&mcu_udmap 0xf501>, <&mcu_udmap 0x7502>,
+> > > +		       <&mcu_udmap 0x7503>;
+> > > +		dma-names = "tx", "rx1", "rx2";
+> > > +		dma-coherent;
+> > > +
+> > > +		rng: rng@40910000 {
+> > > +			compatible = "inside-secure,safexcel-eip76";
+> > > +			reg = <0x00 0x40910000 0x00 0x7d>;
+> > > +			interrupts = <GIC_SPI 945 IRQ_TYPE_LEVEL_HIGH>;
+> > 
+> > Please document why disabled.
+> > 
+> 
+> Sure thing, will add background info to the commit message.
 
-diff --git a/arch/arm/boot/dts/armada-39x.dtsi b/arch/arm/boot/dts/armada-39x.dtsi
-index e0b7c2099831..923b035a3ab3 100644
---- a/arch/arm/boot/dts/armada-39x.dtsi
-+++ b/arch/arm/boot/dts/armada-39x.dtsi
-@@ -438,16 +438,26 @@
- 				reg = <0x0800 0 0 0 0>;
- 				#address-cells = <3>;
- 				#size-cells = <2>;
-+				interrupt-names = "intx";
-+				interrupts-extended = <&gic GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
- 				#interrupt-cells = <1>;
- 				ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0
- 					  0x81000000 0 0 0x81000000 0x1 0 1 0>;
- 				bus-range = <0x00 0xff>;
--				interrupt-map-mask = <0 0 0 0>;
--				interrupt-map = <0 0 0 0 &gic GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-map-mask = <0 0 0 7>;
-+				interrupt-map = <0 0 0 1 &pcie1_intc 0>,
-+						<0 0 0 2 &pcie1_intc 1>,
-+						<0 0 0 3 &pcie1_intc 2>,
-+						<0 0 0 4 &pcie1_intc 3>;
- 				marvell,pcie-port = <0>;
- 				marvell,pcie-lane = <0>;
- 				clocks = <&gateclk 8>;
- 				status = "disabled";
-+
-+				pcie1_intc: interrupt-controller {
-+					interrupt-controller;
-+					#interrupt-cells = <1>;
-+				};
- 			};
- 
- 			/* x1 port */
-@@ -457,16 +467,26 @@
- 				reg = <0x1000 0 0 0 0>;
- 				#address-cells = <3>;
- 				#size-cells = <2>;
-+				interrupt-names = "intx";
-+				interrupts-extended = <&gic GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
- 				#interrupt-cells = <1>;
- 				ranges = <0x82000000 0 0 0x82000000 0x2 0 1 0
- 					  0x81000000 0 0 0x81000000 0x2 0 1 0>;
- 				bus-range = <0x00 0xff>;
--				interrupt-map-mask = <0 0 0 0>;
--				interrupt-map = <0 0 0 0 &gic GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-map-mask = <0 0 0 7>;
-+				interrupt-map = <0 0 0 1 &pcie2_intc 0>,
-+						<0 0 0 2 &pcie2_intc 1>,
-+						<0 0 0 3 &pcie2_intc 2>,
-+						<0 0 0 4 &pcie2_intc 3>;
- 				marvell,pcie-port = <1>;
- 				marvell,pcie-lane = <0>;
- 				clocks = <&gateclk 5>;
- 				status = "disabled";
-+
-+				pcie2_intc: interrupt-controller {
-+					interrupt-controller;
-+					#interrupt-cells = <1>;
-+				};
- 			};
- 
- 			/* x1 port */
-@@ -476,16 +496,26 @@
- 				reg = <0x1800 0 0 0 0>;
- 				#address-cells = <3>;
- 				#size-cells = <2>;
-+				interrupt-names = "intx";
-+				interrupts-extended = <&gic GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
- 				#interrupt-cells = <1>;
- 				ranges = <0x82000000 0 0 0x82000000 0x3 0 1 0
- 					  0x81000000 0 0 0x81000000 0x3 0 1 0>;
- 				bus-range = <0x00 0xff>;
--				interrupt-map-mask = <0 0 0 0>;
--				interrupt-map = <0 0 0 0 &gic GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-map-mask = <0 0 0 7>;
-+				interrupt-map = <0 0 0 1 &pcie3_intc 0>,
-+						<0 0 0 2 &pcie3_intc 1>,
-+						<0 0 0 3 &pcie3_intc 2>,
-+						<0 0 0 4 &pcie3_intc 3>;
- 				marvell,pcie-port = <2>;
- 				marvell,pcie-lane = <0>;
- 				clocks = <&gateclk 6>;
- 				status = "disabled";
-+
-+				pcie3_intc: interrupt-controller {
-+					interrupt-controller;
-+					#interrupt-cells = <1>;
-+				};
- 			};
- 
- 			/*
-@@ -498,16 +528,26 @@
- 				reg = <0x2000 0 0 0 0>;
- 				#address-cells = <3>;
- 				#size-cells = <2>;
-+				interrupt-names = "intx";
-+				interrupts-extended = <&gic GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
- 				#interrupt-cells = <1>;
- 				ranges = <0x82000000 0 0 0x82000000 0x4 0 1 0
- 					  0x81000000 0 0 0x81000000 0x4 0 1 0>;
- 				bus-range = <0x00 0xff>;
--				interrupt-map-mask = <0 0 0 0>;
--				interrupt-map = <0 0 0 0 &gic GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-map-mask = <0 0 0 7>;
-+				interrupt-map = <0 0 0 1 &pcie4_intc 0>,
-+						<0 0 0 2 &pcie4_intc 1>,
-+						<0 0 0 3 &pcie4_intc 2>,
-+						<0 0 0 4 &pcie4_intc 3>;
- 				marvell,pcie-port = <3>;
- 				marvell,pcie-lane = <0>;
- 				clocks = <&gateclk 7>;
- 				status = "disabled";
-+
-+				pcie4_intc: interrupt-controller {
-+					interrupt-controller;
-+					#interrupt-cells = <1>;
-+				};
- 			};
- 		};
- 
+I'd suggest to document in dts as well. See thread [1]
+
+
+[1] https://lore.kernel.org/linux-arm-kernel/YiizsYnKB0X9bDY2@atomide.com/
+
 -- 
-2.20.1
-
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
