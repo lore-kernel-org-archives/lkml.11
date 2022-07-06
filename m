@@ -2,116 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88AFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10468C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232746AbiGFKHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
+        id S232803AbiGFKIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232589AbiGFKHA (ORCPT
+        with ESMTP id S232775AbiGFKHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:07:00 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5B52528F
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:06:58 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id i18so25035096lfu.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 03:06:58 -0700 (PDT)
+        Wed, 6 Jul 2022 06:07:41 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E2E25597
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:07:28 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id s1so21308660wra.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 03:07:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=o/JI08us7vL24f4s2bZjdnzknLcJKDlQAeiE558KAis=;
-        b=KN0X8kX9WhJxJK4/kKMKHEZoc2zJhbOciZhqDlTpiqOahrwQy59NBTHG3BxxidxG7m
-         67bhQWO1Fs7NcpSyyBgrGPymXr5wZkwBcziPGklMAb5E3NBvx/p9g/iqCxn6x/VJkm1A
-         PmzjaLP3ZqbE1EVYUS8Lrv8UI1sopmhz7jP7IQxJBEaI2lleD6FRmwhphOaOICEJkKn2
-         7zNsDlY4gdRINoYkfsphM3/92q3sySrWB+Av6pPfwsAKt/pc5IEOttCtubLBfbg3wE0O
-         q1zWJU3oGo7cirC74MKe9oyKGNSnE4CmNIaHU+X4niYJ6RYwWySoawAQM2K9XMfWBAL8
-         N88A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QObgdcNgPMmmkDUAL9Gi7pEY5BpJMOpSGHFLHn03yYA=;
+        b=zOd9ffccl9iKPwv8bkny3QSt1yff375lo1GN7IGSjUfvbUmcyeTzsHRpUc/NyUkGGc
+         j7JCVoFIc+YsJwE+f6oUfsOy+mfvfMiEGdKppg2/x8GwobRAF12Hnab4zqYiAqWxiQbn
+         c2G88/YUPhZ932/+NCrv33WzT5/NBLuTK9RNtnEgSyvqVnWYGFFEhO+G5NFDDA6qtqww
+         Y7UYl38YzOTDB04Hj6iMVDwEwuU6zlGhReg5DoHiwOqtlUW91WMnzKdqxc9tuMN5hjDD
+         aohUAYA1lzTSJ8H+Fh4wLc3+zpNjvqnJDqXRiM4bPcVWpE9eqMApo6tZywHA7cqeb1JM
+         YMIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=o/JI08us7vL24f4s2bZjdnzknLcJKDlQAeiE558KAis=;
-        b=ywy1//qUjou9oo/sIIRDG0YoiC/wBZ1QnhGQzIaF2hvaZtQrSMHzn+6LXB+kBWa62l
-         XpKt32g55GRfKfLf3vLMBzshX70rs4Nm+ekammfos0ozH51ieAz5f+zlAvDJtmle4+iv
-         FS97MwLmsiw8EHFJ4CuuqBtR9SfL52/Jo910WUYx2wiav+9Jw8fEzB76e4QKUGvtPqWf
-         PKZxPhIQaSlSjoHfffnwWyIQn4IOfDu+G9lDiGdX0ieqEeIqvch2gbi8BYm9aP44+oQE
-         T1zSSq4svLZhPgTxORfjH+zm6qja/ZxzuW/VF6bCrRup7p1Zapm0hCkEmmXyA8My6X3t
-         1SvA==
-X-Gm-Message-State: AJIora/Cg++q0fZYquTYH1DGjksfVuIPT5HnFKtKodjgOxdpV4UkLbcP
-        j7FpIcVHxswrtWGc9Df4T9ylwQ==
-X-Google-Smtp-Source: AGRyM1uRSIf3VLsyNglEEsS5S8MByTBNN1VD5w4WP3bbUucHWwXC/emiIf6KMm+pT6aFgJzFoOJ9cw==
-X-Received: by 2002:a05:6512:31d1:b0:47f:5d39:1d9d with SMTP id j17-20020a05651231d100b0047f5d391d9dmr25517702lfe.140.1657102015414;
-        Wed, 06 Jul 2022 03:06:55 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id h4-20020ac250c4000000b00483e5f0192esm769001lfm.87.2022.07.06.03.06.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 03:06:54 -0700 (PDT)
-Message-ID: <2829e71b-1769-ce24-f810-d63e619aa5f0@linaro.org>
-Date:   Wed, 6 Jul 2022 12:06:53 +0200
+        bh=QObgdcNgPMmmkDUAL9Gi7pEY5BpJMOpSGHFLHn03yYA=;
+        b=NjUi2dolfmxt0bJva9cc7xMB5rj89OXzOUzdlYF7Mo1mOiPCPhM4wkYMaOFjpX8mad
+         diRYAWXeLnu4ln+Fj9Nlty9Do64Nhj7zVbMUa5XkMkE+Sdyqq4HdZYRe07Jfi/CvMzcg
+         lPMYCZ8Z1BkgSQcj/HAAEBixHs5MI7MFsMpgl3tp3mtCntxwpvWjG4zZphsjZzLIcuBi
+         3Zc9oKvD82hV76XCFy408Cte7hwDgO3mBKsskea4F7lBKM8MJpZ2h+rOPn+zU7rafRQH
+         +VrJRAtoiKJZ3jncipxVeNj7MITh2s97CUJU5D62sv8fsA0y7k4mK3CikkvLqou+mr0F
+         xvvg==
+X-Gm-Message-State: AJIora8ufSqE4ZSgoEz0y50GkzMxjvYdeOrpQI4YsSVwNvUqC3hOzDat
+        8bzntk8HAVSQIRUauMrXD+855w==
+X-Google-Smtp-Source: AGRyM1sjNYc1LtO3TTtCWhgBsef9MokUhndxvevofnCl3/UmI5h7ZLG1LXPoJC1T5ZRpWDJkpL31qA==
+X-Received: by 2002:a05:6000:1683:b0:21b:93b0:898f with SMTP id y3-20020a056000168300b0021b93b0898fmr35871674wrd.662.1657102047194;
+        Wed, 06 Jul 2022 03:07:27 -0700 (PDT)
+Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id n35-20020a05600c3ba300b003a039054567sm24678143wms.18.2022.07.06.03.07.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 03:07:26 -0700 (PDT)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 0/7] nvmem: patches (set 1) for 5.20
+Date:   Wed,  6 Jul 2022 11:06:20 +0100
+Message-Id: <20220706100627.6534-1-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V3 02/11] dt-bindings: pci: tegra: Convert to json-schema
-Content-Language: en-US
-To:     Vidya Sagar <vidyas@nvidia.com>, Rob Herring <robh@kernel.org>
-Cc:     bhelgaas@google.com, lorenzo.pieralisi@arm.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, kishon@ti.com,
-        vkoul@kernel.org, kw@linux.com, p.zabel@pengutronix.de,
-        mperttunen@nvidia.com, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        kthota@nvidia.com, mmaddireddy@nvidia.com, sagar.tv@gmail.com,
-        Thierry Reding <treding@nvidia.com>
-References: <20220629060435.25297-1-vidyas@nvidia.com>
- <20220629060435.25297-3-vidyas@nvidia.com>
- <20220630210449.GA3283899-robh@kernel.org>
- <e971a557-3387-efcf-87ec-983b998c5e93@nvidia.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <e971a557-3387-efcf-87ec-983b998c5e93@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/07/2022 11:53, Vidya Sagar wrote:
->>> +  nvidia,bpmp:
->>> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->>> +    description: |
->>> +      Must contain a pair of phandle to BPMP controller node followed by controller ID. Following
->>> +      are the controller IDs for each controller:
->>> +
->>> +        0: C0
->>> +        1: C1
->>> +        2: C2
->>> +        3: C3
->>> +        4: C4
->>> +        5: C5
->>> +    items:
->>> +      - items:
->>> +          - minimum: 0
->>> +            maximum: 0xffffffff
->>
->> That's already the limit. Just a description is fine.
->>
->>> +          - enum: [ 0, 1, 2, 3, 4, 5 ]
->>
->> maximum: 5
-> 
-> Setting the maximum to '5' is resulting in the following error.
-> 
-> pcie-ep@141a0000: nvidia,bpmp:0:0: 4294967295 is greater than the 
-> maximum of 5
-> 
-> Could you please help me understand why I'm seeing this error?
+Hi Greg,
+Here are nvmem patches for 5.20, which includes
 
-Trim your replies.
+- New MicroChip NVMEM provider
+- updated bindings for MediaTech to include new SoC's
+- An enhancement in mtk-efuse to use devm_platform_get_and_ioremap_resource
 
-Why adding minimum:5 to the phandle? Rob said add a description. Nothing
-about minimum.
+Can you please queue them up for 5.20.
 
-Best regards,
-Krzysztof
+Thanks,
+Srini
+
+Allen-KH Cheng (1):
+  dt-bindings: nvmem: mediatek: efuse: add support for mt8186
+
+AngeloGioacchino Del Regno (1):
+  nvmem: mtk-efuse: Simplify with
+    devm_platform_get_and_ioremap_resource()
+
+Chunfeng Yun (2):
+  dt-bindings: nvmem: convert mtk-efuse.txt to YAML schema
+  dt-bindings: nvmem: mediatek: efuse: add support mt8183
+
+Claudiu Beznea (2):
+  dt-bindings: microchip-otpc: document Microchip OTPC
+  nvmem: microchip-otpc: add support
+
+Lukas Bulwahn (1):
+  MAINTAINERS: rectify file pattern in MICROCHIP OTPC DRIVER
+
+ .../bindings/nvmem/mediatek,efuse.yaml        |  89 ++++++
+ .../nvmem/microchip,sama7g5-otpc.yaml         |  50 +++
+ .../devicetree/bindings/nvmem/mtk-efuse.txt   |  43 ---
+ MAINTAINERS                                   |   8 +
+ drivers/nvmem/Kconfig                         |   7 +
+ drivers/nvmem/Makefile                        |   2 +
+ drivers/nvmem/microchip-otpc.c                | 288 ++++++++++++++++++
+ drivers/nvmem/mtk-efuse.c                     |   3 +-
+ .../nvmem/microchip,sama7g5-otpc.h            |  12 +
+ 9 files changed, 457 insertions(+), 45 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+ create mode 100644 Documentation/devicetree/bindings/nvmem/microchip,sama7g5-otpc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
+ create mode 100644 drivers/nvmem/microchip-otpc.c
+ create mode 100644 include/dt-bindings/nvmem/microchip,sama7g5-otpc.h
+
+-- 
+2.25.1
+
