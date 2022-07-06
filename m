@@ -2,113 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 389DFCCA480
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:30:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F5BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234533AbiGFVax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 17:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
+        id S233870AbiGFVgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 17:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234627AbiGFVas (ORCPT
+        with ESMTP id S231872AbiGFVgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 17:30:48 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3412A94F;
-        Wed,  6 Jul 2022 14:30:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=8YduW0eS5FyJqaOqaP8Ime9Kxv0Nz0ax91qwOz8aVq0=; b=tJ8pa1OCY41/griklmW+EWfOVD
-        GWRX3NjEHhYKoa1dirAXu9tcLaN+qpf0nzpSUt6AE2hSTAMaGkgPgv4NcYCGYPyn5+QpenS+wTnVf
-        dzwHgdTgxI67I3CmK0cMnjTb734bjxbjYx7DQA9orlsLZwJnT7/WMP2dzbiZ7YbAQzYQu/y+kd36E
-        NWKd/LUDPN2BcSU2j0kYeELLqOgQTg66ewIFq/UnLnPvN5w4UmYxGdTvEJEsZFKMhHTjiXUcAJU+a
-        56SmKOp2xezp85myJotIUFWF91GMeRTiTwry5HfRHn7/M0IWeMCxtQww2OKOWXkI2zuBZnUl0FPwc
-        DaJoW4Qg==;
-Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230] helo=[192.168.11.155])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1o9CbT-008LWu-KY; Wed, 06 Jul 2022 15:30:36 -0600
-Message-ID: <e40595f9-f398-d43f-b09d-08d3e88b3950@deltatee.com>
-Date:   Wed, 6 Jul 2022 15:30:30 -0600
+        Wed, 6 Jul 2022 17:36:03 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FC1E02
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:36:01 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 145so14978733pga.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 14:36:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=E//5ZA8uzfUdBafNOuQKisK6Qx4fv09+u0puRM54Yd4=;
+        b=WYNY3+EZM7O23aAqdPFVrW/DUF8fqtHeku8lTPTokWqu4qo5ihKYdUaHcZWbwvv/uk
+         8pSXVp4lrwvMkWw/I3pmkDXmnaHZGzkKLQfFWknorNkRdOAZ34z44bGUwMJFTFtav0az
+         gm4V27G3TiZgAd6SfIrgB9fz0EOxM2PT3QKrjXYqlTNYE/nVNyiGONlx9/iQi7rRbONh
+         /hlEJz3SBbw/A6hPaYmMguUx2TWyvJ5D43pCulKKsZ+mosv9JeeNvxWS8RbOy2/4uIVU
+         gwHVRrlkgfaDmSmmD1HpaixNY4NrKhE4Mc0jzJ3HGiknRzhAmLsbIGxApWqP6xhzhjwU
+         Sung==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=E//5ZA8uzfUdBafNOuQKisK6Qx4fv09+u0puRM54Yd4=;
+        b=2HEa/VxRW8QYW2w1JqdaCFS5bCuQg35FQaEtIHExx/FhJiv2RkZiR9FeFWymfZ3wtg
+         7veV3bquHK23DCEWP9masAKNLwp+CJpD1azFvhPGaCjI5R+2/1ujWTKAYXtfm5Waj6Q2
+         RWALmQn8sk+xDdS4lcG8OeMaP24Bjnm0dGpDHszwQUOUwatqY33vw4DrfmsIMjn4MFAm
+         ftmdHefoW0TQrho7D/AfFpfLqJbZ0uMn9sQ3JnTRSWi+iJfTslRgpgaSTKiWDpsbQ1Zp
+         EoJUOQvLhqcbui+UXGbqrQfl8ziG+NOjBA2GlldNdCXTuesEKT+3UuFQtS/Xj6+ZShH9
+         OO3w==
+X-Gm-Message-State: AJIora/5rKQEsCmnfEk7KiVCohfP8uI8bEHvBNANbxWyCM+uRonCAIUu
+        SH87qkGXp6i/TjEYFB5rSZefTw==
+X-Google-Smtp-Source: AGRyM1vTi5E2bFkpKPPnm+ygtjra8noxOqMQi4yVuvfE/qj8l2tXrHYCvXKpy5UhaMgSliBROIV24A==
+X-Received: by 2002:a05:6a00:80d:b0:525:520a:1736 with SMTP id m13-20020a056a00080d00b00525520a1736mr48216477pfk.36.1657143361099;
+        Wed, 06 Jul 2022 14:36:01 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id i1-20020a17090a718100b001ef87123615sm7423406pjk.37.2022.07.06.14.36.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 14:36:00 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 21:35:56 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 06/28] KVM: nVMX: Introduce
+ KVM_CAP_HYPERV_ENLIGHTENED_VMCS2
+Message-ID: <YsYAPL1UUKJB3/MJ@google.com>
+References: <20220629150625.238286-1-vkuznets@redhat.com>
+ <20220629150625.238286-7-vkuznets@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, linux-kernel@vger.kernel.org,
-        linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-mm@kvack.org,
-        iommu@lists.linux-foundation.org,
-        Stephen Bates <sbates@raithlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Don Dutile <ddutile@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Minturn Dave B <dave.b.minturn@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Xiong Jianxin <jianxin.xiong@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-References: <20220705161240.GB13721@lst.de>
- <a509b13c-244b-23fc-f989-339750a733a5@deltatee.com>
- <20220705164315.GB14484@lst.de>
- <acb91f37-0470-8ce4-19e4-426903cbc3a1@deltatee.com>
- <20220705165039.GB14566@lst.de> <YsRzNqmZYlgkL7fI@kroah.com>
- <1bd43ef7-0403-bd25-087c-d54d5af677e4@deltatee.com>
- <YsR4CNDgtt4JWonv@kroah.com>
- <b3deacdd-cb76-6ebb-0e29-ef6a5a426a0d@deltatee.com>
- <20220706065127.GA27132@lst.de> <YsU0Cb0rRbW8FGPX@kroah.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <YsU0Cb0rRbW8FGPX@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.73.163.230
-X-SA-Exim-Rcpt-To: gregkh@linuxfoundation.org, hch@lst.de, jgg@ziepe.ca, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, dan.j.williams@intel.com, christian.koenig@amd.com, jhubbard@nvidia.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, dave.b.minturn@intel.com, jason@jlekstrand.net, dave.hansen@linux.intel.com, jianxin.xiong@intel.com, helgaas@kernel.org, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, rcampbell@nvidia.com, bhelgaas@google.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629150625.238286-7-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022-07-06 01:04, Greg Kroah-Hartman wrote:
-> On Wed, Jul 06, 2022 at 08:51:27AM +0200, Christoph Hellwig wrote:
->> On Tue, Jul 05, 2022 at 12:16:45PM -0600, Logan Gunthorpe wrote:
->>> The current version does it through a char device, but that requires
->>> creating a simple_fs and anon_inode for teardown on driver removal, plus
->>> a bunch of hooks through the driver that exposes it (NVMe, in this case)
->>> to set this all up.
->>>
->>> Christoph is suggesting a sysfs interface which could potentially avoid
->>> the anon_inode and all of the extra hooks. It has some significant
->>> benefits and maybe some small downsides, but I wouldn't describe it as
->>> horrid.
->>
->> Yeah, I don't think is is horrible, it fits in with the resource files
->> for the BARs, and solves a lot of problems.  Greg, can you explain
->> what would be so bad about it?
+On Wed, Jun 29, 2022, Vitaly Kuznetsov wrote:
+> Turns out Enlightened VMCS can gain new fields without version change
+> and KVM_CAP_HYPERV_ENLIGHTENED_VMCS which KVM currently has cant's
+> handle this reliably. In particular, just updating the current definition
+> of eVMCSv1 with the new fields and adjusting the VMX MSR filtering will
+> inevitably break live migration to older KVMs. Note: enabling eVMCS and
+> setting VMX feature MSR can happen in any order.
 > 
-> As you mention, you will have to pass different things down into sysfs
-> in order for that to be possible.  If it matches the resource files like
-> we currently have today, that might not be that bad, but it still feels
-> odd to me.  Let's see an implementation and a Documentation/ABI/ entry
-> first though.
+> Introduce a notion of KVM internal "Enlightened VMCS revision" and add
+> a new capability allowing to add fields to Enlightened VMCS while keeping
+> its version.
 
-I'll work something up in the coming weeks.
+Bumping a "minor" version number in KVM is going to be a nightmare.  KVM is going
+to be stuck "supporting" old revisions in perpetuity, and userspace will be forced
+to keep track of which features are available with which arbitrary revision (is
+that information even communicated to userspace?).
 
-Thanks,
+I think a more maintainable approach would be to expose the "filtered" VMX MSRs to
+userspace, e.g. add KVM_GET_EVMCS_VMX_MSRS.  Then KVM just needs to document what
+the "filters" are for KVM versions that don't support KVM_GET_EVMCS_VMX_MSRS.
+KVM itself doesn't need to maintain version information because it's userspace's
+responsibility to ensure that userspace doesn't try to migrate to a KVM that doesn't
+support the desired feature set.
 
-Logan
+That also avoids messes like unnecessarily blocking migration from "incompatible"
+revisions when running on hardware that doesn't even support the control.
