@@ -2,97 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488BDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A73C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233378AbiGFNOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
+        id S233465AbiGFNPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233193AbiGFNOl (ORCPT
+        with ESMTP id S232052AbiGFNPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:14:41 -0400
-Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B21393;
-        Wed,  6 Jul 2022 06:14:40 -0700 (PDT)
-Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        Wed, 6 Jul 2022 09:15:38 -0400
+X-Greylist: delayed 327 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 06:15:37 PDT
+Received: from synology.com (mail.synology.com [211.23.38.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0137225F1;
+        Wed,  6 Jul 2022 06:15:37 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.17.41.204])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id C9B503EEC4;
-        Wed,  6 Jul 2022 15:14:38 +0200 (CEST)
-Message-ID: <fa748405-ca38-8ec8-0e8d-83a99a0c9c57@somainline.org>
-Date:   Wed, 6 Jul 2022 15:14:38 +0200
+        by synology.com (Postfix) with ESMTPSA id 791051BA2363A;
+        Wed,  6 Jul 2022 21:10:08 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synology.com; s=123;
+        t=1657113009; bh=7Ow7q0OE+V2ezcJYBI6yuyQyioUIMwsO6+48RC1L7nk=;
+        h=From:To:Cc:Subject:Date;
+        b=m7Ed0l9BZRERmpnawm3hW48qeAx6CZPmQqU1yUuLigny3rB0KkGQFOPeL4ab+y95C
+         V8yaOC/s2C4fsap0zGApsqOZiGmxhJfw8eYr47D5NvlXQEXuZ5NKPrZB21+P4i336R
+         uzosslY0weE22GBQRtgQlc8SsX7DCUpG2hDpmhlk=
+From:   bingjingc <bingjingc@synology.com>
+To:     josef@toxicpanda.com, dsterba@suse.com, clm@fb.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     bingjingc@synology.com, robbieko@synology.com, bxxxjxxg@gmail.com
+Subject: [PATCH 0/2] btrfs: send: fix a bug that sending a link command on existing file path
+Date:   Wed,  6 Jul 2022 21:09:01 +0800
+Message-Id: <20220706130903.1661-1-bingjingc@synology.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5 1/3] clk: qcom: clk-alpha-pll: add support for APSS PLL
-Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220705191017.1683716-1-robimarko@gmail.com>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220705191017.1683716-1-robimarko@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Synology-MCP-Status: no
+X-Synology-Spam-Flag: no
+X-Synology-Spam-Status: score=0, required 6, WHITELIST_FROM_ADDRESS 0
+X-Synology-Virus-Status: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: BingJing Chang <bingjingc@synology.com>
 
+btrfs_ioctl_send processes recorded btrfs_keys in a defined order. (First,
+we process a btrfs_key with a samller objectid. If btrfs_keys have the same
+objectid, then we compare their types and offsets accordingly.) However,
+reference paths for an inode can be stored in either BTRFS_INODE_REF_KEY
+btrfs_keys or BTRFS_INODE_EXTREF_KEY btrfs_keys. And due to the limitation
+of the helper function - iterate_inode_ref, we can only iterate the entries
+of ONE btrfs_inode_ref or btrfs_inode_extref. That is, there must be a bug
+in processing the same reference paths, which are stored in different ways.
 
-On 5.07.2022 21:10, Robert Marko wrote:
-> APSS PLL type will be used by the IPQ8074 APSS driver for providing the
-> CPU core clocks and enabling CPU Frequency scaling.
-> 
-> This is ported from the downstream 5.4 kernel.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
-> ---
->  drivers/clk/qcom/clk-alpha-pll.c | 12 ++++++++++++
->  drivers/clk/qcom/clk-alpha-pll.h |  1 +
->  2 files changed, 13 insertions(+)
-> 
-> diff --git a/drivers/clk/qcom/clk-alpha-pll.c b/drivers/clk/qcom/clk-alpha-pll.c
-> index 4406cf609aae..8270363ff98e 100644
-> --- a/drivers/clk/qcom/clk-alpha-pll.c
-> +++ b/drivers/clk/qcom/clk-alpha-pll.c
-> @@ -154,6 +154,18 @@ const u8 clk_alpha_pll_regs[][PLL_OFF_MAX_REGS] = {
->  		[PLL_OFF_TEST_CTL_U] = 0x30,
->  		[PLL_OFF_TEST_CTL_U1] = 0x34,
->  	},
-> +	[CLK_ALPHA_PLL_TYPE_APSS] = {
-The name is surely not correct, can somebody from qcom chime in
-and suggest what it should be?
+Please see the second commit for the details.
 
-Konrad
-> +		[PLL_OFF_L_VAL] = 0x08,
-> +		[PLL_OFF_ALPHA_VAL] = 0x10,
-> +		[PLL_OFF_ALPHA_VAL_U] = 0xff,
-> +		[PLL_OFF_USER_CTL] = 0x18,
-> +		[PLL_OFF_USER_CTL_U] = 0xff,
-> +		[PLL_OFF_CONFIG_CTL] = 0x20,
-> +		[PLL_OFF_CONFIG_CTL_U] = 0x24,
-> +		[PLL_OFF_TEST_CTL] = 0x30,
-> +		[PLL_OFF_TEST_CTL_U] = 0x34,
-> +		[PLL_OFF_STATUS] = 0x28,
-> +	},
->  };
->  EXPORT_SYMBOL_GPL(clk_alpha_pll_regs);
->  
-> diff --git a/drivers/clk/qcom/clk-alpha-pll.h b/drivers/clk/qcom/clk-alpha-pll.h
-> index 6e9907deaf30..626fdf80336d 100644
-> --- a/drivers/clk/qcom/clk-alpha-pll.h
-> +++ b/drivers/clk/qcom/clk-alpha-pll.h
-> @@ -18,6 +18,7 @@ enum {
->  	CLK_ALPHA_PLL_TYPE_AGERA,
->  	CLK_ALPHA_PLL_TYPE_ZONDA,
->  	CLK_ALPHA_PLL_TYPE_LUCID_EVO,
-> +	CLK_ALPHA_PLL_TYPE_APSS,
->  	CLK_ALPHA_PLL_TYPE_MAX,
->  };
->  
+bingjingc (2):
+  btrfs: send: introduce recorded_ref_alloc and recorded_ref_free
+  btrfs: send: fix a bug that sending a link command on existing file
+    path
+
+ fs/btrfs/send.c | 194 ++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 180 insertions(+), 14 deletions(-)
+
+-- 
+2.37.0
+
