@@ -2,124 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98857CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CF1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233637AbiGFNP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45114 "EHLO
+        id S233576AbiGFNQ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233620AbiGFNPu (ORCPT
+        with ESMTP id S232394AbiGFNQ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:15:50 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEF7193FA;
-        Wed,  6 Jul 2022 06:15:49 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id lg18so7262489ejb.0;
-        Wed, 06 Jul 2022 06:15:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YMLDVTvyR9wt+eqPK81VYvFaLzU3RcWbb4f8d1UYbe0=;
-        b=O7oIIbXjjWTNjkt5EfudQbxBsTYbqDCruMWFEeT6nHKIO0POe/a+KdpUphr1xzTG3L
-         3ZlVzrkX8RNNVIoDZj5yoduQVQE55KGiqJ92r9B9yyW6H5q+Cpg2bGJbzQWURCrpCvi1
-         ZkyIM9hKReEpHvkorY1RXdL3JtZTXX7DSpNyVWoHrWJiJHCF6ZZK5fJXFRj60M2MsgGm
-         EglaEiBlz4oxEOLRyxWelf31rWqK7oRplnfbLNAentKnCYasfi0oJz5Rm1psBphPiYkB
-         HfdIletDeaFJEs0+0JxdUp7EHeL1CqiWOqt1y0vH8yAITaMYh5yKOzLytBETYuI35rq0
-         BIow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YMLDVTvyR9wt+eqPK81VYvFaLzU3RcWbb4f8d1UYbe0=;
-        b=rH8OWdpHkG3vadB8CQf2Lvrps6LZOBSKcLzgNmVNbI/y94q8cqcYSdPkwUhikmALtI
-         tH/pQT7pGzduSmqJmx3uaQNF6eHJpIfwXLQyEDu8Pbj15nCcnIJQL6PS/5lYkEpJlYqe
-         WA6zjABVGj7Ax9Ob8/6+XKy7ueh42K6SX6zmXpcvjpcxmwAbQmBYZWzdec3V8n1M++ru
-         yPypVr9GheQD6++B4lYSZT5oBG5jT4CXCJIrQhrYHF/72xa1EqJQw+z+0FPJgcjjP2j/
-         A75umfHbdM4YuUSxVTVGm8fVwVZB6gghh4X5iFSSrsB8YMOzSHJV4O1xNoRhCjPahLPe
-         EbNg==
-X-Gm-Message-State: AJIora9jJpfdWlcIduvUavUCouIJNH3DoZzIJwbjqpAhlgHRiy2/0QGg
-        7VpBRjOhoaNJLwz+lQt9Oic=
-X-Google-Smtp-Source: AGRyM1sWdd5RhCFisyvcHYvpMka/7jI3qty/imuN5FuzgvtZXh/LrwdN+EtN4bg1i4WaM+cuJ4j/Sw==
-X-Received: by 2002:a17:907:a40a:b0:72a:a61d:9ac8 with SMTP id sg10-20020a170907a40a00b0072aa61d9ac8mr17698037ejc.43.1657113348120;
-        Wed, 06 Jul 2022 06:15:48 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id f22-20020a50ee96000000b0043a0da110e3sm9298427edr.43.2022.07.06.06.15.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 06:15:47 -0700 (PDT)
-Message-ID: <62c58b03.1c69fb81.527d5.ecc6@mx.google.com>
-X-Google-Original-Message-ID: <YsWHHj0bdrA+sjiI@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 14:59:10 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
-Subject: Re: [PATCH 06/13] ARM: dts: qcom: enable usb phy by default for
- ipq8064
-References: <20220705133917.8405-1-ansuelsmth@gmail.com>
- <20220705133917.8405-7-ansuelsmth@gmail.com>
- <eadf03c4-7e4c-e2a0-b20d-6e2dff3af1e3@somainline.org>
+        Wed, 6 Jul 2022 09:16:26 -0400
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE2725F1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:16:24 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by michel.telenet-ops.be with bizsmtp
+        id rpGL2700W4C55Sk06pGLll; Wed, 06 Jul 2022 15:16:21 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o94tA-002L9t-35; Wed, 06 Jul 2022 15:16:20 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o94t9-009enR-L2; Wed, 06 Jul 2022 15:16:19 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Simon Ser <contact@emersion.fr>
+Subject: [PATCH v2] drm/fb: Improve drm_framebuffer.offsets documentation
+Date:   Wed,  6 Jul 2022 15:16:18 +0200
+Message-Id: <33fda13b500b39645e7363806c6e458e915b581e.1657113304.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eadf03c4-7e4c-e2a0-b20d-6e2dff3af1e3@somainline.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 03:04:44PM +0200, Konrad Dybcio wrote:
-> 
-> 
-> On 5.07.2022 15:39, Christian Marangi wrote:
-> > Enable usb phy by default. When the usb phy were pushed, half of them
-> > were flagged as disabled by mistake. Fix this to correctly init dwc3
-> > node on any ipq8064 based SoC.
-> Are you sure they are used on *all* devices? If not, you will
-> lose power by enabling unused hw..
-> 
-> Konrad
+Fix various spelling and grammar mistakes in the kerneldoc comments
+documenting the offsets member in the drm_framebuffer structure:
+  - s/laytou/layout/,
+  - Add missing "is",
+  - s/it/its/.
 
-Well there could be device that have no usb at all... so honestly
-enabling one of them is also wrong. Should I disable the other and
-enable it for the upstream device?
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Reviewed-by: Simon Ser <contact@emersion.fr>
+---
+v2:
+  - Add Acked-by, Reviewed-by.
+---
+ include/drm/drm_framebuffer.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Also it's all handled by dummy vbus so i think we can ignore the losing
-power thing. (this thing is old)
-
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > Tested-by: Jonathan McDowell <noodles@earth.li>
-> > ---
-> >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 4 ----
-> >  1 file changed, 4 deletions(-)
-> > 
-> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > index b2faa4a067e9..9c32c637ea46 100644
-> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > @@ -1177,8 +1177,6 @@ hs_phy_0: phy@100f8800 {
-> >  			clocks = <&gcc USB30_0_UTMI_CLK>;
-> >  			clock-names = "ref";
-> >  			#phy-cells = <0>;
-> > -
-> > -			status = "disabled";
-> >  		};
-> >  
-> >  		ss_phy_0: phy@100f8830 {
-> > @@ -1187,8 +1185,6 @@ ss_phy_0: phy@100f8830 {
-> >  			clocks = <&gcc USB30_0_MASTER_CLK>;
-> >  			clock-names = "ref";
-> >  			#phy-cells = <0>;
-> > -
-> > -			status = "disabled";
-> >  		};
-> >  
-> >  		usb3_0: usb3@100f8800 {
-
+diff --git a/include/drm/drm_framebuffer.h b/include/drm/drm_framebuffer.h
+index f67c5b7bcb68654a..0dcc07b68654844b 100644
+--- a/include/drm/drm_framebuffer.h
++++ b/include/drm/drm_framebuffer.h
+@@ -154,10 +154,10 @@ struct drm_framebuffer {
+ 	 * drm_mode_fb_cmd2.
+ 	 *
+ 	 * Note that this is a linear offset and does not take into account
+-	 * tiling or buffer laytou per @modifier. It meant to be used when the
+-	 * actual pixel data for this framebuffer plane starts at an offset,
+-	 * e.g.  when multiple planes are allocated within the same backing
+-	 * storage buffer object. For tiled layouts this generally means it
++	 * tiling or buffer layout per @modifier. It is meant to be used when
++	 * the actual pixel data for this framebuffer plane starts at an offset,
++	 * e.g. when multiple planes are allocated within the same backing
++	 * storage buffer object. For tiled layouts this generally means its
+ 	 * @offsets must at least be tile-size aligned, but hardware often has
+ 	 * stricter requirements.
+ 	 *
 -- 
-	Ansuel
+2.25.1
+
