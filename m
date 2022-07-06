@@ -2,122 +2,300 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B96EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A81C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbiGFIYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:24:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
+        id S231808AbiGFIY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231926AbiGFIX7 (ORCPT
+        with ESMTP id S231765AbiGFIYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:23:59 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1C72127A
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:23:58 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id g1so10505978qkl.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:23:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1rup06Vco8ni++NHk+fV9QZlwRsoZbZgKQALP9OU2oQ=;
-        b=cv+j4JQb1ISWoJ8z34+l/PMmk8xfXG9cKN8LSWsB85ldibuPnuenR53ZannLlgpZIG
-         QFC89WnyC8qgjzl6vLBd3WoviKmm6AiC1QZfdPWTqazZ2XUQ++kO75BdibuOSJOyJv02
-         3UQahRMUaQFqFbvmNTgRQNm8g7eEQe+SBya47/yv3vDZjupFvcADpI85/Iieky0bYFqX
-         I/rHPcAJnhKtfJs0mzuQCP+Gnx9uc9h+fJ35Ts1CG1KXAeamqbypySdJJqSZ+Ged0WN1
-         pJJOb4qZN5j7oEJDiC7PFkZEY7R/gIXsdS7IIFxmOxg6QL9gNlSz/70nYW2wWUoKqOCV
-         EYPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1rup06Vco8ni++NHk+fV9QZlwRsoZbZgKQALP9OU2oQ=;
-        b=T3vYbph7RxplrPHsqi6Npv/T/OBNNzVC14v1Zy66xf/GE6/Laesjk+mtH4I9ZqyHTG
-         0kBjALN9GRfYRCTvp4Zlfw+H+wTBc2tlg/qW6e3q0FPOIANwVfeQn6e6WuSwpNeQe18U
-         0p937/8qbOvd3dZ/wHs4qyFE6XnTYw+ZYqbcZP85UJ3tBt3AZ/tbCEE4i2I0lsMF66CD
-         jre8RIwjGrTnHVivmARaF/ib3zLpTM2sjCMjX8sFyDcXzxwtoRzUwLv+OY0NKLhuPzc/
-         njQYxX1kInKnt3EUCd1GkXPu9w7dYcDnKGv68FDhD/0diqz+04wY0oq8Q5/qTVvrZ9i9
-         +kQw==
-X-Gm-Message-State: AJIora+kTLsDOsjsImy5kC0w5nzuFKdEEMUyKWshFj4eSucCVuBAzfmK
-        85JqPqAIx0cXeasa9a+T8ypspnEvZPoVtwNUAiafCA==
-X-Google-Smtp-Source: AGRyM1tdB1TNGeTDhjl2mWrO7dYY5lgeSpPZwNnggzjHH2xfv/Copq/oDtv5UzbGKDrdkmU3Mixw5wsgQlFU7i8ZuvU=
-X-Received: by 2002:a05:620a:2409:b0:6b1:4464:e401 with SMTP id
- d9-20020a05620a240900b006b14464e401mr26117406qkn.30.1657095837223; Wed, 06
- Jul 2022 01:23:57 -0700 (PDT)
+        Wed, 6 Jul 2022 04:24:09 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778CD65CE;
+        Wed,  6 Jul 2022 01:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657095848; x=1688631848;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kJl1R88jMUFb5Y8ov4QxxubYj5SsjR8PCdbcDnNsdhM=;
+  b=WXFTAL9EeYSlctTOynMN6MTUfDDnRM2dTJfLimkHX7cvI0+qdvkIFEUV
+   QovYwEE7JKQ8iBd1wbiTIvBYGYmFuffDXl1vRQRwx2WzqkeQKTNKh/pNY
+   +5O+iFQ5ge89sZf6K6y3XrhOKJw/KrPHwv9ey0lZzLnO8jUEGvtu7OHBy
+   Ku9Se5pzGUKXi/Rfw/z2NiHXHhBClMB1G1BAuQjQr4HdEkQdvyuzLb6bR
+   gWddgPPN4D4ZfnIkJ0U5N8YmOsYVLbNp5Dn4f7WjpjiNUA//Y91/2anj3
+   xrcNiihtqSILbvN1WMgKOe4h0pfVmBy9bRjKOrIcDxJIwE1wqYH/t1Y5t
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="282433194"
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="282433194"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 01:24:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="567967851"
+Received: from chaop.bj.intel.com ([10.240.192.101])
+  by orsmga006.jf.intel.com with ESMTP; 06 Jul 2022 01:23:57 -0700
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v7 02/14] selftests/memfd: Add tests for F_SEAL_AUTO_ALLOCATE
+Date:   Wed,  6 Jul 2022 16:20:04 +0800
+Message-Id: <20220706082016.2603916-3-chao.p.peng@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
 MIME-Version: 1.0
-References: <20220705202837.667-1-ansuelsmth@gmail.com> <20220705202837.667-2-ansuelsmth@gmail.com>
-In-Reply-To: <20220705202837.667-2-ansuelsmth@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 6 Jul 2022 11:23:46 +0300
-Message-ID: <CAA8EJpoXOwooUYic-_G6jG7MBiHo2mfoKfR0jBDmRy0DsmMNEw@mail.gmail.com>
-Subject: Re: [PATCH 1/5] dt-bindings: clock: fix wrong clock documentation for qcom,rpmcc
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Jul 2022 at 23:56, Christian Marangi <ansuelsmth@gmail.com> wrote:
->
-> qcom,rpmcc describe 2 different kind of device.
-> Currently we have definition for rpm-smd based device but we lack
-> Documentation for simple rpm based device.
->
-> Add the missing clk for ipq806x, apq8060, msm8660 and apq8064 and
-> provide and additional example.
->
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  .../devicetree/bindings/clock/qcom,rpmcc.yaml | 77 ++++++++++++++++++-
->  1 file changed, 73 insertions(+), 4 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml b/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml
-> index 9d296b89a8d0..028eb0277495 100644
-> --- a/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml
-> +++ b/Documentation/devicetree/bindings/clock/qcom,rpmcc.yaml
-[,,,,]
+Add tests to verify sealing memfds with the F_SEAL_AUTO_ALLOCATE works
+as expected.
 
-> +
-> +then:
-> +  properties:
-> +    clocks:
-> +      description: pxo clock
-> +
-> +    clock-names:
-> +      const: pxo
-> +
-> +  required:
-> +    - clocks
-> +    - clock-names
+Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+---
+ tools/testing/selftests/memfd/memfd_test.c | 166 +++++++++++++++++++++
+ 1 file changed, 166 insertions(+)
 
-I don't think you can not mark these properties as required, older
-schemas do not have them.
-
-> +
-> +else:
-> +  if:
-> +    properties:
-> +      compatible:
-> +        contains:
-> +          const: qcom,rpmcc-apq8064
-> +  then:
-> +    properties:
-> +      clocks:
-> +        items:
-> +          - description: pxo clock
-> +          - description: cxo clock
-[...]
-
+diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
+index 94df2692e6e4..b849ece295fd 100644
+--- a/tools/testing/selftests/memfd/memfd_test.c
++++ b/tools/testing/selftests/memfd/memfd_test.c
+@@ -9,6 +9,7 @@
+ #include <fcntl.h>
+ #include <linux/memfd.h>
+ #include <sched.h>
++#include <setjmp.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <signal.h>
+@@ -232,6 +233,31 @@ static void mfd_fail_open(int fd, int flags, mode_t mode)
+ 	}
+ }
+ 
++static void mfd_assert_fallocate(int fd)
++{
++	int r;
++
++	r = fallocate(fd, 0, 0, mfd_def_size);
++	if (r < 0) {
++		printf("fallocate(ALLOC) failed: %m\n");
++		abort();
++	}
++}
++
++static void mfd_assert_punch_hole(int fd)
++{
++	int r;
++
++	r = fallocate(fd,
++		      FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
++		      0,
++		      mfd_def_size);
++	if (r < 0) {
++		printf("fallocate(PUNCH_HOLE) failed: %m\n");
++		abort();
++	}
++}
++
+ static void mfd_assert_read(int fd)
+ {
+ 	char buf[16];
+@@ -594,6 +620,94 @@ static void mfd_fail_grow_write(int fd)
+ 	}
+ }
+ 
++static void mfd_assert_hole_write(int fd)
++{
++	ssize_t l;
++	void *p;
++	char *p1;
++
++	/*
++	 * huegtlbfs does not support write, but we want to
++	 * verify everything else here.
++	 */
++	if (!hugetlbfs_test) {
++		/* verify direct write() succeeds */
++		l = write(fd, "\0\0\0\0", 4);
++		if (l != 4) {
++			printf("write() failed: %m\n");
++			abort();
++		}
++	}
++
++	/* verify mmaped write succeeds */
++	p = mmap(NULL,
++		 mfd_def_size,
++		 PROT_READ | PROT_WRITE,
++		 MAP_SHARED,
++		 fd,
++		 0);
++	if (p == MAP_FAILED) {
++		printf("mmap() failed: %m\n");
++		abort();
++	}
++	p1 = (char *)p + mfd_def_size - 1;
++	*p1 = 'H';
++	if (*p1 != 'H') {
++		printf("mmaped write failed: %m\n");
++		abort();
++
++	}
++	munmap(p, mfd_def_size);
++}
++
++sigjmp_buf jbuf, *sigbuf;
++static void sig_handler(int sig, siginfo_t *siginfo, void *ptr)
++{
++	if (sig == SIGBUS) {
++		if (sigbuf)
++			siglongjmp(*sigbuf, 1);
++		abort();
++	}
++}
++
++static void mfd_fail_hole_write(int fd)
++{
++	ssize_t l;
++	void *p;
++	char *p1;
++
++	/* verify direct write() fails */
++	l = write(fd, "data", 4);
++	if (l > 0) {
++		printf("expected failure on write(), but got %d: %m\n", (int)l);
++		abort();
++	}
++
++	/* verify mmaped write fails */
++	p = mmap(NULL,
++		 mfd_def_size,
++		 PROT_READ | PROT_WRITE,
++		 MAP_SHARED,
++		 fd,
++		 0);
++	if (p == MAP_FAILED) {
++		printf("mmap() failed: %m\n");
++		abort();
++	}
++
++	sigbuf = &jbuf;
++	if (sigsetjmp(*sigbuf, 1))
++		goto out;
++
++	/* Below write should trigger SIGBUS signal */
++	p1 = (char *)p + mfd_def_size - 1;
++	*p1 = 'H';
++	printf("failed to receive SIGBUS for mmaped write: %m\n");
++	abort();
++out:
++	munmap(p, mfd_def_size);
++}
++
+ static int idle_thread_fn(void *arg)
+ {
+ 	sigset_t set;
+@@ -880,6 +994,57 @@ static void test_seal_resize(void)
+ 	close(fd);
+ }
+ 
++/*
++ * Test F_SEAL_AUTO_ALLOCATE
++ * Test whether F_SEAL_AUTO_ALLOCATE actually prevents allocation.
++ */
++static void test_seal_auto_allocate(void)
++{
++	struct sigaction act;
++	int fd;
++
++	printf("%s SEAL-AUTO-ALLOCATE\n", memfd_str);
++
++	memset(&act, 0, sizeof(act));
++	act.sa_sigaction = sig_handler;
++	act.sa_flags = SA_SIGINFO;
++	if (sigaction(SIGBUS, &act, 0)) {
++		printf("sigaction() failed: %m\n");
++		abort();
++	}
++
++	fd = mfd_assert_new("kern_memfd_seal_auto_allocate",
++			    mfd_def_size,
++			    MFD_CLOEXEC | MFD_ALLOW_SEALING);
++
++	/* read/write should pass if F_SEAL_AUTO_ALLOCATE not set */
++	mfd_assert_read(fd);
++	mfd_assert_hole_write(fd);
++
++	mfd_assert_has_seals(fd, 0);
++	mfd_assert_add_seals(fd, F_SEAL_AUTO_ALLOCATE);
++	mfd_assert_has_seals(fd, F_SEAL_AUTO_ALLOCATE);
++
++	/* read/write should pass for pre-allocated area */
++	mfd_assert_read(fd);
++	mfd_assert_hole_write(fd);
++
++	mfd_assert_punch_hole(fd);
++
++	/* read should pass, write should fail in hole */
++	mfd_assert_read(fd);
++	mfd_fail_hole_write(fd);
++
++	mfd_assert_fallocate(fd);
++
++	/* read/write should pass after fallocate */
++	mfd_assert_read(fd);
++	mfd_assert_hole_write(fd);
++
++	close(fd);
++}
++
++
+ /*
+  * Test sharing via dup()
+  * Test that seals are shared between dupped FDs and they're all equal.
+@@ -1059,6 +1224,7 @@ int main(int argc, char **argv)
+ 	test_seal_shrink();
+ 	test_seal_grow();
+ 	test_seal_resize();
++	test_seal_auto_allocate();
+ 
+ 	test_share_dup("SHARE-DUP", "");
+ 	test_share_mmap("SHARE-MMAP", "");
 -- 
-With best wishes
-Dmitry
+2.25.1
+
