@@ -2,112 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65DA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63608C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234028AbiGFS1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
+        id S234054AbiGFS3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234022AbiGFS1S (ORCPT
+        with ESMTP id S230443AbiGFS3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:27:18 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B641155
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:27:16 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id l7so6154374ual.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:27:16 -0700 (PDT)
+        Wed, 6 Jul 2022 14:29:14 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4506AE6;
+        Wed,  6 Jul 2022 11:29:13 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id c131-20020a1c3589000000b003a19b2bce36so6505948wma.4;
+        Wed, 06 Jul 2022 11:29:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5IdTe03T4AbQW3cQ+frSJyoDxiG9eWKIQ4uCqO8KXZ4=;
-        b=a44ubRV55zQ1AZtYKCbVMinunDOe4rwc2pZvSauSYy5diqTxZLw4LVdSpi/sCWmxt1
-         QFkHr6JdsWo+xDl7rtVC5oEBYvpgvQFSp9padrA/TJLthCjvZ2QmRM4+jCrssNtDReNn
-         sCKs9n0NEKjtPrEdrlpBT4AazVTbw4+e3URQc7B0YRVrL71UkORan40s5NR4ykw8mrz7
-         WaTse9b6Kt2wg/EP+ApZ6kt8zi2WKtzcnzxxxAt1ZMWpu82NyCdwSFOPpS00gI14vlb9
-         ut4neTFBBpdMKuG9VlA6OrFWLdf2t5iiZ3Q7KQd29FTta2nuF4ADtcVjmwLKpvPeRUvs
-         957w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=veq/Lh4TlAFiqd2as2QsDi+5Sf/Jvx1yYHKwqofOJ9o=;
+        b=D/GBtbDoDrd9WwaKJrXkQPvMJSnhagjGlrMvRdZngoIOSQDMFwf3riNka9sKWeqUNZ
+         68j9wAd8P1tOp6+eYbBL3LPhXmcL7ncpp3SJbkkONwh9iHnHCvJ0LgIh0ehHtblz6Xy/
+         mROak7qhzqZU18vdXSDiBY8UhDFH5gcTJ+UksgT6qUUwNmbmFP3P2OKXyEC0qMF1jZfu
+         f9p1UF3PpXu/MPUbJN44Um5RfZ/DowbA8xZPZKvbhPd27bczcpR90fcMTtf5GNkgIHXv
+         CLclsFl7XWUrDyTonvk+LNSWdVcvt4vpOy0tqASojUCUBmYAGcuvq1TJ5JO93XcQfVq+
+         lTuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5IdTe03T4AbQW3cQ+frSJyoDxiG9eWKIQ4uCqO8KXZ4=;
-        b=eN4j8YuJUereH8NyMLHKhEX5ZsPOWm+iOI4N7Ng/pOebENP6yr/bv96wEZwCGGzPFH
-         szaa9JhGh6Xn0751CRZ+oj5P2V5FMmDK4aCNP0mPctLRJ1nZsVH+rilfjJVWsSHUKJsP
-         v4E0UTloskrhj+hzz10XwAh+RiWsU0dAVOtBktLT6eV5Lip79XtrRgDS4SiwembVTwPD
-         91MmlhWdTVQCVrO2wpli9VaOgWgRW3Pom/+0qvUpHuPsVXUaXFae4uyr2m/WxBWSPwoa
-         Y1+l+DknZvn6L9i1r6XOKuYmbhnmcoRYUh7KtWniC6MIKQTDkH+NqlpBeSxP+51HicKO
-         Pl8A==
-X-Gm-Message-State: AJIora+AkiReJuhcEzJCJtL1VDRn7dfy5rcsWlwJr+n0NrlxxWEyGSky
-        4kZyS16xXt086Lh4Tda6Sc/vJA==
-X-Google-Smtp-Source: AGRyM1vejyMjrY8q5Bjgz6aa4ackRpzH3NS3rC3B3F2Wtht3Ptl8sWiaNRGi38LCC0c/FymCA6Dogg==
-X-Received: by 2002:a9f:35ef:0:b0:37f:18d2:4578 with SMTP id u44-20020a9f35ef000000b0037f18d24578mr20821637uad.65.1657132035461;
-        Wed, 06 Jul 2022 11:27:15 -0700 (PDT)
-Received: from zeta-build.. ([190.190.187.68])
-        by smtp.gmail.com with ESMTPSA id bl9-20020a056102508900b003563680212asm7445539vsb.27.2022.07.06.11.27.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=veq/Lh4TlAFiqd2as2QsDi+5Sf/Jvx1yYHKwqofOJ9o=;
+        b=g+7Hb8GVbWLGlf3vn69NRG9mPQ6YOzLB74u3fAlq7SIGzF78B91/os3iKQkE4KrO8T
+         hgi9BSHV+Rr/AXRm5YyYJVYP+HI21EH8UETPZ1K3MJErbWoHxrZcJBOmTg//EPMXK6P/
+         zrBpK1pomqhCVBZFxoGOZub15O0UTq5PYSzMlir/UKoIOyR3RF1Gf2SLpz4zdELWABTj
+         vfFWGIO+dVygV3WasPte8pc5lGF/laxC9osNvGlu8pRmBXOeZGYpt9zoKMsaI2bHC8cr
+         82EsYHLZXX2vhaNiUgnA3ZPXn0u31jx/ZG9rLkf7K8i2OWZt1giE4iSyXFX1ZuwoqMuM
+         CmIg==
+X-Gm-Message-State: AJIora+Cs8qv6U6kzJCUdE5im3szb7fMQJPZgStt/HBFsGN5t6sdOpIM
+        XD7BEZnVPuUVn8QLWAYynRo=
+X-Google-Smtp-Source: AGRyM1v+PzFf3H84UTOcP8kXa3ogDH7CjY7F56uHMLIutxGcHvpSyE47mzgtd7yg9gcVbPZPjDejGQ==
+X-Received: by 2002:a05:600c:600d:b0:3a1:9712:5d31 with SMTP id az13-20020a05600c600d00b003a197125d31mr24463802wmb.67.1657132151725;
+        Wed, 06 Jul 2022 11:29:11 -0700 (PDT)
+Received: from kista.localdomain (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id r15-20020a0560001b8f00b0021d74906683sm5142406wru.28.2022.07.06.11.29.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 11:27:15 -0700 (PDT)
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>
-Subject: [PATCH 1/8] videobuf2: Introduce vb2_find_buffer()
-Date:   Wed,  6 Jul 2022 15:26:50 -0300
-Message-Id: <20220706182657.210650-2-ezequiel@vanguardiasur.com.ar>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220706182657.210650-1-ezequiel@vanguardiasur.com.ar>
-References: <20220706182657.210650-1-ezequiel@vanguardiasur.com.ar>
+        Wed, 06 Jul 2022 11:29:11 -0700 (PDT)
+From:   Jernej Skrabec <jernej.skrabec@gmail.com>
+To:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de
+Cc:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
+        benjamin.gaignard@collabora.com, nicolas.dufresne@collabora.com,
+        gregkh@linuxfoundation.org, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: [PATCH v3 0/7] media: hantro: Add 10-bit support
+Date:   Wed,  6 Jul 2022 20:28:54 +0200
+Message-Id: <20220706182901.78949-1-jernej.skrabec@gmail.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ezequiel Garcia <ezequiel@collabora.com>
+This series adds support for 10-bit format handling in Hantro driver.
+Most patches adjust postproc behaviour to be more universal. There is
+a lot of assumptions, which need to be replaced with more generalized.
 
-All users of vb2_find_timestamp() combine it with vb2_get_buffer()
-to retrieve a videobuf2 buffer, given a u64 timestamp.
+Tested on Allwinner H6. Tested with vp92-2-20-10bit-yuv420.webm sample,
+which produces correct checksum.
 
-Introduce an API for this use-case. Users will be converted to the new
-API as follow-up commits.
+Please take a look.
 
-Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
----
- include/media/videobuf2-v4l2.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Best regards,
+Jernej
 
-diff --git a/include/media/videobuf2-v4l2.h b/include/media/videobuf2-v4l2.h
-index d818d9707695..7f9ae5b39b78 100644
---- a/include/media/videobuf2-v4l2.h
-+++ b/include/media/videobuf2-v4l2.h
-@@ -78,6 +78,24 @@ struct vb2_v4l2_buffer {
- int vb2_find_timestamp(const struct vb2_queue *q, u64 timestamp,
- 		       unsigned int start_idx);
- 
-+/**
-+ * vb2_find_buffer() - Find a buffer with given timestamp
-+ *
-+ * @q:		pointer to &struct vb2_queue with videobuf2 queue.
-+ * @timestamp:	the timestamp to find.
-+ *
-+ * Returns the buffer with the given @timestamp, or NULL if not found.
-+ */
-+static inline struct vb2_buffer *vb2_find_buffer(struct vb2_queue *q,
-+						 u64 timestamp)
-+{
-+	int index = vb2_find_timestamp(q, timestamp, 0);
-+
-+	if (index < 0)
-+		return NULL;
-+	return vb2_get_buffer(q, index);
-+}
-+
- int vb2_querybuf(struct vb2_queue *q, struct v4l2_buffer *b);
- 
- /**
+Changes fron v2:
+- rebased on media-stage/master
+- added P010 4L4 format documentation
+- added t-b and r-b tags
+
+Changes from RFC:
+- fixed typo in function name
+- removed merged patch (P010 format)
+- removed broken patch (sunxi frequency change)
+- added new patch (media: hantro: postproc: Properly calculate chroma offset)
+- added r-b from Ezequiel
+
+Ezequiel Garcia (1):
+  media: Add P010 tiled format
+
+Jernej Skrabec (6):
+  media: hantro: Support format filtering by depth
+  media: hantro: postproc: Fix buffer size calculation
+  media: hantro: postproc: Fix legacy regs configuration
+  media: hantro: postproc: Properly calculate chroma offset
+  media: hantro: Store VP9 bit depth in context
+  media: hantro: sunxi: Enable 10-bit decoding
+
+ .../media/v4l/pixfmt-yuv-planar.rst           | 18 +++++--
+ drivers/media/v4l2-core/v4l2-common.c         |  1 +
+ drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
+ drivers/staging/media/hantro/hantro.h         |  4 ++
+ drivers/staging/media/hantro/hantro_drv.c     | 23 +++++++++
+ .../staging/media/hantro/hantro_g2_vp9_dec.c  |  8 ---
+ .../staging/media/hantro/hantro_postproc.c    | 38 +++++++++++---
+ drivers/staging/media/hantro/hantro_v4l2.c    | 50 +++++++++++++++++--
+ drivers/staging/media/hantro/hantro_v4l2.h    |  3 ++
+ drivers/staging/media/hantro/sunxi_vpu_hw.c   | 27 ++++++++++
+ include/uapi/linux/videodev2.h                |  1 +
+ 11 files changed, 151 insertions(+), 23 deletions(-)
+
 -- 
-2.34.3
+2.37.0
 
