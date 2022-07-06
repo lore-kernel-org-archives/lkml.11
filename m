@@ -2,97 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54077C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C55C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232170AbiGFIeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
+        id S231359AbiGFIea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231249AbiGFIeS (ORCPT
+        with ESMTP id S232159AbiGFIeV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:34:18 -0400
-X-Greylist: delayed 343 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 01:34:17 PDT
-Received: from mout-u-204.mailbox.org (mout-u-204.mailbox.org [IPv6:2001:67c:2050:101:465::204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D2E0240BB;
-        Wed,  6 Jul 2022 01:34:17 -0700 (PDT)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-u-204.mailbox.org (Postfix) with ESMTPS id 4LdCNr02Qxz9sR1;
-        Wed,  6 Jul 2022 10:28:28 +0200 (CEST)
-Message-ID: <d860aca2-442a-8583-e39a-1fdc2a5945b5@denx.de>
-Date:   Wed, 6 Jul 2022 10:28:26 +0200
+        Wed, 6 Jul 2022 04:34:21 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0E3248CF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:34:20 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id i18so24637790lfu.8
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:34:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DOaCGCmUeMU+aBCSHaz5vHzoj67y7Rf+nlaYsyBeoq8=;
+        b=z8LHDTRNyLRB2QEngm+wtbjbQCoQydyzYiKCTYt/9h74YY2RmE9h8vy75w6JlsoBv9
+         Fybkv4fkmpOgQG+RGnmAo0sG4/jH8nHZvoJAcw9K9V3uBtZz2ClgZfjjlGhxbj4xlSav
+         F2NuHE4U3KKehL7I90K/ZD4Xo07oqoFMkQFRR6Cqs3ancEmqzsy8SammYTwi9thxhJdz
+         TU07c5LYQaxrUHNnMCZO3tgOx7BxPJFXZmS24186BvTNzJQ2NGAO042vUbtuQanLbCru
+         RwRXxXYg+bpp7vCPfCKqVbO2bj3cYtbHt7w7vzVylwNXfP3PMnUJ8MqOimffq/qvz1UK
+         JRGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DOaCGCmUeMU+aBCSHaz5vHzoj67y7Rf+nlaYsyBeoq8=;
+        b=sllyPjHfFfrIkglVqYYW7JaImdxHBKDR5DZn2kxlibGiO9qhp96j+kwqkhuMrTBOpZ
+         I72isaceuMCA2Ac+nyUsRhLMpUbIOMm5f8+sjgRvM83nanXHXETq3aXkNjooTh/bJJCS
+         qvXzvewexBnL0bFbdRKZLTCFzBxZx3+ZRiNaiolxeUYzmvurk+gsnpPPOIskXy2k75tf
+         46hzCBt7G6Ns1IVOZg6bA7a6eGocyqJvfyq87bY14mmaIQJ/yR+HyjCSxKNMdnEjqEO3
+         7eXMciJ/iXYZi5HcOfmaDw9hLg+xYA6XMxwF1VcIIr6JQbdO9gHtAw7cdeSLADR1zmmZ
+         weeg==
+X-Gm-Message-State: AJIora/LUsszJTk6s/cFae6uQF/uQVUmj/RefG3bAe/wPCwMwUvio66o
+        zAretJQhFBC+NHO9hU3QfcdTSQ==
+X-Google-Smtp-Source: AGRyM1vFX6iI5mVeOz+sx6ehzIM88D0lyJ45NiC3hlV/lL+DDOdXf5Ex22+0duhZpGUaK7Dpcgcc1g==
+X-Received: by 2002:a05:6512:3e06:b0:47f:7928:a578 with SMTP id i6-20020a0565123e0600b0047f7928a578mr24934014lfv.406.1657096458704;
+        Wed, 06 Jul 2022 01:34:18 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id d10-20020a0565123d0a00b0048110fd06c4sm5185406lfv.53.2022.07.06.01.34.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 01:34:18 -0700 (PDT)
+Message-ID: <e81344f6-7da5-a209-2785-d540e41f3958@linaro.org>
+Date:   Wed, 6 Jul 2022 10:34:16 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH v3] dmaengine: altera-msgdma: Fixed some inconsistent
- function name descriptions
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 03/13] ARM: dts: qcom: add missing rpm regulators and
+ cells for ipq8064
 Content-Language: en-US
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        olivierdautricourt@gmail.com
-Cc:     vkoul@kernel.org, dmaengine@vger.kernel.org,
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220706082605.114907-1-jiapeng.chong@linux.alibaba.com>
-From:   Stefan Roese <sr@denx.de>
-In-Reply-To: <20220706082605.114907-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 4LdCNr02Qxz9sR1
+Cc:     Jonathan McDowell <noodles@earth.li>
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-4-ansuelsmth@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220705133917.8405-4-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06.07.22 10:26, Jiapeng Chong wrote:
-> Inconsistent function names describing msgdma_chan_remove() and
-> msgdma_dma_remove are modified to msgdma_dev_remove() and msgdma_remove().
+On 05/07/2022 15:39, Christian Marangi wrote:
+> Add cells definition for rpm node and add missing regulators for the 4
+> regulator present on ipq8064. There regulators are controlled by rpm and
+> to correctly works gsbi4_i2c require to be NEVER disabled or rpm will
+> reject any regulator change request.
 > 
-> Remove some warnings found by running scripts/kernel-doc, which is caused
-> by using 'make W=1'.
-> 
-> drivers/dma/altera-msgdma.c:927: warning: expecting prototype for msgdma_dma_remove(). Prototype was for msgdma_remove() instead.
-> drivers/dma/altera-msgdma.c:758: warning: expecting prototype for msgdma_chan_remove(). Prototype was for msgdma_dev_remove() instead.
-> 
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-
-Reviewed-by: Stefan Roese <sr@denx.de>
-
-Thanks,
-Stefan
-
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> Tested-by: Jonathan McDowell <noodles@earth.li>
 > ---
-> Changes in v3:
->    -Modified the commit title and message.
+>  arch/arm/boot/dts/qcom-ipq8064.dtsi | 36 +++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
 > 
->   drivers/dma/altera-msgdma.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
-> index 6f56dfd375e3..4153c2edb049 100644
-> --- a/drivers/dma/altera-msgdma.c
-> +++ b/drivers/dma/altera-msgdma.c
-> @@ -749,7 +749,7 @@ static irqreturn_t msgdma_irq_handler(int irq, void *data)
->   }
->   
->   /**
-> - * msgdma_chan_remove - Channel remove function
-> + * msgdma_dev_remove() - Device remove function
->    * @mdev: Pointer to the Altera mSGDMA device structure
->    */
->   static void msgdma_dev_remove(struct msgdma_device *mdev)
-> @@ -918,7 +918,7 @@ static int msgdma_probe(struct platform_device *pdev)
->   }
->   
->   /**
-> - * msgdma_dma_remove - Driver remove function
-> + * msgdma_remove() - Driver remove function
->    * @pdev: Pointer to the platform_device structure
->    *
->    * Return: Always '0'
+> diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> index 1b4b72723ead..c0b05d2a2d6d 100644
+> --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> @@ -844,10 +844,46 @@ rpm: rpm@108000 {
+>  			clocks = <&gcc RPM_MSG_RAM_H_CLK>;
+>  			clock-names = "ram";
+>  
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
 
-Viele Grüße,
-Stefan Roese
+Why adding these?
 
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-51 Fax: (+49)-8142-66989-80 Email: sr@denx.de
+> +
+>  			rpmcc: clock-controller {
+>  				compatible = "qcom,rpmcc-ipq806x", "qcom,rpmcc";
+>  				#clock-cells = <1>;
+>  			};
+> +
+> +			smb208_regulators: regulators {
+> +				compatible = "qcom,rpm-smb208-regulators";
+> +				status = "okay";
+
+Was the node disabled?
+
+> +
+> +				smb208_s1a: s1a {
+> +					regulator-min-microvolt = <1050000>;
+> +					regulator-max-microvolt = <1150000>;
+> +
+> +					qcom,switch-mode-frequency = <1200000>;
+> +				};
+> +
+> +				smb208_s1b: s1b {
+> +					regulator-min-microvolt = <1050000>;
+> +					regulator-max-microvolt = <1150000>;
+> +
+> +					qcom,switch-mode-frequency = <1200000>;
+> +				};
+> +
+> +				smb208_s2a: s2a {
+> +					regulator-min-microvolt = < 800000>;
+> +					regulator-max-microvolt = <1250000>;
+> +
+> +					qcom,switch-mode-frequency = <1200000>;
+> +				};
+> +
+> +				smb208_s2b: s2b {
+> +					regulator-min-microvolt = < 800000>;
+> +					regulator-max-microvolt = <1250000>;
+> +
+> +					qcom,switch-mode-frequency = <1200000>;
+> +				};
+> +			};
+>  		};
+>  
+>  		tcsr: syscon@1a400000 {
+
+
+Best regards,
+Krzysztof
