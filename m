@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A530CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 19:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D99C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 19:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233573AbiGFTIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 15:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
+        id S233999AbiGFTIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 15:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230241AbiGFTIs (ORCPT
+        with ESMTP id S233532AbiGFTIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 15:08:48 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DE121839;
-        Wed,  6 Jul 2022 12:08:47 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266J8d5N067193;
-        Wed, 6 Jul 2022 14:08:39 -0500
+        Wed, 6 Jul 2022 15:08:50 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF3221839;
+        Wed,  6 Jul 2022 12:08:49 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266J8fAW022362;
+        Wed, 6 Jul 2022 14:08:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657134519;
-        bh=TsZFw/Y128sot7WWm1RTTs/Yzv1yc19MRgmVdodbX1k=;
-        h=From:To:CC:Subject:Date;
-        b=sDblqCYTClf0IVTQl9SGmbAIO5nsO6GUqyOvFP/x666Fe5QtFQ8dQIETaEOt4aFgY
-         oK64vgqPG91sr2vPLAIyzGFuk1ZXjDXEsIFstIPsCMt90C9MXIr0UdnqWrqj67Rc6U
-         X/1sQqVupkIVdVdJ4YFoPNS5lAn7JX4pN7gY6fQk=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266J8dgw030772
+        s=ti-com-17Q1; t=1657134521;
+        bh=WIzKw+aiDnah+6g7Qkj9tB3V5hr3AN7/V/fJCf0qS2Q=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=EuZwJoKJKI2W8LZYWV1Xm+eoYsGE36u9jDoV3Hopv+bW0l7S1L5eBI4vEV2uX4WOc
+         /15qBfA/6+Oa1pWjQlSd0N8FSwlo1fy6gADSDSAFd2U6QYf8su1DSkrgvmtzrICBnv
+         BDgX8aaA6UdFO4jyK2wzM1R7JAfTv/NtI5ndVM6w=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266J8fJI114670
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Jul 2022 14:08:39 -0500
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 6 Jul 2022 14:08:41 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Jul 2022 14:08:39 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ Jul 2022 14:08:41 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Jul 2022 14:08:39 -0500
+ Frontend Transport; Wed, 6 Jul 2022 14:08:40 -0500
 Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266J8c6v010468;
-        Wed, 6 Jul 2022 14:08:38 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266J8c70010468;
+        Wed, 6 Jul 2022 14:08:40 -0500
 From:   Andrew Davis <afd@ti.com>
 To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
         Tero Kristo <kristo@kernel.org>,
@@ -48,10 +48,12 @@ To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Andrew Davis <afd@ti.com>
-Subject: [PATCH v2 1/4] arm64: dts: ti: k3-am65-main: Disable RNG node
-Date:   Wed, 6 Jul 2022 14:08:35 -0500
-Message-ID: <20220706190838.26074-1-afd@ti.com>
+Subject: [PATCH v2 4/4] arm64: dts: ti: k3-j7200-mcu-wakeup: Add SA2UL node
+Date:   Wed, 6 Jul 2022 14:08:38 -0500
+Message-ID: <20220706190838.26074-4-afd@ti.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220706190838.26074-1-afd@ti.com>
+References: <20220706190838.26074-1-afd@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -60,31 +62,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The hardware random number generator is used by OP-TEE and is access is
-denied to other users with SoC level bus firewalls. Any access to this
-device from Linux will result in firewall errors. Disable this node.
+J7200 has an instance of SA2UL in the MCU domain.
+Add DT node for the same.
+
+The device is marked TI_SCI_PD_SHARED as parts of this IP are also
+shared with the security co-processor and OP-TEE.
+
+The RNG node is added but marked disabled as it is firewalled off for
+exclusive use by OP-TEE. Any access to this device from Linux will
+result in firewall errors. We add the node for completeness of the
+hardware description.
 
 Signed-off-by: Andrew Davis <afd@ti.com>
 ---
 
 Changes from v1:
  - Added comment in dtsi file
+ - Added extra context to commit message
 
- arch/arm64/boot/dts/ti/k3-am65-main.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ .../boot/dts/ti/k3-j7200-mcu-wakeup.dtsi      | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-index e749343accedd..9de5a8294acd6 100644
---- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-@@ -127,6 +127,7 @@ rng: rng@4e10000 {
- 			reg = <0x0 0x4e10000 0x0 0x7d>;
- 			interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&k3_clks 136 1>;
-+			status = "disabled"; /* Used by OP-TEE */
+diff --git a/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
+index 1044ec6c4b0d4..a37280200c401 100644
+--- a/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
+@@ -375,4 +375,24 @@ mcu_r5fss0_core1: r5f@41400000 {
+ 			ti,loczrama = <1>;
  		};
  	};
- 
++
++	mcu_crypto: crypto@40900000 {
++		compatible = "ti,j721e-sa2ul";
++		reg = <0x00 0x40900000 0x00 0x1200>;
++		power-domains = <&k3_pds 265 TI_SCI_PD_SHARED>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges = <0x00 0x40900000 0x00 0x40900000 0x00 0x30000>;
++		dmas = <&mcu_udmap 0xf501>, <&mcu_udmap 0x7502>,
++		       <&mcu_udmap 0x7503>;
++		dma-names = "tx", "rx1", "rx2";
++		dma-coherent;
++
++		rng: rng@40910000 {
++			compatible = "inside-secure,safexcel-eip76";
++			reg = <0x00 0x40910000 0x00 0x7d>;
++			interrupts = <GIC_SPI 945 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled"; /* Used by OP-TEE */
++		};
++	};
+ };
 -- 
 2.36.1
 
