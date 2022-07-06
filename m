@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0A7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B3E0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234445AbiGFPgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
+        id S234455AbiGFPgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234195AbiGFPfr (ORCPT
+        with ESMTP id S234037AbiGFPfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:35:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECCE296;
-        Wed,  6 Jul 2022 08:33:27 -0700 (PDT)
+        Wed, 6 Jul 2022 11:35:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8881C18398;
+        Wed,  6 Jul 2022 08:33:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3439BCE2080;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC6BB81D97;
+        Wed,  6 Jul 2022 15:33:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E0CEC341CE;
         Wed,  6 Jul 2022 15:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C91C3411C;
-        Wed,  6 Jul 2022 15:33:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121604;
-        bh=h1wfxGz2vBToOZrZjVl2LDtbJkmq2Kug3U3SqP0uKRM=;
+        s=k20201202; t=1657121607;
+        bh=+Tc7B7eHJsJlCG5mleBaegds+TrWSgEsBX0tpPnlfSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXacmzXzp/5DjmhPA8BDskhe14cDrp/0+0yxSXHqxCMQDc3II5JPB0xqBExRozIZk
-         MQ5FZOWEUW50rpEzo0ohOSjWjE7TPKF09l3FwpCIEEeC5FXCQA6s6rnX3n+436qHPg
-         J56QHgzoGAdX+M+pe5b90TXvHwDhSO9/ZSZSi8NN8QeqoB7ueRb0MhxSkB64oMSH10
-         W7FwhXvqQn5nWbOaI2tKaG49+8WPyDgzwIzJP8niMl4r+3ASt8yJJdcdITvI0SQxBS
-         3ugfhEs3Tadt9bsvBaH+stQE479LTh3mkrLKMQz4eneh+Erxw9fsjlAearsfrpLkb0
-         sxeYidYOTl2eA==
+        b=ITVEQKuODceghsLOC997As1VWj+LEfPIhh8gajBOwK1mkv9+qzALO2QQtZf/RMop/
+         43I8TcFc/n2fBf3x177WkUc6lHC+85QlWRYlHC2g+p2jvD7BytQs+LlfG0Ai+kkHEb
+         iI2vf/pt59zFBs8I+JgOz+ZJT7mWvhr2zC98e3hWt8wNQh3VMMa+ItcGBEF3mPDhCQ
+         qLDuRxvbm8QAISd8LaKc+/dIwpnPXwMD4SuRJ1vSKdVikSkNW2/CvEYuJiePihg+1A
+         NQaVU8f++K1/PDC5dx8M6XnMR3y5zFryl7NxkJRJ9fMCmG8EB5g+4JXrHjOUzSlfKe
+         qsICR9UFrfrLA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>, Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        mpe@ellerman.id.au, linux-pm@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 4/9] cpufreq: pmac32-cpufreq: Fix refcount leak bug
-Date:   Wed,  6 Jul 2022 11:33:10 -0400
-Message-Id: <20220706153316.1598554-4-sashal@kernel.org>
+Cc:     Hangyu Hua <hbh25y@gmail.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, jmaloy@redhat.com,
+        ying.xue@windriver.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.4 6/9] net: tipc: fix possible refcount leak in tipc_sk_create()
+Date:   Wed,  6 Jul 2022 11:33:12 -0400
+Message-Id: <20220706153316.1598554-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220706153316.1598554-1-sashal@kernel.org>
 References: <20220706153316.1598554-1-sashal@kernel.org>
@@ -52,36 +55,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit ccd7567d4b6cf187fdfa55f003a9e461ee629e36 ]
+[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
 
-In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
-of_node_put() for the three node pointers whose refcount have
-been incremented by of_find_node_by_name().
+Free sk in case tipc_sk_insert() fails.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/tipc/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
-index 73621bc11976..3704476bb83a 100644
---- a/drivers/cpufreq/pmac32-cpufreq.c
-+++ b/drivers/cpufreq/pmac32-cpufreq.c
-@@ -471,6 +471,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
- 	if (slew_done_gpio_np)
- 		slew_done_gpio = read_gpio(slew_done_gpio_np);
- 
-+	of_node_put(volt_gpio_np);
-+	of_node_put(freq_gpio_np);
-+	of_node_put(slew_done_gpio_np);
-+
- 	/* If we use the frequency GPIOs, calculate the min/max speeds based
- 	 * on the bus frequencies
- 	 */
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index d543c4556df2..58c4d61d603f 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -455,6 +455,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+ 	sock_init_data(sock, sk);
+ 	tipc_set_sk_state(sk, TIPC_OPEN);
+ 	if (tipc_sk_insert(tsk)) {
++		sk_free(sk);
+ 		pr_warn("Socket create failed; port number exhausted\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.35.1
 
