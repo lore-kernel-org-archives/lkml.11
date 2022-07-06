@@ -2,400 +2,345 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 045DCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233299AbiGFRQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 13:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38936 "EHLO
+        id S233682AbiGFRRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232589AbiGFRQs (ORCPT
+        with ESMTP id S229824AbiGFRRG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 13:16:48 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E80D2981D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:16:47 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so12813720pjo.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 10:16:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nOxzzNqxP9p+XkxqjJmrHM896mN92roDpbi4243vf1k=;
-        b=bU6c9MqPVXBuJxLQ7/Np+98fh9o1xn55UVvGFJ5y3gzSzwcADqtXkkDLTJcuVpsgue
-         xyqZcs0f+vlT5rWCjviAsD7mo/f79yqL4ZN3IPKIOkOQtIpMXtOV8dJXkOhpcjWst36y
-         9OfWRAECnxzGA0Cq1R0NHwmbR/tbf7wq/xLEs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nOxzzNqxP9p+XkxqjJmrHM896mN92roDpbi4243vf1k=;
-        b=4yR6E0ye4QuHOT60FsHtraiU6C6SbG4KzKblEBM+Ut59W5d80P9swUbxaGIf4yufx9
-         bb4UBvHBXASgSFuIPET1+wQR6ionokA/BmH8y6RXp5AW9jLdEVpCm/hBRtuCuCQO0JjV
-         4pFbQyGu/MaHWGIvQ8wAc1XSOfFa+T3odU7qiUMQxDpWirjIOnXhfjhpJnIbIzwCjR/8
-         Sp3/1Zh4fU8RNSxUhN0MYzP3xoNJVV+qheU14Gj89od7vTEGQHNm7xsMPBgzYIQNavsK
-         dUuxtlw0767lEOtdgmcAzEgjTh23jVUiddpfUHcqE6ZKR+R7hSn/Wb/ohl5fSVYa3yGT
-         DwFA==
-X-Gm-Message-State: AJIora/qZ3n2EQwkvbNBSm5SXFDqybLV6QytukIp2xWjDIrVIvnhmxxq
-        Rn9XjYuMI8qZfrB5MB7BWkZcu+pAvB1ONg==
-X-Google-Smtp-Source: AGRyM1s7EmLCkGQKjM7xOnzSMY34kcSKCTe1YwTk0c2gcuKvlNqztw+il7ue6v8AV6Qi3Q9eUXP+Fg==
-X-Received: by 2002:a17:902:e748:b0:16a:726e:7c9e with SMTP id p8-20020a170902e74800b0016a726e7c9emr46508227plf.12.1657127806755;
-        Wed, 06 Jul 2022 10:16:46 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h14-20020a170902f7ce00b0016be0d5483asm7514953plw.252.2022.07.06.10.16.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 10:16:46 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH v2 1/9] usb: typec: Add support for retimers
-Date:   Wed,  6 Jul 2022 17:15:05 +0000
-Message-Id: <20220706171601.807042-2-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220706171601.807042-1-pmalani@chromium.org>
-References: <20220706171601.807042-1-pmalani@chromium.org>
+        Wed, 6 Jul 2022 13:17:06 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70049.outbound.protection.outlook.com [40.107.7.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA27F2A71F;
+        Wed,  6 Jul 2022 10:17:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nG+EcWBlg/UNR3Z+IfUh1pF8WGgaILHrytPhxwszQef+Eb9jYdBSQygUw8ZVnHe1tgBd8wZofqC9uQsc1msL7FT1MQQn+IfU325nYpgALsEojtFU1YMdHf9/8y1q3hsY0c/emTlGYTForK/ofb/yy4QncA9wl54B82+fVz6rxiATbLFw8SBi6UO33m8vhUj6l5n2+asyWFpLfdXI8YIuNJ4CRRf1C6urox/V36U+FQ2i46zsOKRsgAd9Pw2ZoVCcEjZo9Av/9wWvvMNuSpgJj2D1XmGvakRE63cCUfiJHSjWczQCnTZf5WxtS09yTaGnZDSw/pvI37FzhyLaQ6Dj3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nHri1r0IcveZ3f0a12y8puGLF9qLGxYF5DnDu5a73pk=;
+ b=blIOBrhbjwX4+tVTk68HC0H7eAxc5PLLSFqKO4SHngaB/Hcg5vpjsgaqNME8vZPju9mWtMjRNiMTbDPg0Z/ajD5+UEfIh+qgywMaVscdcUuA79R2VnsBfngaeq28b2Sr4VN1ecfmXqA8JDeY6a2oiatCnfKiqWHMvUC4ySrBtBQPor1BJLjH0kVkvqvIezcVs62WaSZ/wjGy720Pq3kYQhIDkV7HxgqrDF01hCujDHeyIZlHyhzLWktblnNA2qgU3R/75olGh6yGBCyf7O53UT3umrKF7nhrk12r02cILG1BNVPRWHnOeYmKqbaQe5wFR+ixA3rUWhPZnbHZTrQySA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nHri1r0IcveZ3f0a12y8puGLF9qLGxYF5DnDu5a73pk=;
+ b=DUqaferrPUOe9qIuzCUZs1N+1eNmFdR7TMBPMFxDmnF0JuNYq8KpZnFLNoqV+LzD9f5fsYTDml5+hJJCMuHsJfvWNVvTW0TsL1xW18CNM88mpHfd4oFWzPWaCml69hp+vOU5ixiYfqEN9HTrpQIrebCjdFjC26i9DZu3k3AsTrY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from VI1PR04MB5005.eurprd04.prod.outlook.com (2603:10a6:803:57::30)
+ by AM9PR04MB8940.eurprd04.prod.outlook.com (2603:10a6:20b:40b::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Wed, 6 Jul
+ 2022 17:17:01 +0000
+Received: from VI1PR04MB5005.eurprd04.prod.outlook.com
+ ([fe80::6546:3ee1:5e6c:278f]) by VI1PR04MB5005.eurprd04.prod.outlook.com
+ ([fe80::6546:3ee1:5e6c:278f%5]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
+ 17:17:00 +0000
+Date:   Wed, 6 Jul 2022 20:16:49 +0300
+From:   Viorel Suman <viorel.suman@oss.nxp.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Stefan Agner <stefan@agner.ch>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Abel Vesa <abelvesa@kernel.org>,
+        Viorel Suman <viorel.suman@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        Liu Ying <victor.liu@nxp.com>,
+        Oliver Graute <oliver.graute@kococonnector.com>,
+        Ming Qian <ming.qian@nxp.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Abel Vesa <abel.vesa@nxp.com>
+Subject: Re: [PATCH v7 09/15] dt-bindings: firmware: Add fsl,scu yaml file
+Message-ID: <20220706171649.gz7x4avjcmho2soh@fsr-ub1664-116>
+References: <20220704161541.943696-1-viorel.suman@oss.nxp.com>
+ <20220704161541.943696-10-viorel.suman@oss.nxp.com>
+ <20220706143658.GA4191302-robh@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706143658.GA4191302-robh@kernel.org>
+X-ClientProxiedBy: AM0PR03CA0031.eurprd03.prod.outlook.com
+ (2603:10a6:208:14::44) To VI1PR04MB5005.eurprd04.prod.outlook.com
+ (2603:10a6:803:57::30)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e8ada079-cb2d-4e76-e815-08da5f73567b
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8940:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: I+ePcq0AOhfEGvn4PvUxH3TQ2vKqbZVAp4saW/85dG3zFnM3EgrNkHNmbqqGWUHA3o3zpjNY6PZgn53AeZP2SxAtkVJ7Wc5nSQVDj3RSWcNZrfPpwnggao9k6dzcRNI4ISnOLCxxsZHrq40oG4cs9DwczNStVAvvkjfjM8wW4aki6lxQFnqPD9QfP8CEk6zFJfrGtaXu3PQOboVl7cG2cGSU5Ey0NRpafwf3rTdgIvJ5EHJhwqn8PpDwKErCUzfWxS3AWP/sC8e55UQhjK/8rCHEpEsKh6qhsKrxlLjqeU8jnZt+gbmRBUZCICPEe2WaL/QrKi/daaBQkHcUp0Qi9MJdrmbBuHrEUg6toTd9ryFu6dPIOR1ENDhdrgdcHaEynYXkGE7EuWwF1ya0zSwWYxmb6rzI0x0178oUsq7LjvuDEv7it/tVPQpyAviCDKa3EQjD7hMe/4VWk8eGAz+mffeL97PO7lvk2RxhVw218vB2rv5rjAscWDFHJao1X9k4RhXKdjDr/sc86eEkz2uP0R+Kp0lQbJQIPArs/gGQzHxxE3d0UNxQ3iSWlQ+Gvwc02rc6g0hk4p5YuHkbugNsiWuzfrTGj680agN9WAjjC/qi5GYetf3JoXck5254C23FaeKOJyWfCzNSEVNoonqDV/14nq0GVq5Xr/KgUdrTA/P/2lG8/ATXshI6I3lwJanS2mMdVYoLPa/zKY9Ja40tV+XfTYgZaoIFFCtoAQH69BR5lfCWC66U51N8JXos1ALBPzOJXugI0/8RpZSDzddj7mLXpHoB/8q1dLfo1/Sb4co9ymKGS8esDzWljydq4rpObTLAGZ/bLv6NjKxgsY0EQYzB+nspQg6SrFjCzK6SVrjn8YZRYHfOksaJj0hqjwtg
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5005.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(396003)(136003)(346002)(39860400002)(376002)(8936002)(966005)(478600001)(7406005)(86362001)(7416002)(83380400001)(6486002)(44832011)(5660300002)(186003)(316002)(54906003)(1076003)(6916009)(9686003)(33716001)(6512007)(2906002)(38350700002)(6506007)(38100700002)(26005)(41300700001)(52116002)(53546011)(66946007)(4326008)(8676002)(6666004)(66476007)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?res+EsbQ8Zt/9XaeZHij9dIr11y0VU17UvsNoMam7Hsd/OO7fdVD6Hvuejt+?=
+ =?us-ascii?Q?8EBrqLFbx1VZ/sUipPRDkZZS4QS988jpPZuQbkagAaJttdEaWX/AgNZkWQP3?=
+ =?us-ascii?Q?1b/Bp2p4RcoeQ1MBdiJrlTmSJqggMvS5Vxov/08B7Ejii2lny9cjR84t67bc?=
+ =?us-ascii?Q?OX/iz5HZlwHkIS56zEOZxew92eAdWRhrkFu26Xg2BaKKLFx/53yCo/tcB5RG?=
+ =?us-ascii?Q?V6epzdPVlE2L1ZZiPdxqjqVPyMs7r+8nxh9sQuN71BgAUtJadz+V6A9bz29P?=
+ =?us-ascii?Q?XyGmoYi2/I2b7z1kl3G8+RkZMGQDFvu1ddg8R62PjUZWaiqnI06PVRxE9epZ?=
+ =?us-ascii?Q?qPctaTY74cPCj2mSOwkvLbJamZNGjrjPcr4qQ5lo04xAK4asb5W+w90pE/4i?=
+ =?us-ascii?Q?5f1HIb/LiBxqJgSSCYQH1yFXwdrYtVc4favfLyjh/ouiy9HWrnvZwJLD5IfO?=
+ =?us-ascii?Q?ejtl44l2W7UkaBQiObT4B2gZssS0odax8qulIHTRBmPKtz13Boe/ipEDfRx7?=
+ =?us-ascii?Q?p7vFVBAah0LHU2IIstC2QVFYlc2wIG08tCefBMJHKiy3AgdQIJOqmM4omUUC?=
+ =?us-ascii?Q?I/9+aHkfphkN7ApbQrT5AR+DfI2ocEVYV94/jAuVR/CuVFPXSIVRo/RXTCvn?=
+ =?us-ascii?Q?YyGj70OlWpDgqBs1l8enQJ+usfoeUs9sEVXwwqWKpKUI4tTLofhTkMqdwvb6?=
+ =?us-ascii?Q?spHfBYI9XZ7rPJNxbDT5wHRXv6FXXwL+zy7l+gB2EepZPmqbr+T0+VGRfGpY?=
+ =?us-ascii?Q?MgBr4mYKjkBa02Zyx2GLgLu5XKTLliXyAVE5sXabRRCVCsIWg2YAibaF4ab2?=
+ =?us-ascii?Q?1mFI9eeFggUVDaUYKqd88LA5PEvUfCaQmL4+g8Ole2LNtKcWRNyaAL9nP+od?=
+ =?us-ascii?Q?YW2XmHn/n8P5TBlMATHvCg4rUe7j0zghmDCM1BV31HOaj0aZDS1rsQ+jmQHg?=
+ =?us-ascii?Q?4+nYC3ThBJBA0MIoRv7UJmp4FNmGdrCSjYg3VL+6CZQ4PpcnI9EonjnGqGWN?=
+ =?us-ascii?Q?p1CekzzUk8RRr3hTb9n6Iz2M5ZbL699cxS19cyhOrK0xmveCyuIX8WmjDmU5?=
+ =?us-ascii?Q?fhoSXTVLBtylHvoRdE9/crATdp6PTsBHukZ34jyU0V/3+G6earRqksjjPQVI?=
+ =?us-ascii?Q?WjN5n6c7Fe66KoGQx/QMEebW/Kf0SOeaWBsQ/pZsI121ii4gwUgE/0CaTFr5?=
+ =?us-ascii?Q?a60+QFF9hAeNWzx105Hv/fOHOowJGnKAB/HI6Z4GZHTF93GLqh4qSzKEsG9v?=
+ =?us-ascii?Q?IB69/MEUvmOZRMzeSNz+fdUTn1A6I+DVyvFBO39HEHrVpuNQTvV5P/huIea0?=
+ =?us-ascii?Q?8MFBWX+EoCP8kJFifYb792/4mk/x86xRh5AnhSxSgZEhS1CyEUwsG56zu/Gd?=
+ =?us-ascii?Q?ZDuRROSM11ydMbG5hdjd82vhGF4Dc9KzJ8mTYplHjTZo6FQwSHbqIZtzumrw?=
+ =?us-ascii?Q?qOMu7nDz8VqagsmoWenDIsYlzGI4/kYiCvzp0B3EMOASME4LofqcbbBlPkZJ?=
+ =?us-ascii?Q?hNnyZURnw/Dn99MQk/hZWlzwQwS9oeyPohj9oboLOnYxBV9wIaIj8+KCZ5h5?=
+ =?us-ascii?Q?aX7lXFX9RDBs7LjpwSw+i38pSliWQTwb7RHk0YQ1?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8ada079-cb2d-4e76-e815-08da5f73567b
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5005.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 17:17:00.5372
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wgE04gGSQeE5e9zBOt0SAyYhuMGqOwbPONudLULv7xNBGzsQBzCPQ5xv9pwOaGD2n6p7ihxdPKcExp26cmtPGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8940
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a retimer device class and associated functions that register
-and use retimer "switch" devices. These operate in a manner similar to
-the "mode-switch" and help configure retimers that exist between the
-Type-C connector and host controller(s).
+On 22-07-06 08:36:58, Rob Herring wrote:
+> On Mon, Jul 04, 2022 at 07:15:35PM +0300, Viorel Suman (OSS) wrote:
+> > From: Abel Vesa <abel.vesa@nxp.com>
 
-Type C ports can be linked to retimers using firmware node device
-references (again, in a manner similar to "mode-switch").
+[...]
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+> > diff --git a/Documentation/devicetree/bindings/firmware/fsl,scu.yaml b/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
+> > new file mode 100644
+> > index 000000000000..c1f5b727352e
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
+> > @@ -0,0 +1,160 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/firmware/fsl,scu.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: NXP i.MX System Controller Firmware (SCFW)
+> > +
+> > +maintainers:
+> > +  - Dong Aisheng <aisheng.dong@nxp.com>
+> > +
+> > +description: System Controller Device Node
+> 
+> The formatting here is not maintained unless you use a literal block 
+> ('|'). But I would just drop this first line.
+> 
 
-Changes since v11:
-- Change class name to "retimer"
-- Change device type to "typec_retimer".
+Thank you for review, will update in the following version.
 
- drivers/usb/typec/Makefile        |   2 +-
- drivers/usb/typec/class.c         |   9 +-
- drivers/usb/typec/class.h         |   1 +
- drivers/usb/typec/retimer.c       | 168 ++++++++++++++++++++++++++++++
- drivers/usb/typec/retimer.h       |  15 +++
- include/linux/usb/typec_retimer.h |  45 ++++++++
- 6 files changed, 238 insertions(+), 2 deletions(-)
- create mode 100644 drivers/usb/typec/retimer.c
- create mode 100644 drivers/usb/typec/retimer.h
- create mode 100644 include/linux/usb/typec_retimer.h
+> > +  The System Controller Firmware (SCFW) is a low-level system function
+> > +  which runs on a dedicated Cortex-M core to provide power, clock, and
+> > +  resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
+> > +  (QM, QP), and i.MX8QX (QXP, DX).
+> > +  The AP communicates with the SC using a multi-ported MU module found
+> > +  in the LSIO subsystem. The current definition of this MU module provides
+> > +  5 remote AP connections to the SC to support up to 5 execution environments
+> > +  (TZ, HV, standard Linux, etc.). The SC side of this MU module interfaces
+> > +  with the LSIO DSC IP bus. The SC firmware will communicate with this MU
+> > +  using the MSI bus.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: fsl,imx-scu
+> > +
+> > +  clock-controller:
+> > +    description:
+> > +      Clock controller node that provides the clocks controlled by the SCU
+> > +    $ref: /schemas/clock/fsl,scu-clk.yaml
+> > +
+> > +  ocotp:
+> > +    description:
+> > +      OCOTP controller node provided by the SCU
+> > +    $ref: /schemas/nvmem/fsl,scu-ocotp.yaml
+> > +
+> > +  keys:
+> > +    description:
+> > +      Keys provided by the SCU
+> > +    $ref: /schemas/input/fsl,scu-key.yaml
+> > +
+> > +  mboxes:
+> > +    description: |
+> > +      List of phandle of 4 MU channels for tx, 4 MU channels for
+> > +      rx, and 1 optional MU channel for general interrupt.
+> > +      All MU channels must be in the same MU instance.
+> > +      Cross instances are not allowed. The MU instance can only
+> > +      be one of LSIO MU0~M4 for imx8qxp and imx8qm. Users need
+> > +      to make sure use the one which is not conflict with other
+> > +      execution environments. e.g. ATF.
+> > +    minItems: 1
+> > +    maxItems: 10
+> 
+> Based on the description, shouldn't this be:
+> 
+> minItems: 8
+> maxItems: 9
+>
 
-diff --git a/drivers/usb/typec/Makefile b/drivers/usb/typec/Makefile
-index 2f174cd3e5df..4955d9af0811 100644
---- a/drivers/usb/typec/Makefile
-+++ b/drivers/usb/typec/Makefile
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_TYPEC)		+= typec.o
--typec-y				:= class.o mux.o bus.o pd.o
-+typec-y				:= class.o mux.o bus.o pd.o retimer.o
- typec-$(CONFIG_ACPI)		+= port-mapper.o
- obj-$(CONFIG_TYPEC)		+= altmodes/
- obj-$(CONFIG_TYPEC_TCPM)	+= tcpm/
-diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
-index bbc46b14f99a..9062836bb638 100644
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -2299,10 +2299,14 @@ static int __init typec_init(void)
- 	if (ret)
- 		goto err_unregister_bus;
- 
--	ret = class_register(&typec_class);
-+	ret = class_register(&retimer_class);
- 	if (ret)
- 		goto err_unregister_mux_class;
- 
-+	ret = class_register(&typec_class);
-+	if (ret)
-+		goto err_unregister_retimer_class;
-+
- 	ret = usb_power_delivery_init();
- 	if (ret)
- 		goto err_unregister_class;
-@@ -2312,6 +2316,9 @@ static int __init typec_init(void)
- err_unregister_class:
- 	class_unregister(&typec_class);
- 
-+err_unregister_retimer_class:
-+	class_unregister(&retimer_class);
-+
- err_unregister_mux_class:
- 	class_unregister(&typec_mux_class);
- 
-diff --git a/drivers/usb/typec/class.h b/drivers/usb/typec/class.h
-index b531f9853bc0..43fcf9e37a8c 100644
---- a/drivers/usb/typec/class.h
-+++ b/drivers/usb/typec/class.h
-@@ -76,6 +76,7 @@ extern const struct device_type typec_port_dev_type;
- #define is_typec_port(dev) ((dev)->type == &typec_port_dev_type)
- 
- extern struct class typec_mux_class;
-+extern struct class retimer_class;
- extern struct class typec_class;
- 
- #if defined(CONFIG_ACPI)
-diff --git a/drivers/usb/typec/retimer.c b/drivers/usb/typec/retimer.c
-new file mode 100644
-index 000000000000..051eaa7d2899
---- /dev/null
-+++ b/drivers/usb/typec/retimer.c
-@@ -0,0 +1,168 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright 2022 Google LLC
-+ *
-+ * USB Type-C Retimer support.
-+ * Author: Prashant Malani <pmalani@chromium.org>
-+ *
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/property.h>
-+#include <linux/slab.h>
-+
-+#include "class.h"
-+#include "retimer.h"
-+
-+static bool dev_name_ends_with(struct device *dev, const char *suffix)
-+{
-+	const char *name = dev_name(dev);
-+	const int name_len = strlen(name);
-+	const int suffix_len = strlen(suffix);
-+
-+	if (suffix_len > name_len)
-+		return false;
-+
-+	return strcmp(name + (name_len - suffix_len), suffix) == 0;
-+}
-+
-+static int retimer_fwnode_match(struct device *dev, const void *fwnode)
-+{
-+	return dev_fwnode(dev) == fwnode && dev_name_ends_with(dev, "-retimer");
-+}
-+
-+static void *typec_retimer_match(struct fwnode_handle *fwnode, const char *id, void *data)
-+{
-+	struct device *dev  = class_find_device(&retimer_class, NULL, fwnode,
-+						retimer_fwnode_match);
-+
-+	return dev ? to_typec_retimer(dev) : ERR_PTR(-EPROBE_DEFER);
-+}
-+
-+/**
-+ * fwnode_typec_retimer_get - Find USB Type-C retimer.
-+ * @fwnode: The caller device node.
-+ *
-+ * Finds a retimer linked to the caller. This function is primarily meant for the
-+ * Type-C drivers. Returns a reference to the retimer on success, NULL if no
-+ * matching connection was found, or ERR_PTR(-EPROBE_DEFER) when a connection
-+ * was found but the retimer has not been enumerated yet.
-+ */
-+struct typec_retimer *fwnode_typec_retimer_get(struct fwnode_handle *fwnode)
-+{
-+	struct typec_retimer *retimer;
-+
-+	retimer = fwnode_connection_find_match(fwnode, "retimer-switch", NULL, typec_retimer_match);
-+	if (!IS_ERR_OR_NULL(retimer))
-+		WARN_ON(!try_module_get(retimer->dev.parent->driver->owner));
-+
-+	return retimer;
-+}
-+EXPORT_SYMBOL_GPL(fwnode_typec_retimer_get);
-+
-+/**
-+ * typec_retimer_put - Release handle to a retimer.
-+ * @retimer: USB Type-C Connector Retimer.
-+ *
-+ * Decrements reference count for @retimer.
-+ */
-+void typec_retimer_put(struct typec_retimer *retimer)
-+{
-+	if (!IS_ERR_OR_NULL(retimer)) {
-+		module_put(retimer->dev.parent->driver->owner);
-+		put_device(&retimer->dev);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(typec_retimer_put);
-+
-+int typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
-+{
-+	if (IS_ERR_OR_NULL(retimer))
-+		return 0;
-+
-+	return retimer->set(retimer, state);
-+}
-+EXPORT_SYMBOL_GPL(typec_retimer_set);
-+
-+static void typec_retimer_release(struct device *dev)
-+{
-+	kfree(to_typec_retimer(dev));
-+}
-+
-+static const struct device_type typec_retimer_dev_type = {
-+	.name = "typec_retimer",
-+	.release = typec_retimer_release,
-+};
-+
-+/**
-+ * typec_retimer_register - Register a retimer device.
-+ * @parent: Parent device.
-+ * @desc: Retimer description.
-+ *
-+ * Some USB Type-C connectors have their physical lines routed through retimers before they
-+ * reach muxes or host controllers. In some cases (for example: using alternate modes)
-+ * these retimers need to be reconfigured appropriately. This function registers retimer
-+ * switches which route and potentially modify the signals on the Type C physical lines
-+ * enroute to the host controllers.
-+ */
-+struct typec_retimer *
-+typec_retimer_register(struct device *parent, const struct typec_retimer_desc *desc)
-+{
-+	struct typec_retimer *retimer;
-+	int ret;
-+
-+	if (!desc || !desc->set)
-+		return ERR_PTR(-EINVAL);
-+
-+	retimer = kzalloc(sizeof(*retimer), GFP_KERNEL);
-+	if (!retimer)
-+		return ERR_PTR(-ENOMEM);
-+
-+	retimer->set = desc->set;
-+
-+	device_initialize(&retimer->dev);
-+	retimer->dev.parent = parent;
-+	retimer->dev.fwnode = desc->fwnode;
-+	retimer->dev.class = &retimer_class;
-+	retimer->dev.type = &typec_retimer_dev_type;
-+	retimer->dev.driver_data = desc->drvdata;
-+	dev_set_name(&retimer->dev, "%s-retimer",
-+		     desc->name ? desc->name : dev_name(parent));
-+
-+	ret = device_add(&retimer->dev);
-+	if (ret) {
-+		dev_err(parent, "failed to register retimer (%d)\n", ret);
-+		put_device(&retimer->dev);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return retimer;
-+}
-+EXPORT_SYMBOL_GPL(typec_retimer_register);
-+
-+/**
-+ * typec_retimer_unregister - Unregister retimer device.
-+ * @retimer: USB Type-C Connector retimer.
-+ *
-+ * Unregister retimer that was registered with typec_retimer_register().
-+ */
-+void typec_retimer_unregister(struct typec_retimer *retimer)
-+{
-+	if (!IS_ERR_OR_NULL(retimer))
-+		device_unregister(&retimer->dev);
-+}
-+EXPORT_SYMBOL_GPL(typec_retimer_unregister);
-+
-+void *typec_retimer_get_drvdata(struct typec_retimer *retimer)
-+{
-+	return dev_get_drvdata(&retimer->dev);
-+}
-+EXPORT_SYMBOL_GPL(typec_retimer_get_drvdata);
-+
-+struct class retimer_class = {
-+	.name = "retimer",
-+	.owner = THIS_MODULE,
-+};
-diff --git a/drivers/usb/typec/retimer.h b/drivers/usb/typec/retimer.h
-new file mode 100644
-index 000000000000..fa15951d4846
---- /dev/null
-+++ b/drivers/usb/typec/retimer.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#ifndef __USB_TYPEC_RETIMER__
-+#define __USB_TYPEC_RETIMER__
-+
-+#include <linux/usb/typec_retimer.h>
-+
-+struct typec_retimer {
-+	struct device dev;
-+	typec_retimer_set_fn_t set;
-+};
-+
-+#define to_typec_retimer(_dev_) container_of(_dev_, struct typec_retimer, dev)
-+
-+#endif /* __USB_TYPEC_RETIMER__ */
-diff --git a/include/linux/usb/typec_retimer.h b/include/linux/usb/typec_retimer.h
-new file mode 100644
-index 000000000000..5e036b3360e2
---- /dev/null
-+++ b/include/linux/usb/typec_retimer.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#ifndef __USB_TYPEC_RETIMER
-+#define __USB_TYPEC_RETIMER
-+
-+#include <linux/property.h>
-+#include <linux/usb/typec.h>
-+
-+struct device;
-+struct typec_retimer;
-+struct typec_altmode;
-+struct fwnode_handle;
-+
-+struct typec_retimer_state {
-+	struct typec_altmode *alt;
-+	unsigned long mode;
-+	void *data;
-+};
-+
-+typedef int (*typec_retimer_set_fn_t)(struct typec_retimer *retimer,
-+				      struct typec_retimer_state *state);
-+
-+struct typec_retimer_desc {
-+	struct fwnode_handle *fwnode;
-+	typec_retimer_set_fn_t set;
-+	const char *name;
-+	void *drvdata;
-+};
-+
-+struct typec_retimer *fwnode_typec_retimer_get(struct fwnode_handle *fwnode);
-+void typec_retimer_put(struct typec_retimer *retimer);
-+int typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state);
-+
-+static inline struct typec_retimer *typec_retimer_get(struct device *dev)
-+{
-+	return fwnode_typec_retimer_get(dev_fwnode(dev));
-+}
-+
-+struct typec_retimer *
-+typec_retimer_register(struct device *parent, const struct typec_retimer_desc *desc);
-+void typec_retimer_unregister(struct typec_retimer *retimer);
-+
-+void *typec_retimer_get_drvdata(struct typec_retimer *retimer);
-+
-+#endif /* __USB_TYPEC_RETIMER */
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+Actually the description should be updated - there is a series sent by Abel
+adding the support for i.MX8 DXL - it has just 1 MU channel for rx, 1 - for tx,
+and 1 optional for general interrupt. An approach would be to add a structure
+which will include two options - one for 8..9, another for 2..3.
+Hopefully I'll be able to define a generic one.
 
+> > +
+> > +  mbox-names:
+> > +    description:
+> > +      include "gip3" if want to support general MU interrupt.
+> 
+> What are all the other names? Needs to be a schema, not freeform text.
+
+Right, ok.
+
+> > +    minItems: 1
+> > +    maxItems: 10
+> > +
+> > +  pinctrl:
+> > +    description:
+> > +      Pin controller provided by the SCU
+> > +    $ref: /schemas/pinctrl/fsl,scu-pinctrl.yaml
+> > +
+> > +  power-controller:
+> > +    description: |
+> > +      Power domains controller node that provides the power domains
+> > +      controlled by the SCU
+> > +    $ref: /schemas/power/fsl,scu-pd.yaml
+> > +
+> > +  rtc:
+> > +    description:
+> > +      RTC controller provided by the SCU
+> > +    $ref: /schemas/rtc/fsl,scu-rtc.yaml
+> > +
+> > +  thermal-sensor:
+> > +    description:
+> > +      Thermal sensor provided by the SCU
+> > +    $ref: /schemas/thermal/fsl,scu-thermal.yaml
+> > +
+> > +  watchdog:
+> > +    description:
+> > +      Watchdog controller provided by the SCU
+> > +    $ref: /schemas/watchdog/fsl,scu-wdt.yaml
+> > +
+> > +required:
+> > +  - compatible
+> > +  - mbox-names
+> > +  - mboxes
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/firmware/imx/rsrc.h>
+> > +    #include <dt-bindings/input/input.h>
+> > +    #include <dt-bindings/pinctrl/pads-imx8qxp.h>
+> > +
+> > +    firmware {
+> > +        system-controller {
+> > +            compatible = "fsl,imx-scu";
+> > +            mbox-names = "tx0", "tx1", "tx2", "tx3",
+> > +                         "rx0", "rx1", "rx2", "rx3",
+> > +                         "gip3";
+> > +            mboxes = <&lsio_mu1 0 0 &lsio_mu1 0 1 &lsio_mu1 0 2 &lsio_mu1 0 3
+> > +                      &lsio_mu1 1 0 &lsio_mu1 1 1 &lsio_mu1 1 2 &lsio_mu1 1 3
+> > +                      &lsio_mu1 3 3>;
+> > +
+> > +            clock-controller {
+> > +                compatible = "fsl,imx8qxp-clk", "fsl,scu-clk";
+> > +                #clock-cells = <2>;
+> > +            };
+> > +
+> > +            pinctrl {
+> > +                compatible = "fsl,imx8qxp-iomuxc";
+> > +
+> > +                pinctrl_lpuart0: lpuart0grp {
+> > +                    fsl,pins = <
+> > +                        IMX8QXP_UART0_RX_ADMA_UART0_RX   0x06000020
+> > +                        IMX8QXP_UART0_TX_ADMA_UART0_TX   0x06000020
+> > +                    >;
+> > +                };
+> > +            };
+> > +
+> > +            ocotp {
+> > +                compatible = "fsl,imx8qxp-scu-ocotp";
+> > +                #address-cells = <1>;
+> > +                #size-cells = <1>;
+> > +
+> > +                fec_mac0: mac@2c4 {
+> > +                    reg = <0x2c4 6>;
+> > +                };
+> > +            };
+> > +
+> > +            power-controller {
+> > +                compatible = "fsl,imx8qxp-scu-pd", "fsl,scu-pd";
+> > +                #power-domain-cells = <1>;
+> > +            };
+> > +
+> > +            rtc {
+> > +                compatible = "fsl,imx8qxp-sc-rtc";
+> > +            };
+> > +
+> > +            keys {
+> > +                compatible = "fsl,imx8qxp-sc-key", "fsl,imx-sc-key";
+> > +                linux,keycodes = <KEY_POWER>;
+> > +            };
+> > +
+> > +            watchdog {
+> > +                compatible = "fsl,imx8qxp-sc-wdt", "fsl,imx-sc-wdt";
+> > +                timeout-sec = <60>;
+> > +            };
+> > +
+> > +            thermal-sensor {
+> > +                compatible = "fsl,imx8qxp-sc-thermal", "fsl,imx-sc-thermal";
+> > +                #thermal-sensor-cells = <1>;
+> > +            };
+> > +        };
+> > +    };
+> > -- 
+> > 2.25.1
+> > 
+> > 
