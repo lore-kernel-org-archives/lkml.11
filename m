@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A591DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234571AbiGFPjH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:39:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
+        id S234662AbiGFPjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234634AbiGFPhi (ORCPT
+        with ESMTP id S234700AbiGFPhp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:37:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9522AE2B;
-        Wed,  6 Jul 2022 08:34:06 -0700 (PDT)
+        Wed, 6 Jul 2022 11:37:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42B329823;
+        Wed,  6 Jul 2022 08:34:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E94DB81D9F;
-        Wed,  6 Jul 2022 15:34:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA73CC341CA;
-        Wed,  6 Jul 2022 15:33:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 585ADB81D8E;
+        Wed,  6 Jul 2022 15:34:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B870C385A9;
+        Wed,  6 Jul 2022 15:34:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121641;
-        bh=cU6nBfCYAO3xE0Q6iDSFyGdhFqzQSt1LLUiGXyLzMZo=;
+        s=k20201202; t=1657121655;
+        bh=X1HuKRt0LWoedxoY1R+Lv8GBU7vpc+yZbocg1ZBZ8JI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jP5/tAdT3nbZiQyhgu4AeYNNZQ8c1f1YxyeqW5lNGp5Fe3SrZKOkWgovF3/8caXVh
-         ujKBxVmC7jTjEyHfur6EFPcXLBSTSOzOyeHVVS6cH8WJInqfKPinsCAwJpSWx5ZmWk
-         CticU/44A2OWHR63OTyBTXaZ2ynoqDJdoAUNKnle2m5p3uN6mKoxy4/DuJIDvvzNhe
-         HBeB4vwLKXCuSIs2t3dihcVAcCPWXTRdyKdjoWMeSpbPwHrLJfmxPfFUsJ2t7j4/iO
-         2S4MX+jkM7ascM9oDVoS4BWjGd7v6QkaCvMxVipaMVITy7wSok4gITwQHZLcAqkT02
-         MhykQ0TsQi9cQ==
+        b=cIeIl08BAFjJxRP13qActLCmwqt5Uvis3WJQXK8uUYrqlsh1joFgg3ClyeDWJYwy/
+         0Fl8ENgLbV40wxw7GjU4SlJe4Hogi+BmoFURvNrvp4awfmifTuwqu2PNOurSqXOZif
+         hlO01HBJPqm+QaJ4OVp/1v0Nkownju1hxQg+S4/pC7+5BahEbrrfyGBVlQpTlTXbFI
+         nx6S+LacSSaQSUkPwholvkrGY6RCn53tOUdPquQ/nWVKIVP+RW0/tvN1Wl5c/oTEyj
+         BLsopF3FULnE9d8d9WUjYMEuslHk9CHSH19pcnDkAUMp0EQfihZwxutgLuN6pvmno3
+         cLItvpdDhOoDA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Hangyu Hua <hbh25y@gmail.com>,
@@ -41,12 +41,12 @@ Cc:     Hangyu Hua <hbh25y@gmail.com>,
         ying.xue@windriver.com, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, netdev@vger.kernel.org,
         tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 4.14 6/8] net: tipc: fix possible refcount leak in tipc_sk_create()
-Date:   Wed,  6 Jul 2022 11:33:48 -0400
-Message-Id: <20220706153351.1598805-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 4/5] net: tipc: fix possible refcount leak in tipc_sk_create()
+Date:   Wed,  6 Jul 2022 11:34:06 -0400
+Message-Id: <20220706153407.1598915-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220706153351.1598805-1-sashal@kernel.org>
-References: <20220706153351.1598805-1-sashal@kernel.org>
+In-Reply-To: <20220706153407.1598915-1-sashal@kernel.org>
+References: <20220706153407.1598915-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -70,12 +70,12 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 94e74987fe65..40002d2afb8a 100644
+index 9f39276e5d4e..1b3516368057 100644
 --- a/net/tipc/socket.c
 +++ b/net/tipc/socket.c
-@@ -440,6 +440,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+@@ -341,6 +341,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+ 	sock->state = state;
  	sock_init_data(sock, sk);
- 	tipc_set_sk_state(sk, TIPC_OPEN);
  	if (tipc_sk_insert(tsk)) {
 +		sk_free(sk);
  		pr_warn("Socket create failed; port number exhausted\n");
