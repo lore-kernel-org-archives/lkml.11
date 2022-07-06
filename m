@@ -2,79 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D708EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D643C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234683AbiGFPjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S234696AbiGFPjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234738AbiGFPht (ORCPT
+        with ESMTP id S234576AbiGFPhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:37:49 -0400
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDDC25EB3;
-        Wed,  6 Jul 2022 08:34:21 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-31c8a1e9e33so91637247b3.5;
-        Wed, 06 Jul 2022 08:34:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e+Fsv8R6El10zE4fRO1Zb3LQa9YV3Qjec5+0V8sZOL8=;
-        b=abA2kxiYOK5w7K6qOsyYQIZT4hWfSiQncZj/EO7rhLYaVAk6FGpU6Kr98ibYzDhH5Y
-         oUgbjATbtc8CW95p7wGQgCqYGSEgL8QD6Mcg7T7Lj0HS3ghwrtlI/kxflVkm861jzK3N
-         03x/T0/empdgiEvnlxIZWNloj8euVPnMObTXrIvMbVztLSA1hUb0EcseNozh8WpSfPzi
-         Ocn3mTICmZ2lIZto4x4gXGIGNJxQZv6Hop0U3ETSKWv22x5b81WalOmLNTWM9CX+rF7s
-         aa3+sOZ845mI96bXxCxxJdJmr53azPXBHoImOmdq54vrnj6ICLDZS0mqxP62rGvX2zuA
-         5kVw==
-X-Gm-Message-State: AJIora+ZUm1wIAlfeVCNpW41toSLZCq+b8F0KDutM6G8Njt+/V+MzgfT
-        FJv4rQAhJehPy8VEOOM5xcAkEkWIEYVdpxe2e6T4CdXSeBg=
-X-Google-Smtp-Source: AGRyM1u7ABPiXSFcDKj/c4I09BwgdOZnzeJIsTesqlFtEdqGMBzTO/wiiq9rxvUww5aXa3RBPwaMfL4Aazj2igIKYaE=
-X-Received: by 2002:a81:6943:0:b0:31c:ee3e:47c6 with SMTP id
- e64-20020a816943000000b0031cee3e47c6mr3379106ywc.515.1657121660817; Wed, 06
- Jul 2022 08:34:20 -0700 (PDT)
+        Wed, 6 Jul 2022 11:37:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788C52AE17;
+        Wed,  6 Jul 2022 08:33:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 144AAB81D98;
+        Wed,  6 Jul 2022 15:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48B37C341C8;
+        Wed,  6 Jul 2022 15:33:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657121636;
+        bh=Yn/jMuAgDhaAo8EvuAzql3ECAH8cMmvlm8r3h/A/msY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dF17ee2iAPMSeq2S+to1TeFTSue8EJfvKgIzX0P+8q9rmuvgmZWBwKcTPPLybPH/B
+         FS7/KwpPM/65juPRpsgP40sBHkBU3J+4vf1fTwXYvWCtdmajqsB9gOQoLghQ1buKqn
+         Rjt/rRoE5xv+20/GI8wlm1CbT8BBCpJO6jPCElIqQeuHlRMvGfaFHZA/yO2HBnQw3M
+         z8KaQW0rNnjuL++gs0hjnjbMidKDVeASkP54arDKYGYNliriw0PLSbQVMUEFpn5tBk
+         7+Nk1iV9PBq2UPLCDk+ZKTj7SIEST9yP+ZnwreqQsPMlzk0RB7MvmtU9Zif1KyHBaM
+         FH72xCKU3fHjA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>,
+        Radim Hrazdil <rhrazdil@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        roopa@nvidia.com, razor@blackwall.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 3/8] netfilter: br_netfilter: do not skip all hooks with 0 priority
+Date:   Wed,  6 Jul 2022 11:33:45 -0400
+Message-Id: <20220706153351.1598805-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220706153351.1598805-1-sashal@kernel.org>
+References: <20220706153351.1598805-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <8c3d50faf8811e86136fb3f9c459e43fc3c50bc0.1653565641.git.viresh.kumar@linaro.org>
- <426bf6edc80b2e944d459fa7b8dffbe8b73bb3d9.1653623526.git.viresh.kumar@linaro.org>
- <CAJZ5v0gswDEdK9-gC1dPr9BFPv3G9rs+JYe-7=1JZ11OMoBb-g@mail.gmail.com>
- <20220615045957.55ocdyddcac3vwct@vireshk-i7> <CAJZ5v0gDCS8mkoFjnqOAi9gGuhTheE79FwvRWgeoxagMj3Ok0Q@mail.gmail.com>
- <20220706152333.fvgybznz3j6ffmre@vireshk-i7>
-In-Reply-To: <20220706152333.fvgybznz3j6ffmre@vireshk-i7>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 6 Jul 2022 17:34:09 +0200
-Message-ID: <CAJZ5v0hnjeTYDfGvwrAEY8hNa6bfD6MDGEiuTOgVV+g6LEaGLQ@mail.gmail.com>
-Subject: Re: [PATCH V2 2/3] cpufreq: Panic if policy is active in cpufreq_policy_free()
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 5:23 PM Viresh Kumar <viresh.kumar@linaro.org> wrote:
->
-> On 06-07-22, 15:49, Rafael J. Wysocki wrote:
-> > WARN_ON() would be somewhat better, but then I'm not sure if having a
-> > full call trace in this case is really useful, because we know when
-> > cpufreq_policy_free() can be called anyway.
-> >
-> > Maybe just print a warning message.
->
-> The warning will get printed, yes, but I am sure everyone will end up
-> ignoring it, once it happens.
->
-> One of the benefits of printing the call-stack is people will take it
-> seriously and report it, and we won't miss a bug, if one gets in
-> somehow.
+From: Florian Westphal <fw@strlen.de>
 
-I'd rather not go into discussing things that people may or may not do and why.
+[ Upstream commit c2577862eeb0be94f151f2f1fff662b028061b00 ]
 
-My point is that if WARN_ON() gets converted to panic(), they will not
-see the message at all and if the message gets printed, they will have
-a chance to see it even in that case.  Whether or not they use that
-chance as desirable is beyond the scope of engineering IMV.
+When br_netfilter module is loaded, skbs may be diverted to the
+ipv4/ipv6 hooks, just like as if we were routing.
+
+Unfortunately, bridge filter hooks with priority 0 may be skipped
+in this case.
+
+Example:
+1. an nftables bridge ruleset is loaded, with a prerouting
+   hook that has priority 0.
+2. interface is added to the bridge.
+3. no tcp packet is ever seen by the bridge prerouting hook.
+4. flush the ruleset
+5. load the bridge ruleset again.
+6. tcp packets are processed as expected.
+
+After 1) the only registered hook is the bridge prerouting hook, but its
+not called yet because the bridge hasn't been brought up yet.
+
+After 2), hook order is:
+   0 br_nf_pre_routing // br_netfilter internal hook
+   0 chain bridge f prerouting // nftables bridge ruleset
+
+The packet is diverted to br_nf_pre_routing.
+If call-iptables is off, the nftables bridge ruleset is called as expected.
+
+But if its enabled, br_nf_hook_thresh() will skip it because it assumes
+that all 0-priority hooks had been called previously in bridge context.
+
+To avoid this, check for the br_nf_pre_routing hook itself, we need to
+resume directly after it, even if this hook has a priority of 0.
+
+Unfortunately, this still results in different packet flow.
+With this fix, the eval order after in 3) is:
+1. br_nf_pre_routing
+2. ip(6)tables (if enabled)
+3. nftables bridge
+
+but after 5 its the much saner:
+1. nftables bridge
+2. br_nf_pre_routing
+3. ip(6)tables (if enabled)
+
+Unfortunately I don't see a solution here:
+It would be possible to move br_nf_pre_routing to a higher priority
+so that it will be called later in the pipeline, but this also impacts
+ebtables evaluation order, and would still result in this very ordering
+problem for all nftables-bridge hooks with the same priority as the
+br_nf_pre_routing one.
+
+Searching back through the git history I don't think this has
+ever behaved in any other way, hence, no fixes-tag.
+
+Reported-by: Radim Hrazdil <rhrazdil@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/bridge/br_netfilter_hooks.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index 7e50bd9f3611..ee7a03ff89f3 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -998,9 +998,24 @@ int br_nf_hook_thresh(unsigned int hook, struct net *net,
+ 		return okfn(net, sk, skb);
+ 
+ 	ops = nf_hook_entries_get_hook_ops(e);
+-	for (i = 0; i < e->num_hook_entries &&
+-	      ops[i]->priority <= NF_BR_PRI_BRNF; i++)
+-		;
++	for (i = 0; i < e->num_hook_entries; i++) {
++		/* These hooks have already been called */
++		if (ops[i]->priority < NF_BR_PRI_BRNF)
++			continue;
++
++		/* These hooks have not been called yet, run them. */
++		if (ops[i]->priority > NF_BR_PRI_BRNF)
++			break;
++
++		/* take a closer look at NF_BR_PRI_BRNF. */
++		if (ops[i]->hook == br_nf_pre_routing) {
++			/* This hook diverted the skb to this function,
++			 * hooks after this have not been run yet.
++			 */
++			i++;
++			break;
++		}
++	}
+ 
+ 	nf_hook_state_init(&state, hook, NFPROTO_BRIDGE, indev, outdev,
+ 			   sk, net, okfn);
+-- 
+2.35.1
+
