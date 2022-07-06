@@ -2,89 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 084EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8B7CCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232953AbiGFLoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 07:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        id S232935AbiGFLoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 07:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbiGFLoG (ORCPT
+        with ESMTP id S232812AbiGFLoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 07:44:06 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A2B27FE2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 04:44:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657107845; x=1688643845;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7trpfv682c9MxdTP7vanTLNmy9tVpMFpAitmjY9UN1A=;
-  b=Xi1aOnqqbRzo3JeXy0q71Q/tjUmTjEFCQikgA/36jKsd9Z3H7V7+gziW
-   6Sx2rs/JD3FulWnBbOapxiUhOBj1/l5sgphdvSuqW4nlqixDZu08Ez4wG
-   mc3lH2wGlW/fh/N8oJGPfjNTB9ZvFq21FS1mrJxuJKjJI0F/984n6lPRs
-   o/Q7mf+QZAFsm8f0VwNukyUontAni3PvBAGimcNjvlPxNHsx4ntbkunp5
-   Ttr2q+XX9XDz8b5POfG2nLgd+rIBKFpXW+5n0VuCYMnD6q1Y9KqCOpXgZ
-   Yyy2pG+dSEHJMpPENZWF2VFwMYiVA4uHdhI+8mL5+Os6pY24unJE0ZxNX
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="347707445"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="347707445"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:44:05 -0700
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="650630112"
-Received: from sannilnx.jer.intel.com ([10.12.26.175])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:44:02 -0700
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Subject: [PATCH v5 02/14] drm/i915/gsc: add slow_fw flag to the mei auxiliary device
-Date:   Wed,  6 Jul 2022 14:43:33 +0300
-Message-Id: <20220706114345.1128018-3-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220706114345.1128018-1-alexander.usyskin@intel.com>
-References: <20220706114345.1128018-1-alexander.usyskin@intel.com>
+        Wed, 6 Jul 2022 07:44:09 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB5827FE1;
+        Wed,  6 Jul 2022 04:44:08 -0700 (PDT)
+Date:   Wed, 06 Jul 2022 11:44:05 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657107846;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WQNDvJM0xfToLKfSGT1GOOqjkWUDf95Dg7dwTQ4Av/s=;
+        b=0FQNE05YSdfPZsbbjsQWmjpS5Vsl31m58ptTs84yOyiK/zb9roN75dPAWLlp4HrAk1z644
+        1SOSjDq3TQTt/3AwKyhc+xzImefgTmeZfL3cPUH7R2/RuXwutjcUmq642BwxS4AVFRMXaJ
+        itiAvSKvcpOjTyxa2OuXxzQ0qHfWiD6ctIyncUfKPOQiHHyl828DNcwZaAhGcyPMXCsCob
+        jzAosoEcNo8eevKZpjnZ6WezpqeCCfk9GxVTQOi4yqqOHnVXrWF/c9f1+8PwIyxZogwb2q
+        jS8jog6p7CO8psLwv5JTi0wikYphVrQXLNZduB1WXoL57aemCJdXlr5V+jKocA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657107846;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WQNDvJM0xfToLKfSGT1GOOqjkWUDf95Dg7dwTQ4Av/s=;
+        b=X0NCsTJnsd4ifShsBRjxssvI0j8BjUHHO00U8TWKCUe2NBSx98+lPIENcCfAu9gdFxq3i8
+        ujl7zvcj+h5iDDBw==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] perf/x86/intel: Fix PEBS data source encoding for ADL
+Cc:     Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220629150840.2235741-2-kan.liang@linux.intel.com>
+References: <20220629150840.2235741-2-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <165710784534.15455.9349056485349357540.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add slow_fw flag to the mei auxiliary device info
-to inform the mei driver about slow underlying firmware.
-Such firmware will require to use larger operation timeouts.
+The following commit has been merged into the perf/core branch of tip:
 
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Reviewed-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Commit-ID:     ccf170e9d8fdacfe435bbe3749c897c7d86d32f8
+Gitweb:        https://git.kernel.org/tip/ccf170e9d8fdacfe435bbe3749c897c7d86d32f8
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Wed, 29 Jun 2022 08:08:40 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Mon, 04 Jul 2022 09:23:09 +02:00
+
+perf/x86/intel: Fix PEBS data source encoding for ADL
+
+The PEBS data source encoding for the e-core is different from the
+p-core.
+
+Add the pebs_data_source[] in the struct x86_hybrid_pmu to store the
+data source encoding for each type of the core.
+
+Add intel_pmu_pebs_data_source_grt() for the e-core.
+There is nothing changed for the data source encoding of the p-core,
+which still reuse the intel_pmu_pebs_data_source_skl().
+
+Fixes: f83d2f91d259 ("perf/x86/intel: Add Alder Lake Hybrid support")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220629150840.2235741-2-kan.liang@linux.intel.com
 ---
- include/linux/mei_aux.h | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/events/intel/core.c |  2 +-
+ arch/x86/events/intel/ds.c   | 51 ++++++++++++++++++++++++++---------
+ arch/x86/events/perf_event.h |  6 ++++-
+ 3 files changed, 45 insertions(+), 14 deletions(-)
 
-diff --git a/include/linux/mei_aux.h b/include/linux/mei_aux.h
-index 587f25128848..a29f4064b9c0 100644
---- a/include/linux/mei_aux.h
-+++ b/include/linux/mei_aux.h
-@@ -11,6 +11,7 @@ struct mei_aux_device {
- 	struct auxiliary_device aux_dev;
- 	int irq;
- 	struct resource bar;
-+	bool slow_fw;
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 07d4a5f..bd8b988 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -6241,7 +6241,7 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+ 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
+ 		x86_pmu.lbr_pt_coexist = true;
+-		intel_pmu_pebs_data_source_skl(false);
++		intel_pmu_pebs_data_source_adl();
+ 		x86_pmu.pebs_latency_data = adl_latency_data_small;
+ 		x86_pmu.num_topdown_events = 8;
+ 		x86_pmu.update_topdown_event = adl_update_topdown_event;
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index de84385..ba60427 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -94,15 +94,40 @@ void __init intel_pmu_pebs_data_source_nhm(void)
+ 	pebs_data_source[0x07] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOP, HITM);
+ }
+ 
+-void __init intel_pmu_pebs_data_source_skl(bool pmem)
++static void __init __intel_pmu_pebs_data_source_skl(bool pmem, u64 *data_source)
+ {
+ 	u64 pmem_or_l4 = pmem ? LEVEL(PMEM) : LEVEL(L4);
+ 
+-	pebs_data_source[0x08] = OP_LH | pmem_or_l4 | P(SNOOP, HIT);
+-	pebs_data_source[0x09] = OP_LH | pmem_or_l4 | REM | P(SNOOP, HIT);
+-	pebs_data_source[0x0b] = OP_LH | LEVEL(RAM) | REM | P(SNOOP, NONE);
+-	pebs_data_source[0x0c] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOPX, FWD);
+-	pebs_data_source[0x0d] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOP, HITM);
++	data_source[0x08] = OP_LH | pmem_or_l4 | P(SNOOP, HIT);
++	data_source[0x09] = OP_LH | pmem_or_l4 | REM | P(SNOOP, HIT);
++	data_source[0x0b] = OP_LH | LEVEL(RAM) | REM | P(SNOOP, NONE);
++	data_source[0x0c] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOPX, FWD);
++	data_source[0x0d] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOP, HITM);
++}
++
++void __init intel_pmu_pebs_data_source_skl(bool pmem)
++{
++	__intel_pmu_pebs_data_source_skl(pmem, pebs_data_source);
++}
++
++static void __init intel_pmu_pebs_data_source_grt(u64 *data_source)
++{
++	data_source[0x05] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOP, HIT);
++	data_source[0x06] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOP, HITM);
++	data_source[0x08] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOPX, FWD);
++}
++
++void __init intel_pmu_pebs_data_source_adl(void)
++{
++	u64 *data_source;
++
++	data_source = x86_pmu.hybrid_pmu[X86_HYBRID_PMU_CORE_IDX].pebs_data_source;
++	memcpy(data_source, pebs_data_source, sizeof(pebs_data_source));
++	__intel_pmu_pebs_data_source_skl(false, data_source);
++
++	data_source = x86_pmu.hybrid_pmu[X86_HYBRID_PMU_ATOM_IDX].pebs_data_source;
++	memcpy(data_source, pebs_data_source, sizeof(pebs_data_source));
++	intel_pmu_pebs_data_source_grt(data_source);
+ }
+ 
+ static u64 precise_store_data(u64 status)
+@@ -198,7 +223,7 @@ u64 adl_latency_data_small(struct perf_event *event, u64 status)
+ 
+ 	dse.val = status;
+ 
+-	val = pebs_data_source[dse.ld_dse];
++	val = hybrid_var(event->pmu, pebs_data_source)[dse.ld_dse];
+ 
+ 	/*
+ 	 * For the atom core on ADL,
+@@ -214,7 +239,7 @@ u64 adl_latency_data_small(struct perf_event *event, u64 status)
+ 	return val;
+ }
+ 
+-static u64 load_latency_data(u64 status)
++static u64 load_latency_data(struct perf_event *event, u64 status)
+ {
+ 	union intel_x86_pebs_dse dse;
+ 	u64 val;
+@@ -224,7 +249,7 @@ static u64 load_latency_data(u64 status)
+ 	/*
+ 	 * use the mapping table for bit 0-3
+ 	 */
+-	val = pebs_data_source[dse.ld_dse];
++	val = hybrid_var(event->pmu, pebs_data_source)[dse.ld_dse];
+ 
+ 	/*
+ 	 * Nehalem models do not support TLB, Lock infos
+@@ -263,7 +288,7 @@ static u64 load_latency_data(u64 status)
+ 	return val;
+ }
+ 
+-static u64 store_latency_data(u64 status)
++static u64 store_latency_data(struct perf_event *event, u64 status)
+ {
+ 	union intel_x86_pebs_dse dse;
+ 	u64 val;
+@@ -273,7 +298,7 @@ static u64 store_latency_data(u64 status)
+ 	/*
+ 	 * use the mapping table for bit 0-3
+ 	 */
+-	val = pebs_data_source[dse.st_lat_dse];
++	val = hybrid_var(event->pmu, pebs_data_source)[dse.st_lat_dse];
+ 
+ 	pebs_set_tlb_lock(&val, dse.st_lat_stlb_miss, dse.st_lat_locked);
+ 
+@@ -1459,9 +1484,9 @@ static u64 get_data_src(struct perf_event *event, u64 aux)
+ 	bool fst = fl & (PERF_X86_EVENT_PEBS_ST | PERF_X86_EVENT_PEBS_HSW_PREC);
+ 
+ 	if (fl & PERF_X86_EVENT_PEBS_LDLAT)
+-		val = load_latency_data(aux);
++		val = load_latency_data(event, aux);
+ 	else if (fl & PERF_X86_EVENT_PEBS_STLAT)
+-		val = store_latency_data(aux);
++		val = store_latency_data(event, aux);
+ 	else if (fl & PERF_X86_EVENT_PEBS_LAT_HYBRID)
+ 		val = x86_pmu.pebs_latency_data(event, aux);
+ 	else if (fst && (fl & PERF_X86_EVENT_PEBS_HSW_PREC))
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index 2d11445..ca2f8bf 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -644,6 +644,8 @@ enum {
+ 	x86_lbr_exclusive_max,
  };
  
- #define auxiliary_dev_to_mei_aux_dev(auxiliary_dev) \
--- 
-2.34.1
-
++#define PERF_PEBS_DATA_SOURCE_MAX	0x10
++
+ struct x86_hybrid_pmu {
+ 	struct pmu			pmu;
+ 	const char			*name;
+@@ -671,6 +673,8 @@ struct x86_hybrid_pmu {
+ 	unsigned int			late_ack	:1,
+ 					mid_ack		:1,
+ 					enabled_ack	:1;
++
++	u64				pebs_data_source[PERF_PEBS_DATA_SOURCE_MAX];
+ };
+ 
+ static __always_inline struct x86_hybrid_pmu *hybrid_pmu(struct pmu *pmu)
+@@ -1508,6 +1512,8 @@ void intel_pmu_pebs_data_source_nhm(void);
+ 
+ void intel_pmu_pebs_data_source_skl(bool pmem);
+ 
++void intel_pmu_pebs_data_source_adl(void);
++
+ int intel_pmu_setup_lbr_filter(struct perf_event *event);
+ 
+ void intel_pt_interrupt(void);
