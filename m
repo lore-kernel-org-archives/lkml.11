@@ -2,104 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AC4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233914AbiGFQen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
+        id S232959AbiGFQhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbiGFQek (ORCPT
+        with ESMTP id S230247AbiGFQhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:34:40 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E44913CE0
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:34:38 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id f23so3782469ejc.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 09:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rsmyrhFdA3oRLX5GTtCbo3h/deELHX26ErxA9V5MPxQ=;
-        b=TJU8Xl+X3pgKEXzhElDychDhdR1mtS857lUCIMiUJ7UVPUTAfbH22wLlDzFeHUCmUZ
-         SqN45egvCiUJRyanpNpkDwnX6D12usmPyEDiHZ5zjR+NEqqnEYKK3EDJ2SqFll0lMv2X
-         SDM8GjPbBjmAa49M3+dDATcxnuVZql2wKbTvg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rsmyrhFdA3oRLX5GTtCbo3h/deELHX26ErxA9V5MPxQ=;
-        b=mwhUOXxq9+678QGBuzjpNTtVpHXPNbyRasAmVvOYcHe8gvI/M/M7TRFjEpAb+hcMdu
-         sUdJeGp+DfUWpyltKTsvM6sspxHVVaFL4LZF8lI0yk4ova0nRtAWzsvzQMrAbY8lwwk1
-         iHtaISiQgN9ExicPbrYftQhzNwusGeyW8wIe3E8ADxn7ujqKqN36zrqeLttDaQ8KeKr5
-         yZVGZydzsRfIquYv/MMrN0/ZXCdI6l7wBR+NZ3JHCgqilYA1jltD+DeOWkdT68OZ5M3n
-         2N1ufYq5tzH9VNE0FMETjydc6gFapytsO1aCSuE22HBk1Yum5ZXBgNqZhMi5Dv8gF6WF
-         HtSw==
-X-Gm-Message-State: AJIora9gWnaK71oGE9nV5xnW+o+k7lJNzJCIYjnTi5THJ+FkVBfyYgEj
-        sKgJksdsHCyC/Z7Or0olt9j9BSVtYERPu3YC
-X-Google-Smtp-Source: AGRyM1vItI5vmAm3hF+FcD8eWKTZ84J5NNkOM5uV+Q2yocllmhOgO0VDclmuTnE/PwAxAF9CFpUiWw==
-X-Received: by 2002:a17:907:7247:b0:72a:fb6d:fb10 with SMTP id ds7-20020a170907724700b0072afb6dfb10mr3405216ejc.525.1657125276720;
-        Wed, 06 Jul 2022 09:34:36 -0700 (PDT)
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
-        by smtp.gmail.com with ESMTPSA id u6-20020a170906780600b006fef557bb7asm17570513ejm.80.2022.07.06.09.34.35
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 09:34:36 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id c131-20020a1c3589000000b003a19b2bce36so6340911wma.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 09:34:35 -0700 (PDT)
-X-Received: by 2002:a05:600c:2049:b0:3a0:536b:c01b with SMTP id
- p9-20020a05600c204900b003a0536bc01bmr44065555wmg.151.1657125275340; Wed, 06
- Jul 2022 09:34:35 -0700 (PDT)
+        Wed, 6 Jul 2022 12:37:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E43A167FA;
+        Wed,  6 Jul 2022 09:37:05 -0700 (PDT)
+Date:   Wed, 06 Jul 2022 16:37:01 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657125422;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dYYX0DCUNenEt9w+U7lXUdXpCHhwy7GMMif07lr1g+s=;
+        b=DE7v3JpODkqalwrZPTFW47u6Tn9IuDdzWWXhnQ3F8gsLIQTYPY25htFu6QGcs+niUSHBjb
+        P5Ui/ryIsJV9H1XT3khd1uhJM7ChjV25jgTOvrVyuq0K1wnvN8QPYolrdJHybkQRRY6lhA
+        6anzpAYHCljXqpX6citGE0bmEc6CIBuRVfxeePGbL661hNHnNO2cbkw+DZBd3psUHSHvBC
+        dYWyjf1fPR9wDmp9w3Ky8lTB+ukdMsTjv3nhtIDYDdSZtCkC7FvPJi3CpJgtDTcp2Pznth
+        YnZSCEOGtJxreojsKEBIs6TcKxwD2k7qygCncfPK39L3+eSq38QNbqIkbAffMQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657125422;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dYYX0DCUNenEt9w+U7lXUdXpCHhwy7GMMif07lr1g+s=;
+        b=4AhLKvxTnRgAFdB7AB3dY3A/5yLN3Khs8FNwtgqu3EXHhGLiG3PDfuHTzebjVq43A/po9f
+        YMg1+9uG+dNbiDBg==
+From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: irq/urgent] Merge tag 'irqchip-fixes-5.19-2' of
+ git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms into
+ irq/urgent
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, maz@kernel.org
+In-Reply-To: <20220701133531.1545319-1-maz@kernel.org>
+References: <20220701133531.1545319-1-maz@kernel.org>
 MIME-Version: 1.0
-References: <cover.1656759988.git.mchehab@kernel.org> <0ae8251f97c642cfd618f2e32eb1e66339e5dfde.1656759989.git.mchehab@kernel.org>
-In-Reply-To: <0ae8251f97c642cfd618f2e32eb1e66339e5dfde.1656759989.git.mchehab@kernel.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 6 Jul 2022 09:34:22 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W7gzG4xSsR3HxOv96ytzyNvT5a1oQnmy4F0BqpCOChOw@mail.gmail.com>
-Message-ID: <CAD=FV=W7gzG4xSsR3HxOv96ytzyNvT5a1oQnmy4F0BqpCOChOw@mail.gmail.com>
-Subject: Re: [PATCH 11/12] docs: arm: index.rst: add google/chromebook-boot-flow
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <165712542136.15455.4429630009732478556.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The following commit has been merged into the irq/urgent branch of tip:
 
-On Sat, Jul 2, 2022 at 4:07 AM Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
->
-> This document was added without placing it at arm book.
->
-> Fixes: 59228d3b9060 ("dt-bindings: Document how Chromebooks with depthcharge boot")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
->
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/12] at: https://lore.kernel.org/all/cover.1656759988.git.mchehab@kernel.org/
->
->  Documentation/arm/index.rst | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/Documentation/arm/index.rst b/Documentation/arm/index.rst
-> index 2bda5461a80b..495ada7915e1 100644
-> --- a/Documentation/arm/index.rst
-> +++ b/Documentation/arm/index.rst
-> @@ -31,6 +31,8 @@ SoC-specific documents
->  .. toctree::
->     :maxdepth: 1
->
-> +   google/chromebook-boot-flow
-> +
+Commit-ID:     80f2a248a2f92c07873128808359756f72a0438b
+Gitweb:        https://git.kernel.org/tip/80f2a248a2f92c07873128808359756f72a0438b
+Author:        Thomas Gleixner <tglx@linutronix.de>
+AuthorDate:    Wed, 06 Jul 2022 18:31:59 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Wed, 06 Jul 2022 18:31:59 +02:00
 
-Sure, seems reasonable. It's not truly SoC-specific but I guess
-there's no better place for it.
+Merge tag 'irqchip-fixes-5.19-2' of git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms into irq/urgent
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Pull irqchip fixes from Marc Zygnier:
+
+ - Gracefully handle failure to request MMIO resources in the GICv3 driver
+
+ - Make a static key static in the Apple AIC driver
+
+ - Fix the Xilinx intc driver dependency on OF_ADDRESS
+
+Link: https://lore.kernel.org/all/20220701133531.1545319-1-maz@kernel.org
+---
