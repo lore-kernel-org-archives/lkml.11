@@ -2,49 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04DC4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232606AbiGFQSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46272 "EHLO
+        id S233823AbiGFQVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234053AbiGFQSb (ORCPT
+        with ESMTP id S232523AbiGFQVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:18:31 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBD8DFE1
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:18:29 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 7E1AB68B05; Wed,  6 Jul 2022 18:18:25 +0200 (CEST)
-Date:   Wed, 6 Jul 2022 18:18:25 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     John Garry <john.garry@huawei.com>, axboe@fb.com, hch@lst.de,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org,
+        Wed, 6 Jul 2022 12:21:16 -0400
+Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC24313D1E;
+        Wed,  6 Jul 2022 09:21:15 -0700 (PDT)
+Received: by mail-io1-f42.google.com with SMTP id v185so14445190ioe.11;
+        Wed, 06 Jul 2022 09:21:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=46WFx0LHKHo7IAjx9SQsto+DNFSa6rkI9h3YC0DlQ/0=;
+        b=bgqFOdwH1VqsnFwXFXuF1zFEqPWatdgv33CfgxiZsS8XU8CMuzOUktLEQpgTgOgonF
+         qvBVKpWCD0dNEmRpJyFsDSiufxKgNuxnobBZUpy5P8iq5FxLdVwLfItn8nlbgBrLP3j4
+         u80fGIs1fLIIpzxDh/EETpEkVhX+UnsdEHT2iVI1iLPMRxiiGKYIhlPxEKhAnwru3RGm
+         AX3i14Q9wNERuWjJfWtM2KGTWi7dj1QSGLf3Hp2qyKmrDfs70OnOBKrDsscaHCpNnaHL
+         wvI5fhlBUChtK+0gsjBUTBHQ7SaX8KHqKMO/KvU5yvBYZJOeU18htsDhmdoaWE5o5RTI
+         YlhA==
+X-Gm-Message-State: AJIora/IBopWcz2zOIwKf3gVmWzkzzg4ZLeJ+iTHqrUhyrCRZYGrK6wP
+        l2clu6N2KvfrGexh1k9ApjINNYNYdw==
+X-Google-Smtp-Source: AGRyM1uzgpPbhEro+IwOoGJCq5wslAcjXi1VJdWM93SO/U9U4sSTIx/BH4UE5y/3LRenbByBT6eqIw==
+X-Received: by 2002:a05:6638:2110:b0:33b:b100:551e with SMTP id n16-20020a056638211000b0033bb100551emr26646242jaj.116.1657124473556;
+        Wed, 06 Jul 2022 09:21:13 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id r16-20020a02b110000000b0032e271a558csm15967124jah.168.2022.07.06.09.21.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 09:21:13 -0700 (PDT)
+Received: (nullmailer pid 151818 invoked by uid 1000);
+        Wed, 06 Jul 2022 16:21:11 -0000
+Date:   Wed, 6 Jul 2022 10:21:11 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] nvme: Fix nvme_setup_command metadata trace event for
- cdw10
-Message-ID: <20220706161825.GA1962@lst.de>
-References: <1657095398-114310-1-git-send-email-john.garry@huawei.com> <YsW0orMaDFfrHbx+@kbusch-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH 1/2] dt-bindings: leds: register-bit-led: Add value
+ property
+Message-ID: <20220706162111.GA145516-robh@kernel.org>
+References: <20220706112828.27278-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YsW0orMaDFfrHbx+@kbusch-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220706112828.27278-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 10:13:22AM -0600, Keith Busch wrote:
-> Did you test what the trace looks like afte this? We're losing valuable trace
-> data here. The field is supposed to get CDW's 10 - 15, so that's 24 bytes. I
-> don't know why it cares that the address of the field being read is only 4
-> bytes; we want everything that comes after it too.
+On Wed, Jul 06, 2022 at 01:28:27PM +0200, Pali Rohár wrote:
+> Allow to define inverted logic (0 - enable LED, 1 - disable LED) via value
+> property. This property name is already used by other syscon drivers, e.g.
+> syscon-reboot.
 
-Because accesses should not spawn boundaries of members in structs unless
-copying the entire struct.  If we want to trace the various fields we
-need to individually assign them.
+Yes, but those are potentially multi-bit values. This is a single bit 
+value, and the only value that's ever needed is 0. Why not just use 
+'active-low' here?
 
-Anyway, I'm dropping this patch from nvme-5.19 for now to let the
-discussion conclude.
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> ---
+>  .../devicetree/bindings/leds/register-bit-led.yaml    | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/leds/register-bit-led.yaml b/Documentation/devicetree/bindings/leds/register-bit-led.yaml
+> index 79b8fc0f9d23..d6054a3f9087 100644
+> --- a/Documentation/devicetree/bindings/leds/register-bit-led.yaml
+> +++ b/Documentation/devicetree/bindings/leds/register-bit-led.yaml
+> @@ -43,6 +43,17 @@ properties:
+>          0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000, 0x4000000,
+>          0x8000000, 0x10000000, 0x20000000, 0x40000000, 0x80000000 ]
+>  
+> +  value:
+> +    description:
+> +      bit value of ON state for the bit controlling this LED in the register
+> +      when not specified it is same as the mask
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum:
+> +      [ 0x0, 0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800,
+> +        0x1000, 0x2000, 0x4000, 0x8000, 0x10000, 0x20000, 0x40000, 0x80000,
+> +        0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000, 0x4000000,
+> +        0x8000000, 0x10000000, 0x20000000, 0x40000000, 0x80000000 ]
+> +
+>    offset:
+>      description:
+>        register offset to the register controlling this LED
+> -- 
+> 2.20.1
+> 
+> 
