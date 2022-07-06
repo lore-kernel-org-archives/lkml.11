@@ -2,101 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA98C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A24C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234512AbiGFVVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 17:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
+        id S231510AbiGFVXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 17:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233364AbiGFVVw (ORCPT
+        with ESMTP id S229816AbiGFVW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 17:21:52 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA33B1AF38
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:21:49 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u12so29165587eja.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 14:21:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b+jNR09nevXwyZD3QcB2efT/aRwjkNE4wZb+r0B6XwE=;
-        b=I6DkDmx26h+CaG/uyqSSoQf0Kpgi3UibjsyI7hR3HtcwlbuXqjSaN373PhsoVA8c/q
-         dP48qLIWwvOkDivqhfCZ9qhqTvobqYE1RdzdhZgsY9X6p1WRrO8y8vZlwC4mJguHh3J2
-         QVHtybfrf6REnR+cLGEVSkcYhTZoN+EAZzqyp91YnDE2h0AB5urwdz4ZAbag8iGXPhdf
-         +G7Qe/WEhy5mYP3bU+JrpZquZQ5DIQOI4BCF/cQ1ezg8Awhq0CRvK74F06s5exP/dLGW
-         dhns8DWwOEGwfzBkdzyAULDjp5+Hd43di+1wckPzbttZOsctcdW6qtLlSLhGgc2hRwlB
-         lU9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b+jNR09nevXwyZD3QcB2efT/aRwjkNE4wZb+r0B6XwE=;
-        b=QRpn8fLE4dDbDQOnWSX9L/Qh0RwUQWAvvWnE4c4hkV0YbcVUljwqa+kijPZ89QYmop
-         thuIIgiOHKa7dGWxn+HdSbhwcd749vePQsvKwbfYznAWgr3eR718Rx2UbVsBA+u/Di+r
-         7T0g39NQZqSDiwzYwQmWCGkih0No+7fvJNSpbWLCG2iJFcckH8f8qMTXhLqx59zdLuV2
-         y2dhXEwaRP4mRZfS//npgJCrQ2nwO37LPcqnD9ApUTuaW83uBFQ5seEUCfMtdPk/oUfT
-         KdyPMgq0o3A75Vh+ALFIM25SmKGUKO6aGipsZAvXfDj7+4jd6aKZo1/F9tLnICcwCkes
-         1Pog==
-X-Gm-Message-State: AJIora94nTO2dMeOXQR3RPoWrxTIeHifjT/07JAdJG/OxM2XAKPm19hq
-        U1O+0v7dpg6quW5Sdvsz++VXBitSSa0Sxn0Qd2aqSg==
-X-Google-Smtp-Source: AGRyM1unmOCSqJ1JoDSIrmquHUHd+3hyWJM/lpJegqaohJgOcShxHgQq8EC+4/uCGtnOiBPC//jVBWUzROPdZlv/7Ms=
-X-Received: by 2002:a17:906:cc96:b0:728:baf0:ba03 with SMTP id
- oq22-20020a170906cc9600b00728baf0ba03mr40471193ejb.52.1657142508217; Wed, 06
- Jul 2022 14:21:48 -0700 (PDT)
+        Wed, 6 Jul 2022 17:22:58 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9D01A066
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:22:57 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:47138)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o9CU2-000KRq-NH; Wed, 06 Jul 2022 15:22:54 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35934 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o9CU1-004OoQ-Pz; Wed, 06 Jul 2022 15:22:54 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Oleg Nesterov <oleg@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+References: <20220706101625.2100298-1-svens@linux.ibm.com>
+Date:   Wed, 06 Jul 2022 16:15:17 -0500
+In-Reply-To: <20220706101625.2100298-1-svens@linux.ibm.com> (Sven Schnelle's
+        message of "Wed, 6 Jul 2022 12:16:25 +0200")
+Message-ID: <87k08qlz8a.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20220625050838.1618469-1-davidgow@google.com> <20220625050838.1618469-5-davidgow@google.com>
-In-Reply-To: <20220625050838.1618469-5-davidgow@google.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Wed, 6 Jul 2022 17:21:37 -0400
-Message-ID: <CAFd5g45www4FZ0BoXN+mbqAJEkub07mM-nfzMtjm4p3q_VSCXw@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] nitro_enclaves: test: Use kunit_test_suite() macro
-To:     David Gow <davidgow@google.com>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Daniel Latypov <dlatypov@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
-        linux-mmc@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-usb@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Matt Johnston <matt@codeconstruct.com.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-XM-SPF: eid=1o9CU1-004OoQ-Pz;;;mid=<87k08qlz8a.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18r6LBKAPlBXmDEAPvZbvEiy1hnJuRFxrM=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] ptrace: fix clearing of JOBCTL_TRACED in
+ ptrace_unfreeze_traced()
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 25, 2022 at 1:10 AM David Gow <davidgow@google.com> wrote:
->
-> The kunit_test_suite() macro previously conflicted with module_init,
-> making it unsuitable for use in the nitro_enclaves test. Now that it's
-> fixed, we can use it instead of a custom call into internal KUnit
-> functions to run the test.
->
-> As a side-effect, this means that the test results are properly included
-> with other suites when built-in. To celebrate, enable the test by
-> default when KUNIT_ALL_TESTS is set (and NITRO_ENCLAVES enabled).
->
-> The nitro_enclave tests can now be run via kunit_tool with:
->         ./tools/testing/kunit/kunit.py run --arch=x86_64 \
->         --kconfig_add CONFIG_PCI=y --kconfig_add CONFIG_SMP=y \
->         --kconfig_add CONFIG_HOTPLUG_CPU=y \
->         --kconfig_add CONFIG_VIRT_DRIVERS=y \
->         --kconfig_add CONFIG_NITRO_ENCLAVES=y \
->         'ne_misc_dev_test'
->
-> (This is a pretty long command, so it may be worth adding a .kunitconfig
-> file at some point, instead.)
->
-> Reviewed-by: Andra Paraschiv <andraprs@amazon.com>
-> Signed-off-by: David Gow <davidgow@google.com>
+Sven Schnelle <svens@linux.ibm.com> writes:
 
-Acked-by: Brendan Higgins <brendanhiggins@google.com>
+> CI reported the following splat while running the strace testsuite:
+>
+> [ 3976.640309] WARNING: CPU: 1 PID: 3570031 at kernel/ptrace.c:272 ptrace_check_attach+0x12e/0x178
+> [ 3976.640391] CPU: 1 PID: 3570031 Comm: strace Tainted: G           OE     5.19.0-20220624.rc3.git0.ee819a77d4e7.300.fc36.s390x #1
+> [ 3976.640410] Hardware name: IBM 3906 M04 704 (z/VM 7.1.0)
+> [ 3976.640452] Call Trace:
+> [ 3976.640454]  [<00000000ab4b645a>] ptrace_check_attach+0x132/0x178
+> [ 3976.640457] ([<00000000ab4b6450>] ptrace_check_attach+0x128/0x178)
+> [ 3976.640460]  [<00000000ab4b6cde>] __s390x_sys_ptrace+0x86/0x160
+> [ 3976.640463]  [<00000000ac03fcec>] __do_syscall+0x1d4/0x200
+> [ 3976.640468]  [<00000000ac04e312>] system_call+0x82/0xb0
+> [ 3976.640470] Last Breaking-Event-Address:
+> [ 3976.640471]  [<00000000ab4ea3c8>] wait_task_inactive+0x98/0x190
+>
+> This is because JOBCTL_TRACED is set, but the task is not in TASK_TRACED
+> state. Caused by ptrace_unfreeze_traced() which does:
+>
+> task->jobctl &= ~TASK_TRACED
+>
+> but it should be:
+>
+> task->jobctl &= ~JOBCTL_TRACED
+
+
+That would definitely do it.  I had to think about it for a few minutes
+to see how it explains some of the stranger behavior but it explains
+all of the funny behavior I have seen.
+
+Thank you for tracking this down.
+
+The fact the original bug report was on s390 had me somehow thinking
+this was s390 only.
+
+I will double check everything get this in linux-next and then send this
+to Linus.
+
+Eric
+
+
+> Fixes: 31cae1eaae4f ("sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state")
+> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+> ---
+>  kernel/ptrace.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/ptrace.c b/kernel/ptrace.c
+> index 156a99283b11..1893d909e45c 100644
+> --- a/kernel/ptrace.c
+> +++ b/kernel/ptrace.c
+> @@ -222,7 +222,7 @@ static void ptrace_unfreeze_traced(struct task_struct *task)
+>  	if (lock_task_sighand(task, &flags)) {
+>  		task->jobctl &= ~JOBCTL_PTRACE_FROZEN;
+>  		if (__fatal_signal_pending(task)) {
+> -			task->jobctl &= ~TASK_TRACED;
+> +			task->jobctl &= ~JOBCTL_TRACED;
+>  			wake_up_state(task, __TASK_TRACED);
+>  		}
+>  		unlock_task_sighand(task, &flags);
