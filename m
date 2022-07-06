@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BF3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbiGFQ6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50682 "EHLO
+        id S233270AbiGFQ7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233758AbiGFQ6i (ORCPT
+        with ESMTP id S233054AbiGFQ6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:58:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A3B2A728;
-        Wed,  6 Jul 2022 09:57:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA35261DAD;
-        Wed,  6 Jul 2022 16:57:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555C8C3411C;
-        Wed,  6 Jul 2022 16:57:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657126630;
-        bh=GF/aKIAzhOdpyO5Xdb1pXVqwDvZ44YUeDjQ86DdLEVU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B7UfPWR6H7wHVWrVGgUXtsz5mVegP0uqNRm7Rl0GaG6lSk3/XF0bJ1dRDz910/nrw
-         ArJlrBbcmQVUkXNEozaNrykOgZ0XjbILwzH8Eig5ZPcPfEFKMTk1JzxGSdij9yq67/
-         xOtgyfqkH+q2ZHp2h9BXhpi1JfDk6uKgD51fVcSVBFpqrBwKzY7rLXfVsxlhUhgZM9
-         CMDchWma018hV0+3hZpxLL5P198TNxnQukwCj8zo74rOMxLjpft0GWboEFVGfNRYBH
-         dVp5s+/IxNrMQyMbS6/mLBlKrb3ESTrf8ZNrF6Lyz4CJD9yebEDJ5ftpznp9zNLEc9
-         NUsajuj6c/aKA==
-Date:   Wed, 6 Jul 2022 22:27:05 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-phy@lists.infradead.org
-Subject: Re: [PATCH net-next v2 04/35] [RFC] phy: fsl: Add Lynx 10G SerDes
- driver
-Message-ID: <YsW+4fm/613ByK09@matsya>
-References: <20220628221404.1444200-1-sean.anderson@seco.com>
- <20220628221404.1444200-5-sean.anderson@seco.com>
- <YsPWMYjyu2nyk+w8@matsya>
- <431a014a-3a8f-fdc7-319e-29df52832128@seco.com>
+        Wed, 6 Jul 2022 12:58:54 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83932A42D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:58:52 -0700 (PDT)
+Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LdQfb5Grpz67pCt;
+        Thu,  7 Jul 2022 00:56:07 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Jul 2022 18:58:50 +0200
+Received: from [10.126.171.66] (10.126.171.66) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Jul 2022 17:58:49 +0100
+Message-ID: <db3958dc-d714-f361-f349-06317a0e0cec@huawei.com>
+Date:   Wed, 6 Jul 2022 17:58:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <431a014a-3a8f-fdc7-319e-29df52832128@seco.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] nvme: Fix nvme_setup_command metadata trace event for
+ cdw10
+To:     Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>
+CC:     <axboe@fb.com>, <sagi@grimberg.me>,
+        <linux-nvme@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <1657095398-114310-1-git-send-email-john.garry@huawei.com>
+ <YsW0orMaDFfrHbx+@kbusch-mbp.dhcp.thefacebook.com>
+ <20220706161825.GA1962@lst.de>
+ <YsW3oXcCe6/y6iRb@kbusch-mbp.dhcp.thefacebook.com>
+ <20220706163434.GA2222@lst.de>
+ <YsW7+Lsy0ENSA/il@kbusch-mbp.dhcp.thefacebook.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <YsW7+Lsy0ENSA/il@kbusch-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.171.66]
+X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05-07-22, 11:29, Sean Anderson wrote:
+On 06/07/2022 17:44, Keith Busch wrote:
+> On Wed, Jul 06, 2022 at 06:34:34PM +0200, Christoph Hellwig wrote:
+>> On Wed, Jul 06, 2022 at 10:26:09AM -0600, Keith Busch wrote:
+>>> On Wed, Jul 06, 2022 at 06:18:25PM +0200, Christoph Hellwig wrote:
+>>>> On Wed, Jul 06, 2022 at 10:13:22AM -0600, Keith Busch wrote:
+>>>>> Did you test what the trace looks like afte this? We're losing valuable trace
+>>>>> data here. The field is supposed to get CDW's 10 - 15, so that's 24 bytes.
 
-> >> +	/* TODO: wait for the PLL to lock */
-> > 
-> > when will this be added?
+ok, I just thought it was a typo, but did not know why you were using an 
+array macro.
+
+> I
+>>>>> don't know why it cares that the address of the field being read is only 4
+>>>>> bytes; we want everything that comes after it too.
+>>>>
+>>>> Because accesses should not spawn boundaries of members in structs unless
+>>>> copying the entire struct.  If we want to trace the various fields we
+>>>> need to individually assign them.
+>>>>
+>>>> Anyway, I'm dropping this patch from nvme-5.19 for now to let the
+>>>> discussion conclude.
+>>>
+>>> How about this instead?
+>>
+>> Maybe a better option would be to use struct_group().
 > 
-> I'm not sure. I haven't had any issues with this, and waiting on the lock bit is
-> only mentioned in some datasheets for this SerDes. On the LS1046A for example,
-> there is no mention of waiting for lock.
+> Good call, I'd never used that macro before. The result produces anonymous
+> unions like I just proposed, so yes, I like that option.
+> .
 
-okay maybe remove the comment then?
+The warning hints at using struct_group() also ...
 
-> >> +static const struct clk_ops lynx_pll_clk_ops = {
-> >> +	.enable = lynx_pll_enable,
-> >> +	.disable = lynx_pll_disable,
-> >> +	.is_enabled = lynx_pll_is_enabled,
-> >> +	.recalc_rate = lynx_pll_recalc_rate,
-> >> +	.round_rate = lynx_pll_round_rate,
-> >> +	.set_rate = lynx_pll_set_rate,
-> >> +};
-> > 
-> > right, this should be a clk driver
-> 
-> Well, it is a clock driver, effectively internal to the SerDes. There are a few
-> examples of this already (e.g. the qualcomm and cadence phys). It could of course
-> be split off, but I would prefer that they remained together.
+Anyway, Keith, do you want to write a new patch or shall I?
 
-I would prefer clk driver is split and we maintain clean split b/w phy
-and clk
-
--- 
-~Vinod
+Thanks,
+John
