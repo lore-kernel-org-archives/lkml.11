@@ -2,81 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D96EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234795AbiGFXwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
+        id S234737AbiGFXwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234737AbiGFXwC (ORCPT
+        with ESMTP id S234794AbiGFXwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:52:02 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3A92D1E5
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:52:02 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id i126so21671957oih.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 16:52:02 -0700 (PDT)
+        Wed, 6 Jul 2022 19:52:06 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE4D2D1C7
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:52:05 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id p128so15443640iof.1
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 16:52:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BL7W23oHq0JL/M8TNGzxaqsF4OCN+5iCjxJ+fwRF/M8=;
-        b=W7Bxxt3rS48fnDgjqLePmCkjfVy8mPWiRP1Ek/okWVaAlUCn9Beu2Yhhpq72FX22vI
-         2clQpJeMjPH/7FGZvt/ndKFWuhQAp2+/Rdk+EBYzZwwF26S9vXx0yJPTmat8wT8VtZ6x
-         MSIy3jbrFXJEuTg8x394WsVqxD3/olXhh5Hw19OancK78mDmiOxvuSoXhPhHZaMo3lSa
-         fx91Gj1tf35/hxtpIRDHBpqSRJbvJlebuNDuE6RBjb2poG9ivmkGPHEIFSlscl4uJklc
-         6SA3V8WcYy35GE5a9VgfKvV9f1/fsFP2re5yYG11rwR4X97SI/LY5CBo+ezoqqpjwwnD
-         I6rQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Iyluj2dtd58+hkHx6sNP9yekyC/Ah4724InV/sfcAHg=;
+        b=G0YuQcXeDg5AEz7YmkdmeCk+M72+kANZO5KayL+kD3BB1r2IQZZ29798CFbb8qxeY3
+         lUTOEZQHIhCbD5iGr1k2fm1w53M0JXHbF2O+O1joElXzhuJpFjfnM4H3lP1NBv9IuXCa
+         xngUbGyrNZOs+ZYR9xd+AAikisrh8PZivpQBM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BL7W23oHq0JL/M8TNGzxaqsF4OCN+5iCjxJ+fwRF/M8=;
-        b=b5foPeuTXOD9bE7nuhvWe+GalMFfBqTMKsJigg8CdBs0Qhi4JsXI5aQq+9PzWtTjo4
-         Iok9M8dUogmniGpqD/lzsl3iDtJhbym+mtlGuL5hh0FLvi9oFXPQOTAwTKNbZ02q49Mj
-         BrfYF5/wfkxkP1k8AaXOfSrpZUAvt6m3QYDoJEyIkFh8kxuZZoOKdpHekzsOcTJy0f2I
-         s0yeGyr9QqAn1qsPHXwB7XpWrvXOv67MBkXiNmuM/KfqSul5EAAo5IrtPFgKtApvoEdT
-         3sQmgsUFLAZ4XnKhzpQ4fuJU/8R1LANfONUAXzLrAGJfFUbzPofFpBYW5LIsBgttSJ5W
-         AMew==
-X-Gm-Message-State: AJIora/06+klM/bcFPz6x07iOJy7+CJOeUbB1d1Qjcd1AQB80wRmFGWv
-        IuTibQbQCFoG+RI90ED51R/fTwBiJkEs1GElOOgPu1Gumfs=
-X-Google-Smtp-Source: AGRyM1uu9XjOrKLX28cVqi4dnKMz2RP55IVUsLf3ms+qDAp/4RaMrlk+119BjbDPEHCq2pfyEQKg2yD6xs8AXxbxhNc=
-X-Received: by 2002:a05:6808:2124:b0:335:7483:f62d with SMTP id
- r36-20020a056808212400b003357483f62dmr764472oiw.112.1657151521323; Wed, 06
- Jul 2022 16:52:01 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Iyluj2dtd58+hkHx6sNP9yekyC/Ah4724InV/sfcAHg=;
+        b=6GMXbZp70OJACHgbw9SuPoKCCcXuAUISre8UjUAEP8vtWHvA4WUwCRIjVlLE2MUIhm
+         8ARbLxUBfSTx0kZ/xQ4k2bd2CfLlsNI8Qr2CEMH2vwhWriJw1sz0Z7alAkRi2dUx8Qqf
+         FQtH7O/wOlbGbvaUJUpM4DhhB0qEDzl7To6dB07oug/sQvYxmF7SstyU0AWrDAPgBqPI
+         I6fTYrU8wslgRfJRDk8DArrZ9uT/eR2Ap2nfm+RgtufUfPWAy69enHekmmgt6Ap8W5Wy
+         waYZmy2OPA8WovvX1SQsDHooqYWzQA6kzaHImm6D8saUj7Y2v5L8rzV7kmjMNpPKib6p
+         utkA==
+X-Gm-Message-State: AJIora9ZbmtgetyTT9zPKK57cukcFq7HAeiRBO9lQyM5dyWp7vC4os/2
+        Z9Geustofi2fm2XiShUvWaTTlg==
+X-Google-Smtp-Source: AGRyM1sVYWaLaK2hckfKaEh7XCtU6FcHj1sJiOqPs9PfkiWKLrJMuWhia35fSWp49sJblxjEPInwPA==
+X-Received: by 2002:a02:cb47:0:b0:339:e7aa:2f8d with SMTP id k7-20020a02cb47000000b00339e7aa2f8dmr27575169jap.234.1657151525280;
+        Wed, 06 Jul 2022 16:52:05 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id p3-20020a92da43000000b002daa3e1fe85sm10534845ilq.58.2022.07.06.16.52.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 16:52:05 -0700 (PDT)
+Subject: Re: [PATCH 5.18 000/102] 5.18.10-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220705115618.410217782@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <969e2541-f7eb-1be0-6aa4-a41312ac7106@linuxfoundation.org>
+Date:   Wed, 6 Jul 2022 17:52:03 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20220614204730.3359543-1-seanjc@google.com> <20220614204730.3359543-6-seanjc@google.com>
-In-Reply-To: <20220614204730.3359543-6-seanjc@google.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Wed, 6 Jul 2022 16:51:50 -0700
-Message-ID: <CALMp9eSH1O8keAVxZzfdvV1vu0AJBhaXVUfkSgYgCPOoSB5=Jw@mail.gmail.com>
-Subject: Re: [PATCH v2 05/21] KVM: nVMX: Prioritize TSS T-flag #DBs over
- Monitor Trap Flag
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 1:47 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> Service TSS T-flag #DBs prior to pending MTFs, as such #DBs are higher
-> priority than MTF.  KVM itself doesn't emulate TSS #DBs, and any such
+On 7/5/22 5:57 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.10 release.
+> There are 102 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 07 Jul 2022 11:55:56 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.10-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Is there a KVM erratum for that?
+Compiled and booted on my test system. No dmesg regressions.
 
-> exceptions injected from L1 will be handled by hardware (or morphed to
-> a fault-like exception if injection fails), but theoretically userspace
-> could pend a TSS T-flag #DB in conjunction with a pending MTF.
->
-> Note, there's no known use case this fixes, it's purely to be technically
-> correct with respect to Intel's SDM.
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-A test would be nice. :-)
+thanks,
+-- Shuah
