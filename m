@@ -2,76 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F2B7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233876AbiGFUxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 16:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
+        id S234358AbiGFUyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 16:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231724AbiGFUx2 (ORCPT
+        with ESMTP id S231529AbiGFUyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 16:53:28 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A63F4E;
-        Wed,  6 Jul 2022 13:53:27 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ay16so29118347ejb.6;
-        Wed, 06 Jul 2022 13:53:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VPC/yhfBicbTkni4vtlss9W8xSqhwhJaJcOTmjPfh0o=;
-        b=lwg0PHFNAPPG6e06TPmruHtjs7+YR9Wp1EDyfHxJdFrJEd2ToYUYkLtjUVwtyvRu31
-         jhCeS821Zb94D3G+7AKE7YkGEvpQA8uPDOfsWI/z0nVHAfi8Nn/0i8psDpIV8+wC1oxc
-         6rPfzCXKilO+lzFQ/ABSu4DJdEN3YJDI0Dpd0oMKAuScjgQ21k9z/r8DQlJeyKuGE6XW
-         8oCbt1SNeqiwGAFU2WvRUv8/68b1GB202XCHCqrnnToF7t+nTfpUTWS5gwiDW1sRWMTY
-         /uQEWrOS0ps2tyfpv/k9CVXSWOEdS+lEPob+Qvd5RXQ2xLk02kzOgh1TbFL0elN7oILn
-         nkwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VPC/yhfBicbTkni4vtlss9W8xSqhwhJaJcOTmjPfh0o=;
-        b=g2rx7kdUSt2OSijcF/i/sD8sAH5oAR9MyoKxMsENhUxNzF+l9xGQpq5fvD6M9CBydL
-         qQcTFFYgJC0t7Rc9uDXrNXEsieCcySIdIiwylCkDrbvJglYlbmLVsmLCtG773iRh4pFP
-         fFUc6SSm/RfydnkBbpx3TAq+SHM//kufxm5UAYpuAY4yC8vQELWxWJ5H0H5dhcduBw20
-         dmONQ8crrfUvpmSGQJ8ZvxpEvvB6PCC3G8W+HHAPZY5P9/gQcOKVukvD22beWZWjMxU+
-         S75kbjD29ZuH04BQ6llZ7lqlbSZbJsFMbb8iH6vNkWLaiiMeBUxRJrF91U9B9RIzoUvg
-         s6TQ==
-X-Gm-Message-State: AJIora9Nv9COYQnHRV/LMaucWiqbpbH4iXAmipEVpkkQ9XOfpXYtY8eg
-        z0psjPpOzO8WJpu+FgRiazA=
-X-Google-Smtp-Source: AGRyM1v4ijRGj37RkVp8PRGE7A61QWZQ6+sovPmwEiF/371QlMaGphMjRoqWQ0BcXbVKp7g8+meo3Q==
-X-Received: by 2002:a17:907:160f:b0:726:a7a4:c626 with SMTP id hb15-20020a170907160f00b00726a7a4c626mr41364469ejc.449.1657140805887;
-        Wed, 06 Jul 2022 13:53:25 -0700 (PDT)
-Received: from reki (87-168-253.netrunf.cytanet.com.cy. [87.228.168.253])
-        by smtp.gmail.com with ESMTPSA id d11-20020a1709064c4b00b0070cac22060esm17735511ejw.95.2022.07.06.13.53.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 13:53:25 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 23:53:22 +0300
-From:   Maxim Devaev <mdevaev@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, stern@rowland.harvard.edu,
-        balbi@kernel.org, caihuoqing@baidu.com,
+        Wed, 6 Jul 2022 16:54:07 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACFE20BD9;
+        Wed,  6 Jul 2022 13:54:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=Cn+qe4oiP2jeVARS3ZZalA1ZQM3ZcWF+3cLGOCQIW6g=; b=Fb
+        kv18Q9LyGiGlJS2oZq2dTmT5wMOfvxUSXNoM2SkooPf4owOi5EfMUEl+v6TzFPR4/Nc0nyUW7tgbT
+        Nf+L0kHfam4g8NF+2pU12gGEMlhAKpOtnZbhGc4/6ddSqeFJMGQEkxi0IprljX04RVheBFA/BxFk/
+        QOsAu7OdjH+dLHE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o9C1q-009W8z-Qk; Wed, 06 Jul 2022 22:53:46 +0200
+Date:   Wed, 6 Jul 2022 22:53:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb: gadget: f_mass_storage: forced_eject attribute
-Message-ID: <20220706235322.01f677bf@reki>
-In-Reply-To: <YsXQ4hFDVjO+xm3s@kroah.com>
-References: <20220706174634.20639-1-mdevaev@gmail.com>
-        <YsXQ4hFDVjO+xm3s@kroah.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+Subject: Re: [PATCH 00/11] ARM: dts: mvebu: Add definitions for PCIe legacy
+ INTx interrupts
+Message-ID: <YsX2Wvtz7hEpJ6X+@lunn.ch>
+References: <20220706183114.30783-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220706183114.30783-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=D0=92 Wed, 6 Jul 2022 20:13:54 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
+On Wed, Jul 06, 2022 at 08:31:03PM +0200, Pali Rohár wrote:
+> This patch series add definitions for PCIe legacy INTx interrupts into
+> every DTS file used by the pci-mvebu.c controller driver.
 
-> You have to document sysfs files in Documentation/ABI/ in order for us
-> to be able to accept them.
+What you fail to explain in the commit message is Why?
 
-I've added this and also the documentation for configfs. Submitted as v2 pa=
-tch.
+     Andrew
