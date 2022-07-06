@@ -2,197 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49BBEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F15CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233173AbiGFKyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        id S233190AbiGFKy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231766AbiGFKyT (ORCPT
+        with ESMTP id S231766AbiGFKy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:54:19 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF4327B06;
-        Wed,  6 Jul 2022 03:54:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657104858; x=1688640858;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=qrEumAiCGHwpWr14nERu9HZ9oiyvzZusQBL2z+Vav/k=;
-  b=QOYlxB+fisZAK/zoGiBYCkBRTNnpgHGnovUFEpzusz7Nebdlc0cL5lhz
-   scFgaw9+ShACFcllSipQRNyFJn7qlq4qu+7JyYO4QrG3dr2qaxVhyWRnV
-   nb1DgZT53TgjpVlXl1RcA4qap5dge3S/H6Px7EzDQnaPqlJhBl8XATddA
-   YDqzgvJ/jNDVTo0k8OPBEkaWqJhbVwfmMDRFtDmmt9X7SUyT+j/YAm3w0
-   +DIsAGZfoV9h3yD9JPwFt4SduhzqvABpfk2guxm9n1Uyh1UJID1JEqla5
-   Ts2i5HiRaR1eng0tVazwIujiV9dDlTHUzCkCr4oQ/YxdxuHZrHgPxHgvS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="264131974"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="264131974"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:51:39 -0700
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="620260611"
-Received: from mropara-mobl1.ger.corp.intel.com (HELO intel.com) ([10.252.49.154])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:51:33 -0700
-Date:   Wed, 6 Jul 2022 12:51:31 +0200
-From:   Andi Shyti <andi.shyti@linux.intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
-        Bruce Chang <yu.bruce.chang@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Mika Kuoppala <mika.kuoppala@linux.intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Thomas =?iso-8859-15?Q?Hellstr=F6m?= 
-        <thomas.hellstrom@linux.intel.com>
-Subject: Re: [PATCH v3 1/2] drm/i915/gt: Serialize GRDOM access between
- multiple engine resets
-Message-ID: <YsVpM1f86FAIEO8i@alfio.lan>
-References: <cover.1656921701.git.mchehab@kernel.org>
- <ccc54757d89d38af35e5c5885edfb980c7b227f6.1656921701.git.mchehab@kernel.org>
+        Wed, 6 Jul 2022 06:54:27 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9396827CC9;
+        Wed,  6 Jul 2022 03:54:25 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id j22so153622ejs.2;
+        Wed, 06 Jul 2022 03:54:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9iLfp3rSvq5HD4T1obBpdS6jjmeDrv6o8UGa12ZUzfc=;
+        b=H72fofPdYrTAe5CoRu1qcLDQQNXcOf4IHWV7YVu9Pbc2lXn40BGIO0WYtnqS0JTXac
+         E9QPyR+kORnd438aaOwOL7NKA7VTd7zm5c6Q0L+hhjG5uYdUiiMe+G789TICkpFnrLbf
+         1JuG/0MecqLV8tF34PF4mt2km54fN/QaHGya4RGTRbZnzpKl4bnPKchHZf7xsixv/cNH
+         0E/7NivY/AOyd1Zn9p+/OHDNTU43BWDIPd09tWYE6Quq2sYPtjjaljHFMNAtA1IT3to8
+         qOd58Bxduoe845txFG9kZWrjdOv+7Q3vkE2gMQx6kFqDYWm1Z646aGn1D5RibrHx5/DV
+         rvGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9iLfp3rSvq5HD4T1obBpdS6jjmeDrv6o8UGa12ZUzfc=;
+        b=Ml8gm+bo9Ve6bJcKuej6LBv6n3lfBr3PUY/gcXciHJYriSifjdnElvctvGY9sm4WRd
+         VnZoJT7dlAPqtTB02qHbRqGyI8dARJlOrWIklRzCZE90nD3mh5O7s9jkMV4qhh1/G9sg
+         l+cv0ELZo2idiriKMhh6xi8BzLVluWlO0C55B5B+TDi0PWGz5qgLVL3WzNQKFwdBQMHl
+         L1OefVgREzIjwxQ89P9zXIIRfqMY7kxGn/djMoy049RQEP/zTBNEfNX+Ujc6+vQhPPUL
+         No+RITFl7l80FHXlM5fh254C+x58Fsv3S+d2rOrGSNVnBRyEVNlLtaXDslZg0526eS/1
+         aCmA==
+X-Gm-Message-State: AJIora/pGrDxiF/JPLIK4DhiTpcrU9WXp2cbsonTC82K3Z3HsGAF/5r5
+        Q1z/UjWhzjMy5FS4IW3Eo2k=
+X-Google-Smtp-Source: AGRyM1sV36e8JK8dqGp1E+M2/fik9hmkeJb/JD4LABvWsvPg/GD2XDc0bg4y0QXlpUdYCkF8C73GMA==
+X-Received: by 2002:a17:906:2086:b0:712:1257:77bf with SMTP id 6-20020a170906208600b00712125777bfmr40111648ejq.655.1657104864099;
+        Wed, 06 Jul 2022 03:54:24 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id v9-20020a170906292900b00722e50dab2csm486351ejd.109.2022.07.06.03.54.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 03:54:23 -0700 (PDT)
+Message-ID: <62c569df.1c69fb81.9be2b.0cd0@mx.google.com>
+X-Google-Original-Message-ID: <YsVl+uXAVdEkMiFs@Ansuel-xps.>
+Date:   Wed, 6 Jul 2022 12:37:46 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCH 09/13] ARM: dts: qcom: add smem node for ipq8064
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-10-ansuelsmth@gmail.com>
+ <c5bf6246-a350-8a87-71bc-bc13d502a8af@linaro.org>
+ <62c56477.1c69fb81.8ec4c.f1ac@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ccc54757d89d38af35e5c5885edfb980c7b227f6.1656921701.git.mchehab@kernel.org>
+In-Reply-To: <62c56477.1c69fb81.8ec4c.f1ac@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mauro and Chris,
-
-On Mon, Jul 04, 2022 at 09:09:28AM +0100, Mauro Carvalho Chehab wrote:
-> From: Chris Wilson <chris.p.wilson@intel.com>
+On Wed, Jul 06, 2022 at 12:14:42PM +0200, Christian Marangi wrote:
+> On Wed, Jul 06, 2022 at 10:39:16AM +0200, Krzysztof Kozlowski wrote:
+> > On 05/07/2022 15:39, Christian Marangi wrote:
+> > > Add missing smem node for ipq8064.
+> > > 
+> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > > Tested-by: Jonathan McDowell <noodles@earth.li>
+> > > ---
+> > >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 18 ++++++++++++++++++
+> > >  1 file changed, 18 insertions(+)
+> > > 
+> > > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > > index b5aede3d7ccf..98527a7d885e 100644
+> > > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > > @@ -908,6 +908,11 @@ lcc: clock-controller@28000000 {
+> > >  			#reset-cells = <1>;
+> > >  		};
+> > >  
+> > > +		sfpb_mutex_block: syscon@1200600 {
+> > > +			compatible = "syscon";
+> > 
+> > syscon alone is not allowed.
+> >
 > 
-> Don't allow two engines to be reset in parallel, as they would both
-> try to select a reset bit (and send requests to common registers)
-> and wait on that register, at the same time. Serialize control of
-> the reset requests/acks using the uncore->lock, which will also ensure
-> that no other GT state changes at the same time as the actual reset.
-> 
-> Cc: stable@vger.kernel.org # Up to 4.4
-> Reported-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
-> Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-> Cc: Mika Kuoppala <mika.kuoppala@linux.intel.com>
-> Reviewed-by: Andi Shyti <andi.shyti@intel.com>
-> Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Mh... This is problematic. How this should be handled?
+> This should be put in sfpb_mutex and change the driver to use regs if
+> present instead of syscon?
+>
 
-sorry for the delay but I wanted to understand what has been
-agreed between you and Tvrtko about the Cc'ing the stable list.
+Found an alternative solution used in ipq807x so I can drop the syscon
+only node.
 
-Anyway, I confirm my review here.
-
-Andi
-
-> ---
+> > > +			reg = <0x01200600 0x100>;
+> > > +		};
+> > > +
+> > >  		pcie0: pci@1b500000 {
+> > >  			compatible = "qcom,pcie-ipq8064";
+> > >  			reg = <0x1b500000 0x1000
+> > > @@ -1332,4 +1337,17 @@ sdcc3: mmc@12180000 {
+> > >  			};
+> > >  		};
+> > >  	};
+> > > +
+> > > +	sfpb_mutex: sfpb-mutex {
+> > 
+> > Generic node names, so hwlock
+> > 
+> > > +		compatible = "qcom,sfpb-mutex";
+> > > +		syscon = <&sfpb_mutex_block 4 4>;
+> > > +
+> > > +		#hwlock-cells = <1>;
+> > > +	};
+> > > +
+> > > +	smem {
+> > > +		compatible = "qcom,smem";
+> > > +		memory-region = <&smem>;
+> > > +		hwlocks = <&sfpb_mutex 3>;
+> > > +	};
+> > >  };
+> > 
+> > 
+> > Best regards,
+> > Krzysztof
 > 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH v3 0/2] at: https://lore.kernel.org/all/cover.1656921701.git.mchehab@kernel.org/
-> 
->  drivers/gpu/drm/i915/gt/intel_reset.c | 37 ++++++++++++++++++++-------
->  1 file changed, 28 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/gt/intel_reset.c b/drivers/gpu/drm/i915/gt/intel_reset.c
-> index a5338c3fde7a..c68d36fb5bbd 100644
-> --- a/drivers/gpu/drm/i915/gt/intel_reset.c
-> +++ b/drivers/gpu/drm/i915/gt/intel_reset.c
-> @@ -300,9 +300,9 @@ static int gen6_hw_domain_reset(struct intel_gt *gt, u32 hw_domain_mask)
->  	return err;
->  }
->  
-> -static int gen6_reset_engines(struct intel_gt *gt,
-> -			      intel_engine_mask_t engine_mask,
-> -			      unsigned int retry)
-> +static int __gen6_reset_engines(struct intel_gt *gt,
-> +				intel_engine_mask_t engine_mask,
-> +				unsigned int retry)
->  {
->  	struct intel_engine_cs *engine;
->  	u32 hw_mask;
-> @@ -321,6 +321,20 @@ static int gen6_reset_engines(struct intel_gt *gt,
->  	return gen6_hw_domain_reset(gt, hw_mask);
->  }
->  
-> +static int gen6_reset_engines(struct intel_gt *gt,
-> +			      intel_engine_mask_t engine_mask,
-> +			      unsigned int retry)
-> +{
-> +	unsigned long flags;
-> +	int ret;
-> +
-> +	spin_lock_irqsave(&gt->uncore->lock, flags);
-> +	ret = __gen6_reset_engines(gt, engine_mask, retry);
-> +	spin_unlock_irqrestore(&gt->uncore->lock, flags);
-> +
-> +	return ret;
-> +}
-> +
->  static struct intel_engine_cs *find_sfc_paired_vecs_engine(struct intel_engine_cs *engine)
->  {
->  	int vecs_id;
-> @@ -487,9 +501,9 @@ static void gen11_unlock_sfc(struct intel_engine_cs *engine)
->  	rmw_clear_fw(uncore, sfc_lock.lock_reg, sfc_lock.lock_bit);
->  }
->  
-> -static int gen11_reset_engines(struct intel_gt *gt,
-> -			       intel_engine_mask_t engine_mask,
-> -			       unsigned int retry)
-> +static int __gen11_reset_engines(struct intel_gt *gt,
-> +				 intel_engine_mask_t engine_mask,
-> +				 unsigned int retry)
->  {
->  	struct intel_engine_cs *engine;
->  	intel_engine_mask_t tmp;
-> @@ -583,8 +597,11 @@ static int gen8_reset_engines(struct intel_gt *gt,
->  	struct intel_engine_cs *engine;
->  	const bool reset_non_ready = retry >= 1;
->  	intel_engine_mask_t tmp;
-> +	unsigned long flags;
->  	int ret;
->  
-> +	spin_lock_irqsave(&gt->uncore->lock, flags);
-> +
->  	for_each_engine_masked(engine, gt, engine_mask, tmp) {
->  		ret = gen8_engine_reset_prepare(engine);
->  		if (ret && !reset_non_ready)
-> @@ -612,17 +629,19 @@ static int gen8_reset_engines(struct intel_gt *gt,
->  	 * This is best effort, so ignore any error from the initial reset.
->  	 */
->  	if (IS_DG2(gt->i915) && engine_mask == ALL_ENGINES)
-> -		gen11_reset_engines(gt, gt->info.engine_mask, 0);
-> +		__gen11_reset_engines(gt, gt->info.engine_mask, 0);
->  
->  	if (GRAPHICS_VER(gt->i915) >= 11)
-> -		ret = gen11_reset_engines(gt, engine_mask, retry);
-> +		ret = __gen11_reset_engines(gt, engine_mask, retry);
->  	else
-> -		ret = gen6_reset_engines(gt, engine_mask, retry);
-> +		ret = __gen6_reset_engines(gt, engine_mask, retry);
->  
->  skip_reset:
->  	for_each_engine_masked(engine, gt, engine_mask, tmp)
->  		gen8_engine_reset_cancel(engine);
->  
-> +	spin_unlock_irqrestore(&gt->uncore->lock, flags);
-> +
->  	return ret;
->  }
->  
 > -- 
-> 2.36.1
+> 	Ansuel
+
+-- 
+	Ansuel
