@@ -2,138 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7DBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2EDCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234744AbiGFXi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
+        id S234584AbiGFXkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234713AbiGFXi1 (ORCPT
+        with ESMTP id S233817AbiGFXkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:38:27 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3532725
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:38:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657150705; x=1688686705;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QAZsvJf1BerwqsqDWfz9Ex516FwclGK3+0CKzld2eyU=;
-  b=kvEv3/1OOt+k0Z4z5VdISLGb/ZWq7D5PZr7UFdWBNtMGLZhqImNuGjW4
-   CyCK3dJa7eQ8Fz+q4NYzOZ9KpGai1FrG49EQQxZlZI9gWDfZPy352iw7G
-   CZEzcpLwDz7gkmYW59st/pPDFn0Ju0+yzV8jD6uObnQy9NabfYfx37/US
-   J6EWU/4qYsdYfZiDMkHiVLzX5747g4mDHxjkJ/YQg61xDTLeVsRvYgNUE
-   SSQ6LJwmccUW0MfzGg46ZdC/YuF8jllmelYvXPhDbFx2na0FEcdOgyZrI
-   NeNDuixAvxfhY4/ES2zlBerjBQm+ypGhyBKzy26csUEHkC0Go61liNPqn
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="272683635"
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="272683635"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 16:38:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="593525909"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 06 Jul 2022 16:38:15 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9Eb0-000LG5-Nu;
-        Wed, 06 Jul 2022 23:38:14 +0000
-Date:   Thu, 7 Jul 2022 07:38:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Conor Dooley <mail@conchuod.ie>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Sudeep Holla <sudeep.holla@arm.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zong Li <zong.li@sifive.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>, Guo Ren <guoren@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Brice Goglin <Brice.Goglin@inria.fr>
-Subject: Re: [PATCH] riscv: arch-topology: fix default topology reporting
-Message-ID: <202207070728.MiQn5fv0-lkp@intel.com>
-References: <20220706184558.2557301-1-mail@conchuod.ie>
+        Wed, 6 Jul 2022 19:40:18 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DBA2CDE8;
+        Wed,  6 Jul 2022 16:40:18 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266Ndvlx124475;
+        Wed, 6 Jul 2022 18:39:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657150797;
+        bh=ltnBzyI2RtId+bp0LQu/TBW77O/RnyLARnLDQrRtLjU=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=L4hrXUSXnMyHK3s5SLjfWD0UbEZ5j/ZmIAWibK+vNG5jXc4q2k9yectzQOnJSqeQT
+         Hkj928fg275YsCB+jGZQavNuD8fqVMRmMp+t5xvVhnUfNoM1bsLYQeByhcHkHlYQhs
+         Hfk5q8tSEOmo3buvyCMoNiprpZU0O59CO23jQlpk=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266NdvLu103943
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Jul 2022 18:39:57 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Jul 2022 18:39:56 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Jul 2022 18:39:56 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266Ndubw026725;
+        Wed, 6 Jul 2022 18:39:56 -0500
+Date:   Wed, 6 Jul 2022 18:39:56 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     <khasim@ti.com>
+CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <ada@thorsis.com>,
+        <pavel@ucw.cz>, <praneeth@ti.com>, <robh+dt@kernel.org>,
+        <devarsht@ti.com>, <s-adivi@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-leds@vger.kernel.org>
+Subject: Re: [PATCH v2] arm64: dts: ti: k3-am642-sk: Add DT entry for onboard
+ LEDs
+Message-ID: <20220706233918.dct7emagduy3r22t@preoccupy>
+References: <20220629075859.6939-1-a-m1@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220706184558.2557301-1-mail@conchuod.ie>
+In-Reply-To: <20220629075859.6939-1-a-m1@ti.com>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+On 13:28-20220629, Aparna M wrote:
+[...]
+>  &main_pmx0 {
+> @@ -316,6 +377,14 @@
+>  				  "VPP_LDO_EN", "RPI_PS_3V3_En",
+>  				  "RPI_PS_5V0_En", "RPI_HAT_DETECT";
+>  	};
+> +
+> +        exp2: gpio@60 {
+> +                compatible = "ti,tpic2810";
+> +                reg = <0x60>;
+> +                gpio-controller;
+> +                #gpio-cells = <2>;
+> +                gpio-line-names = "LED1","LED2","LED3","LED4","LED5","LED6","LED7","LED8";
+> +        };
 
-I love your patch! Yet something to improve:
+https://lore.kernel.org/all/CACRpkdbj2B90-RE2XKQJ5qEj1hZQA-u=vUu2vpXwNqQLf_kaPg@mail.gmail.com/
 
-[auto build test ERROR on b6f1f2fa2bddd69ff46a190b8120bd440fd50563]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Conor-Dooley/riscv-arch-topology-fix-default-topology-reporting/20220707-024856
-base:   b6f1f2fa2bddd69ff46a190b8120bd440fd50563
-config: riscv-randconfig-r042-20220706 (https://download.01.org/0day-ci/archive/20220707/202207070728.MiQn5fv0-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f553287b588916de09c66e3e32bf75e5060f967f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/824f4c3cb56ada865e6e3b14457c0582fa255cbf
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Conor-Dooley/riscv-arch-topology-fix-default-topology-reporting/20220707-024856
-        git checkout 824f4c3cb56ada865e6e3b14457c0582fa255cbf
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> arch/riscv/kernel/topology.c:17:37: error: use of undeclared identifier 'cpu_topology'
-           struct cpu_topology *cpuid_topo = &cpu_topology[cpuid];
-                                              ^
->> arch/riscv/kernel/topology.c:31:2: error: call to undeclared function 'update_siblings_masks'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           update_siblings_masks(cpuid);
-           ^
-   2 errors generated.
-
-
-vim +/cpu_topology +17 arch/riscv/kernel/topology.c
-
-    14	
-    15	void store_cpu_topology(unsigned int cpuid)
-    16	{
-  > 17		struct cpu_topology *cpuid_topo = &cpu_topology[cpuid];
-    18	
-    19		if (cpuid_topo->package_id != -1)
-    20			goto topology_populated;
-    21	
-    22		cpuid_topo->thread_id = -1;
-    23		cpuid_topo->core_id = cpuid;
-    24		cpuid_topo->package_id = cpu_to_node(cpuid);
-    25	
-    26		pr_debug("CPU%u: package %d core %d thread %d\n",
-    27			 cpuid, cpuid_topo->package_id, cpuid_topo->core_id,
-    28			 cpuid_topo->thread_id);
-    29	
-    30	topology_populated:
-  > 31		update_siblings_masks(cpuid);
+I see Rob and Linus has acked it, but it does'nt belong to TI device
+tree queue. and I cannot pick up dts node without the compatible in
+master branch in rc1, so I have to skip.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
