@@ -2,118 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 676CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:00:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbiGFP47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54360 "EHLO
+        id S233404AbiGFQAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbiGFP46 (ORCPT
+        with ESMTP id S232918AbiGFQAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:56:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6FC2F4;
-        Wed,  6 Jul 2022 08:56:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA325B81DA8;
-        Wed,  6 Jul 2022 15:56:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2897BC3411C;
-        Wed,  6 Jul 2022 15:56:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657123014;
-        bh=lTSwJ5wODwZqrldSHc5BFPXMnZHNUb/6g50d+0FvaWI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ynSskVbRdSidHqLkwrL6tnVYL50v5wTp3hBw1MgBHRbb0iMuE9lC3Rr+eLJYFXAxT
-         fH04Vql5k9Zn5YflQoGZnEkHeqERNgrnTVI7DPHyIIDyjGTzbl/VliT8exm0ooicSQ
-         Q/9Y/aIOR7vY+gKo9Gwfkk7Kmo0Hn4Oy1vsvySCk=
-Date:   Wed, 6 Jul 2022 17:56:51 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Abel Vesa <abel.vesa@linaro.org>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC v2] driver core: Fix repeated device_is_dependent check for
- same link
-Message-ID: <YsWww/WJH0gv+dbf@kroah.com>
-References: <20220706155347.778762-1-abel.vesa@linaro.org>
+        Wed, 6 Jul 2022 12:00:49 -0400
+Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A00F22B0D;
+        Wed,  6 Jul 2022 09:00:47 -0700 (PDT)
+Received: by mail-io1-f41.google.com with SMTP id p69so14389721iod.10;
+        Wed, 06 Jul 2022 09:00:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Eapa/ltQqCjpwdBfwKCsw90fAUtdsJkoZHS0nADe7Iw=;
+        b=a+fTCf2j7eV/BFWxkkEtBy+kOyVfVWJiuUZBZPxcpbPc7/qj/1Ibn79/N83Z1zi1ZI
+         1utRmUZzRPB0nZvv9VYkRArqBhUrcXHtfn+Jp1+AP/soz6y94XlLMzGm+jNMzMjzYpxT
+         uwjWB+UxWJTzLAu3SXRQnugjXDw6Mz/hUya9Fw9bBRzkJEQ0QJKowE+ilshffuHQnhSj
+         801yfyYaYaFhUHtbATaiUbTyNBy6UxSLgKrrMVweRpecDiHvj2u0q/Qtj5VThv1sAR+S
+         uXWSxRp4BPATLQx0mrUq2363UlyyYVNOiB1STBuRDFw0buenq+Kf9gkJwcPyYksRvwtF
+         vrpQ==
+X-Gm-Message-State: AJIora8Gy0JRcsrDIRHgsDDFCTcnJ3ik6+wzZHDAogJ10dfM4hJ78MhW
+        nfNOvBA8lMrSPnuyWL8wfb2t4F6Sww==
+X-Google-Smtp-Source: AGRyM1tdiGrB5Ucg2D1u/brE0h7PErQZk7g0g4hKTr463CkrTRnXebaIjgUy203Zg6eB3Em4ssvPjw==
+X-Received: by 2002:a6b:8f44:0:b0:675:1e6d:938e with SMTP id r65-20020a6b8f44000000b006751e6d938emr21749173iod.189.1657123246482;
+        Wed, 06 Jul 2022 09:00:46 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id d11-20020a056e020c0b00b002dae42fa5f2sm6366095ile.56.2022.07.06.09.00.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 09:00:46 -0700 (PDT)
+Received: (nullmailer pid 122249 invoked by uid 1000);
+        Wed, 06 Jul 2022 16:00:44 -0000
+Date:   Wed, 6 Jul 2022 10:00:44 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: samsung: document preferred compatible
+ naming
+Message-ID: <20220706160044.GA122192-robh@kernel.org>
+References: <20220705161340.493474-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706155347.778762-1-abel.vesa@linaro.org>
+In-Reply-To: <20220705161340.493474-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 06:53:47PM +0300, Abel Vesa wrote:
-> In case of a cyclic dependency, if the supplier is not yet available,
-> the parent of the supplier is checked for dependency. But if there are
-> more than one suppliers with the same parent, the first check returns
-> true while the next ones skip that specific link entirely because of
-> having DL_FLAG_MANAGED and DL_FLAG_SYNC_STATE_ONLY set, which is what
-> the relaxing of the link does. But if we check for the target being
-> a consumer before the check for those flags, we can check as many
-> times as needed the same link and it will always return true, This is
-> safe to do, since the relaxing of the link will be done only once
-> because those flags will be set and it will bail early.
+On Tue, 05 Jul 2022 18:13:40 +0200, Krzysztof Kozlowski wrote:
+> Compatibles can come in two formats.  Either "vendor,ip-soc" or
+> "vendor,soc-ip".  Add a DT schema documenting preferred policy and
+> enforcing it for all new compatibles, except few existing patterns.  The
+> schema also disallows wild-cards used in SoC compatibles.
 > 
-> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
 > ---
->  drivers/base/core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 753e7cca0f40..2c3b860dfe80 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -297,13 +297,13 @@ int device_is_dependent(struct device *dev, void *target)
->  		return ret;
-> 
->  	list_for_each_entry(link, &dev->links.consumers, s_node) {
-> +		if (link->consumer == target)
-> +			return 1;
-> +
->  		if ((link->flags & ~DL_FLAG_INFERRED) ==
->  		    (DL_FLAG_SYNC_STATE_ONLY | DL_FLAG_MANAGED))
->  			continue;
-> 
-> -		if (link->consumer == target)
-> -			return 1;
-> -
->  		ret = device_is_dependent(link->consumer, target);
->  		if (ret)
->  			break;
-> --
-> 2.34.3
+> Changes since v1:
+> 1. Update comment.
+> ---
+>  .../bindings/arm/samsung/samsung-soc.yaml     | 40 +++++++++++++++++++
+>  1 file changed, 40 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/samsung/samsung-soc.yaml
 > 
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Reviewed-by: Rob Herring <robh@kernel.org>
