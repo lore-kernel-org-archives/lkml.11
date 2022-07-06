@@ -2,73 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8778C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234094AbiGFQng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
+        id S233939AbiGFQor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233954AbiGFQnb (ORCPT
+        with ESMTP id S232575AbiGFQop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:43:31 -0400
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1600CEAA;
-        Wed,  6 Jul 2022 09:43:29 -0700 (PDT)
-Received: from [127.0.0.1] ([73.223.250.219])
-        (authenticated bits=0)
-        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 266Ggp781236933
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Wed, 6 Jul 2022 09:42:51 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 266Ggp781236933
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-        s=2022060401; t=1657125775;
-        bh=zQoEvTxnDh6zWBd1c1ezKVw870QaKisAdMJsMEZ0XiI=;
-        h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-        b=uod/87KmlxnlFtaMoLSH+a3zy87aEMycqPjViqWSmbrvXTDJePOvAvh4NdfmXjyOo
-         /nZjEuDksvqEeMFeyvv3nNTJaLGMHrWkIQZOgcNcM3isnB2T3CVCzQYI731tr8Huo6
-         7H2oEO54ACpyb6iUmo0L2mcfUpp9aQvoLhDCxBbnm5v+FW3EtXCUH3XJpeWQHzzhV/
-         eulgCmnqbY02rNDoS+WZNu79Fosli2i61lGLIGLfx3DdGltUdPqnFp6O9bBcgBWMam
-         2PXfzTFX5aQgK0eGmJfiwxbYGBVaUAWny3Ktqh+1F919S48/9ocINv7En1vi36fb0T
-         n+NARfx8eOcGg==
-Date:   Wed, 06 Jul 2022 09:42:49 -0700
-From:   "H. Peter Anvin" <hpa@zytor.com>
-To:     Borislav Petkov <bp@alien8.de>
-CC:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] random: remove CONFIG_ARCH_RANDOM and "nordrand"
-User-Agent: K-9 Mail for Android
-In-Reply-To: <YsV+w77z8iSM7dJQ@zn.tnic>
-References: <20220705190121.293703-1-Jason@zx2c4.com> <YsSStCQQf008hF2F@zn.tnic> <YsSUkapje04MP2a1@zx2c4.com> <YsSXkNBtB6Ciy9iN@zn.tnic> <11C903CC-22A7-48EE-AD63-E71CC8D28B88@zytor.com> <YsS0ZLQw+QFA7XdJ@zn.tnic> <805B66CB-D847-4547-B6EE-C4FB72B75765@zytor.com> <YsV+w77z8iSM7dJQ@zn.tnic>
-Message-ID: <0A608F00-CDC0-494E-AC57-69BA0E3F547F@zytor.com>
+        Wed, 6 Jul 2022 12:44:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA24124F33
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:44:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E35D61DA9
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:44:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43EE8C3411C;
+        Wed,  6 Jul 2022 16:44:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657125883;
+        bh=ETQIfKZ04DBpBTgbtjCsfZym+4EgvwaHflYjwEazCCQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a74zkiUKuyq/dPmCUK9FEAfat7L9V4nkJmMHDcG04XZv1OCevAd/TOWHcu3ScUEI9
+         XYjssuU+EkcGFRsV98+R6BRrlaHiUwLtxN8+i8GJdkKMlJl7AHrW5yNYfuW49ZPMab
+         JxykKrwdbqEvxh6sGkdxhxQbloeWyWWuLC+wSmiNPow54vY+7OuewxziiGpZF/HeiP
+         z40s1HJReRpWl/Gl+CCGp/TM+ARjySJIBk3jmt7uD3cHUQHql4JjddJLOMDkwppk5h
+         efEDqiRu/gdTbA58Q3mTWHAGTEwKsEI7DLCVlkuO3YxpoZ+TLln/a1iqMvtZPbKl26
+         QgKvg8NeXsWjg==
+Date:   Wed, 6 Jul 2022 10:44:40 -0600
+From:   Keith Busch <kbusch@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     John Garry <john.garry@huawei.com>, axboe@fb.com, sagi@grimberg.me,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nvme: Fix nvme_setup_command metadata trace event for
+ cdw10
+Message-ID: <YsW7+Lsy0ENSA/il@kbusch-mbp.dhcp.thefacebook.com>
+References: <1657095398-114310-1-git-send-email-john.garry@huawei.com>
+ <YsW0orMaDFfrHbx+@kbusch-mbp.dhcp.thefacebook.com>
+ <20220706161825.GA1962@lst.de>
+ <YsW3oXcCe6/y6iRb@kbusch-mbp.dhcp.thefacebook.com>
+ <20220706163434.GA2222@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706163434.GA2222@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On July 6, 2022 5:23:31 AM PDT, Borislav Petkov <bp@alien8=2Ede> wrote:
->On Tue, Jul 05, 2022 at 04:11:45PM -0700, H=2E Peter Anvin wrote:
->> What I'm wondering is if we shouldn't be simply instrument *every*
->> invocation, and set the trust to zero if we ever trip it=2E
->
->I guess you can add some logic to rdrand_long() to sanity-check what it
->returns=2E=2E=2E
->
->But would that be worth the effort?
->
+On Wed, Jul 06, 2022 at 06:34:34PM +0200, Christoph Hellwig wrote:
+> On Wed, Jul 06, 2022 at 10:26:09AM -0600, Keith Busch wrote:
+> > On Wed, Jul 06, 2022 at 06:18:25PM +0200, Christoph Hellwig wrote:
+> > > On Wed, Jul 06, 2022 at 10:13:22AM -0600, Keith Busch wrote:
+> > > > Did you test what the trace looks like afte this? We're losing valuable trace
+> > > > data here. The field is supposed to get CDW's 10 - 15, so that's 24 bytes. I
+> > > > don't know why it cares that the address of the field being read is only 4
+> > > > bytes; we want everything that comes after it too.
+> > > 
+> > > Because accesses should not spawn boundaries of members in structs unless
+> > > copying the entire struct.  If we want to trace the various fields we
+> > > need to individually assign them.
+> > > 
+> > > Anyway, I'm dropping this patch from nvme-5.19 for now to let the
+> > > discussion conclude.
+> > 
+> > How about this instead?
+> 
+> Maybe a better option would be to use struct_group().
 
-I think doing it centrally, as non-arch-specific code, and letting it subs=
-ume ad hoc checks for known failure conditions could be a win=2E
+Good call, I'd never used that macro before. The result produces anonymous
+unions like I just proposed, so yes, I like that option.
