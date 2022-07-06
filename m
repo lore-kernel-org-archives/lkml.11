@@ -2,62 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC01C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B59C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233026AbiGFKIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        id S233040AbiGFKIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232812AbiGFKHo (ORCPT
+        with ESMTP id S232832AbiGFKHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 06:07:44 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7024D255AE
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:07:33 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id r14so15527759wrg.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 03:07:33 -0700 (PDT)
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C9F255B6
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:07:34 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id v14so21322074wra.5
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 03:07:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=RV7crcrnHKpDR+JNHqiUBuQdjQCZb9VboNC1TvQ0gW8=;
-        b=zJUCSNvP9yZ+p4ALIcEWbwB922qRIYqUJVITA2czxsD6ZIQEUTbLfBNpLINcHzMJeo
-         4aEo/MxYDJKeUBNvZhinZBh4HD+ncGq/Bdx7rDsjmP4e8x7FoAQ7l1+GNNbmvC9v8b0C
-         WUjZzAADOPJffgFIfN+n1MVs83XedLrQ78MWi1901rjT55Puzw4JpbHNurAwiQC0nZX9
-         ru7IpD6az0PPFppMQt7ws4bjs2YNUuhk089MizGAbxDULrqRgvoDAaOt1qG0QgQL08UJ
-         DZPn4PnffwtRnLQy7k3NSfo7S05XN8YRFaQ1cKyNZSrR+RNBiyXJIbSyHVzhvowFn+03
-         3j3g==
+        bh=9cCIfCk0PS+dyz7rIB5P1DspSw8HOWC+zkE/AUtkHdQ=;
+        b=Z3MQlNslvaTMUV7hT9QSB1qCJO04cKka/LCo0Hpq1NFnKVQrV47fDAhLVW5Qd84ZXz
+         MkJZTY0wRA/73J5fOdU1iGmElV8FnlHVJsaHAzsjSFt3zfx0UkKybH0M68/AfzmdS+ut
+         feC4ixr95nHpKfEAccTy09sCrXJBl231/N1Rsw114Q/9L8tnaK12HRgeHLbJaigumjUA
+         aPZCysoZ47CeHEoLdMHhd1bQIMXbinwK5dSgIoJGLNzmowmzB0dCSn8MXJIEtd1IJ5dT
+         xXEhvAiqX8DUOgaI1xflB4E3UGbMcU7YpKBG9pObYMcdsYfPBPCRDixo4LYbP31Z47tJ
+         eqmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RV7crcrnHKpDR+JNHqiUBuQdjQCZb9VboNC1TvQ0gW8=;
-        b=Nu1KcamkDwVVNrvulh44WCiBOgJnGjvBdKlQndVdYOIHaGYK7PklFrjy1UA9A8rOjX
-         vgaanyL///+DERzv+Wg9y66dG0BeBLBMH8wWm+MaSnn9AwJDCJGGOhQ3gQBYtf4ZLn8n
-         7fI+sqb41EUkwqmKqHCRW/0TVCsXQfC02MH3C+OSi7Sw05CyskoD6CPcopVAbvJEQXrt
-         fdCaETDswrkOq8EoMHZSSDK4ai++xuQ/MWs75CIGy+6FACEmKUq2QU7e1AwiXd7P7Xwb
-         So32n+7vek8AQ82BzbKlnFF1l85Y/p6bAhEbuWb/UxR3Yy4lwD56/8ni4dwrb7v024Ds
-         iVBg==
-X-Gm-Message-State: AJIora+v3rIyQeyivcvZUe7ADSYB4USxuPLu1unHXwX3ZGhdJgWF6gRn
-        GmMZ4GU8E+SN2VViLso+ZvuM+A==
-X-Google-Smtp-Source: AGRyM1vsuEiLpgFjfJ2YRNAqjZ43kbtzJyqEr1FOLrjFzorK5fs+8U5fYUK6WXGBeNENzwT3W+Msdw==
-X-Received: by 2002:a05:6000:237:b0:21d:4d65:32b3 with SMTP id l23-20020a056000023700b0021d4d6532b3mr24855054wrz.169.1657102051976;
-        Wed, 06 Jul 2022 03:07:31 -0700 (PDT)
+        bh=9cCIfCk0PS+dyz7rIB5P1DspSw8HOWC+zkE/AUtkHdQ=;
+        b=N6A1MuD6pqcrXT3CCmfEUukJ2I4cjnWenvGiZyngbjWqrycPPD/2T3AvVkhjiDXDJR
+         yYYgfj40ToVQ6TTgk+e24mbPZ4jUYz8VvLXs/eoZskI98iAo3q5llAcG6A6AsZaod7ty
+         gwe8TbicQME0KtpzfUkhZ8zZtWKiKbrOnyeauBwTCHcEpwegK54jUyQsnqezn+Lcv0+i
+         2FThhui7oIIGOW04n1d+J/4cGfR1ntiW9x+3B25IqrVe7hpkfxfYqWvzNrYEH2BnBhh/
+         kjRT0m0/afYCIuAjWFflmguhq4Z8Mc2KmmrreU/h+0c9s7KieHR2MaytNvuwVeiPvdDh
+         +Bzg==
+X-Gm-Message-State: AJIora9kRCIdkWGoGQzfZCO1dTBqGHtUnzR2dq6WYIRHeZE5GEqUma/Y
+        ArbNXxBJMbl5v/FvuMF0qv+DHQ==
+X-Google-Smtp-Source: AGRyM1s4jud/t0ZiR3YanCaX6xahLItsT+TBGh9qS5k8TO7r1/mjAxsB2m9Ma8RHDVvJnsF8C8sUzA==
+X-Received: by 2002:a05:6000:1acc:b0:21c:439c:7074 with SMTP id i12-20020a0560001acc00b0021c439c7074mr34665051wry.686.1657102053306;
+        Wed, 06 Jul 2022 03:07:33 -0700 (PDT)
 Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id n35-20020a05600c3ba300b003a039054567sm24678143wms.18.2022.07.06.03.07.31
+        by smtp.gmail.com with ESMTPSA id n35-20020a05600c3ba300b003a039054567sm24678143wms.18.2022.07.06.03.07.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:07:31 -0700 (PDT)
+        Wed, 06 Jul 2022 03:07:32 -0700 (PDT)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org,
         Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Rob Herring <robh@kernel.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 4/7] dt-bindings: nvmem: convert mtk-efuse.txt to YAML schema
-Date:   Wed,  6 Jul 2022 11:06:24 +0100
-Message-Id: <20220706100627.6534-5-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 5/7] dt-bindings: nvmem: mediatek: efuse: add support mt8183
+Date:   Wed,  6 Jul 2022 11:06:25 +0100
+Message-Id: <20220706100627.6534-6-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220706100627.6534-1-srinivas.kandagatla@linaro.org>
 References: <20220706100627.6534-1-srinivas.kandagatla@linaro.org>
@@ -69,161 +68,27 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-Convert mtk-efuse.txt to YAML schema mediatek,efuse.yaml
+Add "mediatek,mt8183-efuse" to fix dtbs check warning.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- .../bindings/nvmem/mediatek,efuse.yaml        | 87 +++++++++++++++++++
- .../devicetree/bindings/nvmem/mtk-efuse.txt   | 43 ---------
- 2 files changed, 87 insertions(+), 43 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
- delete mode 100644 Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
+ Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-new file mode 100644
-index 000000000000..f6e01ddb7499
---- /dev/null
+index f6e01ddb7499..7c7233e29ecf 100644
+--- a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
 +++ b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-@@ -0,0 +1,87 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/nvmem/mediatek,efuse.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek efuse
-+
-+description: |
-+  MediaTek's efuse is used for storing calibration data, it can be accessed
-+  on ARM devices usiong I/O mapped memory.
-+
-+maintainers:
-+  - Andrew-CT Chen <andrew-ct.chen@mediatek.com>
-+  - Lala Lin <lala.lin@mediatek.com>
-+
-+allOf:
-+  - $ref: "nvmem.yaml#"
-+
-+properties:
-+  $nodename:
-+    pattern: "^efuse@[0-9a-f]+$"
-+
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt7622-efuse
-+              - mediatek,mt7623-efuse
-+              - mediatek,mt8173-efuse
-+              - mediatek,mt8192-efuse
-+              - mediatek,mt8195-efuse
-+              - mediatek,mt8516-efuse
-+          - const: mediatek,efuse
-+      - const: mediatek,mt8173-efuse
-+        deprecated: true
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    efuse@11c10000 {
-+        compatible = "mediatek,mt8195-efuse", "mediatek,efuse";
-+        reg = <0x11c10000 0x1000>;
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+
-+        u3_tx_imp_p0: usb3-tx-imp@184,1 {
-+            reg = <0x184 0x1>;
-+            bits = <0 5>;
-+        };
-+        u3_rx_imp_p0: usb3-rx-imp@184,2 {
-+            reg = <0x184 0x2>;
-+            bits = <5 5>;
-+        };
-+        u3_intr_p0: usb3-intr@185 {
-+            reg = <0x185 0x1>;
-+            bits = <2 6>;
-+        };
-+        comb_tx_imp_p1: usb3-tx-imp@186,1 {
-+            reg = <0x186 0x1>;
-+            bits = <0 5>;
-+        };
-+        comb_rx_imp_p1: usb3-rx-imp@186,2 {
-+            reg = <0x186 0x2>;
-+            bits = <5 5>;
-+        };
-+        comb_intr_p1: usb3-intr@187 {
-+            reg = <0x187 0x1>;
-+            bits = <2 6>;
-+        };
-+        u2_intr_p0: usb2-intr-p0@188,1 {
-+            reg = <0x188 0x1>;
-+            bits = <0 5>;
-+        };
-+        u2_intr_p1: usb2-intr-p1@188,2 {
-+            reg = <0x188 0x2>;
-+            bits = <5 5>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt b/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
-deleted file mode 100644
-index 39d529599444..000000000000
---- a/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
-+++ /dev/null
-@@ -1,43 +0,0 @@
--= Mediatek MTK-EFUSE device tree bindings =
--
--This binding is intended to represent MTK-EFUSE which is found in most Mediatek SOCs.
--
--Required properties:
--- compatible: should be
--	      "mediatek,mt7622-efuse", "mediatek,efuse": for MT7622
--	      "mediatek,mt7623-efuse", "mediatek,efuse": for MT7623
--	      "mediatek,mt8173-efuse" or "mediatek,efuse": for MT8173
--	      "mediatek,mt8192-efuse", "mediatek,efuse": for MT8192
--	      "mediatek,mt8195-efuse", "mediatek,efuse": for MT8195
--	      "mediatek,mt8516-efuse", "mediatek,efuse": for MT8516
--- reg: Should contain registers location and length
--- bits: contain the bits range by offset and size
--
--= Data cells =
--Are child nodes of MTK-EFUSE, bindings of which as described in
--bindings/nvmem/nvmem.txt
--
--Example:
--
--	efuse: efuse@10206000 {
--		compatible = "mediatek,mt8173-efuse";
--		reg	   = <0 0x10206000 0 0x1000>;
--		#address-cells = <1>;
--		#size-cells = <1>;
--
--		/* Data cells */
--		thermal_calibration: calib@528 {
--			reg = <0x528 0xc>;
--		};
--	};
--
--= Data consumers =
--Are device nodes which consume nvmem data cells.
--
--For example:
--
--	thermal {
--		...
--		nvmem-cells = <&thermal_calibration>;
--		nvmem-cell-names = "calibration";
--	};
+@@ -28,6 +28,7 @@ properties:
+               - mediatek,mt7622-efuse
+               - mediatek,mt7623-efuse
+               - mediatek,mt8173-efuse
++              - mediatek,mt8183-efuse
+               - mediatek,mt8192-efuse
+               - mediatek,mt8195-efuse
+               - mediatek,mt8516-efuse
 -- 
 2.25.1
 
