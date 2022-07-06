@@ -2,140 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2146DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F6CCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232385AbiGFNr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46666 "EHLO
+        id S233128AbiGFNsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbiGFNr4 (ORCPT
+        with ESMTP id S233133AbiGFNsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:47:56 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FD1DEF2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:47:54 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id m184so8891053wme.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 06:47:54 -0700 (PDT)
+        Wed, 6 Jul 2022 09:48:11 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE6424F12;
+        Wed,  6 Jul 2022 06:48:10 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id a5so7470658wrx.12;
+        Wed, 06 Jul 2022 06:48:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=oUwD/AXk3hn18jg9g8hVaPoJbhZdU+eC6asfRcw/JZ8=;
-        b=OV6NQ+wPRl2SEbWwcpJRPhyEuZ8cg8yTsJqgVyKnZOK2UthzIAwcDwB3+WLL18sjlb
-         /C16E768PD8WDWQUV6iOuuogcZaJTm3BQQsDxPgatCYJKd+jgAHy1Tif+KBTazTMIlG/
-         kxGvrZ0Tvh2dHNnjY8fuDHaK5o5kkwzA5t881UFs5Y/G0C1qj/QbDh/lehUdLme1OnUm
-         YpZ2RKUuGtPpgDS7hss+aISwdPO9egSp90BXGcvs1tYhm0cVrJ80C2ATmvjFYErITX1w
-         ajhAeUc+2+ukI2+7/Coim6NfRFcDUpiexL3hP8VSfhXG28L4D0jNDHs4VXRANYAZ2PQm
-         L6MQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Ys6nhaWDkYktLlUqq0SwlRalsF7YwG4ENbLhHnvqbhY=;
+        b=fV8aJ9j+yuHCeCJsnseihO3elQIXDVuluuk4eEAuWmKG+ZK7rCd24w3roTCv9M3cST
+         X5kMf3UXuNCGkNWELxZKURXY0ztY/VKtR6/sCuBqAOOoH759XuEGDMn/RcFj0qaYKaLe
+         kTRu9z4IqfmlqILQRbqADqlV2hrVFq77785WL1jQIwYmp+9cY0tfQOInOH7Enyih4OQy
+         6QzZVmfouiDIElYWsH34+xwHK6E3jiSnOTph+07cgrvKE00fQA4IeucMqhvFgxJVPpbh
+         Fjf7bydjRVlNfviN68vi9tA2pbet372RqOUYk7ePKh4exRP1IaJp4myFJmdOIavAtPu3
+         TN+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=oUwD/AXk3hn18jg9g8hVaPoJbhZdU+eC6asfRcw/JZ8=;
-        b=j42Mv0csPN9zCufqAr8YH11aswa7tq757qDDDpdmfq87E4kqxmKq2dA9CqFh/rEeo4
-         5n9E1fpKaSu49sAPBpfj1C6Z9HdE1Tq1EUZVIP8SUTeB7kNsvB+eUKI2EBZCtWmccaj5
-         wZzhsZQEx/WHdWsQQl3We94wfyGz1MQHaRZ2U1Xj13ZtvITxo1akibxDrRJzxUAX1Dlu
-         NvxMw0lfVtiOvSNULowZXLd8w6X2KNFHxyZRJAPIqt0UFB88YWyIUtsvqCVM/LPR3AGr
-         soSVUdu4eRPxhiJ2aYjNruDquKECXkYKYiaXzP4aqufrEgn7OSthQbhEj1Z0rWdAkvmf
-         JRmg==
-X-Gm-Message-State: AJIora8S1cL7ZhTHsigXp/6R4x7fRu1lUMKEXS4Eucs9vdUIJ9ee1Ap5
-        gV4T8GKiP16zt5xXNJOE8ffw9w==
-X-Google-Smtp-Source: AGRyM1uUD5fUICbLUxi3NjNN7CjKDLK0xdLSPc5G0890T3qq/ARu1rv+irGhKla3vDPUN0DyFqatKQ==
-X-Received: by 2002:a7b:c413:0:b0:3a1:8f03:29d0 with SMTP id k19-20020a7bc413000000b003a18f0329d0mr29344119wmi.160.1657115273408;
-        Wed, 06 Jul 2022 06:47:53 -0700 (PDT)
-Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
-        by smtp.gmail.com with ESMTPSA id v192-20020a1cacc9000000b003975c7058bfsm26068541wme.12.2022.07.06.06.47.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 06:47:53 -0700 (PDT)
-References: <20220705142444.17063-1-pboos@baylibre.com>
- <f756b2d5-56e7-6e52-2739-eca4bb33508b@baylibre.com>
- <1jmtdnwd7y.fsf@starbuckisacylon.baylibre.com>
- <20220706124139.GB492220@roeck-us.net>
-User-agent: mu4e 1.8.3; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Philippe Boos <pboos@baylibre.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] watchdog: meson: keep running if already active
-Date:   Wed, 06 Jul 2022 15:24:27 +0200
-In-reply-to: <20220706124139.GB492220@roeck-us.net>
-Message-ID: <1j8rp6z720.fsf@starbuckisacylon.baylibre.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ys6nhaWDkYktLlUqq0SwlRalsF7YwG4ENbLhHnvqbhY=;
+        b=HIRDzxkRCmlFy2evCMis/b7qaFCu8ZplTIUdsIK+8YxsdbHJAh2R6KXtwbqrONUblU
+         lJ2PoFXeci7aO4E76i+8Iqx0Bl1rebVLiZ7S+tIOkTmxYEYkz/Iii4D0yYpakVA0vIdt
+         E6Yue1qNWDZlfobW9UeXr9FEOuNeKn4IqfCRPsJbqn0TpOq3h7JpCYrQZmMzfKhmPK1F
+         nqw/UsvUHrqlI0b0Q+UJbzft1iJzXp2xguQJTfn3C7RENRwHDvtiocglA8iX9sf9t7Qk
+         qBkFph+bHzaWY+SMucuwGT555F1RySVnj49tH1QiIrSZG+zBHBzt+Lob7FQ6L55J2YLL
+         xf/w==
+X-Gm-Message-State: AJIora/MTWSMGqMM644hiP0gQGtR/R59W0need5K7YEm0d9kXNLorKzs
+        qaqzHI0EcbUQ0NYX/Hs8fBtQ1IGmngtt0A==
+X-Google-Smtp-Source: AGRyM1uKokpPXD3KIW+1SGhOJH0F4Ot+3fwFEVIyD8thjoxNU4UTGfcWYVexdf/YGnIyZIvbYxqHnQ==
+X-Received: by 2002:a5d:4201:0:b0:21d:7b63:1b43 with SMTP id n1-20020a5d4201000000b0021d7b631b43mr3917188wrq.225.1657115288718;
+        Wed, 06 Jul 2022 06:48:08 -0700 (PDT)
+Received: from [192.168.0.14] ([37.223.147.254])
+        by smtp.gmail.com with ESMTPSA id m1-20020a7bcb81000000b003a05621dc53sm25703913wmi.29.2022.07.06.06.48.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 06:48:07 -0700 (PDT)
+Message-ID: <9757b32c-c196-f7e0-3c61-1d4edae854dc@gmail.com>
+Date:   Wed, 6 Jul 2022 15:48:06 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 02/16] dt-bindings: memory: mediatek: Update condition
+ for mt8195 smi node
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>
+Cc:     iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+ <20220704100028.19932-3-tinghan.shen@mediatek.com>
+ <119f2a98-ef56-7b99-631f-221b737939ae@linaro.org>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <119f2a98-ef56-7b99-631f-221b737939ae@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On Wed 06 Jul 2022 at 05:41, Guenter Roeck <linux@roeck-us.net> wrote:
 
-> On Tue, Jul 05, 2022 at 09:29:35PM +0200, Jerome Brunet wrote:
->> 
->> On Tue 05 Jul 2022 at 16:39, Neil Armstrong <narmstrong@baylibre.com> wrote:
->> 
->> > Hi,
->> >
->> > On 05/07/2022 16:24, Philippe Boos wrote:
->> >> If the watchdog is already running (e.g.: started by bootloader) then
->> >> the kernel driver should keep the watchdog active but the amlogic driver
->> >> turns it off.
->> >> Let the driver fix the clock rate then restart the watchdog if it was
->> >> previously active.
->> >> Reviewed-by: Jerome Brunet <jbrunet@baylibre.com>
->> >
->> > Please drop this review tag since it was done off-list
->> 
->> Indeed a review was done off-list.
->> 
->> Reviewed-by says a review has been done. I was not aware this applied to
->> public reviews only. I probably missed that, would you mind pointing me
->> to that rule please ?
->> 
->
-> Public or not doesn't really matter. However, you can only apply a
-> Reviewed-by: tag (or any tag, really) if you explicitly received one.
-> The exchange seems to suggest that you did not receive that tag.
+On 04/07/2022 14:36, Krzysztof Kozlowski wrote:
+> On 04/07/2022 12:00, Tinghan Shen wrote:
+>> The max clock items for the dts node with compatible
+>> 'mediatek,mt8195-smi-sub-common' should be 3.
+>>
+>> However, the dtbs_check of such node will get following message,
+>> arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names: ['apb', 'smi', 'gals0'] is too long
+>>           From schema: Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+>>
+>> Remove the last 'else' checking to fix this error.
+> 
+> Missing fixes tag.
+> 
 
-Philippe did receive that Reviewed-by. I gave it to him.
-Doing his first public patches, he first requested a review off-list to
-try to get things right and not bother people too much (so much for that :/)
+ From my understanding, fixes tags are for patches that fix bugs (hw is not 
+working etc) and not a warning message from dtbs_check. So my point of view 
+would be to not add a fixes tag here.
 
-> Please never add any tags on your own.
+Regards,
+Matthias
 
-He did not.
-
->
-> On the other side, if the reviewer did send a Reviewed-by: tag off list,
-> I would kindly ask the reviewer to not do that in the future to avoid
-> misunderstandings.
-
-No worries. That being said, I have gone over 
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/submitting-patches.rst
-
-It just says that Reviewed-by sent on the list should be collected for
-the following version. Nothing against adding the tag if the job has
-been done, on or off list. Same goes for Suggested-by, Tested-by, etc.
-
-If I missed something or it is non-written rule, please let me know.
-
-> If you don't want your Reviewed-by: tag attached to
-> a patch, don't send one. Not everyone will even realize that you sent
-> your tag off-list, and no one can be expected to know that you didn't
-> really mean it when you sent your tag.
-
-I do want Philippe to add it. I would not have given it the first place
-if it was not the case.
-
->
-> Thanks,
-> Guenter
-
+>>
+>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+>> ---
+>>   .../memory-controllers/mediatek,smi-common.yaml        | 10 +++++++++-
+>>   1 file changed, 9 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+>> index a98b359bf909..e5f553e2e12a 100644
+>> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+>> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+>> @@ -143,7 +143,15 @@ allOf:
+>>               - const: gals0
+>>               - const: gals1
+>>   
+>> -    else:  # for gen2 HW that don't have gals
+>> +  - if:  # for gen2 HW that don't have gals
+>> +      properties:
+>> +        compatible:
+>> +          enum:
+>> +            - mediatek,mt2712-smi-common
+>> +            - mediatek,mt8167-smi-common
+>> +            - mediatek,mt8173-smi-common
+>> +
+> 
+> Without looking at the code, it's impossible to understand what you are
+> doing here. The commit msg says one, but you are doing something else.
+> 
+> Write commit msg explaining what you want to achieve and what you are doing.
+> 
+> 
+> Best regards,
+> Krzysztof
