@@ -2,80 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5C9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EC9CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231922AbiGFHpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 03:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34246 "EHLO
+        id S230342AbiGFHrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 03:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231827AbiGFHpT (ORCPT
+        with ESMTP id S229599AbiGFHrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 03:45:19 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E169813E0A
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 00:45:17 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=cruzzhao@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VIXa9DY_1657093513;
-Received: from 30.97.49.75(mailfrom:cruzzhao@linux.alibaba.com fp:SMTPD_---0VIXa9DY_1657093513)
-          by smtp.aliyun-inc.com;
-          Wed, 06 Jul 2022 15:45:14 +0800
-Message-ID: <2f2b3592-9cf8-95ad-7150-6fb430906231@linux.alibaba.com>
-Date:   Wed, 6 Jul 2022 15:45:13 +0800
+        Wed, 6 Jul 2022 03:47:04 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAA922BE1;
+        Wed,  6 Jul 2022 00:47:01 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id 128so13627926pfv.12;
+        Wed, 06 Jul 2022 00:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=n2THw/2ch+7BfHEoDU2EE1L3hnFG9rBbIWEZ3J6rMMM=;
+        b=ljhAEM8a/4ak2si07DvB8Jb3UHMoDso/Rm0fhiZlhQJmuB5oDu0VGrMs2k8HhN8tPq
+         H471uaUd9s+hdzRHWyGzrMBiOL8ZSLJaQu9mu+AtPWFasvuryVgdc6yk2Nyf5sG4EzHF
+         ZfGZRDA1nMulstdi70uDIa2xjvG/tdwCncmTYIx/42Hq60VA2cMbIiG4RV7/4c/UO+VO
+         jc48DbXlFDgEpQ94j1jyZRTVEuIIXVUUj8yKnL5eO7p1LoQmcx6XjStYI2tvkBCWgL88
+         ViyWcQi4PPN0L2Q7FZXY+3HKLeRATvtbFy2sTkDtku23cmIuDszcPBcWTfe6UvCwY5xY
+         DhEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=n2THw/2ch+7BfHEoDU2EE1L3hnFG9rBbIWEZ3J6rMMM=;
+        b=F0jGK4pqwnsd0oRRk2sOTnTxsz+ob/UoDmhR/uE5cjXsGh8mttp0T6Lq6kcu1NBSON
+         1V6Dmj8SgYCw4hjHE36rRDzLWE7rGIAfaA2/fhIM4BO4Q4k1m8kUfS/IjYWixG76Z6zZ
+         KogytgFece6s2IpV3daQKchRNO1Iwz6B3nloyJSY51oMUkBJxetnWAjbGQJ/7EDew199
+         WGa4U4hxaqiAeimQ/Y/eTofjfUXOuFpb4+RaKlpHYpA9ECg73/+XUALijMVgX5Pb0lvA
+         IS2Y+gpJ+uPXOG9ysOmsyZ4ZEBNI4RJ5r5iRe0pgEPtCUnvsoUWT2u5lvRM93DjCKjtY
+         jCRg==
+X-Gm-Message-State: AJIora8BQcvWWHoI+B2hgDjgJieU5qmTf0O47ysTZKnK12vHEmZQolg8
+        ikecKvAN1wR9XsWL30/bFXw=
+X-Google-Smtp-Source: AGRyM1sPt73d/PnYTpHPFp0GNH1m7ee1PvmynEuFMLTTMTxGHp6XOdPcWpYbaOGIAmLgzM2rWtY+Ig==
+X-Received: by 2002:a63:5346:0:b0:412:9544:1ff2 with SMTP id t6-20020a635346000000b0041295441ff2mr1826529pgl.504.1657093621344;
+        Wed, 06 Jul 2022 00:47:01 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-23.three.co.id. [180.214.232.23])
+        by smtp.gmail.com with ESMTPSA id l8-20020a17090a384800b001ecd954f3b6sm14132863pjf.7.2022.07.06.00.47.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 00:47:00 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 6263B1039C1; Wed,  6 Jul 2022 14:46:57 +0700 (WIB)
+Date:   Wed, 6 Jul 2022 14:46:57 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 00/98] 5.15.53-rc1 review
+Message-ID: <YsU98eRZWPPg5PBt@debian.me>
+References: <20220705115617.568350164@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH 2/3] sched/core: Introduce nr_running percpu for each
- cookie
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org
-References: <1656403045-100840-1-git-send-email-CruzZhao@linux.alibaba.com>
- <1656403045-100840-3-git-send-email-CruzZhao@linux.alibaba.com>
- <YsK2riNersXeRgKM@hirez.programming.kicks-ass.net>
-From:   cruzzhao <cruzzhao@linux.alibaba.com>
-In-Reply-To: <YsK2riNersXeRgKM@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-在 2022/7/4 下午5:45, Peter Zijlstra 写道:
-> On Tue, Jun 28, 2022 at 03:57:24PM +0800, Cruz Zhao wrote:
+On Tue, Jul 05, 2022 at 01:57:18PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.53 release.
+> There are 98 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
->>  static unsigned long sched_core_alloc_cookie(void)
->>  {
->>  	struct sched_core_cookie *ck = kmalloc(sizeof(*ck), GFP_KERNEL);
->> +	int cpu;
->> +
->>  	if (!ck)
->>  		return 0;
->>  
->>  	refcount_set(&ck->refcnt, 1);
->> +
->> +	ck->nr_running = alloc_percpu(unsigned int);
-> 
-> 	if (!ck->nr_running)
-> 		// do something
-> 
->> +	for_each_possible_cpu(cpu)
->> +		*per_cpu_ptr(ck->nr_running, cpu) = 0;
-> 
-> So I really, as in *really* dislike how this blows up the size of
-> cookies. Esp. with 100s of CPUs not actually being rare these days.
 
-My idea is to get the distribution of cookie'd tasks on each runqueue
-through ck->nr_running, so as to facilitate optimization of load
-balance. Sorry for not stating this in the change log.
+Successfully cross-compiled for arm64 (bcm2711_defconfig, GCC 10.2.0)
+and powerpc (ps3_defconfig, GCC 12.1.0).
 
-This does blow up the size of cookies in scenarios with a large number
-of CPUs, and I'll try to get around this problem.
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Many thanks for reviewing.
-Best wishes,
-Cruz Zhao
+-- 
+An old man doll... just what I always wanted! - Clara
