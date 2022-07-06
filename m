@@ -2,86 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D842CCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232438AbiGFJ56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:57:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38770 "EHLO
+        id S232549AbiGFJ6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232256AbiGFJ54 (ORCPT
+        with ESMTP id S232507AbiGFJ6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 05:57:56 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EFA1ED
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:57:54 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3C48A20079B;
-        Wed,  6 Jul 2022 11:57:53 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 04D402007DE;
-        Wed,  6 Jul 2022 11:57:53 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 50153180327D;
-        Wed,  6 Jul 2022 17:57:51 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: imx-card: Fix DSD/PDM mclk frequency
-Date:   Wed,  6 Jul 2022 17:42:55 +0800
-Message-Id: <1657100575-8261-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 6 Jul 2022 05:58:52 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92F0205C5
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:58:49 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id a39so17783016ljq.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 02:58:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GpoFCpZ8O+svTpauDAo3u58PUgHKFYEWbYXLRGlqYoI=;
+        b=fQBiNzPcw6khJIZ+MJnKxSLu+xO+uEeNhlVX/9O2EgoZjfKxokGTrBAI639jhnFbss
+         Tu5EexKI/sj5GBhoLe/lMSdh/gpRDpmMhOPsqpDYKdbtLpz+Wq6zWykcUg6je1Cc9l4A
+         e5xDnh5fN4sDrwjqPstLnQmQ+RZ1iqBSYFYmYlkXRYOg1eDOahK5I6mLFCDE24sMd/qQ
+         IEbqgkoQcSz3BA8l6RasVmJHESsATl3g/r31ztbHw3OCPOb8rjdHUdP/jEf7zs8aaCXd
+         lrwDnUw15bQa7iqxN7t7jOl/xSizN0VJ3rMc/lnG4QA9yjiUSl7T3gNnN4584rxZ4VY2
+         wXFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GpoFCpZ8O+svTpauDAo3u58PUgHKFYEWbYXLRGlqYoI=;
+        b=vH80wDxAQ1ZaZZOgeTjJAbRsXBz9YYDMdqdgI5XvaG8id02n4sr8UYHG/TcHucusbi
+         OOmlqb8Nw3fdMWjK3qAP8okOOgeZfmvN/1WGNz6vL7kiMlIUej569oPMoXWeoXJXwcMb
+         h/TCtVCXNl4tA136wEKL5WelBlqtsvnXSl7TBRgnl0ykaP8AhxD7o9vTaxvhv0ywH4Fc
+         Ln0IbYkTUWC1ZRy/pcun5JIXM2ucL4spGB9+46c8B65PjOcHqGVXpmMYkijBo3kqHF9I
+         jMD9udW76yI1m9ATNcjxKVc2gPoi0tC0il2tIUcLiojeE/kAU6uyeV17VtQDWV05PozZ
+         MxRw==
+X-Gm-Message-State: AJIora8Pa4d5i5wukpYkWBJcY1E0CGADShNRorh11xoTfuVus1m0iqUJ
+        /DaBQDSKrT7GSJOgfNt6lXklGg==
+X-Google-Smtp-Source: AGRyM1vcERb/TA5ylNvEDQakZ4PfRptsZ/M6Y8Wo3syi8+/XiLTxJb4Yj1R8b80RGJ3L7PBUAGQwvQ==
+X-Received: by 2002:a2e:9b89:0:b0:25d:1c51:6c6a with SMTP id z9-20020a2e9b89000000b0025d1c516c6amr10198982lji.158.1657101528176;
+        Wed, 06 Jul 2022 02:58:48 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id s1-20020a197701000000b0047f6e84f532sm6194015lfc.38.2022.07.06.02.58.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 02:58:47 -0700 (PDT)
+Message-ID: <e7ba92aa-c501-929b-6962-4cb4c6a1dc48@linaro.org>
+Date:   Wed, 6 Jul 2022 11:58:46 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH V3 02/11] dt-bindings: pci: tegra: Convert to json-schema
+Content-Language: en-US
+To:     Vidya Sagar <vidyas@nvidia.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, robh+dt@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com
+Cc:     kishon@ti.com, vkoul@kernel.org, kw@linux.com,
+        p.zabel@pengutronix.de, mperttunen@nvidia.com,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
+        Thierry Reding <treding@nvidia.com>
+References: <20220629060435.25297-1-vidyas@nvidia.com>
+ <20220629060435.25297-3-vidyas@nvidia.com>
+ <cab66a0d-18d1-77ba-c0ac-06f802874c0a@linaro.org>
+ <3e21dbaa-b478-5713-5355-319d2843167f@nvidia.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <3e21dbaa-b478-5713-5355-319d2843167f@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DSD/PDM rate not only DSD64/128/256/512, which are the
-multiple rate of 44.1kHz,  but also support the multiple
-rate of 8kHz, so can't force all mclk frequency to be
-22579200Hz, need to assign the frequency according to
-rate.
+On 06/07/2022 11:51, Vidya Sagar wrote:
+>>> +  phy-names:
+>>> +    minItems: 1
+>>> +    maxItems: 16
+>>> +    items:
+>>> +      pattern: "^p2u-[0-9]+$"
+>>
+>> No, because this allows any/unspecified order. Please list the items, so
+>> the order is fixed.
+> 
+> Not all controllers are going to have all of them specified. Number of
+> these entries depend on the number of lanes assigned to that particular 
+> controller. In this scenario, I thought specifying it using 'pattern' 
+> should be fine. Please let me know if there is any other better way to 
+> specify this.
 
-Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/imx-card.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+As I understood previous bindings and your message above, these are all
+incremented by one, so just list them and drop maxItems.
 
-diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
-index 1797d777b1b8..ccc4194dc5e7 100644
---- a/sound/soc/fsl/imx-card.c
-+++ b/sound/soc/fsl/imx-card.c
-@@ -17,6 +17,9 @@
- 
- #include "fsl_sai.h"
- 
-+#define IMX_CARD_MCLK_22P5792MHZ  22579200
-+#define IMX_CARD_MCLK_24P576MHZ   24576000
-+
- enum codec_type {
- 	CODEC_DUMMY = 0,
- 	CODEC_AK5558 = 1,
-@@ -353,9 +356,14 @@ static int imx_aif_hw_params(struct snd_pcm_substream *substream,
- 		mclk_freq = akcodec_get_mclk_rate(substream, params, slots, slot_width);
- 	else
- 		mclk_freq = params_rate(params) * slots * slot_width;
--	/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
--	if (format_is_dsd(params))
--		mclk_freq = 22579200;
-+
-+	if (format_is_dsd(params)) {
-+		/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
-+		if (!(params_rate(params) % 11025))
-+			mclk_freq = IMX_CARD_MCLK_22P5792MHZ;
-+		else
-+			mclk_freq = IMX_CARD_MCLK_24P576MHZ;
-+	}
- 
- 	ret = snd_soc_dai_set_sysclk(cpu_dai, link_data->cpu_sysclk_id, mclk_freq,
- 				     SND_SOC_CLOCK_OUT);
--- 
-2.17.1
+Trim the context, it makes it easier to spot the actual response. You
+quoted a lot above and a lot below. I do not know if there is something
+more to discuss? Usually quote means there is but I could not find... If
+there is, use replying style matching mailing list.
 
+Best regards,
+Krzysztof
