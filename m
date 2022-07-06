@@ -2,117 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7849C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8B6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234349AbiGFSFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50032 "EHLO
+        id S234428AbiGFSGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234242AbiGFSE7 (ORCPT
+        with ESMTP id S234396AbiGFSGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:04:59 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC5D1CFD7;
-        Wed,  6 Jul 2022 11:04:57 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266I4lsW007844;
-        Wed, 6 Jul 2022 13:04:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657130687;
-        bh=XpbkBEGGYKqTiMJ2YYdbdlpLwVJebHMbh9qvZvd6lWA=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=q/KBKYvgy004QBAesCVKWEL+0AfDjCWlxp5DQmGoMdu2iYcfAViCyUHviNUjLcZSa
-         9CYov34FBmP2riDC1QvRC/tqitu2ox9Y+LfZXnSbqQst4uVlHlv6jXqxlgoRotNc8n
-         yoF6d61g0Gtvo6n+dbwA3F29cFl4G/i6VigIHKuk=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266I4lUr014768
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Jul 2022 13:04:47 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Jul 2022 13:04:46 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Jul 2022 13:04:46 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266I4klu082914;
-        Wed, 6 Jul 2022 13:04:46 -0500
-Date:   Wed, 6 Jul 2022 13:04:46 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Andrew Davis <afd@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 6/6] arm64: dts: ti: k3-j7200-mcu-wakeup: Add SA2UL node
-Message-ID: <20220706180446.cyzujuasovjvsofk@lively>
-References: <20220705170340.26719-1-afd@ti.com>
- <20220705170340.26719-6-afd@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220705170340.26719-6-afd@ti.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Wed, 6 Jul 2022 14:06:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83971EECE
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:06:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A60961FDF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 18:06:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C163EC3411C;
+        Wed,  6 Jul 2022 18:06:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657130794;
+        bh=bxD5nMv+RFvod/z5p3giNFod7bS/GVcUc00piNI5OvY=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=H6MCDwunS7+e+fMV68MkeubRpzj5GVYmFR2R3PfqmE5XT2NjClwNkog2OKkxP5D9d
+         QxeTVRkcyls9YiURAKXyMA7W8lREOhrwypRWZXWowIsEZfI4q50C14lqXRL94v2yf9
+         mpBys2vCSpXmUAdHJRCR5Sjd5yW3xAXqHCKFphmgaBMYIrhhSJmx3dHbazfm0osfsb
+         /Z6E5ev08Qp1piaot1wSVeiwQQn+6fTf3MALdhVPKe1PJut9LYAxpbhBaFv+tJqxmj
+         wAQB/nTQxHdJ7AptsFu06PgFpSoLOQk3eFFLhtu9AI7ouWgpFubCZMzxqWqycE/TyI
+         lI3EJa7vM0vLg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD538E45BD9;
+        Wed,  6 Jul 2022 18:06:34 +0000 (UTC)
+Subject: Re: [GIT PULL] sound fixes for 5.19-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <87k08qs8vh.wl-tiwai@suse.de>
+References: <87k08qs8vh.wl-tiwai@suse.de>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <87k08qs8vh.wl-tiwai@suse.de>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc6
+X-PR-Tracked-Commit-Id: c5e58c4545a69677d078b4c813b5d10d3481be9c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: c3850b3f975f94317011421bb55325f828ae72ea
+Message-Id: <165713079468.25095.1236010539777270144.pr-tracker-bot@kernel.org>
+Date:   Wed, 06 Jul 2022 18:06:34 +0000
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12:03-20220705, Andrew Davis wrote:
-> J7200 has an instance of SA2UL in the MCU domain.
-> Add DT node for the same.
-> 
-> Signed-off-by: Andrew Davis <afd@ti.com>
-> ---
->  .../boot/dts/ti/k3-j7200-mcu-wakeup.dtsi      | 20 +++++++++++++++++++
->  1 file changed, 20 insertions(+)
+The pull request you sent on Wed, 06 Jul 2022 14:50:26 +0200:
 
-Please split this series into what crypto maintainers need to pick up vs
-what I need to pick up for dts. patches for my tree need to have lakml
-in cc as a rule (see MAINTAINERS file).
+> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc6
 
-> 
-> diff --git a/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
-> index 1044ec6c4b0d4..ebad3642c8e30 100644
-> --- a/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
-> +++ b/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
-> @@ -375,4 +375,24 @@ mcu_r5fss0_core1: r5f@41400000 {
->  			ti,loczrama = <1>;
->  		};
->  	};
-> +
-> +	mcu_crypto: crypto@40900000 {
-> +		compatible = "ti,j721e-sa2ul";
-> +		reg = <0x00 0x40900000 0x00 0x1200>;
-> +		power-domains = <&k3_pds 265 TI_SCI_PD_SHARED>;
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges = <0x00 0x40900000 0x00 0x40900000 0x00 0x30000>;
-> +		dmas = <&mcu_udmap 0xf501>, <&mcu_udmap 0x7502>,
-> +		       <&mcu_udmap 0x7503>;
-> +		dma-names = "tx", "rx1", "rx2";
-> +		dma-coherent;
-> +
-> +		rng: rng@40910000 {
-> +			compatible = "inside-secure,safexcel-eip76";
-> +			reg = <0x00 0x40910000 0x00 0x7d>;
-> +			interrupts = <GIC_SPI 945 IRQ_TYPE_LEVEL_HIGH>;
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/c3850b3f975f94317011421bb55325f828ae72ea
 
-Please document why disabled.
-
-> +			status = "disabled";
-> +		};
-> +	};
->  };
-> -- 
-> 2.36.1
-> 
+Thank you!
 
 -- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
