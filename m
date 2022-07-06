@@ -2,131 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE755CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DECC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231260AbiGFINf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
+        id S231215AbiGFIQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiGFINd (ORCPT
+        with ESMTP id S229592AbiGFIQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:13:33 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F6B62F7
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:13:31 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id r9so17451296ljp.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:13:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=q5HVmA8sCnStfWK2o12uYQzpyK3n2MMa6yOBkWT5nc4=;
-        b=UJKrwkK63DRqwhebPcgtSGFbf7L+yQsuZmf9S5ZHrdlc6imWTd1nqHKtSlKQehwDPh
-         hQB+zUPmYC2sxSjkvPh3bWn9xlglh/esdgKNDgT9pC5KoS+/qCdZLsN69ezSikNawyqb
-         5D1sWBTiEVCKSbWnB4MYAoS4DxLz+fgDk0Wrh5Sfzz8SW4HpAi8ajwFmRDv8xxxgVvmg
-         3RJvE32/5ItiWrjQoo42fJFHMeh5TXzpK6l2UpD1tP+eww+YVfYmNIeiU5kBc8vao9Ez
-         rukvHk7q5byYRDYQX/CnjsKbIHzKPNNo/M4d/wFXiFTVLKeByVHAn2+kQUiEAvPYyzPL
-         S8bA==
+        Wed, 6 Jul 2022 04:16:01 -0400
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com [209.85.217.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D701DA6D;
+        Wed,  6 Jul 2022 01:16:00 -0700 (PDT)
+Received: by mail-vs1-f54.google.com with SMTP id o185so1866456vsc.7;
+        Wed, 06 Jul 2022 01:16:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=q5HVmA8sCnStfWK2o12uYQzpyK3n2MMa6yOBkWT5nc4=;
-        b=vLAgz0cLkBf4t6OzhayvnNaPatliP0crcK3NJtKefNZ0Gih5ZGJWkrPSOv60Mgy8D1
-         81PlHMMf+Ny02P1Gu4wcsdZPgX8OfPu25nuyQ57rrkXhv3gdUhp1T6h3Nz73EIztzH74
-         ZvgQL4QLRSOKX5jWwL1BaXuCUIOTIj7haYDImBafNsVlGSwPQq01nMgkUjWILXzTsgKD
-         c3SBuHfxqWbGH5BVTc8V6BGf5U7aFTEfx4QSGkav6pWxv1mtvMaAOszWgoqHyllHE8Qj
-         mifQTsCs/t878bwNHj2PdRhqTFIhSvBnNrw90aTGQVrK3jrHzi0a57uMA1oGmCnNQHpz
-         kJBw==
-X-Gm-Message-State: AJIora/TYzSiX814OWYmbg3h3+9sKUPmo51KBJGiAcUFXAE2LxjCsMDO
-        I5DIedNUUNA3S1xMOh7r6QEvDxvLRsdaDw==
-X-Google-Smtp-Source: AGRyM1vHeSTTD8DYfDtNiJtCXkLRLR8Aas+YPJtmy/Ovp5zENmXzxSMK84WqWuvevJD+G+V8OJfG8g==
-X-Received: by 2002:a05:651c:623:b0:25d:30c0:22e9 with SMTP id k35-20020a05651c062300b0025d30c022e9mr5275970lje.290.1657095209978;
-        Wed, 06 Jul 2022 01:13:29 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id a19-20020a05651c031300b0025d4853f35dsm104129ljp.62.2022.07.06.01.13.28
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pNNZ2G3zXs1oo3JcBfsTX3whovGatUAPfm1YVK9uZPI=;
+        b=oldjN0zReoqhuAgGlziquy7fZz+ZOD7S1CBQq9AJHwlq/vBMztVIggYJT/Vknzpert
+         Tp2JhRo2kDjKe4sQ5AIaHfDo0AiW+ngvBa8G/yZ8wuurOK1/pJ8XxBMMtmo7P2Y4xQCD
+         ZHHdeUN27Vgmi0nmirrJjHcAytCJIVuIfGtJzx/9WCMv38f3H071fEmD1GGo4cbMXGB+
+         S84FmnrvosZsG/tkRnL9SGmzRZa0tdzZ/QM+llZowljOql8qK9rVl6QfwtUgOOFY8gdb
+         8aB+dFFpP9RkdEglH70rWiPinbWZ+OCybmMgKX1Zr1QPoqfAEegg3Aiw0LmH1H/fSoxB
+         vIkg==
+X-Gm-Message-State: AJIora91RCx/UZVOcj7mWGchHZ+M8d263JpjSqUaNb+ijVDuT25MZRBT
+        AGxwuRv60/4K8kWBScwns9zwwiI/TjAJ0A==
+X-Google-Smtp-Source: AGRyM1uVzuPT53m8JitCqfLOzvOk/8XU7TAOhKz3cNKhgvVKMBZTFBqWrSAu5c3cJkQHBbfm2wk2wQ==
+X-Received: by 2002:a05:6102:23f1:b0:356:97b0:29bf with SMTP id p17-20020a05610223f100b0035697b029bfmr14487158vsc.87.1657095359702;
+        Wed, 06 Jul 2022 01:15:59 -0700 (PDT)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id s7-20020a1f4507000000b0036bf47b519asm9587768vka.54.2022.07.06.01.15.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 01:13:28 -0700 (PDT)
-Message-ID: <93926f8a-6c40-a953-0435-34fc1b9ae120@linaro.org>
-Date:   Wed, 6 Jul 2022 10:13:27 +0200
+        Wed, 06 Jul 2022 01:15:59 -0700 (PDT)
+Received: by mail-ua1-f45.google.com with SMTP id n3so2926546uak.13;
+        Wed, 06 Jul 2022 01:15:59 -0700 (PDT)
+X-Received: by 2002:a25:be49:0:b0:64a:2089:f487 with SMTP id
+ d9-20020a25be49000000b0064a2089f487mr27921915ybm.202.1657094998024; Wed, 06
+ Jul 2022 01:09:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v6 11/12] arm64: dts: qcom: add PMP8074 DTSI
-Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, konrad.dybcio@somainline.org,
-        lee.jones@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linus.walleij@linaro.org,
-        lgirdwood@gmail.com, broonie@kernel.org, jic23@kernel.org,
-        lars@metafoo.de, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org
-References: <20220704212402.1715182-1-robimarko@gmail.com>
- <20220704212402.1715182-11-robimarko@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220704212402.1715182-11-robimarko@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220705215213.1802496-1-mail@conchuod.ie>
+In-Reply-To: <20220705215213.1802496-1-mail@conchuod.ie>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 6 Jul 2022 10:09:46 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXrVsvYRth+edCs6_bdDTWDacxegMDmgy9HeaKPRaWfkg@mail.gmail.com>
+Message-ID: <CAMuHMdXrVsvYRth+edCs6_bdDTWDacxegMDmgy9HeaKPRaWfkg@mail.gmail.com>
+Subject: Re: [PATCH v5 00/13] Canaan devicetree fixes
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Dillon Min <dillon.minfei@gmail.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/07/2022 23:24, Robert Marko wrote:
-> PMP8074 is a companion PMIC to the Qualcomm IPQ8074 series that is
-> controlled via SPMI.
-> 
-> Add DTSI for it providing GPIO, regulator and RTC support.
-> 
-> RTC is disabled by default as there is no built-in battery so it will
-> loose time unless board vendor added a battery, so make it optional.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
-> ---
-> Changes in v6:
-> * Add RTC and GPIO nodes
-> 
-> Changes in v5:
-> * Remove #address-cells and #size-cells as they are not required for
-> regulator subnodes
-> ---
->  arch/arm64/boot/dts/qcom/pmp8074.dtsi | 125 ++++++++++++++++++++++++++
->  1 file changed, 125 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/pmp8074.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/pmp8074.dtsi b/arch/arm64/boot/dts/qcom/pmp8074.dtsi
-> new file mode 100644
-> index 000000000000..a3b395e4d78f
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/pmp8074.dtsi
-> @@ -0,0 +1,125 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +#include <dt-bindings/spmi/spmi.h>
-> +#include <dt-bindings/iio/qcom,spmi-vadc.h>
-> +
-> +&spmi_bus {
-> +	pmic@0 {
-> +		compatible = "qcom,pmp8074", "qcom,spmi-pmic";
-> +		reg = <0x0 SPMI_USID>;
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		pmp8074_adc: adc@3100 {
-> +			compatible = "qcom,spmi-adc-rev2";
-> +			reg = <0x3100>;
-> +			interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			#io-channel-cells = <1>;
-> +
-> +			ref_gnd@0 {
+Hi Conor,
 
-Don't use underscores in node names, unless something depends on this.
+On Tue, Jul 5, 2022 at 11:52 PM Conor Dooley <mail@conchuod.ie> wrote:
+> This series should rid us of dtbs_check errors for the RISC-V Canaan k210
+> based boards. To make keeping it that way a little easier, I changed the
+> Canaan devicetree Makefile so that it would build all of the devicetrees
+> in the directory if SOC_CANAAN.
+>
+> I *DO NOT* have any Canaan hardware so I have not tested any of this in
+> action. Since I sent v1, I tried to buy some since it's cheap - but could
+> out of the limited stockists none seemed to want to deliver to Ireland :(
+> I based the series on next-20220617.
 
+Boots fine on SiPEED MAiX BiT, so
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
+Gr{oetje,eeting}s,
 
-Best regards,
-Krzysztof
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
