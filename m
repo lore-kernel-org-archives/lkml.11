@@ -2,231 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F629C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbiGFG2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 02:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
+        id S230302AbiGFG2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 02:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiGFG2Y (ORCPT
+        with ESMTP id S230157AbiGFG23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 02:28:24 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2045.outbound.protection.outlook.com [40.107.244.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7881710D;
-        Tue,  5 Jul 2022 23:28:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GZxAylzueXYiAwGpRZH21hJQdmKbtm2Tbbd1iIisFvM3n7Cdin5rQP7mvfLGEHVJETb9meE2GI1s8q6ZkrhgcITEddQvWiGwl1YYfxuAFZdYk+QNFJaiBXMix+MMFtmWaIQRS4vEAWUGU8isoqNEDdNcIdzBvOGxlk5+0b49ASBWlDxWUV29MftgUkWvTVwmbzSjzrGFcno7N/xV0Rkqr0IEKym0KJ6lhEe8TuKoekx2SX4vNd6TkilGuBSbEqmnle6ykQL8lEm1iMSm2H8QaWV0/FEYfME5UoA7bZf+zwfrlIO+/L/f4TJImkP1sE2eGe5ODMMKpXwEX2mBlx7TtA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UGzY5kDOuxoOgpgnwFQgvMH+nVw92r80SdTewifgses=;
- b=cIa26FoRcV6jQ0S5wTiY4t1cJecPzeLWvn02eeaVVIKMcmBHWYOletJggq0GjDTlt4LjEazqZhRz9ssXfxqFgznbfgQjxWQv8MbG29im4vU+EquANorgU7YMH8yCIFv6926YU2pMMZrch8PhqoIRLYSGeUwygsVZK6E1SAhsfHq9JLdr4FspQtwJ0qzTIy3opl3UJda8VgKk//MProQ7w6bzl1lBqIOhcfRJgwQ1JcE0Owh5YybTBBFfALnHfMumMdIC9mL5ySFJgPKjdyzZijvnaKFrHXbaIY99UqJTzPbYfvo29+Y8CI0+tQdz4//mt6NDKHVDGouKi7W4a9RsEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=linux.ibm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UGzY5kDOuxoOgpgnwFQgvMH+nVw92r80SdTewifgses=;
- b=NdCB37UwKQyQCk8DbFHRVJuOZCQ1L5KvRFBM52/0bGNDuelkj2POcrbDT+a81+txWd8HEBeZTuil8v16YTl1w6C5xzfNkT2y+4UIN6hG2xHTtWsEQDEfhFnKQyJn7AvEUcT+r+gyJCFt0KOWEkcuLnYGrUBIVmGJnEsA1TKT9x4UPULRBO/Mks1+RPud7IpOwGIZ9UptBIXB6Iycgn0jo/iaS2Jp/dF/t0Q+LvWTb5vKOiEaeWFPsWj2AXybHo9hXVXMsAA2VwwDZnCNCfMQ7HHLqytIVTShQD2kxZaMdMkh0NEbpN9TP1YeyvoEl2VdPACc7YnBkPm/12p5o3XnVg==
-Received: from DM6PR12CA0004.namprd12.prod.outlook.com (2603:10b6:5:1c0::17)
- by BY5PR12MB4114.namprd12.prod.outlook.com (2603:10b6:a03:20c::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Wed, 6 Jul
- 2022 06:28:18 +0000
-Received: from DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1c0:cafe::4e) by DM6PR12CA0004.outlook.office365.com
- (2603:10b6:5:1c0::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14 via Frontend
- Transport; Wed, 6 Jul 2022 06:28:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT016.mail.protection.outlook.com (10.13.173.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 06:28:18 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 6 Jul
- 2022 06:28:17 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 5 Jul 2022
- 23:28:16 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Tue, 5 Jul 2022 23:28:15 -0700
-From:   Nicolin Chen <nicolinc@nvidia.com>
-To:     <kwankhede@nvidia.com>, <corbet@lwn.net>, <hca@linux.ibm.com>,
-        <gor@linux.ibm.com>, <agordeev@linux.ibm.com>,
-        <borntraeger@linux.ibm.com>, <svens@linux.ibm.com>,
-        <zhenyuw@linux.intel.com>, <zhi.a.wang@intel.com>,
-        <jani.nikula@linux.intel.com>, <joonas.lahtinen@linux.intel.com>,
-        <rodrigo.vivi@intel.com>, <tvrtko.ursulin@linux.intel.com>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <farman@linux.ibm.com>,
-        <mjrosato@linux.ibm.com>, <pasic@linux.ibm.com>,
-        <vneethv@linux.ibm.com>, <oberpar@linux.ibm.com>,
-        <freude@linux.ibm.com>, <akrowiak@linux.ibm.com>,
-        <jjherne@linux.ibm.com>, <alex.williamson@redhat.com>,
-        <cohuck@redhat.com>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
-        <hch@infradead.org>
-CC:     <jchrist@linux.ibm.com>, <kvm@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-s390@vger.kernel.org>,
-        <intel-gvt-dev@lists.freedesktop.org>,
-        <intel-gfx@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>
-Subject: [RFT][PATCH v2 3/9] vfio/ccw: Only pass in contiguous pages
-Date:   Tue, 5 Jul 2022 23:27:53 -0700
-Message-ID: <20220706062759.24946-4-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220706062759.24946-1-nicolinc@nvidia.com>
-References: <20220706062759.24946-1-nicolinc@nvidia.com>
+        Wed, 6 Jul 2022 02:28:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D185BD4;
+        Tue,  5 Jul 2022 23:28:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F31B361D5E;
+        Wed,  6 Jul 2022 06:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 581B6C341CB;
+        Wed,  6 Jul 2022 06:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657088903;
+        bh=uf62HvexVvB/Jx636o0MTt6E8hWMJQJNNvtBTXI9zxU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=inhfUNQ4eoL/s3BvkLPhTfpTXUyY3Um/ynU4oJD6fAmIxr2da4mvIonLnOhuSE4S2
+         xtZP1F+/IckpFSk/VgPIzcAqZkbDucMs7Mwt269DQmrASyWxH1jz5dlJhigA9w4IS3
+         sIVpag65QuzZlPt16iddFyqWtX2jf1iUgUY3Dj13lPQHv77T4rI3PEGveVNYrQDSys
+         7j1SF3T2ZYRiqhQYlPwUl9Df1AiJ5HwwbFJyc3spw8U7bgRzuwET2oMjNC3Xwscppg
+         Sx+T7CWGyUyzWAwoglJNoQsumuM/CoylPF49jeuhM40LsjboVZKd2HrG4IVq/xw/y7
+         8Xxe+2nH7yCPg==
+Received: by mail-ot1-f42.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so11262885otk.0;
+        Tue, 05 Jul 2022 23:28:23 -0700 (PDT)
+X-Gm-Message-State: AJIora8VKfocbtKsyAx8IKw1nJKLqsh43ZHb8pTC4omXWPfSYyyGIagQ
+        1CyGeT7BVTT+d6rP+iZWZsCFCWfH8UxK5IEX7QI=
+X-Google-Smtp-Source: AGRyM1utRDa88CHhHTp5mP603IgAR57zrfhTLhegc113/GcO7yyNAJfXIpPN9E4szsM0k5P00ekmC12Kbd2fKlOgQfk=
+X-Received: by 2002:a05:6830:d0d:b0:616:99da:1fb0 with SMTP id
+ bu13-20020a0568300d0d00b0061699da1fb0mr16396323otb.109.1657088902445; Tue, 05
+ Jul 2022 23:28:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 94d1939b-66a1-4f0f-ffc6-08da5f18b721
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4114:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lbEkdFNI2JfjsA6yxocRCLCkrsuoLWtJNjDbZJR0ksPojirBt1G5kthH4tE5dU8IPq46sjERsCLkJg/52NuEtPRto7ixdKxLWcLCf+lJncYo/GbgOrhWlkJaAW9AQcJWMMHJlcYa4RYMPjozrf9DZjvqv101U5FVDNROiJn9sMUiIuYhHkLsBYbUMrXQpGZNbyAGPJYE+dD9xiLL+DtpYpu+W2lNtOd9vvlDJY8ThzimVtcyBsSoqIFJc+JFyz+pLhUX4kLEGB/0SoHFdcvPlEMeZ3+HHCSH9RUukoVeYyLrvg1+ouL5oyqC9c/6/ButhkqL2kGwl/BMoX9l8DXbRuczJMU/1bIFqN+dCu/MsjDWNIeRqeUxRLASYuXNfdCrT2lNnObSgTSIeF63Vp7e95RvvQiSfxPZuhQ90gyrG/W3mjUzU3eS/yCoIB6sdh3njBdsel0d0C+i/ZkFQEFGsQQJeAxDU6nsmzBUhgVL4XHRMXV7OZWCtoAndo/ti6KzqL9NJREwjXJKQtgC/N124pB9OLgDW7vClGyU58pHBwPpuI4MQJTBCY/ai04vhTnlpi38e/aoJcD2d+c988qUCoEHObNEIDYkVQds4qef6MfPSjUqM57VodDaa6I8rs842QGqNOOnE+H+oVbl7AJ2pyD+vngW5r5+HUX9QDNR74itUBqq/AI/Db5lkXzf72CNM7SDlXpFaSmwW6myl1EyHT5bgEPZLiE1Na3nMHlYzZMZGmyUyZ6eEOpfWu1GEZeeIC1gI+3EdqYbrLGIu7ppPX20ekSzSmg3FEXqJ87CcVV/1eKYCEtFr/ywB5yqrur8oFSPKaEZbpl2XegCrSSLYghoFi09R8sCyNMSRRk+Lcj7DmtSAV77IfY6CQHlpW+FgTAkotKqZjG5iY0CNwHTutq2jhiyAD/IuaPbrI6uRs4=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(396003)(346002)(136003)(46966006)(36840700001)(40470700004)(5660300002)(7416002)(7406005)(356005)(921005)(8936002)(82740400003)(36860700001)(82310400005)(81166007)(2906002)(54906003)(26005)(7696005)(110136005)(2616005)(316002)(83380400001)(41300700001)(6666004)(478600001)(70586007)(4326008)(70206006)(8676002)(47076005)(336012)(426003)(1076003)(186003)(40460700003)(40480700001)(36756003)(86362001)(83996005)(36900700001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 06:28:18.1409
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94d1939b-66a1-4f0f-ffc6-08da5f18b721
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4114
+References: <CGME20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p4>
+ <20220706052217epcms2p444cc8608b21d483a66a43ecf4f2140d4@epcms2p4>
+In-Reply-To: <20220706052217epcms2p444cc8608b21d483a66a43ecf4f2140d4@epcms2p4>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Wed, 6 Jul 2022 08:28:11 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPfA_5a9bfx5=p=2qj1GxLRxt-1WsHwPfT3iho48mxiANw@mail.gmail.com>
+Message-ID: <CAJKOXPfA_5a9bfx5=p=2qj1GxLRxt-1WsHwPfT3iho48mxiANw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/5] dt-bindings: phy: Add ARTPEC-8 PCIe phy
+To:     wangseok.lee@samsung.com
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver is the only caller of vfio_pin/unpin_pages that might pass
-in a non-contiguous PFN list, but in many cases it has a contiguous PFN
-list to process. So letting VFIO API handle a non-contiguous PFN list
-is actually counterproductive.
+On Wed, 6 Jul 2022 at 07:22, Wangseok Lee <wangseok.lee@samsung.com> wrote:
+>
+> On 05/07/2022 19:59, Krzysztof Kozlowski wrote:
+> > On 29/06/2022 09:18, Wangseok Lee wrote:
+> >> Just a gentle ping for this patch, if any concern on this patch please let me know.
+> >>
+> >
+> > You received comments to fix in this patch. Exactly four. Four important
+> > points to fix. Therefore what is this ping about?
+> >
+> > Without fixing these items, your patch cannot be accepted. What is more
+> > to ping here?
+> >
+> > Best regards,
+> > Krzysztof
+>
+> I tried to receive your opinion about the fix point .
+> I will request a review again after modifying it in the next patch.
 
-Add a pair of simple loops to pass in contiguous PFNs only, to have an
-efficient implementation in VFIO.
+But there was no quote about any fix point in your message. You
+replied on top of it so there was no reference to any previous topic.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/s390/cio/vfio_ccw_cp.c | 70 +++++++++++++++++++++++++++-------
- 1 file changed, 56 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/s390/cio/vfio_ccw_cp.c b/drivers/s390/cio/vfio_ccw_cp.c
-index 0c2be9421ab7..3b94863ad24e 100644
---- a/drivers/s390/cio/vfio_ccw_cp.c
-+++ b/drivers/s390/cio/vfio_ccw_cp.c
-@@ -90,6 +90,38 @@ static int pfn_array_alloc(struct pfn_array *pa, u64 iova, unsigned int len)
- 	return 0;
- }
- 
-+/*
-+ * pfn_array_unpin() - Unpin user pages in memory
-+ * @pa: pfn_array on which to perform the operation
-+ * @vdev: the vfio device to perform the operation
-+ * @pa_nr: number of user pages to unpin
-+ *
-+ * Only unpin if any pages were pinned to begin with, i.e. pa_nr > 0,
-+ * otherwise only clear pa->pa_nr
-+ */
-+static void pfn_array_unpin(struct pfn_array *pa,
-+			    struct vfio_device *vdev, int pa_nr)
-+{
-+	int unpinned = 0, npage = 1;
-+
-+	while (unpinned < pa_nr) {
-+		unsigned long *first = &pa->pa_iova_pfn[unpinned];
-+		unsigned long *last = &first[npage];
-+
-+		if (unpinned + npage < pa_nr &&
-+		    *first + npage == *last) {
-+			npage++;
-+			continue;
-+		}
-+
-+		vfio_unpin_pages(vdev, first, npage);
-+		unpinned += npage;
-+		npage = 1;
-+	}
-+
-+	pa->pa_nr = 0;
-+}
-+
- /*
-  * pfn_array_pin() - Pin user pages in memory
-  * @pa: pfn_array on which to perform the operation
-@@ -101,34 +133,44 @@ static int pfn_array_alloc(struct pfn_array *pa, u64 iova, unsigned int len)
-  */
- static int pfn_array_pin(struct pfn_array *pa, struct vfio_device *vdev)
- {
-+	int pinned = 0, npage = 1;
- 	int ret = 0;
- 
--	ret = vfio_pin_pages(vdev, pa->pa_iova_pfn, pa->pa_nr,
--			     IOMMU_READ | IOMMU_WRITE, pa->pa_pfn);
-+	while (pinned < pa->pa_nr) {
-+		unsigned long *first = &pa->pa_iova_pfn[pinned];
-+		unsigned long *last = &first[npage];
- 
--	if (ret < 0) {
--		goto err_out;
--	} else if (ret > 0 && ret != pa->pa_nr) {
--		vfio_unpin_pages(vdev, pa->pa_iova_pfn, ret);
--		ret = -EINVAL;
--		goto err_out;
-+		if (pinned + npage < pa->pa_nr &&
-+		    *first + npage == *last) {
-+			npage++;
-+			continue;
-+		}
-+
-+		ret = vfio_pin_pages(vdev, first, npage,
-+				     IOMMU_READ | IOMMU_WRITE,
-+				     &pa->pa_pfn[pinned]);
-+		if (ret < 0) {
-+			goto err_out;
-+		} else if (ret > 0 && ret != npage) {
-+			pinned += ret;
-+			ret = -EINVAL;
-+			goto err_out;
-+		}
-+		pinned += npage;
-+		npage = 1;
- 	}
- 
- 	return ret;
- 
- err_out:
--	pa->pa_nr = 0;
--
-+	pfn_array_unpin(pa, vdev, pinned);
- 	return ret;
- }
- 
- /* Unpin the pages before releasing the memory. */
- static void pfn_array_unpin_free(struct pfn_array *pa, struct vfio_device *vdev)
- {
--	/* Only unpin if any pages were pinned to begin with */
--	if (pa->pa_nr)
--		vfio_unpin_pages(vdev, pa->pa_iova_pfn, pa->pa_nr);
--	pa->pa_nr = 0;
-+	pfn_array_unpin(pa, vdev, pa->pa_nr);
- 	kfree(pa->pa_iova_pfn);
- }
- 
--- 
-2.17.1
-
+Best regards,
+Krzysztof
