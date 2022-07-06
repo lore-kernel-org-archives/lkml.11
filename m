@@ -2,131 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1747AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2207C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232948AbiGFKOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
+        id S231718AbiGFKPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232856AbiGFKOc (ORCPT
+        with ESMTP id S229949AbiGFKPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:14:32 -0400
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9DBAB1FE;
-        Wed,  6 Jul 2022 03:14:31 -0700 (PDT)
-Received: by mail-qk1-f175.google.com with SMTP id z12so10663298qki.3;
-        Wed, 06 Jul 2022 03:14:31 -0700 (PDT)
+        Wed, 6 Jul 2022 06:15:43 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CE3B1FE;
+        Wed,  6 Jul 2022 03:15:42 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so8697516wmb.3;
+        Wed, 06 Jul 2022 03:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8iSPnCQlsn+unzEqQcxOovCWHEse64Sct+b/T3iSIHY=;
+        b=aj0FxjuXf5+sYxguaPR56ZprS55VHe5p8rrpzjIRCgOqycEJExWkGLaeRK3bPBodEJ
+         Gfg9DK1JRt2nsD/jT3t+r5R4BzX9VYkUj+62J3DYIKHyNHnGGqMsRvmvfV3YwHP/NiGj
+         q8kqKp0caReF+UEGk7/Qe/2J3lBVLMTwAONjOsuz1HvtgF+Bsg1twpdOUr/kVYxu8TPS
+         ZLhsaEK3atv4PCC+o8S0tUw7fma2qXrFc4jq3R58hS3/fPCZva/3808NI7u/atFvHxU3
+         O/v8IOQDlpGCzudIpAW6jMZ3QnELL7udgODcy4IRqEKr+afWPOBEZjjSY2GAQkCeHdWs
+         C7sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NzIRuH6wU929NRt5HMIsmc4z3oC4w64egTYXgfNitrM=;
-        b=slJIU7GxNi8g9C0MUWZDViJYqpb7rFn0Ni9ZcDghA3IxWsbR+UdRp2LFeKuD+iYnxT
-         MlIMJ+nJx+9uOJkLOLupd5Dy6UqAa5qgWF8h5zXr210uAKnd7Kin4bl5mGB7vClQFwF7
-         8Y95p1TERKimGgL2ewgDPru6kEkxz9xe+FIP5+JhkTuw1bpiqoreGMZgTfiBxfHgxvjd
-         prvFebGpRlUbMPEubjKtBSec6CvN4JtThvJmrCc76PFmhfuzcUZBb/41Qd7G4ZPyQ09p
-         hbAlmu3P7ECJ+Yg4sC57CW+5sMdA27sCl2pI5BkNf72cERMZ1rp1cYx4sLJsZ6UQUw+b
-         VtPA==
-X-Gm-Message-State: AJIora8zz6OpH6DWg+OLp3SdQeGi8RW7M2U0gA+mnOYyNbbbKud6y8dO
-        TCcgszn0JSoD8FE+QAbCpCOu4Y/TQ+hoFtnB
-X-Google-Smtp-Source: AGRyM1vFr7+izcQe86fOaaoRtzk4ceLzcOmPr5oJXAZu/hluO7lsDxVDZOMLdWdg0Q/L1BnKm6w2SQ==
-X-Received: by 2002:a05:620a:4610:b0:6b1:b83c:a16b with SMTP id br16-20020a05620a461000b006b1b83ca16bmr24542787qkb.487.1657102470871;
-        Wed, 06 Jul 2022 03:14:30 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id h4-20020a05620a284400b006a787380a5csm30248003qkp.67.2022.07.06.03.14.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 03:14:30 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id l11so26471299ybu.13;
-        Wed, 06 Jul 2022 03:14:30 -0700 (PDT)
-X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
- r1-20020a5b06c1000000b00669a7c34c33mr42474483ybq.543.1657102064364; Wed, 06
- Jul 2022 03:07:44 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8iSPnCQlsn+unzEqQcxOovCWHEse64Sct+b/T3iSIHY=;
+        b=WbWk62TTg5Lo7KjzoL67vnXGFWaCnExSSr0ypF6v/2C/t830YIAYFiVIBETVf7LOVl
+         kN+eOTPa004UiXUX9M3IUu56+a1tghBARcSgQ3CtKHEw/gl2kRByvvgjTYe2g8zpS1RX
+         yB6ba0Feqth/yDudjQvCuc8T7jwrJa8xWcMXDzWphDp52BCRdh1QrWiJUYh7dRmrlB11
+         ayHYvkxHFUBdcSP9/BNUeUP9YKkPpPzqTB89CJFeH4DvRD50dmKid27iVM102as0WFw5
+         dArTHOZ4Kgw3n8uWkQI95YtEHabS28Gr2YcRpwwFGjFj+1WWvSwjOoMuPPCnEAUchDYx
+         DoFQ==
+X-Gm-Message-State: AJIora+LOh3Ou7ObhtKyTcbsvFRPYDwGdVbNWkywKc7LUGkTlW7R0B/w
+        KkdefzzqU0Nzzgc3Wtql5mo=
+X-Google-Smtp-Source: AGRyM1trurU8mdAXWWae97aHNRdGMRp2KksttXISCTNRtIBYP+sMAcFFNPp2a9M21Jsx8Lfhhyqd/w==
+X-Received: by 2002:a7b:c8d2:0:b0:3a0:2fd0:177 with SMTP id f18-20020a7bc8d2000000b003a02fd00177mr42782003wml.23.1657102541471;
+        Wed, 06 Jul 2022 03:15:41 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id q11-20020adfea0b000000b0020fff0ea0a3sm34783485wrm.116.2022.07.06.03.15.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 03:15:41 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 11:15:39 +0100
+From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 00/98] 5.15.53-rc1 review
+Message-ID: <YsVgy1TGlldNqADK@debian>
+References: <20220705115617.568350164@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20220617144031.2549432-1-alexandr.lobakin@intel.com> <20220617144031.2549432-4-alexandr.lobakin@intel.com>
-In-Reply-To: <20220617144031.2549432-4-alexandr.lobakin@intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 6 Jul 2022 12:07:33 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWqxqg7JubLK=KOX-V8JjoMbEKRPON+WhST=GKcjn8Y+w@mail.gmail.com>
-Message-ID: <CAMuHMdWqxqg7JubLK=KOX-V8JjoMbEKRPON+WhST=GKcjn8Y+w@mail.gmail.com>
-Subject: Re: [PATCH v3 3/7] bitops: unify non-atomic bitops prototypes across architectures
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 7:09 PM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
-> Currently, there is a mess with the prototypes of the non-atomic
-> bitops across the different architectures:
->
-> ret     bool, int, unsigned long
-> nr      int, long, unsigned int, unsigned long
-> addr    volatile unsigned long *, volatile void *
->
-> Thankfully, it doesn't provoke any bugs, but can sometimes make
-> the compiler angry when it's not handy at all.
-> Adjust all the prototypes to the following standard:
->
-> ret     bool                            retval can be only 0 or 1
-> nr      unsigned long                   native; signed makes no sense
-> addr    volatile unsigned long *        bitmaps are arrays of ulongs
->
-> Next, some architectures don't define 'arch_' versions as they don't
-> support instrumentation, others do. To make sure there is always the
-> same set of callables present and to ease any potential future
-> changes, make them all follow the rule:
->  * architecture-specific files define only 'arch_' versions;
->  * non-prefixed versions can be defined only in asm-generic files;
-> and place the non-prefixed definitions into a new file in
-> asm-generic to be included by non-instrumented architectures.
->
-> Finally, add some static assertions in order to prevent people from
-> making a mess in this room again.
-> I also used the %__always_inline attribute consistently, so that
-> they always get resolved to the actual operations.
->
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Acked-by: Mark Rutland <mark.rutland@arm.com>
-> Reviewed-by: Yury Norov <yury.norov@gmail.com>
+Hi Greg,
 
->  arch/m68k/include/asm/bitops.h                | 49 +++++++++++++------
+On Tue, Jul 05, 2022 at 01:57:18PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.53 release.
+> There are 98 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 07 Jul 2022 11:55:56 +0000.
+> Anything received after that time might be too late.
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Build test (gcc version 11.3.1 20220627):
+mips: 62 configs -> no failure
+arm: 99 configs -> no failure
+arm64: 3 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+csky allmodconfig -> no failure
+powerpc allmodconfig -> no failure
+riscv allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
 
-Gr{oetje,eeting}s,
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
+mips: Booted on ci20 board. No regression. [3]
 
-                        Geert
+[1]. https://openqa.qa.codethink.co.uk/tests/1458
+[2]. https://openqa.qa.codethink.co.uk/tests/1461
+[3]. https://openqa.qa.codethink.co.uk/tests/1464
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Regards
+Sudip
