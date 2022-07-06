@@ -2,88 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD465C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED41C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233479AbiGFO3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
+        id S232418AbiGFObP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233494AbiGFO3U (ORCPT
+        with ESMTP id S231827AbiGFObO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:29:20 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7DD72658;
-        Wed,  6 Jul 2022 07:29:19 -0700 (PDT)
-Received: from [192.168.1.87] (unknown [122.171.17.200])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8CB0920DDC9F;
-        Wed,  6 Jul 2022 07:29:16 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8CB0920DDC9F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1657117759;
-        bh=PFSLHpgWMBD62kPT/Dh5GcD1zjQveXoTA7H8jWtS0Rg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jVZr9LrBR+IQGvZ5v0LFYRVWxc1CeuB0lMfFdHnt8C13yOgKFb1e72XpViMLqryKn
-         p/V7BnBEwX7D8eTdxSh5EbmPxRA2LHEWM9N6nRP1Tl3YSgTpuU8FJ8lAGmzUGTKruO
-         S+gW/SgtBRBLdxC7zGczPfmLf1iEG6MZSnaCQhtQ=
-Message-ID: <1c4bc0cf-6665-3fe6-28d8-8e9613e3f9d4@linux.microsoft.com>
-Date:   Wed, 6 Jul 2022 19:59:09 +0530
+        Wed, 6 Jul 2022 10:31:14 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB981EC63;
+        Wed,  6 Jul 2022 07:31:13 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id q82so6984998pgq.6;
+        Wed, 06 Jul 2022 07:31:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=w2xT/7PtZ3tagdbQ/WcQuh2A722VFZF5Mx+6h0X0mqc=;
+        b=FHhGi4dSerZiLVraVC71UzQcIY/dX8G9dwqPSniHYz1DMQyHRIUrnPpLmMUDhdIt4F
+         DC3km78EYNYJvy0k+6SCXJG16xhLsYFmv8RQyARjtNQ3he+v8hRV/CY0OfDAC/B6Lyg8
+         pKy90tQXmQmph/4CMz6TdVEyEriDBESocTMUAWCpgudrr5guo838IXSv8HgB/xl6sbk/
+         mNbtMqUPRQjxWHhtxjomSOOu31Hhap+BgnuBux3LL9lRneU4fDbCaVC17gJFgJHcfe3S
+         NbYCceM2vHwYRb2abNn0GIhMptJ03g2z0K3nh/kZQCCyBn9AJkDhQh1KVjvqw/dHLKXo
+         BAQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=w2xT/7PtZ3tagdbQ/WcQuh2A722VFZF5Mx+6h0X0mqc=;
+        b=wfQv7ge7BhSWMU414zE7N8UL+uZRcoRWIxWcZMD45h357MEe881AZn5OTpCuiR9ljj
+         +fzO6tR7oXXY4SFww5Ki50mh4ks5672kUJsUVVuyd73GHONBUrYKixsY6UiLTgEeVrYQ
+         jj1OQS5U+h8pv68JKZVABGbKuCv9d5FlGZn6xwy4sR5kAjvt1DvF9yTQKwf/XncEwCH9
+         dZMxBip9MzEC8bi22Q2uKFTY8G72hN3i+TjXv4faGHDHwG0pn/jolwFkH+6re3dv0PxP
+         Ox+Gfz9vAwc+YJqLrNrRN4Ae9GA0fqwhiYQ0SXiucDFf0/Q7FxivBD9t7YrKGHAdmOrf
+         Ojmg==
+X-Gm-Message-State: AJIora/uD6B9Se+wM2ozYlOIZT+8iWtfemUFaADKiGf0Ss1OYFprXmZq
+        2Ehh5cVzIG1EqH8OpS0NSWQ=
+X-Google-Smtp-Source: AGRyM1tb3fDyu58P0qGU+xKZ+uH0ststnJ1GBLgXwZPNsLr3hizpL9L5hnRKltaVSZByHQS2CK1VOg==
+X-Received: by 2002:a65:6bd6:0:b0:39d:4f85:9ecf with SMTP id e22-20020a656bd6000000b0039d4f859ecfmr35962872pgw.336.1657117873111;
+        Wed, 06 Jul 2022 07:31:13 -0700 (PDT)
+Received: from [192.168.11.9] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id mn1-20020a17090b188100b001ef42b3c5besm4505153pjb.23.2022.07.06.07.31.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 07:31:12 -0700 (PDT)
+Message-ID: <a5544eb7-6044-0b84-cf1c-17ca849c641e@gmail.com>
+Date:   Wed, 6 Jul 2022 23:31:09 +0900
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] scsi: storvsc: Prevent running tasklet for long
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 0/5] Address some issues with sphinx detection
 Content-Language: en-US
-To:     Saurabh Singh Sengar <ssengar@linux.microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ssengar@microsoft.com, mikelley@microsoft.com
-References: <1657035141-2132-1-git-send-email-ssengar@linux.microsoft.com>
- <b4fea161-41c5-a03e-747b-316c74eb986c@linux.microsoft.com>
- <20220706095358.GA3320@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-From:   Praveen Kumar <kumarpraveen@linux.microsoft.com>
-In-Reply-To: <20220706095358.GA3320@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mchehab+huawei@kernel.org,
+        ksummit@lists.linux.dev, Akira Yokosawa <akiyks@gmail.com>
+References: <cover.1656756450.git.mchehab@kernel.org>
+ <d0e1a08a-b965-ada6-e026-4e1cc38fbd90@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <d0e1a08a-b965-ada6-e026-4e1cc38fbd90@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06-07-2022 15:23, Saurabh Singh Sengar wrote:
-> On Wed, Jul 06, 2022 at 02:44:42PM +0530, Praveen Kumar wrote:
->> On 05-07-2022 21:02, Saurabh Sengar wrote:
->>> There can be scenarios where packets in ring buffer are continuously
->>> getting queued from upper layer and dequeued from storvsc interrupt
->>> handler, such scenarios can hold the foreach_vmbus_pkt loop (which is
->>> executing as a tasklet) for a long duration. Theoretically its possible
->>> that this loop executes forever. Add a condition to limit execution of
->>> this tasklet for finite amount of time to avoid such hazardous scenarios.
->>>
->>> Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
->>> ---
->>>  drivers/scsi/storvsc_drv.c | 7 +++++++
->>>  1 file changed, 7 insertions(+)
->>>
->>> diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
->>> index fe000da..0c428cb 100644
->>> --- a/drivers/scsi/storvsc_drv.c
->>> +++ b/drivers/scsi/storvsc_drv.c
->>> @@ -60,6 +60,9 @@
->>>  #define VMSTOR_PROTO_VERSION_WIN8_1	VMSTOR_PROTO_VERSION(6, 0)
->>>  #define VMSTOR_PROTO_VERSION_WIN10	VMSTOR_PROTO_VERSION(6, 2)
->>>  
->>> +/* channel callback timeout in ms */
->>> +#define CALLBACK_TIMEOUT		5
->>
->> If I may, it would be good if we have the CALLBACK_TIMEOUT configurable based upon user's requirement with default value to '5'.
->> I assume, this value '5' fits best to the use-case which we are trying to resolve here. Thanks.
+[CC: update address of ksummit]
+
+On Tue, 5 Jul 2022 13:15:57 +0900, Akira Yokosawa wrote:
+> Hi Mauro,
+[...]
 > 
-> Agree, how about adding a sysfs entry for this parameter
+> Fedora, RHEL/CentOS, and openSUSE Leap provide helpful packages
+> for installing math expression support.
+> 
+>     Fedora 36               python3-sphinx-latex (python3-sphinx depends on this)
+>     RHEL 9/CentOS stream 9  ditto
+>     openSUSE Leap 15.4      python3-Sphinx_4_2_0-latex
+>                                 (python3-Sphinx_4_2_0 depends on this) or
+>                             python3-Sphinx-latex
+>                                 (python3-Sphinx depends on this, version: 2.3.1)
+
+These packages are supposed to cover LaTeX packages necessary
+for building LaTeX sources the version of Sphinx generates.
+
+HOWEVER, in my test of openSUSE Leap 15.4, pythno3-Sphinx-4_2_0-latex
+does not cover texlive-tex-gyre, which is required since Sphinx 4.0.0.
+
+Changelog of Sphinx 4.0.0 [1] says:
+
+> Dependencies
+>
+> 4.0.0b1
+>
+> [...]
+>   * LaTeX: add tex-gyre font dependency
+
+[1]: https://www.sphinx-doc.org/en/master/changes.html#release-4-0-0-released-may-09-2021
+
+I'm thinking of opening a ticket at openSUSE's bugzilla.
+
+Fedora 36's python3-sphinx-latex (for Sphinx 4.4.0) has
+texlive-collection-fontsrecommended and covers texlive-tex-gyre naturally.
+
+        Thanks, Akira
+
 > 
 
-Sounds good to me. Thanks.
-
-Regards,
-
-~Praveen.
