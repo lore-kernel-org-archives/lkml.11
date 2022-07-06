@@ -2,98 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7032DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B598C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234160AbiGFQO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39700 "EHLO
+        id S234444AbiGFQPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234544AbiGFQM1 (ORCPT
+        with ESMTP id S234005AbiGFQPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:12:27 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C5126AF8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:12:26 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id bf13so1324486pgb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 09:12:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4WFgEfc4lU4Bdkh+g3sOJNLYHrZYR9dECbM6bIzs7yM=;
-        b=iflVFHtvvvxlXskuJbiR0vcElZRuvHG9MtJzklGcKVV+DFwhKJNNDgDnMX8fxPGQa5
-         LrEcqwqxrUWJSiYMS8FYUGGsUVEpi8gYInPAc2d1y91aUT+OZDdNZlio+p8nfS+6BcxH
-         OKsqHYIdiPskSJWmG4GkDtYuLETZbIKi6oPxfXzdeGBZPJt+nHYnUpAZ/4uHWSgvcbVf
-         gk5EtbdYAoljtvMVLWEwMiJBXTiFJ14Ow5wzcFdLN6zB1G7lO2vyuyDhhwnXwqUlfQ/L
-         pBvaxzT4wUPA8RwwstqDcT5jEc+4Mc9obMs4SJOi5/VCDOzhE1jtLImPZeA3e9rxfrH0
-         Qtyw==
+        Wed, 6 Jul 2022 12:15:20 -0400
+Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BA917AA2;
+        Wed,  6 Jul 2022 09:15:19 -0700 (PDT)
+Received: by mail-io1-f43.google.com with SMTP id v185so14427946ioe.11;
+        Wed, 06 Jul 2022 09:15:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4WFgEfc4lU4Bdkh+g3sOJNLYHrZYR9dECbM6bIzs7yM=;
-        b=B4ZL3PZ/W7Y9ccEuX8nkDMnBCmtIpIjGFYSEW1AajLXOnkYIev9eoNG6p91PiEb5LB
-         4BEgQq70cxZ4Tjon6haPKEOhxoKJhijsrcyNnsHkswGn6kBfCgmpGMzedSspT5odYmjD
-         YKSZ0dwTGGDN/AmD3CSuUYKfUnyiyECq5OqsqOJ846OAmt2YTYhHjDJFbd59Q68ab/wO
-         LlRnHGKINbYIHJmgZdHrccvtrygRE7w55jK3QRmVRwRnit/yv052RvA3KcRgjBzXLKoD
-         vYmeEXXQcMDZWmZLCH1PW8TKAbOAbhIXXM4MVOD6VFAKhwoDGJFFO71KbKmvWJyDOJr1
-         nldw==
-X-Gm-Message-State: AJIora9p2W1yoFvU1w/9fLRklTjG+JFvfll4OsviuChAjC+OUBHY8WsW
-        fJCHRTeZFVk8EK5pV62cYWuT3Q==
-X-Google-Smtp-Source: AGRyM1vptzfZUA+oT/ChE2oyDliXXD0XSTU6D7fqD5ilJCyC4Zsj7OFsmjVD43oTGnq61RX/svMQeg==
-X-Received: by 2002:a65:6c03:0:b0:412:ac5a:bcab with SMTP id y3-20020a656c03000000b00412ac5abcabmr1517657pgu.7.1657123945682;
-        Wed, 06 Jul 2022 09:12:25 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id m184-20020a6258c1000000b005289eafbd08sm2650556pfb.18.2022.07.06.09.12.24
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=yIuMK+Epa4CeSgafcIsVixZuNX7hOleHdf6ygTqGQic=;
+        b=KyPDdrCKAep8qU83RXPBG6KW1vNzc2QUV/dTQPp9hpiIjwPdbBDDC4kgskodiNBK9x
+         LDMTx/LSFPCmrF/uT9UfOEDSP2Fr5jQ7iH1vxOvcfYAlHhFyk6CFIKuKazVRZzpek0s4
+         +uQLnCnZFyvGeeqdxhZVS+qyGx06oIcYgX8INgDP5rnA0QRyoRMw22J5limjChguXVQY
+         fCBSFLrKktrhu+0JrzwHm0AhF8KIOrqhHaCLcXM3ZXUezVwCz4KzqQWsJtPDeeMbFjl6
+         ilkpYpODy/DvGHuzU+6kr22/hmFIUXbuz0QTtWvGkdilRI5vE9X/3L1zmUXy2Q+3/GIs
+         xsfg==
+X-Gm-Message-State: AJIora9I0QXSQ7R2Bv+53LvMSeTL1jtp1rx5/3UJqnpltopFh583ypo6
+        QiFQCJ1T223G+/MR59/W+g==
+X-Google-Smtp-Source: AGRyM1tgaH87vbPXIyTm51/rl0HRCmr9Zvj2FpHEwqOBNW/fakBKe/7zvs2hlfs05Iy5v7d+JKaY6Q==
+X-Received: by 2002:a02:9709:0:b0:339:ef87:c30b with SMTP id x9-20020a029709000000b00339ef87c30bmr25332247jai.214.1657124118887;
+        Wed, 06 Jul 2022 09:15:18 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id r16-20020a02b110000000b0032e271a558csm15962003jah.168.2022.07.06.09.15.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 09:12:24 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 16:12:20 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Subject: Re: [PATCH v2 02/21] KVM: VMX: Drop bits 31:16 when shoving
- exception error code into VMCS
-Message-ID: <YsW0ZDkfVywkQEJO@google.com>
-References: <20220614204730.3359543-1-seanjc@google.com>
- <20220614204730.3359543-3-seanjc@google.com>
- <df72cfcdda55b594d6bbbd9b5b0e2b229dc6c718.camel@redhat.com>
+        Wed, 06 Jul 2022 09:15:18 -0700 (PDT)
+Received: (nullmailer pid 143080 invoked by uid 1000);
+        Wed, 06 Jul 2022 16:15:17 -0000
+Date:   Wed, 6 Jul 2022 10:15:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jimmy Chen =?utf-8?B?KOmZs+awuOmBlCk=?= <jimmy.chen@moxa.com>
+Cc:     "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] Add an entry for MOXA platform board
+Message-ID: <20220706161517.GA140402-robh@kernel.org>
+References: <SEYPR01MB4272F28F81FB51152496D9CBFA809@SEYPR01MB4272.apcprd01.prod.exchangelabs.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <df72cfcdda55b594d6bbbd9b5b0e2b229dc6c718.camel@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <SEYPR01MB4272F28F81FB51152496D9CBFA809@SEYPR01MB4272.apcprd01.prod.exchangelabs.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022, Maxim Levitsky wrote:
-> On Tue, 2022-06-14 at 20:47 +0000, Sean Christopherson wrote:
-> > Deliberately truncate the exception error code when shoving it into the
-> > VMCS (VM-Entry field for vmcs01 and vmcs02, VM-Exit field for vmcs12).
-> > Intel CPUs are incapable of handling 32-bit error codes and will never
-> > generate an error code with bits 31:16, but userspace can provide an
-> > arbitrary error code via KVM_SET_VCPU_EVENTS.  Failure to drop the bits
-> > on exception injection results in failed VM-Entry, as VMX disallows
-> > setting bits 31:16.  Setting the bits on VM-Exit would at best confuse
-> > L1, and at worse induce a nested VM-Entry failure, e.g. if L1 decided to
-> > reinject the exception back into L2.
+On Wed, Jul 06, 2022 at 07:22:23AM +0000, Jimmy Chen (陳永達) wrote:
+> UC-8220 & UC-8210 hardware compatibility model
 > 
-> Wouldn't it be better to fail KVM_SET_VCPU_EVENTS instead if it tries
-> to set error code with uppper 16 bits set?
+> Signed-off-by: Jimmy Chen <jimmy.chen@moxa.com>
+> ---
+>  .../devicetree/bindings/arm/moxa.yaml         | 21 +++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/moxa.yaml
 
-No, because AMD CPUs generate error codes with bits 31:16 set.  KVM "supports"
-cross-vendor live migration, so outright rejecting is not an option.
+What's the relationship to moxart.yaml?
 
-> Or if that is considered ABI breakage, then KVM_SET_VCPU_EVENTS code
-> can truncate the user given value to 16 bit.
-
-Again, AMD, and more specifically SVM, allows bits 31:16 to be non-zero, so
-truncation is only correct for VMX.  I say "VMX" instead of "Intel" because
-architecturally the Intel CPUs do have 32-bit error codes, it's just the VMX
-architecture that doesn't allow injection of 32-bit values.
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/moxa.yaml b/Documentation/devicetree/bindings/arm/moxa.yaml
+> new file mode 100644
+> index 000000000000..73f4bf883b06
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/moxa.yaml
+> @@ -0,0 +1,21 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/arm/moxa.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MOXA platform device tree bindings
+> +
+> +maintainers:
+> +  - Jimmy Chen <jimmy.chen@moxa.com>
+> +
+> +properties:
+> +  compatible:
+> +    description: UC-82XX-LX embedded computer
+> +    items:
+> +      - const: moxa,uc-8210
+> +      - const: moxa,uc-8220
+> +
+> +additionalProperties: true
+> +...
+> +
+> -- 
+> 2.20.1
+> 
