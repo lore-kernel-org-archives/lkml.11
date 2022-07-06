@@ -2,153 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05433CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED044C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:08:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbiGFOHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        id S231735AbiGFOIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiGFOHG (ORCPT
+        with ESMTP id S231446AbiGFOIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:07:06 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28E5B9A;
-        Wed,  6 Jul 2022 07:07:04 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id z3so3993333ilz.5;
-        Wed, 06 Jul 2022 07:07:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HKcelWJsUXG+18Nwfg8eobymoMxt5y7xTMcV4rJ4jIM=;
-        b=K14oQmdverp2DzpSpOp8APkZITqbUnfMthYycoeQdvUqVvI/bcgfwOelE2yS5C4Le5
-         /XnH0L1tHXo/jcrD7mi+2jQzXHbBwN1pK3c3xMYg1toLwQrDDoW1JNbzISpvuVdNP+7y
-         SNuTPobiRWsw66eGtxZzgmbSjpPd1FzwcSXb5qurfhCTyNYzN+iFvAYUlVS7TILU+idv
-         WELv3ji7pTZGxOCNEhHYeNOAg87od0Mdj8A6dvkjFApQRnOoNkq+OUcj+/AzGMuQTMix
-         FQbEebbmq9xZecUXbleGzSS/OrtSwD/2/EjEKYPXANsr96w3qYZJcCLUpyDorY2Q7IZ2
-         aHYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HKcelWJsUXG+18Nwfg8eobymoMxt5y7xTMcV4rJ4jIM=;
-        b=D5xES1tokNFJntcHwP1wLek81KbHUa4cMHr6b5r9pJA6XEfs3qBJ0IZXB19NjehDwJ
-         KDYZIwLlWzUhYrDuOKboHQF6t9mfKKVJIWpdq4DTiRtizbICVLkdtRYgXEO4Z+Uf96Wu
-         wn1KPRFKAEOaizAGdGMMgjBtaH86xYFugkSth48mQTNY9JGWQviAED4WElxNjV2sRz1K
-         krEmsRToqIMyplJ4T46R1sHJcRE+DLWi6Klhu09NdA35in5tD4cGkgPL3CJxNyMTrW6i
-         jGr5+mMwlBKjVIq0ec8F4C0A3Petq8R8Sk9VV5tASXymyNBe2ibAOivOMApGUiOHcKVU
-         o0jA==
-X-Gm-Message-State: AJIora8P1mxyPLVTQP9gqmGy7QNNx5lXumavnKaPdfJdScZhUZzcH+Nt
-        L8z1J8ozgrHxV0YVIOnk4wr0nQ9T1utp+g==
-X-Google-Smtp-Source: AGRyM1tR72Fw7RUjiJaTyk+us/gqsZAWL/OtbmF8MaVczaEhDTDIcshgMbsvUxoACdjtb1nTNSeubA==
-X-Received: by 2002:a92:c242:0:b0:2dc:2df2:a3d1 with SMTP id k2-20020a92c242000000b002dc2df2a3d1mr3788217ilo.111.1657116423548;
-        Wed, 06 Jul 2022 07:07:03 -0700 (PDT)
-Received: from james-x399.localdomain (71-218-105-222.hlrn.qwest.net. [71.218.105.222])
-        by smtp.gmail.com with ESMTPSA id t8-20020a5d8848000000b0067276ff71b4sm16756034ios.44.2022.07.06.07.07.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 07:07:02 -0700 (PDT)
-From:   James Hilliard <james.hilliard1@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     James Hilliard <james.hilliard1@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] bpf/scripts: Generate GCC compatible helpers
-Date:   Wed,  6 Jul 2022 08:06:23 -0600
-Message-Id: <20220706140623.2917858-1-james.hilliard1@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 6 Jul 2022 10:08:35 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C71101B;
+        Wed,  6 Jul 2022 07:08:30 -0700 (PDT)
+Received: from [192.168.100.1] ([82.142.8.70]) by mrelayeu.kundenserver.de
+ (mreue012 [213.165.67.103]) with ESMTPSA (Nemesis) id
+ 1MCXhr-1oICFt3vt5-009i0R; Wed, 06 Jul 2022 16:08:27 +0200
+Message-ID: <8d952be9-8ea4-7ffa-107d-d73d5f08889c@vivier.eu>
+Date:   Wed, 6 Jul 2022 16:08:26 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] m68k: Add forward declaration for show_registers()
+Content-Language: fr
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Finn Thain <fthain@linux-m68k.org>
+Cc:     linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org
+References: <d5b6a7f9af3e82f0ccb67edac09d9ee45d457932.1657114791.git.geert@linux-m68k.org>
+From:   Laurent Vivier <laurent@vivier.eu>
+In-Reply-To: <d5b6a7f9af3e82f0ccb67edac09d9ee45d457932.1657114791.git.geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:yUkA2TeWWfPuZf5nJv8cRVPiE4yBE0sIqwehpUpZpd/uefhryRJ
+ 0qk9Z1mkX4Y20RPySif0caci8yas/uqjZbtWFsJc8a83REsicJxlHWVIMGzEstudXj1eDAE
+ odvsoi5rvqJA4+aVDPtxlopdZzV5p7yeD2W6b+rKdCXOCuzlaE5eBcJrsLLrhJjr3hZyxF1
+ 4MnKII0IVuIH9/fmV8hJQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Nx65Dcr3efc=:8689rSaWT/mZREixusj7TM
+ 0MmMm/EPwzTwDNUY9p8OKGaU7GxQKImimoSafHVltUETbxduPAWLl2NT2hY05y/4kNmDX6NiX
+ egJOWgUNsqKXtqknYYEiEU1y1y1Hl1UVMyGH+iBkXGkkNWos4jO6XCeJPu/OK4T9Qd0X0xUT1
+ 9uNJ05jGQ/xt6+jhoMfvzKmGOguoNuGtLZCGWDcVl1OeDM/+Z6PvIh0Db2ZUVEEJSIBMXNxJW
+ 0ZLb34rgwz/G8pEY4nVIMDyTHmRW9Inl7c59WEUAindXjky9KCwfM8n2PrejddSyoNoVVg/y6
+ 6dABkuu/m8mBTy0Lc51hxJTeUQtB79zFHbela2RAsV4k4gmLNRSPbc5rnqWk/IzpL9L14zVPW
+ JNuX30kdqIFPMo3z4qRhr5OIwLULXXEK+7zeiXtEFKCVCjCyn9oYTksg3ZWwbL0tRzOIMJ+fi
+ v1Sa3QheSoK6TiCj5ozikOecX5OnzYC35VpuW4j0MOTL4ZaBHxH1I8B29sQAYLL8lwsAO1XPX
+ qfD78a9Ul44lDWBmHrQ1fSaKPOkS5QagXYOlF/9xk8fSHs8X6hzXKPLLZgRFDYMFe4O8283ld
+ +rtg1ML2Z9aAsLIdVlRsY89e+rKpkcjpzJUFKun2Tlon5CzA6v71Fecote27Yw/Mn/6Wy4mJP
+ yR1Zrq3IFoeoZf2DyKkAawoRuI5gDVq3QlP2i1KDGDwYzwuAi8FBG7UphbQFVnETACGswphKI
+ 6rMNP29JpEJhqUo/YitblP5SkTGSbiypCE8fNQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current bpf_helper_defs.h helpers are llvm specific and don't work
-correctly with gcc.
+Le 06/07/2022 à 15:48, Geert Uytterhoeven a écrit :
+> There are several forward declarations for show_registers() in C source
+> files.  Replace these by a single common forward declaration in
+> <asm/processor.h>, and include <asm/processor.h> where needed.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+> To be queued in the m68k tree for v5.20.
+> 
+>   arch/m68k/include/asm/processor.h | 1 +
+>   arch/m68k/kernel/traps.c          | 1 +
+>   arch/m68k/mac/macints.c           | 3 +--
+>   arch/m68k/virt/ints.c             | 3 +--
+>   4 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/m68k/include/asm/processor.h b/arch/m68k/include/asm/processor.h
+> index ffeda9aa526a5420..d86b4009880b4e79 100644
+> --- a/arch/m68k/include/asm/processor.h
+> +++ b/arch/m68k/include/asm/processor.h
+> @@ -151,6 +151,7 @@ static inline void release_thread(struct task_struct *dead_task)
+>   }
+>   
+>   unsigned long __get_wchan(struct task_struct *p);
+> +void show_registers(struct pt_regs *regs);
+>   
+>   #define	KSTK_EIP(tsk)	\
+>       ({			\
+> diff --git a/arch/m68k/kernel/traps.c b/arch/m68k/kernel/traps.c
+> index 59fc63feb0dcce8a..5c8cba0efc63e580 100644
+> --- a/arch/m68k/kernel/traps.c
+> +++ b/arch/m68k/kernel/traps.c
+> @@ -36,6 +36,7 @@
+>   #include <linux/uaccess.h>
+>   #include <asm/traps.h>
+>   #include <asm/machdep.h>
+> +#include <asm/processor.h>
+>   #include <asm/siginfo.h>
+>   #include <asm/tlbflush.h>
+>   
+> diff --git a/arch/m68k/mac/macints.c b/arch/m68k/mac/macints.c
+> index 883e48230f87a187..5cbaf6e9497c698a 100644
+> --- a/arch/m68k/mac/macints.c
+> +++ b/arch/m68k/mac/macints.c
+> @@ -126,8 +126,7 @@
+>   #include <asm/mac_baboon.h>
+>   #include <asm/hwtest.h>
+>   #include <asm/irq_regs.h>
+> -
+> -extern void show_registers(struct pt_regs *);
+> +#include <asm/processor.h>
+>   
+>   static unsigned int mac_irq_startup(struct irq_data *);
+>   static void mac_irq_shutdown(struct irq_data *);
+> diff --git a/arch/m68k/virt/ints.c b/arch/m68k/virt/ints.c
+> index 95818f901ebe322d..896aa6eb8bcc6f3d 100644
+> --- a/arch/m68k/virt/ints.c
+> +++ b/arch/m68k/virt/ints.c
+> @@ -12,6 +12,7 @@
+>   #include <asm/hwtest.h>
+>   #include <asm/irq.h>
+>   #include <asm/irq_regs.h>
+> +#include <asm/processor.h>
+>   #include <asm/virt.h>
+>   
+>   #define GFPIC_REG_IRQ_PENDING           0x04
+> @@ -19,8 +20,6 @@
+>   #define GFPIC_REG_IRQ_DISABLE           0x0c
+>   #define GFPIC_REG_IRQ_ENABLE            0x10
+>   
+> -extern void show_registers(struct pt_regs *regs);
+> -
+>   static struct resource picres[6];
+>   static const char *picname[6] = {
+>   	"goldfish_pic.0",
 
-Generate gcc compatible headers based on the format in bpf-helpers.h.
-
-See:
-https://github.com/gcc-mirror/gcc/blob/releases/gcc-12.1.0/gcc/config/bpf/bpf-helpers.h#L24-L27
-
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
----
- scripts/bpf_doc.py | 43 ++++++++++++++++++++++++++-----------------
- 1 file changed, 26 insertions(+), 17 deletions(-)
-
-diff --git a/scripts/bpf_doc.py b/scripts/bpf_doc.py
-index a0ec321469bd..36fb400a5731 100755
---- a/scripts/bpf_doc.py
-+++ b/scripts/bpf_doc.py
-@@ -739,6 +739,24 @@ class PrinterHelpers(Printer):
- 
-     seen_helpers = set()
- 
-+    def print_args(self, proto):
-+        comma = ''
-+        for i, a in enumerate(proto['args']):
-+            t = a['type']
-+            n = a['name']
-+            if proto['name'] in self.overloaded_helpers and i == 0:
-+                    t = 'void'
-+                    n = 'ctx'
-+            one_arg = '{}{}'.format(comma, self.map_type(t))
-+            if n:
-+                if a['star']:
-+                    one_arg += ' {}'.format(a['star'])
-+                else:
-+                    one_arg += ' '
-+                one_arg += '{}'.format(n)
-+            comma = ', '
-+            print(one_arg, end='')
-+
-     def print_one(self, helper):
-         proto = helper.proto_break_down()
- 
-@@ -762,26 +780,17 @@ class PrinterHelpers(Printer):
-                 print(' *{}{}'.format(' \t' if line else '', line))
- 
-         print(' */')
-+        print('#if __GNUC__ && !__clang__')
-+        print('%s %s%s(' % (self.map_type(proto['ret_type']),
-+                                      proto['ret_star'], proto['name']), end='')
-+        self.print_args(proto)
-+        print(') __attribute__((kernel_helper(%d)));' % len(self.seen_helpers))
-+        print('#else')
-         print('static %s %s(*%s)(' % (self.map_type(proto['ret_type']),
-                                       proto['ret_star'], proto['name']), end='')
--        comma = ''
--        for i, a in enumerate(proto['args']):
--            t = a['type']
--            n = a['name']
--            if proto['name'] in self.overloaded_helpers and i == 0:
--                    t = 'void'
--                    n = 'ctx'
--            one_arg = '{}{}'.format(comma, self.map_type(t))
--            if n:
--                if a['star']:
--                    one_arg += ' {}'.format(a['star'])
--                else:
--                    one_arg += ' '
--                one_arg += '{}'.format(n)
--            comma = ', '
--            print(one_arg, end='')
--
-+        self.print_args(proto)
-         print(') = (void *) %d;' % len(self.seen_helpers))
-+        print('#endif')
-         print('')
- 
- ###############################################################################
--- 
-2.34.1
-
+Reviewed-by: Laurent Vivier <laurent@vivier.eu>
