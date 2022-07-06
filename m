@@ -2,101 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF9ECCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8603BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233682AbiGFMMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45824 "EHLO
+        id S233505AbiGFMMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233610AbiGFMLj (ORCPT
+        with ESMTP id S233581AbiGFMMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:11:39 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8152A424;
-        Wed,  6 Jul 2022 05:11:30 -0700 (PDT)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LdJFH458gz686xt;
-        Wed,  6 Jul 2022 20:07:15 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 14:11:28 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 13:11:22 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
-        <bvanassche@acm.org>, <hch@lst.de>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hare@suse.de>, <satishkh@cisco.com>,
-        <sebaddel@cisco.com>, <kartilak@cisco.com>
-CC:     <linux-doc@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <linux-nvme@lists.infradead.org>,
-        <linux-s390@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <mpi3mr-linuxdrv.pdl@broadcom.com>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <nbd@other.debian.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v3 6/6] blk-mq: Drop local variable for reserved tag
-Date:   Wed, 6 Jul 2022 20:03:54 +0800
-Message-ID: <1657109034-206040-7-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1657109034-206040-1-git-send-email-john.garry@huawei.com>
-References: <1657109034-206040-1-git-send-email-john.garry@huawei.com>
+        Wed, 6 Jul 2022 08:12:21 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14D52A72B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:11:54 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id eq6so18997660edb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 05:11:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N8SiADVZ0KBDLxFo+fo8QUS4MOh1gf7B6JuJMFLC4bk=;
+        b=HgxVzYvDle/d1CEh6AG1GZUcPYT+1KA3sTSEjmLiflVXdHAaXsIUJQdpd/Cft0ENun
+         8QtJSxn0ieSoNkiZId7FUOQ056DX62vamfJMe52Qw4gJf8jRLqYQ3w7bdramuFqlSF2U
+         SehjyB8iiTiR5st1Ohxe1wKDAJFmMVYuu4Xqe070npzAQ4BUwENQuyHhuXd3Ira0yEhm
+         ao5HiRtOJcVYKfQo2MYmOTxpSpPFGMkEOzRtHuTq/wnF6pL6dTwJtpMr+nzdZL2WX+2P
+         ufPUiA8LaRWPF1W1S7LgnawXvspOtjS2XezEDVrZFmFOVX9qRKgC1W0nLgoSBWK0YF2P
+         267g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N8SiADVZ0KBDLxFo+fo8QUS4MOh1gf7B6JuJMFLC4bk=;
+        b=3N+wl49B//MzwrXkjhPFsfZW/gVSsTW48qIJRIXb+mntx8lXBojIScuywKhL/71EFX
+         3+yUICdEkC3aPUjal5yU/yQW81NyQIPegO+O8Pj7XITdtrN1F66qOD+uAKONt9WwJHMY
+         NWgkHTiyC3bogvygUCE1wRQe7j7D3T7DAmuPMjpen9zE2fwstCJmY3TLfbwlV+now7nU
+         NfKIEl6A9mytHW5SnYSJ3sqz58XoBghl4IgGZROyXRT29U4V4qgplQ1RFw+vscUusNGS
+         dVbVG5FkQcYxPzJqamNiYp1olqHOB9oqrCjAKlROj0cqeA2XmzZhGmsmfDqL7lr6kKz2
+         XyDg==
+X-Gm-Message-State: AJIora/GfYVimZaL5RqPBjE7zfoIkMZbPZF/6YxKF/e/5xgQQcBpxYKO
+        mFfdRUX/ktigfTiVs+bd3BDLZY5n8XUjw3pqHhzxLg==
+X-Google-Smtp-Source: AGRyM1vpuAqdUfAJusRdAhecce32zUigq0oPHC1Ch9CEbzZkxlWq1NVJqHyNIpP2zeYxH8v4AApd5lRVPX29zGcOApI=
+X-Received: by 2002:a05:6402:42c3:b0:43a:46f6:ebd2 with SMTP id
+ i3-20020a05640242c300b0043a46f6ebd2mr23832628edc.213.1657109513100; Wed, 06
+ Jul 2022 05:11:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20220705171835.4923-1-brgl@bgdev.pl> <CAHp75Ve3sPhFOZhL=_2p+1avuo96CP995KD+bi+Pn3gyj1F9TA@mail.gmail.com>
+In-Reply-To: <CAHp75Ve3sPhFOZhL=_2p+1avuo96CP995KD+bi+Pn3gyj1F9TA@mail.gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Wed, 6 Jul 2022 14:11:42 +0200
+Message-ID: <CAMRc=MekRvEVjRKJn6CWpbk9GJWS0Y+kB9MYpGFSN9WSSzWC7A@mail.gmail.com>
+Subject: Re: [PATCH] gpio: pxa: schedule a devm action for the clock struct
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>
+Cc:     Robert Jarzmik <robert.jarzmik@free.fr>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>, Yuan Can <yuancan@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The local variable is now only referenced once so drop it.
+On Wed, Jul 6, 2022 at 1:49 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+s>
+> On Tue, Jul 5, 2022 at 7:29 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> >
+> > The clock is never released after probe(). Schedule devm actions for
+> > putting and disabling the clock.
+>
+> ...
+>
+> > Reported-by: Signed-off-by: Yuan Can <yuancan@huawei.com>
+>
+> Me puzzled.
+>
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
----
- block/blk-mq-tag.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Yuan Can sent the following patch:
+https://patchwork.ozlabs.org/project/linux-gpio/patch/20220704130323.104294-1-yuancan@huawei.com/
 
-diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
-index 4e9b8ec55bda..8e3b36d1cb57 100644
---- a/block/blk-mq-tag.c
-+++ b/block/blk-mq-tag.c
-@@ -262,7 +262,6 @@ static bool bt_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 	struct blk_mq_hw_ctx *hctx = iter_data->hctx;
- 	struct request_queue *q = iter_data->q;
- 	struct blk_mq_tag_set *set = q->tag_set;
--	bool reserved = iter_data->reserved;
- 	struct blk_mq_tags *tags;
- 	struct request *rq;
- 	bool ret = true;
-@@ -272,7 +271,7 @@ static bool bt_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 	else
- 		tags = hctx->tags;
- 
--	if (!reserved)
-+	if (!iter_data->reserved)
- 		bitnr += tags->nr_reserved_tags;
- 	/*
- 	 * We can hit rq == NULL here, because the tagging functions
-@@ -333,12 +332,11 @@ static bool bt_tags_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- {
- 	struct bt_tags_iter_data *iter_data = data;
- 	struct blk_mq_tags *tags = iter_data->tags;
--	bool reserved = iter_data->flags & BT_TAG_ITER_RESERVED;
- 	struct request *rq;
- 	bool ret = true;
- 	bool iter_static_rqs = !!(iter_data->flags & BT_TAG_ITER_STATIC_RQS);
- 
--	if (!reserved)
-+	if (!(iter_data->flags & BT_TAG_ITER_RESERVED))
- 		bitnr += tags->nr_reserved_tags;
- 
- 	/*
--- 
-2.35.3
+I responded that it was not complete and sent this instead.
 
+>
+> ...
+>
+> > +       ret = devm_add_action_or_reset(&pdev->dev, pxa_gpio_clk_put, clk);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> >         ret = clk_prepare_enable(clk);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       ret = devm_add_action_or_reset(&pdev->dev,
+> > +                                      pxa_gpio_clk_disable_unprepare, clk);
+> > +       if (ret)
+> >                 return ret;
+>
+> Can we use recently introduced clk APIs for that? Maybe Stephen has an
+> immutable branch you may reuse?
+
+Sure, sounds good! Stephen, would you mind providing me with a branch for that?
+
+Bart
+
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
