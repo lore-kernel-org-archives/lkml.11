@@ -2,138 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20084C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81BF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233437AbiGFRlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 13:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58148 "EHLO
+        id S233905AbiGFRmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbiGFRlJ (ORCPT
+        with ESMTP id S231431AbiGFRmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 13:41:09 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AA1B87C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:41:07 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id c15so19405445ljr.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 10:41:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6KthULA5VbxGyqiiOjKStZJbvnL5Ouw6A4+pSTV6Kj8=;
-        b=JXpykR9CyoD738BQHWkUG0ypVyu3dd6Wuio2ZR72pj4RAsz4ciU/RABGkmzmDgdlB4
-         Y4+EthXDwKUEbv4/QS/by9K1yMizKbQaKZWLKlNrCZ0XZqehFGmqZhJ0ffUsy6ThGHpn
-         dXa+hET8TxYmeswjFN+YyEi8iR6gOyvuXVTdt11Ke5epMBmqV9ZJTxSam3rRl7wzqvB1
-         4DBrBRbZYxaZNMRpansfPh8og2KF27ng1wSdCxYgWx+/fTVd/j0s6BsFHpwmCd5k9Jma
-         gTMqqVsdt/l5PxWeMy/mu8EufPYofY9tudEvR7b7nJaQqU7s3VJPSj6uufQ7XE7qU7X2
-         AtMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6KthULA5VbxGyqiiOjKStZJbvnL5Ouw6A4+pSTV6Kj8=;
-        b=BgmDrSRTEVvMmvxoqKUbL52Mb8Rpmbg3yLa8MDCBReleYWtQggUEOwe5q1SRyxw0Px
-         laEmBRVsS4SiugNiUpVDphEujwhBSwd8EH600liGdWwK3JfTfxK7JSvXYq775aEggoc+
-         l0xirOBS+gX0htQc/KGL1Z+0fp/mj0boR2kBfo/BMmD1mxebZ+NC1fuCsSE9/W6fETeg
-         bpd4vXi88JUL7wFjOH10xuVHa9zF6SfUe/KzDfSfGw3g4nMlNp+rdIMQg8nJce2UMb0V
-         NvIs/aqpGnU2BaeqpLp6RQ6N9BeGYoOrBCBg07Eyxwtm3GbSU9VSVIrz5vjMCr+/8OXg
-         TxfQ==
-X-Gm-Message-State: AJIora8jqQAv+4komJHsVospiAIX9b8KBuV3CjVH+YiTOPwN2Q7r2NeZ
-        /GuhuqxF/Y/4MKBs57FdThabhg==
-X-Google-Smtp-Source: AGRyM1tQBRHMvjV5LEJGwXYsY62d5osg8L+wM4g39+h6nowDWQdwsVn7zlcHYU8r78KNNQmktRwT3w==
-X-Received: by 2002:a2e:b88f:0:b0:25d:4cc0:f03c with SMTP id r15-20020a2eb88f000000b0025d4cc0f03cmr50610ljp.173.1657129265687;
-        Wed, 06 Jul 2022 10:41:05 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id o13-20020ac25e2d000000b0047f660822e0sm6363586lfg.289.2022.07.06.10.41.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 10:41:05 -0700 (PDT)
-Message-ID: <b85a7423-44ec-1f58-7465-e5322bc32cd3@linaro.org>
-Date:   Wed, 6 Jul 2022 20:41:04 +0300
+        Wed, 6 Jul 2022 13:42:19 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD2EB87C
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:42:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657129338; x=1688665338;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=id27GaKfdc/LaUJ5IInwpXGIPa9O9rQUx2Zc+9nNpks=;
+  b=FFJM402O6I0a+vc12A03/rAJYzdKkrRYMD/F8e3qIJdFZi2tNRemA97O
+   tTGIQ1Iicpot+mBwXuIiVr/EUe6ip9k4cU5YU6CXNhHYItBMls9qWw/kf
+   O94lZCSQdpm0kDWIW2KOWd2TQ/9bN+mAgfH0mfLe3yZJxwT2YjeGpPcmP
+   Dck4mGHSsm+xAvveXdenKDIsB1xT0QwbT6niXmw7jGDp08aKPwk9uNKLX
+   FHtrxXtHrddV5e+dndD6vHZX/FRFf36mknPwIi37sLCwbMv3Pk/LBqz7N
+   sAMRUtwUFofRMFMWEq1g4Nz46BEkSqnRVdafYkdJljSDe+PWujprxRmJw
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="282575720"
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="282575720"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 10:42:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="568167863"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 06 Jul 2022 10:42:16 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o992V-000KrH-Lb;
+        Wed, 06 Jul 2022 17:42:15 +0000
+Date:   Thu, 7 Jul 2022 01:41:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [alobakin:xdp_hints 27/52] net/bpf/core.c:801:37: sparse: sparse:
+ incorrect type in argument 2 (different base types)
+Message-ID: <202207070123.NXIiCz5W-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3] drm/msm/dp: make eDP panel as the first connected
- connector
-Content-Language: en-GB
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
-        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        agross@kernel.org, bjorn.andersson@linaro.org
-Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1657128246-15929-1-git-send-email-quic_khsieh@quicinc.com>
- <86ee9636-8827-7bad-6bd9-22191b2d293c@linaro.org>
- <949ae061-8191-2497-af56-1df74432272d@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <949ae061-8191-2497-af56-1df74432272d@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/07/2022 20:38, Kuogee Hsieh wrote:
-> 
-> On 7/6/2022 10:25 AM, Dmitry Baryshkov wrote:
->> On 06/07/2022 20:24, Kuogee Hsieh wrote:
->>> Some userspace presumes that the first connected connector is the main
->>> display, where it's supposed to display e.g. the login screen. For
->>> laptops, this should be the main panel.
->>>
->>> This patch call drm_helper_move_panel_connectors_to_head() after
->>> drm_bridge_connector_init() to make sure eDP stay at head of
->>> connected connector list. This fixes unexpected corruption happen
->>> at eDP panel if eDP is not placed at head of connected connector
->>> list.
->>>
->>> Changes in v2:
->>> -- move drm_helper_move_panel_connectors_to_head() to
->>>         dpu_kms_drm_obj_init()
->>>
->>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->>> ---
->>>   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 2 ++
->>>   1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c 
->>> b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
->>> index 2b9d931..50ff666 100644
->>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
->>> @@ -763,6 +763,8 @@ static int _dpu_kms_drm_obj_init(struct dpu_kms 
->>> *dpu_kms)
->>>       if (ret)
->>>           return ret;
->>>   +    drm_helper_move_panel_connectors_to_head(dev);
->>
->> This should be in msm_drv.c unless you have a strong reason to have it 
->> here.
-> Can you please  provide more info why should be in msm_drv.c?
+tree:   https://github.com/alobakin/linux xdp_hints
+head:   e9f4215398901c2e3f477da53abc668ce7b7e320
+commit: 7f869a161c7f4f95855a6bbcb1f5ea86cd926e50 [27/52] net, xdp: add &sk_buff <-> &xdp_meta_generic converters
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220707/202207070123.NXIiCz5W-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/alobakin/linux/commit/7f869a161c7f4f95855a6bbcb1f5ea86cd926e50
+        git remote add alobakin https://github.com/alobakin/linux
+        git fetch --no-tags alobakin xdp_hints
+        git checkout 7f869a161c7f4f95855a6bbcb1f5ea86cd926e50
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash net/bpf/
 
-Let me quote my message from v1 review:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Please move this call to the msm_drm_init(). Calling this function 
-somewhere after the ->kms_init() would make sure that all panel 
-connectors are close to the top of the list, whichever MDP/DPU driver is 
-used and whichever actual interface is bound to this panel.
 
->> _dpu_kms_drm_obj_init() create and initialize drm obj one by one and 
->> _dpu_kms_setup_displays() had created system wide connectors/interfaces .
-> 
-> After that should be fine to move edp to head of connector list.
-> 
->>> +
->>>       num_encoders = 0;
->>>       drm_for_each_encoder(encoder, dev)
->>>           num_encoders++;
->>
->>
+sparse warnings: (new ones prefixed by >>)
+>> net/bpf/core.c:801:37: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int [usertype] val @@     got restricted __wsum const [usertype] csum @@
+   net/bpf/core.c:801:37: sparse:     expected unsigned int [usertype] val
+   net/bpf/core.c:801:37: sparse:     got restricted __wsum const [usertype] csum
+>> net/bpf/core.c:844:19: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
+   net/bpf/core.c:844:19: sparse:     expected restricted __wsum [usertype] csum
+   net/bpf/core.c:844:19: sparse:     got unsigned int
 
+vim +801 net/bpf/core.c
+
+   781	
+   782	/**
+   783	 * ___xdp_build_meta_generic_from_skb - fill a generic metadata from an skb
+   784	 * @rx_md: a pointer to the XDP generic metadata to be filled
+   785	 * @skb: a pointer to the skb to take the info from
+   786	 *
+   787	 * Fills a given generic metadata struct with the info set previously in
+   788	 * an skb. @md can point to anywhere and the function doesn't use the
+   789	 * skb_metadata_{end,len}().
+   790	 */
+   791	void ___xdp_build_meta_generic_from_skb(struct xdp_meta_generic_rx *rx_md,
+   792						const struct sk_buff *skb)
+   793	{
+   794		struct xdp_meta_generic *md = to_gen_md(rx_md);
+   795		ktime_t ts;
+   796	
+   797		xdp_meta_init(rx_md, xdp_meta_generic_id);
+   798	
+   799		xdp_meta_rx_csum_level_set(md, skb->csum_level);
+   800		xdp_meta_rx_csum_status_set(md, skb->ip_summed);
+ > 801		xdp_meta_rx_csum_set(md, skb->csum);
+   802	
+   803		xdp_meta_rx_hash_set(md, skb_get_hash_raw(skb));
+   804		xdp_meta_rx_hash_type_set(md, xdp_meta_rx_hash_type_from_skb(skb));
+   805	
+   806		if (likely(skb_rx_queue_recorded(skb))) {
+   807			xdp_meta_rx_qid_present_set(md, 1);
+   808			xdp_meta_rx_qid_set(md, skb_get_rx_queue(skb));
+   809		}
+   810	
+   811		if (skb_vlan_tag_present(skb)) {
+   812			xdp_meta_rx_vlan_type_set(md, xdp_meta_rx_vlan_from_prot(skb));
+   813			xdp_meta_rx_vid_set(md, skb_vlan_tag_get(skb));
+   814		}
+   815	
+   816		ts = skb_hwtstamps(skb)->hwtstamp;
+   817		if (ts) {
+   818			xdp_meta_rx_tstamp_present_set(md, 1);
+   819			xdp_meta_rx_tstamp_set(md, ktime_to_ns(ts));
+   820		}
+   821	}
+   822	EXPORT_SYMBOL_GPL(___xdp_build_meta_generic_from_skb);
+   823	
+   824	/**
+   825	 * ___xdp_populate_skb_meta_generic - fill the skb fields from a generic meta
+   826	 * @skb: a pointer to the skb to be filled
+   827	 * @rx_md: a pointer to the generic metadata to take the values from
+   828	 *
+   829	 * Populates the &sk_buff fields from a given XDP generic metadata. A meta
+   830	 * can be from anywhere, the function doesn't use skb_metadata_{end,len}().
+   831	 * Checks whether the metadata is generic-compatible before accessing other
+   832	 * fields.
+   833	 */
+   834	void ___xdp_populate_skb_meta_generic(struct sk_buff *skb,
+   835					      const struct xdp_meta_generic_rx *rx_md)
+   836	{
+   837		const struct xdp_meta_generic *md = to_gen_md(rx_md);
+   838	
+   839		if (unlikely(!xdp_meta_has_generic(md + 1)))
+   840			return;
+   841	
+   842		skb->csum_level = xdp_meta_rx_csum_level_get(md);
+   843		skb->ip_summed = xdp_meta_rx_csum_status_get(md);
+ > 844		skb->csum = xdp_meta_rx_csum_get(md);
 
 -- 
-With best wishes
-Dmitry
+0-DAY CI Kernel Test Service
+https://01.org/lkp
