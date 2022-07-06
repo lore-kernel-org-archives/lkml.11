@@ -2,242 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1912DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2090C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232778AbiGFKMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
+        id S232890AbiGFKM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232019AbiGFKMR (ORCPT
+        with ESMTP id S232385AbiGFKMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 06:12:17 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66BAF15A19;
-        Wed,  6 Jul 2022 03:12:14 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id c131-20020a1c3589000000b003a19b2bce36so5711623wma.4;
-        Wed, 06 Jul 2022 03:12:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8vzw6bFniL24T6OECphPlNcFeN72oaM117VUsHYULlE=;
-        b=Thg92U1EPycx9LB0a//LM9U+OMX34Fsr0FAVhF1xY91kKLYsTWAqz9dUlN0CXw3cSP
-         J+j87wOTOcH4DzPMD36ypemV/7VtYu029uIRCv8crksOEAT12ZTSRVvJuh/rwNBh94Vk
-         maXP4DaacK5HX+wYS+L1H0FWCnzIDfKBzMbIk14zZV5wNHLm9UOc7fLv2WcX8pANnnn9
-         HgG9irCgP6JELmnIt3mw1BWBbXOFSwHXUt9IGgO4P+vVuOYEmIwd3vcuVwOz9PsHrvUJ
-         Gp7QjAxA8Ubnvn39P1nsHQQjXv8MMRPt6H21f3SFZ5m4fCByeLThxwYTh7coZ5HK5TQx
-         kQUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8vzw6bFniL24T6OECphPlNcFeN72oaM117VUsHYULlE=;
-        b=abq85OLQcButquyx1iva4enh9qTsDM/HP4op5jdFnj41TkGqs++TB4DP3wODS40ld6
-         IL4nnt/Z6FCQIiXKp9nrANSWj/4/c8k2CDcvgrdE3pkFJrKwMXqjLe/jvTKTNLfPDpfy
-         daNwofhPaplWvKcURAmyCZ6qOOdVPqUMQB/EP1UC9jM5dwgTueqSvlAwK4uWjCkj/BW7
-         Gu+JvrgjxT9KkClouSv6n809uFTf2eXYaz1s4UrlrmAMbea4OGb96htN/qgzNUenMipG
-         70hm3gDGfJbiVEminCN7RJrgHhnHBo6j8SEyPKf6+kE9g8ok49N7jdcMAfMCA24LPMDE
-         puMg==
-X-Gm-Message-State: AJIora8cdIBqJtrbCyFzhmkWuQnmDWcZJJtZY+bvokfaXBvuxi3iGn+e
-        SZ7e0uADUsj02ZcsT+zqknzbw3H9ClqQc2+zXAE=
-X-Google-Smtp-Source: AGRyM1sCzHST+YhMi5w2+9hHPYiwsrrf6MeFPLaxUs7QmKI7OpMUhP9KCuJGluc5CQjY+3D6X+bEQ1JXW1gQE+tA3s8=
-X-Received: by 2002:a05:600c:6004:b0:3a0:41db:aae with SMTP id
- az4-20020a05600c600400b003a041db0aaemr42613766wmb.171.1657102332798; Wed, 06
- Jul 2022 03:12:12 -0700 (PDT)
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD74FB8D;
+        Wed,  6 Jul 2022 03:12:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Tkl3lxTOKWGbOCuxxKNckxHNjYRI3zGLuGc8imHNxDs=; b=WpgGH4+Y6U9gQSSnMVR6OLMxva
+        3xYxeAZ7USH+mmbkdac+gWqkqSUncCao79OXiiUot5IPHXuNd6BKu4KcdJ/3wd9E6vbdtwdlfX++8
+        YHg9SPa4d3D+hoJ+xHEd64U2BB0PxnnwhjCX34YKvpd3mB9eaqJ+9sCf1Ma6Y4Sc+A5HLQFse3wc3
+        7p9dt+e0Yzacjyq/2QRyinJn3DEvx+LTPjMD8J3/m/+8JP5Q5o8reLw6djHCmeIC4Lr1NoUT74Cpg
+        hLfvPld/nyGauGdSHTmpv4A/geUNh2jHXRL3BD0xt9eK7uievOocsG0NSTJd7nMGZkXKKLQVVrNY/
+        fCxnd6CA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o9207-000QRU-BY; Wed, 06 Jul 2022 10:11:19 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6964C3001AE;
+        Wed,  6 Jul 2022 12:11:15 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 43F7A20207235; Wed,  6 Jul 2022 12:11:15 +0200 (CEST)
+Date:   Wed, 6 Jul 2022 12:11:15 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
+ TASK_STOPPED state
+Message-ID: <YsVfw3dy7smrpEbn@hirez.programming.kicks-ass.net>
+References: <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+ <877d5ajesi.fsf@email.froward.int.ebiederm.org>
+ <YrHgo8GKFPWwoBoJ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+ <20220628191541.34a073fc@gandalf.local.home>
+ <yt9d5ykbekn3.fsf@linux.ibm.com>
+ <yt9dpmijcvu6.fsf@linux.ibm.com>
+ <YsSQRmCZSIQ1ewzo@worktop.programming.kicks-ass.net>
+ <yt9dsfneaczk.fsf@linux.ibm.com>
+ <YsVO1NU3bXGg9YJ3@worktop.programming.kicks-ass.net>
+ <yt9da69ma8wm.fsf@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-4-schultz.hans+netdev@gmail.com> <20220627180557.xnxud7d6ol22lexb@skbuf>
- <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com> <20220706085559.oyvzijcikivemfkg@skbuf>
-In-Reply-To: <20220706085559.oyvzijcikivemfkg@skbuf>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Wed, 6 Jul 2022 12:12:01 +0200
-Message-ID: <CAKUejP7gmULyrjqd3b3PiWwi7TJzF4HNuEbmAf25Cqh3w7a1mw@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB implementation
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yt9da69ma8wm.fsf@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 10:56 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Tue, Jun 28, 2022 at 02:26:43PM +0200, Hans S wrote:
-> > > Dumb question: if you only flush the locked entries at fast age if the
-> > > port is locked, then what happens with the existing locked entries if
-> > > the port becomes unlocked before an FDB flush takes place?
-> > > Shouldn't mv88e6xxx_port_set_lock() call mv88e6xxx_atu_locked_entry_flush()
-> > > too?
-
-BTW:
->> @@ -919,6 +920,9 @@ static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
->>       if (err)
->>               dev_err(chip->dev,
->>                       "p%d: failed to force MAC link down\n", port);
->> +     else
->> +             if (mv88e6xxx_port_is_locked(chip, port, true))
->> +                     mv88e6xxx_atu_locked_entry_flush(ds, port);
->
->This is superfluous, is it not? The bridge will transition a port whose
->link goes down to BR_STATE_DISABLED, which will make dsa_port_set_state()
->fast-age the dynamic FDB entries on the port, which you've already
->handled below.
-
-I removed this code, but then on link down the locked entries were not
-cleared out. Something not as thought?
-
+On Wed, Jul 06, 2022 at 11:27:05AM +0200, Sven Schnelle wrote:
+> Peter Zijlstra <peterz@infradead.org> writes:
+> 
+> > On Wed, Jul 06, 2022 at 09:58:55AM +0200, Sven Schnelle wrote:
 > >
-> > That was my first thought too, but the way the flags are handled with the mask etc, does so that
-> > mv88e6xxx_port_set_lock() is called when other flags change. It could be done by the transition
-> > from locked->unlocked by checking if the port is locked already.
->
-> Why does mv88e6xxx_port_set_lock() get called when other flags change?
-
-That is what seems to happen, but maybe I am wrong. Looking at the dsa
-functions dsa_port_inherit_brport_flags() and
-dsa_port_clear_brport_flags(), they set the mask for which underlying
-function is called, and it looks to me that they call once for all the
-flags: BR_LEARNING, BR_FLOOD, BR_MCAST_FLOOD, BR_BCAST_FLOOD,
-BR_PORT_LOCKED?
-
->
-> > On the other hand, the timers will timeout and the entries will be removed anyhow.
->
-> > > > +static void mv88e6xxx_atu_locked_entry_timer_work(struct atu_locked_entry *ale)
-> > >
-> > > Please find a more adequate name for this function.
+> >> >> [   86.218551] kill_chi-343805    6d.... 79990141us : ptrace_stop: JOBCTL_TRACED already set, state=0 <------ valid combination of flags?
+> >> >
+> >> > Yeah, that's not supposed to be so. JOBCTL_TRACED is supposed to follow
+> >> > __TASK_TRACED for now. Set when __TASK_TRACED, cleared when
+> >> > TASK_RUNNING.
+> >> >
+> >> > Specifically {ptrace_,}signal_wake_up() in signal.h clear JOBCTL_TRACED
+> >> > when they would wake a __TASK_TRACED task.
+> >> 
+> >> try_to_wake_up() clears TASK_TRACED in this case because a signal
+> >> (SIGKILL) has to be delivered. As a test I put the following change
+> >> on top, and it "fixes" the problem:
+> >> 
+> >> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> >> index da0bf6fe9ecd..f2e0f5e70e77 100644
+> >> --- a/kernel/sched/core.c
+> >> +++ b/kernel/sched/core.c
+> >> @@ -4141,6 +4149,9 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
+> >>          * TASK_WAKING such that we can unlock p->pi_lock before doing the
+> >>          * enqueue, such as ttwu_queue_wakelist().
+> >>          */
+> >> +       if (p->__state & TASK_TRACED)
+> >> +               trace_printk("clearing TASK_TRACED 2\n");
+> >> +       p->jobctl &= ~JOBCTL_TRACED;
+> >>         WRITE_ONCE(p->__state, TASK_WAKING);
+> >> 
+> >>         /*
+> >> 
+> >> There are several places where the state is changed from TASK_TRACED to
+> >> something else without clearing JOBCTL_TRACED.
 > >
-> > Any suggestions?
->
-> Not sure. It depends on whether you leave just the logic to delete a
-> locked ATU entry, or also the switchdev FDB_DEL_TO_BRIDGE notifier.
-> In any case, pick a name that reflects what it does. Something with
-> locked_entry_delete() can't be too wrong.
->
-> > > From the discussion with Ido and Nikolay I get the impression that
-> > > you're not doing the right thing here either, notifying a
-> > > SWITCHDEV_FDB_DEL_TO_BRIDGE from what is effectively the
-> > > SWITCHDEV_FDB_DEL_TO_DEVICE handler (port_fdb_del).
+> > I'm having difficulty spotting them; I find:
 > >
-> > Hmm, my experience tells me that much is opposite the normal
-> > conventions when dealing with
-> > locked ports, as there was never switchdev notifications from the
-> > driver to the bridge before, but
-> > that is needed to keep ATU and FDB entries in sync.
->
-> On delete you mean? So the bridge signals switchdev a deletion of a
-> locked FDB entry (as I pointed out, this function gets indirectly called
-> from port_fdb_del), but it won't get deleted until switchdev signals it
-> back, is what you're saying?
->
-
-When added they are added with bridge FDB flags: extern_learn offload
-locked, with a SWITCHDEV_FDB_ADD_TO_BRIDGE event. So they are owned by
-the driver.
-When the driver deletes the locked entry the bridge FDB entry is
-removes by the SWITCHDEV_FDB_DEL_TO_BRIDGE event from the driver. That
-seems quite fair?
-
-> > > Why is the rtnl_unlock() outside the switch statement but the rtnl_lock() inside?
-> > > Not to mention, the dsa_port_to_bridge_port() call needs to be under rtnl_lock().
+> > TASK_WAKEKILL: signal_wake_up()
+> > __TASK_TRACED: ptrace_signal_wake_up(), ptrace_unfreeze_traced(), ptrace_resume()
 > >
-> > Just a small optimization as I also have another case of the switch
-> > (only one switch case if
-> > you didn't notice) belonging to the next patch set regarding dynamic
-> > ATU entries.
->
-> What kind of optimization are you even talking about? Please get rid of
-> coding patterns like this, sorry.
->
-Right!
-
-> > > Please, no "if (chiplock) mutex_lock()" hacks. Just lockdep_assert_held(&chip->reg_lock),
-> > > which serves both for documentation and for validation purposes, ensure
-> > > the lock is always taken at the caller (which in this case is super easy)
-> > > and move on.
+> > And all those sites dutifully clear JOBCTL_TRACED.
 > >
-> > As I am calling the function in if statement checks, it would make
-> > that code more messy, while with
-> > this approach the function can be called from anywhere. I also looked
-> > at having two functions, with
-> > one being a wrapper function taking the lock and calling the other...
->
-> There are many functions in mv88e6xxx that require the reg_lock to be
-> held, there's nothing new or special here.
->
+> > I'd be most interested in the calstack for the 'clearing TASK_TRACED 2'
+> > events to see where we miss a spot.
+> 
+> The calltrace is:
+> [    9.863613] Call Trace:
+> [    9.863616]  [<00000000d3105f0e>] try_to_wake_up+0xae/0x620
+> [    9.863620] ([<00000000d3106164>] try_to_wake_up+0x304/0x620)
+> [    9.863623]  [<00000000d30d1e46>] ptrace_unfreeze_traced+0x9e/0xa8
+> [    9.863629]  [<00000000d30d2ef0>] __s390x_sys_ptrace+0xc0/0x160
+> [    9.863633]  [<00000000d3c5d8f4>] __do_syscall+0x1d4/0x200
+> [    9.863678]  [<00000000d3c6c332>] system_call+0x82/0xb0
+> [    9.863685] Last Breaking-Event-Address:
+> [    9.863686]  [<00000000d3106176>] try_to_wake_up+0x316/0x620
+> [    9.863688] ---[ end trace 0000000000000000 ]---
+> 
+> ptrace_unfreeze_traced() is:
+> 
+> static void ptrace_unfreeze_traced(struct task_struct *task)
+> {
+>         unsigned long flags;
+> 
+>         /*
+>          * The child may be awake and may have cleared
+>          * JOBCTL_PTRACE_FROZEN (see ptrace_resume).  The child will
+>          * not set JOBCTL_PTRACE_FROZEN or enter __TASK_TRACED anew.
+>          */
+>         if (lock_task_sighand(task, &flags)) {
+>                 task->jobctl &= ~JOBCTL_PTRACE_FROZEN;
+>                 if (__fatal_signal_pending(task)) {
+>                         task->jobctl &= ~TASK_TRACED;
+> 
+> Looking at this, shouldn't the line above read task->jobctl &= ~JOBCTL_TRACED?
 
-Now I take the lock in the function regardless. No boolean.
+YES! Absolutely.
 
-> > >
-> > > > +
-> > > > +     if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
-> > > > +             goto out;
-> > >
-> > > It would be good to actually propagate the error to the caller and
-> > > "locked" via a pass-by-reference bool pointer argument, not just say
-> > > that I/O errors mean that the port is unlocked.
-> >
-> > Again the wish to be able to call it from if statement checks,.
-> >
-> > > > +     reg &= MV88E6XXX_PORT_ASSOC_VECTOR_PAV_MASK;
-> > > > +     if (locked) {
-> > > > +             reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
-> > > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
-> > > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
-> > > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
-> > >
-> > > I'd suggest aligning these macros vertically.
-> >
-> > They are according to the Linux kernel coding standard wrt indentation afaik.
->
-> Compare:
->
->                 reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
->                         MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
->                         MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
->                         MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
->
-> with:
->
->                 reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
->                        MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
->                        MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
->                        MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
-
-I cannot see the difference here...?
-
-Another issue...
-
-I have removed the timers as they are superfluous and now just use the
-worker and jiffies. But I have found that the whole ageing time seems
-to be broken on the 5.17 kernel I am running. I don't know if it has
-been fixed, but the ageing timeout is supposed to be given in seconds.
-Here is the output from various functions after the command "ip link
-set dev br0 type bridge ageing_time 1500" (that is nominally 1500
-seconds according to man page!):
-
-dsa_switch_ageing_time: ageing_time 10000, ageing_time_min 1000,
-ageing_time_max 3825000
-mv88e6xxx_set_ageing_time: set ageing time to 10000
-br0: failed (err=-34) to set attribute (id=6)
-dsa_switch_ageing_time: ageing_time 15000, ageing_time_min 1000,
-ageing_time_max 3825000
-mv88e6xxx_set_ageing_time: set ageing time to 15000
-
-The 15000 set corresponds to 150 seconds! (I hardcoded the dsa
-ageing_time_min to 1000)
+>                         wake_up_state(task, __TASK_TRACED);
+>                 }
+>                 unlock_task_sighand(task, &flags);
+>         }
+> }
