@@ -2,93 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A6B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA427CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234256AbiGFUwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 16:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54488 "EHLO
+        id S234315AbiGFUwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 16:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234075AbiGFUwb (ORCPT
+        with ESMTP id S232212AbiGFUwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 16:52:31 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00701DA5E;
-        Wed,  6 Jul 2022 13:52:29 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id u12so29060716eja.8;
-        Wed, 06 Jul 2022 13:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:in-reply-to:date:message-id
-         :mime-version;
-        bh=0oY4gap3TRwLTtcF3gSbbfZZEWWnO/s07oBC4LBZLoI=;
-        b=bdO+++3upnx+oi3mTBDx64vJsbxbunSAVJ72P1Wg9Ls5kg1jyw90zYb9fUyks7rGAq
-         hfe4rh0kVzbYa50kA+D1CbuzAp+Uk1/TRCDt/9R9vYfAOlzzjvAKhkh9LN1OrcqTSHPk
-         KOZsHGgTTN0uWgWG7NwrWMIdchOn7g82ENW36yzFwooCgJ0cNeECU4ijALbSW9iJ5NPe
-         OCQARHJ9XobsakLfbWAfH70x5sk2d7/UGIt6uR/0daP9WxluMOIQ2yy2rcptqbouwxh0
-         wQmHZqocdgf99hNSgM1iDG8+jvfdDZFq2eYEZkS4eqET/dIw0mIAsEoKBB8U2IvLk0EQ
-         cYSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=0oY4gap3TRwLTtcF3gSbbfZZEWWnO/s07oBC4LBZLoI=;
-        b=JMiM7bo5gy9Pa8J5G2np5kYFsWfzkQcpItwYXG8ulLW5enu6rdsrn1o76PtIVzddKy
-         IcsufNJR583XN4mefX7YL33Q4b+r8RNdHaf4X9RB7tyiej0qhDiNTKlAwum7tTaeV1mi
-         CmEW1dtrEfmsKKbsvZiq3OyCV6EARBrb0NQulJTBPsIyDOukBULey43iy3/M2zngGna3
-         LszGbfubYwYfOaEAxBqk8uMCkTLnoV2A/iv2zXfvU0K8mhh+AcLJijNmTytM+5DdK4jB
-         TzD91CErL5qSjiQdv66xop6rcqRM0mU+1WjVRJR0+LyKSjVLUlgECCTKJ13ig9bJOhdc
-         tBug==
-X-Gm-Message-State: AJIora96NOal26H1axyYs6597z2tHVnB/vGwTXl0nvhsApQceDGqaz0b
-        hlfDjG4zc0oWtYB5kL7HeDk=
-X-Google-Smtp-Source: AGRyM1tLUh67ZeMeuui0Z/nGcNVm7oENy27fJUrmht9yXGN16ZynddjFjllrPUaVYjEQcSZhxD2MGQ==
-X-Received: by 2002:a17:906:8d6:b0:723:42c3:657 with SMTP id o22-20020a17090608d600b0072342c30657mr39613070eje.657.1657140748472;
-        Wed, 06 Jul 2022 13:52:28 -0700 (PDT)
-Received: from localhost (92.40.202.8.threembb.co.uk. [92.40.202.8])
-        by smtp.gmail.com with ESMTPSA id s15-20020a170906500f00b00722dceb3f8bsm17877565ejj.151.2022.07.06.13.52.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 13:52:28 -0700 (PDT)
-References: <20220703111057.23246-1-aidanmacdonald.0x0@gmail.com>
- <20220703111057.23246-4-aidanmacdonald.0x0@gmail.com>
- <CACRpkdamknwRPGEeGGQGQPtKw=dPXa79GAJy+E6y+03NakN=cA@mail.gmail.com>
- <GrX3yDSwNOGIBcWmKqusaJ3dDqNGLr3Y@localhost>
- <CAHp75Vd9P3Mf75TcXeWB3QE4n_rn7QcWz6g5fDYpPiLVOMsAig@mail.gmail.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Michael Walle <michael@walle.cc>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] gpio: regmap: Support a custom ->to_irq() hook
-In-reply-to: <CAHp75Vd9P3Mf75TcXeWB3QE4n_rn7QcWz6g5fDYpPiLVOMsAig@mail.gmail.com>
-Date:   Wed, 06 Jul 2022 21:53:36 +0100
-Message-ID: <7EciRXW2jHHdJoybh7lao4eux9khP3Sc@localhost>
+        Wed, 6 Jul 2022 16:52:49 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF47A1CB1D;
+        Wed,  6 Jul 2022 13:52:46 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-119-232.nat.spd-mgts.ru [109.252.119.232])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id B5DFC66019A9;
+        Wed,  6 Jul 2022 21:52:44 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657140765;
+        bh=plFfInWaF2jQzdSTym9IBrTK4gHtJFiLIaSgAP0rW5M=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TSyP7iVStBzIx18dwKvtCyZtx9VysYN+PtKQAWJ4T6zlCCnSi5NjRZAw3znj/Yk+y
+         pt/mAjdcaKXdn9Rihd0+wsNOZLEGD8hln6wO6S7e3e/oi8WJkMCu5Dqg5MhD4EsXCz
+         dscnYA5fYBemHlVlLV5zqHUCo1zHNK5S5S7yxN//zdyfGCQj6P2Ymq6jxu4NbLoiph
+         8kk9JlmJDSPDmQguHoIywkOHtIOMM7aZUF/Q8Rel9tXv0V6QRKypBpPGBobBCXSZml
+         aG1K8OJ3iy/yQTxmcU7KAtrWZWampuIhHxDmkmpvvJTH+G/G9dDc1uXvphcJFqGzYN
+         o5ZbJ2RrG9MhQ==
+Message-ID: <d8dc8a62-93b8-618e-ff18-dd85c8e75464@collabora.com>
+Date:   Wed, 6 Jul 2022 23:52:42 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v6 2/2] iio: light: Add support for ltrf216a sensor
+Content-Language: en-US
+To:     Shreeya Patel <shreeya.patel@collabora.com>, jic23@kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com, andy.shevchenko@gmail.com,
+        digetx@gmail.com, kernel test robot <lkp@intel.com>
+References: <20220615135130.227236-1-shreeya.patel@collabora.com>
+ <20220615135130.227236-3-shreeya.patel@collabora.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <20220615135130.227236-3-shreeya.patel@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 6/15/22 16:51, Shreeya Patel wrote:
+> +static int ltrf216a_get_lux(struct ltrf216a_data *data)
+> +{
+> +	int greendata;
+> +	u64 lux, div;
+> +
+> +	ltrf216a_set_power_state(data, true);
 
-Andy Shevchenko <andy.shevchenko@gmail.com> writes:
+All the power-on errors should be handled.
 
-> On Tue, Jul 5, 2022 at 1:22 PM Aidan MacDonald
-> <aidanmacdonald.0x0@gmail.com> wrote:
->
-> ...
->
->> Is that really better than simply using ->to_irq()?
->
-> We have Intel PMIC drivers (that are in MFD) and they have respective
-> GPIO drivers, none of them is using ->to_irq() and all of them provide
-> IRQ functionality. Can it be taken as an example or is it something
-> quite different to your hardware?
-
-In the Intel PMICs the MFD irqchip has a single interrupt for all GPIOs.
-The GPIO driver then has its own irqchip and it looks at other registers
-to find out which GPIO interrupt fired. It's a typical cascaded setup.
-
-In my case the MFD irqchip has one interrupt per GPIO. The GPIO driver
-does not need its own irqchip; everything is handled by the MFD irqchip.
-Existing examples include wm831x, wm8994, da9052, and tps6586x.
+-- 
+Best regards,
+Dmitry
