@@ -2,147 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEF7CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 04:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3741C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 04:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230424AbiGFEV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 00:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43412 "EHLO
+        id S231794AbiGFEVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 00:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbiGFEVZ (ORCPT
+        with ESMTP id S231454AbiGFEVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 00:21:25 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EE3167F4;
-        Tue,  5 Jul 2022 21:21:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657081285; x=1688617285;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TYwiYZ0ZNBBmTQZ6MpJbG1wGZesenEs5jSJYL6XhHBE=;
-  b=TyNSoi7jdRYfAL0wFBW/hiPNikAPa1WLkYIiFfeTpb9OUtIBHaAI4IAf
-   EsN6gS7GkBqY1ceAnwFzsMS8ytIn4aAkH7W1Af+S45G5B3WVLQIBnd5/M
-   nVj4oxGH8g6hEhzubqnRvjErw5BJA08LOVOoJSchrozW0hljLC1kTpCjb
-   /apm0w4eJXjJIg9rfeELNUvssF3ohIe8QBrhMmTzMLwz+oknB1W80CMGa
-   QbPY3ItbvlMfTrdvHWeTR6Pj5vra3mZqn0MI2zrse2q5/s5yyvYnWk1XK
-   3SHbY7HIULb1QOqJ2jpib3N7SEQ6f6cghx6yQFgkx3WsMQgAM2wNW5a3s
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="264057350"
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="264057350"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 21:21:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="735412357"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 05 Jul 2022 21:21:22 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8wXS-000Jz9-2r;
-        Wed, 06 Jul 2022 04:21:22 +0000
-Date:   Wed, 6 Jul 2022 12:20:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH 02/13] tracing/IB/hfi1: Use the new __vstring() helper
-Message-ID: <202207061250.oSPdYi3E-lkp@intel.com>
-References: <20220705224749.239494531@goodmis.org>
+        Wed, 6 Jul 2022 00:21:46 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2100.outbound.protection.outlook.com [40.107.244.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE95F1838E;
+        Tue,  5 Jul 2022 21:21:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CnmjlRP2pL4W9uG20j/xN+41mTmq8K5SQqygueR60M3Myr+ar8qkUW4hMH6Q8w28aTCkDvEEaQxHeFxO4FdBtXbJyGejpN4GCEF8lRACCwPY26DDKbIn5W1SP9ixb/QM/btugc3XaXhgCgnYrbvbeZgWHa7WPWwSvdC8wgX1+THUWJH4WhIa4CXd4TH8nV5Xurk6X7h7gcuDRkwC0VtToSZKogB0h39D1roc6fbXsvgbLF/mnHZRSkrhWi1+zamz4eRA1RUGPAFPkpQBWmcVV+qcLuPEKDrwRC0uUe+Ele9lsSS2G+vFLHHFY91FKUW4ffIYyG6W5xRwnjkoLrDZRQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S7VL3IgyFLKTjem93FjW19WJUJFv3PTFAMzp2hIbEPo=;
+ b=cr0AOnn7y7M9u6Pj5+wlLTUu8aVfU6ysL4ZV/KzYOwF+jEAQAb0XMX3JY7BsSSdeMPkx4FfuDr1NqFHF7lGmNmM+AffqpEr7f22mN8zjtLfPsrv8e+qbGhhMrE+/b9WPKqebuhn8tIm0/SZO1NLbpFKAyVXmwMIOgALHIPDpCCcXcivRFyGB1B2Hr3l40V6WbVvXGGZ3H7Zwa4uBB7KaADAi1+HiNTIGazMWtdjri0Q8BPFGm1MjFIynB1D9knVglDa5h8p8Bx3xu3nnZCc3LCIJXmlMCerBAmTR7a8DQ4basBoXoVDPf8F2Sn2c1jVfrYqubZLe74A++Z1SxJgnUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S7VL3IgyFLKTjem93FjW19WJUJFv3PTFAMzp2hIbEPo=;
+ b=Nw6JlShdtVrtuw1+QpdMJF+3AAi38h4sTdnH7dQ7RCEeVXYg5rVF2Yd4zHOFr7MciwUgls/TwLJlZqG292rwbbZSdbNUTMowmW/5S6drW98MbeAuLwiiIbE/t5j8iDIJTPoX2UomkGXqjT2Kqip8S8abugNcE38PgPSsHXY7CV8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
+ BL0PR01MB5299.prod.exchangelabs.com (2603:10b6:208:31::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5395.17; Wed, 6 Jul 2022 04:21:41 +0000
+Received: from SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::7535:773:f979:893e]) by SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::7535:773:f979:893e%8]) with mapi id 15.20.5395.022; Wed, 6 Jul 2022
+ 04:21:41 +0000
+Message-ID: <01bcd315-4d28-6854-3c6e-0a755b37824a@os.amperecomputing.com>
+Date:   Wed, 6 Jul 2022 11:21:28 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0
+Subject: Re: [PATCH v1 0/5] Enable second flash, update gpios pin and merge
+ adc channels
+Content-Language: en-CA
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Open Source Submission <patches@amperecomputing.com>,
+        Phong Vo <phong@os.amperecomputing.com>,
+        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
+References: <20220228000242.1884-1-quan@os.amperecomputing.com>
+ <CACPK8XfCskh7KPhXJqOR9ZLnoBdd64SL9D1z5HoDC+_VVs4LCg@mail.gmail.com>
+From:   Quan Nguyen <quan@os.amperecomputing.com>
+In-Reply-To: <CACPK8XfCskh7KPhXJqOR9ZLnoBdd64SL9D1z5HoDC+_VVs4LCg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR02CA0059.apcprd02.prod.outlook.com
+ (2603:1096:4:54::23) To SJ0PR01MB7282.prod.exchangelabs.com
+ (2603:10b6:a03:3f2::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705224749.239494531@goodmis.org>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d764f443-6692-4d44-410d-08da5f0706ab
+X-MS-TrafficTypeDiagnostic: BL0PR01MB5299:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qviMmCATCwluuhgqp/IDuqbwvQmO0AhETKnsqlXOwCXMuDV0rtZdABpQ2rOrvqCBn/VW0wGU1erknZ8xm2iqAurcAYaedBnr78egwx0BSWDHG5zH0KhvYERAFIZeuYPAIihNNZuUR+NeyLKlzg0cPDqyVJCAnra78DnwDmOGpfU6bFuSfLAsqqLqmOaJW5YX1NjzNxWesshqOrfGXG2wATwqaDeOmBvOUrPpP45jFaEoGvnDxdDvHakrmlpx5JGjF3XcNPPeen3hWxLNk5PS+3kGnPsLec0qHITjwl69c2Isr5JqucUe5OLV9yDv9oAEaL7//J8y0ElniZSLGmja9T7peA3G/bpHfKFiFfuPV1nJ5aP0irENeRSMS2Zn/BcmlqyfD2vvOY4M5cBznZua5G7FpkyAfHx5ToWrO2vrzkeo4lqO550rtN+QbgpwozrYpI+0v7a/5bNMKCA8HQa4dt83IlBLcY6dAV1Cdu+6fZU2pGSyp+RsS3uEfTYNZ0RPnbkGVNKl44og0X1JBGMaDTEPkjJg7TJwAF0+HFjnd1K9lVH+eYbPDcrDb30GWg0eMxDPxtAJoLRXUix0s7LKl6wp2xwnpKSUbnFGnhpONwhLkqrboEzzak5twGxPbwseeZ6kTMAEt0XIspMLvMRUadm4G4S0cGoblsxku5BH1Tu+efTXRbaZP4zEMh91VtAm6yapCdZdzeZWZ2cb3UKjK8ENaXdbT8bt+6Zi0vZmnDm2yfdMS7GZfItpHKUYxWB5uvT/BjBzU7MoNk25UWS41ORQXZn8uW/nxJj0ArJeZKksHBz7Vt0eg4FHTjSeYJloVVFs909/VkLtp32O2ckW72bFbbCWLZ3U3PR3DcM5Z7iP18Nx56JHvwJtyqWMqnF3fCOE0W4t+8TfmD+HeMe33w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39850400004)(136003)(396003)(346002)(376002)(366004)(38350700002)(107886003)(38100700002)(66946007)(8676002)(4326008)(66556008)(66476007)(6506007)(5660300002)(2906002)(86362001)(31696002)(15650500001)(52116002)(53546011)(8936002)(2616005)(6486002)(6666004)(478600001)(41300700001)(83380400001)(54906003)(6916009)(316002)(186003)(6512007)(26005)(31686004)(449214003)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eXNCR0Njc3FhR2pEQktUZWtHRC85bDI4dkU3d0VFbkNpRk14STBVcXBVNUxp?=
+ =?utf-8?B?aWdxcTVieTc4SG5XMFEraUlrS0tPRy9GNS9DOTVTKzNyZm5KTndxZm5rRTBy?=
+ =?utf-8?B?SXJhcWxHVlJoRXBIQ01KRGd5a3hDbmtuN2JsZzllenFNWnlmRXg2S1ZiSTRX?=
+ =?utf-8?B?WTlCUlcrdCtNYXc4YlpFb1lmR0Vqa21hUWZtK3JCZlFXcTZ1eWs1WWxWMkJP?=
+ =?utf-8?B?bWRnZUVBSENUcjc1SjQydytYdlVGdzVPbW5GNURlSmFlOXhwbmljelVrNlVR?=
+ =?utf-8?B?Z3NrNk82VitEWE5LYU5aR21NU2h0cDJQWER1QXNaZGFrYXFwbzlpOGJQNFUv?=
+ =?utf-8?B?aENPY3hBUGZscmVYZy9OQjdBRUYrSTV0Zmg4NkhIaW9ENlVTL21PR1owK1dY?=
+ =?utf-8?B?cnVmYlRqSnZzblI0ZkdNTFd5di9tQUpEM21Xc3hEOEZsSlRXWW1OWUJnK205?=
+ =?utf-8?B?RVVOa0I1TE9CWTRKTlZZOWZWM2lLZGJ6YWZuRVVIOG9lZ3ZUa2FjTmFodDRL?=
+ =?utf-8?B?WkJtbmhrUDk2UGdSVFNCaDFIUFB1dUhDUUNoRUxQR3VRMlFmMUh2RXFPT0li?=
+ =?utf-8?B?TFptQWMvVGpGSVVQUTFSbWw0aHJXQVRwYTVVZHhnQ3F3ZTNQc0E2YXdEeGhY?=
+ =?utf-8?B?NnFwNkhidlQ0SE13Um5rRFRXdDFJSStFeW1kZ0NPZzlkZm95TlVwK09xN3li?=
+ =?utf-8?B?U3hnRWtNU1FDclBiLzRKSkFIWm51clpGSkk0YjJuOU9JS3JVVzhPRnppTHBF?=
+ =?utf-8?B?cVdVQzN5V3VZS0pyOEl4TmtZMmZjK1VnVlV5Sm4rYmFHUmFQSjNBTllHSG80?=
+ =?utf-8?B?QnhPWTQ2ekhCbzVSc200VzVSSGI4YWFRS1lKdlJ3UVFwY1lFNlo3aWtYUGY5?=
+ =?utf-8?B?UXRwb3BmZkZ3aDZ4Z2EvdXpTTEU4czNxaEtCTDJIWXVJc1grNktaeDFzZkRT?=
+ =?utf-8?B?TFd2ZGlFSGRPSkV1MmRRRWhaWnNTeWM2RnA0Ky8yaHN4OWEzVzRpN05zVDdW?=
+ =?utf-8?B?SUY1dUxJNkdNSTk4NExNSjRSMVBlWkdGMit3MzJINC9PY0IzOWRROWgyVWZ4?=
+ =?utf-8?B?RXJKbjg4VDVEdWNlU1FNdGRqR0MyZnRRWThTNEtWdmR2L2FWSkdZemxVQVRK?=
+ =?utf-8?B?YkZwTWVPSmNHREwvR01XYTdCY0gxRXY4YnE1eWVaREttWWpueDJHVGlGK2x0?=
+ =?utf-8?B?VWhNdjN0UStvSEJYNmxVVW1WZ3BWWHpidmQwa0g4cUZxZ2hCTkVrY0F2azRa?=
+ =?utf-8?B?aldTRlZLSUtpUUFWMEI3TjVGelBmYUI5d2FlS3Z3WGRXb2FOOEtJSWU5S1Vu?=
+ =?utf-8?B?NThlTUovYzhldllXVURTdDdlU2MwcnNlbzBLbkxva2pQRWRDVGxwVm5iMWoy?=
+ =?utf-8?B?cmxlNHc1eVFLWG1ydnNZRVlObllDVm9DRlI4c3J5eDBmQ3l3VSs5RXdCekdM?=
+ =?utf-8?B?OXozZEdwenRVRC9WRVhOcUxPWWozQ1BBL0FucFhTNGZhaURGcFVodldOZU0x?=
+ =?utf-8?B?anc1ME1jcERScXYxdlYrRjB5WnEydlFnN1k3Q0p1ckg1b09KL084ZHF0ZXhi?=
+ =?utf-8?B?aytIWjFXWFMzcklhclRxcmVud3IvaE9CK1dlZ3gvS0w0ay9WWjg0UzlDZy9L?=
+ =?utf-8?B?ZWh4b0hmdkdzaC9LQVNzQVpmbkhrTmM3RU0zL3k2dlJlWkpwd090SHMvN0c2?=
+ =?utf-8?B?S2c2UGpQdEZDcVRSdWx3SXpDbWtDV3hIZ3BNeHlNZHJhcVNTWnc2Q3JHK240?=
+ =?utf-8?B?bFdNQTNWa1dTekJtdWlHMDcwNnlSWkQ3bUkyVURRT1cwelpZTzJ6VXg0YlpX?=
+ =?utf-8?B?QS9qVGYvUWNZRjh1c2pqNnJWMzVqQzdYOUhvRmxpeGlQY0R4elR3RFAwbVZ6?=
+ =?utf-8?B?Yk95YTNtbUdkNHRzVVlxa25sZmkrWkhlTEtkVFhLa2dCbGVOS0U1NldyanM0?=
+ =?utf-8?B?OWllc2JFU01lVVBOTzdMN25DbWhWUUt6aXVyUmlidXFSaWRPdFFobEhTVXhP?=
+ =?utf-8?B?NjM0TzVQZTNpZFdPeWZGVjlxRjZScWYzN3lWOEpsU2hxY0ZSWUJ3L0syZE5C?=
+ =?utf-8?B?MVFGaHoyVFF3amxUZTZ5L2daWnJqTW9nTU1rM3dmOTFHN21HVGRHL2ZJM2Jz?=
+ =?utf-8?B?TTh1SUtyaThIay9rbGtKL2tqVW1tRXRabnZFODRlZ2l2bUQ5U0k1WGdQc0Rw?=
+ =?utf-8?Q?+2i03DJlbAGkDZWbk4R/two=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d764f443-6692-4d44-410d-08da5f0706ab
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 04:21:41.2967
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: isFGHV1IoXiyijWCgDJWamFs2qKZ604DUU64M0PYF6sHzqCu6tmblIG7Nj7CAeiaSmN2acpgw+KKRaD4XN9FE4ByUfZwx9n+lXOJE6z3n0E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR01MB5299
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steven,
+Dear Joel,
 
-Thank you for the patch! Perhaps something to improve:
+Thanks for applying this patchset for v5.18.
 
-[auto build test WARNING on rostedt-trace/for-next]
-[also build test WARNING on wireless-next/main]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Would it be also possible to apply them to OpenBMC kernel dev-5.15 
+branch as well?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Steven-Rostedt/tracing-events-Add-__vstring-and-__assign_vstr-helpers/20220706-065125
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git for-next
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207061250.oSPdYi3E-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/e742b16f3b984d761db2d898c15e7632e9166d4a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Steven-Rostedt/tracing-events-Add-__vstring-and-__assign_vstr-helpers/20220706-065125
-        git checkout e742b16f3b984d761db2d898c15e7632e9166d4a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/infiniband/hw/hfi1/
+Thanks,
+- Quan
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/trace/define_trace.h:102,
-                    from drivers/infiniband/hw/hfi1/trace_dbg.h:111,
-                    from drivers/infiniband/hw/hfi1/trace.h:15,
-                    from drivers/infiniband/hw/hfi1/trace.c:6:
-   drivers/infiniband/hw/hfi1/./trace_dbg.h: In function 'trace_event_get_offsets_hfi1_trace_template':
->> include/trace/trace_events.h:261:16: warning: function 'trace_event_get_offsets_hfi1_trace_template' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     261 |         struct trace_event_raw_##call __maybe_unused *entry;            \
-         |                ^~~~~~~~~~~~~~~~
-   drivers/infiniband/hw/hfi1/./trace_dbg.h:25:1: note: in expansion of macro 'DECLARE_EVENT_CLASS'
-      25 | DECLARE_EVENT_CLASS(hfi1_trace_template,
-         | ^~~~~~~~~~~~~~~~~~~
-   In file included from include/trace/define_trace.h:102,
-                    from drivers/infiniband/hw/hfi1/trace_dbg.h:111,
-                    from drivers/infiniband/hw/hfi1/trace.h:15,
-                    from drivers/infiniband/hw/hfi1/trace.c:6:
-   drivers/infiniband/hw/hfi1/./trace_dbg.h: In function 'trace_event_raw_event_hfi1_trace_template':
-   include/trace/trace_events.h:386:16: warning: function 'trace_event_raw_event_hfi1_trace_template' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     386 |         struct trace_event_raw_##call *entry;                           \
-         |                ^~~~~~~~~~~~~~~~
-   drivers/infiniband/hw/hfi1/./trace_dbg.h:25:1: note: in expansion of macro 'DECLARE_EVENT_CLASS'
-      25 | DECLARE_EVENT_CLASS(hfi1_trace_template,
-         | ^~~~~~~~~~~~~~~~~~~
-   In file included from include/trace/define_trace.h:103,
-                    from drivers/infiniband/hw/hfi1/trace_dbg.h:111,
-                    from drivers/infiniband/hw/hfi1/trace.h:15,
-                    from drivers/infiniband/hw/hfi1/trace.c:6:
-   drivers/infiniband/hw/hfi1/./trace_dbg.h: In function 'perf_trace_hfi1_trace_template':
-   include/trace/perf.h:64:16: warning: function 'perf_trace_hfi1_trace_template' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-      64 |         struct hlist_head *head;                                        \
-         |                ^~~~~~~~~~
-   drivers/infiniband/hw/hfi1/./trace_dbg.h:25:1: note: in expansion of macro 'DECLARE_EVENT_CLASS'
-      25 | DECLARE_EVENT_CLASS(hfi1_trace_template,
-         | ^~~~~~~~~~~~~~~~~~~
-
-
-vim +261 include/trace/trace_events.h
-
-55de2c0b5610cb include/trace/trace_events.h Masami Hiramatsu         2021-11-22  253  
-091ad3658e3c76 include/trace/ftrace.h       Ingo Molnar              2009-11-26  254  #undef DECLARE_EVENT_CLASS
-091ad3658e3c76 include/trace/ftrace.h       Ingo Molnar              2009-11-26  255  #define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
-d0ee8f4a1f5f3d include/trace/trace_events.h Steven Rostedt (Red Hat  2015-05-13  256) static inline notrace int trace_event_get_offsets_##call(		\
-62323a148fbeb0 include/trace/trace_events.h Steven Rostedt (Red Hat  2015-05-13  257) 	struct trace_event_data_offsets_##call *__data_offsets, proto)	\
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  258  {									\
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  259  	int __data_size = 0;						\
-114e7b52dee69c include/trace/ftrace.h       Filipe Brandenburger     2014-02-28  260  	int __maybe_unused __item_length;				\
-a7237765730a10 include/trace/trace_events.h Steven Rostedt (Red Hat  2015-05-13 @261) 	struct trace_event_raw_##call __maybe_unused *entry;		\
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  262  									\
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  263  	tstruct;							\
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  264  									\
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  265  	return __data_size;						\
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  266  }
-7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  267  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On 28/02/2022 11:21, Joel Stanley wrote:
+> On Mon, 28 Feb 2022 at 00:03, Quan Nguyen <quan@os.amperecomputing.com> wrote:
+>>
+>> This patchset adds the second flash support, merge all ADC channels to
+>> single iio-hwmon node and update various gpios pin name.
+>>
+>> Link:https://github.com/openbmc/docs/blob/master/designs/device-tree-gpio-naming.md
+>>
+>> Quan Nguyen (5):
+>>    ARM: dts: aspeed: mtjade: Enable secondary flash
+>>    ARM: dts: aspeed: mtjade: Update rtc-battery-voltage-read-enable pin
+>>    ARM: dts: aspeed: mtjade: Update host0-ready pin
+>>    ARM: dts: aspeed: mtjade: Rename GPIO hog nodes to match schema.
+>>    ARM: dts: aspeed: mtjade: Move all adc sensors into iio-hwmon node
+> 
+> These look good.
+> 
+> Reviewed-by: Joel Stanley <joel@jms.id.au>
+> 
+> I'll apply them for v5.18.
+> 
+>>
+>>   .../arm/boot/dts/aspeed-bmc-ampere-mtjade.dts | 26 +++++++++----------
+>>   1 file changed, 12 insertions(+), 14 deletions(-)
+>>
+>> --
+>> 2.28.0
+>>
