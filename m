@@ -2,135 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE832C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56376C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233723AbiGFPwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
+        id S229379AbiGFPxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233519AbiGFPwS (ORCPT
+        with ESMTP id S233546AbiGFPxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:52:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2DD2655F
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 08:50:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1691E61FAC
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 15:50:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E70C3411C;
-        Wed,  6 Jul 2022 15:50:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657122626;
-        bh=ViaMuLi4HNR/JkZs+Ue4PdCTt9ZbO+5BZ+zjC0V0VwI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u7llt3fpXNTF1QgDdMNjSHXYfeFNwRC7UcZzyFsGfl2yJ4JQ7Yqy+Ovm76QbFGzXG
-         JtF9qCbzMXqCb2VWjMMXtldmgs04nBPJXXyKxrlxSVl32Y/eQAn9q3mwm+C0EZ/3hJ
-         0++2TvirDwB1AiAawYphlq9VSrnqKCTDn2PW4vSV1mBWOkZEdJ+4xNj7O+FEgZg6DD
-         XfzzD8pCMe6H3dfe/gQbQ5RQgazcdI5j+3ID5iRLAkMGKxOdT+ALy09UJ3MyJbulkB
-         PPq0xN99M99qXfMPPC1Kb6Yu37OWpV21KBWHKqE5koCY0k/YurN6NIyfFqIqRrot+L
-         4iQcEaKlcgwcg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1DCB14096F; Wed,  6 Jul 2022 12:50:23 -0300 (-03)
-Date:   Wed, 6 Jul 2022 12:50:23 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     cclaudio@linux.ibm.com, Jiri Olsa <jolsa@kernel.org>,
-        Linux Kernel? Mailing List <linux-kernel@vger.kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: Re: [PATCH] perf trace: Fix SIGSEGV when processing augmented args
-Message-ID: <YsWvPwRirNIT67tl@kernel.org>
-References: <20220310104741.209834-1-naveen.n.rao@linux.vnet.ibm.com>
- <Yi+9G1nK1shEIXVN@kernel.org>
- <1647364864.3xrhklc7kl.naveen@linux.ibm.com>
- <YjDSRb1wwswKpJNJ@kernel.org>
- <YjJKaSanKI7LQdEk@kernel.org>
- <1657110053.93m1349h4k.naveen@linux.ibm.com>
+        Wed, 6 Jul 2022 11:53:36 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14B418398;
+        Wed,  6 Jul 2022 08:52:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657122732; x=1688658732;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=y3/9f4gAnKgtfKYM4zXe/3Q35Ma8+prwhvKdkpVJo64=;
+  b=UZqyyVFPijSkyZ6NJTB462HO9aUTSezlH62xGgsodKHzQjbZu2a0rn36
+   ojFbUfqzs0M22mBV7oJSP/gTVUSoOt1A20XDyPG5cZIr6cY9pSqmM19Ym
+   qwewCiMLgwjqNeg0zKTJF2EvLhFzdjjLCK4DkUOmfNlj1Bnv18Ki4G+UJ
+   9ua4W6bwYkbzjUFRnxKccF2GvZ5eD2dmNEnxd+ivb7tLxwKRPPsR0gcmx
+   WemhQwtSBEkw9PzwbTyYUkRrSnSLuq10iS0fDsoshT8LCDTDkQTGJl1xA
+   +79EMxdedsvb1fJLZwY62SM2NsNZOF76hMAQ2ijzm7kEMZI3ANwNWvJvZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="347770035"
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="347770035"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 08:50:11 -0700
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="620370161"
+Received: from tjsteven-mobl3.amr.corp.intel.com (HELO [10.255.228.25]) ([10.255.228.25])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 08:50:12 -0700
+Message-ID: <d2d58cc2-7e6d-aa2d-3096-a500ce321494@intel.com>
+Date:   Wed, 6 Jul 2022 08:48:07 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657110053.93m1349h4k.naveen@linux.ibm.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 0/3] Add PUD and kernel PTE level pagetable account
+Content-Language: en-US
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        akpm@linux-foundation.org
+Cc:     rppt@linux.ibm.com, willy@infradead.org, will@kernel.org,
+        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
+        peterz@infradead.org, catalin.marinas@arm.com,
+        chenhuacai@kernel.org, kernel@xen0n.name,
+        tsbogend@alpha.franken.de, dave.hansen@linux.intel.com,
+        luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, hpa@zytor.com, arnd@arndb.de, guoren@kernel.org,
+        monstr@monstr.eu, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
+        x86@kernel.org, linux-arch@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+        linux-mips@vger.kernel.org, linux-csky@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Jul 06, 2022 at 06:01:29PM +0530, Naveen N. Rao escreveu:
-> Hi Arnaldo,
-> 
-> Arnaldo Carvalho de Melo wrote:
-> > Em Tue, Mar 15, 2022 at 02:52:05PM -0300, Arnaldo Carvalho de Melo escreveu:
-> > > Em Tue, Mar 15, 2022 at 10:57:57PM +0530, Naveen N. Rao escreveu:
-> > > > Yes, it looks like the current check in 'perf' isn't working. The below
-> > > > patch also resolves the crash we are seeing:
-> > > > diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-> > > > index 2f1d20553a0aa3..86b459f4ebdd61 100644
-> > > > --- a/tools/perf/builtin-trace.c
-> > > > +++ b/tools/perf/builtin-trace.c
-> > > > @@ -2326,7 +2326,7 @@ static int trace__sys_enter(struct trace *trace, struct evsel *evsel,
-> > > >         * thinking that the extra 2 u64 args are the augmented filename, so just check
-> > > >         * here and avoid using augmented syscalls when the evsel is the raw_syscalls one.
-> > > >         */
-> > > > -       if (evsel != trace->syscalls.events.sys_enter)
-> > > > +       if (strcmp(evsel__name(evsel), "raw_syscalls:sys_enter"))
-> > > >                augmented_args = syscall__augmented_args(sc, sample, &augmented_args_size, trace->raw_augmented_syscalls_args_size);
-> > > >        ttrace->entry_time = sample->time;
-> > > >        msg = ttrace->entry_str;
-> > > 
-> > > Interesting, that should be equivalent :-\ humm, not really, understood,
-> > > when processing perf.data files we don't setup
-> > > trace->syscalls.events.sys_enter...
-> > > 
-> > > switching from strcmp() to something cheaper but equivalent should be
-> > > the fix for now.
-> > 
-> > I'll add a trace->use_augmented_args boolean that will do this test
-> > once, and then use it in this case and will audit to check if this
-> > should be used in other places.
-> 
-> Does something like the below look reasonable?
-> 
-> I know this isn't quite what you proposed, but it fixes the problem for me
-> while avoiding the need for a string comparison. I also think this addresses
-> all uses in 'perf trace', though I didn't audit the need for a similar fix
-> elsewhere in 'perf'.
+On 7/6/22 01:59, Baolin Wang wrote:
+> Now we will miss to account the PUD level pagetable and kernel PTE level
+> pagetable, as well as missing to set the PG_table flags for these pagetable
+> pages, which will get an inaccurate pagetable accounting, and miss
+> PageTable() validation in some cases. So this patch set introduces new
+> helpers to help to account PUD and kernel PTE pagetable pages.
 
-I'll check and test, but I like it, two-liner even :-)
-
-- Arnaldo
- 
-> 
-> Thanks,
-> Naveen
-> 
-> ---
-> diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-> index d2de2a4073e7eb..352b88a51dec2d 100644
-> --- a/tools/perf/builtin-trace.c
-> +++ b/tools/perf/builtin-trace.c
-> @@ -4291,6 +4292,8 @@ static int trace__replay(struct trace *trace)
->                goto out;
->        }
-> 
-> +       trace->syscalls.events.sys_enter = evsel;
-> +
->        evsel = evlist__find_tracepoint_by_name(session->evlist, "raw_syscalls:sys_exit");
->        if (evsel == NULL)
->                evsel = evlist__find_tracepoint_by_name(session->evlist, "syscalls:sys_exit");
-> @@ -4301,6 +4304,8 @@ static int trace__replay(struct trace *trace)
->                goto out;
->        }
-> 
-> +       trace->syscalls.events.sys_exit  = evsel;
-> +
->        evlist__for_each_entry(session->evlist, evsel) {
->                if (evsel->core.attr.type == PERF_TYPE_SOFTWARE &&
->                    (evsel->core.attr.config == PERF_COUNT_SW_PAGE_FAULTS_MAJ ||
-> 
-> 
-
--- 
-
-- Arnaldo
+Could you explain the motivation for this series a bit more?  Is there a
+real-world problem that this fixes?
