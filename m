@@ -2,101 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F61C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1912DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232095AbiGFKMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S232778AbiGFKMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232422AbiGFKL6 (ORCPT
+        with ESMTP id S232019AbiGFKMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:11:58 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D082BAE5D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:11:57 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id l68so8530559wml.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 03:11:57 -0700 (PDT)
+        Wed, 6 Jul 2022 06:12:17 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66BAF15A19;
+        Wed,  6 Jul 2022 03:12:14 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id c131-20020a1c3589000000b003a19b2bce36so5711623wma.4;
+        Wed, 06 Jul 2022 03:12:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bJUbjFqLiGSB5OjmspqHgctiZDrpEvVdOgFv+mnyDrY=;
-        b=WUiC/qR++dreygxO/e5FRN1CcpN48p4tSY0P3vPUGsauO1pAEx6jDr0A8eokLWrG1W
-         jrIrpAPVAHsTWn91clYJVshV+gNDkkrhrGn0Z1b6vpXKxOlGxZq2ML9xnNhzCvIdCuNc
-         V3ETf2fDEu7KQkLdm+ebJMkZ5vOnCU/xe+B0XIhV8YUca7Owof4BnKBAT7zlgJAEIFBz
-         C/I11L6HdARba0CqmTYnIZ/YHrL1lKlq3Citidw6ZNl5iGzxlzE4HVJTLetmUKvEzhQG
-         cRRGLGa+KGymeV+f6ge5TwpvrouuCipDxd7DRplqE0mL0jzMrWt9NUe/JKZ2GtHBMo1F
-         bjHQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8vzw6bFniL24T6OECphPlNcFeN72oaM117VUsHYULlE=;
+        b=Thg92U1EPycx9LB0a//LM9U+OMX34Fsr0FAVhF1xY91kKLYsTWAqz9dUlN0CXw3cSP
+         J+j87wOTOcH4DzPMD36ypemV/7VtYu029uIRCv8crksOEAT12ZTSRVvJuh/rwNBh94Vk
+         maXP4DaacK5HX+wYS+L1H0FWCnzIDfKBzMbIk14zZV5wNHLm9UOc7fLv2WcX8pANnnn9
+         HgG9irCgP6JELmnIt3mw1BWBbXOFSwHXUt9IGgO4P+vVuOYEmIwd3vcuVwOz9PsHrvUJ
+         Gp7QjAxA8Ubnvn39P1nsHQQjXv8MMRPt6H21f3SFZ5m4fCByeLThxwYTh7coZ5HK5TQx
+         kQUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bJUbjFqLiGSB5OjmspqHgctiZDrpEvVdOgFv+mnyDrY=;
-        b=wd8v1PTY6pz4iUXx6HZdIuSdAV0qUepvhazABKYqJdBdDgDnoTr26REvSp44lb+rAF
-         m0SiDTIktGG12o4dm9XRzYnvftgNqQj2W3pQLCUtlb/BvI+M02BuymH7t948qDZCJgXg
-         eftjFXePh0i/WqVgrcCl5AfKw06UscagWZwCSkMYAiUI2irk1/BvcMnG/XdgcBpd6v3b
-         DA0Zc6+tjPl/8PaFP2/ZPLGftPK3Vy9DBWZvLuON/Eub//0H4we7MBCxlCSOnmRY6kjt
-         fNBXY/2ut6uYZYNQlZyk9KJri6qZiMbeXCjxqDmkuR9wH4HgNGGJYQK/64/69VNAx49a
-         9Djg==
-X-Gm-Message-State: AJIora8ydMAUc3eFp9tQ7u6px4T+a/DqwLB9VxgkRj8iAfvzPLd2C/x4
-        oQlb8Va2otE9fVqxpduJ9vYFwLpwZqsseo8t
-X-Google-Smtp-Source: AGRyM1tnZ48LVi0raQWKxaPw6jvbXxt/O0eYPo3FcUYIjSpzVDVCDnIfbvP6vdCRtw0FpKZG9xRqfA==
-X-Received: by 2002:a05:600c:3399:b0:3a1:967a:78af with SMTP id o25-20020a05600c339900b003a1967a78afmr23429233wmp.29.1657102316406;
-        Wed, 06 Jul 2022 03:11:56 -0700 (PDT)
-Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id u23-20020a7bcb17000000b0039aef592ca0sm24826620wmj.35.2022.07.06.03.11.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:11:55 -0700 (PDT)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 2/2] slimbus: messaging: fix typos in comments
-Date:   Wed,  6 Jul 2022 11:11:31 +0100
-Message-Id: <20220706101131.6934-3-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220706101131.6934-1-srinivas.kandagatla@linaro.org>
-References: <20220706101131.6934-1-srinivas.kandagatla@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8vzw6bFniL24T6OECphPlNcFeN72oaM117VUsHYULlE=;
+        b=abq85OLQcButquyx1iva4enh9qTsDM/HP4op5jdFnj41TkGqs++TB4DP3wODS40ld6
+         IL4nnt/Z6FCQIiXKp9nrANSWj/4/c8k2CDcvgrdE3pkFJrKwMXqjLe/jvTKTNLfPDpfy
+         daNwofhPaplWvKcURAmyCZ6qOOdVPqUMQB/EP1UC9jM5dwgTueqSvlAwK4uWjCkj/BW7
+         Gu+JvrgjxT9KkClouSv6n809uFTf2eXYaz1s4UrlrmAMbea4OGb96htN/qgzNUenMipG
+         70hm3gDGfJbiVEminCN7RJrgHhnHBo6j8SEyPKf6+kE9g8ok49N7jdcMAfMCA24LPMDE
+         puMg==
+X-Gm-Message-State: AJIora8cdIBqJtrbCyFzhmkWuQnmDWcZJJtZY+bvokfaXBvuxi3iGn+e
+        SZ7e0uADUsj02ZcsT+zqknzbw3H9ClqQc2+zXAE=
+X-Google-Smtp-Source: AGRyM1sCzHST+YhMi5w2+9hHPYiwsrrf6MeFPLaxUs7QmKI7OpMUhP9KCuJGluc5CQjY+3D6X+bEQ1JXW1gQE+tA3s8=
+X-Received: by 2002:a05:600c:6004:b0:3a0:41db:aae with SMTP id
+ az4-20020a05600c600400b003a041db0aaemr42613766wmb.171.1657102332798; Wed, 06
+ Jul 2022 03:12:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-4-schultz.hans+netdev@gmail.com> <20220627180557.xnxud7d6ol22lexb@skbuf>
+ <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com> <20220706085559.oyvzijcikivemfkg@skbuf>
+In-Reply-To: <20220706085559.oyvzijcikivemfkg@skbuf>
+From:   Hans S <schultz.hans@gmail.com>
+Date:   Wed, 6 Jul 2022 12:12:01 +0200
+Message-ID: <CAKUejP7gmULyrjqd3b3PiWwi7TJzF4HNuEbmAf25Cqh3w7a1mw@mail.gmail.com>
+Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB implementation
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@inria.fr>
+On Wed, Jul 6, 2022 at 10:56 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Tue, Jun 28, 2022 at 02:26:43PM +0200, Hans S wrote:
+> > > Dumb question: if you only flush the locked entries at fast age if the
+> > > port is locked, then what happens with the existing locked entries if
+> > > the port becomes unlocked before an FDB flush takes place?
+> > > Shouldn't mv88e6xxx_port_set_lock() call mv88e6xxx_atu_locked_entry_flush()
+> > > too?
 
-Spelling mistakes (triple letters) in comments.
-Detected with the help of Coccinelle.
+BTW:
+>> @@ -919,6 +920,9 @@ static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
+>>       if (err)
+>>               dev_err(chip->dev,
+>>                       "p%d: failed to force MAC link down\n", port);
+>> +     else
+>> +             if (mv88e6xxx_port_is_locked(chip, port, true))
+>> +                     mv88e6xxx_atu_locked_entry_flush(ds, port);
+>
+>This is superfluous, is it not? The bridge will transition a port whose
+>link goes down to BR_STATE_DISABLED, which will make dsa_port_set_state()
+>fast-age the dynamic FDB entries on the port, which you've already
+>handled below.
 
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/slimbus/messaging.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I removed this code, but then on link down the locked entries were not
+cleared out. Something not as thought?
 
-diff --git a/drivers/slimbus/messaging.c b/drivers/slimbus/messaging.c
-index e5ae26227bdb..4ce0cb61e481 100644
---- a/drivers/slimbus/messaging.c
-+++ b/drivers/slimbus/messaging.c
-@@ -79,7 +79,7 @@ int slim_alloc_txn_tid(struct slim_controller *ctrl, struct slim_msg_txn *txn)
- EXPORT_SYMBOL_GPL(slim_alloc_txn_tid);
- 
- /**
-- * slim_free_txn_tid() - Freee tid of txn
-+ * slim_free_txn_tid() - Free tid of txn
-  *
-  * @ctrl: Controller handle
-  * @txn: transaction whose tid should be freed
-@@ -101,7 +101,7 @@ EXPORT_SYMBOL_GPL(slim_free_txn_tid);
-  * @txn: Transaction to be sent over SLIMbus
-  *
-  * Called by controller to transmit messaging transactions not dealing with
-- * Interface/Value elements. (e.g. transmittting a message to assign logical
-+ * Interface/Value elements. (e.g. transmitting a message to assign logical
-  * address to a slave device
-  *
-  * Return: -ETIMEDOUT: If transmission of this message timed out
--- 
-2.25.1
+> >
+> > That was my first thought too, but the way the flags are handled with the mask etc, does so that
+> > mv88e6xxx_port_set_lock() is called when other flags change. It could be done by the transition
+> > from locked->unlocked by checking if the port is locked already.
+>
+> Why does mv88e6xxx_port_set_lock() get called when other flags change?
 
+That is what seems to happen, but maybe I am wrong. Looking at the dsa
+functions dsa_port_inherit_brport_flags() and
+dsa_port_clear_brport_flags(), they set the mask for which underlying
+function is called, and it looks to me that they call once for all the
+flags: BR_LEARNING, BR_FLOOD, BR_MCAST_FLOOD, BR_BCAST_FLOOD,
+BR_PORT_LOCKED?
+
+>
+> > On the other hand, the timers will timeout and the entries will be removed anyhow.
+>
+> > > > +static void mv88e6xxx_atu_locked_entry_timer_work(struct atu_locked_entry *ale)
+> > >
+> > > Please find a more adequate name for this function.
+> >
+> > Any suggestions?
+>
+> Not sure. It depends on whether you leave just the logic to delete a
+> locked ATU entry, or also the switchdev FDB_DEL_TO_BRIDGE notifier.
+> In any case, pick a name that reflects what it does. Something with
+> locked_entry_delete() can't be too wrong.
+>
+> > > From the discussion with Ido and Nikolay I get the impression that
+> > > you're not doing the right thing here either, notifying a
+> > > SWITCHDEV_FDB_DEL_TO_BRIDGE from what is effectively the
+> > > SWITCHDEV_FDB_DEL_TO_DEVICE handler (port_fdb_del).
+> >
+> > Hmm, my experience tells me that much is opposite the normal
+> > conventions when dealing with
+> > locked ports, as there was never switchdev notifications from the
+> > driver to the bridge before, but
+> > that is needed to keep ATU and FDB entries in sync.
+>
+> On delete you mean? So the bridge signals switchdev a deletion of a
+> locked FDB entry (as I pointed out, this function gets indirectly called
+> from port_fdb_del), but it won't get deleted until switchdev signals it
+> back, is what you're saying?
+>
+
+When added they are added with bridge FDB flags: extern_learn offload
+locked, with a SWITCHDEV_FDB_ADD_TO_BRIDGE event. So they are owned by
+the driver.
+When the driver deletes the locked entry the bridge FDB entry is
+removes by the SWITCHDEV_FDB_DEL_TO_BRIDGE event from the driver. That
+seems quite fair?
+
+> > > Why is the rtnl_unlock() outside the switch statement but the rtnl_lock() inside?
+> > > Not to mention, the dsa_port_to_bridge_port() call needs to be under rtnl_lock().
+> >
+> > Just a small optimization as I also have another case of the switch
+> > (only one switch case if
+> > you didn't notice) belonging to the next patch set regarding dynamic
+> > ATU entries.
+>
+> What kind of optimization are you even talking about? Please get rid of
+> coding patterns like this, sorry.
+>
+Right!
+
+> > > Please, no "if (chiplock) mutex_lock()" hacks. Just lockdep_assert_held(&chip->reg_lock),
+> > > which serves both for documentation and for validation purposes, ensure
+> > > the lock is always taken at the caller (which in this case is super easy)
+> > > and move on.
+> >
+> > As I am calling the function in if statement checks, it would make
+> > that code more messy, while with
+> > this approach the function can be called from anywhere. I also looked
+> > at having two functions, with
+> > one being a wrapper function taking the lock and calling the other...
+>
+> There are many functions in mv88e6xxx that require the reg_lock to be
+> held, there's nothing new or special here.
+>
+
+Now I take the lock in the function regardless. No boolean.
+
+> > >
+> > > > +
+> > > > +     if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
+> > > > +             goto out;
+> > >
+> > > It would be good to actually propagate the error to the caller and
+> > > "locked" via a pass-by-reference bool pointer argument, not just say
+> > > that I/O errors mean that the port is unlocked.
+> >
+> > Again the wish to be able to call it from if statement checks,.
+> >
+> > > > +     reg &= MV88E6XXX_PORT_ASSOC_VECTOR_PAV_MASK;
+> > > > +     if (locked) {
+> > > > +             reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
+> > > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
+> > > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
+> > > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
+> > >
+> > > I'd suggest aligning these macros vertically.
+> >
+> > They are according to the Linux kernel coding standard wrt indentation afaik.
+>
+> Compare:
+>
+>                 reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
+>                         MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
+>                         MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
+>                         MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
+>
+> with:
+>
+>                 reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
+>                        MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
+>                        MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
+>                        MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
+
+I cannot see the difference here...?
+
+Another issue...
+
+I have removed the timers as they are superfluous and now just use the
+worker and jiffies. But I have found that the whole ageing time seems
+to be broken on the 5.17 kernel I am running. I don't know if it has
+been fixed, but the ageing timeout is supposed to be given in seconds.
+Here is the output from various functions after the command "ip link
+set dev br0 type bridge ageing_time 1500" (that is nominally 1500
+seconds according to man page!):
+
+dsa_switch_ageing_time: ageing_time 10000, ageing_time_min 1000,
+ageing_time_max 3825000
+mv88e6xxx_set_ageing_time: set ageing time to 10000
+br0: failed (err=-34) to set attribute (id=6)
+dsa_switch_ageing_time: ageing_time 15000, ageing_time_min 1000,
+ageing_time_max 3825000
+mv88e6xxx_set_ageing_time: set ageing time to 15000
+
+The 15000 set corresponds to 150 seconds! (I hardcoded the dsa
+ageing_time_min to 1000)
