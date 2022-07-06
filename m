@@ -2,91 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BF3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAE9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233270AbiGFQ7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50672 "EHLO
+        id S232736AbiGFRBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233054AbiGFQ6y (ORCPT
+        with ESMTP id S231454AbiGFRBa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:58:54 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83932A42D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:58:52 -0700 (PDT)
-Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LdQfb5Grpz67pCt;
-        Thu,  7 Jul 2022 00:56:07 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 18:58:50 +0200
-Received: from [10.126.171.66] (10.126.171.66) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 17:58:49 +0100
-Message-ID: <db3958dc-d714-f361-f349-06317a0e0cec@huawei.com>
-Date:   Wed, 6 Jul 2022 17:58:49 +0100
+        Wed, 6 Jul 2022 13:01:30 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A18964D1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:01:29 -0700 (PDT)
+Received: from zn.tnic (p200300ea970ff625329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:f625:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 372DB1EC0453;
+        Wed,  6 Jul 2022 19:01:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1657126883;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=YuG9Q+oxYEiway3JJ+jBLFvim0S1LMN5Amv/Z4wmYOg=;
+        b=EOVKH88UnwbLUGmgyTFs6FasfHgJZWGtuo5qd9U2XujbRMoomm+jklABu0L5mmqRDWIYKS
+        6sX8bZuCKS/Svvc1Ue3/+A9RQTeqkeFyDI7QVgA9nZl1k5a6QdUys/lsRGfvh+BIBPHXHN
+        AyMRh/70e+IFGqqPfhAFHm5sislbIFo=
+Date:   Wed, 6 Jul 2022 19:01:19 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jan Beulich <jbeulich@suse.com>
+Cc:     Andrew Lutomirski <luto@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+Subject: Re: [PATCH] x86/PAT: have pat_enabled() properly reflect state when
+ running on e.g. Xen
+Message-ID: <YsW/3/fEuNYAuFwZ@zn.tnic>
+References: <9385fa60-fa5d-f559-a137-6608408f88b0@suse.com>
+ <YsRTAGI2PhfZ5V7M@zn.tnic>
+ <016d281b-7e40-f1bd-66ee-c19c3cc56efe@suse.com>
+ <YsRjX/U1XN8rq+8u@zn.tnic>
+ <b7fa785b-cea3-3e05-c101-d6c7bd101ef3@suse.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] nvme: Fix nvme_setup_command metadata trace event for
- cdw10
-To:     Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>
-CC:     <axboe@fb.com>, <sagi@grimberg.me>,
-        <linux-nvme@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-References: <1657095398-114310-1-git-send-email-john.garry@huawei.com>
- <YsW0orMaDFfrHbx+@kbusch-mbp.dhcp.thefacebook.com>
- <20220706161825.GA1962@lst.de>
- <YsW3oXcCe6/y6iRb@kbusch-mbp.dhcp.thefacebook.com>
- <20220706163434.GA2222@lst.de>
- <YsW7+Lsy0ENSA/il@kbusch-mbp.dhcp.thefacebook.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <YsW7+Lsy0ENSA/il@kbusch-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.171.66]
-X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <b7fa785b-cea3-3e05-c101-d6c7bd101ef3@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/07/2022 17:44, Keith Busch wrote:
-> On Wed, Jul 06, 2022 at 06:34:34PM +0200, Christoph Hellwig wrote:
->> On Wed, Jul 06, 2022 at 10:26:09AM -0600, Keith Busch wrote:
->>> On Wed, Jul 06, 2022 at 06:18:25PM +0200, Christoph Hellwig wrote:
->>>> On Wed, Jul 06, 2022 at 10:13:22AM -0600, Keith Busch wrote:
->>>>> Did you test what the trace looks like afte this? We're losing valuable trace
->>>>> data here. The field is supposed to get CDW's 10 - 15, so that's 24 bytes.
+On Wed, Jul 06, 2022 at 08:17:41AM +0200, Jan Beulich wrote:
+> Sure, but that alone won't help.
 
-ok, I just thought it was a typo, but did not know why you were using an 
-array macro.
+Well, the MTRR code looks at X86_FEATURE_MTRR. If Xen doesn't expose the
+MTRRs, then that bit should be clear in the CPUID the guest sees.
 
-> I
->>>>> don't know why it cares that the address of the field being read is only 4
->>>>> bytes; we want everything that comes after it too.
->>>>
->>>> Because accesses should not spawn boundaries of members in structs unless
->>>> copying the entire struct.  If we want to trace the various fields we
->>>> need to individually assign them.
->>>>
->>>> Anyway, I'm dropping this patch from nvme-5.19 for now to let the
->>>> discussion conclude.
->>>
->>> How about this instead?
->>
->> Maybe a better option would be to use struct_group().
-> 
-> Good call, I'd never used that macro before. The result produces anonymous
-> unions like I just proposed, so yes, I like that option.
-> .
+So in that case, you could test X86_FEATURE_XENPV at the end of
+mtrr_bp_init() and not disable PAT if running as a PV guest. Would that
+work?
 
-The warning hints at using struct_group() also ...
+> There's a beneficial side effect of running through pat_disable():
+> That way pat_init() will bail right away. Without that I'd need to
+> further special case things there (as under Xen/PV PAT must not be
+> written, only read)
 
-Anyway, Keith, do you want to write a new patch or shall I?
+We have wrmsr_safe for that.
 
-Thanks,
-John
+> Any decent hypervisor will allow overriding CPUID, so in principle
+> I'd expect any to permit disabling MTRR to leave a guest to use
+> the (more modern and less cumbersome) PAT alone.
+
+So I'm being told that it would be generally beneficial for all kinds of
+virtualization solutions to be able to support PAT only, without MTRRs
+so it would be interesting to see how ugly it would become to decouple
+PAT from MTRRs in Linux...
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
