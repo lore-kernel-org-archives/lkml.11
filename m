@@ -2,97 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F155AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:21:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232508AbiGFOVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        id S232977AbiGFOVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbiGFOVO (ORCPT
+        with ESMTP id S232280AbiGFOVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:21:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE6616586
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 07:21:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E113B81D0A
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D85DBC3411C;
-        Wed,  6 Jul 2022 14:21:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657117270;
-        bh=BBqleXYQ4a7+Wf4AHDy7c+4UEGJSou8ATB/bmunX1rA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=UF6BlsoxCRU5TKLF4xnkYYWEKLfFj3c2cds3rlDoddcl8smCvLtUkRvYSGRL8jlO3
-         dnPFuYXv1gsW9f+1MEv5ePP2rGOv1fxpkuLCANbWReBFTJa8mAX2fihls9IZ+ROBD5
-         9NZCVuPMttGwlgEnTv9XPK5bK54RbZltrMCkGiAU1Jw8sTEspPH0uC0va7NQjQA48V
-         bUI8TOz3Bhg0tJXyf1X1IZdHCHCSEuQ+rv8vHzM25Upd5EYCPfIqi/PhFNeooyNlEH
-         PuHFP98BfSFNv6oaAl7/9s0iVHALb3onJ5V06yrcityGJQ5wBc5eynWMo7jQmYvCxa
-         0FTdgcqZv8eLw==
-Message-ID: <089b4584-2142-c761-27ca-bfb4d75e0f36@kernel.org>
-Date:   Wed, 6 Jul 2022 22:21:07 +0800
+        Wed, 6 Jul 2022 10:21:16 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6348C1FCDA;
+        Wed,  6 Jul 2022 07:21:14 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id k30so11363902edk.8;
+        Wed, 06 Jul 2022 07:21:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:date:in-reply-to:message-id
+         :mime-version;
+        bh=3Wb+2NYdNYlT/r55W5Q9BfPi7qfSp7lu+o+6L0rJtv8=;
+        b=gWJipTj+zP9LdoXW9ZZmPEOCzTlBkuyB0ff9epBmgDE/i75a/0ROab93UWiX68yi+7
+         Yt1iVTbV0mmGIUPRsu7Iv5ZcPakBrVTGgNn3QbSAbJtpD1ll+9ETR4NC2zrYuD2Fnhr0
+         3uqRa9NzLc3SPWQvYGtU92MRw784mM0wllnyz59w08XWzjpZjczcPBBFzQBfGl7lqBnO
+         kAPfQ328Di9nQotQ680IHOoOE5XpcYZIGGB+pFBD4V5yok26buCnhT3XtXyauzJsZOcl
+         ODNecWdJmbQGMgGDmfrBQHUim98ctmI2881WkJtNSMeuMS9vVtFx62bUPJeJme6xPEAJ
+         6VZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=3Wb+2NYdNYlT/r55W5Q9BfPi7qfSp7lu+o+6L0rJtv8=;
+        b=MHGARK1MfbjPjTMfgUdD/6o2VGqgirUU9ipTgpm7GN4fDtporzacIFB304Vg+/Ccd1
+         H2gdAQkFYSfmXfAP8eJQshsEwpyaxcm7WVOhLb8GDT4ViLjFIoPPym9KDN+gjMiWd4vj
+         OxNzleQc7hx2pU5j4itClotuPl3vzs+VnCfnYvU8z074G8WwecHRqP4P6geJavmHGg6I
+         qv5rkVnev5BaNix64wVJS5es2+++XLgHz+QzATADI788Gsw/M1xzRGPIi1wSmHDvCnFK
+         savL0E/iJy3MKGek+2Xm8r0vLELaIrU5PpxvftwsgzJlUrkQz/ThI9Vb/EXA0iTlcAii
+         Fr4g==
+X-Gm-Message-State: AJIora89nVyHkJMpDQs8S0r3TM9+uo18Pl4CdqmcR8j2t0ope/Gkzm7s
+        lUlJ+cUdHX4sjSw3DAa0HPG4f3vTOoE=
+X-Google-Smtp-Source: AGRyM1tT9stuoFyBcHRx0dfy4qvcPGQyu83eyJWdXOLAslwHbMig41DsfUkSzMnQ7gjy24d4uY2z1Q==
+X-Received: by 2002:a05:6402:2985:b0:439:651b:c1f4 with SMTP id eq5-20020a056402298500b00439651bc1f4mr43380871edb.276.1657117272992;
+        Wed, 06 Jul 2022 07:21:12 -0700 (PDT)
+Received: from localhost (92.40.202.41.threembb.co.uk. [92.40.202.41])
+        by smtp.gmail.com with ESMTPSA id au8-20020a170907092800b00722e19fec6dsm17325213ejc.156.2022.07.06.07.21.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 07:21:12 -0700 (PDT)
+References: <20220703111057.23246-1-aidanmacdonald.0x0@gmail.com>
+ <20220703111057.23246-4-aidanmacdonald.0x0@gmail.com>
+ <CACRpkdamknwRPGEeGGQGQPtKw=dPXa79GAJy+E6y+03NakN=cA@mail.gmail.com>
+ <GrX3yDSwNOGIBcWmKqusaJ3dDqNGLr3Y@localhost>
+ <CACRpkdbHg-vTj6CnkF=oMxtpy+FxEPdn2_qKzgtsT0TYU6Nv-g@mail.gmail.com>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     michael@walle.cc, brgl@bgdev.pl, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] gpio: regmap: Support a custom ->to_irq() hook
+Date:   Wed, 06 Jul 2022 14:50:49 +0100
+In-reply-to: <CACRpkdbHg-vTj6CnkF=oMxtpy+FxEPdn2_qKzgtsT0TYU6Nv-g@mail.gmail.com>
+Message-ID: <ZTG1etjWj47jkqTxIRgriV6pQhW9dasf@localhost>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] f2fs: fix to remove F2FS_COMPR_FL and tag F2FS_NOCOMP_FL
- at the same time
-Content-Language: en-US
-To:     Chao Liu <chaoliu719@gmail.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
-        Wayne Zhang <zhangwen@coolpad.com>,
-        Xiaoyu Qi <qxy65535@gmail.com>, Chao Liu <liuchao@coolpad.com>
-References: <20220621064833.1079383-1-chaoliu719@gmail.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220621064833.1079383-1-chaoliu719@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/21 14:48, Chao Liu wrote:
-> From: Chao Liu <liuchao@coolpad.com>
-> 
-> If the inode has the compress flag, it will fail to use
-> 'chattr -c +m' to remove its compress flag and tag no compress flag.
-> However, the same command will be successful when executed again,
-> as shown below:
-> 
->    $ touch foo.txt
->    $ chattr +c foo.txt
->    $ chattr -c +m foo.txt
->    chattr: Invalid argument while setting flags on foo.txt
->    $ chattr -c +m foo.txt
->    $ f2fs_io getflags foo.txt
->    get a flag on foo.txt ret=0, flags=nocompression,inline_data
-> 
-> Fix this by removing some checks in f2fs_setflags_common()
-> that do not affect the original logic. I go through all the
-> possible scenarios, and the results are as follows. Bold is
-> the only thing that has changed.
-> 
-> +---------------+-----------+-----------+----------+
-> |               |            file flags            |
-> + command       +-----------+-----------+----------+
-> |               | no flag   | compr     | nocompr  |
-> +---------------+-----------+-----------+----------+
-> | chattr +c     | compr     | compr     | -EINVAL  |
-> | chattr -c     | no flag   | no flag   | nocompr  |
-> | chattr +m     | nocompr   | -EINVAL   | nocompr  |
-> | chattr -m     | no flag   | compr     | no flag  |
-> | chattr +c +m  | -EINVAL   | -EINVAL   | -EINVAL  |
-> | chattr +c -m  | compr     | compr     | compr    |
-> | chattr -c +m  | nocompr   | *nocompr* | nocompr  |
-> | chattr -c -m  | no flag   | no flag   | no flag  |
-> +---------------+-----------+-----------+----------+
-> 
-> Fixes: 4c8ff7095bef ("f2fs: support data compression")
-> Signed-off-by: Chao Liu <liuchao@coolpad.com>
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+Linus Walleij <linus.walleij@linaro.org> writes:
 
-Thanks,
+> On Tue, Jul 5, 2022 at 1:08 PM Aidan MacDonald
+> <aidanmacdonald.0x0@gmail.com> wrote:
+>> Linus Walleij <linus.walleij@linaro.org> writes:
+>
+>> I'm not trying to argue that hierarchical IRQ domains are always a bad
+>> thing -- I'm just pointing out they're not always useful or necessary.
+>> All your points make sense when the GPIO controller is a large distinct
+>> block with potentially many GPIOs. When we're dealing with an MFD device
+>> with just a few GPIOs, maybe even just one, having a separate IRQ domain
+>> makes less sense; the added structure is generally not useful.
+>
+> Do you mean your driver does this:
+>
+> MFD main device
+> MFD irqchip
+>  |
+>  +->  MFD gpiochip
+>          No irqchip here, so .to_irq() just refers ^ to that one up there
+>
+> IIUC you mean that if I want to use the irqchip directly then
+> I have to refer to the MFD irqchip, I just cannot refer to the
+> gpiochip subnode because that one does not have an irqchip.
+
+Yep, that's right.
+
+> // Getting GPIO from gpiochip and irq from MFD device
+> // for the same GPIO line
+> gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
+> irqs = <&mfd 114 IRQ_EDGE_RISING>;
+>
+> Then for a Linux driver this can be papered over by using the
+> .to_irq() callback and just defining gpios.
+>
+> This isn't very good, if you created a separate gpiochip then you
+> should have a separate (hierarchical) irqchip associated with that
+> gpiochip as well.
+>
+> // Getting GPIO and irq from the same gpiochip node
+> gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
+> irqs = <&gpio 3 IRQ_EDGE_RISING>;
+>
+> I made this mistake with the ab8500 driver and
+> I would not do it like this today. I would use hierarchical gpio
+> irqchip. And I should go and fix it. (Is on my TODO.)
+>
+
+If moving to hierarchical IRQ chips is the plan, could we add a note
+to say .to_irq() is discouraged and shouldn't be used in new code?
+Based on what you're saying (which I agree makes sense) it sounds
+like there's really no reason to ever use .to_irq().
+
+>> Looking at other GPIO drivers using a hierarchical IRQ domain, they
+>> include their own IRQ chips with specialized ops. In my case I don't
+>> need any of that (and it'd be the same with other MFD devices) so it
+>> looks like using an IRQ domain would mean I'd have to create a fake
+>> IRQ chip and domain just to translate between two number spaces.
+>>
+>> Is that really better than simply using ->to_irq()?
+>
+> To be honest most irqchips are "fake", what they mostly do is figure
+> out which of a few internal sources that fired the irq, so it models the
+> different things connected to a single IRQ line.
+>
+> So yeah, I think the hierarchical irqchip is worth it, especially if that
+> means the offset of the irqs and gpios become the same.
+>
+> Maybe we can add more helpers in the core to make it dirt simple
+> though? It would help others with the same problem.
+>
+> Yours,
+> Linus Walleij
+
+Okay, that sounds like a good plan. I'll look more carefully at the
+existing drivers and see if I can use existing gpiolib helpers.
+
+One potential issue (from reading the code) is that hierarchical IRQ
+domains seemingly can't have a non-hierarchical domain as the parent:
+irq_domain_alloc_irqs_parent() calls irq_domain_alloc_irqs_hierarchy()
+and the latter fails with -ENOSYS for a non-hierarchical domain.
+
+In my case I'm using a regmap IRQ chip, which is non-hierarchical,
+so perhaps that will need to be expanded? 
+
+Regards,
+Aidan
