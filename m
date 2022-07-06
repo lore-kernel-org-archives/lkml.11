@@ -2,102 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE99CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFF2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233726AbiGFNhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
+        id S233701AbiGFNhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233573AbiGFNhj (ORCPT
+        with ESMTP id S233709AbiGFNhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:37:39 -0400
-Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [5.144.164.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B37022B0D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:37:39 -0700 (PDT)
-Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 221B13F715;
-        Wed,  6 Jul 2022 15:37:37 +0200 (CEST)
-Message-ID: <43572937-8505-ddf0-1fe0-99ddfe486c11@somainline.org>
-Date:   Wed, 6 Jul 2022 15:37:36 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 04/13] ARM: dts: qcom: disable smb208 regulators for
- ipq8064-rb3011
-Content-Language: en-US
-To:     Christian Marangi <ansuelsmth@gmail.com>
+        Wed, 6 Jul 2022 09:37:46 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0276A22B0D;
+        Wed,  6 Jul 2022 06:37:44 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id sb34so27110991ejc.11;
+        Wed, 06 Jul 2022 06:37:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dKKydK5tKzNauOSLwuMbV7i2MBJlb9QQ2YCYOCrDsp0=;
+        b=RCOcZ/hoR/jOgEOOmG7sVY3Cwwm5J3af33LdQfjNdAmlIsJKjRu5c+DZyyN/x6vvKr
+         6DkFdOIjKTjWW1hrfSJf91OFXO9fVs71YIg1NkAWTG6muLnHQeRL0vB2VGafhf/0b4eP
+         jRgl6534p614z/2XJ+d08Aa6rJcqnIz0vCOca5xBVJALxjW+Su2osASE2YgSTd6aX9qX
+         XhebzEWfi3DCB/ZVJ1k/aSBPZ0/If5kdmBDg2aVnqOLn9YQHBRdFBz1XG8EOFfY7lBge
+         UnmnLhuVMSxzHhl9F4jHbo10yT2b2NH3tPIaMCHrCCsMkCDzx15cUU8dyEe0iPrwdKKn
+         rbLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dKKydK5tKzNauOSLwuMbV7i2MBJlb9QQ2YCYOCrDsp0=;
+        b=l+TO3TFqNZObD0ki9LRqGRYiykzUvybX1yLWouAucDDUh5DA+QmlY9VwveoWb3vfUa
+         UH0p5+FuIHblCzqn4nobmec/a+eUlbi+fHYItTTJR3WQBd0oKw2iiW6DlVJWgM6REmyt
+         4VVmWkBsgUITIakngAOhF9pVeY/cekLDfVgObuY+hUl5c/2TaaTU2lAfgje/FsQj821L
+         TdhIbfoJtiLZNAtYBSZxzuYGBVpe56j5a7ExD/3JcdJ9kGo2hUQMvo5aCd2edxoaITJ0
+         Who/4P83NXo14BsIsy9Wrc7CZlVRc6x7LbUeq1RBiJjgP4sROgbhTIvBqk//F0X7XhqG
+         Zp8Q==
+X-Gm-Message-State: AJIora9ykDm41wLtfqcMwmGIxBnpfDptonRr+BWYe6Iu9Ut0nSgbYCco
+        1XmglC2LQnF6npSLSxvwQ94=
+X-Google-Smtp-Source: AGRyM1sZY9e/JHjxCK1nAL99G44PCfL49v1xRwoanY5pRQH9Q23XUfZdE9rTVuYAMi7NFDmhqJB8Gw==
+X-Received: by 2002:a17:907:a428:b0:726:c9f6:cb72 with SMTP id sg40-20020a170907a42800b00726c9f6cb72mr38200703ejc.663.1657114662366;
+        Wed, 06 Jul 2022 06:37:42 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id fi9-20020a170906da0900b00722e5b234basm17492148ejb.179.2022.07.06.06.37.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 06:37:27 -0700 (PDT)
+Message-ID: <62c59017.1c69fb81.a08b4.f18c@mx.google.com>
+X-Google-Original-Message-ID: <YsWMMULRVCaNe9Fe@Ansuel-xps.>
+Date:   Wed, 6 Jul 2022 15:20:49 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
 Cc:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCH 06/13] ARM: dts: qcom: enable usb phy by default for
+ ipq8064
 References: <20220705133917.8405-1-ansuelsmth@gmail.com>
- <20220705133917.8405-5-ansuelsmth@gmail.com>
- <8a394fa3-92fb-d162-b4ee-df010a09aed0@somainline.org>
- <62c58a60.1c69fb81.25b26.e72a@mx.google.com>
- <36a68a0b-0c18-deb5-609c-2128aa3fc21f@somainline.org>
- <62c58fca.1c69fb81.76f6a.15f4@mx.google.com>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <62c58fca.1c69fb81.76f6a.15f4@mx.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <20220705133917.8405-7-ansuelsmth@gmail.com>
+ <eadf03c4-7e4c-e2a0-b20d-6e2dff3af1e3@somainline.org>
+ <62c58b03.1c69fb81.527d5.ecc6@mx.google.com>
+ <837c6cd8-72d9-e7c8-dfd9-e171d809f0bf@somainline.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <837c6cd8-72d9-e7c8-dfd9-e171d809f0bf@somainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jul 06, 2022 at 03:33:25PM +0200, Konrad Dybcio wrote:
+> 
+> 
+> On 6.07.2022 14:59, Christian Marangi wrote:
+> > On Wed, Jul 06, 2022 at 03:04:44PM +0200, Konrad Dybcio wrote:
+> >>
+> >>
+> >> On 5.07.2022 15:39, Christian Marangi wrote:
+> >>> Enable usb phy by default. When the usb phy were pushed, half of them
+> >>> were flagged as disabled by mistake. Fix this to correctly init dwc3
+> >>> node on any ipq8064 based SoC.
+> >> Are you sure they are used on *all* devices? If not, you will
+> >> lose power by enabling unused hw..
+> >>
+> >> Konrad
+> > 
+> > Well there could be device that have no usb at all... so honestly
+> > enabling one of them is also wrong. Should I disable the other and
+> > enable it for the upstream device?
+> We generally disable everything that's not obviously being used by the
+> SoC internally or is required for components like these for function
+> (think clock controllers etc) and enable peripherals on a per-device
+> basis.
+> 
 
+Will change this to disable the other usb and push another commit to
+enable usb on the upstream device.
 
-On 6.07.2022 15:19, Christian Marangi wrote:
-> On Wed, Jul 06, 2022 at 03:31:55PM +0200, Konrad Dybcio wrote:
->>
->>
->> On 6.07.2022 14:56, Christian Marangi wrote:
->>> On Wed, Jul 06, 2022 at 03:03:32PM +0200, Konrad Dybcio wrote:
->>>>
->>>>
->>>> On 5.07.2022 15:39, Christian Marangi wrote:
->>>>> Mikrotik RB3011 have a special configuration where the regulators are
->>>>> not the common smb208 controlled by RPM but they use a TPS563900
->>>>> controlled via i2c. Disable the smb208 for this specific device.
->>>> Ok, so that answers my question from the previous email.
->>>> Please define the SMB208 regulators only in the DTs of
->>>> boards that actually use it, as it is not a SoC component as
->>>> far as I can tell.
->>>>
->>>> Konrad
->>>
->>> This was already discuessed,
->> Yeah sorry, I didn't notice earlier and started reviewing patches
->> that were already reviewed by others.
->>
-> 
-> Np, thanks for the review.
-> 
->>
->> rb3011 is the exception, qcom for ipq8064
->>> recommends to use smb208 but gives the option to implement it in their
->>> own way. So again we have 28 device with smb208 and 1 device that use
->>> its own special way...
->>>
->>> Wonder if a separate dtsi can be used for this if we really can't put
->>> smb208 in ipq8064 dtsi?
->> There's msm8916-pm8916.dtsi. You can follow.
-> 
-> Ok, will put the smb208 definition to a separate dtsi, something like
-> ipq8064-smb208.dtsi? or ipq8064-rpm-smb208.dtsi? Looks also cleaner that
-> way.
-You can create ipq8064-smb208.dtsi that will also contain every ipq8064-plus-smb208-specific
-configuration, such as regulator assignemnts to in-SoC components (like PHYs, SDHCIs etc.).
+> Konrad
+> > 
+> > Also it's all handled by dummy vbus so i think we can ignore the losing
+> > power thing. (this thing is old)
+> > 
+> >>>
+> >>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> >>> Tested-by: Jonathan McDowell <noodles@earth.li>
+> >>> ---
+> >>>  arch/arm/boot/dts/qcom-ipq8064.dtsi | 4 ----
+> >>>  1 file changed, 4 deletions(-)
+> >>>
+> >>> diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> >>> index b2faa4a067e9..9c32c637ea46 100644
+> >>> --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> >>> +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> >>> @@ -1177,8 +1177,6 @@ hs_phy_0: phy@100f8800 {
+> >>>  			clocks = <&gcc USB30_0_UTMI_CLK>;
+> >>>  			clock-names = "ref";
+> >>>  			#phy-cells = <0>;
+> >>> -
+> >>> -			status = "disabled";
+> >>>  		};
+> >>>  
+> >>>  		ss_phy_0: phy@100f8830 {
+> >>> @@ -1187,8 +1185,6 @@ ss_phy_0: phy@100f8830 {
+> >>>  			clocks = <&gcc USB30_0_MASTER_CLK>;
+> >>>  			clock-names = "ref";
+> >>>  			#phy-cells = <0>;
+> >>> -
+> >>> -			status = "disabled";
+> >>>  		};
+> >>>  
+> >>>  		usb3_0: usb3@100f8800 {
+> > 
 
-Konrad
-> 
->>
->> Konrad
->>
->> [...]
-> 
+-- 
+	Ansuel
