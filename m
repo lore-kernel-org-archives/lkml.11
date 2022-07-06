@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A2EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 594AECCA486
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbiGFHhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 03:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
+        id S231731AbiGFHh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 03:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbiGFHhD (ORCPT
+        with ESMTP id S231718AbiGFHhV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 03:37:03 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2069.outbound.protection.outlook.com [40.107.223.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BED922B12;
-        Wed,  6 Jul 2022 00:37:02 -0700 (PDT)
+        Wed, 6 Jul 2022 03:37:21 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2051.outbound.protection.outlook.com [40.107.95.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE7422BDA;
+        Wed,  6 Jul 2022 00:37:16 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H4qN/Ygj/0W/BJggo2zwMoHjLBIduwF1UQaADeexh/0VoPkMsMAywp2RHCz1BToNq+q8lpb01xQCQxtO6WYG54FDlR0S6uhjk8G2CGarvwmH1xRjFhGr0ixphmfP6O9q2dMyg7BkWY4aSXGj6IP70R718nTXZYE3aVXkc98b6nR+oNeODaJdX2GO7GliFZ0OmcnKg9xslhlpcmttABZ0w8d7rW3hCUpKDj+xClNvh8dHd3tSxaBTY3ZHRR9PORxkWqkH83oWVdH3HWgnU+ZSUeFo8bVor4dm0bOOAvJ3lRqS5ZjiDS5RD/Qkk4nxyaFGqqJZg6PbLw+Wu3k+D5qPeA==
+ b=AikVvfv3W4dkSMBa27t5RqP3sK8k65pSec9enHAFOQu4HS1m8DqkGRHfYe8iv94IkmjWNSWkyPNMKQ5c2kAKVat8OIs47fcu8KjFkqZbyUCCEx3iXiQ5Q8QABMpV74KyQGlO4oGjUOjmUPnLY7D4qDdU3ySYhtuwkKw+lu5i5DC/aw3LY7NIcw7xUc2MmZNWalvDSq67o5zYwU8NascEWutvwv/CK1xT0Jp47iLxQzQK6hE1BJ8WQtuQ25ubIR2/xrK/QcQ1FPO9AxovUEE9k66bAPVxW8b0QvWjhwH3x1gNvHD02JA/uN5fVrikFMIfwZU1xF4TgqmLmGJmB2Emgg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8frwN5BUYDjDSKMjlKCxogQT8IDDj4bmOt/zbxWJSVE=;
- b=C0dZ5Pc52ytZCcHJJP9o/cokl/3d6HlPgWHIk8u72D1nfXRw/GLSAgkqT4CqcC1iwvy2mHWjltCYvOhqDYH+Fr/6u9pcrJJ+7f2NX8RPugyPAmKjSewXeF+PrwEa2m5h2dMd8tsqraf087BN8Mxp/3fw1kpfS67Cml7ry9tGd9UXd7ippxI6Duq7O27d3fRyxbSrlNwhg0e2IZgEo4mxw3nZL66jTxe4V4wz16PshPDKr+jCYxSy5fAxuFNjODDeuIVf7F3LpzHSE2SGHY9b++KM6IT0jKPS44J4nD/xsgNvqBPEinrLTU8u8SvhcHN1h2dZ2wMDHBz2w4wDbO2MfQ==
+ bh=u9jVD8VCQwj175Ua0vVRJi7aq/e/QgeG8zsInv6yQbM=;
+ b=fItEhAuZkM6g9UJkHTumC0WRTziZ7HQV7uPmhIEyVrTSzwUAUHE2jQGRMDav6p8sbVA7U4eVCWHIKXmX9HvGfDYeefYgzWFIF2vHDZa1jybPfX4wo2Qkap2PlDlYOUkugV1/p4MhubbS0qymdde29Uk4vi5qr2KTKu+0AeTaOS0BiAWeK1128t4vfpI1CabwnEaD+YC3juYMveaseO3VpVCzZ0k13ay2xXFkJkJtWuJDNh41j33Dq5fu/gGGpKERxhoNTLSj8GOBrorwzxX9iTPIXGI1BMh77Dya77tFq8kNP2c871Q/BwYo+qoM5FXHUI3tOihH2KoCelOmdGlh0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8frwN5BUYDjDSKMjlKCxogQT8IDDj4bmOt/zbxWJSVE=;
- b=qlJqgBjH1GrmM9PaPvM2WmpxP6zxpU9p1/y/S9Ozo3QZdxTQ4xlb+w8lKeTj7GzvZhLltnhfDCPPrcUgh2PqH5u3qNCcHrVcKZZil1P817kLSWaUhipBv/4D8LJC5ZfzGlrDQW2Kdu2+m8UQQm8IYAvd71y3te0USw51fy62Ohw=
-Received: from MW4PR04CA0362.namprd04.prod.outlook.com (2603:10b6:303:81::7)
- by BYAPR12MB4696.namprd12.prod.outlook.com (2603:10b6:a03:9d::15) with
+ bh=u9jVD8VCQwj175Ua0vVRJi7aq/e/QgeG8zsInv6yQbM=;
+ b=YzfIPc3yAVMme4nHGSew8uHt4uvi4ai9HVpOrbPL3e6sAQlUjRy4aUc2V8ssa6mZg2oAL5/Q67ANfXMotlkzpn91dmUz9suLj1hrpANEMryB4BsQDz9bN8pbvl0X8LGEBlhHZyeAZllWUJKtUHMyuXo1qJGmZd8F0rsCjXnCvkE=
+Received: from MWHPR20CA0041.namprd20.prod.outlook.com (2603:10b6:300:ed::27)
+ by CY4PR1201MB2503.namprd12.prod.outlook.com (2603:10b6:903:d1::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.18; Wed, 6 Jul
- 2022 07:36:59 +0000
-Received: from CO1NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:81:cafe::f8) by MW4PR04CA0362.outlook.office365.com
- (2603:10b6:303:81::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15 via Frontend
- Transport; Wed, 6 Jul 2022 07:36:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Wed, 6 Jul
+ 2022 07:37:12 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:ed:cafe::9e) by MWHPR20CA0041.outlook.office365.com
+ (2603:10b6:300:ed::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16 via Frontend
+ Transport; Wed, 6 Jul 2022 07:37:12 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,13 +47,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT049.mail.protection.outlook.com (10.13.175.50) with Microsoft SMTP
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 07:36:59 +0000
+ 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 07:37:12 +0000
 Received: from jasmine-meng.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 6 Jul
- 2022 02:36:54 -0500
+ 2022 02:37:07 -0500
 From:   Meng Li <li.meng@amd.com>
 To:     Shuah Khan <skhan@linuxfoundation.org>,
         Huang Rui <ray.huang@amd.com>, <linux-pm@vger.kernel.org>
@@ -68,9 +68,9 @@ CC:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
         Viresh Kumar <viresh.kumar@linaro.org>,
         Borislav Petkov <bp@alien8.de>, <linux-kernel@vger.kernel.org>,
         Meng Li <li.meng@amd.com>
-Subject: [PATCH V1 1/4] selftests: amd-pstate: Modify amd-pstate-ut.sh to basic.sh.
-Date:   Wed, 6 Jul 2022 15:36:19 +0800
-Message-ID: <20220706073622.672135-2-li.meng@amd.com>
+Subject: [PATCH V1 4/4] Documentation: amd-pstate: Add tbench and gitsource test introduction
+Date:   Wed, 6 Jul 2022 15:36:22 +0800
+Message-ID: <20220706073622.672135-5-li.meng@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220706073622.672135-1-li.meng@amd.com>
 References: <20220706073622.672135-1-li.meng@amd.com>
@@ -82,320 +82,207 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7fd02a77-258d-4692-425f-08da5f224f66
-X-MS-TrafficTypeDiagnostic: BYAPR12MB4696:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5d2242aa-9b9d-4bbf-0ebb-08da5f225746
+X-MS-TrafficTypeDiagnostic: CY4PR1201MB2503:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /qZjdOQgsaE5MpXJWeOcIMhF4hO9U5DWAROtNhN7odsPt95QUcwUsnx6l6g9oaBnqaILbuRrbrED8KXnXC/QsLj9HINGDZfltvczfwF6CyvPK1U+iAqYnzRda1djWkEG0OsQfMHcXMBla3oPOlNtCK8jEW9FksFdxg5Ys/8m6AscH/VTsBEn/aIcT7ElA2o0lq+dLpx4XQMe5TA0f6ZOuEdpOUBNOoboVzWTng6k1WI1fT+9OOx7Xzxtf2Vx9y7/Pya2LvJFu3ktzej8X+VVYwPW/hPFv0rfAPOL3JimvTFPLH/ZF11voZK44VlmCnzpD8kzwY8mUHD0wgTD7HBxBOP/qX+JxcpdGXHpqvJzbamuIgrMxXmDFOYBfwmjp+VWxwIS8nAkdspxCfPu12NDgEow/gRB3hDuZVB5yYgA7N1yAnChK4cryUg61aivm8T9XIEum6KTSwgHmVKXYmRIHOlxyNvXH6ylkr6Twywg900cKWpcdhlFqNj5MZus6rywnIn6BL1KtAyP/4SQNbB9/kb8Rcf+41gLUjGcA25dvWZw/MOMdkyiSxggvCVQ5SRq9J/cUl+xnfFoNrsGgq94D3FlewDJT96iIbx738875IQDZHEbPDDU1EMAgd7DdICwT8fLXynCZf8YFuHrxQJ6GCpt+f7xAWBkUTuJ1V41uNUXYIPDw1QdfO+oRI/77dWKhU1dFRrEUt6ySDQF2S73sUgZfOi/BatWTtrwYr7hZ7mfkGCN64kf/LlsW+VtBQtbwzPDx9i0d/DjAaLvP4/7BOltX6MQClgvMCzqHhThE+FCpdVqJG8uWmthksc03KxnYMqk9dDRj/8zw6kIjhL/WgK0EjK72brtJqYA+s415DsyvdAJEjGfJrjfvnjjiDrk
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(396003)(39860400002)(40470700004)(46966006)(36840700001)(36860700001)(40460700003)(110136005)(54906003)(316002)(2616005)(26005)(6666004)(7696005)(1076003)(186003)(16526019)(36756003)(478600001)(34020700004)(2906002)(86362001)(356005)(8936002)(5660300002)(8676002)(4326008)(82310400005)(70586007)(70206006)(41300700001)(426003)(47076005)(336012)(83380400001)(40480700001)(82740400003)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: +EpgYX8ntRwEFUrGPue6E3L4ezsYuIGrTfCjujGo9bc6vouncqcVAvzJp4enIBbDXQQqlMFXtyVh7nxtOIOAHyNtAQBAtG2kvDJmeTIpB1xvS5vVB9f8C7uq4UQNSw1t0Z1Llb/+3w6AcVGlcE8DBTjSu1lnXAdMP6HNwIApmwQWJ8zKO0ZG6hJeWGS5G7a5HJHVOH+DfSVfQ2ikucOaQBzrR8cDLR/+wb+Avmu7JjGoApft50Aui71lse/3gz8Yylz1Xum5cfvTxgiWw7Hu08N0sqGDudkX0PHTXjKSpPX6KbHfC5VwilaH1hfLM3hjB4OeUh2yVoT9Ymoje81Dtu3TAJDfHeJOXiSC3FnkotIIht9vssW7kmNvRRYhzx4XYoiJx98hhkrg0JtGE846FmjMR1iLTNIJ6qVgHjT+D0ByKw+1KW8guN9bYiGHZHUqcNWGlD7Z8eRyg0xPyrt7M8Lr8Y1LmWMruRaYI9RBUBei05cx53X0nCMut4aennwOuOq0UuYgpqpjwCknpT1w8k3ieLe1riP2askgfL0AA/7SBtrzSTjVxNsNAPa+yqBB6qa1YrlQMVv69Og+FxpWrl6X4zId/SpfBhUP7CEhPxAkOoADF4q72JYFtXn3PMG8en2XyTturQqZxEMb4GG+T+nBcPhkdjYR8JXjsseumj5DHXJRJougrjlwXJQnRKGITJjFqgDPNzu4azkkhLz7T05w1rqkbv4tjXDgNDBAY1qGuBWAR4F2L5Ndu45xEOanHPhsjJ8P5VCm7obMrkwnGQJqz4PKxJUzrACLWHuo2bv05xvTxzh3Tl//xnZH2l43Nd17aBrbsgx9DG5f4zm8a8Nphemzk0cWr3neQYJvm/Sy/BqNHvpZ/8oHCmAmnOTl
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(346002)(376002)(136003)(36840700001)(40470700004)(46966006)(316002)(86362001)(478600001)(8676002)(6666004)(40480700001)(356005)(110136005)(41300700001)(2906002)(54906003)(82310400005)(81166007)(82740400003)(8936002)(36756003)(47076005)(70206006)(186003)(426003)(336012)(1076003)(2616005)(83380400001)(16526019)(70586007)(34020700004)(26005)(36860700001)(7696005)(5660300002)(40460700003)(40140700001)(4326008)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 07:36:59.0256
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 07:37:12.2363
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7fd02a77-258d-4692-425f-08da5f224f66
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d2242aa-9b9d-4bbf-0ebb-08da5f225746
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4696
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB2503
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Modify amd-pstate-ut.sh to basic.sh.
-The purpose of this modification is to facilitate the subsequent
-addition of gitsource, tbench and other tests.
+Introduce tbench and gitsource test cases design and implementation.
+Monitor cpus changes about performance and power consumption etc.
 
 Signed-off-by: Meng Li <li.meng@amd.com>
 ---
- tools/testing/selftests/amd-pstate/Makefile   |   3 +-
- .../selftests/amd-pstate/amd-pstate-ut.sh     |  55 --------
- tools/testing/selftests/amd-pstate/basic.sh   |  38 +++++
- tools/testing/selftests/amd-pstate/main.sh    | 131 ++++++++++++++++++
- tools/testing/selftests/amd-pstate/run.sh     |  15 ++
- 5 files changed, 186 insertions(+), 56 deletions(-)
- delete mode 100755 tools/testing/selftests/amd-pstate/amd-pstate-ut.sh
- create mode 100755 tools/testing/selftests/amd-pstate/basic.sh
- create mode 100755 tools/testing/selftests/amd-pstate/main.sh
- create mode 100755 tools/testing/selftests/amd-pstate/run.sh
+ Documentation/admin-guide/pm/amd-pstate.rst | 124 +++++++++++++++++---
+ 1 file changed, 106 insertions(+), 18 deletions(-)
 
-diff --git a/tools/testing/selftests/amd-pstate/Makefile b/tools/testing/selftests/amd-pstate/Makefile
-index 199867f44b32..167ab51ec290 100644
---- a/tools/testing/selftests/amd-pstate/Makefile
-+++ b/tools/testing/selftests/amd-pstate/Makefile
-@@ -4,6 +4,7 @@
- # No binaries, but make sure arg-less "make" doesn't trigger "run_tests"
- all:
+diff --git a/Documentation/admin-guide/pm/amd-pstate.rst b/Documentation/admin-guide/pm/amd-pstate.rst
+index 8f3d30c5a0d8..48fb488e000e 100644
+--- a/Documentation/admin-guide/pm/amd-pstate.rst
++++ b/Documentation/admin-guide/pm/amd-pstate.rst
+@@ -409,37 +409,53 @@ Unit Tests for amd-pstate
  
--TEST_PROGS := amd-pstate-ut.sh
-+TEST_PROGS := run.sh
-+TEST_FILES := main.sh basic.sh
+ 1. Test case decriptions
  
- include ../lib.mk
-diff --git a/tools/testing/selftests/amd-pstate/amd-pstate-ut.sh b/tools/testing/selftests/amd-pstate/amd-pstate-ut.sh
-deleted file mode 100755
-index 273364650285..000000000000
---- a/tools/testing/selftests/amd-pstate/amd-pstate-ut.sh
-+++ /dev/null
-@@ -1,55 +0,0 @@
--#!/bin/sh
--# SPDX-License-Identifier: GPL-2.0
++    1). basic tests
++
++        Test prerequisite and basic functions for the ``amd-pstate`` driver.
++
+         +---------+--------------------------------+------------------------------------------------------------------------------------+
+         | Index   | Functions                      | Description                                                                        |
+         +=========+================================+====================================================================================+
+-        | 0       | amd_pstate_ut_acpi_cpc_valid   || Check whether the _CPC object is present in SBIOS.                                |
++        | 1       | amd_pstate_ut_acpi_cpc_valid   || Check whether the _CPC object is present in SBIOS.                                |
+         |         |                                ||                                                                                   |
+         |         |                                || The detail refer to `Processor Support <processor_support_>`_.                    |
+         +---------+--------------------------------+------------------------------------------------------------------------------------+
+-        | 1       | amd_pstate_ut_check_enabled    || Check whether AMD P-State is enabled.                                             |
++        | 2       | amd_pstate_ut_check_enabled    || Check whether AMD P-State is enabled.                                             |
+         |         |                                ||                                                                                   |
+         |         |                                || AMD P-States and ACPI hardware P-States always can be supported in one processor. |
+         |         |                                | But AMD P-States has the higher priority and if it is enabled with                 |
+         |         |                                | :c:macro:`MSR_AMD_CPPC_ENABLE` or ``cppc_set_enable``, it will respond to the      |
+         |         |                                | request from AMD P-States.                                                         |
+         +---------+--------------------------------+------------------------------------------------------------------------------------+
+-        | 2       | amd_pstate_ut_check_perf       || Check if the each performance values are reasonable.                              |
++        | 3       | amd_pstate_ut_check_perf       || Check if the each performance values are reasonable.                              |
+         |         |                                || highest_perf >= nominal_perf > lowest_nonlinear_perf > lowest_perf > 0.           |
+         +---------+--------------------------------+------------------------------------------------------------------------------------+
+-        | 3       | amd_pstate_ut_check_freq       || Check if the each frequency values and max freq when set support boost mode       |
++        | 4       | amd_pstate_ut_check_freq       || Check if the each frequency values and max freq when set support boost mode       |
+         |         |                                | are reasonable.                                                                    |
+         |         |                                || max_freq >= nominal_freq > lowest_nonlinear_freq > min_freq > 0                   |
+         |         |                                || If boost is not active but supported, this maximum frequency will be larger than  |
+         |         |                                | the one in ``cpuinfo``.                                                            |
+         +---------+--------------------------------+------------------------------------------------------------------------------------+
+ 
++    2). Tbench test
++
++        Testing and monitor the cpu changes when running tbench benchmark under the specified governor.
++        These changes include desire performance, frequency, load, performance, energy etc.
++        The specified governor is ondemand or schedutil.
++
++    3). Gitsource test
++
++        Testing and monitor the cpu changes when running gitsource benchmark under the specified governor.
++        These changes include desire performance, frequency, load, time, energy etc.
++        The specified governor is ondemand or schedutil.
++
+ #. How to execute the tests
+ 
+    We use test module in the kselftest frameworks to implement it.
+    We create amd-pstate-ut module and tie it into kselftest.(for
+    details refer to Linux Kernel Selftests [4]_).
+ 
+-    1. Build
++    a. Build
+ 
+         + open the :c:macro:`CONFIG_X86_AMD_PSTATE` configuration option.
+         + set the :c:macro:`CONFIG_X86_AMD_PSTATE_UT` configuration option to M.
+@@ -449,23 +465,95 @@ Unit Tests for amd-pstate
+             $ cd linux
+             $ make -C tools/testing/selftests
+ 
++        + make perf ::
++
++            $ cd tools/perf/
++            $ make
++
++
+     #. Installation & Steps ::
+ 
+         $ make -C tools/testing/selftests install INSTALL_PATH=~/kselftest
++        $ cp tools/perf/perf ~/kselftest/amd-pstate/
+         $ sudo ./kselftest/run_kselftest.sh -c amd-pstate
+-        TAP version 13
+-        1..1
+-        # selftests: amd-pstate: amd-pstate-ut.sh
+-        # amd-pstate-ut: ok
+-        ok 1 selftests: amd-pstate: amd-pstate-ut.sh
 -
--# amd-pstate-ut is a test module for testing the amd-pstate driver.
--# It can only run on x86 architectures and current cpufreq driver
--# must be amd-pstate.
--# (1) It can help all users to verify their processor support
--# (SBIOS/Firmware or Hardware).
--# (2) Kernel can have a basic function test to avoid the kernel
--# regression during the update.
--# (3) We can introduce more functional or performance tests to align
--# the result together, it will benefit power and performance scale optimization.
+-    #. Results ::
 -
--# Kselftest framework requirement - SKIP code is 4.
--ksft_skip=4
--
--# amd-pstate-ut only run on x86/x86_64 AMD systems.
--ARCH=$(uname -m 2>/dev/null | sed -e 's/i.86/x86/' -e 's/x86_64/x86/')
--VENDOR=$(cat /proc/cpuinfo | grep -m 1 'vendor_id' | awk '{print $NF}')
--
--if ! echo "$ARCH" | grep -q x86; then
--	echo "$0 # Skipped: Test can only run on x86 architectures."
--	exit $ksft_skip
--fi
--
--if ! echo "$VENDOR" | grep -iq amd; then
--	echo "$0 # Skipped: Test can only run on AMD CPU."
--	echo "$0 # Current cpu vendor is $VENDOR."
--	exit $ksft_skip
--fi
--
--scaling_driver=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_driver)
--if [ "$scaling_driver" != "amd-pstate" ]; then
--	echo "$0 # Skipped: Test can only run on amd-pstate driver."
--	echo "$0 # Current cpufreq scaling drvier is $scaling_driver."
--	exit $ksft_skip
--fi
--
--msg="Skip all tests:"
--if [ ! -w /dev ]; then
--    echo $msg please run this as root >&2
--    exit $ksft_skip
--fi
--
--if ! /sbin/modprobe -q -n amd-pstate-ut; then
--	echo "amd-pstate-ut: module amd-pstate-ut is not found [SKIP]"
--	exit $ksft_skip
--fi
--if /sbin/modprobe -q amd-pstate-ut; then
--	/sbin/modprobe -q -r amd-pstate-ut
--	echo "amd-pstate-ut: ok"
--else
--	echo "amd-pstate-ut: [FAIL]"
--	exit 1
--fi
-diff --git a/tools/testing/selftests/amd-pstate/basic.sh b/tools/testing/selftests/amd-pstate/basic.sh
-new file mode 100755
-index 000000000000..e4c43193e4a3
---- /dev/null
-+++ b/tools/testing/selftests/amd-pstate/basic.sh
-@@ -0,0 +1,38 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
+-         $ dmesg | grep "amd_pstate_ut" | tee log.txt
+-         [12977.570663] amd_pstate_ut: 1    amd_pstate_ut_acpi_cpc_valid  success!
+-         [12977.570673] amd_pstate_ut: 2    amd_pstate_ut_check_enabled   success!
+-         [12977.571207] amd_pstate_ut: 3    amd_pstate_ut_check_perf      success!
+-         [12977.571212] amd_pstate_ut: 4    amd_pstate_ut_check_freq      success!
 +
-+# amd-pstate-ut is a test module for testing the amd-pstate driver.
-+# It can only run on x86 architectures and current cpufreq driver
-+# must be amd-pstate.
-+# (1) It can help all users to verify their processor support
-+# (SBIOS/Firmware or Hardware).
-+# (2) Kernel can have a basic function test to avoid the kernel
-+# regression during the update.
-+# (3) We can introduce more functional or performance tests to align
-+# the result together, it will benefit power and performance scale optimization.
++    #. Specified test case ::
 +
-+# protect against multiple inclusion
-+if [ $FILE_BASIC ]; then
-+	return 0
-+else
-+	FILE_BASIC=DONE
-+fi
++        $ cd ~/kselftest/amd-pstate
++        $ sudo ./run.sh -t basic
++        $ sudo ./run.sh -t tbench
++        $ sudo ./run.sh -t gitsource
++        $ ./run.sh --help
++        ./run.sh: illegal option -- -
++        Usage: ./run.sh [OPTION...]
++        [-h <help>]
++        [-o <output-file-for-dump>]
++        [-t <all:       All testing,
++        basic:     Basic testing,
++        tbench:    Test tbench,
++        gitsource: Test gitsource.>]
++        [-i <tbench time limit>]
++        [-p <tbench process number>]
++        [-l <loop times for tbench/gitsource]
++        [-n <amd tracer interval]
 +
-+amd_pstate_basic()
-+{
-+	printf "\n---------------------------------------------\n"
-+	printf "*** Running AMD P-state ut                ***"
-+	printf "\n---------------------------------------------\n"
++    4). Results
 +
-+	if ! /sbin/modprobe -q -n amd-pstate-ut; then
-+		echo "amd-pstate-ut: module amd-pstate-ut is not found [SKIP]"
-+		exit $ksft_skip
-+	fi
-+	if /sbin/modprobe -q amd-pstate-ut; then
-+		/sbin/modprobe -q -r amd-pstate-ut
-+		echo "amd-pstate-basic: ok"
-+	else
-+		echo "amd-pstate-basic: [FAIL]"
-+		exit 1
-+	fi
-+}
-diff --git a/tools/testing/selftests/amd-pstate/main.sh b/tools/testing/selftests/amd-pstate/main.sh
-new file mode 100755
-index 000000000000..1c28b5d7b4c5
---- /dev/null
-+++ b/tools/testing/selftests/amd-pstate/main.sh
-@@ -0,0 +1,131 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
++        + basic
 +
-+# protect against multiple inclusion
-+if [ $FILE_MAIN ]; then
-+	return 0
-+else
-+	FILE_MAIN=DONE
-+fi
++         When you finish test, you will get the following log info ::
 +
-+source basic.sh
++          $ dmesg | grep "amd_pstate_ut" | tee log.txt
++          [12977.570663] amd_pstate_ut: 1    amd_pstate_ut_acpi_cpc_valid  success!
++          [12977.570673] amd_pstate_ut: 2    amd_pstate_ut_check_enabled   success!
++          [12977.571207] amd_pstate_ut: 3    amd_pstate_ut_check_perf      success!
++          [12977.571212] amd_pstate_ut: 4    amd_pstate_ut_check_freq      success!
 +
-+# amd-pstate-ut only run on x86/x86_64 AMD systems.
-+ARCH=$(uname -m 2>/dev/null | sed -e 's/i.86/x86/' -e 's/x86_64/x86/')
-+VENDOR=$(cat /proc/cpuinfo | grep -m 1 'vendor_id' | awk '{print $NF}')
++        + tbench
 +
-+FUNC=all
-+OUTFILE=selftest
++         When you finish test, you will get selftest.tbench.csv and selftest.tbench.result files form amd-pstate.
++         Open selftest.tbench.csv :
 +
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
++         + Governor  | Round   | Des-perf | Freq    | Load     | Performance(MB/s) | Energy(Joules) | PPW(MB/J) |
++         +===========+=========+==========+=========+==========+===================+================+===========+
++         + ondemand  | 1       | 203.244  | 3.2225  | 87.5064  | 35368.2           | 6626.1         | 101.4164  |
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
++         + ondemand  | 2       | 205.861  | 3.24948 | 88.9281  | 34795.7           | 6547.06        | 100.9794  |
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
++         + ondemand  | Average | 204.553  | 3.23599 | 88.2173  | 35081.9           | 6586.58        | 101.1991  |
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
++         +           |         |          |         |          |                   |                |           |
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
++         + schedutil | 1       | 253.735  | 3.26755 | 96.6481  | 34653.9           | 6622.85        | 99.4170   |
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
++         + schedutil | 2       | 254.654  | 3.44086 | 92.3564  | 31707.8           | 6573.67        | 91.6456   |
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
++         + schedutil | Average | 254.195  | 3.3542  | 94.5023  | 33180.8           | 6598.26        | 95.5456   |
++         +-----------+---------+----------+---------+----------+-------------------+----------------+-----------+
 +
-+# All amd-pstate tests
-+amd_pstate_all()
-+{
-+	printf "\n=============================================\n"
-+	printf "***** Running AMD P-state Sanity Tests  *****\n"
-+	printf "=============================================\n\n"
++        + gitsource
 +
-+	# unit test for amd-pstate kernel driver
-+	amd_pstate_basic
-+}
++         When you finish test, you will get selftest.gitsource.csv and selftest.gitsource.result files form amd-pstate.
++         Open selftest.gitsource.csv :
 +
-+helpme()
-+{
-+	printf "Usage: $0 [OPTION...]
-+	[-h <help>]
-+	[-o <output-file-for-dump>]
-+	[-c <all: All testing,
-+	     basic: Basic testing.>]
-+	\n"
-+	exit 2
-+}
-+
-+parse_arguments()
-+{
-+	while getopts ho:c: arg
-+	do
-+		case $arg in
-+			h) # --help
-+				helpme
-+				;;
-+
-+			c) # --func_type (Function to perform: basic (default: all))
-+				FUNC=$OPTARG
-+				;;
-+
-+			o) # --output-file (Output file to store dumps)
-+				OUTFILE=$OPTARG
-+				;;
-+
-+			\?)
-+				helpme
-+				;;
-+		esac
-+	done
-+}
-+
-+prerequisite()
-+{
-+	if ! echo "$ARCH" | grep -q x86; then
-+		echo "$0 # Skipped: Test can only run on x86 architectures."
-+		exit $ksft_skip
-+	fi
-+
-+	if ! echo "$VENDOR" | grep -iq amd; then
-+		echo "$0 # Skipped: Test can only run on AMD CPU."
-+		echo "$0 # Current cpu vendor is $VENDOR."
-+		exit $ksft_skip
-+	fi
-+
-+	scaling_driver=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_driver)
-+	if [ "$scaling_driver" != "amd-pstate" ]; then
-+		echo "$0 # Skipped: Test can only run on amd-pstate driver."
-+		echo "$0 # Current cpufreq scaling drvier is $scaling_driver."
-+		exit $ksft_skip
-+	fi
-+
-+	msg="Skip all tests:"
-+	if [ ! -w /dev ]; then
-+		echo $msg please run this as root >&2
-+		exit $ksft_skip
-+	fi
-+}
-+
-+do_test()
-+{
-+	case "$FUNC" in
-+		"all")
-+		amd_pstate_all
-+		;;
-+
-+		"basic")
-+		amd_pstate_basic
-+		;;
-+
-+		*)
-+		echo "Invalid [-f] function type"
-+		helpme
-+		;;
-+	esac
-+}
-+
-+# clear dumps
-+pre_clear_dumps()
-+{
-+	case "$FUNC" in
-+		"all")
-+		rm -rf $OUTFILE*
-+		;;
-+
-+		"basic")
-+		;;
-+
-+	esac
-+}
-+
-+post_clear_dumps()
-+{
-+	rm -rf $OUTFILE.log
-+}
-diff --git a/tools/testing/selftests/amd-pstate/run.sh b/tools/testing/selftests/amd-pstate/run.sh
-new file mode 100755
-index 000000000000..247e80bfee44
---- /dev/null
-+++ b/tools/testing/selftests/amd-pstate/run.sh
-@@ -0,0 +1,15 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+source main.sh
-+
-+# Parse arguments
-+parse_arguments $@
-+
-+# Make sure all requirements are met
-+prerequisite
-+
-+# Run requested functions
-+pre_clear_dumps
-+do_test | tee -a $OUTFILE.log
-+post_clear_dumps
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
++         + Governor  | Round   | Des-perf | Freq     | Load     | Times(s) | Energy(Joules) | PPW(s/J) |
++         +===========+=========+==========+==========+==========+==========+================+==========+
++         + ondemand  | 1       | 29.7305  | 1.13025  | 8.49585  | 341.61   | 6811.02        | 0.0501   |
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
++         + ondemand  | 2       | 28.0523  | 1.33848  | 8.16496  | 339.21   | 6999.84        | 0.0484   |
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
++         + ondemand  | Average | 28.8914  | 1.23436  | 8.33041  | 340.41   | 6905.43        | 0.0492   |
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
++         +           |         |          |          |          |          |                |          |
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
++         + schedutil | 1       | 29.6971  | 0.834149 | 9.57879  | 278.15   | 5992.26        | 0.0464   |
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
++         + schedutil | 2       | 31.6573  | 0.99686  | 8.60513  | 280.28   | 5772.59        | 0.0485   |
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
++         + schedutil | Average | 30.6772  | 0.915504 | 9.09196  | 279.215  | 5882.43        | 0.0474   |
++         +-----------+---------+----------+----------+----------+----------+----------------+----------+
+ 
+ Reference
+ ===========
 -- 
 2.25.1
 
