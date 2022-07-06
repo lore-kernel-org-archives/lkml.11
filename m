@@ -2,196 +2,373 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E211C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99034C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233167AbiGFOAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
+        id S233461AbiGFOA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233169AbiGFOAp (ORCPT
+        with ESMTP id S233745AbiGFOAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:00:45 -0400
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CDE17E3D;
-        Wed,  6 Jul 2022 07:00:40 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id o2so22200632yba.7;
-        Wed, 06 Jul 2022 07:00:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Lln/3deL7qOtLziJcXYPqqy6CqnXU6Vj8A13Rxsyfck=;
-        b=zUBjuz1mJ2LWLfVpGDSFuj0QMNfI26fh6F38pVkPf0mofz7kxuG0iODefMFAJMjRnK
-         5N2DTVHI+zd8HUEg+vGnzDvEfMFU+i0syO+4m2Mzvvgc6EaFBBHfojHvYYPfKaRBcZ68
-         qhrDIHM5FNNFp24+GeUyGlq8tdma33DgVTzBQ2mSxu2UY2jfoldoq8eTCjexRmUy+pOG
-         d632nG7gBTTmBTPq50G0A53zAiSHdEJ0/OODNUdHh5VDMerzfwKi4N0777GK8uT2xgXr
-         kB/bbAoD8qWUa33aJlWbo3/424ff+90RO3d68FvSp+Z9c3B7SNIhVo/pe6FCgGjlmlBT
-         fm8Q==
-X-Gm-Message-State: AJIora9kG/AgmpM4/Ld0lVvEt+gAlwofIO2K4hiLRCM0fuypx4hHs/zL
-        Z56WDQbXaqaqUz7vT1MqD4JhnzVByX49JGQyWJ0=
-X-Google-Smtp-Source: AGRyM1vGBIO6ejUezqbzrzuaUC5etUaxh8lxWDh293Sam2Jc/zFfeBj4g08hdYpvSA8zzuIj5u2PxdHOfRWqZSWT82c=
-X-Received: by 2002:a05:6902:50e:b0:66e:7f55:7a66 with SMTP id
- x14-20020a056902050e00b0066e7f557a66mr7763507ybs.365.1657116039561; Wed, 06
- Jul 2022 07:00:39 -0700 (PDT)
+        Wed, 6 Jul 2022 10:00:50 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30C140A4;
+        Wed,  6 Jul 2022 07:00:49 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 266AMhMX021477;
+        Wed, 6 Jul 2022 07:00:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=muz/Z4b4RsFM7b2BkZy8O6edjJFsBmR0LKqDwZ1oGTw=;
+ b=Yo3az5ik0CJl3uJwaH3VEkFqV4zK1Iz9Ai2HLllCNVnyGxAdOVv/Xk+VV29xFRdcMM+S
+ 6dQPziFH+FDr98+5BWpc1FiNN93BFZQ+OlF3UmliHid10rEcinAk+z+4kVsXNO7hE0cv
+ OpCCVxQrHXVirW5ZLJ5aDMJttpdcZKosVkI= 
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2177.outbound.protection.outlook.com [104.47.59.177])
+        by m0089730.ppops.net (PPS) with ESMTPS id 3h4ucjncrv-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 07:00:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I9WzJ4eEdrNwu35d6abngqKRpd56GmuKqhJwcseJ9C3ifMmuJw6RmnYiYyoxFqfOMkFO1YWPkSMWgr58QDINOckEyFma11mPua9uG+vfAYHx+gfgOpdpBgqlZN+ajcK5uqQkaiQQRK4pCH/KYSgeVG8cJ76y+Y9zxunA0rNvm31aHnM0c1PChu0T4PomBgGk9uCIH7dh0VJTSzLVg0kzLKHxXNDSdXUjDALL5oHiAQ04ujE+pimAUHuJ6EFnSSt+Z9gZHuXRgufquGTwjk/nBvLhnXRkutyWSYGtaQ2oULTEpNMIc/3zpZZDYdgTJv1+LzoCDdtv8ABDaZxZjHTuFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=muz/Z4b4RsFM7b2BkZy8O6edjJFsBmR0LKqDwZ1oGTw=;
+ b=mAzIYXc5ErDlEZTxi2x3EHf9jQDPYRlRrk3hWi3nEJS8R6PEN+3F1eQg/da55V1i+QH3caTR2SpZc3HQvsodm64bbLKzwCHrJ5O0YH6t5CVoki+0sewrb0hhkQzWa7uHswYs5BfoiVNkcaU1C4UsjfXCBQiHxZ9cM8GKSVomRSlfXchQVEqgUpMV4HCam/35nxtJXQiSLL71id3YB06nxrdIsR3r1r2Nl8XpiTLd9N7Y6Fd/M7S91luxt/t8R/17a57Twfqg/Rf70+d9tTK//pHmkPx6uFK2QYWZmmCbRrifvmDQfTYwf/xCnykQAaqYTeVNf2CUktxr0GcK2E7SBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SJ0PR15MB4552.namprd15.prod.outlook.com (2603:10b6:a03:379::12)
+ by PH0PR15MB5071.namprd15.prod.outlook.com (2603:10b6:510:c7::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 6 Jul
+ 2022 14:00:45 +0000
+Received: from SJ0PR15MB4552.namprd15.prod.outlook.com
+ ([fe80::81f9:c21c:c5bf:e174]) by SJ0PR15MB4552.namprd15.prod.outlook.com
+ ([fe80::81f9:c21c:c5bf:e174%8]) with mapi id 15.20.5417.016; Wed, 6 Jul 2022
+ 14:00:44 +0000
+From:   Jonathan McDowell <noodles@fb.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>
+CC:     Mimi Zohar <zohar@linux.ibm.com>,
+        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "nayna@linux.ibm.com" <nayna@linux.ibm.com>,
+        "nasastry@in.ibm.com" <nasastry@in.ibm.com>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: Re: [PATCH v4 4/5] of: kexec: Refactor IMA buffer related functions
+ to make them reusable
+Thread-Topic: [PATCH v4 4/5] of: kexec: Refactor IMA buffer related functions
+ to make them reusable
+Thread-Index: AQHYkMErYgOTAJp330m4YH5UOsaqI61xX/2A
+Date:   Wed, 6 Jul 2022 14:00:44 +0000
+Message-ID: <YsWVfbMu85Cmwdgm@noodles-fedora.dhcp.thefacebook.com>
+References: <20220701022603.31076-1-stefanb@linux.ibm.com>
+ <20220701022603.31076-5-stefanb@linux.ibm.com>
+ <47256afac54d68c23f0bdec257ffa26ddf1eb25d.camel@linux.ibm.com>
+In-Reply-To: <47256afac54d68c23f0bdec257ffa26ddf1eb25d.camel@linux.ibm.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2eeb2b21-33ec-4b47-df1a-08da5f57eb6f
+x-ms-traffictypediagnostic: PH0PR15MB5071:EE_
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: umWSkseHLQwQ6Ccn8zIWDtn5YDuOsNky3F6H2GfGlCgdinASBDzVRFJoJxvJfDmGmkMH6sTPedTY2Ksq3NFn2MLoVEdlkGe6w/tcOTdMcd4fBi5t/9dHKN8z5eN1ZmY7+C4Zi9vpdn2tc0CiXtAgC4znx8Em3vYJQXhhd7WnibUjOSe4KyZI1bBrQwO6yCrsG9eJllJyRQ0ZzzpZDGt7lq6PhxGMP3Z0qVba1RyXKfGd+8MfrsnFYTZ/2zVBRZFuXla7cpiEfCsmj1wJhNviO0J7gwv4Yo0bcy4or7EAT3os1VDf2DMwU8avQrKVXULtFqh7se6lf6jzr4JQLWEGZwuuJXAiomcpZjScxC4/C+byQjxWtJksU9XW5Jv0dXme3KNDq/Ghvq1l0lvGOUTUZhpGFNwEXl8I3AUNTnh46Uyld1GmI8f8mwx47mfjPAW1IHwT0J5yGdF2dH9rfyFlD9AG+f6F7uGSHz9nDsnr0WVdn3spAo3edccbORilG98cPUt7o+P+CovDUVrUOgkWfqFlRJXCp04V7jGXEdyGlKbbvqXAi/2CVxyV6TPMEP83A+bwg2CkM9dMOeufYyJV3KfAJQ2hzwUpMj2foqr9Jjjv8O9SE7um2FNIF3gOk2+NcYX/C3CMZQ2OdGrC8NI3pVB5mykSF1p5gUnv7Sr3dAIVQM+rQfd3n5oFq5dNZPLKhUEP743TFp6WGDqye+giADdtXgLhbbBLpBw42OUyxrphDOjgs9I+0YF/ti6Dud4Dryd+LBccGk/b9ba/8+BJrA9+q5BJQK2da4HCWyzVifxtinNB5NZ6NzjanPdPSnI3ekp5hvo+o4AXDzvp8xDb2SiJtZdCvZSxy9kWqCpb1z4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR15MB4552.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(396003)(39860400002)(366004)(8936002)(9686003)(6512007)(26005)(4326008)(8676002)(64756008)(66446008)(66476007)(66556008)(66946007)(71200400001)(478600001)(76116006)(91956017)(7416002)(86362001)(6916009)(54906003)(5660300002)(316002)(2906002)(41300700001)(6506007)(186003)(6486002)(966005)(83380400001)(122000001)(38070700005)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/UdPMDwGKEYkMNA7yigW0x8DH+47RrCl0eKjmIptLcSjyyv+ez2DhBp1nOam?=
+ =?us-ascii?Q?puBbbDGDdlz5lP6BKJMeuwbJa4YDYohwgUCRntkysFLLb55ELexK1Yj/0Rx5?=
+ =?us-ascii?Q?7CFu1e9c1fnSrsOkc+5LxPevKcB3fZi8T+R8jOgTa7VYtcA1bpoqCMZQgq4e?=
+ =?us-ascii?Q?YXOzd/fvuZE6D/udCG83ppg4WGxyg/kw5BO9TYgo7dLwxAhq9fUQ+9hgqZRH?=
+ =?us-ascii?Q?O3sY0cq1Mg7fzGtLexFzt6nYH+U1sJrJX9E23Q/jY2xUZi92S/PLqemnOHW2?=
+ =?us-ascii?Q?JD4kZsEVthJgLMDpjK9JqQaqh6MKb3HfhzIpmMv9NvdT43KSRKDXIycHE8q9?=
+ =?us-ascii?Q?Wcj6NsAKHW38uNcgbRrTcDms/43HDCStr3o7sesSkRY0a244Kjkp4ZrzUuJZ?=
+ =?us-ascii?Q?hpMMwMRpAUGvUOLT5jezUKFFloeIOUJIiQMo2baLYcGL4usubFik/E/cWnzf?=
+ =?us-ascii?Q?RmHSlSy8qNYezu1MxGGGMz+CxSidvFFSQ4a7v1br4ksCVHHdYZ50e4sPDBGy?=
+ =?us-ascii?Q?DE9eDdmU3/x7VcORQNcdFVGg7ZLwcrDh/ZQHHWx5impZPNRgvaZlK/XaTKii?=
+ =?us-ascii?Q?9GO1r4dPkJjkWkSQy9tEmPLc/G6VHXdL5qmaqp5Ckh3XMNrk+gl9+mN9YbYJ?=
+ =?us-ascii?Q?pXEquMRGLpy5kjw+THT7SOBBj2IyLTPXavJNodd3R7fCYqtNJdvXSvRqlvKB?=
+ =?us-ascii?Q?y/TxNlnw7+pmvP0UoKk3Vb1Q3o1PipMiY+sZ8kGs4FRyJzZUiXVHqL9Kau7Z?=
+ =?us-ascii?Q?AJ1YB9cv+4nV82tolaCcAr2KOQSRzFIrifXPsZlqvRcArZwhxwDzuWlnAkha?=
+ =?us-ascii?Q?ig4euM0RaBeMt7S2dsd/ju24d8fuupcxVs4zqOPBPFZB/urhMGUDz0Ld2jtm?=
+ =?us-ascii?Q?VjAA3ZfuvwwSL3husN5+6/fL4bWF90zVLhxS0fYxfaOodWTB4eYVykM3UxJd?=
+ =?us-ascii?Q?R8T0p4dlaLgG6jvzdK7MpqFU3D64JMl2M8FIZ4Vke00y5cuXamcUZAidzrw9?=
+ =?us-ascii?Q?ojCDu/VNvelYeqfN492zf3VMTjpGj8lGz3l9nF+Uc2u3MNYR4F98boXKV8KK?=
+ =?us-ascii?Q?vNpdXMrebgxqNIxtl8QBsxxBvXrJnQ5YPm/5PVSAXqzYLgc6+wfmLqjtSZhb?=
+ =?us-ascii?Q?IX+hLuXBwH5nrkuGQL6nk1/Rph0/4rMlr33vhSHTUhPAHXVXgv8o/mhcE/Y+?=
+ =?us-ascii?Q?VCDALnYekvFuaBd51T127AonI2aor18lKBK7bWqx+hiH1nOqJDXKIEp3aJcn?=
+ =?us-ascii?Q?BWXL5lMXhKYXFehy6vOvZSRTEyQB59A6vUGGuNhOYgZO2dfHpsFSn020Lk02?=
+ =?us-ascii?Q?2Qhj+ZMOMuSzKMf8ERdHmXYmNlgVjO0UVZfGTPj8qix5ga3rzMiuqqbPYAD/?=
+ =?us-ascii?Q?BCp0LRAoa6ZuiO6x7F2TMiA7p+j9UTuVGYll+BURkW4tPK9wVeuAQU9GQnBE?=
+ =?us-ascii?Q?lGIpPm3Ndd4jIt1JbtmeH1eTzeTd+PTsqv2Gl21H41ziVwDYhzuWoU0nkcq/?=
+ =?us-ascii?Q?gfIrvYVzpE2ALAoAxSv0JiJ4tPdmpi+ONpGrEu4BsUPw253HcSgTDO9ivaUd?=
+ =?us-ascii?Q?AGlem5+/D54Mm8rzKVogXiC8L/5jR71Vm2yWKfkx?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3DCCC94782084E419D9F1409E28AFED5@namprd15.prod.outlook.com>
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR15MB4552.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2eeb2b21-33ec-4b47-df1a-08da5f57eb6f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 14:00:44.2492
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4DGpyowW2tvBdg578hLVwdqsJLWHVFveRKo1gL4GfKt/PSNelpiFTOAXcQxJaEBT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR15MB5071
+X-Proofpoint-GUID: EoiMq6u3Dk63jWqdXXnSDzOSAKy6eh5m
+X-Proofpoint-ORIG-GUID: EoiMq6u3Dk63jWqdXXnSDzOSAKy6eh5m
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20220608142723.103523089@infradead.org> <20220608144517.061583457@infradead.org>
-In-Reply-To: <20220608144517.061583457@infradead.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 6 Jul 2022 16:00:28 +0200
-Message-ID: <CAJZ5v0iBAt7xyBzrFwgVSOk7dLx017X_naLZAjnDuwi=oUmREg@mail.gmail.com>
-Subject: Re: [PATCH 18/36] cpuidle: Annotate poll_idle()
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        vgupta@kernel.org,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        ulli.kroll@googlemail.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        bcain@quicinc.com, Huacai Chen <chenhuacai@kernel.org>,
-        kernel@xen0n.name, Geert Uytterhoeven <geert@linux-m68k.org>,
-        sammy@sammy.net, Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        dinguyen@kernel.org, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi,
-        Stafford Horne <shorne@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        David Miller <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        anton.ivanov@cambridgegreys.com,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, acme@kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        jolsa@kernel.org, namhyung@kernel.org,
-        Juergen Gross <jgross@suse.com>, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Chris Zankel <chris@zankel.net>, jcmvbkbc@gmail.com,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Anup Patel <anup@brainfault.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Petr Mladek <pmladek@suse.com>, senozhatsky@chromium.org,
-        John Ogness <john.ogness@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        quic_neeraju@quicinc.com, Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Benjamin Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-snps-arc@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        openrisc@lists.librecores.org,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390@vger.kernel.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-perf-users@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>, rcu@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-06_08,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 4:46 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> The __cpuidle functions will become a noinstr class, as such they need
-> explicit annotations.
->
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+On Tue, Jul 05, 2022 at 06:46:54PM -0400, Mimi Zohar wrote:
+> [Cc'ing Borislav Petkov <bp@suse.de>, Jonathan McDowell <noodles@fb.com
+> >]
+> 
+> Hi Stefan,
+> 
+> On Thu, 2022-06-30 at 22:26 -0400, Stefan Berger wrote:
+> > Refactor IMA buffer related functions to make them reusable for carrying
+> > TPM logs across kexec.
+> > 
+> > Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> > Cc: Rob Herring <robh+dt@kernel.org>
+> > Cc: Frank Rowand <frowand.list@gmail.com>
+> > Cc: Mimi Zohar <zohar@linux.ibm.com>
+> 
+> Refactoring the ima_get_kexec_buffer sounds good, but there's a merge
+> conflict with Jonathan McDowell's commit "b69a2afd5afc x86/kexec: Carry
+> forward IMA measurement log on kexec".
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/of/kexec.c
 
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+None of this looks difficult to re-do on top of my changes that are in
+-next; the only thing to watch out for is a couple of functions have
+moved into the __init section but that looks appropriate for your TPM
+log carry-over too.
 
-> ---
->  drivers/cpuidle/poll_state.c |    6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> --- a/drivers/cpuidle/poll_state.c
-> +++ b/drivers/cpuidle/poll_state.c
-> @@ -13,7 +13,10 @@
->  static int __cpuidle poll_idle(struct cpuidle_device *dev,
->                                struct cpuidle_driver *drv, int index)
->  {
-> -       u64 time_start = local_clock();
-> +       u64 time_start;
-> +
-> +       instrumentation_begin();
-> +       time_start = local_clock();
->
->         dev->poll_time_limit = false;
->
-> @@ -39,6 +42,7 @@ static int __cpuidle poll_idle(struct cp
->         raw_local_irq_disable();
->
->         current_clr_polling();
-> +       instrumentation_end();
->
->         return index;
->  }
->
->
+> > ---
+> > v4:
+> >  - Move debug output into setup_buffer()
+> > ---
+> >  drivers/of/kexec.c | 131 ++++++++++++++++++++++++++-------------------
+> >  1 file changed, 76 insertions(+), 55 deletions(-)
+> > 
+> > diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+> > index c4f9b6655a2e..0710703acfb0 100644
+> > --- a/drivers/of/kexec.c
+> > +++ b/drivers/of/kexec.c
+> > @@ -115,48 +115,59 @@ static int do_get_kexec_buffer(const void *prop, int len, unsigned long *addr,
+> >  	return 0;
+> >  }
+> >  
+> > -/**
+> > - * ima_get_kexec_buffer - get IMA buffer from the previous kernel
+> > - * @addr:	On successful return, set to point to the buffer contents.
+> > - * @size:	On successful return, set to the buffer size.
+> > - *
+> > - * Return: 0 on success, negative errno on error.
+> > - */
+> > -int ima_get_kexec_buffer(void **addr, size_t *size)
+> > +static int get_kexec_buffer(const char *name, unsigned long *addr, size_t *size)
+> >  {
+> >  	int ret, len;
+> > -	unsigned long tmp_addr;
+> >  	unsigned long start_pfn, end_pfn;
+> > -	size_t tmp_size;
+> >  	const void *prop;
+> >  
+> > -	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> > -		return -ENOTSUPP;
+> > -
+> > -	prop = of_get_property(of_chosen, "linux,ima-kexec-buffer", &len);
+> > +	prop = of_get_property(of_chosen, name, &len);
+> >  	if (!prop)
+> >  		return -ENOENT;
+> >  
+> > -	ret = do_get_kexec_buffer(prop, len, &tmp_addr, &tmp_size);
+> > +	ret = do_get_kexec_buffer(prop, len, addr, size);
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > -	/* Do some sanity on the returned size for the ima-kexec buffer */
+> > -	if (!tmp_size)
+> > +	/* Do some sanity on the returned size for the kexec buffer */
+> > +	if (!*size)
+> >  		return -ENOENT;
+> >  
+> >  	/*
+> >  	 * Calculate the PFNs for the buffer and ensure
+> >  	 * they are with in addressable memory.
+> >  	 */
+> > -	start_pfn = PHYS_PFN(tmp_addr);
+> > -	end_pfn = PHYS_PFN(tmp_addr + tmp_size - 1);
+> > +	start_pfn = PHYS_PFN(*addr);
+> > +	end_pfn = PHYS_PFN(*addr + *size - 1);
+> >  	if (!page_is_ram(start_pfn) || !page_is_ram(end_pfn)) {
+> > -		pr_warn("IMA buffer at 0x%lx, size = 0x%zx beyond memory\n",
+> > -			tmp_addr, tmp_size);
+> > +		pr_warn("%s buffer at 0x%lx, size = 0x%zx beyond memory\n",
+> > +			name, *addr, *size);
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > +	return 0;
+> > +}
+> > +
+> > +/**
+> > + * ima_get_kexec_buffer - get IMA buffer from the previous kernel
+> > + * @addr:	On successful return, set to point to the buffer contents.
+> > + * @size:	On successful return, set to the buffer size.
+> > + *
+> > + * Return: 0 on success, negative errno on error.
+> > + */
+> > +int ima_get_kexec_buffer(void **addr, size_t *size)
+> > +{
+> > +	int ret;
+> > +	unsigned long tmp_addr;
+> > +	size_t tmp_size;
+> > +
+> > +	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> > +		return -ENOTSUPP;
+> > +
+> > +	ret = get_kexec_buffer("linux,ima-kexec-buffer", &tmp_addr, &tmp_size);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	*addr = __va(tmp_addr);
+> >  	*size = tmp_size;
+> >  
+> > @@ -191,72 +202,82 @@ int ima_free_kexec_buffer(void)
+> >  	return memblock_phys_free(addr, size);
+> >  }
+> >  
+> > -/**
+> > - * remove_ima_buffer - remove the IMA buffer property and reservation from @fdt
+> > - *
+> > - * @fdt: Flattened Device Tree to update
+> > - * @chosen_node: Offset to the chosen node in the device tree
+> > - *
+> > - * The IMA measurement buffer is of no use to a subsequent kernel, so we always
+> > - * remove it from the device tree.
+> > - */
+> > -static void remove_ima_buffer(void *fdt, int chosen_node)
+> > +static int remove_buffer(void *fdt, int chosen_node, const char *name)
+> >  {
+> >  	int ret, len;
+> >  	unsigned long addr;
+> >  	size_t size;
+> >  	const void *prop;
+> >  
+> > -	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> > -		return;
+> > -
+> > -	prop = fdt_getprop(fdt, chosen_node, "linux,ima-kexec-buffer", &len);
+> > +	prop = fdt_getprop(fdt, chosen_node, name, &len);
+> >  	if (!prop)
+> > -		return;
+> > +		return -ENOENT;
+> >  
+> >  	ret = do_get_kexec_buffer(prop, len, &addr, &size);
+> > -	fdt_delprop(fdt, chosen_node, "linux,ima-kexec-buffer");
+> > +	fdt_delprop(fdt, chosen_node, name);
+> >  	if (ret)
+> > -		return;
+> > +		return ret;
+> >  
+> >  	ret = fdt_find_and_del_mem_rsv(fdt, addr, size);
+> >  	if (!ret)
+> > -		pr_debug("Removed old IMA buffer reservation.\n");
+> > +		pr_debug("Remove old %s buffer reserveration", name);
+> > +	return ret;
+> >  }
+> >  
+> > -#ifdef CONFIG_IMA_KEXEC
+> >  /**
+> > - * setup_ima_buffer - add IMA buffer information to the fdt
+> > - * @image:		kexec image being loaded.
+> > - * @fdt:		Flattened device tree for the next kernel.
+> > - * @chosen_node:	Offset to the chosen node.
+> > + * remove_ima_buffer - remove the IMA buffer property and reservation from @fdt
+> >   *
+> > - * Return: 0 on success, or negative errno on error.
+> > + * @fdt: Flattened Device Tree to update
+> > + * @chosen_node: Offset to the chosen node in the device tree
+> > + *
+> > + * The IMA measurement buffer is of no use to a subsequent kernel, so we always
+> > + * remove it from the device tree.
+> >   */
+> > -static int setup_ima_buffer(const struct kimage *image, void *fdt,
+> > -			    int chosen_node)
+> > +static void remove_ima_buffer(void *fdt, int chosen_node)
+> > +{
+> > +	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> > +		return;
+> > +
+> > +	remove_buffer(fdt, chosen_node, "linux,ima-kexec-buffer");
+> > +}
+> > +
+> > +#ifdef CONFIG_IMA_KEXEC
+> > +static int setup_buffer(void *fdt, int chosen_node, const char *name,
+> > +			phys_addr_t addr, size_t size)
+> >  {
+> >  	int ret;
+> >  
+> > -	if (!image->ima_buffer_size)
+> > +	if (!size)
+> >  		return 0;
+> >  
+> >  	ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
+> > -				       "linux,ima-kexec-buffer",
+> > -				       image->ima_buffer_addr,
+> > -				       image->ima_buffer_size);
+> > +				       name, addr, size);
+> >  	if (ret < 0)
+> >  		return -EINVAL;
+> >  
+> > -	ret = fdt_add_mem_rsv(fdt, image->ima_buffer_addr,
+> > -			      image->ima_buffer_size);
+> > +	ret = fdt_add_mem_rsv(fdt, addr, size);
+> >  	if (ret)
+> >  		return -EINVAL;
+> >  
+> > -	pr_debug("IMA buffer at 0x%pa, size = 0x%zx\n",
+> > -		 &image->ima_buffer_addr, image->ima_buffer_size);
+> > +	pr_debug("%s at 0x%pa, size = 0x%zx\n", name, &addr, size);
+> >  
+> >  	return 0;
+> > +
+> > +}
+> > +
+> > +/**
+> > + * setup_ima_buffer - add IMA buffer information to the fdt
+> > + * @image:		kexec image being loaded.
+> > + * @fdt:		Flattened device tree for the next kernel.
+> > + * @chosen_node:	Offset to the chosen node.
+> > + *
+> > + * Return: 0 on success, or negative errno on error.
+> > + */
+> > +static int setup_ima_buffer(const struct kimage *image, void *fdt,
+> > +			    int chosen_node)
+> > +{
+> > +	return setup_buffer(fdt, chosen_node, "linux,ima-kexec-buffer",
+> > +			    image->ima_buffer_addr, image->ima_buffer_size);
+> >  }
+> >  #else /* CONFIG_IMA_KEXEC */
+> >  static inline int setup_ima_buffer(const struct kimage *image, void *fdt,
