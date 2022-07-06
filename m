@@ -2,123 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B23CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D1FCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232825AbiGFLoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 07:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
+        id S232895AbiGFLoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 07:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232781AbiGFLoD (ORCPT
+        with ESMTP id S232801AbiGFLoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 07:44:03 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F0D2183
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 04:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657107842; x=1688643842;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fMJWfltOfFJMxVswzKOrQgNi1Q52cAI5noW02Iljmjk=;
-  b=AO/eKxBDmrNXUu6QchsiGl/4OKVEJK/CvukKXqUTF1ZVBeEGesKJ9xUU
-   QaJOtRpwVDoILzBvKoCEuLAtFp/C+0vYNo6bPC0yPZ4ln6/l0y8WhQ5dX
-   uN2n4oXfKf8gwKpZVjSnjyrkjch1XeztV38Wxsk/rQx9RaznVYqvXEseQ
-   jlF2bJcC0n5Kl5T/XqTvhfH+xcNhOxOHhUd4ZXBCCaDGPDW2dRRlMXzz6
-   ycr9WMIe+RNf1ZUm/fVr0bIbYOm+vtVE0DL+snNjuZWl6PeRObvROUnLd
-   PR0Wt+nAo8ZcvohnMhfyXob+iGRyHiEJt2BYb8s9W2wP598ZjpcZBCQT3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="347707433"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="347707433"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:44:02 -0700
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="650630092"
-Received: from sannilnx.jer.intel.com ([10.12.26.175])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:43:59 -0700
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Subject: [PATCH v5 01/14] drm/i915/gsc: skip irq initialization if using polling
-Date:   Wed,  6 Jul 2022 14:43:32 +0300
-Message-Id: <20220706114345.1128018-2-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220706114345.1128018-1-alexander.usyskin@intel.com>
-References: <20220706114345.1128018-1-alexander.usyskin@intel.com>
+        Wed, 6 Jul 2022 07:44:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1FC221A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 04:44:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657107842;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4qBFj/falt5wlCjO0QFUH2Aq6wUuCp0x5wyiWtRWTgE=;
+        b=S/ATMM9cg03tIfQQibO6xxl1CCyRncpMEoutdChdSsCRthJjmhpoQ41KYdYtjAhP7xU7ht
+        ucQcTVBnvHOdsJTpPYn5SFchNu1mqzC0hAf66yGXJiJgyfeln+zNGI0XH+XdcHsoK3M2eo
+        Q0gHRXI0HkISSBpSqmRN4KlfI0OgL88=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-333-wz1CfbnbPyyqiRDfP0ZL_Q-1; Wed, 06 Jul 2022 07:43:59 -0400
+X-MC-Unique: wz1CfbnbPyyqiRDfP0ZL_Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 57FB8805AF5;
+        Wed,  6 Jul 2022 11:43:59 +0000 (UTC)
+Received: from starship (unknown [10.40.194.38])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 07231C44AE3;
+        Wed,  6 Jul 2022 11:43:56 +0000 (UTC)
+Message-ID: <bfe5ccd26f1b09df2ac1bfbf7c5a4cf20cc5c8d0.camel@redhat.com>
+Subject: Re: [PATCH v2 03/21] KVM: x86: Don't check for code breakpoints
+ when emulating on exception
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Date:   Wed, 06 Jul 2022 14:43:55 +0300
+In-Reply-To: <20220614204730.3359543-4-seanjc@google.com>
+References: <20220614204730.3359543-1-seanjc@google.com>
+         <20220614204730.3359543-4-seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Lubart <vitaly.lubart@intel.com>
+On Tue, 2022-06-14 at 20:47 +0000, Sean Christopherson wrote:
+> Don't check for code breakpoints during instruction emulation if the
+> emulation was triggered by exception interception.  Code breakpoints are
+> the highest priority fault-like exception, and KVM only emulates on
+> exceptions that are fault-like.  Thus, if hardware signaled a different
+> exception, then the vCPU is already passed the stage of checking for
+> hardware breakpoints.
+> 
+> This is likely a glorified nop in terms of functionality, and is more for
+> clarification and is technically an optimization.  Intel's SDM explicitly
+> states vmcs.GUEST_RFLAGS.RF on exception interception is the same as the
+> value that would have been saved on the stack had the exception not been
+> intercepted, i.e. will be '1' due to all fault-like exceptions setting RF
+> to '1'.  AMD says "guest state saved ... is the processor state as of the
+> moment the intercept triggers", but that begs the question, "when does
+> the intercept trigger?".
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/x86.c | 21 ++++++++++++++++++---
+>  1 file changed, 18 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 2318a99139fa..c5db31b4bd6f 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -8364,8 +8364,24 @@ int kvm_skip_emulated_instruction(struct kvm_vcpu *vcpu)
+>  }
+>  EXPORT_SYMBOL_GPL(kvm_skip_emulated_instruction);
+>  
+> -static bool kvm_vcpu_check_code_breakpoint(struct kvm_vcpu *vcpu, int *r)
+> +static bool kvm_vcpu_check_code_breakpoint(struct kvm_vcpu *vcpu,
+> +					   int emulation_type, int *r)
+>  {
+> +	WARN_ON_ONCE(emulation_type & EMULTYPE_NO_DECODE);
+> +
+> +	/*
+> +	 * Do not check for code breakpoints if hardware has already done the
+> +	 * checks, as inferred from the emulation type.  On NO_DECODE and SKIP,
+> +	 * the instruction has passed all exception checks, and all intercepted
+> +	 * exceptions that trigger emulation have lower priority than code
+> +	 * breakpoints, i.e. the fact that the intercepted exception occurred
+> +	 * means any code breakpoints have already been serviced.
+> +	 */
+> +	if (emulation_type & (EMULTYPE_NO_DECODE | EMULTYPE_SKIP |
+> +			      EMULTYPE_TRAP_UD | EMULTYPE_TRAP_UD_FORCED |
+> +			      EMULTYPE_VMWARE_GP | EMULTYPE_PF))
+> +		return false;
+> +
+>  	if (unlikely(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP) &&
+>  	    (vcpu->arch.guest_debug_dr7 & DR7_BP_EN_MASK)) {
+>  		struct kvm_run *kvm_run = vcpu->run;
+> @@ -8487,8 +8503,7 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+>  		 * are fault-like and are higher priority than any faults on
+>  		 * the code fetch itself.
+>  		 */
+> -		if (!(emulation_type & EMULTYPE_SKIP) &&
+> -		    kvm_vcpu_check_code_breakpoint(vcpu, &r))
+> +		if (kvm_vcpu_check_code_breakpoint(vcpu, emulation_type, &r))
+>  			return r;
+>  
+>  		r = x86_decode_emulated_instruction(vcpu, emulation_type,
 
-Some platforms require the host to poll on the
-GSC registers instead of relaying on the interrupts.
-For those platforms, irq initialization should be skipped
 
-Signed-off-by: Vitaly Lubart <vitaly.lubart@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Reviewed-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
----
- drivers/gpu/drm/i915/gt/intel_gsc.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_gsc.c b/drivers/gpu/drm/i915/gt/intel_gsc.c
-index 0e494028b81d..e0236ff1d072 100644
---- a/drivers/gpu/drm/i915/gt/intel_gsc.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gsc.c
-@@ -40,6 +40,7 @@ struct gsc_def {
- 	const char *name;
- 	unsigned long bar;
- 	size_t bar_size;
-+	bool use_polling;
- };
- 
- /* gsc resources and definitions (HECI1 and HECI2) */
-@@ -117,6 +118,10 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 		return;
- 	}
- 
-+	/* skip irq initialization */
-+	if (def->use_polling)
-+		goto add_device;
-+
- 	intf->irq = irq_alloc_desc(0);
- 	if (intf->irq < 0) {
- 		drm_err(&i915->drm, "gsc irq error %d\n", intf->irq);
-@@ -129,6 +134,7 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 		goto fail;
- 	}
- 
-+add_device:
- 	adev = kzalloc(sizeof(*adev), GFP_KERNEL);
- 	if (!adev)
- 		goto fail;
-@@ -182,10 +188,8 @@ static void gsc_irq_handler(struct intel_gt *gt, unsigned int intf_id)
- 		return;
- 	}
- 
--	if (gt->gsc.intf[intf_id].irq < 0) {
--		drm_err_ratelimited(&gt->i915->drm, "GSC irq: irq not set");
-+	if (gt->gsc.intf[intf_id].irq < 0)
- 		return;
--	}
- 
- 	ret = generic_handle_irq(gt->gsc.intf[intf_id].irq);
- 	if (ret)
--- 
-2.34.1
+Best regards,
+	Maxim Levitsky
 
