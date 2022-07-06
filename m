@@ -2,275 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EABEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 05:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B964CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 05:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230424AbiGFFWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 01:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45078 "EHLO
+        id S230480AbiGFFW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 01:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiGFFWM (ORCPT
+        with ESMTP id S231154AbiGFFWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 01:22:12 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1B8201AE;
-        Tue,  5 Jul 2022 22:22:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657084929; x=1688620929;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0ktErGUxee0HxFn0K3EFz92GAteW37Trp2iCXAPhjIE=;
-  b=U3e7gdG/E2vvw5VUyJ2RAMDjD62cQWuXSTRgbKz09/fUXYopOH8tzGNu
-   7f6vyoe8pK/fuOECq6MOkz3pyzuTDJ3kOE3EsDtTUqrX3kw7zErtVXFJi
-   6k8dccjlr9x+Ehj54dPFb5ckQiooxFa1kldlRCNokYo99N3XYcKrOLV+9
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.92,248,1650931200"; 
-   d="scan'208";a="105210165"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 06 Jul 2022 05:21:55 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com (Postfix) with ESMTPS id 2A39E43400;
-        Wed,  6 Jul 2022 05:21:55 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 6 Jul 2022 05:21:54 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.55) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Wed, 6 Jul 2022 05:21:52 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 net 01/16] sysctl: Clean up proc_handler definitions.
-Date:   Tue, 5 Jul 2022 22:21:15 -0700
-Message-ID: <20220706052130.16368-2-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220706052130.16368-1-kuniyu@amazon.com>
-References: <20220706052130.16368-1-kuniyu@amazon.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.55]
-X-ClientProxiedBy: EX13D18UWA004.ant.amazon.com (10.43.160.45) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
+        Wed, 6 Jul 2022 01:22:22 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8685205DB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 22:22:20 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220706052219epoutp019d1a97ef88e02d5958e0d538cf2a74ea~-Jfj4NrU20326403264epoutp01L
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:22:19 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220706052219epoutp019d1a97ef88e02d5958e0d538cf2a74ea~-Jfj4NrU20326403264epoutp01L
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1657084939;
+        bh=Ispl4LOX16CobeM8SQ1UfhF/UhNI9nkTRJAg/7f9IJ4=;
+        h=Subject:Reply-To:From:To:CC:Date:References:From;
+        b=nWv7EhoUb4Fjg4+cDL27uRE8kYM2k0+dqgnNXG++QxetC/2BPOGvf904r0RixSEUy
+         AcF3ZA8pSaUVGBSsbYF3UWQj4Tcyc9Xf3gWtRRktW3OvzObHFB/+q/RvoiD0yQXALX
+         CSV+rzmz28xv/SI3s2OqFLlq/jh9+SAoJb5661pk=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220706052218epcas2p2a2f562156ae6b09914c56e6748bd98e0~-JfjJMIWF3204232042epcas2p2-;
+        Wed,  6 Jul 2022 05:22:18 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.88]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4Ld7G14xwcz4x9QG; Wed,  6 Jul
+        2022 05:22:17 +0000 (GMT)
+X-AuditID: b6c32a47-5f7ff700000025aa-60-62c51c095a2d
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B1.E4.09642.90C15C26; Wed,  6 Jul 2022 14:22:17 +0900 (KST)
+Mime-Version: 1.0
+Subject: Re: [PATCH v3 2/5] dt-bindings: phy: Add ARTPEC-8 PCIe phy
+Reply-To: wangseok.lee@samsung.com
+Sender: Wangseok Lee <wangseok.lee@samsung.com>
+From:   Wangseok Lee <wangseok.lee@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>
+CC:     Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220706052217epcms2p444cc8608b21d483a66a43ecf4f2140d4@epcms2p4>
+Date:   Wed, 06 Jul 2022 14:22:17 +0900
+X-CMS-MailID: 20220706052217epcms2p444cc8608b21d483a66a43ecf4f2140d4
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOJsWRmVeSWpSXmKPExsWy7bCmmS6nzNEkg3U9qhZLmjIsXh7StJh/
+        5Byrxe4Zy5ksZk49w2zx/NAsZotPLaoWF572sFm8nHWPzeL8+Q3sFg09v1ktjrz5yGyx//hK
+        JovLu+awWZydd5zNYsKqbywWb36/YLc4tzjTonXvEXaLnXdOMFv82vqHyUHUY828NYwe19cF
+        eCzYVOqxaVUnm8eTK9OZPDYvqffo27KK0eP4je1MHp83yQVwRmXbZKQmpqQWKaTmJeenZOal
+        2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE6Lpl5gB9pqRQlphTChQKSCwuVtK3synKLy1J
+        VcjILy6xVUotSMkpMC/QK07MLS7NS9fLSy2xMjQwMDIFKkzIzljzLargt0TF7FWXWRoYl0t0
+        MXJySAiYSGy4u4C9i5GLQ0hgB6PEidWH2LoYOTh4BQQl/u4QBqkRFnCW2PV/ExuILSSgJLFj
+        zTxmiLi+xPUV3awgNpuArsS/xS/ZQOaICMxik1jydSkTiMMssIBRYv/vfYwQ23glZrQ/ZYGw
+        pSW2L98KFdeQ+LGslxnCFpW4ufotO4z9/th8qBoRidZ7Z6FqBCUe/NwNFZeSWPDkECuEXS2x
+        /+9vJgi7gVGi/34qyDMSQJfuuG4MEuYV8JV4eGIG2DMsAqoSv5+uh2p1kTj18C/YWmYBbYll
+        C18zg7QyC2hKrN+lDzFFWeLILRaYRxo2/mZHZzML8El0HP4LF98x7wnUMWoS81buZIYYIyOx
+        9aX/BEalWYhwnoVk7SyEtQsYmVcxiqUWFOempxYbFRjDYzY5P3cTIziFa7nvYJzx9oPeIUYm
+        DsZDjBIczEoivKsmHUwS4k1JrKxKLcqPLyrNSS0+xGgK9PBEZinR5HxgFskriTc0sTQwMTMz
+        NDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cAU/Pqqvf6S6eyzBG3KIsMdZ2cVLJz2
+        cpqFc+/mlpkSuxOy2D4qfD9Z4p3x9ff50K5FW4yZ/8W7zYpZunJxaFnaqc7Upt3ZxfWqCw0F
+        9vxc0Dr3Rua610pfzdVnpXzTOJHddO9s5ffCj93disJzz2VHvS+Y8ODAM7Z3L95tmMnWOG//
+        F2VzGdHFKd8ij1Z4vS+OW2zP7DtN4cIhfp6yj084jv0/fkd9S83+DxZnN4m7fk/R2zfBuMuk
+        7N6eryFOs9QFWipu7JV/UBF//6nMve3H3PdHN5RXthqvNpn8Qy311d2y1uWXHefNDm9ScNPt
+        Sr0cfsljemnZ2eagDfe9FfwUXpyTF8q9btfpYz2n6OEKJZbijERDLeai4kQA3PVmIGoEAAA=
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7
+References: <CGME20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p4>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All proc_handler variants have almost the same function prototypes in
-sysctl.h and empty functions in sysctl.c in case CONFIG_PROC_SYSCTL is
-disabled.
-
-This patch arranges them in the same order and defines them cleanly with
-two macros so that we can add lockless helpers easily in the following
-commits.
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- include/linux/sysctl.h |  43 ++++++++---------
- kernel/sysctl.c        | 105 ++++++++++-------------------------------
- 2 files changed, 45 insertions(+), 103 deletions(-)
-
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index 80263f7cdb77..9beab3a4de3d 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -62,29 +62,26 @@ extern const int sysctl_vals[];
- extern const unsigned long sysctl_long_vals[];
- 
- typedef int proc_handler(struct ctl_table *ctl, int write, void *buffer,
--		size_t *lenp, loff_t *ppos);
--
--int proc_dostring(struct ctl_table *, int, void *, size_t *, loff_t *);
--int proc_dobool(struct ctl_table *table, int write, void *buffer,
--		size_t *lenp, loff_t *ppos);
--int proc_dointvec(struct ctl_table *, int, void *, size_t *, loff_t *);
--int proc_douintvec(struct ctl_table *, int, void *, size_t *, loff_t *);
--int proc_dointvec_minmax(struct ctl_table *, int, void *, size_t *, loff_t *);
--int proc_douintvec_minmax(struct ctl_table *table, int write, void *buffer,
--		size_t *lenp, loff_t *ppos);
--int proc_dou8vec_minmax(struct ctl_table *table, int write, void *buffer,
--			size_t *lenp, loff_t *ppos);
--int proc_dointvec_jiffies(struct ctl_table *, int, void *, size_t *, loff_t *);
--int proc_dointvec_userhz_jiffies(struct ctl_table *, int, void *, size_t *,
--		loff_t *);
--int proc_dointvec_ms_jiffies(struct ctl_table *, int, void *, size_t *,
--		loff_t *);
--int proc_doulongvec_minmax(struct ctl_table *, int, void *, size_t *, loff_t *);
--int proc_doulongvec_ms_jiffies_minmax(struct ctl_table *table, int, void *,
--		size_t *, loff_t *);
--int proc_do_large_bitmap(struct ctl_table *, int, void *, size_t *, loff_t *);
--int proc_do_static_key(struct ctl_table *table, int write, void *buffer,
--		size_t *lenp, loff_t *ppos);
-+			 size_t *lenp, loff_t *ppos);
-+
-+#define PROC_HANDLER(function)						\
-+	int function(struct ctl_table *table, int write, void *buffer,	\
-+		     size_t *lenp, loff_t *ppos)
-+
-+PROC_HANDLER(proc_dostring);
-+PROC_HANDLER(proc_dobool);
-+PROC_HANDLER(proc_dointvec);
-+PROC_HANDLER(proc_douintvec);
-+PROC_HANDLER(proc_dointvec_minmax);
-+PROC_HANDLER(proc_douintvec_minmax);
-+PROC_HANDLER(proc_dou8vec_minmax);
-+PROC_HANDLER(proc_doulongvec_minmax);
-+PROC_HANDLER(proc_doulongvec_ms_jiffies_minmax);
-+PROC_HANDLER(proc_dointvec_jiffies);
-+PROC_HANDLER(proc_dointvec_userhz_jiffies);
-+PROC_HANDLER(proc_dointvec_ms_jiffies);
-+PROC_HANDLER(proc_do_large_bitmap);
-+PROC_HANDLER(proc_do_static_key);
- 
- /*
-  * Register a set of sysctl names by calling register_sysctl_table
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index e52b6e372c60..1082c8bc5ba5 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1016,7 +1016,6 @@ int proc_dou8vec_minmax(struct ctl_table *table, int write,
- 		*data = val;
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(proc_dou8vec_minmax);
- 
- #ifdef CONFIG_MAGIC_SYSRQ
- static int sysrq_sysctl_handler(struct ctl_table *table, int write,
-@@ -1475,83 +1474,28 @@ int proc_do_large_bitmap(struct ctl_table *table, int write,
- 
- #else /* CONFIG_PROC_SYSCTL */
- 
--int proc_dostring(struct ctl_table *table, int write,
--		  void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_dobool(struct ctl_table *table, int write,
--		void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_dointvec(struct ctl_table *table, int write,
--		  void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_douintvec(struct ctl_table *table, int write,
--		  void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_dointvec_minmax(struct ctl_table *table, int write,
--		    void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_douintvec_minmax(struct ctl_table *table, int write,
--			  void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_dou8vec_minmax(struct ctl_table *table, int write,
--			void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
- 
--int proc_dointvec_jiffies(struct ctl_table *table, int write,
--		    void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
--		    void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_dointvec_ms_jiffies(struct ctl_table *table, int write,
--			     void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_doulongvec_minmax(struct ctl_table *table, int write,
--		    void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
--
--int proc_doulongvec_ms_jiffies_minmax(struct ctl_table *table, int write,
--				      void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
-+#define PROC_HANDLER_ENOSYS(function)				\
-+	int function(struct ctl_table *table, int write,	\
-+		 void *buffer, size_t *lenp, loff_t *ppos)	\
-+	{							\
-+		return -ENOSYS;					\
-+	}
- 
--int proc_do_large_bitmap(struct ctl_table *table, int write,
--			 void *buffer, size_t *lenp, loff_t *ppos)
--{
--	return -ENOSYS;
--}
-+PROC_HANDLER_ENOSYS(proc_dostring);
-+PROC_HANDLER_ENOSYS(proc_dobool);
-+PROC_HANDLER_ENOSYS(proc_dointvec);
-+PROC_HANDLER_ENOSYS(proc_douintvec);
-+PROC_HANDLER_ENOSYS(proc_dointvec_minmax);
-+PROC_HANDLER_ENOSYS(proc_douintvec_minmax);
-+PROC_HANDLER_ENOSYS(proc_dou8vec_minmax);
-+PROC_HANDLER_ENOSYS(proc_doulongvec_minmax);
-+PROC_HANDLER_ENOSYS(proc_doulongvec_ms_jiffies_minmax);
-+PROC_HANDLER_ENOSYS(proc_dointvec_jiffies);
-+PROC_HANDLER_ENOSYS(proc_dointvec_userhz_jiffies);
-+PROC_HANDLER_ENOSYS(proc_dointvec_ms_jiffies);
-+PROC_HANDLER_ENOSYS(proc_do_cad_pid);
-+PROC_HANDLER_ENOSYS(proc_do_large_bitmap);
- 
- #endif /* CONFIG_PROC_SYSCTL */
- 
-@@ -2448,15 +2392,16 @@ int __init sysctl_init_bases(void)
-  * No sense putting this after each symbol definition, twice,
-  * exception granted :-)
-  */
-+EXPORT_SYMBOL(proc_dostring);
- EXPORT_SYMBOL(proc_dobool);
- EXPORT_SYMBOL(proc_dointvec);
- EXPORT_SYMBOL(proc_douintvec);
--EXPORT_SYMBOL(proc_dointvec_jiffies);
- EXPORT_SYMBOL(proc_dointvec_minmax);
- EXPORT_SYMBOL_GPL(proc_douintvec_minmax);
--EXPORT_SYMBOL(proc_dointvec_userhz_jiffies);
--EXPORT_SYMBOL(proc_dointvec_ms_jiffies);
--EXPORT_SYMBOL(proc_dostring);
-+EXPORT_SYMBOL_GPL(proc_dou8vec_minmax);
- EXPORT_SYMBOL(proc_doulongvec_minmax);
- EXPORT_SYMBOL(proc_doulongvec_ms_jiffies_minmax);
-+EXPORT_SYMBOL(proc_dointvec_jiffies);
-+EXPORT_SYMBOL(proc_dointvec_userhz_jiffies);
-+EXPORT_SYMBOL(proc_dointvec_ms_jiffies);
- EXPORT_SYMBOL(proc_do_large_bitmap);
--- 
-2.30.2
-
+On=C2=A005/07/2022=C2=A019:59,=C2=A0Krzysztof=C2=A0Kozlowski=C2=A0wrote:=0D=
+=0A>=C2=A0On=C2=A029/06/2022=C2=A009:18,=C2=A0Wangseok=C2=A0Lee=C2=A0wrote:=
+=0D=0A>>=C2=A0Just=C2=A0a=C2=A0gentle=C2=A0ping=C2=A0for=C2=A0this=C2=A0pat=
+ch,=C2=A0if=C2=A0any=C2=A0concern=C2=A0on=C2=A0this=C2=A0patch=C2=A0please=
+=C2=A0let=C2=A0me=C2=A0know.=0D=0A>>=C2=A0=0D=0A>=C2=A0=0D=0A>=C2=A0You=C2=
+=A0received=C2=A0comments=C2=A0to=C2=A0fix=C2=A0in=C2=A0this=C2=A0patch.=C2=
+=A0Exactly=C2=A0four.=C2=A0Four=C2=A0important=0D=0A>=C2=A0points=C2=A0to=
+=C2=A0fix.=C2=A0Therefore=C2=A0what=C2=A0is=C2=A0this=C2=A0ping=C2=A0about?=
+=0D=0A>=C2=A0=0D=0A>=C2=A0Without=C2=A0fixing=C2=A0these=C2=A0items,=C2=A0y=
+our=C2=A0patch=C2=A0cannot=C2=A0be=C2=A0accepted.=C2=A0What=C2=A0is=C2=A0mo=
+re=0D=0A>=C2=A0to=C2=A0ping=C2=A0here?=0D=0A>=C2=A0=0D=0A>=C2=A0Best=C2=A0r=
+egards,=0D=0A>=C2=A0Krzysztof=0D=0A=0D=0AI=C2=A0tried=C2=A0to=C2=A0receive=
+=C2=A0your=C2=A0opinion=C2=A0about=C2=A0the=C2=A0fix=C2=A0point=C2=A0.=0D=
+=0AI=C2=A0will=C2=A0request=C2=A0a=C2=A0review=C2=A0again=C2=A0after=C2=A0m=
+odifying=C2=A0it=C2=A0in=C2=A0the=C2=A0next=C2=A0patch.=0D=0A=0D=0AThank=C2=
+=A0you.=0D=0A=0D=0A>>>=C2=A0+=0D=0A>>>=C2=A0+=C2=A0=C2=A0clocks:=0D=0A>>>=
+=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0-=C2=A0description:=C2=A0PCIe=C2=A0PHY=C2=A0reference=C2=A0c=
+lock=0D=0A>=C2=A0=0D=0A>=C2=A0refer=C2=A0to=C2=A0sample-schema.yaml,=C2=A0e=
+ven=C2=A0if=C2=A0the=C2=A0clock=C2=A0item=C2=A0is=C2=A0single,=0D=0A>=C2=A0=
+it=C2=A0seems=C2=A0to=C2=A0be=C2=A0used=C2=A0as=C2=A0follows.=0D=0A>=C2=A0=
+=0D=0A>=C2=A0clocks:=0D=0A>=C2=A0=C2=A0=C2=A0maxItems:=C2=A01=0D=0A>=C2=A0=
+=0D=0A>=C2=A0clock-names:=0D=0A>=C2=A0=C2=A0=C2=A0items:=0D=0A>=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0ref=0D=0A>=C2=A0=0D=0A>=C2=A0If=C2=A0o=
+nly=C2=A0=22clocks:=22=C2=A0are=C2=A0define=C2=A0and=C2=A0clock-names=C2=A0=
+are=C2=A0not=C2=A0define,=0D=0A>=C2=A0the=C2=A0following=C2=A0warning=C2=A0=
+occurs.=0D=0A>=C2=A0=22'clock-names'=C2=A0does=C2=A0not=C2=A0match=C2=A0any=
+=C2=A0of=C2=A0the=C2=A0regexes=22=0D=0A>=C2=A0=0D=0A>>>=C2=A0+=0D=0A>>>=C2=
+=A0+=C2=A0=C2=A0lcpll-ref-clk:=0D=0A>>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0const=
+:=C2=A01=0D=0A>>=C2=A0=0D=0A>>=C2=A0Unknown=C2=A0field...=C2=A0custom=C2=A0=
+properties=C2=A0need=C2=A0vendor=C2=A0(axis,),=C2=A0type=C2=A0(boolean)=0D=
+=0A>>=C2=A0and=C2=A0description.=0D=0A>>=C2=A0=0D=0A>=C2=A0=0D=0A>=C2=A0=22=
+lcpl-ref-clk=22=C2=A0has=C2=A0an=C2=A0enum=C2=A0type=C2=A0value,=C2=A0so=C2=
+=A0i=C2=A0will=C2=A0modify=C2=A0it=C2=A0as=C2=A0below.=0D=0A>=C2=A0=0D=0A>=
+=C2=A0=0D=0A>=C2=A0axis,lcpll-ref-clk:=0D=0A>=C2=A0=C2=A0=C2=A0description:=
+=0D=0A>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0select=C2=A0the=C2=A0reference=C2=A0cl=
+ock=C2=A0of=C2=A0phy=C2=A0and=C2=A0initialization=C2=A0is=C2=A0performed=0D=
+=0A>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0with=C2=A0the=C2=A0reference=C2=A0clock=
+=C2=A0according=C2=A0to=C2=A0the=C2=A0selected=C2=A0value.=0D=0A>=C2=A0=C2=
+=A0=C2=A0=24ref:=C2=A0/schemas/types.yaml=23/definitions/uint32=0D=0A>=C2=
+=A0=C2=A0=C2=A0enum:=C2=A0=5B=C2=A00,=C2=A01,=C2=A02,=C2=A03,=C2=A04=C2=A0=
+=5D=0D=0A>=C2=A0
