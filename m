@@ -2,87 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EAEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21913C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232026AbiGFIXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
+        id S231921AbiGFIXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiGFIWz (ORCPT
+        with ESMTP id S231720AbiGFIXQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:22:55 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004C6248D1
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:22:49 -0700 (PDT)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LdCC94M8qz67gQT;
-        Wed,  6 Jul 2022 16:20:05 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Wed, 6 Jul 2022 10:22:47 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 09:22:44 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <kbusch@kernel.org>, <axboe@fb.com>, <hch@lst.de>,
-        <sagi@grimberg.me>
-CC:     <linux-nvme@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        "John Garry" <john.garry@huawei.com>
-Subject: [PATCH] nvme: Fix nvme_setup_command metadata trace event for cdw10
-Date:   Wed, 6 Jul 2022 16:16:38 +0800
-Message-ID: <1657095398-114310-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Wed, 6 Jul 2022 04:23:16 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA32723BE5;
+        Wed,  6 Jul 2022 01:23:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=YIlwG
+        mkCnNWwg9yDvnJieOw98BJOCEUEMOaSjA7XI40=; b=Z1lhBI/zQD1R3iTkNHoC/
+        Eqe8yJBWFF+Z/ri7WpOgWyVBuM0XJNFabwfR5Q6pq1nh3SE4UywVGPxoftPfaJeR
+        28K5HR+BdGdt4SGIi4cLtz72kT4jTx4HHJXyj4jAl4uvALjnQvH8H7PkvWFhvBlK
+        svE2jHYrzByiIOK2c++DZw=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp1 (Coremail) with SMTP id GdxpCgDX3tZPRsViE6pDMw--.58602S4;
+        Wed, 06 Jul 2022 16:22:48 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     djwong@kernel.org, dchinner@redhat.com, chandan.babu@oracle.com
+Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] xfs: fix potential memory leak in xfs_bmap_add_attrfork()
+Date:   Wed,  6 Jul 2022 16:22:37 +0800
+Message-Id: <20220706082237.2255887-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+X-CM-TRANSID: GdxpCgDX3tZPRsViE6pDMw--.58602S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Jr13uFy3tryDXr4Uur48JFb_yoWfCrb_Ja
+        n7KF1xC3y5Ja9rJw1jyFZ0gr4jqFW8AFs3Za17KFy3Kr15JFZ8Xr97Xryvyr1xGrW5WFs5
+        CFn7Kr1Fkrya9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRibAwPUUUUU==
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbBORg2jF-POXTu9AAAsc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For x86_64 allmodconfig I get this warning:
+xfs_bmap_add_attrfork() allocates a memory chunk for ip->i_afp with
+xfs_ifork_alloc(). When some error occurs, the function goto trans_cancel;
+without releasing the ip->i_afp, which will lead to a memory leak.
 
-In function ‘fortify_memcpy_chk’,
-    inlined from ‘perf_trace_nvme_setup_cmd’ at drivers/nvme/host/./trace.h:47:1:
-./include/linux/fortify-string.h:352:4: error: call to ‘__read_overflow2_field’ declared with attribute warning: detected read beyond size of field (2nd parameter); maybe use struct_group()? [-Werror]
-    __read_overflow2_field(q_size_field, size);
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In function ‘fortify_memcpy_chk’,
-    inlined from ‘trace_event_raw_event_nvme_setup_cmd’ at drivers/nvme/host/./trace.h:47:1:
-./include/linux/fortify-string.h:352:4: error: call to ‘__read_overflow2_field’ declared with attribute warning: detected read beyond size of field (2nd parameter); maybe use struct_group()? [-Werror]
-    __read_overflow2_field(q_size_field, size);
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We should release the ip->i_afp with kmem_cache_free() and set "ip->i_afp
+= NULL" if ip->i_afp is not NULL pointer.
 
-cdw10 metadata is 24 bytes, and we try to copy size of cdw10 metadata from
-nvme_command.common.cdw10 into that cdw10 metadata, but
-nvme_command.common.cdw10 is only 4 bytes in size.
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ fs/xfs/libxfs/xfs_bmap.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Fix by making the trace metadata size as 4 bytes.
-
-I find that this warning started first appearing from commit f68f2ff91512
-("fortify: Detect struct member overflows in memcpy() at compile-time").
-
-Signed-off-by: John Garry <john.garry@huawei.com>
-
-diff --git a/drivers/nvme/host/trace.h b/drivers/nvme/host/trace.h
-index b5f85259461a..d6d35f935006 100644
---- a/drivers/nvme/host/trace.h
-+++ b/drivers/nvme/host/trace.h
-@@ -57,7 +57,7 @@ TRACE_EVENT(nvme_setup_cmd,
- 		__field(u16, cid)
- 		__field(u32, nsid)
- 		__field(bool, metadata)
--		__array(u8, cdw10, 24)
-+		__array(u8, cdw10, 4)
- 	    ),
- 	    TP_fast_assign(
- 		__entry->ctrl_id = nvme_req(req)->ctrl->instance;
+diff --git a/fs/xfs/libxfs/xfs_bmap.c b/fs/xfs/libxfs/xfs_bmap.c
+index 6833110d1bd4..0c99726c0968 100644
+--- a/fs/xfs/libxfs/xfs_bmap.c
++++ b/fs/xfs/libxfs/xfs_bmap.c
+@@ -1088,6 +1088,10 @@ xfs_bmap_add_attrfork(
+ trans_cancel:
+ 	xfs_trans_cancel(tp);
+ 	xfs_iunlock(ip, XFS_ILOCK_EXCL);
++	if (ip->i_afp) {
++		kmem_cache_free(xfs_ifork_cache, ip->i_afp);
++		ip->a_afp = NULL;
++	}
+ 	return error;
+ }
+ 
 -- 
-2.35.3
+2.25.1
 
