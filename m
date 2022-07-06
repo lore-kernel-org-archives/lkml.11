@@ -2,98 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE01C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35716CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbiGFOAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        id S232943AbiGFOAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232733AbiGFOAM (ORCPT
+        with ESMTP id S231454AbiGFOAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:00:12 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BB51F2D7;
-        Wed,  6 Jul 2022 06:59:59 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 090DC660186F;
-        Wed,  6 Jul 2022 14:59:57 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657115998;
-        bh=hlSoJlMQ1wNrpKuPTKn+3MdUzD6VbIFbGoYJHvb0jKU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=X9+ALsZmAkZHB57bQsEqs/yp/DtoHi+5edpM+LAwaBt2OVVBP/IlUYu+L52n3To7z
-         R3jSDTxLpQcdkUD/oM3E9Iqe12UPRPe8qdAiAqFDv0P+YEbsphVdVxhtMsfzMpL36u
-         Zli3i5AdW3v8EfJEckF5TQ4fi+lr9njpbTpjQ0M6ZzXhTDjBEAKQTwnB6aomuRjQNT
-         FoPAn52JK414APBY+eBHYAT/hjh1qJfNG22hkWRhU4ujNkeYo+WOnfL5qLPZldKL/I
-         blCDOZYR/NFIhT3uaIK4onFqjOdbDQ455gBYC8FOkWa3KJNMVO7jh68GeDWgB6oWCr
-         d0hUXXTkUbQbw==
-Message-ID: <a7c7e807-5489-c731-224f-a4b681952917@collabora.com>
-Date:   Wed, 6 Jul 2022 15:59:55 +0200
+        Wed, 6 Jul 2022 10:00:40 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81141A3B1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 07:00:37 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id w24so15338901pjg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 07:00:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=XGOAzLfiIBaUE5hKEF3LhixwuP+tVymp1O1VXS0KHeE=;
+        b=P+t87zBrFa4h4Z7Nm8/KvhJEOvcDyhcGTVBrwWwcgFzyMBIohPPj5asiDfLoC+JqU9
+         C+jyckc6TPV9NRylDkSRg8UW+/W5iwCKbsjK4L8+Lvbh5Hfxpvnic4kuvis6NiV7Fgv5
+         AZ84QbkDcIL94O0J7/pLTKGifGXyZPipR/5q0/27h/dRmx2JkCpoasw4EtKUdlc3O2FP
+         iiboZoSOepv3fFg8jnZl2hYYkavvAtd51zGvGX30azrMUe1MMBCc+yhB6hikaAkqonft
+         B41ZpPQDLzHh0UFa2VLSIZ0A2kPPeIZmjW7gRzD1ANjPllmvuwPCXxbO+TKnNPRKiTtV
+         TmLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=XGOAzLfiIBaUE5hKEF3LhixwuP+tVymp1O1VXS0KHeE=;
+        b=AVVmEOaKANPGvZA1smJr9RTnHOwxYGz/eBYX8CIaNKDI4UxMFppT9PEkicJxOUWbcB
+         3AzNXxrxNfraiaSnrVyT91EXNoXO+xoV3t9PqchVi3wBD7TLH/zwXyWo6zlloKD6+Uys
+         AgPX4q0WzI6XUpItxtxpA2//qTB3VjVtc9EHSUw25E7puS1Wob3+TQTBuPFYtxi/M7Va
+         +TeSQjP7y98+a8w82zMXKHN/svXQBjKHAyOQx2DXAHMSqb3m139lNLza5vbPiLHBjtYX
+         xpDi3n8X9sMmLn+8CZNirb8+KNNykhKJj99aWj/PifjaaO6CQmi4h3TfawJ39Oq+AkNW
+         IinQ==
+X-Gm-Message-State: AJIora+bTYQGUkosfs3CzDwuUnHh8Oh4IGDh1QYhwr9eOml03javeYBC
+        7MFwWvjmReigdCm55nbIH6G4
+X-Google-Smtp-Source: AGRyM1twtwmsrNvpt6gTv7kScz14KKqm/0ECGH4tOu5mMFIiKv1InaWYOEEdgQakWXhgBCw6tYmP2g==
+X-Received: by 2002:a17:902:dac1:b0:16a:3ebe:c722 with SMTP id q1-20020a170902dac100b0016a3ebec722mr45645641plx.169.1657116037038;
+        Wed, 06 Jul 2022 07:00:37 -0700 (PDT)
+Received: from thinkpad ([117.202.190.202])
+        by smtp.gmail.com with ESMTPSA id t16-20020aa79390000000b0052521fd273fsm24826252pfe.218.2022.07.06.07.00.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 07:00:36 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 19:30:31 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     bjorn.andersson@linaro.org, agross@kernel.org,
+        linus.walleij@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pinctrl: qcom: spmi-gpio: make the irqchip immutable
+Message-ID: <20220706140031.GB2327@thinkpad>
+References: <20220624195112.894916-1-robimarko@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 RESEND 0/4] MediaTek Helio X10 MT6795 - MT6331/6332
- Regulators
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     lgirdwood@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, lee.jones@linaro.org
-References: <20220706100912.200698-1-angelogioacchino.delregno@collabora.com>
- <YsV9IerWCoa/xtwM@sirena.org.uk>
- <57367b11-f2d4-476b-b92d-16c1726316c0@collabora.com>
- <YsWG0jfqAf4EqojE@sirena.org.uk>
- <82736173-b3b8-1e1a-3e2e-25d9ca3287eb@collabora.com>
- <YsWTt3YSHI9LLpnw@sirena.org.uk>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <YsWTt3YSHI9LLpnw@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220624195112.894916-1-robimarko@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 06/07/22 15:52, Mark Brown ha scritto:
-> On Wed, Jul 06, 2022 at 03:38:34PM +0200, AngeloGioacchino Del Regno wrote:
->> Il 06/07/22 14:57, Mark Brown ha scritto:
->>> On Wed, Jul 06, 2022 at 02:49:56PM +0200, AngeloGioacchino Del Regno wrote:
->>>> Il 06/07/22 14:16, Mark Brown ha scritto:
->>>
->>>>> This previously got 0day failures due to missing dependencies which
->>>>> need would need a merge with IIRC MFD, I see no reference in the cover
->>>>> letter to dependencies?
->>>
->>>> The only blocker for this series was the MFD patch, which got picked and
->>>> it's present in next-20220706 (as you suggested me to resend when things
->>>> were picked... I decided to wait until they actually landed on -next...)
->>>
->>> Right, I also said I'd need a pull request - if I apply the patches
->>> without having the MFD bits they depend on in my tree then it will fail
->>> to build.
->>
->> I remember writing that to Lee... how do we proceed in this case?
->> Should we add him to the Cc's of this patch to notify him or..?
+On Fri, Jun 24, 2022 at 09:51:12PM +0200, Robert Marko wrote:
+> Commit 6c846d026d49 ("gpio: Don't fiddle with irqchips marked as
+> immutable") added a warning to indicate if the gpiolib is altering the
+> internals of irqchips.
 > 
-> Lee, Angelo has sent me this series for Helio X10 which needs some MFD
-> bits (not 100% sure which, I guess Angelo can fill that in) - is there a
-> tagged branch available to pull in?
+> Following this change the following warning is now observed for the SPMI
+> PMIC pinctrl driver:
+> gpio gpiochip1: (200f000.spmi:pmic@0:gpio@c000): not an immutable chip, please consider fixing it!
+> 
+> Fix this by making the irqchip in the SPMI PMIC pinctrl driver immutable.
+> 
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
 
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-(Thank you, Mark!)
+I've also tested this patch on Lenovo X13s, so
 
-The required bits are all in just one commit:
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-https://patchwork.kernel.org/project/linux-mediatek/patch/20220627123954.64299-1-angelogioacchino.delregno@collabora.com/
+Thanks,
+Mani
 
-Landed on next-20220706 with ID ad7f984a6aa9722443c1db9e8f72609bf06a8910
+> ---
+>  drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 22 ++++++++++++----------
+>  1 file changed, 12 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+> index c3255b0bece4..406ee0933d0b 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+> @@ -171,7 +171,6 @@ struct pmic_gpio_state {
+>  	struct regmap	*map;
+>  	struct pinctrl_dev *ctrl;
+>  	struct gpio_chip chip;
+> -	struct irq_chip irq;
+>  	u8 usid;
+>  	u8 pid_base;
+>  };
+> @@ -988,6 +987,17 @@ static void *pmic_gpio_populate_parent_fwspec(struct gpio_chip *chip,
+>  	return fwspec;
+>  }
+>  
+> +static const struct irq_chip spmi_gpio_irq_chip = {
+> +	.name		= "spmi-gpio",
+> +	.irq_ack	= irq_chip_ack_parent,
+> +	.irq_mask	= irq_chip_mask_parent,
+> +	.irq_unmask	= irq_chip_unmask_parent,
+> +	.irq_set_type	= irq_chip_set_type_parent,
+> +	.irq_set_wake	= irq_chip_set_wake_parent,
+> +	.flags		= IRQCHIP_IMMUTABLE | IRQCHIP_MASK_ON_SUSPEND,
+> +	GPIOCHIP_IRQ_RESOURCE_HELPERS,
+> +};
+> +
+>  static int pmic_gpio_probe(struct platform_device *pdev)
+>  {
+>  	struct irq_domain *parent_domain;
+> @@ -1081,16 +1091,8 @@ static int pmic_gpio_probe(struct platform_device *pdev)
+>  	if (!parent_domain)
+>  		return -ENXIO;
+>  
+> -	state->irq.name = "spmi-gpio",
+> -	state->irq.irq_ack = irq_chip_ack_parent,
+> -	state->irq.irq_mask = irq_chip_mask_parent,
+> -	state->irq.irq_unmask = irq_chip_unmask_parent,
+> -	state->irq.irq_set_type = irq_chip_set_type_parent,
+> -	state->irq.irq_set_wake = irq_chip_set_wake_parent,
+> -	state->irq.flags = IRQCHIP_MASK_ON_SUSPEND,
+> -
+>  	girq = &state->chip.irq;
+> -	girq->chip = &state->irq;
+> +	gpio_irq_chip_set_chip(girq, &spmi_gpio_irq_chip);
+>  	girq->default_type = IRQ_TYPE_NONE;
+>  	girq->handler = handle_level_irq;
+>  	girq->fwnode = of_node_to_fwnode(state->dev->of_node);
+> -- 
+> 2.36.1
+> 
 
-...which can be also found here:
-https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git/log/?h=for-mfd-next
+-- 
+மணிவண்ணன் சதாசிவம்
