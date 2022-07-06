@@ -2,95 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC57CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE34CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232632AbiGFNgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
+        id S233633AbiGFNhk convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbiGFNgu (ORCPT
+        with ESMTP id S230420AbiGFNhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:36:50 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED44B5F66;
-        Wed,  6 Jul 2022 06:36:48 -0700 (PDT)
-Received: from andrey-lpc.intra.ispras.ru (unknown [83.149.199.65])
-        by mail.ispras.ru (Postfix) with ESMTPS id D6A4740737B9;
-        Wed,  6 Jul 2022 13:36:44 +0000 (UTC)
-From:   Andrey Strachuk <strochuk@ispras.ru>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     Andrey Strachuk <strochuk@ispras.ru>,
-        Dave Chinner <dchinner@redhat.com>,
-        Allison Henderson <allison.henderson@oracle.com>,
-        Chandan Babu R <chandan.babu@oracle.com>,
-        linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org
-Subject: [PATCH] xfs: removed useless condition in function xfs_attr_node_get
-Date:   Wed,  6 Jul 2022 16:36:27 +0300
-Message-Id: <20220706133627.11198-1-strochuk@ispras.ru>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 6 Jul 2022 09:37:38 -0400
+X-Greylist: delayed 2351 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 06:37:38 PDT
+Received: from astra4050.startdedicated.net (mail.wseas.org [62.138.2.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C39D22B0D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:37:38 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by astra4050.startdedicated.net (Postfix) with ESMTP id E765D6E11F91
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:46:06 +0200 (CEST)
+Received: from astra4050.startdedicated.net ([127.0.0.1])
+        by localhost (astra4050.startdedicated.net [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 4a2V45plkNWb for <linux-kernel@vger.kernel.org>;
+        Wed,  6 Jul 2022 14:46:06 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by astra4050.startdedicated.net (Postfix) with ESMTP id 4CA296DCD5C0
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 13:47:28 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at wseas.org
+Received: from astra4050.startdedicated.net ([127.0.0.1])
+        by localhost (astra4050.startdedicated.net [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id eXprhhW55kmZ for <linux-kernel@vger.kernel.org>;
+        Wed,  6 Jul 2022 13:47:28 +0200 (CEST)
+Received: from 10.0.2.15 (astra4050.startdedicated.net [62.138.2.54])
+        by astra4050.startdedicated.net (Postfix) with SMTP id EF5026D86415
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 12:54:35 +0200 (CEST)
+From:   "MCSI 2022 - with IEEE" <info@mcsi-conf.org>
+To:     <linux-kernel@vger.kernel.org>
+Subject: IEEE Proceedings and Journals (indexed in ISI Web of Science, Scopus, EI Compendex, etc for our MCSI Conference
+Sender: "MCSI 2022 - with IEEE" <info@mcsi-conf.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date:   Wed, 6 Jul 2022 13:53:36 +0300
+Reply-To: "MCSI 2022 - with IEEE" <info@mcsi-conf.org>
+Message-Id: <20220706105436.EF5026D86415@astra4050.startdedicated.net>
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At line 1561, variable "state" is being compared
-with NULL every loop iteration.
+Dear Professor,
 
--------------------------------------------------------------------
-1561	for (i = 0; state != NULL && i < state->path.active; i++) {
-1562		xfs_trans_brelse(args->trans, state->path.blk[i].bp);
-1563		state->path.blk[i].bp = NULL;
-1564	}
--------------------------------------------------------------------
+You are invited to participate with an Invited Lecture in the
+7th International Conference on Mathematics and Computers in Sciences and
+Industry 
 
-However, it cannot be NULL.
+http: // mcsi-conf. org/
+Marathon Beach, Athens, Greece, August 22-24, 2022
 
-----------------------------------------
-1546	state = xfs_da_state_alloc(args);
-----------------------------------------
+Upload your paper now
 
-xfs_da_state_alloc calls kmem_cache_zalloc. kmem_cache_zalloc is
-called with __GFP_NOFAIL flag and, therefore, it cannot return NULL.
+IEEE Proceedings and Journals (indexed in ISI Web of Science, Scopus, EI Compendex, etc
+for our MCSI Conference 
 
---------------------------------------------------------------------------
-	struct xfs_da_state *
-	xfs_da_state_alloc(
-	struct xfs_da_args	*args)
-	{
-		struct xfs_da_state	*state;
 
-		state = kmem_cache_zalloc(xfs_da_state_cache, GFP_NOFS | __GFP_NOFAIL);
-		state->args = args;
-		state->mp = args->dp->i_mount;
-		return state;
-	}
---------------------------------------------------------------------------
+Plenary Speakers
+===================
+Prof. Joel Chaskalovic
+Institut Jean Le Rond d’Alembert Sorbonne University,
+Paris, France
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+Prof. Elias C. Aifantis
+Mercator Fellow, Friedrich-Alexander University, Erlangen-Nuremberg,
+90762 Fürth, Germany
 
-Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+Prof. Aristides D. Zdetsis
+Molecular Engineering Laboratory, Department of Physics, University of Patras,
+Patras 26500 GR, Greece
 
-Fixes: 4d0cdd2bb8f0 ("xfs: clean up xfs_attr_node_hasname")
----
- fs/xfs/libxfs/xfs_attr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Prof. Michael Gr. Voskoglou
+Mathematical Sciences, School of Technological Applications
+University of Peloponnese (ex T.E.I. of Western Greece) Meg. Alexandrou 1,
+26334 Patras, Greece
 
-diff --git a/fs/xfs/libxfs/xfs_attr.c b/fs/xfs/libxfs/xfs_attr.c
-index 224649a76cbb..6b8857e53add 100644
---- a/fs/xfs/libxfs/xfs_attr.c
-+++ b/fs/xfs/libxfs/xfs_attr.c
-@@ -1558,7 +1558,7 @@ xfs_attr_node_get(
- 	 * If not in a transaction, we have to release all the buffers.
- 	 */
- out_release:
--	for (i = 0; state != NULL && i < state->path.active; i++) {
-+	for (i = 0; i < state->path.active; i++) {
- 		xfs_trans_brelse(args->trans, state->path.blk[i].bp);
- 		state->path.blk[i].bp = NULL;
- 	}
--- 
-2.25.1
+Prof. George J. Tsekouras
+University of West Attica, Egaleo, Athens, Greece
+
+Prof. Imre J. Rudas
+Óbuda University, Budapest, Hungary
+
+Prof. Dimitrios A. Karras, PhD
+National and Kapodistrian University of Athens (NKUA),
+Dept. General, Greece
+
+Prof. Abdel-Badeeh. M. Salem
+Computer Science Departement, Faculty of Computer and Information Sciences,
+Ain Shams University, Cairo, Egypt
+
+Prof. Badea Lepadatescu
+Transylvania University of Brasov,
+Brasov, Romania
+
+Thanks
+
+
+If August is not convenient for you, we have a similar conference in September
+
+Other Similar Conference: 
+6th International Conference on Mathematical Models & Computational Techniques in Science
+& Engineering, Marathon Beach, Athens, Greece, September 20-22, 2022
+http: // mmctse. org/
+
+IEEE Proceedings and Journals (indexed in ISI Web of Science, Scopus, EI Compendex, etc
+for our MMCTSE Conference 
+
+Best Regards
+
+Dr. George Petrakis
+MCSI 2022, MMCTSE 2022
+info@mcsi-conf.orgdor
 
