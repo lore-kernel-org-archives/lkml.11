@@ -2,175 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87178C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0748BCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232036AbiGFKD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42734 "EHLO
+        id S232442AbiGFKEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbiGFKDw (ORCPT
+        with ESMTP id S231824AbiGFKEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:03:52 -0400
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E6824F13;
-        Wed,  6 Jul 2022 03:03:51 -0700 (PDT)
-Received: by mail-qt1-f171.google.com with SMTP id he28so17481259qtb.13;
-        Wed, 06 Jul 2022 03:03:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=moQR5LBdu+yLzctPNV/vOqPzvGKHHurzxQlNOu9l9Us=;
-        b=EesshI2dz2nUcJOk+dJEmUXSyU3cxFbAF3MTtcsDp8HC89WnRnXWqs0B8xNoeB/GgQ
-         Kk1KCc2xbvizzIvOcX53AE81Pn48RcI4/2BIrsQEMGWaEnc747JN4TZc+Fvyx6WdrMQE
-         vapVQPFTaYrfLaAbQjPi0EDAIsQpB9A+KwjUqDu5dk36lixxywxCGSLhD0FHIsXYSWHX
-         GoacpeCU5MfZjeNzf3VFoqUSw4P/zzx3XsYYCof4DeGjAVGDjlz9NatrkO7l6oOGJSmk
-         V7buL3P6KGmMvhVXceC+0aTfruI1pFkCMFIDpubvvjZy8xWRy+lZFR64CCA9SfJs1Tdz
-         26Yw==
-X-Gm-Message-State: AJIora/0pgAHSDr5Jl9M1QDs/X9epQp27h5YxkSx5DiIofUd8y/wcu5b
-        ahSInx7/NhO1sWkaCJ6AyqB53qqMEp9SM9VC
-X-Google-Smtp-Source: AGRyM1u7clC6UC8AqvqBpVgGP0o5aTr2tLeLXw6o3mv3Gm2SPqaW5OaIs1i60ABw/dE1xxaHAT911A==
-X-Received: by 2002:a05:622a:83:b0:31d:3362:7ef4 with SMTP id o3-20020a05622a008300b0031d33627ef4mr25065824qtw.32.1657101830944;
-        Wed, 06 Jul 2022 03:03:50 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id fw3-20020a05622a4a8300b0031e7b06edbasm4844135qtb.67.2022.07.06.03.03.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 03:03:49 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-31c8a1e9e33so82387417b3.5;
-        Wed, 06 Jul 2022 03:03:49 -0700 (PDT)
-X-Received: by 2002:a0d:c787:0:b0:31b:a963:e1de with SMTP id
- j129-20020a0dc787000000b0031ba963e1demr44581975ywd.283.1657101828958; Wed, 06
- Jul 2022 03:03:48 -0700 (PDT)
+        Wed, 6 Jul 2022 06:04:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D210224F00
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:04:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61A68B81BA7
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:04:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7825BC3411C;
+        Wed,  6 Jul 2022 10:04:28 +0000 (UTC)
+Date:   Wed, 6 Jul 2022 11:04:24 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Will Deacon <will@kernel.org>,
+        "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
+        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
+        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
+        jonathan@marek.ca, mark.rutland@arm.com,
+        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        geert+renesas@glider.be, linux-mm@kvack.org,
+        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
+Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
+ degradation
+Message-ID: <YsVeKPzaO0SJdwFW@arm.com>
+References: <20220704163815.GA32177@willie-the-truck>
+ <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
+ <20220705095231.GB552@willie-the-truck>
+ <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+ <20220705121115.GB1012@willie-the-truck>
+ <YsRSajyMxahXe7ZS@kernel.org>
+ <YsRZ8V8mQ+HM31D6@arm.com>
+ <YsRfgX7FFZLxQU50@kernel.org>
+ <YsRvPTORdvIwzShL@arm.com>
+ <YsSi9HAOOzbPYN+w@kernel.org>
 MIME-Version: 1.0
-References: <20220630051630.1718927-1-anshuman.khandual@arm.com> <20220630051630.1718927-22-anshuman.khandual@arm.com>
-In-Reply-To: <20220630051630.1718927-22-anshuman.khandual@arm.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 6 Jul 2022 12:03:37 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX_Ji7dCzzCc3xw5ic6J=0PaPkyzXKpOgUFjjEkR+yJOw@mail.gmail.com>
-Message-ID: <CAMuHMdX_Ji7dCzzCc3xw5ic6J=0PaPkyzXKpOgUFjjEkR+yJOw@mail.gmail.com>
-Subject: Re: [PATCH V6 21/26] m68k/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-csky@vger.kernel.org,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Christoph Hellwig <hch@infradead.org>,
-        arcml <linux-snps-arc@lists.infradead.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsSi9HAOOzbPYN+w@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Anshuman,
+On Tue, Jul 05, 2022 at 11:45:40PM +0300, Mike Rapoport wrote:
+> On Tue, Jul 05, 2022 at 06:05:01PM +0100, Catalin Marinas wrote:
+> > On Tue, Jul 05, 2022 at 06:57:53PM +0300, Mike Rapoport wrote:
+> > > On Tue, Jul 05, 2022 at 04:34:09PM +0100, Catalin Marinas wrote:
+> > > > On Tue, Jul 05, 2022 at 06:02:02PM +0300, Mike Rapoport wrote:
+> > > > > +void __init remap_crashkernel(void)
+> > > > > +{
+> > > > > +#ifdef CONFIG_KEXEC_CORE
+> > > > > +	phys_addr_t start, end, size;
+> > > > > +	phys_addr_t aligned_start, aligned_end;
+> > > > > +
+> > > > > +	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+> > > > > +	    return;
+> > > > > +
+> > > > > +	if (!crashk_res.end)
+> > > > > +	    return;
+> > > > > +
+> > > > > +	start = crashk_res.start & PAGE_MASK;
+> > > > > +	end = PAGE_ALIGN(crashk_res.end);
+> > > > > +
+> > > > > +	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
+> > > > > +	aligned_end = ALIGN(end, PUD_SIZE);
+> > > > > +
+> > > > > +	/* Clear PUDs containing crash kernel memory */
+> > > > > +	unmap_hotplug_range(__phys_to_virt(aligned_start),
+> > > > > +			    __phys_to_virt(aligned_end), false, NULL);
+> > > > 
+> > > > What I don't understand is what happens if there's valid kernel data
+> > > > between aligned_start and crashk_res.start (or the other end of the
+> > > > range).
+> > > 
+> > > Data shouldn't go anywhere :)
+> > > 
+> > > There is 
+> > > 
+> > > +	/* map area from PUD start to start of crash kernel with large pages */
+> > > +	size = start - aligned_start;
+> > > +	__create_pgd_mapping(swapper_pg_dir, aligned_start,
+> > > +			     __phys_to_virt(aligned_start),
+> > > +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+> > > 
+> > > and 
+> > > 
+> > > +	/* map area from end of crash kernel to PUD end with large pages */
+> > > +	size = aligned_end - end;
+> > > +	__create_pgd_mapping(swapper_pg_dir, end, __phys_to_virt(end),
+> > > +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+> > > 
+> > > after the unmap, so after we tear down a part of a linear map we
+> > > immediately recreate it, just with a different page size.
+> > > 
+> > > This all happens before SMP, so there is no concurrency at that point.
+> > 
+> > That brief period of unmap worries me. The kernel text, data and stack
+> > are all in the vmalloc space but any other (memblock) allocation to this
+> > point may be in the unmapped range before and after the crashkernel
+> > reservation. The interrupts are off, so I think the only allocation and
+> > potential access that may go in this range is the page table itself. But
+> > it looks fragile to me.
+> 
+> I agree there are chances there will be an allocation from the unmapped
+> range. 
+> 
+> We can make sure this won't happen, though. We can cap the memblock
+> allocations with memblock_set_current_limit(aligned_end) or
+> memblock_reserve(algined_start, aligned_end) until the mappings are
+> restored. 
 
-On Thu, Jun 30, 2022 at 7:19 AM Anshuman Khandual
-<anshuman.khandual@arm.com> wrote:
-> This enables ARCH_HAS_VM_GET_PAGE_PROT on the platform and exports standard
-> vm_get_page_prot() implementation via DECLARE_VM_GET_PAGE_PROT, which looks
-> up a private and static protection_map[] array. Subsequently all __SXXX and
-> __PXXX macros can be dropped which are no longer needed.
->
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: linux-m68k@lists.linux-m68k.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+We can reserve the region just before unmapping to avoid new allocations
+for the page tables but we can't do much about pages already allocated
+prior to calling remap_crashkernel().
 
-Thanks for your patch!
-
-> --- a/arch/m68k/include/asm/mcf_pgtable.h
-> +++ b/arch/m68k/include/asm/mcf_pgtable.h
-> @@ -91,60 +91,6 @@
->   * for use. In general, the bit positions are xwr, and P-items are
->   * private, the S-items are shared.
->   */
-
-The comment above should be removed, too.
-
-> -#define __P000         PAGE_NONE
-> -#define __P001         __pgprot(CF_PAGE_VALID \
-> -                                | CF_PAGE_ACCESSED \
-> -                                | CF_PAGE_READABLE)
-
-> --- a/arch/m68k/include/asm/motorola_pgtable.h
-> +++ b/arch/m68k/include/asm/motorola_pgtable.h
-> @@ -83,28 +83,6 @@ extern unsigned long mm_cachebits;
->  #define PAGE_COPY_C    __pgprot(_PAGE_PRESENT | _PAGE_RONLY | _PAGE_ACCESSED)
->  #define PAGE_READONLY_C        __pgprot(_PAGE_PRESENT | _PAGE_RONLY | _PAGE_ACCESSED)
-
-You might move the *_C definitions above into arch/m68k/mm/motorola.c
-as well, as they are only used in the latter.
-
->
-> -/*
-> - * The m68k can't do page protection for execute, and considers that the same are read.
-> - * Also, write permissions imply read permissions. This is the closest we can get..
-> - */
-> -#define __P000 PAGE_NONE_C
-> -#define __P001 PAGE_READONLY_C
-> -#define __P010 PAGE_COPY_C
-> -#define __P011 PAGE_COPY_C
-> -#define __P100 PAGE_READONLY_C
-> -#define __P101 PAGE_READONLY_C
-> -#define __P110 PAGE_COPY_C
-> -#define __P111 PAGE_COPY_C
-> -
-> -#define __S000 PAGE_NONE_C
-> -#define __S001 PAGE_READONLY_C
-> -#define __S010 PAGE_SHARED_C
-> -#define __S011 PAGE_SHARED_C
-> -#define __S100 PAGE_READONLY_C
-> -#define __S101 PAGE_READONLY_C
-> -#define __S110 PAGE_SHARED_C
-> -#define __S111 PAGE_SHARED_C
-> -
->  #define pmd_pgtable(pmd) ((pgtable_t)pmd_page_vaddr(pmd))
->
->  /*
-> diff --git a/arch/m68k/include/asm/sun3_pgtable.h b/arch/m68k/include/asm/sun3_pgtable.h
-> index 5e4e753f0d24..9d919491765b 100644
-> --- a/arch/m68k/include/asm/sun3_pgtable.h
-> +++ b/arch/m68k/include/asm/sun3_pgtable.h
-> @@ -71,23 +71,6 @@
->   * protection settings, valid (implying read and execute) and writeable. These
->   * are as close as we can get...
->   */
-
-The comment above should be removed, too.
-
-> -#define __P000 PAGE_NONE
-> -#define __P001 PAGE_READONLY
-
-With the above fixed:
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Catalin
