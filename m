@@ -2,80 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 021BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbiGFJPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
+        id S233057AbiGFJPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232895AbiGFJPI (ORCPT
+        with ESMTP id S232924AbiGFJPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 05:15:08 -0400
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA371B5
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:15:07 -0700 (PDT)
-Received: by mail-qt1-f179.google.com with SMTP id ay10so17348206qtb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 02:15:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NyuJdlq0J6ZQ1JNEf5bqR4BNFIBiYk0Fgz9plyVNlpI=;
-        b=7Agsb4H8P9pJcMSCSOi3ZL/uW15KdEpbeuDV8U9W6SrzfhjKj7VZFatCSuzxQPAXOf
-         H/B0l/qIA8AZ4cv+rZFTpJMXuAh3EnFo3fFDXGMDKYMVnlK4tsp7IGqOc5V/5Xn7y3Ac
-         zB776/0+/laNt1NdvGVAFgl4YRBjl+CeZH3aWIj+juY5up9sjYFxfN3xN+tPgwQ/b0Vt
-         /ojhegXO9dZAmIQXBywuQqUKIorDsQTRr9piY9xGI/mOPWCCv7wAegT0L+UuDYAYctq+
-         CIZ9HdDD0Y/CCORJp3yliwjeM/A+QLji27jmy67bpAAGXSFFgwma0eg1zxjZfzAbR/Js
-         IfRw==
-X-Gm-Message-State: AJIora+a2G4JV6OfMWr5DEPprF/SJfkbxCZeoMG5jwEt3wihUBGu4ie4
-        ejduHdSSN4l8hhnlrr/CN0L/ZvC+w8RRyg==
-X-Google-Smtp-Source: AGRyM1vV6lnZ+NPJCNVSn/VINosnBdPTs9eCq+56gQGvUERn0yjserzDyrraIbMc/DBZ9rkrrPlLVw==
-X-Received: by 2002:a05:622a:14d4:b0:31d:3db8:3d00 with SMTP id u20-20020a05622a14d400b0031d3db83d00mr17579296qtx.666.1657098906206;
-        Wed, 06 Jul 2022 02:15:06 -0700 (PDT)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id a186-20020a3766c3000000b006a37c908d33sm28683498qkc.28.2022.07.06.02.15.05
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 02:15:05 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id o2so21030284yba.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 02:15:05 -0700 (PDT)
-X-Received: by 2002:a05:6902:1143:b0:66e:8ad6:34c with SMTP id
- p3-20020a056902114300b0066e8ad6034cmr5217971ybu.89.1657098905609; Wed, 06 Jul
- 2022 02:15:05 -0700 (PDT)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659A1C23;
+        Wed,  6 Jul 2022 02:15:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657098905; x=1688634905;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+VI0QHCyPONLMhvZQIjJCP6FWIqDVbefx+zx+Z98RBc=;
+  b=FqBCdX+dKwjfCTP4qWzmWXOyXVGACg4qF/Ljw8Bsah3nJYe1X/NVDB/c
+   UpRnDBSXNg+OJmn0UY1z7fyK+zhcHh6EggVYruSKhPXVLZ9YU/pMNpHPg
+   YeUaeHoLdJc1LcyG652+uaAyeiQ2eT1Lt7oj8bGSWNG05UpOtSCGLTymM
+   NTZdLbMdUeApSDbPzn93fwig6pVTBnKAfJ4bbHbqJbGdgT8Xt4DE76FDh
+   4iSRA9KZw4/ZM0BvD0XssGz1DSPK4+0x5KYPlHN7HBAD4/y+iHmYsTuhH
+   udojrgBt4/Hnr2IS73rudankdwaWIumkcq46tBHHtyX3vni0KGHxZWMzI
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="170971252"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jul 2022 02:15:04 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 6 Jul 2022 02:15:04 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 6 Jul 2022 02:15:01 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>
+CC:     <linux-crypto@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH] crypto: atmel-tdes: initialize tdes_dd while declaring
+Date:   Wed, 6 Jul 2022 12:17:27 +0300
+Message-ID: <20220706091727.831036-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20220630085037.72420-1-jiaming@nfschina.com>
-In-Reply-To: <20220630085037.72420-1-jiaming@nfschina.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 6 Jul 2022 11:14:54 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWg=8aAN6xup_MUy+3GvRuAOH2s55NQvXnNMdFk8Hr10g@mail.gmail.com>
-Message-ID: <CAMuHMdWg=8aAN6xup_MUy+3GvRuAOH2s55NQvXnNMdFk8Hr10g@mail.gmail.com>
-Subject: Re: [PATCH] m68k/mm: Fix spelling mistake
-To:     jiaming@nfschina.com
-Cc:     Sam Creasey <sammy@sammy.net>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        liqiong@nfschina.com, renyu@nfschina.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 10:50 AM Zhang Jiaming <jiaming@nfschina.com> wrote:
-> Change 'writeable' to 'writable'.
->
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+Initialize sha_dd with platform_get_drvdata() when declaring it.
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-i.e. will queue in the m68k for-v5.20 branch.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
 
-Gr{oetje,eeting}s,
+Hi,
 
-                        Geert
+This patch is based on patch at [1].
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+[1] https://patchwork.kernel.org/project/linux-crypto/patch/20220705205144.131702-3-u.kleine-koenig@pengutronix.de
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thank you,
+Claudiu Beznea
+
+ drivers/crypto/atmel-tdes.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/crypto/atmel-tdes.c b/drivers/crypto/atmel-tdes.c
+index a5e78aa08bf0..8b7bc1076e0d 100644
+--- a/drivers/crypto/atmel-tdes.c
++++ b/drivers/crypto/atmel-tdes.c
+@@ -1263,9 +1263,7 @@ static int atmel_tdes_probe(struct platform_device *pdev)
+ 
+ static int atmel_tdes_remove(struct platform_device *pdev)
+ {
+-	struct atmel_tdes_dev *tdes_dd;
+-
+-	tdes_dd = platform_get_drvdata(pdev);
++	struct atmel_tdes_dev *tdes_dd = platform_get_drvdata(pdev);
+ 
+ 	spin_lock(&atmel_tdes.lock);
+ 	list_del(&tdes_dd->list);
+-- 
+2.33.0
+
