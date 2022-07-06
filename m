@@ -2,62 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C07D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 00:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 00:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbiGFAVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 20:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
+        id S231388AbiGFAYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 20:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiGFAVP (ORCPT
+        with ESMTP id S229454AbiGFAYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 20:21:15 -0400
-X-Greylist: delayed 515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Jul 2022 17:21:11 PDT
-Received: from cavan.codon.org.uk (irc.codon.org.uk [IPv6:2a00:1098:84:22e::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0219313F43;
-        Tue,  5 Jul 2022 17:21:10 -0700 (PDT)
-Received: by cavan.codon.org.uk (Postfix, from userid 1000)
-        id C2FD140A60; Wed,  6 Jul 2022 01:12:33 +0100 (BST)
-Date:   Wed, 6 Jul 2022 01:12:33 +0100
-From:   Matthew Garrett <mjg59@srcf.ucam.org>
-To:     Brendan Trotter <btrotter@gmail.com>
-Cc:     The development of GNU GRUB <grub-devel@gnu.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        James Morris <jmorris@namei.org>
-Subject: Re: Linux DRTM on UEFI platforms
-Message-ID: <20220706001233.GA5802@srcf.ucam.org>
-References: <20220329174057.GA17778@srcf.ucam.org>
- <f9622b47-c45f-8c91-cb85-e5db7fd541cf@apertussolutions.com>
- <CAMj1kXEUT8BK_akqjF1Wx0JkLniFyV_h9s1TfQnPqfxCHsKfWw@mail.gmail.com>
- <7aab2990-9c57-2456-b08d-299ae96ac919@apertussolutions.com>
- <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
+        Tue, 5 Jul 2022 20:24:05 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D32DFE
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 17:24:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657067045; x=1688603045;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=M0xhOJPVCeN91aku9bU9ecvcw/a4Vgk7oNkQ12/Y7SA=;
+  b=aTqWBWsP1zwjaRmVAcbvIL3m9uCfYYnljkCzlRCh6UeA364JzT0MMy3s
+   0+ig+S1cstkJB8iGfa6WitvTjpEhf1VfphpOSKUz7P0BAeEt2MvshAZ/2
+   /ITqDOo93ysWvs3nUEhO8D3qXjBmyQUFQUGh4zyaQ5TUEhyGBIKSnF4J3
+   tSZCagNhfMgDW6qoGkQycMT7mUOEBJg0tmBCryGrG3Z301e7BzteW2I7M
+   XKqFG9jBqTOhup3tQAevHm8xLlKxSIC9ONm2ninj/vmIpAgTjn9CjhSbD
+   tJsBM+fdJxe+V3URBptmq0HfS3wYF6GzNCFxVDiQwYFSNjr0v3u0fcvN4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="345277247"
+X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
+   d="scan'208";a="345277247"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 17:24:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
+   d="scan'208";a="695866288"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 05 Jul 2022 17:24:02 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8spm-000Jk5-7s;
+        Wed, 06 Jul 2022 00:24:02 +0000
+Date:   Wed, 6 Jul 2022 08:23:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/tramp_22 7/21] kernel/trace/ftrace_test.c:7:6:
+ warning: no previous prototype for 'ftrace_test_0'
+Message-ID: <202207060857.oxde1BCA-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 09:33:23AM +0930, Brendan Trotter wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_22
+head:   1d891c46bb689a24985cea58f4eddb053d6b1331
+commit: d2304746483fe3d68537522df1f8e63993bdd732 [7/21] ftrace: Add test functions
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207060857.oxde1BCA-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=d2304746483fe3d68537522df1f8e63993bdd732
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf bpf/tramp_22
+        git checkout d2304746483fe3d68537522df1f8e63993bdd732
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/trace/
 
-> The only correct approach is "efi-stub -> head_64.S -> kernel's own
-> secure init"; where (on UEFI systems) neither GRUB nor Trenchboot has
-> a valid reason to exist and should never be installed.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Surely the entire point of DRTM is that we *don't* have to trust the 
-bootloader?
+All warnings (new ones prefixed by >>):
+
+>> kernel/trace/ftrace_test.c:7:6: warning: no previous prototype for 'ftrace_test_0' [-Wmissing-prototypes]
+       7 | FUNC(ftrace_test_0)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:8:6: warning: no previous prototype for 'ftrace_test_1' [-Wmissing-prototypes]
+       8 | FUNC(ftrace_test_1)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:9:6: warning: no previous prototype for 'ftrace_test_2' [-Wmissing-prototypes]
+       9 | FUNC(ftrace_test_2)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:10:6: warning: no previous prototype for 'ftrace_test_3' [-Wmissing-prototypes]
+      10 | FUNC(ftrace_test_3)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:11:6: warning: no previous prototype for 'ftrace_test_4' [-Wmissing-prototypes]
+      11 | FUNC(ftrace_test_4)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:12:6: warning: no previous prototype for 'ftrace_test_5' [-Wmissing-prototypes]
+      12 | FUNC(ftrace_test_5)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:13:6: warning: no previous prototype for 'ftrace_test_6' [-Wmissing-prototypes]
+      13 | FUNC(ftrace_test_6)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:14:6: warning: no previous prototype for 'ftrace_test_7' [-Wmissing-prototypes]
+      14 | FUNC(ftrace_test_7)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:15:6: warning: no previous prototype for 'ftrace_test_8' [-Wmissing-prototypes]
+      15 | FUNC(ftrace_test_8)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+>> kernel/trace/ftrace_test.c:16:6: warning: no previous prototype for 'ftrace_test_9' [-Wmissing-prototypes]
+      16 | FUNC(ftrace_test_9)
+         |      ^~~~~~~~~~~~~
+   kernel/trace/ftrace_test.c:4:5: note: in definition of macro 'FUNC'
+       4 | int __name(void) { return 0; }  \
+         |     ^~~~~~
+
+
+vim +/ftrace_test_0 +7 kernel/trace/ftrace_test.c
+
+     6	
+   > 7	FUNC(ftrace_test_0)
+   > 8	FUNC(ftrace_test_1)
+   > 9	FUNC(ftrace_test_2)
+  > 10	FUNC(ftrace_test_3)
+  > 11	FUNC(ftrace_test_4)
+  > 12	FUNC(ftrace_test_5)
+  > 13	FUNC(ftrace_test_6)
+  > 14	FUNC(ftrace_test_7)
+  > 15	FUNC(ftrace_test_8)
+  > 16	FUNC(ftrace_test_9)
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
