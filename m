@@ -2,161 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B799C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA617C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231875AbiGFK0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
+        id S232245AbiGFK0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbiGFK0T (ORCPT
+        with ESMTP id S232324AbiGFK0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:26:19 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956B125EA1;
-        Wed,  6 Jul 2022 03:26:18 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id r18so18656956edb.9;
-        Wed, 06 Jul 2022 03:26:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m51M7aOH5FnJwLofP0W607fIK7M775HfSh2WEy0mTWo=;
-        b=JJZXb8nugrU4hB99yEftnyX099Qa8+XsZFeQfNMyE9Js8PCpj07zB1+fVtGZAmj4UW
-         NGRLyoxucyp6S57S5jMPV/IMlUKAeUmI27IAud4oJZce87gRrxXi58dhsMnwRHdivOgp
-         TWokJk6BnRhb2dFySMHHaEDuqFHv6DB2ZvqaOFO/KYMOBJfecwonKssNRMGjgDh4yZUm
-         Km54CjtSPIywNcEFl+hS6wC4BZeCseVERyDgMlPpB08RCJdVr5y0fgoSVb/BpuA4cA7I
-         59RK4YRScLqaSjzZeLG2pSMUWA83CfTchlSs0VNOhP0H/6qeZ0mSo4Mwiq0E3iSwZeMq
-         2GZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m51M7aOH5FnJwLofP0W607fIK7M775HfSh2WEy0mTWo=;
-        b=p3mt8D8Q6G8Dqp6Oq5KzAl5MLa3jWxF9Z00/I+tBOwfDxp7fsrg0M7ce/9CXCXdND0
-         bOG7kjV5Yrzg9G119HqppTuRxcdAKeneVqFBmLXomGp55cwhThbE0rZUiV3XQIij1LDK
-         80BP2seUH8D6aARsN7s9VEiV8sDUawQ9/K9ELQi8BPFKiZovv9+QqnQ9mxMT09tE1FVG
-         DbHwbDN7AamewM+9ii3l3txHZI9JKfmUP90gtro0RWMtYfasDYbZtfCRy1CwByn8B2TR
-         /mYSkQ2pbTlsK432xZ5lkm3aDT7j39svGjJQ4g/82Jd3SOOPuGQ5EjBwvOqYKErOLnRK
-         aImA==
-X-Gm-Message-State: AJIora/LAWzv6NQXF1xvfoNYCQowe3QF1Cb/ya+j5lpUqfvqeUZKWd/n
-        wtDmdeznxA7qOxHURLfihVM=
-X-Google-Smtp-Source: AGRyM1teWvIdZYx1txxcSxtn7EDb6uif4hNEcDyJI+h0PwivdUZtKJ5qLCm8F/LlRHOFsgcI0CojKA==
-X-Received: by 2002:a05:6402:12d8:b0:43a:6a70:9039 with SMTP id k24-20020a05640212d800b0043a6a709039mr18588969edx.379.1657103177039;
-        Wed, 06 Jul 2022 03:26:17 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id y14-20020a170906448e00b0072737733f9asm10563605ejo.106.2022.07.06.03.26.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:26:16 -0700 (PDT)
-Message-ID: <62c56348.1c69fb81.d2cad.2584@mx.google.com>
-X-Google-Original-Message-ID: <YsVfY6MZxOMeahXp@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 12:09:39 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
-Subject: Re: [PATCH 03/13] ARM: dts: qcom: add missing rpm regulators and
- cells for ipq8064
-References: <20220705133917.8405-1-ansuelsmth@gmail.com>
- <20220705133917.8405-4-ansuelsmth@gmail.com>
- <e81344f6-7da5-a209-2785-d540e41f3958@linaro.org>
+        Wed, 6 Jul 2022 06:26:32 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F0B26AD5
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:26:30 -0700 (PDT)
+Received: from fsav311.sakura.ne.jp (fsav311.sakura.ne.jp [153.120.85.142])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 266AQT3u067488;
+        Wed, 6 Jul 2022 19:26:29 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav311.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp);
+ Wed, 06 Jul 2022 19:26:29 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 266AQSCK067485
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Wed, 6 Jul 2022 19:26:28 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <a6d98824-56c8-6d92-bb1b-eb065b57cb81@I-love.SAKURA.ne.jp>
+Date:   Wed, 6 Jul 2022 19:26:28 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e81344f6-7da5-a209-2785-d540e41f3958@linaro.org>
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] char: misc: make misc_open() and misc_register() killable
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Arjan van de Ven <arjan@linux.intel.com>
+References: <YsKW6VvWqvcMRBSl@kroah.com>
+ <100f445e-9fa8-4f37-76aa-8359f0008c59@I-love.SAKURA.ne.jp>
+ <YsLIepAXeBKT0AF/@kroah.com>
+ <01a93294-e323-b9ca-7e95-a33d4b89dc47@I-love.SAKURA.ne.jp>
+ <YsL5pUuydMWJ9dSQ@kroah.com>
+ <617f64e3-74c8-f98b-3430-bd476867e483@I-love.SAKURA.ne.jp>
+ <5665ccb2-b92b-9e1f-8bb5-a950986450ec@I-love.SAKURA.ne.jp>
+ <YsRHwy6+5gask+KT@kroah.com>
+ <064bbe2a-c18e-203e-9e01-b32fe9baa390@I-love.SAKURA.ne.jp>
+ <7ddb25ff-60e5-75be-8080-2a7465cca68c@I-love.SAKURA.ne.jp>
+ <YsUtBERm94k/iZTy@kroah.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <YsUtBERm94k/iZTy@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 10:34:16AM +0200, Krzysztof Kozlowski wrote:
-> On 05/07/2022 15:39, Christian Marangi wrote:
-> > Add cells definition for rpm node and add missing regulators for the 4
-> > regulator present on ipq8064. There regulators are controlled by rpm and
-> > to correctly works gsbi4_i2c require to be NEVER disabled or rpm will
-> > reject any regulator change request.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > Tested-by: Jonathan McDowell <noodles@earth.li>
-> > ---
-> >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 36 +++++++++++++++++++++++++++++
-> >  1 file changed, 36 insertions(+)
-> > 
-> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > index 1b4b72723ead..c0b05d2a2d6d 100644
-> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > @@ -844,10 +844,46 @@ rpm: rpm@108000 {
-> >  			clocks = <&gcc RPM_MSG_RAM_H_CLK>;
-> >  			clock-names = "ram";
-> >  
-> > +			#address-cells = <1>;
-> > +			#size-cells = <0>;
+On 2022/07/06 15:34, Greg KH wrote:
+> On Wed, Jul 06, 2022 at 03:21:15PM +0900, Tetsuo Handa wrote:
+>> How should we fix this problem?
 > 
-> Why adding these?
->
+> We can decrease the timeout in usb_stor_msg_common().  I imagine that if
+> that timeout is ever hit in this sequence, then all will recover, right?
+> Try decreasing it to a sane number and see what happens.
 
-Fix dt warning, will split and put it in a separate commit.
+Yes, all recovers with below diff.
 
-> > +
-> >  			rpmcc: clock-controller {
-> >  				compatible = "qcom,rpmcc-ipq806x", "qcom,rpmcc";
-> >  				#clock-cells = <1>;
-> >  			};
-> > +
-> > +			smb208_regulators: regulators {
-> > +				compatible = "qcom,rpm-smb208-regulators";
-> > +				status = "okay";
-> 
-> Was the node disabled?
-> 
+------------------------------------------------------------
+diff --git a/drivers/usb/storage/transport.c b/drivers/usb/storage/transport.c
+index 1928b3918242..d2a192306e0c 100644
+--- a/drivers/usb/storage/transport.c
++++ b/drivers/usb/storage/transport.c
+@@ -164,7 +164,7 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
+  
+ 	/* wait for the completion of the URB */
+ 	timeleft = wait_for_completion_interruptible_timeout(
+-			&urb_done, timeout ? : MAX_SCHEDULE_TIMEOUT);
++			&urb_done, timeout ? : 5 * HZ);
+  
+ 	clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags);
+ 
+------------------------------------------------------------
 
-smb208 is the normal and advised way to handle regulators on this
-platform. Some device may want to not follow that and implement their
-own regulator bypassing rpm so we add a status and on the current device
-present upstream we set it disabled as it does use different regulators
-implementation.
+But
 
-> > +
-> > +				smb208_s1a: s1a {
-> > +					regulator-min-microvolt = <1050000>;
-> > +					regulator-max-microvolt = <1150000>;
-> > +
-> > +					qcom,switch-mode-frequency = <1200000>;
-> > +				};
-> > +
-> > +				smb208_s1b: s1b {
-> > +					regulator-min-microvolt = <1050000>;
-> > +					regulator-max-microvolt = <1150000>;
-> > +
-> > +					qcom,switch-mode-frequency = <1200000>;
-> > +				};
-> > +
-> > +				smb208_s2a: s2a {
-> > +					regulator-min-microvolt = < 800000>;
-> > +					regulator-max-microvolt = <1250000>;
-> > +
-> > +					qcom,switch-mode-frequency = <1200000>;
-> > +				};
-> > +
-> > +				smb208_s2b: s2b {
-> > +					regulator-min-microvolt = < 800000>;
-> > +					regulator-max-microvolt = <1250000>;
-> > +
-> > +					qcom,switch-mode-frequency = <1200000>;
-> > +				};
-> > +			};
-> >  		};
-> >  
-> >  		tcsr: syscon@1a400000 {
-> 
-> 
-> Best regards,
-> Krzysztof
+>> Anyway,
+>>
+>>         /*
+>>          * Resuming.  We may need to wait for the image device to
+>>          * appear.
+>>          */
+>>         wait_for_device_probe();
+>>
+>> in snapshot_open() will sleep forever if some device became unresponsive.
+>>
 
--- 
-	Ansuel
+wait_for_device_probe() in snapshot_open() was added by commit c751085943362143
+("PM/Hibernate: Wait for SCSI devices scan to complete during resume"), and
+that commit did not take into account possibility of unresponsive hardware.
+
+   "In addition, if the resume from hibernation is userland-driven, it's
+    better to wait for all device probes in the kernel to complete before
+    attempting to open the resume device."
+
+It is trivial to make e.g. atomic_read(&probe_count) == 10, which means that
+acceptable timeout for usb_stor_msg_common() may be no longer acceptable timeout
+for wait_for_device_probe(). Unlike flush_workqueue(), wait_for_device_probe()
+can wait forever if new probe requests keep coming in while waiting for existing
+probe requests to complete. Therefore, I think we should introduce timeout on
+wait_for_device_probe() side as well.
+
+I would like to propose below changes in 3 patches as fixes for this problem.
+Since there are 13 wait_for_device_probe() callers, maybe we want both killable
+and uninterruptible versions and pass timeout as an argument...
+
+------------------------------------------------------------
+ drivers/base/dd.c               |    3 ++-
+ drivers/char/misc.c             |    9 ++++++---
+ drivers/usb/storage/transport.c |    2 +-
+ 3 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 3fc3b5940bb3..67e08b381ee2 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -723,7 +723,8 @@ void wait_for_device_probe(void)
+ 	flush_work(&deferred_probe_work);
+ 
+ 	/* wait for the known devices to complete their probing */
+-	wait_event(probe_waitqueue, atomic_read(&probe_count) == 0);
++	wait_event_killable_timeout(probe_waitqueue,
++				    atomic_read(&probe_count) == 0, 60 * HZ);
+ 	async_synchronize_full();
+ }
+ EXPORT_SYMBOL_GPL(wait_for_device_probe);
+diff --git a/drivers/char/misc.c b/drivers/char/misc.c
+index ca5141ed5ef3..6430c534a1cb 100644
+--- a/drivers/char/misc.c
++++ b/drivers/char/misc.c
+@@ -104,7 +104,8 @@ static int misc_open(struct inode *inode, struct file *file)
+ 	int err = -ENODEV;
+ 	const struct file_operations *new_fops = NULL;
+ 
+-	mutex_lock(&misc_mtx);
++	if (mutex_lock_killable(&misc_mtx))
++		return -EINTR;
+ 
+ 	list_for_each_entry(c, &misc_list, list) {
+ 		if (c->minor == minor) {
+@@ -116,7 +117,8 @@ static int misc_open(struct inode *inode, struct file *file)
+ 	if (!new_fops) {
+ 		mutex_unlock(&misc_mtx);
+ 		request_module("char-major-%d-%d", MISC_MAJOR, minor);
+-		mutex_lock(&misc_mtx);
++		if (mutex_lock_killable(&misc_mtx))
++			return -EINTR;
+ 
+ 		list_for_each_entry(c, &misc_list, list) {
+ 			if (c->minor == minor) {
+@@ -178,7 +180,8 @@ int misc_register(struct miscdevice *misc)
+ 
+ 	INIT_LIST_HEAD(&misc->list);
+ 
+-	mutex_lock(&misc_mtx);
++	if (mutex_lock_killable(&misc_mtx))
++		return -EINTR;
+ 
+ 	if (is_dynamic) {
+ 		int i = find_first_zero_bit(misc_minors, DYNAMIC_MINORS);
+diff --git a/drivers/usb/storage/transport.c b/drivers/usb/storage/transport.c
+index 1928b3918242..d2a192306e0c 100644
+--- a/drivers/usb/storage/transport.c
++++ b/drivers/usb/storage/transport.c
+@@ -164,7 +164,7 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
+  
+ 	/* wait for the completion of the URB */
+ 	timeleft = wait_for_completion_interruptible_timeout(
+-			&urb_done, timeout ? : MAX_SCHEDULE_TIMEOUT);
++			&urb_done, timeout ? : 60 * HZ);
+  
+ 	clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags);
+ 
+------------------------------------------------------------
+
