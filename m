@@ -2,133 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1747AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232736AbiGFKN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
+        id S232948AbiGFKOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231898AbiGFKN5 (ORCPT
+        with ESMTP id S232856AbiGFKOc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:13:57 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9174DE8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657102436; x=1688638436;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=C8e9Ary7CS/Usq4YlOj+xf9gVfFxt63NWjas0FuW7E8=;
-  b=AN6A4IukANF3BJ1l6UUDWbhxgGa5lNOxRI/vKZORBWjNPWNqw7/Yqbcl
-   txTg4tSYLfGJg1h0ArkDymnWZ3d//0M4K4roWTcKB7QeD5lQpNHNlCdaN
-   07SvvYnm/O0tU7s7tjzY8nQilEDxnJ4/iMxXP8tTSImzky/QHCGSqDrSF
-   BeT0OPmQQqMqDhK1HZc0LdV/rWPAZ7qY+EkiF1OTMTSmbDZveHXIrImdt
-   QrerWq7yWoETMGKM/dHCms56XJLpvMbl/EX2l96rLPMLfmF3VVOWttbnS
-   YYEvLmws0POC03D1cuSK4Yum3jNDOwBKHHYcnQu5Sn8R5TJd/IHGMA4YT
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272490303"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="272490303"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:13:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="720080321"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 06 Jul 2022 03:13:55 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o922c-000KQH-BU;
-        Wed, 06 Jul 2022 10:13:54 +0000
-Date:   Wed, 6 Jul 2022 18:12:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matteo Croce <mcroce@microsoft.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Subject: [esmil:visionfive 3/50] arch/riscv/include/asm/string.h:27:32:
- error: redefinition of '__memmove'
-Message-ID: <202207061822.TbmIa2x2-lkp@intel.com>
+        Wed, 6 Jul 2022 06:14:32 -0400
+Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9DBAB1FE;
+        Wed,  6 Jul 2022 03:14:31 -0700 (PDT)
+Received: by mail-qk1-f175.google.com with SMTP id z12so10663298qki.3;
+        Wed, 06 Jul 2022 03:14:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NzIRuH6wU929NRt5HMIsmc4z3oC4w64egTYXgfNitrM=;
+        b=slJIU7GxNi8g9C0MUWZDViJYqpb7rFn0Ni9ZcDghA3IxWsbR+UdRp2LFeKuD+iYnxT
+         MlIMJ+nJx+9uOJkLOLupd5Dy6UqAa5qgWF8h5zXr210uAKnd7Kin4bl5mGB7vClQFwF7
+         8Y95p1TERKimGgL2ewgDPru6kEkxz9xe+FIP5+JhkTuw1bpiqoreGMZgTfiBxfHgxvjd
+         prvFebGpRlUbMPEubjKtBSec6CvN4JtThvJmrCc76PFmhfuzcUZBb/41Qd7G4ZPyQ09p
+         hbAlmu3P7ECJ+Yg4sC57CW+5sMdA27sCl2pI5BkNf72cERMZ1rp1cYx4sLJsZ6UQUw+b
+         VtPA==
+X-Gm-Message-State: AJIora8zz6OpH6DWg+OLp3SdQeGi8RW7M2U0gA+mnOYyNbbbKud6y8dO
+        TCcgszn0JSoD8FE+QAbCpCOu4Y/TQ+hoFtnB
+X-Google-Smtp-Source: AGRyM1vFr7+izcQe86fOaaoRtzk4ceLzcOmPr5oJXAZu/hluO7lsDxVDZOMLdWdg0Q/L1BnKm6w2SQ==
+X-Received: by 2002:a05:620a:4610:b0:6b1:b83c:a16b with SMTP id br16-20020a05620a461000b006b1b83ca16bmr24542787qkb.487.1657102470871;
+        Wed, 06 Jul 2022 03:14:30 -0700 (PDT)
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
+        by smtp.gmail.com with ESMTPSA id h4-20020a05620a284400b006a787380a5csm30248003qkp.67.2022.07.06.03.14.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 03:14:30 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id l11so26471299ybu.13;
+        Wed, 06 Jul 2022 03:14:30 -0700 (PDT)
+X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
+ r1-20020a5b06c1000000b00669a7c34c33mr42474483ybq.543.1657102064364; Wed, 06
+ Jul 2022 03:07:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220617144031.2549432-1-alexandr.lobakin@intel.com> <20220617144031.2549432-4-alexandr.lobakin@intel.com>
+In-Reply-To: <20220617144031.2549432-4-alexandr.lobakin@intel.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 6 Jul 2022 12:07:33 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWqxqg7JubLK=KOX-V8JjoMbEKRPON+WhST=GKcjn8Y+w@mail.gmail.com>
+Message-ID: <CAMuHMdWqxqg7JubLK=KOX-V8JjoMbEKRPON+WhST=GKcjn8Y+w@mail.gmail.com>
+Subject: Re: [PATCH v3 3/7] bitops: unify non-atomic bitops prototypes across architectures
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   943858df470556d0b7f3b31fcc10931603f0f3cc
-commit: 163ef6b6c194ae4d1f709053e4677687e6b87a27 [3/50] riscv: optimized memmove
-config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207061822.TbmIa2x2-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/esmil/linux/commit/163ef6b6c194ae4d1f709053e4677687e6b87a27
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 163ef6b6c194ae4d1f709053e4677687e6b87a27
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+On Fri, Jun 17, 2022 at 7:09 PM Alexander Lobakin
+<alexandr.lobakin@intel.com> wrote:
+> Currently, there is a mess with the prototypes of the non-atomic
+> bitops across the different architectures:
+>
+> ret     bool, int, unsigned long
+> nr      int, long, unsigned int, unsigned long
+> addr    volatile unsigned long *, volatile void *
+>
+> Thankfully, it doesn't provoke any bugs, but can sometimes make
+> the compiler angry when it's not handy at all.
+> Adjust all the prototypes to the following standard:
+>
+> ret     bool                            retval can be only 0 or 1
+> nr      unsigned long                   native; signed makes no sense
+> addr    volatile unsigned long *        bitmaps are arrays of ulongs
+>
+> Next, some architectures don't define 'arch_' versions as they don't
+> support instrumentation, others do. To make sure there is always the
+> same set of callables present and to ease any potential future
+> changes, make them all follow the rule:
+>  * architecture-specific files define only 'arch_' versions;
+>  * non-prefixed versions can be defined only in asm-generic files;
+> and place the non-prefixed definitions into a new file in
+> asm-generic to be included by non-instrumented architectures.
+>
+> Finally, add some static assertions in order to prevent people from
+> making a mess in this room again.
+> I also used the %__always_inline attribute consistently, so that
+> they always get resolved to the actual operations.
+>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Acked-by: Mark Rutland <mark.rutland@arm.com>
+> Reviewed-by: Yury Norov <yury.norov@gmail.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+>  arch/m68k/include/asm/bitops.h                | 49 +++++++++++++------
 
-All errors (new ones prefixed by >>):
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-   In file included from include/linux/string.h:20,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from include/linux/mm_types_task.h:14,
-                    from include/linux/mm_types.h:5,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from arch/riscv/lib/string.c:11:
-   arch/riscv/include/asm/string.h:25:31: error: redefinition of '__memcpy'
-      25 | #define memcpy(dst, src, len) __memcpy(dst, src, len)
-         |                               ^~~~~~~~
-   arch/riscv/lib/string.c:90:7: note: in expansion of macro 'memcpy'
-      90 | void *memcpy(void *dest, const void *src, size_t count) __weak __alias(__memcpy);
-         |       ^~~~~~
-   arch/riscv/lib/string.c:31:7: note: previous definition of '__memcpy' with type 'void *(void *, const void *, size_t)' {aka 'void *(void *, const void *, long unsigned int)'}
-      31 | void *__memcpy(void *dest, const void *src, size_t count)
-         |       ^~~~~~~~
-   In file included from include/linux/string.h:20,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from include/linux/mm_types_task.h:14,
-                    from include/linux/mm_types.h:5,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from arch/riscv/lib/string.c:11:
->> arch/riscv/include/asm/string.h:27:32: error: redefinition of '__memmove'
-      27 | #define memmove(dst, src, len) __memmove(dst, src, len)
-         |                                ^~~~~~~~~
-   arch/riscv/lib/string.c:113:7: note: in expansion of macro 'memmove'
-     113 | void *memmove(void *dest, const void *src, size_t count) __weak __alias(__memmove);
-         |       ^~~~~~~
-   arch/riscv/lib/string.c:97:7: note: previous definition of '__memmove' with type 'void *(void *, const void *, size_t)' {aka 'void *(void *, const void *, long unsigned int)'}
-      97 | void *__memmove(void *dest, const void *src, size_t count)
-         |       ^~~~~~~~~
+Gr{oetje,eeting}s,
 
+                        Geert
 
-vim +/__memmove +27 arch/riscv/include/asm/string.h
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-163ef6b6c194ae Matteo Croce 2021-09-29  22  
-8ad8b72721d0f0 Nick Hu      2020-01-06  23  /* For those files which don't want to check by kasan. */
-8ad8b72721d0f0 Nick Hu      2020-01-06  24  #if defined(CONFIG_KASAN) && !defined(__SANITIZE_ADDRESS__)
-8ad8b72721d0f0 Nick Hu      2020-01-06  25  #define memcpy(dst, src, len) __memcpy(dst, src, len)
-8ad8b72721d0f0 Nick Hu      2020-01-06  26  #define memset(s, c, n) __memset(s, c, n)
-04091d6c0535f6 Nylon Chen   2020-11-30 @27  #define memmove(dst, src, len) __memmove(dst, src, len)
-9530141455c968 Kefeng Wang  2021-02-25  28  
-
-:::::: The code at line 27 was first introduced by commit
-:::::: 04091d6c0535f6dc82af864ab56425235c6581a4 riscv: provide memmove implementation
-
-:::::: TO: Nylon Chen <nylon7@andestech.com>
-:::::: CC: Palmer Dabbelt <palmerdabbelt@google.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
