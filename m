@@ -2,160 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBD5CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D0ACCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231841AbiGFXbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S233857AbiGFXdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234036AbiGFXbL (ORCPT
+        with ESMTP id S231373AbiGFXdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:31:11 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B882BB3A;
-        Wed,  6 Jul 2022 16:31:10 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266NV2dZ078471;
-        Wed, 6 Jul 2022 18:31:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657150262;
-        bh=HChBSuYPg3XFNgNE1J30KqlRi/A+/hWfCMaoAkl4RfU=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=h+uZY2QW/XzH3Q8NdLWy+wDrxHPE4xricNibyCYSHoYn2n0iA6VYt2jaNA/Kr+skP
-         eYxVseb2xUl43feEDoiYqvjyIAH80gOx9CnnLYyrBmka0jO6T/MYR+wAKs0Taxz8Fr
-         OPZpiOvd+egnON/KCxWETYtK4d/PkEtOYwJ+R/DM=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266NV2nk044320
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Jul 2022 18:31:02 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Jul 2022 18:31:01 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Jul 2022 18:31:01 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266NV1lE010474;
-        Wed, 6 Jul 2022 18:31:01 -0500
-Date:   Wed, 6 Jul 2022 18:31:01 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Jai Luthra <j-luthra@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, Jayesh Choudhary <j-choudhary@ti.com>
-Subject: Re: [PATCH v4 2/2] arm64: dts: ti: k3-am625-sk: Add audio output
- support
-Message-ID: <20220706233101.zrrzeaa62fgvd5g4@huddling>
-References: <20220620102750.32718-1-j-luthra@ti.com>
- <20220620102750.32718-4-j-luthra@ti.com>
+        Wed, 6 Jul 2022 19:33:39 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047A42C135;
+        Wed,  6 Jul 2022 16:33:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=+ziVL8l45N1j8hHSl9LgmfhnTA7yOdWor6E4r8/k7yg=; b=UH/OkfVs7Cpj/LrUgT0DHqZLoi
+        S7s1dgLIMpSKGh48el+4LoYQfgSeyCS9ZMSXx/0pvWGHVKnMhhXPuCmRFtItIy4LadtG9Z/+2Ybd+
+        dmeABV+cOZC2tgvQEFkUbrKC4OBqEgIhMyW7e/51PoY0Lm7pRK0frAfGfTB4xNuMVg0kfYQXuFnrh
+        uo0gJMxkwfqXOyI5UlFWAcLrN8uy8lIn/Nsy+Zu1n5XIUUM7R5o+VX/TXotM0SUDJla/6ElxsdvKH
+        /CqaunG0R0DfE5gkROjyLtb8vE0CWih8lrUYA8kdoA3XfjomaTg1D3Vkhi6KkvSGmjtPHnLcVdhAu
+        SzQF3bEQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o9EWU-00ClG8-VB; Wed, 06 Jul 2022 23:33:34 +0000
+Date:   Wed, 6 Jul 2022 16:33:34 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Aaron Tomlin <atomlin@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] module: Show the last unloaded module's taint flag(s)
+Message-ID: <YsYbzgnO2KL9eFvc@bombadil.infradead.org>
+References: <20220627164052.2416485-1-atomlin@redhat.com>
+ <20220627164052.2416485-2-atomlin@redhat.com>
+ <4ddb64da-58f0-a4af-cf57-a870015a0077@csgroup.eu>
+ <20220628074708.fg3ocx3vu7affkxl@ava.usersys.com>
+ <20220703142218.65dacvxozppgct6y@ava.usersys.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220620102750.32718-4-j-luthra@ti.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220703142218.65dacvxozppgct6y@ava.usersys.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15:57-20220620, Jai Luthra wrote:
-> Add nodes for audio codec and sound card, enable the audio serializer
-> (McASP1) under use and update pinmux. Disable all other McASP nodes.
+On Sun, Jul 03, 2022 at 03:22:18PM +0100, Aaron Tomlin wrote:
+> On Tue 2022-06-28 08:47 +0100, Aaron Tomlin wrote:
+> > On Tue 2022-06-28 05:54 +0000, Christophe Leroy wrote:
+> > > > -	/* Store the name of the last unloaded module for diagnostic purposes */
+> > > >   	strlcpy(last_unloaded_module, mod->name, sizeof(last_unloaded_module));
+> > > > +	strcat(last_unloaded_module, module_flags(mod, buf, false));
+> > > 
+> > > You replace a bounded string copy by an unbounded strict contat.
+> > > 
+> > > Should you use strlcat() instead ?
+> > 
+> > Hi Christophe,
+> > 
+> > Why? If I understand correctly, both the destination and source string are
+> > NULL-terminated (see module_flags()). So, strcat() should be sufficient.
 > 
-> Audio input is currently not working properly, so the RX port on McASP1
-> is disabled for now, until the issue is debugged.
+> Hi Luis,
 > 
-> The serializer is shared between HDMI and codec. By default codec is
-> used for output, but it can be toggled to HDMI using a FET switch
-> connected to the MCASP1_FET_SEL (J24) header on the board.
-> 
-> Signed-off-by: Jai Luthra <j-luthra@ti.com>
-[...]
-> +	main_mcasp1_pins_default: main-mcasp1-pins-default {
-> +		pinctrl-single,pins = <
-> +			AM62X_IOPAD(0x0090, PIN_INPUT, 2) /* (M24) GPMC0_BE0N_CLE.MCASP1_ACLKX */
-> +			AM62X_IOPAD(0x0098, PIN_INPUT, 2) /* (U23) GPMC0_WAIT0.MCASP1_AFSX */
-> +			AM62X_IOPAD(0x008c, PIN_OUTPUT, 2) /* (L25) GPMC0_WEN.MCASP1_AXR0 */
-> +			AM62X_IOPAD(0x0084, PIN_INPUT, 2) /* (L23) GPMC0_ADVN_ALE.MCASP1_AXR2 */
-> +		>;
-> +	};
->  };
->  
->  &wkup_uart0 {
-> @@ -352,6 +401,18 @@
->  		pinctrl-names = "default";
->  		pinctrl-0 = <&main_gpio1_ioexp_intr_pins_default>;
->  	};
-> +
-> +	tlv320aic3106: audio-codec@1b {
-> +		#sound-dai-cells = <0>;
-> +		compatible = "ti,tlv320aic3106";
+> Any thoughts on this? As far as I can tell, the destination string cannot
+> be overwritten; albeit, I can use the safer option if you prefer.
 
-I cant pick up a patch with compatibles that are'nt converted to yaml.
+Yeah I don't like this as-is, it makes it not so easy to follow, I'll
+reply in my review of your patch now.
 
-Please convert to yaml in master and then post.
-
-> +		reg = <0x1b>;
-> +
-> +		/* Regulators */
-> +		AVDD-supply = <&vcc_3v3_sys>;
-> +		IOVDD-supply = <&vcc_3v3_sys>;
-> +		DRVDD-supply = <&vcc_3v3_sys>;
-> +		DVDD-supply = <&vcc_1v8>;
-> +	};
->  };
->  
->  &main_i2c2 {
-> @@ -412,6 +473,34 @@
->  	};
->  };
->  
-> +&mcasp0 {
-> +	status = "disabled";
-> +};
-> +
-> +&mcasp1 {
-> +	status = "okay";
-
-we don't need to set okay on a node that is ok by default.
-
-> +	#sound-dai-cells = <0>;
-> +
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&main_mcasp1_pins_default>;
-> +
-> +	op-mode = <0>;          /* MCASP_IIS_MODE */
-> +	tdm-slots = <2>;
-> +
-> +	serial-dir = <  /* 0: INACTIVE, 1: TX, 2: RX */
-> +	       1 0 0 0
-> +	       0 0 0 0
-> +	       0 0 0 0
-> +	       0 0 0 0
-> +	>;
-> +	tx-num-evt = <32>;
-> +	rx-num-evt = <32>;
-> +};
-> +
-> +&mcasp2 {
-> +	status = "disabled";
-> +};
-> +
->  &mailbox0_cluster0 {
->  	mbox_m4_0: mbox-m4-0 {
->  		ti,mbox-rx = <0 0 0>;
-> 
-> -- 
-> 2.17.1
-> 
-
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+  Luis
