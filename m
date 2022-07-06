@@ -2,103 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8093CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233040AbiGFQXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
+        id S232923AbiGFQZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiGFQXm (ORCPT
+        with ESMTP id S232413AbiGFQZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:23:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507831D0D5;
-        Wed,  6 Jul 2022 09:23:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 042D4B81ADB;
-        Wed,  6 Jul 2022 16:23:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B9CC3411C;
-        Wed,  6 Jul 2022 16:23:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657124618;
-        bh=E94CHoe4nJY8KaW5wk7Skqvv5P2Zf38aYdSKiyagHDg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lOyZD6X+mJZZAfd982nC3hM4EB71f6D3hD5QE5OXiAoCuBgb7nS+zDyCB/sWZgqda
-         MMGW6dJi9kHb/dB+3UXiSyW1dsWnzh42NIxyqxj7g3N4i9GjiC+F9R1Y/bixvs5F1b
-         6Un822/c6bbMg6wBtKyr13pjFFFFJuTnLvxIALTG+tiNh//43cq3wbb9uDA2/gytOb
-         63OgU72JIeJumm0pCRw9NyjGsCepgvsjkjgH6IXHSCq0YGnoEQ8BZ3DnvcvllkYHut
-         MHnsEhv32nUJMZR3z5iBKtWfRYB94ttiPmSAeXQjehBJG7Ac7TrkrwcDlfBplJjJAS
-         OjALc7l3wKnLg==
-Received: by pali.im (Postfix)
-        id 89B9A7BA; Wed,  6 Jul 2022 18:23:35 +0200 (CEST)
-Date:   Wed, 6 Jul 2022 18:23:35 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: leds: register-bit-led: Add value
- property
-Message-ID: <20220706162335.2eewgf7l3xghdjtr@pali>
-References: <20220706112828.27278-1-pali@kernel.org>
- <20220706162111.GA145516-robh@kernel.org>
+        Wed, 6 Jul 2022 12:25:41 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F130A24BEC
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:25:39 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id bf9so3570281lfb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 09:25:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=JIashhGYeFkYbR7kffcxLHDD+hAhV8QuuTTEgk9FK6w=;
+        b=SSDkiH9n4YUDAEgzeFf1wijKsdU1ygC2Uyrcwx3gg8zkLNpuo/dxGqL9ivnDrIvWyk
+         K7yIk7BMjOc6IC/9b4aQTUqXeBnTDeHPL2xwu4cOGWLdCvJ9GySyewAp8xjALGKyBPn4
+         wrsgaRflmgDS7gopEhVKYyjKWrASbY+yuOsZRblk4Dz4T/xpYr5ti5UqzEO+kUH0j0ev
+         EsvgVCkjESXJvQtWvCzUzKH6nhBTNYjyCqwaLce8Z/sswjrLjQA/pyjdGHbUo2hfwQJp
+         WmHOcsagFJ1ypodUlhsfFtJOhHYm0I4etlRQwLGimh/qRSggOHY1Q3wVmFvSc2m+5FKR
+         8Eow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JIashhGYeFkYbR7kffcxLHDD+hAhV8QuuTTEgk9FK6w=;
+        b=2rbPZ+gJBwKjwrWI/BvzHY7kyJ2Jt+F0BSnRK+tbWE52Wn+On6Ljejr+A4WhFvd4O/
+         6hXbh2c5hoBh05wRVjb5Tvg807vYEUZb3QKNeJVOgsred3GA902dQNFguHJQ+/ysWvxQ
+         bY6SAPFl+TMCsQcMgACuTv/n+oZcqILWx/ZaB16/ojt18scE3n7pXNB1TLFMzxfdi9sJ
+         F0zeJ1NWJRbHDihpkr56bIRscdfcnJI9itNFlxWAJCEfPGukBbRpAIt4KgAB3nbK7q+D
+         vPCSw/yolR3x+SemasFaF2Tl8cfwNoh3/UkHInY2OBVUrLFpmt1OEQq1uOTp1dJzu4oQ
+         R2WA==
+X-Gm-Message-State: AJIora8lgrNYuYlD4gfZzd4DELTRlQ9fqz9ORCBLdkYqC/ajjcwfA5uE
+        muq26tAsI5UTL8S0IWQ1Yr8EUg==
+X-Google-Smtp-Source: AGRyM1v3dY3SIkHzldafEjg4djIqTpd+Td8TJMqE++IEKyQClDARm8w1I4/mKmWXRyPnpi9Alj+NTQ==
+X-Received: by 2002:a05:6512:b8d:b0:47f:74f0:729b with SMTP id b13-20020a0565120b8d00b0047f74f0729bmr25713700lfv.403.1657124738237;
+        Wed, 06 Jul 2022 09:25:38 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id 14-20020a2e154e000000b0025bf58c5338sm4025232ljv.15.2022.07.06.09.25.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 09:25:37 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     krzysztof.kozlowski@linaro.org, linux-samsung-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, alim.akhtar@samsung.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: soc: samsung: exynos-pmu: cleanup assigned clocks
+Date:   Wed,  6 Jul 2022 18:25:35 +0200
+Message-Id: <165712469638.30806.13604483011536770069.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220706160257.27579-1-krzysztof.kozlowski@linaro.org>
+References: <20220706160257.27579-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220706162111.GA145516-robh@kernel.org>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wednesday 06 July 2022 10:21:11 Rob Herring wrote:
-> On Wed, Jul 06, 2022 at 01:28:27PM +0200, Pali Rohár wrote:
-> > Allow to define inverted logic (0 - enable LED, 1 - disable LED) via value
-> > property. This property name is already used by other syscon drivers, e.g.
-> > syscon-reboot.
+On Wed, 6 Jul 2022 18:02:55 +0200, Krzysztof Kozlowski wrote:
+> "assigned-clocks" are not needed in the device schema as they come from
+> core schema.
 > 
-> Yes, but those are potentially multi-bit values. This is a single bit 
-> value, and the only value that's ever needed is 0. Why not just use 
-> 'active-low' here?
+> 
 
-Just because to have uniform definitions across more syscon nodes.
+Applied with Rob's tags carried over from v1.
 
-> > 
-> > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > ---
-> >  .../devicetree/bindings/leds/register-bit-led.yaml    | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/leds/register-bit-led.yaml b/Documentation/devicetree/bindings/leds/register-bit-led.yaml
-> > index 79b8fc0f9d23..d6054a3f9087 100644
-> > --- a/Documentation/devicetree/bindings/leds/register-bit-led.yaml
-> > +++ b/Documentation/devicetree/bindings/leds/register-bit-led.yaml
-> > @@ -43,6 +43,17 @@ properties:
-> >          0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000, 0x4000000,
-> >          0x8000000, 0x10000000, 0x20000000, 0x40000000, 0x80000000 ]
-> >  
-> > +  value:
-> > +    description:
-> > +      bit value of ON state for the bit controlling this LED in the register
-> > +      when not specified it is same as the mask
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +    enum:
-> > +      [ 0x0, 0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800,
-> > +        0x1000, 0x2000, 0x4000, 0x8000, 0x10000, 0x20000, 0x40000, 0x80000,
-> > +        0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000, 0x4000000,
-> > +        0x8000000, 0x10000000, 0x20000000, 0x40000000, 0x80000000 ]
-> > +
-> >    offset:
-> >      description:
-> >        register offset to the register controlling this LED
-> > -- 
-> > 2.20.1
-> > 
-> > 
+Applied, thanks!
+
+[1/3] dt-bindings: soc: samsung: exynos-pmu: cleanup assigned clocks
+      https://git.kernel.org/krzk/linux/c/38aed2e0aa406de6dda64515cc3937976a27038e
+[2/3] dt-bindings: soc: samsung: exynos-pmu: use abolute ref paths
+      https://git.kernel.org/krzk/linux/c/61bebc2902901cc2f1cac496dc81be38ca74d7d4
+[3/3] dt-bindings: soc: samsung: exynos-pmu: add reboot-mode
+      https://git.kernel.org/krzk/linux/c/3e27bf719303b1b19edd37bd04e9e586c73f6511
+
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
