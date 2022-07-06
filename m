@@ -2,87 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A72F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F95BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbiGFIiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
+        id S231181AbiGFIif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbiGFIiD (ORCPT
+        with ESMTP id S231720AbiGFIi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:38:03 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CD324968
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:37:50 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id t25so24672256lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:37:50 -0700 (PDT)
+        Wed, 6 Jul 2022 04:38:29 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A091FE
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:38:28 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id d16so14624585wrv.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:38:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QXTMhBYT3w75TvCkzzesF7l5WGW26s/hOIbi6cFrZsE=;
-        b=M0QwwRWJ9eR2dndWmYSYHbZgoje5eb99kgZr9dycrA6Zxt7jWc3ibsuy1tYmgy16Hr
-         qU6oK9/YIvVGjJjpd9IAd3QilMOOK6k7mNL5VxPcq1iYaGNWilVZADGQ/sktxAQTExy/
-         biyeeTdpmKf5IL1nyA1cFg8bsPOWWNeJ2Wzl4wqBvJ2vOXl5TxxNsFBfaM6Vz61vXjvE
-         BWO0f2LPCIXMZ5+Oq7YNMbJv42A1mIM4xjTCF0wpfXT6yZ3DsEZWpYYKF0FWG0pPkL3I
-         pBppxvVQD+4FN6PFxP0Iu1xclZTKM7vq5q5t8aQ8dJ6ZCJYV53cnBN41PlcuF5AxAR9G
-         makQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jvy9fZnYZOoUrKY4T2EHzyax/+pT0S6ZamgoWmCY7lI=;
+        b=Nrhlvi6Z3KY701t0TfH8JnJ1eqEH2mzMamvFfXkAzFp4yCik2wthX5b3eiGElyvktY
+         twrPjYnxH4Az3+UmhZZyi4kamjX7dmvkLuZ3fe6Y1Zwwi7fdAUSUWpMsVoLnc6Q6rzvW
+         qQU61MwwrRJzMAfPB1T4+5euhuz6TkkhTHBkZjlLyqQmV3/u0RSXtgyy89UsQGTSptFa
+         rbxm5yZOIAAt2gicjScl7bUX2ZcLzlqji8MJM9Bzs/Mo7PsrQ05mNlXrxDJiUjYMLehx
+         AwXhr7GPmcZZgqAmb6q2D5c6t6TBjdN1QLyjaESLYjidadwhnFPeBL/fEiaKbpTIE6rX
+         PlYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QXTMhBYT3w75TvCkzzesF7l5WGW26s/hOIbi6cFrZsE=;
-        b=5uHym+IWy2TKmlTRhiwFjBPU91prpZPGZzvmzDO3FtpLaRzm+XzZfDPaZLVN2oVxoy
-         Cckc0/cdV8kq68epmuRlBcw1NDBY9wpkJwWgKbXZqUlCxntg8oBnR/pgVQU3iclaEug2
-         Q527d/bx8GyLd/ICrM5yb8QWK65qXxk34j5B8DLSVP74owkjUdTo0hGP8/C71Q7XCa+c
-         2hHxD4pYEoE7SbaWd5fJ9iAUQIWXI9eFhMI1GUOyWNfRd/O3JhBmXCf+2Ksw+6HVM6l0
-         TTo8EEUfGpMPM4WUkLxpiihs78reWmWuFvA8qYcXSnKme4yQtjpqwZEB/GYSrJGsJyLS
-         Hopg==
-X-Gm-Message-State: AJIora+sIXxg6dkL21vef+93CTqGF03Tbi0vfFUvFjd6I2FM4dtbbv6m
-        YTj0HckkvhcBrmzI+6HfG6Pzdg==
-X-Google-Smtp-Source: AGRyM1uoVHEA1HqOG77YoQYuQ9EeTV1O78NlNvafZDIKrTdHFQoeOA8K2DCtaWXYP6FX/MUoPmCHIg==
-X-Received: by 2002:a19:ad4d:0:b0:485:689:18c8 with SMTP id s13-20020a19ad4d000000b00485068918c8mr2869141lfd.287.1657096668753;
-        Wed, 06 Jul 2022 01:37:48 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id c13-20020ac25f6d000000b0047f6c95f2cesm6164157lfc.145.2022.07.06.01.37.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 01:37:48 -0700 (PDT)
-Message-ID: <7c3ef50a-2a4d-4b75-3aab-3bfbf12e06c4@linaro.org>
-Date:   Wed, 6 Jul 2022 10:37:47 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 08/13] ARM: dts: qcom: fix dtc warning for missing
- #address-cells for ipq8064
-Content-Language: en-US
-To:     Christian Marangi <ansuelsmth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jvy9fZnYZOoUrKY4T2EHzyax/+pT0S6ZamgoWmCY7lI=;
+        b=CZdaHpcDokaD+C+fskwhVLQG6EuiSqmE0O0PLkHO0LWtAZ8F6jx1sdtCEG9sTKD829
+         5xhdPLKK4cy1OyJtF/2wPEG/YjmGx+N4Mrk/iYZspY+V4TvW+8AD5KE+PMygZk3eogsW
+         mQyuMbIK7MuZKTdYkf3+ocNDDg77xVeESLRSfPcCpjUKJCp/9+iqQ3/RKwoTbMIlaYbf
+         /qaxQctjt5M5Xot/18E2r6DKb/Xa2aYNRtE+BjTv4j9VCiKkv9F4X3vN/RDtJ5gDBDaR
+         ldSHOotD2OeL04sYC8WELoAZnixvGJXl3SO9Mr5r90ZpawgfTGiY0HzRwFn4m83Uf81A
+         yv1Q==
+X-Gm-Message-State: AJIora8RH6gOq3nyhw0hvi8jzA48Blsp24WzGYJqJe0/9m1tOL+17pla
+        WrI74oEaiENn0ObO9iZH1FPgTA==
+X-Google-Smtp-Source: AGRyM1u3aF0xlinqVbRSOVIwu8dj8kY7lVCFFrYuXzoizRjf/6/698o7/GM5e2My59isg+g9TMgrJg==
+X-Received: by 2002:a05:6000:1e10:b0:21b:98c7:d35e with SMTP id bj16-20020a0560001e1000b0021b98c7d35emr38383139wrb.30.1657096706860;
+        Wed, 06 Jul 2022 01:38:26 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id j22-20020a05600c1c1600b003a046549a85sm21339238wms.37.2022.07.06.01.38.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 01:38:26 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 09:38:24 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>, Jingoo Han <jg1.han@samsung.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Jonathan McDowell <noodles@earth.li>
-References: <20220705133917.8405-1-ansuelsmth@gmail.com>
- <20220705133917.8405-9-ansuelsmth@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220705133917.8405-9-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] Revert "drivers/video/backlight/platform_lcd.c: add
+ support for device tree based probe"
+Message-ID: <20220706083824.yow4e2hqthoqffol@maple.lan>
+References: <20220629210024.815761-1-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629210024.815761-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 15:39, Christian Marangi wrote:
-> Fix dtc warning for missing #address-cells for ipq8064.
-
-Paste the applicable part of warning in the commit log.
-
+On Wed, Jun 29, 2022 at 03:00:23PM -0600, Rob Herring wrote:
+> This reverts commit 52e842432f36d5b15227d0ee0d2aa3d2bc3cc0b2.
 > 
+> The DT support never would have worked because there's no platform_data
+> providing ops. There's not any documented binding for it either.
+> 
+> Cc: Jingoo Han <jg1.han@samsung.com>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 
 
-Best regards,
-Krzysztof
+Daniel.
+
+
+> ---
+>  drivers/video/backlight/platform_lcd.c | 10 ----------
+>  1 file changed, 10 deletions(-)
+> 
+> diff --git a/drivers/video/backlight/platform_lcd.c b/drivers/video/backlight/platform_lcd.c
+> index b2bfbf070200..dc37494baf42 100644
+> --- a/drivers/video/backlight/platform_lcd.c
+> +++ b/drivers/video/backlight/platform_lcd.c
+> @@ -12,7 +12,6 @@
+>  #include <linux/fb.h>
+>  #include <linux/backlight.h>
+>  #include <linux/lcd.h>
+> -#include <linux/of.h>
+>  #include <linux/slab.h>
+>  
+>  #include <video/platform_lcd.h>
+> @@ -133,19 +132,10 @@ static int platform_lcd_resume(struct device *dev)
+>  static SIMPLE_DEV_PM_OPS(platform_lcd_pm_ops, platform_lcd_suspend,
+>  			platform_lcd_resume);
+>  
+> -#ifdef CONFIG_OF
+> -static const struct of_device_id platform_lcd_of_match[] = {
+> -	{ .compatible = "platform-lcd" },
+> -	{},
+> -};
+> -MODULE_DEVICE_TABLE(of, platform_lcd_of_match);
+> -#endif
+> -
+>  static struct platform_driver platform_lcd_driver = {
+>  	.driver		= {
+>  		.name	= "platform-lcd",
+>  		.pm	= &platform_lcd_pm_ops,
+> -		.of_match_table = of_match_ptr(platform_lcd_of_match),
+>  	},
+>  	.probe		= platform_lcd_probe,
+>  };
+> -- 
+> 2.34.1
+> 
