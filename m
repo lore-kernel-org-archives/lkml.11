@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D99FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A28C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234686AbiGFPjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
+        id S233399AbiGFPji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233634AbiGFPgv (ORCPT
+        with ESMTP id S234682AbiGFPhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:36:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986E11CFC8;
-        Wed,  6 Jul 2022 08:33:48 -0700 (PDT)
+        Wed, 6 Jul 2022 11:37:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E45229806;
+        Wed,  6 Jul 2022 08:34:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A867B81D90;
-        Wed,  6 Jul 2022 15:33:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96618C341CE;
-        Wed,  6 Jul 2022 15:33:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA6D6B81D97;
+        Wed,  6 Jul 2022 15:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A1AC385A5;
+        Wed,  6 Jul 2022 15:34:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121625;
-        bh=08xxHGUudMtdS1OarUIzc4kUHpP8gjuUZlzB8ABPe2E=;
+        s=k20201202; t=1657121651;
+        bh=KtcIH+E3c9VLP7E/93kgfkyPI4Y4Eqggbw0U3c+oQjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pDa1FuaXAGlKqKbX0bLgISs5lriSuLEY2hjvV6yuM14c39B4TtR30eibthTi+HbJf
-         aAKpE4YMI8xqY0BGbDhrZVtH3UaYVejGrdMM/Dm2nYUQvUfY2gTcY0q6TNQr08tIFI
-         pgN8fXBS00RozduhjOyhpHZuAr/aL37Xij+iH+NJMRWzMQa6366QqVuTxt6lPWlpIf
-         PxwFQ5NSGCqgmNBEhhBehIEUtA4R3Ufyg4a1srxFpn2cusXas3KHx+5MYHVaNK6Y9r
-         7UO2KmU2mar62VU/HSvV9vEb5Rlw8bQ1lURvr+PILVFzvJ1FLSFb9vFv/hyG6BQ22d
-         RBud8Fpctz3og==
+        b=QUEPFA1ecu6tzN5W0ylPYRMXmwq2wrBy0sI/G8FWhrXDfM2mccmZfMfITFQjBtU8V
+         piSUZt5jm+C9BPn6/ZUPqYuA5ySZ65Bw/8T4z+scrbB4aWRw4comTwfoHOJ+qZ6ERm
+         Yp0e2gPPVjidvWI4X8dCarEyZQHSqUeLuy0FpQcCrDD2HA5kF2373MeX7cnQF/B1Si
+         h3mA9R/56QNshkUSykdPSPe2WIffH99Bw87h9yh4m9Qv9wx5pWgOG6/Jk9fWRRIyAd
+         qMNIId8b/w/NUsQ6gEFkr5TKIUcBXfOvTp8KKCq6QW+Rs7EDVaWaTzW1xlJsgcGGie
+         naW8ZJ6siWPug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
-        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jmaloy@redhat.com,
-        ying.xue@windriver.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 4.19 6/8] net: tipc: fix possible refcount leak in tipc_sk_create()
-Date:   Wed,  6 Jul 2022 11:33:33 -0400
-Message-Id: <20220706153335.1598699-6-sashal@kernel.org>
+Cc:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 4.9 2/5] virtio_mmio: Restore guest page size on resume
+Date:   Wed,  6 Jul 2022 11:34:04 -0400
+Message-Id: <20220706153407.1598915-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220706153335.1598699-1-sashal@kernel.org>
-References: <20220706153335.1598699-1-sashal@kernel.org>
+In-Reply-To: <20220706153407.1598915-1-sashal@kernel.org>
+References: <20220706153407.1598915-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,32 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
+[ Upstream commit e0c2ce8217955537dd5434baeba061f209797119 ]
 
-Free sk in case tipc_sk_insert() fails.
+Virtio devices might lose their state when the VMM is restarted
+after a suspend to disk (hibernation) cycle. This means that the
+guest page size register must be restored for the virtio_mmio legacy
+interface, since otherwise the virtio queues are not functional.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This is particularly problematic for QEMU that currently still defaults
+to using the legacy interface for virtio_mmio. Write the guest page
+size register again in virtio_mmio_restore() to make legacy virtio_mmio
+devices work correctly after hibernation.
+
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Message-Id: <20220621110621.3638025-3-stephan.gerhold@kernkonzept.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/virtio/virtio_mmio.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 6c18b4565ab5..8266452c143b 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -453,6 +453,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
- 	sock_init_data(sock, sk);
- 	tipc_set_sk_state(sk, TIPC_OPEN);
- 	if (tipc_sk_insert(tsk)) {
-+		sk_free(sk);
- 		pr_warn("Socket create failed; port number exhausted\n");
- 		return -EINVAL;
- 	}
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index d69f0c5135ff..413f6af4d132 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -502,6 +502,9 @@ static int virtio_mmio_restore(struct device *dev)
+ {
+ 	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
+ 
++	if (vm_dev->version == 1)
++		writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
++
+ 	return virtio_device_restore(&vm_dev->vdev);
+ }
+ 
 -- 
 2.35.1
 
