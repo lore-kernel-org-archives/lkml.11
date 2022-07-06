@@ -2,90 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24557C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96756C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232712AbiGFSKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:10:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53102 "EHLO
+        id S233254AbiGFSLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbiGFSJz (ORCPT
+        with ESMTP id S230291AbiGFSLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:09:55 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE3928E1D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:09:55 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id c137so11651806qkg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:09:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=h6S/EAPbHUNIbmXXj14hsIbltK0duF8Y5acVLSRIfKw=;
-        b=N/tz9N/SSFLMmYTQkaNJ4CB/sp6wy/327SJpmlqKizg2sWBvXoEy9Vh2lS3aS6xaCa
-         LlruG9ZOcCe9uvWdBlil1sAXdWp63Sz9I6ezEZf9LPSTlVzjfga4mD+uAlT7mqwl+YCa
-         cyaIExJTh3p49QKh9Mv3MLaNm7p43+EUUvTKPzH+j4lEKbLtq+VGU32/3GS8+HGEo2I4
-         jM3LmTW8JRbiSHyhrQ8tAwvFF+Y//z57gUNtLIDYxYXWK362M0fZ2SImpQTkOu6U5yM2
-         t/G52UUaYu2ERcukpw/GbD46CoMzdS4QM4cUwA08LxtAugO31qDRH7K5VxI41zMvDwfx
-         7ABg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=h6S/EAPbHUNIbmXXj14hsIbltK0duF8Y5acVLSRIfKw=;
-        b=Kbceamnn/ZkjGZ5ZVZmaoA5RPcRUSLoKAIlaEZCv9kC3GNqFxTCTJoAJ/QNbLAW231
-         O7pI7vP6UILFuGHsgrBpaCGaKCBfb/JV70r9mNMMcv+dPXT7BrN0a6Iu6Q7c5PiFTH85
-         61kCbOudgmuxEbDg7x/wkfEGj1YAyn8YAR0bBVtVGhz4si3DspQTki23nFIuHk/1YCGN
-         Cj5ffzSBlo2zsOAO9/FqBdxpy3y2C8yY0piFxiE5esrUdzZsqWUQGhsBvfSz6fudiyh/
-         1c72FAGYxLRYh3+jRal+xSwgFx7YXa7uWgQMeEB/KZA9fns1BtMsPClhJx2OERHgSO7X
-         7BWQ==
-X-Gm-Message-State: AJIora+BxxGYZSb6kp8sB/7jRmn7EVb+dD3yfFjjkjKjg7ruN2sv3kQH
-        laosCZi3/iVPA6kZRp7N04Y=
-X-Google-Smtp-Source: AGRyM1vFl7hDJFPMFghBlMz/Jd+3l5fu20aimU9k0iPTh3/REAhiyl63Jo0aOq8wzu5j+wRFOZZsag==
-X-Received: by 2002:a05:620a:1996:b0:6b2:59b7:2636 with SMTP id bm22-20020a05620a199600b006b259b72636mr19808413qkb.782.1657130994269;
-        Wed, 06 Jul 2022 11:09:54 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id n4-20020a05620a294400b006b24d912ab7sm16022959qkp.46.2022.07.06.11.09.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 11:09:53 -0700 (PDT)
-Message-ID: <29684681-2f0f-e887-20d9-dddda4977512@gmail.com>
-Date:   Wed, 6 Jul 2022 11:09:48 -0700
+        Wed, 6 Jul 2022 14:11:01 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEBC28E28;
+        Wed,  6 Jul 2022 11:11:01 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266IAvWS009357;
+        Wed, 6 Jul 2022 13:10:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657131057;
+        bh=mYqyAiq5ehGUf6IoQZIVZVf2MHlbWHt5NT9zBcqkp2I=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=Gw+BcOdE2y1dmryHTvOCOc+tmfeUQ0WCXVhc/B3rbmX8MYkgRjw7tBSwQ0XTmEHTn
+         0UtiOubc4g7FyXSqnHA0J9FDa5g73XMLt3zXdL3AOdD7KsXHIoDUQAoeP+FwW1CQ6j
+         VHHluaoQdwsyNRSzaJGUZlCPlajzuor0rhwgKipE=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266IAvhF017632
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Jul 2022 13:10:57 -0500
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Jul 2022 13:10:56 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Jul 2022 13:10:56 -0500
+Received: from [10.250.33.129] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266IAugH090962;
+        Wed, 6 Jul 2022 13:10:56 -0500
+Message-ID: <16319b56-4b14-6f51-23c6-6b78b87119d7@ti.com>
+Date:   Wed, 6 Jul 2022 13:10:56 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH] ARM: module: Teach unwinder about PLTs
+Subject: Re: [PATCH 6/6] arm64: dts: ti: k3-j7200-mcu-wakeup: Add SA2UL node
 Content-Language: en-US
-To:     Alexander A Sverdlin <alexander.sverdlin@nokia.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Kursad Oney <kursad.oney@broadcom.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ard Biesheuvel <ardb@kernel.org>, linux-kernel@vger.kernel.org
-References: <20220706163135.53874-1-alexander.sverdlin@nokia.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220706163135.53874-1-alexander.sverdlin@nokia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Nishanth Menon <nm@ti.com>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220705170340.26719-1-afd@ti.com>
+ <20220705170340.26719-6-afd@ti.com> <20220706180446.cyzujuasovjvsofk@lively>
+From:   Andrew Davis <afd@ti.com>
+In-Reply-To: <20220706180446.cyzujuasovjvsofk@lively>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/6/22 09:31, Alexander A Sverdlin wrote:
-> From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+On 7/6/22 1:04 PM, Nishanth Menon wrote:
+> On 12:03-20220705, Andrew Davis wrote:
+>> J7200 has an instance of SA2UL in the MCU domain.
+>> Add DT node for the same.
+>>
+>> Signed-off-by: Andrew Davis <afd@ti.com>
+>> ---
+>>   .../boot/dts/ti/k3-j7200-mcu-wakeup.dtsi      | 20 +++++++++++++++++++
+>>   1 file changed, 20 insertions(+)
 > 
-> "unwind: Index not found eef26358" warnings keep popping up on
-> CONFIG_ARM_MODULE_PLTS-enabled systems if the PC points to a PLT veneer.
-> Teach the unwinder how to deal with them, taking into account they don't
-> change state of the stack or register file except loading PC.
+> Please split this series into what crypto maintainers need to pick up vs
+> what I need to pick up for dts. patches for my tree need to have lakml
+> in cc as a rule (see MAINTAINERS file).
 > 
-> Tested-by: Kursad Oney <kursad.oney@broadcom.com>
-> Link: https://lore.kernel.org/linux-arm-kernel/20200402153845.30985-1-kursad.oney@broadcom.com/
-> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
 
-I would be inclined to slap a Fixes tag to this patch so we get it back 
-ported where appropriate, however it is not clear to me which specific
-commit(s) we should be listing here.
+Okay, I'll break the first two into their own series. Adding LAKML folks
+for v2.
 
-Thanks Alexander!
--- 
-Florian
+>>
+>> diff --git a/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
+>> index 1044ec6c4b0d4..ebad3642c8e30 100644
+>> --- a/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
+>> +++ b/arch/arm64/boot/dts/ti/k3-j7200-mcu-wakeup.dtsi
+>> @@ -375,4 +375,24 @@ mcu_r5fss0_core1: r5f@41400000 {
+>>   			ti,loczrama = <1>;
+>>   		};
+>>   	};
+>> +
+>> +	mcu_crypto: crypto@40900000 {
+>> +		compatible = "ti,j721e-sa2ul";
+>> +		reg = <0x00 0x40900000 0x00 0x1200>;
+>> +		power-domains = <&k3_pds 265 TI_SCI_PD_SHARED>;
+>> +		#address-cells = <2>;
+>> +		#size-cells = <2>;
+>> +		ranges = <0x00 0x40900000 0x00 0x40900000 0x00 0x30000>;
+>> +		dmas = <&mcu_udmap 0xf501>, <&mcu_udmap 0x7502>,
+>> +		       <&mcu_udmap 0x7503>;
+>> +		dma-names = "tx", "rx1", "rx2";
+>> +		dma-coherent;
+>> +
+>> +		rng: rng@40910000 {
+>> +			compatible = "inside-secure,safexcel-eip76";
+>> +			reg = <0x00 0x40910000 0x00 0x7d>;
+>> +			interrupts = <GIC_SPI 945 IRQ_TYPE_LEVEL_HIGH>;
+> 
+> Please document why disabled.
+> 
+
+Sure thing, will add background info to the commit message.
+
+Thanks,
+Andrew
+
+>> +			status = "disabled";
+>> +		};
+>> +	};
+>>   };
+>> -- 
+>> 2.36.1
+>>
+> 
