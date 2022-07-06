@@ -2,157 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B0CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C74C7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232149AbiGFKXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        id S232351AbiGFKYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbiGFKXw (ORCPT
+        with ESMTP id S231867AbiGFKYB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:23:52 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE26248E2;
-        Wed,  6 Jul 2022 03:23:51 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id lg18so6489634ejb.0;
-        Wed, 06 Jul 2022 03:23:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=A9xeNdZDUIjr4l2jLGqq1SJhUmTfqKYqMsJa/JfV6ag=;
-        b=MGaI+JsM9XJwL7VpB7yT/Oaz4A474xJtZQz5NEzLu+9WfWoK4TQlRBDHRfW8qbKSdc
-         GA7/T3yW7vazdXBIpLnKhiU0pLqxuWc8lpHotv9baCvj5Bgwt1WsU5jweCEm25CzchXl
-         2XE6d1IQsFAjT/8LuxxYSv8PrgMyAzlhBDiOPjsIeeegZfLwxBsvZ5DW2WY5on1snlSq
-         LxuSxGOA+TYtKNPD9Dt85W+gKmwIHQw7ct/NT769ISTPlqF6uNhD8M/DXujRgIABePDr
-         VFiq5fXuGBvud8h4T0442F3t94nsT5PcCZ/l0kObS9cNukhRS5yC4tsaft7aqTUg1j1k
-         CWqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=A9xeNdZDUIjr4l2jLGqq1SJhUmTfqKYqMsJa/JfV6ag=;
-        b=Ee5hj6VDaM0SOqExC6k7vcVSvgI8KQIwsqBbBM4CPXly9y/oCe6DDn2tLuFo2/cMpd
-         z9oUGkAmqEGTZbCEma+8/SqVZZ3vtJG8lUOaB0ZCnH6/arhtT+0gssAHhBE3d1gELBOp
-         PlHOSlR8NX9Jo3GvJXcErDQnKgI6CfHyZu7ioGo5dOvyJtMFPevMVXah8aXpG5BOIj8v
-         AryU/4VFlOQMyhqhI+eaMvctaPBIf4b0V5OwQfBeBPbKezJKBWzWHMrr5AkEaxifGz0r
-         JIIsAvHygMsi0NKtA0G9QzEIKg9/vqPXv1iho+YINEPwlhiYzErFPMxh8KDtlhrmhfF8
-         i5Ag==
-X-Gm-Message-State: AJIora+CnENvccohGFJTtwo1oQ6Nx5TI+9tGQCaOKDFoxRCH4cUHAEPl
-        RRZL36mm7Tzq4PC1OStUbGk=
-X-Google-Smtp-Source: AGRyM1vG14ChU514xvqFxRVaxYHsajgsNZGdG9Vwh2mJxfoeSO8ko8QGjp0eczHjU6mfpOj75LWtXg==
-X-Received: by 2002:a17:907:16a6:b0:726:574d:d31f with SMTP id hc38-20020a17090716a600b00726574dd31fmr37626967ejc.514.1657103029693;
-        Wed, 06 Jul 2022 03:23:49 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id p17-20020a056402501100b0043787ad7cfasm20919288eda.22.2022.07.06.03.23.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:23:49 -0700 (PDT)
-Message-ID: <62c562b5.1c69fb81.d69fc.4079@mx.google.com>
-X-Google-Original-Message-ID: <YsVe0Pu4FooN5XYt@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 12:07:12 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] clk: qcom: lcc-ipq806x: convert to parent data
-References: <20220621163326.16858-1-ansuelsmth@gmail.com>
- <20220621163326.16858-3-ansuelsmth@gmail.com>
- <CAA8EJpqQTTevQa4pQg3E+x4_AOjYo8ajOqUrfwGsVtC8N=bpOw@mail.gmail.com>
- <62b228b6.1c69fb81.e4673.34a2@mx.google.com>
- <CAA8EJprb=xV9+gZMANAYrt_JnKAtC89h1RAosL+g517_-Ugd2g@mail.gmail.com>
- <62c4a38b.1c69fb81.4d58e.ce99@mx.google.com>
- <CAA8EJprGf6V9K1gFDCE+bnKwhjVgLvruTRAZ-AOqfPsbmmYRLA@mail.gmail.com>
+        Wed, 6 Jul 2022 06:24:01 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182A9255B0;
+        Wed,  6 Jul 2022 03:23:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657103039; x=1688639039;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zTFv7Opvp0eEPeRg+7RzVe5uBkJpvPK7zHsXwdYPXxo=;
+  b=dd0mqhmKDR4UAwLrMoYTaQDuDUd52DQG20fjjPOiR7pGIgg8AQu5yW3g
+   EWduoAFbW4kAaEilxXoEcIa/un5ihARrDhnt0Dtp+C/UeUuu4tel2MioJ
+   0iRWyP0Kg9ZoxMzfIK8LBHUgYpd9BLPhku2oCfgp9bzpL8kQv9usfeS/x
+   B5ouk1pD7cldYXCGnrhpgoO8PplIw+0+A/KED3p7PN6HZPKJ0WFo1RsOG
+   Ak5XPmFAHz1/kFxFQp43og/kqBpKEUrVeSREBt4AIDJU7/bImA+frpuuk
+   GlycG6TvHUnvormKn7AK+smewwgu9iE5cwdGXwFhrXf1tZC2p4WjH7Q9T
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="281256103"
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="281256103"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:23:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="543339999"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 06 Jul 2022 03:23:55 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o92CI-000KR3-PE;
+        Wed, 06 Jul 2022 10:23:54 +0000
+Date:   Wed, 6 Jul 2022 18:23:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH 08/13] USB: mtu3: tracing: Use the new __vstring() helper
+Message-ID: <202207061812.KyUeiLeY-lkp@intel.com>
+References: <20220705224750.354926535@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAA8EJprGf6V9K1gFDCE+bnKwhjVgLvruTRAZ-AOqfPsbmmYRLA@mail.gmail.com>
+In-Reply-To: <20220705224750.354926535@goodmis.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 10:34:04AM +0300, Dmitry Baryshkov wrote:
-> On Tue, 5 Jul 2022 at 23:48, Christian Marangi <ansuelsmth@gmail.com> wrote:
-> >
-> > On Tue, Jun 21, 2022 at 11:43:10PM +0300, Dmitry Baryshkov wrote:
-> > > On Tue, 21 Jun 2022 at 23:23, Christian Marangi <ansuelsmth@gmail.com> wrote:
-> > > >
-> > > > On Tue, Jun 21, 2022 at 08:15:57PM +0300, Dmitry Baryshkov wrote:
-> > > > > On Tue, 21 Jun 2022 at 19:33, Christian Marangi <ansuelsmth@gmail.com> wrote:
-> > > > > >
-> > > > > > Convert lcc-ipq806x driver to parent_data API.
-> > > > > >
-> > > > > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > > > > > ---
-> > > > > > v2:
-> > > > > > - Fix Sob tag
-> > > > > >
-> > > > > >  drivers/clk/qcom/lcc-ipq806x.c | 79 +++++++++++++++++++---------------
-> > > > > >  1 file changed, 44 insertions(+), 35 deletions(-)
-> > > > > >
-> > > > > > diff --git a/drivers/clk/qcom/lcc-ipq806x.c b/drivers/clk/qcom/lcc-ipq806x.c
-> > > > > > index ba90bebba597..c07ca8dc6e3a 100644
-> > > > > > --- a/drivers/clk/qcom/lcc-ipq806x.c
-> > > > > > +++ b/drivers/clk/qcom/lcc-ipq806x.c
-> > > > > > @@ -24,6 +24,10 @@
-> > > > > >  #include "clk-regmap-mux.h"
-> > > > > >  #include "reset.h"
-> > > > > >
-> > > > > > +static const struct clk_parent_data gcc_pxo[] = {
-> > > > > > +       { .fw_name = "pxo", .name = "pxo" },
-> > > > >
-> > > > > I think you'd use .name = "pxo_board" here. You don't need to use the
-> > > > > interim clock.
-> > > > >
-> > > >
-> > > > In gcc and in the rest of this driver we use pxo. Wonder what is right?
-> > >
-> > > I'd use .fw_name = "pxo", .name = "pxo_board", like the rest of drivers do.
-> > >
-> >
-> > Will do the change, but I need an explaination... Is the use of
-> > pxo_board correct?
-> >
-> > I'm sending a patch that sets the pxo_board fixed clock in dts to output
-> > "pxo". The only clock that still use pxo_board is rpm, everything else
-> > at least for ipq806x use pxo and i'm sending a patch to use pxo for rpm.
-> >
-> > Considering pxo is always present and pxo_board should be dropped
-> > because every ipq806x driver use "pxo".
-> >
-> > What is correct naming pxo or pxo_board? I assume pxo right?
-> 
-> This might be not the case for the ipq806x, but here is the story for
-> all other (old) platforms:
-> - gcc driver manually registered pxo/cxo/xo fixed factor clocks.
-> - Then we started adding *xo_board clocks to the DT, as they represent
-> the external oscillators
-> -  PXO clock consumers receive a clocks entry with clock-names = "pxo"
-> which points to the pxo_board
-> - All clock drivers are now being switched to use .fw_name = "pxo",
-> .name = "pxo_board" to use the DT-defined pxo_board clock.
-> 
-> Hopefully at some point we can then drop the manually registered pxo
-> clock and always use the DT-based one.
->
+Hi Steven,
 
-Okok. I got confused since looking at the code factor clock is really
-just a hack to handle both driver that use pxo_board and pxo cause from
-what I notice it's the same clock with different naming.
+Thank you for the patch! Yet something to improve:
 
-Sooo keep using pxo_board with the fact that pxo is always present seems
-to be redundant but if that's the pattern then I will just keep
-pxo_board in .name where it's used.
+[auto build test ERROR on rostedt-trace/for-next]
+[also build test ERROR on wireless-next/main wireless/main linus/master v5.19-rc5 next-20220705]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> -- 
-> With best wishes
-> Dmitry
+url:    https://github.com/intel-lab-lkp/linux/commits/Steven-Rostedt/tracing-events-Add-__vstring-and-__assign_vstr-helpers/20220706-065125
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git for-next
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207061812.KyUeiLeY-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/829b320ff9db68465d88e10181df019fffb775db
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Steven-Rostedt/tracing-events-Add-__vstring-and-__assign_vstr-helpers/20220706-065125
+        git checkout 829b320ff9db68465d88e10181df019fffb775db
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from include/trace/define_trace.h:102,
+                    from drivers/usb/mtu3/mtu3_trace.h:279,
+                    from drivers/usb/mtu3/mtu3_trace.c:12:
+>> drivers/usb/mtu3/./mtu3_trace.h:28:50: error: expected specifier-qualifier-list before ',' token
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/trace_events.h:54:17: note: in definition of macro 'DECLARE_EVENT_CLASS'
+      54 |                 tstruct                                                 \
+         |                 ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   In file included from include/trace/define_trace.h:102,
+                    from drivers/usb/mtu3/mtu3_trace.h:279,
+                    from drivers/usb/mtu3/mtu3_trace.c:12:
+>> drivers/usb/mtu3/./mtu3_trace.h:28:50: error: expected specifier-qualifier-list before ',' token
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/trace_events.h:117:17: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     117 |                 tstruct;                                                \
+         |                 ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   In file included from include/trace/define_trace.h:102,
+                    from drivers/usb/mtu3/mtu3_trace.h:279,
+                    from drivers/usb/mtu3/mtu3_trace.c:12:
+>> drivers/usb/mtu3/./mtu3_trace.h:28:50: error: expected expression before ',' token
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/trace_events.h:244:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     244 |         tstruct                                                         \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   In file included from include/trace/define_trace.h:102,
+                    from drivers/usb/mtu3/mtu3_trace.h:279,
+                    from drivers/usb/mtu3/mtu3_trace.c:12:
+   drivers/usb/mtu3/./mtu3_trace.h: In function 'trace_event_get_offsets_mtu3_log':
+>> include/linux/stddef.h:16:33: error: 'struct trace_event_raw_mtu3_log' has no member named '__data'
+      16 | #define offsetof(TYPE, MEMBER)  __builtin_offsetof(TYPE, MEMBER)
+         |                                 ^~~~~~~~~~~~~~~~~~
+   include/trace/trace_events.h:263:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     263 |         tstruct;                                                        \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   include/trace/stages/stage5_get_offsets.h:31:32: note: in expansion of macro 'offsetof'
+      31 |                                offsetof(typeof(*entry), __data);        \
+         |                                ^~~~~~~~
+   include/trace/stages/stage5_get_offsets.h:36:29: note: in expansion of macro '__dynamic_array'
+      36 | #define __string(item, src) __dynamic_array(char, item,                 \
+         |                             ^~~~~~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:27:17: note: in expansion of macro '__string'
+      27 |                 __string(name, dev_name(dev))
+         |                 ^~~~~~~~
+>> include/linux/stddef.h:16:33: error: 'struct trace_event_raw_mtu3_log' has no member named '__data'
+      16 | #define offsetof(TYPE, MEMBER)  __builtin_offsetof(TYPE, MEMBER)
+         |                                 ^~~~~~~~~~~~~~~~~~
+   include/trace/trace_events.h:263:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     263 |         tstruct;                                                        \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   include/trace/stages/stage5_get_offsets.h:31:32: note: in expansion of macro 'offsetof'
+      31 |                                offsetof(typeof(*entry), __data);        \
+         |                                ^~~~~~~~
+   include/trace/stages/stage5_get_offsets.h:43:34: note: in expansion of macro '__dynamic_array'
+      43 | #define __vstring(item, fmt, ap) __dynamic_array(char, item,            \
+         |                                  ^~~~~~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:28:17: note: in expansion of macro '__vstring'
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                 ^~~~~~~~~
+>> drivers/usb/mtu3/./mtu3_trace.h:28:50: error: expected expression before ',' token
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/trace_events.h:263:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     263 |         tstruct;                                                        \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:28:50: warning: left-hand operand of comma expression has no effect [-Wunused-value]
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/trace_events.h:263:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     263 |         tstruct;                                                        \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   In file included from include/trace/define_trace.h:102,
+                    from drivers/usb/mtu3/mtu3_trace.h:279,
+                    from drivers/usb/mtu3/mtu3_trace.c:12:
+   drivers/usb/mtu3/./mtu3_trace.h: In function 'trace_event_raw_event_mtu3_log':
+>> drivers/usb/mtu3/./mtu3_trace.h:28:50: error: expected expression before ',' token
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/trace_events.h:400:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     400 |         tstruct                                                         \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:28:50: warning: left-hand operand of comma expression has no effect [-Wunused-value]
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/trace_events.h:400:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     400 |         tstruct                                                         \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   In file included from include/trace/define_trace.h:103,
+                    from drivers/usb/mtu3/mtu3_trace.h:279,
+                    from drivers/usb/mtu3/mtu3_trace.c:12:
+   drivers/usb/mtu3/./mtu3_trace.h: In function 'perf_trace_mtu3_log':
+>> drivers/usb/mtu3/./mtu3_trace.h:28:50: error: expected expression before ',' token
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/perf.h:87:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+      87 |         tstruct                                                         \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:28:50: warning: left-hand operand of comma expression has no effect [-Wunused-value]
+      28 |                 __vstring(msg, vaf->fmt, vaf->va),
+         |                                                  ^
+   include/trace/perf.h:87:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+      87 |         tstruct                                                         \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:26:9: note: in expansion of macro 'TP_STRUCT__entry'
+      26 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   include/trace/perf.h:62:13: warning: unused variable '__count' [-Wunused-variable]
+      62 |         u64 __count = 1;                                                \
+         |             ^~~~~~~
+   include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+      40 |         DECLARE_EVENT_CLASS(name,                              \
+         |         ^~~~~~~~~~~~~~~~~~~
+   drivers/usb/mtu3/./mtu3_trace.h:23:1: note: in expansion of macro 'TRACE_EVENT'
+      23 | TRACE_EVENT(mtu3_log,
+         | ^~~~~~~~~~~
+
+
+vim +28 drivers/usb/mtu3/./mtu3_trace.h
+
+    22	
+    23	TRACE_EVENT(mtu3_log,
+    24		TP_PROTO(struct device *dev, struct va_format *vaf),
+    25		TP_ARGS(dev, vaf),
+    26		TP_STRUCT__entry(
+    27			__string(name, dev_name(dev))
+  > 28			__vstring(msg, vaf->fmt, vaf->va),
+    29		),
+    30		TP_fast_assign(
+    31			__assign_str(name, dev_name(dev));
+    32			__assign_vstr(msg, vaf->fmt, vaf->va);
+    33		),
+    34		TP_printk("%s: %s", __get_str(name), __get_str(msg))
+    35	);
+    36	
 
 -- 
-	Ansuel
+0-DAY CI Kernel Test Service
+https://01.org/lkp
