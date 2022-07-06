@@ -2,140 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17792C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0EE7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233642AbiGFNcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
+        id S232234AbiGFNc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233875AbiGFNc2 (ORCPT
+        with ESMTP id S232444AbiGFNcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:32:28 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B404D2495E;
-        Wed,  6 Jul 2022 06:32:26 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id z12so12491589wrq.7;
-        Wed, 06 Jul 2022 06:32:26 -0700 (PDT)
+        Wed, 6 Jul 2022 09:32:51 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CD82495E;
+        Wed,  6 Jul 2022 06:32:49 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id q6so27081118eji.13;
+        Wed, 06 Jul 2022 06:32:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7TOtOp9DDgCuQFSmCL0sSxp9HqC0uywGNi7BY5wOYCA=;
-        b=bRnI/QO6vg4k8EqqvSMs5qADxX5jIJ6eBSi6z9cxmtdCZ6pn8MmZaDruaPDiFCRW44
-         4vrK6+n0L+rfVeCHD4l8M5mqxvJrmLNNy6ZtqR5peJVf76356NqgakFYRnvwljBvseYQ
-         gc7F2WqinIjZ27hbPncGJeZg076luDZ2ODOXZWK2XfES6ybnBZl728M4/lLajrxxVCeL
-         SY/UbVcxT+yz38R4XaVFFc5J6n92ILHZAzya7qe/6soAiUkxZBx/ZjCzvlO1ZoUJvi79
-         rOZro0xXlpBpMOSghLPvoHSjYqCFHqpTUJ0tcAskTrGhjSzuh9j68rkPP0GKuk34Iciw
-         PjbA==
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BwTGtm/bNRREp1aBUcAs+S7luq0oxviV8pBVWLt+InY=;
+        b=GKPSWMhBOzfO/YBN78J2m6A42DBcc3C2SEoO/Cf5G/XgZwOmGDdXUamaES8swT89Gu
+         OGnX6W9oA3Mdu6dObmhJUUIjTSaq9fvK/p3nBY/RnUKCNIZihERp0OTTOjfTS0x7k0w8
+         KULYv6JwX/onnhP5PU8ruMITdTbPb+OFJmi3GdK+arf61qONcqdWn9yKbE/Gxog1JfBh
+         ZSJeNBU9V4JkQES1saWAaImlmXPkUQ+XTtl1UimatEbCgN3TQlkdL2olz7E2xH4Ct5qg
+         +NQoJyXJaspkF2IhOcNwjOP3uBVRW6FM5EpHgDzaYGJhOzWgZQM2iGpRClbdn6LACfft
+         55ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7TOtOp9DDgCuQFSmCL0sSxp9HqC0uywGNi7BY5wOYCA=;
-        b=dclmXynZJut5Kx8dmCv3MICT0M4D3aH9K08QLqkqp79gdj9C3CCSver/0ziAxZTqR0
-         GVHUaiXICwZMRDL8JnSOO+NckFOBUwWYa+bFpcCwxPMSk00c4RUPVQOU00Vd1IjeJi+x
-         xmpPHSRiPEWP6ZPAQSZloCwElt2o6vONd515qMqYxvf0gX1bCwIVtQEl0qOSCgh9eJfs
-         BNat/C6YxWpUaUqEBTZE2lRFYjQKzPLHEvyZ5XAUT6KLaLqrWCxflYkfgR/bpeb/6Q7O
-         gGP6iFueFrADf6leIzaa50bYpEefEqaPO3KeV/tU6F9o2HCFOWlZgtb+ML8psH0DnKjG
-         xN8w==
-X-Gm-Message-State: AJIora9eJhtlpi/a4Qfsu7wMaIHQ1UtfkhkBYQrr30wHeA+d9zewD4CN
-        kLmbuVJiw9tphj/5MizjtgxPz+BVRUXhzA==
-X-Google-Smtp-Source: AGRyM1ti/Wxh3IDrjkuHFZmYCXFfWmQQ6PkxajNWY5pbRz/P7qnGbOgcbRrWKoyx1dmMIHkIvV6XRw==
-X-Received: by 2002:a5d:4aca:0:b0:21d:6793:1c11 with SMTP id y10-20020a5d4aca000000b0021d67931c11mr17085716wrs.202.1657114344966;
-        Wed, 06 Jul 2022 06:32:24 -0700 (PDT)
-Received: from [192.168.0.14] ([37.223.147.254])
-        by smtp.gmail.com with ESMTPSA id k5-20020a05600c1c8500b003a0fb88a197sm25845925wms.16.2022.07.06.06.32.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 06:32:24 -0700 (PDT)
-Message-ID: <56fca90e-3ab1-a655-4180-37b5d5bc431f@gmail.com>
-Date:   Wed, 6 Jul 2022 15:32:23 +0200
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BwTGtm/bNRREp1aBUcAs+S7luq0oxviV8pBVWLt+InY=;
+        b=3Bav7XZQwAP2L4OOUpHiFGCd9F/AsgMfCZ9Tgx/yuLEZ3L0gxOAcI33hrEv2Qr9F7W
+         mGQLkUVmMefqx3LM1p/acbYiyLKqzIEsVKYwFVa+ahFCPS0kJ9A/jvVDXaQ3l3CtFha2
+         lxu2dSeGzESbMByozucPhe/R0OAfTjO4RbdW2BoiRMDGmLLlrZ/uoFSFTI8kwRp7d60M
+         absf9eFLJ61rOF0Ss+4KraYvDsbkiqC2VE4M07mSMBlmV1e6djD8Ya/Wysjjb2DqX8zm
+         S79WYd4UzCZ7oooaqYqiOXWiS98yKNbChmxtRtimQkvub8lH/fwGuavdcKoiqyUSn8sR
+         Klbg==
+X-Gm-Message-State: AJIora9617bp/c1TKCjtnt/55h/b9QGyA7UUc2CkBiE1uKN+I5d3K3Xb
+        xrMZOyUKdZeWDOPmBdeBmkw=
+X-Google-Smtp-Source: AGRyM1tSWBqRJwiH9jeXNAt4N2H9owkS7npZHATrZq4RIBHTxekj9ewJKTqjuQqn9AsFzffHabae/w==
+X-Received: by 2002:a17:907:3f9f:b0:726:39d8:4c8c with SMTP id hr31-20020a1709073f9f00b0072639d84c8cmr38616750ejc.241.1657114367842;
+        Wed, 06 Jul 2022 06:32:47 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id ml22-20020a170906cc1600b006febce7081bsm17412760ejb.163.2022.07.06.06.32.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 06:32:47 -0700 (PDT)
+Message-ID: <62c58eff.1c69fb81.9bbbf.f072@mx.google.com>
+X-Google-Original-Message-ID: <YsWLGqZxMZfUnlL3@Ansuel-xps.>
+Date:   Wed, 6 Jul 2022 15:16:10 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] clk: qcom: clk-rpm: convert to parent_data API
+References: <20220705202837.667-1-ansuelsmth@gmail.com>
+ <20220705202837.667-4-ansuelsmth@gmail.com>
+ <92d41b82-97ab-723d-4191-1fcaca17fb76@somainline.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 RESEND] Input: mtk-pmic-keys - Add support for MT6331
- PMIC keys
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        dmitry.torokhov@gmail.com
-Cc:     mkorpershoek@baylibre.com, linux-input@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220706101122.201007-1-angelogioacchino.delregno@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220706101122.201007-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <92d41b82-97ab-723d-4191-1fcaca17fb76@somainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 06/07/2022 12:11, AngeloGioacchino Del Regno wrote:
-> Add support for PMIC Keys of the MT6331 PMIC.
+On Wed, Jul 06, 2022 at 03:26:53PM +0200, Konrad Dybcio wrote:
 > 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Reviewed-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
-> ---
->   drivers/input/keyboard/mtk-pmic-keys.c | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
 > 
-> diff --git a/drivers/input/keyboard/mtk-pmic-keys.c b/drivers/input/keyboard/mtk-pmic-keys.c
-> index 6404081253ea..9b34da0ec260 100644
-> --- a/drivers/input/keyboard/mtk-pmic-keys.c
-> +++ b/drivers/input/keyboard/mtk-pmic-keys.c
-> @@ -9,6 +9,7 @@
->   #include <linux/interrupt.h>
->   #include <linux/kernel.h>
->   #include <linux/mfd/mt6323/registers.h>
-> +#include <linux/mfd/mt6331/registers.h>
->   #include <linux/mfd/mt6358/registers.h>
->   #include <linux/mfd/mt6397/core.h>
->   #include <linux/mfd/mt6397/registers.h>
-> @@ -22,6 +23,10 @@
->   #define MTK_PMIC_PWRKEY_RST	BIT(6)
->   #define MTK_PMIC_HOMEKEY_RST	BIT(5)
->   
-> +#define MTK_PMIC_MT6331_RST_DU_MASK	GENMASK(13, 12)
-> +#define MTK_PMIC_MT6331_PWRKEY_RST	BIT(9)
-> +#define MTK_PMIC_MT6331_HOMEKEY_RST	BIT(8)
-> +
->   #define MTK_PMIC_PWRKEY_INDEX	0
->   #define MTK_PMIC_HOMEKEY_INDEX	1
->   #define MTK_PMIC_MAX_KEY_COUNT	2
-> @@ -72,6 +77,19 @@ static const struct mtk_pmic_regs mt6323_regs = {
->   	.rst_lprst_mask = MTK_PMIC_RST_DU_MASK,
->   };
->   
-> +static const struct mtk_pmic_regs mt6331_regs = {
-> +	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
-> +		MTK_PMIC_KEYS_REGS(MT6331_TOPSTATUS, 0x2,
-> +				   MT6331_INT_MISC_CON, 0x4,
-> +				   MTK_PMIC_MT6331_PWRKEY_RST),
-> +	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
-> +		MTK_PMIC_KEYS_REGS(MT6331_TOPSTATUS, 0x4,
-> +				   MT6331_INT_MISC_CON, 0x2,
-> +				   MTK_PMIC_MT6331_HOMEKEY_RST),
-> +	.pmic_rst_reg = MT6331_TOP_RST_MISC,
-> +	.rst_lprst_mask = MTK_PMIC_MT6331_RST_DU_MASK,
-> +};
-> +
->   static const struct mtk_pmic_regs mt6358_regs = {
->   	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
->   		MTK_PMIC_KEYS_REGS(MT6358_TOPSTATUS,
-> @@ -255,6 +273,9 @@ static const struct of_device_id of_mtk_pmic_keys_match_tbl[] = {
->   	}, {
->   		.compatible = "mediatek,mt6323-keys",
->   		.data = &mt6323_regs,
-> +	}, {
-> +		.compatible = "mediatek,mt6331-keys",
-> +		.data = &mt6331_regs,
->   	}, {
->   		.compatible = "mediatek,mt6358-keys",
->   		.data = &mt6358_regs,
+> On 5.07.2022 22:28, Christian Marangi wrote:
+> > Convert clk-rpm driver to parent_data API and change parent names to cxo
+> > and pxo instead of the board variant as pxo_board is an ancient name and
+> > pxo should be used instead.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
+> >  drivers/clk/qcom/clk-rpm.c | 24 ++++++++++++++++--------
+> >  1 file changed, 16 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/clk/qcom/clk-rpm.c b/drivers/clk/qcom/clk-rpm.c
+> > index a18811c38018..d45a8b0fc97c 100644
+> > --- a/drivers/clk/qcom/clk-rpm.c
+> > +++ b/drivers/clk/qcom/clk-rpm.c
+> > @@ -23,6 +23,14 @@
+> >  #define QCOM_RPM_SCALING_ENABLE_ID			0x2
+> >  #define QCOM_RPM_XO_MODE_ON				0x2
+> >  
+> > +static const struct clk_parent_data gcc_pxo[] = {
+> > +	{ .fw_name = "pxo", .name = "pxo" },
+> The .name lookup should include _board, as the old DTs expect that.
+> If I understand correctly though, you need to preserve both pxo and
+> pxo_board, as they were separate, not sure though..
+>
+
+pxo_board is what comes first... then qcom gcc driver hacks it and
+create a factor clk with 1/1 div and provide pxo.
+In practice they are the same clk. But yhea I should not change the
+name, will resent with .name = pxo_board and be done with it.
+
+> Konrad
+> > +};
+> > +
+> > +static const struct clk_parent_data gcc_cxo[] = {
+> > +	{ .fw_name = "cxo", .name = "cxo" },
+> > +};
+> > +
+> >  #define DEFINE_CLK_RPM(_platform, _name, _active, r_id)			      \
+> >  	static struct clk_rpm _platform##_##_active;			      \
+> >  	static struct clk_rpm _platform##_##_name = {			      \
+> > @@ -32,8 +40,8 @@
+> >  		.hw.init = &(struct clk_init_data){			      \
+> >  			.ops = &clk_rpm_ops,				      \
+> >  			.name = #_name,					      \
+> > -			.parent_names = (const char *[]){ "pxo_board" },      \
+> > -			.num_parents = 1,				      \
+> > +			.parent_data = gcc_pxo,				      \
+> > +			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
+> >  		},							      \
+> >  	};								      \
+> >  	static struct clk_rpm _platform##_##_active = {			      \
+> > @@ -44,8 +52,8 @@
+> >  		.hw.init = &(struct clk_init_data){			      \
+> >  			.ops = &clk_rpm_ops,				      \
+> >  			.name = #_active,				      \
+> > -			.parent_names = (const char *[]){ "pxo_board" },      \
+> > -			.num_parents = 1,				      \
+> > +			.parent_data = gcc_pxo,				      \
+> > +			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
+> >  		},							      \
+> >  	}
+> >  
+> > @@ -56,8 +64,8 @@
+> >  		.hw.init = &(struct clk_init_data){			      \
+> >  			.ops = &clk_rpm_xo_ops,			      \
+> >  			.name = #_name,					      \
+> > -			.parent_names = (const char *[]){ "cxo_board" },      \
+> > -			.num_parents = 1,				      \
+> > +			.parent_data = gcc_cxo,				      \
+> > +			.num_parents = ARRAY_SIZE(gcc_cxo),		      \
+> >  		},							      \
+> >  	}
+> >  
+> > @@ -68,8 +76,8 @@
+> >  		.hw.init = &(struct clk_init_data){			      \
+> >  			.ops = &clk_rpm_fixed_ops,			      \
+> >  			.name = #_name,					      \
+> > -			.parent_names = (const char *[]){ "pxo" },	      \
+> > -			.num_parents = 1,				      \
+> > +			.parent_data = gcc_pxo,				      \
+> > +			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
+> >  		},							      \
+> >  	}
+> >  
+
+-- 
+	Ansuel
