@@ -2,106 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E7EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FDBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233459AbiGFRXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 13:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
+        id S233372AbiGFRYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbiGFRXl (ORCPT
+        with ESMTP id S232592AbiGFRYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 13:23:41 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6016D2A72C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:23:38 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id y18so6176696plb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 10:23:38 -0700 (PDT)
+        Wed, 6 Jul 2022 13:24:36 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B75B99;
+        Wed,  6 Jul 2022 10:24:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yav60sk4t1jSHI9y7JwNTzYMHxVBsDg0h4MxYyUTEPE=;
-        b=j2Jn45au290gtTFCTf5ikH5yAqAHf0I7w5DZ6J2ln2fTcaKI1HD+BMjDKiRf1fWhsh
-         XfiCuSZJyaHD/8ghRqM5EcDDKHtC+IzPaP0SpwDeXP4r9gVE5NuBWd/QOd2qKPIqblc9
-         h/DGkYqxjMj00Jr6530xkwT3Gme6bs4dSOdfc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yav60sk4t1jSHI9y7JwNTzYMHxVBsDg0h4MxYyUTEPE=;
-        b=ZU95Nn1BSh+/yEK8vJlOquBOXusKPGOwCLpRe0kT4O9EdaVjWvbYHEDQrmOqr41VxT
-         axIBkh/aSvoTxZYv/384D4QIfNohNRcqz9/64Tg3Nfbltheps2fn1dxNN1IzRwoM/dlk
-         oq2KcN1SaTgOjVXyrDnggzPPalOtg7aD9/mTj2xHAV/TYKZn6qb/+EH48MrBt+lVJgBE
-         BvYeRfuQOI9+gMLbIR6BxX7VC0fUI0AGh6Oz18Z7dS0MLBQfZY8kgOaad0lUKUafNPEA
-         ZXd3rroD5EPIJ6cBxvdXaOy4gFDmJhJYU5gT5iuWn4Yp9w83+kuWUNF0pgxCw8njmWaj
-         P24g==
-X-Gm-Message-State: AJIora+O0xS48283yV2znUkgLS7ZrxhR7pLBuL9pN23vVzdygjggJINR
-        hbcJ+sajmTH0H4YwvOtfxtTiKSfBZvviyA==
-X-Google-Smtp-Source: AGRyM1tnnh3jgtm7cCp9Qgeg1uF8C64jY6TXiUAsXTO+1wpBfTZrDmt44SkdsuY2bjLKYP5D1k01mw==
-X-Received: by 2002:a17:902:d50b:b0:16c:474:ce67 with SMTP id b11-20020a170902d50b00b0016c0474ce67mr3487691plg.112.1657128217975;
-        Wed, 06 Jul 2022 10:23:37 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h14-20020a170902f7ce00b0016be0d5483asm7514953plw.252.2022.07.06.10.23.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 10:23:37 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH v2 8/9] platform/chrome: cros_ec_typec: Cleanup switch handle return paths
-Date:   Wed,  6 Jul 2022 17:15:12 +0000
-Message-Id: <20220706171601.807042-9-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220706171601.807042-1-pmalani@chromium.org>
-References: <20220706171601.807042-1-pmalani@chromium.org>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657128275; x=1688664275;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=mceTDkANXKKZ+cDEZtrXAG36yhBvkMzaJGxFZJ3jvww=;
+  b=N4sVyZQ/fvBqvVXk/UGZamhY/5sx+v4yKlRFUe3rqBez78f+kGqGQ7F5
+   HyqM9BECXSxX7lc2mzQkN7DQe7umcoi5/FxtUhv/W1WHHkz8o6JzhNDjS
+   rvOM6aWV9kxHy9gV1daGvdfBhdsDD4dNZAvNU5h7DxTatJVCIySPM3yuC
+   Y=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 06 Jul 2022 10:24:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 10:24:34 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Jul 2022 10:24:14 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Jul 2022 10:24:13 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
+        <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3] drm/msm/dp: make eDP panel as the first connected connector
+Date:   Wed, 6 Jul 2022 10:24:06 -0700
+Message-ID: <1657128246-15929-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the return paths for the cros_typec_get_switch_handles()
-aren't necessary. Clean up the return paths to only undo the handle
-get's which succeeded.
+Some userspace presumes that the first connected connector is the main
+display, where it's supposed to display e.g. the login screen. For
+laptops, this should be the main panel.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+This patch call drm_helper_move_panel_connectors_to_head() after
+drm_bridge_connector_init() to make sure eDP stay at head of
+connected connector list. This fixes unexpected corruption happen
+at eDP panel if eDP is not placed at head of connected connector
+list.
+
+Changes in v2:
+-- move drm_helper_move_panel_connectors_to_head() to
+		dpu_kms_drm_obj_init()
+
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 ---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Changes since v1:
-- No changes.
-
- drivers/platform/chrome/cros_ec_typec.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-index 7cb2e35c4ded..39e6fd4491a9 100644
---- a/drivers/platform/chrome/cros_ec_typec.c
-+++ b/drivers/platform/chrome/cros_ec_typec.c
-@@ -157,12 +157,10 @@ static int cros_typec_get_switch_handles(struct cros_typec_port *port,
- 	return 0;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 2b9d931..50ff666 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -763,6 +763,8 @@ static int _dpu_kms_drm_obj_init(struct dpu_kms *dpu_kms)
+ 	if (ret)
+ 		return ret;
  
- role_sw_err:
--	usb_role_switch_put(port->role_sw);
--ori_sw_err:
- 	typec_switch_put(port->ori_sw);
--mux_err:
-+ori_sw_err:
- 	typec_mux_put(port->mux);
--
-+mux_err:
- 	return -ENODEV;
- }
- 
++	drm_helper_move_panel_connectors_to_head(dev);
++
+ 	num_encoders = 0;
+ 	drm_for_each_encoder(encoder, dev)
+ 		num_encoders++;
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
