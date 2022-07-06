@@ -2,46 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D71FDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C308C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234282AbiGFPfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        id S234308AbiGFPfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233866AbiGFPeU (ORCPT
+        with ESMTP id S233997AbiGFPe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:34:20 -0400
+        Wed, 6 Jul 2022 11:34:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469A129CAB;
-        Wed,  6 Jul 2022 08:33:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505FB2A24C;
+        Wed,  6 Jul 2022 08:33:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99166B81D94;
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB407B81D96;
+        Wed,  6 Jul 2022 15:33:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D61F4C385A5;
         Wed,  6 Jul 2022 15:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81720C3411C;
-        Wed,  6 Jul 2022 15:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121579;
-        bh=c/4PWi9uW7ks+TPO9bvDxMl2pN9E6hNEXRQhKN88tuw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pBsZu2ukuS2gN3tXXKTw6E63Iz23kmqGBoud5RaPM0Ii/aYLy+ickcQyLu6ByMts0
-         YBI8sZXRFr+nSv60gmAgL8dnB9pzXViLo02PiTUc1bmFVU7ar2TmDGKqeyrf7I39Tn
-         iY6PZe5WzoQ7VKnJp5/jQDwym9mAQN3uFFtszlamgFDtYfkDyau2xzK7+Y/aAekmq1
-         a0AODs8nud6NFrrHNe8bfVPffrjjsJJ1iN7kU9rGPQ8dtsa8LeSGbRd/U9655OtC9T
-         xbafADKNVVsDm1PHjqfPVs/+3pTxDUnudaAwroAHGMq0ICxTqv/AQumO8AkebzhJT9
-         QqDWJY6ZG8yAA==
+        s=k20201202; t=1657121582;
+        bh=GqYSiyEiYN54B9KbL1CA43tpPPB30YDlNdA9ZXdKhCM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Dr1S0R8eaYjAjQTP7H2rcEpMqsm3H1CyuMiPgfE1X+hv5IhuE4eNgwQgMh/oc3LFc
+         oNLkJ2rj5YBU/ivazRKqR8oOuILT+EHRhPt8IKzfi1TkrL3DtTX0Z33KO2yceSDTp3
+         x+iH/Fc//tPf7bIIiPwOoj3jnk7F2c2b7AgPw6sS+BysEGcVXK1C7jpu6cuXt5HznG
+         GXDoC6J+jGJBGqy6+zzt7CQBFrafO4XYjxZyt3CcS7SaWZ1pJO70NU7g5eiSQrsy8C
+         bRdHqgacd//cWv7KaJZmHZDe3Pvz97QvjR4JIVxwWTd09+cl7IZzr70sXbi82/+DXc
+         F65+3jCcGNvEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.10 01/11] virtio_mmio: Add missing PM calls to freeze/restore
-Date:   Wed,  6 Jul 2022 11:32:46 -0400
-Message-Id: <20220706153256.1598411-1-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Radim Hrazdil <rhrazdil@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        roopa@nvidia.com, razor@blackwall.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 03/11] netfilter: br_netfilter: do not skip all hooks with 0 priority
+Date:   Wed,  6 Jul 2022 11:32:48 -0400
+Message-Id: <20220706153256.1598411-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220706153256.1598411-1-sashal@kernel.org>
+References: <20220706153256.1598411-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,79 +56,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit ed7ac37fde33ccd84e4bd2b9363c191f925364c7 ]
+[ Upstream commit c2577862eeb0be94f151f2f1fff662b028061b00 ]
 
-Most virtio drivers provide freeze/restore callbacks to finish up
-device usage before suspend and to reinitialize the virtio device after
-resume. However, these callbacks are currently only called when using
-virtio_pci. virtio_mmio does not have any PM ops defined.
+When br_netfilter module is loaded, skbs may be diverted to the
+ipv4/ipv6 hooks, just like as if we were routing.
 
-This causes problems for example after suspend to disk (hibernation),
-since the virtio devices might lose their state after the VMM is
-restarted. Calling virtio_device_freeze()/restore() ensures that
-the virtio devices are re-initialized correctly.
+Unfortunately, bridge filter hooks with priority 0 may be skipped
+in this case.
 
-Fix this by implementing the dev_pm_ops for virtio_mmio,
-similar to virtio_pci_common.
+Example:
+1. an nftables bridge ruleset is loaded, with a prerouting
+   hook that has priority 0.
+2. interface is added to the bridge.
+3. no tcp packet is ever seen by the bridge prerouting hook.
+4. flush the ruleset
+5. load the bridge ruleset again.
+6. tcp packets are processed as expected.
 
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Message-Id: <20220621110621.3638025-2-stephan.gerhold@kernkonzept.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+After 1) the only registered hook is the bridge prerouting hook, but its
+not called yet because the bridge hasn't been brought up yet.
+
+After 2), hook order is:
+   0 br_nf_pre_routing // br_netfilter internal hook
+   0 chain bridge f prerouting // nftables bridge ruleset
+
+The packet is diverted to br_nf_pre_routing.
+If call-iptables is off, the nftables bridge ruleset is called as expected.
+
+But if its enabled, br_nf_hook_thresh() will skip it because it assumes
+that all 0-priority hooks had been called previously in bridge context.
+
+To avoid this, check for the br_nf_pre_routing hook itself, we need to
+resume directly after it, even if this hook has a priority of 0.
+
+Unfortunately, this still results in different packet flow.
+With this fix, the eval order after in 3) is:
+1. br_nf_pre_routing
+2. ip(6)tables (if enabled)
+3. nftables bridge
+
+but after 5 its the much saner:
+1. nftables bridge
+2. br_nf_pre_routing
+3. ip(6)tables (if enabled)
+
+Unfortunately I don't see a solution here:
+It would be possible to move br_nf_pre_routing to a higher priority
+so that it will be called later in the pipeline, but this also impacts
+ebtables evaluation order, and would still result in this very ordering
+problem for all nftables-bridge hooks with the same priority as the
+br_nf_pre_routing one.
+
+Searching back through the git history I don't think this has
+ever behaved in any other way, hence, no fixes-tag.
+
+Reported-by: Radim Hrazdil <rhrazdil@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_mmio.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ net/bridge/br_netfilter_hooks.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 5c970e6f664c..7dec1418bf7c 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -62,6 +62,7 @@
- #include <linux/list.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
-+#include <linux/pm.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/virtio.h>
-@@ -543,6 +544,25 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
- 	.get_shm_region = vm_get_shm_region,
- };
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index 68c0d0f92890..10a2c7bca719 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -1012,9 +1012,24 @@ int br_nf_hook_thresh(unsigned int hook, struct net *net,
+ 		return okfn(net, sk, skb);
  
-+#ifdef CONFIG_PM_SLEEP
-+static int virtio_mmio_freeze(struct device *dev)
-+{
-+	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
+ 	ops = nf_hook_entries_get_hook_ops(e);
+-	for (i = 0; i < e->num_hook_entries &&
+-	      ops[i]->priority <= NF_BR_PRI_BRNF; i++)
+-		;
++	for (i = 0; i < e->num_hook_entries; i++) {
++		/* These hooks have already been called */
++		if (ops[i]->priority < NF_BR_PRI_BRNF)
++			continue;
 +
-+	return virtio_device_freeze(&vm_dev->vdev);
-+}
++		/* These hooks have not been called yet, run them. */
++		if (ops[i]->priority > NF_BR_PRI_BRNF)
++			break;
 +
-+static int virtio_mmio_restore(struct device *dev)
-+{
-+	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
-+
-+	return virtio_device_restore(&vm_dev->vdev);
-+}
-+
-+static const struct dev_pm_ops virtio_mmio_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(virtio_mmio_freeze, virtio_mmio_restore)
-+};
-+#endif
++		/* take a closer look at NF_BR_PRI_BRNF. */
++		if (ops[i]->hook == br_nf_pre_routing) {
++			/* This hook diverted the skb to this function,
++			 * hooks after this have not been run yet.
++			 */
++			i++;
++			break;
++		}
++	}
  
- static void virtio_mmio_release_dev(struct device *_d)
- {
-@@ -787,6 +807,9 @@ static struct platform_driver virtio_mmio_driver = {
- 		.name	= "virtio-mmio",
- 		.of_match_table	= virtio_mmio_match,
- 		.acpi_match_table = ACPI_PTR(virtio_mmio_acpi_match),
-+#ifdef CONFIG_PM_SLEEP
-+		.pm	= &virtio_mmio_pm_ops,
-+#endif
- 	},
- };
- 
+ 	nf_hook_state_init(&state, hook, NFPROTO_BRIDGE, indev, outdev,
+ 			   sk, net, okfn);
 -- 
 2.35.1
 
