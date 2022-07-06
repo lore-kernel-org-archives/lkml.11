@@ -2,186 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E8EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70FB6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbiGFWiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 18:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40374 "EHLO
+        id S232278AbiGFWsf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 18:48:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233780AbiGFWiE (ORCPT
+        with ESMTP id S231761AbiGFWsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 18:38:04 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4352B1B5
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 15:38:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1657147083; x=1688683083;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6qnLDe/yg7WUXPj4IO0fRwUVQrjauWYs9yVOFR0aA/I=;
-  b=QDD9n7i+yWCkLvwTwEk33/PTp/CQv3S4cg8rkezjDCcQq8V9zW2XwdcU
-   zRAz6R6sy1ldISGV4AWteL5XLEuihHECueewsaIhusqogtIlJcuDxx4QS
-   96khCZOM8tIzSBPhW2zQx9NrzhxK42qbKnNn4Ove9zKq6VYNlffeV96q+
-   jM6T4AyZdH3/9ah+hpEQRYMWhvQVhU5wAmb4oHraojEmNs54NOBkNUdKH
-   51inYsBfFBuvDmgT1op1wFwP79cxk+PwTabg3meiIt+dww6Y9tU9v1FAD
-   ySltqQNomy08U4IRMa9ocIgjbf6xbY6x5Tu6queHNgbBhVECl4149IEZO
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,251,1650902400"; 
-   d="scan'208";a="209925916"
-Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 07 Jul 2022 06:38:01 +0800
-IronPort-SDR: 5lNp16/oEF+kPxiuPG/L7FYshHkNEbK/ewUjyLPawA8p44YnMflzNAiU74QE9l1VsHOkLyZZSz
- vGeR7030Ny9L1hy7xHvBWrLbXEc/dBC4yVXspwYKdwaOr3XLtowEPPd6M2cZ8BSaltpfU3djto
- dWud0q5shKG+AJ4yeUbvg8LYXdU/0qRaxGWz1Jr1Br3s04nzbpZjUnVdvJHodrhBezi6394c17
- QQwZgJR85i0CcThv6DfSNRm8A6QNGFcBHfG/1dnpPMoF5nT4/kjHeI8gYC9co4w+OpoEbUoFps
- 0VKsX1XN6Y0pRZIQSI3ZCT/l
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Jul 2022 14:59:48 -0700
-IronPort-SDR: U+Bef7M1MUAuG083cK0bw2zbi/nObVG7Oi1zGfWZyvovksbo4RE/f4q21LumkJAGk4nLb996OI
- l6uJIQFMlbOaJgKun/0OjAE6XtbT3SAla586btVs7K0rnRtyLwkQmTCNCrAX4XuL2SvBpjzTTb
- 2CLJq8ADc7iPNEgaOY5iu9iXMHXRA7Q8Y/hm+Wc5F73ih92N7rMMEsVplSYw4RvTfJ6W39lfna
- ToowzGmqhHUEOkPqMW6AUMptEundLi5uYrmFCw3ZoiDdbOtsIuWy3rz+UyklpjNMAvHGivrrsi
- 710=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Jul 2022 15:38:02 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LdZF55Jhtz1RwqM
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 15:38:01 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1657147076; x=1659739077; bh=6qnLDe/yg7WUXPj4IO0fRwUVQrjauWYs9yV
-        OFR0aA/I=; b=h9HBHIsp+uufAe60GPD0mLTMw0xwsXiH3GXdODQQcpHzf/18rCt
-        v5dst8X1xkW5dir+LG8yLMOLK0K6iZNqN5BJZNyV5cNtSnY2ifPvLBLtjYvGSPzR
-        Eo5FFBMUobHwO3rhFbjOeYA3N1IqkJZaUEkwFY7gVsn+IVy8DjVpt1rRpuWJ4g62
-        t0k0hIa5a+1z3CvoaJv4IUNCZ15vB06QKD4eUmxWzoDF74l0V7n9TiP7d7grPqXA
-        VgUeL4fHpX3sU0IdkYovJ/SqJBbHkWruoLtyRf/r5pIl4YqUABb8JcmkNx9TG6xp
-        pxrMMhyUmxrggGlBENoNE9sialZE4U2UTmA==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id XzoTlVdIoLyB for <linux-kernel@vger.kernel.org>;
-        Wed,  6 Jul 2022 15:37:56 -0700 (PDT)
-Received: from [10.225.163.110] (unknown [10.225.163.110])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LdZDz1csyz1RtVk;
-        Wed,  6 Jul 2022 15:37:55 -0700 (PDT)
-Message-ID: <061ce84e-794d-e235-657a-238dd2308cf5@opensource.wdc.com>
-Date:   Thu, 7 Jul 2022 07:37:53 +0900
+        Wed, 6 Jul 2022 18:48:31 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF4D17E01;
+        Wed,  6 Jul 2022 15:48:30 -0700 (PDT)
+Received: from [IPV6:2405:201:10:3153:7fbd:8a7b:29b6:89fb] (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 13F866601967;
+        Wed,  6 Jul 2022 23:48:21 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657147708;
+        bh=h45Gv9/CBtzMhLWXtaV5EArlpDe5KGn5W/AUow9ryTI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=KSjgbooxPNxwaYS1MTiF2wiKX2iCIrppsfJiX6P6cjynAcrwKMqowMksARnRDr4VY
+         8jwyDPOXnb83gWybzHD33MAUcpO5Eai7tyr4Tfq/TLZFM+RcfERFGc2PHr9QtnK69M
+         ibpB/fX9Tfp0U8ph2C5khkrp1Bc11Wsdf404Yq3CRw5o8Ri/N/zI2ptdJd7xJHG2VO
+         29gdAPYJylfQZ96CIRoji6i+1ddpSr41syhqbMjNlNjEzDs7nnHnpHz6OwQOoSVcoA
+         k6AKaHGUIc+NoAf81vuuoEaIb/AR4a2kMJN0iCeDIiJh5AVMhoryh3ooHrejg5/E92
+         dvqQK5cP9uJHQ==
+Message-ID: <f5e0a2a8-f206-e493-df7e-080ddec6a03f@collabora.com>
+Date:   Thu, 7 Jul 2022 04:18:02 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] zonefs: Call page_address() on page acquired with
- GFP_KERNEL flag
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v6 2/2] iio: light: Add support for ltrf216a sensor
 Content-Language: en-US
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        Johannes Thumshirn <jth@kernel.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ira Weiny <ira.weiny@intel.com>
-References: <20220705142202.24603-1-fmdefrancesco@gmail.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220705142202.24603-1-fmdefrancesco@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>, jic23@kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com, andy.shevchenko@gmail.com,
+        digetx@gmail.com, kernel test robot <lkp@intel.com>
+References: <20220615135130.227236-1-shreeya.patel@collabora.com>
+ <20220615135130.227236-3-shreeya.patel@collabora.com>
+ <60b6965b-7a14-8b7c-c9b9-c463fc0ad88c@collabora.com>
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+In-Reply-To: <60b6965b-7a14-8b7c-c9b9-c463fc0ad88c@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/5/22 23:22, Fabio M. De Francesco wrote:
-> zonefs_read_super() acquires a page with alloc_page(GFP_KERNEL). That
-> page cannot come from ZONE_HIGHMEM, thus there's no need to map it with
-> kmap().
-> 
-> Therefore, use a plain page_address() on that page.
-> 
-> Suggested-by: Ira Weiny <ira.weiny@intel.com>
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-Applied to for-5.20. Thanks !
-
-> ---
->  fs/zonefs/super.c | 16 +++++++---------
->  1 file changed, 7 insertions(+), 9 deletions(-)
-> 
-> diff --git a/fs/zonefs/super.c b/fs/zonefs/super.c
-> index 053299758deb..bd4e4be97a68 100644
-> --- a/fs/zonefs/super.c
-> +++ b/fs/zonefs/super.c
-> @@ -1687,11 +1687,11 @@ static int zonefs_read_super(struct super_block *sb)
->  	if (ret)
->  		goto free_page;
->  
-> -	super = kmap(page);
-> +	super = page_address(page);
->  
->  	ret = -EINVAL;
->  	if (le32_to_cpu(super->s_magic) != ZONEFS_MAGIC)
-> -		goto unmap;
-> +		goto free_page;
->  
->  	stored_crc = le32_to_cpu(super->s_crc);
->  	super->s_crc = 0;
-> @@ -1699,14 +1699,14 @@ static int zonefs_read_super(struct super_block *sb)
->  	if (crc != stored_crc) {
->  		zonefs_err(sb, "Invalid checksum (Expected 0x%08x, got 0x%08x)",
->  			   crc, stored_crc);
-> -		goto unmap;
-> +		goto free_page;
->  	}
->  
->  	sbi->s_features = le64_to_cpu(super->s_features);
->  	if (sbi->s_features & ~ZONEFS_F_DEFINED_FEATURES) {
->  		zonefs_err(sb, "Unknown features set 0x%llx\n",
->  			   sbi->s_features);
-> -		goto unmap;
-> +		goto free_page;
->  	}
->  
->  	if (sbi->s_features & ZONEFS_F_UID) {
-> @@ -1714,7 +1714,7 @@ static int zonefs_read_super(struct super_block *sb)
->  				       le32_to_cpu(super->s_uid));
->  		if (!uid_valid(sbi->s_uid)) {
->  			zonefs_err(sb, "Invalid UID feature\n");
-> -			goto unmap;
-> +			goto free_page;
->  		}
->  	}
->  
-> @@ -1723,7 +1723,7 @@ static int zonefs_read_super(struct super_block *sb)
->  				       le32_to_cpu(super->s_gid));
->  		if (!gid_valid(sbi->s_gid)) {
->  			zonefs_err(sb, "Invalid GID feature\n");
-> -			goto unmap;
-> +			goto free_page;
->  		}
->  	}
->  
-> @@ -1732,14 +1732,12 @@ static int zonefs_read_super(struct super_block *sb)
->  
->  	if (memchr_inv(super->s_reserved, 0, sizeof(super->s_reserved))) {
->  		zonefs_err(sb, "Reserved area is being used\n");
-> -		goto unmap;
-> +		goto free_page;
->  	}
->  
->  	import_uuid(&sbi->s_uuid, super->s_uuid);
->  	ret = 0;
->  
-> -unmap:
-> -	kunmap(page);
->  free_page:
->  	__free_page(page);
->  
+On 07/07/22 02:39, Dmitry Osipenko wrote:
+> On 6/15/22 16:51, Shreeya Patel wrote:
+>> +static int ltrf216a_probe(struct i2c_client *client)
+>> +{
+>> +	struct ltrf216a_data *data;
+>> +	struct iio_dev *indio_dev;
+>> +	int ret;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	data = iio_priv(indio_dev);
+>> +	i2c_set_clientdata(client, indio_dev);
+>> +	data->client = client;
+>> +
+>> +	mutex_init(&data->lock);
+>> +
+>> +	indio_dev->info = &ltrf216a_info;
+>> +	indio_dev->name = LTRF216A_DRV_NAME;
+>> +	indio_dev->channels = ltrf216a_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(ltrf216a_channels);
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +	/* reset sensor, chip fails to respond to this, so ignore any errors */
+>> +	ltrf216a_reset(indio_dev);
+> Shouldn't SW resetting be done after enabling sensor? Perhaps that's why
+> it fails to respond?
 
 
--- 
-Damien Le Moal
-Western Digital Research
+We tried to reset the device through i2c-tool to see if that works :-
+
+(root@steamdeck ~)# i2cset -f 0 0x53 0x00 0x10
+warning! This program can confuse your i2c bus, cause data loss and worse!
+Dangerous! Writing to a serial eeprom on a memory dimm
+may render your memory useless and make your system unbootable!
+I will write to device file /dev/i2c-0, chip address 0x53,
+data address 0x00, data 0x10, mode byte.
+Continue? [y/n] y
+error: write failed
+(1)(b+)(root@steamdeck ~)#
+
+But the problem here is that the light sensor resets itself 
+instantaneously while the i2c transaction is still in progress.
+So it never replies with the proper stop bit that is expected at the end 
+of a transaction. Hence, we decided to ignore
+the error.
+
+
+Thanks,
+Shreeya Patel
+>
