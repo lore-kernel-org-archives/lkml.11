@@ -2,144 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADF4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 02:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C736C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 02:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbiGFCsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 22:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43618 "EHLO
+        id S231180AbiGFCty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 22:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiGFCsJ (ORCPT
+        with ESMTP id S229648AbiGFCtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 22:48:09 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2971A05C;
-        Tue,  5 Jul 2022 19:48:07 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ld3nl48DhzcftB;
-        Wed,  6 Jul 2022 10:46:03 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 10:48:04 +0800
-Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Jul
- 2022 10:48:04 +0800
-From:   Liu Shixin <liushixin2@huawei.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-        William Kucharski <william.kucharski@oracle.com>,
-        "Christoph Hellwig" <hch@lst.de>
-CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
-        Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH 5.15] mm/filemap: fix UAF in find_lock_entries
-Date:   Wed, 6 Jul 2022 11:24:34 +0800
-Message-ID: <20220706032434.579610-1-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 5 Jul 2022 22:49:53 -0400
+Received: from out199-6.us.a.mail.aliyun.com (out199-6.us.a.mail.aliyun.com [47.90.199.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9918915A3E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 19:49:51 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VIW9-BM_1657075784;
+Received: from 30.225.28.170(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VIW9-BM_1657075784)
+          by smtp.aliyun-inc.com;
+          Wed, 06 Jul 2022 10:49:45 +0800
+Message-ID: <7bf7c5ea-16eb-b02f-8ef5-bb94c157236d@linux.alibaba.com>
+Date:   Wed, 6 Jul 2022 10:49:43 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
+ degradation
+To:     Mike Rapoport <rppt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Will Deacon <will@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+        baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
+        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
+        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
+        jonathan@marek.ca, mark.rutland@arm.com,
+        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        geert+renesas@glider.be, linux-mm@kvack.org,
+        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
+References: <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
+ <20220704163815.GA32177@willie-the-truck>
+ <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
+ <20220705095231.GB552@willie-the-truck>
+ <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+ <20220705121115.GB1012@willie-the-truck> <YsRSajyMxahXe7ZS@kernel.org>
+ <YsRZ8V8mQ+HM31D6@arm.com> <YsRfgX7FFZLxQU50@kernel.org>
+ <YsRvPTORdvIwzShL@arm.com> <YsSi9HAOOzbPYN+w@kernel.org>
+From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
+In-Reply-To: <YsSi9HAOOzbPYN+w@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Release refcount after xas_set to fix UAF which may cause panic like this:
+Thanks.
 
- page:ffffea000491fa40 refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1247e9
- head:ffffea000491fa00 order:3 compound_mapcount:0 compound_pincount:0
- memcg:ffff888104f91091
- flags: 0x2fffff80010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
-...
-page dumped because: VM_BUG_ON_PAGE(PageTail(page))
- ------------[ cut here ]------------
- kernel BUG at include/linux/page-flags.h:632!
- invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN
- CPU: 1 PID: 7642 Comm: sh Not tainted 5.15.51-dirty #26
-...
- Call Trace:
-  <TASK>
-  __invalidate_mapping_pages+0xe7/0x540
-  drop_pagecache_sb+0x159/0x320
-  iterate_supers+0x120/0x240
-  drop_caches_sysctl_handler+0xaa/0xe0
-  proc_sys_call_handler+0x2b4/0x480
-  new_sync_write+0x3d6/0x5c0
-  vfs_write+0x446/0x7a0
-  ksys_write+0x105/0x210
-  do_syscall_64+0x35/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f52b5733130
-...
+在 2022/7/6 4:45, Mike Rapoport 写道:
+> On Tue, Jul 05, 2022 at 06:05:01PM +0100, Catalin Marinas wrote:
+>> On Tue, Jul 05, 2022 at 06:57:53PM +0300, Mike Rapoport wrote:
+>>> On Tue, Jul 05, 2022 at 04:34:09PM +0100, Catalin Marinas wrote:
+>>>> On Tue, Jul 05, 2022 at 06:02:02PM +0300, Mike Rapoport wrote:
+>>>>> +void __init remap_crashkernel(void)
+>>>>> +{
+>>>>> +#ifdef CONFIG_KEXEC_CORE
+>>>>> +	phys_addr_t start, end, size;
+>>>>> +	phys_addr_t aligned_start, aligned_end;
+>>>>> +
+>>>>> +	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+>>>>> +	    return;
+>>>>> +
+>>>>> +	if (!crashk_res.end)
+>>>>> +	    return;
+>>>>> +
+>>>>> +	start = crashk_res.start & PAGE_MASK;
+>>>>> +	end = PAGE_ALIGN(crashk_res.end);
+>>>>> +
+>>>>> +	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
+>>>>> +	aligned_end = ALIGN(end, PUD_SIZE);
+>>>>> +
+>>>>> +	/* Clear PUDs containing crash kernel memory */
+>>>>> +	unmap_hotplug_range(__phys_to_virt(aligned_start),
+>>>>> +			    __phys_to_virt(aligned_end), false, NULL);
+>>>>
+>>>> What I don't understand is what happens if there's valid kernel data
+>>>> between aligned_start and crashk_res.start (or the other end of the
+>>>> range).
+>>>
+>>> Data shouldn't go anywhere :)
+>>>
+>>> There is
+>>>
+>>> +	/* map area from PUD start to start of crash kernel with large pages */
+>>> +	size = start - aligned_start;
+>>> +	__create_pgd_mapping(swapper_pg_dir, aligned_start,
+>>> +			     __phys_to_virt(aligned_start),
+>>> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+>>>
+>>> and
+>>>
+>>> +	/* map area from end of crash kernel to PUD end with large pages */
+>>> +	size = aligned_end - end;
+>>> +	__create_pgd_mapping(swapper_pg_dir, end, __phys_to_virt(end),
+>>> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+>>>
+>>> after the unmap, so after we tear down a part of a linear map we
+>>> immediately recreate it, just with a different page size.
+>>>
+>>> This all happens before SMP, so there is no concurrency at that point.
+>>
+>> That brief period of unmap worries me. The kernel text, data and stack
+>> are all in the vmalloc space but any other (memblock) allocation to this
+>> point may be in the unmapped range before and after the crashkernel
+>> reservation. The interrupts are off, so I think the only allocation and
+>> potential access that may go in this range is the page table itself. But
+>> it looks fragile to me.
+> 
+> I agree there are chances there will be an allocation from the unmapped
+> range.
+> 
+> We can make sure this won't happen, though. We can cap the memblock
+> allocations with memblock_set_current_limit(aligned_end) or
+> memblock_reserve(algined_start, aligned_end) until the mappings are
+> restored.
+>   
+>> -- 
+>> Catalin
+> 
+I think there is no need to worry about vmalloc mem.
 
-This problem has been fixed on mainline by patch 6b24ca4a1a8d ("mm: Use
-multi-index entries in the page cache") since it deletes the related code.
+1.As mentioned above,
+When reserving crashkernel and remapping linear mem mapping, there is 
+only one boot cpu running. There is no other cpu/thread running at the 
+same time.
 
-Fixes: 5c211ba29deb ("mm: add and use find_lock_entries")
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
----
- mm/filemap.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+2.Although vmalloc may alloc mem from the ummaped area, but we will 
+rebuid remapping using pte level mapping which keeps virtual address to 
+the same physical address
+(At the same time, no other cpu/thread is access vmalloc mem).
 
-diff --git a/mm/filemap.c b/mm/filemap.c
-index 00e391e75880..24b5d7ebdc29 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2087,16 +2087,18 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t start,
- {
- 	XA_STATE(xas, &mapping->i_pages, start);
- 	struct page *page;
-+	bool putpage;
- 
- 	rcu_read_lock();
- 	while ((page = find_get_entry(&xas, end, XA_PRESENT))) {
-+		putpage = true;
- 		if (!xa_is_value(page)) {
- 			if (page->index < start)
--				goto put;
-+				goto next;
- 			if (page->index + thp_nr_pages(page) - 1 > end)
--				goto put;
-+				goto next;
- 			if (!trylock_page(page))
--				goto put;
-+				goto next;
- 			if (page->mapping != mapping || PageWriteback(page))
- 				goto unlock;
- 			VM_BUG_ON_PAGE(!thp_contains(page, xas.xa_index),
-@@ -2105,20 +2107,24 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t start,
- 		indices[pvec->nr] = xas.xa_index;
- 		if (!pagevec_add(pvec, page))
- 			break;
-+		putpage = false;
- 		goto next;
- unlock:
- 		unlock_page(page);
--put:
--		put_page(page);
- next:
- 		if (!xa_is_value(page) && PageTransHuge(page)) {
- 			unsigned int nr_pages = thp_nr_pages(page);
- 
- 			/* Final THP may cross MAX_LFS_FILESIZE on 32-bit */
- 			xas_set(&xas, page->index + nr_pages);
--			if (xas.xa_index < nr_pages)
-+			if (xas.xa_index < nr_pages) {
-+				if (putpage)
-+					put_page(page);
- 				break;
-+			}
- 		}
-+		if (putpage)
-+			put_page(page);
- 	}
- 	rcu_read_unlock();
- 
--- 
-2.25.1
-
+As a result, it has no effect to vmalloc mem.
