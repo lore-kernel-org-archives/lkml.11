@@ -2,162 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EB2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87812C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 20:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233974AbiGFUbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 16:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
+        id S234206AbiGFUeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 16:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233519AbiGFUbO (ORCPT
+        with ESMTP id S233466AbiGFUeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 16:31:14 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB662494D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 13:31:13 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id bu42so7944116lfb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 13:31:13 -0700 (PDT)
+        Wed, 6 Jul 2022 16:34:00 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23ADE63DF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 13:34:00 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so7102286pjr.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 13:34:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sLAB7PPgRJS7FBUcfBXuPogoYxwCOXpRzrraHJLqWfE=;
-        b=YHlBoPSJuPoCecofCvpCH4tmscl+28DBd8wK50hy4bthb6jphDprUKrGdG13GhRe+u
-         X/AfJXnFGGeZhoOHuSQsipNPRMWzx4kR5pABv7w668ayE5GKkdUWl3yvMursxjLsvM8e
-         Y3zMol3FS7vEhujIcXUWqzJwz8fx4PxlMkt6j+Sfb8BptT4P45z0fb594wOqvRYIc2K7
-         AGTT2Xa1k/mXHjlJve+o+IrgXTAJdWOTOa23QcRvUpEVV6OgY31stizTEvIv3fT7j4lE
-         hMAOAY5hzFOL1C4dU0Pg3xrS3CBqrOFLCiorK+3GE1cAscIjpENyCxd/dx9XtJmEhKFz
-         eccw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CWCLa+dTVXWwsrUUTc1ULWbuRRtRrFjABx527QYlRYE=;
+        b=N3mfqfa8QIYI2oMOnSFfuS+ztGJzFRckUNR60Rg7uj0J6KdS5RiNyoKRlYbfh0xKDP
+         miNEQDrvOEAW5HkFaO++0utAkCCH4gvrj/JSV4V/RhCKNpcq+NyoHrCPSI3rIYG6GNlu
+         v27ODgmoQE9bllvvKMUdP06XIFx+LSlfYDQVU/3lEeBY9WKcEpq3SZ7ln8frW8plw0Bm
+         um0LZ33TKl333MX/RChX0fqReTrqXLAklWNN1yr6CvsDolJFGpEtHn8CnniukAzvPIbZ
+         nNZpd/YBLec0jEJNkaUHiIQLAh6Nl+VF1BrCEerL2s4AAIkyZH6S+1a88bX6lwVOozYe
+         Equg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sLAB7PPgRJS7FBUcfBXuPogoYxwCOXpRzrraHJLqWfE=;
-        b=pZfs798eTMiwaGzbhf7gA7sidJ3eEkRsT52FCZNW44VKw4zD45/sJOuIB0ZrJLZvZJ
-         9OUmybVnTVtVVahrpUwa/tR/UmsJdgrZqDTyZ0fX00kiEh38oLaqp4OMc9kYzPIn11XD
-         Moz2BqoBcwonpjiF0MzKXxY0RfKG6rq9TfjtDYY5sKfLt8bQ32Qr+ekNnCIjbNbx7ke2
-         unvmhzjP/F7RcAU/jTkU/okelQspUEpFpmD8Y6u/XdUUDbnPqY5sHEJZKCWjmpIEw0E9
-         HQaW/IdggQRvUvy9mOkGdSP0eY7paZbhSQZh0ez/ByrvSKXwE7c9Uwn1Lnc2RWckR+N4
-         46IA==
-X-Gm-Message-State: AJIora+gwWVz/wJGPjB3R0E6zdInoPY3kcXeLXEHotY9z2xoHyy0PJQt
-        KIGRlbu70LdRHKc5G7L+fdMV5B+vGEJQ4yHoQfc7w4/1mBqPtw==
-X-Google-Smtp-Source: AGRyM1vSDOBH7B9iAAHVjpTbPd3tKPUPLTeCrocbC7VW2zzKMNmJfLigIa8R9o8iO9nBgX/88zOV/6kdmmjeOMD7f3U=
-X-Received: by 2002:a05:6512:1188:b0:481:2eb7:f2 with SMTP id
- g8-20020a056512118800b004812eb700f2mr26513384lfr.401.1657139471312; Wed, 06
- Jul 2022 13:31:11 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CWCLa+dTVXWwsrUUTc1ULWbuRRtRrFjABx527QYlRYE=;
+        b=VVfnqqshkUVi63GiIdjZwSWv7NLOm+kIwXunukOwj/+lhdKjfcnxPe4iggcP74lfH0
+         5R7ANoxG06J/O8Yiw7sMY9pi3j3oZYG5DbCARYe8Jx7mIiyW0aB6Vx5xyPtqLDGkt8RN
+         SlMLcSQQDvhvKd2m1gfwMaBawAD79lU5EZ54ZUehWGkGJoNqq2Jr3LuYkcXvOdpRhdym
+         qKuC+02sTQ8a66sBY9ghsCagEKFOUkIb0vjzkjsulmKSYDtqezd19QINr2bFy5uYSQ3A
+         W7nogYjT1zqjMj0jv+RUOv8eRSFxj26chbdPRKAKsvEE57k46Xrp+7cIZp4H8YSjVLYI
+         BO2w==
+X-Gm-Message-State: AJIora+BY57hpIf+QUrJnIYku9jq5sIaQmS1egRD7iTB/f+DbOE0LEZw
+        eqfC6qEASjCkPZ8gy4sHCeQ=
+X-Google-Smtp-Source: AGRyM1tXewrWxIrfYGjV6cq7zTptlUMB++mYEvJvssDzXJFuaW8LXUuYbRWfiGSaFp1zNFRn47dwkA==
+X-Received: by 2002:a17:902:dace:b0:16b:e8d4:2955 with SMTP id q14-20020a170902dace00b0016be8d42955mr15758494plx.135.1657139639489;
+        Wed, 06 Jul 2022 13:33:59 -0700 (PDT)
+Received: from localhost.localdomain (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id v11-20020a17090a4ecb00b001ef863193f4sm7797248pjl.33.2022.07.06.13.33.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 13:33:58 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        linux-kernel@vger.kernel.org (open list), ssantosh@kernel.org,
+        ardb@kernel.org, linus.walleij@linaro.org, geert+renesas@glider.be
+Subject: [PATCH v3] ARM: Fix MAX_DMA_ADDRESS overflow
+Date:   Wed,  6 Jul 2022 13:33:53 -0700
+Message-Id: <20220706203353.247633-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <202207060054.o8GrfMhS-lkp@intel.com> <20220706134523.00000555@Huawei.com>
-In-Reply-To: <20220706134523.00000555@Huawei.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 6 Jul 2022 13:30:59 -0700
-Message-ID: <CAKwvOdm9+UEXCepJGDzjNibYTss5joek-3FMC6K2Z7w1EPLdGQ@mail.gmail.com>
-Subject: Re: drivers/iio/adc/ad7476.c:29:8: warning: Excessive padding in
- 'struct ad7476_chip_info' (10 padding bytes, where 2 is optimal). Optimal
- fields order: reset, channel, convst_channel, int_vref_uv, has_vref,
- has_vdrive, consider reordering the fields or addin...
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 5:45 AM Jonathan Cameron
-<Jonathan.Cameron@huawei.com> wrote:
->
->
->
-> >    Use -header-filter=3D.* to display errors from all non-system header=
-s. Use -system-headers to display errors from system headers as well.
-> >    21 warnings generated.
-> > >> drivers/iio/adc/ad7476.c:29:8: warning: Excessive padding in 'struct=
- ad7476_chip_info' (10 padding bytes, where 2 is optimal). Optimal fields o=
-rder: reset, channel, convst_channel, int_vref_uv, has_vref, has_vdrive, co=
-nsider reordering the fields or adding explicit padding members [clang-anal=
-yzer-optin.performance.Padding]
-> >    struct ad7476_chip_info {
-> >    ~~~~~~~^~~~~~~~~~~~~~~~~~
-> >    drivers/iio/adc/ad7476.c:29:8: note: Excessive padding in 'struct ad=
-7476_chip_info' (10 padding bytes, where 2 is optimal). Optimal fields orde=
-r: reset, channel, convst_channel, int_vref_uv, has_vref, has_vdrive, consi=
-der reordering the fields or adding explicit padding members
-> >    struct ad7476_chip_info {
-> >    ~~~~~~~^~~~~~~~~~~~~~~~~~
-> > >> drivers/iio/adc/ad7476.c:39:8: warning: Excessive padding in 'struct=
- ad7476_state' (472 padding bytes, where 216 is optimal). Optimal fields or=
-der: data, spi, chip_info, ref_reg, convst_gpio, msg, xfer, consider reorde=
-ring the fields or adding explicit padding members [clang-analyzer-optin.pe=
-rformance.Padding]
-> >    struct ad7476_state {
->
-> For this one and I'm guessing some of the other IIO cases, if there is an=
-y way to suppress the warning where we have specific
-> alignments specified then that would be great. These are padded to ensure=
- the buffers are DMA safe.
+Commit 26f09e9b3a06 ("mm/memblock: add memblock memory allocation apis")
+added a check to determine whether arm_dma_zone_size is exceeding the
+amount of kernel virtual address space available between the upper 4GB
+virtual address limit and PAGE_OFFSET in order to provide a suitable
+definition of MAX_DMA_ADDRESS that should fit within the 32-bit virtual
+address space. The quantity used for comparison was off by a missing
+trailing 0, leading to MAX_DMA_ADDRESS to be overflowing a 32-bit
+quantity.
 
-I didn't see anything during a quick scan of:
-https://github.com/llvm/llvm-project/blob/main/clang/lib/StaticAnalyzer/Che=
-ckers/PaddingChecker.cpp#L73
-to disable this warning when it's a false positive.
+This was caught thanks to CONFIG_DEBUG_VIRTUAL on the bcm2711 platform
+where we define a dma_zone_size of 1GB and we have a PAGE_OFFSET value
+of 0xc000_0000 (CONFIG_VMSPLIT_3G) leading to MAX_DMA_ADDRESS being
+0x1_0000_0000 which overflows the unsigned long type used throughout
+__pa() and then __virt_addr_valid(). Because the virtual address passed
+to __virt_addr_valid() would now be 0, the function would loudly warn
+and flood the kernel log, thus making the platform unable to boot
+properly.
 
-Though
-https://clang.llvm.org/extra/clang-tidy/#suppressing-undesired-diagnostics
-mentions NOLINT.
+Fixes: 26f09e9b3a06 ("mm/memblock: add memblock memory allocation apis")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v3:
 
->
-> Thanks,
->
-> Jonathan
->
->
-> >    ~~~~~~~^~~~~~~~~~~~~~
-> >    drivers/iio/adc/ad7476.c:39:8: note: Excessive padding in 'struct ad=
-7476_state' (472 padding bytes, where 216 is optimal). Optimal fields order=
-: data, spi, chip_info, ref_reg, convst_gpio, msg, xfer, consider reorderin=
-g the fields or adding explicit padding members
-> >    struct ad7476_state {
-> >    ~~~~~~~^~~~~~~~~~~~~~
-> >    Suppressed 19 warnings (7 in non-user code, 12 with check filters).
-> >    Use -header-filter=3D.* to display errors from all non-system header=
-s. Use -system-headers to display errors from system headers as well.
-> >    20 warnings generated.
-> >    drivers/iio/adc/ad7766.c:35:8: warning: Excessive padding in 'struct=
- ad7766' (392 padding bytes, where 136 is optimal). Optimal fields order: d=
-ata, chip_info, spi, mclk, pd_gpio, trig, reg, msg, xfer, consider reorderi=
-ng the fields or adding explicit padding members [clang-analyzer-optin.perf=
-ormance.Padding]
-> >    struct ad7766 {
-> >    ~~~~~~~^~~~~~~~
-> >    drivers/iio/adc/ad7766.c:35:8: note: Excessive padding in 'struct ad=
-7766' (392 padding bytes, where 136 is optimal). Optimal fields order: data=
-, chip_info, spi, mclk, pd_gpio, trig, reg, msg, xfer, consider reordering =
-the fields or adding explicit padding members
-> >    struct ad7766 {
-> >    ~~~~~~~^~~~~~~~
-> >    Suppressed 19 warnings (7 in non-user code, 12 with check filters).
-> >    Use -header-filter=3D.* to display errors from all non-system header=
-s. Use -system-headers to display errors from system headers as well.
-> >    20 warnings generated.
-> >    drivers/iio/adc/ad7768-1.c:154:8: warning: Excessive padding in 'str=
-uct ad7768_state' (388 padding bytes, where 132 is optimal). Optimal fields=
- order: data, mclk_freq, spi, vref, mclk, trig, gpio_sync_in, labels, lock,=
- completion, samp_freq, consider reordering the fields or adding explicit p=
-adding members [clang-analyzer-optin.performance.Padding]
-> >    struct ad7768_state {
-> >    ~~~~~~~^~~~~~~~~~~~~~
-> >    drivers/iio/adc/ad7768-1.c:154:8: note: Excessive padding in 'struct=
- ad7768_state' (388 padding bytes, where 132 is optimal). Optimal fields or=
-der: data, mclk_freq, spi, vref, mclk, trig, gpio_sync_in, labels, lock, co=
-mpletion, samp_freq, consider reordering the fields or adding explicit padd=
-ing members
-> >    struct ad7768_state {
-> >    ~~~~~~~^~~~~~~~~~~~~~
->
+- added ULL suffix to the constant
+- reworded the commit message to be clearer
 
+Changes in v2:
 
---=20
-Thanks,
-~Nick Desaulniers
+- simplify the patch and drop the first patch that attempted to fix an
+  off by one in the calculation.
+
+ arch/arm/include/asm/dma.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/include/asm/dma.h b/arch/arm/include/asm/dma.h
+index a81dda65c576..45180a2cc47c 100644
+--- a/arch/arm/include/asm/dma.h
++++ b/arch/arm/include/asm/dma.h
+@@ -10,7 +10,7 @@
+ #else
+ #define MAX_DMA_ADDRESS	({ \
+ 	extern phys_addr_t arm_dma_zone_size; \
+-	arm_dma_zone_size && arm_dma_zone_size < (0x10000000 - PAGE_OFFSET) ? \
++	arm_dma_zone_size && arm_dma_zone_size < (0x100000000ULL - PAGE_OFFSET) ? \
+ 		(PAGE_OFFSET + arm_dma_zone_size) : 0xffffffffUL; })
+ #endif
+ 
+-- 
+2.25.1
+
