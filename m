@@ -2,117 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59901C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B73CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiGFGis (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 02:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37338 "EHLO
+        id S229971AbiGFGjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 02:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiGFGin (ORCPT
+        with ESMTP id S229793AbiGFGju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 02:38:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E12167CA;
-        Tue,  5 Jul 2022 23:38:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62D2361D84;
-        Wed,  6 Jul 2022 06:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39758C3411C;
-        Wed,  6 Jul 2022 06:38:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657089519;
-        bh=sIhADMY3Ddiwqu/4zmrMxVcxGylkvp6d6ylGolHrEgY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dv8K6kxrFf7OTnxoy7BJoYTK27INCS/dp6gsLZU+mDz0eG+7Cfsq3vGkwutzzXz77
-         jOM4u9OlUDKwA1RaRr22Fe34PTWi+7e+iuBGypoSgP3RRd1neORWeqv6u+fz4YMohn
-         QmQwowyzodvSl9o04hklMK59Etq0P85n2f5nOg/4=
-Date:   Wed, 6 Jul 2022 08:38:37 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
-        rafael@kernel.org, rppt@kernel.org, akpm@linux-foundation.org,
-        daniel.gutson@eclypsium.com, hughsient@gmail.com,
-        alex.bazhaniuk@eclypsium.com, alison.schofield@intel.com,
-        keescook@chromium.org
-Subject: Re: [PATCH v9 9/9] drivers/node: Show in sysfs node's crypto
- capabilities
-Message-ID: <YsUt7X6HLIY6wt1Z@kroah.com>
-References: <20220704135833.1496303-1-martin.fernandez@eclypsium.com>
- <20220704135833.1496303-10-martin.fernandez@eclypsium.com>
- <YsL6XCWmgiIeLKJ9@kroah.com>
- <CAKgze5aD3vJwMQwzJ1syzAKvSvPgYDFvtapDea_zBki5taoFEQ@mail.gmail.com>
+        Wed, 6 Jul 2022 02:39:50 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74837167CA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 23:39:49 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id y141so13524483pfb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 23:39:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vRmDjPpc1ypdcneiWKEOt2A9rTdMJLx78Cgy5W5981I=;
+        b=n2H4gCdeHo2gNaIplHcteu9pNdBzHjiMsZ3HktbeujIfTSTHZOIp8M6i9KFOS/7tGo
+         AGG0KWlbosrHRn6oXOB/3NXtAS+fw9ucxy3MMKMh7JmCZg+NF4fPZmECERwUugcbmlDG
+         Q7qY6Y+kcP11LhpO5z553sCkV53YQkExlJ11RGhbVaIQoVwnWCVogdPDpK9YDveaJ2B8
+         QBlZx1dToQ1uDdrjAXV9eEueKGMNKaDenn9rpgJBPtPCdF3X4cobBb7piYAfPKkYQIS6
+         LW+2XO6gTYgy77S3O/VFScec0XhN8bNR6S24/06C49uV0i/xvXtEO2cLsZ0TikvoYaWd
+         HUoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vRmDjPpc1ypdcneiWKEOt2A9rTdMJLx78Cgy5W5981I=;
+        b=B1dXg/EoGO0S89Wbi8UoEe04CzspOSTQJ64Vl5MKfmYfvQs4XXc9fA89e+znEvHznQ
+         wcfcPSaaLaBr0xxrfrctGy6iEzqIZ2m7UIbRMKxlaSHdAdP7c4xXUE+vnvrZIfn1tqUI
+         m2NElU6AcE90xTXltfkjzEezSxhj6b12fTphXFV86sWIc+C34RRp+sGbFVkmaEuyuCkF
+         wbZQbDeAZQS7u5U6sXaYznfI6huM57vP6BHg+DynGWib0xwrXsc9zKYiXmXxTk83FngF
+         Rjm4buGIo7caEwIaPZR43n3gMvDsX6lkMuH4dqFOeC1+gcJeNAexUvXsupqVw4NaaA22
+         Ih1A==
+X-Gm-Message-State: AJIora8lP0cLb27LMTSizSXHvf0sV2dAzefRDw3HJGIbPRA80d6/g0/7
+        KlsiVw0ONS2MWSCrAT8RVSg7SQ==
+X-Google-Smtp-Source: AGRyM1uxQGhUy5Sr+MIJTzxNS6ZGjSIqdJU5vg3JQGPO6WWbvIuMl58/vYe/PFW+FZfao0qAeALdqA==
+X-Received: by 2002:a65:42cc:0:b0:3a9:f71f:33f9 with SMTP id l12-20020a6542cc000000b003a9f71f33f9mr32966547pgp.391.1657089588947;
+        Tue, 05 Jul 2022 23:39:48 -0700 (PDT)
+Received: from localhost ([122.171.18.80])
+        by smtp.gmail.com with ESMTPSA id br10-20020a056a00440a00b0051c2fc79aa8sm24619356pfb.91.2022.07.05.23.39.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 23:39:48 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 12:09:46 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2 09/13] OPP: Assert clk_count == 1 for single clk
+ helpers
+Message-ID: <20220706063946.pmtkwiyfzxx5ka7h@vireshk-i7>
+References: <cover.1657003420.git.viresh.kumar@linaro.org>
+ <f039572f213ee49125d3d1ea4e64a94b79778426.1657003420.git.viresh.kumar@linaro.org>
+ <df997015-df77-2bcb-1551-6e8da4acb36a@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKgze5aD3vJwMQwzJ1syzAKvSvPgYDFvtapDea_zBki5taoFEQ@mail.gmail.com>
+In-Reply-To: <df997015-df77-2bcb-1551-6e8da4acb36a@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 02:35:18PM -0300, Martin Fernandez wrote:
-> On 7/4/22, Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Mon, Jul 04, 2022 at 10:58:33AM -0300, Martin Fernandez wrote:
-> >> Show in each node in sysfs if its memory is able to do be encrypted by
-> >> the CPU; on EFI systems: if all its memory is marked with
-> >> EFI_MEMORY_CPU_CRYPTO in the EFI memory map.
-> >>
-> >> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
-> >> ---
-> >>  Documentation/ABI/testing/sysfs-devices-node | 10 ++++++++++
-> >>  drivers/base/node.c                          | 10 ++++++++++
-> >>  2 files changed, 20 insertions(+)
-> >>  create mode 100644 Documentation/ABI/testing/sysfs-devices-node
-> >>
-> >> diff --git a/Documentation/ABI/testing/sysfs-devices-node
-> >> b/Documentation/ABI/testing/sysfs-devices-node
-> >> new file mode 100644
-> >> index 000000000000..0e95420bd7c5
-> >> --- /dev/null
-> >> +++ b/Documentation/ABI/testing/sysfs-devices-node
-> >> @@ -0,0 +1,10 @@
-> >> +What:		/sys/devices/system/node/nodeX/crypto_capable
-> >> +Date:		April 2022
-> >> +Contact:	Martin Fernandez <martin.fernandez@eclypsium.com>
-> >> +Users:		fwupd (https://fwupd.org)
-> >> +Description:
-> >> +		This value is 1 if all system memory in this node is
-> >> +		capable of being protected with the CPU's memory
-> >> +		cryptographic capabilities.  It is 0 otherwise.
-> >> +		On EFI systems the node will be marked with
-> >> +		EFI_MEMORY_CPU_CRYPTO.
-> >
-> > Where will such a node be "marked"?  I do not understand this last
-> > sentence, sorry, can you please reword this?
-> 
-> What I meant is that if all the memory regions in a given node are
-> flagged with EFI_MEMORY_CPU_CRYPTO then that file will hold a 1.
-> 
-> Maybe it's a little confusing if you don't know what
-> EFI_MEMORY_CPU_CRYPTO is.
-> 
-> > And why is EFI an issue here at all?
-> 
-> Checking for EFI_MEMORY_CPU_CRYPTO is the way to know if a memory
-> region is able to be encrypted by the CPU on EFI platforms. It's not
-> really an issue and it's currently the only implementation for this
-> file.
-> 
-> Is it clearer here?
-> 
->   This value is 1 if the memory in this node is capable of being
->   protected with the CPU's memory cryptographic capabilities.  It is 0
->   otherwise.
->   On EFI systems this means that all the memory regions of the node
->   have the EFI_MEMORY_CPU_CRYPTO attribute set.
+On 05-07-22, 19:21, Krzysztof Kozlowski wrote:
+> Where is the safety problem with multiple-clocks case?
 
-Much better, thanks.
+All these APIs, which I have added the assert to now, are designed
+with a single clk/freq in mind. They simply take a clock frequency
+value as input and do something based on it. It only works fine with
+single clk case, as more information is required for multiple clock
+case, a freq value isn't sufficient here. In order to avoid abuse or
+accidental use of the wrong API, these WARNs were required.
 
-greg k-h
+> And how users of PM OPP API are supposed to iterate/find OPPs they
+> want if the API now throws WARN?
+
+We need to provide new APIs for that, as I mentioned in the cover
+letter and the other mail I sent you yesterday.
+
+Specifically, if we want to have OPP finder API based on freq value,
+then it needs to either have index + freq as input, or an array of
+frequencies (one for each clk) as input.
+
+Though I am not sure what you would need at the moment, as you can
+also use opp-level for OPPs as they match UFS gears, that was my
+understanding from earlier discussion.
+
+-- 
+viresh
