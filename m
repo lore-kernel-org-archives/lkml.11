@@ -2,225 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D82C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C60C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233697AbiGFMbj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:31:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35870 "EHLO
+        id S233710AbiGFMbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233676AbiGFMbe (ORCPT
+        with ESMTP id S233704AbiGFMbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:31:34 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6308826AC9
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:33 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id n66so10624265oia.11
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 05:31:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RcutWXTnA/WDhwPlx9qo4wsri5JOk1i2qD2fd6gm+Uo=;
-        b=TQtAz7IJdH/RcgD2JhDeWupI3HpDRhSsuMv93XWEktBxg2cUnb7N6Z5TXgViCOwSNQ
-         qduuM1jEM8RgHppmsUYSiMqSyP1mdaql/xEpkAdml3SJJyTp0WZ6AhON3jlOG+8xCuVz
-         HRXyVUW5G9o4GUjIgLLCf5Z0OocWhVV5A8UISGzlBn6/c0dXz9MqBUYr4zr4x765O1uY
-         p0eWt808Z0CAzZCyAC+XxZyLqBfXOc909/5dF55CsM4lAqsGqh9LjLt2gkXxH40JTMpA
-         PfnVGOzaUEqrWd9S5oGXoMtMd99Z23/0XHDjD3JmKlPlwUptGqlnzJeExz374yecRz8o
-         eyjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RcutWXTnA/WDhwPlx9qo4wsri5JOk1i2qD2fd6gm+Uo=;
-        b=M+tVNO9i/SZ0UP9BfSVp5G8wemTKsPFNzOlMFt/UKddUpgt3nlEeZ6E7+uhXFRtb9G
-         CLOyhODA8dpX3t/X0Ehb54IVRposiFTsPdAxcLyZBDoihSI/+eGWbUrc/uauowwAcLuN
-         ikqv/AMFgkr7ZGRBwuSSLDFnV9AVmnU3Pjea2NUE3j1H7oP/bcX6AX83lGo6IFyQECtA
-         mYTWANDAIvWagrn31k79Z5Fed6hazs6UZZOms50wB6BMCj7R/zhQ7Tsi/403CjsVeE3X
-         jn3bhDAmNRtlU3+rG4xMuQ2WpvwS0TNhW2BMWW/fsz/5BKOtlTwENkWP3lpYtCC0uZPD
-         ZWcg==
-X-Gm-Message-State: AJIora9AVa8hGm8d7WUBY432RdUmPTJombglM47IhHATmNMFP+Gg9nSt
-        L7IDONeQ9HL0CM1DTdlBoAPFB5qA5WF2s/OTycU53w==
-X-Google-Smtp-Source: AGRyM1tAz1H7e2uwc6cDOZT4xcEqNzp8sUNzevKJ456/ix3zpbw31abTY4nAoXKBmsfvR38p8cMuI5uKZ4Jrf3aXY6A=
-X-Received: by 2002:a05:6808:14ca:b0:335:b401:9054 with SMTP id
- f10-20020a05680814ca00b00335b4019054mr20168504oiw.241.1657110692604; Wed, 06
- Jul 2022 05:31:32 -0700 (PDT)
+        Wed, 6 Jul 2022 08:31:41 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152EC26AFA
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:40 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266B1fCu027122;
+        Wed, 6 Jul 2022 12:31:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=dYDdcUQdF89TV7ilxTQPKp4DbfjRbcN5O9ow2J7bkB0=;
+ b=NXiCRWQbaCmEM87ObgUPDvV5kki/IrC0TlT20pH3p+3GblPTLKBNjKkOj8O8PbNfLFNV
+ 24UE+CUQ2J3HjtvVfofMWEe7tmKphvWsdF6xRjzU1Y/1qip7FsesZKPvRvsJiSr1qKkm
+ M8wmM4pH0Tx20RfdAsY3/8+Z7e4j07X5Op8sMUzXN0SJ4RQ+M25BBxuj70Ro3VLbQ60N
+ a0aWzurnVW3+APSetaklnY5uSX6RLgOcgPwMutbogxkLVhTDtCWITZIPMG5eRai64Cth
+ OjhUQ2hpDlzyeW3OJrlfvF+7NKDivYMSGcPL0tW15QnnYzaO3czA2HWX9eoONfPKWU5v FA== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h57mc4ycb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 12:31:37 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 266CLk8u030958;
+        Wed, 6 Jul 2022 12:31:33 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3h4ujsh3fm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 12:31:33 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 266CVVdi17039802
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 6 Jul 2022 12:31:31 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2A194A404D;
+        Wed,  6 Jul 2022 12:31:31 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B4B4BA4055;
+        Wed,  6 Jul 2022 12:31:30 +0000 (GMT)
+Received: from localhost (unknown [9.43.110.188])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  6 Jul 2022 12:31:30 +0000 (GMT)
+Date:   Wed, 06 Jul 2022 18:01:29 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH] perf trace: Fix SIGSEGV when processing augmented args
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     cclaudio@linux.ibm.com, Jiri Olsa <jolsa@kernel.org>,
+        Linux =?iso-8859-1?q?Kernel=0A?= Mailing List 
+        <linux-kernel@vger.kernel.org>, Namhyung Kim <namhyung@kernel.org>
+References: <20220310104741.209834-1-naveen.n.rao@linux.vnet.ibm.com>
+        <Yi+9G1nK1shEIXVN@kernel.org> <1647364864.3xrhklc7kl.naveen@linux.ibm.com>
+        <YjDSRb1wwswKpJNJ@kernel.org> <YjJKaSanKI7LQdEk@kernel.org>
+In-Reply-To: <YjJKaSanKI7LQdEk@kernel.org>
 MIME-Version: 1.0
-References: <20220629160550.433980-1-hsinyi@chromium.org> <20220629160550.433980-2-hsinyi@chromium.org>
- <20220706022926.GA2357796@anxtwsw-Precision-3640-Tower>
-In-Reply-To: <20220706022926.GA2357796@anxtwsw-Precision-3640-Tower>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Wed, 6 Jul 2022 14:31:21 +0200
-Message-ID: <CAG3jFyu2KObuc5CiFFK=NzkE1LOTSFVoA3mNyY6r1aKs2SU3ow@mail.gmail.com>
-Subject: Re: [PATCH 1/4] drm/bridge: anx7625: Convert to devm_i2c_new_dummy_device()
-To:     Xin Ji <xji@analogixsemi.com>
-Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <maxime@cerno.tech>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1657110053.93m1349h4k.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: vVVLXEPDFEDzEM7o9bgXPcSq94R7BHrJ
+X-Proofpoint-ORIG-GUID: vVVLXEPDFEDzEM7o9bgXPcSq94R7BHrJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-06_08,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1011
+ suspectscore=0 spamscore=0 priorityscore=1501 impostorscore=0 adultscore=0
+ lowpriorityscore=0 bulkscore=0 mlxscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207060049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Hsin-Yi,
+Hi Arnaldo,
 
-On Wed, 6 Jul 2022 at 04:29, Xin Ji <xji@analogixsemi.com> wrote:
->
-> Hi Hsin-Yi, thanks for your patch, looks good to me.
->
-> Reviewed-by: Xin Ji <xji@analogixsemi.com>
->
-> On Thu, Jun 30, 2022 at 12:05:47AM +0800, Hsin-Yi Wang wrote:
-> > Simplify the resource management.
-> >
-> > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> > ---
-> >  drivers/gpu/drm/bridge/analogix/anx7625.c | 96 +++++++----------------
-> >  1 file changed, 27 insertions(+), 69 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > index 3710fa9ee0acd..f89e8151475f7 100644
-> > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > @@ -2436,82 +2436,44 @@ static const struct drm_bridge_funcs anx7625_bridge_funcs = {
-> >  static int anx7625_register_i2c_dummy_clients(struct anx7625_data *ctx,
-> >                                             struct i2c_client *client)
-> >  {
-> > -     int err = 0;
-> > +     struct device *dev = &ctx->client->dev;
-> >
-> > -     ctx->i2c.tx_p0_client = i2c_new_dummy_device(client->adapter,
-> > -                                                  TX_P0_ADDR >> 1);
-> > +     ctx->i2c.tx_p0_client = devm_i2c_new_dummy_device(dev, client->adapter,
-> > +                                             TX_P0_ADDR >> 1);
-> >       if (IS_ERR(ctx->i2c.tx_p0_client))
-> >               return PTR_ERR(ctx->i2c.tx_p0_client);
-> >
-> > -     ctx->i2c.tx_p1_client = i2c_new_dummy_device(client->adapter,
-> > -                                                  TX_P1_ADDR >> 1);
-> > -     if (IS_ERR(ctx->i2c.tx_p1_client)) {
-> > -             err = PTR_ERR(ctx->i2c.tx_p1_client);
-> > -             goto free_tx_p0;
-> > -     }
-> > +     ctx->i2c.tx_p1_client = devm_i2c_new_dummy_device(dev, client->adapter,
-> > +                                             TX_P1_ADDR >> 1);
-> > +     if (IS_ERR(ctx->i2c.tx_p1_client))
-> > +             return PTR_ERR(ctx->i2c.tx_p1_client);
-> >
-> > -     ctx->i2c.tx_p2_client = i2c_new_dummy_device(client->adapter,
-> > -                                                  TX_P2_ADDR >> 1);
-> > -     if (IS_ERR(ctx->i2c.tx_p2_client)) {
-> > -             err = PTR_ERR(ctx->i2c.tx_p2_client);
-> > -             goto free_tx_p1;
-> > -     }
-> > +     ctx->i2c.tx_p2_client = devm_i2c_new_dummy_device(dev, client->adapter,
-> > +                                             TX_P2_ADDR >> 1);
-> > +     if (IS_ERR(ctx->i2c.tx_p2_client))
-> > +             return PTR_ERR(ctx->i2c.tx_p2_client);
-> >
-> > -     ctx->i2c.rx_p0_client = i2c_new_dummy_device(client->adapter,
-> > -                                                  RX_P0_ADDR >> 1);
-> > -     if (IS_ERR(ctx->i2c.rx_p0_client)) {
-> > -             err = PTR_ERR(ctx->i2c.rx_p0_client);
-> > -             goto free_tx_p2;
-> > -     }
-> > +     ctx->i2c.rx_p0_client = devm_i2c_new_dummy_device(dev, client->adapter,
-> > +                                             RX_P0_ADDR >> 1);
-> > +     if (IS_ERR(ctx->i2c.rx_p0_client))
-> > +             return PTR_ERR(ctx->i2c.rx_p0_client);
-> >
-> > -     ctx->i2c.rx_p1_client = i2c_new_dummy_device(client->adapter,
-> > -                                                  RX_P1_ADDR >> 1);
-> > -     if (IS_ERR(ctx->i2c.rx_p1_client)) {
-> > -             err = PTR_ERR(ctx->i2c.rx_p1_client);
-> > -             goto free_rx_p0;
-> > -     }
-> > +     ctx->i2c.rx_p1_client = devm_i2c_new_dummy_device(dev, client->adapter,
-> > +                                             RX_P1_ADDR >> 1);
-> > +     if (IS_ERR(ctx->i2c.rx_p1_client))
-> > +             return PTR_ERR(ctx->i2c.rx_p1_client);
-> >
-> > -     ctx->i2c.rx_p2_client = i2c_new_dummy_device(client->adapter,
-> > -                                                  RX_P2_ADDR >> 1);
-> > -     if (IS_ERR(ctx->i2c.rx_p2_client)) {
-> > -             err = PTR_ERR(ctx->i2c.rx_p2_client);
-> > -             goto free_rx_p1;
-> > -     }
-> > +     ctx->i2c.rx_p2_client = devm_i2c_new_dummy_device(dev, client->adapter,
-> > +                                             RX_P2_ADDR >> 1);
-> > +     if (IS_ERR(ctx->i2c.rx_p2_client))
-> > +             return PTR_ERR(ctx->i2c.rx_p2_client);
-> >
-> > -     ctx->i2c.tcpc_client = i2c_new_dummy_device(client->adapter,
-> > -                                                 TCPC_INTERFACE_ADDR >> 1);
-> > -     if (IS_ERR(ctx->i2c.tcpc_client)) {
-> > -             err = PTR_ERR(ctx->i2c.tcpc_client);
-> > -             goto free_rx_p2;
-> > -     }
-> > +     ctx->i2c.tcpc_client = devm_i2c_new_dummy_device(dev, client->adapter,
-> > +                                             TCPC_INTERFACE_ADDR >> 1);
-> > +     if (IS_ERR(ctx->i2c.tcpc_client))
-> > +             return PTR_ERR(ctx->i2c.tcpc_client);
-> >
-> >       return 0;
-> > -
-> > -free_rx_p2:
-> > -     i2c_unregister_device(ctx->i2c.rx_p2_client);
-> > -free_rx_p1:
-> > -     i2c_unregister_device(ctx->i2c.rx_p1_client);
-> > -free_rx_p0:
-> > -     i2c_unregister_device(ctx->i2c.rx_p0_client);
-> > -free_tx_p2:
-> > -     i2c_unregister_device(ctx->i2c.tx_p2_client);
-> > -free_tx_p1:
-> > -     i2c_unregister_device(ctx->i2c.tx_p1_client);
-> > -free_tx_p0:
-> > -     i2c_unregister_device(ctx->i2c.tx_p0_client);
-> > -
-> > -     return err;
-> > -}
-> > -
-> > -static void anx7625_unregister_i2c_dummy_clients(struct anx7625_data *ctx)
-> > -{
-> > -     i2c_unregister_device(ctx->i2c.tx_p0_client);
-> > -     i2c_unregister_device(ctx->i2c.tx_p1_client);
-> > -     i2c_unregister_device(ctx->i2c.tx_p2_client);
-> > -     i2c_unregister_device(ctx->i2c.rx_p0_client);
-> > -     i2c_unregister_device(ctx->i2c.rx_p1_client);
-> > -     i2c_unregister_device(ctx->i2c.rx_p2_client);
-> > -     i2c_unregister_device(ctx->i2c.tcpc_client);
-> >  }
-> >
-> >  static int __maybe_unused anx7625_runtime_pm_suspend(struct device *dev)
-> > @@ -2723,8 +2685,6 @@ static int anx7625_i2c_probe(struct i2c_client *client,
-> >       if (!platform->pdata.low_power_mode)
-> >               pm_runtime_put_sync_suspend(&client->dev);
-> >
-> > -     anx7625_unregister_i2c_dummy_clients(platform);
-> > -
-> >  free_wq:
-> >       if (platform->workqueue)
-> >               destroy_workqueue(platform->workqueue);
-> > @@ -2754,8 +2714,6 @@ static int anx7625_i2c_remove(struct i2c_client *client)
-> >       if (!platform->pdata.low_power_mode)
-> >               pm_runtime_put_sync_suspend(&client->dev);
-> >
-> > -     anx7625_unregister_i2c_dummy_clients(platform);
-> > -
-> >       if (platform->pdata.audio_en)
-> >               anx7625_unregister_audio(platform);
-> >
-> > --
-> > 2.37.0.rc0.161.g10f37bed90-goog
+Arnaldo Carvalho de Melo wrote:
+> Em Tue, Mar 15, 2022 at 02:52:05PM -0300, Arnaldo Carvalho de Melo escrev=
+eu:
+>> Em Tue, Mar 15, 2022 at 10:57:57PM +0530, Naveen N. Rao escreveu:
+>> > Yes, it looks like the current check in 'perf' isn't working. The belo=
+w
+>> > patch also resolves the crash we are seeing:
+>> =20
+>> > diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+>> > index 2f1d20553a0aa3..86b459f4ebdd61 100644
+>> > --- a/tools/perf/builtin-trace.c
+>> > +++ b/tools/perf/builtin-trace.c
+>> > @@ -2326,7 +2326,7 @@ static int trace__sys_enter(struct trace *trace,=
+ struct evsel *evsel,
+>> >         * thinking that the extra 2 u64 args are the augmented filenam=
+e, so just check
+>> >         * here and avoid using augmented syscalls when the evsel is th=
+e raw_syscalls one.
+>> >         */
+>> > -       if (evsel !=3D trace->syscalls.events.sys_enter)
+>> > +       if (strcmp(evsel__name(evsel), "raw_syscalls:sys_enter"))
+>> >                augmented_args =3D syscall__augmented_args(sc, sample, =
+&augmented_args_size, trace->raw_augmented_syscalls_args_size);
+>> >        ttrace->entry_time =3D sample->time;
+>> >        msg =3D ttrace->entry_str;
+>>=20
+>> Interesting, that should be equivalent :-\ humm, not really, understood,
+>> when processing perf.data files we don't setup
+>> trace->syscalls.events.sys_enter...
+>>=20
+>> switching from strcmp() to something cheaper but equivalent should be
+>> the fix for now.
+>=20
+> I'll add a trace->use_augmented_args boolean that will do this test
+> once, and then use it in this case and will audit to check if this
+> should be used in other places.
 
-Can you fix the checkpatch --strict warnings and formatting issues in
-this series?
+Does something like the below look reasonable?
+
+I know this isn't quite what you proposed, but it fixes the problem for=20
+me while avoiding the need for a string comparison. I also think this=20
+addresses all uses in 'perf trace', though I didn't audit the need for a=20
+similar fix elsewhere in 'perf'.
+
+
+Thanks,
+Naveen
+
+---
+diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+index d2de2a4073e7eb..352b88a51dec2d 100644
+--- a/tools/perf/builtin-trace.c
++++ b/tools/perf/builtin-trace.c
+@@ -4291,6 +4292,8 @@ static int trace__replay(struct trace *trace)
+                goto out;
+        }
+=20
++       trace->syscalls.events.sys_enter =3D evsel;
++
+        evsel =3D evlist__find_tracepoint_by_name(session->evlist, "raw_sys=
+calls:sys_exit");
+        if (evsel =3D=3D NULL)
+                evsel =3D evlist__find_tracepoint_by_name(session->evlist, =
+"syscalls:sys_exit");
+@@ -4301,6 +4304,8 @@ static int trace__replay(struct trace *trace)
+                goto out;
+        }
+=20
++       trace->syscalls.events.sys_exit  =3D evsel;
++
+        evlist__for_each_entry(session->evlist, evsel) {
+                if (evsel->core.attr.type =3D=3D PERF_TYPE_SOFTWARE &&
+                    (evsel->core.attr.config =3D=3D PERF_COUNT_SW_PAGE_FAUL=
+TS_MAJ ||
+
+
+
