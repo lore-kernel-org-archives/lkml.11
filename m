@@ -2,74 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D08AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7969C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233250AbiGFNGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        id S233401AbiGFNG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbiGFNGL (ORCPT
+        with ESMTP id S231689AbiGFNGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:06:11 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F98DEA1;
-        Wed,  6 Jul 2022 06:06:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ce63EBe4Tq2Uux8fPs1Pycd4aTVkng2Wf2+PmZuWupU=; b=aVRTvSA1UJKof07qjOK7lF85rq
-        ppGLIBe1l5SZn2IR5uT/g6O6COcRr9qIFNhOrUBf7LrdEdykgvsuyBJdvMg9PXyfosj9fpdmXiF0s
-        U4pqKxdd1i3JfD6a0LO1134K4hG10jpzzerJRrDhK4wf7bFmhkzQnGlPcOtwONeG3S9YMeOQvToAw
-        t4XbRh2ZYR6dNR6g/g8rXCkhNwookOWkOJ/BmhtWB2xsbU1eH+WXF0fy2WPVP2oUZFfrJ8j0nZesf
-        vEzBEAnewPuz4t/STSKoITyPDmgZoQYgK5XwnJFfIHZkJougC1UEdEiSEoiXak5OcMlE8SOH1lBD2
-        MA3zzhRQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o94jJ-00A9fn-Ln; Wed, 06 Jul 2022 13:06:09 +0000
-Date:   Wed, 6 Jul 2022 06:06:09 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Sergei Shtepa <sergei.shtepa@veeam.com>
-Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 18/20] block, blksnap: Kconfig
-Message-ID: <YsWIwQ7Z2OKesQVI@infradead.org>
-References: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
- <1655135593-1900-19-git-send-email-sergei.shtepa@veeam.com>
+        Wed, 6 Jul 2022 09:06:53 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8595D193FF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:06:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=D0hNbSBzGzNXDpHde8BsfsD5hfBQ
+        bb4aorNSvpTgVrU=; b=E6cdQmWOgXODAMsv1qYtftsUDkq8yB2rzDN7nbBj49dC
+        OTU5rWih/KddxbSWUIuqbYyZA1DH1debq9NIp/cByt22mxrn5n/ONLBreV56cIbi
+        Lq0NaxHrB7CM921l7oThMnvySzFR0PaRyaVsm+XjBJmkMxL8giq3frwg2nVAZ1E=
+Received: (qmail 1712726 invoked from network); 6 Jul 2022 15:06:46 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 6 Jul 2022 15:06:46 +0200
+X-UD-Smtp-Session: l3s3148p1@ZX/5oyLjKmlZzIq1
+Date:   Wed, 6 Jul 2022 15:06:42 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Till Harbaum <till@harbaum.org>
+Subject: Re: [PATCH v2 2/2] i2c: Introduce i2c_str_read_write() and make use
+ of it
+Message-ID: <YsWI4nzQa9gmqKdw@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Till Harbaum <till@harbaum.org>
+References: <20220703154232.55549-1-andriy.shevchenko@linux.intel.com>
+ <20220703154232.55549-2-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="CdaVGdeblKJUV2jY"
 Content-Disposition: inline
-In-Reply-To: <1655135593-1900-19-git-send-email-sergei.shtepa@veeam.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220703154232.55549-2-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 06:53:11PM +0300, Sergei Shtepa wrote:
-> +config BLK_SNAP_TRACKING_BLOCK_MINIMUM_SHIFT
-> +	depends on BLK_SNAP
-> +	int "The power of 2 for minimum trackings block size"
 
-> +config BLK_SNAP_TRACKING_BLOCK_MAXIMUM_COUNT
-> +	depends on BLK_SNAP
+--CdaVGdeblKJUV2jY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +config BLK_SNAP_CHUNK_MINIMUM_SHIFT
-> +	depends on BLK_SNAP
+Hi Andy,
 
-> +config BLK_SNAP_CHUNK_MAXIMUM_COUNT
-> +	depends on BLK_SNAP
-> +	int "The limit of the maximum number of snapshots chunks"
+On Sun, Jul 03, 2022 at 06:42:32PM +0300, Andy Shevchenko wrote:
+> str_read_write() returns a string literal "read" or "write" based
+> on the value. It also allows to unify usage of a such in the kernel.
+>=20
+> For i2c case introduce a wrapper that takes struct i2c_msg as parameter.
+>=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-...
+To be honest, I don't think this series is very useful. Most of the
+converted strings here are debug printouts which could rather be removed
+because we have a tracepoint for i2c_transfer (which is the preferred
+unification). The warnings printed on timeouts are plain wrong, because
+timeouts can happen and need to be handled by the client driver. And the
+change in the I2C core is not worth the hazzle IMHO.
 
-Is there any good reason for these to be compile options vs runtime
-settings?
+Happy hacking,
 
-> +config BLK_SNAP_DEBUG_MEMORY_LEAK
-> +	depends on BLK_SNAP
-> +	bool "Enable memory leak detector"
-> +	default n
-> +	help
-> +	  Enables debugging code to monitor memory consumption by the module.
+   Wolfram
 
-Is there any advantage in this over kmemleak and friends?
+--CdaVGdeblKJUV2jY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLFiN4ACgkQFA3kzBSg
+KbaOnRAAlv7WrOzngujipBR3pVf3yo6uKVwFX+PykjBTa0wBHwetMP0pYuObpjH9
+MPI+xi3IOPO8nnwQgPbg8ke0Yq4akFTTkLG8QOXU1ddT1UWRq1TJXNB9hME3tXGD
+WkO7L/wslhrvwy48f+0nOJotVJ3q34bifTQ78CTnFyYY6Tfg6BgF/opp70w7XNgW
+5blntGsxPCRsh1VBlDilYsgh3TXzmD934y8v1hFpM2BXFgnHKsID9FOeHVDsuB8O
+RL08dyCz/yt2r4M0f7DDOF56PS/35JsJhZ5v2F9er0fkPgEdS392WEeJrQhiQ920
+ugWPpY6MhwTuTFZQqaeiv9moB+j1BBcKoEyG3c4quq35KKIYsaaC0fj40+1u9Gel
+wlZ5qxgE29BYSWZocpQbdFF8jG/iEhnEy9pIRfGfQagUypOLsqqcsk5Qq9aavWHK
+Vu4pI5SRlsMcRWzWO4592D8KYF5Tc/0NQ+qfCj6AO+OwBIBR+S7lBsLiNpIETLil
+EMa1kLVlr/ElAFyqXIa8yX7vvK9xHDcHEPWsW3Q30g5QEGT40iXSGkM21l3KebVz
+Lw7qzoMkINICUNGP2ULiYOCgafWdlVlev4RmQCDFDljj2ZKH1ph91kJeM7YscDj5
+ZGh3HI5USzLFt/C6uFVIwSpz2aM2IMOWcasNvtXlR7RZNu/qwdI=
+=srXy
+-----END PGP SIGNATURE-----
+
+--CdaVGdeblKJUV2jY--
