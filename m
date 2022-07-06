@@ -2,136 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAAEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233054AbiGFNln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
+        id S233169AbiGFNly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232712AbiGFNll (ORCPT
+        with ESMTP id S233106AbiGFNls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:41:41 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C3324BE4;
-        Wed,  6 Jul 2022 06:41:39 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so9197507wme.0;
-        Wed, 06 Jul 2022 06:41:39 -0700 (PDT)
+        Wed, 6 Jul 2022 09:41:48 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF7D25280;
+        Wed,  6 Jul 2022 06:41:46 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id dn9so21901062ejc.7;
+        Wed, 06 Jul 2022 06:41:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=J37bnxv35AKNMkkxULLkWayVHEaMjv0zIAo9khsK/xs=;
-        b=Jlle0rhzTTAnWZ/MNh25r/iMQIdPg+Nu4CyuUQnEB3+XRfZWe+9CZwdtvObPWmIv6g
-         d913Ju/S7mnMovkMbGewR/EJ+C5hKF2jryill+Reaw1pTWmgv8OAkwAghmrTDutguk4Q
-         SDRosAPaNN+hGVT71HuA/B9Esxx0cYVXiQjFvXDsdTGo7ASRZIONNC4+54ApG9tqpPi8
-         dAp/BlYJDauy6Cy12yvpidH/bodG8wQQhyC1J0YUuQOVTwNttLSB8AvN8+SX88WjcVbl
-         b+DKOSfFHI1jNA6LLUabbhounPawG5AlMa6HNpwSyCeqBqtN+6gRteWmi1fx+JReOXzf
-         dCzg==
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hUXwjjf1U46wfMLKCsYIvNuZoHapS30B+iSnE2vDi98=;
+        b=kqEhS1C88SXdC/AEcQncgZRYYuNMXDwHSE1d6A0+/0U3Jnpr9RB681WXtj5XRfPLyI
+         oZJfjdawxAsCgy39VQVcWRHRxyOheyrX63VBk48oHTYR/Yc42IUlh/ycpvkJEdlyODbD
+         VOl0HCwYmf0EQ7O5VPF4sfDrBSQOHl4vdxEaOyRDYdr0gUCOAZeagErgo1notCjcaDz8
+         ATRusZunAP5nXLUHcHtt/Qdl7L9E4W+2M1BDiqm+RuBDci0Xx+Ms25UNxJJHs8WRxWq6
+         LOf3PrVOdVxPvlimzwDoNRPWuP1TzpYvtW2VKt81YImJOx8udWBYTp9KNvD1lAz3UTkj
+         kLFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=J37bnxv35AKNMkkxULLkWayVHEaMjv0zIAo9khsK/xs=;
-        b=uj5GSzqN3K6buano1Woj+R6wCARO1hqx5b2NyxD//ZyxP481bZRFakKDAHTAnQnmhb
-         6bBRnLhAmbBgeQ9Fa6nHk/clrQmugVgO8uf/MrwFfrjVGFKR3mN0GuxV56PvSGX8gPSw
-         BZNEdYpaPKFC+Mc/HxiYYkARltDdIbUBt9f9DETUGtcYXTDpoKqSKJxO+UiFwyG+papd
-         02yE337vg3EN9N1+MW7CWBWuAMyjpjqIHZzGs+rHWjGQj7p2PAbFLgONukIAe5kOWEMb
-         btwh8QYPx+hY1IJIfsnuINOyEtDfig7bgeb02MmhSV40EpDGjedVPoUnzyjWU7RcW17U
-         eFVg==
-X-Gm-Message-State: AJIora+zZ7whJxJuCHgN/ihCkdbbMe0li6h1aZCBlWf738jN9CUNsT/J
-        RFKu6zOZPaTXG9ZC3g76zxc=
-X-Google-Smtp-Source: AGRyM1uzrUL3jgHl7v16xkNIYUGr+iA0aegNeob2FrKF9QFhYl/5MRV7Rool8Fm50IsaKRG6foS/1A==
-X-Received: by 2002:a05:600c:274b:b0:3a0:47e8:ca85 with SMTP id 11-20020a05600c274b00b003a047e8ca85mr45800324wmw.156.1657114898287;
-        Wed, 06 Jul 2022 06:41:38 -0700 (PDT)
-Received: from [192.168.0.14] ([37.223.147.254])
-        by smtp.gmail.com with ESMTPSA id h16-20020a5d4310000000b0021d7b41255esm2225662wrq.98.2022.07.06.06.41.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 06:41:37 -0700 (PDT)
-Message-ID: <17203a8a-407e-30cf-79de-352716c3ebce@gmail.com>
-Date:   Wed, 6 Jul 2022 15:41:36 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1 08/16] arm64: dts: mt8195: Add power domains controller
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hUXwjjf1U46wfMLKCsYIvNuZoHapS30B+iSnE2vDi98=;
+        b=uEy42nkL0cDeJdBpU+qMz/dVrCVZXrX4b1hwGK32bKOw8cCkzDMC4peaR6E2FNUsmv
+         pCIwZaFc8sxpfwgzAXMDpxcuZPaLtytMk0uicYLX6+tk4jdFrHXO09N9QYSpt54WWi7y
+         jmVxoCw/a00UnQPCm3lXRw6WGRUocdAMk30U2vpkvnTRHe0qU2yAXCSy4BEd8S+O7F2D
+         jiw0gBaq+6KkBvHbTUzazysnGtOyb1Xqf/H1AFrkmHc4b9DYlg7UNbM+K3hnhZOczVPL
+         1FL41Tdrx72dpiEM9jrSPJBMWFWBRy4vEFDEkfSF+2IXbKrigwmlg4vzleZijURD9vgY
+         y/MQ==
+X-Gm-Message-State: AJIora/AW3AoJhTay0g/tAAQZz0Vv9uPM3nxeDy+1psFkdmG+JGNgEdC
+        G+x7YsdyMP0aF1bPZ6fcptw=
+X-Google-Smtp-Source: AGRyM1tuxALukWE0mce/eNKJsKRDcupgzd8ysNgkN59i6gZp96Mp4o9eMZxUakP5WLi+zuQq5A+2RQ==
+X-Received: by 2002:a17:907:b09:b0:72a:8f36:e781 with SMTP id h9-20020a1709070b0900b0072a8f36e781mr26706939ejl.362.1657114905170;
+        Wed, 06 Jul 2022 06:41:45 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id lb10-20020a170907784a00b0072aa014e852sm6747660ejc.87.2022.07.06.06.41.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 06:41:44 -0700 (PDT)
+Message-ID: <62c59118.1c69fb81.9c3f3.ac43@mx.google.com>
+X-Google-Original-Message-ID: <YsWNM1m58uj8XfkV@Ansuel-xps.>
+Date:   Wed, 6 Jul 2022 15:25:07 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Weiyi Lu <weiyi.lu@mediatek.com>
-Cc:     iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
- <20220704100028.19932-9-tinghan.shen@mediatek.com>
- <3b65405d-167f-a0c7-d15e-5da6f08d99b3@linaro.org>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <3b65405d-167f-a0c7-d15e-5da6f08d99b3@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCH 04/13] ARM: dts: qcom: disable smb208 regulators for
+ ipq8064-rb3011
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-5-ansuelsmth@gmail.com>
+ <8a394fa3-92fb-d162-b4ee-df010a09aed0@somainline.org>
+ <62c58a60.1c69fb81.25b26.e72a@mx.google.com>
+ <36a68a0b-0c18-deb5-609c-2128aa3fc21f@somainline.org>
+ <62c58fca.1c69fb81.76f6a.15f4@mx.google.com>
+ <43572937-8505-ddf0-1fe0-99ddfe486c11@somainline.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <43572937-8505-ddf0-1fe0-99ddfe486c11@somainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 04/07/2022 14:38, Krzysztof Kozlowski wrote:
-> On 04/07/2022 12:00, Tinghan Shen wrote:
->> Add power domains controller node for mt8195.
->>
->> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
->> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
->> ---
->>   arch/arm64/boot/dts/mediatek/mt8195.dtsi | 327 +++++++++++++++++++++++
->>   1 file changed, 327 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
->> index 8d59a7da3271..d52e140d9271 100644
->> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
->> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
->> @@ -10,6 +10,7 @@
->>   #include <dt-bindings/interrupt-controller/irq.h>
->>   #include <dt-bindings/phy/phy.h>
->>   #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
->> +#include <dt-bindings/power/mt8195-power.h>
->>   
->>   / {
->>   	compatible = "mediatek,mt8195";
->> @@ -338,6 +339,332 @@
->>   			#interrupt-cells = <2>;
->>   		};
->>   
->> +		scpsys: syscon@10006000 {
->> +			compatible = "syscon", "simple-mfd";
+On Wed, Jul 06, 2022 at 03:37:36PM +0200, Konrad Dybcio wrote:
 > 
-> These compatibles cannot be alone.
 > 
+> On 6.07.2022 15:19, Christian Marangi wrote:
+> > On Wed, Jul 06, 2022 at 03:31:55PM +0200, Konrad Dybcio wrote:
+> >>
+> >>
+> >> On 6.07.2022 14:56, Christian Marangi wrote:
+> >>> On Wed, Jul 06, 2022 at 03:03:32PM +0200, Konrad Dybcio wrote:
+> >>>>
+> >>>>
+> >>>> On 5.07.2022 15:39, Christian Marangi wrote:
+> >>>>> Mikrotik RB3011 have a special configuration where the regulators are
+> >>>>> not the common smb208 controlled by RPM but they use a TPS563900
+> >>>>> controlled via i2c. Disable the smb208 for this specific device.
+> >>>> Ok, so that answers my question from the previous email.
+> >>>> Please define the SMB208 regulators only in the DTs of
+> >>>> boards that actually use it, as it is not a SoC component as
+> >>>> far as I can tell.
+> >>>>
+> >>>> Konrad
+> >>>
+> >>> This was already discuessed,
+> >> Yeah sorry, I didn't notice earlier and started reviewing patches
+> >> that were already reviewed by others.
+> >>
+> > 
+> > Np, thanks for the review.
+> > 
+> >>
+> >> rb3011 is the exception, qcom for ipq8064
+> >>> recommends to use smb208 but gives the option to implement it in their
+> >>> own way. So again we have 28 device with smb208 and 1 device that use
+> >>> its own special way...
+> >>>
+> >>> Wonder if a separate dtsi can be used for this if we really can't put
+> >>> smb208 in ipq8064 dtsi?
+> >> There's msm8916-pm8916.dtsi. You can follow.
+> > 
+> > Ok, will put the smb208 definition to a separate dtsi, something like
+> > ipq8064-smb208.dtsi? or ipq8064-rpm-smb208.dtsi? Looks also cleaner that
+> > way.
+> You can create ipq8064-smb208.dtsi that will also contain every ipq8064-plus-smb208-specific
+> configuration, such as regulator assignemnts to in-SoC components (like PHYs, SDHCIs etc.).
 
-You mean we would need something like "mediatek,scpsys" as dummy compatible 
-that's not bound to any driver?
+Just for reference there regulators are used only for cpu voltage, l2
+cache and special ubi32 cores that are not supported currently, nothing
+more.
 
->> +			reg = <0 0x10006000 0 0x1000>;
->> +			#power-domain-cells = <1>;
-> 
-> If it is simple MFD, then probably it is not a power domain provider.
-> Decide.
+>
+> Konrad
+> > 
+> >>
+> >> Konrad
+> >>
+> >> [...]
+> > 
 
-The SCPSYS IP block of MediaTek SoCs group several functionality, one is the 
-power domain controller. Others are not yet implemented, but defining the scpsys 
-as a MFD will give us the possibility to do so in the future.
-
-Regards,
-Matthias
-
-> 
-> Best regards,
-> Krzysztof
+-- 
+	Ansuel
