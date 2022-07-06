@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E8DCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13129CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234075AbiGFPeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
+        id S234216AbiGFPeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233956AbiGFPc0 (ORCPT
+        with ESMTP id S234072AbiGFPeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:32:26 -0400
+        Wed, 6 Jul 2022 11:34:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9C6286DF;
-        Wed,  6 Jul 2022 08:31:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D1527FFF;
+        Wed,  6 Jul 2022 08:32:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D5DCB81D90;
-        Wed,  6 Jul 2022 15:31:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D747C341CA;
-        Wed,  6 Jul 2022 15:31:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12C04B81D8E;
+        Wed,  6 Jul 2022 15:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D92AC3411C;
+        Wed,  6 Jul 2022 15:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121516;
-        bh=cJ4EpiTnne1jAnseMdkgLxRJnnbD3zSSBr50r+xpmcs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FWTTEwoo0Ud854kQIs828GvVBVDBq2E3sePL9lcmZAGCaa1a3oZhNMHx4N98QoD5y
-         Yl9lGu0W53CUzmoAHtHlUY/OL6EwD4LU06m+ifnj1M7rSg4wNnHSFg81GgVJJm8USi
-         wHZ0g9AsyLBbnMQAKy7TJeBpmCh31d7ZiFImRG9PCn1aDpA28yNv4gl15b3QkJZVhe
-         69nMQKKIrwdcAo9JK2JUgudea16WHko9afD4/KeADod1rkI075eT9Cn+4jZfAkiGFf
-         amFaW9kBmHnMVzJW+3TKq3WOfZtfS1q11sxk/l7nNzVsVgJSKfi8SWuicWuhs+X9SK
-         M5bHN6PFQx1Kw==
+        s=k20201202; t=1657121566;
+        bh=dJ/ClODH9MSblUyY3ISrR3RfultNhLe428VSshkHzf4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sEOTeR3O4+FDm62kEvp+gwMLbOTEPNRgpxROQA/b8CFvOgrg1KNYDVv+qXjqDHSl+
+         7Fk0sDp+bca/EqtKIpnPebQKHhBo9Z5hiHkGi946KUBVnxVfYNa+N+3C3quP5K87kb
+         4hRmbPVuSstk3NazCZPtUf3+mV5A1na/spwZXzrod29Kesi5oH9hta/7kXyyOKQQ4r
+         JDT1I+KoAEuKImdb9qvymp2+POPaokAiLU9+HvnazMb1YjIRPwzb83ddxCIFULHOpQ
+         cs1lS/MzN+IF8/jXBFGmdP3CmzKrskq7rGxa02OjJ7f5zDeB0M9yIc6ojA1KlGBaXR
+         Sohqlw7EpI/HA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Namjae Jeon <linkinjeon@kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Namjae Jeon <linkinjeon@kerne.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 01/18] ksmbd: use SOCK_NONBLOCK type for kernel_accept()
-Date:   Wed,  6 Jul 2022 11:31:36 -0400
-Message-Id: <20220706153153.1598076-1-sashal@kernel.org>
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>, daniel@ffwll.ch,
+        deller@gmx.de, sam@ravnborg.org, tzimmermann@suse.de,
+        alexander.deucher@amd.com, zheyuma97@gmail.com,
+        thunder.leizhen@huawei.com, deng.changcheng@zte.com.cn,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 13/18] fbdev: Disable sysfb device registration when removing conflicting FBs
+Date:   Wed,  6 Jul 2022 11:31:48 -0400
+Message-Id: <20220706153153.1598076-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220706153153.1598076-1-sashal@kernel.org>
+References: <20220706153153.1598076-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,45 +55,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-[ Upstream commit fe0fde09e1cb83effcf8fafa372533f438d93a1a ]
+[ Upstream commit ee7a69aa38d87a3bbced7b8245c732c05ed0c6ec ]
 
-I found that normally it is O_NONBLOCK but there are different value
-for some arch.
+The platform devices registered by sysfb match with firmware-based DRM or
+fbdev drivers, that are used to have early graphics using a framebuffer
+provided by the system firmware.
 
-/include/linux/net.h:
-#ifndef SOCK_NONBLOCK
-#define SOCK_NONBLOCK   O_NONBLOCK
-#endif
+DRM or fbdev drivers later are probed and remove conflicting framebuffers,
+leading to these platform devices for generic drivers to be unregistered.
 
-/arch/alpha/include/asm/socket.h:
-#define SOCK_NONBLOCK   0x40000000
+But the current solution has a race, since the sysfb_init() function could
+be called after a DRM or fbdev driver is probed and request to unregister
+the devices for drivers with conflicting framebuffes.
 
-Use SOCK_NONBLOCK instead of O_NONBLOCK for kernel_accept().
+To prevent this, disable any future sysfb platform device registration by
+calling sysfb_disable(), if a driver requests to remove the conflicting
+framebuffers.
 
-Suggested-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kerne.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220607182338.344270-4-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/transport_tcp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbmem.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/fs/ksmbd/transport_tcp.c b/fs/ksmbd/transport_tcp.c
-index 82a1429bbe12..755329c295ca 100644
---- a/fs/ksmbd/transport_tcp.c
-+++ b/fs/ksmbd/transport_tcp.c
-@@ -230,7 +230,7 @@ static int ksmbd_kthread_fn(void *p)
- 			break;
- 		}
- 		ret = kernel_accept(iface->ksmbd_socket, &client_sk,
--				    O_NONBLOCK);
-+				    SOCK_NONBLOCK);
- 		mutex_unlock(&iface->sock_release_lock);
- 		if (ret) {
- 			if (ret == -EAGAIN)
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index 0371ad233fdf..ba9c66a95ada 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -19,6 +19,7 @@
+ #include <linux/kernel.h>
+ #include <linux/major.h>
+ #include <linux/slab.h>
++#include <linux/sysfb.h>
+ #include <linux/mm.h>
+ #include <linux/mman.h>
+ #include <linux/vt.h>
+@@ -1774,6 +1775,17 @@ int remove_conflicting_framebuffers(struct apertures_struct *a,
+ 		do_free = true;
+ 	}
+ 
++	/*
++	 * If a driver asked to unregister a platform device registered by
++	 * sysfb, then can be assumed that this is a driver for a display
++	 * that is set up by the system firmware and has a generic driver.
++	 *
++	 * Drivers for devices that don't have a generic driver will never
++	 * ask for this, so let's assume that a real driver for the display
++	 * was already probed and prevent sysfb to register devices later.
++	 */
++	sysfb_disable();
++
+ 	mutex_lock(&registration_lock);
+ 	do_remove_conflicting_framebuffers(a, name, primary);
+ 	mutex_unlock(&registration_lock);
 -- 
 2.35.1
 
