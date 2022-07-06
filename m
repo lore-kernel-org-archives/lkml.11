@@ -2,156 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B80CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbiGFOVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46232 "EHLO
+        id S232280AbiGFOVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbiGFOVQ (ORCPT
+        with ESMTP id S232943AbiGFOVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:21:16 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6348C1FCDA;
-        Wed,  6 Jul 2022 07:21:14 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id k30so11363902edk.8;
-        Wed, 06 Jul 2022 07:21:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=3Wb+2NYdNYlT/r55W5Q9BfPi7qfSp7lu+o+6L0rJtv8=;
-        b=gWJipTj+zP9LdoXW9ZZmPEOCzTlBkuyB0ff9epBmgDE/i75a/0ROab93UWiX68yi+7
-         Yt1iVTbV0mmGIUPRsu7Iv5ZcPakBrVTGgNn3QbSAbJtpD1ll+9ETR4NC2zrYuD2Fnhr0
-         3uqRa9NzLc3SPWQvYGtU92MRw784mM0wllnyz59w08XWzjpZjczcPBBFzQBfGl7lqBnO
-         kAPfQ328Di9nQotQ680IHOoOE5XpcYZIGGB+pFBD4V5yok26buCnhT3XtXyauzJsZOcl
-         ODNecWdJmbQGMgGDmfrBQHUim98ctmI2881WkJtNSMeuMS9vVtFx62bUPJeJme6xPEAJ
-         6VZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=3Wb+2NYdNYlT/r55W5Q9BfPi7qfSp7lu+o+6L0rJtv8=;
-        b=MHGARK1MfbjPjTMfgUdD/6o2VGqgirUU9ipTgpm7GN4fDtporzacIFB304Vg+/Ccd1
-         H2gdAQkFYSfmXfAP8eJQshsEwpyaxcm7WVOhLb8GDT4ViLjFIoPPym9KDN+gjMiWd4vj
-         OxNzleQc7hx2pU5j4itClotuPl3vzs+VnCfnYvU8z074G8WwecHRqP4P6geJavmHGg6I
-         qv5rkVnev5BaNix64wVJS5es2+++XLgHz+QzATADI788Gsw/M1xzRGPIi1wSmHDvCnFK
-         savL0E/iJy3MKGek+2Xm8r0vLELaIrU5PpxvftwsgzJlUrkQz/ThI9Vb/EXA0iTlcAii
-         Fr4g==
-X-Gm-Message-State: AJIora89nVyHkJMpDQs8S0r3TM9+uo18Pl4CdqmcR8j2t0ope/Gkzm7s
-        lUlJ+cUdHX4sjSw3DAa0HPG4f3vTOoE=
-X-Google-Smtp-Source: AGRyM1tT9stuoFyBcHRx0dfy4qvcPGQyu83eyJWdXOLAslwHbMig41DsfUkSzMnQ7gjy24d4uY2z1Q==
-X-Received: by 2002:a05:6402:2985:b0:439:651b:c1f4 with SMTP id eq5-20020a056402298500b00439651bc1f4mr43380871edb.276.1657117272992;
-        Wed, 06 Jul 2022 07:21:12 -0700 (PDT)
-Received: from localhost (92.40.202.41.threembb.co.uk. [92.40.202.41])
-        by smtp.gmail.com with ESMTPSA id au8-20020a170907092800b00722e19fec6dsm17325213ejc.156.2022.07.06.07.21.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 07:21:12 -0700 (PDT)
-References: <20220703111057.23246-1-aidanmacdonald.0x0@gmail.com>
- <20220703111057.23246-4-aidanmacdonald.0x0@gmail.com>
- <CACRpkdamknwRPGEeGGQGQPtKw=dPXa79GAJy+E6y+03NakN=cA@mail.gmail.com>
- <GrX3yDSwNOGIBcWmKqusaJ3dDqNGLr3Y@localhost>
- <CACRpkdbHg-vTj6CnkF=oMxtpy+FxEPdn2_qKzgtsT0TYU6Nv-g@mail.gmail.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     michael@walle.cc, brgl@bgdev.pl, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] gpio: regmap: Support a custom ->to_irq() hook
-Date:   Wed, 06 Jul 2022 14:50:49 +0100
-In-reply-to: <CACRpkdbHg-vTj6CnkF=oMxtpy+FxEPdn2_qKzgtsT0TYU6Nv-g@mail.gmail.com>
-Message-ID: <ZTG1etjWj47jkqTxIRgriV6pQhW9dasf@localhost>
+        Wed, 6 Jul 2022 10:21:47 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060E523BFB
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 07:21:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657117305; x=1688653305;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rANpPC1k8ntNoM9UbPaxTmHG5k84FYQtX4k3gZlotro=;
+  b=fyQ4xFgN/axPASZ5hJrxCrXFwKTbzjCIj2nCAMGyRkJm1QS1frSUa/By
+   kIKWIBKdsScHB7Ex9jGkHtSV2yzzI+Fnf7PjPPyWZKTPQ8gqxzsrQLraF
+   5UkDSc8n6Hfaz31/8F/6YZ8DntiYWDg91VjfD1g3sDwNVO+65MQKFnWs6
+   3qgjh+5mArSvO0kyJ4jkv0BqdMOpo+nWmTpGMxrmtxwbl4VBXZXm8tsZj
+   0XaybRIZvq7053AkLPj/jjseRbYU2+/XV9DZ3tAWBebOC6gxTqOetaLO4
+   ajctck1tsp89Hj/54DAlBbDt16NE1Wr92nXGAHQzYMhGVg8QQCAvKv6mU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="283783802"
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="283783802"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 07:21:45 -0700
+X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
+   d="scan'208";a="650683204"
+Received: from xsang-optiplex-9020.sh.intel.com (HELO xsang-OptiPlex-9020) ([10.239.159.143])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 07:21:42 -0700
+Date:   Wed, 6 Jul 2022 22:21:36 +0800
+From:   Oliver Sang <oliver.sang@intel.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        0day robot <lkp@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        lkp@lists.01.org, Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        Hugh Dickins <hughd@google.com>
+Subject: Re: [mm/page_alloc]  2bd8eec68f:
+ BUG:sleeping_function_called_from_invalid_context_at_mm/gup.c
+Message-ID: <YsWacP1k8wMgGfXx@xsang-OptiPlex-9020>
+References: <20220613125622.18628-8-mgorman@techsingularity.net>
+ <YsFk/qU+QtWun04h@xsang-OptiPlex-9020>
+ <20220703132209.875b823d1cb7169a8d51d56d@linux-foundation.org>
+ <YsRB3fZHAfik0M/q@xsang-OptiPlex-9020>
+ <20220706095535.GD27531@techsingularity.net>
+ <20220706115328.GE27531@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706115328.GE27531@techsingularity.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+hi, Mel Gorman,
 
-Linus Walleij <linus.walleij@linaro.org> writes:
+On Wed, Jul 06, 2022 at 12:53:29PM +0100, Mel Gorman wrote:
+> On Wed, Jul 06, 2022 at 10:55:35AM +0100, Mel Gorman wrote:
+> > On Tue, Jul 05, 2022 at 09:51:25PM +0800, Oliver Sang wrote:
+> > > Hi Andrew Morton,
+> > > 
+> > > On Sun, Jul 03, 2022 at 01:22:09PM -0700, Andrew Morton wrote:
+> > > > On Sun, 3 Jul 2022 17:44:30 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+> > > > 
+> > > > > FYI, we noticed the following commit (built with gcc-11):
+> > > > > 
+> > > > > commit: 2bd8eec68f740608db5ea58ecff06965228764cb ("[PATCH 7/7] mm/page_alloc: Replace local_lock with normal spinlock")
+> > > > > url: https://github.com/intel-lab-lkp/linux/commits/Mel-Gorman/Drain-remote-per-cpu-directly/20220613-230139
+> > > > > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+> > > > > patch link: https://lore.kernel.org/lkml/20220613125622.18628-8-mgorman@techsingularity.net
+> > > > > 
+> > > > 
+> > > > Did this test include the followup patch
+> > > > mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch?
+> > > 
+> > > no, we just fetched original patch set and test upon it.
+> > > 
+> > > now we applied the patch you pointed to us upon 2bd8eec68f and found the issue
+> > > still exist.
+> > > (attached dmesg FYI)
+> > > 
+> > 
+> > Thanks Oliver.
+> > 
+> > The trace is odd in that it hits in GUP when the page allocator is no
+> > longer active and the context is a syscall. First, is this definitely
+> > the first patch the problem occurs?
+> > 
+> 
+> I tried reproducing this on a 2-socket machine with Xeon
+> Gold Gold 5218R CPUs. It was necessary to set timeouts in both
+> vm/settings and kselftest/runner.sh to avoid timeouts. Testing with
+> a standard config on my original 5.19-rc3 baseline and the baseline
+> b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3 both passed. I tried your kernel
+> config with i915 disabled (would not build) and necessary storage drivers
+> and network drivers enabled (for boot and access). The kernel log shows
+> a bunch of warnings related to USBAN during boot and during some of the
+> tests but otherwise compaction_test completed successfully as well as
+> the other VM tests.
+> 
+> Is this always reproducible?
 
-> On Tue, Jul 5, 2022 at 1:08 PM Aidan MacDonald
-> <aidanmacdonald.0x0@gmail.com> wrote:
->> Linus Walleij <linus.walleij@linaro.org> writes:
->
->> I'm not trying to argue that hierarchical IRQ domains are always a bad
->> thing -- I'm just pointing out they're not always useful or necessary.
->> All your points make sense when the GPIO controller is a large distinct
->> block with potentially many GPIOs. When we're dealing with an MFD device
->> with just a few GPIOs, maybe even just one, having a separate IRQ domain
->> makes less sense; the added structure is generally not useful.
->
-> Do you mean your driver does this:
->
-> MFD main device
-> MFD irqchip
->  |
->  +->  MFD gpiochip
->          No irqchip here, so .to_irq() just refers ^ to that one up there
->
-> IIUC you mean that if I want to use the irqchip directly then
-> I have to refer to the MFD irqchip, I just cannot refer to the
-> gpiochip subnode because that one does not have an irqchip.
+not always but high rate.
+we actually also observed other dmesgs stats for both 2bd8eec68f74 and its
+parent, but those dmesg.BUG:sleeping_function_called_from_invalid_context_at*
+seem only happen on 2bd8eec68f74 as well as the '-fix' commit.
 
-Yep, that's right.
+=========================================================================================
+compiler/group/kconfig/rootfs/sc_nr_hugepages/tbox_group/testcase/ucode:
+  gcc-11/vm/x86_64-rhel-8.3-kselftests/debian-11.1-x86_64-20220510.cgz/2/lkp-csl-2sp9/kernel-selftests/0x500320a
 
-> // Getting GPIO from gpiochip and irq from MFD device
-> // for the same GPIO line
-> gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
-> irqs = <&mfd 114 IRQ_EDGE_RISING>;
->
-> Then for a Linux driver this can be papered over by using the
-> .to_irq() callback and just defining gpios.
->
-> This isn't very good, if you created a separate gpiochip then you
-> should have a separate (hierarchical) irqchip associated with that
-> gpiochip as well.
->
-> // Getting GPIO and irq from the same gpiochip node
-> gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
-> irqs = <&gpio 3 IRQ_EDGE_RISING>;
->
-> I made this mistake with the ab8500 driver and
-> I would not do it like this today. I would use hierarchical gpio
-> irqchip. And I should go and fix it. (Is on my TODO.)
->
+commit:
+  eec0ff5df294 ("mm/page_alloc: Remotely drain per-cpu lists")
+  2bd8eec68f74 ("mm/page_alloc: Replace local_lock with normal spinlock")
+  292baeb4c714 ("mm/page_alloc: replace local_lock with normal spinlock -fix")
 
-If moving to hierarchical IRQ chips is the plan, could we add a note
-to say .to_irq() is discouraged and shouldn't be used in new code?
-Based on what you're saying (which I agree makes sense) it sounds
-like there's really no reason to ever use .to_irq().
+eec0ff5df2945d19 2bd8eec68f740608db5ea58ecff 292baeb4c7149ac2cb844137481
+---------------- --------------------------- ---------------------------
+       fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
+           |             |             |             |             |
+           :20          75%          15:20          70%          14:21    dmesg.BUG:scheduling_while_atomic
+           :20           5%           1:20           0%            :21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_fs/binfmt_elf.c
+           :20           5%           1:20          10%           2:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_fs/dcache.c
+           :20           5%           1:20           5%           1:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_include/linux/freezer.h
+           :20          10%           2:20          25%           5:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_include/linux/mmu_notifier.h
+           :20           5%           1:20           0%            :21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_include/linux/percpu-rwsem.h
+           :20          40%           8:20          40%           8:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h
+           :20          10%           2:20           0%            :21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/mutex.c
+           :20          10%           2:20          10%           2:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_lib/strncpy_from_user.c
+           :20          55%          11:20          65%          13:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_mm/gup.c
+           :20          15%           3:20           5%           1:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_mm/memory.c
+           :20          60%          12:20          55%          11:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_mm/migrate.c
+           :20           5%           1:20           5%           1:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_mm/page_alloc.c
+           :20           0%            :20           5%           1:21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_mm/rmap.c
+           :20          15%           3:20           0%            :21    dmesg.BUG:sleeping_function_called_from_invalid_context_at_mm/vmalloc.c
+           :20          45%           9:20          45%           9:21    dmesg.BUG:workqueue_leaked_lock_or_atomic
+           :20          25%           5:20          15%           3:21    dmesg.Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=
+           :20           5%           1:20           0%            :21    dmesg.RIP:__clear_user
+         20:20           0%          20:20           5%          21:21    dmesg.RIP:rcu_eqs_exit
+         20:20           0%          20:20           5%          21:21    dmesg.RIP:sched_clock_tick
+           :20           5%           1:20           0%            :21    dmesg.RIP:smp_call_function_many_cond
+         20:20           0%          20:20           5%          21:21    dmesg.WARNING:at_kernel/rcu/tree.c:#rcu_eqs_exit
+         20:20           0%          20:20           5%          21:21    dmesg.WARNING:at_kernel/sched/clock.c:#sched_clock_tick
+           :20           5%           1:20           0%            :21    dmesg.WARNING:at_kernel/smp.c:#smp_call_function_many_cond
+         20:20           0%          20:20           5%          21:21    dmesg.WARNING:suspicious_RCU_usage
+         20:20           0%          20:20           5%          21:21    dmesg.boot_failures
+          9:20         -15%           6:20          -5%           8:21    dmesg.include/linux/rcupdate.h:#rcu_read_lock()used_illegally_while_idle
+          9:20         -15%           6:20          -5%           8:21    dmesg.include/linux/rcupdate.h:#rcu_read_unlock()used_illegally_while_idle
+         20:20           0%          20:20           5%          21:21    dmesg.include/trace/events/error_report.h:#suspicious_rcu_dereference_check()usage
+         20:20           0%          20:20           5%          21:21    dmesg.include/trace/events/lock.h:#suspicious_rcu_dereference_check()usage
 
->> Looking at other GPIO drivers using a hierarchical IRQ domain, they
->> include their own IRQ chips with specialized ops. In my case I don't
->> need any of that (and it'd be the same with other MFD devices) so it
->> looks like using an IRQ domain would mean I'd have to create a fake
->> IRQ chip and domain just to translate between two number spaces.
->>
->> Is that really better than simply using ->to_irq()?
->
-> To be honest most irqchips are "fake", what they mostly do is figure
-> out which of a few internal sources that fired the irq, so it models the
-> different things connected to a single IRQ line.
->
-> So yeah, I think the hierarchical irqchip is worth it, especially if that
-> means the offset of the irqs and gpios become the same.
->
-> Maybe we can add more helpers in the core to make it dirt simple
-> though? It would help others with the same problem.
->
-> Yours,
-> Linus Walleij
 
-Okay, that sounds like a good plan. I'll look more carefully at the
-existing drivers and see if I can use existing gpiolib helpers.
-
-One potential issue (from reading the code) is that hierarchical IRQ
-domains seemingly can't have a non-hierarchical domain as the parent:
-irq_domain_alloc_irqs_parent() calls irq_domain_alloc_irqs_hierarchy()
-and the latter fails with -ENOSYS for a non-hierarchical domain.
-
-In my case I'm using a regmap IRQ chip, which is non-hierarchical,
-so perhaps that will need to be expanded? 
-
-Regards,
-Aidan
+> 
+> -- 
+> Mel Gorman
+> SUSE Labs
