@@ -2,118 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB21C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234430AbiGFVPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 17:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S234503AbiGFVQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 17:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233838AbiGFVPD (ORCPT
+        with ESMTP id S234512AbiGFVQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 17:15:03 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1E711B
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:15:02 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id bs20so20115830qtb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 14:15:02 -0700 (PDT)
+        Wed, 6 Jul 2022 17:16:08 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3863B6
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:16:05 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id y4so7443865edc.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 14:16:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=maine.edu; s=google;
-        h=from:date:to:cc:subject:message-id:mime-version;
-        bh=vJ209fpIO1bKI/cgVAFnh55F4SOnFvYKatDCLV/61Dc=;
-        b=ZygOd3jKHHkYe2NMJEaN2RLRmJjKSbEbhCI2qKFS4S43vA4tVxkK8r9t3II03/jJt5
-         ptRzsRua71ND+YeASevoj4tBwjOyxcFD1hyvAcI7MHUk05zIAwyreMwRnP3Wgu+ONREl
-         B5OsXAvM+BlGO8iU8mUYOMy4S/Jfr6WCPUsdo=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hThyagx/3gO75R3ByObu2jcXCn9gsg8eLIOZEOFTgW0=;
+        b=qxZxOVueXL4xlVup4HqnHuiID4ylYROtcIuMl/Z9Mo0Y57haMDDPOImjOILx8fPqt1
+         k6leDDEur87IiyUGE53yyulvaw0GG6VKKGKtC5TW74SIRBupHfYMrbhWton1G/KnqORy
+         Vo8KeFFXMqVBr7tP8UiplZ9ls+YJYM5Y24fTkbZVIxZ5SybAUUJGxNmObIIV8U8HW/Gd
+         IYIUjRvth7RP3GtrWLzmNsMl1vQPCgBoGHad5roS56vxNwWFlt94iAMdufbaKZZP73Xs
+         /lgqaSE/9c+5UqZmchyK7DTRYBZunag3dRo3yGYzMSfRvdmxdC1DDlGqGsMXCpIL4MNU
+         HVjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:mime-version;
-        bh=vJ209fpIO1bKI/cgVAFnh55F4SOnFvYKatDCLV/61Dc=;
-        b=3IPIKiqTiTDRrObl6/h0Cs2wZn5MUP5z1m2KpDjRg4F31gVCZp8BhyX28ET2H0Tb1g
-         sqLYhn98DN9tGJdJBvRPU6m++6pXhWXZvhrAcs29SSsOWfYErd823SRLTeEElJda+lMG
-         kAogN3d1d7elOBqrRXO4bQoK/u3tzh9TMcE0Sa95C50ECjZudP3JywnJwzRcYiYDd1IU
-         YVmPO1p/WKYLo58FhFPAwB8Fy2GaT2VpfQOm9kkGSFtzX23SYzaZ6/lGN3qDdkNKTuG7
-         dTKMGApGJSCvA+rXGldX5OXJ3/C3CaFGxrqWPaXK1V/uD4H3HsIBQaUTFxtb5EmLkyMZ
-         1VeA==
-X-Gm-Message-State: AJIora9Kjo55OWjJ3A13so3rqtgDSs4KLPXRBqDvQWVOx+r2QVK1kDLZ
-        gCzUMxA4k1B3eJK4Z2DbBYKdNxej32JtzA==
-X-Google-Smtp-Source: AGRyM1sJL6GL2z3fqJBEZR1UlsgrNjBuNLWV+4rdrauPidzIszdFWjnWftml42c6srs3Bg7vq1e1Eg==
-X-Received: by 2002:a05:6214:509e:b0:470:3fdb:3ebe with SMTP id kk30-20020a056214509e00b004703fdb3ebemr37231062qvb.81.1657142101332;
-        Wed, 06 Jul 2022 14:15:01 -0700 (PDT)
-Received: from macbook-air.local (weaver.eece.maine.edu. [130.111.218.23])
-        by smtp.gmail.com with ESMTPSA id s7-20020a05620a254700b006a65c58db99sm32330024qko.64.2022.07.06.14.15.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 14:15:00 -0700 (PDT)
-From:   Vince Weaver <vincent.weaver@maine.edu>
-X-Google-Original-From: Vince Weaver <vince@maine.edu>
-Date:   Wed, 6 Jul 2022 17:14:56 -0400 (EDT)
-To:     linux-kernel@vger.kernel.org
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: [perf] odd fuzzer generated trace in intel_pmu_lbr_restore
-Message-ID: <66961a7d-a6d8-2536-9ed3-68c2e7f4e03d@maine.edu>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hThyagx/3gO75R3ByObu2jcXCn9gsg8eLIOZEOFTgW0=;
+        b=jrnl6w2g8Zfw8s8U6SKizR1QX1BURjIQow+WKwYZrv/sVNwOUi/TL6nr+THsY3UmA/
+         g9By9kSfajcoF61yyWX+rb1xm69XSj1hmIdYVaAqQSK6Or9I2KMMgBgTtBo7iC3Znb+C
+         NZoUv4EnRrFbV2pxewtkMzFTDn8v6brWFJz//sPf/VjNsbbJLKHq6/+wYmQtJ+KIYa4J
+         QIHgNAEggUbZTBYUspEWgWViR62L3Xkt+SGyUDtk9YeCIC65MTvOWKXvVZFgYMMdSqXf
+         +XsYqL7tZpJRYtxr9+A5I+gjqCN3T0iZRwrLIDoN7gGgbkZsVNm9mMRvHNgaiDVLMrGs
+         4sOg==
+X-Gm-Message-State: AJIora+ejB/WYtDOKAsHzyUWE7X3BmOQrM9e6Az7FPHT1BibmRz5eSfR
+        8821WR5sQgMmW+yE3KIu2oOpS8niejihGjMYPQOX4A==
+X-Google-Smtp-Source: AGRyM1sPbJFOfgds1z44L+2x0LeSz+WDXIcXmrmRGKcnUJOHvArk6m1Yo9JIVaHoclX4irKL2BmvvO9xvoY4Zp4J2ko=
+X-Received: by 2002:a05:6402:90a:b0:439:c144:24cd with SMTP id
+ g10-20020a056402090a00b00439c14424cdmr33905014edz.209.1657142164310; Wed, 06
+ Jul 2022 14:16:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20220625050838.1618469-1-davidgow@google.com> <20220625050838.1618469-3-davidgow@google.com>
+In-Reply-To: <20220625050838.1618469-3-davidgow@google.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Wed, 6 Jul 2022 17:15:53 -0400
+Message-ID: <CAFd5g46ftDZwaPDdr8p2tRsd86uEQhFGfv+y6S3EVDtHCEa4zg@mail.gmail.com>
+Subject: Re: [PATCH v3 2/5] kunit: flatten kunit_suite*** to kunit_suite** in .kunit_test_suites
+To:     David Gow <davidgow@google.com>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
+        linux-mmc@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        openbmc@lists.ozlabs.org, linux-usb@vger.kernel.org,
+        linux-modules@vger.kernel.org,
+        Matt Johnston <matt@codeconstruct.com.au>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello
+On Sat, Jun 25, 2022 at 1:10 AM 'David Gow' via KUnit Development
+<kunit-dev@googlegroups.com> wrote:
+>
+> From: Daniel Latypov <dlatypov@google.com>
+>
+> We currently store kunit suites in the .kunit_test_suites ELF section as
+> a `struct kunit_suite***` (modulo some `const`s).
+> For every test file, we store a struct kunit_suite** NULL-terminated arra=
+y.
+>
+> This adds quite a bit of complexity to the test filtering code in the
+> executor.
+>
+> Instead, let's just make the .kunit_test_suites section contain a single
+> giant array of struct kunit_suite pointers, which can then be directly
+> manipulated. This array is not NULL-terminated, and so none of the test
+> filtering code needs to NULL-terminate anything.
+>
+> Tested-by: Ma=C3=ADra Canal <maira.canal@usp.br>
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> Co-developed-by: David Gow <davidgow@google.com>
+> Signed-off-by: David Gow <davidgow@google.com>
 
-Let the fuzzer running a long time on 5.19-rc1 and after a few weeks it 
-triggered this weird trace.  It is repeatable (although I haven't 
-narrowed down exactly what's causing it).
-
-It's odd in that it just dumps a <TASK>, it doesn't provide any info on 
-what the actual trigger is.
-
-This is on a Haswell machine.
-
-[2611569.407088] Call Trace:
-[2611569.407092]  <TASK>
-[2611569.407093]  intel_pmu_lbr_restore+0x9a/0x1f0
-[2611569.407100]  intel_pmu_lbr_sched_task+0x91/0x1c0
-[2611569.407103]  __perf_event_task_sched_in+0x1cd/0x240
-[2611569.407107]  ? __perf_event_task_sched_out+0x75/0x5c0
-[2611569.407109]  finish_task_switch.isra.0+0x188/0x2a0
-[2611569.407114]  ? __switch_to+0x112/0x430
-[2611569.407119]  __schedule+0x2cf/0x10d0
-[2611569.407123]  ? __sysvec_irq_work+0x5b/0xc0
-[2611569.407127]  schedule+0x4e/0xb0
-[2611569.407129]  schedule_timeout+0x115/0x150
-[2611569.407132]  ? schedule_timeout+0x115/0x150
-[2611569.407135]  ? _raw_spin_unlock_irqrestore+0x23/0x40
-[2611569.407138]  ? preempt_count_add+0x68/0xa0
-[2611569.407141]  ? preempt_count_add+0x68/0xa0
-[2611569.407144]  __wait_for_common+0x93/0x1a0
-[2611569.407146]  ? usleep_range_state+0x90/0x90
-[2611569.407149]  __wait_rcu_gp+0x112/0x120
-[2611569.407152]  synchronize_rcu+0xc8/0xe0
-[2611569.407156]  ? note_gp_changes+0x80/0x80
-[2611569.407159]  perf_trace_event_unreg.isra.0+0x37/0x90
-[2611569.407163]  perf_trace_destroy+0x38/0x50
-[2611569.407165]  _free_event+0xf9/0x3d0
-[2611569.407167]  perf_event_release_kernel+0x279/0x2d0
-[2611569.407170]  perf_release+0x11/0x20
-[2611569.407172]  __fput+0x8c/0x240
-[2611569.407175]  task_work_run+0x5c/0x90
-[2611569.407180]  exit_to_user_mode_prepare+0x125/0x130
-[2611569.407183]  syscall_exit_to_user_mode+0x22/0x40
-[2611569.407185]  ? __x64_sys_close+0xd/0x40
-[2611569.407189]  do_syscall_64+0x48/0xc0
-[2611569.407193]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[2611569.407198] RIP: 0033:0x7f92e4813cc3
-[2611569.407200] Code: e9 37 ff ff ff e8 ad ef 01 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8
-[2611569.407202] RSP: 002b:00007fffc243bb98 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-[2611569.407205] RAX: 0000000000000000 RBX: 000000000000000c RCX: 00007f92e4813cc3
-[2611569.407207] RDX: 0000000000005be0 RSI: 00007fffc243bb74 RDI: 0000000000000048
-[2611569.407208] RBP: 00007fffc243bbc0 R08: 00007f92e48f7234 R09: 00007f92e48f7240
-[2611569.407209] R10: 0000000000000000 R11: 0000000000000246 R12: 000056355ea124f0
-[2611569.407210] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-[2611569.407212]  </TASK>
-
-
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
