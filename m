@@ -2,92 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A28C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D708EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233399AbiGFPji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        id S234683AbiGFPjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234682AbiGFPhn (ORCPT
+        with ESMTP id S234738AbiGFPht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:37:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E45229806;
-        Wed,  6 Jul 2022 08:34:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA6D6B81D97;
-        Wed,  6 Jul 2022 15:34:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A1AC385A5;
-        Wed,  6 Jul 2022 15:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121651;
-        bh=KtcIH+E3c9VLP7E/93kgfkyPI4Y4Eqggbw0U3c+oQjc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QUEPFA1ecu6tzN5W0ylPYRMXmwq2wrBy0sI/G8FWhrXDfM2mccmZfMfITFQjBtU8V
-         piSUZt5jm+C9BPn6/ZUPqYuA5ySZ65Bw/8T4z+scrbB4aWRw4comTwfoHOJ+qZ6ERm
-         Yp0e2gPPVjidvWI4X8dCarEyZQHSqUeLuy0FpQcCrDD2HA5kF2373MeX7cnQF/B1Si
-         h3mA9R/56QNshkUSykdPSPe2WIffH99Bw87h9yh4m9Qv9wx5pWgOG6/Jk9fWRRIyAd
-         qMNIId8b/w/NUsQ6gEFkr5TKIUcBXfOvTp8KKCq6QW+Rs7EDVaWaTzW1xlJsgcGGie
-         naW8ZJ6siWPug==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 4.9 2/5] virtio_mmio: Restore guest page size on resume
-Date:   Wed,  6 Jul 2022 11:34:04 -0400
-Message-Id: <20220706153407.1598915-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220706153407.1598915-1-sashal@kernel.org>
-References: <20220706153407.1598915-1-sashal@kernel.org>
+        Wed, 6 Jul 2022 11:37:49 -0400
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDDC25EB3;
+        Wed,  6 Jul 2022 08:34:21 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-31c8a1e9e33so91637247b3.5;
+        Wed, 06 Jul 2022 08:34:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e+Fsv8R6El10zE4fRO1Zb3LQa9YV3Qjec5+0V8sZOL8=;
+        b=abA2kxiYOK5w7K6qOsyYQIZT4hWfSiQncZj/EO7rhLYaVAk6FGpU6Kr98ibYzDhH5Y
+         oUgbjATbtc8CW95p7wGQgCqYGSEgL8QD6Mcg7T7Lj0HS3ghwrtlI/kxflVkm861jzK3N
+         03x/T0/empdgiEvnlxIZWNloj8euVPnMObTXrIvMbVztLSA1hUb0EcseNozh8WpSfPzi
+         Ocn3mTICmZ2lIZto4x4gXGIGNJxQZv6Hop0U3ETSKWv22x5b81WalOmLNTWM9CX+rF7s
+         aa3+sOZ845mI96bXxCxxJdJmr53azPXBHoImOmdq54vrnj6ICLDZS0mqxP62rGvX2zuA
+         5kVw==
+X-Gm-Message-State: AJIora+ZUm1wIAlfeVCNpW41toSLZCq+b8F0KDutM6G8Njt+/V+MzgfT
+        FJv4rQAhJehPy8VEOOM5xcAkEkWIEYVdpxe2e6T4CdXSeBg=
+X-Google-Smtp-Source: AGRyM1u7ABPiXSFcDKj/c4I09BwgdOZnzeJIsTesqlFtEdqGMBzTO/wiiq9rxvUww5aXa3RBPwaMfL4Aazj2igIKYaE=
+X-Received: by 2002:a81:6943:0:b0:31c:ee3e:47c6 with SMTP id
+ e64-20020a816943000000b0031cee3e47c6mr3379106ywc.515.1657121660817; Wed, 06
+ Jul 2022 08:34:20 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <8c3d50faf8811e86136fb3f9c459e43fc3c50bc0.1653565641.git.viresh.kumar@linaro.org>
+ <426bf6edc80b2e944d459fa7b8dffbe8b73bb3d9.1653623526.git.viresh.kumar@linaro.org>
+ <CAJZ5v0gswDEdK9-gC1dPr9BFPv3G9rs+JYe-7=1JZ11OMoBb-g@mail.gmail.com>
+ <20220615045957.55ocdyddcac3vwct@vireshk-i7> <CAJZ5v0gDCS8mkoFjnqOAi9gGuhTheE79FwvRWgeoxagMj3Ok0Q@mail.gmail.com>
+ <20220706152333.fvgybznz3j6ffmre@vireshk-i7>
+In-Reply-To: <20220706152333.fvgybznz3j6ffmre@vireshk-i7>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 6 Jul 2022 17:34:09 +0200
+Message-ID: <CAJZ5v0hnjeTYDfGvwrAEY8hNa6bfD6MDGEiuTOgVV+g6LEaGLQ@mail.gmail.com>
+Subject: Re: [PATCH V2 2/3] cpufreq: Panic if policy is active in cpufreq_policy_free()
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+On Wed, Jul 6, 2022 at 5:23 PM Viresh Kumar <viresh.kumar@linaro.org> wrote:
+>
+> On 06-07-22, 15:49, Rafael J. Wysocki wrote:
+> > WARN_ON() would be somewhat better, but then I'm not sure if having a
+> > full call trace in this case is really useful, because we know when
+> > cpufreq_policy_free() can be called anyway.
+> >
+> > Maybe just print a warning message.
+>
+> The warning will get printed, yes, but I am sure everyone will end up
+> ignoring it, once it happens.
+>
+> One of the benefits of printing the call-stack is people will take it
+> seriously and report it, and we won't miss a bug, if one gets in
+> somehow.
 
-[ Upstream commit e0c2ce8217955537dd5434baeba061f209797119 ]
+I'd rather not go into discussing things that people may or may not do and why.
 
-Virtio devices might lose their state when the VMM is restarted
-after a suspend to disk (hibernation) cycle. This means that the
-guest page size register must be restored for the virtio_mmio legacy
-interface, since otherwise the virtio queues are not functional.
-
-This is particularly problematic for QEMU that currently still defaults
-to using the legacy interface for virtio_mmio. Write the guest page
-size register again in virtio_mmio_restore() to make legacy virtio_mmio
-devices work correctly after hibernation.
-
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Message-Id: <20220621110621.3638025-3-stephan.gerhold@kernkonzept.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/virtio/virtio_mmio.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index d69f0c5135ff..413f6af4d132 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -502,6 +502,9 @@ static int virtio_mmio_restore(struct device *dev)
- {
- 	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
- 
-+	if (vm_dev->version == 1)
-+		writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
-+
- 	return virtio_device_restore(&vm_dev->vdev);
- }
- 
--- 
-2.35.1
-
+My point is that if WARN_ON() gets converted to panic(), they will not
+see the message at all and if the message gets printed, they will have
+a chance to see it even in that case.  Whether or not they use that
+chance as desirable is beyond the scope of engineering IMV.
