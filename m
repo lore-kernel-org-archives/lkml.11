@@ -2,133 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD93FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE58CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232240AbiGFLki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 07:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        id S232402AbiGFLl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 07:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiGFLkg (ORCPT
+        with ESMTP id S229949AbiGFLl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 07:40:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5DFA14D20
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 04:40:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657107634;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=T9Lj3RyDX92hfQSFqlU6kQoYe1pQfwKH5XoVYNn4fSs=;
-        b=K3IZWx0gezJTJt1qbNjo1fdweDqT4d4GDdZG417rWJI+QWmBl4DGIVEXp/Pf/K55uVKmPy
-        1QRcKMuRpIc/vXNFqgcNmPLVXNBSl2bJZTC95CePy5jZfIJyo+uFiE78frCocfZo7Bipuz
-        vqhKOwR4kkNwN1pbtCzTVkZw9XjIu6A=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-570-bBNdnsj1NwKIw3oGtQk5aw-1; Wed, 06 Jul 2022 07:40:31 -0400
-X-MC-Unique: bBNdnsj1NwKIw3oGtQk5aw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1A4493C11042;
-        Wed,  6 Jul 2022 11:40:31 +0000 (UTC)
-Received: from starship (unknown [10.40.194.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8069440CFD0A;
-        Wed,  6 Jul 2022 11:40:28 +0000 (UTC)
-Message-ID: <faba7f7ff1a8f090143b2d58d3e33a3c82dd328e.camel@redhat.com>
-Subject: Re: [PATCH v2 01/21] KVM: nVMX: Unconditionally purge
- queued/injected events on nested "exit"
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Date:   Wed, 06 Jul 2022 14:40:27 +0300
-In-Reply-To: <20220614204730.3359543-2-seanjc@google.com>
-References: <20220614204730.3359543-1-seanjc@google.com>
-         <20220614204730.3359543-2-seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 6 Jul 2022 07:41:26 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F0E25C59;
+        Wed,  6 Jul 2022 04:41:25 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 266Bf6uY096717;
+        Wed, 6 Jul 2022 06:41:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657107666;
+        bh=3vNcCgtYK6oeAlB1FRtuqMNsWqaSnPkxEW05tBN2XiM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=e1Ce6EJoTqhYFltjnGGNfDMv8WRJxBHvwBRGCbxr3SalBxvkzFhpCJHRjQFuibuw5
+         SDz5o9wAet+SmZ8iTcfItqs/CNOM161Izjh5BXbIle4qs2ELvWIS/WEsBDOtRZAEic
+         ktrWd+oc2MuyhjsPKSDTPJk8kxALxe8On6BASBZ4=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 266Bf5WY008260
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Jul 2022 06:41:06 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Jul 2022 06:41:05 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Jul 2022 06:41:05 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 266Bf4g2115524;
+        Wed, 6 Jul 2022 06:41:05 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
+        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
+        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
+        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
+        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH v5 3/5] drm/bridge: cdns-dsi: Move to drm/bridge/cadence
+Date:   Wed, 6 Jul 2022 17:10:51 +0530
+Message-ID: <20220706114053.3454-4-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220706114053.3454-1-r-ravikumar@ti.com>
+References: <20220706114053.3454-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-14 at 20:47 +0000, Sean Christopherson wrote:
-> Drop pending exceptions and events queued for re-injection when leaving
-> nested guest mode, even if the "exit" is due to VM-Fail, SMI, or forced
-> by host userspace.  Failure to purge events could result in an event
-> belonging to L2 being injected into L1.
-> 
-> This _should_ never happen for VM-Fail as all events should be blocked by
-> nested_run_pending, but it's possible if KVM, not the L1 hypervisor, is
-> the source of VM-Fail when running vmcs02.
-> 
-> SMI is a nop (barring unknown bugs) as recognition of SMI and thus entry
-> to SMM is blocked by pending exceptions and re-injected events.
-> 
-> Forced exit is definitely buggy, but has likely gone unnoticed because
-> userspace probably follows the forced exit with KVM_SET_VCPU_EVENTS (or
-> some other ioctl() that purges the queue).
-> 
-> Fixes: 4f350c6dbcb9 ("kvm: nVMX: Handle deferred early VMLAUNCH/VMRESUME failure properly")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/vmx/nested.c | 19 +++++++++++--------
->  1 file changed, 11 insertions(+), 8 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index 7d8cd0ebcc75..ee6f27dffdba 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -4263,14 +4263,6 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
->  			nested_vmx_abort(vcpu,
->  					 VMX_ABORT_SAVE_GUEST_MSR_FAIL);
->  	}
-> -
-> -	/*
-> -	 * Drop what we picked up for L2 via vmx_complete_interrupts. It is
-> -	 * preserved above and would only end up incorrectly in L1.
-> -	 */
-> -	vcpu->arch.nmi_injected = false;
-> -	kvm_clear_exception_queue(vcpu);
-> -	kvm_clear_interrupt_queue(vcpu);
->  }
->  
->  /*
-> @@ -4609,6 +4601,17 @@ void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 vm_exit_reason,
->  		WARN_ON_ONCE(nested_early_check);
->  	}
->  
-> +	/*
-> +	 * Drop events/exceptions that were queued for re-injection to L2
-> +	 * (picked up via vmx_complete_interrupts()), as well as exceptions
-> +	 * that were pending for L2.  Note, this must NOT be hoisted above
-> +	 * prepare_vmcs12(), events/exceptions queued for re-injection need to
-> +	 * be captured in vmcs12 (see vmcs12_save_pending_event()).
-> +	 */
-> +	vcpu->arch.nmi_injected = false;
-> +	kvm_clear_exception_queue(vcpu);
-> +	kvm_clear_interrupt_queue(vcpu);
-> +
->  	vmx_switch_vmcs(vcpu, &vmx->vmcs01);
->  
->  	/* Update any VMCS fields that might have changed while L2 ran */
+Move the cadence dsi bridge under drm/bridge/cadence
+directory, to prepare for adding j721e wrapper
+support
 
-Makes sense.
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+---
+ drivers/gpu/drm/bridge/Kconfig                        | 11 -----------
+ drivers/gpu/drm/bridge/Makefile                       |  1 -
+ drivers/gpu/drm/bridge/cadence/Kconfig                | 11 +++++++++++
+ drivers/gpu/drm/bridge/cadence/Makefile               |  2 ++
+ .../bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c}    |  0
+ 5 files changed, 13 insertions(+), 12 deletions(-)
+ rename drivers/gpu/drm/bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c} (100%)
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-Best regards,
-	Maxim Levitsky
+diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
+index 57946d80b02d..8b2226f72b24 100644
+--- a/drivers/gpu/drm/bridge/Kconfig
++++ b/drivers/gpu/drm/bridge/Kconfig
+@@ -15,17 +15,6 @@ config DRM_PANEL_BRIDGE
+ menu "Display Interface Bridges"
+ 	depends on DRM && DRM_BRIDGE
+ 
+-config DRM_CDNS_DSI
+-	tristate "Cadence DPI/DSI bridge"
+-	select DRM_KMS_HELPER
+-	select DRM_MIPI_DSI
+-	select DRM_PANEL_BRIDGE
+-	select GENERIC_PHY_MIPI_DPHY
+-	depends on OF
+-	help
+-	  Support Cadence DPI to DSI bridge. This is an internal
+-	  bridge and is meant to be directly embedded in a SoC.
+-
+ config DRM_CHIPONE_ICN6211
+ 	tristate "Chipone ICN6211 MIPI-DSI/RGB Converter bridge"
+ 	depends on OF
+diff --git a/drivers/gpu/drm/bridge/Makefile b/drivers/gpu/drm/bridge/Makefile
+index 1884803c6860..52f6e8b4a821 100644
+--- a/drivers/gpu/drm/bridge/Makefile
++++ b/drivers/gpu/drm/bridge/Makefile
+@@ -1,5 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+-obj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o
+ obj-$(CONFIG_DRM_CHIPONE_ICN6211) += chipone-icn6211.o
+ obj-$(CONFIG_DRM_CHRONTEL_CH7033) += chrontel-ch7033.o
+ obj-$(CONFIG_DRM_CROS_EC_ANX7688) += cros-ec-anx7688.o
+diff --git a/drivers/gpu/drm/bridge/cadence/Kconfig b/drivers/gpu/drm/bridge/cadence/Kconfig
+index 1d06182bea71..8fbb46c66094 100644
+--- a/drivers/gpu/drm/bridge/cadence/Kconfig
++++ b/drivers/gpu/drm/bridge/cadence/Kconfig
+@@ -25,3 +25,14 @@ config DRM_CDNS_MHDP8546_J721E
+ 	  initializes the J721E Display Port and sets up the
+ 	  clock and data muxes.
+ endif
++
++config DRM_CDNS_DSI
++	tristate "Cadence DPI/DSI bridge"
++	select DRM_KMS_HELPER
++	select DRM_MIPI_DSI
++	select DRM_PANEL_BRIDGE
++	select GENERIC_PHY_MIPI_DPHY
++	depends on OF
++	help
++	  Support Cadence DPI to DSI bridge. This is an internal
++	  bridge and is meant to be directly embedded in a SoC.
+diff --git a/drivers/gpu/drm/bridge/cadence/Makefile b/drivers/gpu/drm/bridge/cadence/Makefile
+index 4d2db8df1bc6..e3d8e9a40784 100644
+--- a/drivers/gpu/drm/bridge/cadence/Makefile
++++ b/drivers/gpu/drm/bridge/cadence/Makefile
+@@ -2,3 +2,5 @@
+ obj-$(CONFIG_DRM_CDNS_MHDP8546) += cdns-mhdp8546.o
+ cdns-mhdp8546-y := cdns-mhdp8546-core.o cdns-mhdp8546-hdcp.o
+ cdns-mhdp8546-$(CONFIG_DRM_CDNS_MHDP8546_J721E) += cdns-mhdp8546-j721e.o
++obj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o
++cdns-dsi-y := cdns-dsi-core.o
+diff --git a/drivers/gpu/drm/bridge/cdns-dsi.c b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+similarity index 100%
+rename from drivers/gpu/drm/bridge/cdns-dsi.c
+rename to drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+-- 
+2.36.1
 
