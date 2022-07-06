@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1014EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD57C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233974AbiGFPcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
+        id S233986AbiGFPct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233986AbiGFPcU (ORCPT
+        with ESMTP id S233798AbiGFPcV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:32:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D8527CE5;
-        Wed,  6 Jul 2022 08:31:46 -0700 (PDT)
+        Wed, 6 Jul 2022 11:32:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE36527FC7;
+        Wed,  6 Jul 2022 08:31:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34C64B81D98;
-        Wed,  6 Jul 2022 15:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7313C385A2;
-        Wed,  6 Jul 2022 15:31:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AC0C61FE8;
+        Wed,  6 Jul 2022 15:31:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7CFBC341CA;
+        Wed,  6 Jul 2022 15:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121503;
-        bh=tHbmYTk29C+tyConO9otde+kD25xesrNCWFelZW3mIY=;
+        s=k20201202; t=1657121508;
+        bh=0tB/LX5tbGmxD7/pJ3RV12uRuMbISjx0rX5KmfklPqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UaGd+zWZNfFqB6GUHXMeFdyHBwPgNAIs9jcrLWe+z/Bxa2gN3K0sJ8SQUaob5uReh
-         2dFDSqVH2Is2m7vtzkm8mS/OVaU8laKXz6VVsTQp5ZTxQOgL1crdbD2BmyjrPx6Gv+
-         8r66ICFiWnT2pB9F1JZijRsDtYI7ksS/jy87xnCeV8z9doFphVB3KgBN8nzI+dFLDh
-         m0D8U4gigr4Bx13+RDzy0E2Xec1BoRir4oXrZgnoKGijFsMMrI1hdcbmkKJA/y43dz
-         UwfrTvQ/93p2GDeJNEafGC9I/7wK8QXoH7NVzug6NA4z+U8HWRaOdUcQ4uy2Sfk4En
-         SQBuHgiyWUgJg==
+        b=nTFCFTf25/OMZscd5W9ynSTPlL/TfGlMOuJWxaWzCwXPsbGMDGr+M5oHvgOz2lkfh
+         pNcNCygx5f3cAwzaY1Aj178W05v5IuuUpQHkOBCUOmaCpwS6Taq6rKET+szaoz/dke
+         mI6hlT13fZAuK333wAXQccxYT/U7APhS3ZQIspi/rT/8FFLGicX7pLc/c59HQig5mF
+         hhrbgV19nF8MVhxcRjzSJUlKC+H8G9r+KJlycZN7B6ZmcAAJxjvC74V3xPcTfeC/n2
+         GxQYEU77iBnLlGx33ebt5ZPYihK3aZjS/3ek1oiFpYPSF2q0qmAXy+YEAozWi9iO6W
+         ybAzmV9wHKQRg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
-        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jmaloy@redhat.com,
-        ying.xue@windriver.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.18 18/22] net: tipc: fix possible refcount leak in tipc_sk_create()
-Date:   Wed,  6 Jul 2022 11:30:36 -0400
-Message-Id: <20220706153041.1597639-18-sashal@kernel.org>
+Cc:     Sagi Grimberg <sagi@grimberg.me>, Daniel Wagner <dwagner@suse.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 20/22] nvme-tcp: always fail a request when sending it failed
+Date:   Wed,  6 Jul 2022 11:30:38 -0400
+Message-Id: <20220706153041.1597639-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220706153041.1597639-1-sashal@kernel.org>
 References: <20220706153041.1597639-1-sashal@kernel.org>
@@ -55,32 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Sagi Grimberg <sagi@grimberg.me>
 
-[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
+[ Upstream commit 41d07df7de841bfbc32725ce21d933ad358f2844 ]
 
-Free sk in case tipc_sk_insert() fails.
+queue stoppage and inflight requests cancellation is fully fenced from
+io_work and thus failing a request from this context. Hence we don't
+need to try to guess from the socket retcode if this failure is because
+the queue is about to be torn down or not.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+We are perfectly safe to just fail it, the request will not be cancelled
+later on.
+
+This solves possible very long shutdown delays when the users issues a
+'nvme disconnect-all'
+
+Reported-by: Daniel Wagner <dwagner@suse.de>
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/nvme/host/tcp.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 17f8c523e33b..43509c7e90fc 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -502,6 +502,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
- 	sock_init_data(sock, sk);
- 	tipc_set_sk_state(sk, TIPC_OPEN);
- 	if (tipc_sk_insert(tsk)) {
-+		sk_free(sk);
- 		pr_warn("Socket create failed; port number exhausted\n");
- 		return -EINVAL;
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index ad3a2bf2f1e9..e44d0570e694 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -1180,8 +1180,7 @@ static int nvme_tcp_try_send(struct nvme_tcp_queue *queue)
+ 	} else if (ret < 0) {
+ 		dev_err(queue->ctrl->ctrl.device,
+ 			"failed to send request %d\n", ret);
+-		if (ret != -EPIPE && ret != -ECONNRESET)
+-			nvme_tcp_fail_request(queue->request);
++		nvme_tcp_fail_request(queue->request);
+ 		nvme_tcp_done_send_req(queue);
  	}
+ 	return ret;
 -- 
 2.35.1
 
