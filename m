@@ -2,184 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C01E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B1BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233174AbiGFKo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:44:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
+        id S232683AbiGFKpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233158AbiGFKoH (ORCPT
+        with ESMTP id S231875AbiGFKpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:44:07 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169C22717E
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:44:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657104241; x=1688640241;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=aH9hA/MIsHjI30isHou2c6pZyhNj72WiBomLNhy3bcs=;
-  b=BKZfYAv/6VwvMAA8NOAd0rWjcfE/J5NU6LqCqPT9inL37hsRiablLuXD
-   +1yG51sGCynjhP5+vvZ5XpMJQHEOZNMatr11oKArMM+hJDNKk5Ezc7N8F
-   ZZn8mZpGEZBPdzWiktaZF4rPe5w7bh/EiLM2tLpGnNth7BBcJjE2Y2qCA
-   QYU9lbsoTPa2o/AOxY4HwmKrq2HAIJQHbPWFy7wbU8oTKxtkPwbY/mSLH
-   /w6xofeaCxmj4y7zpTSZAeXSNIK5iraTOmc3OUb7ZqS32h6rCEmrPdq6t
-   XNS1j0J+v7V1KcXrtM3E/HUXj5pEzURqn85fAYSLgpn8JBLVuYQKnA9fZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284830840"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="284830840"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:44:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="696052664"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 06 Jul 2022 03:43:57 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o92Vg-000KSt-UN;
-        Wed, 06 Jul 2022 10:43:56 +0000
-Date:   Wed, 06 Jul 2022 18:43:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.06.30b] BUILD SUCCESS
- ee801586f686297982812f49478f6a42c7ae4f20
-Message-ID: <62c56741.ML4vagVUtT/lLaKF%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 6 Jul 2022 06:45:11 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACB76337
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:45:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=6+vRWgIROMcCt5sXw27vWrci5F+2pQj9WFh5sEOI6pk=; b=doYmDC3cqezpwdGRODF/WXYOY0
+        pzg8Ru5FGeuPBBxmGx97bSVkgmwV2KHdd/co3cEo+/we24ZjPv9GCvo3tZAuLccNcRiqVhWlArE51
+        AFoofFBkVb5DoTSsvCdAiWNbhSmIaZnr9BbhRrEzOggnlPmSO4jMYXEyXOCCOi+IHKZ0EqKLoMrQs
+        YdPOfzjB6U+UvFmynzAJoyudFKTE0KY4+6wJvgEH/zwO5xVLbAGShWsJzKRB/0+T8JHmwWIVo62wt
+        dalU/Vw9i/tnWIpe9nf/aqTAEc016KLoxpZOUEHa4Te+Hw0f+6EGuI+Yt5M7qichZ3vOi76U0aW4b
+        xzG1+x6w==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o92Wj-001aAH-CT; Wed, 06 Jul 2022 10:45:01 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 1E124980050; Wed,  6 Jul 2022 12:44:59 +0200 (CEST)
+Date:   Wed, 6 Jul 2022 12:44:58 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Oleg Nesterov <oleg@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ptrace: fix clearing of JOBCTL_TRACED in
+ ptrace_unfreeze_traced()
+Message-ID: <YsVnqtvOa9ImLkmj@worktop.programming.kicks-ass.net>
+References: <20220706101625.2100298-1-svens@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20220706101625.2100298-1-svens@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.06.30b
-branch HEAD: ee801586f686297982812f49478f6a42c7ae4f20  doc: Emphasize the need for explicit RCU read-side markers
+On Wed, Jul 06, 2022 at 12:16:25PM +0200, Sven Schnelle wrote:
+> CI reported the following splat while running the strace testsuite:
+> 
+> [ 3976.640309] WARNING: CPU: 1 PID: 3570031 at kernel/ptrace.c:272 ptrace_check_attach+0x12e/0x178
+> [ 3976.640391] CPU: 1 PID: 3570031 Comm: strace Tainted: G           OE     5.19.0-20220624.rc3.git0.ee819a77d4e7.300.fc36.s390x #1
+> [ 3976.640410] Hardware name: IBM 3906 M04 704 (z/VM 7.1.0)
+> [ 3976.640452] Call Trace:
+> [ 3976.640454]  [<00000000ab4b645a>] ptrace_check_attach+0x132/0x178
+> [ 3976.640457] ([<00000000ab4b6450>] ptrace_check_attach+0x128/0x178)
+> [ 3976.640460]  [<00000000ab4b6cde>] __s390x_sys_ptrace+0x86/0x160
+> [ 3976.640463]  [<00000000ac03fcec>] __do_syscall+0x1d4/0x200
+> [ 3976.640468]  [<00000000ac04e312>] system_call+0x82/0xb0
+> [ 3976.640470] Last Breaking-Event-Address:
+> [ 3976.640471]  [<00000000ab4ea3c8>] wait_task_inactive+0x98/0x190
+> 
+> This is because JOBCTL_TRACED is set, but the task is not in TASK_TRACED
+> state. Caused by ptrace_unfreeze_traced() which does:
+> 
+> task->jobctl &= ~TASK_TRACED
+> 
+> but it should be:
+> 
+> task->jobctl &= ~JOBCTL_TRACED
+> 
+> Fixes: 31cae1eaae4f ("sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state")
+> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
 
-elapsed time: 725m
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-configs tested: 108
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-xtensa                  audio_kc705_defconfig
-sh                            shmin_defconfig
-sh                            migor_defconfig
-arc                         haps_hs_defconfig
-sh                               j2_defconfig
-arm                         lubbock_defconfig
-m68k                          multi_defconfig
-arc                     haps_hs_smp_defconfig
-powerpc                        warp_defconfig
-mips                         bigsur_defconfig
-sh                            titan_defconfig
-powerpc                 mpc8540_ads_defconfig
-powerpc                     pq2fads_defconfig
-sh                         ecovec24_defconfig
-sh                           se7206_defconfig
-x86_64                           alldefconfig
-openrisc                            defconfig
-sh                        sh7785lcr_defconfig
-arm                           h3600_defconfig
-alpha                            allyesconfig
-m68k                        stmark2_defconfig
-mips                       bmips_be_defconfig
-m68k                        m5407c3_defconfig
-sparc                       sparc64_defconfig
-m68k                        mvme147_defconfig
-sh                          polaris_defconfig
-arm                         assabet_defconfig
-arm                       multi_v4t_defconfig
-xtensa                         virt_defconfig
-sh                              ul2_defconfig
-sh                          r7785rp_defconfig
-m68k                       m5475evb_defconfig
-m68k                          amiga_defconfig
-sh                        sh7757lcr_defconfig
-mips                        bcm47xx_defconfig
-arc                 nsimosci_hs_smp_defconfig
-i386                                defconfig
-xtensa                    xip_kc705_defconfig
-riscv                               defconfig
-arc                          axs101_defconfig
-arm                          gemini_defconfig
-openrisc                    or1ksim_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-ia64                             allmodconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                             allyesconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                randconfig-r042-20220703
-s390                 randconfig-r044-20220703
-arc                  randconfig-r043-20220703
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-
-clang tested configs:
-mips                          ath79_defconfig
-powerpc                     ksi8560_defconfig
-powerpc                     kilauea_defconfig
-arm                           sama7_defconfig
-arm                         orion5x_defconfig
-mips                          ath25_defconfig
-powerpc                     powernv_defconfig
-mips                     cu1000-neo_defconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r041-20220703
-hexagon              randconfig-r045-20220703
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  kernel/ptrace.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/ptrace.c b/kernel/ptrace.c
+> index 156a99283b11..1893d909e45c 100644
+> --- a/kernel/ptrace.c
+> +++ b/kernel/ptrace.c
+> @@ -222,7 +222,7 @@ static void ptrace_unfreeze_traced(struct task_struct *task)
+>  	if (lock_task_sighand(task, &flags)) {
+>  		task->jobctl &= ~JOBCTL_PTRACE_FROZEN;
+>  		if (__fatal_signal_pending(task)) {
+> -			task->jobctl &= ~TASK_TRACED;
+> +			task->jobctl &= ~JOBCTL_TRACED;
+>  			wake_up_state(task, __TASK_TRACED);
+>  		}
+>  		unlock_task_sighand(task, &flags);
+> -- 
+> 2.34.1
+> 
