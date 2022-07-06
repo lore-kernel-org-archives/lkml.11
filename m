@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED935C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 15:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234490AbiGFPhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 11:37:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
+        id S234390AbiGFPhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 11:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234141AbiGFPgG (ORCPT
+        with ESMTP id S234192AbiGFPgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 11:36:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7052A71B;
-        Wed,  6 Jul 2022 08:33:38 -0700 (PDT)
+        Wed, 6 Jul 2022 11:36:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7732A955;
+        Wed,  6 Jul 2022 08:33:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C2935CE2071;
-        Wed,  6 Jul 2022 15:33:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD5ACC3411C;
-        Wed,  6 Jul 2022 15:33:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 004FD61FF9;
+        Wed,  6 Jul 2022 15:33:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B772BC385A5;
+        Wed,  6 Jul 2022 15:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121615;
-        bh=mYgorTCKW9dcyIfBO3uoP1zk+o/ZbssEvug0p5OqzbA=;
+        s=k20201202; t=1657121619;
+        bh=mRSL+apNKrvio6NVOXKtCrU99U9hQ2heTqOSh0hWygI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/PJq5YAZpDgnCey5CraDZ+oc08HiOqjShHm7ZYaZswoM2nxQkPbmt4q44LFvCy5z
-         dsBZ5tHgTQtqbXm+3DyPtrmyU0ywVUPcRHO6dqv3BmQPo+99wBu5wLhnAMNVu2YHEq
-         lmZoFBN7WRLpZkVc3icMdQQIlKJOPduRYk14z1TvFtqNQueCXCkPRDjMYyACezPq0P
-         s6FZN1QnBl+XCBhGhp/auRt9QU2cPhOG05cyXsrgekRLhrlfLB51kzDvY0eV+anLpB
-         vkEnz9aKErJvO94bsPQLEPqCoXePvMY4BUxTXNn3QshE+5n2J5m3T1qOgeRwdY1ZrL
-         SSHHzCptIxsBg==
+        b=s3cP/4gn6x9lcANWUUUOl89CWP4wdkqOU2WuYCW7wJR+d4k5PYvf7X/nVrueMkM/5
+         MZDneJXiaaBMIM+7cm+WhYX5i30k67jcMaFVWZq2Oip5/4UDf1RxuJerDUldZcmHH+
+         FIyxxII9nVRe0LL7Qecc3lcsx8w0WDsEJ6SzX8faknhnO/Hr79yWBkDQyItZLtLtbA
+         9zno4RVVFCSEeMO+IwSPcmMi8PGYOwbiSWehy/+JC4NOAGQlThTk8ObocynXtt8Ned
+         wlikhSCbOCinNFCqiPnRS22Pdszo4EV7Vf/0b0qKnoT3gkNKc7RmYcI0ypZamPmbOW
+         NZr1Y0J185WgA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianglei Nie <niejianglei2021@163.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 9/9] net: sfp: fix memory leak in sfp_probe()
-Date:   Wed,  6 Jul 2022 11:33:15 -0400
-Message-Id: <20220706153316.1598554-9-sashal@kernel.org>
+Cc:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 4.19 2/8] virtio_mmio: Restore guest page size on resume
+Date:   Wed,  6 Jul 2022 11:33:29 -0400
+Message-Id: <20220706153335.1598699-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220706153316.1598554-1-sashal@kernel.org>
-References: <20220706153316.1598554-1-sashal@kernel.org>
+In-Reply-To: <20220706153335.1598699-1-sashal@kernel.org>
+References: <20220706153335.1598699-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,36 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit 0a18d802d65cf662644fd1d369c86d84a5630652 ]
+[ Upstream commit e0c2ce8217955537dd5434baeba061f209797119 ]
 
-sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
-devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+Virtio devices might lose their state when the VMM is restarted
+after a suspend to disk (hibernation) cycle. This means that the
+guest page size register must be restored for the virtio_mmio legacy
+interface, since otherwise the virtio queues are not functional.
 
-We should use devm_add_action_or_reset() instead of devm_add_action().
+This is particularly problematic for QEMU that currently still defaults
+to using the legacy interface for virtio_mmio. Write the guest page
+size register again in virtio_mmio_restore() to make legacy virtio_mmio
+devices work correctly after hibernation.
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220629075550.2152003-1-niejianglei2021@163.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Message-Id: <20220621110621.3638025-3-stephan.gerhold@kernkonzept.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/virtio/virtio_mmio.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 5657c604602e..beaa00342a13 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1878,7 +1878,7 @@ static int sfp_probe(struct platform_device *pdev)
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 79474bd0c52c..17cd682acc22 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -521,6 +521,9 @@ static int virtio_mmio_restore(struct device *dev)
+ {
+ 	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
  
- 	platform_set_drvdata(pdev, sfp);
- 
--	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
-+	err = devm_add_action_or_reset(sfp->dev, sfp_cleanup, sfp);
- 	if (err < 0)
- 		return err;
++	if (vm_dev->version == 1)
++		writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
++
+ 	return virtio_device_restore(&vm_dev->vdev);
+ }
  
 -- 
 2.35.1
