@@ -2,144 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B146EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A13C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232859AbiGFJzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
+        id S231414AbiGFJ4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232034AbiGFJyN (ORCPT
+        with ESMTP id S232644AbiGFJ4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 05:54:13 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA6725281;
-        Wed,  6 Jul 2022 02:54:10 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-10bf634bc50so11683649fac.3;
-        Wed, 06 Jul 2022 02:54:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o8jOPstF035V3JBIGTjyEra8xnCZ4RAIho4NrHeIzoU=;
-        b=ifKui5S5rFjVMq/DNxGGiZYtnihyrIPz+XgGy+287htk2qPkSPTBDT6zU/bqaW0IAj
-         eEIcUuZm8zNyVqggg0vPkfq5SvWboTygMYut/vI30ZWm7OI6knykq5A50cyUN7yxHwbt
-         x3OJkAQz3rS3Y9MtqJ6NwJrgnwi7+6R6OQArw7NoCvrdzt2fl1u+Op6Sk71Eo0mnk7Kf
-         K4jGzZJ9jl69cTwc5fCZkxMTOGQj3eJLQiDqOz0u70kr/hzsHNPD58iNGRUJ3Qra3PtG
-         IF6KKSoTvxIaCco+8PSMr8pK01Kl4c2wWlCyc/+gJQOyWRzB04t4vTh7uCb3o8arKg4q
-         uq5Q==
-X-Gm-Message-State: AJIora8bNvFpKnAMxBIwdfj9hdkzH+LUCtZi660XXnMILcmdqPyTufKv
-        uEDKcQWoKlpivWccpTeeGBiDcGrSKa967ox8
-X-Google-Smtp-Source: AGRyM1uAKY8ZoN6KGv4/toshO1qHFCf+QFQjTKFAVF+YPn4y9ij2Yrnm8jj6CEE8H4m9dwU7r8nybw==
-X-Received: by 2002:a05:6870:b3a7:b0:10c:224c:a0b6 with SMTP id w39-20020a056870b3a700b0010c224ca0b6mr2265078oap.248.1657101249503;
-        Wed, 06 Jul 2022 02:54:09 -0700 (PDT)
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com. [209.85.161.46])
-        by smtp.gmail.com with ESMTPSA id r81-20020acaf354000000b003359fb6609asm8613210oih.22.2022.07.06.02.54.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 02:54:09 -0700 (PDT)
-Received: by mail-oo1-f46.google.com with SMTP id m26-20020a4abc9a000000b00425cd321033so2843821oop.10;
-        Wed, 06 Jul 2022 02:54:09 -0700 (PDT)
-X-Received: by 2002:a05:6902:50e:b0:66e:7f55:7a66 with SMTP id
- x14-20020a056902050e00b0066e7f557a66mr6648581ybs.365.1657100796735; Wed, 06
- Jul 2022 02:46:36 -0700 (PDT)
+        Wed, 6 Jul 2022 05:56:16 -0400
+Received: from outbound-smtp40.blacknight.com (outbound-smtp40.blacknight.com [46.22.139.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A964252A8
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:55:38 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp40.blacknight.com (Postfix) with ESMTPS id D4D111C3C34
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:55:36 +0100 (IST)
+Received: (qmail 18395 invoked from network); 6 Jul 2022 09:55:36 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 6 Jul 2022 09:55:36 -0000
+Date:   Wed, 6 Jul 2022 10:55:35 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Oliver Sang <oliver.sang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        0day robot <lkp@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        lkp@lists.01.org, Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        Hugh Dickins <hughd@google.com>
+Subject: Re: [mm/page_alloc]  2bd8eec68f:
+ BUG:sleeping_function_called_from_invalid_context_at_mm/gup.c
+Message-ID: <20220706095535.GD27531@techsingularity.net>
+References: <20220613125622.18628-8-mgorman@techsingularity.net>
+ <YsFk/qU+QtWun04h@xsang-OptiPlex-9020>
+ <20220703132209.875b823d1cb7169a8d51d56d@linux-foundation.org>
+ <YsRB3fZHAfik0M/q@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-References: <20220608142723.103523089@infradead.org> <20220608144517.124597382@infradead.org>
-In-Reply-To: <20220608144517.124597382@infradead.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 6 Jul 2022 11:46:25 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW4pT+YQfLzLTegFu1M3v9-9vaFDFAama7mc82=x6R__w@mail.gmail.com>
-Message-ID: <CAMuHMdW4pT+YQfLzLTegFu1M3v9-9vaFDFAama7mc82=x6R__w@mail.gmail.com>
-Subject: Re: [PATCH 19/36] objtool/idle: Validate __cpuidle code as noinstr
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>, tony@atomide.com,
-        khilman@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-        guoren@kernel.org, bcain@quicinc.com, chenhuacai@kernel.org,
-        kernel@xen0n.name, sammy@sammy.net, monstr@monstr.eu,
-        tsbogend@alpha.franken.de, dinguyen@kernel.org, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
-        James.Bottomley@hansenpartnership.com, deller@gmx.de,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
-        davem@davemloft.net, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, jgross@suse.com, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com,
-        boris.ostrovsky@oracle.com, chris@zankel.net, jcmvbkbc@gmail.com,
-        rafael@kernel.org, lenb@kernel.org, pavel@ucw.cz,
-        gregkh@linuxfoundation.org, mturquette@baylibre.com,
-        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
-        sudeep.holla@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, anup@brainfault.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, rostedt@goodmis.org, pmladek@suse.com,
-        senozhatsky@chromium.org, john.ogness@linutronix.de,
-        paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
-        rcu@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <YsRB3fZHAfik0M/q@xsang-OptiPlex-9020>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 4:46 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> Idle code is very like entry code in that RCU isn't available. As
-> such, add a little validation.
->
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+On Tue, Jul 05, 2022 at 09:51:25PM +0800, Oliver Sang wrote:
+> Hi Andrew Morton,
+> 
+> On Sun, Jul 03, 2022 at 01:22:09PM -0700, Andrew Morton wrote:
+> > On Sun, 3 Jul 2022 17:44:30 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+> > 
+> > > FYI, we noticed the following commit (built with gcc-11):
+> > > 
+> > > commit: 2bd8eec68f740608db5ea58ecff06965228764cb ("[PATCH 7/7] mm/page_alloc: Replace local_lock with normal spinlock")
+> > > url: https://github.com/intel-lab-lkp/linux/commits/Mel-Gorman/Drain-remote-per-cpu-directly/20220613-230139
+> > > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+> > > patch link: https://lore.kernel.org/lkml/20220613125622.18628-8-mgorman@techsingularity.net
+> > > 
+> > 
+> > Did this test include the followup patch
+> > mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch?
+> 
+> no, we just fetched original patch set and test upon it.
+> 
+> now we applied the patch you pointed to us upon 2bd8eec68f and found the issue
+> still exist.
+> (attached dmesg FYI)
+> 
 
->  arch/m68k/kernel/vmlinux-nommu.lds   |    1 -
->  arch/m68k/kernel/vmlinux-std.lds     |    1 -
->  arch/m68k/kernel/vmlinux-sun3.lds    |    1 -
+Thanks Oliver.
 
-FWIW
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+The trace is odd in that it hits in GUP when the page allocator is no
+longer active and the context is a syscall. First, is this definitely
+the first patch the problem occurs?
 
-Gr{oetje,eeting}s,
+Second, it's possible for IRQs to be enabled and an IRQ delivered before
+preemption is enabled. It's not clear why that would be a problem other
+than lacking symmetry or how it could result in the reported BUG but
+might as well rule it out. This is build tested only
 
-                        Geert
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 934d1b5a5449..d0141e51e613 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -192,14 +192,14 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
+ 
+ #define pcpu_spin_unlock(member, ptr)					\
+ ({									\
+-	spin_unlock(&ptr->member);					\
+ 	pcpu_task_unpin();						\
++	spin_unlock(&ptr->member);					\
+ })
+ 
+ #define pcpu_spin_unlock_irqrestore(member, ptr, flags)			\
+ ({									\
+-	spin_unlock_irqrestore(&ptr->member, flags);			\
+ 	pcpu_task_unpin();						\
++	spin_unlock_irqrestore(&ptr->member, flags);			\
+ })
+ 
+ /* struct per_cpu_pages specific helpers. */
+ 
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
