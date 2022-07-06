@@ -2,116 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5925C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 250D0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbiGFI2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        id S232396AbiGFI3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbiGFI11 (ORCPT
+        with ESMTP id S232387AbiGFI2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:27:27 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180FF240BF;
-        Wed,  6 Jul 2022 01:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657095997; x=1688631997;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XcUkjLL+YpWw11P834waxgWm/NgeT+vT/ACdu5U5CAo=;
-  b=bXM4SmRunfF2UdZ6n2adSVce6ocOAHH1xRPLAz10BV2oKs9zugqpZkDy
-   8i33755KPbazt9wepKm6IEY9asDygjbALi4nVDTUKElkJVhrytr9AY+iK
-   DMtg4aMn8kiGYKQ7RxwoeO+ZVSKw/DE6Sjp0yXxFaFrmSlRLnyJ59JWqW
-   cjfUGgcV7pYTkEupEnsOMoikiq642Z/9e8cVFbFRWfd57+w97Id6rkxlE
-   94y5G41P/YmbhWo6wHoy7WDEtgDB0Kc0o2RORHR3+CCPMpgcTA6faftRQ
-   9/d2CCGhHdmRTsZuRYjZLmND6Cb8Tax3SjIOkgKFBb0QbNGSwZ/WayQXC
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272467402"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="272467402"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 01:26:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="567968372"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga006.jf.intel.com with ESMTP; 06 Jul 2022 01:26:16 -0700
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v7 14/14] memfd_create.2: Describe MFD_INACCESSIBLE flag
-Date:   Wed,  6 Jul 2022 16:20:16 +0800
-Message-Id: <20220706082016.2603916-15-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+        Wed, 6 Jul 2022 04:28:45 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D4224966
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:27:46 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id f14so10567101qkm.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:27:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ga7nDnbfUpJ9V6ACUSstOgYZyMVy4dse7zJQzHBX+go=;
+        b=XfFD9/MZI+n41MLBK0E9mJU/XfUSFToIxhHGHSeXX5RSI/HMC32byDNxQ3J8hIknCZ
+         H1YnXYCpyIF3P6+gRcN12sqyL3OrrdgJnHfVFxdBh9A+Fzqh5DsB+jTuO0Kw6oA0fE5k
+         axQXuBptSouPb/ZM8WNzbbnwqwyMb/eHYjuzTCgwAfiAYRez+zIcV41H36FtK0q57/Hb
+         fc7EpvpnjHDme0fS5lPpxHSOFzwBYfK2Y5WX+t1XRpgrRfhw+jx8ZonW5P4JfHQ4TdXh
+         V2lTIgPSLo52tfTCeUtldlg3qV1M4q/4jBkuN275HUv7/2cJ9TA/4BzJ3azwDDq6fmMy
+         vRLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ga7nDnbfUpJ9V6ACUSstOgYZyMVy4dse7zJQzHBX+go=;
+        b=3c75pSG2hSCyNHMzUWXzmAN/RcR92sBnwKNUgvPdpmdpHieSwQjuZZG9kg5ZgfdVFj
+         JohkuuvhoO1l9QOalW3Rbwg7oM5ePwrqiEd5kPdSV6G4rrfHPqGInSLjhxKtWuQH6OS0
+         jb8Zek3ZZn1+NZSLzUwfwbAm9gS+PmSYADfJpXj6kC3dCQBFspjCOqbD357UmXM7xppu
+         oH5YD11dvErLhyf17uUNFnxe/Mkz3c/7pW/Tc24elf/WinudydIoIQhUZ5XS+myI13CE
+         XlpEb7kwG2Vx5gLDqSfc6w6uhgaNvq1LsBcevzV35g1tBNzqI9GLsZe5AzpLqFf3tv36
+         Tdrg==
+X-Gm-Message-State: AJIora/bMkOl2WL8z3/lRfk7GSUFGd4QmZ18NMmoe4m8IlxFw3zwJ6eE
+        6kr6v5XmmZqxnM9TZ3RkDrHcsa8GUvQrB8oJ2ewmSw==
+X-Google-Smtp-Source: AGRyM1s0dNFUwGjzYQrSacrH+zKZnt3/yN8zb4JMapiqP581z2KtzHaeLpWvpk2in8PzwyIpExyFMQFqXwJMGqb8DEQ=
+X-Received: by 2002:a05:620a:2409:b0:6b1:4464:e401 with SMTP id
+ d9-20020a05620a240900b006b14464e401mr26122750qkn.30.1657096065684; Wed, 06
+ Jul 2022 01:27:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220705202837.667-1-ansuelsmth@gmail.com> <20220705202837.667-4-ansuelsmth@gmail.com>
+In-Reply-To: <20220705202837.667-4-ansuelsmth@gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 6 Jul 2022 11:27:34 +0300
+Message-ID: <CAA8EJpry3pJxEVOL7P7gFL4M9yDktCuDE=2KOGfc6DeAUasYGw@mail.gmail.com>
+Subject: Re: [PATCH 3/5] clk: qcom: clk-rpm: convert to parent_data API
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
----
- man2/memfd_create.2 | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+On Tue, 5 Jul 2022 at 23:56, Christian Marangi <ansuelsmth@gmail.com> wrote:
+>
+> Convert clk-rpm driver to parent_data API and change parent names to cxo
+> and pxo instead of the board variant as pxo_board is an ancient name and
+> pxo should be used instead.
+>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  drivers/clk/qcom/clk-rpm.c | 24 ++++++++++++++++--------
+>  1 file changed, 16 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/clk/qcom/clk-rpm.c b/drivers/clk/qcom/clk-rpm.c
+> index a18811c38018..d45a8b0fc97c 100644
+> --- a/drivers/clk/qcom/clk-rpm.c
+> +++ b/drivers/clk/qcom/clk-rpm.c
+> @@ -23,6 +23,14 @@
+>  #define QCOM_RPM_SCALING_ENABLE_ID                     0x2
+>  #define QCOM_RPM_XO_MODE_ON                            0x2
+>
+> +static const struct clk_parent_data gcc_pxo[] = {
+> +       { .fw_name = "pxo", .name = "pxo" },
 
-diff --git a/man2/memfd_create.2 b/man2/memfd_create.2
-index 89e9c4136..2698222ae 100644
---- a/man2/memfd_create.2
-+++ b/man2/memfd_create.2
-@@ -101,6 +101,19 @@ meaning that no other seals can be set on the file.
- .\" FIXME Why is the MFD_ALLOW_SEALING behavior not simply the default?
- .\" Is it worth adding some text explaining this?
- .TP
-+.BR MFD_INACCESSIBLE
-+Disallow userspace access through ordinary MMU accesses via
-+.BR read (2),
-+.BR write (2)
-+and
-+.BR mmap (2).
-+The file size cannot be changed once initialized.
-+This flag cannot coexist with
-+.B MFD_ALLOW_SEALING
-+and when this flag is set, the initial set of seals will be
-+.B F_SEAL_SEAL,
-+meaning that no other seals can be set on the file.
-+.TP
- .BR MFD_HUGETLB " (since Linux 4.14)"
- .\" commit 749df87bd7bee5a79cef073f5d032ddb2b211de8
- The anonymous file will be created in the hugetlbfs filesystem using
+This means that the core clock would look for the DT clock named 'pxo'
+with the fallback to the global clock named 'pxo'. Fallback is
+required to keep compatibility with older DT files, not having the
+clocks/clock-names properties.
+For all other platforms we were using as a fallback  the 'pxo_board'
+clock (defined in the DT) rather than the 'pxo' (hackily injected by
+the gcc driver).
+I'd suggest following this pattern and using .fw_name = "pxo', .name =
+"pxo_board".
+
+Same applies to the CXO clock.
+
+> +};
+> +
+
+
 -- 
-2.17.1
-
+With best wishes
+Dmitry
