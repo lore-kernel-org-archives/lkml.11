@@ -2,130 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B63C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4669EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233058AbiGFNTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
+        id S233363AbiGFNUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiGFNTt (ORCPT
+        with ESMTP id S231744AbiGFNUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:19:49 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D561E5F96;
-        Wed,  6 Jul 2022 06:19:48 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id eq6so19239548edb.6;
-        Wed, 06 Jul 2022 06:19:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4XLe7zW1SnFhJBynn+dzzylqg9TZLd8+lQL8sfIiDAw=;
-        b=jTzJDJ8gaO6pMDhJ3bEENI4SJUPSyAfgj4SB2xeoJFB0/cqHZtGy6yiRhIzE1FTOzG
-         lg6k1TdfN/GL11Nf0lJCKe/+f1cZYiCR9c1SzopMevCvku5YC5SLHrypIQmmHNf/EwEH
-         u1lnL7N3kcPv5ELETlzUUDK47k9bj9MW/tajYcDgWGg3QJghg3SyeQioOqwlAg/paQdr
-         BFQRFAl5jnZQfpbDQ6pGSjd4Afc56sxe58wc6K2XK3t1DxFP0vpbd1V6CcWd/BWEPPej
-         ai/OBs+d44Pb+QkhihM6Y0pxYWBW5Tu+AXorAoLfuxsi3Uiy3DeNymlNfrj0CC6M8BwZ
-         2veA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4XLe7zW1SnFhJBynn+dzzylqg9TZLd8+lQL8sfIiDAw=;
-        b=maMf2uRgJJdAI6OdK0gTAPwVFPK1wp6inDL0W2waBHzrTMTP9V40pyKA0jZwC+u69c
-         iw/z7ITD1+qgDmdIR2/L+p86FElpotTloDIcUNVIuAHHBEO2Sp4etZcQQVS6qJ0bxodX
-         MFSOCGrx7iv0DN4IRdfoJx/J/EnJ88cIdlPH+vpln/fC2hiGvWjezIwihU4GLUNwXT+z
-         SAndIPxBsdx6fWotepzzEMEF1X5xKrSJgR7F/6jIIO1go0972PCTfuZP2yGEHxKMkrzC
-         8RbMSbOIxrW1erY321e7KIF6H/uKylwg5GmtYIvQlffq9iHioEsm2tUCGWLoblZfr/BL
-         mTBw==
-X-Gm-Message-State: AJIora++U6eitg/1vnJa453gYTpAG+t2MIkboeFz6/sNHh+PU+/qN5Nn
-        6rG5BDqCTnBnSApUPr1n55U=
-X-Google-Smtp-Source: AGRyM1vYI/zIcvw/ZNo7wuYxyoa6YMBNat69TMvMy+L9FAhFRGGUiJ7l7eqncvdnNE9aRXO4WGNNpA==
-X-Received: by 2002:a05:6402:5299:b0:435:61da:9bb9 with SMTP id en25-20020a056402529900b0043561da9bb9mr54821086edb.21.1657113587254;
-        Wed, 06 Jul 2022 06:19:47 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id s3-20020a056402520300b0043a84dfbf06sm2124739edd.15.2022.07.06.06.19.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 06:19:46 -0700 (PDT)
-Message-ID: <62c58bf2.1c69fb81.f5075.3309@mx.google.com>
-X-Google-Original-Message-ID: <YsWIDsZ28KCPhUII@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 15:03:10 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
-Subject: Re: [PATCH 09/13] ARM: dts: qcom: add smem node for ipq8064
-References: <20220705133917.8405-1-ansuelsmth@gmail.com>
- <20220705133917.8405-10-ansuelsmth@gmail.com>
- <a56f2941-b386-19f3-a6ad-b5a0738c8458@somainline.org>
+        Wed, 6 Jul 2022 09:20:22 -0400
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EE25F7B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:20:21 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by michel.telenet-ops.be with bizsmtp
+        id rpLL2700B4C55Sk06pLLLQ; Wed, 06 Jul 2022 15:20:20 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o94x1-002LC2-P3; Wed, 06 Jul 2022 15:20:19 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o94x1-009ewI-F5; Wed, 06 Jul 2022 15:20:19 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Simon Ser <contact@emersion.fr>
+Subject: [PATCH v3] drm/mode: Improve drm_mode_fb_cmd2 documentation
+Date:   Wed,  6 Jul 2022 15:20:18 +0200
+Message-Id: <536de72eab09242e1faf22fa58d91c9005d6ea51.1657113597.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a56f2941-b386-19f3-a6ad-b5a0738c8458@somainline.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 03:11:05PM +0200, Konrad Dybcio wrote:
-> 
-> 
-> On 5.07.2022 15:39, Christian Marangi wrote:
-> > Add missing smem node for ipq8064.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > Tested-by: Jonathan McDowell <noodles@earth.li>
-> > ---
-> I can't find a downstream kernel for these router SoCs, but
-> I wonder if the 8x64 family DTs couldn't be somewhat
-> unified? It looks like they share quite some code..
+Fix various grammar mistakes in the kerneldoc comments documenting the
+drm_mode_fb_cmd2 structure:
+  - s/is/are/,
+  - s/8 bit/8-bit/.
 
-Mhh don't know they have some peculiar changes so unifying them would
-make more harm than good IMHO.
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Reviewed-by: Simon Ser <contact@emersion.fr>
+---
+v3:
+  - Add Reviewed-by.
 
-> 
-> Konrad
-> >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 18 ++++++++++++++++++
-> >  1 file changed, 18 insertions(+)
-> > 
-> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > index b5aede3d7ccf..98527a7d885e 100644
-> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > @@ -908,6 +908,11 @@ lcc: clock-controller@28000000 {
-> >  			#reset-cells = <1>;
-> >  		};
-> >  
-> > +		sfpb_mutex_block: syscon@1200600 {
-> > +			compatible = "syscon";
-> > +			reg = <0x01200600 0x100>;
-> > +		};
-> > +
-> >  		pcie0: pci@1b500000 {
-> >  			compatible = "qcom,pcie-ipq8064";
-> >  			reg = <0x1b500000 0x1000
-> > @@ -1332,4 +1337,17 @@ sdcc3: mmc@12180000 {
-> >  			};
-> >  		};
-> >  	};
-> > +
-> > +	sfpb_mutex: sfpb-mutex {
-> > +		compatible = "qcom,sfpb-mutex";
-> > +		syscon = <&sfpb_mutex_block 4 4>;
-> > +
-> > +		#hwlock-cells = <1>;
-> > +	};
-> > +
-> > +	smem {
-> > +		compatible = "qcom,smem";
-> > +		memory-region = <&smem>;
-> > +		hwlocks = <&sfpb_mutex 3>;
-> > +	};
-> >  };
+v2:
+  - Add Acked-by,
+  - Rebase on top of commit a3574119826d9a4e ("drm: document struct
+    drm_mode_fb_cmd2") in v5.18.
+---
+ include/uapi/drm/drm_mode.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/include/uapi/drm/drm_mode.h b/include/uapi/drm/drm_mode.h
+index 0a0d56a6158e6327..fa953309d9ce5775 100644
+--- a/include/uapi/drm/drm_mode.h
++++ b/include/uapi/drm/drm_mode.h
+@@ -675,11 +675,11 @@ struct drm_mode_fb_cmd {
+  *   fetch metadata about an existing frame-buffer.
+  *
+  * In case of planar formats, this struct allows up to 4 buffer objects with
+- * offsets and pitches per plane. The pitch and offset order is dictated by the
+- * format FourCC as defined by ``drm_fourcc.h``, e.g. NV12 is described as:
++ * offsets and pitches per plane. The pitch and offset order are dictated by
++ * the format FourCC as defined by ``drm_fourcc.h``, e.g. NV12 is described as:
+  *
+- *     YUV 4:2:0 image with a plane of 8 bit Y samples followed by an
+- *     interleaved U/V plane containing 8 bit 2x2 subsampled colour difference
++ *     YUV 4:2:0 image with a plane of 8-bit Y samples followed by an
++ *     interleaved U/V plane containing 8-bit 2x2 subsampled colour difference
+  *     samples.
+  *
+  * So it would consist of a Y plane at ``offsets[0]`` and a UV plane at
 -- 
-	Ansuel
+2.25.1
+
