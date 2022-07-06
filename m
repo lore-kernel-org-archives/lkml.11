@@ -2,162 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C60C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E68EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233710AbiGFMbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
+        id S233750AbiGFMby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233704AbiGFMbl (ORCPT
+        with ESMTP id S233718AbiGFMbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:31:41 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152EC26AFA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:40 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266B1fCu027122;
-        Wed, 6 Jul 2022 12:31:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=dYDdcUQdF89TV7ilxTQPKp4DbfjRbcN5O9ow2J7bkB0=;
- b=NXiCRWQbaCmEM87ObgUPDvV5kki/IrC0TlT20pH3p+3GblPTLKBNjKkOj8O8PbNfLFNV
- 24UE+CUQ2J3HjtvVfofMWEe7tmKphvWsdF6xRjzU1Y/1qip7FsesZKPvRvsJiSr1qKkm
- M8wmM4pH0Tx20RfdAsY3/8+Z7e4j07X5Op8sMUzXN0SJ4RQ+M25BBxuj70Ro3VLbQ60N
- a0aWzurnVW3+APSetaklnY5uSX6RLgOcgPwMutbogxkLVhTDtCWITZIPMG5eRai64Cth
- OjhUQ2hpDlzyeW3OJrlfvF+7NKDivYMSGcPL0tW15QnnYzaO3czA2HWX9eoONfPKWU5v FA== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h57mc4ycb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Jul 2022 12:31:37 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 266CLk8u030958;
-        Wed, 6 Jul 2022 12:31:33 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3h4ujsh3fm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Jul 2022 12:31:33 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 266CVVdi17039802
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Jul 2022 12:31:31 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2A194A404D;
-        Wed,  6 Jul 2022 12:31:31 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B4B4BA4055;
-        Wed,  6 Jul 2022 12:31:30 +0000 (GMT)
-Received: from localhost (unknown [9.43.110.188])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Jul 2022 12:31:30 +0000 (GMT)
-Date:   Wed, 06 Jul 2022 18:01:29 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH] perf trace: Fix SIGSEGV when processing augmented args
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     cclaudio@linux.ibm.com, Jiri Olsa <jolsa@kernel.org>,
-        Linux =?iso-8859-1?q?Kernel=0A?= Mailing List 
-        <linux-kernel@vger.kernel.org>, Namhyung Kim <namhyung@kernel.org>
-References: <20220310104741.209834-1-naveen.n.rao@linux.vnet.ibm.com>
-        <Yi+9G1nK1shEIXVN@kernel.org> <1647364864.3xrhklc7kl.naveen@linux.ibm.com>
-        <YjDSRb1wwswKpJNJ@kernel.org> <YjJKaSanKI7LQdEk@kernel.org>
-In-Reply-To: <YjJKaSanKI7LQdEk@kernel.org>
+        Wed, 6 Jul 2022 08:31:49 -0400
+Received: from mail.intenta.de (mail.intenta.de [178.249.25.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36F127153
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de;
+        s=dkim1; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version:
+        References:Message-ID:Subject:CC:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=EF7HWvqhWpKU7bA7LZSnMlfunbzGQc4QRNwktShveWA=; b=fF5/AQrli0W2CXPfDAQ7eI4lES
+        AOks4sZD+/6M4BmdrinXOL+IBmbPPbdldPoKi+J/eOpXZ1J3TIWGv+0mndgVj7uvaUCJ+vyFhKgpl
+        c5lYB6W1n4Qv/LBVKRGO6AEYfkWFVNcle2lSDVFyJ8TCNnWjXYGubnkyGzshb59SHcGdWrmulLccX
+        R1W0CdQjt9DeSDh/c5xtSDuhumCk5C9uF3IyY+/5XgQQnrejXj/H6QO7tNW4gT4FewTiJzX3NkHqi
+        mQ7NyrRM7wbwm0QkGz2FvefqKJaZw13Ne7QP7RQLpcG518OyETrkGFCQeVgXZMJnWNloJ2w+rHFgN
+        6Jk29Kow==;
+Date:   Wed, 6 Jul 2022 14:30:06 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Support Opensource <support.opensource@diasemi.com>,
+        Lee Jones <lee.jones@linaro.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+        Mark Brown <broonie@kernel.org>,
+        Wolfram Sang <wsa@the-dreams.de>
+Subject: [PATCH v4 2/2] dt-bindings: mfd: da9062 can be a system power
+ controller
+Message-ID: <fde0a8136c773a11def5127d4acad627ec5a9b27.1657104160.git.helmut.grohne@intenta.de>
+References: <c6e19670802355222a228061f37aadace2764933.1657104160.git.helmut.grohne@intenta.de>
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1657110053.93m1349h4k.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: vVVLXEPDFEDzEM7o9bgXPcSq94R7BHrJ
-X-Proofpoint-ORIG-GUID: vVVLXEPDFEDzEM7o9bgXPcSq94R7BHrJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-06_08,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1011
- suspectscore=0 spamscore=0 priorityscore=1501 impostorscore=0 adultscore=0
- lowpriorityscore=0 bulkscore=0 mlxscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207060049
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c6e19670802355222a228061f37aadace2764933.1657104160.git.helmut.grohne@intenta.de>
+X-EXCLAIMER-MD-CONFIG: 0e788d66-80ec-4ac3-b2f1-4d8c6f55fd77
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnaldo,
+The DA9062 can be used to power off a system if it is appropriately
+wired.
 
-Arnaldo Carvalho de Melo wrote:
-> Em Tue, Mar 15, 2022 at 02:52:05PM -0300, Arnaldo Carvalho de Melo escrev=
-eu:
->> Em Tue, Mar 15, 2022 at 10:57:57PM +0530, Naveen N. Rao escreveu:
->> > Yes, it looks like the current check in 'perf' isn't working. The belo=
-w
->> > patch also resolves the crash we are seeing:
->> =20
->> > diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
->> > index 2f1d20553a0aa3..86b459f4ebdd61 100644
->> > --- a/tools/perf/builtin-trace.c
->> > +++ b/tools/perf/builtin-trace.c
->> > @@ -2326,7 +2326,7 @@ static int trace__sys_enter(struct trace *trace,=
- struct evsel *evsel,
->> >         * thinking that the extra 2 u64 args are the augmented filenam=
-e, so just check
->> >         * here and avoid using augmented syscalls when the evsel is th=
-e raw_syscalls one.
->> >         */
->> > -       if (evsel !=3D trace->syscalls.events.sys_enter)
->> > +       if (strcmp(evsel__name(evsel), "raw_syscalls:sys_enter"))
->> >                augmented_args =3D syscall__augmented_args(sc, sample, =
-&augmented_args_size, trace->raw_augmented_syscalls_args_size);
->> >        ttrace->entry_time =3D sample->time;
->> >        msg =3D ttrace->entry_str;
->>=20
->> Interesting, that should be equivalent :-\ humm, not really, understood,
->> when processing perf.data files we don't setup
->> trace->syscalls.events.sys_enter...
->>=20
->> switching from strcmp() to something cheaper but equivalent should be
->> the fix for now.
->=20
-> I'll add a trace->use_augmented_args boolean that will do this test
-> once, and then use it in this case and will audit to check if this
-> should be used in other places.
-
-Does something like the below look reasonable?
-
-I know this isn't quite what you proposed, but it fixes the problem for=20
-me while avoiding the need for a string comparison. I also think this=20
-addresses all uses in 'perf trace', though I didn't audit the need for a=20
-similar fix elsewhere in 'perf'.
-
-
-Thanks,
-Naveen
-
+Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
-diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-index d2de2a4073e7eb..352b88a51dec2d 100644
---- a/tools/perf/builtin-trace.c
-+++ b/tools/perf/builtin-trace.c
-@@ -4291,6 +4292,8 @@ static int trace__replay(struct trace *trace)
-                goto out;
-        }
-=20
-+       trace->syscalls.events.sys_enter =3D evsel;
-+
-        evsel =3D evlist__find_tracepoint_by_name(session->evlist, "raw_sys=
-calls:sys_exit");
-        if (evsel =3D=3D NULL)
-                evsel =3D evlist__find_tracepoint_by_name(session->evlist, =
-"syscalls:sys_exit");
-@@ -4301,6 +4304,8 @@ static int trace__replay(struct trace *trace)
-                goto out;
-        }
-=20
-+       trace->syscalls.events.sys_exit  =3D evsel;
-+
-        evlist__for_each_entry(session->evlist, evsel) {
-                if (evsel->core.attr.type =3D=3D PERF_TYPE_SOFTWARE &&
-                    (evsel->core.attr.config =3D=3D PERF_COUNT_SW_PAGE_FAUL=
-TS_MAJ ||
+ Documentation/devicetree/bindings/mfd/da9062.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-
+diff --git a/Documentation/devicetree/bindings/mfd/da9062.txt b/Documentation/devicetree/bindings/mfd/da9062.txt
+index bab0d0e66cb3..4861c3ad97e9 100644
+--- a/Documentation/devicetree/bindings/mfd/da9062.txt
++++ b/Documentation/devicetree/bindings/mfd/da9062.txt
+@@ -41,6 +41,7 @@ further information on IRQ bindings.
+ 
+ Optional properties:
+ 
++- system-power-controller
+ - gpio-controller : Marks the device as a gpio controller.
+ - #gpio-cells     : Should be two. The first cell is the pin number and the
+                     second cell is used to specify the gpio polarity.
+-- 
+2.30.2
+ 
+Dipl.-Inf. Helmut Grohne
+Research and Development
+Application Engineering
+ 
+Phone: +49 (371) 24354 0 ∙ Fax:  +49 (371) 24354 020
+helmut.grohne@intenta.de ∙ https://www.intenta.de
+ 
+Intenta GmbH ∙ Ahornstraße 55 ∙ 09112 Chemnitz, Germany
+Managing Director: Dr.-Ing. Basel Fardi ∙ VAT/USt-IdNr.: DE 275745394
+Commercial register: HRB 26404 Amtsgericht Chemnitz
