@@ -2,196 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F8F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 03:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D67AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 03:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbiGFDui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 23:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50958 "EHLO
+        id S231331AbiGFDv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 23:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231675AbiGFDuK (ORCPT
+        with ESMTP id S231907AbiGFDvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 23:50:10 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A696C1CFD7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 20:48:46 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id y18so4605284plb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 20:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vO0ibtZ+G9xkuV+PcEvkoLdb5M0LHVa95jNt+v4jHr8=;
-        b=FVZFdqd/sveybWuB17SKf5U66wsYwfbA6oOkfyj/92C+lDDgN8lmLbq4HCfE6pqVV7
-         4sPhYZa6rjtwFjU0BCsxeYfG7T/UMWPO/afLG5p463TDAQHhyOY3Y7RpCI1UeoHKCbsV
-         c4ssgFikv0deFfkyurQDrP/ErVVysB1GeUrol7EaFWOIs8UF8woniH10nZY07lcMbnnw
-         kCIrVeJ2aazOVEuyeHOZQ0q0uFQlVGJJ38J5gcZeeDqq5yiRmXhKkOsYWAiJ6b8z+Mvm
-         OtGwLQTHryzjClCFzJQflj3RxXonvh30uuV4Yj+j2jeWQjO1VcypByEYV2MoPNzORARi
-         /dtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vO0ibtZ+G9xkuV+PcEvkoLdb5M0LHVa95jNt+v4jHr8=;
-        b=U7DXbt/MUhguWrdJ29wUPQGzfgz/oIxslbewsGviRpUl+19ULpZDnU8KkDS0nVfFRn
-         XcmeUIAHd8BeE0r/kuoJH2I9l+fPVIvsnCOmxWQVLPqeBXpp4RJnmz8/TOmcJ4kFSmTI
-         y+Wy1k1rUBDLBr4thXKzddyK9uOcrFIAyMPQRaVYuFCsUqjjUJw2GkWiEg8lweW1/YPl
-         qYp1DCneLgr+2EpktwhWs5sYa2Hular4qrdjAHT4c62n2mAIpNHcVnqmVviwlWK8H/Zj
-         pb/uH89b5z3WgxEPualrdr+erC/8bT/2lICriZ4+kaiSIw4YC4nbcuzfWJge9bX/pfKm
-         rTqw==
-X-Gm-Message-State: AJIora/GMwFujWlKNEkDaOB9yw+O5OXpmv1QsJ9btuZ0RpXsvI2PtRul
-        20yEy73qe3F14eyLzT3OOIjurg==
-X-Google-Smtp-Source: AGRyM1v0bTBAale1x4Kc9Cg6jv4aP0ydNajpRAzJD9jLi1ytuYgxp/4bpSZyXv1zCgZJ8Aki0Ha0YA==
-X-Received: by 2002:a17:902:9307:b0:166:41a8:abc0 with SMTP id bc7-20020a170902930700b0016641a8abc0mr45898229plb.135.1657079326192;
-        Tue, 05 Jul 2022 20:48:46 -0700 (PDT)
-Received: from C02FT5A6MD6R.bytedance.net ([61.120.150.78])
-        by smtp.gmail.com with ESMTPSA id u27-20020a62d45b000000b0050dc7628148sm23723282pfl.34.2022.07.05.20.48.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 20:48:45 -0700 (PDT)
-From:   Gang Li <ligang.bdlg@bytedance.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Gang Li <ligang.bdlg@bytedance.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4] mm, hugetlb: skip irrelevant nodes in show_free_areas()
-Date:   Wed,  6 Jul 2022 11:46:54 +0800
-Message-Id: <20220706034655.1834-1-ligang.bdlg@bytedance.com>
-X-Mailer: git-send-email 2.32.0
+        Tue, 5 Jul 2022 23:51:03 -0400
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FF71E3FB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 20:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1657079399; x=1688615399;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=nWXv72h/88bA9KDqkdclJQLLn1UNVvDpSy3/LQXeW3c=;
+  b=Qm3LRsZXeUUOBBaYEB9HLsJiaBSCcrcutWr7Z46AhKe+9k3ZwBGEHRI2
+   +2G3GxNJCz58f0SZmQejTCJdK3cOpIgNB0Xq1B6kdx8yjDf1KH+fDQxcI
+   CuFAul04TyjK9Ms/SKyTSI5Mp62NjNCy2w7jktpM9mLBn1Skvg3+VUAWq
+   ECL9YOYu4+KCn7GtsMEs3/0/3RzmxRjAoCXmfTU8BE4TI7dVSJzrWRlOI
+   t5CRzchbznlypMtiKR9SAlHzWYZR7C7Xo5j6DIFZ9esQtLwNZejW6/NFX
+   iNDx3pwxJGnqYQhyLZF0xC+5BLBN8fWriYvTWZpbRaU3yQyarRnEGBN39
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,248,1650902400"; 
+   d="scan'208";a="205653587"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 06 Jul 2022 11:49:58 +0800
+IronPort-SDR: 63CFAoHyGhzzSDQHagMtnu2ReKoyH3zZvAluyKdIpgYPwSDEEphEnbn4wOmE6+M9UoUineVkXi
+ oUl5nz/5kENmo6td+mORQyUaRYvnpr9VGr9JBJ5jNdFR8xg3epfSjRylYmnVpm2uqorzJpAgKE
+ Yr4xefFc5rOTI5pzMN6iCXy3a04Il4odKWeYg3Etw0ZrYAqnTJO5sDshGO1LqdmAnhB0mwo9qA
+ Vkp1KLEdU3fnlWGF6UKLpRZl1kkIODaUWCv3f5AChAZh0VHIV4W+w0ckVc5JgfSH0WtRgG95sH
+ 9oMWzt/I5lDTMrvPyiO/R5MK
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Jul 2022 20:07:16 -0700
+IronPort-SDR: eSV4xuAWo+hdTfnqnO7G1J2G4J1iTJ/v32GyE7DHK+b/4KLySSMA2qOldO9steFyothqeT2Npo
+ VVVLkWR8v3t8JSvIfluHucE26x6Wl80s+im6pbMJQoI3MLhMVgT4yRzOECv49eMUNg7qR0LkLI
+ JZ9DNjo5p+76wSctz9AdC1NGS077qRnTpsQ0yGnqygmynGpmUSYcU3TsqLquOwg6Q3rXC8SzMq
+ bGv3cFrjjIT7bvc9DqIgqZMKu4VzBYSVxeEq9dFTqfwUxt0JI7yDzQtrr1yY+yjbghQltGoien
+ t14=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Jul 2022 20:49:58 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Ld5CN3fPpz1Rws0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 20:49:52 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1657079391; x=1659671392; bh=nWXv72h/88bA9KDqkdclJQLLn1UNVvDpSy3
+        /LQXeW3c=; b=nsPEh3kxlE7MqhvN3ZaDyASIGDCsqRg1j2EfcgKLG7Vy/56o+nO
+        gTH2/zWFVqqi/8O91Lt2+Ne0RNdzEdBhpu6VbUqoWACPLWwx1OIniYii0AB2/Uyu
+        H/uPpkOILPvsZYZCrZVkDTP5Cvyh/J+5y2e9azvx6X/wZkUamLwakVCSueTTqpfh
+        4yNO76Ic1bibrnnbqYS52T/TPW4kT6e22aepwGJsEeVZx8fAKyH6AS8Evx7mYCVj
+        PHhpDMgw8x3qXycgDjWY9Ai+Yx6fJHxL+122RCb+ALDPD8jM1NqrSBH9PKxtoxgH
+        p2797YK5vNvqIsrIz56kcxEjGygqerYWYwA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id xIFnJhWQ3Q2q for <linux-kernel@vger.kernel.org>;
+        Tue,  5 Jul 2022 20:49:51 -0700 (PDT)
+Received: from [10.225.163.110] (unknown [10.225.163.110])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Ld5CJ61Zxz1RtVk;
+        Tue,  5 Jul 2022 20:49:48 -0700 (PDT)
+Message-ID: <53aa543b-a109-046d-beda-91a15ef5a487@opensource.wdc.com>
+Date:   Wed, 6 Jul 2022 12:49:47 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 5/5] riscv: dts: canaan: Add k210 topology information
+Content-Language: en-US
+To:     Conor Dooley <mail@conchuod.ie>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Zong Li <zong.li@sifive.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jonas Hahnfeld <hahnjo@hahnjo.de>
+Cc:     devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Brice Goglin <Brice.Goglin@inria.fr>
+References: <20220705190435.1790466-1-mail@conchuod.ie>
+ <20220705190435.1790466-6-mail@conchuod.ie>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220705190435.1790466-6-mail@conchuod.ie>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-show_free_areas() allows to filter out node specific data which is
-irrelevant to the allocation request. But hugetlb_show_meminfo() still
-shows hugetlb on all nodes, which is redundant and unnecessary.
+On 7/6/22 04:04, Conor Dooley wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
+> 
+> The k210 has no cpu-map node, so tools like hwloc cannot correctly
+> parse the topology. Add the node using the existing node labels.
+> 
+> Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
+> Link: https://github.com/open-mpi/hwloc/issues/536
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 
-Use show_mem_node_skip() to skip irrelevant nodes. And replace
-hugetlb_show_meminfo() with hugetlb_show_meminfo_node(nid).
+Looks good to me.
 
-before-and-after sample output of OOM:
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-before:
-```
-[  214.362453] Node 1 active_anon:148kB inactive_anon:4050920kB active_file:112kB inactive_file:100kB
-[  214.375429] Node 1 Normal free:45100kB boost:0kB min:45576kB low:56968kB high:68360kB reserved_hig
-[  214.388334] lowmem_reserve[]: 0 0 0 0 0
-[  214.390251] Node 1 Normal: 423*4kB (UE) 320*8kB (UME) 187*16kB (UE) 117*32kB (UE) 57*64kB (UME) 20
-[  214.397626] Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=2048kB
-[  214.401518] Node 1 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=2048kB
-```
+> ---
+>  arch/riscv/boot/dts/canaan/k210.dtsi | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/arch/riscv/boot/dts/canaan/k210.dtsi b/arch/riscv/boot/dts/canaan/k210.dtsi
+> index 44d338514761..ec944d1537dc 100644
+> --- a/arch/riscv/boot/dts/canaan/k210.dtsi
+> +++ b/arch/riscv/boot/dts/canaan/k210.dtsi
+> @@ -65,6 +65,18 @@ cpu1_intc: interrupt-controller {
+>  				compatible = "riscv,cpu-intc";
+>  			};
+>  		};
+> +
+> +		cpu-map {
+> +			cluster0 {
+> +				core0 {
+> +					cpu = <&cpu0>;
+> +				};
+> +
+> +				core1 {
+> +					cpu = <&cpu1>;
+> +				};
+> +			};
+> +		};
+>  	};
+>  
+>  	sram: memory@80000000 {
 
-after:
-```
-[  145.069705] Node 1 active_anon:128kB inactive_anon:4049412kB active_file:56kB inactive_file:84kB u
-[  145.110319] Node 1 Normal free:45424kB boost:0kB min:45576kB low:56968kB high:68360kB reserved_hig
-[  145.152315] lowmem_reserve[]: 0 0 0 0 0
-[  145.155244] Node 1 Normal: 470*4kB (UME) 373*8kB (UME) 247*16kB (UME) 168*32kB (UE) 86*64kB (UME) 
-[  145.164119] Node 1 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=2048kB
-```
 
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
----
-v3->v4:
- - add before-and-after sample output text. (Andrew Morton)
-
-v2->v3:
- - move for_each_hstate() into hugetlb_show_meminfo_node(). (Muchun Song)
-
-v1->v2:
- - replace hugetlb_show_meminfo() with hugetlb_show_meminfo_node(nid) to avoid
-   exporting show_mem_node_skip. (Muchun Song)
----
- include/linux/hugetlb.h |  4 ++--
- mm/hugetlb.c            | 18 ++++++++----------
- mm/page_alloc.c         |  8 ++++++--
- 3 files changed, 16 insertions(+), 14 deletions(-)
-
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index 29c4d0883d36..21795e62398b 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -155,7 +155,7 @@ void __unmap_hugepage_range_final(struct mmu_gather *tlb,
- 			  struct page *ref_page, zap_flags_t zap_flags);
- void hugetlb_report_meminfo(struct seq_file *);
- int hugetlb_report_node_meminfo(char *buf, int len, int nid);
--void hugetlb_show_meminfo(void);
-+void hugetlb_show_meminfo_node(int nid);
- unsigned long hugetlb_total_pages(void);
- vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
- 			unsigned long address, unsigned int flags);
-@@ -301,7 +301,7 @@ static inline int hugetlb_report_node_meminfo(char *buf, int len, int nid)
- 	return 0;
- }
- 
--static inline void hugetlb_show_meminfo(void)
-+static inline void hugetlb_show_meminfo_node(int nid)
- {
- }
- 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index ca081078e814..e7f12edb120c 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4490,22 +4490,20 @@ int hugetlb_report_node_meminfo(char *buf, int len, int nid)
- 			     nid, h->surplus_huge_pages_node[nid]);
- }
- 
--void hugetlb_show_meminfo(void)
-+void hugetlb_show_meminfo_node(int nid)
- {
- 	struct hstate *h;
--	int nid;
- 
- 	if (!hugepages_supported())
- 		return;
- 
--	for_each_node_state(nid, N_MEMORY)
--		for_each_hstate(h)
--			pr_info("Node %d hugepages_total=%u hugepages_free=%u hugepages_surp=%u hugepages_size=%lukB\n",
--				nid,
--				h->nr_huge_pages_node[nid],
--				h->free_huge_pages_node[nid],
--				h->surplus_huge_pages_node[nid],
--				huge_page_size(h) / SZ_1K);
-+	for_each_hstate(h)
-+		printk("Node %d hugepages_total=%u hugepages_free=%u hugepages_surp=%u hugepages_size=%lukB\n",
-+			nid,
-+			h->nr_huge_pages_node[nid],
-+			h->free_huge_pages_node[nid],
-+			h->surplus_huge_pages_node[nid],
-+			huge_page_size(h) / SZ_1K);
- }
- 
- void hugetlb_report_usage(struct seq_file *m, struct mm_struct *mm)
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 2eb6ad5a650a..93f032f32812 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6014,7 +6014,7 @@ static void show_migration_types(unsigned char type)
- void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- {
- 	unsigned long free_pcp = 0;
--	int cpu;
-+	int cpu, nid;
- 	struct zone *zone;
- 	pg_data_t *pgdat;
- 
-@@ -6202,7 +6202,11 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 		printk(KERN_CONT "= %lukB\n", K(total));
- 	}
- 
--	hugetlb_show_meminfo();
-+	for_each_online_node(nid) {
-+		if (show_mem_node_skip(filter, nid, nodemask))
-+			continue;
-+		hugetlb_show_meminfo_node(nid);
-+	}
- 
- 	printk("%ld total pagecache pages\n", global_node_page_state(NR_FILE_PAGES));
- 
 -- 
-2.20.1
-
+Damien Le Moal
+Western Digital Research
