@@ -2,173 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4160EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A17EBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233975AbiGFRmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 13:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
+        id S234060AbiGFRmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbiGFRmT (ORCPT
+        with ESMTP id S233990AbiGFRm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 13:42:19 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A759720BD4
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:42:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657129338; x=1688665338;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=cmcTql/wpNIHAh2NbA+ZXsM9qZOwJwt62fKRqJPgpmM=;
-  b=BsD9IKRc1maY3OWQzUXSJ/ohIhEM3thhcIqf4YxooY+gi17uAao7VAYp
-   OOl+PE/zb3E3w0SeNEwdNPpTbvUeVS4ctx7k28GE7USyncQ5tZEnZoMmt
-   lA1V9coQ4+XwSQRkkxng9wunu53rIdLBXhi8fe1yoOPJbryl0cF+Zhwof
-   MwFkv6pIgvvSLuX35+JEAzViX3dPycwEcNvCnBCElUeYz+6rwsFw81gfy
-   VHI2B9YcdpR8kW5zzHkiYpYadikXX4WLg1ub2abOqRgsYzFdYkDECJsqN
-   J+4AkviclsZdK4dZZrbJ+kxSJB30qmZT4dryR3XHOF7vONekvsZTsB67A
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="284946877"
-X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
-   d="scan'208";a="284946877"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 10:42:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,250,1650956400"; 
-   d="scan'208";a="543496690"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 06 Jul 2022 10:42:16 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o992V-000KrJ-MN;
-        Wed, 06 Jul 2022 17:42:15 +0000
-Date:   Thu, 7 Jul 2022 01:41:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [ammarfaizi2-block:broonie/sound/for-next 328/352]
- sound/soc/soc-acpi.c:58:36: warning: initialization of 'struct acpi_device
- *' from 'int' makes pointer from integer without a cast
-Message-ID: <202207070102.kkRe03MS-lkp@intel.com>
+        Wed, 6 Jul 2022 13:42:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4CE3220BD4
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:42:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657129344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bm6ni0e0Z3ZqDaHM6VmzfCaa2VxT43x1YW4zQJliK1o=;
+        b=Ph56QsOt4O4p6CyqrzHLBwCWxbwLVB38pmIPAI+WO00VTukDz0Q1ZywioJ8yJrM8KQ+sP/
+        GIfKaJdtE7raTMLSlJFp7S/bTJZ22FvCel5plTNmvpvBXdKmWr0GnK2qZfkJ03h+y8Olex
+        7lNyLrlHD2n221D7KVCeiUs6rV9sO+o=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-453-yEBB8VLzPWu5-aqsowrSVA-1; Wed, 06 Jul 2022 13:42:20 -0400
+X-MC-Unique: yEBB8VLzPWu5-aqsowrSVA-1
+Received: by mail-il1-f199.google.com with SMTP id y13-20020a056e021bed00b002dc2f0ab426so2163393ilv.14
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 10:42:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Bm6ni0e0Z3ZqDaHM6VmzfCaa2VxT43x1YW4zQJliK1o=;
+        b=B4N7dJSojlZ1AQ7IYnKMOv3ci2yj5c8W7wEZNT7OZYPT8TCCvxfubADOtWIWQocY48
+         FeIDL65kYe3l036oAQujJ8kcW0fpamQJJF8RBFYoAbhAjd7HGE3bcwYou46Ep1jNOfLg
+         zoLNgE5/AqDT0QjBvHfdRnHYjuW4HtqT51B8+Iw1zSZO85Ylv5mGFhZ8S/4T1OrF8rix
+         4LFvS/tiaW7rFhlJchP0+UWNNuKGPFxuqei2HZfcqPK3sGeliKQ7Y8Vz3yC6lBNlgj5L
+         DJBCcGr/XWUz4CKHotufYy78ZDRDXGRFgDzAXahvqoFny3j094b5o5G6ac8CGc6Npb3+
+         dq4A==
+X-Gm-Message-State: AJIora/j6Lkgy9k6fT8hvuN1fGjC8QaDKdkyamnwxFF5UU0UxSnArFzz
+        xbakHyb63K9glyI0eTUzYEe9RRg+8isG1V7E6K8gpV3NSv2NYmsJBlyuuJczjteLLe0dh5vm2Db
+        TUbh3qkzH53+n22bd6e1I2PRs
+X-Received: by 2002:a05:6e02:1be6:b0:2db:ea7f:10c4 with SMTP id y6-20020a056e021be600b002dbea7f10c4mr17220919ilv.248.1657129340288;
+        Wed, 06 Jul 2022 10:42:20 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tKW5hHrIbN8D8MKAPlov0FsaTgJJCZrivyPi82ikNP5NQmibHb26OWtdHiMispm5nOi3tbJA==
+X-Received: by 2002:a05:6e02:1be6:b0:2db:ea7f:10c4 with SMTP id y6-20020a056e021be600b002dbea7f10c4mr17220872ilv.248.1657129339926;
+        Wed, 06 Jul 2022 10:42:19 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id i83-20020a6bb856000000b0065a47e16f53sm17005663iof.37.2022.07.06.10.42.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 10:42:19 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 11:42:17 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Nicolin Chen <nicolinc@nvidia.com>
+Cc:     <joro@8bytes.org>, <will@kernel.org>, <marcan@marcan.st>,
+        <sven@svenpeter.dev>, <robin.murphy@arm.com>,
+        <robdclark@gmail.com>, <baolu.lu@linux.intel.com>,
+        <orsonzhai@gmail.com>, <baolin.wang7@gmail.com>,
+        <zhang.lyra@gmail.com>, <jean-philippe@linaro.org>,
+        <jgg@nvidia.com>, <kevin.tian@intel.com>,
+        <suravee.suthikulpanit@amd.com>, <alyssa@rosenzweig.io>,
+        <dwmw2@infradead.org>, <mjrosato@linux.ibm.com>,
+        <gerald.schaefer@linux.ibm.com>, <thierry.reding@gmail.com>,
+        <vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <cohuck@redhat.com>,
+        <thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
+        <chenxiang66@hisilicon.com>, <john.garry@huawei.com>,
+        <yangyingliang@huawei.com>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>, <kvm@vger.kernel.org>
+Subject: Re: [PATCH v5 0/5] cover-letter: Simplify vfio_iommu_type1
+ attach/detach routine
+Message-ID: <20220706114217.105f4f61.alex.williamson@redhat.com>
+In-Reply-To: <20220701214455.14992-1-nicolinc@nvidia.com>
+References: <20220701214455.14992-1-nicolinc@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block broonie/sound/for-next
-head:   6abb4d7d17ffe320e9b7e22f474e5631c0464524
-commit: f94fa84058014f81ad526641f1b1f583ca2cf32f [328/352] ASoC: amd: enable machine driver build for Jadeite platform
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220707/202207070102.kkRe03MS-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/f94fa84058014f81ad526641f1b1f583ca2cf32f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block broonie/sound/for-next
-        git checkout f94fa84058014f81ad526641f1b1f583ca2cf32f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash sound/soc/
+On Fri, 1 Jul 2022 14:44:50 -0700
+Nicolin Chen <nicolinc@nvidia.com> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> This is a preparatory series for IOMMUFD v2 patches. It enforces error
+> code -EMEDIUMTYPE in iommu_attach_device() and iommu_attach_group() when
+> an IOMMU domain and a device/group are incompatible. It also drops the
+> useless domain->ops check since it won't fail in current environment.
+> 
+> These allow VFIO iommu code to simplify its group attachment routine, by
+> avoiding the extra IOMMU domain allocations and attach/detach sequences
+> of the old code.
+> 
+> Worths mentioning the exact match for enforce_cache_coherency is removed
+> with this series, since there's very less value in doing that as KVM will
+> not be able to take advantage of it -- this just wastes domain memory.
+> Instead, we rely on Intel IOMMU driver taking care of that internally.
+> 
+> This is on github:
+> https://github.com/nicolinc/iommufd/commits/vfio_iommu_attach
 
-All warnings (new ones prefixed by >>):
+How do you foresee this going in, I'm imagining Joerg would merge the
+first patch via the IOMMU tree and provide a topic branch that I'd
+merge into the vfio tree along with the remaining patches.  Sound
+right?  Thanks,
 
-   sound/soc/soc-acpi.c:34:1: error: redefinition of 'snd_soc_acpi_find_machine'
-      34 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from sound/soc/soc-acpi.c:9:
-   include/sound/soc-acpi.h:38:1: note: previous definition of 'snd_soc_acpi_find_machine' with type 'struct snd_soc_acpi_mach *(struct snd_soc_acpi_mach *)'
-      38 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
-   sound/soc/soc-acpi.c: In function 'snd_soc_acpi_find_package':
-   sound/soc/soc-acpi.c:58:36: error: implicit declaration of function 'acpi_fetch_acpi_dev'; did you mean 'device_match_acpi_dev'? [-Werror=implicit-function-declaration]
-      58 |         struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
-         |                                    ^~~~~~~~~~~~~~~~~~~
-         |                                    device_match_acpi_dev
->> sound/soc/soc-acpi.c:58:36: warning: initialization of 'struct acpi_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-   sound/soc/soc-acpi.c:64:25: error: invalid use of undefined type 'struct acpi_device'
-      64 |         if (adev && adev->status.present && adev->status.functional) {
-         |                         ^~
-   sound/soc/soc-acpi.c:64:49: error: invalid use of undefined type 'struct acpi_device'
-      64 |         if (adev && adev->status.present && adev->status.functional) {
-         |                                                 ^~
-   sound/soc/soc-acpi.c:80:26: error: implicit declaration of function 'acpi_extract_package' [-Werror=implicit-function-declaration]
-      80 |                 status = acpi_extract_package(myobj,
-         |                          ^~~~~~~~~~~~~~~~~~~~
-   sound/soc/soc-acpi.c: At top level:
-   sound/soc/soc-acpi.c:95:6: error: redefinition of 'snd_soc_acpi_find_package_from_hid'
-      95 | bool snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from sound/soc/soc-acpi.c:9:
-   include/sound/soc-acpi.h:44:1: note: previous definition of 'snd_soc_acpi_find_package_from_hid' with type 'bool(const u8 *, struct snd_soc_acpi_package_context *)' {aka '_Bool(const unsigned char *, struct snd_soc_acpi_package_context *)'}
-      44 | snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   sound/soc/soc-acpi.c:109:27: error: redefinition of 'snd_soc_acpi_codec_list'
-     109 | struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~
-   In file included from sound/soc/soc-acpi.c:9:
-   include/sound/soc-acpi.h:51:41: note: previous definition of 'snd_soc_acpi_codec_list' with type 'struct snd_soc_acpi_mach *(void *)'
-      51 | static inline struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
-         |                                         ^~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+Alex
 
+ 
+> Changelog
+> v5:
+>  * Rebased on top of Robin's "Simplify bus_type determination".
+>  * Fixed a wrong change returning -EMEDIUMTYPE in arm-smmu driver.
+>  * Added Baolu's "Reviewed-by".
+> v4:
+>  * Dropped -EMEDIUMTYPE change in mtk_v1 driver per Robin's input
+>  * Added Baolu's and Kevin's Reviewed-by lines
+> v3: https://lore.kernel.org/kvm/20220623200029.26007-1-nicolinc@nvidia.com/
+>  * Dropped all dev_err since -EMEDIUMTYPE clearly indicates what error.
+>  * Updated commit message of enforce_cache_coherency removing patch.
+>  * Updated commit message of domain->ops removing patch.
+>  * Replaced "goto out_unlock" with simply mutex_unlock() and return.
+>  * Added a line of comments for -EMEDIUMTYPE return check.
+>  * Moved iommu_get_msi_cookie() into alloc_attach_domain() as a cookie
+>    should be logically tied to the lifetime of a domain itself.
+>  * Added Kevin's "Reviewed-by".
+> v2: https://lore.kernel.org/kvm/20220616000304.23890-1-nicolinc@nvidia.com/
+>  * Added -EMEDIUMTYPE to more IOMMU drivers that fit the category.
+>  * Changed dev_err to dev_dbg for -EMEDIUMTYPE to avoid kernel log spam.
+>  * Dropped iommu_ops patch, and removed domain->ops in VFIO directly,
+>    since there's no mixed-driver use case that would fail the sanity.
+>  * Updated commit log of the patch removing enforce_cache_coherency.
+>  * Fixed a misplace of "num_non_pinned_groups--" in detach_group patch.
+>  * Moved "num_non_pinned_groups++" in PATCH-5 to the common path between
+>    domain-reusing and new-domain pathways, like the code previously did.
+>  * Fixed a typo in EMEDIUMTYPE patch.
+> v1: https://lore.kernel.org/kvm/20220606061927.26049-1-nicolinc@nvidia.com/
+> 
+> Jason Gunthorpe (1):
+>   vfio/iommu_type1: Prefer to reuse domains vs match enforced cache
+>     coherency
+> 
+> Nicolin Chen (4):
+>   iommu: Return -EMEDIUMTYPE for incompatible domain and device/group
+>   vfio/iommu_type1: Remove the domain->ops comparison
+>   vfio/iommu_type1: Clean up update_dirty_scope in detach_group()
+>   vfio/iommu_type1: Simplify group attachment
+> 
+>  drivers/iommu/amd/iommu.c                   |   2 +-
+>  drivers/iommu/apple-dart.c                  |   4 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  15 +-
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       |   5 +-
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c     |   9 +-
+>  drivers/iommu/intel/iommu.c                 |  10 +-
+>  drivers/iommu/iommu.c                       |  28 ++
+>  drivers/iommu/ipmmu-vmsa.c                  |   4 +-
+>  drivers/iommu/omap-iommu.c                  |   3 +-
+>  drivers/iommu/s390-iommu.c                  |   2 +-
+>  drivers/iommu/sprd-iommu.c                  |   6 +-
+>  drivers/iommu/tegra-gart.c                  |   2 +-
+>  drivers/iommu/virtio-iommu.c                |   3 +-
+>  drivers/vfio/vfio_iommu_type1.c             | 352 ++++++++++----------
+>  14 files changed, 229 insertions(+), 216 deletions(-)
+> 
 
-vim +58 sound/soc/soc-acpi.c
-
-8ceffd229f0ef1 sound/soc/intel/common/sst-match-acpi.c Vinod Koul           2016-02-08  54  
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  55  static acpi_status snd_soc_acpi_find_package(acpi_handle handle, u32 level,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  56  					     void *context, void **ret)
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  57  {
-ff4865b3c8cd74 sound/soc/soc-acpi.c                    Rafael J. Wysocki    2022-01-26 @58  	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
-59ce3233a538fc sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2021-04-16  59  	acpi_status status;
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  60  	struct snd_soc_acpi_package_context *pkg_ctx = context;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  61  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  62  	pkg_ctx->data_valid = false;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  63  
-ff4865b3c8cd74 sound/soc/soc-acpi.c                    Rafael J. Wysocki    2022-01-26  64  	if (adev && adev->status.present && adev->status.functional) {
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  65  		struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  66  		union acpi_object  *myobj = NULL;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  67  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  68  		status = acpi_evaluate_object_typed(handle, pkg_ctx->name,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  69  						NULL, &buffer,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  70  						ACPI_TYPE_PACKAGE);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  71  		if (ACPI_FAILURE(status))
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  72  			return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  73  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  74  		myobj = buffer.pointer;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  75  		if (!myobj || myobj->package.count != pkg_ctx->length) {
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  76  			kfree(buffer.pointer);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  77  			return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  78  		}
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  79  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  80  		status = acpi_extract_package(myobj,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  81  					pkg_ctx->format, pkg_ctx->state);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  82  		if (ACPI_FAILURE(status)) {
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  83  			kfree(buffer.pointer);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  84  			return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  85  		}
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  86  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  87  		kfree(buffer.pointer);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  88  		pkg_ctx->data_valid = true;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  89  		return AE_CTRL_TERMINATE;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  90  	}
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  91  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  92  	return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  93  }
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  94  
-
-:::::: The code at line 58 was first introduced by commit
-:::::: ff4865b3c8cd746ef72f59bdd485848b4cebd43d ALSA: Replace acpi_bus_get_device()
-
-:::::: TO: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-:::::: CC: Takashi Iwai <tiwai@suse.de>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
