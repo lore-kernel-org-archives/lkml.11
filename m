@@ -2,101 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A612AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4612DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbiGFMYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
+        id S233029AbiGFM04 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbiGFMYR (ORCPT
+        with ESMTP id S231799AbiGFM0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:24:17 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810A820F77
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:24:16 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id v12so6435093edc.10
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 05:24:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RFoPbjkSjdmVurjLAdQHIZMmbqCDP9ZVm/F67iJ6N8g=;
-        b=va4yl0z+19I3hSaQDNSfPEsm9G9b8bwhbQgo1duQ0EhsPKhxl9oo2FWEdN0qUaUiYu
-         B4V+2QhOTX2TWW2luDLlWlWgVzz/85Q8atkjEGE/JikJthJSQbPy61A2Hz8/nX53ythb
-         Q7/oFzKQ+g/9TijPFwoYhhxMnFn0HmdkfZWcx0q2YxlTgv368e0+smEY+p1fGuBqXbeB
-         4W8aD5flsniUayPEnRHe+zxkAZ84Ndz35pLI8MNwHbsG6hHc/GDJQkP3d2Vhk7MZQHWK
-         lyKBcrf72LUNM9sWu9xFBLIT9t5nviJd2JA9IvpCwMCEzm2QHqUVmkXVaqK97h8pc5T4
-         VrAQ==
+        Wed, 6 Jul 2022 08:26:55 -0400
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3766223141;
+        Wed,  6 Jul 2022 05:26:54 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id e69so20452891ybh.2;
+        Wed, 06 Jul 2022 05:26:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RFoPbjkSjdmVurjLAdQHIZMmbqCDP9ZVm/F67iJ6N8g=;
-        b=1q8hMv1ZKwZcJs03ytMEm8bNjUtLMe6ioPg9K/gatxkzdWUX6tN4vY0fR0Ecj9mWFK
-         /HdsxshOdsazmav8Q+65+/T7dy4OSDeIZqjLvEZ3gk/PmCzCL/Na4FWA+ZiL0Naldoms
-         tg+i5sXNtE5BktNHqS2f9JkAjYjcGc/hiHN9t3EWhNfgA6iFGKYfY3FeeL5kaa3tCsML
-         bvlDdM2cQxR6XmI+ytHUkzpejIjd3SJjc6+4ry/bGFyU5/Oq77VcQYnboY2pk7TwcsDx
-         yWPWplZ4B1ih9hh4pEAjJJ+/IXk+3kj5+sS8WWCuSo4Vd2YHNunL2y9bIAUJUK4KOxlM
-         gvJQ==
-X-Gm-Message-State: AJIora99jYCwqa4UTrX74ZRLPGxvtPk/DGpr0zV+opBivb8hNEAFewh6
-        iSI1z2pj84fk8Ubd0zXJ+c9No1GMA5EFGgKoLNle1mNF+ZU=
-X-Google-Smtp-Source: AGRyM1tzSRMxo/trUzyuH0aunDnCaFlnf2AvSDNMzsf0mK160rae+QSv+YAg5wiIvXzzzdx2BzJGGy8NRImg2tCi9DU=
-X-Received: by 2002:a05:6402:18:b0:435:9a79:9a40 with SMTP id
- d24-20020a056402001800b004359a799a40mr52615584edu.328.1657110255176; Wed, 06
- Jul 2022 05:24:15 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gpk0Gh0a+AtnRVgdtA4MUVRtIe6naoBICzq73QDej2Y=;
+        b=qfOtqNnIRC9LBsBjWVd+mVuSYQ+7+66az3Nk/6mzHxqA1tMch9LUtiT4gOhpg2MT5/
+         fMl2edI7qz3wc+XzS2Crf3VOBDT0wTGDwsWF1vZ8HtBnyO4BCG6WRsyumThe82PaMHxZ
+         WA5JI4VIlb69pDNozD2x7COZxyyf7GW9XLwmJwTITfGw4dyC2ih9ArJMv5GbXl8ftiOC
+         egNdsaw/c57BtUbdHA6GA2VvqKH5Mc8fjCtVT6xDWYc0wFtArrYQwGP+okIkOSes9oBd
+         UwM0FpxSuoSYdx46ryVNY1JbL44m8R2o7DdUaHvsHsRRr2Ljjl/AMFNvdGfI+HP8u1AU
+         bdyA==
+X-Gm-Message-State: AJIora+AE7HGTq2JsZBbyR9O/hvSAk3rCcZowXmc+N1G1PSN3hlg2Les
+        oi5BWkaLe12sSDMDP+KsARTaPRktOmVuGb5BWS82axQf
+X-Google-Smtp-Source: AGRyM1tKDYbnkqKUPoh71iZOMDwFVwrB8898cCK95PJhcy623Xcogk41U3bLgfT9DGSd625UZs38bVOravIr+SKYhag=
+X-Received: by 2002:a25:ab81:0:b0:66e:3dc5:898c with SMTP id
+ v1-20020a25ab81000000b0066e3dc5898cmr19162785ybi.81.1657110413378; Wed, 06
+ Jul 2022 05:26:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220628193906.36350-1-andriy.shevchenko@linux.intel.com>
- <20220628193906.36350-3-andriy.shevchenko@linux.intel.com>
- <SJ0PR03MB6253C3D92FFF37717D48C7618EBB9@SJ0PR03MB6253.namprd03.prod.outlook.com>
- <CAHp75VfR6XwW1HZDKoxhxs0i9R6s=uim1-dTtwJeXrA9AGWGQA@mail.gmail.com>
- <PH0PR03MB67861277E1AE456A316DFFEB99BB9@PH0PR03MB6786.namprd03.prod.outlook.com>
- <CAHp75VfeZ9jbWvFwL+Sae0h8DG36GeV4PKtskVQe10hpWGf28w@mail.gmail.com>
- <PH0PR03MB6786A0E94BEC148D3547D90A99BB9@PH0PR03MB6786.namprd03.prod.outlook.com>
- <YsV86YmZNpieqxiB@smile.fi.intel.com>
-In-Reply-To: <YsV86YmZNpieqxiB@smile.fi.intel.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 6 Jul 2022 14:24:04 +0200
-Message-ID: <CAMRc=MdUXcuXF1WX5NMD2Y5DexpVfcYzzSirJcbG8mh0XRDrXw@mail.gmail.com>
-Subject: Re: [PATCH v1 3/3] gpio: adp5588: sort header inclusion alphabetically
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "Sa, Nuno" <Nuno.Sa@analog.com>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
+References: <20220629151012.3115773-1-daniel.lezcano@linaro.org> <92c86903-354f-0114-a796-64571667a923@linaro.org>
+In-Reply-To: <92c86903-354f-0114-a796-64571667a923@linaro.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 6 Jul 2022 14:26:42 +0200
+Message-ID: <CAJZ5v0jPdo5=YWS_ZjLDojtXkpxqejzircN+fGG9y1pnCyH_qg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] thermal/core: Use clamp() helper in the stepwise governor
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 2:15 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
+On Wed, Jul 6, 2022 at 2:07 PM Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
 >
-> On Wed, Jun 29, 2022 at 10:40:00AM +0000, Sa, Nuno wrote:
-> > > From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > Sent: Wednesday, June 29, 2022 12:33 PM
-> > > On Wed, Jun 29, 2022 at 12:10 PM Sa, Nuno <Nuno.Sa@analog.com>
-> > > wrote:
->
-> ...
->
-> > > Ah, Okay, I was thinking about a week or two from now. Let's see how
-> > > it will go and let Linus decide how to proceed.
+> On 29/06/2022 17:10, Daniel Lezcano wrote:
+> > The code is actually clampling the next cooling device state using the
+> > lowest and highest states of the thermal instance.
 > >
-> > Yeah, if it does not happen today, I will only get into it again next
-> > Wednesday (so in this case, might make sense).
+> > That code can be replaced by the clamp() macro which does exactly the
+> > same. It results in a simpler routine to read.
+> >
+> > Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> > ---
 >
-> If I'm not mistaken, that didn't happen.
+> I'll apply this series if nobody has comments
+
+Sounds good to me.
+
+Please feel free to add ACKs from me to the patches.
+
 >
-> Bart, can you apply this series then?
+> >   drivers/thermal/gov_step_wise.c | 15 ++++-----------
+> >   1 file changed, 4 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/drivers/thermal/gov_step_wise.c b/drivers/thermal/gov_step_wise.c
+> > index 12acb12aac50..6efbfaf014da 100644
+> > --- a/drivers/thermal/gov_step_wise.c
+> > +++ b/drivers/thermal/gov_step_wise.c
+> > @@ -11,6 +11,7 @@
+> >    */
+> >
+> >   #include <linux/thermal.h>
+> > +#include <linux/minmax.h>
+> >   #include <trace/events/thermal.h>
+> >
+> >   #include "thermal_core.h"
+> > @@ -52,10 +53,7 @@ static unsigned long get_target_state(struct thermal_instance *instance,
+> >
+> >       if (!instance->initialized) {
+> >               if (throttle) {
+> > -                     next_target = (cur_state + 1) >= instance->upper ?
+> > -                                     instance->upper :
+> > -                                     ((cur_state + 1) < instance->lower ?
+> > -                                     instance->lower : (cur_state + 1));
+> > +                     next_target = clamp((cur_state + 1), instance->lower, instance->upper);
+> >               } else {
+> >                       next_target = THERMAL_NO_TARGET;
+> >               }
+> > @@ -66,10 +64,7 @@ static unsigned long get_target_state(struct thermal_instance *instance,
+> >       switch (trend) {
+> >       case THERMAL_TREND_RAISING:
+> >               if (throttle) {
+> > -                     next_target = cur_state < instance->upper ?
+> > -                                 (cur_state + 1) : instance->upper;
+> > -                     if (next_target < instance->lower)
+> > -                             next_target = instance->lower;
+> > +                     next_target = clamp((cur_state + 1), instance->lower, instance->upper);
+> >               }
+> >               break;
+> >       case THERMAL_TREND_RAISE_FULL:
+> > @@ -82,9 +77,7 @@ static unsigned long get_target_state(struct thermal_instance *instance,
+> >                               next_target = THERMAL_NO_TARGET;
+> >               } else {
+> >                       if (!throttle) {
+> > -                             next_target = cur_state - 1;
+> > -                             if (next_target > instance->upper)
+> > -                                     next_target = instance->upper;
+> > +                             next_target = clamp((cur_state - 1), instance->lower, instance->upper);
+> >                       }
+> >               }
+> >               break;
+>
 >
 > --
-> With Best Regards,
-> Andy Shevchenko
+> <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 >
->
-
-Now queued.
-
-Bart
+> Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+> <http://twitter.com/#!/linaroorg> Twitter |
+> <http://www.linaro.org/linaro-blog/> Blog
