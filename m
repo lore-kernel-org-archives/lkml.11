@@ -2,90 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A076C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E03CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 11:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233411AbiGFLpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 07:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S233395AbiGFLpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 07:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232351AbiGFLor (ORCPT
+        with ESMTP id S231689AbiGFLpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 07:44:47 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DE827FEE
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 04:44:45 -0700 (PDT)
+        Wed, 6 Jul 2022 07:45:18 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509D228E1B;
+        Wed,  6 Jul 2022 04:45:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657107885; x=1688643885;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=l3f4kmL/e4Vs46eZCsUJjbE/qwAE8WJvTMJVgsuz57I=;
-  b=j9wUfDv6oXfQF3WfzXaJkI3GPRH62eQWllzZ6o65WisvueLsrWPbXVve
-   MriCt5yisbDphq6QF83TA+Yrm5Gccehw6MYeiCV35sDIeLsNfr7EWv1pB
-   0ZOQf3LVFlFJ7s+GQZEgM81KYah2nl/Hei0ySUezHZHJGuFReO4J+RnxI
-   nFkJ2abpT32ec2Pyyl7NINPIc5dcmrD5pDK39MrUjlkZCeTRTmKK/fgUD
-   WX4YhMZl/qmbYEJO5eztqoBII0PEkyr4NUnHugAmPj6hwa5JYSwcf33vw
-   y3GlCFMzVZYZUKl+13iLeAES0oZcFfkAzMVrnO39lu/NZiPp/yclSO1qY
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="347707591"
+  t=1657107903; x=1688643903;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9O/uk8hzidHlOKBk1K4kxy0EkY6O5XjVCbjq4/nqvi0=;
+  b=SotLaba0xgoe2w2WERUplCst6b3O4b5oDOyp2N+LyPnAjH3ggO/HJ/la
+   FG+fow73VghIh5hANlsMfEJ96bXQ6SxrnfKM6o7LCDtUnXTYJhWlbc6S3
+   vW82uVp/90k54fAtg0HOVnCfvUmKLXxZB4KP9ksaWWi/wcyjSdA/diiyt
+   OLiniPJSVts+xKisr6pxdL45UhuuSR4NSR0ZLvdj3ORXwMftXJMlnwBm9
+   DXPaSSihquyA0xYo0Y4faaZ5yfbRBRhSHSeytPmNGjkoCN+KjhY1KjnUA
+   MP3vcbVuSDz25Em48rh++CMi9WxAoZw8axVTwu/w8bkNx4lkVHdj2blek
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="264141399"
 X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="347707591"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:44:45 -0700
+   d="scan'208";a="264141399"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:45:03 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="650630315"
-Received: from sannilnx.jer.intel.com ([10.12.26.175])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:44:42 -0700
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Subject: [PATCH v5 14/14] HAX: drm/i915: force INTEL_MEI_GSC on for CI
-Date:   Wed,  6 Jul 2022 14:43:45 +0300
-Message-Id: <20220706114345.1128018-15-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220706114345.1128018-1-alexander.usyskin@intel.com>
-References: <20220706114345.1128018-1-alexander.usyskin@intel.com>
+   d="scan'208";a="682890850"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 06 Jul 2022 04:45:01 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o93Sm-000KXF-CP;
+        Wed, 06 Jul 2022 11:45:00 +0000
+Date:   Wed, 6 Jul 2022 19:44:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        dmitry.torokhov@gmail.com
+Cc:     kbuild-all@lists.01.org, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, mkorpershoek@baylibre.com,
+        linux-input@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 RESEND] Input: mtk-pmic-keys - Add support for MT6331
+ PMIC keys
+Message-ID: <202207061915.tYTQKEhu-lkp@intel.com>
+References: <20220706101122.201007-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706101122.201007-1-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Hi AngeloGioacchino,
 
-After the new config option is merged we'll enable it by default in the
-CI config, but for now just force it on via the i915 Kconfig so we can
-get pre-merge CI results for it.
+Thank you for the patch! Yet something to improve:
 
-Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
----
- drivers/gpu/drm/i915/Kconfig.debug | 1 +
- 1 file changed, 1 insertion(+)
+[auto build test ERROR on dtor-input/next]
+[also build test ERROR on linus/master v5.19-rc5 next-20220705]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-diff --git a/drivers/gpu/drm/i915/Kconfig.debug b/drivers/gpu/drm/i915/Kconfig.debug
-index e7fd3e76f8a2..be4ef485d6c1 100644
---- a/drivers/gpu/drm/i915/Kconfig.debug
-+++ b/drivers/gpu/drm/i915/Kconfig.debug
-@@ -48,6 +48,7 @@ config DRM_I915_DEBUG
- 	select DRM_I915_DEBUG_RUNTIME_PM
- 	select DRM_I915_SW_FENCE_DEBUG_OBJECTS
- 	select DRM_I915_SELFTEST
-+	select INTEL_MEI_GSC
- 	select BROKEN # for prototype uAPI
- 	default n
- 	help
+url:    https://github.com/intel-lab-lkp/linux/commits/AngeloGioacchino-Del-Regno/Input-mtk-pmic-keys-Add-support-for-MT6331-PMIC-keys/20220706-181323
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
+config: arc-randconfig-r043-20220703 (https://download.01.org/0day-ci/archive/20220706/202207061915.tYTQKEhu-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/5e286347fa7c13c4674f97ed475e4f42a49ce5b4
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review AngeloGioacchino-Del-Regno/Input-mtk-pmic-keys-Add-support-for-MT6331-PMIC-keys/20220706-181323
+        git checkout 5e286347fa7c13c4674f97ed475e4f42a49ce5b4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/input/keyboard/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/input/keyboard/mtk-pmic-keys.c:12:10: fatal error: linux/mfd/mt6331/registers.h: No such file or directory
+      12 | #include <linux/mfd/mt6331/registers.h>
+         |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   compilation terminated.
+
+
+vim +12 drivers/input/keyboard/mtk-pmic-keys.c
+
+  > 12	#include <linux/mfd/mt6331/registers.h>
+    13	#include <linux/mfd/mt6358/registers.h>
+    14	#include <linux/mfd/mt6397/core.h>
+    15	#include <linux/mfd/mt6397/registers.h>
+    16	#include <linux/module.h>
+    17	#include <linux/of_device.h>
+    18	#include <linux/of.h>
+    19	#include <linux/platform_device.h>
+    20	#include <linux/regmap.h>
+    21	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
