@@ -2,98 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3014C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19241C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbiGFJUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34950 "EHLO
+        id S232502AbiGFJUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232505AbiGFJUP (ORCPT
+        with ESMTP id S229789AbiGFJUq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 05:20:15 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1D2215A2B;
-        Wed,  6 Jul 2022 02:20:14 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0E64515DB;
-        Wed,  6 Jul 2022 02:20:15 -0700 (PDT)
-Received: from [10.57.10.18] (unknown [10.57.10.18])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 24ED13F66F;
-        Wed,  6 Jul 2022 02:20:11 -0700 (PDT)
-Message-ID: <33aafc05-daa1-50e0-00ab-dab97bb8a879@arm.com>
-Date:   Wed, 6 Jul 2022 10:20:05 +0100
+        Wed, 6 Jul 2022 05:20:46 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2098315A31;
+        Wed,  6 Jul 2022 02:20:46 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LdDXG6mKFzl1gB;
+        Wed,  6 Jul 2022 17:19:58 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgCH6mnrU8ViIk++AQ--.22412S4;
+        Wed, 06 Jul 2022 17:20:44 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     josef@toxicpanda.com, axboe@kernel.dk, houtao1@huawei.com,
+        yukuai3@huawei.com
+Cc:     linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-kernel@vger.kernel.org, yukuai1@huaweicloud.com,
+        yi.zhang@huawei.com
+Subject: [PATCH] nbd: add missing definition of pr_fmt
+Date:   Wed,  6 Jul 2022 17:33:20 +0800
+Message-Id: <20220706093320.1962871-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] KVM: arm64: Use the bitmap API to allocate bitmaps
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Oliver Upton <oliver.upton@linux.dev>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu
-References: <a93d3e94be2003922c7e9652b57e96261cc47641.1656961792.git.christophe.jaillet@wanadoo.fr>
-From:   Vladimir Murzin <vladimir.murzin@arm.com>
-In-Reply-To: <a93d3e94be2003922c7e9652b57e96261cc47641.1656961792.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgCH6mnrU8ViIk++AQ--.22412S4
+X-Coremail-Antispam: 1UD129KBjvdXoWrKryrGrWDCFyrtFy8ZrWfGrg_yoW3Wrg_Ca
+        s7Zw4xXws3WryxCr4jyFs3ZryFyw4rXrnYvrna9393ZFyUZF97J3ZFyrZxGr47G3WvqF93
+        Aa1qqrsrAF4fJjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbz8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6r1F6r1fM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+        vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
+        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26c
+        xKx2IYs7xG6Fyj6rWUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E
+        14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUF9a9DUUUU
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/4/22 20:10, Christophe JAILLET wrote:
-> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
-> 
-> It is less verbose and it improves the semantic.
-> 
-> While at it, turn a bitmap_clear() into an equivalent bitmap_zero(). It is
-> also less verbose.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  arch/arm64/kvm/vmid.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm64/kvm/vmid.c b/arch/arm64/kvm/vmid.c
-> index d78ae63d7c15..f4612cdb60ff 100644
-> --- a/arch/arm64/kvm/vmid.c
-> +++ b/arch/arm64/kvm/vmid.c
-> @@ -47,7 +47,7 @@ static void flush_context(void)
->  	int cpu;
->  	u64 vmid;
->  
-> -	bitmap_clear(vmid_map, 0, NUM_USER_VMIDS);
-> +	bitmap_zero(vmid_map, NUM_USER_VMIDS);
->  
->  	for_each_possible_cpu(cpu) {
->  		vmid = atomic64_xchg_relaxed(&per_cpu(active_vmids, cpu), 0);
-> @@ -182,8 +182,7 @@ int kvm_arm_vmid_alloc_init(void)
->  	 */
->  	WARN_ON(NUM_USER_VMIDS - 1 <= num_possible_cpus());
->  	atomic64_set(&vmid_generation, VMID_FIRST_VERSION);
-> -	vmid_map = kcalloc(BITS_TO_LONGS(NUM_USER_VMIDS),
-> -			   sizeof(*vmid_map), GFP_KERNEL);
-> +	vmid_map = bitmap_zalloc(NUM_USER_VMIDS, GFP_KERNEL);
->  	if (!vmid_map)
->  		return -ENOMEM;
->  
-> @@ -192,5 +191,5 @@ int kvm_arm_vmid_alloc_init(void)
->  
->  void kvm_arm_vmid_alloc_free(void)
->  {
-> -	kfree(vmid_map);
-> +	bitmap_free(vmid_map);
->  }
+From: Yu Kuai <yukuai3@huawei.com>
 
-FWIW
+commit 1243172d5894 ("nbd: use pr_err to output error message") tries
+to define pr_fmt and use short pr_err() to output error message,
+however, the definition is missed.
 
-Reviewed-by: Vladimir Murzin <vladimir.murzin@arm.com>
+Fixes: 1243172d5894 ("nbd: use pr_err to output error message")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ drivers/block/nbd.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Cheers
-Vladimir
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 07f3c139a3d7..94a1602adab5 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -44,6 +44,9 @@
+ #include <linux/nbd-netlink.h>
+ #include <net/genetlink.h>
+ 
++#undef pr_fmt
++#define pr_fmt(fmt) "nbd: " fmt
++
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/nbd.h>
+ 
+-- 
+2.31.1
+
