@@ -2,163 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBF8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 642C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbiGFMbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
+        id S232716AbiGFMbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232686AbiGFMba (ORCPT
+        with ESMTP id S233627AbiGFMbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:31:30 -0400
-Received: from mail.intenta.de (mail.intenta.de [178.249.25.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF6526AC9
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de;
-        s=dkim1; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:
-        Subject:CC:To:From:Date:Sender:Reply-To:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=w4pHfmZD0IlO48upKT0jymWFM3XUku7K9TO4KSQqx44=; b=ekgqeH0R3TIx7YeKE/3c5/hjwW
-        1lOKsp25xtyAcwV/X7vqdt3OHCae4wnXYGQuVq/xgxJKOZxXkqJDIQJouZZz7qZ6eN9k7ojC4n1YE
-        gtoLiGDSaKhNYxtMvSSqJmJhxZZRGnhPIdyY2APZC2DgEwJrnRXVsoBWVib7blaGIiuQPQ6NE6Hk1
-        5ZI09mFxH/L7fOtHie3dMSPUTPoATs9qwG3mnAc6/DExa8N6r9P95yAXlT3XXFAIkdJAggYcNVY3V
-        5hzjxD51LTK5TjtCqKF0FIB8g8k5QikftEnmUPC9wJnRZLCLDG+4sQ8rQmJnHuq9nXdDgtp1qK5mi
-        l0WSMa4A==;
-Date:   Wed, 6 Jul 2022 14:29:48 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Support Opensource <support.opensource@diasemi.com>,
-        Lee Jones <lee.jones@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+        Wed, 6 Jul 2022 08:31:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC38252AE
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7ABEB81CDE
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 12:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F24C3411C;
+        Wed,  6 Jul 2022 12:31:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657110689;
+        bh=FkOzRRaCg8g1b6CDz+WZmX3BYS39FULPDoML5S8RLAA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=u+j5NLlACF2MuZoSRaKG3UtZBwacG7xgzZPKLobqxh9TBLaxg4VEPIyxiKj+RiidA
+         hQvtFChrImW5PTRFSNt3pe+nGBPlHljv/bTECL3G9T3XrbxNbQxHIF27jIClAOfxFI
+         NVtR0IjYYZenmpz6YRU9mf1kxKBqiS6Qijtri1Isv2tW9lr/4xRUb2gIRxo4GfZ17t
+         uuWqe6+bPK2O2ySLO2k9RY29unEc6v7rlGEU+K/yxHt3/dMsrWaH7z2cf+9AZAS3eg
+         wzUEE4jtgYnAMwaCbLjNzzyQtTYLUAfpkdMsi21m04uSLS3YP39SfbvbdmL3nQJA2s
+         inqNXk0OmjFZg==
+Date:   Wed, 6 Jul 2022 13:31:24 +0100
+From:   Will Deacon <will@kernel.org>
+To:     "Ivan T. Ivanov" <iivanov@suse.de>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
         Mark Brown <broonie@kernel.org>,
-        Wolfram Sang <wsa@the-dreams.de>
-Subject: [PATCH v4 1/2] mfd: da9062: enable being a system-power-controller
-Message-ID: <c6e19670802355222a228061f37aadace2764933.1657104160.git.helmut.grohne@intenta.de>
+        Mark Rutland <mark.rutland@arm.com>,
+        "Madhavan T . Venkataraman" <madvenka@linux.microsoft.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/1] arm64: Add stack unwinder unit tests
+Message-ID: <20220706123124.GJ2403@willie-the-truck>
+References: <20220624141000.88120-1-iivanov@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: 0e788d66-80ec-4ac3-b2f1-4d8c6f55fd77
+In-Reply-To: <20220624141000.88120-1-iivanov@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DA9062 can be the device used to power the CPU. In that case, it can
-be used to power off the system. In the CONTROL_A register, the M_*_EN
-bits must be zero for the corresponding *_EN bits to have an effect. We
-zero them all to turn off the system.
+On Fri, Jun 24, 2022 at 05:09:59PM +0300, Ivan T. Ivanov wrote:
+> Here is my initial arm64 unwinder test support. Code is based on s390
+> unwinder tests, while errors introduced are mine. I am hopping that it
+> will be useful for testing and validating upcoming arm64
+> arch_stack_walk_reliable() support.
 
-Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
----
- drivers/mfd/da9062-core.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+Thanks for doing this! Tests are always welcome.
 
-Compared to v3, this addresses the following concerns raised by Lee Jones:
- * Consistently start error messages upper case.
- * Pull i2c_get_clientdata out of the call again. In his previous review he
-   remarked the joint declaration and call as "passable", which I misunderstood
-   as "can be passed to regmap_update_bits directly" while the intended meaning
-   was more like "acceptable". This is part is now reverted back to the v2
-   form.
+Since you based this on the s390 code, how much scope is there for moving
+the tests out of the arch/ directories and unifying them somewhere like
+kselftest or lkdtm so that other archs can benefit too?
 
-Adam Thomson's observation about the use of i2c in atomic context is observable
-in reality since a few kernel releases. When powering off the system, I now see
-this:
-
-reboot: Power down
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 1 at drivers/i2c/i2c-core.h:40 i2c_transfer+0x104/0x134
----[ end trace 0000000000000000 ]---
-
-Looking at the actual warning, this is actually about using non-atomic xfers in
-atomic context (i.e. he's totally right). Wolfram Sang worked on this problem
-on a more fundamental level and added a patch "i2c: core: introduce callbacks
-for atomic transfers" (63b96983a5dd). Unfortunately, the relevant i2c driver in
-use here (i2c-cadence) does not include atomic transfer callbacks yet, which is
-why I see the warning. However, that only confirms the way of using i2c code in
-pm_power_off hooks as the "right" way to do it.
-
-In all of my tests, the system powered off reliably.
-
-I still didn't include Adam Thomson's Reviewed-by from v2, because the code is
-still noticeably different.
-
-Thanks for bearing with me
-
-Helmut
-diff --git a/drivers/mfd/da9062-core.c b/drivers/mfd/da9062-core.c
-index 2774b2cbaea6..94d447769da3 100644
---- a/drivers/mfd/da9062-core.c
-+++ b/drivers/mfd/da9062-core.c
-@@ -620,6 +620,27 @@ static const struct of_device_id da9062_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, da9062_dt_ids);
- 
-+static struct i2c_client *da9062_i2c_client;
-+
-+static void da9062_power_off(void)
-+{
-+	struct da9062 *chip = i2c_get_clientdata(da9062_i2c_client);
-+	int ret;
-+
-+	ret = regmap_update_bits(
-+		chip->regmap,
-+		DA9062AA_CONTROL_A,
-+		DA9062AA_SYSTEM_EN_MASK | DA9062AA_POWER_EN_MASK |
-+			DA9062AA_POWER1_EN_MASK | DA9062AA_M_SYSTEM_EN_MASK |
-+			DA9062AA_M_POWER_EN_MASK | DA9062AA_M_POWER1_EN_MASK,
-+		0
-+	);
-+
-+	if (ret < 0)
-+		dev_err(&da9062_i2c_client->dev,
-+			"Failed to power the system off (err=%d)\n", ret);
-+}
-+
- static int da9062_i2c_probe(struct i2c_client *i2c,
- 	const struct i2c_device_id *id)
- {
-@@ -720,6 +741,15 @@ static int da9062_i2c_probe(struct i2c_client *i2c,
- 		return ret;
- 	}
- 
-+	if (of_device_is_system_power_controller(i2c->dev.of_node)) {
-+		if (!pm_power_off) {
-+			da9062_i2c_client = i2c;
-+			pm_power_off = da9062_power_off;
-+		} else {
-+			dev_warn(&i2c->dev, "Poweroff callback already assigned\n");
-+		}
-+	}
-+
- 	return ret;
- }
- 
-@@ -727,6 +757,11 @@ static int da9062_i2c_remove(struct i2c_client *i2c)
- {
- 	struct da9062 *chip = i2c_get_clientdata(i2c);
- 
-+	if (pm_power_off == da9062_power_off)
-+		pm_power_off = NULL;
-+	if (da9062_i2c_client)
-+		da9062_i2c_client = NULL;
-+
- 	mfd_remove_devices(chip->dev);
- 	regmap_del_irq_chip(i2c->irq, chip->regmap_irq);
- 
--- 
-2.30.2
- 
-Dipl.-Inf. Helmut Grohne
-Research and Development
-Application Engineering
- 
-Phone: +49 (371) 24354 0 ∙ Fax:  +49 (371) 24354 020
-helmut.grohne@intenta.de ∙ https://www.intenta.de
- 
-Intenta GmbH ∙ Ahornstraße 55 ∙ 09112 Chemnitz, Germany
-Managing Director: Dr.-Ing. Basel Fardi ∙ VAT/USt-IdNr.: DE 275745394
-Commercial register: HRB 26404 Amtsgericht Chemnitz
+Will
