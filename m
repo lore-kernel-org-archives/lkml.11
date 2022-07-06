@@ -2,149 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F10DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88DD8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234060AbiGFS4V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:56:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36820 "EHLO
+        id S234108AbiGFS7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbiGFS4T (ORCPT
+        with ESMTP id S232014AbiGFS7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:56:19 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050:0:465::102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361512A941;
-        Wed,  6 Jul 2022 11:56:17 -0700 (PDT)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4LdTK74dyDz9sS6;
-        Wed,  6 Jul 2022 20:56:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1657133771;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gWRQ34WBwUcgZFnDVii0kRTol59eMnvDdmOFJDSqIlM=;
-        b=Qlzj0j8gY1Bn+osmzzywPIUHBhOyWzU3O6IDByYpwfi0j1C7dp1Esw1nlxeoBslbtzilJm
-        rmyorlJsC6zC/s0VE0u23V5bzAnLtuwjUJM7SKhoSlZ9wXgc29ba5c6BK1nZu/2w+KvSl9
-        /j+ZhE91NY/ixoBvRAPDrMe7p5BKV5w/F0vY6pvzb17/avB670q+nXgGzXqQ0HVr/ddRai
-        QTrwUJGsWIYr5sAIXS1zdKdzwaijIgXzdAopBK6c//WlyzUa2oDlHRzJM5m6bvqNQ5IxNf
-        vsbXWicVS6avS07xWPc30dYmaCk0SwyfFN/bHHjpZgG4akmwNDAUQ+HpXvt/Cg==
-Message-ID: <b73295d8-d3e6-c6b8-de76-d82a5ae7ee42@mailbox.org>
-Date:   Wed, 6 Jul 2022 18:56:04 +0000
+        Wed, 6 Jul 2022 14:59:03 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02D81EAD7
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:59:02 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id r18so20404733edb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KJBGd4YWiUvcMgoxfpT1QB+xxsar8YQaWyM+sKP7ZWQ=;
+        b=Ha03cEmXtorTod0JjdWM7qlCulK5jqVzsbXnMzrHqrcKjlt9Ma3N59CDMyu1eMZrsG
+         UgLyAUK58xH+I6ypU5n9XI0hQviOL6iPVIN3YpyXU1UrGg6v6XT8KknMx2ICrABkWJi0
+         LpxFEYgv38vGoni7rA+EjR+FBusEIlvlvEQBwS6PP7QqUdl1jUM7wPDKILu/1/yVkVi/
+         0HYjOPejeE0+qkRMvNpfHtAl5+BSiyc/GgJs3HUdFKd2kfLBFxnBqh1le5hpMsVbrOYH
+         nV6uMh1u7zL6037NxeP4JDqRDuk2cGg9L5kgs8SY6bsuFg6v2HykiLbnTeP3UGIbizt3
+         EZnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KJBGd4YWiUvcMgoxfpT1QB+xxsar8YQaWyM+sKP7ZWQ=;
+        b=gMbm6H88PGgXUhZCWvZzu87SMoeJdNu69Okw+uXnTyTld0YzAdipuNLmlmbvS54V62
+         ffobedyzNS1sSKKDoctlO8rKDToN2VwTJtzgy6dMpGhZ5FA7ZZTs7mrfFReScJEyxudg
+         AEp7WY1LZz6tSrJqmhMqI0zcM8DPT02rebojUWOgzBEYJeHhhAJgv0BM55A8GMCOBomQ
+         wGSZQxRU/A2X91arqvZp9zSNU7ax2DdxffQCy8GFtjcup2lyzkgr0zE1gnd2j4ytx8rv
+         OG050cUOHlqkWrDASzPgcp8/Bu0Q96Gc8FAbEiXl9FV2GD4Jyh0Z8Q2pXjVWwDqh/0FC
+         E3tg==
+X-Gm-Message-State: AJIora8OpjiObmCdYv39/+9FsmgS9ZGi4XVKrt1W/TrHzILfMyq/RFuq
+        piMLshZUeFGnFFwG559wrO4XWQ8nt+IUnv7MO51lSA==
+X-Google-Smtp-Source: AGRyM1vTicJO+szVHVNfKuAfRJ0zZgZaaiG7xOw2TtlxNbtKOPv5thsTbIRTuGpZMrgB8p9agM1Z4R7ryZ8gR+RtOrQ=
+X-Received: by 2002:a05:6402:43c4:b0:43a:6309:6c9b with SMTP id
+ p4-20020a05640243c400b0043a63096c9bmr22459868edc.91.1657133941113; Wed, 06
+ Jul 2022 11:59:01 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [Regression?] Linux 5.19-rc5 gets stuck on boot, not rc4
-Content-Language: en-US
-To:     Thorsten Leemhuis <regressions@leemhuis.info>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <272584304.305738.1657029005216@office.mailbox.org>
- <CAHk-=wivGGgs9K_TfQYTW4RzH_C-JVfLZKNA5+hKQU0eNFBeiw@mail.gmail.com>
- <MN0PR12MB61015A04C6E4202B2E8E08A9E2819@MN0PR12MB6101.namprd12.prod.outlook.com>
- <72419963.329229.1657096948079@office.mailbox.org>
- <8ee1bc75-3ecd-9d87-b7cc-37ba15133026@leemhuis.info>
-From:   Tor Vic <torvic9@mailbox.org>
-In-Reply-To: <8ee1bc75-3ecd-9d87-b7cc-37ba15133026@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-MBO-RS-ID: 66bb31361032e829da4
-X-MBO-RS-META: u68cyx87wwpwomnx367d5ut8eqok4ekg
-X-Rspamd-Queue-Id: 4LdTK74dyDz9sS6
+References: <20220516194730.1546328-1-dlatypov@google.com>
+In-Reply-To: <20220516194730.1546328-1-dlatypov@google.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Wed, 6 Jul 2022 14:58:50 -0400
+Message-ID: <CAFd5g45ByGFAmoOAy=BBBXouk_h0hT13ZLHTzY_hv30B8KfL9Q@mail.gmail.com>
+Subject: Re: [PATCH 1/3] kunit: tool: drop unused load_config argument
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     davidgow@google.com, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 16, 2022 at 3:48 PM Daniel Latypov <dlatypov@google.com> wrote:
+>
+> It's always set to true except in one test case.
+> And in that test case it can safely be set to true anyways.
+>
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
 
-
-On 06.07.22 18:21, Thorsten Leemhuis wrote:
-> On 06.07.22 10:42, torvic9@mailbox.org wrote:
->>
->>> Limonciello, Mario <mario.limonciello@amd.com> hat am 05.07.2022 17:10 GMT geschrieben:
->>>> -----Original Message-----
->>>> From: Linus Torvalds <torvalds@linux-foundation.org>
->>>> Sent: Tuesday, July 5, 2022 11:40
->>>> To: Tor Vic <torvic9@mailbox.org>
->>>> Cc: linux-kernel@vger.kernel.org; platform-driver-x86@vger.kernel.org;
->>>> Hans de Goede <hdegoede@redhat.com>; Jani Nikula
->>>> <jani.nikula@intel.com>
->>>> Subject: Re: [Regression?] Linux 5.19-rc5 gets stuck on boot, not rc4
->>>>
->>>> On Tue, Jul 5, 2022 at 6:50 AM <torvic9@mailbox.org> wrote:
->>>>>
->>>>> Linux 5.19-rc5 does not boot on my Kaby Lake Thinkpad.
->>>>> rc3 and rc4 were still fine, so I guess something between rc4 and rc5
->>>>> introduced a regression.
->>>>
->>>> Sounds that way.
->>>>
->>>>> Unfortunately, there are no errors or warning messages.
->>>>> It gets stuck quite early on boot, about the time USB is initialized,
->>>>> so less than 1 second into post-bootloader boot.
->>>>> It then just sits there doing nothing - SysRq still works though.
->>>>
->>>> There aren't all that many changes in rc5, and your hardware looks
->>>> *very* standard (all intel chipset, and a Samsung SM961 SSD).
->>>>
->>>> And with the lack of details, we'll either need a bisect:
->>>>
->>>>> I don't have time for a bisect, but I thought I'll let you know about
->>>>> this issue, and maybe someone already has an idea.
->>>>
->>>> or we'll need more reports..
->>>>
->>>>> Some system information below. Root filesystem is f2fs.
->>>>
->>>> Ok, f2fs is certainly unusual, but there are no f2fs changes in rc5.
->>>>
->>>> There's some PM changes for i915 ("drm/i915/dgfx: Disable d3cold at
->>>> gfx root port") and a couple of thinkpad-acpi platform driver updates,
->>>> so I'm adding a few random people to the cc in case somebody goes
->>>> "ahh..."
->>>>
->>>
->>> If a bisect isn't possible for you the kernel command line should be pretty
->>> helpful to isolate which area the problem is introduced.
->>> I'd say start out with "nomodeset" on the kernel command line to prevent
->>> i915 from loading.  If that fixes it, hopefully it's a small number of commits
->>> to peel back like the one Linus mentioned.
->>
->> Good advice!
->> Using "nomodeset" makes the computer boot again.
-> 
-> Wild guess, I'm not involved at all in any of the following, I just
-> noticed it and thought it might be worth mentioning:
-> 
-> I heard Fedora rawhide added this patch to solve a boot problem that
-> sounded similar to yours:
-> https://patchwork.freedesktop.org/patch/489982/
-> 
-> See also this thread:
-> https://lore.kernel.org/all/fddf5ca6-77dc-88f9-c191-7de09717063c@redhat.com/
-
-Hi Thorsten,
-
-Yep, that sounds just like it!
-I do have 'CONFIG_SYSFB_SIMPLEFB=y' in my laptop's config.
-
-Will try this tomorrow and report back again.
-
-> 
-> A few config option are mentioned there that seem to have an impact.
-> Maybe it's worth changing those or trying that patch.
-> 
-> But as I said, I'm not involved, so maybe this is a bad advice.
-> 
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> 
-> P.S.: As the Linux kernel's regression tracker I deal with a lot of
-> reports and sometimes miss something important when writing mails like
-> this. If that's the case here, don't hesitate to tell me in a public
-> reply, it's in everyone's interest to set the public record straight.
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
