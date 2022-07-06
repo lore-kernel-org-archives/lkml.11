@@ -2,157 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3092DCCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E8BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:00:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232618AbiGFI7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39184 "EHLO
+        id S232633AbiGFJAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232619AbiGFI7n (ORCPT
+        with ESMTP id S232642AbiGFJA1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:59:43 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E044619C2C;
-        Wed,  6 Jul 2022 01:59:39 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0VIXd7l-_1657097967;
-Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VIXd7l-_1657097967)
-          by smtp.aliyun-inc.com;
-          Wed, 06 Jul 2022 16:59:29 +0800
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-To:     akpm@linux-foundation.org
-Cc:     rppt@linux.ibm.com, willy@infradead.org, will@kernel.org,
-        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
-        peterz@infradead.org, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, kernel@xen0n.name,
-        tsbogend@alpha.franken.de, dave.hansen@linux.intel.com,
-        luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, hpa@zytor.com, arnd@arndb.de, guoren@kernel.org,
-        monstr@monstr.eu, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
-        baolin.wang@linux.alibaba.com, x86@kernel.org,
-        linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        loongarch@lists.linux.dev, linux-mips@vger.kernel.org,
-        linux-csky@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] mm: Add kernel PTE level pagetable pages account
-Date:   Wed,  6 Jul 2022 16:59:17 +0800
-Message-Id: <398ead25695e530f766849be5edafaf62c1c864d.1657096412.git.baolin.wang@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
-References: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
-In-Reply-To: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
-References: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
+        Wed, 6 Jul 2022 05:00:27 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABC41A3A1;
+        Wed,  6 Jul 2022 02:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Lc1nfuTmRLJC5zrVjNH0l/duy5mbZIyykH5a0W+voY8=; b=i8xduWRVHzPycpj4aYcRorY6TA
+        XTVVYE1I11IukCdv42nkSkB4f3OUjy3AJBnUNvj4TUakkooAJ1n5Jxvz/d11wUl5GqYcIieozQ864
+        B2Kq4qM14Ou6J9CVLN/3LK5EtRqKlxLdn/RmXRZRjVpX8V+q58etmYn1WtdVfrGKd1PjTnLKIclOH
+        a+kaMIxwNo1ZpUXKKhskeM8BfC/efZCZUI/kLzOIUxKfbHx5WlpT/PAfH8HC0Vsd+kQRpn60lp6J6
+        7jOYxvTDvKgYfoTkv2ZeG6LX11dKbzDctVwLJJNREnMQMKg8yLBMcQhZCodE4KYfbJDXW00LAylze
+        g1pP64tw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o90sB-000N9S-20; Wed, 06 Jul 2022 08:59:15 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 875EF980050; Wed,  6 Jul 2022 10:59:00 +0200 (CEST)
+Date:   Wed, 6 Jul 2022 10:59:00 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
+ TASK_STOPPED state
+Message-ID: <YsVO1NU3bXGg9YJ3@worktop.programming.kicks-ass.net>
+References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+ <20220505182645.497868-12-ebiederm@xmission.com>
+ <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+ <877d5ajesi.fsf@email.froward.int.ebiederm.org>
+ <YrHgo8GKFPWwoBoJ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+ <20220628191541.34a073fc@gandalf.local.home>
+ <yt9d5ykbekn3.fsf@linux.ibm.com>
+ <yt9dpmijcvu6.fsf@linux.ibm.com>
+ <YsSQRmCZSIQ1ewzo@worktop.programming.kicks-ass.net>
+ <yt9dsfneaczk.fsf@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yt9dsfneaczk.fsf@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now the kernel PTE level ptes are always protected by mm->page_table_lock
-instead of split pagetable lock, so the kernel PTE level pagetable pages
-are not accounted. Especially the vmalloc()/vmap() can consume lots of
-kernel pagetable, so to get an accurate pagetable accounting, calling new
-helpers page_{set,clear}_pgtable() when allocating or freeing a kernel
-PTE level pagetable page.
+On Wed, Jul 06, 2022 at 09:58:55AM +0200, Sven Schnelle wrote:
 
-Meanwhile converting architectures to use corresponding generic PTE pagetable
-allocation and freeing functions.
+> >> [   86.218551] kill_chi-343805    6d.... 79990141us : ptrace_stop: JOBCTL_TRACED already set, state=0 <------ valid combination of flags?
+> >
+> > Yeah, that's not supposed to be so. JOBCTL_TRACED is supposed to follow
+> > __TASK_TRACED for now. Set when __TASK_TRACED, cleared when
+> > TASK_RUNNING.
+> >
+> > Specifically {ptrace_,}signal_wake_up() in signal.h clear JOBCTL_TRACED
+> > when they would wake a __TASK_TRACED task.
+> 
+> try_to_wake_up() clears TASK_TRACED in this case because a signal
+> (SIGKILL) has to be delivered. As a test I put the following change
+> on top, and it "fixes" the problem:
+> 
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index da0bf6fe9ecd..f2e0f5e70e77 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -4141,6 +4149,9 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
+>          * TASK_WAKING such that we can unlock p->pi_lock before doing the
+>          * enqueue, such as ttwu_queue_wakelist().
+>          */
+> +       if (p->__state & TASK_TRACED)
+> +               trace_printk("clearing TASK_TRACED 2\n");
+> +       p->jobctl &= ~JOBCTL_TRACED;
+>         WRITE_ONCE(p->__state, TASK_WAKING);
+> 
+>         /*
+> 
+> There are several places where the state is changed from TASK_TRACED to
+> something else without clearing JOBCTL_TRACED.
 
-Note this patch only adds accounting to the page tables allocated after boot.
+I'm having difficulty spotting them; I find:
 
-Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
----
- arch/csky/include/asm/pgalloc.h |  2 +-
- arch/microblaze/mm/pgtable.c    |  2 +-
- arch/openrisc/mm/ioremap.c      |  2 +-
- arch/x86/mm/pgtable.c           |  2 +-
- include/asm-generic/pgalloc.h   | 14 ++++++++++++--
- 5 files changed, 16 insertions(+), 6 deletions(-)
+TASK_WAKEKILL: signal_wake_up()
+__TASK_TRACED: ptrace_signal_wake_up(), ptrace_unfreeze_traced(), ptrace_resume()
 
-diff --git a/arch/csky/include/asm/pgalloc.h b/arch/csky/include/asm/pgalloc.h
-index 7d57e5d..56f8d25 100644
---- a/arch/csky/include/asm/pgalloc.h
-+++ b/arch/csky/include/asm/pgalloc.h
-@@ -29,7 +29,7 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
- 	pte_t *pte;
- 	unsigned long i;
- 
--	pte = (pte_t *) __get_free_page(GFP_KERNEL);
-+	pte = __pte_alloc_one_kernel(mm);
- 	if (!pte)
- 		return NULL;
- 
-diff --git a/arch/microblaze/mm/pgtable.c b/arch/microblaze/mm/pgtable.c
-index 9f73265..e96dd1b 100644
---- a/arch/microblaze/mm/pgtable.c
-+++ b/arch/microblaze/mm/pgtable.c
-@@ -245,7 +245,7 @@ unsigned long iopa(unsigned long addr)
- __ref pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
- {
- 	if (mem_init_done)
--		return (pte_t *)__get_free_page(GFP_KERNEL | __GFP_ZERO);
-+		return __pte_alloc_one_kernel(mm);
- 	else
- 		return memblock_alloc_try_nid(PAGE_SIZE, PAGE_SIZE,
- 					      MEMBLOCK_LOW_LIMIT,
-diff --git a/arch/openrisc/mm/ioremap.c b/arch/openrisc/mm/ioremap.c
-index daae13a..3453acc 100644
---- a/arch/openrisc/mm/ioremap.c
-+++ b/arch/openrisc/mm/ioremap.c
-@@ -118,7 +118,7 @@ pte_t __ref *pte_alloc_one_kernel(struct mm_struct *mm)
- 	pte_t *pte;
- 
- 	if (likely(mem_init_done)) {
--		pte = (pte_t *)get_zeroed_page(GFP_KERNEL);
-+		pte = __pte_alloc_one_kernel(mm);
- 	} else {
- 		pte = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		if (!pte)
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index ea39670..20f3076 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -858,7 +858,7 @@ int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
- 	/* INVLPG to clear all paging-structure caches */
- 	flush_tlb_kernel_range(addr, addr + PAGE_SIZE-1);
- 
--	free_page((unsigned long)pte);
-+	pte_free_kernel(NULL, pte);
- 
- 	return 1;
- }
-diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
-index 8ce8d7c..cd8420f 100644
---- a/include/asm-generic/pgalloc.h
-+++ b/include/asm-generic/pgalloc.h
-@@ -18,7 +18,14 @@
-  */
- static inline pte_t *__pte_alloc_one_kernel(struct mm_struct *mm)
- {
--	return (pte_t *)__get_free_page(GFP_PGTABLE_KERNEL);
-+	struct page *page;
-+	gfp_t gfp = GFP_PGTABLE_KERNEL;
-+
-+	page = alloc_pages(gfp, 0);
-+	if (!page)
-+		return NULL;
-+	page_set_pgtable(page);
-+	return (pte_t *)page_address(page);
- }
- 
- #ifndef __HAVE_ARCH_PTE_ALLOC_ONE_KERNEL
-@@ -41,7 +48,10 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
-  */
- static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
- {
--	free_page((unsigned long)pte);
-+	struct page *page = virt_to_page(pte);
-+
-+	page_clear_pgtable(page);
-+	__free_page(page);
- }
- 
- /**
--- 
-1.8.3.1
+And all those sites dutifully clear JOBCTL_TRACED.
 
+I'd be most interested in the calstack for the 'clearing TASK_TRACED 2'
+events to see where we miss a spot.
