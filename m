@@ -2,98 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10BBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4CFCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232603AbiGFKIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46366 "EHLO
+        id S232117AbiGFKKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232856AbiGFKHq (ORCPT
+        with ESMTP id S232600AbiGFKJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:07:46 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BBF25C48
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:07:36 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id c131-20020a1c3589000000b003a19b2bce36so5703322wma.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 03:07:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=D8DtgYwJoP/V2130+PGEO/pkL1xXDKz8qmvliOW/LJI=;
-        b=MAbBA1ZvhfFw4fDm6wOAOKOuxS/qKDxsuvcH1T72Dugsw9aoGSmRktizFEXOJn/XZo
-         VzGmTecvl7q22iDePjsT21Y+RpDifbceiBq4CyuIxr5uz7lnkMy25yZYiuMgA9p5tWMm
-         JU7caoTydExMRtKdVO/svDNqO2CG5mtnOENdjFLoDWWUJtH5OouT0+meYHPcNxEx+vLU
-         k7Er1mT0v30LUtgolRto1kXf6ilOqpuOOu8yvS0e/JN/5puHNHMcf6caIvaRNiwQ5FbB
-         gC9dRkZ/+veunifxFt07o3AwkXlvYOC+6AiiKZb008NbXoMKU4JWAnTeyRn4x+JxH3I5
-         umgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=D8DtgYwJoP/V2130+PGEO/pkL1xXDKz8qmvliOW/LJI=;
-        b=UWQxetYWRAM33TyxN2Zt/KRMqBo+QqRz1jYcc7TtjIBubjG451bLDlTMFzfTMC4oQ5
-         OTy6J3XcpBmW7IABG/d03sBJ0GPP/XtjYRDXiD0WviIuK45GYkyGbZJCLIaNGi7C8k2t
-         bcv77GOnJ3/rH/J19wERMzUrIGgHphQQX3WSkqSxXiudaZWL1Z6UN7XfMNH1tP2Riqmc
-         +qhlCZy5AhICZlLhs3n/M3Tv/jzX8MZY9exujaP/XO1CzG35eijTdPCqlFTEzLbeFgev
-         piklu9Gev38M/hOHOrfDX9kSRhlkNfeeMN4U/YVbzhz8NS3p9gW6LjnZaiAnxjdeNDJR
-         V+3Q==
-X-Gm-Message-State: AJIora+4DOpQr8uTlZrdr4zSceqUm8qr2iz1RTjCh8QgkBbKw6/TQQje
-        XvcR8B/SsPWVPnSUxC0m/WHZ4w==
-X-Google-Smtp-Source: AGRyM1sTiuaoxWI3ZvWwLGuTZmjpKap/Ril3DCU2PyAV7HdhhcPy4GNOJ1qVBRpsmcrHbFW2K3KwPQ==
-X-Received: by 2002:a7b:cb98:0:b0:3a2:afc8:72cd with SMTP id m24-20020a7bcb98000000b003a2afc872cdmr13222310wmi.98.1657102055591;
-        Wed, 06 Jul 2022 03:07:35 -0700 (PDT)
-Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id n35-20020a05600c3ba300b003a039054567sm24678143wms.18.2022.07.06.03.07.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:07:35 -0700 (PDT)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 7/7] nvmem: mtk-efuse: Simplify with devm_platform_get_and_ioremap_resource()
-Date:   Wed,  6 Jul 2022 11:06:27 +0100
-Message-Id: <20220706100627.6534-8-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220706100627.6534-1-srinivas.kandagatla@linaro.org>
-References: <20220706100627.6534-1-srinivas.kandagatla@linaro.org>
+        Wed, 6 Jul 2022 06:09:48 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D365F65A1;
+        Wed,  6 Jul 2022 03:09:34 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id CE35C66019AA;
+        Wed,  6 Jul 2022 11:09:32 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657102173;
+        bh=BAxlR3/lkspMvovn7KbmzMLiXm5omRN205BI9gc6tfg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kGVpgnuUA/4JhkoGIJAnlmqe8l/+JjzD+3DnA/lwseolhlVGk0tVWP9IEmq/OF7bn
+         2tG4H1R2epzcQPgEpEw6MZKHjvJCXMdaVj0gLfWppmjpIgDyMan5HpcHgqap/1nvtz
+         RtzlQOFCR6RRflc/Pf/NIBDRcJI9X6KRGqYb44YkSSU44hmzdvuotW9PGiMYqqn6RN
+         Z7gNSUFkOHarmP4nIeaBF0iJM4PoLdCPHA+d9MVCK35+X4HexQn1Of3kTfx7o9717g
+         6UJswu4Scnx0Qxqq5lBWVd7TY6GtYnKUtVoOyWrDKdj6WbElcVUdW7cUDApASAiK09
+         af9yY9CmRviKg==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     lgirdwood@gmail.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v3 RESEND 0/4] MediaTek Helio X10 MT6795 - MT6331/6332 Regulators
+Date:   Wed,  6 Jul 2022 12:09:08 +0200
+Message-Id: <20220706100912.200698-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In an effort to give some love to the apparently forgotten MT6795 SoC,
+I am upstreaming more components that are necessary to support platforms
+powered by this one apart from a simple boot to serial console.
 
-Convert platform_get_resource(), devm_ioremap_resource() to a single
-call to devm_platform_get_and_ioremap_resource(), as this is exactly
-what this function does.
+This series adds support for the regulators found in MT6331 and MT6332
+main/companion PMICs.
 
-No functional changes.
+Adding support to each driver in each subsystem is done in different
+patch series as to avoid spamming uninteresting patches to maintainers.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/nvmem/mtk-efuse.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Tested on a MT6795 Sony Xperia M5 (codename "Holly") smartphone.
 
-diff --git a/drivers/nvmem/mtk-efuse.c b/drivers/nvmem/mtk-efuse.c
-index e9a375dd84af..a08e0aedd21c 100644
---- a/drivers/nvmem/mtk-efuse.c
-+++ b/drivers/nvmem/mtk-efuse.c
-@@ -41,8 +41,7 @@ static int mtk_efuse_probe(struct platform_device *pdev)
- 	if (!priv)
- 		return -ENOMEM;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	priv->base = devm_ioremap_resource(dev, res);
-+	priv->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
- 
+Changes in v3:
+ - Sorry, one of the commits picked both the pre-rename file and
+   the new one... the v3 fixes the mt6332 bindings commit.
+ - Changed comment style on top for mt633[12]-regulator.c as
+   suggested (missed that in v2)
+
+Changes in v2:
+ - Refactored description in dt-bindings
+ - Simplified get_status() function and removed callback
+   where not needed
+ - Simplified set_mode()/get_mode() functions and removed
+   callback where not needed
+ - Added new regulator_ops for no_qi (no .get_status) and
+   for no_ms (no .{get, set}_mode)
+ - Fixed vsel mask on some regulators and removed pattern of
+   repeated voltage entries present in some voltage tables,
+   avoiding to set higher bits for safety
+ - Reordered regulators (and some formatting fixes) in
+   mt6331-regulator.c in per-type alphabetic order
+
+AngeloGioacchino Del Regno (4):
+  dt-bindings: regulator: Add bindings for MT6331 regulator
+  regulator: Add driver for MT6331 PMIC regulators
+  dt-bindings: regulator: Add bindings for MT6332 regulator
+  regulator: Add driver for MT6332 PMIC regulators
+
+ .../regulator/mediatek,mt6331-regulator.yaml  | 273 ++++++++++
+ .../regulator/mediatek,mt6332-regulator.yaml  | 112 ++++
+ drivers/regulator/Kconfig                     |  18 +
+ drivers/regulator/Makefile                    |   2 +
+ drivers/regulator/mt6331-regulator.c          | 507 ++++++++++++++++++
+ drivers/regulator/mt6332-regulator.c          | 422 +++++++++++++++
+ include/linux/regulator/mt6331-regulator.h    |  46 ++
+ include/linux/regulator/mt6332-regulator.h    |  27 +
+ 8 files changed, 1407 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/regulator/mediatek,mt6331-regulator.yaml
+ create mode 100644 Documentation/devicetree/bindings/regulator/mediatek,mt6332-regulator.yaml
+ create mode 100644 drivers/regulator/mt6331-regulator.c
+ create mode 100644 drivers/regulator/mt6332-regulator.c
+ create mode 100644 include/linux/regulator/mt6331-regulator.h
+ create mode 100644 include/linux/regulator/mt6332-regulator.h
+
 -- 
-2.25.1
+2.35.1
 
