@@ -2,197 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A46ACCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0BECCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbiGFSef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
+        id S234147AbiGFSew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbiGFSee (ORCPT
+        with ESMTP id S233823AbiGFSeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:34:34 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84582186F1;
-        Wed,  6 Jul 2022 11:34:32 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 02:35:36 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657132470;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IO11bj6nk+Np3PVqv865QhkFdKjlAqHlVwGCt6I3fOc=;
-        b=OQWWsrwJIl6r1fSKhY4Z9Xt+JTyjL0JxygDTc4oUaCD/ViMTFy2fU7z6QUYPEnSWFCW50e
-        3cE4yeNrZGYHM7EohbouH+Z2sCBeqaLyoWq6MdO/GbNrwWTbagLsxKr84zS8caHrcCY4dL
-        DtAMxtsptEKG96+UhhixtKCfqLbWY4Y=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Tao Zhou <tao.zhou@linux.dev>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org, Tao Zhou <tao.zhou@linux.dev>
-Subject: Re: [PATCH V4 03/20] rv/include: Add helper functions for
- deterministic automata
-Message-ID: <YsXV+KTbOU0E5dU+@geo.homenetwork>
-References: <cover.1655368610.git.bristot@kernel.org>
- <2b5b14c821ee4b069f68571e7f78fbc2ee4e9626.1655368610.git.bristot@kernel.org>
+        Wed, 6 Jul 2022 14:34:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE28F186F1;
+        Wed,  6 Jul 2022 11:34:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79AA262022;
+        Wed,  6 Jul 2022 18:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A65D3C3411C;
+        Wed,  6 Jul 2022 18:34:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657132488;
+        bh=tdhbHRpjTdh0jLJq87r0ykUnbSyUx7D2m6eJLr6vJG4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Xjg/qMVcpW7nAsDPPTnx9mX520shW0tsKY/G5PfEFxgKLu5Svhi+2uOl3uoA08/kg
+         96mYYvNNeYLW7CBPJcv9wOgSLz2G/XqhDO1GC1vbHatPB7C5vqQ00VAs2Rauxhk2vr
+         hl19gXfziF9DpHXIoppesGt8nfWDeVOo1fqsC6K1Ra3ao69LedrqC1Gi9N9P/GVIud
+         B46gVzXVJCQMaWZ0T4PUM5mvWRhL+dQ9DMBvm/jurQv/powltTfiCtHqq8UY/Jc8A2
+         hkeBV06xt3RJkPrC535UE5kCkXy3bUc6o3P4S0/sz97RZ7umTb6LTYD5DT8Mxv97C/
+         nrx2cqSIOKszQ==
+Received: by pali.im (Postfix)
+        id 748067BA; Wed,  6 Jul 2022 20:34:45 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 00/11] ARM: dts: mvebu: Add definitions for PCIe legacy INTx interrupts
+Date:   Wed,  6 Jul 2022 20:31:03 +0200
+Message-Id: <20220706183114.30783-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2b5b14c821ee4b069f68571e7f78fbc2ee4e9626.1655368610.git.bristot@kernel.org>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 10:44:45AM +0200, Daniel Bristot de Oliveira wrote:
+This patch series add definitions for PCIe legacy INTx interrupts into
+every DTS file used by the pci-mvebu.c controller driver.
 
-> Formally, a deterministic automaton, denoted by G, is defined as a
-> quintuple:
-> 
->   G = { X, E, f, x_0, X_m }
-> 
-> where:
-> 	- X is the set of states;
-> 	- E is the finite set of events;
-> 	- x_0 is the initial state;
-> 	- X_m (subset of X) is the set of marked states.
-> 	- f : X x E -> X $ is the transition function. It defines the
-> 	  state transition in the occurrence of a event from E in
-> 	  the state X. In the special case of deterministic automata,
-> 	  the occurrence of the event in E in a state in X has a
-> 	  deterministic next state from X.
-> 
-> An automaton can also be represented using a graphical format of
-> vertices (nodes) and edges. The open-source tool Graphviz can produce
-> this graphic format using the (textual) DOT language as the source code.
-> 
-> The dot2c tool presented in this paper:
-> 
-> DE OLIVEIRA, Daniel Bristot; CUCINOTTA, Tommaso; DE OLIVEIRA, Romulo
-> Silva. Efficient formal verification for the Linux kernel. In:
-> International Conference on Software Engineering and Formal Methods.
-> Springer, Cham, 2019. p. 315-332.
-> 
-> Translates a deterministic automaton in the DOT format into a C
-> surce code representation that to be used for monitoring.
-> 
-> This header file implements helper functions to facilitate the usage
-> of the C output from dot2c for monitoring.
-> 
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Marco Elver <elver@google.com>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Shuah Khan <skhan@linuxfoundation.org>
-> Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-> Cc: Juri Lelli <juri.lelli@redhat.com>
-> Cc: Clark Williams <williams@redhat.com>
-> Cc: linux-doc@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-trace-devel@vger.kernel.org
-> Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-> ---
->  include/rv/automata.h | 49 +++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 49 insertions(+)
->  create mode 100644 include/rv/automata.h
-> 
-> diff --git a/include/rv/automata.h b/include/rv/automata.h
-> new file mode 100644
-> index 000000000000..0c0aa54bd820
-> --- /dev/null
-> +++ b/include/rv/automata.h
-> @@ -0,0 +1,49 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Deterministic automata helper functions, to be used with the automata
-> + * models in C generated by the dot2k tool.
-> + *
-> + * Copyright (C) 2019-2022 Daniel Bristot de Oliveira <bristot@kernel.org>
-> + */
-> +
-> +#define DECLARE_AUTOMATA_HELPERS(name, type)					\
-> +										\
-> +static inline void *model_get_model_##name(void)				\
-> +{										\
-> +	return (void *) &automaton_##name;					\
-> +}									\
-> +										\
-> +static char *model_get_state_name_##name(enum states_##name state)		\
-> +{										\
-> +	return automaton_##name.state_names[state];				\
-> +}										\
-> +										\
-> +static char *model_get_event_name_##name(enum events_##name event)		\
-> +{										\
-> +	return automaton_##name.event_names[event];				\
-> +}										\
-> +										\
-> +static inline type model_get_init_state_##name(void)				\
-> +{										\
-> +	return automaton_##name.initial_state;					\
-> +}										\
-> +										\
-> +static inline type model_get_next_state_##name(enum states_##name curr_state,	\
-> +					       enum events_##name event)	\
-> +{										\
-> +	if ((curr_state < 0) || (curr_state > state_max_##name))		\
-> +		return -1;							\
+It was tested on 88F6820 (A385) and 88F6281 (Kirkwood) SoCs.
 
-curr_state can not be state_max_xxx. curr_state must be not bigger
-than state_max_xxx. Or am I miss something?
+Pali Rohár (11):
+  ARM: dts: kirkwood: Add definitions for PCIe legacy INTx interrupts
+  ARM: dts: dove: Add definitions for PCIe legacy INTx interrupts
+  ARM: dts: armada-370.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-xp-98dx3236.dtsi: Add definitions for PCIe legacy
+    INTx interrupts
+  ARM: dts: armada-xp-mv78230.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-xp-mv78260.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-xp-mv78460.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-375.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-380.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-385.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-39x.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
 
-> +	if ((event < 0) || (event > event_max_##name))				\
-> +		return -1;							\
-> +										\
+ arch/arm/boot/dts/armada-370.dtsi         |  28 ++++-
+ arch/arm/boot/dts/armada-375.dtsi         |  28 ++++-
+ arch/arm/boot/dts/armada-380.dtsi         |  42 ++++++-
+ arch/arm/boot/dts/armada-385.dtsi         |  52 ++++++--
+ arch/arm/boot/dts/armada-39x.dtsi         |  56 +++++++--
+ arch/arm/boot/dts/armada-xp-98dx3236.dtsi |  14 ++-
+ arch/arm/boot/dts/armada-xp-mv78230.dtsi  |  70 +++++++++--
+ arch/arm/boot/dts/armada-xp-mv78260.dtsi  | 126 ++++++++++++++++---
+ arch/arm/boot/dts/armada-xp-mv78460.dtsi  | 140 ++++++++++++++++++----
+ arch/arm/boot/dts/dove.dtsi               |  28 ++++-
+ arch/arm/boot/dts/kirkwood-6192.dtsi      |  14 ++-
+ arch/arm/boot/dts/kirkwood-6281.dtsi      |  14 ++-
+ arch/arm/boot/dts/kirkwood-6282.dtsi      |  28 ++++-
+ arch/arm/boot/dts/kirkwood-98dx4122.dtsi  |  14 ++-
+ 14 files changed, 560 insertions(+), 94 deletions(-)
 
-Same here for the event boundary check.
+-- 
+2.20.1
 
-> +	return automaton_##name.function[curr_state][event];			\
-> +}										\
-> +										\
-> +static inline bool model_is_final_state_##name(enum states_##name state)	\
-> +{										\
-> +	if ((state < 0) || (state > state_max_##name))				\
-> +		return 0;							\
-> +										\
-
-Same here.
-
-> +	return !!automaton_##name.final_states[state];				\
-
-If the value of .final_states[state] is 0 or 1, can the type of
-.final_states[state] be befined to bool. Or not need to use !! to
-explicitly transfer the type to bool. I remember that you define
-this as char array and the matrix model value of this array is 0 or 1
-see from the next patche. 1 delegate the state it is the initial state.
-0 for others.
-
-> +}
-> -- 
-> 2.35.1
-> 
