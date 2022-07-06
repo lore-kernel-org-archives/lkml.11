@@ -2,135 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECCDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90526C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232833AbiGFKK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
+        id S230070AbiGFKLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232532AbiGFKJu (ORCPT
+        with ESMTP id S232801AbiGFKLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:09:50 -0400
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED099A467;
-        Wed,  6 Jul 2022 03:09:46 -0700 (PDT)
-Received: by mail-qt1-f176.google.com with SMTP id c13so17480565qtq.10;
-        Wed, 06 Jul 2022 03:09:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kx69JRXRHaP9bPHWeCJjLQ/KjVRjWJF5OqT3P9q0cBs=;
-        b=lAzdRd1By0sHsBk/HkiVBJYiSBscgl0i1ZLAsUpFAIe8qAFmd4kDffUF8y1jY0FzOQ
-         vVQfqo0DLW7HANISepVttWLbihN1jcWLZBXtujKa69KSjCNBQbl+XqnRi2/a+OCql/Tc
-         G8X6soaObeyIiRaLHtBaDSvM4cEzvyuPysp+OQZs4wHtBIWH/haIhn4mW1FvFW+t+ti0
-         qBHP0Vmz2rWXotho0cLXnoEcZVjtPVWLkVQDIOQaZYE5+Ub0Ua9c2gW8CKiGhkL+io3k
-         qVkdq0txxNz1x/GETY20MSUDfZmIuHQf2qN1c1YuF5B4VJ9m9c4sskMn3wC6HuqqW6ET
-         4sEA==
-X-Gm-Message-State: AJIora+fQVLRC2JPBJguYfUYsik9hV+zeKmHAXEqN5WBunFzox/ZpMxo
-        yPE6Majlkyis7OxP4gCWrdsz3ayypng1TNvl
-X-Google-Smtp-Source: AGRyM1uRi24Ome6ymG0bopZ8WaKaGL4MX+ul7f2gDeb/y4XMxl60luZgTxp4X64UGyjAH5lS0Ja8GQ==
-X-Received: by 2002:a05:622a:4cc:b0:31d:26a1:2538 with SMTP id q12-20020a05622a04cc00b0031d26a12538mr31085549qtx.498.1657102185760;
-        Wed, 06 Jul 2022 03:09:45 -0700 (PDT)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id d71-20020a379b4a000000b006a6a1e4aec2sm28819484qke.49.2022.07.06.03.09.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 03:09:44 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-31c86fe1dddso87249647b3.1;
-        Wed, 06 Jul 2022 03:09:44 -0700 (PDT)
-X-Received: by 2002:a81:5404:0:b0:31c:c24d:94b0 with SMTP id
- i4-20020a815404000000b0031cc24d94b0mr10209449ywb.502.1657102184115; Wed, 06
- Jul 2022 03:09:44 -0700 (PDT)
+        Wed, 6 Jul 2022 06:11:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA3512D23;
+        Wed,  6 Jul 2022 03:11:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E341AB81BA8;
+        Wed,  6 Jul 2022 10:11:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74D29C3411C;
+        Wed,  6 Jul 2022 10:11:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657102261;
+        bh=dKEeKNqJpoL5hH00p3yVGSgJ+P+GEsFV9D+wcQU4tt0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SDJHfaBi68ceMUFS0St1t1mYWHA4SAQ26COFTBXCh1zmzWCp6lq52k1WPvY1BzJkd
+         zIIzGFlW6lgV6TMaLhGW4GfaDrLNnrSJt9Jj3NpW5Z+F7tYH4iu8Ze2mvUoA8+bcAm
+         uHF2/AjnvuRuX5V61+/DdvxZAhH25mEL+aSUyD2VpB1jzu+G+XnuMqgJRUiVe4FFK4
+         p8i6Gp8BMq/LXqT7x0mpgOgwySVh8SaPAhdcp2SA2Ws2EuJgfuJfOAK1W5Qfivbg7o
+         RSYdsz9ApTWn6kCsh6UJLLYI+LUg4HBEyIlbObLF4qikTOE1luuNGfHkrn6dY2i9ZC
+         /cBorrxLjUJww==
+Received: by pali.im (Postfix)
+        id 911F37BA; Wed,  6 Jul 2022 12:10:58 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
+Date:   Wed,  6 Jul 2022 12:10:43 +0200
+Message-Id: <20220706101043.4867-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20220624121313.2382500-1-alexandr.lobakin@intel.com> <20220624121313.2382500-4-alexandr.lobakin@intel.com>
-In-Reply-To: <20220624121313.2382500-4-alexandr.lobakin@intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 6 Jul 2022 12:09:33 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWB8CjbOarttKSaY2=kASbqU2UBCe9bpU17=MdZP_rGUA@mail.gmail.com>
-Message-ID: <CAMuHMdWB8CjbOarttKSaY2=kASbqU2UBCe9bpU17=MdZP_rGUA@mail.gmail.com>
-Subject: Re: [PATCH v5 3/9] bitops: unify non-atomic bitops prototypes across architectures
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, kernel test robot <lkp@intel.com>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>, llvm@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 2:13 PM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
-> Currently, there is a mess with the prototypes of the non-atomic
-> bitops across the different architectures:
->
-> ret     bool, int, unsigned long
-> nr      int, long, unsigned int, unsigned long
-> addr    volatile unsigned long *, volatile void *
->
-> Thankfully, it doesn't provoke any bugs, but can sometimes make
-> the compiler angry when it's not handy at all.
-> Adjust all the prototypes to the following standard:
->
-> ret     bool                            retval can be only 0 or 1
-> nr      unsigned long                   native; signed makes no sense
-> addr    volatile unsigned long *        bitmaps are arrays of ulongs
->
-> Next, some architectures don't define 'arch_' versions as they don't
-> support instrumentation, others do. To make sure there is always the
-> same set of callables present and to ease any potential future
-> changes, make them all follow the rule:
->  * architecture-specific files define only 'arch_' versions;
->  * non-prefixed versions can be defined only in asm-generic files;
-> and place the non-prefixed definitions into a new file in
-> asm-generic to be included by non-instrumented architectures.
->
-> Finally, add some static assertions in order to prevent people from
-> making a mess in this room again.
-> I also used the %__always_inline attribute consistently, so that
-> they always get resolved to the actual operations.
->
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Acked-by: Mark Rutland <mark.rutland@arm.com>
-> Reviewed-by: Yury Norov <yury.norov@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
+Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
+board which has this pre-3.0 controller:
 
->  arch/m68k/include/asm/bitops.h                | 49 ++++++++++-----
+  $ lspci -bvnn
+  00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
+          !!! Invalid class 0b20 for header type 01
+          Capabilities: [4c] Express Root Port (Slot-), MSI 00
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
+Port to the Freescale specific PCIe register 0x474.
 
-Gr{oetje,eeting}s,
+With this change lspci -b output is:
 
-                        Geert
+  $ lspci -bvnn
+  00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
+          Capabilities: [4c] Express Root Port (Slot-), MSI 00
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Without any "Invalid class" error. So class code was properly reflected
+into standard (read-only) PCI register 0x08.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
+http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
+
+Fix activated by U-Boot stay active also after booting Linux kernel.
+But boards which use older U-Boot version without that fix are affected and
+still require this fix.
+
+So implement this class code fix also in kernel fsl_pci.c driver.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ arch/powerpc/sysdev/fsl_pci.c | 8 ++++++++
+ arch/powerpc/sysdev/fsl_pci.h | 1 +
+ 2 files changed, 9 insertions(+)
+
+diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
+index 1011cfea2e32..bfbb8c8fc9aa 100644
+--- a/arch/powerpc/sysdev/fsl_pci.c
++++ b/arch/powerpc/sysdev/fsl_pci.c
+@@ -521,6 +521,7 @@ int fsl_add_bridge(struct platform_device *pdev, int is_primary)
+ 	struct resource rsrc;
+ 	const int *bus_range;
+ 	u8 hdr_type, progif;
++	u32 class_code;
+ 	struct device_node *dev;
+ 	struct ccsr_pci __iomem *pci;
+ 	u16 temp;
+@@ -594,6 +595,13 @@ int fsl_add_bridge(struct platform_device *pdev, int is_primary)
+ 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
+ 		if (fsl_pcie_check_link(hose))
+ 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
++		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
++		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
++			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
++			class_code &= 0xff;
++			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
++			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
++		}
+ 	} else {
+ 		/*
+ 		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
+diff --git a/arch/powerpc/sysdev/fsl_pci.h b/arch/powerpc/sysdev/fsl_pci.h
+index cdbde2e0c96e..093a875d7d1e 100644
+--- a/arch/powerpc/sysdev/fsl_pci.h
++++ b/arch/powerpc/sysdev/fsl_pci.h
+@@ -18,6 +18,7 @@ struct platform_device;
+ 
+ #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
+ #define PCIE_LTSSM_L0	0x16		/* L0 state */
++#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
+ #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
+ #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
+ #define PIWAR_EN		0x80000000	/* Enable */
+-- 
+2.20.1
+
