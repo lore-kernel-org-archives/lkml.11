@@ -2,115 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 17:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232042AbiGFRJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 13:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S232413AbiGFRLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbiGFRJ0 (ORCPT
+        with ESMTP id S230243AbiGFRLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 13:09:26 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311A21EAF3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:09:24 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so9335872wmb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 10:09:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=5LUOM8ZYJNqDNXNRkK8SW6v1KeODGn/t/tSrSeB93Hg=;
-        b=FWxQ9w9QQNjX8fhNNM4ShlZTIrizS+PKUFTG21pr1iRgQ7Vf64He23QLE9Bp6vZC9d
-         QZu2/gYfSpYUu+IGln2mRJLyYTBfq/2oQnalM/9l2402od6QikiGfzuLSKyyHtUvM0ND
-         H8c1Ve5FE8EFWb3V5w4SgEjotxtGfnYtzZH/0u8do8Ur8T0RcZirfEQuMgVoNg6hEjJl
-         IFvuFdAFs7G+vCfMwzF+R9e5ptnM53k9g6vDUW9c9MrHQ6945QoFT/IiVHoXUxXm909V
-         DfjWv/xGi1nJsBJDn0frsfD/P79LZl9yDkDVyV2rDWgVln6fVNSHmzJB+nvuFcX8uCDE
-         vGYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=5LUOM8ZYJNqDNXNRkK8SW6v1KeODGn/t/tSrSeB93Hg=;
-        b=SpJflemDQ07vzGH75OJjQfPVtDftNoDi1hzRpqJ50CIzRkgF1GmKyao4vxuKpyN4+W
-         d/Bvli4FU85HgjEARxLNUP56SmjGUIfbGkhV4jaYveV2fF0YoVu51EjlTNi4AUXvtJSi
-         rcmwdswQ062dwaNZgaJ5bEeRfl5QZQIY5LibbIk61yGKfgLre5B/b4KNCmdthNeNlv1/
-         585l4kFeRFVSRu6ucnj5XQ6mvyQtAC5yzRHU9FQnJUeD8f2VXinXDILiXnLRs4x7PzdA
-         VI9NYZWxydJOB52JDVkyEtJjaxSl1xIzr0MIwAtekq8IiLX/QfqflymsU7OBmttDmqzx
-         EulA==
-X-Gm-Message-State: AJIora9YQoXH8uBeQ6ECvDVzTlqzlok0lXbg3Mar9OhUABs7VLDSV7GP
-        HbRg28gEQPcIrJsq6Qs4Kk4hzw==
-X-Google-Smtp-Source: AGRyM1tDs+r809drkm9fTo8mDedQDX5NO3elMnVmkCGdj1wZQpsTYCLXuaPJsjJ/fdV04pS7uHNxFg==
-X-Received: by 2002:a05:600c:1e14:b0:3a0:2bba:4b2e with SMTP id ay20-20020a05600c1e1400b003a02bba4b2emr42964111wmb.196.1657127362770;
-        Wed, 06 Jul 2022 10:09:22 -0700 (PDT)
-Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
-        by smtp.gmail.com with ESMTPSA id m16-20020adfe950000000b0021d70a871cbsm5605291wrn.32.2022.07.06.10.09.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 10:09:22 -0700 (PDT)
-References: <20220705142444.17063-1-pboos@baylibre.com>
- <f756b2d5-56e7-6e52-2739-eca4bb33508b@baylibre.com>
- <1jmtdnwd7y.fsf@starbuckisacylon.baylibre.com>
- <20220706124139.GB492220@roeck-us.net>
- <1j8rp6z720.fsf@starbuckisacylon.baylibre.com>
- <20220706164325.GA776177@roeck-us.net>
-User-agent: mu4e 1.8.3; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Philippe Boos <pboos@baylibre.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] watchdog: meson: keep running if already active
-Date:   Wed, 06 Jul 2022 19:00:39 +0200
-In-reply-to: <20220706164325.GA776177@roeck-us.net>
-Message-ID: <1j4jzuyxq8.fsf@starbuckisacylon.baylibre.com>
+        Wed, 6 Jul 2022 13:11:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC12201B4;
+        Wed,  6 Jul 2022 10:11:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1C0261E90;
+        Wed,  6 Jul 2022 17:11:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44865C3411C;
+        Wed,  6 Jul 2022 17:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657127478;
+        bh=R5uFfz3FlRiA/UmN4AvfiJh1+ViQVEYfhBWTVA9sjrQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hzNiWt6LgG05cY5vim/053sp6g+qWinAyoXkUx3t1aZ7SrPiSySwFnuYnPnKRd9ir
+         Hdgpjp8E6hrjmqBWz1Rv54OW7UaKILwx4a1eS7h7rJi9s4o0L2glUjMYCa7VByqJEa
+         b+hMfuJG58O/ZBB7qSHopGYrb1tzNrEmYey2L4DY06cAvtyAzukiG0BkUJm2mau2MF
+         uVlDI2zL3GRm9D4xgY28dgPYJiZPsmKGmq0tRxrNy+jmCBno+lHLHdbaUJMqO0Ifpx
+         mude+KnbUXfXhmHg4e0b1dZ5kSDoRHVWq7UYitkqLyYo1FALxEwZaLre6T387C430N
+         0IcK/98LzgTrQ==
+Date:   Wed, 6 Jul 2022 10:11:17 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Andrey Strachuk <strochuk@ispras.ru>
+Cc:     Dave Chinner <dchinner@redhat.com>,
+        Allison Henderson <allison.henderson@oracle.com>,
+        Chandan Babu R <chandan.babu@oracle.com>,
+        linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Subject: Re: [PATCH] xfs: removed useless condition in function
+ xfs_attr_node_get
+Message-ID: <YsXCNSIeP9y9S2fa@magnolia>
+References: <20220706133627.11198-1-strochuk@ispras.ru>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706133627.11198-1-strochuk@ispras.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jul 06, 2022 at 04:36:27PM +0300, Andrey Strachuk wrote:
+> At line 1561, variable "state" is being compared
+> with NULL every loop iteration.
+> 
+> -------------------------------------------------------------------
+> 1561	for (i = 0; state != NULL && i < state->path.active; i++) {
+> 1562		xfs_trans_brelse(args->trans, state->path.blk[i].bp);
+> 1563		state->path.blk[i].bp = NULL;
+> 1564	}
+> -------------------------------------------------------------------
+> 
+> However, it cannot be NULL.
+> 
+> ----------------------------------------
+> 1546	state = xfs_da_state_alloc(args);
+> ----------------------------------------
+> 
+> xfs_da_state_alloc calls kmem_cache_zalloc. kmem_cache_zalloc is
+> called with __GFP_NOFAIL flag and, therefore, it cannot return NULL.
+> 
+> --------------------------------------------------------------------------
+> 	struct xfs_da_state *
+> 	xfs_da_state_alloc(
+> 	struct xfs_da_args	*args)
+> 	{
+> 		struct xfs_da_state	*state;
+> 
+> 		state = kmem_cache_zalloc(xfs_da_state_cache, GFP_NOFS | __GFP_NOFAIL);
+> 		state->args = args;
+> 		state->mp = args->dp->i_mount;
+> 		return state;
+> 	}
+> --------------------------------------------------------------------------
+> 
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> 
+> Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+> 
+> Fixes: 4d0cdd2bb8f0 ("xfs: clean up xfs_attr_node_hasname")
 
-On Wed 06 Jul 2022 at 09:43, Guenter Roeck <linux@roeck-us.net> wrote:
+Nit: usually the tags go at the end with no empty lines between them.
 
-> On Wed, Jul 06, 2022 at 03:24:27PM +0200, Jerome Brunet wrote:
->> 
-> [ ... ]
->
->> 
->> No worries. That being said, I have gone over 
->> 
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/submitting-patches.rst
->> 
->> It just says that Reviewed-by sent on the list should be collected for
->> the following version. Nothing against adding the tag if the job has
->> been done, on or off list. Same goes for Suggested-by, Tested-by, etc.
->> 
->> If I missed something or it is non-written rule, please let me know.
->
-> Your interpretation is quite a strict one. I don't think there is a rule
-> that states that tags not sent to a list must not be collected.
->
-> Anyway, I would have called it common sense, especially since it does
-> happen that someone accidentally hits "reply" instead of "reply all"
-> and replies end up not being sent to the list. If you expect me to dig
-> through e-mail headers to determine if you meant your tags to be published
-> or not, sorry, that won't happen. Do not send me e-mails with any tags
-> unless you accept that they may be published.
->
-> Guenter
+The change looks correct to me, so
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 
-Exactly. Not expecting anything. I'm 100% aligned with you.
-Maybe this is where is misunderstanding is.
+--D
 
-The Reviewed-by was there when Philippe sent his mail.
-I was meant to be there and taken. Plain and simple.
-No other expectation whatsoever.
-
-I'm not asking for the tag to dropped, quite the opposite actually.
+> ---
+>  fs/xfs/libxfs/xfs_attr.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/xfs/libxfs/xfs_attr.c b/fs/xfs/libxfs/xfs_attr.c
+> index 224649a76cbb..6b8857e53add 100644
+> --- a/fs/xfs/libxfs/xfs_attr.c
+> +++ b/fs/xfs/libxfs/xfs_attr.c
+> @@ -1558,7 +1558,7 @@ xfs_attr_node_get(
+>  	 * If not in a transaction, we have to release all the buffers.
+>  	 */
+>  out_release:
+> -	for (i = 0; state != NULL && i < state->path.active; i++) {
+> +	for (i = 0; i < state->path.active; i++) {
+>  		xfs_trans_brelse(args->trans, state->path.blk[i].bp);
+>  		state->path.blk[i].bp = NULL;
+>  	}
+> -- 
+> 2.25.1
+> 
