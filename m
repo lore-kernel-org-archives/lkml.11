@@ -2,271 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE87ACCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 03:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FD9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 03:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbiGFDqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 23:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
+        id S231718AbiGFDqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 23:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231325AbiGFDpX (ORCPT
+        with ESMTP id S231386AbiGFDpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 23:45:23 -0400
-Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3640C1EADC
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 20:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1657079119; x=1688615119;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ge/ABfXnrM5/z7n6G4b0DuoSM+BhI8eaEOtVOhmsYv4=;
-  b=h83dZFvvuW3rMyrkmw4hWiOyA+zKmL9yAcpUpW0+7/Y8eZQcKn8N1SZu
-   J3abYdAzOTv14vxGAgO56fFJaKulJydi3VDvoajNGZVkrTELUYan0EsK9
-   eU3RmNPMZc/Ih6rshrzWyoHCkDmVNXswycCcvYLhN9FduEgTy8y9ZVygd
-   fAVHy9HEUUGIpAMxD6z6NxTB5xWMFNbRzeEqeJT08CauzwpCw7jT45+H/
-   BEQsmXiok8BStBAKo0qMTAHRXhPyNt7As0MmIx4CQIOn5SO1I9AZ8M8sx
-   zoZtxarjUz9lP/SvEs7F7Nxxu9Y6s4C/ZbQO8mPq0UxnL0hwzPdb6fSAL
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,248,1650902400"; 
-   d="scan'208";a="204942399"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 06 Jul 2022 11:45:16 +0800
-IronPort-SDR: aGO6FpyWGXcuu2NoFCpXgRHEwDLAbSS6OFpEYqsFrsKDIndTnY/Xo4/ggOw3Bp8e47WtaJbkGM
- MiUgpw8FDK7KeEB3P03d7VnqlBDWik2xrEoj1dM2r8bWqFKITjJsYML7AuQ05bX1QgzALE7iVA
- HcXlo+xHSlZjIw3tQ4frgpGRIpJcCGsSuTr9j6TQ5fNPSGitUwnOfBbCj1ubDftL38KAIc2ACr
- a54oDX6tdcspaO7gKV6f58+7aKj3i8NfoiYohRJ1mAIFexdOV0TMlLyuzDgokUEEAvbHq7T7Ac
- h9pSg6Q42+TwsG9nrxChTupz
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Jul 2022 20:02:35 -0700
-IronPort-SDR: qAKYPIXhrk8ZdXFQ2z6ECdYYEn6/LjdGa5hqUCUlfSzuIeO5KYnTv/oVlM2+Qv+iehO8IuXXAS
- /gAR/IpMeWOWyYB07gwvypT29cmFNWPh73MPilCxkWrMp2uRoiio0ZPrHlvh3uY1ZbVJ7P1gHS
- V9xhphPSN5/Jl1NCCpQMwHUu8EbJPyegYEbMyytg5wFRURRf1qSVUOmQVSuSLynPavuIzZtNRF
- JwKhPsthL0AeTssIrbpkGdLvUFFn/3AjEOV3fJTgUlCP5jtMDRZcNG3YjpKNToa2cu8vNtGbEr
- fCc=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Jul 2022 20:45:18 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Ld5650z6Pz1Rw4L
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 20:45:17 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1657079115; x=1659671116; bh=ge/ABfXnrM5/z7n6G4b0DuoSM+BhI8eaEOt
-        VOhmsYv4=; b=B5EgcBwO4d4yXN9SooMrS4jNH2BwfOF9zg+u+QHut8zybxvHUz4
-        mRC746iEW1PokCXLnRA+qt2Ks3cHErlcVY+RzmzX12hjIaD+SrpkK99gPVDsbMzu
-        +sUcd8Jkdg/lfLT5//clsU6X/hGO2NrepCRldf+/ks2PevTcaw/6GqPS94l59VO9
-        f8XqxS30dFaEma0fki5bCasudTb+D8Bb/NlPoUgOXTKgIw/cqmCVlMyKMB1g6mY/
-        ZinmabCNCAnIW1wcKpePBcg30yWWqUvbP/5RIH5z6TSR3UZUWj2m1Swgvn1JrKSp
-        rfyYjIP9YN/t1xC0s04nAiHXdI2hr8Z8OiA==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id mPoTNeh6A8Im for <linux-kernel@vger.kernel.org>;
-        Tue,  5 Jul 2022 20:45:15 -0700 (PDT)
-Received: from [10.225.163.110] (unknown [10.225.163.110])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Ld55s01rTz1RtVk;
-        Tue,  5 Jul 2022 20:45:04 -0700 (PDT)
-Message-ID: <50b65a2b-49fb-41d9-d68c-af1d908ba5db@opensource.wdc.com>
-Date:   Wed, 6 Jul 2022 12:45:03 +0900
+        Tue, 5 Jul 2022 23:45:24 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8B61D0EF;
+        Tue,  5 Jul 2022 20:45:23 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2660SKN4030450;
+        Tue, 5 Jul 2022 20:45:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=ZSk/a5kvKGgnF6HkXBA27+cNCJVtIZvIFDYoJIKOcyw=;
+ b=QBT5KX8lWjGNgbMcHBlOmA8+4Y/RO7m+jYXqB/2uncUj45LjbZXYCyaEPjxlDaVYH8Zn
+ bVVZPYGc207m8Y2uSCYQlf8Q/Zq/xPeU90/mduz1Jexwf7lAvbU3+urgyVR3CR7K6Q9A
+ 6YetJJBjB6gCcR9uc5lOVCayiVJ3XnlMqECG89xuzyAg7XLVIMvZ9vjFmKON/wyz4kfO
+ MEYnBCFqJwR1A5+7ZDIVf0RefeAdFaTK4YGXhnnh90fJVjHl0/vrl8dQCfeCnablzHWT
+ qtB9kqMgtOpAy5lMbH8NQpsgrbJpVixj0aJ356PoaWj7abkNtl79hSSwFgiW1ElYRSJI GA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h4yvr0hpd-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 20:45:15 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Jul
+ 2022 20:45:10 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 5 Jul 2022 20:45:10 -0700
+Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
+        by maili.marvell.com (Postfix) with ESMTP id 7BB9B5B6944;
+        Tue,  5 Jul 2022 20:45:08 -0700 (PDT)
+From:   Ratheesh Kannoth <rkannoth@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        Ratheesh Kannoth <rkannoth@marvell.com>
+Subject: [PATCH V1 08/12] octeontx2: Modify mbox request and response structures
+Date:   Wed, 6 Jul 2022 09:14:38 +0530
+Message-ID: <20220706034442.2308670-9-rkannoth@marvell.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220706034442.2308670-1-rkannoth@marvell.com>
+References: <20220706034442.2308670-1-rkannoth@marvell.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5/9] arm: bcmbca: Replace ARCH_BCM_63XX with ARCH_BCMBCA
-Content-Language: en-US
-To:     William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     joel.peshkin@broadcom.com, kursad.oney@broadcom.com,
-        f.fainelli@gmail.com, anand.gore@broadcom.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        philippe.reynes@softathome.com, dan.beygelman@broadcom.com,
-        Al Cooper <alcooperx@gmail.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jan Dabros <jsd@semihalf.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Jie Deng <jie.deng@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Matt Mackall <mpm@selenic.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Rob Herring <robh@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Tyrone Ting <kfting@nuvoton.com>,
-        Vinod Koul <vkoul@kernel.org>, Wolfram Sang <wsa@kernel.org>,
-        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
-References: <20220705172613.21152-1-william.zhang@broadcom.com>
- <20220705172613.21152-6-william.zhang@broadcom.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220705172613.21152-6-william.zhang@broadcom.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 4uUvWmrqokr9WaQIswayks-BtJVs5QwF
+X-Proofpoint-ORIG-GUID: 4uUvWmrqokr9WaQIswayks-BtJVs5QwF
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-06_02,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/6/22 02:26, William Zhang wrote:
-> Update ARCH_BCM_63XX in all sources to use ARCHB_BCMBCA instead.
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+Exact match table modification requires wider fields as it has
+more number of slots to fill in. Modifying an entry in exact match
+table may cause hash collision and may be required to delete entry
+from 4-way 2K table and add to fully associative 32 entry CAM table.
 
-For the ata Kconfig change:
+Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  | 27 ++++++++++++++-----
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  4 +--
+ .../marvell/octeontx2/nic/otx2_dmac_flt.c     |  2 +-
+ 3 files changed, 24 insertions(+), 9 deletions(-)
 
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-
-
-> ---
-> 
->  arch/arm/Kconfig.debug         | 2 +-
->  drivers/ata/Kconfig            | 2 +-
->  drivers/char/hw_random/Kconfig | 2 +-
->  drivers/clk/bcm/Kconfig        | 4 ++--
->  drivers/i2c/busses/Kconfig     | 2 +-
->  drivers/phy/broadcom/Kconfig   | 2 +-
->  drivers/spi/Kconfig            | 2 +-
->  drivers/tty/serial/Kconfig     | 4 ++--
->  8 files changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-> index 9b0aa4822d69..792796a348c3 100644
-> --- a/arch/arm/Kconfig.debug
-> +++ b/arch/arm/Kconfig.debug
-> @@ -271,7 +271,7 @@ choice
->  
->  	config DEBUG_BCM63XX_UART
->  		bool "Kernel low-level debugging on BCM63XX UART"
-> -		depends on ARCH_BCM_63XX
-> +		depends on ARCH_BCMBCA
->  
->  	config DEBUG_BERLIN_UART
->  		bool "Marvell Berlin SoC Debug UART"
-> diff --git a/drivers/ata/Kconfig b/drivers/ata/Kconfig
-> index bb45a9c00514..1c9f4fb2595d 100644
-> --- a/drivers/ata/Kconfig
-> +++ b/drivers/ata/Kconfig
-> @@ -148,7 +148,7 @@ config SATA_AHCI_PLATFORM
->  config AHCI_BRCM
->  	tristate "Broadcom AHCI SATA support"
->  	depends on ARCH_BRCMSTB || BMIPS_GENERIC || ARCH_BCM_NSP || \
-> -		   ARCH_BCM_63XX || COMPILE_TEST
-> +		   ARCH_BCMBCA || COMPILE_TEST
->  	select SATA_HOST
->  	help
->  	  This option enables support for the AHCI SATA3 controller found on
-> diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-> index b3f2d55dc551..3da8e85f8aae 100644
-> --- a/drivers/char/hw_random/Kconfig
-> +++ b/drivers/char/hw_random/Kconfig
-> @@ -87,7 +87,7 @@ config HW_RANDOM_BA431
->  config HW_RANDOM_BCM2835
->  	tristate "Broadcom BCM2835/BCM63xx Random Number Generator support"
->  	depends on ARCH_BCM2835 || ARCH_BCM_NSP || ARCH_BCM_5301X || \
-> -		   ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-> +		   ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
->  	default HW_RANDOM
->  	help
->  	  This driver provides kernel-side support for the Random Number
-> diff --git a/drivers/clk/bcm/Kconfig b/drivers/clk/bcm/Kconfig
-> index ec738f74a026..77266afb1c79 100644
-> --- a/drivers/clk/bcm/Kconfig
-> +++ b/drivers/clk/bcm/Kconfig
-> @@ -22,9 +22,9 @@ config CLK_BCM2835
->  
->  config CLK_BCM_63XX
->  	bool "Broadcom BCM63xx clock support"
-> -	depends on ARCH_BCM_63XX || COMPILE_TEST
-> +	depends on ARCH_BCMBCA || COMPILE_TEST
->  	select COMMON_CLK_IPROC
-> -	default ARCH_BCM_63XX
-> +	default ARCH_BCMBCA
->  	help
->  	  Enable common clock framework support for Broadcom BCM63xx DSL SoCs
->  	  based on the ARM architecture
-> diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-> index b1d7069dd377..acf2a393bd56 100644
-> --- a/drivers/i2c/busses/Kconfig
-> +++ b/drivers/i2c/busses/Kconfig
-> @@ -486,7 +486,7 @@ config I2C_BCM_KONA
->  
->  config I2C_BRCMSTB
->  	tristate "BRCM Settop/DSL I2C controller"
-> -	depends on ARCH_BCM2835 || ARCH_BCM4908 || ARCH_BCM_63XX || \
-> +	depends on ARCH_BCM2835 || ARCH_BCM4908 || ARCH_BCMBCA || \
->  		   ARCH_BRCMSTB || BMIPS_GENERIC || COMPILE_TEST
->  	default y
->  	help
-> diff --git a/drivers/phy/broadcom/Kconfig b/drivers/phy/broadcom/Kconfig
-> index 849c4204f550..93a6a8ee4716 100644
-> --- a/drivers/phy/broadcom/Kconfig
-> +++ b/drivers/phy/broadcom/Kconfig
-> @@ -83,7 +83,7 @@ config PHY_NS2_USB_DRD
->  config PHY_BRCM_SATA
->  	tristate "Broadcom SATA PHY driver"
->  	depends on ARCH_BRCMSTB || ARCH_BCM_IPROC || BMIPS_GENERIC || \
-> -		   ARCH_BCM_63XX || COMPILE_TEST
-> +		   ARCH_BCMBCA || COMPILE_TEST
->  	depends on OF
->  	select GENERIC_PHY
->  	default ARCH_BCM_IPROC
-> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-> index 2d034459e79f..8e550269d488 100644
-> --- a/drivers/spi/Kconfig
-> +++ b/drivers/spi/Kconfig
-> @@ -183,7 +183,7 @@ config SPI_BCM63XX
->  
->  config SPI_BCM63XX_HSSPI
->  	tristate "Broadcom BCM63XX HS SPI controller driver"
-> -	depends on BCM63XX || BMIPS_GENERIC || ARCH_BCM_63XX || COMPILE_TEST
-> +	depends on BCM63XX || BMIPS_GENERIC || ARCH_BCMBCA || COMPILE_TEST
->  	help
->  	  This enables support for the High Speed SPI controller present on
->  	  newer Broadcom BCM63XX SoCs.
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 8a3ee1525d80..e3279544b03c 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1100,8 +1100,8 @@ config SERIAL_TIMBERDALE
->  config SERIAL_BCM63XX
->  	tristate "Broadcom BCM63xx/BCM33xx UART support"
->  	select SERIAL_CORE
-> -	depends on ARCH_BCM4908 || ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-> -	default ARCH_BCM4908 || ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC
-> +	depends on ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-> +	default ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC
->  	help
->  	  This enables the driver for the onchip UART core found on
->  	  the following chipsets:
-
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 38e064bdaf72..430aa8a05c23 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -169,9 +169,10 @@ M(CGX_GET_PHY_FEC_STATS, 0x219, cgx_get_phy_fec_stats, msg_req, msg_rsp) \
+ M(CGX_FEATURES_GET,	0x21B, cgx_features_get, msg_req,		\
+ 			       cgx_features_info_msg)			\
+ M(RPM_STATS,		0x21C, rpm_stats, msg_req, rpm_stats_rsp)	\
+-M(CGX_MAC_ADDR_RESET,	0x21D, cgx_mac_addr_reset, msg_req, msg_rsp)	\
++M(CGX_MAC_ADDR_RESET,	0x21D, cgx_mac_addr_reset, cgx_mac_addr_reset_req, \
++							msg_rsp) \
+ M(CGX_MAC_ADDR_UPDATE,	0x21E, cgx_mac_addr_update, cgx_mac_addr_update_req, \
+-			       msg_rsp)					\
++						    cgx_mac_addr_update_rsp) \
+ M(CGX_PRIO_FLOW_CTRL_CFG, 0x21F, cgx_prio_flow_ctrl_cfg, cgx_pfc_cfg,  \
+ 				 cgx_pfc_rsp)                               \
+ /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
+@@ -455,6 +456,7 @@ struct cgx_fec_stats_rsp {
+ struct cgx_mac_addr_set_or_get {
+ 	struct mbox_msghdr hdr;
+ 	u8 mac_addr[ETH_ALEN];
++	u32 index;
+ };
+ 
+ /* Structure for requesting the operation to
+@@ -470,7 +472,7 @@ struct cgx_mac_addr_add_req {
+  */
+ struct cgx_mac_addr_add_rsp {
+ 	struct mbox_msghdr hdr;
+-	u8 index;
++	u32 index;
+ };
+ 
+ /* Structure for requesting the operation to
+@@ -478,7 +480,7 @@ struct cgx_mac_addr_add_rsp {
+  */
+ struct cgx_mac_addr_del_req {
+ 	struct mbox_msghdr hdr;
+-	u8 index;
++	u32 index;
+ };
+ 
+ /* Structure for response against the operation to
+@@ -486,7 +488,7 @@ struct cgx_mac_addr_del_req {
+  */
+ struct cgx_max_dmac_entries_get_rsp {
+ 	struct mbox_msghdr hdr;
+-	u8 max_dmac_filters;
++	u32 max_dmac_filters;
+ };
+ 
+ struct cgx_link_user_info {
+@@ -587,10 +589,20 @@ struct cgx_set_link_mode_rsp {
+ 	int status;
+ };
+ 
++struct cgx_mac_addr_reset_req {
++	struct mbox_msghdr hdr;
++	u32 index;
++};
++
+ struct cgx_mac_addr_update_req {
+ 	struct mbox_msghdr hdr;
+ 	u8 mac_addr[ETH_ALEN];
+-	u8 index;
++	u32 index;
++};
++
++struct cgx_mac_addr_update_rsp {
++	struct mbox_msghdr hdr;
++	u32 index;
+ };
+ 
+ #define RVU_LMAC_FEAT_FC		BIT_ULL(0) /* pause frames */
+@@ -1636,6 +1648,9 @@ enum cgx_af_status {
+ 	LMAC_AF_ERR_PERM_DENIED		= -1103,
+ 	LMAC_AF_ERR_PFC_ENADIS_PERM_DENIED       = -1104,
+ 	LMAC_AF_ERR_8023PAUSE_ENADIS_PERM_DENIED = -1105,
++	LMAC_AF_ERR_EXACT_MATCH_TBL_ADD_FAILED = -1108,
++	LMAC_AF_ERR_EXACT_MATCH_TBL_DEL_FAILED = -1109,
++	LMAC_AF_ERR_EXACT_MATCH_TBL_LOOK_UP_FAILED = -1110,
+ };
+ 
+ #endif /* MBOX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index 97a633c1d395..0d86f3e68fa0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -1089,7 +1089,7 @@ int rvu_mbox_handler_cgx_set_link_mode(struct rvu *rvu,
+ 	return 0;
+ }
+ 
+-int rvu_mbox_handler_cgx_mac_addr_reset(struct rvu *rvu, struct msg_req *req,
++int rvu_mbox_handler_cgx_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_reset_req *req,
+ 					struct msg_rsp *rsp)
+ {
+ 	int pf = rvu_get_pf(req->hdr.pcifunc);
+@@ -1104,7 +1104,7 @@ int rvu_mbox_handler_cgx_mac_addr_reset(struct rvu *rvu, struct msg_req *req,
+ 
+ int rvu_mbox_handler_cgx_mac_addr_update(struct rvu *rvu,
+ 					 struct cgx_mac_addr_update_req *req,
+-					 struct msg_rsp *rsp)
++					 struct cgx_mac_addr_update_rsp *rsp)
+ {
+ 	int pf = rvu_get_pf(req->hdr.pcifunc);
+ 	u8 cgx_id, lmac_id;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
+index 2ec800f741d8..142d87722bed 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
+@@ -93,7 +93,7 @@ static int otx2_dmacflt_do_remove(struct otx2_nic *pfvf, const u8 *mac,
+ 
+ static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
+ {
+-	struct msg_req *req;
++	struct cgx_mac_addr_reset_req *req;
+ 	int err;
+ 
+ 	mutex_lock(&pf->mbox.lock);
 -- 
-Damien Le Moal
-Western Digital Research
+2.25.1
+
