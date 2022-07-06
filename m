@@ -2,131 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E91C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65241C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234448AbiGFS3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S234503AbiGFS3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiGFS3W (ORCPT
+        with ESMTP id S234526AbiGFS3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:29:22 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99134DA8;
-        Wed,  6 Jul 2022 11:29:20 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id s1so23219940wra.9;
-        Wed, 06 Jul 2022 11:29:20 -0700 (PDT)
+        Wed, 6 Jul 2022 14:29:44 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B841A12AD7
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:29:43 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31cbcba2f28so45138007b3.19
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:29:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aRhpgcalr07YkEQC06e4quRgCbSsA86eLkAqCnDRLp8=;
-        b=pcydag+pErwwrdcsmjf+nFIVxjSqKs3nSu05sEc+DitNQRoW43UAfrWUOvZR5eJbGU
-         XiE5mJ2bYJ+uqPX+b6HKuNlkKSZ8SzLTaugHjQgkcOmwONArnOB0T8++e71Lti63s8Nt
-         NMO95ub8vty+cf7GwftldTDIx+6zgB9/9LC92KBVy/UVMlYotWQBrlAbC70r15BU9oSM
-         sYfr+n9/93qVCTRXS1I7tbqY2SaacHWmGwYnmm51IqDpuZHDCiw+8dFoekXyiinSQMES
-         Lp1IEXFlwhXbJEHpKVbM1Y2LAYKKVuTxdP+C/lBxjgRZrDfnEat17Qzxq7G4Ghwl7FUn
-         3sVg==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=WFIqq+Ih1CphrUsWAZ/TbaFgC8wSAo6D8gk6Qgq5hnE=;
+        b=KKDpFirza47Orl3k+eu59zksxZJfyAAZGEmAozAnCJw/8ycZWnOjOjZ66rNx63/vff
+         CZsDzYCXha5g6Bz4HHm0aZpHX2Q+dIfjkWlrcIgYR1xbw+R8rB36+ZJjZFQgvFOhao7b
+         EyHykMj40N8gXOSwjRJ1zKW5UQbMYtNCBLwjmi45IOZbkBjBaeQeF2rLMpuKKOOXtkaf
+         OH76PqHJAHOoZ/cm5sexyU6e5adhrjxjASPMEaG9zGkd7SZKHw0Fzt6PZhws365Afemg
+         80iD5wE/Nh2Z6cosBcnbXu7i+/RD+2HazCOm0sc7hW/GObtZmHOeK0i4vX8PaJmUq5XJ
+         4YUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aRhpgcalr07YkEQC06e4quRgCbSsA86eLkAqCnDRLp8=;
-        b=G6aC6oij9bC2tt2qFT5TDZ1cc0xIrQ8614PI9l9Tjc8M+Fve/vFqFXppiFDCNzz62h
-         9z6Hm57ILGe3o1AAkphURvfpIbA0dUC0zCW6QD/suj03CYQetJO8WA4Qw6qK4+08wpeD
-         w7h3oi+v9loFPtU/Hra6KF2NKCXlmSwGIiazGdqfD7u65x32w0EkuTTQDtt12pg5selQ
-         Lln+sZz6wBuTBmkmw0Xr+YD38fk1uRZASJVLOUpifltdj9Ds64ru2rKEG/hksh0/GvkU
-         3dGFcAAH5hpfwW1tI+tDyAr3H4xzPeBWTdwbLzzaac8mYDsjTM3LLEOgXAq61wdCgiuQ
-         fA9A==
-X-Gm-Message-State: AJIora+D/FqeGBzmnfW5GLm7PKRp38YjSUj4tSx0RmmUIbY7SbA+out0
-        hWPIcqDV+BxpF7lU6QIHdIg=
-X-Google-Smtp-Source: AGRyM1vqDJph0zXaYU+mKDtrGOKYY+x7Ui4yKgelPc1/miuilxQ3TdUsAbj7Z1VEKJsMxiRYhuCZ9w==
-X-Received: by 2002:adf:dd82:0:b0:21d:62e3:a51 with SMTP id x2-20020adfdd82000000b0021d62e30a51mr21961682wrl.324.1657132159236;
-        Wed, 06 Jul 2022 11:29:19 -0700 (PDT)
-Received: from kista.localdomain (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id r15-20020a0560001b8f00b0021d74906683sm5142406wru.28.2022.07.06.11.29.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 11:29:18 -0700 (PDT)
-From:   Jernej Skrabec <jernej.skrabec@gmail.com>
-To:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de
-Cc:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        benjamin.gaignard@collabora.com, nicolas.dufresne@collabora.com,
-        gregkh@linuxfoundation.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH v3 6/7] media: hantro: Store VP9 bit depth in context
-Date:   Wed,  6 Jul 2022 20:29:00 +0200
-Message-Id: <20220706182901.78949-7-jernej.skrabec@gmail.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220706182901.78949-1-jernej.skrabec@gmail.com>
-References: <20220706182901.78949-1-jernej.skrabec@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=WFIqq+Ih1CphrUsWAZ/TbaFgC8wSAo6D8gk6Qgq5hnE=;
+        b=7D0H8q95wctWPnAaUOw4voqhkM4qBGcTHZKWMXLvRDCGhRZnvIkCf52Q4SlddYAYQE
+         Womn8Bgwx8C15Nboz+1G+tPqwcIyT07YM/Yu/oK37OVFqopc2rU++s6QPnfmr1bE79V7
+         ZEGnsB0CX5SbbhSMzC6IQz6n7QElAlaNfy0ZLZ+Wv+48TdBtpFGPmy64k+ox9Q/2fL+9
+         T+qwtmvNvRlxJ/Hrmqye2q7iNWvd61zt/h74Kk3bhul4VxkTRXKotgzC5h5kl7i/9KIY
+         R6g+ve+sAG8SL4E55BkUeaQfgZgQqi7bPs40uw7UykfilnrkQBrC++OZi6F/Z9bt4OZv
+         7kwg==
+X-Gm-Message-State: AJIora9EFSH74C/XSfHj72Rlb5oVEANxs9KIgzKC+KbBFUJxoHUFERay
+        ecK6h0qwaNntrU3O1vWL6hQaHS57vuDxw6A=
+X-Google-Smtp-Source: AGRyM1s7dT6nr0ViJcQtDJEIuz8ngMKQXBvRBWAFFgqLK42PyV8aI8hdF86axENugYHnaXsYT6RhQn4SdgVZ/bk=
+X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
+ (user=tjmercier job=sendgmr) by 2002:a81:110:0:b0:317:a640:ad04 with SMTP id
+ 16-20020a810110000000b00317a640ad04mr49013482ywb.427.1657132182771; Wed, 06
+ Jul 2022 11:29:42 -0700 (PDT)
+Date:   Wed,  6 Jul 2022 18:29:24 +0000
+Message-Id: <20220706182924.2563058-1-tjmercier@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH] drm/etnaviv: Remove duplicate call to drm_gem_free_mmap_offset
+From:   "T.J. Mercier" <tjmercier@google.com>
+To:     tjmercier@google.com, Lucas Stach <l.stach@pengutronix.de>,
+        Russell King <linux+etnaviv@armlinux.org.uk>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that we have proper infrastructure for postprocessing 10-bit
-formats, store VP9 bit depth in context.
+The docs explicitly say the drm_gem_object_release function already calls this,
+and this does not appear to be a prerequisite for the call to
+etnaviv_gem_ops.release.
 
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Tested-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: T.J. Mercier <tjmercier@google.com>
 ---
- drivers/staging/media/hantro/hantro_drv.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/gpu/drm/etnaviv/etnaviv_gem.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-index 01d33dcb0467..afddf7ac0731 100644
---- a/drivers/staging/media/hantro/hantro_drv.c
-+++ b/drivers/staging/media/hantro/hantro_drv.c
-@@ -324,6 +324,24 @@ static int hantro_hevc_s_ctrl(struct v4l2_ctrl *ctrl)
- 	return 0;
- }
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem.c b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
+index cc386f8a7116..ecb828e4e156 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gem.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
+@@ -504,7 +504,6 @@ void etnaviv_gem_free_object(struct drm_gem_object *obj)
+ 		kfree(mapping);
+ 	}
  
-+static int hantro_vp9_s_ctrl(struct v4l2_ctrl *ctrl)
-+{
-+	struct hantro_ctx *ctx;
-+
-+	ctx = container_of(ctrl->handler,
-+			   struct hantro_ctx, ctrl_handler);
-+
-+	switch (ctrl->id) {
-+	case V4L2_CID_STATELESS_VP9_FRAME:
-+		ctx->bit_depth = ctrl->p_new.p_vp9_frame->bit_depth;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct v4l2_ctrl_ops hantro_ctrl_ops = {
- 	.try_ctrl = hantro_try_ctrl,
- };
-@@ -336,6 +354,10 @@ static const struct v4l2_ctrl_ops hantro_hevc_ctrl_ops = {
- 	.s_ctrl = hantro_hevc_s_ctrl,
- };
+-	drm_gem_free_mmap_offset(obj);
+ 	etnaviv_obj->ops->release(etnaviv_obj);
+ 	drm_gem_object_release(obj);
  
-+static const struct v4l2_ctrl_ops hantro_vp9_ctrl_ops = {
-+	.s_ctrl = hantro_vp9_s_ctrl,
-+};
-+
- #define HANTRO_JPEG_ACTIVE_MARKERS	(V4L2_JPEG_ACTIVE_MARKER_APP0 | \
- 					 V4L2_JPEG_ACTIVE_MARKER_COM | \
- 					 V4L2_JPEG_ACTIVE_MARKER_DQT | \
-@@ -503,6 +525,7 @@ static const struct hantro_ctrl controls[] = {
- 		.codec = HANTRO_VP9_DECODER,
- 		.cfg = {
- 			.id = V4L2_CID_STATELESS_VP9_FRAME,
-+			.ops = &hantro_vp9_ctrl_ops,
- 		},
- 	}, {
- 		.codec = HANTRO_VP9_DECODER,
 -- 
-2.37.0
+2.37.0.rc0.161.g10f37bed90-goog
 
