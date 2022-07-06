@@ -2,157 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA55FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8734CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233473AbiGFNt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49490 "EHLO
+        id S233796AbiGFNue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiGFNtx (ORCPT
+        with ESMTP id S233257AbiGFNub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:49:53 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2075.outbound.protection.outlook.com [40.107.93.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4877D248D6
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:49:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=daEnHZoIQb/FDu6GfGvIghepqDNe+7kvt0oROVXniaY4XGPQ/nWfp7sK2ZykRIRTqf82F4fGYVdX4+WFUNIjQyd6qbMCe2116Bg2XOCrjOFXg7ZbztWQ4r4hdosck3e+4hHykJQFWNtjdK1mH4jD10L7tOQIGN64gYM4cpITmGlrVDOzlvl0WZuQW781PLCmh6CZcMt+ABc2tkHzYvllI8Q5sr3pSZntzdTLDjWmMsvf9lQ8jZUW16l5NKQE44rQ8wjlyVJmWKPx/NZEFFr7X+daCMPjMqbWva6jH1Mj+ZHcjm3LL8VdDRk+OtzsPwHB7v6YDE9a6PyJSr4yOBwaww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DVbYJPhYbHMdqdQCwGUVOLHWE7j33Wj33jq21o8VaeA=;
- b=WoHRVgkKpqULIJCSXT0op4WYSg4PpzDLvlSNXVVYo1VoR79XzuOqcHA4ixmYOBhe6LDfPs5AJGXpp9744AQdexJAxhm+5t2lFll3sNY7nGbouRAT4Sq+efZ2RKIAa1IVyqRpJZPPwvw09R+Tg0IMos2SurLcjyJH7u6xf5s1FgIWBu3LQ6IYKEJXNGwx2+Ad/P+wAufFkvETadL+WGKPzl96OkIAeZo+PovRxV5YuuZYkJyBRRxpNLnLtqkKCA3VcfmNfo+Vp7RwzDgvRJ8m2DhUNMWE95j8vj79XtWePBwnzF5D3b3TNgqQCLliN+OkFytyIyjB4LFL38629cQUMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DVbYJPhYbHMdqdQCwGUVOLHWE7j33Wj33jq21o8VaeA=;
- b=wSViML2OZ6yEAPZuX3C3qqQb+0Hpv29I/kaiDKIxUEHKdl2tpLruBtjlitb1YEP9fObb55CuyegGAU1zmevhBz8azeQG9S8nUdt8VAK7YrC+x4d0doAxvMriPKI0/syUEhYOqYcNzMG47EOWVRSNbr7g+w9qksWUAOlhjkCXG/U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1947.namprd12.prod.outlook.com (2603:10b6:3:111::23)
- by MW3PR12MB4523.namprd12.prod.outlook.com (2603:10b6:303:5b::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Wed, 6 Jul
- 2022 13:49:43 +0000
-Received: from DM5PR12MB1947.namprd12.prod.outlook.com
- ([fe80::9da9:705a:18ae:5e91]) by DM5PR12MB1947.namprd12.prod.outlook.com
- ([fe80::9da9:705a:18ae:5e91%9]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 13:49:43 +0000
-Message-ID: <3e07a8d0-2cbc-8f3e-8f9f-5b73fb82028b@amd.com>
-Date:   Wed, 6 Jul 2022 09:49:40 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1] drm/scheduler: Don't kill jobs in interrupt context
-Content-Language: en-US
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Erico Nunes <nunes.erico@gmail.com>,
-        Steven Price <steven.price@arm.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Rob Herring <robh@kernel.org>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-References: <20220411221536.283312-1-dmitry.osipenko@collabora.com>
- <a78343c8-2a6d-b223-4219-6b6b0a4fcb1f@arm.com>
- <CAK4VdL2hCEoshWZbCh5mkHuS6wYMiPFR3v4MWTnrEKM9zyv6Mw@mail.gmail.com>
- <ef88ec2c-77b5-fa0d-49d1-fdd2451713b7@collabora.com>
- <573fae0d-c9ab-98b0-c6f1-5b0d4e52dd01@amd.com>
- <a33ab7b9-738f-db91-f6ba-78a9641365e8@amd.com>
- <b05f9861-1966-72f5-132b-aebb4b6e0c6b@collabora.com>
- <107fe968-8311-0511-cc31-22feb994a6d7@collabora.com>
-From:   Andrey Grodzovsky <andrey.grodzovsky@amd.com>
-In-Reply-To: <107fe968-8311-0511-cc31-22feb994a6d7@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: YT3PR01CA0015.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:86::24) To DM5PR12MB1947.namprd12.prod.outlook.com
- (2603:10b6:3:111::23)
+        Wed, 6 Jul 2022 09:50:31 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7C11837A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:50:30 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id t2-20020a6b0902000000b006753087a104so8218193ioi.18
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 06:50:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/ObOq9i9PCetyXNMRRQQc3PnpcFrRWKHOKNFDzXth8Y=;
+        b=ByhTlz+cdFafi+x/kqFAPaF72aQZ+odmpKSSEv74kVagJ+LTUZbvgxOUG+TWr5zwTb
+         NzE+pCAGUOF5CIrKBHxhGf2z6LDMswzMU304h1Mw1mhwl0xPUyyaxCQQqmWFv+o6Ki8z
+         dFuFWTjBwD0HMuc76JJK2Ljtg+gqEUqw3N/JMOhNLzGdRcha9N0P90Bf5W8WSDZrftgN
+         YdTjRaxw52Fy6dw7srRmvUALeDXcz6gL1L6cN5ddzsGUSia4Lb29c0YI/rEUncl5k6K9
+         hHe2KiYOaoLbUGSceYxPRxZgDItiwHRuClJNhj5BXXLsBzIk+5lo3oRAly9mcFKQaPy6
+         aVIA==
+X-Gm-Message-State: AJIora/B1jXuJ+aeKWlRPVfanU3Ikl/F6m7IsVdkK1IMRX1NMexN1vGw
+        xCxcZ2eiFO7OUEQyzJFfEu0NtvFrQajCcPLrkK01472PJwQn
+X-Google-Smtp-Source: AGRyM1t8ImqiOaezDVWfmn71B5bWPJmtE7RGKYf8NvS+4MvTHQWU7NFxK6JSI/aZP8jNglYcDkuuX7ysnkVPsDJTdt5a0d+pHI7U
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f21b2b34-e52c-48cc-3e13-08da5f566165
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4523:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pwUCbnqjR8jO7GZ2D4iC414xW6n4ciS4lJRqv3U6y/NrncoqIjczn1qtRpLCxRW0KkHRhh5ocOarE9UqEvSXr8tXE6zJ5effulULmQyXY4TfWkswMwkzbLmajwI9PUx5T45WElW+nvl7kzNqXsLvZTbnsduV+5ZMi0OI2NPhT3rXtpKKfuhFlnRhxdgLj/dhancdN9BRyhBR3Irc5kwW3/CjMX0GjpqUqmuAD7V6M5DwTmB+VwCKWDwQ8zlhx5uNn9A+OVpgab0mUjxE18l6MLV70un7ocYMzmC8ICRIcX+v0Ne/6UgTSQpL3nDJK1FGBpL1H/C5/XvN/ZvRklNMC0kPa/YPHieBQ50LJqWgZKR+e510gwcAEmVYkBt+rPtR8Wrwj2C8LM8APYpM9VraNdyXoaawsaLjVxVGJ1KZsscK/4GxjiD4W/RPNY7ReBgXeo45BbmBIozwBSYw+n90op1SxHaLnldWHsiB8kEOnkUZM9dOb6sdRfTRqljHMQTJwLFyAICCeKXF5oGmY+p3nN6o1cS0R1ovf/JJYq2paUBrlE903FsH9l68HFK9fOVefDZX+n/t4R0DpcXiY7svj8W684K56V9G+ZT2AE1QNpwUwOsdZhRPDh8Yjs8QJqZxPHkE+PK0MkGmRWpPug97MIhD2irgqN976f0Xu3ZuhCNmk0d632P5CMv6Snre2GApsylrk7dBJWFFdFFkPBVcZp8mOXgBVz3RkXEkSE4GSy/jOwSoG1MjOt8/QNiiTuhDUSZQqL0k1/x36042H3hICFhJyeIG47Sri+/c2vHdNqfUZDkxpnQfKsT+rF+bPdu+6YGLXVkiikjdRvkJz1PpaA7qiP6I7x/XCSvayJp+wvg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1947.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(366004)(396003)(136003)(6512007)(2616005)(66946007)(66556008)(66476007)(8936002)(7416002)(4326008)(8676002)(5660300002)(31696002)(36756003)(41300700001)(86362001)(31686004)(6506007)(2906002)(6486002)(186003)(53546011)(478600001)(316002)(54906003)(110136005)(4744005)(44832011)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QjRmbEwySlBkWWV2T3o4WjFEa29ZdnZWUzhVUEFuN3ZlUkdHVXd2cWZKTTFw?=
- =?utf-8?B?WkVxakNjMFZXbGZSMWZoL2ttOXdGdG5lYld5aXoxaFJwcXVtbko5cGs3YXBj?=
- =?utf-8?B?TDFXUFZqVEpNbGQzUk9Jb2FMbkV6WkJxTUJVYmNsTjlxaDMxV2dOKzlOTUhN?=
- =?utf-8?B?QTJ3N29WeldTK01PRnJmbmpaVmMxK3lDNmRzL25tL3JIRGJrVko0WDNxRHhz?=
- =?utf-8?B?K3BVU2lnRWVSaUFTbFFUUGhpR3FSeXBpUFBQWExPcGJUbDdTaTFRa3ErM1dI?=
- =?utf-8?B?d2ZIb25BMkZKOVBrdGthQ3ZTbllHcEpmdVZRS2cxbE5xc3pqVVZFbDRFVVJ5?=
- =?utf-8?B?T1hIVFF5VThFTFI2VTlUMnJTalZIZ0RUdGhkOHpHYXhoMXBSekg2OE1pdFI2?=
- =?utf-8?B?aklNMldLbUI1SWV5dEc3NytIN2xDeDVYSlFKYnI3Qkp3U2psMjF2NUZrN0hK?=
- =?utf-8?B?TkJwUVE1cmFObW1HQmlxVmZpQ0F5VVlWNGZ3eFBNK1M2Wkt4OUw5YzEycGtk?=
- =?utf-8?B?R0xRUjZQRFpiMFlsNUJXMnRCRjJzT1RYSmNNWDJaVWZETTdMVnhmL0ZwdC9Y?=
- =?utf-8?B?NzIwNEJDM243YTJTM0lMbzBOdEJNQU5ibDVuK0pQVkVPNFVRTXdPWnhTMlIw?=
- =?utf-8?B?RVgrOEZ4TTJ4N2tjNFM4TGMwb1lYWVF5YXhmU01DMVBYQTJ1VEIwaTg4ei9T?=
- =?utf-8?B?MEMvU3drb1ZoMDZ1bE9mR243NXNaR3hweTEyRmc2ZzF6c09KZ2dRN0FjN2ds?=
- =?utf-8?B?SU9pWEQvb09MZzdNZ3VPOFRSOUQ2ejdHTkoxNlNkZllkMXAwWFAwMysvZGJq?=
- =?utf-8?B?MFFNdGNKZDRSbGFtbnlwc3FOaTNiT0J0Qm01R2J4aXZuMUJzMGpnSHlzdnht?=
- =?utf-8?B?Y3h6ajMrUDBoRXpIVmt3OEovanNnTnhmUXlEaGV5L0tDTzNtNUJEU1krOGE0?=
- =?utf-8?B?TGplQ0h6MzJycTdyQnAyem41VXBuckZxcnR6ODF3d2JScHY2R2FDU1lqUWU2?=
- =?utf-8?B?VEw3VEk3SmlpZGZvMi8zRUVtalFnTWs4elc1ZHM2dXhCSVJsLzliaG9STXFX?=
- =?utf-8?B?SitJakt6Q2lhQWt3WHBkN1VBR0x6dmo2VllEdUd3ZEI5Zkh2UVdWTXZGbXFM?=
- =?utf-8?B?dlA3V0xPdUxjekQraXFzekxKcG45ZGF5ZCtvbGIvbTZYY2E0WWs3a3lpekox?=
- =?utf-8?B?cVJIbXFQeEJUVW1FZmZWcHNpcDFGbzZXM0lCOEYvc3R3ejhiN0ZHYVRseUFR?=
- =?utf-8?B?d2liM3hKK25RdVBLbnJWZGI4cjdCU2NuTzdqY1lsRksyaDkrOEdrd1VjL3RB?=
- =?utf-8?B?cXhUa2l4TU9hdnloaklDRnhGb2JRaXB1OWpuVEhFSERFaVhFK0lFM004emp2?=
- =?utf-8?B?Qk84dHFuK0o4YWFRMzB4cThGTU5CeGJjM25rcy9LY1NIbHpmTFVqWmx3ejJR?=
- =?utf-8?B?S05GNFo3N21UbEpYdGVqS3BMSmlkUUJhaW9rc2RLaGdtbGVROGY5SUxrWmYz?=
- =?utf-8?B?OXBON3JpdE1DTGF2MXNZcVd0bGNMSVZnRk5UYzRLR05NWkdxYjVvY3ZUNWQr?=
- =?utf-8?B?STBnem5aN0ZIZ1Vtc21JS1QzNWZqNlhiRHhJYVFaWDNYa3BDZ25sTzY0MHZT?=
- =?utf-8?B?ZVltcHRvNk8rU1lxMENzNkJwTFNsdW5BenJtcU1vZ3dkRjVYZzNlZnRtMzRX?=
- =?utf-8?B?RWJHWXlFaVJOcUpLcjltdHVxRDRvS0tHWUtTWnkveFBCZVF6Qjk4NGVSRlJh?=
- =?utf-8?B?Nk45RVVBUVNkdnZCanRoZzR1RUFsY0o0RHF5emFGVlhDQitHcHRnU2grT3Jl?=
- =?utf-8?B?dUYvcm9Kamc4TXNjVHRWeHVFblc3ZjJGZjR4KzVtS1FoMWhOa1NNRCtCSkFj?=
- =?utf-8?B?cFZNd2FvSDFrbVJqSmxnRUY4LzJvckp4TWt1SHhpL285ZWMxWGNzYU5VcDFH?=
- =?utf-8?B?YTRUSjlwYXYvWmJpL2ZQRnByUHo4eXAvL3RCWWNlYUdGRklZSlJsdGo5SWhJ?=
- =?utf-8?B?K3hIeEFjRGRCMjlHUDdIcXg5czY2bkkyZVhVVnpwR2RMWkwrdTkxWm9WZWxM?=
- =?utf-8?B?N0hSRTFXaUhsL2NJY04yampidE9vVWpJSnhGNTRjblBwNjhucmVhTjNzUlVs?=
- =?utf-8?B?L0pYL1M0dzlQL1NkMC83YWR3TXZUU3NwRnRYWXltb0tGUmdQdEtoUkkyRm56?=
- =?utf-8?Q?zWGdSMbFc52EsFORutUS4El7mlM5NRc5+rP5RoAg2AnA?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f21b2b34-e52c-48cc-3e13-08da5f566165
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1947.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 13:49:43.3760
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0qWFytNu/yiXZ+wD2xIlxKAbprmscTggYzF+1HJc4Me3Ngk+0a5iBOtqzaBfXlw++O6FCuFPA1/Sc7TpLbm6Ww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4523
+X-Received: by 2002:a05:6e02:16cc:b0:2da:b7b7:a7ab with SMTP id
+ 12-20020a056e0216cc00b002dab7b7a7abmr24967520ilx.114.1657115429712; Wed, 06
+ Jul 2022 06:50:29 -0700 (PDT)
+Date:   Wed, 06 Jul 2022 06:50:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008a396105e32340b3@google.com>
+Subject: [syzbot] WARNING in notifier_chain_register
+From:   syzbot <syzbot+5214f8dac5863061e37c@syzkaller.appspotmail.com>
+To:     bigeasy@linutronix.de, bp@suse.de, davem@davemloft.net,
+        dmitry.osipenko@collabora.com, edumazet@google.com,
+        johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, mirq-linux@rere.qmqm.pl,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        rafael.j.wysocki@intel.com, stern@rowland.harvard.edu,
+        syzkaller-bugs@googlegroups.com, vasyl.vavrychuk@opensynergy.com,
+        vschneid@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-06 03:07, Dmitry Osipenko wrote:
+Hello,
 
-> Hello Andrey,
->
-> On 5/17/22 17:48, Dmitry Osipenko wrote:
->> On 5/17/22 17:13, Andrey Grodzovsky wrote:
->>> Done.
->>>
->>> Andrey
->> Awesome, thank you!
->>
-> Given that this drm-scheduler issue needs to be fixed in the 5.19-RC and
-> earlier, shouldn't it be in the drm-fixes and not in drm-next?
+syzbot found the following issue on:
+
+HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=168bb25bf00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=5214f8dac5863061e37c
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13915d68080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13dee200080000
+
+The issue was bisected to:
+
+commit ff7f2926114d3a50f5ffe461a9bce8d761748da5
+Author: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+Date:   Tue Apr 26 08:18:23 2022 +0000
+
+    Bluetooth: core: Fix missing power_on work cancel on HCI close
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15ea8982080000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=17ea8982080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13ea8982080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5214f8dac5863061e37c@syzkaller.appspotmail.com
+Fixes: ff7f2926114d ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+
+------------[ cut here ]------------
+notifier callback hci_suspend_notifier already registered
+WARNING: CPU: 1 PID: 3898 at kernel/notifier.c:28 notifier_chain_register kernel/notifier.c:28 [inline]
+WARNING: CPU: 1 PID: 3898 at kernel/notifier.c:28 notifier_chain_register+0x156/0x210 kernel/notifier.c:22
+Modules linked in:
+CPU: 1 PID: 3898 Comm: syz-executor172 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+RIP: 0010:notifier_chain_register kernel/notifier.c:28 [inline]
+RIP: 0010:notifier_chain_register+0x156/0x210 kernel/notifier.c:22
+Code: 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 a5 00 00 00 49 8b 75 00 48 c7 c7 c0 d0 cb 89 e8 14 f5 e3 07 <0f> 0b 41 bc ef ff ff ff e8 5d 6f 2a 00 44 89 e0 48 83 c4 18 5b 5d
+RSP: 0018:ffffc9000367fca8 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: ffff88807ae11180 RCX: 0000000000000000
+RDX: ffff888076fa3a80 RSI: ffffffff81610608 RDI: fffff520006cff87
+RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000001 R12: 0000000000000000
+R13: ffff88807ae11180 R14: ffff88801bb79188 R15: dffffc0000000000
+FS:  0000555556682300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fe4d8d866e8 CR3: 0000000070960000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __blocking_notifier_chain_register kernel/notifier.c:266 [inline]
+ blocking_notifier_chain_register+0x6f/0xc0 kernel/notifier.c:284
+ hci_register_suspend_notifier net/bluetooth/hci_core.c:2752 [inline]
+ hci_register_suspend_notifier+0x9d/0xc0 net/bluetooth/hci_core.c:2746
+ hci_sock_bind+0x141a/0x1630 net/bluetooth/hci_sock.c:1234
+ __sys_bind+0x1e9/0x250 net/socket.c:1776
+ __do_sys_bind net/socket.c:1787 [inline]
+ __se_sys_bind net/socket.c:1785 [inline]
+ __x64_sys_bind+0x6f/0xb0 net/socket.c:1785
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fe4d8d314a9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 d1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe5c71ae28 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007fe4d8d314a9
+RDX: 0000000000000006 RSI: 0000000020000240 RDI: 0000000000000004
+RBP: 0000000000000003 R08: 0000000000000150 R09: 0000000000000150
+R10: 0000000000000000 R11: 0000000000000246 R12: 00005555566822b8
+R13: 0000000000000011 R14: 00007ffe5c71ae90 R15: 00007ffe5c71ae48
+ </TASK>
 
 
-I pushed it into drm-misc from where it got into drm-next. I don't have 
-permission for drm-fixes.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Andrey
-
-
->
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
