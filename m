@@ -2,140 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B344C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233529AbiGFQdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58978 "EHLO
+        id S233628AbiGFQem (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiGFQds (ORCPT
+        with ESMTP id S232969AbiGFQek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:33:48 -0400
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9421D60EB
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:33:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=CFvMe
-        DY3KWTRlsa+jf+Ek5nBc1pC1m2qyu122oAI8l4=; b=Se8rzosvWBZzEJI2QSbpH
-        7RKMyM0SGFIX1ot+CzcmIjoQvbiyD6tAlpuxyantKC83rSWU/mZIAPoQ2adQl8QQ
-        k66Vr0qybxtxAjeI+EYp5Zx4oIm1QjF467YRLi88Y8FuRQ05mYGtShmcGlntm0eM
-        k0x4zikUt3w9m+8UKqtf9k=
-Received: from localhost.localdomain (unknown [113.247.71.237])
-        by smtp7 (Coremail) with SMTP id DsmowACHxfQiucVi3wYIEg--.2802S2;
-        Thu, 07 Jul 2022 00:32:36 +0800 (CST)
-From:   huangbing775@126.com
-To:     dietmar.eggemann@arm.com, vincent.guittot@linaro.org
-Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
-        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
-        mgorman@suse.de, mingo@redhat.com, rostedt@goodmis.org,
-        peterz@infradead.org
-Subject: [PATCH v5] sched/fair: Make per-cpu cpumasks static
-Date:   Thu,  7 Jul 2022 00:32:34 +0800
-Message-Id: <20220706163234.101176-1-huangbing775@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Jul 2022 12:34:40 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1121C1581C
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:34:39 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id ABB1E68BEB; Wed,  6 Jul 2022 18:34:34 +0200 (CEST)
+Date:   Wed, 6 Jul 2022 18:34:34 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>, John Garry <john.garry@huawei.com>,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nvme: Fix nvme_setup_command metadata trace event for
+ cdw10
+Message-ID: <20220706163434.GA2222@lst.de>
+References: <1657095398-114310-1-git-send-email-john.garry@huawei.com> <YsW0orMaDFfrHbx+@kbusch-mbp.dhcp.thefacebook.com> <20220706161825.GA1962@lst.de> <YsW3oXcCe6/y6iRb@kbusch-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowACHxfQiucVi3wYIEg--.2802S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJw1xCF4DGr4rWw47urW3ZFb_yoW5ZF1fpr
-        WkK3yUW395ta4kX3yvy34kCr1Fg3s3GwsxtanYvF95Gr9rG3WUKrnYgF13urW09rWkGF13
-        KFWvyrWIqw1jyw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UxPEhUUUUU=
-X-Originating-IP: [113.247.71.237]
-X-CM-SenderInfo: xkxd0w5elqwlixv6ij2wof0z/1tbijAQ2r1pEIedF2gAAsW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsW3oXcCe6/y6iRb@kbusch-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bing Huang <huangbing775@126.com>
+On Wed, Jul 06, 2022 at 10:26:09AM -0600, Keith Busch wrote:
+> On Wed, Jul 06, 2022 at 06:18:25PM +0200, Christoph Hellwig wrote:
+> > On Wed, Jul 06, 2022 at 10:13:22AM -0600, Keith Busch wrote:
+> > > Did you test what the trace looks like afte this? We're losing valuable trace
+> > > data here. The field is supposed to get CDW's 10 - 15, so that's 24 bytes. I
+> > > don't know why it cares that the address of the field being read is only 4
+> > > bytes; we want everything that comes after it too.
+> > 
+> > Because accesses should not spawn boundaries of members in structs unless
+> > copying the entire struct.  If we want to trace the various fields we
+> > need to individually assign them.
+> > 
+> > Anyway, I'm dropping this patch from nvme-5.19 for now to let the
+> > discussion conclude.
+> 
+> How about this instead?
 
-load_balance_mask and select_rq_mask are only used in fair.c. Make
-them static and move their allocation into init_sched_fair_class().
-
-Replace kzalloc_node() with zalloc_cpumask_var_node() to get rid of the
-CONFIG_CPUMASK_OFFSTACK #ifdef and to align with per-cpu cpumask
-allocation for RT (local_cpu_mask in init_sched_rt_class()) and DL
-class (local_cpu_mask_dl in init_sched_dl_class()).
-
-Signed-off-by: Bing Huang <huangbing@kylinos.cn>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
----
-
- v1->v2:
-   move load_balance_mask and select_idle_mask allocation from
-   sched_init() to init_sched_fair_class()
- v2->v3:
-   fixup by Dietmar Eggemann <dietmar.eggemann@arm.com>
- v3->v4:
-   change the patch title and commit message
- v4->v5:
-   change select_idle_mask to select_rq_mask
-
- kernel/sched/core.c | 11 -----------
- kernel/sched/fair.c | 13 +++++++++++--
- 2 files changed, 11 insertions(+), 13 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index eda7bffe852a..475bfb5f0187 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9597,9 +9597,6 @@ LIST_HEAD(task_groups);
- static struct kmem_cache *task_group_cache __read_mostly;
- #endif
- 
--DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
--DECLARE_PER_CPU(cpumask_var_t, select_rq_mask);
--
- void __init sched_init(void)
- {
- 	unsigned long ptr = 0;
-@@ -9643,14 +9640,6 @@ void __init sched_init(void)
- 
- #endif /* CONFIG_RT_GROUP_SCHED */
- 	}
--#ifdef CONFIG_CPUMASK_OFFSTACK
--	for_each_possible_cpu(i) {
--		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
--			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--		per_cpu(select_rq_mask, i) = (cpumask_var_t)kzalloc_node(
--			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--	}
--#endif /* CONFIG_CPUMASK_OFFSTACK */
- 
- 	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
- 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index ac64b5bb7cc9..b044fda2df9d 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -5897,8 +5897,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
- #ifdef CONFIG_SMP
- 
- /* Working cpumask for: load_balance, load_balance_newidle. */
--DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
--DEFINE_PER_CPU(cpumask_var_t, select_rq_mask);
-+static DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
-+static DEFINE_PER_CPU(cpumask_var_t, select_rq_mask);
- 
- #ifdef CONFIG_NO_HZ_COMMON
- 
-@@ -12049,6 +12049,15 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
- __init void init_sched_fair_class(void)
- {
- #ifdef CONFIG_SMP
-+	int i;
-+
-+	for_each_possible_cpu(i) {
-+		zalloc_cpumask_var_node(&per_cpu(load_balance_mask, i),
-+					GFP_KERNEL, cpu_to_node(i));
-+		zalloc_cpumask_var_node(&per_cpu(select_rq_mask, i),
-+					GFP_KERNEL, cpu_to_node(i));
-+	}
-+
- 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
- 
- #ifdef CONFIG_NO_HZ_COMMON
--- 
-2.25.1
-
+Maybe a better option would be to use struct_group().
