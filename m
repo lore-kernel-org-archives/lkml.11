@@ -2,144 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD13C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE01C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233184AbiGFOAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57216 "EHLO
+        id S232935AbiGFOAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231561AbiGFN7v (ORCPT
+        with ESMTP id S232733AbiGFOAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:59:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F47718B39
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 06:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657115985;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=xee+8ukBmNojfXI8l7dxzoj4RSqG2t1cV1iXsHkpJW4=;
-        b=BekWSA7gAbmPEnjaErCuTvhLE/xIe5fEwnjV4VKmJ8qjso2VnMRqGk0YdRIL3jDJjGBscN
-        Th8VYlViiNs9Sz+9fJJs0IPfpT0hTAmmABNqeCMMcsMuF+tfMLAgLFCtRhiks9Rgxn9hkS
-        yBaPPE0xEK2xvUZnSYJH+4/o68vfRMY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-OmgxzY1MNcGFFydUWZKKMA-1; Wed, 06 Jul 2022 09:59:34 -0400
-X-MC-Unique: OmgxzY1MNcGFFydUWZKKMA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 6 Jul 2022 10:00:12 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BB51F2D7;
+        Wed,  6 Jul 2022 06:59:59 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1C0A4857A87;
-        Wed,  6 Jul 2022 13:59:34 +0000 (UTC)
-Received: from llong.com (unknown [10.22.8.95])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A3B9840315E;
-        Wed,  6 Jul 2022 13:59:33 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mike Stowell <mstowell@redhat.com>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH v3] locking/rtmutex: Limit # of lock stealing for non-RT waiters
-Date:   Wed,  6 Jul 2022 09:59:16 -0400
-Message-Id: <20220706135916.980580-1-longman@redhat.com>
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 090DC660186F;
+        Wed,  6 Jul 2022 14:59:57 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657115998;
+        bh=hlSoJlMQ1wNrpKuPTKn+3MdUzD6VbIFbGoYJHvb0jKU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=X9+ALsZmAkZHB57bQsEqs/yp/DtoHi+5edpM+LAwaBt2OVVBP/IlUYu+L52n3To7z
+         R3jSDTxLpQcdkUD/oM3E9Iqe12UPRPe8qdAiAqFDv0P+YEbsphVdVxhtMsfzMpL36u
+         Zli3i5AdW3v8EfJEckF5TQ4fi+lr9njpbTpjQ0M6ZzXhTDjBEAKQTwnB6aomuRjQNT
+         FoPAn52JK414APBY+eBHYAT/hjh1qJfNG22hkWRhU4ujNkeYo+WOnfL5qLPZldKL/I
+         blCDOZYR/NFIhT3uaIK4onFqjOdbDQ455gBYC8FOkWa3KJNMVO7jh68GeDWgB6oWCr
+         d0hUXXTkUbQbw==
+Message-ID: <a7c7e807-5489-c731-224f-a4b681952917@collabora.com>
+Date:   Wed, 6 Jul 2022 15:59:55 +0200
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 RESEND 0/4] MediaTek Helio X10 MT6795 - MT6331/6332
+ Regulators
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     lgirdwood@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, lee.jones@linaro.org
+References: <20220706100912.200698-1-angelogioacchino.delregno@collabora.com>
+ <YsV9IerWCoa/xtwM@sirena.org.uk>
+ <57367b11-f2d4-476b-b92d-16c1726316c0@collabora.com>
+ <YsWG0jfqAf4EqojE@sirena.org.uk>
+ <82736173-b3b8-1e1a-3e2e-25d9ca3287eb@collabora.com>
+ <YsWTt3YSHI9LLpnw@sirena.org.uk>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <YsWTt3YSHI9LLpnw@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 48eb3f4fcfd3 ("locking/rtmutex: Implement equal priority lock
-stealing") allows unlimited number of lock stealing's for non-RT
-tasks. That can lead to lock starvation of non-RT top waiter tasks if
-there is a constant incoming stream of non-RT lockers. This can cause
-rcu_preempt self-detected stall or even task lockup in PREEMPT_RT kernel.
-For example,
+Il 06/07/22 15:52, Mark Brown ha scritto:
+> On Wed, Jul 06, 2022 at 03:38:34PM +0200, AngeloGioacchino Del Regno wrote:
+>> Il 06/07/22 14:57, Mark Brown ha scritto:
+>>> On Wed, Jul 06, 2022 at 02:49:56PM +0200, AngeloGioacchino Del Regno wrote:
+>>>> Il 06/07/22 14:16, Mark Brown ha scritto:
+>>>
+>>>>> This previously got 0day failures due to missing dependencies which
+>>>>> need would need a merge with IIRC MFD, I see no reference in the cover
+>>>>> letter to dependencies?
+>>>
+>>>> The only blocker for this series was the MFD patch, which got picked and
+>>>> it's present in next-20220706 (as you suggested me to resend when things
+>>>> were picked... I decided to wait until they actually landed on -next...)
+>>>
+>>> Right, I also said I'd need a pull request - if I apply the patches
+>>> without having the MFD bits they depend on in my tree then it will fail
+>>> to build.
+>>
+>> I remember writing that to Lee... how do we proceed in this case?
+>> Should we add him to the Cc's of this patch to notify him or..?
+> 
+> Lee, Angelo has sent me this series for Helio X10 which needs some MFD
+> bits (not 100% sure which, I guess Angelo can fill that in) - is there a
+> tagged branch available to pull in?
 
-[77107.424943] rcu: INFO: rcu_preempt self-detected stall on CPU
-[ 1249.921363] INFO: task systemd:2178 blocked for more than 622 seconds.
 
-Avoiding this problem and ensuring forward progress by limiting the
-number of times that a lock can be stolen from each waiter. This patch
-sets a threshold of 32. That number is arbitrary and can be changed
-if needed.
+(Thank you, Mark!)
 
-Fixes: 48eb3f4fcfd3 ("locking/rtmutex: Implement equal priority lock stealing")
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- kernel/locking/rtmutex.c        | 9 ++++++---
- kernel/locking/rtmutex_common.h | 8 ++++++++
- 2 files changed, 14 insertions(+), 3 deletions(-)
+The required bits are all in just one commit:
 
- [v3: Increase threshold to 32 and add rcu_preempt self-detected stall]
- 
-diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 7779ee8abc2a..bdddb3dc36c2 100644
---- a/kernel/locking/rtmutex.c
-+++ b/kernel/locking/rtmutex.c
-@@ -359,10 +359,13 @@ static inline bool rt_mutex_steal(struct rt_mutex_waiter *waiter,
- 	if (rt_prio(waiter->prio) || dl_prio(waiter->prio))
- 		return false;
- 
--	return rt_mutex_waiter_equal(waiter, top_waiter);
--#else
--	return false;
-+	if (rt_mutex_waiter_equal(waiter, top_waiter) &&
-+	   (top_waiter->nr_steals < RT_MUTEX_LOCK_STEAL_MAX)) {
-+		top_waiter->nr_steals++;
-+		return true;
-+	}
- #endif
-+	return false;
- }
- 
- #define __node_2_waiter(node) \
-diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index c47e8361bfb5..d5eeba955f07 100644
---- a/kernel/locking/rtmutex_common.h
-+++ b/kernel/locking/rtmutex_common.h
-@@ -26,6 +26,7 @@
-  * @task:		task reference to the blocked task
-  * @lock:		Pointer to the rt_mutex on which the waiter blocks
-  * @wake_state:		Wakeup state to use (TASK_NORMAL or TASK_RTLOCK_WAIT)
-+ * @nr_steals:		Number of times the lock is stolen
-  * @prio:		Priority of the waiter
-  * @deadline:		Deadline of the waiter if applicable
-  * @ww_ctx:		WW context pointer
-@@ -36,11 +37,17 @@ struct rt_mutex_waiter {
- 	struct task_struct	*task;
- 	struct rt_mutex_base	*lock;
- 	unsigned int		wake_state;
-+	unsigned int		nr_steals;
- 	int			prio;
- 	u64			deadline;
- 	struct ww_acquire_ctx	*ww_ctx;
- };
- 
-+/*
-+ * The maximum number of times where lock can be stolen per waiter.
-+ */
-+#define	RT_MUTEX_LOCK_STEAL_MAX	(1U << 5)
-+
- /**
-  * rt_wake_q_head - Wrapper around regular wake_q_head to support
-  *		    "sleeping" spinlocks on RT
-@@ -194,6 +201,7 @@ static inline void rt_mutex_init_waiter(struct rt_mutex_waiter *waiter)
- 	RB_CLEAR_NODE(&waiter->tree_entry);
- 	waiter->wake_state = TASK_NORMAL;
- 	waiter->task = NULL;
-+	waiter->nr_steals = 0;
- }
- 
- static inline void rt_mutex_init_rtlock_waiter(struct rt_mutex_waiter *waiter)
--- 
-2.31.1
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220627123954.64299-1-angelogioacchino.delregno@collabora.com/
 
+Landed on next-20220706 with ID ad7f984a6aa9722443c1db9e8f72609bf06a8910
+
+...which can be also found here:
+https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git/log/?h=for-mfd-next
