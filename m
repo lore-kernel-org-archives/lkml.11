@@ -2,74 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233342AbiGFJlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
+        id S232238AbiGFJnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232433AbiGFJl2 (ORCPT
+        with ESMTP id S233304AbiGFJnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 05:41:28 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EABDF2528C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:40:07 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 46B9415DB;
-        Wed,  6 Jul 2022 02:40:03 -0700 (PDT)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 42A673F66F;
-        Wed,  6 Jul 2022 02:40:00 -0700 (PDT)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     linux-arm-kernel@lists.infradead.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
+        Wed, 6 Jul 2022 05:43:03 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5F2C24085;
+        Wed,  6 Jul 2022 02:42:36 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1o91YH-0003Nf-00; Wed, 06 Jul 2022 11:42:33 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 869D2C0230; Wed,  6 Jul 2022 10:19:01 +0200 (CEST)
+Date:   Wed, 6 Jul 2022 10:19:01 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Sander Vanheule <sander@svanheule.net>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        martin.blumenstingl@googlemail.com, hauke@hauke-m.de,
+        git@birger-koblitz.de, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>, wbartczak@marvell.com,
-        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
-        souvik.chakravarty@arm.com, adrian.slatineanu@arm.com,
-        wleavitt@marvell.com, james.quinlan@broadcom.com,
-        etienne.carriere@linaro.org, daniel.lezcano@linaro.org,
-        tarek.el-sherbiny@arm.com, vincent.guittot@linaro.org
-Subject: Re: [PATCH v4 0/7] SCMIv3.1 Powercap protocol and driver
-Date:   Wed,  6 Jul 2022 10:39:57 +0100
-Message-Id: <165710015322.2263892.5289020414237680742.b4-ty@arm.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220704102241.2988447-1-cristian.marussi@arm.com>
-References: <20220704102241.2988447-1-cristian.marussi@arm.com>
+Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second
+ VPE
+Message-ID: <20220706081901.GA10797@alpha.franken.de>
+References: <20220702190705.5319-1-olek2@wp.pl>
+ <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
+ <87fsjen2kl.wl-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87fsjen2kl.wl-maz@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Jul 2022 11:22:34 +0100, Cristian Marussi wrote:
-> this short series introduces the last missing bit of SCMIv3.1, Powercap
-> protocol. Along the series, there is a small refactoring around the SCMI
-> FastChannels handling routines so as to reuse as much as possible the
-> pre-existent (and tested) FastChannel code from the Perf protocol.
+On Wed, Jul 06, 2022 at 08:05:30AM +0100, Marc Zyngier wrote:
+> On Sun, 03 Jul 2022 19:15:11 +0100,
+> Sander Vanheule <sander@svanheule.net> wrote:
+> > 
+> > Hi Aleksander,
+> > 
+> > Since this is IRQ related: +CC Marc Zyngier
+> > 
+> > On Sat, 2022-07-02 at 21:07 +0200, Aleksander Jan Bajkowski wrote:
+> > > This patch is needed to handle interrupts by the second VPE on
+> > > the Lantiq xRX200, xRX300 and xRX330 SoCs. In these chips, 32 ICU
+> > > interrupts are connected to each hardware line. The SoC supports
+> > > a total of 160 interrupts. Currently changing smp_affinity to the
+> > > second VPE hangs interrupts.
+> > > 
+> > > This problem affects multithreaded SoCs with a custom interrupt
+> > > controller. Chips with 1004Kc core and newer use the MIPS GIC.
+> > > 
+> > > Also CC'ed Birger Koblitz and Sander Vanheule. Both are working
+> > > on support for Realtek RTL930x chips with 34Kc core and Birger
+> > > has added a patch in OpenWRT that also enables all interrupt
+> > > lines. So it looks like this patch is useful for more SoCs.
+> > > 
+> > > Tested on lantiq xRX200 and xRX330.
+> > > 
+> > > Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> > 
+> > Thanks for bringing up this issue. Like you say OpenWrt carries a
+> > similar patch, and I also carry a patch on my tree to enable all CPU
+> > IRQ lines.
+> > 
+> > Indiscriminately enabling all IRQ lines doesn't sit quite right with
+> > me though, since I would expect these to be enabled
+> > on-demand. I.e. when a peripheral requests an IRQ, or when an IRQ
+> > controller is cascaded into one of the CPU's interrupt lines. If I
+> > understand correctly, the IRQ mask/unmask functions in
+> > drivers/irqchip/irq-mips-cpu.c should do this.
 > 
-> New SCMI FC tracing support is added too along the way.
+> But this is only enabling interrupts at the CPU level, right? And the
+> irqchip is still in control of the masking of the individual
+> interrupts?
+
+in the Lantiq case yes
+
+> If both assertions are true, then this patch seems OK. If it just let
+> any interrupt through without any control, then this is wrong.
 > 
-> [...]
+> So which one is it?
 
-Applied to sudeep.holla/linux (for-next/scmi), thanks!
+if there isn't an additional irqchip connected to the cpu interrupt lines,
+this patch will cause problems.
 
-[1/7] dt-bindings: firmware: arm,scmi: Add powercap protocol
-      https://git.kernel.org/sudeep.holla/c/451d8457bc
-[2/7] firmware: arm_scmi: Add SCMIv3.1 Powercap protocol basic support
-      https://git.kernel.org/sudeep.holla/c/0316f99c47
-[3/7] firmware: arm_scmi: Generalize FastChannel support
-      https://git.kernel.org/sudeep.holla/c/6f9ea4dabd
-[4/7] firmware: arm_scmi: Add SCMIv3.1 Powercap FastChannels support
-      https://git.kernel.org/sudeep.holla/c/855aa26e5f
-[5/7] include: trace: Add SCMI FastChannel tracing
-      https://git.kernel.org/sudeep.holla/c/e699eb9b4f
-[6/7] firmware: arm_scmi: Use FastChannel tracing
-      https://git.kernel.org/sudeep.holla/c/b27d04d5a5
+Thomas.
 
---
-Regards,
-Sudeep
-
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
