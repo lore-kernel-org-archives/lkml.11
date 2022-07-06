@@ -2,100 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10689CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234360AbiGFQMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
+        id S234382AbiGFQNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233665AbiGFQMp (ORCPT
+        with ESMTP id S233665AbiGFQN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:12:45 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C221526AF5;
-        Wed,  6 Jul 2022 09:12:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657123962; x=1688659962;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=GnfUMVq1W6rBm3XVQUeNZvGnk+n43Q4tBwbR/zDUP5k=;
-  b=QmAiIBZPuFsg9AtV4tMSGNCjzKwTIjHUw1ZTb96aW8yFxI3Wxwu09CcS
-   sqVrl4XXAmViVpDUgYZUwDyh72BJxP/gNrdQA7UDBt46ddDf8PPHR/n+y
-   SwvWo80EikhhPW85Z2UemqzO/tRg0rR5V859hOu/nqV9BpX3d2mGo8eoR
-   E=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 06 Jul 2022 09:12:42 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 09:12:27 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Jul 2022 09:12:26 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Jul 2022 09:12:25 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
-        <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] drm/msm/dp: make eDP panel as the first connected connector
-Date:   Wed, 6 Jul 2022 09:12:16 -0700
-Message-ID: <1657123936-2459-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 6 Jul 2022 12:13:27 -0400
+Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4153AF;
+        Wed,  6 Jul 2022 09:13:26 -0700 (PDT)
+Received: by mail-io1-f51.google.com with SMTP id p128so14460184iof.1;
+        Wed, 06 Jul 2022 09:13:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TvrtBUF3QCSk1zMA7Dk12dzB8jZO0FszbYgfQoyxdZg=;
+        b=zrPw+4sJvBBRMWD3HdCEUepvFdghbwxN8NZwamTQ5ylShVLNIAxrFLpo34eTXH8kwE
+         JnxAticURA5Mwq73usg92imGVd6mvNL4V11Q2yaR1WvlraxOBZ8d16Gls4QmbYgjpYXm
+         jikU9NxGY9QMDChfZL0tPStk1+wcX2msEn345UL3+dkIHWZz+zUz4kUUJJ9dj2Z8JI04
+         9rrL6pMOLFlr9drCChRvdyQaMI5hqN4JmuF5Vs6VNwZ5JlhwUR7mMiWf1JTbMsN6PRHr
+         TF9reTlp3RV8nWzDzn5z9S5GILuu/2o1RI7xW6yHp+pmVkUVZV/gU2mkslTvFsaatyb0
+         Ogdw==
+X-Gm-Message-State: AJIora+rj0YP+RFH4ihIE/3Z3BMraczFhfu5K5vW8A1UKmuub2UFsiEB
+        5lu9yJsK6Hr1/N+FK7SoQQ==
+X-Google-Smtp-Source: AGRyM1vBtpYxC3SUwaxTGvXOV5v1/bmL0O3/t3lMZhg+53gxeih+OnIt/Wdk0ksZ1XWBJ/178iMCow==
+X-Received: by 2002:a6b:7845:0:b0:64c:9acc:9f1a with SMTP id h5-20020a6b7845000000b0064c9acc9f1amr22309984iop.103.1657124005646;
+        Wed, 06 Jul 2022 09:13:25 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id j25-20020a02a699000000b00339c33df66bsm16050036jam.118.2022.07.06.09.13.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 09:13:25 -0700 (PDT)
+Received: (nullmailer pid 140225 invoked by uid 1000);
+        Wed, 06 Jul 2022 16:13:23 -0000
+Date:   Wed, 6 Jul 2022 10:13:23 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Aurelien Jarno <aurelien@aurel32.net>,
+        linux-kernel@vger.kernel.org,
+        David Abdurachmanov <davidlt@rivosinc.com>,
+        Vincent Pelletier <plr.vincent@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen L Arnold <nerdboy@gentoo.org>,
+        Bin Meng <bin.meng@windriver.com>,
+        linux-riscv@lists.infradead.org, linux-leds@vger.kernel.org,
+        Qiu Wenbo <qiuwenbo@kylinos.com.cn>,
+        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        devicetree@vger.kernel.org,
+        Jianlong Huang <jianlong.huang@starfivetech.com>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Ron Economos <w6rz@comcast.net>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Re: [PATCH v1 2/4] dt-bindings: leds: pwm-multicolor: Add active-low
+ property
+Message-ID: <20220706161323.GA140190-robh@kernel.org>
+References: <20220705210143.315151-1-emil.renner.berthing@canonical.com>
+ <20220705210143.315151-3-emil.renner.berthing@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705210143.315151-3-emil.renner.berthing@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some userspace presumes that the first connected connector is the main
-display, where it's supposed to display e.g. the login screen. For
-laptops, this should be the main panel.
+On Tue, 05 Jul 2022 23:01:41 +0200, Emil Renner Berthing wrote:
+> Add the active-low property to LEDs that are part of a multicolor LED
+> just like the regular PWM LEDs have.
+> 
+> Signed-off-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+> ---
+>  .../devicetree/bindings/leds/leds-pwm-multicolor.yaml         | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-This patch call drm_helper_move_panel_connectors_to_head() after
-drm_bridge_connector_init() to make sure eDP stay at head of
-connected connector list. This fixes unexpected corruption happen
-at eDP panel if eDP is not placed at head of connected connector
-list.
-
-Changes in v2:
--- move drm_helper_move_panel_connectors_to_head() to
-		dpu_kms_drm_obj_init()
-
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Tested-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index 2b9d931..50ff666 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -763,6 +763,8 @@ static int _dpu_kms_drm_obj_init(struct dpu_kms *dpu_kms)
- 	if (ret)
- 		return ret;
- 
-+	drm_helper_move_panel_connectors_to_head(dev);
-+
- 	num_encoders = 0;
- 	drm_for_each_encoder(encoder, dev)
- 		num_encoders++;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+Reviewed-by: Rob Herring <robh@kernel.org>
