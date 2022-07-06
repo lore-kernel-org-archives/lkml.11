@@ -2,176 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD6AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 00:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25999C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 00:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbiGFAYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 20:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        id S231467AbiGFA2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 20:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231402AbiGFAYR (ORCPT
+        with ESMTP id S229479AbiGFA2b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 20:24:17 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE91B12AF5
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 17:24:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657067056; x=1688603056;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NzPgZDZ1/C1339edFWZfg3lPwFjYpEBnGuVVnHSss30=;
-  b=KuJARquk91AiNUF6qXU1RCSbFYyy6w7e71vYz+KYQqIV17NOMDahi8/T
-   lWSXtUwfBvq4hcdKbBxYUPsCFnRIte/xXWTl9do8xC+RkNa2n7zlqvZDQ
-   s4RAh2155afelEOeHkyKx3EV8+nABbi84jExHbJ5vKlTF7DrluobSFxCh
-   6QO4yiKe/AVZe2a+vaJBq6JgFaLIPnt2BRXmCBBjbyG1TCjLYdbCidY+s
-   swZnjy6dnsXM0d4xTqoyUkCvp6vnBOC2Qqe7R5qvPNMdwCeSs5KTcDBpd
-   Kh4Tw0v3KPKnH+uNupk3jaSNoCUiVwPs/wAawwnEdyAMs6WD3JHniZjiE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272376442"
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="272376442"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 17:24:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="719919425"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 05 Jul 2022 17:24:02 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8spm-000Jk7-8W;
-        Wed, 06 Jul 2022 00:24:02 +0000
-Date:   Wed, 6 Jul 2022 08:23:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [kbusch:alignment-fixes 3/3] block/bio.c:1229:6: warning: variable
- 'i' is used uninitialized whenever 'if' condition is true
-Message-ID: <202207060806.4qoJVWlL-lkp@intel.com>
+        Tue, 5 Jul 2022 20:28:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1F5BAE;
+        Tue,  5 Jul 2022 17:28:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC2AFB81A4C;
+        Wed,  6 Jul 2022 00:28:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E8CC341C7;
+        Wed,  6 Jul 2022 00:28:25 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ihc73PJ/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1657067303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OhugZvecg+oWrbxbccQQJUXAAF4kA6okY4PhlziPCHY=;
+        b=ihc73PJ/0bSh+zgqGgWeUk/Hm5AVBfEF9wPhoIjfU6IXnQq0Evw5IV7MV7pFn+utADjqHU
+        tLwFQa5KqWiwPoKWLREPMkkWzzzxJ/PRlWSblvPAqtP7Fx5tJ5pUAASWYy8W5Va7qsfJ9l
+        a9mKSh5Snj6sDzvYSnoQdLykd2A6bMg=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 53f900aa (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 6 Jul 2022 00:28:23 +0000 (UTC)
+Date:   Wed, 6 Jul 2022 02:28:19 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     "H. Peter Anvin" <hpa@zytor.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] random: remove CONFIG_ARCH_RANDOM and "nordrand"
+Message-ID: <YsTXI3J+ptkN/vb4@zx2c4.com>
+References: <20220705190121.293703-1-Jason@zx2c4.com>
+ <YsSStCQQf008hF2F@zn.tnic>
+ <YsSUkapje04MP2a1@zx2c4.com>
+ <YsSXkNBtB6Ciy9iN@zn.tnic>
+ <11C903CC-22A7-48EE-AD63-E71CC8D28B88@zytor.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <11C903CC-22A7-48EE-AD63-E71CC8D28B88@zytor.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git alignment-fixes
-head:   9d1ebc4c688471ccd3bffa5e6b08a82a71431f7b
-commit: 9d1ebc4c688471ccd3bffa5e6b08a82a71431f7b [3/3] block: fix leaking page ref on truncated direct io
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220706/202207060806.4qoJVWlL-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 142aca7741d5b06207e87bf4880fbe308c8d6823)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git/commit/?id=9d1ebc4c688471ccd3bffa5e6b08a82a71431f7b
-        git remote add kbusch https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git
-        git fetch --no-tags kbusch alignment-fixes
-        git checkout 9d1ebc4c688471ccd3bffa5e6b08a82a71431f7b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Hi Borislav, Peter,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Tue, Jul 05, 2022 at 02:50:34PM -0700, H. Peter Anvin wrote:
+> On July 5, 2022 12:57:04 PM PDT, Borislav Petkov <bp@alien8.de> wrote:
+> >On Tue, Jul 05, 2022 at 09:44:17PM +0200, Jason A. Donenfeld wrote:
+> >> Oh, huh. Maybe in that case I should adjust the message to say "consider
+> >> using `random.trust_cpu=0`," which is the thing that would actually make
+> >> a security difference.
+> >
+> >Why isn't that option documented in
+> >Documentation/admin-guide/kernel-parameters.txt?
 
-All warnings (new ones prefixed by >>):
+Maybe you're not grepping the right tree?
 
->> block/bio.c:1229:6: warning: variable 'i' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (unlikely(size <= 0)) {
-               ^~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:78:22: note: expanded from macro 'unlikely'
-   # define unlikely(x)    __builtin_expect(!!(x), 0)
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   block/bio.c:1251:9: note: uninitialized use occurs here
-           while (i < nr_pages)
-                  ^
-   block/bio.c:1229:2: note: remove the 'if' if its condition is always false
-           if (unlikely(size <= 0)) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   block/bio.c:1202:17: note: initialize the variable 'i' to silence this warning
-           unsigned len, i;
-                          ^
-                           = 0
-   1 warning generated.
+zx2c4@thinkpad ~/Projects/random-linux $ grep trust_cpu Documentation/admin-guide/kernel-parameters.txt
+        random.trust_cpu={on,off}
 
+https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/tree/Documentation/admin-guide/kernel-parameters.txt#n4506
 
-vim +1229 block/bio.c
+> >> But actually, one thing that wasn't clear to me was: does `nordrand`
+> >> affect what userspace sees? While random.c is okay in lots of
+> >> circumstances, I could imagine `nordrand` playing a role in preventing
+> >> userspace from using it, which might be desirable. Is this the case? If
+> >> so, I can remove the nordrand chunk from this patch for v2. If not, I'll
+> >> adjust the text to mention `random.trust_cpu=0`.
+> >
+> >Unfortunately, it doesn't disable the instruction. It would be lovely if
+> >we had a switch like that...
+> >
+> >That's why this message is supposed to be noisy so that people can pay
+> >attention at least.
 
-  1184	
-  1185	/**
-  1186	 * __bio_iov_iter_get_pages - pin user or kernel pages and add them to a bio
-  1187	 * @bio: bio to add pages to
-  1188	 * @iter: iov iterator describing the region to be mapped
-  1189	 *
-  1190	 * Pins pages from *iter and appends them to @bio's bvec array. The
-  1191	 * pages will have to be released using put_page() when done.
-  1192	 * For multi-segment *iter, this function only adds pages from the
-  1193	 * next non-empty segment of the iov iterator.
-  1194	 */
-  1195	static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
-  1196	{
-  1197		unsigned short nr_pages = bio->bi_max_vecs - bio->bi_vcnt;
-  1198		unsigned short entries_left = bio->bi_max_vecs - bio->bi_vcnt;
-  1199		struct bio_vec *bv = bio->bi_io_vec + bio->bi_vcnt;
-  1200		struct page **pages = (struct page **)bv;
-  1201		ssize_t size, left;
-  1202		unsigned len, i;
-  1203		size_t offset;
-  1204		int ret = 0;
-  1205	
-  1206		/*
-  1207		 * Move page array up in the allocated memory for the bio vecs as far as
-  1208		 * possible so that we can start filling biovecs from the beginning
-  1209		 * without overwriting the temporary page array.
-  1210		 */
-  1211		BUILD_BUG_ON(PAGE_PTRS_PER_BVEC < 2);
-  1212		pages += entries_left * (PAGE_PTRS_PER_BVEC - 1);
-  1213	
-  1214		/*
-  1215		 * Each segment in the iov is required to be a block size multiple.
-  1216		 * However, we may not be able to get the entire segment if it spans
-  1217		 * more pages than bi_max_vecs allows, so we have to ALIGN_DOWN the
-  1218		 * result to ensure the bio's total size is correct. The remainder of
-  1219		 * the iov data will be picked up in the next bio iteration.
-  1220		 */
-  1221		size = iov_iter_get_pages(iter, pages, UINT_MAX - bio->bi_iter.bi_size,
-  1222					  nr_pages, &offset);
-  1223		if (size > 0) {
-  1224			nr_pages = DIV_ROUND_UP(offset + size, PAGE_SIZE);
-  1225			size = ALIGN_DOWN(size, bdev_logical_block_size(bio->bi_bdev));
-  1226		} else
-  1227			nr_pages = 0;
-  1228	
-> 1229		if (unlikely(size <= 0)) {
-  1230			ret = size ? size : -EFAULT;
-  1231			goto out;
-  1232		}
-  1233	
-  1234		for (left = size, i = 0; left > 0; left -= len, i++) {
-  1235			struct page *page = pages[i];
-  1236	
-  1237			len = min_t(size_t, PAGE_SIZE - offset, left);
-  1238			if (bio_op(bio) == REQ_OP_ZONE_APPEND) {
-  1239				ret = bio_iov_add_zone_append_page(bio, page, len,
-  1240						offset);
-  1241				if (ret)
-  1242					break;
-  1243			} else
-  1244				bio_iov_add_page(bio, page, len, offset);
-  1245	
-  1246			offset = 0;
-  1247		}
-  1248	
-  1249		iov_iter_advance(iter, size - left);
-  1250	out:
-  1251		while (i < nr_pages)
-  1252			put_page(pages[i++]);
-  1253	
-  1254		return ret;
-  1255	}
-  1256	
+I was wondering if it somehow removed it from cpuid. But I guess that's
+not possible. So okay, no real userspace effect. I think I agree with
+you then:
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> >> In the sense that random.c can handle mostly any input without making
+> >> the quality worse. So, you can't accidentally taint it. The only risk is
+> >> if it thinks RDRAND is good and trustable when it isn't, but that's what
+> >> `random.trust_cpu=0` is for.
+> >
+> >And that's why I'm saying that if you detect RDRAND returning the
+> >same thing over and over again, you should simply stop using it.
+> >Automatically. Not rely on the user to do anything.
+> >
+> 
+> It's just math. The only variable is your confidence level, i.e. at
+> what level do you decide that the likelihood of pure chance is way
+> smaller than the likelihood of hardware failure. For example, the
+> likelihood of m n-bit samples in a row being identical is
+> 2^-(n*(m-3/2)), and the likelihood of the CPU being destroyed by a
+> meterorite in the same microsecond is about 2^-100.
+
+I think I'm on board with that general plan of adding a little online
+selftest that's better than what's there now and using that to get rid
+of nordrand. I don't want to instrument every invocation like you
+suggested, because this has effects on forward secrecy (e.g. it's nice
+to burn previous results from memory). But doing a little test at boot
+up better than what we have now seems like a good idea.
+
+So let's do this - I'll send a v2 changing this patch to be a bit more
+boring and just get rid of CONFIG_ARCH_RANDOM. That'll be straight
+forward. And then Peter - do you want to take a stab at doing the
+selftest in order to get rid of nordrand? Or would you prefer I try? It
+sounds like you have a specific idea of what you'd like there, so maybe
+that's best?
+
+For now, v2 of this patch sans nordrand is incoming shortly.
+
+Jason
