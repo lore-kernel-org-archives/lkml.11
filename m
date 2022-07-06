@@ -2,112 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C42FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1647C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 08:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230469AbiGFIVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 04:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
+        id S231561AbiGFIWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 04:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiGFIVh (ORCPT
+        with ESMTP id S230112AbiGFIWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 04:21:37 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE18237D2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:21:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657095695; x=1688631695;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=PJhhnXComKx1M4ShaOEW3g+zg2Tl+r3qnW72BNEdkHw=;
-  b=Y0s4nFcyUSiKwu1reklQd6BllokYgWd7TqdZSOjPtbiLdqyypUoVdBml
-   ifOUTVWiD6CyaYawYFsuGhEJE8aOPuo/rK7alD4X8gcNaVG8PssGbnrWm
-   uZrwH4DjRjRl67Fq4TKfxnIXM3RA1urNZ4rd3R71FPG1Y2oTgBAkQ0HEM
-   pgsKDMQ9wj0qoiHqZfQsEa2EWj7bt957c0qPurJjEIEevHVHsqpGEaygj
-   o1prNh/wNe8NjHY/WNx3lMS5pSbPKtEcyN4MIh/eRkcEuaOgRjBbbI4i1
-   foWW1VJZpOkxUCNno24up5u1IuCz/6sdFbEkGO18ERl+HOlLArshX5aG5
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="282432786"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="282432786"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 01:21:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="567967360"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 06 Jul 2022 01:21:33 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o90Hs-000KFx-Gy;
-        Wed, 06 Jul 2022 08:21:32 +0000
-Date:   Wed, 6 Jul 2022 16:20:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [agd5f:drm-next 353/388]
- drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:2720:6: warning: no
- previous prototype for 'dc_reset_state'
-Message-ID: <202207061638.WngLaW9T-lkp@intel.com>
+        Wed, 6 Jul 2022 04:22:00 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E6221E32
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 01:21:58 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id g20-20020a17090a579400b001ed52939d72so15070040pji.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 01:21:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GqB+pMEeOX9h0udH1mNyDv5eJ9rhofvXzOhjJhiuvEo=;
+        b=f861gyIxenkTm+IPNvjX90TJpK8xwY78UPnvHnHpBQkEmmP3Pakp40vpyQs76NTHSq
+         Rh8X4FpXt9QVv7u8+RGbIWr8ewjvWoTYUnuwD2ZAWkWD0BLeIUh1pMmIN/JW4Qat1dwS
+         0t3cPjwJA+b3yyScwzC2WyIGy/SjfidVMC9h4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GqB+pMEeOX9h0udH1mNyDv5eJ9rhofvXzOhjJhiuvEo=;
+        b=OtFQ8fwLBW5d+BPA+kTrHwKgdUkMgBV/2W0CvfWTD5vi4mNUKCK3/ZvQp8HQbo0xyv
+         60oBm4OqNwJA9SYccYoyP4/ssLvCsCmDoiaMY9KlNPuFtU+GHV44KDQzWDdf7Pwid4q1
+         TIgToCn8nPyH+VM4SED79RYRe3H5/Nzj2X46b0DB3cO5DfFxOwWn8p+ZFdWVPosd2EeD
+         KjHaUqKDiSFbZRrjUBMvITxD/fVQDnJr0sQOXeyeGIB5p+grBVYioeDpvpV2Qgys+Uoo
+         XAos2iGlDihJhCxO/u4e1/PJ1cL6oFtlQdNtaZvQfdA6Tc9SMfYTEZITe2Oi97iGgqo5
+         A/3w==
+X-Gm-Message-State: AJIora/lUVhFqKjQbEOa3wquhZ4BZ0onJZjez2aoo7sUt84kIitluidW
+        ahn+I8et0xhzTU6Yf5AsAc4kizqwwoCr4A==
+X-Google-Smtp-Source: AGRyM1tsd4xWLnRQhFWsHSq5ng2txHr8cKx03t+O3C5k4KZzMRDXo6+93OUir8+OQCbeF7eGyCMN2w==
+X-Received: by 2002:a17:902:b586:b0:16b:ec53:a660 with SMTP id a6-20020a170902b58600b0016bec53a660mr11343900pls.24.1657095717673;
+        Wed, 06 Jul 2022 01:21:57 -0700 (PDT)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:74a3:a7a4:af57:d7f])
+        by smtp.gmail.com with ESMTPSA id rm1-20020a17090b3ec100b001ed27d132c1sm20767040pjb.2.2022.07.06.01.21.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 01:21:57 -0700 (PDT)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>, linux-media@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Subject: [PATCH v2 0/6] media: mediatek: vcodec: Fix 4K decoding support
+Date:   Wed,  6 Jul 2022 16:21:32 +0800
+Message-Id: <20220706082138.2668163-1-wenst@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   fc25fd602b1e101a45650475a8d2f00d7bb8e971
-commit: 97ca308925a50aa80711ccfaf814fa3898374862 [353/388] drm/amd/display: Add minimal pipe split transition state
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207061638.WngLaW9T-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout 97ca308925a50aa80711ccfaf814fa3898374862
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+This is v2 of the mtk-vcodec 4K decoder fixes.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+While testing a backport of recent mtk-vcodec developments on ChromeOS
+v5.10 kernel [1], it was found that 4K decoding support had regressed.
+The decoder was not correctly reporting 4K frame sizes when queried,
+and ChromeOS then determined that the hardware did not support it.
 
-All warnings (new ones prefixed by >>):
+This turned out to be a mix of different bugs:
 
->> drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:2720:6: warning: no previous prototype for 'dc_reset_state' [-Wmissing-prototypes]
-    2720 | void dc_reset_state(struct dc *dc, struct dc_state *context)
-         |      ^~~~~~~~~~~~~~
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/core_types.h:32,
-                    from drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:33:
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:137:22: warning: 'SYNAPTICS_DEVICE_ID' defined but not used [-Wunused-const-variable=]
-     137 | static const uint8_t SYNAPTICS_DEVICE_ID[] = "SYNA";
-         |                      ^~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:134:17: warning: 'DP_SINK_BRANCH_DEV_NAME_7580' defined but not used [-Wunused-const-variable=]
-     134 | static const u8 DP_SINK_BRANCH_DEV_NAME_7580[] = "7580\x80u";
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:132:22: warning: 'DP_SINK_DEVICE_STR_ID_2' defined but not used [-Wunused-const-variable=]
-     132 | static const uint8_t DP_SINK_DEVICE_STR_ID_2[] = {7, 1, 8, 7, 5, 0};
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:131:22: warning: 'DP_SINK_DEVICE_STR_ID_1' defined but not used [-Wunused-const-variable=]
-     131 | static const uint8_t DP_SINK_DEVICE_STR_ID_1[] = {7, 1, 8, 7, 3, 0};
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~
+1. Frame size enumeration on the output side should not depend on the
+   currently set format, or any other derived state. This is fixed in
+   patch 2.
+
+2. TRY_FMT on the output side was incorrectly clamping the resolution
+   based on the current maximum values. It should not. Fixed in patch
+   4.
+
+3. The default resolution limit was not set according to the default
+   output format determined at runtime, but hard-coded to 1080p. An
+   S_FMT call is needed to override this. The instance resolution limit
+   is rendered useless after patches 3 and 4, and dropped in patch 5.
+
+Other patches:
+- Patch 1 makes stepwise_fhd constant.
+- Patch 3 drops redundant aligning of default resolution
+- Patch 6 moves framesize inside mtk_video_fmt, making it easier to
+  access and removes a list search that was added in patch 4.
+
+Changes since v1:
+  - Added patch to const-ify stepwise_fhd, as Nicolas requested.
+  - Dropped old patch 2 (media: mediatek: vcodec: dec: Set default
+    max resolution based on format)
+  - Dropped old patch 4 (media: mediatek: vcodec: dec: Set maximum
+    resolution when S_FMT on output only)
+  - Made max resolution lookup for TRY_FMT return stepwise structure in
+    patch 4, which helps with the last patch that moves framesize
+    stepwise into mtk_video_fmt.
+  - Did some style cleanups in patch 4
+
+This series is based on next-20220705.
+
+This was only tested on the backport kernel [1] on MT8195, which is the
+only currently supported SoC that does 4K decoding. Hopefully the folks
+at Collabora can give this a test on their mainline MT8195 integration
+branch.
 
 
-vim +/dc_reset_state +2720 drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c
+Regards
+ChenYu
 
-  2719	
-> 2720	void dc_reset_state(struct dc *dc, struct dc_state *context)
-  2721	{
-  2722		dc_resource_state_destruct(context);
-  2723	
-  2724		/* clear the structure, but don't reset the reference count */
-  2725		memset(context, 0, offsetof(struct dc_state, refcount));
-  2726	
-  2727		init_state(dc, context);
-  2728	}
-  2729	
+[1] https://crrev.com/c/3713491
+
+Chen-Yu Tsai (6):
+  media: mediatek: vcodec: decoder: Const-ify stepwise_fhd
+  media: mediatek: vcodec: decoder: Fix 4K frame size enumeration
+  media: mediatek: vcodec: decoder: Skip alignment for default
+    resolution
+  media: mediatek: vcodec: decoder: Fix resolution clamping in TRY_FMT
+  media: mediatek: vcodec: decoder: Drop max_{width,height} from
+    mtk_vcodec_ctx
+  media: mediatek: vcodec: decoder: Embed framesize inside mtk_video_fmt
+
+ .../platform/mediatek/vcodec/mtk_vcodec_dec.c | 54 ++++++++-----------
+ .../mediatek/vcodec/mtk_vcodec_dec_stateful.c | 29 +++-------
+ .../vcodec/mtk_vcodec_dec_stateless.c         | 30 +++++------
+ .../platform/mediatek/vcodec/mtk_vcodec_drv.h | 20 +------
+ 4 files changed, 41 insertions(+), 92 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.0.rc0.161.g10f37bed90-goog
+
