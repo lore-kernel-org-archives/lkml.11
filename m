@@ -2,74 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E49E8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED877C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 14:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233115AbiGFOs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 10:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
+        id S232918AbiGFOur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 10:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232907AbiGFOs4 (ORCPT
+        with ESMTP id S232070AbiGFOuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 10:48:56 -0400
-Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303051B791;
-        Wed,  6 Jul 2022 07:48:56 -0700 (PDT)
-Received: by mail-il1-f179.google.com with SMTP id u13so4997336iln.6;
-        Wed, 06 Jul 2022 07:48:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=badKAwxl6oMYcNxW/h/2c+73UYSFXg04UnT39V63dEY=;
-        b=drnFzMiMKglMs3v3dL2yeHtJOdXe5G5KVUfOrMDwuBtkEbpb7wSJpF86daJwFhCsB+
-         S+4KuMAQSshFHOYtPf5sErqPo4438LU3eoHOWCrMQPmM6/zzd9rlz9P0P2XpynfJz0sP
-         944cYFVM5XFXnIlm3VZm6a33VFeQyzvkrADitjr739u87FvB4S0LdVb8gRanXyr+qpL8
-         mMpsM8sLD+qD+Rc3Gk9o4LbKTUqL/8LjXrk0kp528CCnRTtLH+BRnfjDhemKSs4K5/Jp
-         ShUHcLSlz9nf/I8ZOuxa8sq13PzewvEs4ZzTeaRKONpBAZz3iDeV4fY79WwwXi16aUcs
-         Trjg==
-X-Gm-Message-State: AJIora/USItJIjFct7YyRCZr6qTpi7bYXdYj5WbEt2W9wJQxCVNrO3xb
-        PbM6thzNZlfWbQ7r6vEh2Qx4adr4fw==
-X-Google-Smtp-Source: AGRyM1tBrNnki+lfPqg2cOAqAZB5OjGxdYUw+1gtao/4Tl9wpSN/tJZyuxCChwl49Gwzpzh0Ru1Rqg==
-X-Received: by 2002:a05:6e02:1a2f:b0:2dc:31f1:2976 with SMTP id g15-20020a056e021a2f00b002dc31f12976mr2718982ile.179.1657118935408;
-        Wed, 06 Jul 2022 07:48:55 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id b18-20020a92c852000000b002dc251040besm1968252ilq.46.2022.07.06.07.48.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 07:48:55 -0700 (PDT)
-Received: (nullmailer pid 22489 invoked by uid 1000);
-        Wed, 06 Jul 2022 14:48:52 -0000
-Date:   Wed, 6 Jul 2022 08:48:52 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     nandhini.srikandan@intel.com
-Cc:     mahesh.r.vaidya@intel.com, kenchappa.demakkanavar@intel.com,
-        robh+dt@kernel.org, furong.zhou@intel.com, broonie@kernel.org,
-        fancer.lancer@gmail.com, mgross@linux.intel.com,
-        mallikarjunappa.sangannavar@intel.com, rashmi.a@intel.com,
-        devicetree@vger.kernel.org, kris.pan@intel.com,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/4] dt-bindings: spi: Add bindings for Intel Thunder
- Bay SoC
-Message-ID: <20220706144852.GA22435-robh@kernel.org>
-References: <20220706042039.5763-1-nandhini.srikandan@intel.com>
- <20220706042039.5763-3-nandhini.srikandan@intel.com>
+        Wed, 6 Jul 2022 10:50:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04ED240B0;
+        Wed,  6 Jul 2022 07:50:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B83661E8E;
+        Wed,  6 Jul 2022 14:50:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEA7EC3411C;
+        Wed,  6 Jul 2022 14:50:41 +0000 (UTC)
+Date:   Wed, 6 Jul 2022 10:50:40 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Subject: [PATCH] net: sock: tracing: Fix sock_exceed_buf_limit not to
+ dereference stale pointer
+Message-ID: <20220706105040.54fc03b0@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706042039.5763-3-nandhini.srikandan@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 06 Jul 2022 12:20:37 +0800, nandhini.srikandan@intel.com wrote:
-> From: Nandhini Srikandan <nandhini.srikandan@intel.com>
-> 
-> Add documentation for SPI controller in Intel Thunder Bay SoC.
-> 
-> Signed-off-by: Nandhini Srikandan <nandhini.srikandan@intel.com>
-> ---
->  Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Acked-by: Rob Herring <robh@kernel.org>
+The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
+and then dereferences it in the TP_printk() portion. This is unsafe as the
+TP_printk() portion is executed at the time the buffer is read. That is,
+it can be seconds, minutes, days, months, even years later. If the proto
+is freed, then this dereference will can also lead to a kernel crash.
+
+Instead, save the sysctl_mem array into the ring buffer and have the
+TP_printk() reference that instead. This is the proper and safe way to
+read pointers in trace events.
+
+Link: https://lore.kernel.org/all/20220706052130.16368-12-kuniyu@amazon.com/
+
+Cc: stable@vger.kernel.org
+Fixes: 3847ce32aea9f ("core: add tracepoints for queueing skb to rcvbuf")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ include/trace/events/sock.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/include/trace/events/sock.h b/include/trace/events/sock.h
+index 12c315782766..777ee6cbe933 100644
+--- a/include/trace/events/sock.h
++++ b/include/trace/events/sock.h
+@@ -98,7 +98,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_STRUCT__entry(
+ 		__array(char, name, 32)
+-		__field(long *, sysctl_mem)
++		__array(long, sysctl_mem, 3)
+ 		__field(long, allocated)
+ 		__field(int, sysctl_rmem)
+ 		__field(int, rmem_alloc)
+@@ -110,7 +110,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_fast_assign(
+ 		strncpy(__entry->name, prot->name, 32);
+-		__entry->sysctl_mem = prot->sysctl_mem;
++		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
++		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
++		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
+ 		__entry->allocated = allocated;
+ 		__entry->sysctl_rmem = sk_get_rmem0(sk, prot);
+ 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
+-- 
+2.35.1
+
