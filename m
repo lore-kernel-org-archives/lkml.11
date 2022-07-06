@@ -2,92 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FDBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7FDCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 22:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234381AbiGFWRn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 18:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S233806AbiGFWVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 18:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232287AbiGFWRl (ORCPT
+        with ESMTP id S230320AbiGFWVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 18:17:41 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2871C2B184
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 15:17:40 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id 73-20020a9d084f000000b00616b04c7656so12780738oty.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 15:17:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1EMMmqphd91Ju+K/4EV2gpB3SCsQxfnUR4WTRXFnUaw=;
-        b=JUAKZLgflnGvGeY8IT6zP5OMaHQ6VMe5txVcGNkWPkN5pW8lnvNe1NeuVhmEOa7le7
-         +CTn3Yy1P35wIc/RxOoOX7e5EFrgzZ6N/3dFbKln656S4EK1O2pVJcP/23F0Ia8hvY9/
-         8+FE7oy1Igk8AS8hxlWEURY23hpln8UL9PdP8Zta9mpwgCTklHMay6n8UeTbSxAu940m
-         5yZg8qnF5+qmTqyRm8V6NP68KoBw+huVP03/30Tg4RfF9i9oBocSxaSxEu7zdLtWK11K
-         mfp/qiX/28WzZSheMJhBqXiKnpx3AkF9dVh+IEFM93tYahd7YP3+K3ZASvKhzzJXWG9/
-         I9UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1EMMmqphd91Ju+K/4EV2gpB3SCsQxfnUR4WTRXFnUaw=;
-        b=Uuq8fwwSprt8aWvK+XMk8fyygERrZrM8twP1yrW6I49/99wRHiRkuV1+YhuZYSISnz
-         ocSVJj4pDeLUlkax04DzsjH8feGAT2BfqalaqwubFb/W641yfOrpm3tDkr1fpfv7/TMh
-         avkvLBf2uPQgaEr4dRJejtDLn6bHmQp506yr0EcaFLp41HjnQqGeORdYDOdQ7ef8xewI
-         /43nAHaD9YM1MnS4FPTK5FTaM+sgQagXAnLlZHwlkfI+SAvQR7MY2IjnUkOIUiWaT3M7
-         fU2EeerA9wi3br/bfb59ATEEy724pqI8i5pnmXbuu3zELkmNEB8gzgUG3keKfyImbmra
-         paVw==
-X-Gm-Message-State: AJIora+pqdre8uzxG1KceeCaVYWUzqJB6BYHyM/+scIUwecMzXQLgtWg
-        sCUZNgTZF0RYbWzbtDgI73hnxLZnB+oxTWq9EwAzpg==
-X-Google-Smtp-Source: AGRyM1viMzcYHYxWXxBukv/4+pwjZlKWOv7GADlAvy/iHMvt/m9eaoK6woLeA+AiCgYd3MktCPiMnYzCuKkAekLu8IM=
-X-Received: by 2002:a05:6830:14:b0:616:dcbd:e53e with SMTP id
- c20-20020a056830001400b00616dcbde53emr17979803otp.267.1657145859328; Wed, 06
- Jul 2022 15:17:39 -0700 (PDT)
+        Wed, 6 Jul 2022 18:21:06 -0400
+Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8875619003;
+        Wed,  6 Jul 2022 15:21:03 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
+        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id BA20310C7E67;
+        Thu,  7 Jul 2022 08:21:01 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1o9DOF-00FOOw-VZ; Thu, 07 Jul 2022 08:21:00 +1000
+Date:   Thu, 7 Jul 2022 08:20:59 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     djwong@kernel.org, dchinner@redhat.com, chandan.babu@oracle.com,
+        linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] xfs: fix potential memory leak in xfs_bmap_add_attrfork()
+Message-ID: <20220706222059.GL227878@dread.disaster.area>
+References: <20220706082237.2255887-1-niejianglei2021@163.com>
 MIME-Version: 1.0
-References: <20220614204730.3359543-1-seanjc@google.com> <20220614204730.3359543-4-seanjc@google.com>
-In-Reply-To: <20220614204730.3359543-4-seanjc@google.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Wed, 6 Jul 2022 15:17:28 -0700
-Message-ID: <CALMp9eTEkt5nGZDT1qnn1sD5Ft_O_keKomDDiyeWLcPo2Xap7A@mail.gmail.com>
-Subject: Re: [PATCH v2 03/21] KVM: x86: Don't check for code breakpoints when
- emulating on exception
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706082237.2255887-1-niejianglei2021@163.com>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=62c60ace
+        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
+        a=kj9zAlcOel0A:10 a=RgO8CyIxsXoA:10 a=Byx-y9mGAAAA:8 a=7-415B0cAAAA:8
+        a=xmMFYpAlcJMcLWuR8zQA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 1:47 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> Don't check for code breakpoints during instruction emulation if the
-> emulation was triggered by exception interception.  Code breakpoints are
-> the highest priority fault-like exception, and KVM only emulates on
-> exceptions that are fault-like.  Thus, if hardware signaled a different
-> exception, then the vCPU is already passed the stage of checking for
-> hardware breakpoints.
->
-> This is likely a glorified nop in terms of functionality, and is more for
-> clarification and is technically an optimization.  Intel's SDM explicitly
-> states vmcs.GUEST_RFLAGS.RF on exception interception is the same as the
-> value that would have been saved on the stack had the exception not been
-> intercepted, i.e. will be '1' due to all fault-like exceptions setting RF
-> to '1'.  AMD says "guest state saved ... is the processor state as of the
-> moment the intercept triggers", but that begs the question, "when does
-> the intercept trigger?".
+On Wed, Jul 06, 2022 at 04:22:37PM +0800, Jianglei Nie wrote:
+> xfs_bmap_add_attrfork() allocates a memory chunk for ip->i_afp with
+> xfs_ifork_alloc(). When some error occurs, the function goto trans_cancel;
+> without releasing the ip->i_afp, which will lead to a memory leak.
 
-IIRC, AMD does not prematurely clobber EFLAGS.RF on an intercepted exception.
+Where does it leak? Do you ahve a KASAN report?
 
-This is actually a big deal with shadow paging. On Intel, the
-hypervisor can't fully squash a #PF and restart the guest instruction
-after filling in the shadow page table entry...not easily, anyway.
+> We should release the ip->i_afp with kmem_cache_free() and set "ip->i_afp
+> = NULL" if ip->i_afp is not NULL pointer.
+> 
+> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> ---
+>  fs/xfs/libxfs/xfs_bmap.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/fs/xfs/libxfs/xfs_bmap.c b/fs/xfs/libxfs/xfs_bmap.c
+> index 6833110d1bd4..0c99726c0968 100644
+> --- a/fs/xfs/libxfs/xfs_bmap.c
+> +++ b/fs/xfs/libxfs/xfs_bmap.c
+> @@ -1088,6 +1088,10 @@ xfs_bmap_add_attrfork(
+>  trans_cancel:
+>  	xfs_trans_cancel(tp);
+>  	xfs_iunlock(ip, XFS_ILOCK_EXCL);
+> +	if (ip->i_afp) {
+> +		kmem_cache_free(xfs_ifork_cache, ip->i_afp);
+> +		ip->a_afp = NULL;
+                    ^^^^^
 
-(OTOH, AMD does prematurely clobber DR6 and DR7 on an intercepted #DB.
-So, no one should be celebrating!)
+Please compile and test your changes before proposing them for
+inclusion.
+
+Cheers,
+
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
