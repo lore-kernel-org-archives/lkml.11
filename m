@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1079C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B36C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbiGFGDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 02:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
+        id S229789AbiGFGDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 02:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiGFGC4 (ORCPT
+        with ESMTP id S229576AbiGFGC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 02:02:56 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887C222298;
-        Tue,  5 Jul 2022 23:02:55 -0700 (PDT)
+        Wed, 6 Jul 2022 02:02:57 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F90122294;
+        Tue,  5 Jul 2022 23:02:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657087375; x=1688623375;
+  t=1657087373; x=1688623373;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=x69ZXl0q6YPIjoY3r38mvBjwXx/dRoW5Meq0IZxS9z0=;
-  b=N7FF+YvAh83YLCpHxasi6CWXJ0yMnIF9QDOOdjtXzcUrx1zO6NiH+xgw
-   mqR6mzdLiZGbtq1wYP6wKCmKT4/T3SjVpoJ3kFGD6ctMiNyhVpw5/ZuPc
-   gTvJ24yV87gnwahZBbNWJXjEbfHeMEalLXDFRbyABRpl6HOZJf+v50usU
-   c=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 23:02:53 -0700
+  bh=X1Xeb7Fgnw4Fu+51DpHFBm7BDpOqou5CXewNC9Ul0sQ=;
+  b=ibboQN6TkmJqw3li3yS7KzmHdgBOqIh7lAj7B9nbfbwC1NMJrJr35PFw
+   VphiSRjU4agSmu0yZdHIh5waK+Wa2UPZtQOrT4s3LoLd0JghRbL2GlPxZ
+   pKEhHHNYiOPexQhExXSaOCwQxmZl4x8z/FDw1YYfMzT35hTvWlOUQGtaZ
+   U=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 05 Jul 2022 23:02:53 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 23:02:53 -0700
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 23:02:52 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 23:02:53 -0700
+ 15.2.986.22; Tue, 5 Jul 2022 23:02:52 -0700
 Received: from hu-clew-lv.qualcomm.com (10.49.16.6) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -42,10 +42,10 @@ From:   Chris Lew <quic_clew@quicinc.com>
 To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <konrad.dybcio@somainline.org>
 CC:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_clew@quicinc.com>, Tao Zhang <quic_taozhan@quicinc.com>
-Subject: [PATCH 4/4] soc: qcom: smp2p: Add remote_id into irq name
-Date:   Tue, 5 Jul 2022 23:02:11 -0700
-Message-ID: <1657087331-32455-5-git-send-email-quic_clew@quicinc.com>
+        <quic_clew@quicinc.com>
+Subject: [PATCH 2/4] soc: qcom: smp2p: Add proper retrigger detection
+Date:   Tue, 5 Jul 2022 23:02:09 -0700
+Message-ID: <1657087331-32455-3-git-send-email-quic_clew@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1657087331-32455-1-git-send-email-quic_clew@quicinc.com>
 References: <1657087331-32455-1-git-send-email-quic_clew@quicinc.com>
@@ -58,47 +58,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tao Zhang <quic_taozhan@quicinc.com>
+Currently, smp2p relies on the hwirq resend feature to retrigger irqs
+that were missed because the irq was disabled at the time of receiving
+it. The hwirq resend feature will retrigger the parent smp2p interrupt.
+In order to keep track of what children needed to be retriggered, the
+pending bitmap was added.
 
-Changed smp2p irq devname from "smp2p" to "smp2p_<remote_id>", which
-makes the wakeup source distinguishable in irq wakeup prints.
+After calling handle_nested_irq, smp2p checks if the interrupt is
+enabled and sets the pending bit if the interrupt is not enabled. There
+is a small window where a client can enable the interrupt between
+calling handle_nested_irq and checking if the interrupt is enabled.
+If this happens, the interrupt is never called when the parent smp2p
+interrupt is retriggered.
 
-Signed-off-by: Tao Zhang <quic_taozhan@quicinc.com>
+Add the irq_retrigger callback so smp2p can know which child interrupts
+need to be retriggered. Set the pending bits accordingly.
+
 Signed-off-by: Chris Lew <quic_clew@quicinc.com>
 ---
- drivers/soc/qcom/smp2p.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/soc/qcom/smp2p.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
-index a1ea5f55c228..21a0e84b16f4 100644
+index 1c3259fe98be..a94cddcb0298 100644
 --- a/drivers/soc/qcom/smp2p.c
 +++ b/drivers/soc/qcom/smp2p.c
-@@ -541,6 +541,7 @@ static int qcom_smp2p_probe(struct platform_device *pdev)
- 	struct device_node *node;
- 	struct qcom_smp2p *smp2p;
- 	const char *key;
-+	char *name;
- 	int irq;
- 	int ret;
+@@ -260,11 +260,7 @@ static void qcom_smp2p_notify_in(struct qcom_smp2p *smp2p)
+ 			    (!(val & BIT(i)) && test_bit(i, entry->irq_falling))) {
+ 				irq_pin = irq_find_mapping(entry->domain, i);
+ 				handle_nested_irq(irq_pin);
+-
+-				if (test_bit(i, entry->irq_enabled))
+-					clear_bit(i, entry->irq_pending);
+-				else
+-					set_bit(i, entry->irq_pending);
++				clear_bit(i, entry->irq_pending);
+ 			}
+ 		}
+ 	}
+@@ -353,11 +349,22 @@ static int smp2p_set_irq_type(struct irq_data *irqd, unsigned int type)
+ 	return 0;
+ }
  
-@@ -632,10 +633,16 @@ static int qcom_smp2p_probe(struct platform_device *pdev)
- 	qcom_smp2p_kick(smp2p);
++static int smp2p_retrigger_irq(struct irq_data *irqd)
++{
++	struct smp2p_entry *entry = irq_data_get_irq_chip_data(irqd);
++	irq_hw_number_t irq = irqd_to_hwirq(irqd);
++
++	set_bit(irq, entry->irq_pending);
++
++	return 0;
++}
++
+ static struct irq_chip smp2p_irq_chip = {
+ 	.name           = "smp2p",
+ 	.irq_mask       = smp2p_mask_irq,
+ 	.irq_unmask     = smp2p_unmask_irq,
+ 	.irq_set_type	= smp2p_set_irq_type,
++	.irq_retrigger	= smp2p_retrigger_irq,
+ };
  
- 	smp2p->irq = irq;
-+	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "smp2p_%d",
-+			      smp2p->remote_pid);
-+	if (!name) {
-+		ret = -ENOMEM;
-+		goto unwind_interfaces;
-+	}
- 	ret = devm_request_threaded_irq(&pdev->dev, irq,
- 					NULL, qcom_smp2p_intr,
- 					IRQF_ONESHOT,
--					"smp2p", (void *)smp2p);
-+					name, (void *)smp2p);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to request interrupt\n");
- 		goto unwind_interfaces;
+ static int smp2p_irq_map(struct irq_domain *d,
 -- 
 2.7.4
 
