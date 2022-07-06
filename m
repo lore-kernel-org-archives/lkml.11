@@ -2,164 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0EE7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 274F4CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 13:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232234AbiGFNc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 09:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
+        id S233036AbiGFNdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 09:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232444AbiGFNcv (ORCPT
+        with ESMTP id S233305AbiGFNd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 09:32:51 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CD82495E;
-        Wed,  6 Jul 2022 06:32:49 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id q6so27081118eji.13;
-        Wed, 06 Jul 2022 06:32:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BwTGtm/bNRREp1aBUcAs+S7luq0oxviV8pBVWLt+InY=;
-        b=GKPSWMhBOzfO/YBN78J2m6A42DBcc3C2SEoO/Cf5G/XgZwOmGDdXUamaES8swT89Gu
-         OGnX6W9oA3Mdu6dObmhJUUIjTSaq9fvK/p3nBY/RnUKCNIZihERp0OTTOjfTS0x7k0w8
-         KULYv6JwX/onnhP5PU8ruMITdTbPb+OFJmi3GdK+arf61qONcqdWn9yKbE/Gxog1JfBh
-         ZSJeNBU9V4JkQES1saWAaImlmXPkUQ+XTtl1UimatEbCgN3TQlkdL2olz7E2xH4Ct5qg
-         +NQoJyXJaspkF2IhOcNwjOP3uBVRW6FM5EpHgDzaYGJhOzWgZQM2iGpRClbdn6LACfft
-         55ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BwTGtm/bNRREp1aBUcAs+S7luq0oxviV8pBVWLt+InY=;
-        b=3Bav7XZQwAP2L4OOUpHiFGCd9F/AsgMfCZ9Tgx/yuLEZ3L0gxOAcI33hrEv2Qr9F7W
-         mGQLkUVmMefqx3LM1p/acbYiyLKqzIEsVKYwFVa+ahFCPS0kJ9A/jvVDXaQ3l3CtFha2
-         lxu2dSeGzESbMByozucPhe/R0OAfTjO4RbdW2BoiRMDGmLLlrZ/uoFSFTI8kwRp7d60M
-         absf9eFLJ61rOF0Ss+4KraYvDsbkiqC2VE4M07mSMBlmV1e6djD8Ya/Wysjjb2DqX8zm
-         S79WYd4UzCZ7oooaqYqiOXWiS98yKNbChmxtRtimQkvub8lH/fwGuavdcKoiqyUSn8sR
-         Klbg==
-X-Gm-Message-State: AJIora9617bp/c1TKCjtnt/55h/b9QGyA7UUc2CkBiE1uKN+I5d3K3Xb
-        xrMZOyUKdZeWDOPmBdeBmkw=
-X-Google-Smtp-Source: AGRyM1tSWBqRJwiH9jeXNAt4N2H9owkS7npZHATrZq4RIBHTxekj9ewJKTqjuQqn9AsFzffHabae/w==
-X-Received: by 2002:a17:907:3f9f:b0:726:39d8:4c8c with SMTP id hr31-20020a1709073f9f00b0072639d84c8cmr38616750ejc.241.1657114367842;
-        Wed, 06 Jul 2022 06:32:47 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id ml22-20020a170906cc1600b006febce7081bsm17412760ejb.163.2022.07.06.06.32.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 06:32:47 -0700 (PDT)
-Message-ID: <62c58eff.1c69fb81.9bbbf.f072@mx.google.com>
-X-Google-Original-Message-ID: <YsWLGqZxMZfUnlL3@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 15:16:10 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Wed, 6 Jul 2022 09:33:29 -0400
+Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65FB28D;
+        Wed,  6 Jul 2022 06:33:27 -0700 (PDT)
+Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id E31643F770;
+        Wed,  6 Jul 2022 15:33:25 +0200 (CEST)
+Message-ID: <837c6cd8-72d9-e7c8-dfd9-e171d809f0bf@somainline.org>
+Date:   Wed, 6 Jul 2022 15:33:25 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 06/13] ARM: dts: qcom: enable usb phy by default for
+ ipq8064
+Content-Language: en-US
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] clk: qcom: clk-rpm: convert to parent_data API
-References: <20220705202837.667-1-ansuelsmth@gmail.com>
- <20220705202837.667-4-ansuelsmth@gmail.com>
- <92d41b82-97ab-723d-4191-1fcaca17fb76@somainline.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <92d41b82-97ab-723d-4191-1fcaca17fb76@somainline.org>
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+ <20220705133917.8405-7-ansuelsmth@gmail.com>
+ <eadf03c4-7e4c-e2a0-b20d-6e2dff3af1e3@somainline.org>
+ <62c58b03.1c69fb81.527d5.ecc6@mx.google.com>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <62c58b03.1c69fb81.527d5.ecc6@mx.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 03:26:53PM +0200, Konrad Dybcio wrote:
+
+
+On 6.07.2022 14:59, Christian Marangi wrote:
+> On Wed, Jul 06, 2022 at 03:04:44PM +0200, Konrad Dybcio wrote:
+>>
+>>
+>> On 5.07.2022 15:39, Christian Marangi wrote:
+>>> Enable usb phy by default. When the usb phy were pushed, half of them
+>>> were flagged as disabled by mistake. Fix this to correctly init dwc3
+>>> node on any ipq8064 based SoC.
+>> Are you sure they are used on *all* devices? If not, you will
+>> lose power by enabling unused hw..
+>>
+>> Konrad
 > 
+> Well there could be device that have no usb at all... so honestly
+> enabling one of them is also wrong. Should I disable the other and
+> enable it for the upstream device?
+We generally disable everything that's not obviously being used by the
+SoC internally or is required for components like these for function
+(think clock controllers etc) and enable peripherals on a per-device
+basis.
+
+Konrad
 > 
-> On 5.07.2022 22:28, Christian Marangi wrote:
-> > Convert clk-rpm driver to parent_data API and change parent names to cxo
-> > and pxo instead of the board variant as pxo_board is an ancient name and
-> > pxo should be used instead.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  drivers/clk/qcom/clk-rpm.c | 24 ++++++++++++++++--------
-> >  1 file changed, 16 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/clk/qcom/clk-rpm.c b/drivers/clk/qcom/clk-rpm.c
-> > index a18811c38018..d45a8b0fc97c 100644
-> > --- a/drivers/clk/qcom/clk-rpm.c
-> > +++ b/drivers/clk/qcom/clk-rpm.c
-> > @@ -23,6 +23,14 @@
-> >  #define QCOM_RPM_SCALING_ENABLE_ID			0x2
-> >  #define QCOM_RPM_XO_MODE_ON				0x2
-> >  
-> > +static const struct clk_parent_data gcc_pxo[] = {
-> > +	{ .fw_name = "pxo", .name = "pxo" },
-> The .name lookup should include _board, as the old DTs expect that.
-> If I understand correctly though, you need to preserve both pxo and
-> pxo_board, as they were separate, not sure though..
->
-
-pxo_board is what comes first... then qcom gcc driver hacks it and
-create a factor clk with 1/1 div and provide pxo.
-In practice they are the same clk. But yhea I should not change the
-name, will resent with .name = pxo_board and be done with it.
-
-> Konrad
-> > +};
-> > +
-> > +static const struct clk_parent_data gcc_cxo[] = {
-> > +	{ .fw_name = "cxo", .name = "cxo" },
-> > +};
-> > +
-> >  #define DEFINE_CLK_RPM(_platform, _name, _active, r_id)			      \
-> >  	static struct clk_rpm _platform##_##_active;			      \
-> >  	static struct clk_rpm _platform##_##_name = {			      \
-> > @@ -32,8 +40,8 @@
-> >  		.hw.init = &(struct clk_init_data){			      \
-> >  			.ops = &clk_rpm_ops,				      \
-> >  			.name = #_name,					      \
-> > -			.parent_names = (const char *[]){ "pxo_board" },      \
-> > -			.num_parents = 1,				      \
-> > +			.parent_data = gcc_pxo,				      \
-> > +			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
-> >  		},							      \
-> >  	};								      \
-> >  	static struct clk_rpm _platform##_##_active = {			      \
-> > @@ -44,8 +52,8 @@
-> >  		.hw.init = &(struct clk_init_data){			      \
-> >  			.ops = &clk_rpm_ops,				      \
-> >  			.name = #_active,				      \
-> > -			.parent_names = (const char *[]){ "pxo_board" },      \
-> > -			.num_parents = 1,				      \
-> > +			.parent_data = gcc_pxo,				      \
-> > +			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
-> >  		},							      \
-> >  	}
-> >  
-> > @@ -56,8 +64,8 @@
-> >  		.hw.init = &(struct clk_init_data){			      \
-> >  			.ops = &clk_rpm_xo_ops,			      \
-> >  			.name = #_name,					      \
-> > -			.parent_names = (const char *[]){ "cxo_board" },      \
-> > -			.num_parents = 1,				      \
-> > +			.parent_data = gcc_cxo,				      \
-> > +			.num_parents = ARRAY_SIZE(gcc_cxo),		      \
-> >  		},							      \
-> >  	}
-> >  
-> > @@ -68,8 +76,8 @@
-> >  		.hw.init = &(struct clk_init_data){			      \
-> >  			.ops = &clk_rpm_fixed_ops,			      \
-> >  			.name = #_name,					      \
-> > -			.parent_names = (const char *[]){ "pxo" },	      \
-> > -			.num_parents = 1,				      \
-> > +			.parent_data = gcc_pxo,				      \
-> > +			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
-> >  		},							      \
-> >  	}
-> >  
-
--- 
-	Ansuel
+> Also it's all handled by dummy vbus so i think we can ignore the losing
+> power thing. (this thing is old)
+> 
+>>>
+>>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+>>> Tested-by: Jonathan McDowell <noodles@earth.li>
+>>> ---
+>>>  arch/arm/boot/dts/qcom-ipq8064.dtsi | 4 ----
+>>>  1 file changed, 4 deletions(-)
+>>>
+>>> diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+>>> index b2faa4a067e9..9c32c637ea46 100644
+>>> --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+>>> +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+>>> @@ -1177,8 +1177,6 @@ hs_phy_0: phy@100f8800 {
+>>>  			clocks = <&gcc USB30_0_UTMI_CLK>;
+>>>  			clock-names = "ref";
+>>>  			#phy-cells = <0>;
+>>> -
+>>> -			status = "disabled";
+>>>  		};
+>>>  
+>>>  		ss_phy_0: phy@100f8830 {
+>>> @@ -1187,8 +1185,6 @@ ss_phy_0: phy@100f8830 {
+>>>  			clocks = <&gcc USB30_0_MASTER_CLK>;
+>>>  			clock-names = "ref";
+>>>  			#phy-cells = <0>;
+>>> -
+>>> -			status = "disabled";
+>>>  		};
+>>>  
+>>>  		usb3_0: usb3@100f8800 {
+> 
