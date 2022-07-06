@@ -2,180 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23C0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231715AbiGFKUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
+        id S233251AbiGFKVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbiGFKTG (ORCPT
+        with ESMTP id S231921AbiGFKUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:19:06 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B874D2714F;
-        Wed,  6 Jul 2022 03:18:53 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id v14so21368765wra.5;
-        Wed, 06 Jul 2022 03:18:53 -0700 (PDT)
+        Wed, 6 Jul 2022 06:20:51 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE5C28701;
+        Wed,  6 Jul 2022 03:19:50 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so8701869wmb.5;
+        Wed, 06 Jul 2022 03:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZvGwVkTGyDn+vP4Fazz0kJpHMoviO3wS63dcj/8fxfo=;
-        b=ZKCpGxJTFzF/rvSEejnIawseKoqfxUwKeVrwTB0K/cZ2nx8Ce/JEBlUNqYZ/6sMZaV
-         y8aM1r7uUGzM8mxiw542IB7VjSGemOdAF34nToc96Ehd2pa3DtjtQLGevQqMRATa+ta9
-         tN+gp4HKFfzBREN3ko+JQ7XhlC/UdW5a+NRch/vxEF5ZYPZaPXXG9MzskzDD7ixfRJJE
-         G37xZgLxxFOVCatGXobMzXlXC+HA+CzMjBTGArCoTXKUxTVt8WFZuCrmTjMctnIWMtb2
-         Z9XOF0V+a1BXKRfjjwMSYAX1h9LNIpf72HYEvgbGV5iB5Z40We8lfR2f3k3x0bhSOstR
-         JMwA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IRtZa4W50+1PL3vwAzMF6KhFeVCThCx8Lk3NGVi7seM=;
+        b=lWDDpIfEx5ebFp2irfwkm9CCyzzmJiMkpYn3Ue9N8UMT/OCrEnaxVseXIhkIz+HSnt
+         E3YOC/xNJ14iB3t97OMpBAw2LPvoOmWrNZi0FUM6QJUce2Ptq2EDewhsSN5u48A7ZfqE
+         tFZ7lj51UQCj0td9G5MwbpGDSylsWYAiYv+IYngMYOOIPrWVLKc3dxcWPVVNRMuK7KyS
+         lQAFPEHBmwvfqUbDkp0JHLO5PSO6dWlrzaE2oDAPp36Kl5iDhr4SbAfL32KU9D9qaehE
+         ENwrr//muBtfbCfMghKgcytkczqPxW664gwJwYR1lZ6388pOd5Wy/mc6Ce56p+DriRS8
+         vD3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZvGwVkTGyDn+vP4Fazz0kJpHMoviO3wS63dcj/8fxfo=;
-        b=FAk/Xnu5N5p67IVOpwEXdgm53Gheju73j5kEyUTBgwuHEIjtRqcXlMuPrttQ0prOOl
-         jI7COOBMi2/EiUKqIKeXSFyTmnFM7J6AFUEpi9RYO3S6eA1b6396DVE/jX5prWCFZjBl
-         BVeLkh9w8o2KolsFxlTz+iP2GtDdLguHeuCGhwlRDfSZreDEuvQWnNqjzd1TCsNPs6/l
-         kzFkjiJH4yqpNWs/jCIsc7y9N1w2k3AgFmZxA41z9jgHj+FVt8A+/VmF7KKAuVZMgZQ6
-         +IdoArdElIzaGXQHtJ5bPITEe7SECO8op/l7aaj3tIXP1CO2MrtZsI9aOyRi6zTRuFPG
-         kyjQ==
-X-Gm-Message-State: AJIora9fHv6HuqUzjHgMegXx0gNJqGKp4j7uOZa/m1QOn/6Zja++8EtL
-        cR3S3g8b6WBqZUyocjNu7/M=
-X-Google-Smtp-Source: AGRyM1vLCj4x+NqNP5HpX/hsCERhQNRayOjvlpg+w1jdkzDlNlP0qjd8PmOdvrbpuk0bd3MwfVqGOw==
-X-Received: by 2002:adf:dc09:0:b0:21b:9ec1:f4ab with SMTP id t9-20020adfdc09000000b0021b9ec1f4abmr37147285wri.558.1657102732173;
-        Wed, 06 Jul 2022 03:18:52 -0700 (PDT)
-Received: from localhost (92.40.202.167.threembb.co.uk. [92.40.202.167])
-        by smtp.gmail.com with ESMTPSA id h15-20020a1ccc0f000000b0039749b01ea7sm33702763wmb.32.2022.07.06.03.18.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IRtZa4W50+1PL3vwAzMF6KhFeVCThCx8Lk3NGVi7seM=;
+        b=hz4TV48uccAFOZ8xrOCRERZklU6MrFhOptkCOvnpkOBpuZUYNFHoW8cf+BB2jZcoCE
+         3MPefHzpC9YquLt5SnRnpBdZhpuaf3E18M3XaLtzEQme0ovftQbkx9lG9kMxZztfqvOA
+         HJlDLf5xHyTdfzHi+OKNr+5MAMXuoq6TzgHGJuyEUnFG4FaGHPPdUnhpPFBoTYpIQyWB
+         QDYC0ZZBnkAQXS6k/sSFGAZzRlRUfY08D0XLK0o5WJImHkjavLDgUJ/sCjm4+8YG3oLr
+         GDEsj8rwnlUSxJNeQvQo4jvYLdhAuKfZk2lbno92J/Bo7yE8dstol+IkU1gYmckcYcx4
+         QEiw==
+X-Gm-Message-State: AJIora/jL/M7FbqtyGNfXe6gWObQKbH63WmR5aLI62myhpVjZY2Ld2nB
+        Jqa87s+lQ2rqLXHow10aOvI=
+X-Google-Smtp-Source: AGRyM1ubExqJXmOSHLAon3XHW+QSRBmtWllxIfYGEAnsyCqQdgC5xDGz5P6U6fqp2i7ewkT+Rp5Yrg==
+X-Received: by 2002:a05:600c:19c8:b0:3a1:7399:861d with SMTP id u8-20020a05600c19c800b003a17399861dmr38802430wmq.170.1657102789374;
+        Wed, 06 Jul 2022 03:19:49 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id u3-20020a05600c210300b003a044fe7fe7sm25014451wml.9.2022.07.06.03.19.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:18:51 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     jic23@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
-        lee.jones@linaro.org, sre@kernel.org, lgirdwood@gmail.com,
-        broonie@kernel.org
-Cc:     lars@metafoo.de, andy.shevchenko@gmail.com,
-        linus.walleij@linaro.org, brgl@bgdev.pl, michael@walle.cc,
-        samuel@sholland.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH v5 13/13] power: axp20x_battery: Add support for AXP192
-Date:   Wed,  6 Jul 2022 11:19:02 +0100
-Message-Id: <20220706101902.4984-14-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
-References: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
+        Wed, 06 Jul 2022 03:19:49 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 11:19:47 +0100
+From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.4 00/58] 5.4.204-rc1 review
+Message-ID: <YsVhw8sYzZiC9L/A@debian>
+References: <20220705115610.236040773@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AXP192 has a battery charger similar to other X-Powers PMICs,
-but unlike the other supported devices, it does not have a fuel
-gauge and can't report battery capacity directly.
+Hi Greg,
 
-Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- drivers/power/supply/axp20x_battery.c | 49 +++++++++++++++++++++++++--
- 1 file changed, 46 insertions(+), 3 deletions(-)
+On Tue, Jul 05, 2022 at 01:57:36PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.204 release.
+> There are 58 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 07 Jul 2022 11:55:56 +0000.
+> Anything received after that time might be too late.
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 574c1d001556..1e84d26ce8e3 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -544,6 +544,19 @@ static int axp20x_battery_set_prop(struct power_supply *psy,
- 	}
- }
- 
-+static enum power_supply_property axp192_battery_props[] = {
-+	POWER_SUPPLY_PROP_PRESENT,
-+	POWER_SUPPLY_PROP_ONLINE,
-+	POWER_SUPPLY_PROP_STATUS,
-+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-+	POWER_SUPPLY_PROP_CURRENT_NOW,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
-+	POWER_SUPPLY_PROP_HEALTH,
-+	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
-+	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-+};
-+
- static enum power_supply_property axp20x_battery_props[] = {
- 	POWER_SUPPLY_PROP_PRESENT,
- 	POWER_SUPPLY_PROP_ONLINE,
-@@ -568,6 +581,16 @@ static int axp20x_battery_prop_writeable(struct power_supply *psy,
- 	       psp == POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX;
- }
- 
-+static const struct power_supply_desc axp192_batt_ps_desc = {
-+	.name = "axp192-battery",
-+	.type = POWER_SUPPLY_TYPE_BATTERY,
-+	.properties = axp192_battery_props,
-+	.num_properties = ARRAY_SIZE(axp192_battery_props),
-+	.property_is_writeable = axp20x_battery_prop_writeable,
-+	.get_property = axp20x_battery_get_prop,
-+	.set_property = axp20x_battery_set_prop,
-+};
-+
- static const struct power_supply_desc axp20x_batt_ps_desc = {
- 	.name = "axp20x-battery",
- 	.type = POWER_SUPPLY_TYPE_BATTERY,
-@@ -578,6 +601,19 @@ static const struct power_supply_desc axp20x_batt_ps_desc = {
- 	.set_property = axp20x_battery_set_prop,
- };
- 
-+static const int axp192_ccc_table[AXP20X_CHRG_CTRL1_TGT_CURR+1] = {
-+	100000,  190000,  280000,  360000,
-+	450000,  550000,  630000,  700000,
-+	780000,  880000,  960000,  1000000,
-+	1080000, 1160000, 1240000, 1320000,
-+};
-+
-+static const struct axp_data axp192_data = {
-+	.ccc_table = axp192_ccc_table,
-+	.get_max_voltage = axp20x_battery_get_max_voltage,
-+	.set_max_voltage = axp20x_battery_set_max_voltage,
-+};
-+
- static const struct axp_data axp209_data = {
- 	.ccc_scale = 100000,
- 	.ccc_offset = 300000,
-@@ -606,6 +642,9 @@ static const struct axp_data axp813_data = {
- 
- static const struct of_device_id axp20x_battery_ps_id[] = {
- 	{
-+		.compatible = "x-powers,axp192-battery-power-supply",
-+		.data = (void *)&axp192_data,
-+	}, {
- 		.compatible = "x-powers,axp209-battery-power-supply",
- 		.data = (void *)&axp209_data,
- 	}, {
-@@ -623,6 +662,7 @@ static int axp20x_power_probe(struct platform_device *pdev)
- 	struct axp20x_batt_ps *axp20x_batt;
- 	struct power_supply_config psy_cfg = {};
- 	struct power_supply_battery_info *info;
-+	const struct power_supply_desc *ps_desc;
- 	struct device *dev = &pdev->dev;
- 
- 	if (!of_device_is_available(pdev->dev.of_node))
-@@ -666,9 +706,12 @@ static int axp20x_power_probe(struct platform_device *pdev)
- 
- 	axp20x_batt->data = (struct axp_data *)of_device_get_match_data(dev);
- 
--	axp20x_batt->batt = devm_power_supply_register(&pdev->dev,
--						       &axp20x_batt_ps_desc,
--						       &psy_cfg);
-+	if (!axp20x_batt->data->has_fg)
-+		ps_desc = &axp192_batt_ps_desc;
-+	else
-+		ps_desc = &axp20x_batt_ps_desc;
-+
-+	axp20x_batt->batt = devm_power_supply_register(&pdev->dev, ps_desc, &psy_cfg);
- 	if (IS_ERR(axp20x_batt->batt)) {
- 		dev_err(&pdev->dev, "failed to register power supply: %ld\n",
- 			PTR_ERR(axp20x_batt->batt));
--- 
-2.35.1
+Build test (gcc version 11.3.1 20220627):
+mips: 65 configs -> no failure
+arm: 106 configs -> no failure
+arm64: 2 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+powerpc allmodconfig -> no failure
+riscv allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
 
+
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/1456
+
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
