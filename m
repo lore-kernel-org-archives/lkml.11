@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A24C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54296CCA480
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 21:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231510AbiGFVXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 17:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
+        id S233940AbiGFVYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 17:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiGFVW6 (ORCPT
+        with ESMTP id S231470AbiGFVYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 17:22:58 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9D01A066
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:22:57 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:47138)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o9CU2-000KRq-NH; Wed, 06 Jul 2022 15:22:54 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35934 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o9CU1-004OoQ-Pz; Wed, 06 Jul 2022 15:22:54 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Oleg Nesterov <oleg@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
-References: <20220706101625.2100298-1-svens@linux.ibm.com>
-Date:   Wed, 06 Jul 2022 16:15:17 -0500
-In-Reply-To: <20220706101625.2100298-1-svens@linux.ibm.com> (Sven Schnelle's
-        message of "Wed, 6 Jul 2022 12:16:25 +0200")
-Message-ID: <87k08qlz8a.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 6 Jul 2022 17:24:30 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C539E183BC
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 14:24:28 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id q6so29153603eji.13
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 14:24:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+IXn0jI0ldRL7YIjp8QrMhyxAPtVIFHuatfuckvUqnQ=;
+        b=fQNvjxAJ1U+/Z5BLvLosjiWEbNpCZr4z3sBkgnVLosoYyjz5Kec9u9Kf+o2d4q/jrl
+         zJwnBFX/aQaqwYhjaVXnYTPOA2N2wRNI1ZdXo3LS5c53rJQDBg/01HLlXC+3nnmX1FkL
+         MSdhueU1Cby+/ZbGkB6Mdv+e7uPB4fONBcFU7hDeLOqJrh0okawS2UkVcxgAZSr0S41d
+         EjuYNIXct/or+FpmV7ItHH0l+xZ+FN4ZCnWFp1FCF0qr6P13rCX9ffwocjeI/nUoEGLH
+         Lz9yGwfWbHPhHgAWaHOOnshg+WGNM0O/k+l0h1lGaoviuCLThNi+10/uzCb/6nd4wSY3
+         rrjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+IXn0jI0ldRL7YIjp8QrMhyxAPtVIFHuatfuckvUqnQ=;
+        b=sjL3bkn/Kevixi4c/o2MwEzJVsFcnUeIg71RVV1qq/bVBw338kLHG2hziOed5gjS5K
+         DTLAM175BrOUe3OkPdap3+SyrHJHq27hJVC7W2C2dR4he5DkXZIQEoguTk7VEeGl7BAd
+         5m2LLykJWzm02n60peoQVlLYHpznSr8ghTmUM7ldsT5XF9F5LnZO6RnXE2/J/cCb89qV
+         drwdbZzDkdbLpsNbJES0Te7uNLSvKiaNRATPFVrJk1YxQCtJYcdvvO5vCoBV/pc31l3L
+         c7eVSxCYThuwSr4QigNRdrymYFaPAfTstz0c2KUv+HKP/rut1iFVxoBaYRV74d88aKq5
+         icnQ==
+X-Gm-Message-State: AJIora+4ZXwSDk/pM19OQvwsCDoUAQ6VB3GhjhOca6US8Cyg2qe0er/o
+        fwhlNUg4UDFwk4bZHLubdCKNj4wRb01A0FuI0c2VQA==
+X-Google-Smtp-Source: AGRyM1sbHYk2Pqpc9qaurG8ACQ+7E+4bfTKqXLTRu9d3ipv8YkEaaHIX9oSlPBTljwJ+/ekeV3QqQO0PmuZmUQvJ4AU=
+X-Received: by 2002:a17:907:3f81:b0:6ff:1a3d:9092 with SMTP id
+ hr1-20020a1709073f8100b006ff1a3d9092mr41359251ejc.319.1657142667241; Wed, 06
+ Jul 2022 14:24:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1o9CU1-004OoQ-Pz;;;mid=<87k08qlz8a.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18r6LBKAPlBXmDEAPvZbvEiy1hnJuRFxrM=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH] ptrace: fix clearing of JOBCTL_TRACED in
- ptrace_unfreeze_traced()
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+References: <20220625050838.1618469-1-davidgow@google.com> <20220625050838.1618469-6-davidgow@google.com>
+In-Reply-To: <20220625050838.1618469-6-davidgow@google.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Wed, 6 Jul 2022 17:24:16 -0400
+Message-ID: <CAFd5g45-SPvFs7JUNEsm=bMbDEZYTA57r0bA6cgRbSGoMz9-uQ@mail.gmail.com>
+Subject: Re: [PATCH v3 5/5] mmc: sdhci-of-aspeed: test: Use kunit_test_suite() macro
+To:     David Gow <davidgow@google.com>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
+        linux-mmc@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        openbmc@lists.ozlabs.org, linux-usb@vger.kernel.org,
+        linux-modules@vger.kernel.org,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sven Schnelle <svens@linux.ibm.com> writes:
-
-> CI reported the following splat while running the strace testsuite:
+On Sat, Jun 25, 2022 at 1:11 AM 'David Gow' via KUnit Development
+<kunit-dev@googlegroups.com> wrote:
 >
-> [ 3976.640309] WARNING: CPU: 1 PID: 3570031 at kernel/ptrace.c:272 ptrace_check_attach+0x12e/0x178
-> [ 3976.640391] CPU: 1 PID: 3570031 Comm: strace Tainted: G           OE     5.19.0-20220624.rc3.git0.ee819a77d4e7.300.fc36.s390x #1
-> [ 3976.640410] Hardware name: IBM 3906 M04 704 (z/VM 7.1.0)
-> [ 3976.640452] Call Trace:
-> [ 3976.640454]  [<00000000ab4b645a>] ptrace_check_attach+0x132/0x178
-> [ 3976.640457] ([<00000000ab4b6450>] ptrace_check_attach+0x128/0x178)
-> [ 3976.640460]  [<00000000ab4b6cde>] __s390x_sys_ptrace+0x86/0x160
-> [ 3976.640463]  [<00000000ac03fcec>] __do_syscall+0x1d4/0x200
-> [ 3976.640468]  [<00000000ac04e312>] system_call+0x82/0xb0
-> [ 3976.640470] Last Breaking-Event-Address:
-> [ 3976.640471]  [<00000000ab4ea3c8>] wait_task_inactive+0x98/0x190
+> The kunit_test_suite() macro is no-longer incompatible with module_add,
+> so its use can be reinstated.
 >
-> This is because JOBCTL_TRACED is set, but the task is not in TASK_TRACED
-> state. Caused by ptrace_unfreeze_traced() which does:
+> Since this fixes parsing with builtins and kunit_tool, also enable the
+> test by default when KUNIT_ALL_TESTS is enabled.
 >
-> task->jobctl &= ~TASK_TRACED
+> The test can now be run via kunit_tool with:
+>         ./tools/testing/kunit/kunit.py run --arch=x86_64 \
+>         --kconfig_add CONFIG_OF=y --kconfig_add CONFIG_OF_ADDRESS=y \
+>         --kconfig_add CONFIG_MMC=y --kconfig_add CONFIG_MMC_SDHCI=y \
+>         --kconfig_add CONFIG_MMC_SDHCI_PLTFM=y \
+>         --kconfig_add CONFIG_MMC_SDHCI_OF_ASPEED=y \
+>         'sdhci-of-aspeed'
 >
-> but it should be:
+> (It may be worth adding a .kunitconfig at some point, as there are
+> enough dependencies to make that command scarily long.)
 >
-> task->jobctl &= ~JOBCTL_TRACED
+> Acked-by: Daniel Latypov <dlatypov@google.com>
+> Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: David Gow <davidgow@google.com>
 
-
-That would definitely do it.  I had to think about it for a few minutes
-to see how it explains some of the stranger behavior but it explains
-all of the funny behavior I have seen.
-
-Thank you for tracking this down.
-
-The fact the original bug report was on s390 had me somehow thinking
-this was s390 only.
-
-I will double check everything get this in linux-next and then send this
-to Linus.
-
-Eric
-
-
-> Fixes: 31cae1eaae4f ("sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state")
-> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-> ---
->  kernel/ptrace.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-> index 156a99283b11..1893d909e45c 100644
-> --- a/kernel/ptrace.c
-> +++ b/kernel/ptrace.c
-> @@ -222,7 +222,7 @@ static void ptrace_unfreeze_traced(struct task_struct *task)
->  	if (lock_task_sighand(task, &flags)) {
->  		task->jobctl &= ~JOBCTL_PTRACE_FROZEN;
->  		if (__fatal_signal_pending(task)) {
-> -			task->jobctl &= ~TASK_TRACED;
-> +			task->jobctl &= ~JOBCTL_TRACED;
->  			wake_up_state(task, __TASK_TRACED);
->  		}
->  		unlock_task_sighand(task, &flags);
+Acked-by: Brendan Higgins <brendanhiggins@google.com>
