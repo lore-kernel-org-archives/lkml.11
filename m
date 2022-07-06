@@ -2,153 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A8ECCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B49C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 18:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234240AbiGFSo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 14:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        id S234275AbiGFSqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 14:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234051AbiGFSoy (ORCPT
+        with ESMTP id S233982AbiGFSqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 14:44:54 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2332425EA8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:44:52 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id g4so14710449pgc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:44:52 -0700 (PDT)
+        Wed, 6 Jul 2022 14:46:14 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C15248CD
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 11:46:13 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id v12so7763818edc.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 11:46:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sq6qcos9XNbTRumjT46X79ghULTNnNg9dBEgItaotRg=;
-        b=UiM407N8Ln1qohMz5R08dtWO1lpCPUaHlBkxBwsRUs3WY2BJLH3d2iXtUZ7jBHtfFH
-         COL5eqVAz9+PBz4XepDF5fWW5Kq+gd00vYE37UwqJrpYMxLqtzBNmvVgVtDuUFXAM/tI
-         r8JDpaZwE0dnfsR3kyP6p2bXAC8fjZ3kjy2/OIpmXfctqjTEqbNlsxrS1S1fJr1hN1Rz
-         eYPilgvjTpA4DD6ius19pGlyky5Z5+PhU5yKehg2UMPrivnvBjNz2ydKvwrg3w4a+eCZ
-         PVcSErKmW8h87YuBkoDCnf62jhu6CPzQUx0pkQTV7jt6aNdlll/Yp7E86+kfmDO9QNZm
-         BAVw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ArQRj5zQtcHaydnmWOW5hB+rAM/OvX+j6DP4yVvvY38=;
+        b=SfC0Ow+BAevij9wNFnjUlGAUPxxIuQEyx9vRw9qqiXZppQrwgiDm9b55bo37nbGfv1
+         etksABI3SWnauwd6TAc1VJM0LxeH9kM6/P+tAnFUjebkUyHDlS1+ccblLwWqAHJisuFa
+         Zv3+Jrqqc2yU9F+WJYGQcmwTNkUVNkf/QoHI0I2DNiJqLbmuPc/9Kvd8+Z2MyzpXBK1Y
+         YULaJbBAHG2B1oiNNz/QJmBT9dFi7h07Zkv/+hqUh4XdkDXVar0mre/nbW1IpLvYiNN4
+         ccTlhrEiPWDRQZ0DC/oAW6RVEPPJV+x3RZcQ8jBndwRH8burEyoKqhVuQbFLA52TWA3G
+         uP6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sq6qcos9XNbTRumjT46X79ghULTNnNg9dBEgItaotRg=;
-        b=P7OxeSrajMhCNnmC8Sj9BuqCrmArRCXj3FM6GWgLrL6HSeIAFcHVND4zka9nZy3rC1
-         O8ST/jk9o3sbMerPcgTqsB2fxuLhnE/mVgyZbn2ox7eyf6QcU2l1Ve2dR+//Kme9Fwz6
-         GIYEUjjd+NPlaIuB10yRJKNb7jaaFFi+Xi7ZAdVV7M8OAaQ8t3GfpRaUecRGcWEWTEXb
-         z8BeYwpn8QjmWrxLMg78pXv1YGg1z+AhhpXITfdjk1yJ/ehV2yTtMXS3e1tKtQyokev0
-         ACUn8mniNGO02AazJZ8IIUloWZiwFSZjP+MkiaWDQ+vN6YPWBwd/Z6dyhWG5aI8DRZv7
-         WZpw==
-X-Gm-Message-State: AJIora9pn7zxz46kMKO1PMclvBXhRCIb7p6uXRCb20VeGfKFlI9CHFe+
-        flWF70W95QuLtSh9IV2k4p4lNw==
-X-Google-Smtp-Source: AGRyM1u3p5z/7I2/9J4cfRGN7XazRx99bmivFsfVOoZ7Ho+YDb5U8qfRpc1ZHvSjssvvBUq/9S0cMg==
-X-Received: by 2002:a65:4d45:0:b0:411:83dc:9625 with SMTP id j5-20020a654d45000000b0041183dc9625mr34831547pgt.359.1657133091569;
-        Wed, 06 Jul 2022 11:44:51 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id v16-20020a170902e8d000b0015e8d4eb24fsm25884936plg.153.2022.07.06.11.44.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 11:44:51 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 18:44:47 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 15/28] KVM: VMX: Check
- CPU_BASED_{INTR,NMI}_WINDOW_EXITING in setup_vmcs_config()
-Message-ID: <YsXYH43clik02kZ9@google.com>
-References: <20220629150625.238286-1-vkuznets@redhat.com>
- <20220629150625.238286-16-vkuznets@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ArQRj5zQtcHaydnmWOW5hB+rAM/OvX+j6DP4yVvvY38=;
+        b=3aAjm/DsHSrfntUf0i/CfwctS1FiiiCCP+JqZTZabCOc+uAfj8Q5v5F0T4NE5HLJXt
+         D5jxdsJ34jVMudDnfNRy9ZB+GE0L3WllpXGRU/pcS4dnBp9DF/RZVFB0+sksp1eOcGK0
+         W7K+OrsSM1mPpIDx9OUkRC24L9TC4UqByNNe7VOFL/GbmNI1x+YfqkXFlLXukR+rV/gs
+         5ytDgadd0jPjqaCkuSsbf62fLEvv09FxhWqMfzFm4tRBX+fpAq9Pg20P8wczw7SnAfmR
+         BxvqhgYaZArI72LRATkW5lmZbyhE8SdjC7EaaEE24UuoIOU/qz2RuGeZCggGivJD5TZC
+         pQcg==
+X-Gm-Message-State: AJIora/pZnIFqONN3wBNo9XHGmOQSabffJpBlvGD49x95y/gf2R7FT1e
+        Ainy8neWFIlUHUp8ibS46qtnCR+RVXB3hTpLnrmHsg==
+X-Google-Smtp-Source: AGRyM1vmlS6JeMg7FkIAaxA4ps9qsKFG6dUJPPUMkJnxDLKjk7ynSMQRPEC1KauAfgG9ktfePccDwQOt9xt4Klwfq/0=
+X-Received: by 2002:a05:6402:90a:b0:439:c144:24cd with SMTP id
+ g10-20020a056402090a00b00439c14424cdmr33061862edz.209.1657133171655; Wed, 06
+ Jul 2022 11:46:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220629150625.238286-16-vkuznets@redhat.com>
+References: <20220702051205.3292468-1-davidgow@google.com>
+In-Reply-To: <20220702051205.3292468-1-davidgow@google.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Wed, 6 Jul 2022 14:46:00 -0400
+Message-ID: <CAFd5g47AVBUV8qdWF0B_oY8EMwTE85apv3b+nSsQu=bOZV=o4g@mail.gmail.com>
+Subject: Re: [PATCH] kunit: Documentation: Fix a kernel-doc reference
+To:     David Gow <davidgow@google.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Daniel Latypov <dlatypov@google.com>,
+        Martin Fernandez <martin.fernandez@eclypsium.com>,
+        Kees Cook <keescook@chromium.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022, Vitaly Kuznetsov wrote:
-> CPU_BASED_{INTR,NMI}_WINDOW_EXITING controls are toggled dynamically by
-> vmx_enable_{irq,nmi}_window, handle_interrupt_window(), handle_nmi_window()
-> but setup_vmcs_config() doesn't check their existence. Add the check and
-> filter the controls out in vmx_exec_control().
-> 
-> No (real) functional change intended as all existing CPUs supporting
-> VMX are supposed to have these controls.
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/vmx/vmx.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index da8bbba38d0e..89a3bbafa5af 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -2487,7 +2487,9 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->  	      CPU_BASED_MWAIT_EXITING |
->  	      CPU_BASED_MONITOR_EXITING |
->  	      CPU_BASED_INVLPG_EXITING |
-> -	      CPU_BASED_RDPMC_EXITING;
-> +	      CPU_BASED_RDPMC_EXITING |
-> +	      CPU_BASED_INTR_WINDOW_EXITING |
-> +	      CPU_BASED_NMI_WINDOW_EXITING;
+On Sat, Jul 2, 2022 at 1:12 AM David Gow <davidgow@google.com> wrote:
+>
+> When building the KUnit documentation, the reference to
+> kunit_test_suites in the kunit_test_init_section_suites kernel-doc
+> comment gives an error:
+> Documentation/dev-tools/kunit/api/test:9: ./include/kunit/test.h:323: WARNING: Inline interpreted text or phrase reference start-string without end-string.
+>
+> This is because the reference is mixing two function reference styles:
+> adding an '&' to the front, and "()" to the end. The latter is neater,
+> so get rid of the '&'.
+>
+> Fixes: 9bf2eed995f9 ("kunit: add support for kunit_suites that reference init code")
+> Signed-off-by: David Gow <davidgow@google.com>
 
-Requiring NMI_WINDOW_EXITING is wrong, KVM doesn't use NMI_WINDOW_EXITING if
-enable_vnmi == false:
-
-	if (!enable_vnmi ||
-	    vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) & GUEST_INTR_STATE_STI) {
-		vmx_enable_irq_window(vcpu);
-		return;
-	}
-
-	exec_controls_setbit(to_vmx(vcpu), CPU_BASED_NMI_WINDOW_EXITING);
-
-And enable_vnmi is cleared if PIN_BASED_VIRTUAL_NMIS are unsupported:
-
-	if (!cpu_has_virtual_nmis())
-		enable_vnmi = 0;
-
-I suspect CPUs that don't support VIRTUAL_NMIS also don't support NMI_WINDOW_EXITING,
-and KVM explicitly supports such CPUs.  See commit 8a1b43922d0d ("kvm: vmx: Reinstate
-support for CPUs without virtual NMI").
-
-Making NMI_WINDOW_EXITING optional and then adding it to cpu_has_virtual_nmis()
-seems like the correct approach.
-
-diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
-index 069d8d298e1d..c34890e9fc2a 100644
---- a/arch/x86/kvm/vmx/capabilities.h
-+++ b/arch/x86/kvm/vmx/capabilities.h
-@@ -82,7 +82,8 @@ static inline bool cpu_has_vmx_basic_inout(void)
-
- static inline bool cpu_has_virtual_nmis(void)
- {
--       return vmcs_config.pin_based_exec_ctrl & PIN_BASED_VIRTUAL_NMIS;
-+       return vmcs_config.pin_based_exec_ctrl & PIN_BASED_VIRTUAL_NMIS &&
-+              vmcs_config.cpu_based_exec_ctrl & CPU_BASED_NMI_WINDOW_EXITING;
- }
-
- static inline bool cpu_has_vmx_preemption_timer(void)
-
-
->  	opt = CPU_BASED_TPR_SHADOW |
->  	      CPU_BASED_USE_MSR_BITMAPS |
-> @@ -4300,6 +4302,10 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
->  {
->  	u32 exec_control = vmcs_config.cpu_based_exec_ctrl;
->  
-> +	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
-> +	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
-> +			  CPU_BASED_NMI_WINDOW_EXITING);
-> +
->  	if (vmx->vcpu.arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)
->  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
->  
-> -- 
-> 2.35.3
-> 
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
