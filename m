@@ -2,208 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E363C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBF8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233665AbiGFMbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        id S233420AbiGFMbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233291AbiGFMbD (ORCPT
+        with ESMTP id S232686AbiGFMba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:31:03 -0400
-Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [IPv6:2001:4b7a:2000:18::168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB7526AC8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:02 -0700 (PDT)
-Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id D06DC3F642;
-        Wed,  6 Jul 2022 14:30:59 +0200 (CEST)
-Message-ID: <3bf68892-9a55-1d6e-fb43-346d9378a866@somainline.org>
-Date:   Wed, 6 Jul 2022 14:30:59 +0200
+        Wed, 6 Jul 2022 08:31:30 -0400
+Received: from mail.intenta.de (mail.intenta.de [178.249.25.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF6526AC9
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:31:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de;
+        s=dkim1; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:
+        Subject:CC:To:From:Date:Sender:Reply-To:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=w4pHfmZD0IlO48upKT0jymWFM3XUku7K9TO4KSQqx44=; b=ekgqeH0R3TIx7YeKE/3c5/hjwW
+        1lOKsp25xtyAcwV/X7vqdt3OHCae4wnXYGQuVq/xgxJKOZxXkqJDIQJouZZz7qZ6eN9k7ojC4n1YE
+        gtoLiGDSaKhNYxtMvSSqJmJhxZZRGnhPIdyY2APZC2DgEwJrnRXVsoBWVib7blaGIiuQPQ6NE6Hk1
+        5ZI09mFxH/L7fOtHie3dMSPUTPoATs9qwG3mnAc6/DExa8N6r9P95yAXlT3XXFAIkdJAggYcNVY3V
+        5hzjxD51LTK5TjtCqKF0FIB8g8k5QikftEnmUPC9wJnRZLCLDG+4sQ8rQmJnHuq9nXdDgtp1qK5mi
+        l0WSMa4A==;
+Date:   Wed, 6 Jul 2022 14:29:48 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Support Opensource <support.opensource@diasemi.com>,
+        Lee Jones <lee.jones@linaro.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+        Mark Brown <broonie@kernel.org>,
+        Wolfram Sang <wsa@the-dreams.de>
+Subject: [PATCH v4 1/2] mfd: da9062: enable being a system-power-controller
+Message-ID: <c6e19670802355222a228061f37aadace2764933.1657104160.git.helmut.grohne@intenta.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 2/2] [PATCH v2 2/2] arm64: dts: qcom: Add LTE SKUs for
- sc7280-villager family
-Content-Language: en-US
-To:     Jimmy Chen <jinghung.chen3@hotmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alan Huang <alan-huang@quanta.corp-partner.google.com>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-References: <SG2PR03MB500697A11DA5D0B45DE41B0ECC819@SG2PR03MB5006.apcprd03.prod.outlook.com>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <SG2PR03MB500697A11DA5D0B45DE41B0ECC819@SG2PR03MB5006.apcprd03.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: 0e788d66-80ec-4ac3-b2f1-4d8c6f55fd77
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The DA9062 can be the device used to power the CPU. In that case, it can
+be used to power off the system. In the CONTROL_A register, the M_*_EN
+bits must be zero for the corresponding *_EN bits to have an effect. We
+zero them all to turn off the system.
 
+Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+---
+ drivers/mfd/da9062-core.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-On 5.07.2022 04:22, Jimmy Chen wrote:
-> This adds LTE skus for villager device tree files.
-> 
-> Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
-> ---
-> 
->  arch/arm64/boot/dts/qcom/Makefile                 |  2 ++
->  .../arm64/boot/dts/qcom/sc7280-chrome-common.dtsi | 11 -----------
->  arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts |  1 +
->  .../dts/qcom/sc7280-herobrine-herobrine-r1.dts    |  1 +
->  .../boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi   | 15 +++++++++++++++
->  .../dts/qcom/sc7280-herobrine-villager-r0-lte.dts | 14 ++++++++++++++
->  .../dts/qcom/sc7280-herobrine-villager-r1-lte.dts | 14 ++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280-idp.dts           |  1 +
->  8 files changed, 48 insertions(+), 11 deletions(-)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-> index bb9f4eb3e65a0..6d81ff12f5af2 100644
-> --- a/arch/arm64/boot/dts/qcom/Makefile
-> +++ b/arch/arm64/boot/dts/qcom/Makefile
-> @@ -103,6 +103,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-r1-lte.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-crd.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-herobrine-r1.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r0.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r0-lte.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r1-lte.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp2.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-crd-r3.dtb
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi b/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-> index cfe2741456a1a..25f31c81b2b74 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-> @@ -83,17 +83,6 @@ spi_flash: flash@0 {
->  	};
->  };
->  
-> -/* Modem setup is different on Chrome setups than typical Qualcomm setup */
-> -&remoteproc_mpss {
-> -	status = "okay";
-> -	compatible = "qcom,sc7280-mss-pil";
-> -	iommus = <&apps_smmu 0x124 0x0>, <&apps_smmu 0x488 0x7>;
-> -	interconnects = <&mc_virt MASTER_LLCC 0 &mc_virt SLAVE_EBI1 0>;
-> -	memory-region = <&mba_mem>, <&mpss_mem>;
-> -	firmware-name = "qcom/sc7280-herobrine/modem/mba.mbn",
-> -			"qcom/sc7280-herobrine/modem/qdsp6sw.mbn";
-> -};
-> -
->  &remoteproc_wpss {
->  	status = "okay";
->  	firmware-name = "ath11k/WCN6750/hw1.0/wpss.mdt";
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> index e9ca6c5d24a16..921eccfec39ae 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> @@ -9,6 +9,7 @@
->  
->  #include "sc7280-herobrine.dtsi"
->  #include "sc7280-herobrine-audio-wcd9385.dtsi"
-> +#include "sc7280-herobrine-lte-sku.dtsi"
->  
->  / {
->  	model = "Qualcomm Technologies, Inc. sc7280 CRD platform (rev5+)";
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-> index c1647a85a371a..c1a6719687252 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-> @@ -8,6 +8,7 @@
->  /dts-v1/;
->  
->  #include "sc7280-herobrine.dtsi"
-> +#include "sc7280-herobrine-lte-sku.dtsi"
->  
->  / {
->  	model = "Google Herobrine (rev1+)";
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
-> new file mode 100644
-> index 0000000000000..a4809dd2f4e8a
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
-> @@ -0,0 +1,15 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Google Herobrine dts fragment for LTE SKUs
-> + *
-> + * Copyright 2022 Google LLC.
-> + */
-> +/* Modem setup is different on Chrome setups than typical Qualcomm setup */
-> +&remoteproc_mpss {
-Hi, just a minor nit.
+Compared to v3, this addresses the following concerns raised by Lee Jones:
+ * Consistently start error messages upper case.
+ * Pull i2c_get_clientdata out of the call again. In his previous review he
+   remarked the joint declaration and call as "passable", which I misunderstood
+   as "can be passed to regmap_update_bits directly" while the intended meaning
+   was more like "acceptable". This is part is now reverted back to the v2
+   form.
 
-It was recently agreed upon that the status property should go last to
-make things consistent with other DTs (qcom is - as usual - a special
-snowflake :D). Could you please fix that up? The rest looks good.
+Adam Thomson's observation about the use of i2c in atomic context is observable
+in reality since a few kernel releases. When powering off the system, I now see
+this:
 
-Konrad
-> +	status = "okay";
-> +	compatible = "qcom,sc7280-mss-pil";
-> +	iommus = <&apps_smmu 0x124 0x0>, <&apps_smmu 0x488 0x7>;
-> +	memory-region = <&mba_mem>, <&mpss_mem>;
-> +	firmware-name = "qcom/sc7280-herobrine/modem/mba.mbn",
-> +			"qcom/sc7280-herobrine/modem/qdsp6sw.mbn";
-> +};
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
-> new file mode 100644
-> index 0000000000000..672cb78e3088f
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
-> @@ -0,0 +1,14 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Google Villager board device tree source
-> + *
-> + * Copyright 2022 Google LLC.
-> + */
-> +
-> +#include "sc7280-herobrine-villager-r0.dts"
-> +#include "sc7280-herobrine-lte-sku.dtsi"
-> +
-> +/ {
-> +	model = "Google Villager (rev0) with LTE";
-> +	compatible = "google,villager-rev0-sku0", "qcom,sc7280";
-> +};
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
-> new file mode 100644
-> index 0000000000000..2f05a19cc388e
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
-> @@ -0,0 +1,14 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Google Villager board device tree source
-> + *
-> + * Copyright 2022 Google LLC.
-> + */
-> +
-> +#include "sc7280-herobrine-villager-r1.dts"
-> +#include "sc7280-herobrine-lte-sku.dtsi"
-> +
-> +/ {
-> +	model = "Google Villager (rev1+) with LTE";
-> +	compatible = "google,villager-sku0", "qcom,sc7280";
-> +};
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dts b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-> index 6d3ff80582ae9..fba7e938ce35a 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-> @@ -10,6 +10,7 @@
->  #include <dt-bindings/iio/qcom,spmi-adc7-pmr735a.h>
->  #include "sc7280-idp.dtsi"
->  #include "pmr735a.dtsi"
-> +#include "sc7280-herobrine-lte-sku.dtsi"
->  
->  / {
->  	model = "Qualcomm Technologies, Inc. sc7280 IDP SKU1 platform";
+reboot: Power down
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at drivers/i2c/i2c-core.h:40 i2c_transfer+0x104/0x134
+---[ end trace 0000000000000000 ]---
+
+Looking at the actual warning, this is actually about using non-atomic xfers in
+atomic context (i.e. he's totally right). Wolfram Sang worked on this problem
+on a more fundamental level and added a patch "i2c: core: introduce callbacks
+for atomic transfers" (63b96983a5dd). Unfortunately, the relevant i2c driver in
+use here (i2c-cadence) does not include atomic transfer callbacks yet, which is
+why I see the warning. However, that only confirms the way of using i2c code in
+pm_power_off hooks as the "right" way to do it.
+
+In all of my tests, the system powered off reliably.
+
+I still didn't include Adam Thomson's Reviewed-by from v2, because the code is
+still noticeably different.
+
+Thanks for bearing with me
+
+Helmut
+diff --git a/drivers/mfd/da9062-core.c b/drivers/mfd/da9062-core.c
+index 2774b2cbaea6..94d447769da3 100644
+--- a/drivers/mfd/da9062-core.c
++++ b/drivers/mfd/da9062-core.c
+@@ -620,6 +620,27 @@ static const struct of_device_id da9062_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, da9062_dt_ids);
+ 
++static struct i2c_client *da9062_i2c_client;
++
++static void da9062_power_off(void)
++{
++	struct da9062 *chip = i2c_get_clientdata(da9062_i2c_client);
++	int ret;
++
++	ret = regmap_update_bits(
++		chip->regmap,
++		DA9062AA_CONTROL_A,
++		DA9062AA_SYSTEM_EN_MASK | DA9062AA_POWER_EN_MASK |
++			DA9062AA_POWER1_EN_MASK | DA9062AA_M_SYSTEM_EN_MASK |
++			DA9062AA_M_POWER_EN_MASK | DA9062AA_M_POWER1_EN_MASK,
++		0
++	);
++
++	if (ret < 0)
++		dev_err(&da9062_i2c_client->dev,
++			"Failed to power the system off (err=%d)\n", ret);
++}
++
+ static int da9062_i2c_probe(struct i2c_client *i2c,
+ 	const struct i2c_device_id *id)
+ {
+@@ -720,6 +741,15 @@ static int da9062_i2c_probe(struct i2c_client *i2c,
+ 		return ret;
+ 	}
+ 
++	if (of_device_is_system_power_controller(i2c->dev.of_node)) {
++		if (!pm_power_off) {
++			da9062_i2c_client = i2c;
++			pm_power_off = da9062_power_off;
++		} else {
++			dev_warn(&i2c->dev, "Poweroff callback already assigned\n");
++		}
++	}
++
+ 	return ret;
+ }
+ 
+@@ -727,6 +757,11 @@ static int da9062_i2c_remove(struct i2c_client *i2c)
+ {
+ 	struct da9062 *chip = i2c_get_clientdata(i2c);
+ 
++	if (pm_power_off == da9062_power_off)
++		pm_power_off = NULL;
++	if (da9062_i2c_client)
++		da9062_i2c_client = NULL;
++
+ 	mfd_remove_devices(chip->dev);
+ 	regmap_del_irq_chip(i2c->irq, chip->regmap_irq);
+ 
+-- 
+2.30.2
+ 
+Dipl.-Inf. Helmut Grohne
+Research and Development
+Application Engineering
+ 
+Phone: +49 (371) 24354 0 ∙ Fax:  +49 (371) 24354 020
+helmut.grohne@intenta.de ∙ https://www.intenta.de
+ 
+Intenta GmbH ∙ Ahornstraße 55 ∙ 09112 Chemnitz, Germany
+Managing Director: Dr.-Ing. Basel Fardi ∙ VAT/USt-IdNr.: DE 275745394
+Commercial register: HRB 26404 Amtsgericht Chemnitz
