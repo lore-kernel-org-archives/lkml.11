@@ -2,89 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1ECC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0E1CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232258AbiGFMcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36336 "EHLO
+        id S233670AbiGFMdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233676AbiGFMcS (ORCPT
+        with ESMTP id S231842AbiGFMdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:32:18 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A1F26ACD;
-        Wed,  6 Jul 2022 05:32:17 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id 64so17773243ybt.12;
-        Wed, 06 Jul 2022 05:32:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8fGAXjGlGnpjPR/MiR6gsPc9M+X2hCgjnxVgcSV7E3k=;
-        b=P/KZVgStvwd6tySv/eqvZW97OYZrxBW12v9/apZmCsEtA/Q+sdmq9OqksdzHZulEya
-         wFBpmwKk3nrt8R3dH8u2dMJgbSFpPpciBDSkjav7dd41r92zJAke3Gl4dNXktkEoa0QG
-         T1nrgddl70vFVYEUx+/IizMxucxyR1Hds4UhCqPzmkDJZcTZapqwyoc1uWSH8iUJ3rdQ
-         ilr6sNRvOYZktNBrDEtEg0+UKHO81nCyzOd4+bRrZAZUtVBMOKIklc3W20D3t9SoZWTf
-         Hh/ladfy9L58v8UJCRMWnnNKAFOCryTiguhDsJw8bNOxZapPWrmn6TUhPofHAZ5f39b5
-         SJxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8fGAXjGlGnpjPR/MiR6gsPc9M+X2hCgjnxVgcSV7E3k=;
-        b=oRWsjX82+2AAyrv4GpJvbyex4WGUT+TZxJnH5jJI85Vz5CPYHZk3UQwlmCssxumOMx
-         TxGm16NTcdj7tTcXgHLhmYkHVPuCSOanUSCCYv6kqqCx/wglZPohPKvNxqrMfkQ9VLDL
-         jDgw2YDtSOwO3KDx3wPs44PPw+9kVBjasyIOuOmTSnZ4uv3F86ZArlK6IJNAvBobCOQ9
-         +O6HBwvKNSgvadFKzDFuR2mXWe4SdS5jynuiI1ILXDhq/xkLfUawxqdGUm2x+LXW38Ur
-         HV490GXMGVpTfPXfg/bZLK5lCCddW5mnTQHjaiJVq1/F2tPH5gBcn0CIAPnCdjbKeR1r
-         zhvg==
-X-Gm-Message-State: AJIora93lbO76FL2+ZPZvVzRpUw3rvo1CMwfxrRkQOicBy4kqLJ6TjdB
-        pzxRs1CEMoW/qzxGEvkB2Ha5oofGHMQiAf8vm/E=
-X-Google-Smtp-Source: AGRyM1s4GlbjUriYI4OcdkNVJtgtJWpB1v8bCoaFXYo/uFZb8MEoGn1i49NyJ8LwAl23y4jn60aNhZquQqyShVxPDjM=
-X-Received: by 2002:a05:6902:686:b0:66e:627f:4d29 with SMTP id
- i6-20020a056902068600b0066e627f4d29mr12612894ybt.385.1657110736868; Wed, 06
- Jul 2022 05:32:16 -0700 (PDT)
+        Wed, 6 Jul 2022 08:33:19 -0400
+X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 05:33:17 PDT
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBCA26ACC;
+        Wed,  6 Jul 2022 05:33:17 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 3165A18864BD;
+        Wed,  6 Jul 2022 12:25:31 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 27ACE25032B8;
+        Wed,  6 Jul 2022 12:25:31 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 1F97F9120FED; Wed,  6 Jul 2022 12:25:31 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from wse-c0127.vestervang (unknown [208.127.141.28])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id A337C9120FED;
+        Wed,  6 Jul 2022 12:25:29 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH net-next 1/1] net: dsa: mv88e6xxx: allow reading FID when handling ATU violations
+Date:   Wed,  6 Jul 2022 14:25:02 +0200
+Message-Id: <20220706122502.1521819-1-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220705171835.4923-1-brgl@bgdev.pl> <CAHp75Ve3sPhFOZhL=_2p+1avuo96CP995KD+bi+Pn3gyj1F9TA@mail.gmail.com>
- <CAMRc=MekRvEVjRKJn6CWpbk9GJWS0Y+kB9MYpGFSN9WSSzWC7A@mail.gmail.com>
-In-Reply-To: <CAMRc=MekRvEVjRKJn6CWpbk9GJWS0Y+kB9MYpGFSN9WSSzWC7A@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 6 Jul 2022 14:31:40 +0200
-Message-ID: <CAHp75VdepbidJWgLZFk3ns13boZXRYvMqvLvXF_xYw=2ahZMgw@mail.gmail.com>
-Subject: Re: [PATCH] gpio: pxa: schedule a devm action for the clock struct
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hulk Robot <hulkci@huawei.com>, Yuan Can <yuancan@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 2:11 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> On Wed, Jul 6, 2022 at 1:49 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Tue, Jul 5, 2022 at 7:29 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+For convenience the function mv88e6xxx_g1_atu_op() has been used to read
+ATU violations, but the function has other purposes and does not enable
+the possibility to read the FID when reading ATU violations.
 
-...
+The FID is needed to get hold of which VID was involved in the violation,
+thus the need for future purposes to be able to read the FID.
 
-> > > Reported-by: Signed-off-by: Yuan Can <yuancan@huawei.com>
-> >
-> > Me puzzled.
->
-> Yuan Can sent the following patch:
-> https://patchwork.ozlabs.org/project/linux-gpio/patch/20220704130323.104294-1-yuancan@huawei.com/
->
-> I responded that it was not complete and sent this instead.
+Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+---
+ drivers/net/dsa/mv88e6xxx/global1_atu.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-I understand that, I am puzzled with Reported-by: followed by SoB.
-What is this format? Is it something new and documented?
-
-
+diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+index 40bd67a5c8e9..5d120d53823c 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
++++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+@@ -114,6 +114,19 @@ static int mv88e6xxx_g1_atu_op_wait(struct mv88e6xxx_chip *chip)
+ 	return mv88e6xxx_g1_wait_bit(chip, MV88E6XXX_G1_ATU_OP, bit, 0);
+ }
+ 
++static int mv88e6xxx_g1_read_atu_violation(struct mv88e6xxx_chip *chip)
++{
++	int err;
++
++	err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
++				 MV88E6XXX_G1_ATU_OP_BUSY |
++				 MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
++	if (err)
++		return err;
++
++	return mv88e6xxx_g1_atu_op_wait(chip);
++}
++
+ static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
+ {
+ 	u16 val;
+@@ -359,8 +372,7 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 
+ 	mv88e6xxx_reg_lock(chip);
+ 
+-	err = mv88e6xxx_g1_atu_op(chip, 0,
+-				  MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
++	err = mv88e6xxx_g1_read_atu_violation(chip);
+ 	if (err)
+ 		goto out;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.30.2
+
