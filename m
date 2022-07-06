@@ -2,107 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B4C6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6034FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbiGFGGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 02:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45974 "EHLO
+        id S229755AbiGFGJe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 02:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiGFGGP (ORCPT
+        with ESMTP id S229609AbiGFGJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 02:06:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005C22F7;
-        Tue,  5 Jul 2022 23:06:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0E95B81A60;
-        Wed,  6 Jul 2022 06:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5985AC3411C;
-        Wed,  6 Jul 2022 06:06:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657087571;
-        bh=jvOZq722r7H/JpYeXiuNKx8BxoPr4CD4sprkmcgtsHU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UBISZFg4Ge7GQRk6VQfVTF0yeKRCowRMpeEhSqfcgqOTkWKECP5WgnXEXnrA+Wa9R
-         eeFmxIOC0Qxgez3KYCybtXaG4ryLGcV+6uNrYabuz6gsK0ZN+TndJmRB5CLbqG8+ai
-         Aj3hvh/M9zGBWZl1H2Hh3mk07Ct6GjGlhxjF+bKEfiy47H6/OJKPw8vVeOOfV9soWc
-         ezvm5XBPimU5RauYA17Htscla7WBVZ+/F13srgoW7V0YtPQ08z3OvAd5kyrov6RUmO
-         wHYOGcdVtnhy8BdxrIydQdsdKoWLlThm3hG619QsiTgjsCYmUoA0l0G1X6yJxdodAd
-         nu7FQDLJ6MNiQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o8yAu-0004bk-7I; Wed, 06 Jul 2022 08:06:12 +0200
-Date:   Wed, 6 Jul 2022 08:06:12 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 17/43] dt-bindings: phy: qcom,qmp-pcie: add missing child
- node schema
-Message-ID: <YsUmVBXWPojz0woT@hovoldconsulting.com>
-References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-18-johan+linaro@kernel.org>
- <4bc79a1c-66b1-225d-5026-ddf3e6f7d22c@linaro.org>
- <YsQlzr6nyvz761Kz@hovoldconsulting.com>
- <963917cf-0f9d-600f-564e-9e687270b1af@linaro.org>
- <YsQqcKZAs1xAB9+S@hovoldconsulting.com>
- <cf61b071-aa31-6f67-07f1-4f15e0fe7511@linaro.org>
+        Wed, 6 Jul 2022 02:09:32 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A139913D41
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 23:09:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657087771; x=1688623771;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vfVvdl9ASxQWmG60XIANcl9T9rHLFX37LENtdBu4h/Q=;
+  b=f4N9TIG3awVbD2Q9WOMCjhjSPpKiwyadD+PDA7NVGeX6YEVQR8qa8y42
+   u909zHi30IGAoF9X5MaT59k1vmw/yIM6kVtu7gFpGQV6ZdzOP/Sy8kWFp
+   24n8tAVmBXOHdCcsNBWK4oF44SvadkLGV6U3we3yfy8GdTlFZvh9jyPGC
+   QykG8ST3BJAUGORf0e5WUPW7wmpvrmXxTdJrmyO6ePA4EjRVT+jECPHxP
+   jbHgKKxvhESRxsEP3Q42GZwjFxx3l6MwcVywr2bTCfNQMYAcmPyJZC/2r
+   U85TXnFOa5EeEWL27FaVRh9vCESyTHcQlwLERxRM/v/slaVE4zgsfoJdL
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="281205874"
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="281205874"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 23:09:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="735441197"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 05 Jul 2022 23:09:29 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8yE4-000K8N-Hj;
+        Wed, 06 Jul 2022 06:09:28 +0000
+Date:   Wed, 6 Jul 2022 14:08:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        jasowang@redhat.com, xiaodong.liu@intel.com,
+        maxime.coquelin@redhat.com, stefanha@redhat.com
+Cc:     kbuild-all@lists.01.org, songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 5/5] vduse: Support registering userspace memory for
+ IOTLB
+Message-ID: <202207061418.mTlO0yqK-lkp@intel.com>
+References: <20220706050503.171-6-xieyongji@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cf61b071-aa31-6f67-07f1-4f15e0fe7511@linaro.org>
+In-Reply-To: <20220706050503.171-6-xieyongji@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 08:21:12PM +0200, Krzysztof Kozlowski wrote:
-> On 05/07/2022 14:11, Johan Hovold wrote:
+Hi Xie,
 
-> > Ok, so you want to flatten this by repeating also the register
-> > descriptions?
-> > 
-> > That wouldn't hurt readability as much, but doing so would be more error
-> > prone as it's easy to miss adding a new compatible in every group of
-> > conditionals and there's no else clause to catch the mistake.
-> > 
-> > Right know the logic is
-> > 
-> > 	if dual-lane
-> > 		items = 6
-> > 	else
-> > 		items = 3 or 4
-> > 		if single-lane-exception
-> > 			items = 3
-> > 		else
-> > 			items = 4
-> > 
-> > Flattening this gives
-> > 
-> > 	if dual-lane
-> > 		items = 6
-> > 	if single-lane-normal
-> > 		items = 4
-> > 	if single-lane-exception
-> > 		items = 3
-> > 
-> > Which means that every compatible must now be listed in one of the
-> > conditionals.
-> 
-> Yes, because it's explicit and easy to read. Handling compatibles in
-> 'else' makes it opposite - one cannot use grep and cannot easily find
-> what is actually covered by maxItems:4 (you need to check all 7
-> compatibles to find what is not covered here).
+Thank you for the patch! Perhaps something to improve:
 
-I'll go with that then.
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.19-rc5 next-20220705]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Johan
+url:    https://github.com/intel-lab-lkp/linux/commits/Xie-Yongji/VDUSE-Support-registering-userspace-memory-as-bounce-buffer/20220706-130802
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git e35e5b6f695d241ffb1d223207da58a1fbcdff4b
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207061418.mTlO0yqK-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/9be699264e4fede9c3be913b2d1003c260d9fa05
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Xie-Yongji/VDUSE-Support-registering-userspace-memory-as-bounce-buffer/20220706-130802
+        git checkout 9be699264e4fede9c3be913b2d1003c260d9fa05
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/vdpa/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/vdpa/vdpa_user/vduse_dev.c: In function 'vduse_dev_dereg_iotlb_mem':
+   drivers/vdpa/vdpa_user/vduse_dev.c:949:9: error: implicit declaration of function 'vfree'; did you mean 'kvfree'? [-Werror=implicit-function-declaration]
+     949 |         vfree(dev->iotlb_mem->pages);
+         |         ^~~~~
+         |         kvfree
+   drivers/vdpa/vdpa_user/vduse_dev.c: In function 'vduse_dev_reg_iotlb_mem':
+   drivers/vdpa/vdpa_user/vduse_dev.c:978:21: error: implicit declaration of function '__vmalloc'; did you mean '__kmalloc'? [-Werror=implicit-function-declaration]
+     978 |         page_list = __vmalloc(array_size(npages, sizeof(struct page *)),
+         |                     ^~~~~~~~~
+         |                     __kmalloc
+>> drivers/vdpa/vdpa_user/vduse_dev.c:978:19: warning: assignment to 'struct page **' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     978 |         page_list = __vmalloc(array_size(npages, sizeof(struct page *)),
+         |                   ^
+   cc1: some warnings being treated as errors
+
+
+vim +978 drivers/vdpa/vdpa_user/vduse_dev.c
+
+   957	
+   958	static int vduse_dev_reg_iotlb_mem(struct vduse_dev *dev,
+   959					   u64 iova, u64 uaddr, u64 size)
+   960	{
+   961		struct page **page_list = NULL;
+   962		struct vduse_iotlb_mem *mem = NULL;
+   963		long pinned = 0;
+   964		unsigned long npages, lock_limit;
+   965		int ret;
+   966	
+   967		if (size != dev->domain->bounce_size ||
+   968		    iova != 0 || uaddr & ~PAGE_MASK)
+   969			return -EINVAL;
+   970	
+   971		mutex_lock(&dev->mem_lock);
+   972		ret = -EEXIST;
+   973		if (dev->iotlb_mem)
+   974			goto unlock;
+   975	
+   976		ret = -ENOMEM;
+   977		npages = size >> PAGE_SHIFT;
+ > 978		page_list = __vmalloc(array_size(npages, sizeof(struct page *)),
+   979				      GFP_KERNEL_ACCOUNT);
+   980		mem = kzalloc(sizeof(*mem), GFP_KERNEL);
+   981		if (!page_list || !mem)
+   982			goto unlock;
+   983	
+   984		mmap_read_lock(current->mm);
+   985	
+   986		lock_limit = PFN_DOWN(rlimit(RLIMIT_MEMLOCK));
+   987		if (npages + atomic64_read(&current->mm->pinned_vm) > lock_limit)
+   988			goto out;
+   989	
+   990		pinned = pin_user_pages(uaddr, npages, FOLL_LONGTERM | FOLL_WRITE,
+   991					page_list, NULL);
+   992		if (pinned != npages) {
+   993			ret = pinned < 0 ? pinned : -ENOMEM;
+   994			goto out;
+   995		}
+   996	
+   997		ret = vduse_domain_add_user_bounce_pages(dev->domain,
+   998							 page_list, pinned);
+   999		if (ret)
+  1000			goto out;
+  1001	
+  1002		atomic64_add(npages, &current->mm->pinned_vm);
+  1003	
+  1004		mem->pages = page_list;
+  1005		mem->npages = pinned;
+  1006		mem->iova = iova;
+  1007		mem->mm = current->mm;
+  1008		mmgrab(current->mm);
+  1009	
+  1010		dev->iotlb_mem = mem;
+  1011	out:
+  1012		if (ret && pinned > 0)
+  1013			unpin_user_pages(page_list, pinned);
+  1014	
+  1015		mmap_read_unlock(current->mm);
+  1016	unlock:
+  1017		if (ret) {
+  1018			vfree(page_list);
+  1019			kfree(mem);
+  1020		}
+  1021		mutex_unlock(&dev->mem_lock);
+  1022		return ret;
+  1023	}
+  1024	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
