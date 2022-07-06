@@ -2,100 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F31C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA34C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233204AbiGFKyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38478 "EHLO
+        id S233216AbiGFKzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233245AbiGFKyn (ORCPT
+        with ESMTP id S230248AbiGFKzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:54:43 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61AE027CEB
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:54:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 68C5E1042;
-        Wed,  6 Jul 2022 03:54:39 -0700 (PDT)
-Received: from [10.57.86.2] (unknown [10.57.86.2])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CD69B3F66F;
-        Wed,  6 Jul 2022 03:54:36 -0700 (PDT)
-Message-ID: <8915e679-71b2-eef4-88d5-127bcc6cf990@arm.com>
-Date:   Wed, 6 Jul 2022 11:54:27 +0100
+        Wed, 6 Jul 2022 06:55:38 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D234627B10
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:55:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657104936; x=1688640936;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RqQ3XulD8QWql1k3Di0ZQs3oNyteJnyER/INy0RNQVg=;
+  b=TBnfupIlHekw0dr2L8NXBob2v6abAM+t0zC2zmjLuAd+YqStQZ8Jvniq
+   5IUS6c4VCeYN3Qh/iuWybHPMhyC4CjCQOwVqxoEfOabfKotGVum1so58T
+   T3rGsh2e3UXxqdG4o41JL5u4mRIxZ8aM39E2LoG+JYBVGsZX5HtAiE14b
+   ctCDiokPZBvQ2diosbkSZw/f4pGV2KMj6kpukIuHD3AfCkigQJPq6XO1H
+   9NEHljyeimGF9KZqznUoRRoXxBXso042QyIE1bDBVGCpHfdm6ygpFq4Mo
+   3tW7JW9ChbVSEGfXwYKnx1uF5E5RKNdLfX5v7MfHv5rGK1IC3x1R6rnHF
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272501384"
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="272501384"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:54:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="593289353"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 06 Jul 2022 03:53:58 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o92fN-000KTh-Di;
+        Wed, 06 Jul 2022 10:53:57 +0000
+Date:   Wed, 6 Jul 2022 18:53:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Zhongjun Tan <hbut_tan@163.com>, perex@perex.cz, tiwai@suse.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Zhongjun Tan <tanzhongjun@coolpad.com>
+Subject: Re: [PATCH] ALSA: usb-audio: Fix unsigned expression compared with
+ zero
+Message-ID: <202207061810.ztYTpLH7-lkp@intel.com>
+References: <20220706070627.16764-1-hbut_tan@163.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 09/14] iommu/ipmmu-vmsa: Clean up bus_set_iommu()
-Content-Language: en-GB
-To:     Alexey Kardashevskiy <aik@ozlabs.ru>, joro@8bytes.org,
-        will@kernel.org
-Cc:     jean-philippe@linaro.org, zhang.lyra@gmail.com,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        thierry.reding@gmail.com, gerald.schaefer@linux.ibm.com,
-        linux-arm-kernel@lists.infradead.org
-References: <cover.1650890638.git.robin.murphy@arm.com>
- <01a58dcc9c70836b7556d54dbdac6a340f206781.1650890638.git.robin.murphy@arm.com>
- <aef1d470-e8a0-4ba8-2a55-adf05b836684@ozlabs.ru>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <aef1d470-e8a0-4ba8-2a55-adf05b836684@ozlabs.ru>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706070627.16764-1-hbut_tan@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-06 09:38, Alexey Kardashevskiy wrote:
-> 
-> 
-> On 28/04/2022 23:18, Robin Murphy wrote:
->> Stop calling bus_set_iommu() since it's now unnecessary. This also
->> leaves the custom initcall effectively doing nothing but register
->> the driver, which no longer needs to happen early either, so convert
->> it to builtin_platform_driver().
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/ipmmu-vmsa.c | 35 +----------------------------------
->>   1 file changed, 1 insertion(+), 34 deletions(-)
->>
->> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
->> index 8fdb84b3642b..2549d32f0ddd 100644
->> --- a/drivers/iommu/ipmmu-vmsa.c
->> +++ b/drivers/iommu/ipmmu-vmsa.c
->> @@ -1090,11 +1090,6 @@ static int ipmmu_probe(struct platform_device 
->> *pdev)
->>           ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, 
->> &pdev->dev);
->>           if (ret)
->>               return ret;
->> -
->> -#if defined(CONFIG_IOMMU_DMA)
->> -        if (!iommu_present(&platform_bus_type))
->> -            bus_set_iommu(&platform_bus_type, &ipmmu_ops);
->> -#endif
->>       }
->>       /*
-> 
-> The comment which starts here did not make it to the patch but it should 
-> have as it mentions bus_set_iommu() which is gone by the end of the series.
+Hi Zhongjun,
 
-Heh, busted! In fact I think the whole point of that comment stops being 
-true, but I couldn't be bothered to reason about it since one of the 
-next steps after this is to start ripping all the arm_iommu_* stuff out 
-anyway.
+Thank you for the patch! Perhaps something to improve:
 
-> More general question/request - could you please include the exact sha1 
-> the patchset is based on? It did not apply to any current trees and 
-> while it was trivial, it was slightly annoying to resolve the conflicts 
-> :)  Thanks,
+[auto build test WARNING on tiwai-sound/for-next]
+[also build test WARNING on linus/master v5.19-rc5 next-20220705]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-v3 is based directly on 5.19-rc3:
+url:    https://github.com/intel-lab-lkp/linux/commits/Zhongjun-Tan/ALSA-usb-audio-Fix-unsigned-expression-compared-with-zero/20220706-150825
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git for-next
+config: hexagon-randconfig-r045-20220703 (https://download.01.org/0day-ci/archive/20220706/202207061810.ztYTpLH7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f553287b588916de09c66e3e32bf75e5060f967f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/10d09dc3ad3a9b823d9097a68058698be90c7a74
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Zhongjun-Tan/ALSA-usb-audio-Fix-unsigned-expression-compared-with-zero/20220706-150825
+        git checkout 10d09dc3ad3a9b823d9097a68058698be90c7a74
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash sound/usb/
 
-https://lore.kernel.org/lkml/cover.1657034827.git.robin.murphy@arm.com/
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-And if it helps I have it on a branch here as well:
+All warnings (new ones prefixed by >>):
 
-https://gitlab.arm.com/linux-arm/linux-rm/-/tree/bus-set-iommu-v3
+>> sound/usb/pcm.c:782:11: warning: comparison of distinct pointer types ('typeof (rmin) *' (aka 'unsigned int *') and 'typeof (r) *' (aka 'int *')) [-Wcompare-distinct-pointer-types]
+                           rmin = min(rmin, r);
+                                  ^~~~~~~~~~~~
+   include/linux/minmax.h:45:19: note: expanded from macro 'min'
+   #define min(x, y)       __careful_cmp(x, y, <)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+>> sound/usb/pcm.c:783:11: warning: comparison of distinct pointer types ('typeof (rmax) *' (aka 'unsigned int *') and 'typeof (r) *' (aka 'int *')) [-Wcompare-distinct-pointer-types]
+                           rmax = max(rmax, r);
+                                  ^~~~~~~~~~~~
+   include/linux/minmax.h:52:19: note: expanded from macro 'max'
+   #define max(x, y)       __careful_cmp(x, y, >)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+   sound/usb/pcm.c:791:12: warning: comparison of distinct pointer types ('typeof (rmin) *' (aka 'unsigned int *') and 'typeof (r) *' (aka 'int *')) [-Wcompare-distinct-pointer-types]
+                                   rmin = min(rmin, r);
+                                          ^~~~~~~~~~~~
+   include/linux/minmax.h:45:19: note: expanded from macro 'min'
+   #define min(x, y)       __careful_cmp(x, y, <)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+   sound/usb/pcm.c:792:12: warning: comparison of distinct pointer types ('typeof (rmax) *' (aka 'unsigned int *') and 'typeof (r) *' (aka 'int *')) [-Wcompare-distinct-pointer-types]
+                                   rmax = max(rmax, r);
+                                          ^~~~~~~~~~~~
+   include/linux/minmax.h:52:19: note: expanded from macro 'max'
+   #define max(x, y)       __careful_cmp(x, y, >)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+   4 warnings generated.
 
-Robin.
+
+vim +782 sound/usb/pcm.c
+
+7726dce14c5e7e Takashi Iwai 2020-11-23  761  
+e5779998bf8b70 Daniel Mack  2010-03-04  762  static int hw_rule_rate(struct snd_pcm_hw_params *params,
+e5779998bf8b70 Daniel Mack  2010-03-04  763  			struct snd_pcm_hw_rule *rule)
+e5779998bf8b70 Daniel Mack  2010-03-04  764  {
+e5779998bf8b70 Daniel Mack  2010-03-04  765  	struct snd_usb_substream *subs = rule->private;
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29  766  	struct snd_usb_audio *chip = subs->stream->chip;
+cab941b7e5cf05 Takashi Iwai 2020-11-23  767  	const struct audioformat *fp;
+e5779998bf8b70 Daniel Mack  2010-03-04  768  	struct snd_interval *it = hw_param_interval(params, SNDRV_PCM_HW_PARAM_RATE);
+10d09dc3ad3a9b Zhongjun Tan 2022-07-06  769  	unsigned int rmin, rmax;
+10d09dc3ad3a9b Zhongjun Tan 2022-07-06  770  	int i, r;
+e5779998bf8b70 Daniel Mack  2010-03-04  771  
+e5779998bf8b70 Daniel Mack  2010-03-04  772  	hwc_debug("hw_rule_rate: (%d,%d)\n", it->min, it->max);
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  773  	rmin = UINT_MAX;
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  774  	rmax = 0;
+88766f04c4142c Eldad Zack   2013-04-03  775  	list_for_each_entry(fp, &subs->fmt_list, list) {
+e5779998bf8b70 Daniel Mack  2010-03-04  776  		if (!hw_check_valid_format(subs, params, fp))
+e5779998bf8b70 Daniel Mack  2010-03-04  777  			continue;
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29  778  		r = snd_usb_endpoint_get_clock_rate(chip, fp->clock);
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29  779  		if (r > 0) {
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29  780  			if (!snd_interval_test(it, r))
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29  781  				continue;
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29 @782  			rmin = min(rmin, r);
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29 @783  			rmax = max(rmax, r);
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29  784  			continue;
+4e7cf1fbb34ecb Takashi Iwai 2021-09-29  785  		}
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  786  		if (fp->rate_table && fp->nr_rates) {
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  787  			for (i = 0; i < fp->nr_rates; i++) {
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  788  				r = fp->rate_table[i];
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  789  				if (!snd_interval_test(it, r))
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  790  					continue;
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  791  				rmin = min(rmin, r);
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  792  				rmax = max(rmax, r);
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  793  			}
+e5779998bf8b70 Daniel Mack  2010-03-04  794  		} else {
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  795  			rmin = min(rmin, fp->rate_min);
+bc4e94aa8e72e7 Takashi Iwai 2020-11-23  796  			rmax = max(rmax, fp->rate_max);
+e5779998bf8b70 Daniel Mack  2010-03-04  797  		}
+e5779998bf8b70 Daniel Mack  2010-03-04  798  	}
+e5779998bf8b70 Daniel Mack  2010-03-04  799  
+7726dce14c5e7e Takashi Iwai 2020-11-23  800  	return apply_hw_params_minmax(it, rmin, rmax);
+e5779998bf8b70 Daniel Mack  2010-03-04  801  }
+e5779998bf8b70 Daniel Mack  2010-03-04  802  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
