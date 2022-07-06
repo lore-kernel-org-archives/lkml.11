@@ -2,70 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD02CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1B0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 06:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbiGFGvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 02:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
+        id S230101AbiGFGyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 02:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiGFGvd (ORCPT
+        with ESMTP id S229477AbiGFGyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 02:51:33 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D5614D0B;
-        Tue,  5 Jul 2022 23:51:32 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 79E0F67373; Wed,  6 Jul 2022 08:51:27 +0200 (CEST)
-Date:   Wed, 6 Jul 2022 08:51:27 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-        Stephen Bates <sbates@raithlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Don Dutile <ddutile@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Minturn Dave B <dave.b.minturn@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Xiong Jianxin <jianxin.xiong@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-Message-ID: <20220706065127.GA27132@lst.de>
-References: <20220705135102.GE23621@ziepe.ca> <20220705161240.GB13721@lst.de> <a509b13c-244b-23fc-f989-339750a733a5@deltatee.com> <20220705164315.GB14484@lst.de> <acb91f37-0470-8ce4-19e4-426903cbc3a1@deltatee.com> <20220705165039.GB14566@lst.de> <YsRzNqmZYlgkL7fI@kroah.com> <1bd43ef7-0403-bd25-087c-d54d5af677e4@deltatee.com> <YsR4CNDgtt4JWonv@kroah.com> <b3deacdd-cb76-6ebb-0e29-ef6a5a426a0d@deltatee.com>
+        Wed, 6 Jul 2022 02:54:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA751B791;
+        Tue,  5 Jul 2022 23:54:44 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ld9Fr6YdJzhZ0N;
+        Wed,  6 Jul 2022 14:52:16 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Jul 2022 14:54:27 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Jul
+ 2022 14:54:27 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        William Kucharski <william.kucharski@oracle.com>,
+        "Christoph Hellwig" <hch@lst.de>
+CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
+        Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH 5.15 v2] mm/filemap: fix UAF in find_lock_entries
+Date:   Wed, 6 Jul 2022 15:30:45 +0800
+Message-ID: <20220706073045.1398379-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b3deacdd-cb76-6ebb-0e29-ef6a5a426a0d@deltatee.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 12:16:45PM -0600, Logan Gunthorpe wrote:
-> The current version does it through a char device, but that requires
-> creating a simple_fs and anon_inode for teardown on driver removal, plus
-> a bunch of hooks through the driver that exposes it (NVMe, in this case)
-> to set this all up.
-> 
-> Christoph is suggesting a sysfs interface which could potentially avoid
-> the anon_inode and all of the extra hooks. It has some significant
-> benefits and maybe some small downsides, but I wouldn't describe it as
-> horrid.
+Release refcount after xas_set to fix UAF which may cause panic like this:
 
-Yeah, I don't think is is horrible, it fits in with the resource files
-for the BARs, and solves a lot of problems.  Greg, can you explain
-what would be so bad about it?
+ page:ffffea000491fa40 refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1247e9
+ head:ffffea000491fa00 order:3 compound_mapcount:0 compound_pincount:0
+ memcg:ffff888104f91091
+ flags: 0x2fffff80010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
+...
+page dumped because: VM_BUG_ON_PAGE(PageTail(page))
+ ------------[ cut here ]------------
+ kernel BUG at include/linux/page-flags.h:632!
+ invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN
+ CPU: 1 PID: 7642 Comm: sh Not tainted 5.15.51-dirty #26
+...
+ Call Trace:
+  <TASK>
+  __invalidate_mapping_pages+0xe7/0x540
+  drop_pagecache_sb+0x159/0x320
+  iterate_supers+0x120/0x240
+  drop_caches_sysctl_handler+0xaa/0xe0
+  proc_sys_call_handler+0x2b4/0x480
+  new_sync_write+0x3d6/0x5c0
+  vfs_write+0x446/0x7a0
+  ksys_write+0x105/0x210
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f52b5733130
+...
+
+This problem has been fixed on mainline by patch 6b24ca4a1a8d ("mm: Use
+multi-index entries in the page cache") since it deletes the related code.
+
+Fixes: 5c211ba29deb ("mm: add and use find_lock_entries")
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ mm/filemap.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 00e391e75880..2c65dd314c49 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -2090,7 +2090,11 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t start,
+ 
+ 	rcu_read_lock();
+ 	while ((page = find_get_entry(&xas, end, XA_PRESENT))) {
++		unsigned long next_idx = xas.xa_index;
++
+ 		if (!xa_is_value(page)) {
++			if (PageTransHuge(page))
++				next_idx = page->index + thp_nr_pages(page);
+ 			if (page->index < start)
+ 				goto put;
+ 			if (page->index + thp_nr_pages(page) - 1 > end)
+@@ -2111,11 +2115,9 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t start,
+ put:
+ 		put_page(page);
+ next:
+-		if (!xa_is_value(page) && PageTransHuge(page)) {
+-			unsigned int nr_pages = thp_nr_pages(page);
+-
++		if (next_idx != xas.xa_index) {
+ 			/* Final THP may cross MAX_LFS_FILESIZE on 32-bit */
+-			xas_set(&xas, page->index + nr_pages);
++			xas_set(&xas, next_idx);
+ 			if (xas.xa_index < nr_pages)
+ 				break;
+ 		}
+-- 
+2.25.1
+
