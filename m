@@ -2,240 +2,354 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D80C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBDA7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233982AbiGFXHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
+        id S234077AbiGFXHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231776AbiGFXHd (ORCPT
+        with ESMTP id S231776AbiGFXHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:07:33 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824AC2B260
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:07:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657148852; x=1688684852;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=AE2UvYsp2+nwmNULN4I1AI/1pvsKh05W3/jaVcEyk/g=;
-  b=m3VKP9koof/VyoZ+nQohqVnYtYeuH8xsAnNAi2DevBuhbRWZ+CWmh32C
-   JU/WXu4IWTNZPyy9LxUk4E2t+V/w6bbpz1bwK90r/RSVlidguNKHuciaA
-   fCbig2SP+VvXZ58fxYIXwVgkF8Ho+RIoToi14ZiL3Nms/t/ndAJbuAqir
-   RtIcaheCECEAEo2C2lIjGTATq4j6c4TNwUDW/sUD9bAX/pmIJECrygAk/
-   KY5RCtcn3eEjcPhkXnmx5OjlcsSyfMuO4y8tvNt9ztVN5zzSjdaSL1wUU
-   oYOOOKpmnf+y+kFjOdnJ8DtUnpbAY1OK3pCKvpwiwF+s11bEaCN7FSI/c
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="283913360"
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="283913360"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 16:07:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="683103119"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 Jul 2022 16:07:30 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9E7G-000LCY-1l;
-        Wed, 06 Jul 2022 23:07:30 +0000
-Date:   Thu, 7 Jul 2022 07:07:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [ammarfaizi2-block:broonie/sound/for-next 328/353]
- sound/soc/soc-acpi.c:34:1: error: redefinition of
- 'snd_soc_acpi_find_machine'
-Message-ID: <202207070640.BouQoaUc-lkp@intel.com>
+        Wed, 6 Jul 2022 19:07:45 -0400
+X-Greylist: delayed 1482 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 16:07:43 PDT
+Received: from mx0d-0054df01.pphosted.com (mx0d-0054df01.pphosted.com [67.231.150.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EA92B260
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:07:42 -0700 (PDT)
+Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266IkT6M015902;
+        Wed, 6 Jul 2022 18:42:50 -0400
+Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2056.outbound.protection.outlook.com [104.47.60.56])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3h4uc4gt2d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 18:42:49 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Rss334BFoKr6701Mdkx/OMS5XI2QZMMZbfkqMx5PwDONe/+aUfvRHh7y8sCnNWpX35qry5Nh3vA83LyHNU/V+OZbDVNjudnoK5Rk1gNuQL/uSJBr2CzaGzlQJSyjBaZexgE8NRWbGfhEFuvGGa+41brIgkF2Gn/Fy6nW04hlCSAPXDOmiQZZKSvrRjsPDDTyARK6nkgAH7oYNSUnmgTcmQOr62hNM7kYzVQOz1SsEMD5GzHVjeAX2gfXM1CRd+QAsQ7dXRE6H9gOdpI6i2Yeuej3LG0HMqfZh2UMq9PXDAkdP1Inn2O9FP4FYap6C/aKF6ZAn2UYu7DZ3MOxtWoTKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r92A6JFLKejvAWBZY2ifqF1CsYTy+6DoGEDlW/TJHRM=;
+ b=QR05KMb0YKRleQzf225ylDpyMsGafceGLhEI2O66HaADuLmge/sVrn4J8PODnF2KBoCx25Boh2YgS3EpZ/mAjBZhafQghLxTRU6iXfsXv+e0hY9RW71v9n1ajcTs6qmdWPsO4Ng9tmAqljAaW3AEr8rptiUnRCfPESrNvA1DhakTZtgkFj3GWcfHUUQIZ/O7wo/sMsbmJS+R8C0qclUm3ZUCyepzaCvpfPLULffBZnQjV1S0wNIG/3j2w/WcK0GuvcrmZ2YAf9eo4gJtT6zKIOrwnZinTqqTKH1fCmgY1aXiVaVfiBOHOqPbZ7at6/xMFifJbZmS0kO1GventxjEuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r92A6JFLKejvAWBZY2ifqF1CsYTy+6DoGEDlW/TJHRM=;
+ b=E2M8w0ER5FNAfDMIWVqBP+JBPqKwgz4KvtX4DqpazKeeYB0ZHuql0CruvSMiaOqn/MAkJ50q65aovkFXLnvYf//06CKwAt9lws12ulb4KcxJQqNY9crV5A7YfXJBtAP9lbCU2n4v/uhB7MmShgCPIfm1DYL/p8ddCrfptH4BXsM=
+Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:b9::6)
+ by YT1PR01MB8508.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:c7::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 6 Jul
+ 2022 22:42:48 +0000
+Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::2490:1742:8b6c:26ec]) by YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::2490:1742:8b6c:26ec%9]) with mapi id 15.20.5395.022; Wed, 6 Jul 2022
+ 22:42:48 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     "lkp@intel.com" <lkp@intel.com>
+CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Subject: Re: [linux-stable-rc:linux-4.19.y 1539/3265]
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c:283:15: error: implicit
+ declaration of function 'read_poll_timeout'
+Thread-Topic: [linux-stable-rc:linux-4.19.y 1539/3265]
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c:283:15: error: implicit
+ declaration of function 'read_poll_timeout'
+Thread-Index: AQHYkSVRv8qTs9csS02hEgdOXlkY0a1x8R8A
+Date:   Wed, 6 Jul 2022 22:42:48 +0000
+Message-ID: <701e5ff60f921cb80bbc76e0fe0119b93c9bb431.camel@calian.com>
+References: <202207061830.78pJNuwN-lkp@intel.com>
+In-Reply-To: <202207061830.78pJNuwN-lkp@intel.com>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 60b5bd42-5029-49e4-a698-08da5fa0d9d8
+x-ms-traffictypediagnostic: YT1PR01MB8508:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tb/OQyulYLncPIeutPJfzr/Hdz1/PUGgG9gWBMjMJERw3n+el6upkndyjfes/1KMtgW9osiw4iyBcOw72J+3REE5nM0GEQB+N3Z7vs+DEPdjxq5C1IZhxDehZj5bGzE5nAb6fpyIX6+0MCxt2ULEJgN3NRtJwX4AeBe4VVOpVBrpw8Am+HzhbWn8L3+siAEPEA1Bh+CcnJasGuY8xG+r/JPuf7pprxUi3/b5fW8wzYlT26BMtBw6Bvvc77bSK9PxT0X223o05kG8/I5+Ma9rEjjRCt3cFtiTLM7YKs4xFnlfxvLkqNTh7lhkEZAcwarFhPBl1UK1NoeIkjTlz2StOjaCleKsLDokmo84F5KwLhA85J5ORc7SqELDNfZLOJLQkX8ZdnPx3vLfk2beViKCQ1Uy65xgR2q2E/B16p30v5SU4kBtcjxm+9giCskJTqltLcGn6/W69N7ZuJNSp+1t1yTli7rNTsfek0lw1WgDLblxmLnHqoxnGbqdqtMC2UggeCFBhUiySl71OWMpoBZ9NXHL8WHvF0fKFrhs7GoFEMcTuKCD/Ig2AYZv8nC3PcHTlsQILYBUiQDjwTLyJBSG3hFfYqyLO2YsAMStkC73RJu9RwZs7a5y17zo4sQXw8XWVDErq2FUMWON2wBSZD1OOZ2S19GEbxq8wMcH+ebOVUivNm31BNMgJSHv3b8txGgT4mBPgcKo8NURVbAE8KW9WOGTo3A6V/snDKF88kFlvDdEHYJHBEk4eqrLPHMyy2Vk/VydbbEP7sP6ZlPKM/8qaAQuozQbKbzN1ik3KLQPAF0Uf97GbQq8GKp1FNiI8cG9RxQz4RpmtKT5WBO6UFN0Yw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(346002)(39860400002)(376002)(396003)(136003)(966005)(6916009)(6486002)(6512007)(54906003)(44832011)(36756003)(71200400001)(26005)(186003)(66946007)(316002)(83380400001)(86362001)(2616005)(38070700005)(76116006)(6506007)(2906002)(478600001)(8936002)(64756008)(66556008)(38100700002)(66476007)(8676002)(4326008)(66446008)(122000001)(41300700001)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?N2h4bXF1S0QzNHNPTmRjQThNN0R5UXhHSXV2KzlRblhCTllSWFNTSVBwMTRr?=
+ =?utf-8?B?UjZYNHd1Ym5GaGVIS25ualJDMWdtWVVndjI4WTU1YjN2UWpEblc0TGNxTVpy?=
+ =?utf-8?B?N2tENVBFUXdjYXR2c2V2NmpZekZmQ1FxMDBJNUhLaG9NUitnSGJsU3hKVlJ0?=
+ =?utf-8?B?cUlaenZ5Nk5WWnN2SS9hMDQxa0NhZm4vZFpmV284ZW9Na2swUzBMMDczb0xF?=
+ =?utf-8?B?UEtmRFFUQkdPRTl0ekZHU05VMWVjRzZ4cm9xN25UdjdST2JzVVBZUVBQaTNv?=
+ =?utf-8?B?eWRoYThCZWFQaWpuQ0xDazdXbXlUMHFScFhYK1BFZnN5Z2N3alZ1Yzc5YzBL?=
+ =?utf-8?B?TzlMZTV4WG5aUmNhRldDUjMwRzBMVFk2RHYwSHVwYlBPVnZGS2xLVytlWnY1?=
+ =?utf-8?B?QUZiV1BCdjkyTXVkSnNNWmI1aWl5UGJoR1llUGVYTGs4Z0doa0RKMnZaVXNz?=
+ =?utf-8?B?SlV1OEFVM0p0RDVnQ2tob1lYQjgwV1NIZGlTRWlwRnUwWmVsNUZoaEI0VFA0?=
+ =?utf-8?B?djdva3FydGY0L1VhMDRlSkFITnZRNktFeW5EeGdydkUwcDlCTDhnZ3lWN1Zo?=
+ =?utf-8?B?TnNCTS9Eblp6QldXV3E4N2gxN0pQV05WekcwMVpITXpzZXlFVmFEWDlybGpH?=
+ =?utf-8?B?T04xTEdQYXpzSjZMZ1p4YmxIbG1JU0NYMnhPY3Y4U05hY1JPS1htdHNaWUc4?=
+ =?utf-8?B?ZnJ6YXZJT2M0OXljNTVjd09NYjdGSW5UR28rREkvOGRXdVkrY0hqT3M4enM2?=
+ =?utf-8?B?QjVQK1BzMTBUV29rRTJEekgrTmZKaTFpem4vaFZEZlpzbUV1RW9QbVRRTmdN?=
+ =?utf-8?B?ZHlCZlZQUVdUdG50azhIUnFvSTN0VEJka0dQd2N0RWNQaXRzTmYyRVhqZHl1?=
+ =?utf-8?B?aW5adGZMK1lPVUY3MU4wR3FVKzBsaTJMOEtnb2lKRkFGUHFFQU1XaFA5OXFp?=
+ =?utf-8?B?NS9lQzZ0UTNUUlFocTNZSFY3V0UxaDZycXRzQmEyWnAzWWZHUEFRNFRzZXFZ?=
+ =?utf-8?B?NitXREFzSmdmNDJOWGVEY0FVQnQxSzhEU29tbUUzQkxCOG9QaE1tSlJOYnhw?=
+ =?utf-8?B?d0FhU3JRejR6RzA5NDh6TVVteFptR1RCMFhteUVvVnhBVFBIcnk1TUVpc1k0?=
+ =?utf-8?B?V09HWkMyU3YyTUdJQ1RDZGVLRGhiYkZEN0dteU50Z2FyQ0JZaStuUVJ5NzN3?=
+ =?utf-8?B?V1NuNUhtclV2SjFWSzE4QmU0Ym9HVWY2RHZvSHIvVXFJOEtBUzNORlBXNXA5?=
+ =?utf-8?B?QitPdDJZTzFWQWNqbzB3NU9xdkoxbHlQamVROVk1NjNYbnhaMkJKVGw5dmNi?=
+ =?utf-8?B?V21VSjdrZGU4MFdkOW5Ja2k1aThva05KR1huTi8xNlFBOGFUVXp5UWhpRzRj?=
+ =?utf-8?B?V2M4KzRIbk9GZUw4SDRGS2Y2eUpGZFhVU0c2R3FvRkxNNzZwN3VQRG14RUFG?=
+ =?utf-8?B?NVhjQno2eElIdHQ4cDVuQVYzNkxrLzhjOERKL3hhaU9YQ3JhMWZUVkg1V3pO?=
+ =?utf-8?B?SkVnSmtzam1DbytuL0pPa1paN3RDL2trcVU1SU1HOTlWQnVWSWFGQlBqcEpp?=
+ =?utf-8?B?Z3N1bmpVYjU1UVlMNFdkMkVtaG1hd1IyOG9rVWFZcUxVQUxpSWt2cUIwOTNn?=
+ =?utf-8?B?eVhjSWxqSi9teEZYUmlWMXo1Z00xMnlhc0IrcEZaeFY3Wk5tcnJqTnBFNXNt?=
+ =?utf-8?B?TkxQT0kxQng4bDUvc3BtWEJBRnpkOEQ0bWVzamNhQzVESnpKN3RXa2NZZk5O?=
+ =?utf-8?B?M216N0Fsc21TREpYZ2RBb3V6WnczdHlVbEpYby9NYmRnaFhvbFc3RjV5NTFl?=
+ =?utf-8?B?S2NJenRaOVlSZnBCUHNxQjc5c3VQQ3BqaXQzYkJZTWFMd2RuYXcyVkVzUS9l?=
+ =?utf-8?B?Ylliai9ra0E5ODEyUXVjMEZvRC9BSlFvTlBSb3Z6Q3lNUkNzMVlqYVNvdDl3?=
+ =?utf-8?B?cU1LTTJPUzJGN3ZOT2x4UTBXdnlYaU81RXZONlUvemR3SHh2eVpsU2lpY0l0?=
+ =?utf-8?B?aUFsbW1UK0gzYVNXRXhnVm5paXRxN3FESHJocFlHZmJkQXVWdUJqRXJyTnFU?=
+ =?utf-8?B?a3dLTngxbndNOC9YRnh0S2FYcW5wVTF3YndKWHdMOTViVGZXRTNobGlXVllE?=
+ =?utf-8?B?N0Y2TVJDbmJ4TzNKbElBVVBjMmFYaEVhNEhKejNMcGhCV1lWbDhVblJEMUJY?=
+ =?utf-8?B?UXc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6FD796C99404AB4884489ECFCFABECCA@CANPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60b5bd42-5029-49e4-a698-08da5fa0d9d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 22:42:48.0294
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yFD2ftqBNhm0JMVm21VNUfah+BrGS8ENdgyDf9frGzL1pEXCznedWaNUeVs+f1EFIFh2qd7hby14LqZ8jtoazgMthu1baWF4kKls9Yj3Rms=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT1PR01MB8508
+X-Proofpoint-GUID: xtt-C2Cebc-cMe8iIzLn9q5ajz5wykIJ
+X-Proofpoint-ORIG-GUID: xtt-C2Cebc-cMe8iIzLn9q5ajz5wykIJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-06_12,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ clxscore=1011 malwarescore=0 mlxlogscore=999 phishscore=0
+ priorityscore=1501 impostorscore=0 spamscore=0 bulkscore=0
+ lowpriorityscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207060086
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vijendar,
-
-First bad commit (maybe != root cause):
-
-tree:   https://github.com/ammarfaizi2/linux-block broonie/sound/for-next
-head:   3f4322bb413adb7f9d8b5e9005eb1b9bc85f9312
-commit: f94fa84058014f81ad526641f1b1f583ca2cf32f [328/353] ASoC: amd: enable machine driver build for Jadeite platform
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220707/202207070640.BouQoaUc-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/f94fa84058014f81ad526641f1b1f583ca2cf32f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block broonie/sound/for-next
-        git checkout f94fa84058014f81ad526641f1b1f583ca2cf32f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> sound/soc/soc-acpi.c:34:1: error: redefinition of 'snd_soc_acpi_find_machine'
-      34 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from sound/soc/soc-acpi.c:9:
-   include/sound/soc-acpi.h:38:1: note: previous definition of 'snd_soc_acpi_find_machine' with type 'struct snd_soc_acpi_mach *(struct snd_soc_acpi_mach *)'
-      38 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
-   sound/soc/soc-acpi.c: In function 'snd_soc_acpi_find_package':
->> sound/soc/soc-acpi.c:58:36: error: implicit declaration of function 'acpi_fetch_acpi_dev'; did you mean 'device_match_acpi_dev'? [-Werror=implicit-function-declaration]
-      58 |         struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
-         |                                    ^~~~~~~~~~~~~~~~~~~
-         |                                    device_match_acpi_dev
-   sound/soc/soc-acpi.c:58:36: warning: initialization of 'struct acpi_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
->> sound/soc/soc-acpi.c:64:25: error: invalid use of undefined type 'struct acpi_device'
-      64 |         if (adev && adev->status.present && adev->status.functional) {
-         |                         ^~
-   sound/soc/soc-acpi.c:64:49: error: invalid use of undefined type 'struct acpi_device'
-      64 |         if (adev && adev->status.present && adev->status.functional) {
-         |                                                 ^~
->> sound/soc/soc-acpi.c:80:26: error: implicit declaration of function 'acpi_extract_package' [-Werror=implicit-function-declaration]
-      80 |                 status = acpi_extract_package(myobj,
-         |                          ^~~~~~~~~~~~~~~~~~~~
-   sound/soc/soc-acpi.c: At top level:
->> sound/soc/soc-acpi.c:95:6: error: redefinition of 'snd_soc_acpi_find_package_from_hid'
-      95 | bool snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from sound/soc/soc-acpi.c:9:
-   include/sound/soc-acpi.h:44:1: note: previous definition of 'snd_soc_acpi_find_package_from_hid' with type 'bool(const u8 *, struct snd_soc_acpi_package_context *)' {aka '_Bool(const unsigned char *, struct snd_soc_acpi_package_context *)'}
-      44 | snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> sound/soc/soc-acpi.c:109:27: error: redefinition of 'snd_soc_acpi_codec_list'
-     109 | struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~
-   In file included from sound/soc/soc-acpi.c:9:
-   include/sound/soc-acpi.h:51:41: note: previous definition of 'snd_soc_acpi_codec_list' with type 'struct snd_soc_acpi_mach *(void *)'
-      51 | static inline struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
-         |                                         ^~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   sound/soc/amd/acp-es8336.c: In function 'st_es8336_late_probe':
->> sound/soc/amd/acp-es8336.c:204:33: error: invalid use of undefined type 'struct acpi_device'
-     204 |                 put_device(&adev->dev);
-         |                                 ^~
-   sound/soc/amd/acp-es8336.c:200:13: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-     200 |         int ret;
-         |             ^~~
-
-
-vim +/snd_soc_acpi_find_machine +34 sound/soc/soc-acpi.c
-
-cafa39b650ec3b sound/soc/soc-acpi.c                    Brent Lu             2021-10-30   32  
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12   33  struct snd_soc_acpi_mach *
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  @34  snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-95f098014815b3 sound/soc/intel/common/sst-match-acpi.c Vinod Koul           2015-11-05   35  {
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12   36  	struct snd_soc_acpi_mach *mach;
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   37  	struct snd_soc_acpi_mach *mach_alt;
-95f098014815b3 sound/soc/intel/common/sst-match-acpi.c Vinod Koul           2015-11-05   38  
-cafa39b650ec3b sound/soc/soc-acpi.c                    Brent Lu             2021-10-30   39  	for (mach = machines; mach->id[0] || mach->comp_ids; mach++) {
-cafa39b650ec3b sound/soc/soc-acpi.c                    Brent Lu             2021-10-30   40  		if (snd_soc_acpi_id_present(mach)) {
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   41  			if (mach->machine_quirk) {
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   42  				mach_alt = mach->machine_quirk(mach);
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   43  				if (!mach_alt)
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   44  					continue; /* not full match, ignore */
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   45  				mach = mach_alt;
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   46  			}
-a3e620f8422832 sound/soc/soc-acpi.c                    Keyon Jie            2018-11-16   47  
-7827d66946ad3a sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15   48  			return mach;
-7827d66946ad3a sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15   49  		}
-7827d66946ad3a sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15   50  	}
-95f098014815b3 sound/soc/intel/common/sst-match-acpi.c Vinod Koul           2015-11-05   51  	return NULL;
-95f098014815b3 sound/soc/intel/common/sst-match-acpi.c Vinod Koul           2015-11-05   52  }
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12   53  EXPORT_SYMBOL_GPL(snd_soc_acpi_find_machine);
-8ceffd229f0ef1 sound/soc/intel/common/sst-match-acpi.c Vinod Koul           2016-02-08   54  
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12   55  static acpi_status snd_soc_acpi_find_package(acpi_handle handle, u32 level,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   56  					     void *context, void **ret)
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   57  {
-ff4865b3c8cd74 sound/soc/soc-acpi.c                    Rafael J. Wysocki    2022-01-26  @58  	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
-59ce3233a538fc sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2021-04-16   59  	acpi_status status;
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12   60  	struct snd_soc_acpi_package_context *pkg_ctx = context;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   61  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   62  	pkg_ctx->data_valid = false;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   63  
-ff4865b3c8cd74 sound/soc/soc-acpi.c                    Rafael J. Wysocki    2022-01-26  @64  	if (adev && adev->status.present && adev->status.functional) {
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   65  		struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   66  		union acpi_object  *myobj = NULL;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   67  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   68  		status = acpi_evaluate_object_typed(handle, pkg_ctx->name,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   69  						NULL, &buffer,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   70  						ACPI_TYPE_PACKAGE);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   71  		if (ACPI_FAILURE(status))
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   72  			return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   73  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   74  		myobj = buffer.pointer;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   75  		if (!myobj || myobj->package.count != pkg_ctx->length) {
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   76  			kfree(buffer.pointer);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   77  			return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   78  		}
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   79  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  @80  		status = acpi_extract_package(myobj,
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   81  					pkg_ctx->format, pkg_ctx->state);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   82  		if (ACPI_FAILURE(status)) {
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   83  			kfree(buffer.pointer);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   84  			return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   85  		}
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   86  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   87  		kfree(buffer.pointer);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   88  		pkg_ctx->data_valid = true;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   89  		return AE_CTRL_TERMINATE;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   90  	}
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   91  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   92  	return AE_OK;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   93  }
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   94  
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  @95  bool snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12   96  				struct snd_soc_acpi_package_context *ctx)
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   97  {
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   98  	acpi_status status;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12   99  
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  100  	status = acpi_get_devices(hid, snd_soc_acpi_find_package, ctx, NULL);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  101  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  102  	if (ACPI_FAILURE(status) || !ctx->data_valid)
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  103  		return false;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  104  
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  105  	return true;
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  106  }
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  107  EXPORT_SYMBOL_GPL(snd_soc_acpi_find_package_from_hid);
-3421894765a345 sound/soc/intel/common/sst-match-acpi.c Pierre-Louis Bossart 2016-11-12  108  
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12 @109  struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  110  {
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  111  	struct snd_soc_acpi_mach *mach = arg;
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  112  	struct snd_soc_acpi_codecs *codec_list =
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  113  		(struct snd_soc_acpi_codecs *) mach->quirk_data;
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  114  	int i;
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  115  
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  116  	if (mach->quirk_data == NULL)
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  117  		return mach;
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  118  
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  119  	for (i = 0; i < codec_list->num_codecs; i++) {
-0d5ea120abc020 sound/soc/soc-acpi.c                    Jeremy Cline         2018-01-05  120  		if (!acpi_dev_present(codec_list->codecs[i], NULL, -1))
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  121  			return NULL;
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  122  	}
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  123  
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  124  	return mach;
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  125  }
-7feb2f786a46d3 sound/soc/soc-acpi.c                    Pierre-Louis Bossart 2017-10-12  126  EXPORT_SYMBOL_GPL(snd_soc_acpi_codec_list);
-54746dabf770eb sound/soc/intel/common/sst-match-acpi.c Naveen M             2017-05-15  127  
-
-:::::: The code at line 34 was first introduced by commit
-:::::: 7feb2f786a46d34cac760d5e246dfbdafafa0e96 ASoC: move ACPI common code out of Intel/sst tree
-
-:::::: TO: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-:::::: CC: Mark Brown <broonie@kernel.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+T24gV2VkLCAyMDIyLTA3LTA2IGF0IDE4OjQzICswODAwLCBrZXJuZWwgdGVzdCByb2JvdCB3cm90
+ZToKPiBIaSBSb2JlcnQsCj4gCj4gRllJLCB0aGUgZXJyb3Ivd2FybmluZyBzdGlsbCByZW1haW5z
+Lgo+IAo+IHRyZWU6wqDCoAo+IGh0dHBzOi8vdXJsZGVmZW5zZS5jb20vdjMvX19odHRwczovL2dp
+dC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9zdGFibGUvbGludXgtc3RhYmxl
+LXJjLmdpdF9fOyEhSU9Hb3MwayFuS180SEc1RGlJamhEYUZ2dEIyYzRIVHNvUU1nOFVIRUJKRHY2
+c3RsR0lNQnV0YlV0SmM0MndHSDVxWGFWQzVKSWtBd1phczROZTFpSXckCj4gwqAgbGludXgtNC4x
+OS55Cj4gaGVhZDrCoMKgIGI5ZjE3NGE3MGM2ZjYwOWI2MTMyYzNhNjU4ODNiMTZkNTUyOTg0YjgK
+PiBjb21taXQ6IDhiOGFkOGE3YWMyNDkwNTkzN2MzOTc1YjU0YzQ1OTRiOTNiNjZlYmIgWzE1Mzkv
+MzI2NV0gbmV0Ogo+IGF4aWVuZXQ6IFdhaXQgZm9yIFBoeVJzdENtcGx0IGFmdGVyIGNvcmUgcmVz
+ZXQKPiBjb25maWc6IG1pY3JvYmxhemUtcmFuZGNvbmZpZy1yMDAzLTIwMjIwNzA0Cj4gKGh0dHBz
+Oi8vdXJsZGVmZW5zZS5jb20vdjMvX19odHRwczovL2Rvd25sb2FkLjAxLm9yZy8wZGF5LWNpL2Fy
+Y2hpdmUvCj4gMjAyMjA3MDYvMjAyMjA3MDYxODMwLjc4cEpOdXdOLWxrcEBpbnRlbC5jb20vY29u
+ZmlnX187ISFJT0dvczBrIW5LXzRICj4gRzVEaUlqaERhRnZ0QjJjNEhUc29RTWc4VUhFQkpEdjZz
+dGxHSU1CdXRiVXRKYzQyd0dINXFYYVZDNUpJa0F3WmF0VUFUCj4gdERhUSTCoCkKPiBjb21waWxl
+cjogbWljcm9ibGF6ZS1saW51eC1nY2MgKEdDQykgMTEuMy4wCj4gcmVwcm9kdWNlICh0aGlzIGlz
+IGEgVz0xIGJ1aWxkKToKPiDCoMKgwqDCoMKgwqDCoCB3Z2V0Cj4gaHR0cHM6Ly91cmxkZWZlbnNl
+LmNvbS92My9fX2h0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9pbnRlbC9sa3AtdGVz
+dHMvbWFzdGVyL3NiaW4vbWFrZS5jcm9zc19fOyEhSU9Hb3MwayFuS180SEc1RGlJamhEYUZ2dEIy
+YzRIVHNvUU1nOFVIRUJKRHY2c3RsR0lNQnV0YlV0SmM0MndHSDVxWGFWQzVKSWtBd1phdXRHNGpr
+Z2ckCj4gwqAgLU8gfi9iaW4vbWFrZS5jcm9zcwo+IMKgwqDCoMKgwqDCoMKgIGNobW9kICt4IH4v
+YmluL21ha2UuY3Jvc3MKPiDCoMKgwqDCoMKgwqDCoCAjCj4gaHR0cHM6Ly91cmxkZWZlbnNlLmNv
+bS92My9fX2h0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3N0
+YWJsZS9saW51eC1zdGFibGUtcmMuZ2l0L2NvbW1pdC8/aWQ9OGI4YWQ4YTdhYzI0OTA1OTM3YzM5
+NzViNTRjNDU5NGI5M2I2NmViYl9fOyEhSU9Hb3MwayFuS180SEc1RGlJamhEYUZ2dEIyYzRIVHNv
+UU1nOFVIRUJKRHY2c3RsR0lNQnV0YlV0SmM0MndHSDVxWGFWQzVKSWtBd1phczhSOU1fc0EkCj4g
+wqAKPiDCoMKgwqDCoMKgwqDCoCBnaXQgcmVtb3RlIGFkZCBsaW51eC1zdGFibGUtcmMKPiBodHRw
+czovL3VybGRlZmVuc2UuY29tL3YzL19faHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xp
+bnV4L2tlcm5lbC9naXQvc3RhYmxlL2xpbnV4LXN0YWJsZS1yYy5naXRfXzshIUlPR29zMGshbktf
+NEhHNURpSWpoRGFGdnRCMmM0SFRzb1FNZzhVSEVCSkR2NnN0bEdJTUJ1dGJVdEpjNDJ3R0g1cVhh
+VkM1SklrQXdaYXM0TmUxaUl3JAo+IMKgCj4gwqDCoMKgwqDCoMKgwqAgZ2l0IGZldGNoIC0tbm8t
+dGFncyBsaW51eC1zdGFibGUtcmMgbGludXgtNC4xOS55Cj4gwqDCoMKgwqDCoMKgwqAgZ2l0IGNo
+ZWNrb3V0IDhiOGFkOGE3YWMyNDkwNTkzN2MzOTc1YjU0YzQ1OTRiOTNiNjZlYmIKPiDCoMKgwqDC
+oMKgwqDCoCAjIHNhdmUgdGhlIGNvbmZpZyBmaWxlCj4gwqDCoMKgwqDCoMKgwqAgbWtkaXIgYnVp
+bGRfZGlyICYmIGNwIGNvbmZpZyBidWlsZF9kaXIvLmNvbmZpZwo+IMKgwqDCoMKgwqDCoMKgIENP
+TVBJTEVSX0lOU1RBTExfUEFUSD0kSE9NRS8wZGF5IENPTVBJTEVSPWdjYy0xMS4zLjAKPiBtYWtl
+LmNyb3NzIFc9MSBPPWJ1aWxkX2RpciBBUkNIPW1pY3JvYmxhemUgU0hFTEw9L2Jpbi9iYXNoCj4g
+ZHJpdmVycy9uZXQvZXRoZXJuZXQveGlsaW54Lwo+IAo+IElmIHlvdSBmaXggdGhlIGlzc3VlLCBr
+aW5kbHkgYWRkIGZvbGxvd2luZyB0YWcgd2hlcmUgYXBwbGljYWJsZQo+IFJlcG9ydGVkLWJ5OiBr
+ZXJuZWwgdGVzdCByb2JvdCA8bGtwQGludGVsLmNvbT4KPiAKPiBBbGwgZXJyb3JzIChuZXcgb25l
+cyBwcmVmaXhlZCBieSA+Pik6Cj4gCj4gwqDCoCBkcml2ZXJzL25ldC9ldGhlcm5ldC94aWxpbngv
+eGlsaW54X2F4aWVuZXRfbWFpbi5jOiBJbiBmdW5jdGlvbgo+ICdheGllbmV0X2RtYV9iZF9pbml0
+JzoKPiDCoMKgIGRyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC94aWxpbnhfYXhpZW5ldF9tYWlu
+LmM6MjgzOjk6IGVycm9yOgo+ICdyZXQnIHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0aGlzIGZ1
+bmN0aW9uKTsgZGlkIHlvdSBtZWFuICduZXQnPwo+IMKgwqDCoMKgIDI4MyB8wqDCoMKgwqDCoMKg
+wqDCoCByZXQgPSByZWFkX3BvbGxfdGltZW91dChheGllbmV0X2lvciwgdmFsdWUsCj4gwqDCoMKg
+wqDCoMKgwqDCoCB8wqDCoMKgwqDCoMKgwqDCoCBefn4KPiDCoMKgwqDCoMKgwqDCoMKgIHzCoMKg
+wqDCoMKgwqDCoMKgIG5ldAo+IMKgwqAgZHJpdmVycy9uZXQvZXRoZXJuZXQveGlsaW54L3hpbGlu
+eF9heGllbmV0X21haW4uYzoyODM6OTogbm90ZToKPiBlYWNoIHVuZGVjbGFyZWQgaWRlbnRpZmll
+ciBpcyByZXBvcnRlZCBvbmx5IG9uY2UgZm9yIGVhY2ggZnVuY3Rpb24gaXQKPiBhcHBlYXJzIGlu
+Cj4gPiA+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC94aWxpbnhfYXhpZW5ldF9tYWluLmM6
+MjgzOjE1OiBlcnJvcjoKPiA+ID4gaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24gJ3Jl
+YWRfcG9sbF90aW1lb3V0JyBbLQo+ID4gPiBXZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFy
+YXRpb25dCj4gwqDCoMKgwqAgMjgzIHzCoMKgwqDCoMKgwqDCoMKgIHJldCA9IHJlYWRfcG9sbF90
+aW1lb3V0KGF4aWVuZXRfaW9yLCB2YWx1ZSwKPiDCoMKgwqDCoMKgwqDCoMKgIHzCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIF5+fn5+fn5+fn5+fn5+fn5+Cj4gwqDCoCBkcml2ZXJzL25ldC9l
+dGhlcm5ldC94aWxpbngveGlsaW54X2F4aWVuZXRfbWFpbi5jOjI4Mzo0NjogZXJyb3I6Cj4gJ3Zh
+bHVlJyB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhpcyBmdW5jdGlvbikKPiDCoMKgwqDCoCAy
+ODMgfMKgwqDCoMKgwqDCoMKgwqAgcmV0ID0gcmVhZF9wb2xsX3RpbWVvdXQoYXhpZW5ldF9pb3Is
+IHZhbHVlLAo+IMKgwqDCoMKgwqDCoMKgwqAgfMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBefn5+fgo+IMKgwqAgY2MxOiBzb21lIHdhcm5pbmdzIGJlaW5nIHRyZWF0ZWQgYXMgZXJy
+b3JzCj4gCgpUaGlzIHNlZW1zIGxpa2UgbWF5YmUgYSBiYWQgYmFja3BvcnQgb2YgdGhlIGxpc3Rl
+ZCBwYXRjaCB0byB0aGUgNC4xOQpzdGFibGUgcmVsZWFzZT8KCj4gCj4gdmltICsvcmVhZF9wb2xs
+X3RpbWVvdXQgKzI4Mwo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC94aWxpbnhfYXhpZW5l
+dF9tYWluLmMKPiAKPiDCoMKgIDE3OMKgwqAKPiDCoMKgIDE3OcKgwqAvKioKPiDCoMKgIDE4MMKg
+wqAgKiBheGllbmV0X2RtYV9iZF9pbml0IC0gU2V0dXAgYnVmZmVyIGRlc2NyaXB0b3IgcmluZ3Mg
+Zm9yCj4gQXhpIERNQQo+IMKgwqAgMTgxwqDCoCAqIEBuZGV2OsKgwqDCoMKgwqDCoMKgUG9pbnRl
+ciB0byB0aGUgbmV0X2RldmljZSBzdHJ1Y3R1cmUKPiDCoMKgIDE4MsKgwqAgKgo+IMKgwqAgMTgz
+wqDCoCAqIFJldHVybjogMCwgb24gc3VjY2VzcyAtRU5PTUVNLCBvbiBmYWlsdXJlCj4gwqDCoCAx
+ODTCoMKgICoKPiDCoMKgIDE4NcKgwqAgKiBUaGlzIGZ1bmN0aW9uIGlzIGNhbGxlZCB0byBpbml0
+aWFsaXplIHRoZSBSeCBhbmQgVHggRE1BCj4gZGVzY3JpcHRvcgo+IMKgwqAgMTg2wqDCoCAqIHJp
+bmdzLiBUaGlzIGluaXRpYWxpemVzIHRoZSBkZXNjcmlwdG9ycyB3aXRoIHJlcXVpcmVkCj4gZGVm
+YXVsdCB2YWx1ZXMKPiDCoMKgIDE4N8KgwqAgKiBhbmQgaXMgY2FsbGVkIHdoZW4gQXhpIEV0aGVy
+bmV0IGRyaXZlciByZXNldCBpcyBjYWxsZWQuCj4gwqDCoCAxODjCoMKgICovCj4gwqDCoCAxODnC
+oMKgc3RhdGljIGludCBheGllbmV0X2RtYV9iZF9pbml0KHN0cnVjdCBuZXRfZGV2aWNlICpuZGV2
+KQo+IMKgwqAgMTkwwqDCoHsKPiDCoMKgIDE5McKgwqDCoMKgwqDCoMKgwqDCoMKgdTMyIGNyOwo+
+IMKgwqAgMTkywqDCoMKgwqDCoMKgwqDCoMKgwqBpbnQgaTsKPiDCoMKgIDE5M8KgwqDCoMKgwqDC
+oMKgwqDCoMKgc3RydWN0IHNrX2J1ZmYgKnNrYjsKPiDCoMKgIDE5NMKgwqDCoMKgwqDCoMKgwqDC
+oMKgc3RydWN0IGF4aWVuZXRfbG9jYWwgKmxwID0gbmV0ZGV2X3ByaXYobmRldik7Cj4gwqDCoCAx
+OTXCoMKgCj4gwqDCoCAxOTbCoMKgwqDCoMKgwqDCoMKgwqDCoC8qIFJlc2V0IHRoZSBpbmRleGVz
+IHdoaWNoIGFyZSB1c2VkIGZvciBhY2Nlc3NpbmcgdGhlCj4gQkRzICovCj4gwqDCoCAxOTfCoMKg
+wqDCoMKgwqDCoMKgwqDCoGxwLT50eF9iZF9jaSA9IDA7Cj4gwqDCoCAxOTjCoMKgwqDCoMKgwqDC
+oMKgwqDCoGxwLT50eF9iZF90YWlsID0gMDsKPiDCoMKgIDE5OcKgwqDCoMKgwqDCoMKgwqDCoMKg
+bHAtPnJ4X2JkX2NpID0gMDsKPiDCoMKgIDIwMMKgwqAKPiDCoMKgIDIwMcKgwqDCoMKgwqDCoMKg
+wqDCoMKgLyogQWxsb2NhdGUgdGhlIFR4IGFuZCBSeCBidWZmZXIgZGVzY3JpcHRvcnMuICovCj4g
+wqDCoCAyMDLCoMKgwqDCoMKgwqDCoMKgwqDCoGxwLT50eF9iZF92ID0gZG1hX3phbGxvY19jb2hl
+cmVudChuZGV2LT5kZXYucGFyZW50LAo+IMKgwqAgMjAzwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgc2l6ZW9mKCpscC0KPiA+dHhfYmRfdikgKiBUWF9CRF9OVU0sCj4gwqDCoCAyMDTCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAmbHAtPnR4X2JkX3AsCj4gR0ZQX0tFUk5FTCk7Cj4g
+wqDCoCAyMDXCoMKgwqDCoMKgwqDCoMKgwqDCoGlmICghbHAtPnR4X2JkX3YpCj4gwqDCoCAyMDbC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBnb3RvIG91dDsKPiDCoMKgIDIwN8Kg
+wqAKPiDCoMKgIDIwOMKgwqDCoMKgwqDCoMKgwqDCoMKgbHAtPnJ4X2JkX3YgPSBkbWFfemFsbG9j
+X2NvaGVyZW50KG5kZXYtPmRldi5wYXJlbnQsCj4gwqDCoCAyMDnCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBzaXplb2YoKmxwLQo+ID5yeF9iZF92KSAqIFJYX0JEX05VTSwKPiDCoMKgIDIx
+MMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICZscC0+cnhfYmRfcCwKPiBHRlBfS0VSTkVM
+KTsKPiDCoMKgIDIxMcKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKCFscC0+cnhfYmRfdikKPiDCoMKg
+IDIxMsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGdvdG8gb3V0Owo+IMKgwqAg
+MjEzwqDCoAo+IMKgwqAgMjE0wqDCoMKgwqDCoMKgwqDCoMKgwqBmb3IgKGkgPSAwOyBpIDwgVFhf
+QkRfTlVNOyBpKyspIHsKPiDCoMKgIDIxNcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoGxwLT50eF9iZF92W2ldLm5leHQgPSBscC0+dHhfYmRfcCArCj4gwqDCoCAyMTbCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgc2l6ZW9mKCpscC0+dHhfYmRfdikgKgo+IMKgwqAgMjE3wqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgICgoaSArIDEpICUgVFhfQkRfTlVNKTsKPiDCoMKgIDIxOMKgwqDCoMKgwqDC
+oMKgwqDCoMKgfQo+IMKgwqAgMjE5wqDCoAo+IMKgwqAgMjIwwqDCoMKgwqDCoMKgwqDCoMKgwqBm
+b3IgKGkgPSAwOyBpIDwgUlhfQkRfTlVNOyBpKyspIHsKPiDCoMKgIDIyMcKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoGxwLT5yeF9iZF92W2ldLm5leHQgPSBscC0+cnhfYmRfcCAr
+Cj4gwqDCoCAyMjLCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6ZW9mKCpscC0+cnhfYmRfdikgKgo+
+IMKgwqAgMjIzwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICgoaSArIDEpICUgUlhfQkRfTlVNKTsKPiDC
+oMKgIDIyNMKgwqAKPiDCoMKgIDIyNcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oHNrYiA9IG5ldGRldl9hbGxvY19za2JfaXBfYWxpZ24obmRldiwgbHAtCj4gPm1heF9mcm1fc2l6
+ZSk7Cj4gwqDCoCAyMjbCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAoIXNr
+YikKPiDCoMKgIDIyN8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqBnb3RvIG91dDsKPiDCoMKgIDIyOMKgwqAKPiDCoMKgIDIyOcKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoGxwLT5yeF9iZF92W2ldLnN3X2lkX29mZnNldCA9ICh1MzIp
+IHNrYjsKPiDCoMKgIDIzMMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGxwLT5y
+eF9iZF92W2ldLnBoeXMgPSBkbWFfbWFwX3NpbmdsZShuZGV2LQo+ID5kZXYucGFyZW50LAo+IMKg
+wqAgMjMxwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IHNrYi0KPiA+ZGF0YSwKPiDCoMKgIDIzMsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBscC0KPiA+bWF4X2ZybV9zaXplLAo+IMKgwqAgMjMzwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgCj4gRE1BX0ZST01f
+REVWSUNFKTsKPiDCoMKgIDIzNMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGxw
+LT5yeF9iZF92W2ldLmNudHJsID0gbHAtPm1heF9mcm1fc2l6ZTsKPiDCoMKgIDIzNcKgwqDCoMKg
+wqDCoMKgwqDCoMKgfQo+IMKgwqAgMjM2wqDCoAo+IMKgwqAgMjM3wqDCoMKgwqDCoMKgwqDCoMKg
+wqAvKiBTdGFydCB1cGRhdGluZyB0aGUgUnggY2hhbm5lbCBjb250cm9sIHJlZ2lzdGVyICovCj4g
+wqDCoCAyMzjCoMKgwqDCoMKgwqDCoMKgwqDCoGNyID0gYXhpZW5ldF9kbWFfaW4zMihscCwgWEFY
+SURNQV9SWF9DUl9PRkZTRVQpOwo+IMKgwqAgMjM5wqDCoMKgwqDCoMKgwqDCoMKgwqAvKiBVcGRh
+dGUgdGhlIGludGVycnVwdCBjb2FsZXNjZSBjb3VudCAqLwo+IMKgwqAgMjQwwqDCoMKgwqDCoMKg
+wqDCoMKgwqBjciA9ICgoY3IgJiB+WEFYSURNQV9DT0FMRVNDRV9NQVNLKSB8Cj4gwqDCoCAyNDHC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKChscC0+Y29hbGVzY2VfY291bnRfcngpIDw8
+Cj4gWEFYSURNQV9DT0FMRVNDRV9TSElGVCkpOwo+IMKgwqAgMjQywqDCoMKgwqDCoMKgwqDCoMKg
+wqAvKiBVcGRhdGUgdGhlIGRlbGF5IHRpbWVyIGNvdW50ICovCj4gwqDCoCAyNDPCoMKgwqDCoMKg
+wqDCoMKgwqDCoGNyID0gKChjciAmIH5YQVhJRE1BX0RFTEFZX01BU0spIHwKPiDCoMKgIDI0NMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAoWEFYSURNQV9ERlRfUlhfV0FJVEJPVU5EIDw8
+Cj4gWEFYSURNQV9ERUxBWV9TSElGVCkpOwo+IMKgwqAgMjQ1wqDCoMKgwqDCoMKgwqDCoMKgwqAv
+KiBFbmFibGUgY29hbGVzY2UsIGRlbGF5IHRpbWVyIGFuZCBlcnJvciBpbnRlcnJ1cHRzCj4gKi8K
+PiDCoMKgIDI0NsKgwqDCoMKgwqDCoMKgwqDCoMKgY3IgfD0gWEFYSURNQV9JUlFfQUxMX01BU0s7
+Cj4gwqDCoCAyNDfCoMKgwqDCoMKgwqDCoMKgwqDCoC8qIFdyaXRlIHRvIHRoZSBSeCBjaGFubmVs
+IGNvbnRyb2wgcmVnaXN0ZXIgKi8KPiDCoMKgIDI0OMKgwqDCoMKgwqDCoMKgwqDCoMKgYXhpZW5l
+dF9kbWFfb3V0MzIobHAsIFhBWElETUFfUlhfQ1JfT0ZGU0VULCBjcik7Cj4gwqDCoCAyNDnCoMKg
+Cj4gwqDCoCAyNTDCoMKgwqDCoMKgwqDCoMKgwqDCoC8qIFN0YXJ0IHVwZGF0aW5nIHRoZSBUeCBj
+aGFubmVsIGNvbnRyb2wgcmVnaXN0ZXIgKi8KPiDCoMKgIDI1McKgwqDCoMKgwqDCoMKgwqDCoMKg
+Y3IgPSBheGllbmV0X2RtYV9pbjMyKGxwLCBYQVhJRE1BX1RYX0NSX09GRlNFVCk7Cj4gwqDCoCAy
+NTLCoMKgwqDCoMKgwqDCoMKgwqDCoC8qIFVwZGF0ZSB0aGUgaW50ZXJydXB0IGNvYWxlc2NlIGNv
+dW50ICovCj4gwqDCoCAyNTPCoMKgwqDCoMKgwqDCoMKgwqDCoGNyID0gKCgoY3IgJiB+WEFYSURN
+QV9DT0FMRVNDRV9NQVNLKSkgfAo+IMKgwqAgMjU0wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgICgobHAtPmNvYWxlc2NlX2NvdW50X3R4KSA8PAo+IFhBWElETUFfQ09BTEVTQ0VfU0hJRlQp
+KTsKPiDCoMKgIDI1NcKgwqDCoMKgwqDCoMKgwqDCoMKgLyogVXBkYXRlIHRoZSBkZWxheSB0aW1l
+ciBjb3VudCAqLwo+IMKgwqAgMjU2wqDCoMKgwqDCoMKgwqDCoMKgwqBjciA9ICgoKGNyICYgflhB
+WElETUFfREVMQVlfTUFTSykpIHwKPiDCoMKgIDI1N8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCAoWEFYSURNQV9ERlRfVFhfV0FJVEJPVU5EIDw8Cj4gWEFYSURNQV9ERUxBWV9TSElGVCkp
+Owo+IMKgwqAgMjU4wqDCoMKgwqDCoMKgwqDCoMKgwqAvKiBFbmFibGUgY29hbGVzY2UsIGRlbGF5
+IHRpbWVyIGFuZCBlcnJvciBpbnRlcnJ1cHRzCj4gKi8KPiDCoMKgIDI1OcKgwqDCoMKgwqDCoMKg
+wqDCoMKgY3IgfD0gWEFYSURNQV9JUlFfQUxMX01BU0s7Cj4gwqDCoCAyNjDCoMKgwqDCoMKgwqDC
+oMKgwqDCoC8qIFdyaXRlIHRvIHRoZSBUeCBjaGFubmVsIGNvbnRyb2wgcmVnaXN0ZXIgKi8KPiDC
+oMKgIDI2McKgwqDCoMKgwqDCoMKgwqDCoMKgYXhpZW5ldF9kbWFfb3V0MzIobHAsIFhBWElETUFf
+VFhfQ1JfT0ZGU0VULCBjcik7Cj4gwqDCoCAyNjLCoMKgCj4gwqDCoCAyNjPCoMKgwqDCoMKgwqDC
+oMKgwqDCoC8qIFBvcHVsYXRlIHRoZSB0YWlsIHBvaW50ZXIgYW5kIGJyaW5nIHRoZSBSeCBBeGkg
+RE1BCj4gZW5naW5lIG91dCBvZgo+IMKgwqAgMjY0wqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBoYWx0
+ZWQgc3RhdGUuIFRoaXMgd2lsbCBtYWtlIHRoZSBSeCBzaWRlIHJlYWR5IGZvcgo+IHJlY2VwdGlv
+bi4KPiDCoMKgIDI2NcKgwqDCoMKgwqDCoMKgwqDCoMKgICovCj4gwqDCoCAyNjbCoMKgwqDCoMKg
+wqDCoMKgwqDCoGF4aWVuZXRfZG1hX291dDMyKGxwLCBYQVhJRE1BX1JYX0NERVNDX09GRlNFVCwg
+bHAtCj4gPnJ4X2JkX3ApOwo+IMKgwqAgMjY3wqDCoMKgwqDCoMKgwqDCoMKgwqBjciA9IGF4aWVu
+ZXRfZG1hX2luMzIobHAsIFhBWElETUFfUlhfQ1JfT0ZGU0VUKTsKPiDCoMKgIDI2OMKgwqDCoMKg
+wqDCoMKgwqDCoMKgYXhpZW5ldF9kbWFfb3V0MzIobHAsIFhBWElETUFfUlhfQ1JfT0ZGU0VULAo+
+IMKgwqAgMjY5wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIGNyIHwgWEFYSURNQV9DUl9SVU5TVE9QX01BU0spOwo+IMKgwqAgMjcwwqDCoMKgwqDC
+oMKgwqDCoMKgwqBheGllbmV0X2RtYV9vdXQzMihscCwgWEFYSURNQV9SWF9UREVTQ19PRkZTRVQs
+IGxwLQo+ID5yeF9iZF9wICsKPiDCoMKgIDI3McKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAoc2l6ZW9mKCpscC0+cnhfYmRfdikgKiAoUlhfQkRf
+TlVNCj4gLSAxKSkpOwo+IMKgwqAgMjcywqDCoAo+IMKgwqAgMjczwqDCoMKgwqDCoMKgwqDCoMKg
+wqAvKiBXcml0ZSB0byB0aGUgUlMgKFJ1bi1zdG9wKSBiaXQgaW4gdGhlIFR4IGNoYW5uZWwKPiBj
+b250cm9sIHJlZ2lzdGVyLgo+IMKgwqAgMjc0wqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBUeCBjaGFu
+bmVsIGlzIG5vdyByZWFkeSB0byBydW4uIEJ1dCBvbmx5IGFmdGVyIHdlCj4gd3JpdGUgdG8gdGhl
+Cj4gwqDCoCAyNzXCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIHRhaWwgcG9pbnRlciByZWdpc3RlciB0
+aGF0IHRoZSBUeCBjaGFubmVsIHdpbGwKPiBzdGFydCB0cmFuc21pdHRpbmcuCj4gwqDCoCAyNzbC
+oMKgwqDCoMKgwqDCoMKgwqDCoCAqLwo+IMKgwqAgMjc3wqDCoMKgwqDCoMKgwqDCoMKgwqBheGll
+bmV0X2RtYV9vdXQzMihscCwgWEFYSURNQV9UWF9DREVTQ19PRkZTRVQsIGxwLQo+ID50eF9iZF9w
+KTsKPiDCoMKgIDI3OMKgwqDCoMKgwqDCoMKgwqDCoMKgY3IgPSBheGllbmV0X2RtYV9pbjMyKGxw
+LCBYQVhJRE1BX1RYX0NSX09GRlNFVCk7Cj4gwqDCoCAyNznCoMKgwqDCoMKgwqDCoMKgwqDCoGF4
+aWVuZXRfZG1hX291dDMyKGxwLCBYQVhJRE1BX1RYX0NSX09GRlNFVCwKPiDCoMKgIDI4MMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjciB8IFhB
+WElETUFfQ1JfUlVOU1RPUF9NQVNLKTsKPiDCoMKgIDI4McKgwqAKPiDCoMKgIDI4MsKgwqDCoMKg
+wqDCoMKgwqDCoMKgLyogV2FpdCBmb3IgUGh5UnN0Q21wbHQgYml0IHRvIGJlIHNldCwgaW5kaWNh
+dGluZyB0aGUKPiBQSFkgcmVzZXQgaGFzIGZpbmlzaGVkICovCj4gwqA+IDI4M8KgwqDCoMKgwqDC
+oMKgwqDCoMKgcmV0ID0gcmVhZF9wb2xsX3RpbWVvdXQoYXhpZW5ldF9pb3IsIHZhbHVlLAo+IMKg
+wqAgMjg0wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqB2YWx1ZSAmCj4gWEFFX0lOVF9QSFlSU1RDTVBMVF9NQVNLLAo+IMKg
+wqAgMjg1wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqBERUxBWV9PRl9PTkVfTUlMTElTRUMsIDUwMDAwLAo+IGZhbHNlLCBs
+cCwKPiDCoMKgIDI4NsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgWEFFX0lTX09GRlNFVCk7Cj4gwqDCoCAyODfCoMKgwqDC
+oMKgwqDCoMKgwqDCoGlmIChyZXQpIHsKPiDCoMKgIDI4OMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoGRldl9lcnIobHAtPmRldiwgIiVzOiB0aW1lb3V0IHdhaXRpbmcgZm9yCj4g
+UGh5UnN0Q21wbHRcbiIsIF9fZnVuY19fKTsKPiDCoMKgIDI4OcKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoHJldHVybiByZXQ7Cj4gwqDCoCAyOTDCoMKgwqDCoMKgwqDCoMKgwqDC
+oH0KPiDCoMKgIDI5McKgwqAKPiDCoMKgIDI5MsKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIDA7
+Cj4gwqDCoCAyOTPCoMKgb3V0Ogo+IMKgwqAgMjk0wqDCoMKgwqDCoMKgwqDCoMKgwqBheGllbmV0
+X2RtYV9iZF9yZWxlYXNlKG5kZXYpOwo+IMKgwqAgMjk1wqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1
+cm4gLUVOT01FTTsKPiDCoMKgIDI5NsKgwqB9Cj4gwqDCoCAyOTfCoMKgCj4gCgo=
