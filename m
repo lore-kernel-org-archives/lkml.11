@@ -2,202 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D95ABC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233637AbiGFQiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
+        id S233372AbiGFQk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233470AbiGFQiB (ORCPT
+        with ESMTP id S232351AbiGFQkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:38:01 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60451C938
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:38:00 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id n15so19128648ljg.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 09:38:00 -0700 (PDT)
+        Wed, 6 Jul 2022 12:40:53 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBEE193E2;
+        Wed,  6 Jul 2022 09:40:52 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id z12so11457399qki.3;
+        Wed, 06 Jul 2022 09:40:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BbnF7h70YkDmP9ErED0ng5loM2AwPwzyHrzbSSQ3P9k=;
-        b=ProhIAPeKWYYTZO+06j73QlKlAil3gMuBFiaYbqddtRKOkrOxJ/GN5y7paxFRA8ISS
-         P/rD5b/Noxn19mWS580dDRSJuOYSYbdqfzKZ/vWERB/s1vrHL6C5Iv3uN+iar2ayOy6k
-         wJsGvTXzotAicEJqn7PVeDvc8NEJV8JxCEDruYI48TnX+Yn3xdKZilcL4D/58c2X9f+e
-         G9paddKkXzTaOg/c5cOtuW/YTx1zKYTHvgnRgl9q5yWW0DWAWraNf/w3eyv+kHMI0B9F
-         6THHJOLmsPzqQnX5OP8AbyPbj+KPhSYLRHyotLbZLdS8wdTfDRjIzhY/CLBK667uRqxt
-         0frQ==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OBd8LZPGUvsdQXbTc4zaMRavgLTINIjBhOwnEvOAp84=;
+        b=ZrZyMrDdlVjKts2PmrZmt56BY3UuXlBAzb6LEmnLkJyKhmTuBnUEmGhcYe7aCOyVd9
+         d4lr+SZkZXmZLVlDTlIFRytxNX0CFjk4tDolpJA/8lfyviYbWN2fq/jwyVc1TfuBak70
+         rH+ZVbiNhBFcVxr5sf/N9YbSqULOlwzrsrzUf13Rq71d+9aQJs4EcOelL9GYah891hQX
+         +vzrxleQc08QXlbYgOUyrRYs2TktGV3bD2KVUGocKwq0Kqz9chdUxZ2c9LeBAuMQnwtp
+         axFe+jBsB75O3dlxrZyveDb4wPvlAD0o30cr73CgvAX7d6l2wTW1cY3oTYf/gdlzjAqb
+         PSJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BbnF7h70YkDmP9ErED0ng5loM2AwPwzyHrzbSSQ3P9k=;
-        b=WuQHo0DC0R8vI6H2ZnclUugrDDNOjqSZFhkpHo9oR4y4ZjoG7UOLjyLUnEn2555AKd
-         l8kkw67EH40Uy5bOMeBk4NrwsBTMr8R4Kc0/t7puJrprTVMK6kJPFu6+rq2SBDwypH1t
-         LPOdOinj0Urj6aogWdRXtaYBNGb7EqOaWQGYNa1b3kJ4CIvJPRn0tP9i+NNHor1OopXO
-         QH2ZK2BdEphaFBEevdJF9ygN6Tk5D6HacLVwhsnFkEKUcFHewgg0gFNxE4rCBxbvvYia
-         TVt/9u40+XwpGZgZsKu6+BNDTs8vxfK60S/rED5J/x03eWH7EVnmuXABGf63yC2ud8gS
-         713Q==
-X-Gm-Message-State: AJIora86glYrWxzJeKuriHh5QnFBPKhmzF2Bw1qVdhA9ZCL9cN0X0THk
-        p+B+MSRpYnxIo5iatF4Gkvg2FQ==
-X-Google-Smtp-Source: AGRyM1sDCHefX4WYIuajRhYSYoVSRX5euAvMxSTHGI0Y3Afj0rqHcog4kbAvaRTEQRTKa2relR527w==
-X-Received: by 2002:a2e:b94a:0:b0:25c:271:5253 with SMTP id 10-20020a2eb94a000000b0025c02715253mr16611856ljs.16.1657125479124;
-        Wed, 06 Jul 2022 09:37:59 -0700 (PDT)
-Received: from krzk-bin.home ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id v12-20020a056512096c00b004831cc659ffsm1168063lft.125.2022.07.06.09.37.58
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OBd8LZPGUvsdQXbTc4zaMRavgLTINIjBhOwnEvOAp84=;
+        b=hDEm21nxrzEabsVy3BuY+ePXBIDblsGh4PHnr1B6Vqfs8QW+SCKiZyG+u9yyPrDKCQ
+         CcNQOHLQSaehGmHvThOOC2v7sCBd7L7/fvZ0d6+vTuHwADNXVqKVmIFIfzrPGqVSP/eL
+         pLtYhpqU4v6zb7c4P/hGN07C1kidQNfwvCfyEv+QN0tW+UOhJeweX73DvetSOUYefD31
+         7jIZwxtUcoWImbu+ohQE0vG727KNomJ+oqgowi+QC2Z/4LUiVgGOdEJ4CODBUD0hnj5V
+         OjhdoSaoSu/hswsRf8khmY1RZpkvKVO5SU4cZIOo2CDLETX3ffpGnxT6op9xG0GKWwLf
+         +7fQ==
+X-Gm-Message-State: AJIora+H2g6KWw6GdfRQ3Ut8fgyX5Dl4bg1sU6PJQpqhyqrkBbRVjLNt
+        2yVhtMbbR17J0N0e6U4juYU=
+X-Google-Smtp-Source: AGRyM1tiH6XKwk3Yt445j7VE5/fPEUbexDerGd9aO4cYBUHHeH1jJF1bBxKh2MghQ5ubkKueDZkIBg==
+X-Received: by 2002:a05:620a:4724:b0:6af:dd84:1f33 with SMTP id bs36-20020a05620a472400b006afdd841f33mr27938530qkb.464.1657125651758;
+        Wed, 06 Jul 2022 09:40:51 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:b82:8788:1659:63af])
+        by smtp.gmail.com with ESMTPSA id k22-20020a05620a415600b006b4880b08a9sm4779043qko.88.2022.07.06.09.40.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 09:37:58 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        arm@kernel.org, soc@kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [GIT PULL 1/2] ARM: dts: cleanup for v5.20, second round
-Date:   Wed,  6 Jul 2022 18:37:54 +0200
-Message-Id: <20220706163754.33064-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220706163754.33064-1-krzysztof.kozlowski@linaro.org>
-References: <20220706163754.33064-1-krzysztof.kozlowski@linaro.org>
+        Wed, 06 Jul 2022 09:40:51 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 09:40:48 -0700
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Wei Wang <weiwan@google.com>
+Subject: Re: [syzbot] WARNING in sk_stream_kill_queues (8)
+Message-ID: <YsW7EP45TloIyEtv@pop-os.localdomain>
+References: <000000000000b06e5505e299a9b6@google.com>
+ <CANn89iLuGKyVcNAAjvwWk8HoJrNgZ5HM4itXEsnqzU=+xZLKOQ@mail.gmail.com>
+ <CANn89iLvG0QBVkdhbC-x59ac=B=j+ZxXitBGanBo+8ThMJGG1g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iLvG0QBVkdhbC-x59ac=B=j+ZxXitBGanBo+8ThMJGG1g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Jun 29, 2022 at 07:46:35PM +0200, Eric Dumazet wrote:
+> On Wed, Jun 29, 2022 at 7:45 PM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Wed, Jun 29, 2022 at 7:41 PM syzbot
+> > <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com> wrote:
+> > >
+> > > Hello,
+> > >
+> > > syzbot found the following issue on:
+> > >
+> > > HEAD commit:    aab35c3d5112 Add linux-next specific files for 20220627
+> > > git tree:       linux-next
+> > > console+strace: https://syzkaller.appspot.com/x/log.txt?x=126fef90080000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=6a874f114a1e4a6b
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=a0e6f8738b58f7654417
+> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14ae0c98080000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=145124f4080000
+> > >
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
+> > >
+> > > nf_conntrack: default automatic helper assignment has been turned off for security reasons and CT-based firewall rule not found. Use the iptables CT target to attach helpers instead.
+> > > ------------[ cut here ]------------
+> > > WARNING: CPU: 1 PID: 3601 at net/core/stream.c:205 sk_stream_kill_queues+0x2ee/0x3d0 net/core/stream.c:205
+> > > Modules linked in:
+> > > CPU: 1 PID: 3601 Comm: syz-executor340 Not tainted 5.19.0-rc4-next-20220627-syzkaller #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > RIP: 0010:sk_stream_kill_queues+0x2ee/0x3d0 net/core/stream.c:205
+> > > Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e ec 00 00 00 8b ab 28 02 00 00 e9 60 ff ff ff e8 3b 9a 29 fa 0f 0b eb 97 e8 32 9a 29 fa <0f> 0b eb a0 e8 29 9a 29 fa 0f 0b e9 6a fe ff ff e8 0d a1 75 fa e9
+> > > RSP: 0018:ffffc90002e6fbf0 EFLAGS: 00010293
+> > > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > > RDX: ffff88801e90ba80 RSI: ffffffff87511cce RDI: 0000000000000005
+> > > RBP: 0000000000000b00 R08: 0000000000000005 R09: 0000000000000000
+> > > R10: 0000000000000b00 R11: 0000000000000004 R12: ffff88801e0c8e28
+> > > R13: ffffffff913121c0 R14: ffff88801e0c8c28 R15: ffff88801e0c8db8
+> > > FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 000000000045b630 CR3: 000000000ba8e000 CR4: 00000000003506e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  <TASK>
+> > >  inet_csk_destroy_sock+0x1a5/0x440 net/ipv4/inet_connection_sock.c:1013
+> > >  __tcp_close+0xb92/0xf50 net/ipv4/tcp.c:2963
+> > >  tcp_close+0x29/0xc0 net/ipv4/tcp.c:2975
+> > >  inet_release+0x12e/0x270 net/ipv4/af_inet.c:428
+> > >  __sock_release+0xcd/0x280 net/socket.c:650
+> > >  sock_close+0x18/0x20 net/socket.c:1365
+> > >  __fput+0x277/0x9d0 fs/file_table.c:317
+> > >  task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+> > >  exit_task_work include/linux/task_work.h:38 [inline]
+> > >  do_exit+0xaf1/0x29f0 kernel/exit.c:795
+> > >  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+> > >  __do_sys_exit_group kernel/exit.c:936 [inline]
+> > >  __se_sys_exit_group kernel/exit.c:934 [inline]
+> > >  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> > >  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > > RIP: 0033:0x7f080e760989
+> > > Code: Unable to access opcode bytes at RIP 0x7f080e76095f.
+> > > RSP: 002b:00007ffcee785818 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+> > > RAX: ffffffffffffffda RBX: 00007f080e7d4270 RCX: 00007f080e760989
+> > > RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+> > > RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000010
+> > > R10: 0000000000000010 R11: 0000000000000246 R12: 00007f080e7d4270
+> > > R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+> > >  </TASK>
+> > >
+> > >
+> > > ---
+> > > This report is generated by a bot. It may contain errors.
+> > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > >
+> > > syzbot will keep track of this issue. See:
+> > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > > syzbot can test patches for this issue, for details see:
+> > > https://goo.gl/tpsmEJ#testing-patches
+> >
+> > Stanislav has bisected the issue to:
+> >
+> > commit 965b57b469a589d64d81b1688b38dcb537011bb0
+> > Author: Cong Wang <cong.wang@bytedance.com>
+> > Date:   Wed Jun 15 09:20:12 2022 -0700
+> >
+> >     net: Introduce a new proto_ops ->read_skb()
+> >
+> >     Currently both splice() and sockmap use ->read_sock() to
+> >     read skb from receive queue, but for sockmap we only read
+> >     one entire skb at a time, so ->read_sock() is too conservative
+> >     to use. Introduce a new proto_ops ->read_skb() which supports
+> >     this sematic, with this we can finally pass the ownership of
+> >     skb to recv actors.
+> >
+> >     For non-TCP protocols, all ->read_sock() can be simply
+> >     converted to ->read_skb().
+> >
+> >     Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> >     Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> >     Reviewed-by: John Fastabend <john.fastabend@gmail.com>
+> >     Link: https://lore.kernel.org/bpf/20220615162014.89193-3-xiyou.wangcong@gmail.com
+> 
+> Repro is doing something like:
+> 
 
-On top of previous pull request.
+I will look into this tonight.
 
-Best regards,
-Krzysztof
-
-
-The following changes since commit 2f7a7f941d770c03942fefe1d91ce954cb329c7e:
-
-  Merge branch 'for-v5.20/aspeed-dts-cleanup' into for-v5.20/dts-cleanup (2022-06-27 10:19:57 +0200)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/dt-cleanup-5.20-2
-
-for you to fetch changes up to 3d34cae102b0612dcce0bd4603a4d6302b8039ed:
-
-  Merge branch 'for-v5.20/aspeed-dts-cleanup' into for-v5.20/dts-cleanup (2022-07-05 13:44:14 +0200)
-
-----------------------------------------------------------------
-Cleanup of ARM DTS for v5.20, part two
-
-Series of cleanups for ARM DTS - white-spaces, gpio-key subnode names
-and gpio-key properties for more boards: TI, Marvell, AT91 and Aspeed.
-
-----------------------------------------------------------------
-Krzysztof Kozlowski (12):
-      ARM: dts: ti: adjust whitespace around '='
-      ARM: dts: omap: adjust whitespace around '='
-      ARM: dts: marvell: align gpio-key node names with dtschema
-      ARM: dts: marvell: correct gpio-keys properties
-      ARM: dts: omap: align gpio-key node names with dtschema
-      ARM: dts: omap: correct gpio-keys properties
-      ARM: dts: at91: align gpio-key node names with dtschema
-      ARM: dts: at91: correct gpio-keys properties
-      ARM: dts: at91: drop unneeded status from gpio-keys
-      ARM: dts: aspeed: align gpio-key node names with dtschema
-      ARM: dts: aspeed: correct gpio-keys properties
-      Merge branch 'for-v5.20/aspeed-dts-cleanup' into for-v5.20/dts-cleanup
-
- arch/arm/boot/dts/am335x-boneblack-wireless.dts    |  2 +-
- arch/arm/boot/dts/am335x-boneblue.dts              |  2 +-
- arch/arm/boot/dts/am335x-bonegreen-wireless.dts    |  2 +-
- arch/arm/boot/dts/am335x-cm-t335.dts               |  4 +-
- arch/arm/boot/dts/am335x-evm.dts                   |  8 ++--
- arch/arm/boot/dts/am335x-guardian.dts              |  2 -
- arch/arm/boot/dts/am335x-moxa-uc-2100-common.dtsi  |  4 +-
- arch/arm/boot/dts/am335x-moxa-uc-8100-common.dtsi  |  4 +-
- arch/arm/boot/dts/am335x-pcm-953.dtsi              |  4 +-
- arch/arm/boot/dts/am335x-pepper.dts                |  8 ++--
- .../boot/dts/am335x-sancloud-bbe-extended-wifi.dts |  2 +-
- arch/arm/boot/dts/am335x-shc.dts                   |  6 +--
- arch/arm/boot/dts/am3517-evm-ui.dtsi               | 26 ++++++------
- arch/arm/boot/dts/am3517-evm.dts                   | 18 ++++----
- arch/arm/boot/dts/am3874-iceboard.dts              |  4 +-
- arch/arm/boot/dts/am437x-idk-evm.dts               |  6 +--
- arch/arm/boot/dts/am437x-l4.dtsi                   |  2 +-
- arch/arm/boot/dts/armada-370-c200-v2.dts           |  8 ++--
- arch/arm/boot/dts/armada-370-rd.dts                |  2 -
- arch/arm/boot/dts/armada-370-seagate-nas-xbay.dtsi |  8 ++--
- .../dts/armada-370-seagate-personal-cloud.dtsi     |  8 ++--
- arch/arm/boot/dts/armada-381-netgear-gs110emx.dts  |  2 +-
- arch/arm/boot/dts/armada-385-clearfog-gtr.dtsi     |  4 +-
- arch/arm/boot/dts/armada-385-linksys.dtsi          |  4 +-
- arch/arm/boot/dts/armada-388-clearfog-base.dts     |  2 +-
- arch/arm/boot/dts/armada-388-clearfog.dts          |  2 +-
- arch/arm/boot/dts/armada-xp-axpwifiap.dts          |  6 +--
- arch/arm/boot/dts/armada-xp-linksys-mamba.dts      |  8 ++--
- arch/arm/boot/dts/armada-xp-openblocks-ax3-4.dts   |  6 +--
- arch/arm/boot/dts/aspeed-bmc-ampere-mtjade.dts     | 30 +++++++-------
- arch/arm/boot/dts/aspeed-bmc-bytedance-g220a.dts   | 48 +++++++++++-----------
- arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts       | 10 ++---
- arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts       | 14 +++----
- arch/arm/boot/dts/aspeed-bmc-inspur-fp5280g2.dts   | 22 +++++-----
- arch/arm/boot/dts/aspeed-bmc-opp-mihawk.dts        | 23 ++++++-----
- arch/arm/boot/dts/aspeed-bmc-opp-mowgli.dts        | 20 ++++-----
- arch/arm/boot/dts/aspeed-bmc-opp-nicole.dts        |  2 +-
- arch/arm/boot/dts/aspeed-bmc-opp-palmetto.dts      |  2 +-
- arch/arm/boot/dts/aspeed-bmc-opp-romulus.dts       |  2 +-
- arch/arm/boot/dts/aspeed-bmc-opp-swift.dts         | 30 +++++++-------
- arch/arm/boot/dts/aspeed-bmc-opp-tacoma.dts        | 14 +++----
- arch/arm/boot/dts/aspeed-bmc-opp-vesnin.dts        |  4 +-
- arch/arm/boot/dts/aspeed-bmc-opp-witherspoon.dts   | 16 ++++----
- arch/arm/boot/dts/aspeed-bmc-opp-zaius.dts         |  4 +-
- arch/arm/boot/dts/at91-foxg20.dts                  |  4 +-
- arch/arm/boot/dts/at91-gatwick.dts                 |  2 +-
- arch/arm/boot/dts/at91-kizbox.dts                  |  8 ++--
- arch/arm/boot/dts/at91-kizbox2-common.dtsi         | 10 ++---
- arch/arm/boot/dts/at91-kizbox3-hs.dts              | 12 +++---
- arch/arm/boot/dts/at91-kizboxmini-common.dtsi      |  6 +--
- arch/arm/boot/dts/at91-nattis-2-natte-2.dts        |  2 +-
- arch/arm/boot/dts/at91-qil_a9260.dts               |  4 +-
- arch/arm/boot/dts/at91-sam9x60ek.dts               |  5 +--
- arch/arm/boot/dts/at91-sama5d27_som1_ek.dts        |  4 +-
- arch/arm/boot/dts/at91-sama5d27_wlsom1_ek.dts      |  5 +--
- arch/arm/boot/dts/at91-sama5d2_icp.dts             |  5 +--
- arch/arm/boot/dts/at91-sama5d2_ptc_ek.dts          |  4 +-
- arch/arm/boot/dts/at91-sama5d2_xplained.dts        |  4 +-
- arch/arm/boot/dts/at91-sama5d3_xplained.dts        |  4 +-
- arch/arm/boot/dts/at91-sama5d4_xplained.dts        |  4 +-
- arch/arm/boot/dts/at91-sama5d4ek.dts               |  4 +-
- arch/arm/boot/dts/at91-sama7g5ek.dts               |  4 +-
- arch/arm/boot/dts/at91-wb45n.dts                   |  7 +---
- arch/arm/boot/dts/at91-wb50n.dts                   | 10 ++---
- arch/arm/boot/dts/at91sam9260ek.dts                |  6 +--
- arch/arm/boot/dts/at91sam9261ek.dts                | 10 ++---
- arch/arm/boot/dts/at91sam9263ek.dts                |  6 +--
- arch/arm/boot/dts/at91sam9g20ek_common.dtsi        |  6 +--
- .../boot/dts/at91sam9g25-gardena-smart-gateway.dts |  2 +-
- arch/arm/boot/dts/at91sam9m10g45ek.dts             | 16 ++++----
- arch/arm/boot/dts/at91sam9n12ek.dts                |  4 +-
- arch/arm/boot/dts/at91sam9rlek.dts                 |  6 +--
- arch/arm/boot/dts/da850-evm.dts                    | 18 ++++----
- arch/arm/boot/dts/da850.dtsi                       | 12 +++---
- arch/arm/boot/dts/dm8148-evm.dts                   |  2 +-
- arch/arm/boot/dts/dm8168-evm.dts                   |  2 +-
- arch/arm/boot/dts/dra62x-j5eco-evm.dts             |  2 +-
- arch/arm/boot/dts/dra76x.dtsi                      |  6 +--
- arch/arm/boot/dts/omap2420-h4.dts                  |  2 +-
- arch/arm/boot/dts/omap3-evm-37xx.dts               |  2 +-
- arch/arm/boot/dts/omap3-evm.dts                    |  2 +-
- arch/arm/boot/dts/omap3-gta04.dtsi                 |  2 +-
- arch/arm/boot/dts/omap3-igep.dtsi                  |  2 +-
- arch/arm/boot/dts/omap3-ldp.dts                    |  6 +--
- arch/arm/boot/dts/omap3-lilly-a83x.dtsi            |  2 +-
- arch/arm/boot/dts/omap3-n900.dts                   |  4 +-
- arch/arm/boot/dts/omap3-n950-n9.dtsi               |  4 +-
- arch/arm/boot/dts/omap3-overo-base.dtsi            |  2 +-
- arch/arm/boot/dts/omap3-pandora-common.dtsi        |  2 +-
- arch/arm/boot/dts/omap3430-sdp.dts                 |  6 +--
- arch/arm/boot/dts/omap5-l4.dtsi                    |  2 +-
- 91 files changed, 301 insertions(+), 348 deletions(-)
+Thanks for the report!
