@@ -2,67 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C752C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:00:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32586C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:00:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbiGFHAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 03:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
+        id S231187AbiGFHAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 03:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiGFHAS (ORCPT
+        with ESMTP id S231130AbiGFHAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 03:00:18 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D021F2DC;
-        Wed,  6 Jul 2022 00:00:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=R46HUaC7dh3ENW3T9JD/LPCN0Q73/N8vSw6Q2zMi/zs=; b=vOm/O/oIezRVCyIO8pt7RST9FS
-        c0ALDfi9HMbz8Vxvmsju3KsbI2eUJASfRzM4wlPSLViIZ2jp5PRhygeJUzgVObOSIkUA818QIL6hv
-        7VIjlRE+GoqmMDDguZDLAKkOHSXH1rS5lfUiRQkoWEykBEpe8/1T7r0wGqNRtefDwq0OYdx4p99vW
-        XvAJZPD5k5+KjlJWgqthaCHi1G2ngvYWMK7HFsZ8SaIcD9xnsidmEW81T7CX3BeIAKbRmJr1cdemD
-        cxfyt0z128b5NXZj95mP2YrSMk1zswZ681CgAorn3aHZ07qd++0Wr7WCShFW+i4dzdAIuIHFKeQ1X
-        1uzohvaA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o8z10-006tU3-EX; Wed, 06 Jul 2022 07:00:03 +0000
-Date:   Wed, 6 Jul 2022 00:00:02 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Yixun Lan <dlan@gentoo.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-riscv@lists.infradead.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH] RISC-V/bpf: Enable bpf_probe_read{, str}()
-Message-ID: <YsUy8jBpt11zoc5E@infradead.org>
-References: <20220703130924.57240-1-dlan@gentoo.org>
- <YsKAZUJRo5cjtZ3n@infradead.org>
- <CAEf4BzbCswMd6KU7f9SEU6xHBBPu_rTL5f+KE0OkYj63e-h-bA@mail.gmail.com>
+        Wed, 6 Jul 2022 03:00:24 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F18D1F2C2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 00:00:23 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id g4so25835867ybg.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 00:00:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fP9UL96cxJNu+e/w1ZAS0SabjOjSeie47tNUCSGsUoc=;
+        b=bInBYldfUKoDTJgam4jbKqa+UaD8EA8WAlBbf3FnOC4E50CpfP8GkcYd+oT8YoNZce
+         jEaHOJ5DcEI5VMT/pCfcH847uP5MbHL6gLoCuevejao+xJxQiLAmM4TAiLFEIHjZFZsn
+         sUFOErAxxxRrJTktcR+YDboQkteP4+At0xLApZ5Md/uSwKQUMbjUfkWxLHbbzL3oP28S
+         zbQHnkZpcb7HwiIZ0zGYVbbG0e70enGSkiJaX/jfe7FSoRtsghLgPd8vIY5vCD855Vzw
+         Qpy3wIqI/3r8EJVjVzAfTT4qSTaurvTTTKgrKveJkVzawr+kJhAYC5YdbIIrv7VIZfvA
+         pTfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fP9UL96cxJNu+e/w1ZAS0SabjOjSeie47tNUCSGsUoc=;
+        b=foGZQsi/4PvZ4h+ZW+ZvOc809GtoRnNnV5Hl6PbV1tGQcR/n+k4V8rQYTtWMDzsHmq
+         0rVjM4qjCQ+fIXD3aHGa7UEGcsdVSGDRwKSTZQRgPgr78qg10BQT9B1G5amng5DwlkcG
+         cifwgfJMC016mJZD3S7qs5Gx9Gbot5fWGd7ZVaPQBl690ZMqDo4NQrrmiVWqLCYx01iM
+         s4zX1h5DfwOaiavcLG1M5RNjzIlqWGAXeKp49wDyd41+RZt16WYsem1IFc8rPjTGXF46
+         xxxBzH6ek5mgSHHhwQbkUvuaP7pPiSZVNvHYkCDrfoR4Wvtz9EmYbzVm+S1LmUnjLzpl
+         +a4g==
+X-Gm-Message-State: AJIora9bg606WXMy7oMoR9tSLkYt1ovnQk/w3JagRrW6QnAh7STRNDZ7
+        G3bQqT8ubzirsa5U0mE5a5vDoJOOEufm+dR4xcAJFw==
+X-Google-Smtp-Source: AGRyM1t+ZEQAVYtPCYHNF4OZvBPyldFzJskniQgVQGjAGnFo0ZI7Xdr+ZZT9n9u7lmcJSCmUhj7Qj2EvQYLapYoBwzM=
+X-Received: by 2002:a25:7455:0:b0:66e:2daf:8924 with SMTP id
+ p82-20020a257455000000b0066e2daf8924mr22469402ybc.427.1657090822296; Wed, 06
+ Jul 2022 00:00:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbCswMd6KU7f9SEU6xHBBPu_rTL5f+KE0OkYj63e-h-bA@mail.gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+References: <20220706052130.16368-1-kuniyu@amazon.com> <20220706052130.16368-4-kuniyu@amazon.com>
+In-Reply-To: <20220706052130.16368-4-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 6 Jul 2022 09:00:11 +0200
+Message-ID: <CANn89i+mJCN=4h5-MM5jUQN8Hv=NdyTmQQb7Oeop+DyYVcEWUg@mail.gmail.com>
+Subject: Re: [PATCH v1 net 03/16] sysctl: Add proc_dointvec_lockless().
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 10:00:42PM -0700, Andrii Nakryiko wrote:
-> riscv existed as of [0], so I'd argue it is a proper bug fix, as
-> corresponding select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE should
-> have been added back then.
+On Wed, Jul 6, 2022 at 7:22 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> A sysctl variable is accessed concurrently, and there is always a chance of
+> data-race.  So, all readers and writers need some basic protection to avoid
+> load/store-tearing.
+>
+> This patch changes proc_dointvec() to use READ_ONCE()/WRITE_ONCE()
+> internally to fix a data-race on the sysctl side.  For now, proc_dointvec()
+> itself is tolerant to a data-race, but we still need to add annotations on
+> the other subsystem's side.
+>
+> In case we miss such fixes, this patch converts proc_dointvec() to a
+> wrapper of proc_dointvec_lockless().  When we fix a data-race in the other
+> subsystem, we can explicitly set it as a handler.
+>
+> Also, this patch removes proc_dointvec()'s document and adds
+> proc_dointvec_lockless()'s one so that no one will use proc_dointvec()
+> anymore.
+>
+> While we are on it, we remove some trailing spaces.
 
-How much of an eBPF ecosystem was there on RISC-V at the point?
+
+I do not see why you add more functions.
+
+Really all sysctls can change locklessly by nature, as I pointed out.
+
+So I would simply add WRITE_ONCE() whenever they are written, and
+READ_ONCE() when they are read.
+
+If stable teams care enough, they will have to backport these changes,
+so I would rather not have to change
+proc_dointvec() to proc_dointvec_lockless() in many files, with many
+conflicts, that ultimately will either
+add bugs, or ask extra work for maintainers.
