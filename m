@@ -2,105 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0E1CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D16C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 12:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbiGFMdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 08:33:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
+        id S232923AbiGFMds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 08:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbiGFMdT (ORCPT
+        with ESMTP id S231690AbiGFMdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 08:33:19 -0400
-X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 05:33:17 PDT
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBCA26ACC;
-        Wed,  6 Jul 2022 05:33:17 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 3165A18864BD;
-        Wed,  6 Jul 2022 12:25:31 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 27ACE25032B8;
-        Wed,  6 Jul 2022 12:25:31 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 1F97F9120FED; Wed,  6 Jul 2022 12:25:31 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from wse-c0127.vestervang (unknown [208.127.141.28])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id A337C9120FED;
-        Wed,  6 Jul 2022 12:25:29 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next 1/1] net: dsa: mv88e6xxx: allow reading FID when handling ATU violations
-Date:   Wed,  6 Jul 2022 14:25:02 +0200
-Message-Id: <20220706122502.1521819-1-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 6 Jul 2022 08:33:45 -0400
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D399EE04;
+        Wed,  6 Jul 2022 05:33:44 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.101.196.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id B0CE441692;
+        Wed,  6 Jul 2022 12:33:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1657110822;
+        bh=Ij7XJmC/+XwLc9RCA+8oEtzYP6f2opNzC/i7DALyxf4=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=N4a6WjFi3HaggQEMc5n/WBnTOkNwycKmXj7W+LLP5Rz4J6dVDd4GLV4FnHAMculYC
+         cux0bvryXmlasULy+7Ni9LuvBbB09oxeyf4PtCJ11nrfllWO6VjAzTY0E7hVhS6fTj
+         mF9YuPnDu5IbgC4fMrGQ66QYwUe1lD1ON/SsBfDVOU0gsUYPpC+D6/pwCQf3sidhgN
+         gMcz/yzneo98haN2J7DDew4Fp1jcFHQa9QGKotyzD53fKVctPFqeNr26BAyGRfEcgc
+         G+LLBsrfRdZpnGuSazTS3bx06e/rGcnnuK6CU7zjmzTSZc8PXr9KwieRTL/P62FYaD
+         mDLAdryM+I2Qg==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     bhelgaas@google.com
+Cc:     mika.westerberg@linux.intel.com, koba.ko@canonical.com,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David E . Box" <david.e.box@linux.intel.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] PCI: Disable upstream port PTM during suspend
+Date:   Wed,  6 Jul 2022 20:32:44 +0800
+Message-Id: <20220706123244.18056-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For convenience the function mv88e6xxx_g1_atu_op() has been used to read
-ATU violations, but the function has other purposes and does not enable
-the possibility to read the FID when reading ATU violations.
+On Intel Alder Lake platforms, Thunderbolt entering D3cold can cause
+some errors reported by AER:
+pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
+pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
+pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
+pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
+thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
+xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
+pcieport 0000:00:1d.0: AER: device recovery failed
 
-The FID is needed to get hold of which VID was involved in the violation,
-thus the need for future purposes to be able to read the FID.
+In addition to that, it can also block system from suspending when
+a Thunderbolt dock is attached to the same system.
 
-Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+The original approach [1] is to disable AER and DPC when link is in
+L2/L3 Ready, L2 and L3, but Bjorn identified the root cause is the Unsupported
+Request:
+  - 08:00.0 sent a PTM Request Message (a Posted Request)
+  - 00:1d.0 received the PTM Request Message
+  - The link transitioned to DL_Down
+  - Per sec 2.9.1, 00:1d.0 discarded the Request and reported an
+    Unsupported Request
+  - Or, per sec 6.21.3, if 00:1d.0 received a PTM Request when its
+    own PTM Enable was clear, it would also be treated as an
+    Unsupported Request
+
+And further: 'David did something like this [1], but just for Root Ports. That
+looks wrong to me because sec 6.21.3 says we should not have PTM enabled in an
+Upstream Port (i.e., in a downstream device like 08:00.0) unless it is already
+enabled in the Downstream Port (i.e., in the Root Port 00:1d.0).'
+
+So also disable upstream port PTM to make the PCI driver conform to the spec
+and solve the issue.
+
+[1] https://lore.kernel.org/all/20220408153159.106741-1-kai.heng.feng@canonical.com/
+[2] https://lore.kernel.org/all/20220422222433.GA1464120@bhelgaas/
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215453
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216210
+Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: David E. Box <david.e.box@linux.intel.com>
+Cc: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- drivers/net/dsa/mv88e6xxx/global1_atu.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/pci/pci.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-index 40bd67a5c8e9..5d120d53823c 100644
---- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-@@ -114,6 +114,19 @@ static int mv88e6xxx_g1_atu_op_wait(struct mv88e6xxx_chip *chip)
- 	return mv88e6xxx_g1_wait_bit(chip, MV88E6XXX_G1_ATU_OP, bit, 0);
- }
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index cfaf40a540a82..8ba8a0e12946e 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2717,7 +2717,8 @@ int pci_prepare_to_sleep(struct pci_dev *dev)
+ 	 * port to enter a lower-power PM state and the SoC to reach a
+ 	 * lower-power idle state as a whole.
+ 	 */
+-	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
++	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
++	    pci_pcie_type(dev) == PCI_EXP_TYPE_UPSTREAM)
+ 		pci_disable_ptm(dev);
  
-+static int mv88e6xxx_g1_read_atu_violation(struct mv88e6xxx_chip *chip)
-+{
-+	int err;
-+
-+	err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
-+				 MV88E6XXX_G1_ATU_OP_BUSY |
-+				 MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
-+	if (err)
-+		return err;
-+
-+	return mv88e6xxx_g1_atu_op_wait(chip);
-+}
-+
- static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
- {
- 	u16 val;
-@@ -359,8 +372,7 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 	pci_enable_wake(dev, target_state, wakeup);
+@@ -2775,7 +2776,8 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
+ 	 * port to enter a lower-power PM state and the SoC to reach a
+ 	 * lower-power idle state as a whole.
+ 	 */
+-	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
++	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
++	    pci_pcie_type(dev) == PCI_EXP_TYPE_UPSTREAM)
+ 		pci_disable_ptm(dev);
  
- 	mv88e6xxx_reg_lock(chip);
- 
--	err = mv88e6xxx_g1_atu_op(chip, 0,
--				  MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
-+	err = mv88e6xxx_g1_read_atu_violation(chip);
- 	if (err)
- 		goto out;
- 
+ 	__pci_enable_wake(dev, target_state, pci_dev_run_wake(dev));
 -- 
-2.30.2
+2.36.1
 
