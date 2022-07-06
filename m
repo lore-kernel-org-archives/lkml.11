@@ -2,127 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 441D7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 03:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E152C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 03:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbiGFD7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 23:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60404 "EHLO
+        id S231404AbiGFD7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 23:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231404AbiGFD7k (ORCPT
+        with ESMTP id S229973AbiGFD7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 23:59:40 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E8B1E3FB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 20:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657079977; x=1688615977;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zhVfnI9C1A/6wqEdz1fBtht+ISwAyqH/ESJAK7cY2kY=;
-  b=Uk1RDTkQ4hSS9p328B7BU0EHmX/SVVpPWBeyiMom5uY9urPYI2g+PXR8
-   +PmRCFQ4/hDyfEHLlVteC2mq0Wc6filVXNkJAwivgomG91khSqjxYKzsj
-   amQfut1rVviQ72/DOlAsVbxu+9h2AlnOvyVJvhREhSlsRFlgE6Fvpd0uB
-   I9b/EKWSEpgtSujAMlHj+mp+kwa2Cu7jpu8W4rBBpMowr7nqEker+DlXW
-   m+sVGWon18VeKsHXULef9Pq/i69azEYrRw+GWrk/tkk04cBBmYL753BjE
-   2VePQM3/mKQRwdRrTJ1ErqlWzPBt1FWTCbiNRNd/qrxx/CXzGCFpYrncG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272418186"
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="272418186"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 20:59:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="625709060"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 05 Jul 2022 20:59:22 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8wC9-000JyT-Il;
-        Wed, 06 Jul 2022 03:59:21 +0000
-Date:   Wed, 6 Jul 2022 11:58:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tramp_22 21/21] kernel/bpf/syscall.c:3137:22: error:
- implicit declaration of function 'bpf_trampoline_multi_detach'
-Message-ID: <202207061138.sopuGQ2w-lkp@intel.com>
+        Tue, 5 Jul 2022 23:59:47 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FA01E3E8;
+        Tue,  5 Jul 2022 20:59:45 -0700 (PDT)
+X-UUID: 48915112848541d8bf96fb524cca2acf-20220706
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:61c2f19c-7242-4769-b2b0-3d00f1917d65,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.8,REQID:61c2f19c-7242-4769-b2b0-3d00f1917d65,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:0f94e32,CLOUDID:51aca886-57f0-47ca-ba27-fe8c57fbf305,C
+        OID:54b2e2f07a8c,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 48915112848541d8bf96fb524cca2acf-20220706
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1496638751; Wed, 06 Jul 2022 11:59:38 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 6 Jul 2022 11:59:37 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 6 Jul 2022 11:59:37 +0800
+Message-ID: <fe61f536d626131580174d8ec8841c47f9e9cdd4.camel@mediatek.com>
+Subject: Re: [PATCH v1 02/16] dt-bindings: memory: mediatek: Update
+ condition for mt8195 smi node
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        "Weiyi Lu" <weiyi.lu@mediatek.com>
+CC:     <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 6 Jul 2022 11:59:36 +0800
+In-Reply-To: <6aafec78-2699-0cc9-bd2a-5ccd39262e38@collabora.com>
+References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+         <20220704100028.19932-3-tinghan.shen@mediatek.com>
+         <6aafec78-2699-0cc9-bd2a-5ccd39262e38@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_22
-head:   1d891c46bb689a24985cea58f4eddb053d6b1331
-commit: 1d891c46bb689a24985cea58f4eddb053d6b1331 [21/21] bpf: Add support to attach multi trampolines
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220706/202207061138.sopuGQ2w-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=1d891c46bb689a24985cea58f4eddb053d6b1331
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf bpf/tramp_22
-        git checkout 1d891c46bb689a24985cea58f4eddb053d6b1331
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Mon, 2022-07-04 at 12:25 +0200, AngeloGioacchino Del Regno wrote:
+> Il 04/07/22 12:00, Tinghan Shen ha scritto:
+> > The max clock items for the dts node with compatible
+> > 'mediatek,mt8195-smi-sub-common' should be 3.
+> > 
+> > However, the dtbs_check of such node will get following message,
+> > arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names: ['apb', 'smi', 'gals0']
+> > is too long
+> >           From schema: Documentation/devicetree/bindings/memory-controllers/mediatek,smi-
+> > common.yaml
+> > 
+> > Remove the last 'else' checking to fix this error.
+> > 
+> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > ---
+> >   .../memory-controllers/mediatek,smi-common.yaml        | 10 +++++++++-
+> >   1 file changed, 9 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> > b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> > index a98b359bf909..e5f553e2e12a 100644
+> > --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> > +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> > @@ -143,7 +143,15 @@ allOf:
+> >               - const: gals0
+> >               - const: gals1
+> >   
+> > -    else:  # for gen2 HW that don't have gals
+> > +  - if:  # for gen2 HW that don't have gals
+> > +      properties:
+> > +        compatible:
+> > +          enum:
+> > +            - mediatek,mt2712-smi-common
+> 
+> MT6795 also doesn't have any GALS, please add it in here.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Ok, I'll update it in next version.
 
-All errors (new ones prefixed by >>):
+Thanks,
+TingHan
 
-   In file included from arch/x86/include/asm/bug.h:87,
-                    from include/linux/bug.h:5,
-                    from include/linux/cpumask.h:14,
-                    from arch/x86/include/asm/cpumask.h:5,
-                    from arch/x86/include/asm/msr.h:11,
-                    from arch/x86/include/asm/processor.h:22,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:67,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/ktime.h:24,
-                    from include/linux/timer.h:6,
-                    from include/linux/workqueue.h:9,
-                    from include/linux/bpf.h:10,
-                    from kernel/bpf/syscall.c:4:
-   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_link_release':
->> kernel/bpf/syscall.c:3137:22: error: implicit declaration of function 'bpf_trampoline_multi_detach' [-Werror=implicit-function-declaration]
-    3137 |         WARN_ON_ONCE(bpf_trampoline_multi_detach(&tr_link->tp, tr_link->id));
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:110:32: note: in definition of macro 'WARN_ON_ONCE'
-     110 |         int __ret_warn_on = !!(condition);                      \
-         |                                ^~~~~~~~~
-   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_attach':
-   kernel/bpf/syscall.c:3307:14: error: implicit declaration of function 'bpf_tramp_id_alloc'; did you mean 'bpf_tramp_id_resolve'? [-Werror=implicit-function-declaration]
-    3307 |         id = bpf_tramp_id_alloc(cnt);
-         |              ^~~~~~~~~~~~~~~~~~
-         |              bpf_tramp_id_resolve
-   kernel/bpf/syscall.c:3307:12: warning: assignment to 'struct bpf_tramp_id *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-    3307 |         id = bpf_tramp_id_alloc(cnt);
-         |            ^
->> kernel/bpf/syscall.c:3348:15: error: implicit declaration of function 'bpf_trampoline_multi_attach'; did you mean 'bpf_tracing_multi_attach'? [-Werror=implicit-function-declaration]
-    3348 |         err = bpf_trampoline_multi_attach(&link->tp, id);
-         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |               bpf_tracing_multi_attach
-   cc1: some warnings being treated as errors
-
-
-vim +/bpf_trampoline_multi_detach +3137 kernel/bpf/syscall.c
-
-  3131	
-  3132	static void bpf_tracing_multi_link_release(struct bpf_link *link)
-  3133	{
-  3134		struct bpf_tracing_multi_link *tr_link =
-  3135			container_of(link, struct bpf_tracing_multi_link, link);
-  3136	
-> 3137		WARN_ON_ONCE(bpf_trampoline_multi_detach(&tr_link->tp, tr_link->id));
-  3138	}
-  3139	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
