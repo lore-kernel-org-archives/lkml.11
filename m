@@ -2,124 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C24CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB1AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232013AbiGFKii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S232957AbiGFKio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232644AbiGFKif (ORCPT
+        with ESMTP id S232953AbiGFKig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 06:38:35 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42952167E5;
-        Wed,  6 Jul 2022 03:38:34 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id h23so26294472ejj.12;
-        Wed, 06 Jul 2022 03:38:34 -0700 (PDT)
+        Wed, 6 Jul 2022 06:38:36 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D0B64F9;
+        Wed,  6 Jul 2022 03:38:35 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 205-20020a1c02d6000000b003a03567d5e9so10909466wmc.1;
+        Wed, 06 Jul 2022 03:38:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vUdjWGTHZmLYlGc/ZuMHohVJj+eoKfKT6JKGQ2BSBvM=;
-        b=UDpjwxUP24o4du4brC7VOF838ENnIC5nCFcdYz0tnMfu3RI9u+0R0GxkwTIByxmX/u
-         umt5Ckca4Rw+IovH0fAoPeWR3ddEL6ixo5zfdiN3bg68cJNOsY8kEd2RidCX4ZhQR1v0
-         RlX5tmx3jsu1NMwypYd0Z7AvCLHGgcqlo11IDr7GWz4v1ObgPS1T5T/XLpz3aGP/N7wE
-         XlI1+aOxqJz/JJvc1YgGpsM1u0mhdQz19k5pbbe1dAFyMpfl+BJPTxP5MiD5JNE3yzg2
-         x5rEXvSTOX60wiHz3JzJDsupDfuNFWa3IFLMraYRRqBxWRgzI2EkB9gXkQOQ+4bwHv2I
-         hLKQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YU7/aTVmwMw1xiBrffIxn8qMUTw+gm+umroriH5I92o=;
+        b=ghSozxp8QV21TAro3RolO4UMKa+ccDr5PJ59lVX3tlVeCT7KTpO1FEbFAWdQL9A9Q/
+         Vulcqud9QeYF5LlhpGGu5zFNVp7E0Pw1H5AKFUDG2J0sEw8BNJTPrOLa23xwxFGdYjKf
+         If5VMtxoBF9DKYqHHkC2gisg2D1nGqpEv3ZjaQf+aDUmlgQG8PyPmHQ+p87NZ5pL+DU2
+         tsWjcMEmSKV+k8rV0ibunpSkVo4CpOltRtd0xY3hltVRq/6bETrZpMViQfqwdm2LZJvt
+         ozlHQfX4HjQlurVfc5cKdfTFBC0fE5p4WvIIqSK2UZfiEAdpOcjGjgmTgMXFZg9Ud90k
+         DzNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vUdjWGTHZmLYlGc/ZuMHohVJj+eoKfKT6JKGQ2BSBvM=;
-        b=WALh0JhryMNLklhiTB59XM0WA0fC05HtCIeZQ56LL/mUz+m/K5tPqG8Au/J/bkpPBM
-         p8NYm3+em16FAb5C1G+LYhV6TN+OPl8BXXXbrYUjdXbbNLkW/Jfa+19pIPnRlUmqlQpD
-         eBU0LghJ1OKgAMCyCYaqIZ9zIn5f6Es4gzEQQXTP47d0TvXwHq55obx8Vc0ULOEsAmV+
-         rxpuMsAyfCNtluzMsEJV8l0yCfXLe1xnLL97O5mXHlO2rpCrRS/gDvk79Chz2N/TnBem
-         OMpbOXii7YTNMAWqWPz/qyM29omyBE7cS2YlgKSid0S1sw6P4gqfiE9U4k23AVFXc98J
-         nJTw==
-X-Gm-Message-State: AJIora9Zv49gKOZBVdW1b8B9CWNgo64U5BWHVOVDvA5fxMXR7j5txaIC
-        Nf/vhChLYxooz2dCqCy1aKA=
-X-Google-Smtp-Source: AGRyM1uJIm3IBu3JUOLVOZveOCHA6AFa86s/jejR2zWEUc0TFRUWLFhcJGuJd1QJBltIrqCSfKwuzg==
-X-Received: by 2002:a17:907:3e11:b0:726:372b:6c32 with SMTP id hp17-20020a1709073e1100b00726372b6c32mr39456512ejc.157.1657103912696;
-        Wed, 06 Jul 2022 03:38:32 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id m11-20020a50ef0b000000b0043a6c9e50f4sm6177406eds.29.2022.07.06.03.38.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YU7/aTVmwMw1xiBrffIxn8qMUTw+gm+umroriH5I92o=;
+        b=uJtSFpx5B/Cli1bD+7gHQL9eS3jlQSI6P0UMXxWGRCqWKvA1Yh/LASR5s2FWD3Yhse
+         3LuG7jIgzAofQoyJ+mCvnD6WVjEP+8uElqCnDCTFsCohNfEYZaJWxfGJwnpUKHJuNztH
+         SOWEGIKHiH/SwcqCrQGX+azYbn+pi1WeqXgg1iZyEUimFgUQBbD5gC2MqObTgqLXQ//m
+         2exhvtMgth4jwUL93gGOwJhDfz80qtX+v0HpdVpfMXT6z9Fwv3buR8nkjlNnCWm+lTMM
+         l1yy5ejy8UIxkYZWp9U5a3w+z79oeiOQeRbkXAdZBrRbERg8WRSOgvOjWkOYtst1Kpu0
+         h6gA==
+X-Gm-Message-State: AJIora/mhFm4KLIdifXqu2G+74T1nkv6ES+lC0mBBqZUytz6TaFDodIb
+        oI094RcXjLGbAfNgwMNbIws=
+X-Google-Smtp-Source: AGRyM1t7dpxKdmG7n71wWdoedPFPmkmnYg17fxZqQSno2zFUho02OLAK4wpsuebRyha/rsbvmeEh0Q==
+X-Received: by 2002:a7b:c4cb:0:b0:3a2:b45a:e344 with SMTP id g11-20020a7bc4cb000000b003a2b45ae344mr12785004wmk.157.1657103914353;
+        Wed, 06 Jul 2022 03:38:34 -0700 (PDT)
+Received: from opensuse.localnet (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
+        by smtp.gmail.com with ESMTPSA id g1-20020adffc81000000b00213ba3384aesm36323831wrr.35.2022.07.06.03.38.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 06 Jul 2022 03:38:32 -0700 (PDT)
-Message-ID: <62c56628.1c69fb81.aea0.a137@mx.google.com>
-X-Google-Original-Message-ID: <YsViQy6l7TSB1AOI@Ansuel-xps.>
-Date:   Wed, 6 Jul 2022 12:21:55 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] clk: qcom: clk-rpm: convert to parent_data API
-References: <20220705202837.667-1-ansuelsmth@gmail.com>
- <20220705202837.667-4-ansuelsmth@gmail.com>
- <CAA8EJpry3pJxEVOL7P7gFL4M9yDktCuDE=2KOGfc6DeAUasYGw@mail.gmail.com>
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "James E. J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        John David Anglin <dave.anglin@bell.net>,
+        linux-parisc@vger.kernel.org, Filipe Manana <fdmanana@kernel.org>
+Subject: Re: [PATCH v5 2/2] btrfs: Replace kmap() with kmap_local_page() in zstd.c
+Date:   Wed, 06 Jul 2022 12:38:29 +0200
+Message-ID: <2250236.ElGaqSPkdT@opensuse>
+In-Reply-To: <YsSLJBzwB5bCyuNR@iweiny-desk3>
+References: <20220704152322.20955-1-fmdefrancesco@gmail.com> <20220704152322.20955-3-fmdefrancesco@gmail.com> <YsSLJBzwB5bCyuNR@iweiny-desk3>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAA8EJpry3pJxEVOL7P7gFL4M9yDktCuDE=2KOGfc6DeAUasYGw@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 11:27:34AM +0300, Dmitry Baryshkov wrote:
-> On Tue, 5 Jul 2022 at 23:56, Christian Marangi <ansuelsmth@gmail.com> wrote:
-> >
-> > Convert clk-rpm driver to parent_data API and change parent names to cxo
-> > and pxo instead of the board variant as pxo_board is an ancient name and
-> > pxo should be used instead.
-> >
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+On marted=C3=AC 5 luglio 2022 21:04:04 CEST Ira Weiny wrote:
+> On Mon, Jul 04, 2022 at 05:23:22PM +0200, Fabio M. De Francesco wrote:
+> > The use of kmap() is being deprecated in favor of kmap_local_page().=20
+With
+> > kmap_local_page(), the mapping is per thread, CPU local and not=20
+globally
+> > visible.
+> >=20
+> > Therefore, use kmap_local_page() / kunmap_local() in zstd.c because in=
+=20
+this
+> > file the mappings are per thread and are not visible in other contexts.=
+=20
+In
+> > the meanwhile use plain page_address() on pages allocated with the=20
+GFP_NOFS
+> > flag instead of calling kmap*() on them (since they are always=20
+allocated
+> > from ZONE_NORMAL).
+> >=20
+> > Tested with xfstests on QEMU + KVM 32 bits VM with 4GB of RAM and
+> > booting a kernel with HIGHMEM64G enabled.
+> >=20
+> > Cc: Filipe Manana <fdmanana@kernel.org>
+> > Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 > > ---
-> >  drivers/clk/qcom/clk-rpm.c | 24 ++++++++++++++++--------
-> >  1 file changed, 16 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/clk/qcom/clk-rpm.c b/drivers/clk/qcom/clk-rpm.c
-> > index a18811c38018..d45a8b0fc97c 100644
-> > --- a/drivers/clk/qcom/clk-rpm.c
-> > +++ b/drivers/clk/qcom/clk-rpm.c
-> > @@ -23,6 +23,14 @@
-> >  #define QCOM_RPM_SCALING_ENABLE_ID                     0x2
-> >  #define QCOM_RPM_XO_MODE_ON                            0x2
-> >
-> > +static const struct clk_parent_data gcc_pxo[] = {
-> > +       { .fw_name = "pxo", .name = "pxo" },
-> 
-> This means that the core clock would look for the DT clock named 'pxo'
-> with the fallback to the global clock named 'pxo'. Fallback is
-> required to keep compatibility with older DT files, not having the
-> clocks/clock-names properties.
-> For all other platforms we were using as a fallback  the 'pxo_board'
-> clock (defined in the DT) rather than the 'pxo' (hackily injected by
-> the gcc driver).
-> I'd suggest following this pattern and using .fw_name = "pxo', .name =
-> "pxo_board".
+> >  fs/btrfs/zstd.c | 34 ++++++++++++++--------------------
+> >  1 file changed, 14 insertions(+), 20 deletions(-)
+> >=20
+> > diff --git a/fs/btrfs/zstd.c b/fs/btrfs/zstd.c
+> > index 0fe31a6f6e68..78e0272e770e 100644
+> > --- a/fs/btrfs/zstd.c
+> > +++ b/fs/btrfs/zstd.c
+> > @@ -403,7 +403,7 @@ int zstd_compress_pages(struct list_head *ws,=20
+struct address_space *mapping,
+> > =20
+> >  	/* map in the first page of input data */
+> >  	in_page =3D find_get_page(mapping, start >> PAGE_SHIFT);
+> > -	workspace->in_buf.src =3D kmap(in_page);
+> > +	workspace->in_buf.src =3D kmap_local_page(in_page);
+> >  	workspace->in_buf.pos =3D 0;
+> >  	workspace->in_buf.size =3D min_t(size_t, len, PAGE_SIZE);
+> > =20
+> > @@ -415,7 +415,7 @@ int zstd_compress_pages(struct list_head *ws,=20
+struct address_space *mapping,
+> >  		goto out;
+> >  	}
+> >  	pages[nr_pages++] =3D out_page;
+> > -	workspace->out_buf.dst =3D kmap(out_page);
+> > +	workspace->out_buf.dst =3D page_address(out_page);
+> >  	workspace->out_buf.pos =3D 0;
+> >  	workspace->out_buf.size =3D min_t(size_t, max_out, PAGE_SIZE);
+> > =20
+> > @@ -450,9 +450,7 @@ int zstd_compress_pages(struct list_head *ws,=20
+struct address_space *mapping,
+> >  		if (workspace->out_buf.pos =3D=3D workspace->out_buf.size)=20
+{
+> >  			tot_out +=3D PAGE_SIZE;
+> >  			max_out -=3D PAGE_SIZE;
+> > -			kunmap(out_page);
+> >  			if (nr_pages =3D=3D nr_dest_pages) {
+> > -				out_page =3D NULL;
+> >  				ret =3D -E2BIG;
+> >  				goto out;
+> >  			}
+> > @@ -462,7 +460,7 @@ int zstd_compress_pages(struct list_head *ws,=20
+struct address_space *mapping,
+> >  				goto out;
+> >  			}
+> >  			pages[nr_pages++] =3D out_page;
+> > -			workspace->out_buf.dst =3D kmap(out_page);
+> > +			workspace->out_buf.dst =3D=20
+page_address(out_page);
+> >  			workspace->out_buf.pos =3D 0;
+> >  			workspace->out_buf.size =3D min_t(size_t,=20
+max_out,
+> >  						=09
+PAGE_SIZE);
+> > @@ -477,15 +475,15 @@ int zstd_compress_pages(struct list_head *ws,=20
+struct address_space *mapping,
+> >  		/* Check if we need more input */
+> >  		if (workspace->in_buf.pos =3D=3D workspace->in_buf.size) {
+> >  			tot_in +=3D PAGE_SIZE;
+> > -			kunmap(in_page);
+> > +			kunmap_local(workspace->in_buf.src);
+> >  			put_page(in_page);
+> > -
+> >  			start +=3D PAGE_SIZE;
+> >  			len -=3D PAGE_SIZE;
+> >  			in_page =3D find_get_page(mapping, start >>=20
+PAGE_SHIFT);
+> > -			workspace->in_buf.src =3D kmap(in_page);
+> > +			workspace->in_buf.src =3D=20
+kmap_local_page(in_page);
+> >  			workspace->in_buf.pos =3D 0;
+> >  			workspace->in_buf.size =3D min_t(size_t, len,=20
+PAGE_SIZE);
+> > +			workspace->out_buf.dst =3D=20
+page_address(out_page);
+>=20
+> Why is this needed?
 
-We were discussing this to the lcc driver. Problematic topic, yes will
-follow the pattern just to not change things.
+Sorry. This initialization is not needed at all.
+Probably made a mistake with copy-pasting snippets of code.
 
-> 
-> Same applies to the CXO clock.
-> 
-> > +};
-> > +
-> 
-> 
-> -- 
-> With best wishes
-> Dmitry
+I'm going to send ASAP the fifth version of this series.
 
--- 
-	Ansuel
+> The rest looks good,
+
+Thanks,
+
+=46abio
+
+> Ira
+>=20
+> [snip]
+>=20
+
+
+
