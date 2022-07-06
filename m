@@ -2,87 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9FAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD62C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbiGFJRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60948 "EHLO
+        id S232035AbiGFJTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbiGFJRj (ORCPT
+        with ESMTP id S229771AbiGFJTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 05:17:39 -0400
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E943F1D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:17:35 -0700 (PDT)
-Received: by mail-qt1-f173.google.com with SMTP id bs20so17373300qtb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 02:17:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N5bac8l9SxzDPCg8iINwZ/ihRJfBHL5uFQtEx4wJI88=;
-        b=y6z3DMha2liFgpENA6KifpWCPnxnR3MF52rrpZO0trFRvPd069l3q4mjccd0jF5n83
-         x73D5N7GokdTyDhNMF1Nf/zYn31ZaztXk5NQGRuUoDSx3090HvrP/GviziKMDJQRj7d6
-         tNyMrbioqXiy3RQvacNwj7gKxK2yRAwULG4VPFGB+1fGbgWEOSoQhaeGBY311oes0fWF
-         EtwXh4+eebJMVOLbRPCjuJE9Sd8XPQHwXA5GvK+JssbtT83sUKKDiDsWpEG2Cyp6+RZG
-         KmHqDHLc5w1hYlQylyew4x2O5cbMzvOfDtxzXdCBEcyK0wqjRSGSHll83NZi1JyPrV4/
-         SQ3A==
-X-Gm-Message-State: AJIora98/c1W5slSeD2YB5HJWsXN2aFy8s/fxMG/WS+1gWkBL9eKdyvN
-        p6XydEmP1Fea+V3Ke0IW4WhFSf+NmmYrNg==
-X-Google-Smtp-Source: AGRyM1v6Ax7NuZ6jjlFLaMHF0fIErMH9lXZZPm1eLDChTOZ+cNTuqTmTSb3kB75N1USmE+gJ9PfQ6A==
-X-Received: by 2002:ad4:5dc1:0:b0:462:194:bc7a with SMTP id m1-20020ad45dc1000000b004620194bc7amr36751615qvh.87.1657099054355;
-        Wed, 06 Jul 2022 02:17:34 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id f15-20020ac87f0f000000b00304e8938800sm25213055qtk.96.2022.07.06.02.17.33
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 02:17:34 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id c143so17765388ybf.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 02:17:33 -0700 (PDT)
-X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
- r1-20020a5b06c1000000b00669a7c34c33mr42274477ybq.543.1657099053737; Wed, 06
- Jul 2022 02:17:33 -0700 (PDT)
+        Wed, 6 Jul 2022 05:19:16 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFAD14D05
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 02:19:13 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LdDVV0D49zl1Vt
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 17:18:26 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgAXemmNU8VihkO+AQ--.22758S4;
+        Wed, 06 Jul 2022 17:19:11 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     agk@redhat.com, snitzer@kernel.org, dm-devel@redhat.com,
+        mpatocka@redhat.com
+Cc:     linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH] dm writecache: fix inaccurate reads/writes stats
+Date:   Wed,  6 Jul 2022 17:31:46 +0800
+Message-Id: <20220706093146.1961598-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220628084903.3147123-1-yangyingliang@huawei.com>
-In-Reply-To: <20220628084903.3147123-1-yangyingliang@huawei.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 6 Jul 2022 11:17:22 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV=YG_EMFO0jq7s4nH=VN3aWox3=+fWuF46HVHdWCDdMg@mail.gmail.com>
-Message-ID: <CAMuHMdV=YG_EMFO0jq7s4nH=VN3aWox3=+fWuF46HVHdWCDdMg@mail.gmail.com>
-Subject: Re: [PATCH -next v2] m68k: virt: platform: fix missing
- platform_device_unregister() on error in virt_platform_init()
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Laurent Vivier <laurent@vivier.eu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgAXemmNU8VihkO+AQ--.22758S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxZw43uFy3AFyrJrW8XFWxCrg_yoW5WFW8pF
+        Z7Jr15Gr1SvF47WwsrAa4UWa4FyayDJasFq347G3yxuF1DAwnxCFWUWFy2yF40qr97uFW3
+        AF4DKrW8CryjyFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWUWVWUuwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
+        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
+        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
+        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
+        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
+        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 10:39 AM Yang Yingliang
-<yangyingliang@huawei.com> wrote:
-> Add the missing platform_device_unregister() before return
-> from virt_platform_init() in the error handling case.
->
-> Fixes: 05d51e42df06 ("m68k: Introduce a virtual m68k machine")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
-> v2:
->   change for loop to while at lable err_unregister_rtc_virtio.
+From: Yu Kuai <yukuai3@huawei.com>
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-i.e. will queue in the m68k for-v5.20 branch.
+Test procedures:
 
-Gr{oetje,eeting}s,
+1) format a dm writecache device with 4k blocksize.
+2) flush cache.
+3) cache 1G data through write.
+4) clear stats.
+5) read 2G data with bs=1m.
+6) read stats.
 
-                        Geert
+Expected result:
+cache hit ratio is 50%.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Test result:
+stats: 0, 1011345, 749201, 0, 263168, 262144, 0, 0, 0, 0, 0, 0, 0, 0
+ratio is 99% (262144/263168)
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+The way that reads is accounted is different between cache hit and cache
+miss:
+
+1) If cache hit, reads will be accounted for each entry, which means reads
+and read_hits will both increase 256 for each io in the above test.
+
+2) If cache miss, reads will only account once, which means reads will only
+increase 1 for each io in the above test.
+
+The case that writes_around has the same problem, fix it by adding
+appropriate reads/writes in writecache_map_remap_origin().
+
+Fixes: e3a35d03407c ("dm writecache: add event counters")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ drivers/md/dm-writecache.c | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
+index d74c5a7a0ab4..c2c6c3a023dd 100644
+--- a/drivers/md/dm-writecache.c
++++ b/drivers/md/dm-writecache.c
+@@ -1329,16 +1329,29 @@ enum wc_map_op {
+ 	WC_MAP_ERROR,
+ };
+ 
+-static enum wc_map_op writecache_map_remap_origin(struct dm_writecache *wc, struct bio *bio,
+-						  struct wc_entry *e)
++static enum wc_map_op writecache_map_remap_origin(struct dm_writecache *wc,
++						  struct bio *bio,
++						  struct wc_entry *e, bool read)
+ {
++	sector_t next_boundary;
++	unsigned long long miss_count;
++
+ 	if (e) {
+-		sector_t next_boundary =
++		next_boundary =
+ 			read_original_sector(wc, e) - bio->bi_iter.bi_sector;
+ 		if (next_boundary < bio->bi_iter.bi_size >> SECTOR_SHIFT)
+ 			dm_accept_partial_bio(bio, next_boundary);
++	} else {
++		next_boundary = bio->bi_iter.bi_size;
+ 	}
+ 
++	miss_count = (round_up(next_boundary, wc->block_size) >>
++			wc->block_size_bits) - 1;
++	if (read)
++		wc->stats.reads += miss_count;
++	else
++		wc->stats.writes += miss_count;
++
+ 	return WC_MAP_REMAP_ORIGIN;
+ }
+ 
+@@ -1366,7 +1379,7 @@ static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *
+ 			map_op = WC_MAP_REMAP;
+ 		}
+ 	} else {
+-		map_op = writecache_map_remap_origin(wc, bio, e);
++		map_op = writecache_map_remap_origin(wc, bio, e, true);
+ 	}
+ 
+ 	return map_op;
+@@ -1458,7 +1471,8 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
+ direct_write:
+ 				wc->stats.writes_around++;
+ 				e = writecache_find_entry(wc, bio->bi_iter.bi_sector, WFE_RETURN_FOLLOWING);
+-				return writecache_map_remap_origin(wc, bio, e);
++				return writecache_map_remap_origin(wc, bio, e,
++								   false);
+ 			}
+ 			wc->stats.writes_blocked_on_freelist++;
+ 			writecache_wait_on_freelist(wc);
+-- 
+2.31.1
+
