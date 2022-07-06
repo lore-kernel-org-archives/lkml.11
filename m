@@ -2,113 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C68DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 07:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231986AbiGFHoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 03:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
+        id S231658AbiGFHpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 03:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiGFHoM (ORCPT
+        with ESMTP id S231865AbiGFHpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 03:44:12 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8BD2DC6
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 00:44:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657093451; x=1688629451;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RFYssEOqQQ+BQQUBnZ5+qyOVdKd7T65+VE37vRgnlK4=;
-  b=UatuhbJEa2QOAxOOD/kXKs+GJB1FdrkuK8ciZaL+k1W480uWwxbrovSE
-   EIhs4p/NOeUsPTC2DjoOPXHQZgvz3r3XjX9COdo0lL8wsEHB2ljdbSvsw
-   cAJcGjDN7Jl0BqrLoYM4hlG/idr/609jzkJoJy64vDQS4Om0S8z0NRzuR
-   lP3rSGy/MUAot3Bk+J1MkOP3xiEHVSchxKayhWJS0XwjOrJO83FICkas3
-   lUUpQq5sfaIPaJY2bcleI5uyOa3TMnlchbpB73xfCKQKQ9r/kvWdGxg0B
-   ee2rw+hC0JyR/+5VxWSykDJ4FULr8K7eK3qoVZU3FhUGhkbqHk6oKqnbH
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="166576966"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jul 2022 00:44:10 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 6 Jul 2022 00:44:10 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 6 Jul 2022 00:44:08 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <tglx@linutronix.de>, <maz@kernel.org>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 2/2] irqchip/atmel-aic5: remove #ifdef CONFIG_PM
-Date:   Wed, 6 Jul 2022 10:46:30 +0300
-Message-ID: <20220706074630.829607-2-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220706074630.829607-1-claudiu.beznea@microchip.com>
-References: <20220706074630.829607-1-claudiu.beznea@microchip.com>
+        Wed, 6 Jul 2022 03:45:05 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AC422B17;
+        Wed,  6 Jul 2022 00:45:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 546B6225A3;
+        Wed,  6 Jul 2022 07:45:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657093502; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=u5DoLqKVxyy1WDXsQxYHtUUIzMR4OyQzQ4xHbmmcCFQ=;
+        b=rNaEq4xWWdueYwENPpdLRIh66mIPKo8u7X3mlrGsXScRB1SjL6BVWfj7kplm9dTyXYFvQv
+        iGKoWLnAULAOT8+u32aXERyjR/75eIKUOa+dc/MYW36Y7OuIt1CT9hd9lQdvzX7vJEGsji
+        jtZk1vVnjQrxo20yjUnw+7xsM6uh4IA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1EDEF134CF;
+        Wed,  6 Jul 2022 07:45:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 5efYBX49xWLJDwAAMHmgww
+        (envelope-from <oneukum@suse.com>); Wed, 06 Jul 2022 07:45:02 +0000
+From:   Oliver Neukum <oneukum@suse.com>
+To:     ean@mess.org, mchehab@kernel.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH] ati-remote: remove private err() macro
+Date:   Wed,  6 Jul 2022 09:44:59 +0200
+Message-Id: <20220706074459.19940-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove #ifdef CONFIG_PM around aic5_suspend() function and from
-aic5_hw_init() function. Coding style recommends (at chapter Conditional
-Compilation) to avoid using preprocessor conditional in .c files.
-gc->chip_types->chip.irq_suspend()/gc->chip_types->chip.irq_resume() is
-called in irq_gc_suspend()/irq_gc_resume() which is NULL in case CONFIG_PM
-is not defined. With this gc->chip_types->chip.irq_pm_shutdown is
-populated all the time as it should be as irq_gc_shutdown() is not
-conditioned by CONFIG_PM.
+Drivers should use dev_err()
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
 ---
- drivers/irqchip/irq-atmel-aic5.c | 8 --------
- 1 file changed, 8 deletions(-)
+ drivers/media/rc/ati_remote.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/irqchip/irq-atmel-aic5.c b/drivers/irqchip/irq-atmel-aic5.c
-index 145535bd7560..890df0cf57d6 100644
---- a/drivers/irqchip/irq-atmel-aic5.c
-+++ b/drivers/irqchip/irq-atmel-aic5.c
-@@ -149,7 +149,6 @@ static int aic5_set_type(struct irq_data *d, unsigned type)
- 	return ret;
- }
+diff --git a/drivers/media/rc/ati_remote.c b/drivers/media/rc/ati_remote.c
+index 3155e876616d..b43ae0580374 100644
+--- a/drivers/media/rc/ati_remote.c
++++ b/drivers/media/rc/ati_remote.c
+@@ -135,8 +135,6 @@ MODULE_PARM_DESC(mouse, "Enable mouse device, default = yes");
  
--#ifdef CONFIG_PM
- static u32 *smr_cache;
+ #define dbginfo(dev, format, arg...) \
+ 	do { if (debug) dev_info(dev , format , ## arg); } while (0)
+-#undef err
+-#define err(format, arg...) printk(KERN_ERR format , ## arg)
  
- static void aic5_suspend(struct irq_data *d)
-@@ -234,11 +233,6 @@ static void aic5_pm_shutdown(struct irq_data *d)
+ struct ati_receiver_type {
+ 	/* either default_keymap or get_default_keymap should be set */
+@@ -816,11 +814,12 @@ static int ati_remote_probe(struct usb_interface *interface,
+ 	struct ati_receiver_type *type = (struct ati_receiver_type *)id->driver_info;
+ 	struct ati_remote *ati_remote;
+ 	struct input_dev *input_dev;
++	struct device *device = &interface->dev;
+ 	struct rc_dev *rc_dev;
+ 	int err = -ENOMEM;
+ 
+ 	if (iface_host->desc.bNumEndpoints != 2) {
+-		err("%s: Unexpected desc.bNumEndpoints\n", __func__);
++		dev_err(device, "%s: Unexpected desc.bNumEndpoints\n", __func__);
+ 		return -ENODEV;
  	}
- 	irq_gc_unlock(bgc);
- }
--#else
--#define aic5_suspend		NULL
--#define aic5_resume		NULL
--#define aic5_pm_shutdown	NULL
--#endif /* CONFIG_PM */
  
- static void __init aic5_hw_init(struct irq_domain *domain)
- {
-@@ -369,12 +363,10 @@ static int __init aic5_of_init(struct device_node *node,
- static int __init sama5d2_aic5_of_init(struct device_node *node,
- 				       struct device_node *parent)
- {
--#ifdef CONFIG_PM
- 	smr_cache = kcalloc(DIV_ROUND_UP(NR_SAMA5D2_IRQS, 32) * 32,
- 			    sizeof(*smr_cache), GFP_KERNEL);
- 	if (!smr_cache)
- 		return -ENOMEM;
--#endif
+@@ -828,15 +827,15 @@ static int ati_remote_probe(struct usb_interface *interface,
+ 	endpoint_out = &iface_host->endpoint[1].desc;
  
- 	return aic5_of_init(node, parent, NR_SAMA5D2_IRQS);
- }
+ 	if (!usb_endpoint_is_int_in(endpoint_in)) {
+-		err("%s: Unexpected endpoint_in\n", __func__);
++		dev_err(device, "%s: Unexpected endpoint_in\n", __func__);
+ 		return -ENODEV;
+ 	}
+ 	if (le16_to_cpu(endpoint_in->wMaxPacketSize) == 0) {
+-		err("%s: endpoint_in message size==0? \n", __func__);
++		dev_err(device, "%s: endpoint_in message size==0? \n", __func__);
+ 		return -ENODEV;
+ 	}
+ 	if (!usb_endpoint_is_int_out(endpoint_out)) {
+-		err("%s: Unexpected endpoint_out\n", __func__);
++		dev_err(device, "%s: Unexpected endpoint_out\n", __func__);
+ 		return -ENODEV;
+ 	}
+ 
 -- 
-2.34.1
+2.35.3
 
