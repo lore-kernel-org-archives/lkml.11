@@ -2,225 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3447BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 10:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbiGFKRS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57966 "EHLO
+        id S233064AbiGFKRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232992AbiGFKRO (ORCPT
+        with ESMTP id S232413AbiGFKRO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 06:17:14 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EC32528F;
-        Wed,  6 Jul 2022 03:17:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657102630; x=1688638630;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=VwlfvnG2tSLYTcnCDSEuoyt5q/+OAYIkK+DH0Z8k1qo=;
-  b=HNAjkkO8/6SDDAVdUlzGY9/YtM3SAmzLWu83JnJ1HKHLJDXn43JzGbFB
-   LwCTiOC00O4UC+2e7nmY8stpO/Db0HHHQRtWIYAm9OQQrX3eDLkvknF91
-   o7OTUpFAlWFgGfgVwoR19WUkIgIDeTSoQN42oJe3etdwt8jb8ngulQfld
-   s=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Jul 2022 03:17:09 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:17:09 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Jul 2022 03:17:08 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Jul 2022 03:17:04 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH] arm64: dts: qcom: sc7280: Move wcd specific pin conf to common file
-Date:   Wed, 6 Jul 2022 15:46:51 +0530
-Message-ID: <1657102611-20067-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0910C24BDE
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 03:17:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1AB7B81BCF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 10:17:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E36FC341CA;
+        Wed,  6 Jul 2022 10:17:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657102631;
+        bh=XjcKeAQVQG+yHoXVErP9byRJUVznXxdAWaloT3bDLRY=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=gkRjDnNXXMGna0mJreuuYeUMV0GkNwIXr0wbe8fz+MD8VQe3tFFagJ7KZ6l2ay6tz
+         oQbzJvYD4bWyH2gJgvGnWMpBzM1nsxIn730j/r0ve9o9iKpEWc7eQJfEXjrATwjfpl
+         b6fbOiwHuCjUvWxOj51k8sEPYZrkg0xIdbRlghexl9rx247d9v1inrixebFqxzoqB3
+         QO1MqkRzcC97kRm8T3jv527d59sLz+vgbdEQSrotG5NL809pO/cLxD/7gJyzvnfmt9
+         Ase/YPrYnHr0N9IJqT8JbMbUtR57zzZcuetWcbsp60nUYVZPsVC+7oDZgRf6T5QK3u
+         vrL2eMyE4qu8g==
+From:   Mark Brown <broonie@kernel.org>
+To:     lee.jones@linaro.org, naresh.solanki@9elements.com,
+        linux-kernel@vger.kernel.org
+Cc:     Naresh.Solanki@9elements.com, patrick.rudolph@9elements.com,
+        sylv@sylv.io
+In-Reply-To: <20220705122244.472894-2-Naresh.Solanki@9elements.com>
+References: <20220705122244.472894-2-Naresh.Solanki@9elements.com>
+Subject: Re: (subset) [PATCH 1/5] dt-bindings: mfd: Add bindings for MAX5970 and MAX5978
+Message-Id: <165710262998.218847.2059131000668986827.b4-ty@kernel.org>
+Date:   Wed, 06 Jul 2022 11:17:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move wcd specific pin conf to common file to support various
-herbronie variant boards and to avoid duplicate nodes in dts files.
+On Tue, 5 Jul 2022 14:22:39 +0200, Naresh Solanki wrote:
+> From: Marcello Sylvester Bauer <sylv@sylv.io>
+> 
+> The MAX597x is a hot swap controller with configurable fault protection.
+> It also has 10bit ADC for current & voltage measurements.
+> 
+> 
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
----
- .../dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi   | 71 ++++++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts  | 61 -------------------
- 2 files changed, 71 insertions(+), 61 deletions(-)
+Applied to
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
-index 32a1e78..b04d796 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
-@@ -5,6 +5,77 @@
-  * Copyright (c) 2022, The Linux Foundation. All rights reserved.
-  */
- 
-+/* PINCTRL - BOARD-SPECIFIC */
-+
-+/*
-+ * Methodology for gpio-line-names:
-+ * - If a pin goes to CRD board and is named it gets that name.
-+ * - If a pin goes to CRD board and is not named, it gets no name.
-+ * - If a pin is totally internal to Qcard then it gets Qcard name.
-+ * - If a pin is not hooked up on Qcard, it gets no name.
-+ */
-+&lpass_dmic01_clk {
-+	drive-strength = <8>;
-+	bias-disable;
-+};
-+
-+&lpass_dmic01_clk_sleep {
-+	drive-strength = <2>;
-+};
-+
-+&lpass_dmic01_data {
-+	bias-pull-down;
-+};
-+
-+&lpass_dmic23_clk {
-+	drive-strength = <8>;
-+	bias-disable;
-+};
-+
-+&lpass_dmic23_clk_sleep {
-+	drive-strength = <2>;
-+};
-+
-+&lpass_dmic23_data {
-+	bias-pull-down;
-+};
-+
-+&lpass_rx_swr_clk {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-disable;
-+};
-+
-+&lpass_rx_swr_clk_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_rx_swr_data {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-bus-hold;
-+};
-+
-+&lpass_rx_swr_data_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_tx_swr_clk {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-disable;
-+};
-+
-+&lpass_tx_swr_clk_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_tx_swr_data {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-bus-hold;
-+};
-+
- &mi2s1_data0 {
- 	drive-strength = <6>;
- 	bias-disable;
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-index e9ca6c5..7881bbc 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-@@ -155,67 +155,6 @@ ap_ts_pen_1v8: &i2c13 {
-  * - If a pin is totally internal to Qcard then it gets Qcard name.
-  * - If a pin is not hooked up on Qcard, it gets no name.
-  */
--&lpass_dmic01_clk {
--	drive-strength = <8>;
--	bias-disable;
--};
--
--&lpass_dmic01_clk_sleep {
--	drive-strength = <2>;
--};
--
--&lpass_dmic01_data {
--	bias-pull-down;
--};
--
--&lpass_dmic23_clk {
--	drive-strength = <8>;
--	bias-disable;
--};
--
--&lpass_dmic23_clk_sleep {
--	drive-strength = <2>;
--};
--
--&lpass_dmic23_data {
--	bias-pull-down;
--};
--
--&lpass_rx_swr_clk {
--	drive-strength = <2>;
--	slew-rate = <1>;
--	bias-disable;
--};
--
--&lpass_rx_swr_clk_sleep {
--	bias-pull-down;
--};
--
--&lpass_rx_swr_data {
--	drive-strength = <2>;
--	slew-rate = <1>;
--	bias-bus-hold;
--};
--
--&lpass_rx_swr_data_sleep {
--	bias-pull-down;
--};
--
--&lpass_tx_swr_clk {
--	drive-strength = <2>;
--	slew-rate = <1>;
--	bias-disable;
--};
--
--&lpass_tx_swr_clk_sleep {
--	bias-pull-down;
--};
--
--&lpass_tx_swr_data {
--	drive-strength = <2>;
--	slew-rate = <1>;
--	bias-bus-hold;
--};
- 
- &pm8350c_gpios {
- 	gpio-line-names = "FLASH_STROBE_1",		/* 1 */
--- 
-2.7.4
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
 
+Thanks!
+
+[3/5] regulator: max597x: Add support for max597x regulator
+      commit: 38493f008deb435577361d4c4cdd69f7bb30f4b9
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
