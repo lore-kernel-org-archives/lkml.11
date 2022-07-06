@@ -2,166 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17052CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AD4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233652AbiGFQlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
+        id S233997AbiGFQn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbiGFQlR (ORCPT
+        with ESMTP id S233911AbiGFQnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:41:17 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABE11C938;
-        Wed,  6 Jul 2022 09:41:17 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id h19so19028435qtp.6;
-        Wed, 06 Jul 2022 09:41:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wNYT3EUUh0A5BJ8lGJoIFptDo9tLPtEzGQ8q5urBmB0=;
-        b=dMKp8xErSwTiUyJoQS+KQBt7xhCLTSYtwhtUUw+YQNlV+HRalMxnKDX4QJ9SMERZuv
-         hFixOUXTM2/0fKMW9G7KsAjGS5xKhq94fzGzV3ZPXgR/hQGH3Vd59e6SUosJuMRwefbs
-         S8xlqVWAUW8v3bipXwguM2nkxjraZBYmcscQC8A3PeLMcg+pHCWAMy+yns3VvPiSiiUO
-         btipaHh6n0pcfRPm+9QYgDaEgxs3go91+YqTMnJe+KEZJJdY72yhQP07Z1ud8MX2Oq6v
-         N9FO8Ore4l+ITC3TFxMlX4K9+3xCDT42JDRrCmxKP8bUMXyr2wtodh2wkPPbzgUu8nSO
-         zX3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wNYT3EUUh0A5BJ8lGJoIFptDo9tLPtEzGQ8q5urBmB0=;
-        b=zBd1CUeKEfRomVHJDPPB2peAL0/0PquZTWun/OWMrmHOTSfRih2HmsMMUzgnwEftc5
-         tQFqqv9RL6KFPNqKE3xYJDaI2irQ4yqpndVO7Y5ZZlQovTyXJUiX9dL0DYdiPLdeRqP9
-         halYo9SVYvRDFH+tmnAuJ+kNKeNNuzCvvD74mZaQofNAKOUAZwAQ/+uexDvwqscjzHX2
-         yxIjrY4zJ+Jkjm8THZUfa13JfbGIg/60+aW3VIn7TI3Vld5fAk4pmmnUOk+VeHAc67Im
-         /xfp/62lvNIqKmiu9jelYZHafsL555cn97tRJ7vqRwdboiUcJTalhHGmkgzp7Lnts6vk
-         bYmw==
-X-Gm-Message-State: AJIora8eseJVNMZ3TovC6UGbfA0hz/w05r4yWlIiDYPOw6/JkbobetLh
-        3WDh+gUzJIxfja9WQnEgE5d8FalsjmE=
-X-Google-Smtp-Source: AGRyM1tEUUheMPtuQLLJk1ir4YLG/oKk+nuSbpPJ3qqgyX1LNgPiMtQH4RRgHOxDz6pzIyxofOVtvA==
-X-Received: by 2002:ad4:5bc3:0:b0:472:f2a2:dd7e with SMTP id t3-20020ad45bc3000000b00472f2a2dd7emr14370081qvt.8.1657125676175;
-        Wed, 06 Jul 2022 09:41:16 -0700 (PDT)
-Received: from pm2-ws13.praxislan02.com ([2001:470:8:67e:84b5:e0c:e62c:c854])
-        by smtp.gmail.com with ESMTPSA id v38-20020a05622a18a600b0031a84ecd4d1sm20706429qtc.95.2022.07.06.09.41.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 09:41:15 -0700 (PDT)
-From:   Jason Andryuk <jandryuk@gmail.com>
-To:     Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Chen Jun <chenjun102@huawei.com>
-Cc:     James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Jason Andryuk <jandryuk@gmail.com>, stable@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] tpm_tis: Hold locality open during probe
-Date:   Wed,  6 Jul 2022 12:40:43 -0400
-Message-Id: <20220706164043.417780-1-jandryuk@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 6 Jul 2022 12:43:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38957B49;
+        Wed,  6 Jul 2022 09:43:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A3861D79;
+        Wed,  6 Jul 2022 16:43:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 576F5C3411C;
+        Wed,  6 Jul 2022 16:43:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657125801;
+        bh=uuvO6hwMB/05Fk/2j7qomQDw+oi4Q/WszQAc44DK4Rc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZMiAS9h2OpJH8Irih8f56zubw7vxasOIr6wRvBgtX0iEpcYo7rxOWxMV5dNpScwL4
+         HvJqGmO43DmPKvnwiExhH7aZB0FC83MBNjCQmrTANlmtFWIiTScrJLPd2GufUwTQ3Z
+         HxrhZVkvZuDOKN1aRgL99zOxXgp3+CbpLegRe0I5rROQCkgBNZFcJabWiMjFUMJX1H
+         K/FJGnh/EQ2TQ4BxZ5vK4CYD+SdmMXrRVmz1mix5esPHFccRgbPPm71IZdexcZET7y
+         +5fHCqOdDftgZhtFtHJvWXVZOMT/1KxgW+wr4Gmuetq8/+4QDVUcPHIfETDhrvT+wB
+         SGARfITZQuGgg==
+Date:   Wed, 6 Jul 2022 18:43:01 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] [RFT] dt-bindings: leds: Add
+ cznic,turris1x-leds.yaml binding
+Message-ID: <20220706184301.3f42a692@thinkpad>
+In-Reply-To: <25b43586-eeb3-4b7b-7362-2d599aa89cf0@linaro.org>
+References: <20220705000448.14337-1-pali@kernel.org>
+        <20220705155929.25565-1-pali@kernel.org>
+        <20220706131507.353f0bed@thinkpad>
+        <20220706111912.hz2mx4dc35lgq6l5@pali>
+        <20220706172732.6228d180@thinkpad>
+        <25b43586-eeb3-4b7b-7362-2d599aa89cf0@linaro.org>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-WEC TPMs (in 1.2 mode) and NTC (in 2.0 mode) have been observer to
-frequently, but intermittently, fail probe with:
-tpm_tis: probe of 00:09 failed with error -1
+On Wed, 6 Jul 2022 17:36:43 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-Added debugging output showed that the request_locality in
-tpm_tis_core_init succeeds, but then the tpm_chip_start fails when its
-call to tpm_request_locality -> request_locality fails.
+> On 06/07/2022 17:27, Marek Beh=C3=BAn wrote:
+> > On Wed, 6 Jul 2022 13:19:12 +0200
+> > Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> >  =20
+> >> On Wednesday 06 July 2022 13:15:07 Marek Beh=C3=BAn wrote: =20
+> >>> On Tue,  5 Jul 2022 17:59:28 +0200
+> >>> Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> >>>    =20
+> >>>> +examples:
+> >>>> +  - |
+> >>>> +    #include <dt-bindings/leds/common.h>
+> >>>> +
+> >>>> +    cpld@3,0 {   =20
+> >>>
+> >>> The generic node name should be just "bus". That it is a CPLD
+> >>> implementation should come from compatible string.   =20
+> >>
+> >> Sorry, I do not understand why "bus". Why other memory chips are named
+> >> e.g. "nand" or "nor" and not "bus" too? =20
+> >=20
+> > As far as I understand this is because that is the preferred name for
+> > busses and this is a bus, since there is also the simple-bus compatible.
+> >  =20
+> >> By this logic should not be _every_ node called just "bus"? Hm... and=
+=20
+> >> are names needed at all then? =20
+> >=20
+> > :-)
+> >=20
+> > The schema
+> >   https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schema=
+s/simple-bus.yaml
+> > allows for different names (soc|axi|ahb|*-bus) to avoid warnings on
+> > existing old dts files.
+> >=20
+> > The preferred way is to not have the implementation in nodename,
+> > similar to how we use 'switch' instead of 'mv88e6xxx', or
+> > 'ethernet-phy' instead of 'mv88e151x', or 'led-controller', ... =20
+>=20
+> Thanks Marek for detailed explanation.
+> The cases above rather trigger my comments and this one here, after
+> Pali's explanation, do not fit them. pld is a generic class of a device,
+> so it is okay here. cpld probably as well (although one could argue that
+> it is a subset of pld, so the generic name is pld, but then one would
+> say fpga also should be called pld). For me it does not have to be bus,
+> just don't want mv88e6xxx or any other vendor/model names. Therefore
+> cpld is fine.
 
-The access register in check_locality would show:
-0x80 TPM_ACCESS_VALID
-0x82 TPM_ACCESS_VALID | TPM_ACCESS_REQUEST_USE
-0x80 TPM_ACCESS_VALID
-continuing until it times out. TPM_ACCESS_ACTIVE_LOCALITY (0x20) doesn't
-get set which would end the wait.
+What about cpld-bus? It is used as a bus (simple-bus compatible) and
+would work with the *-bus pattern in dt-schema.
 
-My best guess is something racy was going on between release_locality's
-write and request_locality's write.  There is no wait in
-release_locality to ensure that the locality is released, so the
-subsequent request_locality could confuse the TPM?
-
-tpm_chip_start grabs locality 0, and updates chip->locality.  Call that
-before the TPM_INT_ENABLE write, and drop the explicit request/release
-calls.  tpm_chip_stop performs the release.  With this, we switch to
-using chip->locality instead of priv->locality.  The probe failure is
-not seen after this.
-
-commit 0ef333f5ba7f ("tpm: add request_locality before write
-TPM_INT_ENABLE") added a request_locality/release_locality pair around
-tpm_tis_write32 TPM_INT_ENABLE, but there is a read of
-TPM_INT_ENABLE for the intmask which should also have the locality
-grabbed.  tpm_chip_start is moved before that to have the locality open
-during the read.
-
-Fixes: 0ef333f5ba7f ("tpm: add request_locality before write TPM_INT_ENABLE")
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Andryuk <jandryuk@gmail.com>
----
-The probe failure was seen on 5.4, 5.15 and 5.17.
-
-commit e42acf104d6e ("tpm_tis: Clean up locality release") removed the
-release wait.  I haven't tried, but re-introducing that would probably
-fix this issue.  It's hard to know apriori when a synchronous wait is
-needed, and they don't seem to be needed typically.  Re-introducing the
-wait would re-introduce a wait in all cases.
-
-Surrounding the read of TPM_INT_ENABLE with grabbing the locality may
-not be necessary?  It looks like the code only grabs a locality for
-writing, but that asymmetry is surprising to me.
-
-tpm_chip and tpm_tis_data track the locality separately.  Should the
-tpm_tis_data one be removed so they don't get out of sync?
----
- drivers/char/tpm/tpm_tis_core.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-index dc56b976d816..529c241800c0 100644
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -986,8 +986,13 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
- 		goto out_err;
- 	}
- 
-+	/* Grabs locality 0. */
-+	rc = tpm_chip_start(chip);
-+	if (rc)
-+		goto out_err;
-+
- 	/* Take control of the TPM's interrupt hardware and shut it off */
--	rc = tpm_tis_read32(priv, TPM_INT_ENABLE(priv->locality), &intmask);
-+	rc = tpm_tis_read32(priv, TPM_INT_ENABLE(chip->locality), &intmask);
- 	if (rc < 0)
- 		goto out_err;
- 
-@@ -995,19 +1000,10 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
- 		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
- 	intmask &= ~TPM_GLOBAL_INT_ENABLE;
- 
--	rc = request_locality(chip, 0);
--	if (rc < 0) {
--		rc = -ENODEV;
--		goto out_err;
--	}
--
--	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
--	release_locality(chip, 0);
-+	tpm_tis_write32(priv, TPM_INT_ENABLE(chip->locality), intmask);
- 
--	rc = tpm_chip_start(chip);
--	if (rc)
--		goto out_err;
- 	rc = tpm2_probe(chip);
-+	/* Releases locality 0. */
- 	tpm_chip_stop(chip);
- 	if (rc)
- 		goto out_err;
--- 
-2.36.1
-
+Marek
