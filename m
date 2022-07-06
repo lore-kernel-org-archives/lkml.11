@@ -2,83 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4134BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB03C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 23:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234076AbiGFXB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 19:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
+        id S234177AbiGFXB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 19:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiGFXBX (ORCPT
+        with ESMTP id S229768AbiGFXBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 19:01:23 -0400
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E71A1C12F;
-        Wed,  6 Jul 2022 16:01:22 -0700 (PDT)
-Received: by mail-ot1-f41.google.com with SMTP id 7-20020a9d0107000000b00616935dd045so12840683otu.6;
-        Wed, 06 Jul 2022 16:01:22 -0700 (PDT)
+        Wed, 6 Jul 2022 19:01:55 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 996821DA6A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 16:01:54 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id ck6so20421417qtb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 16:01:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PtNM1GEZDSdRmQMZQoeggIYPPP+5wqHALbDWGxuW5Cc=;
+        b=Q5GA+WIFBxr1AvdVtYRnT+47GWrXVpL4qFWtF4+6IsSV+2SRJGr5EHycebrSGzT9D6
+         KbePikb19U8h4mXTBPkve1L2iyLedbWhDVMS1885oEQ26Bw+6StZX0Ft9YPOj65HOxD4
+         u9Wtx7lBUNZp1GhGKZIBsTXDLkQYtY4AKEjHKeLqGAXy+0SG/EOKe4cdX+ilj1UQBIF2
+         Ipik/JGfEdWnzFIoF5AjZTHno5E7xHFy4ScshLG79WJt2KL0jlwgGg48bahcMqtmYS5q
+         ICxwkuW8PDyla0Yu973s5vH2LyeeRblMxs5S7IKHHaTxfGM27EZq0EZCu4HABohvNQDG
+         lqOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rpwT695sri6PiwsIkplM0soIt4K0mTDGGLf39HX2spg=;
-        b=lNyqBye5TUrmVc25uQEzrqVcglIdDbtya0SJHAolFQI3/jGaesHEKvaJU9ThVZSws9
-         X+/nK8t7WVLGo3k/C6bciAPwi42GjAQC/tlGkVdRRJgQ0IF9JCuICL6tQ4IQ13iNxyrB
-         rvRg7MtsUnd1S+ny0eIMuZ75ijtki01vBMjwNqUEek7Mgz2cppWO8FlUV4Qa3nyPuAmq
-         2/uqxxe7Xyrs5UMkpTdjBeymYkWvT5D7J/D7LkJ8qa2W7CU2SJQeXlaiwwReZGNwIJbb
-         lgTzZeBCdwXPnkOnlvceJeVhlBPIZNNOjfN4cyXRU2cUpu3zS88TYSKmnsuHA6O9J6x7
-         Ja0w==
-X-Gm-Message-State: AJIora8mrLvPkis6jkcktVnYP2oY0Me7f8IqSqCPv9DcMJbYikMe0Lmp
-        FAnhmqerNZVsFGAo9pu7EA0fUnAklQ==
-X-Google-Smtp-Source: AGRyM1sZ6SEM/+/Qq2SjdTe5pzaMC4OLV2H6/yij1GibQKAOaL4bQj6xoE8l6Oe89u5hgaHGcDS/tQ==
-X-Received: by 2002:a9d:7646:0:b0:616:c17c:7d26 with SMTP id o6-20020a9d7646000000b00616c17c7d26mr19384810otl.83.1657148481842;
-        Wed, 06 Jul 2022 16:01:21 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:5fe0:199f:283a:d3be:fc5c:70cd])
-        by smtp.gmail.com with ESMTPSA id v39-20020a05687070a700b0010c3b371098sm25324oae.27.2022.07.06.16.01.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 16:01:21 -0700 (PDT)
-Received: (nullmailer pid 673503 invoked by uid 1000);
-        Wed, 06 Jul 2022 22:46:13 -0000
-Date:   Wed, 6 Jul 2022 16:46:13 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Wolfram Sang <wsa@kernel.org>,
-        Alain Volmat <alain.volmat@foss.st.com>, mark.rutland@arm.com,
-        pierre-yves.mordret@foss.st.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        fabrice.gasnier@foss.st.com, amelie.delaunay@foss.st.com
-Subject: Re: [PATCH 1/4] dt-bindings: i2c: st,stm32-i2c: don't mandate a
- reset line
-Message-ID: <20220706224613.GD572635-robh@kernel.org>
-References: <20220620105405.145959-1-alain.volmat@foss.st.com>
- <20220620105405.145959-2-alain.volmat@foss.st.com>
- <20220628134115.GA345270-robh@kernel.org>
- <YryrpbBKsAKcL865@shikoro>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PtNM1GEZDSdRmQMZQoeggIYPPP+5wqHALbDWGxuW5Cc=;
+        b=5gWw4crNOV+66DOJ6fTp6CL9pWoRRuZopxs2Lz3TxRrBd/YRUwUkM2vfDuMjELYP1H
+         tnEMnfR8da1GdGgxkRNWk3t30Qw000QNOGNd3xQaOYXizoZjUSNcJ8hjVMv6aYSuHBx0
+         AbrOfcyJAnd7eplyYSV3ivMa9JZ9OXgWmN5GZ5xX6JbNZH+rQMc5GW87jT5syxLsZy8C
+         teI/zJfRd/AEbNiFr/K70l1leF71ooKhkHeCjK4JUpdReu7impjE9YoCk63vzkX8/UDa
+         66XT1D5LnXmbZGfaTkeXuaakRW76ut5XA/qkhR8ZE8+VT6UL7i5cMUTIjA8AjtgCOCdO
+         Qo5w==
+X-Gm-Message-State: AJIora8V65IjBzQJKjwymCJ8I/nWdehjk4Q9gcpLwiVlHkK7ZrBKzn7v
+        o6AM5vrmskWLlQH39FCbh/HFrv3/PaEwKjU/eW+pvA==
+X-Google-Smtp-Source: AGRyM1udpm2O+FOWxGd36c7AV3UpmX/cXi9qnAvOXyNitk2mFoRcQAvdHwuLHr1CAZfSltNwqJQ6erI2QtRUjI6DJpQ=
+X-Received: by 2002:a05:6214:202f:b0:432:4810:1b34 with SMTP id
+ 15-20020a056214202f00b0043248101b34mr19087377qvf.35.1657148513364; Wed, 06
+ Jul 2022 16:01:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YryrpbBKsAKcL865@shikoro>
+References: <1656667620-18718-1-git-send-email-alan.maguire@oracle.com> <1656667620-18718-2-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1656667620-18718-2-git-send-email-alan.maguire@oracle.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Wed, 6 Jul 2022 16:01:42 -0700
+Message-ID: <CA+khW7gY5qAqP+EsHzEqrAk5OFKdR4Fhy76v_5WN+0ko+vkgsA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/2] bpf: add a ksym BPF iterator
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     ast@kernel.org, andrii@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
+        mhiramat@kernel.org, akpm@linux-foundation.org, void@manifault.com,
+        swboyd@chromium.org, ndesaulniers@google.com,
+        9erthalion6@gmail.com, kennyyu@fb.com, geliang.tang@suse.com,
+        kuniyu@amazon.co.jp, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 09:44:37PM +0200, Wolfram Sang wrote:
-> On Tue, Jun 28, 2022 at 07:41:15AM -0600, Rob Herring wrote:
-> > On Mon, Jun 20, 2022 at 12:54:02PM +0200, Alain Volmat wrote:
-> > > Update the dt-bindings of the i2c-stm32 drivers to avoid the
-> > > needs for a reset property in the device-tree.
-> > 
-> > That is clear from the diff, but why. Some chips don't have a reset? 
-> > If so, this should be combined with patch 2 as part of changes needed 
-> > for a new version.
-> 
-> What do you mean? Patches 1+2 should be squashed together? I can do this
-> when applying. Or do you mean something else?
+On Fri, Jul 1, 2022 at 2:28 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> add a "ksym" iterator which provides access to a "struct kallsym_iter"
+> for each symbol.  Intent is to support more flexible symbol parsing
+> as discussed in [1].
+>
+> [1] https://lore.kernel.org/all/YjRPZj6Z8vuLeEZo@krava/
+>
+> Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> ---
+>  kernel/kallsyms.c | 89 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 89 insertions(+)
+>
+> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+> index fbdf8d3..8b662da 100644
+> --- a/kernel/kallsyms.c
+> +++ b/kernel/kallsyms.c
+> @@ -30,6 +30,7 @@
+[...]
+> +
+> +static struct bpf_iter_reg ksym_iter_reg_info = {
+> +       .target                 = "ksym",
+> +       .ctx_arg_info_size      = 1,
+> +       .ctx_arg_info           = {
+> +               { offsetof(struct bpf_iter__ksym, ksym),
+> +                 PTR_TO_BTF_ID_OR_NULL },
+> +       },
+> +       .seq_info               = &ksym_iter_seq_info,
+> +};
 
-Sorry, I meant combined with patch 3. If the new chip added in patch 3 
-doesn't have a reset, then 1 and 3 should be 1 patch. IOW, all the 
-changes needed for a new chip in 1 patch.
+It would be great to allow cond_resched() while iterating. Disabling
+resched is unnecessary for iterating ksyms IMO.
 
-Rob
+.feature = BPF_ITER_RESCHED,
+
+Hao
+
+> +
+[...]
+> --
+> 1.8.3.1
+>
