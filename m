@@ -2,148 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B964CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 05:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF98C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 05:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbiGFFW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 01:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
+        id S230508AbiGFFWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 01:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbiGFFWW (ORCPT
+        with ESMTP id S230445AbiGFFW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 01:22:22 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8685205DB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 22:22:20 -0700 (PDT)
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220706052219epoutp019d1a97ef88e02d5958e0d538cf2a74ea~-Jfj4NrU20326403264epoutp01L
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 05:22:19 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220706052219epoutp019d1a97ef88e02d5958e0d538cf2a74ea~-Jfj4NrU20326403264epoutp01L
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1657084939;
-        bh=Ispl4LOX16CobeM8SQ1UfhF/UhNI9nkTRJAg/7f9IJ4=;
-        h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=nWv7EhoUb4Fjg4+cDL27uRE8kYM2k0+dqgnNXG++QxetC/2BPOGvf904r0RixSEUy
-         AcF3ZA8pSaUVGBSsbYF3UWQj4Tcyc9Xf3gWtRRktW3OvzObHFB/+q/RvoiD0yQXALX
-         CSV+rzmz28xv/SI3s2OqFLlq/jh9+SAoJb5661pk=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20220706052218epcas2p2a2f562156ae6b09914c56e6748bd98e0~-JfjJMIWF3204232042epcas2p2-;
-        Wed,  6 Jul 2022 05:22:18 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.88]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4Ld7G14xwcz4x9QG; Wed,  6 Jul
-        2022 05:22:17 +0000 (GMT)
-X-AuditID: b6c32a47-5f7ff700000025aa-60-62c51c095a2d
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B1.E4.09642.90C15C26; Wed,  6 Jul 2022 14:22:17 +0900 (KST)
-Mime-Version: 1.0
-Subject: Re: [PATCH v3 2/5] dt-bindings: phy: Add ARTPEC-8 PCIe phy
-Reply-To: wangseok.lee@samsung.com
-Sender: Wangseok Lee <wangseok.lee@samsung.com>
-From:   Wangseok Lee <wangseok.lee@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
-        "lars.persson@axis.com" <lars.persson@axis.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "kw@linux.com" <kw@linux.com>,
-        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
-        "kernel@axis.com" <kernel@axis.com>
-CC:     Moon-Ki Jun <moonki.jun@samsung.com>,
-        Sang Min Kim <hypmean.kim@samsung.com>,
-        Dongjin Yang <dj76.yang@samsung.com>,
-        Yeeun Kim <yeeun119.kim@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220706052217epcms2p444cc8608b21d483a66a43ecf4f2140d4@epcms2p4>
-Date:   Wed, 06 Jul 2022 14:22:17 +0900
-X-CMS-MailID: 20220706052217epcms2p444cc8608b21d483a66a43ecf4f2140d4
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOJsWRmVeSWpSXmKPExsWy7bCmmS6nzNEkg3U9qhZLmjIsXh7StJh/
-        5Byrxe4Zy5ksZk49w2zx/NAsZotPLaoWF572sFm8nHWPzeL8+Q3sFg09v1ktjrz5yGyx//hK
-        JovLu+awWZydd5zNYsKqbywWb36/YLc4tzjTonXvEXaLnXdOMFv82vqHyUHUY828NYwe19cF
-        eCzYVOqxaVUnm8eTK9OZPDYvqffo27KK0eP4je1MHp83yQVwRmXbZKQmpqQWKaTmJeenZOal
-        2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE6Lpl5gB9pqRQlphTChQKSCwuVtK3synKLy1J
-        VcjILy6xVUotSMkpMC/QK07MLS7NS9fLSy2xMjQwMDIFKkzIzljzLargt0TF7FWXWRoYl0t0
-        MXJySAiYSGy4u4C9i5GLQ0hgB6PEidWH2LoYOTh4BQQl/u4QBqkRFnCW2PV/ExuILSSgJLFj
-        zTxmiLi+xPUV3awgNpuArsS/xS/ZQOaICMxik1jydSkTiMMssIBRYv/vfYwQ23glZrQ/ZYGw
-        pSW2L98KFdeQ+LGslxnCFpW4ufotO4z9/th8qBoRidZ7Z6FqBCUe/NwNFZeSWPDkECuEXS2x
-        /+9vJgi7gVGi/34qyDMSQJfuuG4MEuYV8JV4eGIG2DMsAqoSv5+uh2p1kTj18C/YWmYBbYll
-        C18zg7QyC2hKrN+lDzFFWeLILRaYRxo2/mZHZzML8El0HP4LF98x7wnUMWoS81buZIYYIyOx
-        9aX/BEalWYhwnoVk7SyEtQsYmVcxiqUWFOempxYbFRjDYzY5P3cTIziFa7nvYJzx9oPeIUYm
-        DsZDjBIczEoivKsmHUwS4k1JrKxKLcqPLyrNSS0+xGgK9PBEZinR5HxgFskriTc0sTQwMTMz
-        NDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cAU/Pqqvf6S6eyzBG3KIsMdZ2cVLJz2
-        cpqFc+/mlpkSuxOy2D4qfD9Z4p3x9ff50K5FW4yZ/8W7zYpZunJxaFnaqc7Upt3ZxfWqCw0F
-        9vxc0Dr3Rua610pfzdVnpXzTOJHddO9s5ffCj93disJzz2VHvS+Y8ODAM7Z3L95tmMnWOG//
-        F2VzGdHFKd8ij1Z4vS+OW2zP7DtN4cIhfp6yj084jv0/fkd9S83+DxZnN4m7fk/R2zfBuMuk
-        7N6eryFOs9QFWipu7JV/UBF//6nMve3H3PdHN5RXthqvNpn8Qy311d2y1uWXHefNDm9ScNPt
-        Sr0cfsljemnZ2eagDfe9FfwUXpyTF8q9btfpYz2n6OEKJZbijERDLeai4kQA3PVmIGoEAAA=
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7
-References: <CGME20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p4>
+        Wed, 6 Jul 2022 01:22:28 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AD4205F0;
+        Tue,  5 Jul 2022 22:22:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1657084947; x=1688620947;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nXgol3t1QpvI6in0uKJ77IASldBl9uWqY9rKUYy3dVc=;
+  b=R5tB7PqpH13hGGQFdzTOcZche8ElVXvks24T1vkKTgFqdom4ixemnmm+
+   Cb19zPnWbFkW/79WZ08xQnVh9QibyNzo8JZUZBA7aHjM+vvupa524Re56
+   2INnnJ8vND8rh2veu3gDcF4IdqNdPElkMLwuMoW6K0Te3kdKIKwxR5CVP
+   I=;
+X-IronPort-AV: E=Sophos;i="5.92,248,1650931200"; 
+   d="scan'208";a="1031201485"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 06 Jul 2022 05:22:10 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com (Postfix) with ESMTPS id 7134943B52;
+        Wed,  6 Jul 2022 05:22:10 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 6 Jul 2022 05:22:09 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.55) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
+ Wed, 6 Jul 2022 05:22:07 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Jia He <hejianet@gmail.com>
+Subject: [PATCH v1 net 02/16] sysctl: Add proc_dobool_lockless().
+Date:   Tue, 5 Jul 2022 22:21:16 -0700
+Message-ID: <20220706052130.16368-3-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220706052130.16368-1-kuniyu@amazon.com>
+References: <20220706052130.16368-1-kuniyu@amazon.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.55]
+X-ClientProxiedBy: EX13D18UWA004.ant.amazon.com (10.43.160.45) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On=C2=A005/07/2022=C2=A019:59,=C2=A0Krzysztof=C2=A0Kozlowski=C2=A0wrote:=0D=
-=0A>=C2=A0On=C2=A029/06/2022=C2=A009:18,=C2=A0Wangseok=C2=A0Lee=C2=A0wrote:=
-=0D=0A>>=C2=A0Just=C2=A0a=C2=A0gentle=C2=A0ping=C2=A0for=C2=A0this=C2=A0pat=
-ch,=C2=A0if=C2=A0any=C2=A0concern=C2=A0on=C2=A0this=C2=A0patch=C2=A0please=
-=C2=A0let=C2=A0me=C2=A0know.=0D=0A>>=C2=A0=0D=0A>=C2=A0=0D=0A>=C2=A0You=C2=
-=A0received=C2=A0comments=C2=A0to=C2=A0fix=C2=A0in=C2=A0this=C2=A0patch.=C2=
-=A0Exactly=C2=A0four.=C2=A0Four=C2=A0important=0D=0A>=C2=A0points=C2=A0to=
-=C2=A0fix.=C2=A0Therefore=C2=A0what=C2=A0is=C2=A0this=C2=A0ping=C2=A0about?=
-=0D=0A>=C2=A0=0D=0A>=C2=A0Without=C2=A0fixing=C2=A0these=C2=A0items,=C2=A0y=
-our=C2=A0patch=C2=A0cannot=C2=A0be=C2=A0accepted.=C2=A0What=C2=A0is=C2=A0mo=
-re=0D=0A>=C2=A0to=C2=A0ping=C2=A0here?=0D=0A>=C2=A0=0D=0A>=C2=A0Best=C2=A0r=
-egards,=0D=0A>=C2=A0Krzysztof=0D=0A=0D=0AI=C2=A0tried=C2=A0to=C2=A0receive=
-=C2=A0your=C2=A0opinion=C2=A0about=C2=A0the=C2=A0fix=C2=A0point=C2=A0.=0D=
-=0AI=C2=A0will=C2=A0request=C2=A0a=C2=A0review=C2=A0again=C2=A0after=C2=A0m=
-odifying=C2=A0it=C2=A0in=C2=A0the=C2=A0next=C2=A0patch.=0D=0A=0D=0AThank=C2=
-=A0you.=0D=0A=0D=0A>>>=C2=A0+=0D=0A>>>=C2=A0+=C2=A0=C2=A0clocks:=0D=0A>>>=
-=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0items:=0D=0A>>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0-=C2=A0description:=C2=A0PCIe=C2=A0PHY=C2=A0reference=C2=A0c=
-lock=0D=0A>=C2=A0=0D=0A>=C2=A0refer=C2=A0to=C2=A0sample-schema.yaml,=C2=A0e=
-ven=C2=A0if=C2=A0the=C2=A0clock=C2=A0item=C2=A0is=C2=A0single,=0D=0A>=C2=A0=
-it=C2=A0seems=C2=A0to=C2=A0be=C2=A0used=C2=A0as=C2=A0follows.=0D=0A>=C2=A0=
-=0D=0A>=C2=A0clocks:=0D=0A>=C2=A0=C2=A0=C2=A0maxItems:=C2=A01=0D=0A>=C2=A0=
-=0D=0A>=C2=A0clock-names:=0D=0A>=C2=A0=C2=A0=C2=A0items:=0D=0A>=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0-=C2=A0const:=C2=A0ref=0D=0A>=C2=A0=0D=0A>=C2=A0If=C2=A0o=
-nly=C2=A0=22clocks:=22=C2=A0are=C2=A0define=C2=A0and=C2=A0clock-names=C2=A0=
-are=C2=A0not=C2=A0define,=0D=0A>=C2=A0the=C2=A0following=C2=A0warning=C2=A0=
-occurs.=0D=0A>=C2=A0=22'clock-names'=C2=A0does=C2=A0not=C2=A0match=C2=A0any=
-=C2=A0of=C2=A0the=C2=A0regexes=22=0D=0A>=C2=A0=0D=0A>>>=C2=A0+=0D=0A>>>=C2=
-=A0+=C2=A0=C2=A0lcpll-ref-clk:=0D=0A>>>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0const=
-:=C2=A01=0D=0A>>=C2=A0=0D=0A>>=C2=A0Unknown=C2=A0field...=C2=A0custom=C2=A0=
-properties=C2=A0need=C2=A0vendor=C2=A0(axis,),=C2=A0type=C2=A0(boolean)=0D=
-=0A>>=C2=A0and=C2=A0description.=0D=0A>>=C2=A0=0D=0A>=C2=A0=0D=0A>=C2=A0=22=
-lcpl-ref-clk=22=C2=A0has=C2=A0an=C2=A0enum=C2=A0type=C2=A0value,=C2=A0so=C2=
-=A0i=C2=A0will=C2=A0modify=C2=A0it=C2=A0as=C2=A0below.=0D=0A>=C2=A0=0D=0A>=
-=C2=A0=0D=0A>=C2=A0axis,lcpll-ref-clk:=0D=0A>=C2=A0=C2=A0=C2=A0description:=
-=0D=0A>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0select=C2=A0the=C2=A0reference=C2=A0cl=
-ock=C2=A0of=C2=A0phy=C2=A0and=C2=A0initialization=C2=A0is=C2=A0performed=0D=
-=0A>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0with=C2=A0the=C2=A0reference=C2=A0clock=
-=C2=A0according=C2=A0to=C2=A0the=C2=A0selected=C2=A0value.=0D=0A>=C2=A0=C2=
-=A0=C2=A0=24ref:=C2=A0/schemas/types.yaml=23/definitions/uint32=0D=0A>=C2=
-=A0=C2=A0=C2=A0enum:=C2=A0=5B=C2=A00,=C2=A01,=C2=A02,=C2=A03,=C2=A04=C2=A0=
-=5D=0D=0A>=C2=A0
+A sysctl variable is accessed concurrently, and there is always a chance of
+data-race.  So, all readers and writers need some basic protection to avoid
+load/store-tearing.
+
+This patch changes proc_dobool() to use READ_ONCE()/WRITE_ONCE() internally
+to fix a data-race on the sysctl side.  For now, proc_dobool() itself is
+tolerant to a data-race, but we still need to add annotations on the other
+subsystem's side.
+
+In case we miss such fixes, this patch converts proc_dobool() to a wrapper
+of proc_dobool_lockless().  When we fix a data-race in the other subsystem,
+we can explicitly set it as a handler.
+
+Also, this patch removes proc_dobool()'s document and adds
+proc_dobool_lockless()'s one so that no one will use proc_dobool() anymore.
+
+Fixes: a2071573d634 ("sysctl: introduce new proc handler proc_dobool")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+CC: Jia He <hejianet@gmail.com>
+---
+ include/linux/sysctl.h |  2 ++
+ kernel/sysctl.c        | 23 ++++++++++++++++-------
+ 2 files changed, 18 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
+index 9beab3a4de3d..fcafc16abbad 100644
+--- a/include/linux/sysctl.h
++++ b/include/linux/sysctl.h
+@@ -83,6 +83,8 @@ PROC_HANDLER(proc_dointvec_ms_jiffies);
+ PROC_HANDLER(proc_do_large_bitmap);
+ PROC_HANDLER(proc_do_static_key);
+ 
++PROC_HANDLER(proc_dobool_lockless);
++
+ /*
+  * Register a set of sysctl names by calling register_sysctl_table
+  * with an initialised array of struct ctl_table's.  An entry with 
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 1082c8bc5ba5..bc6fcc64eeaf 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -424,13 +424,12 @@ static void proc_put_char(void **buf, size_t *size, char c)
+ }
+ 
+ static int do_proc_dobool_conv(bool *negp, unsigned long *lvalp,
+-				int *valp,
+-				int write, void *data)
++			       int *valp, int write, void *data)
+ {
+ 	if (write) {
+-		*(bool *)valp = *lvalp;
++		WRITE_ONCE(*(bool *)valp, *lvalp);
+ 	} else {
+-		int val = *(bool *)valp;
++		int val = READ_ONCE(*(bool *)valp);
+ 
+ 		*lvalp = (unsigned long)val;
+ 		*negp = false;
+@@ -701,7 +700,7 @@ int do_proc_douintvec(struct ctl_table *table, int write,
+ }
+ 
+ /**
+- * proc_dobool - read/write a bool
++ * proc_dobool_lockless - read/write a bool locklessly
+  * @table: the sysctl table
+  * @write: %TRUE if this is a write to the sysctl file
+  * @buffer: the user buffer
+@@ -713,13 +712,19 @@ int do_proc_douintvec(struct ctl_table *table, int write,
+  *
+  * Returns 0 on success.
+  */
+-int proc_dobool(struct ctl_table *table, int write, void *buffer,
+-		size_t *lenp, loff_t *ppos)
++int proc_dobool_lockless(struct ctl_table *table, int write, void *buffer,
++			 size_t *lenp, loff_t *ppos)
+ {
+ 	return do_proc_dointvec(table, write, buffer, lenp, ppos,
+ 				do_proc_dobool_conv, NULL);
+ }
+ 
++int proc_dobool(struct ctl_table *table, int write, void *buffer,
++		size_t *lenp, loff_t *ppos)
++{
++	return proc_dobool_lockless(table, write, buffer, lenp, ppos);
++}
++
+ /**
+  * proc_dointvec - read a vector of integers
+  * @table: the sysctl table
+@@ -1497,6 +1502,8 @@ PROC_HANDLER_ENOSYS(proc_dointvec_ms_jiffies);
+ PROC_HANDLER_ENOSYS(proc_do_cad_pid);
+ PROC_HANDLER_ENOSYS(proc_do_large_bitmap);
+ 
++PROC_HANDLER_ENOSYS(proc_dobool_lockless);
++
+ #endif /* CONFIG_PROC_SYSCTL */
+ 
+ #if defined(CONFIG_SYSCTL)
+@@ -2405,3 +2412,5 @@ EXPORT_SYMBOL(proc_dointvec_jiffies);
+ EXPORT_SYMBOL(proc_dointvec_userhz_jiffies);
+ EXPORT_SYMBOL(proc_dointvec_ms_jiffies);
+ EXPORT_SYMBOL(proc_do_large_bitmap);
++
++EXPORT_SYMBOL(proc_dobool_lockless);
+-- 
+2.30.2
+
