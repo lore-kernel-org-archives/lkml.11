@@ -2,146 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3CBACCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109DCCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 16:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234163AbiGFQLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
+        id S234244AbiGFQLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 12:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234127AbiGFQLO (ORCPT
+        with ESMTP id S234174AbiGFQLg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:11:14 -0400
-Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D344E237E3;
-        Wed,  6 Jul 2022 09:11:13 -0700 (PDT)
-Received: by mail-il1-f179.google.com with SMTP id b1so3836850ilf.8;
-        Wed, 06 Jul 2022 09:11:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xqvCFaRmeZZtgaYKxSb/zDtrg0BtbPrZr498xClMHoA=;
-        b=smYGCgckHEI2Xbbkl8cZcxfpvhBSzQQ7X9b/43khfNLiLz4Xsyt5AP24iFpJXteKSr
-         BKG2KwSNyt7VUd7XwH4HvVy8D+H6ba6awJME6qMY8P6vHuVmqm1VesbBm1wxkLkRwURt
-         e+iNEVbGgZXlyLr7HyJ+sgRcm3u8D9hmOBMDWx/lFEKhkmIJOYG0EoSIr23W0k3Fxj8+
-         hWwaZBz1ztv8jUANLws0oCB1Tz36q3c+N2D2PG5CfiG+OMWT49r32ogjRCKN+HFIem6k
-         EODdQTpQYMUnfLlZFL4PRDi8lGTuzU3XD2WZpdZeKB+rWevjGR7OKmFxBZc9gzBaO/iM
-         r+AQ==
-X-Gm-Message-State: AJIora+hrq3xky3He3HrTGwzJgA2lEbAJ6pfDFjvycWYh1VJguLAMDen
-        xnbW50rh6AVzHsuNHXR2Rg==
-X-Google-Smtp-Source: AGRyM1v8pCXB40SvhaQJFc1zm1w3F8CrTtVMAwVoNHW1OCBQIOXWP1i4ozkxVqIm7YI18B7NPIxp6A==
-X-Received: by 2002:a92:cd8f:0:b0:2d9:5d44:6a53 with SMTP id r15-20020a92cd8f000000b002d95d446a53mr24555148ilb.226.1657123872876;
-        Wed, 06 Jul 2022 09:11:12 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id q25-20020a05663810d900b0032e1a07228asm16164339jad.26.2022.07.06.09.11.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 09:11:12 -0700 (PDT)
-Received: (nullmailer pid 136692 invoked by uid 1000);
-        Wed, 06 Jul 2022 16:11:10 -0000
-Date:   Wed, 6 Jul 2022 10:11:10 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Han Xu <han.xu@nxp.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Michael Walle <michael@walle.cc>,
-        Bough Chen <haibo.chen@nxp.com>, ashish.kumar@nxp.com,
-        yogeshgaur.83@gmail.com, broonie@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, singh.kuldeep87k@gmail.com,
-        tudor.ambarus@microchip.com, p.yadav@ti.com,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
-        festevam@gmail.com, dl-linux-imx <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, zhengxunli@mxic.com.tw
-Subject: Re: [PATCH 07/11] dt-bindings: spi: spi-nxp-fspi: add a new property
- nxp,fspi-dll-slvdly
-Message-ID: <20220706161110.GA123915-robh@kernel.org>
-References: <VI1PR04MB40167A70FBE772DF91047A4190819@VI1PR04MB4016.eurprd04.prod.outlook.com>
- <59d360ef-5374-c7a7-2995-854ab3715b25@linaro.org>
- <DU2PR04MB87747C9A8F18D8300461D6B197819@DU2PR04MB8774.eurprd04.prod.outlook.com>
- <f33ad190-f5c7-d9fa-088b-5538ab1f4d59@linaro.org>
- <DU2PR04MB877492F346BAA10B2AA7428497819@DU2PR04MB8774.eurprd04.prod.outlook.com>
- <62f113a0cdb0d58bf04ab0b274912eb7@walle.cc>
- <be521f90-97ce-c61d-d7d6-8f2bde24d824@linaro.org>
- <20220705145226.tarpvub6bh67tj63@umbrella>
- <0bd271e9-8d9b-7388-2d9b-65cc39a54f8c@linaro.org>
- <20220705155031.zk36jsq4q2ac2ow4@umbrella>
+        Wed, 6 Jul 2022 12:11:36 -0400
+X-Greylist: delayed 582 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 09:11:34 PDT
+Received: from mx08-0057a101.pphosted.com (mx08-0057a101.pphosted.com [185.183.31.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B45622B0B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 09:11:34 -0700 (PDT)
+Received: from pps.filterd (m0214196.ppops.net [127.0.0.1])
+        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2667L2HQ012353;
+        Wed, 6 Jul 2022 18:01:25 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=12052020; bh=xbZt/QN8NoPfTPY59kA+cN+jOThglCveIz09DPZUCa0=;
+ b=lGYnj3rXNSBrlfP/L0x56M0ed1Vl0LGmOalHQ0SHPMWI6uRyOI1S22Cq31zCmrav23Em
+ obTqD42Sy3h64pA8+oum3//UAPdXQUj1/dz/9PZS/Sxspgx2gytds4U+WHbArydl2lHV
+ kR8vBZS3bM4spSYPeZVBv1AKAgUlEXykUs+OgT8x07CbHXW1AI20wwsWSWBJ6A7FAqkv
+ LV1OG6LgeiraVY1Y4BWt5aLI/Oo4X/bIzIGo+6aB7ny488U3UuO88iR52t1Zvhd7VFdz
+ ibnpMzfHJfWM0nOsLmGBpyKrUi4fbNb7/OfdejNYyLKUpUE1AsH6qAqXLamo6cN9nvrf tw== 
+Received: from mail.beijerelectronics.com ([195.67.87.131])
+        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3h4ubyrwtn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 18:01:24 +0200
+Received: from Orpheus.nch.westermo.com (172.29.100.2) by
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2375.17; Wed, 6 Jul 2022 18:01:23 +0200
+From:   Matthias May <matthias.may@westermo.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>,
+        Matthias May <matthias.may@westermo.com>
+Subject: [PATCH net-next v2] ip_tunnel: allow to inherit from VLAN encapsulated IP frames
+Date:   Wed, 6 Jul 2022 18:00:22 +0200
+Message-ID: <20220706160021.10710-1-matthias.may@westermo.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705155031.zk36jsq4q2ac2ow4@umbrella>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.29.100.2]
+X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25)
+X-Proofpoint-GUID: SswlMR5Y5zZsk8tlMIimxaubmOl0nNzO
+X-Proofpoint-ORIG-GUID: SswlMR5Y5zZsk8tlMIimxaubmOl0nNzO
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 10:50:31AM -0500, Han Xu wrote:
-> On 22/07/05 05:38PM, Krzysztof Kozlowski wrote:
-> > On 05/07/2022 16:52, Han Xu wrote:
-> > > On 22/07/05 04:12PM, Krzysztof Kozlowski wrote:
-> > >> On 05/07/2022 16:06, Michael Walle wrote:
-> > >>>
-> > >>>>>
-> > >>>>> I think you could use here clock cycles or clock phase, but then it 
-> > >>>>> has to be obvious
-> > >>>>> it is that unit.
-> > >>>>
-> > >>>> Hi Krzysztof,
-> > >>>>
-> > >>>> Let me clarify it, in the document a term "delay cell" was used to
-> > >>>> descript this register bit. Each delay cell equals "1/32 clock phase",
-> > >>>> so the unit of delay cell is clock phase. The value user need set in
-> > >>>> DT just number to define how many delay cells needed.
-> > >>>
-> > >>> Then should the unit be "-degrees" and the possible range 0-180?
-> > >>
-> > >> Thanks. We don't have it documented currently, but the unit seems
-> > >> reasonable.
-> > > 
-> > > IMO, use the unit "-degrees" makes it more complicate. Personaly I would
-> > > calculate how many clock cycle delay needed, such as 1/4 clock cycle or half
-> > > clock cycle. Using degree brings extra calculation.
-> > 
-> > And what if the next device uses a bit different divider? Like 1/16?
-> > This is why we have standard units so people won't push register values
-> > into the bindings.
-> > 
-> > > 
-> > > The granularity of the clock phase change is 1/32 of 180 degree, but the range
-> > > 0-180 make people feel it can be set in any degree in range.
-> > 
-> > Yes, because that's how the bindings are being written - allowing any
-> > reasonable value, not register-specific value, to be used because it is
-> > the most flexible, hardware-independent and allows further customization
-> > of bindings (e.g. new devices). Embedding device programming model into
-> > the bindings contradicts it.
-> > 
-> > Second, nothing stops you from narrowing the acceptable values with an
-> > enum. This still allows extension. Your 1/32 does not.
-> > 
-> > > 
-> > > If I describe all details of the relation between "nxp,fspi-dll-slvdly" and
-> > > "delay cell" in patch v2, do you think it's clear for users?
+The current code allows to inherit the TOS, TTL, DF from the payload
+when skb->protocol is ETH_P_IP or ETH_P_IPV6.
+However when the payload is VLAN encapsulated (e.g because the tunnel
+is of type GRETAP), then this inheriting does not work, because the
+visible skb->protocol is of type ETH_P_8021Q.
 
-What's a cell?
+Add a check on ETH_P_8021Q and subsequently check the payload protocol.
 
-> > 
-> > 1/32 could be a nice unit, but degrees is better. Just like uV is better
-> > than 1/32 of V. Like 1 us is better than 1/32 of ms.
-> > 
-> > Do you see  in the bindings many other values like time, potential,
-> > current or power described in 1/32 units?
-> 
-> That make sense. I will use degree as the unit and round to register proper
-> value in driver as Michael suggested. Thanks for all comments.
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+---
+v1 -> v2:
+ - Add support for ETH_P_8021AD as suggested by Jakub Kicinski.
+---
+ net/ipv4/ip_tunnel.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
-I'm still wondering what this is delaying? From what to what? We already 
-have numerous common delay properties for SPI. If one of those doesn't 
-work, then should this be a new common property? And if common, I think 
-time units is better to use than degrees.
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 94017a8c3994..bdcc0f1e83c8 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -648,6 +648,13 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	u8 tos, ttl;
+ 	__be32 dst;
+ 	__be16 df;
++	__be16 *payload_protocol;
++
++	if (skb->protocol == htons(ETH_P_8021Q) ||
++	    skb->protocol == htons(ETH_P_8021AD))
++		payload_protocol = (__be16 *)(skb->head + skb->network_header - 2);
++	else
++		payload_protocol = &skb->protocol;
+ 
+ 	inner_iph = (const struct iphdr *)skb_inner_network_header(skb);
+ 	connected = (tunnel->parms.iph.daddr != 0);
+@@ -670,13 +677,12 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 			dst = tun_info->key.u.ipv4.dst;
+ 			md = true;
+ 			connected = true;
+-		}
+-		else if (skb->protocol == htons(ETH_P_IP)) {
++		} else if (*payload_protocol == htons(ETH_P_IP)) {
+ 			rt = skb_rtable(skb);
+ 			dst = rt_nexthop(rt, inner_iph->daddr);
+ 		}
+ #if IS_ENABLED(CONFIG_IPV6)
+-		else if (skb->protocol == htons(ETH_P_IPV6)) {
++		else if (*payload_protocol == htons(ETH_P_IPV6)) {
+ 			const struct in6_addr *addr6;
+ 			struct neighbour *neigh;
+ 			bool do_tx_error_icmp;
+@@ -716,10 +722,10 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	tos = tnl_params->tos;
+ 	if (tos & 0x1) {
+ 		tos &= ~0x1;
+-		if (skb->protocol == htons(ETH_P_IP)) {
++		if (*payload_protocol == htons(ETH_P_IP)) {
+ 			tos = inner_iph->tos;
+ 			connected = false;
+-		} else if (skb->protocol == htons(ETH_P_IPV6)) {
++		} else if (*payload_protocol == htons(ETH_P_IPV6)) {
+ 			tos = ipv6_get_dsfield((const struct ipv6hdr *)inner_iph);
+ 			connected = false;
+ 		}
+@@ -765,7 +771,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	}
+ 
+ 	df = tnl_params->frag_off;
+-	if (skb->protocol == htons(ETH_P_IP) && !tunnel->ignore_df)
++	if (*payload_protocol == htons(ETH_P_IP) && !tunnel->ignore_df)
+ 		df |= (inner_iph->frag_off & htons(IP_DF));
+ 
+ 	if (tnl_update_pmtu(dev, skb, rt, df, inner_iph, 0, 0, false)) {
+@@ -786,10 +792,10 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	tos = ip_tunnel_ecn_encap(tos, inner_iph, skb);
+ 	ttl = tnl_params->ttl;
+ 	if (ttl == 0) {
+-		if (skb->protocol == htons(ETH_P_IP))
++		if (*payload_protocol == htons(ETH_P_IP))
+ 			ttl = inner_iph->ttl;
+ #if IS_ENABLED(CONFIG_IPV6)
+-		else if (skb->protocol == htons(ETH_P_IPV6))
++		else if (*payload_protocol == htons(ETH_P_IPV6))
+ 			ttl = ((const struct ipv6hdr *)inner_iph)->hop_limit;
+ #endif
+ 		else
+-- 
+2.35.1
 
-If this is vendor specific, then I'd just use the register value. 
-There's not much point in using common units unless it is a common 
-property.
-
-Rob
