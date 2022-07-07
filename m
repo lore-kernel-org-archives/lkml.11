@@ -2,117 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC39C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD259CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235568AbiGGPa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 11:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
+        id S236219AbiGGPal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 11:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236171AbiGGPaL (ORCPT
+        with ESMTP id S236157AbiGGPaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 11:30:11 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CCD62E9EF;
-        Thu,  7 Jul 2022 08:29:59 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id AE4091886E7B;
-        Thu,  7 Jul 2022 15:29:57 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id A0CA025032B7;
-        Thu,  7 Jul 2022 15:29:57 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 842CFA1E00B8; Thu,  7 Jul 2022 15:29:57 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from wse-c0127.vestervang (unknown [208.127.141.28])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id D38979120FED;
-        Thu,  7 Jul 2022 15:29:55 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v4 net-next 6/6] selftests: forwarding: add test of MAC-Auth Bypass to locked port tests
-Date:   Thu,  7 Jul 2022 17:29:30 +0200
-Message-Id: <20220707152930.1789437-7-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220707152930.1789437-1-netdev@kapio-technology.com>
-References: <20220707152930.1789437-1-netdev@kapio-technology.com>
+        Thu, 7 Jul 2022 11:30:16 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44F524BC1;
+        Thu,  7 Jul 2022 08:30:14 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267E47W9012214;
+        Thu, 7 Jul 2022 11:29:59 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3h5u9s2qkt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 11:29:59 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 267FTwSO010596
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 7 Jul 2022 11:29:58 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Thu, 7 Jul 2022
+ 11:29:57 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Thu, 7 Jul 2022 11:29:57 -0400
+Received: from euswvd-wpr-621.reddog.microsoft.com ([10.140.226.135])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 267FTmbI008137;
+        Thu, 7 Jul 2022 11:29:50 -0400
+From:   Atif Ofluoglu <Atif.Ofluoglu@analog.com>
+To:     <linux@roeck-us.net>
+CC:     <jdelvare@suse.com>, <linux-hwmon@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Atif Ofluoglu <atif.ofluoglu@analog.com>
+Subject: [PATCH 0/2] Adding MAX20754 support
+Date:   Thu, 7 Jul 2022 15:29:16 +0000
+Message-ID: <cover.1657204859.git.atif.ofluoglu@analog.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: WEmX6ZgaOqf0ReStf6cP6la3IZA3rsiO
+X-Proofpoint-ORIG-GUID: WEmX6ZgaOqf0ReStf6cP6la3IZA3rsiO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_12,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501 mlxscore=0
+ clxscore=1011 impostorscore=0 mlxlogscore=695 suspectscore=0 phishscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207070061
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Verify that the MAC-Auth mechanism works by adding a FDB entry with the
-locked flag set, denying access until the FDB entry is replaced with a
-FDB entry without the locked flag set.
+From: Atif Ofluoglu <atif.ofluoglu@analog.com>
 
-Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
----
- .../net/forwarding/bridge_locked_port.sh      | 30 ++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+Adding support for Maxim MAX20754 Dual-Output, Configurable Multiphase Power-Supply Controller with PMBus Interface.
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-index 5b02b6b60ce7..1ee12d7b5c8b 100755
---- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-@@ -1,7 +1,7 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
--ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-+ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan locked_port_mab"
- NUM_NETIFS=4
- CHECK_TC="no"
- source lib.sh
-@@ -166,6 +166,34 @@ locked_port_ipv6()
- 	log_test "Locked port ipv6"
- }
- 
-+locked_port_mab()
-+{
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work before locking port"
-+
-+	bridge link set dev $swp1 locked on
-+	bridge link set dev $swp1 learning on
-+
-+	ping_do $h1 192.0.2.2
-+	check_fail $? "MAB: Ping worked on locked port without FDB entry"
-+
-+	bridge fdb show | grep `mac_get $h1` | grep -q "locked"
-+	check_err $? "MAB: No locked fdb entry after ping on locked port"
-+
-+	bridge fdb replace `mac_get $h1` dev $swp1 master static
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
-+
-+	bridge fdb del `mac_get $h1` dev $swp1 master
-+	bridge link set dev $swp1 learning off
-+	bridge link set dev $swp1 locked off
-+
-+	log_test "Locked port MAB"
-+}
- trap cleanup EXIT
- 
- setup_prepare
+The driver is tested on MAX20754 evalution kit hardware.
+
+Atif Ofluoglu (2):
+  hwmon: (pmbus/max20754) Add support for MAX20754
+  Added documentation for Maxim Integrated max20754 hwmon userspace
+    sysfs.
+
+ Documentation/hwmon/max20754.rst | 122 ++++++++++
+ drivers/hwmon/pmbus/Kconfig      |   9 +
+ drivers/hwmon/pmbus/Makefile     |   1 +
+ drivers/hwmon/pmbus/max20754.c   | 390 +++++++++++++++++++++++++++++++
+ 4 files changed, 522 insertions(+)
+ create mode 100644 Documentation/hwmon/max20754.rst
+ create mode 100644 drivers/hwmon/pmbus/max20754.c
+
 -- 
-2.30.2
+2.25.1
 
