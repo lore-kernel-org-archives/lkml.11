@@ -2,57 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D3DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB726C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233584AbiGGFqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 01:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
+        id S233928AbiGGFrW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 01:47:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiGGFqd (ORCPT
+        with ESMTP id S231829AbiGGFrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 01:46:33 -0400
+        Thu, 7 Jul 2022 01:47:19 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40B03139F;
-        Wed,  6 Jul 2022 22:46:32 -0700 (PDT)
-X-UUID: 325c50e0cdf04af1b73fd155d898424b-20220707
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDEA3138F;
+        Wed,  6 Jul 2022 22:47:17 -0700 (PDT)
+X-UUID: a194472b477941c39999f1ef9db2b8c7-20220707
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:885cf4f0-48e3-4476-a3cd-eacdb9d3dad1,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:0f94e32,CLOUDID:a384a463-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+X-CID-O-INFO: VERSION:1.1.8,REQID:b0217c3c-8222-403d-a6a4-4de3ac0ba2bd,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:b389a463-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
         ,QS:nil,BEC:nil,COL:0
-X-UUID: 325c50e0cdf04af1b73fd155d898424b-20220707
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <kewei.xu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 688955489; Thu, 07 Jul 2022 13:46:24 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 7 Jul 2022 13:46:23 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Jul 2022 13:46:21 +0800
-From:   Kewei Xu <kewei.xu@mediatek.com>
-To:     <wsa@the-dreams.de>
-CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+X-UUID: a194472b477941c39999f1ef9db2b8c7-20220707
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <johnson.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1452492003; Thu, 07 Jul 2022 13:47:13 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 7 Jul 2022 13:47:12 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Thu, 7 Jul 2022 13:47:12 +0800
+From:   Johnson Wang <johnson.wang@mediatek.com>
+To:     <ulf.hansson@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-mmc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
         <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
-        <qii.wang@mediatek.com>, <liguo.zhang@mediatek.com>,
-        <caiyu.chen@mediatek.com>, <housong.zhang@mediatek.com>,
-        <yuhan.wei@mediatek.com>, <kewei.xu@mediatek.com>,
-        <david-yh.chiu@mediatek.com>, <liju-clr.chen@mediatek.com>
-Subject: [PATCH V1 1/2] dt-bindings: i2c: update bindings for MT8188 SoC
-Date:   Thu, 7 Jul 2022 13:46:16 +0800
-Message-ID: <20220707054617.13583-2-kewei.xu@mediatek.com>
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Johnson Wang <johnson.wang@mediatek.com>
+Subject: [PATCH] dt-bindings: mmc: Add compatible for MediaTek MT8188
+Date:   Thu, 7 Jul 2022 13:47:10 +0800
+Message-ID: <20220707054710.1396-1-johnson.wang@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220707054617.13583-1-kewei.xu@mediatek.com>
-References: <20220707054617.13583-1-kewei.xu@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -60,25 +55,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a DT binding documentation for the MT8188 soc.
+This commit adds dt-binding documentation of mmc for MediaTek MT8188 SoC
+platform.
 
-Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
+Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
 ---
- Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
-index 16a1a3118204..4e730fb7be56 100644
---- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
-@@ -27,6 +27,7 @@ properties:
-       - const: mediatek,mt8173-i2c
-       - const: mediatek,mt8183-i2c
-       - const: mediatek,mt8186-i2c
-+      - const: mediatek,mt8188-i2c
-       - const: mediatek,mt8192-i2c
+diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+index 2a2e9fa8c188..3fbf33ad4f7c 100644
+--- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
++++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+@@ -32,6 +32,9 @@ properties:
        - items:
-           - enum:
+           - const: mediatek,mt8186-mmc
+           - const: mediatek,mt8183-mmc
++      - items:
++          - const: mediatek,mt8188-mmc
++          - const: mediatek,mt8183-mmc
+       - items:
+           - const: mediatek,mt8192-mmc
+           - const: mediatek,mt8183-mmc
 -- 
 2.18.0
 
