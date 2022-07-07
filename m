@@ -2,119 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F30FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C48C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235039AbiGGIS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 04:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        id S235276AbiGGIUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 04:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234919AbiGGISA (ORCPT
+        with ESMTP id S235261AbiGGITj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 04:18:00 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7F14F188;
-        Thu,  7 Jul 2022 01:16:28 -0700 (PDT)
+        Thu, 7 Jul 2022 04:19:39 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C32250715
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:18:49 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id o25so31099725ejm.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 01:18:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657181788; x=1688717788;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=pK51D6/KCwtEn5SHEF/Xv6jcS3+colyLJ58dPARzfUo=;
-  b=cxcilQOVnEKZZ2/buX8s4HciTC4d0flRA3S95co9JgqWQYnagCEhjV/x
-   /5jdat9odiYuWFquys7/8+UUgf3UnHXKljWFgTfziSZXFJ/Y0WNWTNOjs
-   ZuXj43jOYKkUc9HiUy4f2EoItAY8JQoeK/Jc4Q/byF96fE4zlKKGfwhQJ
-   g=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Jul 2022 01:16:28 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 01:16:28 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Jul 2022 01:16:27 -0700
-Received: from c-skakit-linux.qualcomm.com (10.49.16.6) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Jul 2022 01:16:23 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
-CC:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Taniya Das <tdas@codeaurora.org>, <mka@chromium.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Taniya Das <quic_tdas@quicinc.com>,
-        "Satya Priya" <quic_c_skakit@quicinc.com>
-Subject: [PATCH V2] arm64: dts: qcom: sc7280: Update lpassaudio clock controller for resets
-Date:   Thu, 7 Jul 2022 13:45:39 +0530
-Message-ID: <1657181739-32052-1-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/RvvGHcCHFo/5jSRy9Ox2PI6Zkn3y7KAtfIwVEzPIQ=;
+        b=SP+ZldLI9wlqq8InQInFS5medRPnbVLRnil97By+qHy5GrdrSr0sGdZNEjsnuN5VLU
+         PPGw2QBwoxsyzxYr4CkK0seEzBuLjhxFSfxjK04ccUbaZS1uhH4lD7MK2By1xjxwG4HI
+         DsicMDx6UH/GzZv582z3Gu11nSWqk63lpXbdZFEAZ0XbILq8zvR6qdBAxyV7A89nu9Kb
+         w26D6hoALGgHdgqLiAJF70IRDeiL7UAgpuwJCI1uJy/CIbRFCVG3vcZWzndOHZg1pRpH
+         F7ZBExFUxP8qFVmJz3NzxwGWvKbKHQdAr9Ja9A9U7syiU+S+IMa+JdTJ4gWLuXhTmYfr
+         ibsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/RvvGHcCHFo/5jSRy9Ox2PI6Zkn3y7KAtfIwVEzPIQ=;
+        b=1tWFcxgeLAlQHZVebhW9o1rS3JkpySwH9V7rz6LdjNyJ4uYxdYqodAK3y/idDeuoZd
+         d+r4JTHPRckTEdJJLef7bzHCf12UGFWODUnEeTw8mv7rnujeSj/Wgc9V8q39bt1X92E0
+         kSGpgoMcuigP5iCOQB7MlmC4uNE6PvVniVxqZZHeny0RRfuQgdBmwagRSEWvnKDgTEiU
+         xDCmqO2Rh5hHk61Bf9OdzG9ijCLRTTHoK5fIlBmxvVGowm2rOz89wq/07a9kpyD+7Rct
+         qeeZL1b02BuuCRZl3teb9QtuHC4tcE+u+PLib8A9XU1Wyz8DwE0F7Q6le62Q4u8NkHst
+         Oaiw==
+X-Gm-Message-State: AJIora+b7UWDWGQ4gwy1Nt9sA2++TUXctMF9SIlcZoXhT7mw5z9sFrKI
+        xxFgc3oBEWVGeMkDsCWXpBClrs+1o6TD2A==
+X-Google-Smtp-Source: AGRyM1uMkMKkQTpfN/nz+zuw+yJXYmMmx1mZxb2Tgt3sul1gOpUTnkmaPhNiZesRdx1PZB30u9kFYw==
+X-Received: by 2002:a17:907:94c5:b0:726:b8a9:f9b9 with SMTP id dn5-20020a17090794c500b00726b8a9f9b9mr43819148ejc.123.1657181927324;
+        Thu, 07 Jul 2022 01:18:47 -0700 (PDT)
+Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
+        by smtp.gmail.com with ESMTPSA id f13-20020a170906824d00b00726e108b566sm12871779ejx.173.2022.07.07.01.18.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 01:18:46 -0700 (PDT)
+From:   Naresh Solanki <naresh.solanki@9elements.com>
+X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Naresh Solanki <Naresh.Solanki@9elements.com>
+Subject: [PATCH v4 0/4] regulator: output-supply DT support
+Date:   Thu,  7 Jul 2022 10:18:22 +0200
+Message-Id: <20220707081826.953449-1-Naresh.Solanki@9elements.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taniya Das <quic_tdas@quicinc.com>
+v4:
+ - Add 9elements as vendor.
+ - Update dt binding.
 
-The lpass audio supports TX/RX/WSA block resets. Disable the LPASS PIL
-clock by default, boards can enable it if needed.
+Add devicetree support of the output-supply driver.
+The supply names for this driver is provided through DT
+regulator-names & regulator handle can be acquired.
+Driver events can be received from sysfs.
 
-Also to keep consistency update lpasscore to lpass_core.
+Laxman Dewangan (1):
+  regulator: output-supply: Add devicetree support
 
-Fixes: 9499240d15f2 ("arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers")
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
----
-Changes since V1:
- - Updated the phandle reference in lpass_aon node.
- - As per Matthias' comment updated the commit text.
+Naresh Solanki (2):
+  dt-bindings: vendor-prefixes: add 9elements
+  dt-bindings: regulator: add bindings for output-supply
 
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Patrick Rudolph (1):
+  regulator: output-supply: Add Notification support
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 40e700c..73dddca 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2174,6 +2174,7 @@
- 			clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
- 			clock-names = "iface";
- 			#clock-cells = <1>;
-+			status = "disabled";
- 		};
- 
- 		lpass_audiocc: clock-controller@3300000 {
-@@ -2185,6 +2186,7 @@
- 			power-domains = <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
- 			#clock-cells = <1>;
- 			#power-domain-cells = <1>;
-+			#reset-cells = <1>;
- 		};
- 
- 		lpass_aon: clock-controller@3380000 {
-@@ -2192,13 +2194,13 @@
- 			reg = <0 0x03380000 0 0x30000>;
- 			clocks = <&rpmhcc RPMH_CXO_CLK>,
- 			       <&rpmhcc RPMH_CXO_CLK_A>,
--			       <&lpasscore LPASS_CORE_CC_CORE_CLK>;
-+			       <&lpass_core LPASS_CORE_CC_CORE_CLK>;
- 			clock-names = "bi_tcxo", "bi_tcxo_ao", "iface";
- 			#clock-cells = <1>;
- 			#power-domain-cells = <1>;
- 		};
- 
--		lpasscore: clock-controller@3900000 {
-+		lpass_core: clock-controller@3900000 {
- 			compatible = "qcom,sc7280-lpasscorecc";
- 			reg = <0 0x03900000 0 0x50000>;
- 			clocks = <&rpmhcc RPMH_CXO_CLK>;
+ .../regulator/9elements,output-supply.yaml    | 63 ++++++++++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+ drivers/regulator/userspace-consumer.c        | 97 ++++++++++++++++++-
+ 3 files changed, 160 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/regulator/9elements,output-supply.yaml
+
+
+base-commit: 9f09069cde34dcd86f5ecf3a3139fd752020812f
+prerequisite-patch-id: 0000000000000000000000000000000000000000
 -- 
-2.7.4
+2.35.3
 
