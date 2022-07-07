@@ -2,164 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C07C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BAACCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236736AbiGGTQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 15:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
+        id S236674AbiGGTSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 15:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236740AbiGGTQI (ORCPT
+        with ESMTP id S236436AbiGGTSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 15:16:08 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9515C9C7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 12:16:04 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id l40-20020a05600c1d2800b003a18adff308so11801251wms.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 12:16:04 -0700 (PDT)
+        Thu, 7 Jul 2022 15:18:00 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4ED5C94D;
+        Thu,  7 Jul 2022 12:18:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=of729cYQdZdatbdtOkxwYpHbBpVYD6mDwvI8OalqF/o=;
-        b=V9nrML7ATfHvbYWklR0Oe2gzTDbjRLUtkda6dyGevx7bagNTD65ZqDTlKZirih5aQ1
-         nkX0TTKbRtilcre9JSlFYoQn3qcIXVkpQdvAbeJAItCMbjV9BvZD23iO9tn/VrjBpGru
-         KZFli/CXWr3kFMVrmqXy+YPpEv3+dBG02Y6iuCQ9sqm8XAx/uLSHgUEXqjDzq3oXUdbQ
-         mId9ygf9HdZzddUVAEuV/UqJOTkNMagpstdk+z9MSsEAraL5XHdPvcnaYEogTvZsdLjm
-         haswyT1lsFEWpC18LYFOZ0t0WcKCbZDLQKiRF/HBqnJeGP4KN6guHx1djhwXS5SfZ2Hz
-         vXCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=of729cYQdZdatbdtOkxwYpHbBpVYD6mDwvI8OalqF/o=;
-        b=KaDbQr2lq1udHICxZlWMbCFu+KMITs961GH8Xfrt3uv4PQWxbLm/Am8dF6Rger5MI/
-         uQHdEqdco0f45ptcVd++rJ9PbxSV3Bw0BrgwLhXngsKY05vLv6q6FwrdLSVIRhM0/42d
-         WTL3wEVJEtruo5R8fLEZxOG6z1HmcgmJVyTgY8zf6eZOAD7XcUpvcdzqpn5wB84igAiz
-         oXnPgJpZCbKF1JXo1ceQor+JK1tRIlccuESqcYzF55k+zVSSi1lb4a1VPG0eXkD7V5gD
-         3T+MOb+UrdrLRbSBpctDB+jvVziSsA1idqFMx83yaBNj73bogc7dgUMpLlD3qvp5EA7D
-         +vRg==
-X-Gm-Message-State: AJIora/diyFojnwAHucUXZuj+4zjPX0jD9AHPDGggy0+4k7vvUO1yLFy
-        1E7v0AL0LjaN6IN8H6CWdJ0hhBl7iwoE65VoX8Jj
-X-Google-Smtp-Source: AGRyM1ujmYeLrS7g423s1azgK9mH3+K6H5JmKsA3Sj8Nhk0vm63Rpr3/GjZGXw6pIRtiE3dUUVQupoL7Ac9kaUGVDh0=
-X-Received: by 2002:a05:600c:4f85:b0:3a1:a8e7:232a with SMTP id
- n5-20020a05600c4f8500b003a1a8e7232amr6425558wmq.158.1657221363107; Thu, 07
- Jul 2022 12:16:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220706234003.66760-1-kuniyu@amazon.com> <20220706234003.66760-11-kuniyu@amazon.com>
-In-Reply-To: <20220706234003.66760-11-kuniyu@amazon.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 7 Jul 2022 15:15:52 -0400
-Message-ID: <CAHC9VhQMigGi65-j0c9WBN+dWLjjaYqTti-eP99c1RRrQzWj5g@mail.gmail.com>
-Subject: Re: [PATCH v2 net 10/12] cipso: Fix data-races around sysctl.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657221480; x=1688757480;
+  h=from:to:cc:subject:date:message-id;
+  bh=b3PuhfRmlQ335e1dt4wosehyULuSFxvWEPSXKYLt/X4=;
+  b=Baj+Ld4dPXssfdlr9gix72VXZijLcPBVN9TBzJoJ54bnC6lRgO2dnhbe
+   /GytH14ZjZfz0rAFKTyld0294fy+RUw8p/7L4uYVJb+/1mlAzazmoFbYL
+   Q54OHAqMGx2qiuCRfFbq6ldGHLcV+jbkQFlvYxrBos7PhLaVw5MKiRvId
+   Q=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jul 2022 12:18:00 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jul 2022 12:17:58 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 08 Jul 2022 00:47:42 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 0151E40CE; Fri,  8 Jul 2022 00:47:40 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V3] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
+Date:   Fri,  8 Jul 2022 00:47:37 +0530
+Message-Id: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 7:43 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> While reading cipso sysctl variables, they can be changed concurrently.
-> So, we need to add READ_ONCE() to avoid data-races.
->
-> Fixes: 446fda4f2682 ("[NetLabel]: CIPSOv4 engine")
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
-> CC: Paul Moore <paul@paul-moore.com>
+In the logic around call to clk_round_rate(), for some corner conditions,
+get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+exact clock rate was not found lowest clock was being returned.
 
-Thanks for the patch, this looks good to me.  However, in the future
-you should probably drop the extra "---" separator (just leave the one
-before the diffstat below) and move my "Cc:" up above "Fixes:".
+Search for suitable clock rate in 2 steps
+a) exact match or within 2% tolerance
+b) within 5% tolerance
+This also takes care of corner conditions.
 
-Acked-by: Paul Moore <paul@paul-moore.com>
+Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+---
+v3: simplified algorithm further, fixed robot compile warnings
+v2: removed minor optimisations to make more readable
+v1: intial patch contained slightly complicated logic
+---
+ drivers/tty/serial/qcom_geni_serial.c | 88 +++++++++++++++++++++--------------
+ 1 file changed, 53 insertions(+), 35 deletions(-)
 
-> ---
->  Documentation/networking/ip-sysctl.rst |  2 +-
->  net/ipv4/cipso_ipv4.c                  | 12 +++++++-----
->  2 files changed, 8 insertions(+), 6 deletions(-)
->
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index 9f41961d11d5..0e58001f8580 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -1085,7 +1085,7 @@ cipso_cache_enable - BOOLEAN
->  cipso_cache_bucket_size - INTEGER
->         The CIPSO label cache consists of a fixed size hash table with each
->         hash bucket containing a number of cache entries.  This variable limits
-> -       the number of entries in each hash bucket; the larger the value the
-> +       the number of entries in each hash bucket; the larger the value is, the
->         more CIPSO label mappings that can be cached.  When the number of
->         entries in a given hash bucket reaches this limit adding new entries
->         causes the oldest entry in the bucket to be removed to make room.
-> diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
-> index 62d5f99760aa..6cd3b6c559f0 100644
-> --- a/net/ipv4/cipso_ipv4.c
-> +++ b/net/ipv4/cipso_ipv4.c
-> @@ -239,7 +239,7 @@ static int cipso_v4_cache_check(const unsigned char *key,
->         struct cipso_v4_map_cache_entry *prev_entry = NULL;
->         u32 hash;
->
-> -       if (!cipso_v4_cache_enabled)
-> +       if (!READ_ONCE(cipso_v4_cache_enabled))
->                 return -ENOENT;
->
->         hash = cipso_v4_map_cache_hash(key, key_len);
-> @@ -296,13 +296,14 @@ static int cipso_v4_cache_check(const unsigned char *key,
->  int cipso_v4_cache_add(const unsigned char *cipso_ptr,
->                        const struct netlbl_lsm_secattr *secattr)
->  {
-> +       int bkt_size = READ_ONCE(cipso_v4_cache_bucketsize);
->         int ret_val = -EPERM;
->         u32 bkt;
->         struct cipso_v4_map_cache_entry *entry = NULL;
->         struct cipso_v4_map_cache_entry *old_entry = NULL;
->         u32 cipso_ptr_len;
->
-> -       if (!cipso_v4_cache_enabled || cipso_v4_cache_bucketsize <= 0)
-> +       if (!READ_ONCE(cipso_v4_cache_enabled) || bkt_size <= 0)
->                 return 0;
->
->         cipso_ptr_len = cipso_ptr[1];
-> @@ -322,7 +323,7 @@ int cipso_v4_cache_add(const unsigned char *cipso_ptr,
->
->         bkt = entry->hash & (CIPSO_V4_CACHE_BUCKETS - 1);
->         spin_lock_bh(&cipso_v4_cache[bkt].lock);
-> -       if (cipso_v4_cache[bkt].size < cipso_v4_cache_bucketsize) {
-> +       if (cipso_v4_cache[bkt].size < bkt_size) {
->                 list_add(&entry->list, &cipso_v4_cache[bkt].list);
->                 cipso_v4_cache[bkt].size += 1;
->         } else {
-> @@ -1199,7 +1200,8 @@ static int cipso_v4_gentag_rbm(const struct cipso_v4_doi *doi_def,
->                 /* This will send packets using the "optimized" format when
->                  * possible as specified in  section 3.4.2.6 of the
->                  * CIPSO draft. */
-> -               if (cipso_v4_rbm_optfmt && ret_val > 0 && ret_val <= 10)
-> +               if (READ_ONCE(cipso_v4_rbm_optfmt) && ret_val > 0 &&
-> +                   ret_val <= 10)
->                         tag_len = 14;
->                 else
->                         tag_len = 4 + ret_val;
-> @@ -1603,7 +1605,7 @@ int cipso_v4_validate(const struct sk_buff *skb, unsigned char **option)
->                          * all the CIPSO validations here but it doesn't
->                          * really specify _exactly_ what we need to validate
->                          * ... so, just make it a sysctl tunable. */
-> -                       if (cipso_v4_rbm_strictvalid) {
-> +                       if (READ_ONCE(cipso_v4_rbm_strictvalid)) {
->                                 if (cipso_v4_map_lvl_valid(doi_def,
->                                                            tag[3]) < 0) {
->                                         err_offset = opt_iter + 3;
-> --
-> 2.30.2
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 2e23b65..ac2df1c 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -943,52 +943,71 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	return 0;
+ }
+ 
+-static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+-			unsigned int sampling_rate, unsigned int *clk_div)
++static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
++			unsigned int *clk_div, unsigned int percent_tol)
+ {
+-	unsigned long ser_clk;
+-	unsigned long desired_clk;
+-	unsigned long freq, prev;
++	unsigned long freq;
+ 	unsigned long div, maxdiv;
+-	int64_t mult;
+-
+-	desired_clk = baud * sampling_rate;
+-	if (!desired_clk) {
+-		pr_err("%s: Invalid frequency\n", __func__);
+-		return 0;
+-	}
++	u64 mult;
++	unsigned long offset, abs_tol, achieved;
+ 
++	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+ 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+-	prev = 0;
+-
+-	for (div = 1; div <= maxdiv; div++) {
+-		mult = div * desired_clk;
+-		if (mult > ULONG_MAX)
++	div = 1;
++	while (div <= maxdiv) {
++		mult = (u64)div * desired_clk;
++		if (mult != (unsigned long)mult)
+ 			break;
+ 
+-		freq = clk_round_rate(clk, (unsigned long)mult);
+-		if (!(freq % desired_clk)) {
+-			ser_clk = freq;
+-			break;
+-		}
++		offset = div * abs_tol;
++		freq = clk_round_rate(clk, mult - offset);
+ 
+-		if (!prev)
+-			ser_clk = freq;
+-		else if (prev == freq)
++		/* Can only get lower if we're done */
++		if (freq < mult - offset)
+ 			break;
+ 
+-		prev = freq;
++		/*
++		 * Re-calculate div in case rounding skipped rates but we
++		 * ended up at a good one, then check for a match.
++		 */
++		div = DIV_ROUND_CLOSEST(freq, desired_clk);
++		achieved = DIV_ROUND_CLOSEST(freq, div);
++		if (achieved <= desired_clk + abs_tol &&
++			achieved >= desired_clk - abs_tol) {
++			*clk_div = div;
++			return freq;
++		}
++
++		div = DIV_ROUND_UP(freq, desired_clk);
+ 	}
+ 
+-	if (!ser_clk) {
+-		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+-								__func__, baud);
+-		return ser_clk;
++	return 0;
++}
++
++static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
++			unsigned int sampling_rate, unsigned int *clk_div)
++{
++	unsigned long ser_clk;
++	unsigned long desired_clk;
++
++	desired_clk = baud * sampling_rate;
++	if (!desired_clk) {
++		pr_err("%s: Invalid frequency\n", __func__);
++		return 0;
+ 	}
+ 
+-	*clk_div = ser_clk / desired_clk;
+-	if (!(*clk_div))
+-		*clk_div = 1;
++	/*
++	 * try to find a clock rate within 2% tolerance, then within
++	 */
++	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
++	if (!ser_clk)
++		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
++
++	if (!ser_clk)
++		pr_err("Couldn't find suitable clock rate for %lu\n", desired_clk);
++	else
++		pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
++			desired_clk, ser_clk, *clk_div);
+ 
+ 	return ser_clk;
+ }
+@@ -1021,8 +1040,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	if (ver >= QUP_SE_VERSION_2_5)
+ 		sampling_rate /= 2;
+ 
+-	clk_rate = get_clk_div_rate(port->se.clk, baud,
+-		sampling_rate, &clk_div);
++	clk_rate = get_clk_div_rate(port->se.clk, baud, sampling_rate, &clk_div);
+ 	if (!clk_rate)
+ 		goto out_restart_rx;
+ 
 -- 
-paul-moore.com
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+
