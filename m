@@ -2,67 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60081C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD3EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234357AbiGGCAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51836 "EHLO
+        id S234779AbiGGCC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbiGGCAK (ORCPT
+        with ESMTP id S234678AbiGGCCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:00:10 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C79132ED4B
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:00:09 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id D52631E80D82;
-        Thu,  7 Jul 2022 09:57:49 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ZZKH5BkaPIZF; Thu,  7 Jul 2022 09:57:47 +0800 (CST)
-Received: from localhost.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: zeming@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 094C11E80D74;
-        Thu,  7 Jul 2022 09:57:47 +0800 (CST)
-From:   Li zeming <zeming@nfschina.com>
-To:     benh@kernel.crashing.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        kernel@nfschina.com, Li zeming <zeming@nfschina.com>
-Subject: [PATCH] macintosh/windfarm_pid: Add header file macro definition
-Date:   Thu,  7 Jul 2022 09:59:49 +0800
-Message-Id: <20220707015949.3733-1-zeming@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Wed, 6 Jul 2022 22:02:24 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF852F031;
+        Wed,  6 Jul 2022 19:02:22 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ldfmq5fYTz4xL4;
+        Thu,  7 Jul 2022 12:02:19 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657159341;
+        bh=UwtjIoglRDJEKGedzdm0Ahvx+a41vhCrbpYe2EuiEYw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=o0Bd03RSQlOUl1QxEGvhTrgpmUnJdnAH7j2M5I8TcnWM/NmHQMDiEMxOsuBtx75hW
+         m82hhMRIOD0OHV1iCwrmIzKaAg5YFRbr64TiejWxjnDPQWVG+BzHUb27tdhTgbunga
+         rKxZJIGszYZTOi2hjOvZK2rcNj8tK6DdwCYLo/2HUJEQzFeS0q42nbjS3T1F7QZA6K
+         5GkiSDAJrY0MaKr8sYj55WqZ4lDGuV7pDSEbJ2tb/JW/5OSGnqbzaX7Cbo4tpgVWNP
+         sHmgGuyEQ8Nt5FdX8HnvOP0EGExrgMV5NpM93tBp+cGQmTrQpSiUMp+8xyUKbCCzcn
+         WJVyf8xAE2C2Q==
+Date:   Thu, 7 Jul 2022 11:31:10 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto List <linux-crypto@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     Guangbin Huang <huangguangbin2@huawei.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Zhou Wang <wangzhou1@hisilicon.com>
+Subject: linux-next: manual merge of the crypto tree with the arm-perf,
+ arm64 trees
+Message-ID: <20220707113110.5d11a098@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/0TKCtQGOIzjzWHhqvSaSiPK";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I think the header file could avoid redefinition errors.
- at compile time by adding macro definitions.
+--Sig_/0TKCtQGOIzjzWHhqvSaSiPK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Li zeming <zeming@nfschina.com>
----
- drivers/macintosh/windfarm_pid.h | 4 ++++
- 1 file changed, 4 insertions(+)
+Hi all,
 
-diff --git a/drivers/macintosh/windfarm_pid.h b/drivers/macintosh/windfarm_pid.h
-index 83f747dbeafc..9882e90a5071 100644
---- a/drivers/macintosh/windfarm_pid.h
-+++ b/drivers/macintosh/windfarm_pid.h
-@@ -1,4 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef _WINDFARM_PID_H
-+#define _WINDFARM_PID_H
-+
- /*
-  * Windfarm PowerMac thermal control. Generic PID helpers
-  *
-@@ -82,3 +85,4 @@ struct wf_cpu_pid_state {
- extern void wf_cpu_pid_init(struct wf_cpu_pid_state *st,
- 			    struct wf_cpu_pid_param *param);
- extern s32 wf_cpu_pid_run(struct wf_cpu_pid_state *st, s32 power, s32 temp);
-+#endif
--- 
-2.18.2
+Today's linux-next merge of the crypto tree got a conflict in:
 
+  MAINTAINERS
+
+between commit:
+
+  66637ab137b4 ("drivers/perf: hisi: add driver for HNS3 PMU")
+
+from the arm-perf, arm64 trees and commit:
+
+  ce6330f74b08 ("MAINTAINERS: update HiSilicon ZIP and QM maintainers")
+
+from the crypto tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc MAINTAINERS
+index 027d9a232107,b04fb3324837..000000000000
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@@ -9069,13 -8936,8 +9069,14 @@@ F:	Documentation/admin-guide/perf/hisi-
+  F:	Documentation/admin-guide/perf/hisi-pmu.rst
+  F:	drivers/perf/hisilicon
+ =20
+ +HISILICON HNS3 PMU DRIVER
+ +M:	Guangbin Huang <huangguangbin2@huawei.com>
+ +S:	Supported
+ +F:	Documentation/admin-guide/perf/hns3-pmu.rst
+ +F:	drivers/perf/hisilicon/hns3_pmu.c
+ +
+- HISILICON QM AND ZIP Controller DRIVER
++ HISILICON QM DRIVER
++ M:	Weili Qian <qianweili@huawei.com>
+  M:	Zhou Wang <wangzhou1@hisilicon.com>
+  L:	linux-crypto@vger.kernel.org
+  S:	Maintained
+
+--Sig_/0TKCtQGOIzjzWHhqvSaSiPK
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGN14ACgkQAVBC80lX
+0GzkhQf9F2NtkvOfFRAwd5K1uneuCbqM/QJl03sWNw2rHzTAF1LHMiDlgjqzAM/y
+oqO+iLUDkp5U2NE6cxUovQjLQdzyUdSwjxBXNCgc+FFfYZhBwJ+dCf6EwD0D1RXM
+dq+fWKL/gSeI6W+ghhIk102hV0SZQ3J80PvEONLa+rUN/DENG/Qk5V3UJ/l+q4X6
+LRyx0Zm2vtS60mDXPvrTyE4HBgSKxF0kzESvkBC0b7yk3Np0JAFpJYXJ98+m9Coi
+Qq2RZRhHlzBuL4FmrfYzIK0HqwGK5sEFrvT+2X64MfhmZ4Okdp6+UWRyRQD8cyJH
+T/luLClhW+opiYfvmEKpIkdX7h1QlA==
+=y/Pe
+-----END PGP SIGNATURE-----
+
+--Sig_/0TKCtQGOIzjzWHhqvSaSiPK--
