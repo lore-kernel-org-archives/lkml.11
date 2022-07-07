@@ -2,86 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E59DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3EDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234907AbiGGIEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 04:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
+        id S235053AbiGGIEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 04:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232120AbiGGIEe (ORCPT
+        with ESMTP id S232120AbiGGIEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 04:04:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C20F25C5;
-        Thu,  7 Jul 2022 01:04:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A02ADB81F50;
-        Thu,  7 Jul 2022 08:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3100C341C8;
-        Thu,  7 Jul 2022 08:04:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657181070;
-        bh=i3ubyFnOD3zhjC1AIUILsyZXAyE/N1coKv+uqBVa8Z0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xXCqNLAfXYa38ck54PvLEFvRVCNtD/7EEsqBmJZU/dy5P8udEd3TfpR8pDo79XQKq
-         UKxBKT4lfdaqth7MXIz5qMOQJV9ag0Tmm7vMq0yN64MK8GuLDSalGxiI9nrLFqRJCE
-         UkSEYCLninFNnTT8zdP4zQQIx4738L7Bpwpt7mhk=
-Date:   Thu, 7 Jul 2022 10:04:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
-        Arjan van de Ven <arjan@linux.intel.com>
-Subject: Re: [PATCH] char: misc: make misc_open() and misc_register() killable
-Message-ID: <YsaTi14Ymd9xA9re@kroah.com>
-References: <YsL5pUuydMWJ9dSQ@kroah.com>
- <617f64e3-74c8-f98b-3430-bd476867e483@I-love.SAKURA.ne.jp>
- <5665ccb2-b92b-9e1f-8bb5-a950986450ec@I-love.SAKURA.ne.jp>
- <YsRHwy6+5gask+KT@kroah.com>
- <064bbe2a-c18e-203e-9e01-b32fe9baa390@I-love.SAKURA.ne.jp>
- <7ddb25ff-60e5-75be-8080-2a7465cca68c@I-love.SAKURA.ne.jp>
- <YsUtBERm94k/iZTy@kroah.com>
- <a6d98824-56c8-6d92-bb1b-eb065b57cb81@I-love.SAKURA.ne.jp>
- <815866b5-842e-4829-5ed8-26a5f1e856a4@suse.com>
- <22c61a75-8140-c62d-ffe0-efd6e9fa38ee@I-love.SAKURA.ne.jp>
+        Thu, 7 Jul 2022 04:04:40 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A9DE00
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:04:39 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id w2so4920265ljj.7
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 01:04:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j6cTL70t81aTnV9x0x+mDaCfTVWwcqwkSWQQpbKRysc=;
+        b=je6ZJ8G24GI5T7f3zVncXY2R3x/GyryMMiZeWydkL5djDwH1y3R7eh9Jq7GZ+VjSmb
+         a+eZLklX94jyOz1YD9eehlDaxgYhFP6qzL8qeUH37Tl8CnuJ36fytFm/LKbEq5ghCWY7
+         52C6lpBA/LauPnoSxudh+wPUKILLcfTJMzWPlgNch+LCoN5IgLz2Ehm9S+caQ5g3MFfv
+         lfFYLqzsKAOcxRUzYSGYFwsSx9YRZZcaNuffd5QCnza1wOsBnwCksWBuR8uwRT0ydprz
+         tl8NMIphq/6HsC8d9JJPNgkNAqR+qMtNZJQSjeh7/RRcJbvchImmlZUiQ7Wr3633/+3q
+         N/ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j6cTL70t81aTnV9x0x+mDaCfTVWwcqwkSWQQpbKRysc=;
+        b=lkFnf5OH0NhCc4V6kadQ7/1grSwhyIHCmqCc+jOH+bw5HJqORAP1CCh+DT/hm1T/PI
+         ly/jstYhntcNTCcTfnu/UqaciCogd9y/TFVijmDzl/8fNktZcJCkKXQhUDdHN1SFenr3
+         YxPIDA3XLyB6r9SyHf1YEbOmGECAIycqhQg3Is/S7jwjGDY3+zfXCbbWXYHe5x6Y4q6W
+         CoR0dfW0dcZ41GacYW7b3LmIU5G305FODPRHRQk5Hff7smLlgMQUcaKx4y5sHiDpMkvY
+         EHSbKEya2VNZl4mIsa6Ou85XKRK2L/vRTGINu1m5eEvGWyZGKVG2Pl173KoHfTD6P/9f
+         eXuA==
+X-Gm-Message-State: AJIora/u2ccvDFs6fPLgT2baiuUWjQJPUisnIFSAwaUjwcMfw00KHzBL
+        3te+ZWU7hxSYxGDA9yrrxvyjMw==
+X-Google-Smtp-Source: AGRyM1s/K+WamhzckF/8xnMBEQZ4YAGMlkNm4IeBoow2nLBL8pH0v4jvCtU+LTl5jPsnxiMxi2PgOg==
+X-Received: by 2002:a05:651c:511:b0:25b:f78e:cb30 with SMTP id o17-20020a05651c051100b0025bf78ecb30mr22584914ljp.327.1657181078252;
+        Thu, 07 Jul 2022 01:04:38 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id s6-20020a056512214600b0047b0f2d7650sm6697187lfr.271.2022.07.07.01.04.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 01:04:37 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 0/5] dt-bindings: mmc: / ARM: qcom: correct reg-names and clock entries
+Date:   Thu,  7 Jul 2022 09:51:46 +0200
+Message-Id: <20220707075151.67335-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <22c61a75-8140-c62d-ffe0-efd6e9fa38ee@I-love.SAKURA.ne.jp>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 02:06:38PM +0900, Tetsuo Handa wrote:
-> On 2022/07/06 20:04, Oliver Neukum wrote:
-> > 
-> > 
-> > On 06.07.22 12:26, Tetsuo Handa wrote:
-> >> On 2022/07/06 15:34, Greg KH wrote:
-> >>> On Wed, Jul 06, 2022 at 03:21:15PM +0900, Tetsuo Handa wrote:
-> >>>> How should we fix this problem?
-> >>>
-> >>> We can decrease the timeout in usb_stor_msg_common().  I imagine that if
-> >>> that timeout is ever hit in this sequence, then all will recover, right?
-> > 
-> > Not really. The timeout there is supposed to come from the SCSI layer
-> > in the general case.
-> 
-> I couldn't catch. usb_stor_msg_common() belongs to USB subsystem, doesn't it?
-> 
-> How does SCSI layer matter here?
-> Does USB storage device shows up as if SCSI disk (e.g. /dev/sdb) relevant?
+Hi,
 
-Yes.  USB storage is a very tiny wrapper around the whole SCSI protocol,
-it is a SCSI disk for all all intensive purposes.
+No dependencies.  DT bindings patches are independent from DTS, so they can go
+via separate tree.
 
-thanks,
+Best regards,
+Krzysztof
 
-greg k-h
+Krzysztof Kozlowski (5):
+  dt-bindings: mmc: sdhci-msm: fix reg-names entries
+  dt-bindings: mmc: sdhci-msm: constrain reg-names at least for one
+    variant
+  ARM: dts: qcom: align SDHCI reg-names with DT schema
+  arm64: dts: qcom: align SDHCI reg-names with DT schema
+  ARM: dts: qcom: align SDHCI clocks with DT schema
+
+ .../devicetree/bindings/mmc/sdhci-msm.yaml    | 40 +++++++++++++------
+ arch/arm/boot/dts/qcom-apq8084.dtsi           | 16 ++++----
+ arch/arm/boot/dts/qcom-ipq4019.dtsi           |  5 ++-
+ arch/arm/boot/dts/qcom-msm8226.dtsi           | 24 +++++------
+ arch/arm/boot/dts/qcom-msm8974.dtsi           | 24 +++++------
+ arch/arm/boot/dts/qcom-msm8974pro.dtsi        |  6 +--
+ arch/arm/boot/dts/qcom-sdx65.dtsi             |  2 +-
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi         |  2 +-
+ arch/arm64/boot/dts/qcom/msm8916.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8953.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8994.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8996.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8998.dtsi         |  2 +-
+ 13 files changed, 77 insertions(+), 60 deletions(-)
+
+-- 
+2.34.1
+
