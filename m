@@ -2,87 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E56C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234788AbiGGEXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 00:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
+        id S234788AbiGGE0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 00:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbiGGEW5 (ORCPT
+        with ESMTP id S229681AbiGGE01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 00:22:57 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC342FFE1
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 21:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1657167773; bh=kVK+K1j5mB45c4TjayXPR0CHym4BWHEeRog+G28gmD4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=isW7nzFD73L6p2ml5+cAPqYl4RKlNVriE6R+uySXyUk146ghNKzC/K9WSfQrT1NOq
-         hL/GcXSW4BJhw7YBkg7ABoC9BZeAEzNHDtNJXLiF0XcnF8pV120J/ZNh7uUZXKvHRf
-         CSsA3C1+iC/yQ3PQDRIDP70wOQI8tjAaXOW18aHA=
-Received: from [100.100.57.190] (unknown [220.248.53.61])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 037FE6010B;
-        Thu,  7 Jul 2022 12:22:52 +0800 (CST)
-Message-ID: <e67e03ae-e2d4-79e6-7f6a-5558ea9de52b@xen0n.name>
-Date:   Thu, 7 Jul 2022 12:22:52 +0800
+        Thu, 7 Jul 2022 00:26:27 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AF92FFE5;
+        Wed,  6 Jul 2022 21:26:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657167986; x=1688703986;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0UKCDk+QO7Jju1w2FSJQYoZZKRQ/VlNP3afiUk2ofuU=;
+  b=CD8M3uAl1fpVW8/bflhhRH/9E4m7CiGbdZFwHkxeUDpoxy+4zU/uQOyn
+   f4YC1EzV9ztCCS9eZxXix4aOBJV34J+DuRu0Yb4UT0AT8U26RkS01pY+4
+   uHQLVDKo2O3HgChqYO9maD35/f6K0v24PkTCpG35PK2NPNv/wiV/+VFIY
+   2H1HHNDI3/G8lBnGh+IdtUNGRREs8GEX0Uyr7XCnHqrYXcr1niiGOXfDQ
+   Sri+wE90YHTRCFkWTjFS8/PWNV3ejoQJKeyHDVcfZWv+hx7QjNPpo3d3b
+   HG0g3wjp/j8H2CPz/sfvKP0QrunYiIzw0Ixd+iiezhdgIXIggBbR6Jpsh
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="264343142"
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="264343142"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 21:26:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="683173227"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 06 Jul 2022 21:26:22 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9J5p-000LXY-Rr;
+        Thu, 07 Jul 2022 04:26:21 +0000
+Date:   Thu, 7 Jul 2022 12:25:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>, kexec@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, nayna@linux.ibm.com,
+        nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Eric Biederman <ebiederm@xmission.com>
+Subject: Re: [PATCH v5 6/6] tpm/kexec: Duplicate TPM measurement log in
+ of-tree for kexec
+Message-ID: <202207071217.lAHS2W7R-lkp@intel.com>
+References: <20220706152329.665636-7-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:104.0)
- Gecko/20100101 Thunderbird/104.0a1
-Subject: Re: [PATCH v2] LoongArch: Clean useless vcsr in loongarch_fpu.
-To:     Xi Ruoyao <xry111@xry111.site>, WANG Xuerui <kernel@xen0n.name>,
-        Qi Hu <huqi@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@kernel.org>
-Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>
-References: <20220704153612.314112-1-huqi@loongson.cn>
- <4273e104-8392-6a06-5d18-a1933978d8c3@xen0n.name>
- <22a1ba993e298ce12a374decefebeca484240883.camel@xry111.site>
- <16c9ccaa5e5a2ffd39272cff6f66e487c659b571.camel@xry111.site>
- <CAAhV-H5+qd1ZrOqE8fgRmWshXy57AfEFpyKSK8ZstZZEQ53owQ@mail.gmail.com>
- <ac46f5cb4c8d1154cfc3e862fb5211e869839c9a.camel@xry111.site>
- <c824b9ca-c9c4-1912-7845-99a0989277a4@loongson.cn>
- <9d064771-9402-4e84-96f8-4713cddf42f2@www.fastmail.com>
- <730cb4c4-a6a3-783e-3e4c-7c2bdc35c088@loongson.cn>
- <0583a335-72f7-55cf-3cd9-4dbd8109a440@xen0n.name>
- <bd889cd7b72138a12b1339a33156ff46530c20b0.camel@xry111.site>
-Content-Language: en-US
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <bd889cd7b72138a12b1339a33156ff46530c20b0.camel@xry111.site>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706152329.665636-7-stefanb@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/7 12:04, Xi Ruoyao wrote:
-> On Thu, 2022-07-07 at 11:05 +0800, WANG Xuerui wrote:
->
->> To be frank, at this point I think you're trying to hide something.
->> (This is not your fault, blame someone else of course because they told
->> you the fact.) In the old-world kernel the VCSR a.k.a. FCSR16 is
->> certainly being saved/restored, and there's apparently no harm in doing
->> so. And if the contents are indeed "undefined", why are the code there
->> in the first place? Certainly the bits *are* meaningful, only that for
->> some reason you aren't revealing the semantics and pretending that they
->> are "undefined" and probably "do nothing externally observable" if
->> accessed in the first place.
-> On a 3A5000LL, I did an experiment via a kernel module, which enables
-> LSX/LASX and tries to write and read fcsr16.  I tried each bit (1, 2, 4,
-> 8, ..., 1 << 31) one by one.  The result: no matter which bit I wrote
-> into fcsr16, I always read out 0.
->
-> And I've objdump'ed a kernel shipped in an early Loongnix release.  It
-> seems the only reference to fcsr16 is a "movgr2fcsr $r16, $r0"
-> instruction.
+Hi Stefan,
 
-Hmm this is weird. I can't understand why the vcsr code was there in the 
-first place then... I'd like to check a few Loongnix/Kylin/UOS kernels 
-but currently I don't have the time.
+Thank you for the patch! Yet something to improve:
 
-If this is the case, indeed all vcsr-related code should be removed. 
-Although I'm still not sure how to best word the commit message.
+[auto build test ERROR on 03c765b0e3b4cb5063276b086c76f7a612856a9a]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Stefan-Berger/tpm-Preserve-TPM-measurement-log-across-kexec-ppc64/20220706-232658
+base:   03c765b0e3b4cb5063276b086c76f7a612856a9a
+config: s390-randconfig-r015-20220706 (https://download.01.org/0day-ci/archive/20220707/202207071217.lAHS2W7R-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f553287b588916de09c66e3e32bf75e5060f967f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/d5d97eac90ae272727cc71409e88360b7024b343
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Stefan-Berger/tpm-Preserve-TPM-measurement-log-across-kexec-ppc64/20220706-232658
+        git checkout d5d97eac90ae272727cc71409e88360b7024b343
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: kernel/kexec_file.o: in function `__se_sys_kexec_file_load':
+>> kexec_file.c:(.text+0xee2): undefined reference to `tpm_add_kexec_buffer'
+   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: drivers/dma/fsl-edma.o: in function `fsl_edma_probe':
+   fsl-edma.c:(.text+0x1e4): undefined reference to `devm_ioremap_resource'
+   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: fsl-edma.c:(.text+0x32a): undefined reference to `devm_ioremap_resource'
+   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: drivers/dma/idma64.o: in function `idma64_platform_probe':
+   idma64.c:(.text+0xbe): undefined reference to `devm_ioremap_resource'
+   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: drivers/crypto/ccree/cc_driver.o: in function `ccree_probe':
+   cc_driver.c:(.text+0xd4c): undefined reference to `devm_ioremap_resource'
+   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: drivers/crypto/ccree/cc_debugfs.o: in function `cc_debugfs_init':
+   cc_debugfs.c:(.text+0x1b0): undefined reference to `debugfs_create_regset32'
+   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: cc_debugfs.c:(.text+0x390): undefined reference to `debugfs_create_regset32'
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
