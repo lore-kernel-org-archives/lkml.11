@@ -2,100 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA485C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6B0CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234132AbiGGJvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
+        id S235106AbiGGJv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235013AbiGGJvk (ORCPT
+        with ESMTP id S235026AbiGGJvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:51:40 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D9E4D4EF;
-        Thu,  7 Jul 2022 02:51:39 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9BC2666019AA;
-        Thu,  7 Jul 2022 10:51:37 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657187498;
-        bh=9cJkFbeGAUaiuZQ1tk/q71MLcCqv08gXnUsskyh+OSU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=iklc8JelOW6VhhEVCPvFwprlF/PtO1UiLbHjv1p8qAO+07GEsSfkqhh82UATV+2yR
-         vZ6W6oQ+tUvgQY5mdEh0FvE/gIPW94z2dcz9ukkiOyPbO7UmNnW3RgZgXkc6BCCo7r
-         s5tIDcPkIzF4nyW5SM19RQtEzF52PpcOe3U3gGmTLnmmF/hAxn3Lnt1FKMpfUWw3xq
-         tVS1FvQlWqcUFeyONlRidVYyQwfP524W2AFBQSBsbqimnIimNlTt4R0FVMdozDK3gL
-         SYDJjrJqH7NtrCgD/3Dru5zEKWXq67riOPJ1+ySr0EKY9dQQVnRtuFUb6PxCfMqIZy
-         Wil+TudE8xb+A==
-Message-ID: <e0452b8a-0544-5647-5d3c-ce6a208f2b69@collabora.com>
-Date:   Thu, 7 Jul 2022 11:51:34 +0200
+        Thu, 7 Jul 2022 05:51:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DC064D4F2
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:51:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A332A1063;
+        Thu,  7 Jul 2022 02:51:52 -0700 (PDT)
+Received: from bogus (unknown [10.57.39.193])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 731493F792;
+        Thu,  7 Jul 2022 02:51:48 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 10:50:37 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Zong Li <zong.li@sifive.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jonas Hahnfeld <hahnjo@hahnjo.de>, Guo Ren <guoren@kernel.org>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Brice Goglin <Brice.Goglin@inria.fr>
+Subject: Re: [PATCH] riscv: arch-topology: fix default topology reporting
+Message-ID: <20220707095037.i2pjcc7zcf4pi3ht@bogus>
+References: <20220706184558.2557301-1-mail@conchuod.ie>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] dt-bindings: mmc: Add compatible for MediaTek MT8188
-Content-Language: en-US
-To:     Johnson Wang <johnson.wang@mediatek.com>, ulf.hansson@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220707054710.1396-1-johnson.wang@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220707054710.1396-1-johnson.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706184558.2557301-1-mail@conchuod.ie>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 07/07/22 07:47, Johnson Wang ha scritto:
-> This commit adds dt-binding documentation of mmc for MediaTek MT8188 SoC
-> platform.
+On Wed, Jul 06, 2022 at 07:45:59PM +0100, Conor Dooley wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
 > 
-> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> RISC-V has no sane defaults to fall back on where there is no cpu-map
+> in the devicetree.
+> Without sane defaults, the package, core and thread IDs are all set to
+> -1. This causes user-visible inaccuracies for tools like hwloc/lstopo
+> which rely on the sysfs cpu topology files to detect a system's
+> topology.
+> 
+> Add sane defaults in ~the exact same way as ARM64.
+> 
+> CC: stable@vger.kernel.org
+> Fixes: 03f11f03dbfe ("RISC-V: Parse cpu topology during boot.")
+> Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
+> Link: https://github.com/open-mpi/hwloc/issues/536
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 > ---
->   Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 3 +++
->   1 file changed, 3 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-> index 2a2e9fa8c188..3fbf33ad4f7c 100644
-> --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-> @@ -32,6 +32,9 @@ properties:
->         - items:
->             - const: mediatek,mt8186-mmc
->             - const: mediatek,mt8183-mmc
-> +      - items:
-> +          - const: mediatek,mt8188-mmc
-> +          - const: mediatek,mt8183-mmc
->         - items:
->             - const: mediatek,mt8192-mmc
->             - const: mediatek,mt8183-mmc
+> Sudeep suggested that this be backported rather than the changes to
+> the devicetrees adding cpu-map since that property is optional.
+> That patchset is still valid in it's own right.
+> 
+>  arch/riscv/include/asm/topology.h | 13 +++++++++++++
+>  arch/riscv/kernel/Makefile        |  1 +
+>  arch/riscv/kernel/smpboot.c       |  4 ++++
+>  arch/riscv/kernel/topology.c      | 32 +++++++++++++++++++++++++++++++
+>  4 files changed, 50 insertions(+)
+>  create mode 100644 arch/riscv/include/asm/topology.h
+>  create mode 100644 arch/riscv/kernel/topology.c
 > 
 
-Hello Johnson,
+[...]
 
-if I'm not wrong, this should be...
-(check with dt_binding_check!)
+> diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
+> index f1e4948a4b52..d551c7f452d4 100644
+> --- a/arch/riscv/kernel/smpboot.c
+> +++ b/arch/riscv/kernel/smpboot.c
+> @@ -32,6 +32,7 @@
+>  #include <asm/sections.h>
+>  #include <asm/sbi.h>
+>  #include <asm/smp.h>
+> +#include <asm/topology.h>
+>  
+>  #include "head.h"
+>  
 
-properties:
-   compatible:
-     oneOf:
-       - enum:
-         - mediatek,mt2701-mmc
-         - .... everything else ....
-       - items:
-         - enum:
-             - mediatek,mt8186-mmc
-             - ... the others ...
-         - const: mediatek.mt8183-mmc
+[...]
 
-Cheers,
-Angelo
+>  void __init smp_prepare_cpus(unsigned int max_cpus)
+> @@ -161,6 +164,7 @@ asmlinkage __visible void smp_callin(void)
+>  	mmgrab(mm);
+>  	current->active_mm = mm;
+>  
+> +	store_cpu_topology(curr_cpuid);
+>  	notify_cpu_starting(curr_cpuid);
+>  	numa_add_cpu(curr_cpuid);
+>  	update_siblings_masks(curr_cpuid);
+
+If the above store_cpu_topology calls update_siblings_masks if required,
+probably you can drop this explicit call here.
+
+-- 
+Regards,
+Sudeep
