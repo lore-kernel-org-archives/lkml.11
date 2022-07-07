@@ -2,117 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D77CDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C1FCCA482
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234803AbiGGK2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
+        id S235019AbiGGK2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232195AbiGGK2C (ORCPT
+        with ESMTP id S232195AbiGGK2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:28:02 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2061.outbound.protection.outlook.com [40.107.244.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2471253D15;
-        Thu,  7 Jul 2022 03:28:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NHvwOwQ4SRE2jaKEhgOwmSEHRnz11GF97RlUaQGfblByC+ScdE2XUcUnKFnEqb8Ot2x9k/Ygv+JdnZ4RKk3m9d6UJIz5DiomcXR8Q6ZkOgwoZoHPWfZNnYhvarZrM+7ERR7nxuNEp9haADixGkmnHlv5mOrYk4zrQKcFAmRz2CesJPqBszOG8jRopOaodKaiyFBUkWm+sUSayMZkO93dgI8XKAy4QpynpIubqYUHJmS9Z/N8AE//SL4J/MDvWGlg6HKxbG4o1r+J3+psnkPtvxweJdS/n1CXPWgFYgn/Fu5ihcjGkbOqjIy3gKZ2Xsx+Ul6MK0t/stbYI9yTLIGmOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZM1zSxmI+2H2m75r4qrM/SZXreN6axvHp5gdZKoF5aE=;
- b=BDcJ7DNXqJn6caPnAveIv4npFqouIhcl4sqZqMs+xbk1thMJGXatzpbAtAq3ucQdotazr74n094Bp2cqHzSYyINWB3PwrInAX6esyVRC6O3EgMoz4cXioS93lWSw2lUm7eitm8WLl6vTz5aUjEUHtwtU1lP1ObbR08MRrVDuN1FMjyL7FTT9zZP05b3bS3b6jC3KW8Z4bTXWd376SavPDhLcg5SxY19Wg11TXnpDvejgDJeMcYTP/5GHbZIw8aGSco0Rj+Aaf3q5GrDTgZLURTuaKjl6zSUCdaXqhdSQwK/ckeUU3qRGh8viyP/kN9/LmG547hEDqphH4OiKYCwIbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZM1zSxmI+2H2m75r4qrM/SZXreN6axvHp5gdZKoF5aE=;
- b=qarWfpLIbJLkybaSHW+y7F8sFnXNIFxv8LQZXtsXVR0iFWC1KndrmQC9wQ+3DFAuTJupCf3qy36bfmf195sPHRlUUCeGl7UFV9Xh6Wxdcuilsb+xrhZPlK7XZXpTXe+HGi/gfHauFabDcgaKUSPcLAl//qrB2aypn5jZfKya5Rlyzvs1FvbroxgeaGqgRYsH4vsOPM9QPUO1MGqPfKa9ZOnkL3xldGN24gvbDNZ+L1b02Eiz0ioqUN/y2OQTjwueRGWrFvLQLnoFl05owo1W70UznPFqPqtexCoaIoOAFoMXCKjcthcZ2ke3nMphl1lTt2O5LdsiHXb7qct5vWH/kg==
-Received: from MWHPR07CA0020.namprd07.prod.outlook.com (2603:10b6:300:116::30)
- by BN6PR12MB1332.namprd12.prod.outlook.com (2603:10b6:404:15::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Thu, 7 Jul
- 2022 10:27:59 +0000
-Received: from CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:116:cafe::39) by MWHPR07CA0020.outlook.office365.com
- (2603:10b6:300:116::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16 via Frontend
- Transport; Thu, 7 Jul 2022 10:27:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT064.mail.protection.outlook.com (10.13.175.77) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 10:27:59 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 7 Jul
- 2022 10:27:58 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 7 Jul 2022
- 03:27:57 -0700
-Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 7 Jul 2022 03:27:54 -0700
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <dmaengine@vger.kernel.org>, <jonathanh@nvidia.com>,
-        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        <thierry.reding@gmail.com>, <vkoul@kernel.org>,
-        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-CC:     <akhilrajeev@nvidia.com>
-Subject: [PATCH 0/2] Add compatible for Tegra234 GPCDMA
-Date:   Thu, 7 Jul 2022 15:57:23 +0530
-Message-ID: <20220707102725.41383-1-akhilrajeev@nvidia.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 7 Jul 2022 06:28:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F5150722;
+        Thu,  7 Jul 2022 03:28:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92BEFB82116;
+        Thu,  7 Jul 2022 10:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C774C3411E;
+        Thu,  7 Jul 2022 10:28:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657189690;
+        bh=J2hgrmLIJ8VnyXSvXhm1mAFaT05vfYTrx5TNkIx1NrI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LXcvNzSEw5aiycMywG8IWlM7s2Eogs+GolVaOcM2jkAUIOH9x8IOxIkr3kZE8ANZb
+         c79JEX2YJ8SeeXvQr5V7NzeBGBmTFLQN41jdPZHLOk77eAOItudbZOyRxt7mpay0+k
+         Dk5GXnU09K0MtDRmNJHgHrLiZw6SBuDXsgUGJT+4dzB0/SLDhWMfqUqEeXqJzv8etu
+         Jyfm5L/mFj7axuZpEIE/Nk/cBnOAK+herZQ/tOvzTL7j59XjUf3XiUs0Cz/nvXpomH
+         frCW9kDZMGT0qB/KYIwRQ0m9m3++cqQQ2OxENoVJvB+AIZNHupnpWB4oJ9kGYkV30i
+         syMIFGT6VdPag==
+Date:   Thu, 7 Jul 2022 11:28:05 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the arm64 tree
+Message-ID: <20220707102801.GD4133@willie-the-truck>
+References: <20220707195707.7aec2e13@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4741a9c5-42d3-4995-8acf-08da60035d70
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1332:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8oDVUVl88LQveVMUty/Ynwm/j5/jvKXu9mgUZ/yVqQQ2ToW9hDF81veWomPwJkDT3mq2L9vkv0+cyHGTf4kKg3xFR9/E/BQ1GZfl7XSMbFRIrBMPgPtS1HRtdhA7XzMT3zvC3lMeYubqyaJ543/f0qWVmS6cC1JJ34cax80KjNRukBHmEoHMdeTIrFEXe1aKatDFX/luGMdm6vhfOLED0tldSwcI+ud/gLbjiFfNMritA4LeU0/o1wMcZ+XzDiqFh1ESi9r4AyOyOBGcSjxYyVsIJSken5R5H/+2OqPzHyFphz6N9vGhE7clZtN3F5hYsvrKzQ07THf5UiiqUuBJJUt+D+auYvDwT2GXpEVERw2lxFxShJ8noRSmSvzUKcyCNsWMeW+16isSxF8sR+yX70ze7W3D4ETTQW/sXp4OVdQMuAKSXgl77j9FxNITzljk+263A06xZzPFJt92I9g5ZESnJ0W30VN5i45zAz0k/k2IQUvSSlE36hgr85G58xWYA+qz9vQfyfEv2QGRrd1fZz1c6bzSkhTrxmAwUuDlJGLhXvVCxvnj7np5RI9pTCno7J9SKnfp1HsDlvUscq6mzLn4PH/y310xjkyPJ4j8rqK1noAecTxOeozpJFUdTNqWfS8q+Plvtw0ZMCemMMQkOOUBUIAu7bIW4az/1hfu3NKvA8+ibHxGWMIpWKIj03fQ/6S8YwFAl4wGB//H0aTloW1GkRlj4VlqrLLi0VhjMjKeC5T5nU9FIabpo2kvz4WdMZtd9Zl9XNF0PtxrZn7djU4eVuk3meZQ4V+vg+h8klTV6pBpWYSMWkPqBquwZn164/Zdv2PggHd8fToPgKna5bW+rhfoARaJErqeIKMSVdQ5MOyM/6gVYGwbGSMj59TxdiwLPM3VJe6QxHLCp1154Kjua9XPrktQPqu1cmvlSEI=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(136003)(39860400002)(346002)(40470700004)(46966006)(36840700001)(2906002)(8936002)(5660300002)(81166007)(36756003)(82740400003)(70206006)(86362001)(8676002)(356005)(40460700003)(4326008)(40480700001)(478600001)(4744005)(70586007)(186003)(921005)(6666004)(2616005)(316002)(36860700001)(41300700001)(336012)(47076005)(83380400001)(7696005)(110136005)(1076003)(26005)(107886003)(426003)(82310400005)(2101003)(36900700001)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 10:27:59.4077
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4741a9c5-42d3-4995-8acf-08da60035d70
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1332
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707195707.7aec2e13@canb.auug.org.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tegra234 supports recovery of a channel hung in pause flush mode.
-This could happen when the client bus gets corrupted or if the end
-device ceases to send/receive data.
+On Thu, Jul 07, 2022 at 07:57:07PM +1000, Stephen Rothwell wrote:
+> After merging the arm64 tree, today's linux-next build (htmldocs)
+> produced this warning:
+> 
+> Documentation/admin-guide/perf/hns3-pmu.rst: WARNING: document isn't included in any toctree
+> 
+> Introduced by commit
+> 
+>   39915b6b5fc2 ("drivers/perf: hisi: Add description for HNS3 PMU driver")
 
-Add a separate compatible for Tegra234 so that this scenario can be
-handled in the driver.
+Thanks, I've fixed this locally and will update the branch later today.
 
-Akhil R (2):
-  dmaengine: tegra: Add terminate() for Tegra234
-  dt-bindings: dmaengine: Add compatible for Tegra234
-
- .../bindings/dma/nvidia,tegra186-gpc-dma.yaml |  1 +
- arch/arm64/boot/dts/nvidia/tegra234.dtsi      |  5 ++--
- drivers/dma/tegra186-gpc-dma.c                | 26 +++++++++++++++++--
- 3 files changed, 28 insertions(+), 4 deletions(-)
-
--- 
-2.17.1
-
+Will
