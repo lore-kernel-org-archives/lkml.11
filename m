@@ -2,139 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 957F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E31A0CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:44:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234357AbiGGCf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
+        id S234149AbiGGCov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbiGGCfz (ORCPT
+        with ESMTP id S229681AbiGGCot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:35:55 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD16F6E
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:35:52 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LdgSh1l1szhZ4j;
-        Thu,  7 Jul 2022 10:33:24 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Jul 2022 10:35:50 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
- 2022 10:35:50 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <anton@tuxera.com>
-CC:     <linux-ntfs-dev@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <chenxiaosong2@huawei.com>,
-        <liuyongqiang13@huawei.com>, <yi.zhang@huawei.com>,
-        <zhangxiaoxu5@huawei.com>
-Subject: [PATCH] ntfs: fix use-after-free in ntfs_ucsncmp()
-Date:   Thu, 7 Jul 2022 10:48:01 +0800
-Message-ID: <20220707024801.2978141-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 6 Jul 2022 22:44:49 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67B62E6A6;
+        Wed,  6 Jul 2022 19:44:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657161888; x=1688697888;
+  h=message-id:subject:from:to:cc:in-reply-to:references:
+   content-transfer-encoding:mime-version:date;
+  bh=Gb3nr30qWpCvqvwt/EmXMfqV47lb+zWrxN4Q99RWa5Q=;
+  b=fQ+o2HVkYa6hF2IvUL9W7rnKdueBOU+lUXW00eWsWr6fxbHxQb9a8EOf
+   7IMkSSJA0WOAIKGwYR8IagyYq4PcFBrP8JG7DFfXEoqgyWz8Tm6/X4JLf
+   A4IgfiBTrTafFh5Z71v7CDiAPjec+5igD8UVROFjD1b7WIqp+BCeXImg4
+   QL4N687BDQxdCUsR0yg2Kw0AM0y1+trcCmy4NHTQoiUJu6Vpf4Vf2XvBT
+   kJyH1TRoWy6t8Y1X6mk9/jPAzilRmxJ5wliyqTCCg+pcEaYvNjI1Wa7RB
+   Ask0AXxppIY6+RvWPN0KRzFI4JeY61PC15miO9LNQadfQ6wKfcX9tNuby
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="283939646"
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="283939646"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 19:44:48 -0700
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="683153469"
+Received: from toddpric-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.213.182.230])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 19:44:45 -0700
+Message-ID: <202a463dd5443ccf2dc502e496e7d45ba5f05440.camel@intel.com>
+Subject: Re: [PATCH v5 12/22] x86/virt/tdx: Convert all memory regions in
+ memblock to TDX memory
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+In-Reply-To: <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
+References: <cover.1655894131.git.kai.huang@intel.com>
+         <8288396be7fedd10521a28531e138579594d757a.1655894131.git.kai.huang@intel.com>
+         <20d63398-928f-0c6f-47ec-8e225c049ad8@intel.com>
+         <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+Date:   Thu, 07 Jul 2022 14:37:46 +1200
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reported use-after-free bug as follows:
 
-==================================================================
-BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
-Read of size 2 at addr ffff8880751acee8 by task a.out/879
+> > > +/*
+> > > + * Walks over all memblock memory regions that are intended to be
+> > > + * converted to TDX memory.  Essentially, it is all memblock memory
+> > > + * regions excluding the low memory below 1MB.
+> > > + *
+> > > + * This is because on some TDX platforms the low memory below 1MB is
+> > > + * not included in CMRs.  Excluding the low 1MB can still guarantee
+> > > + * that the pages managed by the page allocator are always TDX memor=
+y,
+> > > + * as the low 1MB is reserved during kernel boot and won't end up to
+> > > + * the ZONE_DMA (see reserve_real_mode()).
+> > > + */
+> > > +#define memblock_for_each_tdx_mem_pfn_range(i, p_start, p_end, p_nid=
+)	\
+> > > +	for_each_mem_pfn_range(i, MAX_NUMNODES, p_start, p_end, p_nid)	\
+> > > +		if (!pfn_range_skip_lowmem(p_start, p_end))
+> >=20
+> > Let's summarize where we are at this point:
+> >=20
+> > 1. All RAM is described in memblocks
+> > 2. Some memblocks are reserved and some are free
+> > 3. The lower 1MB is marked reserved
+> > 4. for_each_mem_pfn_range() walks all reserved and free memblocks, so w=
+e
+> >    have to exclude the lower 1MB as a special case.
+> >=20
+> > That seems superficially rather ridiculous.  Shouldn't we just pick a
+> > memblock iterator that skips the 1MB?  Surely there is such a thing.
+>=20
+> Perhaps you are suggesting we should always loop the _free_ ranges so we =
+don't
+> need to care about the first 1MB which is reserved?
+>=20
+> The problem is some reserved memory regions are actually later freed to t=
+he page
+> allocator, for example, initrd.  So to cover all those 'late-freed-reserv=
+ed-
+> regions', I used for_each_mem_pfn_range(), instead of for_each_free_mem_r=
+ange().
+>=20
+> Btw, I do have a checkpatch warning around this code:
+>=20
+> ERROR: Macros with complex values should be enclosed in parentheses
+> #109: FILE: arch/x86/virt/vmx/tdx/tdx.c:377:
+> +#define memblock_for_each_tdx_mem_pfn_range(i, p_start, p_end, p_nid)	\
+> +	for_each_mem_pfn_range(i, MAX_NUMNODES, p_start, p_end, p_nid)	\
+> +		if (!pfn_range_skip_lowmem(p_start, p_end))
+>=20
+> But it looks like a false positive to me.
 
-CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x1c0/0x2b0
- print_address_description.constprop.0.cold+0xd4/0x484
- print_report.cold+0x55/0x232
- kasan_report+0xbf/0xf0
- ntfs_ucsncmp+0x123/0x130
- ntfs_are_names_equal.cold+0x2b/0x41
- ntfs_attr_find+0x43b/0xb90
- ntfs_attr_lookup+0x16d/0x1e0
- ntfs_read_locked_attr_inode+0x4aa/0x2360
- ntfs_attr_iget+0x1af/0x220
- ntfs_read_locked_inode+0x246c/0x5120
- ntfs_iget+0x132/0x180
- load_system_files+0x1cc6/0x3480
- ntfs_fill_super+0xa66/0x1cf0
- mount_bdev+0x38d/0x460
- legacy_get_tree+0x10d/0x220
- vfs_get_tree+0x93/0x300
- do_new_mount+0x2da/0x6d0
- path_mount+0x496/0x19d0
- __x64_sys_mount+0x284/0x300
- do_syscall_64+0x3b/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3f2118d9ea
-Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
-RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
-R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+Hi Dave,
 
-The buggy address belongs to the physical page:
-page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
-memcg:ffff888101f7e180
-anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
-raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
-raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
-page dumped because: kasan: bad access detected
+Sorry to ping. Just double check, any comments around here, ..
 
-Memory state around the buggy address:
- ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-                                                          ^
- ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
+>=20
+> > Or, should we be doing something different with the 1MB in the memblock
+> > structure?
+>=20
+> memblock APIs are used by other kernel components.  I don't think we shou=
+ld
+> modify memblock code behaviour for TDX.  Do you have any specific suggest=
+ion?
+>=20
+> One possible option I can think is explicitly "register" memory regions a=
+s TDX
+> memory when they are firstly freed to the page allocator. =20
 
-The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
-name string is out of bounds.
+[...]
 
-Fix this by adding sanity check on end address of attibute name string.
+>=20
+> This will require new data structures to represent TDX memblock and the c=
+ode to
+> create, insert and merge contiguous TDX memblocks, etc.  The advantage is=
+ we can
+> just iterate those TDX memblocks when constructing TDMRs.
+>=20
+>=20
 
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- fs/ntfs/attrib.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
-index 4de597a83b88..4d1c3ca0c698 100644
---- a/fs/ntfs/attrib.c
-+++ b/fs/ntfs/attrib.c
-@@ -592,8 +592,12 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
- 		a = (ATTR_RECORD*)((u8*)ctx->attr +
- 				le32_to_cpu(ctx->attr->length));
- 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
--		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
--				le32_to_cpu(ctx->mrec->bytes_allocated))
-+		u8 *mrec_end = (u8 *)(u8*)ctx->mrec +
-+		               le32_to_cpu(ctx->mrec->bytes_allocated);
-+		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
-+		               a->name_length;
-+		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
-+		    name_end > mrec_end)
- 			break;
- 		ctx->attr = a;
- 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
--- 
-2.31.1
+And here?
 
