@@ -2,163 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8981C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80918CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234694AbiGGFKF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 01:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
+        id S234808AbiGGFO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 01:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbiGGFKE (ORCPT
+        with ESMTP id S229612AbiGGFO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 01:10:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A1B831225
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 22:10:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657170601;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=u9lzc6w/Opw97U2hLgEhRkh2O+cH+saQhnPq0SCuszs=;
-        b=VignCwS7Kqkb41W05tML3VxtQpHxD4P/lwb15dGlAEkktsO11BEEMU+bk9lf44sMXoPehP
-        RMnl0mmVZ5enBeE3gYM2J+0llDfETvLXpdwYVg/xV8AOEuSBorciyE7YDsedDuUQcNFQVe
-        kB/FnxW1AtegVbOCx6Pyk7WZsPsY87A=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-dT9wpTb_NieJ6Dn_vt_7nQ-1; Thu, 07 Jul 2022 01:10:00 -0400
-X-MC-Unique: dT9wpTb_NieJ6Dn_vt_7nQ-1
-Received: by mail-ed1-f72.google.com with SMTP id g7-20020a056402424700b00435ac9c7a8bso13123545edb.14
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 22:10:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u9lzc6w/Opw97U2hLgEhRkh2O+cH+saQhnPq0SCuszs=;
-        b=Y8Nd7CUJc+/rwla3GbyPhVpUiKqSdGjYggcPZ+XIz1YYgjDYEUguctDqctk73FZxye
-         O9NZ26Sol435dAOZGk87S9XWSADstRVm33XdFrygh8Y+EuQi403Uts5X755m5ggr7Ac8
-         sEsJ420Qkk8+DnLslm++RoHUAePpWN6kYCYDtmGT1suezlh/GmoKZECwWYSdGhXbeMc7
-         lFaoAjvVebDa/3r7qSM3yuPg4hiQWVC5jr/JOSOng/bDlLLEx1aJVvTQ6c3gV5ex2Ad8
-         9wd57rcM11KuYfTzdrqTtU0sQwCC+EDdwLiHO9NtKR9fCGZzhgtjWE7O29M1owvnaopX
-         BzHQ==
-X-Gm-Message-State: AJIora/+NIl1vhtVGudBy+cYkJEVKVOEyJGqKloG4j2i8FYzjNMfG9Z5
-        qpUQLbkTizrQRME7TIkpy2SiRMonwaELxrAZsekcY4ThXOs30ER8pui1yAea1N6ntVI0AotURTI
-        Cqy7yzmzcvQVDLvWGmXec/viR
-X-Received: by 2002:a05:6402:3705:b0:43a:214b:5f40 with SMTP id ek5-20020a056402370500b0043a214b5f40mr30738830edb.83.1657170599291;
-        Wed, 06 Jul 2022 22:09:59 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sohhdZNZE7c0EBG3VjG+K42I/xUZSo8tDQCDdtJmisQuBT4yRmnBw6C2WBL3mzB4KECJQUsw==
-X-Received: by 2002:a05:6402:3705:b0:43a:214b:5f40 with SMTP id ek5-20020a056402370500b0043a214b5f40mr30738812edb.83.1657170599059;
-        Wed, 06 Jul 2022 22:09:59 -0700 (PDT)
-Received: from redhat.com ([2.52.154.68])
-        by smtp.gmail.com with ESMTPSA id b4-20020a1709065e4400b00706287ba061sm18290813eju.180.2022.07.06.22.09.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 22:09:58 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 01:09:55 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Cc:     jasowang@redhat.com, eperezma@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, sgarzare@redhat.com
-Subject: Re: [PATCH v2 2/4] virtio_test: move magic number in code as defined
- constant
-Message-ID: <20220707010036-mutt-send-email-mst@kernel.org>
-References: <20220707024409.1869-1-qtxuning1999@sjtu.edu.cn>
- <20220707024409.1869-3-qtxuning1999@sjtu.edu.cn>
+        Thu, 7 Jul 2022 01:14:56 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DA031230;
+        Wed,  6 Jul 2022 22:14:54 -0700 (PDT)
+X-UUID: 58f5c9dbb434497d9b99c2d6b4dd5ce6-20220707
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:e290d56d-f96a-4348-b372-e63675557bda,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.8,REQID:e290d56d-f96a-4348-b372-e63675557bda,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:0f94e32,CLOUDID:85bfa363-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:687ad5be47b9,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 58f5c9dbb434497d9b99c2d6b4dd5ce6-20220707
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 435513236; Thu, 07 Jul 2022 13:14:44 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 7 Jul 2022 13:14:43 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 7 Jul 2022 13:14:43 +0800
+Message-ID: <6b4a4be9b5c93b1931cdbd5b009eac3bfa9badbe.camel@mediatek.com>
+Subject: Re: [PATCH v13 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 7 Jul 2022 13:14:43 +0800
+In-Reply-To: <20220701062808.18596-6-rex-bc.chen@mediatek.com>
+References: <20220701062808.18596-1-rex-bc.chen@mediatek.com>
+         <20220701062808.18596-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707024409.1869-3-qtxuning1999@sjtu.edu.cn>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 10:44:07AM +0800, Guo Zhi wrote:
-> We should avoid using magic numbers directly.
+Hi, Bo-Chen:
 
-Not necessarily. For repeated values - I guess.
-But this kind of thing:
-
-	#define BUF_SIZE 1024
-	int buf_size = BUF_SIZE;
-
-brings no benefit IMHO.
-
-And this has cost - values are now removed from code.
-
-
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->  tools/virtio/virtio_test.c | 18 +++++++++++-------
->  1 file changed, 11 insertions(+), 7 deletions(-)
+On Fri, 2022-07-01 at 14:28 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
 > 
-> diff --git a/tools/virtio/virtio_test.c b/tools/virtio/virtio_test.c
-> index 95f78b311..1ecd64271 100644
-> --- a/tools/virtio/virtio_test.c
-> +++ b/tools/virtio/virtio_test.c
-> @@ -20,7 +20,10 @@
->  #include "../../drivers/vhost/test.h"
->  
->  #define RANDOM_BATCH -1
-> -
-> +#define ALIGN 4096
-> +#define RINGSIZE   256
-> +#define TEST_BUF_NUM 0x100000
-> +#define BUF_SIZE   1024
->  /* Unused */
->  void *__kmalloc_fake, *__kfree_ignore_start, *__kfree_ignore_end;
->  
-> @@ -100,8 +103,8 @@ static void vq_reset(struct vq_info *info, int num, struct virtio_device *vdev)
->  	if (info->vq)
->  		vring_del_virtqueue(info->vq);
->  
-> -	memset(info->ring, 0, vring_size(num, 4096));
-> -	vring_init(&info->vring, num, info->ring, 4096);
-> +	memset(info->ring, 0, vring_size(num, ALIGN));
-> +	vring_init(&info->vring, num, info->ring, ALIGN);
->  	info->vq = __vring_new_virtqueue(info->idx, info->vring, vdev, true,
->  					 false, vq_notify, vq_callback, "test");
->  	assert(info->vq);
-> @@ -115,7 +118,7 @@ static void vq_info_add(struct vdev_info *dev, int num)
->  	info->idx = dev->nvqs;
->  	info->kick = eventfd(0, EFD_NONBLOCK);
->  	info->call = eventfd(0, EFD_NONBLOCK);
-> -	r = posix_memalign(&info->ring, 4096, vring_size(num, 4096));
-> +	r = posix_memalign(&info->ring, PAGE_SIZE, vring_size(num, ALIGN));
->  	assert(r >= 0);
->  	vq_reset(info, num, &dev->vdev);
->  	vhost_vq_setup(dev, info);
+> This patch adds a embedded displayport driver for the MediaTek mt8195
+> SoC.
+> 
+> It supports the MT8195, the embedded DisplayPort units. It offers
+> DisplayPort 1.4 with up to 4 lanes.
+> 
+> The driver creates a child device for the phy. The child device will
+> never exist without the parent being active. As they are sharing a
+> register range, the parent passes a regmap pointer to the child so
+> that
+> both can work with the same register range. The phy driver sets
+> device
+> data that is read by the parent to get the phy device that can be
+> used
+> to control the phy properties.
+> 
+> This driver is based on an initial version by
+> Jitao shi <jitao.shi@mediatek.com>
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
 
-This is actually doing more than what commit log says.
+[snip]
 
-> @@ -131,7 +134,7 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
->  	dev->vdev.features = features;
->  	INIT_LIST_HEAD(&dev->vdev.vqs);
->  	spin_lock_init(&dev->vdev.vqs_list_lock);
-> -	dev->buf_size = 1024;
-> +	dev->buf_size = BUF_SIZE;
-
-
-This seems to have zero added value.
-
->  	dev->buf = malloc(dev->buf_size);
->  	assert(dev->buf);
->          dev->control = open("/dev/vhost-test", O_RDWR);
-> @@ -396,7 +399,8 @@ int main(int argc, char **argv)
->  
->  done:
->  	vdev_info_init(&dev, features);
-> -	vq_info_add(&dev, 256);
-> -	run_test(&dev, &dev.vqs[0], delayed, batch, reset, 0x100000);
-> +	vq_info_add(&dev, RINGSIZE);
 > +
-> +	run_test(&dev, &dev.vqs[0], delayed, batch, reset, TEST_BUF_NUM);
->  	return 0;
+> +static ssize_t mtk_dp_hpd_sink_event(struct mtk_dp *mtk_dp)
 
+The caller never use the return value, so let this function to void.
 
-This replacement does not buy us anything either.
+> +{
+> +	ssize_t ret;
+> +	u8 sink_count;
+> +	u8 link_status[DP_LINK_STATUS_SIZE] = {};
+> +	u32 sink_count_reg = DP_SINK_COUNT_ESI;
+> +	u32 link_status_reg = DP_LANE0_1_STATUS;
+> +
+> +	ret = drm_dp_dpcd_readb(&mtk_dp->aux, sink_count_reg,
+> &sink_count);
 
->  }
-> -- 
-> 2.17.1
+You read sink_count but never use it, so this read is redundant. Remove
+it.
+
+> +	if (ret < 1) {
+> +		drm_err(mtk_dp->drm_dev, "Read sink count failed\n");
+> +		return ret == 0 ? -EIO : ret;
+> +	}
+> +
+> +	ret = drm_dp_dpcd_read(&mtk_dp->aux, link_status_reg,
+> link_status,
+> +			       sizeof(link_status));
+> +	if (!ret) {
+> +		drm_err(mtk_dp->drm_dev, "Read link status failed\n");
+> +		return ret;
+> +	}
+> +
+> +	drm_dp_channel_eq_ok(link_status, mtk_dp-
+> >train_info.lane_count);
+
+This function just return true or false, and you does not process the
+return value, so this is redundant. Remove it.
+
+Regard,
+CK
+
+> +
+> +	if (link_status[1] & DP_REMOTE_CONTROL_COMMAND_PENDING)
+> +		drm_dp_dpcd_writeb(&mtk_dp->aux,
+> DP_DEVICE_SERVICE_IRQ_VECTOR,
+> +				   DP_REMOTE_CONTROL_COMMAND_PENDING);
+> +
+> +	return 0;
+> +}
 
