@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D24C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235562AbiGGLwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55574 "EHLO
+        id S235575AbiGGLwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235362AbiGGLwD (ORCPT
+        with ESMTP id S235476AbiGGLwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 07:52:03 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE92D53D1A;
-        Thu,  7 Jul 2022 04:51:56 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id v14so25969665wra.5;
-        Thu, 07 Jul 2022 04:51:56 -0700 (PDT)
+        Thu, 7 Jul 2022 07:52:04 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19564564C0;
+        Thu,  7 Jul 2022 04:52:01 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id m6-20020a05600c3b0600b003a0489f412cso795450wms.1;
+        Thu, 07 Jul 2022 04:52:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=KdxwbQTLr44vrShJt6dX+A6d3S9sOOf0L7GmeCfw9ec=;
-        b=BDp52qCVies3QKHtxYshYvVtFcBQdL+esYa9/FetrmrCVkPUFp6VkmSBOby/TRqtBJ
-         O1059pmQdBiDLHP1G74u7n/jtDwDicVU3URSzDBoQGkDWOSLuGS1fzcGgKClP9Ves0M3
-         pfsr2SWuWvOf2c2ZtKVyhc4Sodewsgl3bgZgyYPY7y6A1rRHsMJyv0P2K9bw84zUpzUb
-         5nLBW+9u1G3BFc7OsmmIhO65nF2TczeKfcfLuAy1ExNl7qAdtjXt82Nthla7ofJzMGo8
-         j+429cZ1lHRf4VaxLTv+e36TqToLxEr8dB47DduX9X64y8P2OZweVKJttUup5FRLhagJ
-         e6qw==
+        bh=530Kj9fyhb4BAaf8FxSCXZ47V34wdCD15bBkxNyM1cg=;
+        b=Xf4aZke/gjdB271cikF+a8GkXtrb/Sa9rjGTmUxWDuPpGwXHnBkR17Nn9l4GWAAAvf
+         yhw6X/L/dDh8xOXl80GBKjiPISyAW6J8Ez+9183rxiBqcFSezxJsFtMSNGR9q7UDfhq5
+         vkCbXEtvCXrXVqc4EA0RHmr4Gp9vMacJ9KcL5BgoYAVWn6Pnqy3bPgCOIQNhSCfspnIU
+         e5WAxf22gSS8xlg/dQHgsA5M/pjSXWZsivseN4AnlP1BCViNg/z5AiUlF3yjc61DQeQu
+         RWGlg19lv/9wLkATHYj6wjhgF4W893Z1WeM2q6F6tOLPNDYvqgqGlb5b1fJVyrhAjgE2
+         WoLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KdxwbQTLr44vrShJt6dX+A6d3S9sOOf0L7GmeCfw9ec=;
-        b=QqqYOSJ3odKGXLEIt5955U3A/QY8RfBZjJKpjeWBEKRn3EhkmwH9E5kD8J0fflM/nK
-         XnZoy949Ey3vNZZhtBtEZXGVWsmP7K7w9ja4SWKqF4n7HnaWK7ZYdTmWvS4IUa81MKTH
-         v6ZsGWoxZShMnStVjhnJgSTnBSutQw6Ux6da0HRUO8msYaiEHS2mAOIvbNbM/Q5Q4hIw
-         GsviUWVNDElPlmbLvXgRan2/izgVXjBVr90PvdfUKoLttMfTvYOKdD2pNIwDpA3Bdf1b
-         nOQHb07HatI6spx8s39QG7kwQv5xcg8rfE9GjU09t0c/+I809v4sEYhGyksz4Til+tKx
-         /dQQ==
-X-Gm-Message-State: AJIora8e43L/TC5XfanVYOjE4YtYeoHVXw3T4w07KiGT/WmrfFiVRoQt
-        EICQI8r1PYGQwVOZSxMokAVR8bhWB4YxR8zyUjE=
-X-Google-Smtp-Source: AGRyM1t4mffcH23icEmwpizHWFGXETGtCzJF8yecoowmb2GCmFnd0Tg6IBBiVNAREz2hYrbg7MTLTw==
-X-Received: by 2002:a05:6000:695:b0:21a:3a1a:7b60 with SMTP id bo21-20020a056000069500b0021a3a1a7b60mr41106126wrb.441.1657194715032;
-        Thu, 07 Jul 2022 04:51:55 -0700 (PDT)
+        bh=530Kj9fyhb4BAaf8FxSCXZ47V34wdCD15bBkxNyM1cg=;
+        b=8C8VsN4uRfrpgzt/w+pSf5j2qB06cjTYC+MWRIvETDKSAhpEFQR8uAXDPCg8vITscm
+         Kw506kmMJtmMyeb75KrxMsz44tIBZrswQyu7I02GOAuwAdtt9AV5slim3muCPXpe74/v
+         BgaBBG81yr151IFV7aW+Pnk0iTqbZZCBnmPCorJNipV9+Uy88fc5V8P+5rJiXu0TErgD
+         o7pHcS/rmBKBpwGGjth+LP6DbsGVP8VNdN3dA5U/QJpbvQRkFZmqm9PA8j2d7iOmPNRR
+         wL3GGj7AzNzODByCIpjyrNae6zil6pAZGv78DJyBqWjfVY0jdVgdvVcWcS7nigrGudXR
+         Z1kQ==
+X-Gm-Message-State: AJIora+Qs9Ue/ceG7yMMCMqTqWRwQ3TxNhWVg025yb7GnYUe+7iyoo/h
+        lN2klfdn3Wg497onGNywIJ74LjN3IfUhAv1J74E=
+X-Google-Smtp-Source: AGRyM1uxnz3sxBaRDQ+35wnzIv5JZeO0SprLs2j7hkwtj6mhvk4MLcZL9rMqeDsQfLfKrG73a/VP3g==
+X-Received: by 2002:a05:600c:1ca9:b0:3a0:43a9:5e1a with SMTP id k41-20020a05600c1ca900b003a043a95e1amr3881477wms.155.1657194719419;
+        Thu, 07 Jul 2022 04:51:59 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.51.54
+        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.51.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 04:51:54 -0700 (PDT)
+        Thu, 07 Jul 2022 04:51:59 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v4 07/27] net: introduce managed frags infrastructure
-Date:   Thu,  7 Jul 2022 12:49:38 +0100
-Message-Id: <088d3480b1ebc687fe7cbfc00aec2ff1c33a72c7.1657194434.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v4 11/27] tcp: support externally provided ubufs
+Date:   Thu,  7 Jul 2022 12:49:42 +0100
+Message-Id: <7ee05f644e3b3626b693973738364bcb23cf905d.1657194434.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657194434.git.asml.silence@gmail.com>
 References: <cover.1657194434.git.asml.silence@gmail.com>
@@ -69,163 +69,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some users like io_uring can do page pinning more efficiently, so we
-want a way to delegate referencing to other subsystems. For that add
-a new flag called SKBFL_MANAGED_FRAG_REFS. When set, skb doesn't hold
-page references and upper layers are responsivle to managing page
-lifetime.
-
-It's allowed to convert skbs from managed to normal by calling
-skb_zcopy_downgrade_managed(). The function will take all needed
-page references and clear the flag. It's needed, for instance,
-to avoid mixing managed modes.
+Teach ipv4/udp how to use external ubuf_info provided in msghdr and
+also prepare it for managed frags by sprinkling
+skb_zcopy_downgrade_managed() when it could mix managed and not managed
+frags.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 25 +++++++++++++++++++++++--
- net/core/skbuff.c      | 29 +++++++++++++++++++++++++++--
- 2 files changed, 50 insertions(+), 4 deletions(-)
+ net/ipv4/tcp.c | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index a8a2dd4cfdfd..07004593d7ca 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -688,11 +688,16 @@ enum {
- 	SKBFL_PURE_ZEROCOPY = BIT(2),
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 390eb3dc53bd..a81f694af5e9 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1223,17 +1223,23 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
- 	SKBFL_DONT_ORPHAN = BIT(3),
-+
-+	/* page references are managed by the ubuf_info, so it's safe to
-+	 * use frags only up until ubuf_info is released
-+	 */
-+	SKBFL_MANAGED_FRAG_REFS = BIT(4),
- };
+ 	flags = msg->msg_flags;
  
- #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
- #define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY | \
--				 SKBFL_DONT_ORPHAN)
-+				 SKBFL_DONT_ORPHAN | SKBFL_MANAGED_FRAG_REFS)
+-	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
++	if ((flags & MSG_ZEROCOPY) && size) {
+ 		skb = tcp_write_queue_tail(sk);
+-		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
+-		if (!uarg) {
+-			err = -ENOBUFS;
+-			goto out_err;
+-		}
  
- /*
-  * The callback notifies userspace to release buffers when skb DMA is done in
-@@ -1810,6 +1815,11 @@ static inline bool skb_zcopy_pure(const struct sk_buff *skb)
- 	return skb_shinfo(skb)->flags & SKBFL_PURE_ZEROCOPY;
- }
- 
-+static inline bool skb_zcopy_managed(const struct sk_buff *skb)
-+{
-+	return skb_shinfo(skb)->flags & SKBFL_MANAGED_FRAG_REFS;
-+}
-+
- static inline bool skb_pure_zcopy_same(const struct sk_buff *skb1,
- 				       const struct sk_buff *skb2)
- {
-@@ -1884,6 +1894,14 @@ static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy_success)
+-		zc = sk->sk_route_caps & NETIF_F_SG;
+-		if (!zc)
+-			uarg->zerocopy = 0;
++		if (msg->msg_ubuf) {
++			uarg = msg->msg_ubuf;
++			net_zcopy_get(uarg);
++			zc = sk->sk_route_caps & NETIF_F_SG;
++		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
++			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
++			if (!uarg) {
++				err = -ENOBUFS;
++				goto out_err;
++			}
++			zc = sk->sk_route_caps & NETIF_F_SG;
++			if (!zc)
++				uarg->zerocopy = 0;
++		}
  	}
- }
  
-+void __skb_zcopy_downgrade_managed(struct sk_buff *skb);
-+
-+static inline void skb_zcopy_downgrade_managed(struct sk_buff *skb)
-+{
-+	if (unlikely(skb_zcopy_managed(skb)))
-+		__skb_zcopy_downgrade_managed(skb);
-+}
-+
- static inline void skb_mark_not_on_list(struct sk_buff *skb)
- {
- 	skb->next = NULL;
-@@ -3499,7 +3517,10 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
-  */
- static inline void skb_frag_unref(struct sk_buff *skb, int f)
- {
--	__skb_frag_unref(&skb_shinfo(skb)->frags[f], skb->pp_recycle);
-+	struct skb_shared_info *shinfo = skb_shinfo(skb);
-+
-+	if (!skb_zcopy_managed(skb))
-+		__skb_frag_unref(&shinfo->frags[f], skb->pp_recycle);
- }
+ 	if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) &&
+@@ -1356,9 +1362,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
- /**
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index f5a3ebbc1f7e..cf4107d80bc4 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -666,11 +666,18 @@ static void skb_release_data(struct sk_buff *skb)
- 			      &shinfo->dataref))
- 		goto exit;
+ 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
  
--	skb_zcopy_clear(skb, true);
-+	if (skb_zcopy(skb)) {
-+		bool skip_unref = shinfo->flags & SKBFL_MANAGED_FRAG_REFS;
-+
-+		skb_zcopy_clear(skb, true);
-+		if (skip_unref)
-+			goto free_head;
-+	}
- 
- 	for (i = 0; i < shinfo->nr_frags; i++)
- 		__skb_frag_unref(&shinfo->frags[i], skb->pp_recycle);
- 
-+free_head:
- 	if (shinfo->frag_list)
- 		kfree_skb_list(shinfo->frag_list);
- 
-@@ -895,7 +902,10 @@ EXPORT_SYMBOL(skb_dump);
-  */
- void skb_tx_error(struct sk_buff *skb)
- {
--	skb_zcopy_clear(skb, true);
-+	if (skb) {
-+		skb_zcopy_downgrade_managed(skb);
-+		skb_zcopy_clear(skb, true);
-+	}
- }
- EXPORT_SYMBOL(skb_tx_error);
- 
-@@ -1375,6 +1385,16 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
- }
- EXPORT_SYMBOL_GPL(skb_zerocopy_iter_stream);
- 
-+void __skb_zcopy_downgrade_managed(struct sk_buff *skb)
-+{
-+	int i;
-+
-+	skb_shinfo(skb)->flags &= ~SKBFL_MANAGED_FRAG_REFS;
-+	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
-+		skb_frag_ref(skb, i);
-+}
-+EXPORT_SYMBOL_GPL(__skb_zcopy_downgrade_managed);
-+
- static int skb_zerocopy_clone(struct sk_buff *nskb, struct sk_buff *orig,
- 			      gfp_t gfp_mask)
- {
-@@ -1692,6 +1712,8 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
- 
- 	BUG_ON(skb_shared(skb));
- 
-+	skb_zcopy_downgrade_managed(skb);
-+
- 	size = SKB_DATA_ALIGN(size);
- 
- 	if (skb_pfmemalloc(skb))
-@@ -3488,6 +3510,8 @@ void skb_split(struct sk_buff *skb, struct sk_buff *skb1, const u32 len)
- 	int pos = skb_headlen(skb);
- 	const int zc_flags = SKBFL_SHARED_FRAG | SKBFL_PURE_ZEROCOPY;
- 
-+	skb_zcopy_downgrade_managed(skb);
-+
- 	skb_shinfo(skb1)->flags |= skb_shinfo(skb)->flags & zc_flags;
- 	skb_zerocopy_clone(skb1, skb, 0);
- 	if (len < pos)	/* Split line is inside header. */
-@@ -3841,6 +3865,7 @@ int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
- 	if (skb_can_coalesce(skb, i, page, offset)) {
- 		skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], size);
- 	} else if (i < MAX_SKB_FRAGS) {
-+		skb_zcopy_downgrade_managed(skb);
- 		get_page(page);
- 		skb_fill_page_desc(skb, i, page, offset, size);
- 	} else {
+-			if (tcp_downgrade_zcopy_pure(sk, skb))
+-				goto wait_for_space;
+-
++			if (unlikely(skb_zcopy_pure(skb) || skb_zcopy_managed(skb))) {
++				if (tcp_downgrade_zcopy_pure(sk, skb))
++					goto wait_for_space;
++				skb_zcopy_downgrade_managed(skb);
++			}
+ 			copy = tcp_wmem_schedule(sk, copy);
+ 			if (!copy)
+ 				goto wait_for_space;
 -- 
 2.36.1
 
