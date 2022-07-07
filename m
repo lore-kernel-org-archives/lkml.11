@@ -2,122 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5917FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 957F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234703AbiGGCf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45748 "EHLO
+        id S234357AbiGGCf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbiGGCfX (ORCPT
+        with ESMTP id S230308AbiGGCfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:35:23 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CE5D6A;
-        Wed,  6 Jul 2022 19:35:21 -0700 (PDT)
-X-UUID: aea485e3a2284a3e9e63ebfef824fbd7-20220707
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:f012d853-75bc-4ace-afd1-96143a306e21,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:9504c286-57f0-47ca-ba27-fe8c57fbf305,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: aea485e3a2284a3e9e63ebfef824fbd7-20220707
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 327723911; Thu, 07 Jul 2022 10:35:14 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 7 Jul 2022 10:35:13 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 7 Jul 2022 10:35:13 +0800
-Message-ID: <ee075f26d133342e0ef386d4afc6173e420e30c5.camel@mediatek.com>
-Subject: Re: [PATCH v13 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 7 Jul 2022 10:35:13 +0800
-In-Reply-To: <20220701062808.18596-6-rex-bc.chen@mediatek.com>
-References: <20220701062808.18596-1-rex-bc.chen@mediatek.com>
-         <20220701062808.18596-6-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 6 Jul 2022 22:35:55 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD16F6E
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:35:52 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LdgSh1l1szhZ4j;
+        Thu,  7 Jul 2022 10:33:24 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 10:35:50 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
+ (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
+ 2022 10:35:50 +0800
+From:   ChenXiaoSong <chenxiaosong2@huawei.com>
+To:     <anton@tuxera.com>
+CC:     <linux-ntfs-dev@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <chenxiaosong2@huawei.com>,
+        <liuyongqiang13@huawei.com>, <yi.zhang@huawei.com>,
+        <zhangxiaoxu5@huawei.com>
+Subject: [PATCH] ntfs: fix use-after-free in ntfs_ucsncmp()
+Date:   Thu, 7 Jul 2022 10:48:01 +0800
+Message-ID: <20220707024801.2978141-1-chenxiaosong2@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+Syzkaller reported use-after-free bug as follows:
 
-On Fri, 2022-07-01 at 14:28 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This patch adds a embedded displayport driver for the MediaTek mt8195
-> SoC.
-> 
-> It supports the MT8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jitao shi <jitao.shi@mediatek.com>
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
-> +
-> +static void mtk_dp_power_enable(struct mtk_dp *mtk_dp)
-> +{
-> +	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_RESET_AND_PROBE,
-> +			   0, SW_RST_B_PHYD);
-> +
-> +	/* Wait for power enable */
-> +	usleep_range(10, 200);
-> +
-> +	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_RESET_AND_PROBE,
-> +			   SW_RST_B_PHYD, SW_RST_B_PHYD);
-> +	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
-> +			   DP_PWR_STATE_BANDGAP_TPLL,
-> DP_PWR_STATE_MASK);
-> +	mtk_dp_write(mtk_dp, MTK_DP_1040, 0x7);
+==================================================================
+BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
+Read of size 2 at addr ffff8880751acee8 by task a.out/879
 
-You have define the bit definition. Use the bit definition instead of a
-magic number.
+CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x1c0/0x2b0
+ print_address_description.constprop.0.cold+0xd4/0x484
+ print_report.cold+0x55/0x232
+ kasan_report+0xbf/0xf0
+ ntfs_ucsncmp+0x123/0x130
+ ntfs_are_names_equal.cold+0x2b/0x41
+ ntfs_attr_find+0x43b/0xb90
+ ntfs_attr_lookup+0x16d/0x1e0
+ ntfs_read_locked_attr_inode+0x4aa/0x2360
+ ntfs_attr_iget+0x1af/0x220
+ ntfs_read_locked_inode+0x246c/0x5120
+ ntfs_iget+0x132/0x180
+ load_system_files+0x1cc6/0x3480
+ ntfs_fill_super+0xa66/0x1cf0
+ mount_bdev+0x38d/0x460
+ legacy_get_tree+0x10d/0x220
+ vfs_get_tree+0x93/0x300
+ do_new_mount+0x2da/0x6d0
+ path_mount+0x496/0x19d0
+ __x64_sys_mount+0x284/0x300
+ do_syscall_64+0x3b/0xc0
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f3f2118d9ea
+Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
+RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
+RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
+R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-+#define MTK_DP_1040			0x1040
-+#define RG_DPAUX_RX_VALID_DEGLITCH_EN	BIT(2)
-+#define RG_XTP_GLB_CKDET_EN		BIT(1)
-+#define RG_DPAUX_RX_EN			BIT(0)
+The buggy address belongs to the physical page:
+page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
+memcg:ffff888101f7e180
+anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
+raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
+raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
+page dumped because: kasan: bad access detected
 
-> +}
-> +
+Memory state around the buggy address:
+ ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                                                          ^
+ ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
+name string is out of bounds.
+
+Fix this by adding sanity check on end address of attibute name string.
+
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+---
+ fs/ntfs/attrib.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
+index 4de597a83b88..4d1c3ca0c698 100644
+--- a/fs/ntfs/attrib.c
++++ b/fs/ntfs/attrib.c
+@@ -592,8 +592,12 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
+ 		a = (ATTR_RECORD*)((u8*)ctx->attr +
+ 				le32_to_cpu(ctx->attr->length));
+ 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
+-		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
+-				le32_to_cpu(ctx->mrec->bytes_allocated))
++		u8 *mrec_end = (u8 *)(u8*)ctx->mrec +
++		               le32_to_cpu(ctx->mrec->bytes_allocated);
++		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
++		               a->name_length;
++		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
++		    name_end > mrec_end)
+ 			break;
+ 		ctx->attr = a;
+ 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
+-- 
+2.31.1
 
