@@ -2,190 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B276C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1CFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236602AbiGGWFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
+        id S236846AbiGGWGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 18:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236730AbiGGWFG (ORCPT
+        with ESMTP id S236802AbiGGWGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 18:05:06 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3312CC8A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:05:03 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id q9so28128975wrd.8
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:05:03 -0700 (PDT)
+        Thu, 7 Jul 2022 18:06:37 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37B95C967
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:06:34 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id h132so4168961ybb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:06:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hjZHB/xWJ3nWli7ZfNwXsxb5s5FyrkVe3kCR2sto3MY=;
-        b=YAksl8QG4Ad+/zsLgP3rFBKEVMf4C2+ycllCQpHkGjWiGmXMrv44Fa5DhcIcWd6OL0
-         nSTFK6m5aqU3OdaAoJJlvx90zXqFH5x1SntHlfXOfmFM2szSOaT/cE4rNrCxUdQ0k/sb
-         /MXyrA28CE+ypPlAWUYiPH/jh+0UZxSU6DqiijerAqCzqowZEABCeK7WJpCw83jCWrPN
-         HOA9Wt1xlePu2vJNvPB59XhOaCfAaoCWjXki4pgl5sLkfmlFKReDiNi3ADDzQ/feC8+5
-         CEFG1S2hd5Dk7O/gc4h/Ij2d+6Dp0wuaAqLn9hrf7s2FMU0JpxwUaKqg4II8nREXih3L
-         4U8A==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7UFGapQUmVzze+bPOzX448q4o7gbh7fA6vE58zBhvvM=;
+        b=ZP8qKMGpzxTcxHpyX+YtpLCre0I0SLiX8dNkR8f1hwUFCt8K0TvDtqClFnq/w5L0y9
+         cOcFu5jmvSQaMMLyPQMZEZytUZO4bCtIFApl70ZnFq5Db+3RXsPhWy0AoUmubKqhZ4So
+         bw1yhLs9WWrUn7z2sQ9FUW77rqTD7DgTUYGfU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hjZHB/xWJ3nWli7ZfNwXsxb5s5FyrkVe3kCR2sto3MY=;
-        b=phKUZyr6zY4+r6HZCKfzuoL0Oyi/jT7Ju4Gc06xIaDflyswZ1zmOyZgvJNWAQ0i37Z
-         G/S3rnQbdR7OND9rpeGcziEALkILwnscrs5Wgkr3/sS6GBNheO5Zs2iI5x9UcrAUDyWZ
-         D37bdGIv4VE/FfOch2LHp4SlzM8ApA6czOrc21DCWAf4dewvp4jWhprAFT6z+knYBk2U
-         sS1nEd+6nqmXnFAdLhBtcV5uphdZ9A4qZCX7AoNPrDx/hhHRMlQ7bCqQs6+vNXfuu2fP
-         tWn+xmjNoV7CaAZ1fmu/iJnrQ2HIKsL4rSgUPnB/HOPOOQcya42nJ7w+APoIolfrgD1Q
-         JKAw==
-X-Gm-Message-State: AJIora+bCdxBPd95DncRTKMIGzKdv651et5kbs+1B50lpJR3Y6RgqIri
-        bBXcbIobXRiw/Uky616oh3S0sg==
-X-Google-Smtp-Source: AGRyM1ucM2HayA4Nu/4tlRlCtdGGmAk0G8SNuvQDYgL/iSBK+mKdFbxIG/Vfscu+gH+wgAlYNt1K1g==
-X-Received: by 2002:adf:d206:0:b0:21d:6434:a158 with SMTP id j6-20020adfd206000000b0021d6434a158mr66682wrh.37.1657231501756;
-        Thu, 07 Jul 2022 15:05:01 -0700 (PDT)
-Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id bn24-20020a056000061800b0020fe35aec4bsm38625743wrb.70.2022.07.07.15.04.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 15:05:01 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Daire McNamara <daire.mcnamara@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zong Li <zong.li@sifive.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>, Guo Ren <guoren@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Brice Goglin <Brice.Goglin@inria.fr>
-Subject: [RFC 3/4] riscv: arch-topology: move riscv to the generic store_cpu_topology()
-Date:   Thu,  7 Jul 2022 23:04:36 +0100
-Message-Id: <20220707220436.4105443-4-mail@conchuod.ie>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220707220436.4105443-1-mail@conchuod.ie>
-References: <20220707220436.4105443-1-mail@conchuod.ie>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7UFGapQUmVzze+bPOzX448q4o7gbh7fA6vE58zBhvvM=;
+        b=ryaTJ+xvx2Y2g2DCkxzm1Mkg/UUEiHd2KVNkYIAmZUbPqJK1++bnGEuOQwHjA5zi0q
+         uc1hM8bM7vrR7w2aiWBVVM7E5yyqOQTyHK0EF9TYG5eJQ+B2v5RQp9OV1kLQbdNof0rl
+         53Rz7A4S+kFFq46B/cEIMcjbzKjR/EuNocygrtafNQD0Q7N7JN0+SEMJuUtgSs3DXu87
+         ejMkyDXO6hJi/U8J6It3sXYmv7ph6MidOArkJupDG+wVI0f72l71SSyUagMltefV4ycG
+         jd8VbxsN5TH4FP+CG5sxVTnQ+7pj1Mf4vcVNCEc8tubmGMxXXm09kmK/jgp1Dz3ThGyZ
+         8anA==
+X-Gm-Message-State: AJIora9ZvIjGRwTThq20HJST4hp86er7MvxQSqgq9EcUEwJy1N6AQCAz
+        KtFuiJNUydonFZ4JZZBnZPP3kf6TBEb8zT8C9jP+0A==
+X-Google-Smtp-Source: AGRyM1tA88lK8bMldivq5Q8tXTohFQGXUUrPduGItjYoy9GpwYyOXFyU3HX0TeVAhcOPU/AITKKPXUEpF+NN+gSsVRg=
+X-Received: by 2002:a25:b7cf:0:b0:66e:2ddc:dda7 with SMTP id
+ u15-20020a25b7cf000000b0066e2ddcdda7mr88408ybj.197.1657231593901; Thu, 07 Jul
+ 2022 15:06:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220706171601.807042-7-pmalani@chromium.org> <202207071256.63ElDHIG-lkp@intel.com>
+In-Reply-To: <202207071256.63ElDHIG-lkp@intel.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Thu, 7 Jul 2022 15:06:23 -0700
+Message-ID: <CACeCKadwM7VVZadZxDr-TQ0DB1Dy5mv2bwY=p+p3Y1uVNHE8Tg@mail.gmail.com>
+Subject: Re: [PATCH v2 6/9] platform/chrome: cros_typec_switch: Add event check
+To:     kernel test robot <lkp@intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev, kbuild-all@lists.01.org,
+        bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Wed, Jul 6, 2022 at 9:26 PM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi Prashant,
+>
+> I love your patch! Perhaps something to improve:
+>
+> [auto build test WARNING on usb/usb-testing]
+> [cannot apply to chrome-platform/for-next linus/master balbi-usb/testing/next peter-chen-usb/for-usb-next v5.19-rc5]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/Prashant-Malani/platform-chrome-Type-C-switch-driver-and-Type-C-framework-updates/20220707-012614
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+> config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220707/202207071256.63ElDHIG-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+> reproduce (this is a W=1 build):
+>         # https://github.com/intel-lab-lkp/linux/commit/60e03c1b36c0e3533e481b44152faab38448be5b
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Prashant-Malani/platform-chrome-Type-C-switch-driver-and-Type-C-framework-updates/20220707-012614
+>         git checkout 60e03c1b36c0e3533e481b44152faab38448be5b
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/platform/chrome/ kernel/bpf/
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> drivers/platform/chrome/cros_typec_switch.c:81:6: warning: no previous prototype for 'cros_typec_check_event' [-Wmissing-prototypes]
+>       81 | bool cros_typec_check_event(struct cros_typec_switch_data *sdata, int port_num, u32 mask)
+>          |      ^~~~~~~~~~~~~~~~~~~~~~
+>    drivers/platform/chrome/cros_typec_switch.c:159:6: warning: no previous prototype for 'cros_typec_unregister_switches' [-Wmissing-prototypes]
+>      159 | void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
+>          |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    drivers/platform/chrome/cros_typec_switch.c:170:5: warning: no previous prototype for 'cros_typec_register_retimer' [-Wmissing-prototypes]
+>      170 | int cros_typec_register_retimer(struct cros_typec_port *port, struct fwnode_handle *fwnode)
+>          |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+I'll fix these warnings and send out a v3.
+Apologies for the churn.
 
-The default implementation of store_cpu_topology() is exactly that
-used by RISC-V so revert the portions of aaaabbbbccccdddd ("riscv:
-arch-topology: fix default topology reporting") which add the arch
-specific version.
-
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/include/asm/topology.h | 13 -------------
- arch/riscv/kernel/Makefile        |  1 -
- arch/riscv/kernel/smpboot.c       |  1 -
- arch/riscv/kernel/topology.c      | 32 -------------------------------
- 4 files changed, 47 deletions(-)
- delete mode 100644 arch/riscv/include/asm/topology.h
- delete mode 100644 arch/riscv/kernel/topology.c
-
-diff --git a/arch/riscv/include/asm/topology.h b/arch/riscv/include/asm/topology.h
-deleted file mode 100644
-index 36bc6ecda898..000000000000
---- a/arch/riscv/include/asm/topology.h
-+++ /dev/null
-@@ -1,13 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries
-- */
--
--#ifndef _ASM_RISCV_TOPOLOGY_H
--#define _ASM_RISCV_TOPOLOGY_H
--
--#include <asm-generic/topology.h>
--
--void store_cpu_topology(unsigned int cpuid);
--
--#endif /* _ASM_RISCV_TOPOLOGY_H */
-diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
-index 9518882ba6f9..c71d6591d539 100644
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -50,7 +50,6 @@ obj-y	+= riscv_ksyms.o
- obj-y	+= stacktrace.o
- obj-y	+= cacheinfo.o
- obj-y	+= patch.o
--obj-y	+= topology.o
- obj-y	+= probes/
- obj-$(CONFIG_MMU) += vdso.o vdso/
- 
-diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
-index a8239b4b61f3..a1c861f84fe2 100644
---- a/arch/riscv/kernel/smpboot.c
-+++ b/arch/riscv/kernel/smpboot.c
-@@ -32,7 +32,6 @@
- #include <asm/sections.h>
- #include <asm/sbi.h>
- #include <asm/smp.h>
--#include <asm/topology.h>
- 
- #include "head.h"
- 
-diff --git a/arch/riscv/kernel/topology.c b/arch/riscv/kernel/topology.c
-deleted file mode 100644
-index db72862bd5b5..000000000000
---- a/arch/riscv/kernel/topology.c
-+++ /dev/null
-@@ -1,32 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/*
-- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries
-- *
-- * Based on the arm64 version, which was in turn based on arm32, which was
-- * ultimately based on sh's.
-- * The arm64 version was listed as:
-- * Copyright (C) 2011,2013,2014 Linaro Limited.
-- */
--
--#include <linux/arch_topology.h>
--#include <linux/topology.h>
--#include <asm/topology.h>
--
--void store_cpu_topology(unsigned int cpuid)
--{
--	struct cpu_topology *cpuid_topo = &cpu_topology[cpuid];
--
--	if (cpuid_topo->package_id != -1)
--		goto topology_populated;
--
--	cpuid_topo->thread_id = -1;
--	cpuid_topo->core_id = cpuid;
--	cpuid_topo->package_id = cpu_to_node(cpuid);
--
--	pr_debug("CPU%u: package %d core %d thread %d\n",
--		 cpuid, cpuid_topo->package_id, cpuid_topo->core_id,
--		 cpuid_topo->thread_id);
--
--topology_populated:
--	update_siblings_masks(cpuid);
--}
--- 
-2.37.0
-
+-Prashant
