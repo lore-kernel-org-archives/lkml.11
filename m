@@ -2,117 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3254AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235229AbiGGKLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
+        id S234526AbiGGKMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235251AbiGGKLl (ORCPT
+        with ESMTP id S235293AbiGGKMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:11:41 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1F504F66E;
-        Thu,  7 Jul 2022 03:11:39 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o9OTx-0007T4-01; Thu, 07 Jul 2022 12:11:37 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id D6B80C02B6; Thu,  7 Jul 2022 11:57:48 +0200 (CEST)
-Date:   Thu, 7 Jul 2022 11:57:48 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Sander Vanheule <sander@svanheule.net>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        martin.blumenstingl@googlemail.com, hauke@hauke-m.de,
-        git@birger-koblitz.de, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second
- VPE
-Message-ID: <20220707095748.GB9894@alpha.franken.de>
-References: <20220702190705.5319-1-olek2@wp.pl>
- <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
- <87fsjen2kl.wl-maz@kernel.org>
- <20220706081901.GA10797@alpha.franken.de>
- <87h73u1s9r.wl-maz@kernel.org>
+        Thu, 7 Jul 2022 06:12:34 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D6E4F66B;
+        Thu,  7 Jul 2022 03:12:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OQ8leRyTD93YZjrlY1kfC9ePsPkDZNN/R0m6VPtHOwAEfKkSO5OautXwc64OCnXmuPWDdG0euZBRxdTIIibNO8I5c1aXchxTiHJ7zxqPwJCbcLrZODUuMEOhywYcFYtKRuymNZ79/OdxrD5ZRUgOe7TzpzmO0wmuLNhkaOn4kindQ16G3W8vsjX39I/jlA3Ysw69mPMuEjH57NOU2eeTyoA23RDDh0m9EXDBBmjiCV5+lzfWf0Pyq2cec4yD5VBeO/75MyyA78+NNrBdC+oZzOQjjZiVFWozBDG4xRPgnKJ/82XYgU4C0uy4cF9WvcQllq6ND4XmXNGz1PRvgIAImw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EdBRVaJ1P4Y5qpiCTjJpHBLLY1ywVLwnNExqMEx+3V4=;
+ b=oPGbmDeebVCPD3Qu5KZ8IGBx1/3jwJfaBRVABdZk0yRLbvVllAgAMdQtpBAaElKHopUA11WN8OQZSj/rC/P57Wmke64opItcNimreuSHPnzMzh7+WeJI+4b6BgYWgJc8JYrVqlfkA8YySw9Uk7f5Z1fHugaAVczD+Ck4W3Jt2oNGVaTMO7RIrr89qzKCxFZOEpshBOiNSkS83R6Z+2rXaLp8UBMZv4QTu8QWJL/TRrJw33wuRzk2ZU+P7K7p26S5C5QwWGt6GoP+bir1V+twOtzW8NMMT5SRVh43ZNE3iWMsX7UL1wy4gPyiFRGbosRXZDjs2c4gcc7tOrZt1vCHyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EdBRVaJ1P4Y5qpiCTjJpHBLLY1ywVLwnNExqMEx+3V4=;
+ b=Ve2JOuqCYOLZM6gxouz1NB+kkN3ZXtSvk+oDBWPIw7/5i9DV57M9+Z64PoMlpcFL7ZT+LP9h+/u99l/2WViXNkouTPUGq7y4KYRX7e4AIJQD22jGbkCNxz+zfr5uV05kxTBmZEC05Fkyisr4TaLhvGiM6JRK0lAgqaqf/6MCrI9MchuIXA9KWsxLrjKat8mwhsKNTxeddrwVIq7Ps9fBZI3fvy9JsWr0I0Mu5GREoNL2EUVrqc2IyLUkTqY9lATzXe479spOndtGcWotJwsqyd5zpbKZxd1Ccmi9hoAErl9y6AX0TTvyTJrrd+OO2Qj11qmMAT3OKT2sh+Tau+SDEg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
+ MN2PR12MB4782.namprd12.prod.outlook.com (2603:10b6:208:a3::33) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5417.16; Thu, 7 Jul 2022 10:12:32 +0000
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::b148:f3bb:5247:a55d]) by CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::b148:f3bb:5247:a55d%2]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
+ 10:12:31 +0000
+Message-ID: <86a49e1c-6ed3-f8f4-6f83-0bb90dbc99bb@nvidia.com>
+Date:   Thu, 7 Jul 2022 11:12:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] net: stmmac: dwc-qos: Disable split header for Tegra194
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
+References: <20220706083913.13750-1-jonathanh@nvidia.com>
+ <20220706191140.5a0f4337@kernel.org>
+From:   Jon Hunter <jonathanh@nvidia.com>
+In-Reply-To: <20220706191140.5a0f4337@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0485.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a8::22) To CO6PR12MB5444.namprd12.prod.outlook.com
+ (2603:10b6:5:35e::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h73u1s9r.wl-maz@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7797a9d6-8553-47b5-73f8-08da60013457
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4782:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qzaPAeH9U30gW18SV5mrvdhiLKQdioT9DLGMnCI8FRDMjxAChJas5sd0i7p55Q3hyCkG88zeOz6HI53wpxeUlGxPK3SI/jVK12q0oEGNTlS7loNdiz6EjkeOnSmnltq9BE8R5ylTvyPdSyWOcnAvdw1GOEC7Qh4YlRcI/5FrT4oUZ3U9otVXyRwPYEPqpPFi0ZpDhE8sThANXKLxJCCFhmiVXEhiuX2s1CX+ZepTBE8Rq0FcwNNpfeAZ5gmwgzBg2ZlVcooXPOAC24l1qcK1MmJ2xbm2eNX+GBsjw6N8hYWzVIZHVL3Qyb72n56ujC5xD83dO+FCNVYADKpUbNYhHg84mhWrzejKqHKb5hEBxKKvzOq5CVgY/rbMJQmRyYlxX8qJbt/mUFs10eLpo9kEscETsqBz3T3qkISgFqFVbUdyW6VhFJUzHusgu3m4ofjXkGEQ97V+C1pjODO5TxHh31K5SELVw2DPTNE6H3+IGrlpdxvN/KdOvgykOrQQvE78A188sHKdnO8p+f6xsMNXcHUS4xyzursMVqMiLvo0UtB4Y2mrekIvafIx0BumNbRH0qeWc7tLUJBB1i3q60QYL1I9UDBEEmW4Py9VqeOEAHVwwVo9qJh/uKXZGMFm+XveZ9I18jZGUd5aUJAl2fLLa1wiOQYc7ENEn/9QaQT0FVCVMOnqkVf1tz3uPA/0RyMN3Qs9EbEBqiZdMHXFyvLX3YCgagXGsTRf3g2vSqxuWNwsa7dI1KKk9797O+wa25WJmO6I8lcHrCLD3NUGqbSsrC8BgZ4K8NRIzGjEz+YIxESf9sMZHZRbtlY0GSBtKqXjl7Q1ZV5ns6l4xPOtE+uDfCJtd4r77MGbtOubVjQjR7Zw/Kd/xp8qhHI4sdfiM9lFOwYU4KM4gRw5ukBekFVk8K88+MtGmbF3QxiSnNjy23Q=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(346002)(376002)(39860400002)(396003)(66946007)(26005)(316002)(66476007)(8676002)(4326008)(66556008)(5660300002)(6512007)(8936002)(31696002)(86362001)(2616005)(6486002)(966005)(6506007)(55236004)(53546011)(38100700002)(478600001)(6916009)(54906003)(41300700001)(6666004)(2906002)(36756003)(31686004)(7416002)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VkJ1NHpuYVc3VmFwWm94a0RPY25kMENSWEFOWVNOblVXSHVmYklIVFo2M29l?=
+ =?utf-8?B?Q2tzUUlWdkVCQUdtZzhIVm9uZHRpWWxhbDd1dXZlMHFoSEd1VTYrS00zTDBD?=
+ =?utf-8?B?Qmk3ZXBtYWV2Vi95QmNFNmpyRlZuQUFQaXpBTElodm9zZ2s4RjBFb0graW9L?=
+ =?utf-8?B?MkoxaEMyWkZtMnk5TXNoZ2tPTXR4azFDOXNob2h5RkVsUzk0dHRMR3Z3MytV?=
+ =?utf-8?B?YjRlWE82dXlvNi9BSTRLdm03L2dEZHkwL2UzM3VWTjhsUUk5aVBIb1h0b3Mv?=
+ =?utf-8?B?VFd1N3BQbU9Pc3lRTmpvUFpBKzRMZWNMZ2ZLYTViN3JOZFU5bjJxUENQQWp0?=
+ =?utf-8?B?R2pZR3NoRzExMEVnRmkwaDY3eUlxaG9DZnlDMU0yWHBUSEhqV25xRWNwQVpZ?=
+ =?utf-8?B?QzlnTk44MEhYWlEyOXdVNDNCVXNkb3l1SGpWbTNnNmpmR1VnTmhabFVCTjFS?=
+ =?utf-8?B?Y0FtdGN6TTRUMFo4TEsydUdwZlNGNE5oOVNVN2RTcHpNOTF6ZHlwL3ZEekg4?=
+ =?utf-8?B?aUx4eFI5S3NoSVFUa2hPYXZtUEgxRTJIOFM2b3pOQUFXQVBpWWZvNXYwc2c1?=
+ =?utf-8?B?ZkwxUFZLVm9aUWU5VVZROElHUGEydmgwYzdnam5GZmluQUlOQ1hJNlBxRXZL?=
+ =?utf-8?B?dHFvMWpaQUVoWjYxSiszMUplVEVwNW51OUtlSzhBUTE0d2l1UDdqS0FzZlpu?=
+ =?utf-8?B?RU5CTzJ3NmsxbXFETWJrSzRpa3dDdW9KYitPRDIzUE9XUWNhSXdsdGk4eElq?=
+ =?utf-8?B?OFRpOUp4c3lOb2JMV3A0eFI0RHhvVHRKdkZrVmtMSTRwcEcxUmdFeHI2Q2hq?=
+ =?utf-8?B?VlpzVGZJNXdrR091Um5OaUlTM0ltZFlCYkcvai8zeHdpZ3pnOFJnZ21Rd01R?=
+ =?utf-8?B?WUVxWmxqRHFmcGV6Wi9saDNFRTlGY1lKMjd2L0M4YUtVSFlCK1YzK1ExeW00?=
+ =?utf-8?B?dHErY2I2TTRka3ZCcHZVODN0T2o3R1N2bXUrVm9IaERSazVLMnBsOHRoMTNQ?=
+ =?utf-8?B?b2xrK2FFY0w2TUZud1VIQXBiRU5iUTBKM25HdFMxY0c2cFNMUDk1eW9WbmpQ?=
+ =?utf-8?B?OUZsRm5TZURHRUFLdS9KTVdiTHh4cGt0eGJmeWZRcEtRdHJWM0xKTmNHOXVP?=
+ =?utf-8?B?dnR0dHN4bFUvOWJsZXR3bzhwblFzOGZwK2x2dmhhN0t3M0NuajFQSVNhUHVH?=
+ =?utf-8?B?Z013d2l0a005QjZDODUvSUpUbGdpbjJQTzR2NTFkMUtLMEhCcGE1aitVZU82?=
+ =?utf-8?B?M1NibmxHM3BEcGNRbEtGT2hyaC9rRWUzYm8rQjFCdjR4UzVoSHZxUWV6T3Nq?=
+ =?utf-8?B?NTBVUStRN1RLMTJ3K3crK3dCaXhZcDFIcW5CajRSUkVxQUN3akd0dk1oTGZy?=
+ =?utf-8?B?VU5NLzE1ZGtQY1V5azFSdkVEWHI3dE42VUk5SFJtMWV3OEU4VEdlZGhCWHRK?=
+ =?utf-8?B?WXJ2QVNvV2FBVW9LaE9GYzJUaEU2WGZiNGsxb1BpSzBmdGV5SmYxN0p6dUFZ?=
+ =?utf-8?B?N3BBSEtTU1d6UUZuR3paVWdudGtQdFIrdXh2OEE1TTBDMWdheVZiOTZGb0xq?=
+ =?utf-8?B?TUJHRU11bXhWa2pVU1duWm9VOFRTSnMrQmp6OE9Ebm9lQktMRk5uc1dWYzA5?=
+ =?utf-8?B?N1ZMTkV1T081QmllbVpTazZXZ0hOSVFGalBLL05PeEtUeXpKdWcrbEc4eGRZ?=
+ =?utf-8?B?VHpnOGlwYkJWMk5OQXhUM2xtQWRWMEFsWmd3ZlZCcEMxNlpMNXU1TU5UL1h2?=
+ =?utf-8?B?MTE4ZC82Yk1iU2xiUGYwdWhuckM4bS9UcXpoOEJsZTJySkNSU2Y1YTZMMHVs?=
+ =?utf-8?B?bW4wZ1FhUWdPdDQzN0REVUR6Qkx4U1RZdG5KUlBwWkN0OHJzRUZxN2VaYjU4?=
+ =?utf-8?B?emxVaEtJbGlCOGVxandXQ3h4VmFyUjdycHMxdkE3d003SThKQkxydi8rWC9v?=
+ =?utf-8?B?cVBsVWFWa1lXcFYzYkEraTROTG9TZ2xsaGNZQWRvdFl3Ukd3ckdncWxzNlFz?=
+ =?utf-8?B?cEIrOVB4dnBTS2Q1RHlPN0RCSVVTYVpIQjNwOU1obHU5cC85K1NHa1N2eThE?=
+ =?utf-8?B?VEV2RGp1d3ZTSkxjcUlQR0t4Y2hWdEFaU2ZpZWUwZGZlK1c2Nm4vWTYxR3NQ?=
+ =?utf-8?B?RVdJbjgyMUQxRGtGYmorSG1TKzVDZlRtMFlpeFpnVHRoekdnVERDVFd3eTZS?=
+ =?utf-8?B?TFE9PQ==?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7797a9d6-8553-47b5-73f8-08da60013457
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 10:12:31.8394
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: S3LkDWTSKsTzYEbQSJmcO2vC2prkXlnfQpcjbxtOxCSPsFvbMnSD0bAiJBXIaG3b8Ln+127ZPRjxVe2nRIO3Jw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4782
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 10:53:36AM +0100, Marc Zyngier wrote:
-> On Wed, 06 Jul 2022 09:19:01 +0100,
-> Thomas Bogendoerfer <tsbogend@alpha.franken.de> wrote:
-> > 
-> > On Wed, Jul 06, 2022 at 08:05:30AM +0100, Marc Zyngier wrote:
-> > > On Sun, 03 Jul 2022 19:15:11 +0100,
-> > > Sander Vanheule <sander@svanheule.net> wrote:
-> > > > 
-> > > > Hi Aleksander,
-> > > > 
-> > > > Since this is IRQ related: +CC Marc Zyngier
-> > > > 
-> > > > On Sat, 2022-07-02 at 21:07 +0200, Aleksander Jan Bajkowski wrote:
-> > > > > This patch is needed to handle interrupts by the second VPE on
-> > > > > the Lantiq xRX200, xRX300 and xRX330 SoCs. In these chips, 32 ICU
-> > > > > interrupts are connected to each hardware line. The SoC supports
-> > > > > a total of 160 interrupts. Currently changing smp_affinity to the
-> > > > > second VPE hangs interrupts.
-> > > > > 
-> > > > > This problem affects multithreaded SoCs with a custom interrupt
-> > > > > controller. Chips with 1004Kc core and newer use the MIPS GIC.
-> > > > > 
-> > > > > Also CC'ed Birger Koblitz and Sander Vanheule. Both are working
-> > > > > on support for Realtek RTL930x chips with 34Kc core and Birger
-> > > > > has added a patch in OpenWRT that also enables all interrupt
-> > > > > lines. So it looks like this patch is useful for more SoCs.
-> > > > > 
-> > > > > Tested on lantiq xRX200 and xRX330.
-> > > > > 
-> > > > > Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
-> > > > 
-> > > > Thanks for bringing up this issue. Like you say OpenWrt carries a
-> > > > similar patch, and I also carry a patch on my tree to enable all CPU
-> > > > IRQ lines.
-> > > > 
-> > > > Indiscriminately enabling all IRQ lines doesn't sit quite right with
-> > > > me though, since I would expect these to be enabled
-> > > > on-demand. I.e. when a peripheral requests an IRQ, or when an IRQ
-> > > > controller is cascaded into one of the CPU's interrupt lines. If I
-> > > > understand correctly, the IRQ mask/unmask functions in
-> > > > drivers/irqchip/irq-mips-cpu.c should do this.
-> > > 
-> > > But this is only enabling interrupts at the CPU level, right? And the
-> > > irqchip is still in control of the masking of the individual
-> > > interrupts?
-> > 
-> > in the Lantiq case yes
-> > 
-> > > If both assertions are true, then this patch seems OK. If it just let
-> > > any interrupt through without any control, then this is wrong.
-> > > 
-> > > So which one is it?
-> > 
-> > if there isn't an additional irqchip connected to the cpu interrupt lines,
-> > this patch will cause problems.
+
+On 07/07/2022 03:11, Jakub Kicinski wrote:
+> On Wed, 6 Jul 2022 09:39:13 +0100 Jon Hunter wrote:
+>> There is a long-standing issue with the Synopsys DWC Ethernet driver
+>> for Tegra194 where random system crashes have been observed [0]. The
+>> problem occurs when the split header feature is enabled in the stmmac
+>> driver. In the bad case, a larger than expected buffer length is
+>> received and causes the calculation of the total buffer length to
+>> overflow. This results in a very large buffer length that causes the
+>> kernel to crash. Why this larger buffer length is received is not clear,
+>> however, the feedback from the NVIDIA design team is that the split
+>> header feature is not supported for Tegra194. Therefore, disable split
+>> header support for Tegra194 to prevent these random crashes from
+>> occurring.
+>>
+>> [0] https://lore.kernel.org/linux-tegra/b0b17697-f23e-8fa5-3757-604a86f3a095@nvidia.com/
+>>
+>> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
 > 
-> And that's what the irq-mips-cpu driver should solve, right? In this
+> Fixes: 67afd6d1cfdf ("net: stmmac: Add Split Header support and enable it in XGMAC cores")
+> 
+> correct?
 
-yes
 
-> case, what's the problem with adopting this driver for the Lantiq
-> platform (and all other ones using the same CPU)?
+Yes that is correct. I forgot to add. Let me know if you want me to send 
+a V2.
 
-I guess vendor code supplied more or less the current code base and
-nobody dared to change it.
-
-Thomas.
+Thanks
+Jon
 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+nvpublic
