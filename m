@@ -2,209 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9006BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7ECC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235883AbiGGNby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
+        id S235908AbiGGNcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235490AbiGGNbw (ORCPT
+        with ESMTP id S235885AbiGGNcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:31:52 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F6E31906;
-        Thu,  7 Jul 2022 06:31:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=IbZ1yvXv8VTRh+Cr01Welmi1nR57tc4pZ0SSCJyULWo=; b=NbHuJxvgBdQ8dXCzCdWU+1naC/
-        s+l/L0niWCcqQpKbBPSkpbWceoUktXST7cZsfhrnpdSPiiaUQiNQdY7DwBaHH9XR1XszrGaqvwcg8
-        W6zrQDo5d09a8PRuF3PLdHiJFWdzGDcjDnaeyP1EQq/1yh7qrOskcW/7sCZPnXnGjOY0qkPCYKq0i
-        IBYteaQOJG7hsMBn9BBdi0Ccjbuazs5CFzBvCUk5mVXykfxBhHVFA9GWyghPI7vip+D5tFdp/0ZQs
-        veZ5+Jq5RHfviOY68oT4nsnMlqvp+zRFEyDtPamPpHkBxAMHzEGyLJLfZQOOiqf2kTn9xZYT5RU6x
-        t6z27Qgg==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o9Rbc-0099vg-9K;
-        Thu, 07 Jul 2022 13:31:44 +0000
-Date:   Thu, 7 Jul 2022 14:31:44 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, Baoquan He <bhe@redhat.com>,
-        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] s390/crash: allow multi-segment iterators
-Message-ID: <YsbgQLNXbHH30phb@ZenIV>
-References: <cover.1657172539.git.agordeev@linux.ibm.com>
- <613f63d652bb4fa6fb3d2bb38762de6bb066b35a.1657172539.git.agordeev@linux.ibm.com>
- <YsbXfh3e2rDEKSNw@casper.infradead.org>
+        Thu, 7 Jul 2022 09:32:00 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409E931912
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:31:59 -0700 (PDT)
+Date:   Thu, 07 Jul 2022 13:31:56 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657200717;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Xg2iBSqaUgbPb/tUAa3bQyVo5CHxvHqF1Os5amRzOw=;
+        b=kcAcHsAmcdoDSdK0UAEobkU47ot8fkVWqUYd/t8Omca8MHMW1FAkY2bt8FLhzYsVToPJB4
+        gB5XPPgfvQnazrfGMoI68f+s3FB5Fy8AotcGfVif85VQPtDkAhtYd6o+807Ik18RGwdjns
+        DBJwEnxpK+H/muoxbtSYbpdulCftYywqG793SmIroIVs3+sFYD6Ho0dZFIRe30wLKUX0Mw
+        z9A8m7l9MIdLQlaH0Y+VFRo3NyWVQl8/9zc+sb4R8kJPxEBftcNOgi1tUagqHt5FoVnbsC
+        Pnmcpnaq7vpk2VKnuqk4VBqUs/F4M+XKWiyGJKYAdF17/9lB5HDn4vB3FSkuFA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657200717;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Xg2iBSqaUgbPb/tUAa3bQyVo5CHxvHqF1Os5amRzOw=;
+        b=+q4bY1T0Ut+4lJYk0lXUMuE5z98yV2KY0B4xNEgiRlkJu0HU6KU+jjxJrk+aOo7LieTvUv
+        YCFYB5hwaH0dEFBA==
+From:   "irqchip-bot for Samuel Holland" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] irqchip/sifive-plic: Make better use of
+ the effective affinity mask
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220701202440.59059-2-samuel@sholland.org>
+References: <20220701202440.59059-2-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YsbXfh3e2rDEKSNw@casper.infradead.org>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Message-ID: <165720071679.15455.18211051296018499116.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 01:54:22PM +0100, Matthew Wilcox wrote:
-> On Thu, Jul 07, 2022 at 08:01:15AM +0200, Alexander Gordeev wrote:
-> > Rework copy_oldmem_page() to allow multi-segment iterators.
-> > Reuse existing iterate_iovec macro as is and only relevant
-> > bits from __iterate_and_advance macro.
-> 
-> Or do it properly?
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Or that...
+Commit-ID:     c1eb23d42c0c5c764687a6dfd5d8b9594065dc97
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/c1eb23d42c0c5c764687a6dfd5d8b9594065dc97
+Author:        Samuel Holland <samuel@sholland.org>
+AuthorDate:    Fri, 01 Jul 2022 15:24:39 -05:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Thu, 07 Jul 2022 14:19:48 +01:00
 
-> You should probably put a mutex around all of this because if you have two
-> threads accessing the hsa at the same time, they'll use the same buffer.
-> But that's a pre-existing problem.  I also fixed the pre-existing bug
-> where you were using 'count' when you meant to use 'len'.
-> 
-> Uncompiled.  You might need to include <linux/uio.h> somewhere.
-> 
-> diff --git a/arch/s390/include/asm/sclp.h b/arch/s390/include/asm/sclp.h
-> index 236b34b75ddb..d8b4c526e0f0 100644
-> --- a/arch/s390/include/asm/sclp.h
-> +++ b/arch/s390/include/asm/sclp.h
-> @@ -143,7 +143,7 @@ int sclp_ap_configure(u32 apid);
->  int sclp_ap_deconfigure(u32 apid);
->  int sclp_pci_report(struct zpci_report_error_header *report, u32 fh, u32 fid);
->  int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count);
-> -int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count);
-> +int memcpy_hsa_iter(struct iov_iter *iter, unsigned long src, size_t count);
->  void sclp_ocf_cpc_name_copy(char *dst);
->  
->  static inline int sclp_get_core_info(struct sclp_core_info *info, int early)
-> diff --git a/arch/s390/kernel/crash_dump.c b/arch/s390/kernel/crash_dump.c
-> index 28124d0fa1d5..6e4dde377f8e 100644
-> --- a/arch/s390/kernel/crash_dump.c
-> +++ b/arch/s390/kernel/crash_dump.c
-> @@ -130,53 +130,11 @@ static inline void *load_real_addr(void *addr)
->  	return (void *)real_addr;
->  }
->  
-> -/*
-> - * Copy memory of the old, dumped system to a kernel space virtual address
-> - */
-> -int copy_oldmem_kernel(void *dst, unsigned long src, size_t count)
-> -{
-> -	unsigned long len;
-> -	void *ra;
-> -	int rc;
-> -
-> -	while (count) {
-> -		if (!oldmem_data.start && src < sclp.hsa_size) {
-> -			/* Copy from zfcp/nvme dump HSA area */
-> -			len = min(count, sclp.hsa_size - src);
-> -			rc = memcpy_hsa_kernel(dst, src, len);
-> -			if (rc)
-> -				return rc;
-> -		} else {
-> -			/* Check for swapped kdump oldmem areas */
-> -			if (oldmem_data.start && src - oldmem_data.start < oldmem_data.size) {
-> -				src -= oldmem_data.start;
-> -				len = min(count, oldmem_data.size - src);
-> -			} else if (oldmem_data.start && src < oldmem_data.size) {
-> -				len = min(count, oldmem_data.size - src);
-> -				src += oldmem_data.start;
-> -			} else {
-> -				len = count;
-> -			}
-> -			if (is_vmalloc_or_module_addr(dst)) {
-> -				ra = load_real_addr(dst);
-> -				len = min(PAGE_SIZE - offset_in_page(ra), len);
-> -			} else {
-> -				ra = dst;
-> -			}
-> -			if (memcpy_real(ra, src, len))
-> -				return -EFAULT;
-> -		}
-> -		dst += len;
-> -		src += len;
-> -		count -= len;
-> -	}
-> -	return 0;
-> -}
-> -
->  /*
->   * Copy memory of the old, dumped system to a user space virtual address
->   */
-> -static int copy_oldmem_user(void __user *dst, unsigned long src, size_t count)
-> +static int copy_oldmem_iter(struct iov_iter *iter, unsigned long src,
-> +		size_t count)
->  {
->  	unsigned long len;
->  	int rc;
-> @@ -185,7 +143,7 @@ static int copy_oldmem_user(void __user *dst, unsigned long src, size_t count)
->  		if (!oldmem_data.start && src < sclp.hsa_size) {
->  			/* Copy from zfcp/nvme dump HSA area */
->  			len = min(count, sclp.hsa_size - src);
-> -			rc = memcpy_hsa_user(dst, src, len);
-> +			rc = memcpy_hsa_iter(iter, src, len);
->  			if (rc)
->  				return rc;
->  		} else {
-> @@ -199,8 +157,8 @@ static int copy_oldmem_user(void __user *dst, unsigned long src, size_t count)
->  			} else {
->  				len = count;
->  			}
-> -			rc = copy_to_user_real(dst, src, count);
-> -			if (rc)
-> +			rc = copy_to_iter(iter, src, len);
-> +			if (rc != len)
->  				return rc;
->  		}
->  		dst += len;
-> @@ -219,23 +177,13 @@ ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn, size_t csize,
->  	unsigned long src;
->  	int rc;
->  
-> -	if (!(iter_is_iovec(iter) || iov_iter_is_kvec(iter)))
-> -		return -EINVAL;
-> -	/* Multi-segment iterators are not supported */
-> -	if (iter->nr_segs > 1)
-> -		return -EINVAL;
->  	if (!csize)
->  		return 0;
->  	src = pfn_to_phys(pfn) + offset;
->  
-> -	/* XXX: pass the iov_iter down to a common function */
-> -	if (iter_is_iovec(iter))
-> -		rc = copy_oldmem_user(iter->iov->iov_base, src, csize);
-> -	else
-> -		rc = copy_oldmem_kernel(iter->kvec->iov_base, src, csize);
-> +	rc = copy_oldmem_iter(iter, src, csize);
->  	if (rc < 0)
->  		return rc;
-> -	iov_iter_advance(iter, csize);
->  	return csize;
->  }
->  
-> diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
-> index 516783ba950f..26125718f3e0 100644
-> --- a/drivers/s390/char/zcore.c
-> +++ b/drivers/s390/char/zcore.c
-> @@ -59,7 +59,7 @@ static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
->   * @src:   Start address within HSA where data should be copied
->   * @count: Size of buffer, which should be copied
->   */
-> -int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
-> +int memcpy_hsa_iter(struct iov_iter *iter, unsigned long src, size_t count)
->  {
->  	unsigned long offset, bytes;
->  
-> @@ -73,10 +73,9 @@ int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
->  		}
->  		offset = src % PAGE_SIZE;
->  		bytes = min(PAGE_SIZE - offset, count);
-> -		if (copy_to_user(dest, hsa_buf + offset, bytes))
-> +		if (copy_to_iter(hsa_buf + offset, bytes, iter) != bytes)
->  			return -EFAULT;
+irqchip/sifive-plic: Make better use of the effective affinity mask
 
-Umm...  Then you want iov_iter_revert() on short copy...
+The PLIC driver already updates the effective affinity mask in its
+.irq_set_affinity callback. Take advantage of that information to only
+touch bits (and take spinlocks) for the specific relevant hart contexts.
+
+First, make sure the effective affinity mask is set before IRQ startup.
+
+Then, since this mask already takes priv->lmask into account, checking
+that mask later is no longer needed (and handler->present is equivalent
+to the bit being set in priv->lmask).
+
+Finally, when (un)masking or changing affinity, only clear/set the
+enable bits in the specific old/new context(s). The cpumask operations
+in plic_irq_unmask() are not needed because they duplicate the code in
+plic_set_affinity().
+
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220701202440.59059-2-samuel@sholland.org
+---
+ drivers/irqchip/Kconfig           |  1 +
+ drivers/irqchip/irq-sifive-plic.c | 27 +++++++++------------------
+ 2 files changed, 10 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 462adac..ea7b748 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -531,6 +531,7 @@ config SIFIVE_PLIC
+ 	bool "SiFive Platform-Level Interrupt Controller"
+ 	depends on RISCV
+ 	select IRQ_DOMAIN_HIERARCHY
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 	help
+ 	   This enables support for the PLIC chip found in SiFive (and
+ 	   potentially other) RISC-V systems.  The PLIC controls devices
+diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+index b3a36dc..46595e6 100644
+--- a/drivers/irqchip/irq-sifive-plic.c
++++ b/drivers/irqchip/irq-sifive-plic.c
+@@ -114,31 +114,18 @@ static inline void plic_irq_toggle(const struct cpumask *mask,
+ 	for_each_cpu(cpu, mask) {
+ 		struct plic_handler *handler = per_cpu_ptr(&plic_handlers, cpu);
+ 
+-		if (handler->present &&
+-		    cpumask_test_cpu(cpu, &handler->priv->lmask))
+-			plic_toggle(handler, d->hwirq, enable);
++		plic_toggle(handler, d->hwirq, enable);
+ 	}
+ }
+ 
+ static void plic_irq_unmask(struct irq_data *d)
+ {
+-	struct cpumask amask;
+-	unsigned int cpu;
+-	struct plic_priv *priv = irq_data_get_irq_chip_data(d);
+-
+-	cpumask_and(&amask, &priv->lmask, cpu_online_mask);
+-	cpu = cpumask_any_and(irq_data_get_affinity_mask(d),
+-					   &amask);
+-	if (WARN_ON_ONCE(cpu >= nr_cpu_ids))
+-		return;
+-	plic_irq_toggle(cpumask_of(cpu), d, 1);
++	plic_irq_toggle(irq_data_get_effective_affinity_mask(d), d, 1);
+ }
+ 
+ static void plic_irq_mask(struct irq_data *d)
+ {
+-	struct plic_priv *priv = irq_data_get_irq_chip_data(d);
+-
+-	plic_irq_toggle(&priv->lmask, d, 0);
++	plic_irq_toggle(irq_data_get_effective_affinity_mask(d), d, 0);
+ }
+ 
+ #ifdef CONFIG_SMP
+@@ -159,11 +146,13 @@ static int plic_set_affinity(struct irq_data *d,
+ 	if (cpu >= nr_cpu_ids)
+ 		return -EINVAL;
+ 
+-	plic_irq_toggle(&priv->lmask, d, 0);
+-	plic_irq_toggle(cpumask_of(cpu), d, !irqd_irq_masked(d));
++	plic_irq_mask(d);
+ 
+ 	irq_data_update_effective_affinity(d, cpumask_of(cpu));
+ 
++	if (!irqd_irq_masked(d))
++		plic_irq_unmask(d);
++
+ 	return IRQ_SET_MASK_OK_DONE;
+ }
+ #endif
+@@ -190,6 +179,7 @@ static struct irq_chip plic_edge_chip = {
+ 	.irq_set_affinity = plic_set_affinity,
+ #endif
+ 	.irq_set_type	= plic_irq_set_type,
++	.flags		= IRQCHIP_AFFINITY_PRE_STARTUP,
+ };
+ 
+ static struct irq_chip plic_chip = {
+@@ -201,6 +191,7 @@ static struct irq_chip plic_chip = {
+ 	.irq_set_affinity = plic_set_affinity,
+ #endif
+ 	.irq_set_type	= plic_irq_set_type,
++	.flags		= IRQCHIP_AFFINITY_PRE_STARTUP,
+ };
+ 
+ static int plic_irq_set_type(struct irq_data *d, unsigned int type)
