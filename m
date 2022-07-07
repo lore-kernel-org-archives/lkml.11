@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D154C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235020AbiGGCcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
+        id S235035AbiGGCc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234918AbiGGCbn (ORCPT
+        with ESMTP id S234911AbiGGCbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 22:31:43 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1732F649
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:40 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id i126so21967702oih.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:40 -0700 (PDT)
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDFF2F3BF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:38 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10c0d96953fso10057378fac.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=QW4iuZlOv4sd87jxv5XGEWli/W/FxeKzQSF/n+L5Jtw=;
-        b=NwSal3tkQmXmBXYmvycScQbHR2KG+P0xphXPzu+9t1297DW+edyRe0BhB2sZzN1XJI
-         slpVkxr+NIrNrr+thf3a2S/QF0jgE9E9syHcdXHZSH8hFGYiqGzCRgLwFBI1tFzvKUOg
-         3xh8jmT+ZU5KI7fkCKvzYuT/aNgjTCOkFnhRJdQvpRJdZkSXjW/4noxUIahfVh5qU+AO
-         nae7kvqP448YZTuKfikaSg2iOfQfjMv6yogwYtvQHG+4U2FC9+A8MwLh7ikXnsTrVawN
-         zA4qOpR2gOgufMHEHhzoZMhTc1Z7xvgnd2JokK3Tw/hZAN4tcCCPY0UA+YwLRBYE2cN+
-         euUw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/7ogWT1H+ImLdlMfj6ihg68dfaIA8LvRjdhEJWHmmos=;
+        b=Ha1SEmr6NNv8/zaLmbB10i4A3gZczVKzg3ROq8Q2hQZG/f4nn+jzxVFP/9pZSr7pGx
+         KkoHRTpPjj7lRZU9lhT8CDlK85qohpzUMHDNCeM2fLyfscQmSmP2Jz/sybBqtxpEZx20
+         aRypXM6AO3o5OMMwKK+m3nXQpXZwIKbvoIxWCZ96WG0ezMyd89heLAifA+FGs1HsSCc9
+         HGbCh9l2f8WGaauL+fDTrUWFLHFddyfVuBa9eK9JnqGPp0CIyg9ifXLEZnbq3zOns12t
+         bnxD4j2Fs8ECG7C5+T9Cj9cmNJYV+j1APEobObYxeYSl7bsfFCGO+TZW14t7MCmmsnE9
+         PjvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QW4iuZlOv4sd87jxv5XGEWli/W/FxeKzQSF/n+L5Jtw=;
-        b=HOCv06Lb0UkF7x1aO2SOVosrJNM99lR/W+D0mzzvUimeki7J4VcKaImU7Kg1fbT+h/
-         uObZGeBLy/pQRp55kh4at/8AMVI8KCi4Fj6IEDnJ3UHHk7G3PiL72pT1LSnfW24HF+ky
-         dyBJJD6TikI3OoRP0y/yRRCszNM6owAKebm+j2y2j1Y6EEKIHJFqk/o9+xB4iZtIEzQI
-         NzwPMsFOzUn/HXKyH7fx9pN77L8V4BqwxYdMRycvQhhJ4MYYQytZNsza58ERJ+TZqvia
-         a7EAdqPPHEjttVcBGLirX9vCzdBbUAQ5g8s17oV2GsFkGalgnaKyfOXOKl3VJPpNdf0a
-         a7pw==
-X-Gm-Message-State: AJIora8chYZEjfpum7Hki2WdTMMNiUTWC1NhfZIN3VFYq/UkFCXkcDrx
-        /SI3wxXyi05Em0hoJcZPgE7v0Q==
-X-Google-Smtp-Source: AGRyM1uPoCJ+iFpOVIBA5ozWqqW8rlmdl/g1y4YCD5rViGVrfPHRug4JFL/hw83XHmJEVQVbIaKi8A==
-X-Received: by 2002:aca:b6d4:0:b0:335:b203:43d2 with SMTP id g203-20020acab6d4000000b00335b20343d2mr1090018oif.297.1657161099953;
-        Wed, 06 Jul 2022 19:31:39 -0700 (PDT)
+        bh=/7ogWT1H+ImLdlMfj6ihg68dfaIA8LvRjdhEJWHmmos=;
+        b=VoVfG2Ov7EHJXBwZRKICTYI+AcqFGx+0KkbIqnuw+K32iIziELQfeop5vNQcTSXKnC
+         ybap/dimtRsRR8PGAvfKIFOC6GdA23LGqZPElIqJohgjrms1IGhrYqQLzCiPMnAL48bF
+         H5QJHYWfWPVqVrRJvoF6jprzSFdOhx51fEjqF5GlOHtw4FDJDzpmt3AVv0H1vT4cQ4Hr
+         vw0pbCzmt7Y4kG+cPTVYUeRSk67MUPzrD163DmmVOv9ej6hFQKFaygHXqPdMOsUd8LBx
+         VRxlAFNQT1KL9ySNE3l2p9CqcVxGr6Mqeyix6JT+Z83dAMObMW4K8bsx2Qdh3nHA99S/
+         ZuXA==
+X-Gm-Message-State: AJIora/LHk5PSUy6mf5Ra9WrZdvQ4Kn11bpQ6yu+SkL1NRWp3r/fHJrG
+        C94ng30OzGQVTAQOj+lJ91W86w==
+X-Google-Smtp-Source: AGRyM1tJ/NV6sY/Sib1jTLGkAvhHU8oaQ91IY8F50p5vMraG6h3T4Vd7wLxb0BPP2Ymd8v6FSyB1BA==
+X-Received: by 2002:a05:6870:d627:b0:10b:f479:7fe4 with SMTP id a39-20020a056870d62700b0010bf4797fe4mr1271236oaq.82.1657161097876;
+        Wed, 06 Jul 2022 19:31:37 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.39
+        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 19:31:39 -0700 (PDT)
+        Wed, 06 Jul 2022 19:31:37 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-arm-msm@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        konrad.dybcio@somainline.org, mturquette@baylibre.com,
-        jonathan@marek.ca, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-clk@vger.kernel.org, robh+dt@kernel.org, sboyd@kernel.org,
-        agross@kernel.org, devicetree@vger.kernel.org,
-        Robert Foss <robert.foss@linaro.org>,
-        linux-kernel@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
-Subject: Re: (subset) [PATCH v8 0/5] SM8350 Display/GPU clock enablement
-Date:   Wed,  6 Jul 2022 21:31:17 -0500
-Message-Id: <165716107314.864223.3569086936166487056.b4-ty@linaro.org>
+To:     linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        Stefan Hansson <newbie13xd@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH v4 1/2] dt-bindings: arm: qcom: Document lg,judyln and lg,judyp devices
+Date:   Wed,  6 Jul 2022 21:31:15 -0500
+Message-Id: <165716107314.864223.7777729041436224109.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220706154337.2026269-1-robert.foss@linaro.org>
-References: <20220706154337.2026269-1-robert.foss@linaro.org>
+In-Reply-To: <20220626164536.16011-1-newbie13xd@gmail.com>
+References: <20220626164536.16011-1-newbie13xd@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -69,24 +69,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Jul 2022 17:43:32 +0200, Robert Foss wrote:
-> Changes since v2
->  - Dropped "clk: Introduce CLK_ASSUME_ENABLED_WHEN_UNUSED"
->  - Dropped "clk: qcom: sm8250-dispcc: Flag shared RCGs as assumed enable"
->  - Dropped "clk: qcom: rcg2: Cache rate changes for parked RCGs"
+On Sun, 26 Jun 2022 12:45:36 -0400, Stefan Hansson wrote:
+> Add binding documentation for the LG G7 and LG V35 smartphones
+> which are based on Snapdragon 845 (sdm845).
 > 
-> Changes since v3:
->  - Dropped RBs & SoBs for bigger changes
->  - Changed author to me for patches with big changes
 > 
-> [...]
 
 Applied, thanks!
 
-[1/5] dt-bindings: clock: Add Qcom SM8350 GPUCC bindings
-      commit: e67a004482c092e326b32f24d4542c85fb8f79bf
-[3/5] dt-bindings: clock: Add Qcom SM8350 DISPCC bindings
-      commit: 909e5be2ca882a0384018370f065ef1c611e6ed9
+[1/2] dt-bindings: arm: qcom: Document lg,judyln and lg,judyp devices
+      (no commit info)
+[2/2] arm64: dts: qcom: add device tree for LG G7 and LG V35
+      commit: 28ae8aa3923c394c8efa8e6439c0f84fa42c96fb
 
 Best regards,
 -- 
