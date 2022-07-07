@@ -2,273 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E57C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236273AbiGGNwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
+        id S235158AbiGGNy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236111AbiGGNwO (ORCPT
+        with ESMTP id S235396AbiGGNym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:52:14 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6328E57223
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:51:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657201863; x=1688737863;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VzIpoNIJ0Q+foKbMkgY/kd7JOLOX/5usap9F57+2qzo=;
-  b=mur2GoMOq08MIGiFObM79oRr+TYFC2YcpjlcPaoLkOFqZlAmqnT7PnaL
-   1uAJmoQKN92LfPJJqHeerJ4Rdd3uAwMuuALmDPuima4Agj+ig4jRjQS9M
-   MCNxUSK1K3gSoIrSzSwnatwkKZ003xs5Q7lGmYqE3Ky3aY7Rs1sktbdzm
-   YSas+Xc7SkowJrmKaQKaTPBXHa8WgjzitdAfjh4H7afojFw/QXvVZ1T5m
-   CgKHExwXFPF9hJVYGFFxupUJ/zGOaaZPnAl/u8khGQVcKIo6Fy12jAhpx
-   2datD2JKq4TSvb763YN6vGsuf61BLoGrlb46WqdBEHijM5QKra5Bl7rYc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="264443631"
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="264443631"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 06:51:02 -0700
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="651141456"
-Received: from wwdowiak-mobl.ger.corp.intel.com (HELO [10.249.254.58]) ([10.249.254.58])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 06:50:58 -0700
-Message-ID: <aecaf6aa-12b0-05bb-8ad4-8d09ca4eff10@linux.intel.com>
-Date:   Thu, 7 Jul 2022 16:51:44 +0300
+        Thu, 7 Jul 2022 09:54:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1C45C969;
+        Thu,  7 Jul 2022 06:53:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62CF3621ED;
+        Thu,  7 Jul 2022 13:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B212EC3411E;
+        Thu,  7 Jul 2022 13:53:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657201999;
+        bh=N37AT1l4FTWK6oQ7foUlDTwImtgc9JahL3XVae3vWh0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ubwxzPzeIKk1CJFQ+A8DyQc/YlyPm83AFhAFsNkSOJPZjZ4x7smXIxvjW4snzKMAs
+         D1DUWEDGLCsaLlEMQWafW5WoUCPY99pJ49kzZWSX5hGa3POWG1VAi3nqt2ao5kySGn
+         JDQK5LA5Yt5k5G41xZs4bHVHsL2yE8p4VOaH31TEgr0phAhbvhH8oIa+ZMVVVH7ICq
+         l0IOyfLiq0Xtsv9EkYPRLEsYT3pXpW11JuHiAZdfHj1+A0NHbPo6TOfQYWyeS3ZkEu
+         UAfRPek6IFErFcQmMZRnywea8PnaDhDct+i5fUA8VUq5UhY7csKamL5bFxLPQ+WA7n
+         WrOro+Wlm31Xg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o9RwX-00019G-Ue; Thu, 07 Jul 2022 15:53:22 +0200
+Date:   Thu, 7 Jul 2022 15:53:21 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/10] dt-bindings: PCI: qcom: Fix msi-interrupt
+ conditional
+Message-ID: <YsblURZDD08fj1Ih@hovoldconsulting.com>
+References: <20220629141000.18111-1-johan+linaro@kernel.org>
+ <20220629141000.18111-3-johan+linaro@kernel.org>
+ <cab173ce-9c7c-9985-277c-3498d82b8400@linaro.org>
+ <2fbe9cf7-7ed8-ccc8-b0bc-26d358cec927@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.10.0
-Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
-Content-Language: en-US
-To:     Cezary Rojewski <cezary.rojewski@intel.com>, andy@kernel.org,
-        broonie@kernel.org
-Cc:     alsa-devel@alsa-project.org, tiwai@suse.com, perex@perex.cz,
-        amadeuszx.slawinski@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
-        ranjani.sridharan@linux.intel.com, linux-kernel@vger.kernel.org,
-        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
-        yung-chuan.liao@linux.intel.com
-References: <20220707091301.1282291-1-cezary.rojewski@intel.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
-In-Reply-To: <20220707091301.1282291-1-cezary.rojewski@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2fbe9cf7-7ed8-ccc8-b0bc-26d358cec927@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 07/07/2022 12:13, Cezary Rojewski wrote:
-> Add strsplit_u32() and its __user variant to allow for splitting
-> specified string into array of u32 tokens.
+On Thu, Jul 07, 2022 at 04:41:02PM +0300, Dmitry Baryshkov wrote:
+> On 07/07/2022 16:34, Dmitry Baryshkov wrote:
+> > On 29/06/2022 17:09, Johan Hovold wrote:
+> >> Fix the msi-interrupt conditional which always evaluated to false due to
+> >> a misspelled property name ("compatibles" in plural).
+> >>
+> >> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > 
+> > Fixes: 6700a9b00f0a ("dt-bindings: PCI: qcom: Do not require resets on 
+> > msm8996 platforms")
 > 
-> Originally this functionality was added for the SOF sound driver. As
-> more users are on the horizon, relocate it so it becomes a common good.
-> 
-> Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
-> ---
->  include/linux/string_helpers.h    |  3 +
->  lib/string_helpers.c              | 96 +++++++++++++++++++++++++++++++
->  sound/soc/sof/sof-client-probes.c | 51 +---------------
->  3 files changed, 100 insertions(+), 50 deletions(-)
-> 
-> diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.h
-> index 4d72258d42fd..a4630ddfca27 100644
-> --- a/include/linux/string_helpers.h
-> +++ b/include/linux/string_helpers.h
-> @@ -126,4 +126,7 @@ static inline const char *str_enabled_disabled(bool v)
->  	return v ? "enabled" : "disabled";
->  }
->  
-> +int strsplit_u32(const char *str, const char *delim, u32 **tkns, size_t *num_tkns);
-> +int strsplit_u32_user(const char __user *from, size_t count, loff_t *ppos, const char *delim,
-> +		      u32 **tkns, size_t *num_tkns);
->  #endif
-> diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-> index 5ed3beb066e6..bb24f0c62539 100644
-> --- a/lib/string_helpers.c
-> +++ b/lib/string_helpers.c
-> @@ -984,3 +984,99 @@ void fortify_panic(const char *name)
->  }
->  EXPORT_SYMBOL(fortify_panic);
->  #endif /* CONFIG_FORTIFY_SOURCE */
-> +
-> +/**
-> + * strsplit_u32 - Split string into sequence of u32 tokens
-> + * @str:	The string to split into tokens.
-> + * @delim:	The string containing delimiter characters.
-> + * @tkns:	Returned u32 sequence pointer.
-> + * @num_tkns:	Returned number of tokens obtained.
-> + *
-> + * On success @num_tkns and @tkns are assigned the number of tokens extracted
-> + * and the array itself respectively.
-> + * Caller takes responsibility for freeing @tkns when no longer needed.
-> + */
-> +int strsplit_u32(const char *str, const char *delim, u32 **tkns, size_t *num_tkns)
-> +{
-> +	size_t max_count = 32;
-> +	size_t count = 0;
-> +	char *s, **p;
-> +	u32 *buf, *tmp;
-> +	int ret = 0;
-> +
-> +	p = (char **)&str;
-> +	*tkns = NULL;
-> +	*num_tkns = 0;
-> +
-> +	buf = kcalloc(max_count, sizeof(*buf), GFP_KERNEL);
-> +	if (!buf)
-> +		return -ENOMEM;
-> +
-> +	while ((s = strsep(p, delim)) != NULL) {
-> +		ret = kstrtouint(s, 0, buf + count);
-> +		if (ret)
-> +			goto free_buf;
-> +
-> +		if (++count > max_count) {
+> Ugh, I was thinking about a different chunk (which also has this issue), 
+> so please ignore the Fixes.
 
-I think this should be as it was originally:
-if (++count >= max_count) {
+Heh, yeah, I was pretty I had already added it for the issue in mainline.
 
-Otherwise when we reach the max_count we would not realloc to get more
-space and the data + max_count is pointing outside of the allocated area.
-
-> +			max_count *= 2;
-> +			tmp = krealloc(buf, max_count * sizeof(*buf), GFP_KERNEL);
-> +			if (!tmp) {
-> +				ret = -ENOMEM;
-> +				goto free_buf;
-> +			}
-> +			buf = tmp;
-> +		}
-> +	}
-> +
-> +	if (!count)
-> +		goto free_buf;
-> +	*tkns = kmemdup(buf, count * sizeof(*buf), GFP_KERNEL);
-> +	if (*tkns == NULL) {
-> +		ret = -ENOMEM;
-> +		goto free_buf;
-> +	}
-> +	*num_tkns = count;
-> +
-> +free_buf:
-> +	kfree(buf);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(strsplit_u32);
-> +
-> +/**
-> + * strsplit_u32_user - Split string into sequence of u32 tokens
-> + * @from:	The user space buffer to read from
-> + * @ppos:	The current position in the buffer
-> + * @count:	The maximum number of bytes to read
-> + * @delim:	The string containing delimiter characters.
-> + * @tkns:	Returned u32 sequence pointer.
-> + * @num_tkns:	Returned number of tokens obtained.
-> + *
-> + * On success @num_tkns and @tkns are assigned the number of tokens extracted
-> + * and the array itself respectively.
-> + * Caller takes responsibility for freeing @tkns when no longer needed.
-> + */
-> +int strsplit_u32_user(const char __user *from, size_t count, loff_t *ppos, const char *delim,
-> +		      u32 **tkns, size_t *num_tkns)
-> +{
-> +	char *buf;
-> +	int ret;
-> +
-> +	buf = kmalloc(count + 1, GFP_KERNEL);
-> +	if (!buf)
-> +		return -ENOMEM;
-> +
-> +	ret = simple_write_to_buffer(buf, count, ppos, from, count);
-> +	if (ret != count) {
-> +		ret = (ret < 0) ? ret : -EIO;
-> +		goto free_buf;
-> +	}
-> +
-> +	buf[count] = '\0';
-> +	ret = strsplit_u32(buf, delim, tkns, num_tkns);
-> +
-> +free_buf:
-> +	kfree(buf);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(strsplit_u32_user);
-> diff --git a/sound/soc/sof/sof-client-probes.c b/sound/soc/sof/sof-client-probes.c
-> index 1f1ea93a7fbf..48ebbe58e2b9 100644
-> --- a/sound/soc/sof/sof-client-probes.c
-> +++ b/sound/soc/sof/sof-client-probes.c
-> @@ -12,6 +12,7 @@
->  #include <linux/debugfs.h>
->  #include <linux/module.h>
->  #include <linux/pm_runtime.h>
-> +#include <linux/string_helpers.h>
->  #include <sound/soc.h>
->  #include <sound/sof/header.h>
->  #include "sof-client.h"
-> @@ -410,56 +411,6 @@ static const struct snd_compress_ops sof_probes_compressed_ops = {
->  	.copy = sof_probes_compr_copy,
->  };
->  
-> -/**
-> - * strsplit_u32 - Split string into sequence of u32 tokens
-> - * @buf:	String to split into tokens.
-> - * @delim:	String containing delimiter characters.
-> - * @tkns:	Returned u32 sequence pointer.
-> - * @num_tkns:	Returned number of tokens obtained.
-> - */
-> -static int strsplit_u32(char *buf, const char *delim, u32 **tkns, size_t *num_tkns)
-> -{
-> -	char *s;
-> -	u32 *data, *tmp;
-> -	size_t count = 0;
-> -	size_t cap = 32;
-> -	int ret = 0;
-> -
-> -	*tkns = NULL;
-> -	*num_tkns = 0;
-> -	data = kcalloc(cap, sizeof(*data), GFP_KERNEL);
-> -	if (!data)
-> -		return -ENOMEM;
-> -
-> -	while ((s = strsep(&buf, delim)) != NULL) {
-> -		ret = kstrtouint(s, 0, data + count);
-> -		if (ret)
-> -			goto exit;
-> -		if (++count >= cap) {
-> -			cap *= 2;
-> -			tmp = krealloc(data, cap * sizeof(*data), GFP_KERNEL);
-> -			if (!tmp) {
-> -				ret = -ENOMEM;
-> -				goto exit;
-> -			}
-> -			data = tmp;
-> -		}
-> -	}
-> -
-> -	if (!count)
-> -		goto exit;
-> -	*tkns = kmemdup(data, count * sizeof(*data), GFP_KERNEL);
-> -	if (!(*tkns)) {
-> -		ret = -ENOMEM;
-> -		goto exit;
-> -	}
-> -	*num_tkns = count;
-> -
-> -exit:
-> -	kfree(data);
-> -	return ret;
-> -}
-> -
->  static int tokenize_input(const char __user *from, size_t count,
->  			  loff_t *ppos, u32 **tkns, size_t *num_tkns)
->  {
-
--- 
-Péter
+Johan
