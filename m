@@ -2,68 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA60C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9AF7CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235292AbiGGLcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        id S235408AbiGGLd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235038AbiGGLct (ORCPT
+        with ESMTP id S235327AbiGGLdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 07:32:49 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18CD2FFF2;
-        Thu,  7 Jul 2022 04:32:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0VIdIQWG_1657193558;
-Received: from 30.97.48.62(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VIdIQWG_1657193558)
-          by smtp.aliyun-inc.com;
-          Thu, 07 Jul 2022 19:32:40 +0800
-Message-ID: <ef376131-bf5f-7e5b-ea1b-1e8f64a6d060@linux.alibaba.com>
-Date:   Thu, 7 Jul 2022 19:32:44 +0800
+        Thu, 7 Jul 2022 07:33:54 -0400
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56922A708
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 04:33:50 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20220707113347b436a0426659325429
+        for <linux-kernel@vger.kernel.org>;
+        Thu, 07 Jul 2022 13:33:48 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=4zrox7ZlHscR7GaMrL4oS4/tk+1RCzBT6lJQ3JfJL0o=;
+ b=HUiTBM6BLE6FL/IKNjsboP7hCLX6YfsV25sCaqNvdbwN9jig4jMsRx9/uwSTllrWuoV43E
+ 9GKrXZbk+hxwly5vX37zBkkvykw6ywSzvzTvTJyG7O2RLNkKWEZMal1sxbYQN6SW61zW5FkZ
+ vghSkA6GzHoyVr16NOIQH9xf+uCZY=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v2 1/4] tty: n_gsm: fix wrong T1 retry count handling
+Date:   Thu,  7 Jul 2022 13:32:20 +0200
+Message-Id: <20220707113223.3685-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 0/3] Add PUD and kernel PTE level pagetable account
-To:     Dave Hansen <dave.hansen@intel.com>, akpm@linux-foundation.org
-Cc:     rppt@linux.ibm.com, willy@infradead.org, will@kernel.org,
-        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
-        peterz@infradead.org, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, kernel@xen0n.name,
-        tsbogend@alpha.franken.de, dave.hansen@linux.intel.com,
-        luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, hpa@zytor.com, arnd@arndb.de, guoren@kernel.org,
-        monstr@monstr.eu, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
-        x86@kernel.org, linux-arch@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linux-csky@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
- <d2d58cc2-7e6d-aa2d-3096-a500ce321494@intel.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <d2d58cc2-7e6d-aa2d-3096-a500ce321494@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Daniel Starke <daniel.starke@siemens.com>
 
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
+retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix gsm_dlci_t1() to comply with 3GPP 27.010.
 
-On 7/6/2022 11:48 PM, Dave Hansen wrote:
-> On 7/6/22 01:59, Baolin Wang wrote:
->> Now we will miss to account the PUD level pagetable and kernel PTE level
->> pagetable, as well as missing to set the PG_table flags for these pagetable
->> pages, which will get an inaccurate pagetable accounting, and miss
->> PageTable() validation in some cases. So this patch set introduces new
->> helpers to help to account PUD and kernel PTE pagetable pages.
-> 
-> Could you explain the motivation for this series a bit more?  Is there a
-> real-world problem that this fixes?
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Not fix real problem. The motivation is that making the pagetable 
-accounting more accurate, which helps us to analyse the consumption of 
-the pagetable pages in some cases, and maybe help to do some empty 
-pagetable reclaiming in future.
+No changes have been applied compared to v1.
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index ba399a660573..1a70e7ae90cc 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1805,8 +1805,8 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 
+ 	switch (dlci->state) {
+ 	case DLCI_OPENING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+@@ -1821,8 +1821,8 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 
+ 		break;
+ 	case DLCI_CLOSING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else
+-- 
+2.34.1
+
