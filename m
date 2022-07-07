@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC70BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582EFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiGGNsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40246 "EHLO
+        id S236196AbiGGNtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236116AbiGGNrr (ORCPT
+        with ESMTP id S236085AbiGGNrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:47:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED88C1F61F;
-        Thu,  7 Jul 2022 06:47:46 -0700 (PDT)
+        Thu, 7 Jul 2022 09:47:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E88F27B20;
+        Thu,  7 Jul 2022 06:47:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD5B6B8222C;
-        Thu,  7 Jul 2022 13:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A661C341FA;
-        Thu,  7 Jul 2022 13:47:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECEAFB8221A;
+        Thu,  7 Jul 2022 13:47:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31927C341CE;
+        Thu,  7 Jul 2022 13:47:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657201660;
-        bh=Y+J7Plv+oHOVcHXQp7HO15QDcgjd2W96yFr9wmzsNjI=;
+        s=k20201202; t=1657201659;
+        bh=t37NNwLh8MwSux7U3ureG58oP/xr5nX9uYzRDQ0W8Dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jqKoKRNETCw8VvrS7CbL/LS2UraJauzpiKvDXgEfFi25I9n653jl6jW1jh0OEr+Tx
-         +P+kdsHhgv4l0pqJyP2E97Wjje9CLihdqoW0oU0y/89YDTpmZGiA6Pwm6WSTUZEkNn
-         uqu3QM9YeS7WK8UTyGn+pPDRP4vlSjl/gWdoME7qYJyxxjn0u67oYGVUpCo9FGTTtd
-         tvYKYLCEypoDtgagxnnyUvgw/lohWnzovnzUGE6NxaHjgtBlSoeNM8YRMyHZR71EZo
-         DnBoH4TgvnHXCQNOuqNKQQxf3HCz5gFJHgR/yK3R1JpaQgKu9MnQTXT8afU5aBSh+N
-         ADJglmaBRYeUA==
+        b=Ipp8H3Cz2npmAH3g3htm83GAkhbejAdjQdZlM++d9T00FQGCgVj+U5t26ntJSwVJF
+         aYIDCMfv7RnKuVU9rwQGrpQ7XxcJad+0SwwnJ0YCJuFpmv53ePaFmiCiV5lS5PAATB
+         9ShS0QFk44sY+wSkFNxxVQ6v7kVXZkhbHYaftn+RtS/5REH4dfJAOMv/SOKM4NePrd
+         lz7p4zhAi2U+nW4mH9/REyavTxbxdND+G0Jtn06btjA3panEnRfw5DXHBmWq6Bftkr
+         zuF+kdtScya0QepF5Zf9Modudjaoe4llx+dKhPvdtulAB1va0S2d9PqcQQCM1tgzM0
+         q3KR0tkiBVrQA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o9Rr4-0000wp-WB; Thu, 07 Jul 2022 15:47:43 +0200
+        id 1o9Rr3-0000vx-TR; Thu, 07 Jul 2022 15:47:41 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -45,9 +45,9 @@ Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 16/30] dt-bindings: phy: qcom,qmp-ufs: add missing SM8450 clock
-Date:   Thu,  7 Jul 2022 15:47:11 +0200
-Message-Id: <20220707134725.3512-17-johan+linaro@kernel.org>
+Subject: [PATCH v2 04/30] dt-bindings: phy: qcom,qmp: fix child node description
+Date:   Thu,  7 Jul 2022 15:46:59 +0200
+Message-Id: <20220707134725.3512-5-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220707134725.3512-1-johan+linaro@kernel.org>
 References: <20220707134725.3512-1-johan+linaro@kernel.org>
@@ -57,57 +57,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing "qref" clock used by the SM8450 UFS QMP PHY to the
-binding.
+Fix the incorrect description of the child nodes which claimed that one
+node is required per lane rather than per PHY.
 
-Fixes: e04121ba1b08 ("dt-bindings: phy: qcom,qmp: Add SM8450 UFS phy compatible")
-Fixes: 07fa917a335e ("arm64: dts: qcom: sm8450: add ufs nodes")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../bindings/phy/qcom,qmp-ufs-phy.yaml        | 20 +++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-index e9dfed29e996..7a1f80e2cf23 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-@@ -42,11 +42,11 @@ properties:
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index ea028bad961d..f7b8898fd95d 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -100,9 +100,7 @@ properties:
+ patternProperties:
+   "^phy@[0-9a-f]+$":
+     type: object
+-    description:
+-      Each device node of QMP phy is required to have as many child nodes as
+-      the number of lanes the PHY has.
++    description: one child node per PHY provided by this block
  
-   clocks:
-     minItems: 1
--    maxItems: 2
-+    maxItems: 3
- 
-   clock-names:
-     minItems: 1
--    maxItems: 2
-+    maxItems: 3
- 
-   resets:
-     maxItems: 1
-@@ -117,6 +117,22 @@ allOf:
-             - const: ref
-             - const: ref_aux
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,sm8450-qmp-ufs-phy
-+    then:
-+      properties:
-+        clocks:
-+          maxItems: 3
-+        clock-names:
-+          items:
-+            - const: ref
-+            - const: ref_aux
-+            - const: qref
-+
- examples:
-   - |
-     #include <dt-bindings/clock/qcom,gcc-sc8280xp.h>
+ required:
+   - compatible
 -- 
 2.35.1
 
