@@ -2,108 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C27DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F08C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiGGJUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
+        id S234443AbiGGJbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230222AbiGGJUt (ORCPT
+        with ESMTP id S229951AbiGGJbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:20:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10A932EC7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:20:47 -0700 (PDT)
-Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1o9Ngi-0006DF-SW; Thu, 07 Jul 2022 11:20:44 +0200
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Julia Lawall <Julia.Lawall@inria.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>
-Cc:     linux-kernel@vger.kernel.org, cocci@inria.fr,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH] coccinelle: api: explicitly request exclusive reset controls
-Date:   Thu,  7 Jul 2022 11:20:30 +0200
-Message-Id: <20220707092030.3319988-1-p.zabel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Thu, 7 Jul 2022 05:31:05 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1AE33E04;
+        Thu,  7 Jul 2022 02:31:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1657186262; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3432oYUbB0NCbGzcaiDe7Zz5ohhG6Uoy9WG/btVsu7A=;
+        b=JtBdqbQGB661DJdFRqmt6kAQ1SROsa6wGDALoANOgBdiRAomxlU2IucnqCUihPqEtfIJmC
+        JMFLR0QwG9OjtAxsdBjEzmmZfgI1AdPXq3yS6K2bYCDsqeDtHGKebsQvudbQwBuYlL4GHT
+        kdoqEDR72JweoTDsQMMhimpdx1obwaU=
+Date:   Thu, 07 Jul 2022 10:30:51 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 02/11] ASoC: jz4740-i2s: Refactor DMA channel setup
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, linux-mips@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Message-Id: <F39NER.PND5B77O5GFP@crapouillou.net>
+In-Reply-To: <20220706211330.120198-3-aidanmacdonald.0x0@gmail.com>
+References: <20220706211330.120198-1-aidanmacdonald.0x0@gmail.com>
+        <20220706211330.120198-3-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::28
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Match deprecated reset_control_get API calls and replace them with the
-corresponding _exclusive variants with the reset-exclusive.cocci rule,
-to hopefully advance the API transition started with commit a53e35db70d1
-("reset: Ensure drivers are explicit when requesting reset lines").
 
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
----
- scripts/coccinelle/api/reset-exclusive.cocci | 49 ++++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 scripts/coccinelle/api/reset-exclusive.cocci
 
-diff --git a/scripts/coccinelle/api/reset-exclusive.cocci b/scripts/coccinelle/api/reset-exclusive.cocci
-new file mode 100644
-index 000000000000..c5d6938ca542
---- /dev/null
-+++ b/scripts/coccinelle/api/reset-exclusive.cocci
-@@ -0,0 +1,49 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/// Explicitly request exclusive reset controls. The implicitly exclusive reset
-+/// control request functions are deprecated.
-+///
-+// Confidence: High
-+// Copyright: (C) 2022 Philipp Zabel.
-+// Comments:
-+// Options: --no-includes --include-headers
-+// Keywords: reset_control_get
-+
-+virtual patch
-+virtual report
-+
-+@depends on patch@
-+expression x;
-+@@
-+
-+ x =
-+(
-+-devm_reset_control_get
-++devm_reset_control_get_exclusive
-+|
-+-devm_reset_control_get_optional
-++devm_reset_control_get_optional_exclusive
-+|
-+-of_reset_control_get
-++of_reset_control_get_exclusive
-+|
-+-of_reset_control_get_by_index
-++of_reset_control_get_exclusive_by_index
-+|
-+-devm_reset_control_get_by_index
-++devm_reset_control_get_exclusive_by_index
-+)
-+ (...)
-+
-+@r depends on !patch exists@
-+expression x;
-+position p;
-+@@
-+
-+*x = \(devm_reset_control_get@p\|devm_reset_control_get_optional@p\|of_reset_control_get@p\|of_rset_control_get_by_index@p\|devm_reset_control_get_by_index@p\)(...)
-+
-+@script:python depends on report@
-+p << r.p;
-+@@
-+
-+msg = "ERROR: explicitly request exclusive reset controls with reset_control_get_exclusive() and variants"
-+coccilib.report.print_report(p[0], msg)
--- 
-2.30.2
+Le mer., juil. 6 2022 at 22:13:21 +0100, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> It's simpler to set up the playback and capture DMA settings
+> at driver probe time instead of during DAI probing.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+>  sound/soc/jz4740/jz4740-i2s.c | 23 +++++------------------
+>  1 file changed, 5 insertions(+), 18 deletions(-)
+>=20
+> diff --git a/sound/soc/jz4740/jz4740-i2s.c=20
+> b/sound/soc/jz4740/jz4740-i2s.c
+> index 298ff0a83931..ecd8df70d39c 100644
+> --- a/sound/soc/jz4740/jz4740-i2s.c
+> +++ b/sound/soc/jz4740/jz4740-i2s.c
+> @@ -95,7 +95,6 @@ struct i2s_soc_info {
+>  struct jz4740_i2s {
+>  	struct resource *mem;
+>  	void __iomem *base;
+> -	dma_addr_t phys_base;
+
+Acked-by: Paul Cercueil <paul@crapouillou.net>
+
+Note that you can remove "mem" too, it's not used anywhere.
+
+Cheers,
+-Paul
+
+>=20
+>  	struct clk *clk_aic;
+>  	struct clk *clk_i2s;
+> @@ -370,21 +369,6 @@ static int jz4740_i2s_resume(struct=20
+> snd_soc_component *component)
+>  	return 0;
+>  }
+>=20
+> -static void jz4740_i2s_init_pcm_config(struct jz4740_i2s *i2s)
+> -{
+> -	struct snd_dmaengine_dai_dma_data *dma_data;
+> -
+> -	/* Playback */
+> -	dma_data =3D &i2s->playback_dma_data;
+> -	dma_data->maxburst =3D 16;
+> -	dma_data->addr =3D i2s->phys_base + JZ_REG_AIC_FIFO;
+> -
+> -	/* Capture */
+> -	dma_data =3D &i2s->capture_dma_data;
+> -	dma_data->maxburst =3D 16;
+> -	dma_data->addr =3D i2s->phys_base + JZ_REG_AIC_FIFO;
+> -}
+> -
+>  static int jz4740_i2s_dai_probe(struct snd_soc_dai *dai)
+>  {
+>  	struct jz4740_i2s *i2s =3D snd_soc_dai_get_drvdata(dai);
+> @@ -395,7 +379,6 @@ static int jz4740_i2s_dai_probe(struct=20
+> snd_soc_dai *dai)
+>  	if (ret)
+>  		return ret;
+>=20
+> -	jz4740_i2s_init_pcm_config(i2s);
+>  	snd_soc_dai_init_dma_data(dai, &i2s->playback_dma_data,
+>  		&i2s->capture_dma_data);
+>=20
+> @@ -529,7 +512,11 @@ static int jz4740_i2s_dev_probe(struct=20
+> platform_device *pdev)
+>  	if (IS_ERR(i2s->base))
+>  		return PTR_ERR(i2s->base);
+>=20
+> -	i2s->phys_base =3D mem->start;
+> +	i2s->playback_dma_data.maxburst =3D 16;
+> +	i2s->playback_dma_data.addr =3D mem->start + JZ_REG_AIC_FIFO;
+> +
+> +	i2s->capture_dma_data.maxburst =3D 16;
+> +	i2s->capture_dma_data.addr =3D mem->start + JZ_REG_AIC_FIFO;
+>=20
+>  	i2s->clk_aic =3D devm_clk_get(dev, "aic");
+>  	if (IS_ERR(i2s->clk_aic))
+> --
+> 2.35.1
+>=20
+
 
