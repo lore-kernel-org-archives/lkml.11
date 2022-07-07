@@ -2,75 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB4DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E28C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbiGGLUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        id S235240AbiGGL2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiGGLUN (ORCPT
+        with ESMTP id S230020AbiGGL2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 07:20:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CD713CEF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 04:20:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DD94622F0
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C8FC3411E;
-        Thu,  7 Jul 2022 11:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657192812;
-        bh=aiyTbicPsb7VZNnD7RyzS8iSfcSdgmUuB8FlOpWLxUo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=j1Q16gU6HsNLSkdiC3XXzN3Qjfuf8GgsGYdqjRV9SUVPbnDBJFY0LTjCIbMN1NvkE
-         XGPVVtHKpw6lBTTD6WVyw7YqxOsIzHgjYQe49B3K6wVWT88ghKMruV0HZ7AjrfUfr+
-         IRCw8G3cybCP171s1xFwTAeDa1AEC3bVBhXCm0n83PM9p/ozuLceCqblvYoThtx2Ik
-         gCUXXNjMkSOj1d50fEJoV8Jl4dFP+MgVgcaHbFVww+1AVdPN231+A00DZx61yX/L6e
-         YRvo5gjwhfQlN8o5jC3SJLsA+NkI9QV5fKbdrT1ie0CEJDLcBB7fvb65Jh0sLPeTGj
-         pgWQD4oBGhkeA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Naresh Solanki <naresh.solanki@9elements.com>,
-        Patrick Rudolph <patrick.rudolph@9elements.com>
-Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH] regulator: Fix MFD_MAX597X dependency
-Date:   Thu,  7 Jul 2022 12:17:53 +0100
-Message-Id: <20220707111753.16581-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=761; h=from:subject; bh=aiyTbicPsb7VZNnD7RyzS8iSfcSdgmUuB8FlOpWLxUo=; b=owEBbQGS/pANAwAKASTWi3JdVIfQAcsmYgBixsCv1EX5jf2aH5wxmWkPgBTLjoO0tTXH7POWdXVj EobqYmuJATMEAAEKAB0WIQSt5miqZ1cYtZ/in+ok1otyXVSH0AUCYsbArwAKCRAk1otyXVSH0B3QB/ 9Lsos5mxxL28/epyxiB/ojaWLVwOvRUfPtu0Dmqz0xst8a6PGBH2I9w4NeQkAnlT1HC+ieU4t2oLBx 7S2vcrBNdoi+ApO1HzoRZWIz5pZChlLGH35Z7eojp7zjnc/4HKxzQ4BeutmkA+umoSfuRsSnNidmFz lmAa6nxnJY65Zw1dxmSWKpleDK+Axppr5Fjw2vNhvqUxeKYD2fN2DCsOmoHNhW2ZJYWhATOOtRcJbI vqLbApuwgDHojJEqfPLVb+qydVj9L1ZxlCYpuNowLa3Mx7iFq4GHSMWloXpExa2D0CTQ5umqeR8m/i pf5Hucj6orJDIG1VlrMIsaqlkXZgB7
-X-Developer-Key: i=broonie@kernel.org; a=openpgp; fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
-Content-Transfer-Encoding: 8bit
+        Thu, 7 Jul 2022 07:28:53 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE832F00D;
+        Thu,  7 Jul 2022 04:28:51 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id u15so7441020ejx.9;
+        Thu, 07 Jul 2022 04:28:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=m5PYfIp3y7G55Xw9BSK+oFXneOri6BhsxpMkd6GW0qo=;
+        b=EJfOtU5spY6XTXJWNfaP8bnujKcmZDrO+oflo0+0LMfVyY1Ourz9zntnsO8dRuZn7V
+         H9kmtAh7Uo7NLMYNgM1Ii0rr7cQDdxsax7F7VGMXL+VbG39gr5NmTQAwtbk1yXA9ezkV
+         mgq42B1cYu087uk3NLRvh2Oe17lh05C+1muvr8EmETgJKXs0ujLBLM+cs6E4SNnWhljt
+         nXalygWZ/czeoOjlkvi4w3zrZbWxZ1abhEgiN0klvEwUQIE7tOUI6UY5EIqI1dc+AP3G
+         dMcMsTu5ZwUBcjULfaftwtLGzOfYeiv/iNZKWW2LSa2HFxC3SBEhcZlw1meMnMz3YCnL
+         oxwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=m5PYfIp3y7G55Xw9BSK+oFXneOri6BhsxpMkd6GW0qo=;
+        b=jcgxqr+WTKkzHkfQfqvbx0rKLLlJBHsZLAHd2piPIw3vk8W8GAW8R/j0zOpsLqhGDS
+         6sCuRHJuEvQ843Gdsnd37y+uDLca93WjQVqPOU0pYTHuDZLpCSdS3a/PQeqANJ5Gd443
+         zXHzZ7JyxlHsnch67fGlSZhatfCYbbFzOiYrgkZK7O3WOVNI0P4JKEr8Kg9dYuIMxZ+2
+         XVBTc5eeuhFDxE1X41T4In6rNNT/3aSPCXmQW8f2xdelgt+XWyynnbBova6IV2N11XSY
+         2Szrsvc91+yHiZAwCq0O2c/mN8x8Y3raFOJCvtxJcfpJrDA7ucUwNLwnPv30ACp/GE5e
+         qZLg==
+X-Gm-Message-State: AJIora/xArXqUdTUKfvGN+50fedAIwLEej4rXLbfh35lQA91lf49+vHn
+        /JgN8dEcfBqRM8KB1b1fo9a+L3oI+2s=
+X-Google-Smtp-Source: AGRyM1sCeMKb/87R0NYQT4DEJ42/TBDB2kYDNSIKTYv53GoGBgwRKFWdbEZx2gE4jszsucPFprN1VA==
+X-Received: by 2002:a17:906:2001:b0:6f3:bd7f:d878 with SMTP id 1-20020a170906200100b006f3bd7fd878mr43048732ejo.133.1657193330498;
+        Thu, 07 Jul 2022 04:28:50 -0700 (PDT)
+Received: from felia.fritz.box (200116b826df3d00599ec68d191c47fa.dip.versatel-1u1.de. [2001:16b8:26df:3d00:599e:c68d:191c:47fa])
+        by smtp.gmail.com with ESMTPSA id hz11-20020a1709072ceb00b00722fc014e8csm18574315ejc.104.2022.07.07.04.28.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 04:28:49 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: mark ARM/PALM TREO SUPPORT orphan
+Date:   Thu,  7 Jul 2022 13:26:45 +0200
+Message-Id: <20220707112645.5147-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drivers should depend on rather than select their MFDs.
+The email address sleep_walker@suse.com and the url http://hackndev.com/,
+provided in the ARM/PALM TREO SUPPORT section, are not reachable anymore.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Make this machine support orphan, and give somebody the chance to step up.
+Move the maintainer into CREDITS to keep the attribution to his work.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- drivers/regulator/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+RFC patch: https://lore.kernel.org/all/20211229191828.21317-1-lukas.bulwahn@gmail.com/
+  - received no comments
 
-diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
-index aedc4cba9240..23e3e4a35cc9 100644
---- a/drivers/regulator/Kconfig
-+++ b/drivers/regulator/Kconfig
-@@ -550,7 +550,7 @@ config REGULATOR_MAX597X
- 	tristate "Maxim 597x power switch and monitor"
- 	depends on I2C
- 	depends on OF
--	select MFD_MAX597X
-+	depends on MFD_MAX597X
- 	help
- 	  This driver controls a Maxim 5970/5978 switch via I2C bus.
- 	  The MAX5970/5978 is a smart switch with no output regulation, but
+Russell, please pick this minor update to MAINTAINERS.
+
+
+ CREDITS     | 4 ++++
+ MAINTAINERS | 4 +---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/CREDITS b/CREDITS
+index 7e85a53b6a88..40d3c655b567 100644
+--- a/CREDITS
++++ b/CREDITS
+@@ -627,6 +627,10 @@ S: 48287 Sawleaf
+ S: Fremont, California 94539
+ S: USA
+ 
++N: Tomas Cech
++E: sleep_walker@suse.com
++D: arm/palm treo support
++
+ N: Florent Chabaud
+ E: florent.chabaud@polytechnique.org
+ D: software suspend
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 36a2c8a9aaea..ffe0c587f9d0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2510,10 +2510,8 @@ F:	drivers/power/reset/oxnas-restart.c
+ N:	oxnas
+ 
+ ARM/PALM TREO SUPPORT
+-M:	Tomas Cech <sleep_walker@suse.com>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+-S:	Maintained
+-W:	http://hackndev.com
++S:	Orphan
+ F:	arch/arm/mach-pxa/palmtreo.*
+ 
+ ARM/PALMTX,PALMT5,PALMLD,PALMTE2,PALMTC SUPPORT
 -- 
-2.30.2
+2.17.1
 
