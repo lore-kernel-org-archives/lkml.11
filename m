@@ -2,89 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB562C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0481DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233255AbiGGGmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 02:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
+        id S233768AbiGGGnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 02:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbiGGGmv (ORCPT
+        with ESMTP id S234075AbiGGGnM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 02:42:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1922A25F;
-        Wed,  6 Jul 2022 23:42:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB86962244;
-        Thu,  7 Jul 2022 06:42:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40070C3411E;
-        Thu,  7 Jul 2022 06:42:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657176169;
-        bh=7KNiT9A/9qFq7ecKeqsFpcWOS7hOTpqT2VHEnm4G894=;
-        h=From:To:Cc:Subject:Date:From;
-        b=f0RwdVKbw74IsgRyg8uZJLsTyMssitnBGuTPWReExo1AZoyrT8smYM24UvDjUAvEg
-         9j5oVymhmN9kvLzyPWfruk/DApTHMLwbAh3Yiz1c7/O2/iVfSlmctn8c4TtoBJpsLH
-         AaWMph0ao4Bli+kfeM2cj7e98XkqsQbBt18iEXE9DaXZ8Zu/XdbeOB7QnSzdE7d7ZT
-         rs3b6/r8QzAU5OJBSWqtxhmbEhfGeUATbx3JK1fwcOdJebKl5e7NPjtch0PRJmtZKu
-         0RVm0f0SWQyRDZCsZVYIOY9eslW3Ks7z/8oANDBTDQl8QiCEcL89U31xz3XLZMaf2I
-         h99X8htfGmGJA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1o9LDv-00045x-59; Thu, 07 Jul 2022 08:42:51 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH] arm64: dts: qcom: sc7280: fix PCIe clock reference
-Date:   Thu,  7 Jul 2022 08:42:22 +0200
-Message-Id: <20220707064222.15717-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 7 Jul 2022 02:43:12 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17922A25F
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 23:43:11 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-3137316bb69so160748757b3.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 23:43:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=B2XYaqgI1q6Tr76zsFUZ/+G5812LFpRJdzVWjY8m2JI=;
+        b=Og3SqjvsKbDfTKlFDb+3VuOMZ47VAEaoBU5L7Blp/3O5w5cWKFJHkU0WhiiqVK7/Yq
+         66nWCmx0bkcb/Wf+0R9YBaMie5b2cSOwz7ABsSTjPsnu5Q6F1HKC84ddr3C/HuLljx23
+         jy6MF4q6aNQCX/1Orgu47l9xewoBfIeUmNLTcAgqIPDTaLfXh6NOSHHN8ARlsUkLrnwr
+         xE9l1ALuC13obilX2gW1KOFfRmM10Eavw6IaPIdNGDh7cp4nlEgq5sV5k4ufGn9A4DJP
+         RdM9eCrnGOa46fRce5KjNZywnuNDEuv2IsPmu79qDPu3sjBmttK6aWGJuJMAe2qXe4rn
+         sQSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=B2XYaqgI1q6Tr76zsFUZ/+G5812LFpRJdzVWjY8m2JI=;
+        b=J0muqdAXH2hq+nPhgmZptMnrl6AAqmVwQUFCIhp/K3HF9fpUp7bBfZi7+ct8Cj6XNJ
+         gbMAgl57iLOqnd+VeTNSNZt++V/qT9+eo2Heb4N7tC8e9caWfOyArfHoM1HdgTIMiv2v
+         Fhn1bALIc39VgODf5ws2JalJ7KP1/r9ajcaNGiVAZ1sqc+Pb9PZTQZEbt6h5/djPGLPr
+         NTTezfhBoZm1z0T1g6EBPLYcQPXe3piWlRBaV1d0UciNDZWPFJm36l8f2WFJJW/LALkW
+         cJUkhwka45ZBrBt2RMXDQin8myLaYbZVImjOPMJlneV1bgYuwZiRAEbkPJJon3ThZ6TB
+         zZlA==
+X-Gm-Message-State: AJIora/4wrGqNykHQplNTnMcklM8Wl9Dy+CCIaQTNpkjdioyY9jrDuEq
+        ayORjV7IKDtyaiVrlBn9wV9PaF40Nu5jU3q5ifBq1w==
+X-Google-Smtp-Source: AGRyM1uwvPHbgGsT/BFDSi4s3hIHjWvOeZtXiRryx1NVO85TcbW0s41YeXR3tKNoZusLMZm7p3UlHv4TiLqP1WY4RLM=
+X-Received: by 2002:a81:4891:0:b0:31d:db7:7ea9 with SMTP id
+ v139-20020a814891000000b0031d0db77ea9mr777066ywa.228.1657176190869; Wed, 06
+ Jul 2022 23:43:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220702045254.22922-1-vincent.guittot@linaro.org>
+ <e830e6eb-6606-74f1-c356-cb61c6f46e99@huawei.com> <BYAPR02MB44888C0FE86220485A38363694819@BYAPR02MB4488.namprd02.prod.outlook.com>
+In-Reply-To: <BYAPR02MB44888C0FE86220485A38363694819@BYAPR02MB4488.namprd02.prod.outlook.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Thu, 7 Jul 2022 08:42:59 +0200
+Message-ID: <CAKfTPtCTrHpNTU66ozFqL0uPy6Rwz-PppbummH4Rd_E7ZUzbnw@mail.gmail.com>
+Subject: Re: [PATCH] sched/fair: fix case with reduced capacity CPU
+To:     David Chen <david.chen@nutanix.com>
+Cc:     Zhang Qiao <zhangqiao22@huawei.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "bsegall@google.com" <bsegall@google.com>,
+        "mgorman@suse.de" <mgorman@suse.de>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "vschneid@redhat.com" <vschneid@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The recent commit that dropped the PCIe PHY clock index failed to update
-the PCIe node reference.
+On Wed, 6 Jul 2022 at 01:50, David Chen <david.chen@nutanix.com> wrote:
+>
+>
+>
+> > -----Original Message-----
+> > From: Zhang Qiao <zhangqiao22@huawei.com>
+> > Sent: Tuesday, July 5, 2022 1:23 AM
+> > To: Vincent Guittot <vincent.guittot@linaro.org>
+> > Cc: mingo@redhat.com; peterz@infradead.org; juri.lelli@redhat.com; diet=
+mar.eggemann@arm.com; rostedt@goodmis.org;
+> > bsegall@google.com; mgorman@suse.de; bristot@redhat.com; vschneid@redha=
+t.com; linux-kernel@vger.kernel.org; David Chen
+> > <david.chen@nutanix.com>
+> > Subject: Re: [PATCH] sched/fair: fix case with reduced capacity CPU
+> >
+> >
+> >
+> > =E5=9C=A8 2022/7/2 12:52, Vincent Guittot =E5=86=99=E9=81=93:
+> > > The capacity of the CPU available for CFS tasks can be reduced becaus=
+e of
+> > > other activities running on the latter. In such case, it's worth tryi=
+ng to
+> > > move CFS tasks on a CPU with more available capacity.
+> > >
+> > > The rework of the load balance has filterd the case when the CPU is
+> > > classified to be fully busy but its capacity is reduced.
+> > >
+> > > Check if CPU's capacity is reduced while gathering load balance stati=
+stics
+> > > and classify it group_misfit_task instead of group_fully_busy so we c=
+an
+> > > try to move the load on another CPU.
+> > >
+> > > Reported-by: David Chen <david.chen@nutanix.com>
+> > > Reported-by: Zhang Qiao <zhangqiao22@huawei.com>
+> > > Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+> > > ---
+> > >
+> > > David, Zhang,
+> > >
+> > > I haven't put your tested-by because I have reworked and cleaned the =
+patch to
+> > > cover more cases.
+> > >
+> > > Could you run some tests with this version ?
+> >
+> > I tested with this version, it is ok.
+> >
+> > Tested-by: Zhang Qiao <zhangqiao22@huawei.com>
+> >
+> > Thanks
+>
+> This version works fine with me.
+> Tested-by: David Chen <david.chen@nutanix.com>
 
-Fixes: 531c738fb360 ("arm64: dts: qcom: sc7280: drop PCIe PHY clock index")
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
+Thanks
 
-The QMP DTS fixes were applied before I was able to send a v2 so here's
-a follow-up fix for an issue caught by Dmitry during review.
+>
+> Thanks
+>
 
-Feel free to squash it in or apply on top.
-
-Johan
-
-
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index b0ae2dbba50f..9052c93c7845 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2035,7 +2035,7 @@ pcie1: pci@1c08000 {
- 
- 			clocks = <&gcc GCC_PCIE_1_PIPE_CLK>,
- 				 <&gcc GCC_PCIE_1_PIPE_CLK_SRC>,
--				 <&pcie1_lane 0>,
-+				 <&pcie1_lane>,
- 				 <&rpmhcc RPMH_CXO_CLK>,
- 				 <&gcc GCC_PCIE_1_AUX_CLK>,
- 				 <&gcc GCC_PCIE_1_CFG_AHB_CLK>,
--- 
-2.35.1
-
+> > >
