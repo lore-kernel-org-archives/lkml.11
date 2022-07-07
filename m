@@ -2,85 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9AD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiGGJ5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
+        id S235168AbiGGJ6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234912AbiGGJ5O (ORCPT
+        with ESMTP id S231775AbiGGJ6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:57:14 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE2C4F182;
-        Thu,  7 Jul 2022 02:57:12 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LdsJk1GTJz4xZD;
-        Thu,  7 Jul 2022 19:57:09 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657187830;
-        bh=m2N/CY1UNR5vI4HQ8svnMwb9Kz3keEatqO3ubARoiok=;
-        h=Date:From:To:Cc:Subject:From;
-        b=H3wnziJ0n6fTPYu9iC7VeLh+hk5HvWPMqeXqcacAcYWT1vZUpyqzYMwXtl4EbpBK3
-         B1fzjEc9cCUAT10/3UrNytMnCOGM+0O1w7Fo7iufTIUtpyQQCDwoZh0CgjGPjzs6uL
-         e32dgFYBr07KHjhawPxV0m/tLWjPw2wkhkaLCKcolJDAp7k9SDyhWv61Bq31lBc/Bx
-         gkkVPQAmnvnmskZGxkvMP5nqeHPKBBbu1iYCG5YDBEYpVTvu+vPHUFSJrGsWtEoZXY
-         yON7xI2f3p7j8Gu0/egZqfikjNY3hzB3zEFbdXAg+R1XSiCxQjr1yKm4UlfpSQ2G2H
-         JiBfy3jBL9R7g==
-Date:   Thu, 7 Jul 2022 19:57:07 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Guangbin Huang <huangguangbin2@huawei.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the arm64 tree
-Message-ID: <20220707195707.7aec2e13@canb.auug.org.au>
+        Thu, 7 Jul 2022 05:58:20 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A304F19A
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:58:19 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 33A553200901;
+        Thu,  7 Jul 2022 05:58:17 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Thu, 07 Jul 2022 05:58:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1657187896; x=
+        1657274296; bh=blIZCyCRaX2Kykl2XYQhF1kcXz91lm/t4KZgjyH+ZSU=; b=U
+        jWvfp3BGT724u6qaVZOepvcwjgDtug4sqsJGq7/sCMaBVbNaY8dKYhwUUCqGlgzW
+        yKbrVoLvr/yBH7tMxOaBxGnArfmgCM01YWSunZjDCk4QA4gmXelihCT8qzA4h7tO
+        fbwBogSGdHwWGQpc2vDO4FYtM9t1LhpTbYO47n4ul/3ebDUPjn8YoJhGGXMS1p1n
+        uPynTK2HtNt1UTcNvs1bVR7MZzOrnk0eBw5DyVKoxxGJl74Sds/ScU6uWwdQYL2S
+        i9pZ5nMh0HavCCe5YszT4Xb+plfg/O7ezCxn/UBVMMYfavl2g1UlhU43gPdP2feA
+        5RsGL+WmgCCzpEuoPeEpA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1657187896; x=
+        1657274296; bh=blIZCyCRaX2Kykl2XYQhF1kcXz91lm/t4KZgjyH+ZSU=; b=f
+        f2K2vPEEaVg45MA5zpZZ6E6RtM0VZRK3uni3dVVA498kXQqr/M2LQ/plFWsw2s7q
+        cJ6gMDlrX+mMf/ixkOQdbncGcV72IS7KF2KZn4P1ClMbpOkYyj+xLHJ6kxCQtpXi
+        +sKeZwXVEd8SM/nvvNPc3Dlh8uv2J6dTq2k9pVtwrfI0jL9h7yZDtRFWzOLZPuYd
+        +8Po+bLlxdBuHYos+iYwxbiuofaZGN5h+cFXMNzaDUOLe4Ngcob2VPMKwHLRWM2h
+        EzjiOOti1MWmbNI7X6KtRzF6t0eomwnvVtGnNswRgRNdiQPoVxIEmL5dOxA5+lh7
+        wyXvcMMJ4GRQE+9NLGTQw==
+X-ME-Sender: <xms:OK7GYicSPJdA3n6VN9QQiZvc115LX9eCMcCRWo6v4-yaelBXmZlF3w>
+    <xme:OK7GYsPgzDLT_xunQDkncSVu2EdX76G7oeShBPUWqSgMwtKeAaSVw0vjmWFc-59Tg
+    JfEVGpTrUaP5UiLtdI>
+X-ME-Received: <xmr:OK7GYjg9T_jcYBz2iivNqw6Zc991v1rMtyeIJFawv1iFRsPDM_4I5NuJ4sBGRgavD7cuW2TJQrurDy10TDPxU7WOaat-eei73ssbddcIwNE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeihedgvdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkfffgggfuffvvehfhfgjtgfgsehtkeertddtfeejnecuhfhrohhmpeflihgr
+    gihunhcujggrnhhguceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomheqne
+    cuggftrfgrthhtvghrnhepudfhkeevvddtueekfeefgfetlefgueegueeltddtieejgeei
+    heevgfehgfdvfeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
+    hfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
+X-ME-Proxy: <xmx:OK7GYv_MQC8eTz6hABoOIOlQlYSrEVS7o2CrmNTl1wS2rnfvQcaJtw>
+    <xmx:OK7GYusmHLDClTO6gpmZaLqU0uyENVdxtiy-8TrkXFBEVZ0uAjZA7Q>
+    <xmx:OK7GYmFQfnL6allvSrvn-H_Xq-OrcdXFq67SYeNYTe_BT9FoLrJnUQ>
+    <xmx:OK7GYiIB4vjqPLaA5Y93IKg6Ij3_YN091oKDp-ZBYp8dM3JxhVMxKQ>
+Feedback-ID: ifd894703:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 7 Jul 2022 05:58:15 -0400 (EDT)
+Message-ID: <bf9d6c87-1264-6d14-bf67-154ee7795bdd@flygoat.com>
+Date:   Thu, 7 Jul 2022 10:58:14 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/QfVCx8ZB5ut6yNpNi4YWikG";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3] LoongArch: Remove vcsr in loongarch_fpu
+Content-Language: en-GB
+To:     WANG Xuerui <kernel@xen0n.name>, Qi Hu <huqi@loongson.cn>,
+        Huacai Chen <chenhuacai@kernel.org>
+Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>
+References: <20220706112937.1218573-1-huqi@loongson.cn>
+ <CAAhV-H6MHjzdwyZqk6a3sKByRofG1Th6QEk0Be5NBhiAsVNcTg@mail.gmail.com>
+ <8a9cd14a-54ed-cd2b-88ad-647a43b09d0e@loongson.cn>
+ <2e0bb05b-cd85-4eb0-bf8f-f90156196a63@www.fastmail.com>
+ <0125879d-7452-17bc-8b46-3d4ae21648d1@xen0n.name>
+From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
+In-Reply-To: <0125879d-7452-17bc-8b46-3d4ae21648d1@xen0n.name>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/QfVCx8ZB5ut6yNpNi4YWikG
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-After merging the arm64 tree, today's linux-next build (htmldocs)
-produced this warning:
+在 2022/7/7 9:56, WANG Xuerui 写道:
+>
+> However, the experiment result is counter-intuitive to me after all; 
+> are you aware that perhaps *some* 3A5000's in the wild actually have 
+> functional VCSR? If so, the state obviously needs isolation 
+> (saving/restoring simply becoming no-ops on later steppings), but 
+> otherwise this cleanup should be correct.
+^ Yep, my concern was 3A5000 with VCSR enabled can be vulnerable.
 
-Documentation/admin-guide/perf/hns3-pmu.rst: WARNING: document isn't includ=
-ed in any toctree
+Thanks
+- Jiaxun
 
-Introduced by commit
-
-  39915b6b5fc2 ("drivers/perf: hisi: Add description for HNS3 PMU driver")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/QfVCx8ZB5ut6yNpNi4YWikG
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGrfMACgkQAVBC80lX
-0Gy7fAf+KZOGfeyzTAmR/d1Z+0tmP12k4tkjH1TJjrmHB1+V9xwBu8Foxo/kYXEC
-vJBIepzEhIqRa3vWcLOAizodHJrdqFVJEUDlivUq9JXXbUsuvXRoqHYz2B3nLaZO
-Hfrt7HnTpIxg4RF32iov5Y2u1TdMueUeiGBOrtmSkk0wNEATN/5zIxeTVogmWLrp
-/wyV6rz9EnHJpA8oI1a9D/3W8KRByTGwLIh1EOOth41bsi0DPzMno9Mr/nhSr11Q
-KrBqP6/0w8BVTHFXknhUw9Z6S55Y6xvlSN9N9QLXoa5zPHRRte0HcWeshJxPVc+b
-5vRd8eYsT3f/Jv9PqlcZjxlUGYSKKA==
-=43aM
------END PGP SIGNATURE-----
-
---Sig_/QfVCx8ZB5ut6yNpNi4YWikG--
