@@ -2,127 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F04CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235247AbiGGJko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        id S232278AbiGGJmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235257AbiGGJkl (ORCPT
+        with ESMTP id S232625AbiGGJmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:40:41 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFC313D30;
-        Thu,  7 Jul 2022 02:40:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1657186839; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Tyen7txTUb5pq9zQQGZmuWYUpttgvf+WfkbcsWB8ZG4=;
-        b=MaSHGdQBI+VAXUZX/C8tnXzbfL4brntQ/nxoaJhWbkMP80u3mi4YyKlBfABfFtTD1DgVaq
-        RRtbfxPfeOdL3JfrQM+gxQ2nJORDBvRcPovkKaZH5TDuUsRzxDGKwbfsFSXkurOOk4Z/m7
-        6PWG8VIiSZuXOYD/L4CSukqEkAo+8BA=
-Date:   Thu, 07 Jul 2022 10:40:29 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 06/11] ASoC: jz4740-i2s: Use FIELD_PREP() macros in
- hw_params callback
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, linux-mips@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Message-Id: <HJ9NER.R0SNUFB7SCZ52@crapouillou.net>
-In-Reply-To: <20220706211330.120198-7-aidanmacdonald.0x0@gmail.com>
-References: <20220706211330.120198-1-aidanmacdonald.0x0@gmail.com>
-        <20220706211330.120198-7-aidanmacdonald.0x0@gmail.com>
+        Thu, 7 Jul 2022 05:42:37 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050504D140
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:42:36 -0700 (PDT)
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2231740A91
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:42:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1657186953;
+        bh=0/k9jZrw5vV9CBwx2r80FHe2MFjiQPs5GdaiVI7LCog=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=WQs9Du5z84wa8TtPXMIdwjqTLXtlghVNXD6uULT00dmlFKcJ8XgpQPkfFgmGhbqlP
+         6gbwixl9HoRAuErPBinow+Yba/PKgRb7DGJnfH2ZqHaC1sU0+RnBjx3QbukqYGSCzE
+         pSoC2qsahCxFCMEDJtY0erfZOv7ZAIRwH6V+YgC4LX+yZkA16jz/KiBUx4DUgpmWdB
+         bTYUwZKXjY6pxTXErSeGRIGz5d/v/rTBq50+zSlyVYBPB00Yveqqjp/5VmQya34qHY
+         71wx5CmOu20DQyH28z4UZLSO1lNQfkP+zJT1HGiUc0eFH0qCP0jDVIfcGeiE23DvNx
+         AsHDJ3sd32dtw==
+Received: by mail-pg1-f199.google.com with SMTP id 9-20020a631449000000b00412b1418c79so1987950pgu.2
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 02:42:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0/k9jZrw5vV9CBwx2r80FHe2MFjiQPs5GdaiVI7LCog=;
+        b=Ew0DbBAqbehJIvM3WrqZDgaa2fEl/7oyJtsvJ6yqN3M1jzgUCI6PEp7ZyrgHmo9d2b
+         v02Cdu/UzJpLfuQrCE21TKudJDryUaiJ4ORV69nbOxQH73zwaJM/nmWFzun2xjqfCZLS
+         ReGhKF0iCHYo+G3tfwIqWx4019/G3Jhxufcj0GcJKEby9/DAeGAVA+D+PjSijeBdNhjE
+         E50yYOr956UJnmJkH9mhrSC4q1U2WI/ozBD+94CO+Dg8bJq2oZlxq0K9TyVWCxLosCzi
+         g+acNXOcX9VRQ70M84/RQklmT0KGW+FMfQp+bgbLlAKSJOIZHIABo+zbXrMjkYKINIBh
+         EKiA==
+X-Gm-Message-State: AJIora/spFp7PnRi1u5rVcbq6jCcWE2onVgW8Dd3GhUmEm8afh9UOL4+
+        2nwp4Y9p5wZqtJN/c2WDIZbZhCkMVI0J2ncXheKKD7PynvEzIMnjZzg+nQyoFxl+gg1NnDQOOmI
+        4qBl8KPsTWhK0awITG+j19enJxVTtmxCHlboVv1vk
+X-Received: by 2002:a17:902:c205:b0:16b:f021:4299 with SMTP id 5-20020a170902c20500b0016bf0214299mr15311600pll.70.1657186951638;
+        Thu, 07 Jul 2022 02:42:31 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sXIgj1gZjhjX5O1aSA2f5ZCznB445mcYvPL8KykhClWZybIN58wmPKyPvJtbx4KxW197vKjw==
+X-Received: by 2002:a17:902:c205:b0:16b:f021:4299 with SMTP id 5-20020a170902c20500b0016bf0214299mr15311565pll.70.1657186951382;
+        Thu, 07 Jul 2022 02:42:31 -0700 (PDT)
+Received: from localhost.localdomain (223-137-51-72.emome-ip.hinet.net. [223.137.51.72])
+        by smtp.gmail.com with ESMTPSA id w15-20020a1709027b8f00b0016230703ca3sm27085064pll.231.2022.07.07.02.42.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 02:42:30 -0700 (PDT)
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+To:     stable@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     memxor@gmail.com, linux-kernel@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, shuah@kernel.org, bpf@vger.kernel.org,
+        po-hsu.lin@canonical.com
+Subject: [PATCH stable 5.15 0/1] Revert "selftests/bpf: Add test for bpf_timer overwriting crash"
+Date:   Thu,  7 Jul 2022 17:42:06 +0800
+Message-Id: <20220707094207.229875-1-po-hsu.lin@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The bpf_timer overwriting crash test will cause bpf selftest build
+fail on the stable 5.15 tree with:
 
+progs/timer_crash.c:8:19: error: field has incomplete type 'struct bpf_timer'
+        struct bpf_timer timer;
+                         ^
+/home/ubuntu/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_helper_defs.h:39:8:
+note: forward declaration of 'struct bpf_timer'
+struct bpf_timer;
+       ^
+1 error generated.
 
-Le mer., juil. 6 2022 at 22:13:25 +0100, Aidan MacDonald=20
-<aidanmacdonald.0x0@gmail.com> a =E9crit :
-> Get rid of a couple of macros and improve readability by using
-> FIELD_PREP() and GENMASK() for the sample size setting.
->=20
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Test shows this can only be built with 5.17 and newer kernels. Let's
+revert it for the 5.15 tree.
 
-Acked-by: Paul Cercueil <paul@crapouillou.net>
+Po-Hsu Lin (1):
+  Revert "selftests/bpf: Add test for bpf_timer overwriting crash"
 
-Cheers,
--Paul
+ .../testing/selftests/bpf/prog_tests/timer_crash.c | 32 -------------
+ tools/testing/selftests/bpf/progs/timer_crash.c    | 54 ----------------------
+ 2 files changed, 86 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/prog_tests/timer_crash.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/timer_crash.c
 
-> ---
->  sound/soc/jz4740/jz4740-i2s.c | 17 ++++++++---------
->  1 file changed, 8 insertions(+), 9 deletions(-)
->=20
-> diff --git a/sound/soc/jz4740/jz4740-i2s.c=20
-> b/sound/soc/jz4740/jz4740-i2s.c
-> index 8bb9449d13d3..3c3cf78bf848 100644
-> --- a/sound/soc/jz4740/jz4740-i2s.c
-> +++ b/sound/soc/jz4740/jz4740-i2s.c
-> @@ -3,6 +3,7 @@
->   *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
->   */
->=20
-> +#include <linux/bitfield.h>
->  #include <linux/init.h>
->  #include <linux/io.h>
->  #include <linux/kernel.h>
-> @@ -49,8 +50,8 @@
->  #define JZ4760_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET 24
->  #define JZ4760_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET 16
->=20
-> -#define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_MASK (0x7 << 19)
-> -#define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_MASK (0x7 << 16)
-> +#define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE GENMASK(21, 19)
-> +#define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE GENMASK(18, 16)
->  #define JZ_AIC_CTRL_ENABLE_RX_DMA BIT(15)
->  #define JZ_AIC_CTRL_ENABLE_TX_DMA BIT(14)
->  #define JZ_AIC_CTRL_MONO_TO_STEREO BIT(11)
-> @@ -65,9 +66,6 @@
->  #define JZ_AIC_CTRL_ENABLE_PLAYBACK BIT(1)
->  #define JZ_AIC_CTRL_ENABLE_CAPTURE BIT(0)
->=20
-> -#define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_OFFSET 19
-> -#define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_OFFSET  16
-> -
->  #define JZ_AIC_I2S_FMT_DISABLE_BIT_CLK BIT(12)
->  #define JZ_AIC_I2S_FMT_DISABLE_BIT_ICLK BIT(13)
->  #define JZ_AIC_I2S_FMT_ENABLE_SYS_CLK BIT(4)
-> @@ -245,8 +243,9 @@ static int jz4740_i2s_hw_params(struct=20
-> snd_pcm_substream *substream,
->  	}
->=20
->  	if (substream->stream =3D=3D SNDRV_PCM_STREAM_PLAYBACK) {
-> -		ctrl &=3D ~JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_MASK;
-> -		ctrl |=3D sample_size << JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_OFFSET;
-> +		ctrl &=3D ~JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE;
-> +		ctrl |=3D FIELD_PREP(JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE, sample_size);
-> +
->  		if (params_channels(params) =3D=3D 1)
->  			ctrl |=3D JZ_AIC_CTRL_MONO_TO_STEREO;
->  		else
-> @@ -254,8 +253,8 @@ static int jz4740_i2s_hw_params(struct=20
-> snd_pcm_substream *substream,
->=20
->  		div_field =3D i2s->field_i2sdiv_playback;
->  	} else {
-> -		ctrl &=3D ~JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_MASK;
-> -		ctrl |=3D sample_size << JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_OFFSET;
-> +		ctrl &=3D ~JZ_AIC_CTRL_INPUT_SAMPLE_SIZE;
-> +		ctrl |=3D FIELD_PREP(JZ_AIC_CTRL_INPUT_SAMPLE_SIZE, sample_size);
->=20
->  		div_field =3D i2s->field_i2sdiv_capture;
->  	}
-> --
-> 2.35.1
->=20
-
+-- 
+2.7.4
 
