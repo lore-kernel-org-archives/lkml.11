@@ -2,74 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7159CCA483
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23582C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235919AbiGGQJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:09:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
+        id S236087AbiGGQKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235902AbiGGQJT (ORCPT
+        with ESMTP id S235815AbiGGQJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:09:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92CB53D37;
-        Thu,  7 Jul 2022 09:08:55 -0700 (PDT)
+        Thu, 7 Jul 2022 12:09:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63E4326D2;
+        Thu,  7 Jul 2022 09:09:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06327623D5;
-        Thu,  7 Jul 2022 16:08:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 798A8C3411E;
-        Thu,  7 Jul 2022 16:08:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35A5F623D8;
+        Thu,  7 Jul 2022 16:09:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F97C3411E;
+        Thu,  7 Jul 2022 16:08:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657210134;
-        bh=vFVSlBpoNhevGGBiHF3LW+RdVMDwd0o7TI9ANdJ0xes=;
+        s=korg; t=1657210140;
+        bh=/5BG/cc05aisUOLt6cB+KbNXrqEwz36t/dRlG7X7EPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X4wTEHt4UUxntXaSwXZvScCqbhoB9OAjX67AnA8iFVNqg6I4Btgce55h60Gya5tAN
-         805aGp8RtfCix/BqtFZvPeY/BrOAPBl9u06a/MN7AyvsFDxBYtQfzO95f+S4WES86G
-         ekolClINWnVElGIznWo3xldsg67EoxAaWn+CIRX0=
+        b=qBiboIUxRmTGAvcGXhZKgDsrWV6EXS/hkPGpiPu0bdS/FODPzkUhXC4A/621DcwQL
+         1Sp5CGB66uZbd7IMX82tBdwefqoMJ2mp6wUveAWl5UDc6nIfFA664E3q2n3/xrmV4j
+         TtMAiFOLssm8JXfZm2v0fCncVCYh8G6yxgKQP9E4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.15.53
-Date:   Thu,  7 Jul 2022 18:08:40 +0200
-Message-Id: <16572101209389@kroah.com>
+Subject: Re: Linux 5.18.10
+Date:   Thu,  7 Jul 2022 18:08:47 +0200
+Message-Id: <165721012621248@kroah.com>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <165721011919131@kroah.com>
-References: <165721011919131@kroah.com>
+In-Reply-To: <1657210126209251@kroah.com>
+References: <1657210126209251@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 393706e85ba2..a60d7e0466af 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -20579,6 +20579,7 @@ F:	drivers/xen/*swiotlb*
- 
- XFS FILESYSTEM
- C:	irc://irc.oftc.net/xfs
-+M:	Leah Rumancik <leah.rumancik@gmail.com>
- M:	Darrick J. Wong <djwong@kernel.org>
- M:	linux-xfs@vger.kernel.org
- L:	linux-xfs@vger.kernel.org
 diff --git a/Makefile b/Makefile
-index 777e0a0eeccd..c7750d260a55 100644
+index 751cfd786c8c..088b84f99203 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 5
- PATCHLEVEL = 15
--SUBLEVEL = 52
-+SUBLEVEL = 53
+ PATCHLEVEL = 18
+-SUBLEVEL = 9
++SUBLEVEL = 10
  EXTRAVERSION =
- NAME = Trick or Treat
+ NAME = Superb Owl
  
 diff --git a/arch/arm/xen/p2m.c b/arch/arm/xen/p2m.c
 index 84a1cea1f43b..309648c17f48 100644
@@ -102,11 +90,42 @@ index 84a1cea1f43b..309648c17f48 100644
  		while (n) {
  			p2m_entry = rb_entry(n, struct xen_p2m_entry, rbnode_phys);
  			if (p2m_entry->pfn <= pfn &&
+diff --git a/arch/parisc/kernel/asm-offsets.c b/arch/parisc/kernel/asm-offsets.c
+index 2673d57eeb00..94652e13c260 100644
+--- a/arch/parisc/kernel/asm-offsets.c
++++ b/arch/parisc/kernel/asm-offsets.c
+@@ -224,8 +224,13 @@ int main(void)
+ 	BLANK();
+ 	DEFINE(ASM_SIGFRAME_SIZE, PARISC_RT_SIGFRAME_SIZE);
+ 	DEFINE(SIGFRAME_CONTEXT_REGS, offsetof(struct rt_sigframe, uc.uc_mcontext) - PARISC_RT_SIGFRAME_SIZE);
++#ifdef CONFIG_64BIT
+ 	DEFINE(ASM_SIGFRAME_SIZE32, PARISC_RT_SIGFRAME_SIZE32);
+ 	DEFINE(SIGFRAME_CONTEXT_REGS32, offsetof(struct compat_rt_sigframe, uc.uc_mcontext) - PARISC_RT_SIGFRAME_SIZE32);
++#else
++	DEFINE(ASM_SIGFRAME_SIZE32, PARISC_RT_SIGFRAME_SIZE);
++	DEFINE(SIGFRAME_CONTEXT_REGS32, offsetof(struct rt_sigframe, uc.uc_mcontext) - PARISC_RT_SIGFRAME_SIZE);
++#endif
+ 	BLANK();
+ 	DEFINE(ICACHE_BASE, offsetof(struct pdc_cache_info, ic_base));
+ 	DEFINE(ICACHE_STRIDE, offsetof(struct pdc_cache_info, ic_stride));
+diff --git a/arch/parisc/kernel/unaligned.c b/arch/parisc/kernel/unaligned.c
+index ed1e88a74dc4..bac581b5ecfc 100644
+--- a/arch/parisc/kernel/unaligned.c
++++ b/arch/parisc/kernel/unaligned.c
+@@ -146,7 +146,7 @@ static int emulate_ldw(struct pt_regs *regs, int toreg, int flop)
+ "	depw	%%r0,31,2,%4\n"
+ "1:	ldw	0(%%sr1,%4),%0\n"
+ "2:	ldw	4(%%sr1,%4),%3\n"
+-"	subi	32,%4,%2\n"
++"	subi	32,%2,%2\n"
+ "	mtctl	%2,11\n"
+ "	vshd	%0,%3,%0\n"
+ "3:	\n"
 diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 941618a7f7ff..27222b75d2a4 100644
+index 500f2a0831ef..45e471516c3c 100644
 --- a/arch/powerpc/Kconfig
 +++ b/arch/powerpc/Kconfig
-@@ -353,6 +353,10 @@ config ARCH_SUSPEND_NONZERO_CPU
+@@ -358,6 +358,10 @@ config ARCH_SUSPEND_NONZERO_CPU
  	def_bool y
  	depends on PPC_POWERNV || PPC_PSERIES
  
@@ -161,10 +180,10 @@ index b183ab9c5107..dfa5f729f774 100644
  then
  	MEM_FUNCS="__memcpy __memset"
 diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-index 543a044560e9..6902f453c745 100644
+index 149635e5c165..5dd434d80f44 100644
 --- a/arch/powerpc/mm/mem.c
 +++ b/arch/powerpc/mm/mem.c
-@@ -104,6 +104,37 @@ void __ref arch_remove_linear_mapping(u64 start, u64 size)
+@@ -103,6 +103,37 @@ void __ref arch_remove_linear_mapping(u64 start, u64 size)
  	vm_unmap_aliases();
  }
  
@@ -202,7 +221,7 @@ index 543a044560e9..6902f453c745 100644
  int __ref arch_add_memory(int nid, u64 start, u64 size,
  			  struct mhp_params *params)
  {
-@@ -114,7 +145,7 @@ int __ref arch_add_memory(int nid, u64 start, u64 size,
+@@ -113,7 +144,7 @@ int __ref arch_add_memory(int nid, u64 start, u64 size,
  	rc = arch_create_linear_mapping(nid, start, size, params);
  	if (rc)
  		return rc;
@@ -212,10 +231,10 @@ index 543a044560e9..6902f453c745 100644
  		arch_remove_linear_mapping(start, size);
  	return rc;
 diff --git a/arch/powerpc/mm/nohash/book3e_pgtable.c b/arch/powerpc/mm/nohash/book3e_pgtable.c
-index 77884e24281d..3d845e001c87 100644
+index 7d4368d055a6..b80fc4a91a53 100644
 --- a/arch/powerpc/mm/nohash/book3e_pgtable.c
 +++ b/arch/powerpc/mm/nohash/book3e_pgtable.c
-@@ -95,8 +95,8 @@ int __ref map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot)
+@@ -96,8 +96,8 @@ int __ref map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot)
  		pgdp = pgd_offset_k(ea);
  		p4dp = p4d_offset(pgdp, ea);
  		if (p4d_none(*p4dp)) {
@@ -226,7 +245,7 @@ index 77884e24281d..3d845e001c87 100644
  		}
  		pudp = pud_offset(p4dp, ea);
  		if (pud_none(*pudp)) {
-@@ -105,7 +105,7 @@ int __ref map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot)
+@@ -106,7 +106,7 @@ int __ref map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot)
  		}
  		pmdp = pmd_offset(pudp, ea);
  		if (!pmd_present(*pmdp)) {
@@ -236,10 +255,10 @@ index 77884e24281d..3d845e001c87 100644
  		}
  		ptep = pte_offset_kernel(pmdp, ea);
 diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
-index 797041b5109a..e402fa964f23 100644
+index 359b0cc0dc35..d7dcad901146 100644
 --- a/arch/s390/Kconfig
 +++ b/arch/s390/Kconfig
-@@ -516,7 +516,6 @@ config KEXEC
+@@ -487,7 +487,6 @@ config KEXEC
  config KEXEC_FILE
  	bool "kexec file based system call"
  	select KEXEC_CORE
@@ -530,13 +549,13 @@ index 5dc712fde3c7..2c6e1c6ecbe7 100644
  	return false;
  }
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ee67215a678a..8ede12c4ba6b 100644
+index d860ac300919..2cef49983e9e 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
-@@ -880,6 +880,11 @@ static void __init setup_randomness(void)
+@@ -875,6 +875,11 @@ static void __init setup_randomness(void)
  	if (stsi(vmms, 3, 2, 2) == 0 && vmms->count)
  		add_device_randomness(&vmms->vm, sizeof(vmms->vm[0]) * vmms->count);
- 	memblock_free((unsigned long) vmms, PAGE_SIZE);
+ 	memblock_free(vmms, PAGE_SIZE);
 +
 +#ifdef CONFIG_ARCH_RANDOM
 +	if (cpacf_query_func(CPACF_PRNO, CPACF_PRNO_TRNG))
@@ -546,7 +565,7 @@ index ee67215a678a..8ede12c4ba6b 100644
  
  /*
 diff --git a/drivers/acpi/acpi_video.c b/drivers/acpi/acpi_video.c
-index 42ede059728c..007deb3a8ea3 100644
+index 990ff5b0aeb8..e4ea42b83b51 100644
 --- a/drivers/acpi/acpi_video.c
 +++ b/drivers/acpi/acpi_video.c
 @@ -73,6 +73,7 @@ module_param(device_id_scheme, bool, 0444);
@@ -567,7 +586,7 @@ index 42ede059728c..007deb3a8ea3 100644
  	mutex_lock(&video->device_list_lock);
  	list_add_tail(&data->entry, &video->video_device_list);
  	mutex_unlock(&video->device_list_lock);
-@@ -2251,6 +2255,7 @@ void acpi_video_unregister(void)
+@@ -2250,6 +2254,7 @@ void acpi_video_unregister(void)
  	if (register_count) {
  		acpi_bus_unregister_driver(&acpi_video_bus);
  		register_count = 0;
@@ -575,7 +594,7 @@ index 42ede059728c..007deb3a8ea3 100644
  	}
  	mutex_unlock(&register_count_mutex);
  }
-@@ -2272,13 +2277,7 @@ void acpi_video_unregister_backlight(void)
+@@ -2271,13 +2276,7 @@ void acpi_video_unregister_backlight(void)
  
  bool acpi_video_handles_brightness_key_presses(void)
  {
@@ -591,7 +610,7 @@ index 42ede059728c..007deb3a8ea3 100644
  }
  EXPORT_SYMBOL(acpi_video_handles_brightness_key_presses);
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index d7a9bf43fb32..f6f679702b83 100644
+index 966a6bf4c162..cf9cfc40a028 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
 @@ -152,6 +152,10 @@ static unsigned int xen_blkif_max_ring_order;
@@ -605,7 +624,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  #define BLK_RING_SIZE(info)	\
  	__CONST_RING_SIZE(blkif, XEN_PAGE_SIZE * (info)->nr_ring_pages)
  
-@@ -209,6 +213,7 @@ struct blkfront_info
+@@ -210,6 +214,7 @@ struct blkfront_info
  	unsigned int feature_discard:1;
  	unsigned int feature_secdiscard:1;
  	unsigned int feature_persistent:1;
@@ -613,7 +632,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  	unsigned int discard_granularity;
  	unsigned int discard_alignment;
  	/* Number of 4KB segments handled */
-@@ -311,8 +316,8 @@ static int fill_grant_buffer(struct blkfront_ring_info *rinfo, int num)
+@@ -312,8 +317,8 @@ static int fill_grant_buffer(struct blkfront_ring_info *rinfo, int num)
  		if (!gnt_list_entry)
  			goto out_of_memory;
  
@@ -624,7 +643,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  			if (!granted_page) {
  				kfree(gnt_list_entry);
  				goto out_of_memory;
-@@ -331,7 +336,7 @@ static int fill_grant_buffer(struct blkfront_ring_info *rinfo, int num)
+@@ -332,7 +337,7 @@ static int fill_grant_buffer(struct blkfront_ring_info *rinfo, int num)
  	list_for_each_entry_safe(gnt_list_entry, n,
  	                         &rinfo->grants, node) {
  		list_del(&gnt_list_entry->node);
@@ -633,7 +652,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  			__free_page(gnt_list_entry->page);
  		kfree(gnt_list_entry);
  		i--;
-@@ -377,7 +382,7 @@ static struct grant *get_grant(grant_ref_t *gref_head,
+@@ -378,7 +383,7 @@ static struct grant *get_grant(grant_ref_t *gref_head,
  	/* Assign a gref to this page */
  	gnt_list_entry->gref = gnttab_claim_grant_reference(gref_head);
  	BUG_ON(gnt_list_entry->gref == -ENOSPC);
@@ -642,7 +661,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  		grant_foreign_access(gnt_list_entry, info);
  	else {
  		/* Grant access to the GFN passed by the caller */
-@@ -401,7 +406,7 @@ static struct grant *get_indirect_grant(grant_ref_t *gref_head,
+@@ -402,7 +407,7 @@ static struct grant *get_indirect_grant(grant_ref_t *gref_head,
  	/* Assign a gref to this page */
  	gnt_list_entry->gref = gnttab_claim_grant_reference(gref_head);
  	BUG_ON(gnt_list_entry->gref == -ENOSPC);
@@ -651,7 +670,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  		struct page *indirect_page;
  
  		/* Fetch a pre-allocated page to use for indirect grefs */
-@@ -703,7 +708,7 @@ static int blkif_queue_rw_req(struct request *req, struct blkfront_ring_info *ri
+@@ -705,7 +710,7 @@ static int blkif_queue_rw_req(struct request *req, struct blkfront_ring_info *ri
  		.grant_idx = 0,
  		.segments = NULL,
  		.rinfo = rinfo,
@@ -660,7 +679,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  	};
  
  	/*
-@@ -981,11 +986,12 @@ static void xlvbd_flush(struct blkfront_info *info)
+@@ -983,11 +988,12 @@ static void xlvbd_flush(struct blkfront_info *info)
  {
  	blk_queue_write_cache(info->rq, info->feature_flush ? true : false,
  			      info->feature_fua ? true : false);
@@ -675,7 +694,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  }
  
  static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
-@@ -1212,7 +1218,7 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+@@ -1209,7 +1215,7 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
  	if (!list_empty(&rinfo->indirect_pages)) {
  		struct page *indirect_page, *n;
  
@@ -684,8 +703,8 @@ index d7a9bf43fb32..f6f679702b83 100644
  		list_for_each_entry_safe(indirect_page, n, &rinfo->indirect_pages, lru) {
  			list_del(&indirect_page->lru);
  			__free_page(indirect_page);
-@@ -1229,7 +1235,7 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
- 							  0, 0UL);
+@@ -1226,7 +1232,7 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+ 							  0UL);
  				rinfo->persistent_gnts_c--;
  			}
 -			if (info->feature_persistent)
@@ -693,16 +712,16 @@ index d7a9bf43fb32..f6f679702b83 100644
  				__free_page(persistent_gnt->page);
  			kfree(persistent_gnt);
  		}
-@@ -1250,7 +1256,7 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+@@ -1247,7 +1253,7 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
  		for (j = 0; j < segs; j++) {
  			persistent_gnt = rinfo->shadow[i].grants_used[j];
- 			gnttab_end_foreign_access(persistent_gnt->gref, 0, 0UL);
+ 			gnttab_end_foreign_access(persistent_gnt->gref, 0UL);
 -			if (info->feature_persistent)
 +			if (info->bounce)
  				__free_page(persistent_gnt->page);
  			kfree(persistent_gnt);
  		}
-@@ -1440,7 +1446,7 @@ static int blkif_completion(unsigned long *id,
+@@ -1437,7 +1443,7 @@ static int blkif_completion(unsigned long *id,
  	data.s = s;
  	num_sg = s->num_sg;
  
@@ -711,7 +730,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  		for_each_sg(s->sg, sg, num_sg, i) {
  			BUG_ON(sg->offset + sg->length > PAGE_SIZE);
  
-@@ -1499,7 +1505,7 @@ static int blkif_completion(unsigned long *id,
+@@ -1496,7 +1502,7 @@ static int blkif_completion(unsigned long *id,
  				 * Add the used indirect page back to the list of
  				 * available pages for indirect grefs.
  				 */
@@ -720,7 +739,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  					indirect_page = s->indirect_grants[i]->page;
  					list_add(&indirect_page->lru, &rinfo->indirect_pages);
  				}
-@@ -1692,7 +1698,7 @@ static int setup_blkring(struct xenbus_device *dev,
+@@ -1689,7 +1695,7 @@ static int setup_blkring(struct xenbus_device *dev,
  	for (i = 0; i < info->nr_ring_pages; i++)
  		rinfo->ring_ref[i] = GRANT_INVALID_REF;
  
@@ -729,7 +748,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  	if (!sring) {
  		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
  		return -ENOMEM;
-@@ -1790,6 +1796,10 @@ static int talk_to_blkback(struct xenbus_device *dev,
+@@ -1787,6 +1793,10 @@ static int talk_to_blkback(struct xenbus_device *dev,
  	if (!info)
  		return -ENODEV;
  
@@ -740,7 +759,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  	max_page_order = xenbus_read_unsigned(info->xbdev->otherend,
  					      "max-ring-page-order", 0);
  	ring_page_order = min(xen_blkif_max_ring_order, max_page_order);
-@@ -2199,17 +2209,18 @@ static int blkfront_setup_indirect(struct blkfront_ring_info *rinfo)
+@@ -2196,17 +2206,18 @@ static int blkfront_setup_indirect(struct blkfront_ring_info *rinfo)
  	if (err)
  		goto out_of_memory;
  
@@ -763,7 +782,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  			if (!indirect_page)
  				goto out_of_memory;
  			list_add(&indirect_page->lru, &rinfo->indirect_pages);
-@@ -2302,6 +2313,8 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
+@@ -2299,6 +2310,8 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
  		info->feature_persistent =
  			!!xenbus_read_unsigned(info->xbdev->otherend,
  					       "feature-persistent", 0);
@@ -772,7 +791,7 @@ index d7a9bf43fb32..f6f679702b83 100644
  
  	indirect_segments = xenbus_read_unsigned(info->xbdev->otherend,
  					"feature-max-indirect-segments", 0);
-@@ -2565,6 +2578,13 @@ static void blkfront_delay_work(struct work_struct *work)
+@@ -2570,6 +2583,13 @@ static void blkfront_delay_work(struct work_struct *work)
  	struct blkfront_info *info;
  	bool need_schedule_work = false;
  
@@ -786,18 +805,72 @@ index d7a9bf43fb32..f6f679702b83 100644
  	mutex_lock(&blkfront_mutex);
  
  	list_for_each_entry(info, &info_list, info_list) {
-diff --git a/drivers/clocksource/timer-ixp4xx.c b/drivers/clocksource/timer-ixp4xx.c
-index cbb184953510..b8e92991c471 100644
---- a/drivers/clocksource/timer-ixp4xx.c
-+++ b/drivers/clocksource/timer-ixp4xx.c
-@@ -282,7 +282,6 @@ void __init ixp4xx_timer_setup(resource_size_t timerbase,
- 	}
- 	ixp4xx_timer_register(base, timer_irq, timer_freq);
+diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
+index 7be38bc6a673..9ac75c1cde9c 100644
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -566,6 +566,28 @@ static int amd_pstate_cpu_exit(struct cpufreq_policy *policy)
+ 	return 0;
  }
--EXPORT_SYMBOL_GPL(ixp4xx_timer_setup);
  
- #ifdef CONFIG_OF
- static __init int ixp4xx_of_timer_init(struct device_node *np)
++static int amd_pstate_cpu_resume(struct cpufreq_policy *policy)
++{
++	int ret;
++
++	ret = amd_pstate_enable(true);
++	if (ret)
++		pr_err("failed to enable amd-pstate during resume, return %d\n", ret);
++
++	return ret;
++}
++
++static int amd_pstate_cpu_suspend(struct cpufreq_policy *policy)
++{
++	int ret;
++
++	ret = amd_pstate_enable(false);
++	if (ret)
++		pr_err("failed to disable amd-pstate during suspend, return %d\n", ret);
++
++	return ret;
++}
++
+ /* Sysfs attributes */
+ 
+ /*
+@@ -636,6 +658,8 @@ static struct cpufreq_driver amd_pstate_driver = {
+ 	.target		= amd_pstate_target,
+ 	.init		= amd_pstate_cpu_init,
+ 	.exit		= amd_pstate_cpu_exit,
++	.suspend	= amd_pstate_cpu_suspend,
++	.resume		= amd_pstate_cpu_resume,
+ 	.set_boost	= amd_pstate_set_boost,
+ 	.name		= "amd-pstate",
+ 	.attr           = amd_pstate_attr,
+diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
+index 0253731d6d25..36c79580fba2 100644
+--- a/drivers/cpufreq/qcom-cpufreq-hw.c
++++ b/drivers/cpufreq/qcom-cpufreq-hw.c
+@@ -442,6 +442,9 @@ static int qcom_cpufreq_hw_cpu_online(struct cpufreq_policy *policy)
+ 	struct platform_device *pdev = cpufreq_get_driver_data();
+ 	int ret;
+ 
++	if (data->throttle_irq <= 0)
++		return 0;
++
+ 	ret = irq_set_affinity_hint(data->throttle_irq, policy->cpus);
+ 	if (ret)
+ 		dev_err(&pdev->dev, "Failed to set CPU affinity of %s[%d]\n",
+@@ -469,6 +472,9 @@ static int qcom_cpufreq_hw_cpu_offline(struct cpufreq_policy *policy)
+ 
+ static void qcom_cpufreq_hw_lmh_exit(struct qcom_cpufreq_data *data)
+ {
++	if (data->throttle_irq <= 0)
++		return;
++
+ 	free_irq(data->throttle_irq, data);
+ }
+ 
 diff --git a/drivers/cpufreq/qoriq-cpufreq.c b/drivers/cpufreq/qoriq-cpufreq.c
 index 6b6b20da2bcf..573b417e1483 100644
 --- a/drivers/cpufreq/qoriq-cpufreq.c
@@ -811,10 +884,10 @@ index 6b6b20da2bcf..573b417e1483 100644
  		return -ENODEV;
  	}
 diff --git a/drivers/devfreq/event/exynos-ppmu.c b/drivers/devfreq/event/exynos-ppmu.c
-index 17ed980d9099..d6da9c3e3106 100644
+index 9b849d781116..a443e7c42daf 100644
 --- a/drivers/devfreq/event/exynos-ppmu.c
 +++ b/drivers/devfreq/event/exynos-ppmu.c
-@@ -514,15 +514,19 @@ static int of_get_devfreq_events(struct device_node *np,
+@@ -519,15 +519,19 @@ static int of_get_devfreq_events(struct device_node *np,
  
  	count = of_get_child_count(events_np);
  	desc = devm_kcalloc(dev, count, sizeof(*desc), GFP_KERNEL);
@@ -836,142 +909,12 @@ index 17ed980d9099..d6da9c3e3106 100644
  
  	j = 0;
  	for_each_child_of_node(events_np, node) {
-diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
-index b223f0ef337b..ecf738411fe2 100644
---- a/drivers/fsi/fsi-occ.c
-+++ b/drivers/fsi/fsi-occ.c
-@@ -50,6 +50,7 @@ struct occ {
- 	struct device *sbefifo;
- 	char name[32];
- 	int idx;
-+	u8 sequence_number;
- 	enum versions version;
- 	struct miscdevice mdev;
- 	struct mutex occ_lock;
-@@ -141,8 +142,7 @@ static ssize_t occ_write(struct file *file, const char __user *buf,
- {
- 	struct occ_client *client = file->private_data;
- 	size_t rlen, data_length;
--	u16 checksum = 0;
--	ssize_t rc, i;
-+	ssize_t rc;
- 	u8 *cmd;
- 
- 	if (!client)
-@@ -156,9 +156,6 @@ static ssize_t occ_write(struct file *file, const char __user *buf,
- 	/* Construct the command */
- 	cmd = client->buffer;
- 
--	/* Sequence number (we could increment and compare with response) */
--	cmd[0] = 1;
--
- 	/*
- 	 * Copy the user command (assume user data follows the occ command
- 	 * format)
-@@ -178,14 +175,7 @@ static ssize_t occ_write(struct file *file, const char __user *buf,
- 		goto done;
- 	}
- 
--	/* Calculate checksum */
--	for (i = 0; i < data_length + 4; ++i)
--		checksum += cmd[i];
--
--	cmd[data_length + 4] = checksum >> 8;
--	cmd[data_length + 5] = checksum & 0xFF;
--
--	/* Submit command */
-+	/* Submit command; 4 bytes before the data and 2 bytes after */
- 	rlen = PAGE_SIZE;
- 	rc = fsi_occ_submit(client->occ->dev, cmd, data_length + 6, cmd,
- 			    &rlen);
-@@ -314,11 +304,13 @@ static int occ_getsram(struct occ *occ, u32 offset, void *data, ssize_t len)
- 	return rc;
- }
- 
--static int occ_putsram(struct occ *occ, const void *data, ssize_t len)
-+static int occ_putsram(struct occ *occ, const void *data, ssize_t len,
-+		       u8 seq_no, u16 checksum)
- {
- 	size_t cmd_len, buf_len, resp_len, resp_data_len;
- 	u32 data_len = ((len + 7) / 8) * 8;	/* must be multiples of 8 B */
- 	__be32 *buf;
-+	u8 *byte_buf;
- 	int idx = 0, rc;
- 
- 	cmd_len = (occ->version == occ_p10) ? 6 : 5;
-@@ -358,6 +350,15 @@ static int occ_putsram(struct occ *occ, const void *data, ssize_t len)
- 	buf[4 + idx] = cpu_to_be32(data_len);
- 	memcpy(&buf[5 + idx], data, len);
- 
-+	byte_buf = (u8 *)&buf[5 + idx];
-+	/*
-+	 * Overwrite the first byte with our sequence number and the last two
-+	 * bytes with the checksum.
-+	 */
-+	byte_buf[0] = seq_no;
-+	byte_buf[len - 2] = checksum >> 8;
-+	byte_buf[len - 1] = checksum & 0xff;
-+
- 	rc = sbefifo_submit(occ->sbefifo, buf, cmd_len, buf, &resp_len);
- 	if (rc)
- 		goto free;
-@@ -467,9 +468,12 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
- 	struct occ *occ = dev_get_drvdata(dev);
- 	struct occ_response *resp = response;
- 	u8 seq_no;
-+	u16 checksum = 0;
- 	u16 resp_data_length;
-+	const u8 *byte_request = (const u8 *)request;
- 	unsigned long start;
- 	int rc;
-+	size_t i;
- 
- 	if (!occ)
- 		return -ENODEV;
-@@ -479,11 +483,26 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
- 		return -EINVAL;
- 	}
- 
-+	/* Checksum the request, ignoring first byte (sequence number). */
-+	for (i = 1; i < req_len - 2; ++i)
-+		checksum += byte_request[i];
-+
- 	mutex_lock(&occ->occ_lock);
- 
--	/* Extract the seq_no from the command (first byte) */
--	seq_no = *(const u8 *)request;
--	rc = occ_putsram(occ, request, req_len);
-+	/*
-+	 * Get a sequence number and update the counter. Avoid a sequence
-+	 * number of 0 which would pass the response check below even if the
-+	 * OCC response is uninitialized. Any sequence number the user is
-+	 * trying to send is overwritten since this function is the only common
-+	 * interface to the OCC and therefore the only place we can guarantee
-+	 * unique sequence numbers.
-+	 */
-+	seq_no = occ->sequence_number++;
-+	if (!occ->sequence_number)
-+		occ->sequence_number = 1;
-+	checksum += seq_no;
-+
-+	rc = occ_putsram(occ, request, req_len, seq_no, checksum);
- 	if (rc)
- 		goto done;
- 
-@@ -574,6 +593,7 @@ static int occ_probe(struct platform_device *pdev)
- 	occ->version = (uintptr_t)of_device_get_match_data(dev);
- 	occ->dev = dev;
- 	occ->sbefifo = dev->parent;
-+	occ->sequence_number = 1;
- 	mutex_init(&occ->occ_lock);
- 
- 	if (dev->of_node) {
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
-index 1d41c2c00623..5690cb6d27fe 100644
+index 6ca1db3c243f..3610bcd29ad9 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
-@@ -768,7 +768,8 @@ int amdgpu_amdkfd_flush_gpu_tlb_pasid(struct kgd_dev *kgd, uint16_t pasid,
- 	struct amdgpu_device *adev = (struct amdgpu_device *)kgd;
+@@ -703,7 +703,8 @@ int amdgpu_amdkfd_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
+ {
  	bool all_hub = false;
  
 -	if (adev->family == AMDGPU_FAMILY_AI)
@@ -980,8 +923,21 @@ index 1d41c2c00623..5690cb6d27fe 100644
  		all_hub = true;
  
  	return amdgpu_gmc_flush_gpu_tlb_pasid(adev, pasid, flush_type, all_hub);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 49f734137f15..66e40cac5eb3 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -5140,7 +5140,7 @@ int amdgpu_device_gpu_recover_imp(struct amdgpu_device *adev,
+ 		 */
+ 		amdgpu_unregister_gpu_instance(tmp_adev);
+ 
+-		drm_fb_helper_set_suspend_unlocked(adev_to_drm(adev)->fb_helper, true);
++		drm_fb_helper_set_suspend_unlocked(adev_to_drm(tmp_adev)->fb_helper, true);
+ 
+ 		/* disable ras on ALL IPs */
+ 		if (!need_emergency_restart &&
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
-index 4f3c62adccbd..cc2e0c9cfe0a 100644
+index ea3e8c66211f..ebd53dacfac4 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
 @@ -333,6 +333,7 @@ int amdgpu_irq_init(struct amdgpu_device *adev)
@@ -993,10 +949,10 @@ index 4f3c62adccbd..cc2e0c9cfe0a 100644
  
  		r = drm_vblank_init(adev_to_drm(adev), adev->mode_info.num_crtc);
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index d2aecf7bf66b..d35a6f6d158e 100644
+index 78a38c3b7d66..6dc9808760fc 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -3838,9 +3838,6 @@ static int amdgpu_dm_initialize_drm_device(struct amdgpu_device *adev)
+@@ -4286,9 +4286,6 @@ static int amdgpu_dm_initialize_drm_device(struct amdgpu_device *adev)
  	}
  #endif
  
@@ -1007,10 +963,10 @@ index d2aecf7bf66b..d35a6f6d158e 100644
  	for (i = 0; i < link_cnt; i++) {
  		struct dc_link *link = NULL;
 diff --git a/drivers/gpu/drm/i915/gem/i915_gem_context.c b/drivers/gpu/drm/i915/gem/i915_gem_context.c
-index 166bb46408a9..ee0c0b712522 100644
+index 9ae294eb7fb4..12b7d4d39216 100644
 --- a/drivers/gpu/drm/i915/gem/i915_gem_context.c
 +++ b/drivers/gpu/drm/i915/gem/i915_gem_context.c
-@@ -720,8 +720,9 @@ static int set_proto_ctx_param(struct drm_i915_file_private *fpriv,
+@@ -932,8 +932,9 @@ static int set_proto_ctx_param(struct drm_i915_file_private *fpriv,
  	case I915_CONTEXT_PARAM_PERSISTENCE:
  		if (args->size)
  			ret = -EINVAL;
@@ -1021,22 +977,147 @@ index 166bb46408a9..ee0c0b712522 100644
 +							    args->value);
  		break;
  
- 	case I915_CONTEXT_PARAM_NO_ZEROMAP:
+ 	case I915_CONTEXT_PARAM_PROTECTED_CONTENT:
+diff --git a/drivers/gpu/drm/i915/i915_driver.c b/drivers/gpu/drm/i915/i915_driver.c
+index 62b3f332bbf5..0478fa6259eb 100644
+--- a/drivers/gpu/drm/i915/i915_driver.c
++++ b/drivers/gpu/drm/i915/i915_driver.c
+@@ -538,6 +538,7 @@ static int i915_set_dma_info(struct drm_i915_private *i915)
+ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
++	struct pci_dev *root_pdev;
+ 	int ret;
+ 
+ 	if (i915_inject_probe_failure(dev_priv))
+@@ -651,6 +652,15 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
+ 
+ 	intel_bw_init_hw(dev_priv);
+ 
++	/*
++	 * FIXME: Temporary hammer to avoid freezing the machine on our DGFX
++	 * This should be totally removed when we handle the pci states properly
++	 * on runtime PM and on s2idle cases.
++	 */
++	root_pdev = pcie_find_root_port(pdev);
++	if (root_pdev)
++		pci_d3cold_disable(root_pdev);
++
+ 	return 0;
+ 
+ err_msi:
+@@ -674,11 +684,16 @@ static int i915_driver_hw_probe(struct drm_i915_private *dev_priv)
+ static void i915_driver_hw_remove(struct drm_i915_private *dev_priv)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
++	struct pci_dev *root_pdev;
+ 
+ 	i915_perf_fini(dev_priv);
+ 
+ 	if (pdev->msi_enabled)
+ 		pci_disable_msi(pdev);
++
++	root_pdev = pcie_find_root_port(pdev);
++	if (root_pdev)
++		pci_d3cold_enable(root_pdev);
+ }
+ 
+ /**
+@@ -1195,14 +1210,6 @@ static int i915_drm_suspend_late(struct drm_device *dev, bool hibernation)
+ 		goto out;
+ 	}
+ 
+-	/*
+-	 * FIXME: Temporary hammer to avoid freezing the machine on our DGFX
+-	 * This should be totally removed when we handle the pci states properly
+-	 * on runtime PM and on s2idle cases.
+-	 */
+-	if (suspend_to_idle(dev_priv))
+-		pci_d3cold_disable(pdev);
+-
+ 	pci_disable_device(pdev);
+ 	/*
+ 	 * During hibernation on some platforms the BIOS may try to access
+@@ -1367,8 +1374,6 @@ static int i915_drm_resume_early(struct drm_device *dev)
+ 
+ 	pci_set_master(pdev);
+ 
+-	pci_d3cold_enable(pdev);
+-
+ 	disable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+ 
+ 	ret = vlv_resume_prepare(dev_priv, false);
+@@ -1545,7 +1550,6 @@ static int intel_runtime_suspend(struct device *kdev)
+ {
+ 	struct drm_i915_private *dev_priv = kdev_to_i915(kdev);
+ 	struct intel_runtime_pm *rpm = &dev_priv->runtime_pm;
+-	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
+ 	int ret;
+ 
+ 	if (drm_WARN_ON_ONCE(&dev_priv->drm, !HAS_RUNTIME_PM(dev_priv)))
+@@ -1591,12 +1595,6 @@ static int intel_runtime_suspend(struct device *kdev)
+ 		drm_err(&dev_priv->drm,
+ 			"Unclaimed access detected prior to suspending\n");
+ 
+-	/*
+-	 * FIXME: Temporary hammer to avoid freezing the machine on our DGFX
+-	 * This should be totally removed when we handle the pci states properly
+-	 * on runtime PM and on s2idle cases.
+-	 */
+-	pci_d3cold_disable(pdev);
+ 	rpm->suspended = true;
+ 
+ 	/*
+@@ -1635,7 +1633,6 @@ static int intel_runtime_resume(struct device *kdev)
+ {
+ 	struct drm_i915_private *dev_priv = kdev_to_i915(kdev);
+ 	struct intel_runtime_pm *rpm = &dev_priv->runtime_pm;
+-	struct pci_dev *pdev = to_pci_dev(dev_priv->drm.dev);
+ 	int ret;
+ 
+ 	if (drm_WARN_ON_ONCE(&dev_priv->drm, !HAS_RUNTIME_PM(dev_priv)))
+@@ -1648,7 +1645,6 @@ static int intel_runtime_resume(struct device *kdev)
+ 
+ 	intel_opregion_notify_adapter(dev_priv, PCI_D0);
+ 	rpm->suspended = false;
+-	pci_d3cold_enable(pdev);
+ 	if (intel_uncore_unclaimed_mmio(&dev_priv->uncore))
+ 		drm_dbg(&dev_priv->drm,
+ 			"Unclaimed access during suspend, bios?\n");
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 3940b9c6323b..fffd2ef897a0 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1187,12 +1187,13 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+ 	DPU_ATRACE_BEGIN("encoder_vblank_callback");
+ 	dpu_enc = to_dpu_encoder_virt(drm_enc);
+ 
++	atomic_inc(&phy_enc->vsync_cnt);
++
+ 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+ 	if (dpu_enc->crtc)
+ 		dpu_crtc_vblank_callback(dpu_enc->crtc);
+ 	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+ 
+-	atomic_inc(&phy_enc->vsync_cnt);
+ 	DPU_ATRACE_END("encoder_vblank_callback");
+ }
+ 
 diff --git a/drivers/gpu/drm/msm/msm_gem_submit.c b/drivers/gpu/drm/msm/msm_gem_submit.c
-index 7fb7ff043bcd..1f74bab9e231 100644
+index c6d60c8d286d..fec4e3973287 100644
 --- a/drivers/gpu/drm/msm/msm_gem_submit.c
 +++ b/drivers/gpu/drm/msm/msm_gem_submit.c
-@@ -889,7 +889,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
- 	submit->fence_id = idr_alloc_cyclic(&queue->fence_idr,
- 			submit->user_fence, 1, INT_MAX, GFP_KERNEL);
+@@ -913,7 +913,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
+ 						    INT_MAX, GFP_KERNEL);
+ 	}
  	if (submit->fence_id < 0) {
 -		ret = submit->fence_id = 0;
 +		ret = submit->fence_id;
  		submit->fence_id = 0;
- 		goto out;
  	}
+ 
 diff --git a/drivers/hwmon/ibmaem.c b/drivers/hwmon/ibmaem.c
-index a4ec85207782..2e6d6a5cffa1 100644
+index de6baf6ca3d1..dab4908b78a8 100644
 --- a/drivers/hwmon/ibmaem.c
 +++ b/drivers/hwmon/ibmaem.c
 @@ -550,7 +550,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
@@ -1080,129 +1161,64 @@ index a4ec85207782..2e6d6a5cffa1 100644
  	ida_simple_remove(&aem_ida, data->id);
  id_err:
 diff --git a/drivers/hwmon/occ/common.c b/drivers/hwmon/occ/common.c
-index ae664613289c..bbe5e4ef4113 100644
+index f00cd59f1d19..1757f3ab842e 100644
 --- a/drivers/hwmon/occ/common.c
 +++ b/drivers/hwmon/occ/common.c
-@@ -132,22 +132,20 @@ struct extended_sensor {
- static int occ_poll(struct occ *occ)
- {
- 	int rc;
--	u16 checksum = occ->poll_cmd_data + occ->seq_no + 1;
--	u8 cmd[8];
-+	u8 cmd[7];
- 	struct occ_poll_response_header *header;
- 
- 	/* big endian */
--	cmd[0] = occ->seq_no++;		/* sequence number */
-+	cmd[0] = 0;			/* sequence number */
- 	cmd[1] = 0;			/* cmd type */
- 	cmd[2] = 0;			/* data length msb */
- 	cmd[3] = 1;			/* data length lsb */
- 	cmd[4] = occ->poll_cmd_data;	/* data */
--	cmd[5] = checksum >> 8;		/* checksum msb */
--	cmd[6] = checksum & 0xFF;	/* checksum lsb */
--	cmd[7] = 0;
-+	cmd[5] = 0;			/* checksum msb */
-+	cmd[6] = 0;			/* checksum lsb */
+@@ -145,7 +145,7 @@ static int occ_poll(struct occ *occ)
+ 	cmd[6] = 0;			/* checksum lsb */
  
  	/* mutex should already be locked if necessary */
--	rc = occ->send_cmd(occ, cmd);
+-	rc = occ->send_cmd(occ, cmd, sizeof(cmd));
 +	rc = occ->send_cmd(occ, cmd, sizeof(cmd), &occ->resp, sizeof(occ->resp));
  	if (rc) {
  		occ->last_error = rc;
  		if (occ->error_count++ > OCC_ERROR_COUNT_THRESHOLD)
-@@ -184,25 +182,24 @@ static int occ_set_user_power_cap(struct occ *occ, u16 user_power_cap)
+@@ -182,6 +182,7 @@ static int occ_set_user_power_cap(struct occ *occ, u16 user_power_cap)
  {
  	int rc;
  	u8 cmd[8];
--	u16 checksum = 0x24;
 +	u8 resp[8];
  	__be16 user_power_cap_be = cpu_to_be16(user_power_cap);
  
--	cmd[0] = 0;
--	cmd[1] = 0x22;
--	cmd[2] = 0;
--	cmd[3] = 2;
-+	cmd[0] = 0;	/* sequence number */
-+	cmd[1] = 0x22;	/* cmd type */
-+	cmd[2] = 0;	/* data length msb */
-+	cmd[3] = 2;	/* data length lsb */
- 
- 	memcpy(&cmd[4], &user_power_cap_be, 2);
- 
--	checksum += cmd[4] + cmd[5];
--	cmd[6] = checksum >> 8;
--	cmd[7] = checksum & 0xFF;
-+	cmd[6] = 0;	/* checksum msb */
-+	cmd[7] = 0;	/* checksum lsb */
- 
- 	rc = mutex_lock_interruptible(&occ->lock);
+ 	cmd[0] = 0;	/* sequence number */
+@@ -198,7 +199,7 @@ static int occ_set_user_power_cap(struct occ *occ, u16 user_power_cap)
  	if (rc)
  		return rc;
  
--	rc = occ->send_cmd(occ, cmd);
+-	rc = occ->send_cmd(occ, cmd, sizeof(cmd));
 +	rc = occ->send_cmd(occ, cmd, sizeof(cmd), resp, sizeof(resp));
  
  	mutex_unlock(&occ->lock);
  
-@@ -1144,8 +1141,6 @@ int occ_setup(struct occ *occ, const char *name)
- {
- 	int rc;
- 
--	/* start with 1 to avoid false match with zero-initialized SRAM buffer */
--	occ->seq_no = 1;
- 	mutex_init(&occ->lock);
- 	occ->groups[0] = &occ->group;
- 
 diff --git a/drivers/hwmon/occ/common.h b/drivers/hwmon/occ/common.h
-index e6df719770e8..7abf19102062 100644
+index 2dd4a4d240c0..726943af9a07 100644
 --- a/drivers/hwmon/occ/common.h
 +++ b/drivers/hwmon/occ/common.h
-@@ -95,9 +95,9 @@ struct occ {
- 	struct occ_sensors sensors;
+@@ -96,7 +96,8 @@ struct occ {
  
  	int powr_sample_time_us;	/* average power sample time */
--	u8 seq_no;
  	u8 poll_cmd_data;		/* to perform OCC poll command */
--	int (*send_cmd)(struct occ *occ, u8 *cmd);
+-	int (*send_cmd)(struct occ *occ, u8 *cmd, size_t len);
 +	int (*send_cmd)(struct occ *occ, u8 *cmd, size_t len, void *resp,
 +			size_t resp_len);
  
  	unsigned long next_update;
  	struct mutex lock;		/* lock OCC access */
 diff --git a/drivers/hwmon/occ/p8_i2c.c b/drivers/hwmon/occ/p8_i2c.c
-index 0cf8588be35a..c35c07964d85 100644
+index 9e61e1fb5142..c35c07964d85 100644
 --- a/drivers/hwmon/occ/p8_i2c.c
 +++ b/drivers/hwmon/occ/p8_i2c.c
-@@ -97,18 +97,22 @@ static int p8_i2c_occ_putscom_u32(struct i2c_client *client, u32 address,
- }
- 
- static int p8_i2c_occ_putscom_be(struct i2c_client *client, u32 address,
--				 u8 *data)
-+				 u8 *data, size_t len)
- {
--	__be32 data0, data1;
-+	__be32 data0 = 0, data1 = 0;
- 
--	memcpy(&data0, data, 4);
--	memcpy(&data1, data + 4, 4);
-+	memcpy(&data0, data, min_t(size_t, len, 4));
-+	if (len > 4) {
-+		len -= 4;
-+		memcpy(&data1, data + 4, min_t(size_t, len, 4));
-+	}
- 
- 	return p8_i2c_occ_putscom_u32(client, address, be32_to_cpu(data0),
+@@ -111,7 +111,8 @@ static int p8_i2c_occ_putscom_be(struct i2c_client *client, u32 address,
  				      be32_to_cpu(data1));
  }
  
--static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd)
+-static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
 +static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
 +			       void *resp, size_t resp_len)
  {
  	int i, rc;
  	unsigned long start;
-@@ -117,7 +121,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd)
+@@ -120,7 +121,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
  	const long wait_time = msecs_to_jiffies(OCC_CMD_IN_PRG_WAIT_MS);
  	struct p8_i2c_occ *ctx = to_p8_i2c_occ(occ);
  	struct i2c_client *client = ctx->client;
@@ -1211,16 +1227,7 @@ index 0cf8588be35a..c35c07964d85 100644
  
  	start = jiffies;
  
-@@ -127,7 +131,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd)
- 		return rc;
- 
- 	/* write command (expected to already be BE), we need bus-endian... */
--	rc = p8_i2c_occ_putscom_be(client, OCB_DATA3, cmd);
-+	rc = p8_i2c_occ_putscom_be(client, OCB_DATA3, cmd, len);
- 	if (rc)
- 		return rc;
- 
-@@ -148,7 +152,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd)
+@@ -151,7 +152,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
  			return rc;
  
  		/* wait for OCC */
@@ -1229,7 +1236,7 @@ index 0cf8588be35a..c35c07964d85 100644
  			rc = -EALREADY;
  
  			if (time_after(jiffies, start + timeout))
-@@ -160,7 +164,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd)
+@@ -163,7 +164,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
  	} while (rc);
  
  	/* check the OCC response */
@@ -1238,7 +1245,7 @@ index 0cf8588be35a..c35c07964d85 100644
  	case OCC_RESP_CMD_IN_PRG:
  		rc = -ETIMEDOUT;
  		break;
-@@ -189,8 +193,8 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd)
+@@ -192,8 +193,8 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
  	if (rc < 0)
  		return rc;
  
@@ -1250,14 +1257,14 @@ index 0cf8588be35a..c35c07964d85 100644
  
  	/* fetch the rest of the response data */
 diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
-index f6387cc0b754..14923e78e1f3 100644
+index 49b13cc01073..bad349bf9f33 100644
 --- a/drivers/hwmon/occ/p9_sbe.c
 +++ b/drivers/hwmon/occ/p9_sbe.c
-@@ -16,18 +16,17 @@ struct p9_sbe_occ {
+@@ -78,11 +78,10 @@ static bool p9_sbe_occ_save_ffdc(struct p9_sbe_occ *ctx, const void *resp,
+ 	return notify;
+ }
  
- #define to_p9_sbe_occ(x)	container_of((x), struct p9_sbe_occ, occ)
- 
--static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd)
+-static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
 +static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
 +			       void *resp, size_t resp_len)
  {
@@ -1266,10 +1273,10 @@ index f6387cc0b754..14923e78e1f3 100644
 -	size_t resp_len = sizeof(*resp);
  	int rc;
  
--	rc = fsi_occ_submit(ctx->sbe, cmd, 8, resp, &resp_len);
-+	rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
- 	if (rc < 0)
+ 	rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
+@@ -96,7 +95,7 @@ static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
  		return rc;
+ 	}
  
 -	switch (resp->return_status) {
 +	switch (((struct occ_response *)resp)->return_status) {
@@ -1305,10 +1312,10 @@ index 8def88cfa300..db9ef3e1eb97 100644
  	/* Relevant to qps created from kernel space only (ULPs) */
  	u8 prev_wqe_size;
 diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
-index f652d083ff20..49dfedbc5665 100644
+index a53476653b0d..df4d7970c1ad 100644
 --- a/drivers/infiniband/hw/qedr/verbs.c
 +++ b/drivers/infiniband/hw/qedr/verbs.c
-@@ -2622,6 +2622,8 @@ int qedr_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
+@@ -2612,6 +2612,8 @@ int qedr_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
  					1 << max_t(int, attr->timeout - 8, 0);
  		else
  			qp_params.ack_timeout = 0;
@@ -1317,7 +1324,7 @@ index f652d083ff20..49dfedbc5665 100644
  	}
  
  	if (attr_mask & IB_QP_RETRY_CNT) {
-@@ -2781,7 +2783,7 @@ int qedr_query_qp(struct ib_qp *ibqp,
+@@ -2771,7 +2773,7 @@ int qedr_query_qp(struct ib_qp *ibqp,
  	rdma_ah_set_dgid_raw(&qp_attr->ah_attr, &params.dgid.bytes[0]);
  	rdma_ah_set_port_num(&qp_attr->ah_attr, 1);
  	rdma_ah_set_sl(&qp_attr->ah_attr, 0);
@@ -1327,7 +1334,7 @@ index f652d083ff20..49dfedbc5665 100644
  	qp_attr->retry_cnt = params.retry_cnt;
  	qp_attr->min_rnr_timer = params.min_rnr_nak_timer;
 diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
-index d9ef52159a22..b0566aabc186 100644
+index 2b26435a6946..e362a7471512 100644
 --- a/drivers/md/dm-raid.c
 +++ b/drivers/md/dm-raid.c
 @@ -1001,12 +1001,13 @@ static int validate_region_size(struct raid_set *rs, unsigned long region_size)
@@ -1404,10 +1411,10 @@ index d9ef52159a22..b0566aabc186 100644
  	return r;
  }
 diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index e54d802ee0bb..b58984ddca13 100644
+index d6ce5a09fd35..0dd4679deb61 100644
 --- a/drivers/md/raid5.c
 +++ b/drivers/md/raid5.c
-@@ -8026,6 +8026,7 @@ static int raid5_add_disk(struct mddev *mddev, struct md_rdev *rdev)
+@@ -8023,6 +8023,7 @@ static int raid5_add_disk(struct mddev *mddev, struct md_rdev *rdev)
  	 */
  	if (rdev->saved_raid_disk >= 0 &&
  	    rdev->saved_raid_disk >= first &&
@@ -1430,10 +1437,10 @@ index a86b1f71762e..d7fb33c078e8 100644
  						slave_info(bond->dev, slave->dev, "Removing an active aggregator\n");
  						/* select new active aggregator */
 diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index bca36be884b8..a6a70b872ac4 100644
+index 303c8d32d451..007d43e46dcb 100644
 --- a/drivers/net/bonding/bond_alb.c
 +++ b/drivers/net/bonding/bond_alb.c
-@@ -1281,12 +1281,12 @@ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+@@ -1302,12 +1302,12 @@ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
  		return res;
  
  	if (rlb_enabled) {
@@ -1448,7 +1455,7 @@ index bca36be884b8..a6a70b872ac4 100644
  		bond->alb_info.rlb_enabled = 0;
  	}
 diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
-index 91230894692d..da87de02b2fc 100644
+index 444ef6a342f6..14c5b2db65f4 100644
 --- a/drivers/net/caif/caif_virtio.c
 +++ b/drivers/net/caif/caif_virtio.c
 @@ -721,13 +721,21 @@ static int cfv_probe(struct virtio_device *vdev)
@@ -1475,10 +1482,10 @@ index 91230894692d..da87de02b2fc 100644
  
  	return 0;
 diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index b3a43a3d90e4..d76b2377d66e 100644
+index 87e81c636339..be0edfa093d0 100644
 --- a/drivers/net/dsa/bcm_sf2.c
 +++ b/drivers/net/dsa/bcm_sf2.c
-@@ -865,6 +865,11 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
+@@ -878,6 +878,11 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
  		if (duplex == DUPLEX_FULL)
  			reg |= DUPLX_MODE;
  
@@ -1502,11 +1509,33 @@ index 2572c6087bb5..b28baab6d56a 100644
  	leds = of_find_node_by_name(hellcreek->dev->of_node, "leds");
  	if (!leds) {
  		dev_err(hellcreek->dev, "No LEDs specified in device tree!\n");
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 52a8566071ed..4a071f96ea28 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1883,6 +1883,8 @@ static void vsc9959_psfp_sgi_table_del(struct ocelot *ocelot,
+ static void vsc9959_psfp_counters_get(struct ocelot *ocelot, u32 index,
+ 				      struct felix_stream_filter_counters *counters)
+ {
++	mutex_lock(&ocelot->stats_lock);
++
+ 	ocelot_rmw(ocelot, SYS_STAT_CFG_STAT_VIEW(index),
+ 		   SYS_STAT_CFG_STAT_VIEW_M,
+ 		   SYS_STAT_CFG);
+@@ -1897,6 +1899,8 @@ static void vsc9959_psfp_counters_get(struct ocelot *ocelot, u32 index,
+ 		     SYS_STAT_CFG_STAT_VIEW(index) |
+ 		     SYS_STAT_CFG_STAT_CLEAR_SHOT(0x10),
+ 		     SYS_STAT_CFG);
++
++	mutex_unlock(&ocelot->stats_lock);
+ }
+ 
+ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 19bb3ca0515e..d7d90cdce4f6 100644
+index 79deb19e3a19..7ad663c5b1ab 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -4293,6 +4293,8 @@ static int mlxsw_sp_nexthop4_init(struct mlxsw_sp *mlxsw_sp,
+@@ -4418,6 +4418,8 @@ static int mlxsw_sp_nexthop4_init(struct mlxsw_sp *mlxsw_sp,
  	return 0;
  
  err_nexthop_neigh_init:
@@ -1515,7 +1544,7 @@ index 19bb3ca0515e..d7d90cdce4f6 100644
  	mlxsw_sp_nexthop_remove(mlxsw_sp, nh);
  	return err;
  }
-@@ -6578,6 +6580,7 @@ static int mlxsw_sp_nexthop6_init(struct mlxsw_sp *mlxsw_sp,
+@@ -6743,6 +6745,7 @@ static int mlxsw_sp_nexthop6_init(struct mlxsw_sp *mlxsw_sp,
  				  const struct fib6_info *rt)
  {
  	struct net_device *dev = rt->fib6_nh->fib_nh_dev;
@@ -1523,7 +1552,7 @@ index 19bb3ca0515e..d7d90cdce4f6 100644
  
  	nh->nhgi = nh_grp->nhgi;
  	nh->nh_weight = rt->fib6_nh->fib_nh_weight;
-@@ -6593,7 +6596,16 @@ static int mlxsw_sp_nexthop6_init(struct mlxsw_sp *mlxsw_sp,
+@@ -6758,7 +6761,16 @@ static int mlxsw_sp_nexthop6_init(struct mlxsw_sp *mlxsw_sp,
  		return 0;
  	nh->ifindex = dev->ifindex;
  
@@ -1541,11 +1570,61 @@ index 19bb3ca0515e..d7d90cdce4f6 100644
  }
  
  static void mlxsw_sp_nexthop6_fini(struct mlxsw_sp *mlxsw_sp,
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+index 5389fffc694a..5edc8b7176c8 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+@@ -396,6 +396,14 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
+ 	u32 mact_entry;
+ 	int res, err;
+ 
++	if (!sparx5_netdevice_check(dev))
++		return -EOPNOTSUPP;
++
++	if (netif_is_bridge_master(v->obj.orig_dev)) {
++		sparx5_mact_learn(spx5, PGID_CPU, v->addr, v->vid);
++		return 0;
++	}
++
+ 	/* When VLAN unaware the vlan value is not parsed and we receive vid 0.
+ 	 * Fall back to bridge vid 1.
+ 	 */
+@@ -461,6 +469,14 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
+ 	u32 mact_entry, res, pgid_entry[3];
+ 	int err;
+ 
++	if (!sparx5_netdevice_check(dev))
++		return -EOPNOTSUPP;
++
++	if (netif_is_bridge_master(v->obj.orig_dev)) {
++		sparx5_mact_forget(spx5, v->addr, v->vid);
++		return 0;
++	}
++
+ 	if (!br_vlan_enabled(spx5->hw_bridge_dev))
+ 		vid = 1;
+ 	else
+@@ -500,6 +516,7 @@ static int sparx5_handle_port_obj_add(struct net_device *dev,
+ 						  SWITCHDEV_OBJ_PORT_VLAN(obj));
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_MDB:
++	case SWITCHDEV_OBJ_ID_HOST_MDB:
+ 		err = sparx5_handle_port_mdb_add(dev, nb,
+ 						 SWITCHDEV_OBJ_PORT_MDB(obj));
+ 		break;
+@@ -552,6 +569,7 @@ static int sparx5_handle_port_obj_del(struct net_device *dev,
+ 						  SWITCHDEV_OBJ_PORT_VLAN(obj)->vid);
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_MDB:
++	case SWITCHDEV_OBJ_ID_HOST_MDB:
+ 		err = sparx5_handle_port_mdb_del(dev, nb,
+ 						 SWITCHDEV_OBJ_PORT_MDB(obj));
+ 		break;
 diff --git a/drivers/net/ethernet/smsc/epic100.c b/drivers/net/ethernet/smsc/epic100.c
-index 44daf79a8f97..f3b1af9a59e8 100644
+index a0654e88444c..0329caf63279 100644
 --- a/drivers/net/ethernet/smsc/epic100.c
 +++ b/drivers/net/ethernet/smsc/epic100.c
-@@ -1513,14 +1513,14 @@ static void epic_remove_one(struct pci_dev *pdev)
+@@ -1515,14 +1515,14 @@ static void epic_remove_one(struct pci_dev *pdev)
  	struct net_device *dev = pci_get_drvdata(pdev);
  	struct epic_private *ep = netdev_priv(dev);
  
@@ -1636,7 +1715,7 @@ index f122026c4682..2fc851082e7b 100644
  	ret = drv->handle_interrupt(phydev);
  	mutex_unlock(&phydev->lock);
 diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 28f4a383aba7..0d3f8fe8e42c 100644
+index 8406ac739def..2a53ae38a962 100644
 --- a/drivers/net/phy/phy_device.c
 +++ b/drivers/net/phy/phy_device.c
 @@ -277,6 +277,15 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
@@ -1677,7 +1756,7 @@ index 28f4a383aba7..0d3f8fe8e42c 100644
  		phy_start_machine(phydev);
  
 diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 02de8d998bfa..ea60453fe69a 100644
+index dbe4c0a4be2c..4ebf83bb9888 100644
 --- a/drivers/net/tun.c
 +++ b/drivers/net/tun.c
 @@ -274,6 +274,12 @@ static void tun_napi_init(struct tun_struct *tun, struct tun_file *tfile,
@@ -1732,7 +1811,7 @@ index 02de8d998bfa..ea60453fe69a 100644
  		sock_hold(&tfile->sk);
  		tun_napi_init(tun, tfile, napi, napi_frags);
 diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-index 4334aafab59a..c126df1c13ee 100644
+index 2c81236c6c7c..45d3cc5cc355 100644
 --- a/drivers/net/usb/asix.h
 +++ b/drivers/net/usb/asix.h
 @@ -126,8 +126,7 @@
@@ -1746,7 +1825,7 @@ index 4334aafab59a..c126df1c13ee 100644
  
  /* AX88772 & AX88178 RX_CTL values */
 diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index f39188b7717a..00c23f1d1c94 100644
+index 632fa6c1d5e3..b4a1b7abcfc9 100644
 --- a/drivers/net/usb/asix_common.c
 +++ b/drivers/net/usb/asix_common.c
 @@ -431,6 +431,7 @@ void asix_adjust_link(struct net_device *netdev)
@@ -1758,10 +1837,10 @@ index f39188b7717a..00c23f1d1c94 100644
  
  int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm)
 diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index d5ce642200e8..0a2c3860179e 100644
+index e2fa56b92685..873f6deabbd1 100644
 --- a/drivers/net/usb/ax88179_178a.c
 +++ b/drivers/net/usb/ax88179_178a.c
-@@ -1471,6 +1471,42 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+@@ -1472,6 +1472,42 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
  	 * are bundled into this buffer and where we can find an array of
  	 * per-packet metadata (which contains elements encoded into u16).
  	 */
@@ -1804,7 +1883,7 @@ index d5ce642200e8..0a2c3860179e 100644
  	if (skb->len < 4)
  		return 0;
  	skb_trim(skb, skb->len - 4);
-@@ -1484,51 +1520,66 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+@@ -1485,51 +1521,66 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
  	/* Make sure that the bounds of the metadata array are inside the SKB
  	 * (and in front of the counter at the end).
  	 */
@@ -1896,23 +1975,11 @@ index d5ce642200e8..0a2c3860179e 100644
  }
  
  static struct sk_buff *
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 0c7f02ca6822..3e1aab1e894e 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1355,6 +1355,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1070, 2)},	/* Telit FN990 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
 diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index af2bbaff2478..a0ea236ac60e 100644
+index 36b24ec11650..2ea81931543c 100644
 --- a/drivers/net/usb/usbnet.c
 +++ b/drivers/net/usb/usbnet.c
-@@ -2002,7 +2002,7 @@ static int __usbnet_read_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
+@@ -2004,7 +2004,7 @@ static int __usbnet_read_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
  		   cmd, reqtype, value, index, size);
  
  	if (size) {
@@ -1921,7 +1988,7 @@ index af2bbaff2478..a0ea236ac60e 100644
  		if (!buf)
  			goto out;
  	}
-@@ -2034,7 +2034,7 @@ static int __usbnet_write_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
+@@ -2036,7 +2036,7 @@ static int __usbnet_write_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
  		   cmd, reqtype, value, index, size);
  
  	if (data) {
@@ -1931,12 +1998,12 @@ index af2bbaff2478..a0ea236ac60e 100644
  			goto out;
  	} else {
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 468d0ffc266b..318c681ad63e 100644
+index 10d548b07b9c..c7804fce204c 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -3241,14 +3241,20 @@ static int virtnet_probe(struct virtio_device *vdev)
- 		}
- 	}
+@@ -3641,14 +3641,20 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	if (vi->has_rss || vi->has_rss_hash_report)
+ 		virtnet_init_default_rss(vi);
  
 -	err = register_netdev(dev);
 +	/* serialize netdev register + virtio_device_ready() with ndo_open() */
@@ -1957,7 +2024,7 @@ index 468d0ffc266b..318c681ad63e 100644
  	if (err) {
  		pr_debug("virtio_net: registering cpu notifier failed\n");
 diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 2492a27467b4..074dceb1930b 100644
+index e2b4a1893a13..97c7633070a3 100644
 --- a/drivers/net/xen-netfront.c
 +++ b/drivers/net/xen-netfront.c
 @@ -66,6 +66,10 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
@@ -2064,7 +2131,7 @@ index 2492a27467b4..074dceb1930b 100644
  	/* Check if backend supports multiple queues */
  	max_queues = xenbus_read_unsigned(info->xbdev->otherend,
  					  "multi-queue-max-queues", 1);
-@@ -2412,6 +2457,9 @@ static int xennet_connect(struct net_device *dev)
+@@ -2413,6 +2458,9 @@ static int xennet_connect(struct net_device *dev)
  		return err;
  	if (np->netback_has_xdp_headroom)
  		pr_info("backend supports XDP headroom\n");
@@ -2092,7 +2159,7 @@ index ceef81d93ac9..01329b91d59d 100644
  	pdata->irq = ret;
  
 diff --git a/drivers/nfc/nfcmrvl/spi.c b/drivers/nfc/nfcmrvl/spi.c
-index 5b833a9a83f8..abd75779194c 100644
+index a38e2fcdfd39..ad3359a4942c 100644
 --- a/drivers/nfc/nfcmrvl/spi.c
 +++ b/drivers/nfc/nfcmrvl/spi.c
 @@ -115,9 +115,9 @@ static int nfcmrvl_spi_parse_dt(struct device_node *node,
@@ -2123,10 +2190,10 @@ index 7e451c10985d..e8f3b35afbee 100644
  	if (r != header.plen) {
  		nfc_err(&client->dev,
 diff --git a/drivers/nvdimm/bus.c b/drivers/nvdimm/bus.c
-index 9dc7f3edd42b..84d197cc09f8 100644
+index 7b0d1443217a..5db16857b80e 100644
 --- a/drivers/nvdimm/bus.c
 +++ b/drivers/nvdimm/bus.c
-@@ -185,8 +185,8 @@ static int nvdimm_clear_badblocks_region(struct device *dev, void *data)
+@@ -182,8 +182,8 @@ static int nvdimm_clear_badblocks_region(struct device *dev, void *data)
  	ndr_end = nd_region->ndr_start + nd_region->ndr_size - 1;
  
  	/* make sure we are in the region */
@@ -2138,10 +2205,10 @@ index 9dc7f3edd42b..84d197cc09f8 100644
  
  	sector = (ctx->phys - nd_region->ndr_start) / 512;
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 58b8461b2b0f..c3db9f12dac3 100644
+index ddea0fb90c28..fe829377c7c2 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
-@@ -3341,8 +3341,11 @@ static const struct pci_device_id nvme_id_table[] = {
+@@ -3436,8 +3436,11 @@ static const struct pci_device_id nvme_id_table[] = {
  	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
  		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
  				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
@@ -2154,11 +2221,211 @@ index 58b8461b2b0f..c3db9f12dac3 100644
  	{ PCI_DEVICE(0x1cc1, 0x8201),   /* ADATA SX8200PNP 512GB */
  		.driver_data = NVME_QUIRK_NO_DEEPEST_PS |
  				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+diff --git a/drivers/nvme/target/configfs.c b/drivers/nvme/target/configfs.c
+index e44b2988759e..ff77c3d2354f 100644
+--- a/drivers/nvme/target/configfs.c
++++ b/drivers/nvme/target/configfs.c
+@@ -773,11 +773,31 @@ static ssize_t nvmet_passthru_io_timeout_store(struct config_item *item,
+ }
+ CONFIGFS_ATTR(nvmet_passthru_, io_timeout);
+ 
++static ssize_t nvmet_passthru_clear_ids_show(struct config_item *item,
++		char *page)
++{
++	return sprintf(page, "%u\n", to_subsys(item->ci_parent)->clear_ids);
++}
++
++static ssize_t nvmet_passthru_clear_ids_store(struct config_item *item,
++		const char *page, size_t count)
++{
++	struct nvmet_subsys *subsys = to_subsys(item->ci_parent);
++	unsigned int clear_ids;
++
++	if (kstrtouint(page, 0, &clear_ids))
++		return -EINVAL;
++	subsys->clear_ids = clear_ids;
++	return count;
++}
++CONFIGFS_ATTR(nvmet_passthru_, clear_ids);
++
+ static struct configfs_attribute *nvmet_passthru_attrs[] = {
+ 	&nvmet_passthru_attr_device_path,
+ 	&nvmet_passthru_attr_enable,
+ 	&nvmet_passthru_attr_admin_timeout,
+ 	&nvmet_passthru_attr_io_timeout,
++	&nvmet_passthru_attr_clear_ids,
+ 	NULL,
+ };
+ 
+diff --git a/drivers/nvme/target/core.c b/drivers/nvme/target/core.c
+index 90e75324dae0..c27660a660d9 100644
+--- a/drivers/nvme/target/core.c
++++ b/drivers/nvme/target/core.c
+@@ -1374,6 +1374,12 @@ u16 nvmet_alloc_ctrl(const char *subsysnqn, const char *hostnqn,
+ 	ctrl->port = req->port;
+ 	ctrl->ops = req->ops;
+ 
++#ifdef CONFIG_NVME_TARGET_PASSTHRU
++	/* By default, set loop targets to clear IDS by default */
++	if (ctrl->port->disc_addr.trtype == NVMF_TRTYPE_LOOP)
++		subsys->clear_ids = 1;
++#endif
++
+ 	INIT_WORK(&ctrl->async_event_work, nvmet_async_event_work);
+ 	INIT_LIST_HEAD(&ctrl->async_events);
+ 	INIT_RADIX_TREE(&ctrl->p2p_ns_map, GFP_KERNEL);
+diff --git a/drivers/nvme/target/nvmet.h b/drivers/nvme/target/nvmet.h
+index 69818752a33a..2b3e5719f24e 100644
+--- a/drivers/nvme/target/nvmet.h
++++ b/drivers/nvme/target/nvmet.h
+@@ -249,6 +249,7 @@ struct nvmet_subsys {
+ 	struct config_group	passthru_group;
+ 	unsigned int		admin_timeout;
+ 	unsigned int		io_timeout;
++	unsigned int		clear_ids;
+ #endif /* CONFIG_NVME_TARGET_PASSTHRU */
+ 
+ #ifdef CONFIG_BLK_DEV_ZONED
+diff --git a/drivers/nvme/target/passthru.c b/drivers/nvme/target/passthru.c
+index 5247c24538eb..6506831cb012 100644
+--- a/drivers/nvme/target/passthru.c
++++ b/drivers/nvme/target/passthru.c
+@@ -30,6 +30,53 @@ void nvmet_passthrough_override_cap(struct nvmet_ctrl *ctrl)
+ 		ctrl->cap &= ~(1ULL << 43);
+ }
+ 
++static u16 nvmet_passthru_override_id_descs(struct nvmet_req *req)
++{
++	struct nvmet_ctrl *ctrl = req->sq->ctrl;
++	u16 status = NVME_SC_SUCCESS;
++	int pos, len;
++	bool csi_seen = false;
++	void *data;
++	u8 csi;
++
++	if (!ctrl->subsys->clear_ids)
++		return status;
++
++	data = kzalloc(NVME_IDENTIFY_DATA_SIZE, GFP_KERNEL);
++	if (!data)
++		return NVME_SC_INTERNAL;
++
++	status = nvmet_copy_from_sgl(req, 0, data, NVME_IDENTIFY_DATA_SIZE);
++	if (status)
++		goto out_free;
++
++	for (pos = 0; pos < NVME_IDENTIFY_DATA_SIZE; pos += len) {
++		struct nvme_ns_id_desc *cur = data + pos;
++
++		if (cur->nidl == 0)
++			break;
++		if (cur->nidt == NVME_NIDT_CSI) {
++			memcpy(&csi, cur + 1, NVME_NIDT_CSI_LEN);
++			csi_seen = true;
++			break;
++		}
++		len = sizeof(struct nvme_ns_id_desc) + cur->nidl;
++	}
++
++	memset(data, 0, NVME_IDENTIFY_DATA_SIZE);
++	if (csi_seen) {
++		struct nvme_ns_id_desc *cur = data;
++
++		cur->nidt = NVME_NIDT_CSI;
++		cur->nidl = NVME_NIDT_CSI_LEN;
++		memcpy(cur + 1, &csi, NVME_NIDT_CSI_LEN);
++	}
++	status = nvmet_copy_to_sgl(req, 0, data, NVME_IDENTIFY_DATA_SIZE);
++out_free:
++	kfree(data);
++	return status;
++}
++
+ static u16 nvmet_passthru_override_id_ctrl(struct nvmet_req *req)
+ {
+ 	struct nvmet_ctrl *ctrl = req->sq->ctrl;
+@@ -152,6 +199,11 @@ static u16 nvmet_passthru_override_id_ns(struct nvmet_req *req)
+ 	 */
+ 	id->mc = 0;
+ 
++	if (req->sq->ctrl->subsys->clear_ids) {
++		memset(id->nguid, 0, NVME_NIDT_NGUID_LEN);
++		memset(id->eui64, 0, NVME_NIDT_EUI64_LEN);
++	}
++
+ 	status = nvmet_copy_to_sgl(req, 0, id, sizeof(*id));
+ 
+ out_free:
+@@ -176,6 +228,9 @@ static void nvmet_passthru_execute_cmd_work(struct work_struct *w)
+ 		case NVME_ID_CNS_NS:
+ 			nvmet_passthru_override_id_ns(req);
+ 			break;
++		case NVME_ID_CNS_NS_DESC_LIST:
++			nvmet_passthru_override_id_descs(req);
++			break;
+ 		}
+ 	} else if (status < 0)
+ 		status = NVME_SC_INTERNAL;
+diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
+index 2793554e622e..0a9542599ad1 100644
+--- a/drivers/nvme/target/tcp.c
++++ b/drivers/nvme/target/tcp.c
+@@ -405,7 +405,7 @@ static int nvmet_tcp_map_data(struct nvmet_tcp_cmd *cmd)
+ 	return NVME_SC_INTERNAL;
+ }
+ 
+-static void nvmet_tcp_send_ddgst(struct ahash_request *hash,
++static void nvmet_tcp_calc_ddgst(struct ahash_request *hash,
+ 		struct nvmet_tcp_cmd *cmd)
+ {
+ 	ahash_request_set_crypt(hash, cmd->req.sg,
+@@ -413,23 +413,6 @@ static void nvmet_tcp_send_ddgst(struct ahash_request *hash,
+ 	crypto_ahash_digest(hash);
+ }
+ 
+-static void nvmet_tcp_recv_ddgst(struct ahash_request *hash,
+-		struct nvmet_tcp_cmd *cmd)
+-{
+-	struct scatterlist sg;
+-	struct kvec *iov;
+-	int i;
+-
+-	crypto_ahash_init(hash);
+-	for (i = 0, iov = cmd->iov; i < cmd->nr_mapped; i++, iov++) {
+-		sg_init_one(&sg, iov->iov_base, iov->iov_len);
+-		ahash_request_set_crypt(hash, &sg, NULL, iov->iov_len);
+-		crypto_ahash_update(hash);
+-	}
+-	ahash_request_set_crypt(hash, NULL, (void *)&cmd->exp_ddgst, 0);
+-	crypto_ahash_final(hash);
+-}
+-
+ static void nvmet_setup_c2h_data_pdu(struct nvmet_tcp_cmd *cmd)
+ {
+ 	struct nvme_tcp_data_pdu *pdu = cmd->data_pdu;
+@@ -454,7 +437,7 @@ static void nvmet_setup_c2h_data_pdu(struct nvmet_tcp_cmd *cmd)
+ 
+ 	if (queue->data_digest) {
+ 		pdu->hdr.flags |= NVME_TCP_F_DDGST;
+-		nvmet_tcp_send_ddgst(queue->snd_hash, cmd);
++		nvmet_tcp_calc_ddgst(queue->snd_hash, cmd);
+ 	}
+ 
+ 	if (cmd->queue->hdr_digest) {
+@@ -1137,7 +1120,7 @@ static void nvmet_tcp_prep_recv_ddgst(struct nvmet_tcp_cmd *cmd)
+ {
+ 	struct nvmet_tcp_queue *queue = cmd->queue;
+ 
+-	nvmet_tcp_recv_ddgst(queue->rcv_hash, cmd);
++	nvmet_tcp_calc_ddgst(queue->rcv_hash, cmd);
+ 	queue->offset = 0;
+ 	queue->left = NVME_TCP_DIGEST_LENGTH;
+ 	queue->rcv_state = NVMET_TCP_RECV_DDGST;
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index e21ea3d23e6f..f1ff003bb14b 100644
+index 5d9dd70e4e0f..ddb8f14247c0 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
-@@ -871,6 +871,8 @@ config PANASONIC_LAPTOP
+@@ -945,6 +945,8 @@ config PANASONIC_LAPTOP
  	tristate "Panasonic Laptop Extras"
  	depends on INPUT && ACPI
  	depends on BACKLIGHT_CLASS_DEVICE
@@ -2167,8 +2434,67 @@ index e21ea3d23e6f..f1ff003bb14b 100644
  	select INPUT_SPARSEKMAP
  	help
  	  This driver adds support for access to backlight control and hotkeys
+diff --git a/drivers/platform/x86/ideapad-laptop.c b/drivers/platform/x86/ideapad-laptop.c
+index 3ccb7b71dfb1..abd0c81d62c4 100644
+--- a/drivers/platform/x86/ideapad-laptop.c
++++ b/drivers/platform/x86/ideapad-laptop.c
+@@ -152,6 +152,10 @@ static bool no_bt_rfkill;
+ module_param(no_bt_rfkill, bool, 0444);
+ MODULE_PARM_DESC(no_bt_rfkill, "No rfkill for bluetooth.");
+ 
++static bool allow_v4_dytc;
++module_param(allow_v4_dytc, bool, 0444);
++MODULE_PARM_DESC(allow_v4_dytc, "Enable DYTC version 4 platform-profile support.");
++
+ /*
+  * ACPI Helpers
+  */
+@@ -871,12 +875,18 @@ static void dytc_profile_refresh(struct ideapad_private *priv)
+ static const struct dmi_system_id ideapad_dytc_v4_allow_table[] = {
+ 	{
+ 		/* Ideapad 5 Pro 16ACH6 */
+-		.ident = "LENOVO 82L5",
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "82L5")
+ 		}
+ 	},
++	{
++		/* Ideapad 5 15ITL05 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "IdeaPad 5 15ITL05")
++		}
++	},
+ 	{}
+ };
+ 
+@@ -901,13 +911,16 @@ static int ideapad_dytc_profile_init(struct ideapad_private *priv)
+ 
+ 	dytc_version = (output >> DYTC_QUERY_REV_BIT) & 0xF;
+ 
+-	if (dytc_version < 5) {
+-		if (dytc_version < 4 || !dmi_check_system(ideapad_dytc_v4_allow_table)) {
+-			dev_info(&priv->platform_device->dev,
+-				 "DYTC_VERSION is less than 4 or is not allowed: %d\n",
+-				 dytc_version);
+-			return -ENODEV;
+-		}
++	if (dytc_version < 4) {
++		dev_info(&priv->platform_device->dev, "DYTC_VERSION < 4 is not supported\n");
++		return -ENODEV;
++	}
++
++	if (dytc_version < 5 &&
++	    !(allow_v4_dytc || dmi_check_system(ideapad_dytc_v4_allow_table))) {
++		dev_info(&priv->platform_device->dev,
++			 "DYTC_VERSION 4 support may not work. Pass ideapad_laptop.allow_v4_dytc=Y on the kernel commandline to enable\n");
++		return -ENODEV;
+ 	}
+ 
+ 	priv->dytc = kzalloc(sizeof(*priv->dytc), GFP_KERNEL);
 diff --git a/drivers/platform/x86/panasonic-laptop.c b/drivers/platform/x86/panasonic-laptop.c
-index d4f444401496..7ca49b3fc6c2 100644
+index 37850d07987d..615e39cbbbf1 100644
 --- a/drivers/platform/x86/panasonic-laptop.c
 +++ b/drivers/platform/x86/panasonic-laptop.c
 @@ -119,20 +119,22 @@
@@ -2308,11 +2634,23 @@ index d4f444401496..7ca49b3fc6c2 100644
  	if (pcc->platform) {
  		device_remove_file(&pcc->platform->dev, &dev_attr_cdpower);
  		platform_device_unregister(pcc->platform);
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index e6cb4a14cdd4..aa6ffeaa3932 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -4529,6 +4529,7 @@ static void thinkpad_acpi_amd_s2idle_restore(void)
+ 	iounmap(addr);
+ cleanup_resource:
+ 	release_resource(res);
++	kfree(res);
+ }
+ 
+ static struct acpi_s2idle_dev_ops thinkpad_acpi_s2idle_dev_ops = {
 diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index e4258f40dcd7..174895372e7f 100644
+index e0de44000d92..c290386aa2f3 100644
 --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
 +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1698,6 +1698,8 @@ static void mlx5_vdpa_set_vq_cb(struct vdpa_device *vdev, u16 idx, struct vdpa_c
+@@ -1757,6 +1757,8 @@ static void mlx5_vdpa_set_vq_cb(struct vdpa_device *vdev, u16 idx, struct vdpa_c
  	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
  
  	ndev->event_cbs[idx] = *cb;
@@ -2321,33 +2659,59 @@ index e4258f40dcd7..174895372e7f 100644
  }
  
  static void mlx5_cvq_notify(struct vringh *vring)
+diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
+index a0467bca39fa..263d1cd3af76 100644
+--- a/fs/ceph/caps.c
++++ b/fs/ceph/caps.c
+@@ -4358,6 +4358,7 @@ static void flush_dirty_session_caps(struct ceph_mds_session *s)
+ 		ihold(inode);
+ 		dout("flush_dirty_caps %llx.%llx\n", ceph_vinop(inode));
+ 		spin_unlock(&mdsc->cap_dirty_lock);
++		ceph_wait_on_async_create(inode);
+ 		ceph_check_caps(ci, CHECK_CAPS_FLUSH, NULL);
+ 		iput(inode);
+ 		spin_lock(&mdsc->cap_dirty_lock);
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 98e4a1aa898e..409cad848ae6 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -3423,7 +3423,9 @@ static int is_path_remote(struct mount_ctx *mnt_ctx)
+ 	struct cifs_tcon *tcon = mnt_ctx->tcon;
+ 	struct smb3_fs_context *ctx = mnt_ctx->fs_ctx;
+ 	char *full_path;
++#ifdef CONFIG_CIFS_DFS_UPCALL
+ 	bool nodfs = cifs_sb->mnt_cifs_flags & CIFS_MOUNT_NO_DFS;
++#endif
+ 
+ 	if (!server->ops->is_path_accessible)
+ 		return -EOPNOTSUPP;
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index a8470a98f84d..189323740324 100644
+index 7c190e885340..7e8c715052c0 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -4788,6 +4788,8 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+@@ -5254,7 +5254,7 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
  		return -EINVAL;
- 	if (unlikely(sqe->addr2 || sqe->file_index))
- 		return -EINVAL;
+-	if (unlikely(sqe->addr2 || sqe->file_index))
 +	if (unlikely(sqe->addr2 || sqe->file_index || sqe->ioprio))
-+		return -EINVAL;
+ 		return -EINVAL;
  
  	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
- 	sr->len = READ_ONCE(sqe->len);
-@@ -5011,6 +5013,8 @@ static int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+@@ -5467,7 +5467,7 @@ static int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
  		return -EINVAL;
- 	if (unlikely(sqe->addr2 || sqe->file_index))
- 		return -EINVAL;
+-	if (unlikely(sqe->addr2 || sqe->file_index))
 +	if (unlikely(sqe->addr2 || sqe->file_index || sqe->ioprio))
-+		return -EINVAL;
+ 		return -EINVAL;
  
  	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
- 	sr->len = READ_ONCE(sqe->len);
 diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 1ed3046dd5b3..876afde0ea66 100644
+index 16c803a9d996..31138e9be1dc 100644
 --- a/fs/ksmbd/smb2pdu.c
 +++ b/fs/ksmbd/smb2pdu.c
-@@ -7684,7 +7684,7 @@ int smb2_ioctl(struct ksmbd_work *work)
+@@ -7705,7 +7705,7 @@ int smb2_ioctl(struct ksmbd_work *work)
  	{
  		struct file_zero_data_information *zero_data;
  		struct ksmbd_file *fp;
@@ -2356,7 +2720,7 @@ index 1ed3046dd5b3..876afde0ea66 100644
  
  		if (!test_tree_conn_flag(work->tcon, KSMBD_TREE_CONN_FLAG_WRITABLE)) {
  			ksmbd_debug(SMB,
-@@ -7701,19 +7701,26 @@ int smb2_ioctl(struct ksmbd_work *work)
+@@ -7722,19 +7722,26 @@ int smb2_ioctl(struct ksmbd_work *work)
  		zero_data =
  			(struct file_zero_data_information *)&req->Buffer[0];
  
@@ -2392,7 +2756,7 @@ index 1ed3046dd5b3..876afde0ea66 100644
  		break;
  	}
  	case FSCTL_QUERY_ALLOCATED_RANGES:
-@@ -7787,14 +7794,24 @@ int smb2_ioctl(struct ksmbd_work *work)
+@@ -7808,14 +7815,24 @@ int smb2_ioctl(struct ksmbd_work *work)
  		src_off = le64_to_cpu(dup_ext->SourceFileOffset);
  		dst_off = le64_to_cpu(dup_ext->TargetFileOffset);
  		length = le64_to_cpu(dup_ext->ByteCount);
@@ -2421,10 +2785,10 @@ index 1ed3046dd5b3..876afde0ea66 100644
  				if (cloned < 0)
  					ret = cloned;
 diff --git a/fs/ksmbd/vfs.c b/fs/ksmbd/vfs.c
-index 835b384b0895..2139aa042c79 100644
+index dcdd07c6efff..05efcdf7a4a7 100644
 --- a/fs/ksmbd/vfs.c
 +++ b/fs/ksmbd/vfs.c
-@@ -1018,7 +1018,9 @@ int ksmbd_vfs_zero_data(struct ksmbd_work *work, struct ksmbd_file *fp,
+@@ -1015,7 +1015,9 @@ int ksmbd_vfs_zero_data(struct ksmbd_work *work, struct ksmbd_file *fp,
  				     FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
  				     off, len);
  
@@ -2435,7 +2799,7 @@ index 835b384b0895..2139aa042c79 100644
  }
  
  int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
-@@ -1049,7 +1051,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
+@@ -1046,7 +1048,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
  	*out_count = 0;
  	end = start + length;
  	while (start < end && *out_count < in_count) {
@@ -2444,7 +2808,7 @@ index 835b384b0895..2139aa042c79 100644
  		if (extent_start < 0) {
  			if (extent_start != -ENXIO)
  				ret = (int)extent_start;
-@@ -1059,7 +1061,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
+@@ -1056,7 +1058,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
  		if (extent_start >= end)
  			break;
  
@@ -2453,7 +2817,7 @@ index 835b384b0895..2139aa042c79 100644
  		if (extent_end < 0) {
  			if (extent_end != -ENXIO)
  				ret = (int)extent_end;
-@@ -1780,6 +1782,10 @@ int ksmbd_vfs_copy_file_ranges(struct ksmbd_work *work,
+@@ -1777,6 +1779,10 @@ int ksmbd_vfs_copy_file_ranges(struct ksmbd_work *work,
  
  		ret = vfs_copy_file_range(src_fp->filp, src_off,
  					  dst_fp->filp, dst_off, len, 0);
@@ -2464,11 +2828,62 @@ index 835b384b0895..2139aa042c79 100644
  		if (ret < 0)
  			return ret;
  
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index d1eaaeb7f713..f0069395f02c 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -4012,22 +4012,29 @@ static int _nfs4_discover_trunking(struct nfs_server *server,
+ 	}
+ 
+ 	page = alloc_page(GFP_KERNEL);
++	if (!page)
++		return -ENOMEM;
+ 	locations = kmalloc(sizeof(struct nfs4_fs_locations), GFP_KERNEL);
+-	if (page == NULL || locations == NULL)
+-		goto out;
++	if (!locations)
++		goto out_free;
++	locations->fattr = nfs_alloc_fattr();
++	if (!locations->fattr)
++		goto out_free_2;
+ 
+ 	status = nfs4_proc_get_locations(server, fhandle, locations, page,
+ 					 cred);
+ 	if (status)
+-		goto out;
++		goto out_free_3;
+ 
+ 	for (i = 0; i < locations->nlocations; i++)
+ 		test_fs_location_for_trunking(&locations->locations[i], clp,
+ 					      server);
+-out:
+-	if (page)
+-		__free_page(page);
++out_free_3:
++	kfree(locations->fattr);
++out_free_2:
+ 	kfree(locations);
++out_free:
++	__free_page(page);
+ 	return status;
+ }
+ 
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 9656d40bb488..673af2d4b5a2 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -2743,5 +2743,6 @@ static int nfs4_run_state_manager(void *ptr)
+ 		goto again;
+ 
+ 	nfs_put_client(clp);
++	module_put_and_kthread_exit(0);
+ 	return 0;
+ }
 diff --git a/fs/nfsd/vfs.c b/fs/nfsd/vfs.c
-index 7bfb68583154..5f62fa0963ce 100644
+index c22ad0532e8e..67c851f02b24 100644
 --- a/fs/nfsd/vfs.c
 +++ b/fs/nfsd/vfs.c
-@@ -560,6 +560,7 @@ __be32 nfsd4_clone_file_range(struct nfsd_file *nf_src, u64 src_pos,
+@@ -577,6 +577,7 @@ __be32 nfsd4_clone_file_range(struct svc_rqst *rqstp,
  ssize_t nfsd_copy_file_range(struct file *src, u64 src_pos, struct file *dst,
  			     u64 dst_pos, u64 count)
  {
@@ -2476,7 +2891,7 @@ index 7bfb68583154..5f62fa0963ce 100644
  
  	/*
  	 * Limit copy to 4MB to prevent indefinitely blocking an nfsd
-@@ -570,7 +571,12 @@ ssize_t nfsd_copy_file_range(struct file *src, u64 src_pos, struct file *dst,
+@@ -587,7 +588,12 @@ ssize_t nfsd_copy_file_range(struct file *src, u64 src_pos, struct file *dst,
  	 * limit like this and pipeline multiple COPY requests.
  	 */
  	count = min_t(u64, count, 1 << 22);
@@ -2490,29 +2905,96 @@ index 7bfb68583154..5f62fa0963ce 100644
  }
  
  __be32 nfsd4_vfs_fallocate(struct svc_rqst *rqstp, struct svc_fh *fhp,
-@@ -1142,6 +1148,7 @@ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp,
- 						nfsd_net_id));
+@@ -1170,6 +1176,7 @@ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp, u64 offset,
+ 			nfsd_copy_write_verifier(verf, nn);
  			err2 = filemap_check_wb_err(nf->nf_file->f_mapping,
  						    since);
 +			err = nfserrno(err2);
  			break;
  		case -EINVAL:
  			err = nfserr_notsupp;
-@@ -1149,8 +1156,8 @@ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp,
+@@ -1177,8 +1184,8 @@ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp, u64 offset,
  		default:
- 			nfsd_reset_boot_verifier(net_generic(nf->nf_net,
- 						 nfsd_net_id));
+ 			nfsd_reset_write_verifier(nn);
+ 			trace_nfsd_writeverf_reset(nn, rqstp, err2);
 +			err = nfserrno(err2);
  		}
 -		err = nfserrno(err2);
  	} else
- 		nfsd_copy_boot_verifier(verf, net_generic(nf->nf_net,
- 					nfsd_net_id));
+ 		nfsd_copy_write_verifier(verf, nn);
+ 
+diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
+index 16d8fc84713a..a12391d06fe5 100644
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -1483,8 +1483,15 @@ static int fanotify_test_fid(struct dentry *dentry)
+ 	return 0;
+ }
+ 
+-static int fanotify_events_supported(struct path *path, __u64 mask)
++static int fanotify_events_supported(struct fsnotify_group *group,
++				     struct path *path, __u64 mask,
++				     unsigned int flags)
+ {
++	unsigned int mark_type = flags & FANOTIFY_MARK_TYPE_BITS;
++	/* Strict validation of events in non-dir inode mask with v5.17+ APIs */
++	bool strict_dir_events = FAN_GROUP_FLAG(group, FAN_REPORT_TARGET_FID) ||
++				 (mask & FAN_RENAME);
++
+ 	/*
+ 	 * Some filesystems such as 'proc' acquire unusual locks when opening
+ 	 * files. For them fanotify permission events have high chances of
+@@ -1496,6 +1503,16 @@ static int fanotify_events_supported(struct path *path, __u64 mask)
+ 	if (mask & FANOTIFY_PERM_EVENTS &&
+ 	    path->mnt->mnt_sb->s_type->fs_flags & FS_DISALLOW_NOTIFY_PERM)
+ 		return -EINVAL;
++
++	/*
++	 * We shouldn't have allowed setting dirent events and the directory
++	 * flags FAN_ONDIR and FAN_EVENT_ON_CHILD in mask of non-dir inode,
++	 * but because we always allowed it, error only when using new APIs.
++	 */
++	if (strict_dir_events && mark_type == FAN_MARK_INODE &&
++	    !d_is_dir(path->dentry) && (mask & FANOTIFY_DIRONLY_EVENT_BITS))
++		return -ENOTDIR;
++
+ 	return 0;
+ }
+ 
+@@ -1634,7 +1651,7 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
+ 		goto fput_and_out;
+ 
+ 	if (flags & FAN_MARK_ADD) {
+-		ret = fanotify_events_supported(&path, mask);
++		ret = fanotify_events_supported(group, &path, mask, flags);
+ 		if (ret)
+ 			goto path_put_and_out;
+ 	}
+@@ -1657,19 +1674,6 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
+ 	else
+ 		mnt = path.mnt;
+ 
+-	/*
+-	 * FAN_RENAME is not allowed on non-dir (for now).
+-	 * We shouldn't have allowed setting any dirent events in mask of
+-	 * non-dir, but because we always allowed it, error only if group
+-	 * was initialized with the new flag FAN_REPORT_TARGET_FID.
+-	 */
+-	ret = -ENOTDIR;
+-	if (inode && !S_ISDIR(inode->i_mode) &&
+-	    ((mask & FAN_RENAME) ||
+-	     ((mask & FANOTIFY_DIRENT_EVENTS) &&
+-	      FAN_GROUP_FLAG(group, FAN_REPORT_TARGET_FID))))
+-		goto path_put_and_out;
+-
+ 	/* Mask out FAN_EVENT_ON_CHILD flag for sb/mount/non-dir marks */
+ 	if (mnt || !S_ISDIR(inode->i_mode)) {
+ 		mask &= ~FAN_EVENT_ON_CHILD;
 diff --git a/fs/read_write.c b/fs/read_write.c
-index af057c57bdc6..c6db1a0762fa 100644
+index e643aec2b0ef..671f47d5984c 100644
 --- a/fs/read_write.c
 +++ b/fs/read_write.c
-@@ -1384,28 +1384,6 @@ ssize_t generic_copy_file_range(struct file *file_in, loff_t pos_in,
+@@ -1381,28 +1381,6 @@ ssize_t generic_copy_file_range(struct file *file_in, loff_t pos_in,
  }
  EXPORT_SYMBOL(generic_copy_file_range);
  
@@ -2541,7 +3023,7 @@ index af057c57bdc6..c6db1a0762fa 100644
  /*
   * Performs necessary checks before doing a file copy
   *
-@@ -1427,6 +1405,24 @@ static int generic_copy_file_checks(struct file *file_in, loff_t pos_in,
+@@ -1424,6 +1402,24 @@ static int generic_copy_file_checks(struct file *file_in, loff_t pos_in,
  	if (ret)
  		return ret;
  
@@ -2566,7 +3048,7 @@ index af057c57bdc6..c6db1a0762fa 100644
  	/* Don't touch certain kinds of inodes */
  	if (IS_IMMUTABLE(inode_out))
  		return -EPERM;
-@@ -1492,26 +1488,41 @@ ssize_t vfs_copy_file_range(struct file *file_in, loff_t pos_in,
+@@ -1489,26 +1485,41 @@ ssize_t vfs_copy_file_range(struct file *file_in, loff_t pos_in,
  	file_start_write(file_out);
  
  	/*
@@ -2632,24 +3114,39 @@ index b698266d0035..6c5733981563 100644
  
  /*
   * Calculate the gap between two values.
+diff --git a/include/linux/fanotify.h b/include/linux/fanotify.h
+index 419cadcd7ff5..2f0e41888854 100644
+--- a/include/linux/fanotify.h
++++ b/include/linux/fanotify.h
+@@ -110,6 +110,10 @@
+ 					 FANOTIFY_PERM_EVENTS | \
+ 					 FAN_Q_OVERFLOW | FAN_ONDIR)
+ 
++/* Events and flags relevant only for directories */
++#define FANOTIFY_DIRONLY_EVENT_BITS	(FANOTIFY_DIRENT_EVENTS | \
++					 FAN_EVENT_ON_CHILD | FAN_ONDIR)
++
+ #define ALL_FANOTIFY_EVENT_BITS		(FANOTIFY_OUTGOING_EVENTS | \
+ 					 FANOTIFY_EVENT_FLAGS)
+ 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 39f1893ecac0..f8d46dc62d65 100644
+index f736c020cde2..bfa27972f860 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1645,7 +1645,7 @@ enum netdev_priv_flags {
+@@ -1653,7 +1653,7 @@ enum netdev_priv_flags {
  	IFF_FAILOVER_SLAVE		= 1<<28,
  	IFF_L3MDEV_RX_HANDLER		= 1<<29,
  	IFF_LIVE_RENAME_OK		= 1<<30,
 -	IFF_TX_SKB_NO_LINEAR		= 1<<31,
 +	IFF_TX_SKB_NO_LINEAR		= BIT_ULL(31),
+ 	IFF_CHANGE_PROTO_DOWN		= BIT_ULL(32),
  };
  
- #define IFF_802_1Q_VLAN			IFF_802_1Q_VLAN
 diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 736e1d1a47c4..946ccec17858 100644
+index 36ca2b5c2253..b2b76dc2e5e2 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -536,6 +536,10 @@ struct macsec_ops;
+@@ -571,6 +571,10 @@ struct macsec_ops;
   * @mdix: Current crossover
   * @mdix_ctrl: User setting of crossover
   * @interrupts: Flag interrupts have been enabled
@@ -2660,7 +3157,7 @@ index 736e1d1a47c4..946ccec17858 100644
   * @interface: enum phy_interface_t value
   * @skb: Netlink message for cable diagnostics
   * @nest: Netlink nest used for cable diagnostics
-@@ -590,6 +594,8 @@ struct phy_device {
+@@ -625,6 +629,8 @@ struct phy_device {
  
  	/* Interrupts are enabled */
  	unsigned interrupts:1;
@@ -2670,10 +3167,10 @@ index 736e1d1a47c4..946ccec17858 100644
  	enum phy_state state;
  
 diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
-index 9f4bb4a6f358..808c73c52820 100644
+index fc0c1454d275..7b9e3f9a0f00 100644
 --- a/include/uapi/drm/drm_fourcc.h
 +++ b/include/uapi/drm/drm_fourcc.h
-@@ -1352,11 +1352,11 @@ drm_fourcc_canonicalize_nvidia_format_mod(__u64 modifier)
+@@ -1375,11 +1375,11 @@ drm_fourcc_canonicalize_nvidia_format_mod(__u64 modifier)
  #define AMD_FMT_MOD_PIPE_MASK 0x7
  
  #define AMD_FMT_MOD_SET(field, value) \
@@ -2687,6 +3184,62 @@ index 9f4bb4a6f358..808c73c52820 100644
  
  #if defined(__cplusplus)
  }
+diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
+index 9690efedb5fa..3e085b6c05a6 100644
+--- a/include/uapi/linux/mptcp.h
++++ b/include/uapi/linux/mptcp.h
+@@ -2,16 +2,17 @@
+ #ifndef _UAPI_MPTCP_H
+ #define _UAPI_MPTCP_H
+ 
++#ifndef __KERNEL__
++#include <netinet/in.h>		/* for sockaddr_in and sockaddr_in6	*/
++#include <sys/socket.h>		/* for struct sockaddr			*/
++#endif
++
+ #include <linux/const.h>
+ #include <linux/types.h>
+ #include <linux/in.h>		/* for sockaddr_in			*/
+ #include <linux/in6.h>		/* for sockaddr_in6			*/
+ #include <linux/socket.h>	/* for sockaddr_storage and sa_family	*/
+ 
+-#ifndef __KERNEL__
+-#include <sys/socket.h>		/* for struct sockaddr			*/
+-#endif
+-
+ #define MPTCP_SUBFLOW_FLAG_MCAP_REM		_BITUL(0)
+ #define MPTCP_SUBFLOW_FLAG_MCAP_LOC		_BITUL(1)
+ #define MPTCP_SUBFLOW_FLAG_JOIN_REM		_BITUL(2)
+diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+index ae4fd4de9ebe..29eb0484215a 100644
+--- a/lib/sbitmap.c
++++ b/lib/sbitmap.c
+@@ -528,7 +528,7 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
+ 
+ 		sbitmap_deferred_clear(map);
+ 		if (map->word == (1UL << (map_depth - 1)) - 1)
+-			continue;
++			goto next;
+ 
+ 		nr = find_first_zero_bit(&map->word, map_depth);
+ 		if (nr + nr_tags <= map_depth) {
+@@ -539,6 +539,8 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
+ 			get_mask = ((1UL << map_tags) - 1) << nr;
+ 			do {
+ 				val = READ_ONCE(map->word);
++				if ((val & ~get_mask) != val)
++					goto next;
+ 				ret = atomic_long_cmpxchg(ptr, val, get_mask | val);
+ 			} while (ret != val);
+ 			get_mask = (get_mask & ~ret) >> nr;
+@@ -549,6 +551,7 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
+ 				return get_mask;
+ 			}
+ 		}
++next:
+ 		/* Jump to next index. */
+ 		if (++index >= sb->map_nr)
+ 			index = 0;
 diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
 index 6b2dc7b2b612..cc1caab4a654 100644
 --- a/net/ipv4/ip_tunnel_core.c
@@ -2701,20 +3254,22 @@ index 6b2dc7b2b612..cc1caab4a654 100644
  
  	skb_dst_update_pmtu_no_confirm(skb, mtu);
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index a189625098ba..5d94822fd506 100644
+index 30a74e4eeab4..cd78b4fc334f 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -2014,7 +2014,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
+@@ -1965,7 +1965,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
  		struct sock *nsk;
  
  		sk = req->rsk_listener;
--		if (unlikely(tcp_v4_inbound_md5_hash(sk, skb, dif, sdif))) {
-+		if (unlikely(!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb) ||
-+			     tcp_v4_inbound_md5_hash(sk, skb, dif, sdif))) {
- 			sk_drops_add(sk, skb);
- 			reqsk_put(req);
- 			goto discard_it;
-@@ -2061,6 +2062,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
+-		drop_reason = tcp_inbound_md5_hash(sk, skb,
++		if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
++			drop_reason = SKB_DROP_REASON_XFRM_POLICY;
++		else
++			drop_reason = tcp_inbound_md5_hash(sk, skb,
+ 						   &iph->saddr, &iph->daddr,
+ 						   AF_INET, dif, sdif);
+ 		if (unlikely(drop_reason)) {
+@@ -2017,6 +2020,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
  			}
  			goto discard_and_relse;
  		}
@@ -2723,10 +3278,10 @@ index a189625098ba..5d94822fd506 100644
  			reqsk_put(req);
  			tcp_v4_restore_cb(skb);
 diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 07b868c002a3..6dcf034835ec 100644
+index 51e77dc6571a..3b47c901c832 100644
 --- a/net/ipv6/addrconf.c
 +++ b/net/ipv6/addrconf.c
-@@ -1111,10 +1111,6 @@ ipv6_add_addr(struct inet6_dev *idev, struct ifa6_config *cfg,
+@@ -1109,10 +1109,6 @@ ipv6_add_addr(struct inet6_dev *idev, struct ifa6_config *cfg,
  		goto out;
  	}
  
@@ -2737,7 +3292,7 @@ index 07b868c002a3..6dcf034835ec 100644
  	neigh_parms_data_state_setall(idev->nd_parms);
  
  	ifa->addr = *cfg->pfx;
-@@ -5170,9 +5166,9 @@ static int in6_dump_addrs(struct inet6_dev *idev, struct sk_buff *skb,
+@@ -5174,9 +5170,9 @@ static int in6_dump_addrs(struct inet6_dev *idev, struct sk_buff *skb,
  		fillargs->event = RTM_GETMULTICAST;
  
  		/* multicast address */
@@ -2750,10 +3305,10 @@ index 07b868c002a3..6dcf034835ec 100644
  				continue;
  			err = inet6_fill_ifmcaddr(skb, ifmca, fillargs);
 diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 0ca7c780d97a..4ca754c360a3 100644
+index c4b6ce017d5e..83786de847ab 100644
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -4590,8 +4590,15 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
+@@ -4565,8 +4565,15 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
  	}
  
  	f6i = ip6_route_info_create(&cfg, gfp_flags, NULL);
@@ -2771,19 +3326,19 @@ index 0ca7c780d97a..4ca754c360a3 100644
  }
  
 diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
-index 5b2c9ce53395..b7d6b64cc532 100644
+index 6de01185cc68..d43c50a7310d 100644
 --- a/net/ipv6/seg6_hmac.c
 +++ b/net/ipv6/seg6_hmac.c
-@@ -408,7 +408,6 @@ int __net_init seg6_hmac_net_init(struct net *net)
+@@ -406,7 +406,6 @@ int __net_init seg6_hmac_net_init(struct net *net)
  
- 	return 0;
+ 	return rhashtable_init(&sdata->hmac_infos, &rht_params);
  }
 -EXPORT_SYMBOL(seg6_hmac_net_init);
  
  void seg6_hmac_exit(void)
  {
 diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 626cb53aa57a..637cd99bd7a6 100644
+index c0b138c20992..6bcd5e419a08 100644
 --- a/net/ipv6/sit.c
 +++ b/net/ipv6/sit.c
 @@ -323,8 +323,6 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
@@ -2822,6 +3377,105 @@ index 626cb53aa57a..637cd99bd7a6 100644
  	return ret;
  }
  
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 8f54293c1d88..713077eef04a 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -2305,6 +2305,11 @@ static void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
+ 		kfree_rcu(subflow, rcu);
+ 	} else {
+ 		/* otherwise tcp will dispose of the ssk and subflow ctx */
++		if (ssk->sk_state == TCP_LISTEN) {
++			tcp_set_state(ssk, TCP_CLOSE);
++			mptcp_subflow_queue_clean(ssk);
++			inet_csk_listen_stop(ssk);
++		}
+ 		__tcp_close(ssk, 0);
+ 
+ 		/* close acquired an extra ref */
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 9ac63fa4866e..2aab5aff6bcd 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -286,6 +286,7 @@ struct mptcp_sock {
+ 
+ 	u32 setsockopt_seq;
+ 	char		ca_name[TCP_CA_NAME_MAX];
++	struct mptcp_sock	*dl_next;
+ };
+ 
+ #define mptcp_data_lock(sk) spin_lock_bh(&(sk)->sk_lock.slock)
+@@ -585,6 +586,7 @@ void mptcp_close_ssk(struct sock *sk, struct sock *ssk,
+ 		     struct mptcp_subflow_context *subflow);
+ void mptcp_subflow_send_ack(struct sock *ssk);
+ void mptcp_subflow_reset(struct sock *ssk);
++void mptcp_subflow_queue_clean(struct sock *ssk);
+ void mptcp_sock_graft(struct sock *sk, struct socket *parent);
+ struct socket *__mptcp_nmpc_socket(const struct mptcp_sock *msk);
+ 
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index be76ada89d96..7919e259175d 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1688,6 +1688,58 @@ static void subflow_state_change(struct sock *sk)
+ 	}
+ }
+ 
++void mptcp_subflow_queue_clean(struct sock *listener_ssk)
++{
++	struct request_sock_queue *queue = &inet_csk(listener_ssk)->icsk_accept_queue;
++	struct mptcp_sock *msk, *next, *head = NULL;
++	struct request_sock *req;
++
++	/* build a list of all unaccepted mptcp sockets */
++	spin_lock_bh(&queue->rskq_lock);
++	for (req = queue->rskq_accept_head; req; req = req->dl_next) {
++		struct mptcp_subflow_context *subflow;
++		struct sock *ssk = req->sk;
++		struct mptcp_sock *msk;
++
++		if (!sk_is_mptcp(ssk))
++			continue;
++
++		subflow = mptcp_subflow_ctx(ssk);
++		if (!subflow || !subflow->conn)
++			continue;
++
++		/* skip if already in list */
++		msk = mptcp_sk(subflow->conn);
++		if (msk->dl_next || msk == head)
++			continue;
++
++		msk->dl_next = head;
++		head = msk;
++	}
++	spin_unlock_bh(&queue->rskq_lock);
++	if (!head)
++		return;
++
++	/* can't acquire the msk socket lock under the subflow one,
++	 * or will cause ABBA deadlock
++	 */
++	release_sock(listener_ssk);
++
++	for (msk = head; msk; msk = next) {
++		struct sock *sk = (struct sock *)msk;
++		bool slow;
++
++		slow = lock_sock_fast_nested(sk);
++		next = msk->dl_next;
++		msk->first = NULL;
++		msk->dl_next = NULL;
++		unlock_sock_fast(sk, slow);
++	}
++
++	/* we are still under the listener msk socket lock */
++	lock_sock_nested(listener_ssk, SINGLE_DEPTH_NESTING);
++}
++
+ static int subflow_ulp_init(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
 diff --git a/net/netfilter/nft_set_hash.c b/net/netfilter/nft_set_hash.c
 index df40314de21f..76de6c8d9865 100644
 --- a/net/netfilter/nft_set_hash.c
@@ -2982,10 +3636,10 @@ index b3138fc2e552..f06ddbed3fed 100644
 +	sock_put(sk);
  }
 diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 7d53272727bf..d775676956bf 100644
+index 4f51094da9da..6fa9e7b1406a 100644
 --- a/net/sched/act_api.c
 +++ b/net/sched/act_api.c
-@@ -350,7 +350,8 @@ static int tcf_idr_release_unsafe(struct tc_action *p)
+@@ -588,7 +588,8 @@ static int tcf_idr_release_unsafe(struct tc_action *p)
  }
  
  static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
@@ -2995,7 +3649,7 @@ index 7d53272727bf..d775676956bf 100644
  {
  	struct nlattr *nest;
  	int n_i = 0;
-@@ -366,20 +367,25 @@ static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+@@ -604,20 +605,25 @@ static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
  	if (nla_put_string(skb, TCA_KIND, ops->kind))
  		goto nla_put_failure;
  
@@ -3027,7 +3681,7 @@ index 7d53272727bf..d775676956bf 100644
  
  	ret = nla_put_u32(skb, TCA_FCNT, n_i);
  	if (ret)
-@@ -400,7 +406,7 @@ int tcf_generic_walker(struct tc_action_net *tn, struct sk_buff *skb,
+@@ -638,7 +644,7 @@ int tcf_generic_walker(struct tc_action_net *tn, struct sk_buff *skb,
  	struct tcf_idrinfo *idrinfo = tn->idrinfo;
  
  	if (type == RTM_DELACTION) {
@@ -3037,7 +3691,7 @@ index 7d53272727bf..d775676956bf 100644
  		return tcf_dump_walker(idrinfo, skb, cb);
  	} else {
 diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
-index 85473264cccf..f0a0a4ad6d52 100644
+index b57cf9df4de8..8272427d29ca 100644
 --- a/net/sunrpc/xdr.c
 +++ b/net/sunrpc/xdr.c
 @@ -979,7 +979,7 @@ static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
@@ -3130,73 +3784,19 @@ index 6ef95ce565bd..b48d97cbbe29 100644
  
  	le = &n->links[b->identity];
  
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index 3a9e332c5e36..68a9a897185c 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -31,6 +31,7 @@
- #include <linux/if_ether.h>
- #include <linux/btf.h>
+diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
+index 8a69c91fcca0..8ccaf8732eb2 100644
+--- a/tools/testing/selftests/net/bpf/Makefile
++++ b/tools/testing/selftests/net/bpf/Makefile
+@@ -2,7 +2,7 @@
  
-+#include <bpf/btf.h>
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
+ CLANG ?= clang
+ CCINCLUDE += -I../../bpf
+-CCINCLUDE += -I../../../lib
++CCINCLUDE += -I../../../../lib
+ CCINCLUDE += -I../../../../../usr/include/
  
-@@ -63,6 +64,11 @@ static bool unpriv_disabled = false;
- static int skips;
- static bool verbose = false;
- 
-+struct kfunc_btf_id_pair {
-+	const char *kfunc;
-+	int insn_idx;
-+};
-+
- struct bpf_test {
- 	const char *descr;
- 	struct bpf_insn	insns[MAX_INSNS];
-@@ -88,6 +94,7 @@ struct bpf_test {
- 	int fixup_map_event_output[MAX_FIXUPS];
- 	int fixup_map_reuseport_array[MAX_FIXUPS];
- 	int fixup_map_ringbuf[MAX_FIXUPS];
-+	struct kfunc_btf_id_pair fixup_kfunc_btf_id[MAX_FIXUPS];
- 	/* Expected verifier log output for result REJECT or VERBOSE_ACCEPT.
- 	 * Can be a tab-separated sequence of expected strings. An empty string
- 	 * means no log verification.
-@@ -718,6 +725,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 	int *fixup_map_event_output = test->fixup_map_event_output;
- 	int *fixup_map_reuseport_array = test->fixup_map_reuseport_array;
- 	int *fixup_map_ringbuf = test->fixup_map_ringbuf;
-+	struct kfunc_btf_id_pair *fixup_kfunc_btf_id = test->fixup_kfunc_btf_id;
- 
- 	if (test->fill_helper) {
- 		test->fill_insns = calloc(MAX_TEST_INSNS, sizeof(struct bpf_insn));
-@@ -903,6 +911,26 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 			fixup_map_ringbuf++;
- 		} while (*fixup_map_ringbuf);
- 	}
-+
-+	/* Patch in kfunc BTF IDs */
-+	if (fixup_kfunc_btf_id->kfunc) {
-+		struct btf *btf;
-+		int btf_id;
-+
-+		do {
-+			btf_id = 0;
-+			btf = btf__load_vmlinux_btf();
-+			if (btf) {
-+				btf_id = btf__find_by_name_kind(btf,
-+								fixup_kfunc_btf_id->kfunc,
-+								BTF_KIND_FUNC);
-+				btf_id = btf_id < 0 ? 0 : btf_id;
-+			}
-+			btf__free(btf);
-+			prog[fixup_kfunc_btf_id->insn_idx].imm = btf_id;
-+			fixup_kfunc_btf_id++;
-+		} while (fixup_kfunc_btf_id->kfunc);
-+	}
- }
- 
- struct libcap {
+ TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
 diff --git a/tools/testing/selftests/net/mptcp/diag.sh b/tools/testing/selftests/net/mptcp/diag.sh
 index ff821025d309..49dfabded1d4 100755
 --- a/tools/testing/selftests/net/mptcp/diag.sh
@@ -3299,6 +3899,45 @@ index ff821025d309..49dfabded1d4 100755
  flush_pids
  
  exit $ret
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
+index 8628aa61b763..e2ea6c126c99 100644
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
+@@ -265,7 +265,7 @@ static void sock_test_tcpulp(int sock, int proto, unsigned int line)
+ static int sock_listen_mptcp(const char * const listenaddr,
+ 			     const char * const port)
+ {
+-	int sock;
++	int sock = -1;
+ 	struct addrinfo hints = {
+ 		.ai_protocol = IPPROTO_TCP,
+ 		.ai_socktype = SOCK_STREAM,
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_inq.c b/tools/testing/selftests/net/mptcp/mptcp_inq.c
+index 29f75e2a1116..8672d898f8cd 100644
+--- a/tools/testing/selftests/net/mptcp/mptcp_inq.c
++++ b/tools/testing/selftests/net/mptcp/mptcp_inq.c
+@@ -88,7 +88,7 @@ static void xgetaddrinfo(const char *node, const char *service,
+ static int sock_listen_mptcp(const char * const listenaddr,
+ 			     const char * const port)
+ {
+-	int sock;
++	int sock = -1;
+ 	struct addrinfo hints = {
+ 		.ai_protocol = IPPROTO_TCP,
+ 		.ai_socktype = SOCK_STREAM,
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_sockopt.c b/tools/testing/selftests/net/mptcp/mptcp_sockopt.c
+index ac9a4d9c1764..ae61f39556ca 100644
+--- a/tools/testing/selftests/net/mptcp/mptcp_sockopt.c
++++ b/tools/testing/selftests/net/mptcp/mptcp_sockopt.c
+@@ -136,7 +136,7 @@ static void xgetaddrinfo(const char *node, const char *service,
+ static int sock_listen_mptcp(const char * const listenaddr,
+ 			     const char * const port)
+ {
+-	int sock;
++	int sock = -1;
+ 	struct addrinfo hints = {
+ 		.ai_protocol = IPPROTO_TCP,
+ 		.ai_socktype = SOCK_STREAM,
 diff --git a/tools/testing/selftests/net/udpgso_bench.sh b/tools/testing/selftests/net/udpgso_bench.sh
 index 80b5d352702e..dc932fd65363 100755
 --- a/tools/testing/selftests/net/udpgso_bench.sh
@@ -3312,3013 +3951,3 @@ index 80b5d352702e..dc932fd65363 100755
  	run_udp "${ipv6_args}"
  }
  
-diff --git a/tools/testing/selftests/rseq/Makefile b/tools/testing/selftests/rseq/Makefile
-index 2af9d39a9716..215e1067f037 100644
---- a/tools/testing/selftests/rseq/Makefile
-+++ b/tools/testing/selftests/rseq/Makefile
-@@ -6,7 +6,7 @@ endif
- 
- CFLAGS += -O2 -Wall -g -I./ -I../../../../usr/include/ -L$(OUTPUT) -Wl,-rpath=./ \
- 	  $(CLANG_FLAGS)
--LDLIBS += -lpthread
-+LDLIBS += -lpthread -ldl
- 
- # Own dependencies because we only want to build against 1st prerequisite, but
- # still track changes to header files and depend on shared object.
-diff --git a/tools/testing/selftests/rseq/basic_percpu_ops_test.c b/tools/testing/selftests/rseq/basic_percpu_ops_test.c
-index eb3f6db36d36..517756afc2a4 100644
---- a/tools/testing/selftests/rseq/basic_percpu_ops_test.c
-+++ b/tools/testing/selftests/rseq/basic_percpu_ops_test.c
-@@ -9,10 +9,9 @@
- #include <string.h>
- #include <stddef.h>
- 
-+#include "../kselftest.h"
- #include "rseq.h"
- 
--#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
--
- struct percpu_lock_entry {
- 	intptr_t v;
- } __attribute__((aligned(128)));
-@@ -168,7 +167,7 @@ struct percpu_list_node *this_cpu_list_pop(struct percpu_list *list,
- 	for (;;) {
- 		struct percpu_list_node *head;
- 		intptr_t *targetptr, expectnot, *load;
--		off_t offset;
-+		long offset;
- 		int ret, cpu;
- 
- 		cpu = rseq_cpu_start();
-diff --git a/tools/testing/selftests/rseq/compiler.h b/tools/testing/selftests/rseq/compiler.h
-new file mode 100644
-index 000000000000..876eb6a7f75b
---- /dev/null
-+++ b/tools/testing/selftests/rseq/compiler.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq/compiler.h
-+ *
-+ * Work-around asm goto compiler bugs.
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef RSEQ_COMPILER_H
-+#define RSEQ_COMPILER_H
-+
-+/*
-+ * gcc prior to 4.8.2 miscompiles asm goto.
-+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
-+ *
-+ * gcc prior to 8.1.0 miscompiles asm goto at O1.
-+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=103908
-+ *
-+ * clang prior to version 13.0.1 miscompiles asm goto at O2.
-+ * https://github.com/llvm/llvm-project/issues/52735
-+ *
-+ * Work around these issues by adding a volatile inline asm with
-+ * memory clobber in the fallthrough after the asm goto and at each
-+ * label target.  Emit this for all compilers in case other similar
-+ * issues are found in the future.
-+ */
-+#define rseq_after_asm_goto()	asm volatile ("" : : : "memory")
-+
-+#endif  /* RSEQ_COMPILER_H_ */
-diff --git a/tools/testing/selftests/rseq/param_test.c b/tools/testing/selftests/rseq/param_test.c
-index 699ad5f93c34..da23c22d5882 100644
---- a/tools/testing/selftests/rseq/param_test.c
-+++ b/tools/testing/selftests/rseq/param_test.c
-@@ -161,7 +161,7 @@ unsigned int yield_mod_cnt, nr_abort;
- 	"	cbnz	" INJECT_ASM_REG ", 222b\n"			\
- 	"333:\n"
- 
--#elif __PPC__
-+#elif defined(__PPC__)
- 
- #define RSEQ_INJECT_INPUT \
- 	, [loop_cnt_1]"m"(loop_cnt[1]) \
-@@ -368,9 +368,7 @@ void *test_percpu_spinlock_thread(void *arg)
- 		abort();
- 	reps = thread_data->reps;
- 	for (i = 0; i < reps; i++) {
--		int cpu = rseq_cpu_start();
--
--		cpu = rseq_this_cpu_lock(&data->lock);
-+		int cpu = rseq_this_cpu_lock(&data->lock);
- 		data->c[cpu].count++;
- 		rseq_percpu_unlock(&data->lock, cpu);
- #ifndef BENCHMARK
-@@ -551,7 +549,7 @@ struct percpu_list_node *this_cpu_list_pop(struct percpu_list *list,
- 	for (;;) {
- 		struct percpu_list_node *head;
- 		intptr_t *targetptr, expectnot, *load;
--		off_t offset;
-+		long offset;
- 		int ret;
- 
- 		cpu = rseq_cpu_start();
-diff --git a/tools/testing/selftests/rseq/rseq-abi.h b/tools/testing/selftests/rseq/rseq-abi.h
-new file mode 100644
-index 000000000000..a8c44d9af71f
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-abi.h
-@@ -0,0 +1,151 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+#ifndef _RSEQ_ABI_H
-+#define _RSEQ_ABI_H
-+
-+/*
-+ * rseq-abi.h
-+ *
-+ * Restartable sequences system call API
-+ *
-+ * Copyright (c) 2015-2022 Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#include <linux/types.h>
-+#include <asm/byteorder.h>
-+
-+enum rseq_abi_cpu_id_state {
-+	RSEQ_ABI_CPU_ID_UNINITIALIZED			= -1,
-+	RSEQ_ABI_CPU_ID_REGISTRATION_FAILED		= -2,
-+};
-+
-+enum rseq_abi_flags {
-+	RSEQ_ABI_FLAG_UNREGISTER = (1 << 0),
-+};
-+
-+enum rseq_abi_cs_flags_bit {
-+	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT_BIT	= 0,
-+	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT	= 1,
-+	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT	= 2,
-+};
-+
-+enum rseq_abi_cs_flags {
-+	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT	=
-+		(1U << RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT_BIT),
-+	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL	=
-+		(1U << RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT),
-+	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE	=
-+		(1U << RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT),
-+};
-+
-+/*
-+ * struct rseq_abi_cs is aligned on 4 * 8 bytes to ensure it is always
-+ * contained within a single cache-line. It is usually declared as
-+ * link-time constant data.
-+ */
-+struct rseq_abi_cs {
-+	/* Version of this structure. */
-+	__u32 version;
-+	/* enum rseq_abi_cs_flags */
-+	__u32 flags;
-+	__u64 start_ip;
-+	/* Offset from start_ip. */
-+	__u64 post_commit_offset;
-+	__u64 abort_ip;
-+} __attribute__((aligned(4 * sizeof(__u64))));
-+
-+/*
-+ * struct rseq_abi is aligned on 4 * 8 bytes to ensure it is always
-+ * contained within a single cache-line.
-+ *
-+ * A single struct rseq_abi per thread is allowed.
-+ */
-+struct rseq_abi {
-+	/*
-+	 * Restartable sequences cpu_id_start field. Updated by the
-+	 * kernel. Read by user-space with single-copy atomicity
-+	 * semantics. This field should only be read by the thread which
-+	 * registered this data structure. Aligned on 32-bit. Always
-+	 * contains a value in the range of possible CPUs, although the
-+	 * value may not be the actual current CPU (e.g. if rseq is not
-+	 * initialized). This CPU number value should always be compared
-+	 * against the value of the cpu_id field before performing a rseq
-+	 * commit or returning a value read from a data structure indexed
-+	 * using the cpu_id_start value.
-+	 */
-+	__u32 cpu_id_start;
-+	/*
-+	 * Restartable sequences cpu_id field. Updated by the kernel.
-+	 * Read by user-space with single-copy atomicity semantics. This
-+	 * field should only be read by the thread which registered this
-+	 * data structure. Aligned on 32-bit. Values
-+	 * RSEQ_CPU_ID_UNINITIALIZED and RSEQ_CPU_ID_REGISTRATION_FAILED
-+	 * have a special semantic: the former means "rseq uninitialized",
-+	 * and latter means "rseq initialization failed". This value is
-+	 * meant to be read within rseq critical sections and compared
-+	 * with the cpu_id_start value previously read, before performing
-+	 * the commit instruction, or read and compared with the
-+	 * cpu_id_start value before returning a value loaded from a data
-+	 * structure indexed using the cpu_id_start value.
-+	 */
-+	__u32 cpu_id;
-+	/*
-+	 * Restartable sequences rseq_cs field.
-+	 *
-+	 * Contains NULL when no critical section is active for the current
-+	 * thread, or holds a pointer to the currently active struct rseq_cs.
-+	 *
-+	 * Updated by user-space, which sets the address of the currently
-+	 * active rseq_cs at the beginning of assembly instruction sequence
-+	 * block, and set to NULL by the kernel when it restarts an assembly
-+	 * instruction sequence block, as well as when the kernel detects that
-+	 * it is preempting or delivering a signal outside of the range
-+	 * targeted by the rseq_cs. Also needs to be set to NULL by user-space
-+	 * before reclaiming memory that contains the targeted struct rseq_cs.
-+	 *
-+	 * Read and set by the kernel. Set by user-space with single-copy
-+	 * atomicity semantics. This field should only be updated by the
-+	 * thread which registered this data structure. Aligned on 64-bit.
-+	 */
-+	union {
-+		__u64 ptr64;
-+
-+		/*
-+		 * The "arch" field provides architecture accessor for
-+		 * the ptr field based on architecture pointer size and
-+		 * endianness.
-+		 */
-+		struct {
-+#ifdef __LP64__
-+			__u64 ptr;
-+#elif defined(__BYTE_ORDER) ? (__BYTE_ORDER == __BIG_ENDIAN) : defined(__BIG_ENDIAN)
-+			__u32 padding;		/* Initialized to zero. */
-+			__u32 ptr;
-+#else
-+			__u32 ptr;
-+			__u32 padding;		/* Initialized to zero. */
-+#endif
-+		} arch;
-+	} rseq_cs;
-+
-+	/*
-+	 * Restartable sequences flags field.
-+	 *
-+	 * This field should only be updated by the thread which
-+	 * registered this data structure. Read by the kernel.
-+	 * Mainly used for single-stepping through rseq critical sections
-+	 * with debuggers.
-+	 *
-+	 * - RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT
-+	 *     Inhibit instruction sequence block restart on preemption
-+	 *     for this thread.
-+	 * - RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL
-+	 *     Inhibit instruction sequence block restart on signal
-+	 *     delivery for this thread.
-+	 * - RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE
-+	 *     Inhibit instruction sequence block restart on migration for
-+	 *     this thread.
-+	 */
-+	__u32 flags;
-+} __attribute__((aligned(4 * sizeof(__u64))));
-+
-+#endif /* _RSEQ_ABI_H */
-diff --git a/tools/testing/selftests/rseq/rseq-arm.h b/tools/testing/selftests/rseq/rseq-arm.h
-index 5943c816c07c..893a11eca9d5 100644
---- a/tools/testing/selftests/rseq/rseq-arm.h
-+++ b/tools/testing/selftests/rseq/rseq-arm.h
-@@ -147,14 +147,11 @@ do {									\
- 		teardown						\
- 		"b %l[" __rseq_str(cmpfail_label) "]\n\t"
- 
--#define rseq_workaround_gcc_asm_size_guess()	__asm__ __volatile__("")
--
- static inline __attribute__((always_inline))
- int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -185,8 +182,8 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -198,30 +195,31 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
- 
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -255,8 +253,8 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -270,19 +268,21 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -292,7 +292,6 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- #ifdef RSEQ_COMPARE_TWICE
-@@ -316,8 +315,8 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [count]		"Ir" (count)
- 		  RSEQ_INJECT_INPUT
-@@ -328,14 +327,15 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		  , error1
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- #endif
- }
-@@ -347,7 +347,6 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -381,8 +380,8 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -398,19 +397,21 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -422,7 +423,6 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -457,8 +457,8 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -474,19 +474,21 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -498,7 +500,6 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -537,8 +538,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -554,21 +555,24 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2, error3
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("1st expected value comparison failed");
- error3:
-+	rseq_after_asm_goto();
- 	rseq_bug("2nd expected value comparison failed");
- #endif
- }
-@@ -582,7 +586,6 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -657,8 +660,8 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		"8:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -678,21 +681,21 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -706,7 +709,6 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -782,8 +784,8 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		"8:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -803,21 +805,21 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-diff --git a/tools/testing/selftests/rseq/rseq-arm64.h b/tools/testing/selftests/rseq/rseq-arm64.h
-index 200dae9e4208..cbe190a4d005 100644
---- a/tools/testing/selftests/rseq/rseq-arm64.h
-+++ b/tools/testing/selftests/rseq/rseq-arm64.h
-@@ -230,8 +230,8 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -242,24 +242,28 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		  , error1, error2
- #endif
- 	);
--
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
- 
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
-@@ -287,8 +291,8 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [expectnot]		"r" (expectnot),
- 		  [load]		"Qo" (*load),
-@@ -300,16 +304,21 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -337,8 +346,8 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [count]		"r" (count)
- 		  RSEQ_INJECT_INPUT
-@@ -348,12 +357,15 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		  , error1
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- #endif
- }
-@@ -388,8 +400,8 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
-@@ -402,17 +414,21 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -447,8 +463,8 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
-@@ -461,17 +477,21 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -508,8 +528,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [expect]		"r" (expect),
- 		  [v2]			"Qo" (*v2),
-@@ -522,19 +542,24 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2, error3
- #endif
- 	);
--
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- error3:
-+	rseq_after_asm_goto();
- 	rseq_bug("2nd expected value comparison failed");
- #endif
- }
-@@ -569,8 +594,8 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
-@@ -584,17 +609,21 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -629,8 +658,8 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"Qo" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
-@@ -644,17 +673,21 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-diff --git a/tools/testing/selftests/rseq/rseq-generic-thread-pointer.h b/tools/testing/selftests/rseq/rseq-generic-thread-pointer.h
-new file mode 100644
-index 000000000000..38c584661571
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-generic-thread-pointer.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-generic-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef _RSEQ_GENERIC_THREAD_POINTER
-+#define _RSEQ_GENERIC_THREAD_POINTER
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+/* Use gcc builtin thread pointer. */
-+static inline void *rseq_thread_pointer(void)
-+{
-+	return __builtin_thread_pointer();
-+}
-+
-+#ifdef __cplusplus
-+}
-+#endif
-+
-+#endif
-diff --git a/tools/testing/selftests/rseq/rseq-mips.h b/tools/testing/selftests/rseq/rseq-mips.h
-index e989e7c14b09..878739fae2fd 100644
---- a/tools/testing/selftests/rseq/rseq-mips.h
-+++ b/tools/testing/selftests/rseq/rseq-mips.h
-@@ -154,14 +154,11 @@ do {									\
- 		teardown \
- 		"b %l[" __rseq_str(cmpfail_label) "]\n\t"
- 
--#define rseq_workaround_gcc_asm_size_guess()	__asm__ __volatile__("")
--
- static inline __attribute__((always_inline))
- int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -190,8 +187,8 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -203,14 +200,11 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -222,11 +216,10 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -258,8 +251,8 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -273,14 +266,11 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -295,7 +285,6 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- #ifdef RSEQ_COMPARE_TWICE
-@@ -319,8 +308,8 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [count]		"Ir" (count)
- 		  RSEQ_INJECT_INPUT
-@@ -331,10 +320,8 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		  , error1
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
-@@ -350,7 +337,6 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -382,8 +368,8 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -399,14 +385,11 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -423,7 +406,6 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -456,8 +438,8 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -473,14 +455,11 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -497,7 +476,6 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- {
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -532,8 +510,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		"5:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -549,14 +527,11 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2, error3
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-@@ -577,7 +552,6 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -649,8 +623,8 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		"8:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -670,21 +644,16 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -698,7 +667,6 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 
- 	RSEQ_INJECT_C(9)
- 
--	rseq_workaround_gcc_asm_size_guess();
- 	__asm__ __volatile__ goto (
- 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
-@@ -771,8 +739,8 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		"8:\n\t"
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -792,21 +760,16 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
--	rseq_workaround_gcc_asm_size_guess();
- 	return 0;
- abort:
--	rseq_workaround_gcc_asm_size_guess();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
--	rseq_workaround_gcc_asm_size_guess();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("cpu_id comparison failed");
- error2:
--	rseq_workaround_gcc_asm_size_guess();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-diff --git a/tools/testing/selftests/rseq/rseq-ppc-thread-pointer.h b/tools/testing/selftests/rseq/rseq-ppc-thread-pointer.h
-new file mode 100644
-index 000000000000..263eee84fb76
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-ppc-thread-pointer.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-ppc-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef _RSEQ_PPC_THREAD_POINTER
-+#define _RSEQ_PPC_THREAD_POINTER
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+static inline void *rseq_thread_pointer(void)
-+{
-+#ifdef __powerpc64__
-+	register void *__result asm ("r13");
-+#else
-+	register void *__result asm ("r2");
-+#endif
-+	asm ("" : "=r" (__result));
-+	return __result;
-+}
-+
-+#ifdef __cplusplus
-+}
-+#endif
-+
-+#endif
-diff --git a/tools/testing/selftests/rseq/rseq-ppc.h b/tools/testing/selftests/rseq/rseq-ppc.h
-index 76be90196fe4..bab8e0b9fb11 100644
---- a/tools/testing/selftests/rseq/rseq-ppc.h
-+++ b/tools/testing/selftests/rseq/rseq-ppc.h
-@@ -47,10 +47,13 @@ do {									\
- 
- #ifdef __PPC64__
- 
--#define STORE_WORD	"std "
--#define LOAD_WORD	"ld "
--#define LOADX_WORD	"ldx "
--#define CMP_WORD	"cmpd "
-+#define RSEQ_STORE_LONG(arg)	"std%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-+#define RSEQ_STORE_INT(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-+#define RSEQ_LOAD_LONG(arg)	"ld%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-+#define RSEQ_LOAD_INT(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-+#define RSEQ_LOADX_LONG		"ldx "							/* From base register ("b" constraint) */
-+#define RSEQ_CMP_LONG		"cmpd "
-+#define RSEQ_CMP_LONG_INT	"cmpdi "
- 
- #define __RSEQ_ASM_DEFINE_TABLE(label, version, flags,				\
- 			start_ip, post_commit_offset, abort_ip)			\
-@@ -89,10 +92,13 @@ do {									\
- 
- #else /* #ifdef __PPC64__ */
- 
--#define STORE_WORD	"stw "
--#define LOAD_WORD	"lwz "
--#define LOADX_WORD	"lwzx "
--#define CMP_WORD	"cmpw "
-+#define RSEQ_STORE_LONG(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-+#define RSEQ_STORE_INT(arg)	RSEQ_STORE_LONG(arg)					/* To memory ("m" constraint) */
-+#define RSEQ_LOAD_LONG(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-+#define RSEQ_LOAD_INT(arg)	RSEQ_LOAD_LONG(arg)					/* From memory ("m" constraint) */
-+#define RSEQ_LOADX_LONG		"lwzx "							/* From base register ("b" constraint) */
-+#define RSEQ_CMP_LONG		"cmpw "
-+#define RSEQ_CMP_LONG_INT	"cmpwi "
- 
- #define __RSEQ_ASM_DEFINE_TABLE(label, version, flags,				\
- 			start_ip, post_commit_offset, abort_ip)			\
-@@ -125,7 +131,7 @@ do {									\
- 		RSEQ_INJECT_ASM(1)						\
- 		"lis %%r17, (" __rseq_str(cs_label) ")@ha\n\t"			\
- 		"addi %%r17, %%r17, (" __rseq_str(cs_label) ")@l\n\t"		\
--		"stw %%r17, %[" __rseq_str(rseq_cs) "]\n\t"			\
-+		RSEQ_STORE_INT(rseq_cs) "%%r17, %[" __rseq_str(rseq_cs) "]\n\t"	\
- 		__rseq_str(label) ":\n\t"
- 
- #endif /* #ifdef __PPC64__ */
-@@ -136,7 +142,7 @@ do {									\
- 
- #define RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, label)			\
- 		RSEQ_INJECT_ASM(2)						\
--		"lwz %%r17, %[" __rseq_str(current_cpu_id) "]\n\t"		\
-+		RSEQ_LOAD_INT(current_cpu_id) "%%r17, %[" __rseq_str(current_cpu_id) "]\n\t" \
- 		"cmpw cr7, %[" __rseq_str(cpu_id) "], %%r17\n\t"		\
- 		"bne- cr7, " __rseq_str(label) "\n\t"
- 
-@@ -153,25 +159,25 @@ do {									\
-  * 	RSEQ_ASM_OP_* (else): doesn't have hard-code registers(unless cr7)
-  */
- #define RSEQ_ASM_OP_CMPEQ(var, expect, label)					\
--		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
--		CMP_WORD "cr7, %%r17, %[" __rseq_str(expect) "]\n\t"		\
-+		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"		\
-+		RSEQ_CMP_LONG "cr7, %%r17, %[" __rseq_str(expect) "]\n\t"		\
- 		"bne- cr7, " __rseq_str(label) "\n\t"
- 
- #define RSEQ_ASM_OP_CMPNE(var, expectnot, label)				\
--		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
--		CMP_WORD "cr7, %%r17, %[" __rseq_str(expectnot) "]\n\t"		\
-+		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"		\
-+		RSEQ_CMP_LONG "cr7, %%r17, %[" __rseq_str(expectnot) "]\n\t"		\
- 		"beq- cr7, " __rseq_str(label) "\n\t"
- 
- #define RSEQ_ASM_OP_STORE(value, var)						\
--		STORE_WORD "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t"
-+		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t"
- 
- /* Load @var to r17 */
- #define RSEQ_ASM_OP_R_LOAD(var)							\
--		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"
-+		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
- 
- /* Store r17 to @var */
- #define RSEQ_ASM_OP_R_STORE(var)						\
--		STORE_WORD "%%r17, %[" __rseq_str(var) "]\n\t"
-+		RSEQ_STORE_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
- 
- /* Add @count to r17 */
- #define RSEQ_ASM_OP_R_ADD(count)						\
-@@ -179,11 +185,11 @@ do {									\
- 
- /* Load (r17 + voffp) to r17 */
- #define RSEQ_ASM_OP_R_LOADX(voffp)						\
--		LOADX_WORD "%%r17, %[" __rseq_str(voffp) "], %%r17\n\t"
-+		RSEQ_LOADX_LONG "%%r17, %[" __rseq_str(voffp) "], %%r17\n\t"
- 
- /* TODO: implement a faster memcpy. */
- #define RSEQ_ASM_OP_R_MEMCPY() \
--		"cmpdi %%r19, 0\n\t" \
-+		RSEQ_CMP_LONG_INT "%%r19, 0\n\t" \
- 		"beq 333f\n\t" \
- 		"addi %%r20, %%r20, -1\n\t" \
- 		"addi %%r21, %%r21, -1\n\t" \
-@@ -191,16 +197,16 @@ do {									\
- 		"lbzu %%r18, 1(%%r20)\n\t" \
- 		"stbu %%r18, 1(%%r21)\n\t" \
- 		"addi %%r19, %%r19, -1\n\t" \
--		"cmpdi %%r19, 0\n\t" \
-+		RSEQ_CMP_LONG_INT "%%r19, 0\n\t" \
- 		"bne 222b\n\t" \
- 		"333:\n\t" \
- 
- #define RSEQ_ASM_OP_R_FINAL_STORE(var, post_commit_label)			\
--		STORE_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
-+		RSEQ_STORE_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"			\
- 		__rseq_str(post_commit_label) ":\n\t"
- 
- #define RSEQ_ASM_OP_FINAL_STORE(value, var, post_commit_label)			\
--		STORE_WORD "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t" \
-+		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t" \
- 		__rseq_str(post_commit_label) ":\n\t"
- 
- static inline __attribute__((always_inline))
-@@ -235,8 +241,8 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -248,23 +254,28 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
- 
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
-@@ -301,8 +312,8 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -316,16 +327,21 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -359,8 +375,8 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [count]		"r" (count)
-@@ -372,12 +388,15 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		  , error1
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- #endif
- }
-@@ -419,8 +438,8 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -436,16 +455,21 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -489,8 +513,8 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -506,16 +530,21 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -560,8 +589,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -577,18 +606,24 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2, error3
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("1st expected value comparison failed");
- error3:
-+	rseq_after_asm_goto();
- 	rseq_bug("2nd expected value comparison failed");
- #endif
- }
-@@ -635,8 +670,8 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -653,16 +688,21 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -711,8 +751,8 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -729,23 +769,23 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
- 
--#undef STORE_WORD
--#undef LOAD_WORD
--#undef LOADX_WORD
--#undef CMP_WORD
--
- #endif /* !RSEQ_SKIP_FASTPATH */
-diff --git a/tools/testing/selftests/rseq/rseq-s390.h b/tools/testing/selftests/rseq/rseq-s390.h
-index 8ef94ad1cbb4..4e6dc5f0cb42 100644
---- a/tools/testing/selftests/rseq/rseq-s390.h
-+++ b/tools/testing/selftests/rseq/rseq-s390.h
-@@ -165,8 +165,8 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -178,16 +178,21 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -198,7 +203,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
-  */
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
-@@ -233,8 +238,8 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -248,16 +253,21 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -288,8 +298,8 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [count]		"r" (count)
-@@ -301,12 +311,15 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		  , error1
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- #endif
- }
-@@ -347,8 +360,8 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -364,16 +377,21 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -426,8 +444,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -443,18 +461,24 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2, error3
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("1st expected value comparison failed");
- error3:
-+	rseq_after_asm_goto();
- 	rseq_bug("2nd expected value comparison failed");
- #endif
- }
-@@ -534,8 +558,8 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- #endif
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [current_cpu_id]	"m" (__rseq_abi.cpu_id),
--		  [rseq_cs]		"m" (__rseq_abi.rseq_cs),
-+		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -555,16 +579,21 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-diff --git a/tools/testing/selftests/rseq/rseq-skip.h b/tools/testing/selftests/rseq/rseq-skip.h
-index 72750b5905a9..7b53dac1fcdd 100644
---- a/tools/testing/selftests/rseq/rseq-skip.h
-+++ b/tools/testing/selftests/rseq/rseq-skip.h
-@@ -13,7 +13,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	return -1;
- }
-diff --git a/tools/testing/selftests/rseq/rseq-thread-pointer.h b/tools/testing/selftests/rseq/rseq-thread-pointer.h
-new file mode 100644
-index 000000000000..977c25d758b2
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-thread-pointer.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef _RSEQ_THREAD_POINTER
-+#define _RSEQ_THREAD_POINTER
-+
-+#if defined(__x86_64__) || defined(__i386__)
-+#include "rseq-x86-thread-pointer.h"
-+#elif defined(__PPC__)
-+#include "rseq-ppc-thread-pointer.h"
-+#else
-+#include "rseq-generic-thread-pointer.h"
-+#endif
-+
-+#endif
-diff --git a/tools/testing/selftests/rseq/rseq-x86-thread-pointer.h b/tools/testing/selftests/rseq/rseq-x86-thread-pointer.h
-new file mode 100644
-index 000000000000..d3133587d996
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-x86-thread-pointer.h
-@@ -0,0 +1,40 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-x86-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef _RSEQ_X86_THREAD_POINTER
-+#define _RSEQ_X86_THREAD_POINTER
-+
-+#include <features.h>
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+#if __GNUC_PREREQ (11, 1)
-+static inline void *rseq_thread_pointer(void)
-+{
-+	return __builtin_thread_pointer();
-+}
-+#else
-+static inline void *rseq_thread_pointer(void)
-+{
-+	void *__result;
-+
-+# ifdef __x86_64__
-+	__asm__ ("mov %%fs:0, %0" : "=r" (__result));
-+# else
-+	__asm__ ("mov %%gs:0, %0" : "=r" (__result));
-+# endif
-+	return __result;
-+}
-+#endif /* !GCC 11 */
-+
-+#ifdef __cplusplus
-+}
-+#endif
-+
-+#endif
-diff --git a/tools/testing/selftests/rseq/rseq-x86.h b/tools/testing/selftests/rseq/rseq-x86.h
-index 640411518e46..bd01dc41ca13 100644
---- a/tools/testing/selftests/rseq/rseq-x86.h
-+++ b/tools/testing/selftests/rseq/rseq-x86.h
-@@ -28,6 +28,8 @@
- 
- #ifdef __x86_64__
- 
-+#define RSEQ_ASM_TP_SEGMENT	%%fs
-+
- #define rseq_smp_mb()	\
- 	__asm__ __volatile__ ("lock; addl $0,-128(%%rsp)" ::: "memory", "cc")
- #define rseq_smp_rmb()	rseq_barrier()
-@@ -123,14 +125,14 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- #endif
-@@ -141,7 +143,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -152,16 +154,21 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -172,7 +179,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
-  */
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
-@@ -184,15 +191,15 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movq %[v], %%rbx\n\t"
- 		"cmpq %%rbx, %[expectnot]\n\t"
- 		"je %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"movq %[v], %%rbx\n\t"
- 		"cmpq %%rbx, %[expectnot]\n\t"
- 		"je %l[error2]\n\t"
-@@ -207,7 +214,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -220,16 +227,21 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -245,11 +257,11 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- #endif
- 		/* final store */
- 		"addq %[count], %[v]\n\t"
-@@ -258,7 +270,7 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [count]		"er" (count)
-@@ -269,12 +281,15 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		  , error1
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- #endif
- }
-@@ -286,7 +301,7 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
-  *  *pval += inc;
-  */
- static inline __attribute__((always_inline))
--int rseq_offset_deref_addv(intptr_t *ptr, off_t off, intptr_t inc, int cpu)
-+int rseq_offset_deref_addv(intptr_t *ptr, long off, intptr_t inc, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
-@@ -296,11 +311,11 @@ int rseq_offset_deref_addv(intptr_t *ptr, off_t off, intptr_t inc, int cpu)
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- #endif
- 		/* get p+v */
- 		"movq %[ptr], %%rbx\n\t"
-@@ -314,7 +329,7 @@ int rseq_offset_deref_addv(intptr_t *ptr, off_t off, intptr_t inc, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [ptr]			"m" (*ptr),
- 		  [off]			"er" (off),
-@@ -351,14 +366,14 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- #endif
-@@ -372,7 +387,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -387,16 +402,21 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -426,8 +446,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error3])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
-@@ -436,7 +456,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(5)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- 		"cmpq %[v2], %[expect2]\n\t"
-@@ -449,7 +469,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -464,18 +484,24 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2, error3
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("1st expected value comparison failed");
- error3:
-+	rseq_after_asm_goto();
- 	rseq_bug("2nd expected value comparison failed");
- #endif
- }
-@@ -500,14 +526,14 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		"movq %[dst], %[rseq_scratch1]\n\t"
- 		"movq %[len], %[rseq_scratch2]\n\t"
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz 5f\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 6f)
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 6f)
- 		"cmpq %[v], %[expect]\n\t"
- 		"jnz 7f\n\t"
- #endif
-@@ -555,7 +581,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- #endif
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -574,16 +600,21 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -600,7 +631,9 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 
- #endif /* !RSEQ_SKIP_FASTPATH */
- 
--#elif __i386__
-+#elif defined(__i386__)
-+
-+#define RSEQ_ASM_TP_SEGMENT	%%gs
- 
- #define rseq_smp_mb()	\
- 	__asm__ __volatile__ ("lock; addl $0,-128(%%esp)" ::: "memory", "cc")
-@@ -701,14 +734,14 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- #endif
-@@ -719,7 +752,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -730,16 +763,21 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -750,7 +788,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
-  */
- static inline __attribute__((always_inline))
- int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
--			       off_t voffp, intptr_t *load, int cpu)
-+			       long voffp, intptr_t *load, int cpu)
- {
- 	RSEQ_INJECT_C(9)
- 
-@@ -762,15 +800,15 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[v], %%ebx\n\t"
- 		"cmpl %%ebx, %[expectnot]\n\t"
- 		"je %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"movl %[v], %%ebx\n\t"
- 		"cmpl %%ebx, %[expectnot]\n\t"
- 		"je %l[error2]\n\t"
-@@ -785,7 +823,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -798,16 +836,21 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -823,11 +866,11 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- #endif
- 		/* final store */
- 		"addl %[count], %[v]\n\t"
-@@ -836,7 +879,7 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [count]		"ir" (count)
-@@ -847,12 +890,15 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		  , error1
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- #endif
- }
-@@ -872,14 +918,14 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- #endif
-@@ -894,7 +940,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"m" (newv2),
-@@ -909,16 +955,21 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -938,15 +989,15 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %[v], %%eax\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %[v], %%eax\n\t"
- 		"jnz %l[error2]\n\t"
-@@ -962,7 +1013,7 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -977,16 +1028,21 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- 
-@@ -1008,8 +1064,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error3])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
-@@ -1018,7 +1074,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(5)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- 		"cmpl %[expect2], %[v2]\n\t"
-@@ -1032,7 +1088,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -1047,18 +1103,24 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2, error3
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("1st expected value comparison failed");
- error3:
-+	rseq_after_asm_goto();
- 	rseq_bug("2nd expected value comparison failed");
- #endif
- }
-@@ -1084,15 +1146,15 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		"movl %[dst], %[rseq_scratch1]\n\t"
- 		"movl %[len], %[rseq_scratch2]\n\t"
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 5f\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 6f)
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 6f)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 7f\n\t"
-@@ -1142,7 +1204,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- #endif
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"m" (expect),
-@@ -1161,16 +1223,21 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-@@ -1196,15 +1263,15 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		"movl %[dst], %[rseq_scratch1]\n\t"
- 		"movl %[len], %[rseq_scratch2]\n\t"
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 5f\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 6f)
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 6f)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 7f\n\t"
-@@ -1255,7 +1322,7 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- #endif
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (&__rseq_abi),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"m" (expect),
-@@ -1274,16 +1341,21 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		  , error1, error2
- #endif
- 	);
-+	rseq_after_asm_goto();
- 	return 0;
- abort:
-+	rseq_after_asm_goto();
- 	RSEQ_INJECT_FAILED
- 	return -1;
- cmpfail:
-+	rseq_after_asm_goto();
- 	return 1;
- #ifdef RSEQ_COMPARE_TWICE
- error1:
-+	rseq_after_asm_goto();
- 	rseq_bug("cpu_id comparison failed");
- error2:
-+	rseq_after_asm_goto();
- 	rseq_bug("expected value comparison failed");
- #endif
- }
-diff --git a/tools/testing/selftests/rseq/rseq.c b/tools/testing/selftests/rseq/rseq.c
-index 7159eb777fd3..986b9458efb2 100644
---- a/tools/testing/selftests/rseq/rseq.c
-+++ b/tools/testing/selftests/rseq/rseq.c
-@@ -26,131 +26,124 @@
- #include <assert.h>
- #include <signal.h>
- #include <limits.h>
-+#include <dlfcn.h>
-+#include <stddef.h>
- 
-+#include "../kselftest.h"
- #include "rseq.h"
- 
--#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
-+static const ptrdiff_t *libc_rseq_offset_p;
-+static const unsigned int *libc_rseq_size_p;
-+static const unsigned int *libc_rseq_flags_p;
- 
--__thread volatile struct rseq __rseq_abi = {
--	.cpu_id = RSEQ_CPU_ID_UNINITIALIZED,
--};
-+/* Offset from the thread pointer to the rseq area.  */
-+ptrdiff_t rseq_offset;
- 
--/*
-- * Shared with other libraries. This library may take rseq ownership if it is
-- * still 0 when executing the library constructor. Set to 1 by library
-- * constructor when handling rseq. Set to 0 in destructor if handling rseq.
-- */
--int __rseq_handled;
-+/* Size of the registered rseq area.  0 if the registration was
-+   unsuccessful.  */
-+unsigned int rseq_size = -1U;
-+
-+/* Flags used during rseq registration.  */
-+unsigned int rseq_flags;
- 
--/* Whether this library have ownership of rseq registration. */
- static int rseq_ownership;
- 
--static __thread volatile uint32_t __rseq_refcount;
-+static
-+__thread struct rseq_abi __rseq_abi __attribute__((tls_model("initial-exec"))) = {
-+	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
-+};
- 
--static void signal_off_save(sigset_t *oldset)
-+static int sys_rseq(struct rseq_abi *rseq_abi, uint32_t rseq_len,
-+		    int flags, uint32_t sig)
- {
--	sigset_t set;
--	int ret;
--
--	sigfillset(&set);
--	ret = pthread_sigmask(SIG_BLOCK, &set, oldset);
--	if (ret)
--		abort();
-+	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
- }
- 
--static void signal_restore(sigset_t oldset)
-+int rseq_available(void)
- {
--	int ret;
-+	int rc;
- 
--	ret = pthread_sigmask(SIG_SETMASK, &oldset, NULL);
--	if (ret)
-+	rc = sys_rseq(NULL, 0, 0, 0);
-+	if (rc != -1)
- 		abort();
--}
--
--static int sys_rseq(volatile struct rseq *rseq_abi, uint32_t rseq_len,
--		    int flags, uint32_t sig)
--{
--	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
-+	switch (errno) {
-+	case ENOSYS:
-+		return 0;
-+	case EINVAL:
-+		return 1;
-+	default:
-+		abort();
-+	}
- }
- 
- int rseq_register_current_thread(void)
- {
--	int rc, ret = 0;
--	sigset_t oldset;
-+	int rc;
- 
--	if (!rseq_ownership)
-+	if (!rseq_ownership) {
-+		/* Treat libc's ownership as a successful registration. */
- 		return 0;
--	signal_off_save(&oldset);
--	if (__rseq_refcount == UINT_MAX) {
--		ret = -1;
--		goto end;
--	}
--	if (__rseq_refcount++)
--		goto end;
--	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq), 0, RSEQ_SIG);
--	if (!rc) {
--		assert(rseq_current_cpu_raw() >= 0);
--		goto end;
- 	}
--	if (errno != EBUSY)
--		__rseq_abi.cpu_id = RSEQ_CPU_ID_REGISTRATION_FAILED;
--	ret = -1;
--	__rseq_refcount--;
--end:
--	signal_restore(oldset);
--	return ret;
-+	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), 0, RSEQ_SIG);
-+	if (rc)
-+		return -1;
-+	assert(rseq_current_cpu_raw() >= 0);
-+	return 0;
- }
- 
- int rseq_unregister_current_thread(void)
- {
--	int rc, ret = 0;
--	sigset_t oldset;
-+	int rc;
- 
--	if (!rseq_ownership)
-+	if (!rseq_ownership) {
-+		/* Treat libc's ownership as a successful unregistration. */
- 		return 0;
--	signal_off_save(&oldset);
--	if (!__rseq_refcount) {
--		ret = -1;
--		goto end;
- 	}
--	if (--__rseq_refcount)
--		goto end;
--	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq),
--		      RSEQ_FLAG_UNREGISTER, RSEQ_SIG);
--	if (!rc)
--		goto end;
--	__rseq_refcount = 1;
--	ret = -1;
--end:
--	signal_restore(oldset);
--	return ret;
-+	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
-+	if (rc)
-+		return -1;
-+	return 0;
- }
- 
--int32_t rseq_fallback_current_cpu(void)
-+static __attribute__((constructor))
-+void rseq_init(void)
- {
--	int32_t cpu;
--
--	cpu = sched_getcpu();
--	if (cpu < 0) {
--		perror("sched_getcpu()");
--		abort();
-+	libc_rseq_offset_p = dlsym(RTLD_NEXT, "__rseq_offset");
-+	libc_rseq_size_p = dlsym(RTLD_NEXT, "__rseq_size");
-+	libc_rseq_flags_p = dlsym(RTLD_NEXT, "__rseq_flags");
-+	if (libc_rseq_size_p && libc_rseq_offset_p && libc_rseq_flags_p) {
-+		/* rseq registration owned by glibc */
-+		rseq_offset = *libc_rseq_offset_p;
-+		rseq_size = *libc_rseq_size_p;
-+		rseq_flags = *libc_rseq_flags_p;
-+		return;
- 	}
--	return cpu;
--}
--
--void __attribute__((constructor)) rseq_init(void)
--{
--	/* Check whether rseq is handled by another library. */
--	if (__rseq_handled)
-+	if (!rseq_available())
- 		return;
--	__rseq_handled = 1;
- 	rseq_ownership = 1;
-+	rseq_offset = (void *)&__rseq_abi - rseq_thread_pointer();
-+	rseq_size = sizeof(struct rseq_abi);
-+	rseq_flags = 0;
- }
- 
--void __attribute__((destructor)) rseq_fini(void)
-+static __attribute__((destructor))
-+void rseq_exit(void)
- {
- 	if (!rseq_ownership)
- 		return;
--	__rseq_handled = 0;
-+	rseq_offset = 0;
-+	rseq_size = -1U;
- 	rseq_ownership = 0;
- }
-+
-+int32_t rseq_fallback_current_cpu(void)
-+{
-+	int32_t cpu;
-+
-+	cpu = sched_getcpu();
-+	if (cpu < 0) {
-+		perror("sched_getcpu()");
-+		abort();
-+	}
-+	return cpu;
-+}
-diff --git a/tools/testing/selftests/rseq/rseq.h b/tools/testing/selftests/rseq/rseq.h
-index 3f63eb362b92..9d850b290c2e 100644
---- a/tools/testing/selftests/rseq/rseq.h
-+++ b/tools/testing/selftests/rseq/rseq.h
-@@ -16,7 +16,9 @@
- #include <errno.h>
- #include <stdio.h>
- #include <stdlib.h>
--#include <linux/rseq.h>
-+#include <stddef.h>
-+#include "rseq-abi.h"
-+#include "compiler.h"
- 
- /*
-  * Empty code injection macros, override when testing.
-@@ -43,8 +45,20 @@
- #define RSEQ_INJECT_FAILED
- #endif
- 
--extern __thread volatile struct rseq __rseq_abi;
--extern int __rseq_handled;
-+#include "rseq-thread-pointer.h"
-+
-+/* Offset from the thread pointer to the rseq area.  */
-+extern ptrdiff_t rseq_offset;
-+/* Size of the registered rseq area.  0 if the registration was
-+   unsuccessful.  */
-+extern unsigned int rseq_size;
-+/* Flags used during rseq registration.  */
-+extern unsigned int rseq_flags;
-+
-+static inline struct rseq_abi *rseq_get_abi(void)
-+{
-+	return (struct rseq_abi *) ((uintptr_t) rseq_thread_pointer() + rseq_offset);
-+}
- 
- #define rseq_likely(x)		__builtin_expect(!!(x), 1)
- #define rseq_unlikely(x)	__builtin_expect(!!(x), 0)
-@@ -108,7 +122,7 @@ int32_t rseq_fallback_current_cpu(void);
-  */
- static inline int32_t rseq_current_cpu_raw(void)
- {
--	return RSEQ_ACCESS_ONCE(__rseq_abi.cpu_id);
-+	return RSEQ_ACCESS_ONCE(rseq_get_abi()->cpu_id);
- }
- 
- /*
-@@ -124,7 +138,7 @@ static inline int32_t rseq_current_cpu_raw(void)
-  */
- static inline uint32_t rseq_cpu_start(void)
- {
--	return RSEQ_ACCESS_ONCE(__rseq_abi.cpu_id_start);
-+	return RSEQ_ACCESS_ONCE(rseq_get_abi()->cpu_id_start);
- }
- 
- static inline uint32_t rseq_current_cpu(void)
-@@ -139,11 +153,7 @@ static inline uint32_t rseq_current_cpu(void)
- 
- static inline void rseq_clear_rseq_cs(void)
- {
--#ifdef __LP64__
--	__rseq_abi.rseq_cs.ptr = 0;
--#else
--	__rseq_abi.rseq_cs.ptr.ptr32 = 0;
--#endif
-+	RSEQ_WRITE_ONCE(rseq_get_abi()->rseq_cs.arch.ptr, 0);
- }
- 
- /*
