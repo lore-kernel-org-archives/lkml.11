@@ -2,170 +2,345 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 674F7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F570C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbiGGPAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 11:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
+        id S236384AbiGGPAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 11:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236378AbiGGO7p (ORCPT
+        with ESMTP id S236197AbiGGPAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:59:45 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1F1599FC;
-        Thu,  7 Jul 2022 07:59:05 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267Eqb8V026145;
-        Thu, 7 Jul 2022 14:58:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=PkaSnhjvXXRaGa4X/wn6DVz10/4aL0t4Wh7Cbn9Diqk=;
- b=kwz1VMzJiihpyouCDEh7ddfZ1VotX+//67AfL/fb/iVjU//FOYLuykzq82/wuZMPANI+
- Cu5yNObMpe0BXk6djEN7/p1L0d3CZzAwcbXJSwHRO3ctGSVtv6WDfWYQf7L+TbdetxIx
- aZAGyj7+vWh6bUS9bRUofQBZhWljwsNts0dRucJFzwDyu4T6wy7YNgDj8p+1hvL9K+qE
- 6/eRfAQAv2XxR1dbTJN+3kDJkFDZDqh+Dr7Sa35SPF0FAl+TseCZxZClgbQ65dq1N8YH
- iIB7GEmf1r1ixhnKk60J8WckWKHy9VBTy/p43BXjOnavWQy/U21oESNgdUe/0kgl71b1 eQ== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h4ubywas6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 07 Jul 2022 14:58:52 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 267EtLxP031075;
-        Thu, 7 Jul 2022 14:58:51 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2174.outbound.protection.outlook.com [104.47.57.174])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3h4ud725br-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 07 Jul 2022 14:58:51 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FFb8MwjcoQj1O2hvlHJwo4Ohv5c2At7xl7ToGOjn8WhVm++VfKIKAmRzFypT9zb1eabF9rqmXyPaj5u8WTa1la2+ad58w3AMsH/4BXNtzzo9w0xkTrrj5VHD4LrgFQ69SwWyX3RFGloOuERtQluR4TUoFj/tIc9tns6PLecye6iO419zKKiO13SaKWslA8pq527CgUmE7XmJCyRnbo/0UdyHK7wgkzXZ2OPBb7DVW54aM2KBbzdd3MrZjUNaJWw0O1n97lqyVDBdl07twbc19P2KhKb+XTXECAg/Kns4AjYx+Cz/wjURCWRJfGZ1vWk7aGIrbqLk7tn3rWkaEDjS1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PkaSnhjvXXRaGa4X/wn6DVz10/4aL0t4Wh7Cbn9Diqk=;
- b=es91dg4cwBwR0l0I9lvMVk3INmxqHguCyXiqhwIqNllxQ4UGI2oMS5tRYGYZ94oUoFtDJGcVzae8IuOD0mxWCoeSghyLUUA4GJwoTdvl2G0MPfpIkkdJo1cZ00RPqLrw96t6iBNyNMiWtvYokCSoi6ohpCkTsyCDNXeXEnZJ1/E8cSrjwPmaJAwszDiQmlFAjRjnoz8Q1+93ufaP9ZJRv+o2On3sUq0ZdNGF9p0UNLtrHhKr0NhA290Zz2OnVj0UmPrAanRz+l8WsHMnXSnpd0LFZoIk89Yr+wIzrmVB7ZvBEpILI0zAP9wM1MANcVM+TCFYEe+zIOf9bi0vYrn53g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PkaSnhjvXXRaGa4X/wn6DVz10/4aL0t4Wh7Cbn9Diqk=;
- b=Mb9rCgT7er4v7UuqboJoKE+ofYrjQWGkBm8ujLMqlBg0bulo/t9T7YFyF4gUJixXKjdTTIceGuFpz18+JGkLMuf+rGYtIMdFpvBnV9d4YvG2fmCsXIddxsELgZaYhhc5qcE9gFDMGzfw0Z3Q6rB1AbpJOWj11g4tKy8lvXg8uWU=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CY4PR1001MB2151.namprd10.prod.outlook.com
- (2603:10b6:910:42::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Thu, 7 Jul
- 2022 14:58:45 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
- 14:58:44 +0000
-Date:   Thu, 7 Jul 2022 17:58:24 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Longfang Liu <liulongfang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] vfio: hisi_acc_vfio_pci: fix integer overflow check in
- hisi_acc_vf_resume_write()
-Message-ID: <20220707145824.GH2316@kadam>
-References: <YsP+2CWqMudArkqF@kili>
- <20220705180649.GI23621@ziepe.ca>
- <20220706055124.GA2338@kadam>
- <20220706161812.GJ23621@ziepe.ca>
+        Thu, 7 Jul 2022 11:00:39 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23AE5C9F0
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:59:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657205991; x=1688741991;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=f17WxGQmreqb0FKTGQ+l/dE3uCInONcHdo+CPZ5YXyA=;
+  b=DGEoFy8W3awRHI7ADxH0zhUbqd/o9wmEFN7pnuaZkVlhx0EnehkZNtQP
+   UN+l7gVTkSmxYxLGowD2TNseiUfwkD3KyTksNkCUhUjx2MN2LJzKp64n7
+   QmwjkwajkdLzj0wHGoC/PM5YGxGR88biMLLZfIk30p1DXC9hTGefkK+rZ
+   LLEdZf/oyWkAsnB6mGzjNh+/hVMnlQF8+WCKzh8XfTKbR85nLe9ZhNahO
+   jt3MFHcknsuk8ASJWsbldcUga+XAvWZ9J4iErjotmFZOm69rTxViYCKMe
+   wtu+dCT9TM91S35tG/0lBTn6YvN4nd+rfpvOibyy+SnT+8bI9ZmWkSFOE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="309602203"
+X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
+   d="scan'208";a="309602203"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 07:59:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
+   d="scan'208";a="543848972"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 07 Jul 2022 07:59:49 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9Syq-000M92-Kk;
+        Thu, 07 Jul 2022 14:59:48 +0000
+Date:   Thu, 7 Jul 2022 22:59:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [qcom:drivers-for-5.20 18/20] drivers/base/power/domain.c:603:20:
+ error: 'pm_wq' undeclared
+Message-ID: <202207072223.4JGJJrf1-lkp@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706161812.GJ23621@ziepe.ca>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0041.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::16)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e521d20e-e9c7-4ba0-0573-08da60293032
-X-MS-TrafficTypeDiagnostic: CY4PR1001MB2151:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4xRSrSVYqAesKJLWr+fm1MVVbDFdacf8WL/rgV/3+zQuNqgFWnc/ZUEYIqJM6uzxHZJ6r+ZScfCXpLH09twfeCatS04FMaQgIIZjCYGjqkWV7zlC9Fqsrw8LXBC7hPJDax5rtEWdcqhKBhaeWKkktmWGFNKU0iZqQ/AYYBdQXq5auZlamni8HAaK5gSM8zdBTvbUZCKtSWy1PdkK0t07wT3/LrlZpReDoY48PpxaIQr/3yhyRmMfLRTehYgxy49NS0MdKzEQQ8LbVnBEtcq3cZU1Y4pPiQ8Nl6wlNxdIStBooP6Lhw1Osa+aH0CB0aC7k6FrIXIoL4QX6B7JJ2Jg1s9QeEcAtOFiSRYpTXUTAJ/vBHGD01KAqQQiKjQyeT4VNCaCSVoY/gh156EHnw61x099ga6NO+3+8UGLP9NRvpr51lVbwloiSusmQRWvN3AAEivd6cvoglqL2KbXz1NCHyuHIf5mXXC9WCLsnqQsKe9iSHGLRMj7Jv5S7yJiy5cYeNVKRaiwUtCWNBwq5DcJ1W3y0eEVzxjvWgJyfernmkSS4bFQMz5rZc3Z2s1k75tlvf+ejaZQutXIri0cvwRACtsf9KAHpj2qLBHAfi7cPIkFmL2IKr8dGsNdleFs7maA9ZKEW2hDM+n4US0Ge9I3wdjKJ22xQc1ZjWTBSYZ2hI4uyq+tJ3LMroqIabncXicXXVPyWqmrYstRP6W4aT+0q3882ss1y/mxQiqhF4ew+I1hQUNZ1V6lw8UnmgQyfbwVq/W4zmxopFUXayLKuOf5o/8rIxhB6fU4MVkhH8iBod5VybFta3ggPJ7ctaLN87OS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(376002)(366004)(396003)(39860400002)(136003)(86362001)(6666004)(33656002)(33716001)(5660300002)(38100700002)(6486002)(7416002)(38350700002)(44832011)(2906002)(316002)(41300700001)(478600001)(8936002)(4744005)(54906003)(6916009)(4326008)(66946007)(8676002)(66556008)(66476007)(83380400001)(186003)(26005)(52116002)(6512007)(9686003)(1076003)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gCIeCjh3dv6Mczg+7R7Tg0OdLtw0xf5fmTuw7rds3Zt6ut+wjNIDEQALVjf2?=
- =?us-ascii?Q?vev0KQ1otGKYig/w0fy2kVhXiPT2wOi1j13AKKYvB9pVLXOiJVSAUs6nEcPH?=
- =?us-ascii?Q?zxAsQG7dJu3Va6d6leXO18Q5PT+dBEa7zlJsZ6TiKS2M5sH9ek/NoafcIOFS?=
- =?us-ascii?Q?RD0jmxsm0NTC1PoCnA8cQ4xsfrAExBnZ7dOEkEgNNdU2I5Yjej6Bu/JRv/sn?=
- =?us-ascii?Q?RcpgvIsmBkyRKYEbvhyW9Mm40azRDWE2GlAgunvf52kLoIQnAQmtIAv5gMSX?=
- =?us-ascii?Q?OlGUU7RpGquoNmMK9E/Q3a4o4t6QF6U7ax0ipItpIE6zky+8wgWJg/rl+dI8?=
- =?us-ascii?Q?LDHqgjZyPmeT0X6HQ10mpnaJOtUPuPE8dViljRZmN9WArrOfsipF+anliiRA?=
- =?us-ascii?Q?+qHfdYWWGZqYuJYFflxVtMRRXFuN1LZPvRDKgAPNToxEJeT89cY6fQOmHXzd?=
- =?us-ascii?Q?/PDz1ovyP6PxLHaHgLk8IwlG8m4c04hNZsJ7KdQAq7VZA7n0JPR0k4Tx2ULt?=
- =?us-ascii?Q?XMZAwSlY3WXlbHqazJcE7h3cgS5Yj0TqcQ+fM/Va9sIrJXKWrDzw2r11j4Wh?=
- =?us-ascii?Q?TO/gtPyRMSepv0eKLyqQ1SJgPYEomrcgpqs8QDcrRRaT5SJg0DkasbgzhZT8?=
- =?us-ascii?Q?vjJC8b87bqFfaxhbE/XaPMj/Q2m3sAcfk+OkbhH/hhgalSVh4Tw2mzcnRujM?=
- =?us-ascii?Q?/oukUmjoP8WRAkjhwSufL/D0bvvJTM9dfMpTVpS03UjvPdS3WGDZoA2ySaFy?=
- =?us-ascii?Q?KUb8QME4o5d5l1ujqG5kAGBkpIUFQQV/Bip2s5wFBK83HEGsKTfkLuT4eLOO?=
- =?us-ascii?Q?IraEO9WDosysVxqnc6Jys0Cer5XxK5d3k7ZXDgduMNieZ4d3fnI76v1v3yKc?=
- =?us-ascii?Q?AiC+8XnBXuo4+hIgFHjKoK8NZ50RnypJXxGxaGc+ALuBJlE+ijvzdRVQTfnN?=
- =?us-ascii?Q?uo+KOJQEndfObfxpEYa/5qhPrQ+WEl99naKXng5UKroAdbopQxfF1f1SnnqX?=
- =?us-ascii?Q?Orz/M0VucDqqNa/PZkuLEvkpCqj4XcH+ylm0KBkerTf+ajvDE1s1dR2ax+Kr?=
- =?us-ascii?Q?3gEr9QImwBW029LP6zLOGt84qYevQhDasQEeIicyQlE8RsKELf4ng3YTwGeD?=
- =?us-ascii?Q?8Um7/SbpSlfWw9UZSPJQWAletxCZTPXqHUyEVuO9SM+nvYLooo5pVy5Fg7nO?=
- =?us-ascii?Q?YBXGKN/Ur1QTF/lwI/PNqNOC9YAIAuZWcd3YFg7M2QmCL0Yxrf6ZLu3v90Oy?=
- =?us-ascii?Q?W8vO4zTYq59lSWfJ63LT/BJTDJE5Hv7tyKy3G4xskPWCCEluFdb0EZERTYbM?=
- =?us-ascii?Q?Oorj+A+iUTFGVkg2jhzwseaKJAX0sEYnakwRirORsQ+gybESTvK9/5+vGQoI?=
- =?us-ascii?Q?MwIZD9nU2eZ0Zj1R1Ap+s0k1oRCZ0fnSSJhed1sPUiK9Wv34/S7Flw1sN20U?=
- =?us-ascii?Q?cBYvajWbjoq5Nw4FXOzaOLVz+ETg9iVC3E5rFgrTkUEtUyBIa2eo1km7mJ1E?=
- =?us-ascii?Q?iewfzHlbi0vmskgByUWy4PgryxkfuBkixUHPL4mH12yMFAgN0ZeQbsRmHam9?=
- =?us-ascii?Q?2R8Bf3K2eH3zDBWfANy9AvlXBBBRNU2jJ6soA/W2PRsOkGKvXilk719CvYaN?=
- =?us-ascii?Q?ug=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e521d20e-e9c7-4ba0-0573-08da60293032
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:58:44.8606
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +ZoUAzgzRm3383malHeFlg6MVfLejdZyxA87dDMkf7JolHieCsj9X2fWg84qAwa2/dtO3OmjHVkZVRDHy9wb8yB0yvYaPwFzmtxgbF8GOac=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1001MB2151
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-07_12:2022-06-28,2022-07-07 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 phishscore=0
- adultscore=0 malwarescore=0 mlxscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207070059
-X-Proofpoint-ORIG-GUID: CXlE8yDhZsNtwJEm-XcRFXX-a-BdD165
-X-Proofpoint-GUID: CXlE8yDhZsNtwJEm-XcRFXX-a-BdD165
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 01:18:12PM -0300, Jason Gunthorpe wrote:
-> On Wed, Jul 06, 2022 at 08:51:24AM +0300, Dan Carpenter wrote:
->
-> > > This code was copy and pasted from drivers/vfio/pci/mlx5/main.c, so it
-> > > should be fixed too
-> > 
-> > Sure.
-> > 
-> > I created a static checker warning for this type of thing but it didn't
-> > catch the issue in drivers/vfio/pci/mlx5/main.c because Smatch says that
-> > the bug is impossible.  Which is true.
-> 
-> How come it is different?
+Hi Konrad,
 
-No, it doesn't find either one.  I don't think it's a real bug because
-of the rw_verify_area() thing.  But I wrote the check based on noticing
-it during review just to see if there were similar issues and didn't
-find anything.
+First bad commit (maybe != root cause):
 
-regards,
-dan carpenter
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux drivers-for-5.20
+head:   b9c2ae6cac403dee3195fda9eb28d8ee733b225b
+commit: 7d0221fb59125181a31ef3a561306c70fb238bc7 [18/20] soc/qcom: Make QCOM_RPMPD select PM_GENERIC_DOMAINS/_OF
+config: arc-randconfig-m031-20220707 (https://download.01.org/0day-ci/archive/20220707/202207072223.4JGJJrf1-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/commit/?id=7d0221fb59125181a31ef3a561306c70fb238bc7
+        git remote add qcom https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux
+        git fetch --no-tags qcom drivers-for-5.20
+        git checkout 7d0221fb59125181a31ef3a561306c70fb238bc7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/base/power/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/base/power/domain.c: In function 'genpd_queue_power_off_work':
+>> drivers/base/power/domain.c:603:20: error: 'pm_wq' undeclared (first use in this function)
+     603 |         queue_work(pm_wq, &genpd->power_off_work);
+         |                    ^~~~~
+   drivers/base/power/domain.c:603:20: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/base/power/domain.c: In function 'genpd_dev_pm_qos_notifier':
+>> drivers/base/power/domain.c:802:39: error: 'struct dev_pm_info' has no member named 'ignore_children'
+     802 |                 if (!dev || dev->power.ignore_children)
+         |                                       ^
+   drivers/base/power/domain.c: In function 'rtpm_status_str':
+>> drivers/base/power/domain.c:3068:23: error: 'struct dev_pm_info' has no member named 'runtime_error'
+    3068 |         if (dev->power.runtime_error)
+         |                       ^
+>> drivers/base/power/domain.c:3070:28: error: 'struct dev_pm_info' has no member named 'disable_depth'
+    3070 |         else if (dev->power.disable_depth)
+         |                            ^
+>> drivers/base/power/domain.c:3072:28: error: 'struct dev_pm_info' has no member named 'runtime_status'
+    3072 |         else if (dev->power.runtime_status < ARRAY_SIZE(status_lookup))
+         |                            ^
+   drivers/base/power/domain.c:3073:45: error: 'struct dev_pm_info' has no member named 'runtime_status'
+    3073 |                 p = status_lookup[dev->power.runtime_status];
+         |                                             ^
+--
+   drivers/base/power/domain_governor.c: In function 'default_suspend_ok':
+>> drivers/base/power/domain_governor.c:85:24: error: 'struct dev_pm_info' has no member named 'ignore_children'
+      85 |         if (!dev->power.ignore_children)
+         |                        ^
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for PM_GENERIC_DOMAINS
+   Depends on PM
+   Selected by
+   - QCOM_RPMPD && QCOM_SMD_RPM
 
 
+vim +/pm_wq +603 drivers/base/power/domain.c
+
+c8f0ea45169c57f Geert Uytterhoeven 2014-11-10  593  
+29e47e2173349ee Ulf Hansson        2015-09-02  594  /**
+86e12eac1f7f84b Ulf Hansson        2016-12-08  595   * genpd_queue_power_off_work - Queue up the execution of genpd_power_off().
+a3d09c73492e57a Moritz Fischer     2016-01-27  596   * @genpd: PM domain to power off.
+29e47e2173349ee Ulf Hansson        2015-09-02  597   *
+86e12eac1f7f84b Ulf Hansson        2016-12-08  598   * Queue up the execution of genpd_power_off() unless it's already been done
+29e47e2173349ee Ulf Hansson        2015-09-02  599   * before.
+29e47e2173349ee Ulf Hansson        2015-09-02  600   */
+29e47e2173349ee Ulf Hansson        2015-09-02  601  static void genpd_queue_power_off_work(struct generic_pm_domain *genpd)
+29e47e2173349ee Ulf Hansson        2015-09-02  602  {
+29e47e2173349ee Ulf Hansson        2015-09-02 @603  	queue_work(pm_wq, &genpd->power_off_work);
+29e47e2173349ee Ulf Hansson        2015-09-02  604  }
+29e47e2173349ee Ulf Hansson        2015-09-02  605  
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  606  /**
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  607   * genpd_power_off - Remove power from a given PM domain.
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  608   * @genpd: PM domain to power down.
+3c64649d1cf9f32 Ulf Hansson        2017-02-17  609   * @one_dev_on: If invoked from genpd's ->runtime_suspend|resume() callback, the
+3c64649d1cf9f32 Ulf Hansson        2017-02-17  610   * RPM status of the releated device is in an intermediate state, not yet turned
+3c64649d1cf9f32 Ulf Hansson        2017-02-17  611   * into RPM_SUSPENDED. This means genpd_power_off() must allow one device to not
+3c64649d1cf9f32 Ulf Hansson        2017-02-17  612   * be RPM_SUSPENDED, while it tries to power off the PM domain.
+763663c9715f5f1 Yang Yingliang     2021-05-12  613   * @depth: nesting count for lockdep.
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  614   *
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  615   * If all of the @genpd's devices have been suspended and all of its subdomains
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  616   * have been powered down, remove power from @genpd.
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  617   */
+2da835452a08758 Ulf Hansson        2017-02-17  618  static int genpd_power_off(struct generic_pm_domain *genpd, bool one_dev_on,
+2da835452a08758 Ulf Hansson        2017-02-17  619  			   unsigned int depth)
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  620  {
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  621  	struct pm_domain_data *pdd;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  622  	struct gpd_link *link;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  623  	unsigned int not_suspended = 0;
+f63816e43d90442 Ulf Hansson        2020-09-24  624  	int ret;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  625  
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  626  	/*
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  627  	 * Do not try to power off the domain in the following situations:
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  628  	 * (1) The domain is already in the "power off" state.
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  629  	 * (2) System suspend is in progress.
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  630  	 */
+41e2c8e0060db25 Ulf Hansson        2017-03-20  631  	if (!genpd_status_on(genpd) || genpd->prepared_count > 0)
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  632  		return 0;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  633  
+ffaa42e8a40b7f1 Ulf Hansson        2017-03-20  634  	/*
+ffaa42e8a40b7f1 Ulf Hansson        2017-03-20  635  	 * Abort power off for the PM domain in the following situations:
+ffaa42e8a40b7f1 Ulf Hansson        2017-03-20  636  	 * (1) The domain is configured as always on.
+ffaa42e8a40b7f1 Ulf Hansson        2017-03-20  637  	 * (2) When the domain has a subdomain being powered on.
+ffaa42e8a40b7f1 Ulf Hansson        2017-03-20  638  	 */
+ed61e18a4b4e445 Leonard Crestez    2019-04-30  639  	if (genpd_is_always_on(genpd) ||
+ed61e18a4b4e445 Leonard Crestez    2019-04-30  640  			genpd_is_rpm_always_on(genpd) ||
+ed61e18a4b4e445 Leonard Crestez    2019-04-30  641  			atomic_read(&genpd->sd_count) > 0)
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  642  		return -EBUSY;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  643  
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  644  	/*
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  645  	 * The children must be in their deepest (powered-off) states to allow
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  646  	 * the parent to be powered off. Note that, there's no need for
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  647  	 * additional locking, as powering on a child, requires the parent's
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  648  	 * lock to be acquired first.
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  649  	 */
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  650  	list_for_each_entry(link, &genpd->parent_links, parent_node) {
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  651  		struct generic_pm_domain *child = link->child;
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  652  		if (child->state_idx < child->state_count - 1)
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  653  			return -EBUSY;
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  654  	}
+e7d90cfac5510f8 Ulf Hansson        2022-02-17  655  
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  656  	list_for_each_entry(pdd, &genpd->dev_list, list_node) {
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  657  		/*
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  658  		 * Do not allow PM domain to be powered off, when an IRQ safe
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  659  		 * device is part of a non-IRQ safe domain.
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  660  		 */
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  661  		if (!pm_runtime_suspended(pdd->dev) ||
+7a02444b8fc25ac Ulf Hansson        2022-05-11  662  			irq_safe_dev_in_sleep_domain(pdd->dev, genpd))
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  663  			not_suspended++;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  664  	}
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  665  
+3c64649d1cf9f32 Ulf Hansson        2017-02-17  666  	if (not_suspended > 1 || (not_suspended == 1 && !one_dev_on))
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  667  		return -EBUSY;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  668  
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  669  	if (genpd->gov && genpd->gov->power_down_ok) {
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  670  		if (!genpd->gov->power_down_ok(&genpd->domain))
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  671  			return -EAGAIN;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  672  	}
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  673  
+2c9b7f8772033cc Ulf Hansson        2018-10-03  674  	/* Default to shallowest state. */
+2c9b7f8772033cc Ulf Hansson        2018-10-03  675  	if (!genpd->gov)
+2c9b7f8772033cc Ulf Hansson        2018-10-03  676  		genpd->state_idx = 0;
+2c9b7f8772033cc Ulf Hansson        2018-10-03  677  
+f63816e43d90442 Ulf Hansson        2020-09-24  678  	/* Don't power off, if a child domain is waiting to power on. */
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  679  	if (atomic_read(&genpd->sd_count) > 0)
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  680  		return -EBUSY;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  681  
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  682  	ret = _genpd_power_off(genpd, true);
+c6a113b52302adc Lina Iyer          2020-10-15  683  	if (ret) {
+c6a113b52302adc Lina Iyer          2020-10-15  684  		genpd->states[genpd->state_idx].rejected++;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  685  		return ret;
+c6a113b52302adc Lina Iyer          2020-10-15  686  	}
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  687  
+49f618e1b669ef0 Ulf Hansson        2020-09-24  688  	genpd->status = GENPD_STATE_OFF;
+afece3ab9a3640f Thara Gopinath     2017-07-14  689  	genpd_update_accounting(genpd);
+c6a113b52302adc Lina Iyer          2020-10-15  690  	genpd->states[genpd->state_idx].usage++;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  691  
+8d87ae48ced2dff Kees Cook          2020-07-08  692  	list_for_each_entry(link, &genpd->child_links, child_node) {
+8d87ae48ced2dff Kees Cook          2020-07-08  693  		genpd_sd_counter_dec(link->parent);
+8d87ae48ced2dff Kees Cook          2020-07-08  694  		genpd_lock_nested(link->parent, depth + 1);
+8d87ae48ced2dff Kees Cook          2020-07-08  695  		genpd_power_off(link->parent, false, depth + 1);
+8d87ae48ced2dff Kees Cook          2020-07-08  696  		genpd_unlock(link->parent);
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  697  	}
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  698  
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  699  	return 0;
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  700  }
+1f8728b7adc4c2b Ulf Hansson        2017-02-17  701  
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  702  /**
+8d87ae48ced2dff Kees Cook          2020-07-08  703   * genpd_power_on - Restore power to a given PM domain and its parents.
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  704   * @genpd: PM domain to power up.
+0106ef5146f9e89 Marek Szyprowski   2016-01-20  705   * @depth: nesting count for lockdep.
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  706   *
+8d87ae48ced2dff Kees Cook          2020-07-08  707   * Restore power to @genpd and all of its parents so that it is possible to
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  708   * resume a device belonging to it.
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  709   */
+86e12eac1f7f84b Ulf Hansson        2016-12-08  710  static int genpd_power_on(struct generic_pm_domain *genpd, unsigned int depth)
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  711  {
+5063ce1571b7386 Rafael J. Wysocki  2011-08-08  712  	struct gpd_link *link;
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  713  	int ret = 0;
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  714  
+41e2c8e0060db25 Ulf Hansson        2017-03-20  715  	if (genpd_status_on(genpd))
+3f241775c30365c Rafael J. Wysocki  2011-08-08  716  		return 0;
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  717  
+5063ce1571b7386 Rafael J. Wysocki  2011-08-08  718  	/*
+5063ce1571b7386 Rafael J. Wysocki  2011-08-08  719  	 * The list is guaranteed not to change while the loop below is being
+8d87ae48ced2dff Kees Cook          2020-07-08  720  	 * executed, unless one of the parents' .power_on() callbacks fiddles
+5063ce1571b7386 Rafael J. Wysocki  2011-08-08  721  	 * with it.
+5063ce1571b7386 Rafael J. Wysocki  2011-08-08  722  	 */
+8d87ae48ced2dff Kees Cook          2020-07-08  723  	list_for_each_entry(link, &genpd->child_links, child_node) {
+8d87ae48ced2dff Kees Cook          2020-07-08  724  		struct generic_pm_domain *parent = link->parent;
+0106ef5146f9e89 Marek Szyprowski   2016-01-20  725  
+8d87ae48ced2dff Kees Cook          2020-07-08  726  		genpd_sd_counter_inc(parent);
+0106ef5146f9e89 Marek Szyprowski   2016-01-20  727  
+8d87ae48ced2dff Kees Cook          2020-07-08  728  		genpd_lock_nested(parent, depth + 1);
+8d87ae48ced2dff Kees Cook          2020-07-08  729  		ret = genpd_power_on(parent, depth + 1);
+8d87ae48ced2dff Kees Cook          2020-07-08  730  		genpd_unlock(parent);
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  731  
+5063ce1571b7386 Rafael J. Wysocki  2011-08-08  732  		if (ret) {
+8d87ae48ced2dff Kees Cook          2020-07-08  733  			genpd_sd_counter_dec(parent);
+9e08cf429697090 Rafael J. Wysocki  2011-08-08  734  			goto err;
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  735  		}
+5063ce1571b7386 Rafael J. Wysocki  2011-08-08  736  	}
+5248051b9afb668 Rafael J. Wysocki  2011-07-01  737  
+86e12eac1f7f84b Ulf Hansson        2016-12-08  738  	ret = _genpd_power_on(genpd, true);
+9e08cf429697090 Rafael J. Wysocki  2011-08-08  739  	if (ret)
+9e08cf429697090 Rafael J. Wysocki  2011-08-08  740  		goto err;
+0140d8bd47f798d Rafael J. Wysocki  2011-12-01  741  
+49f618e1b669ef0 Ulf Hansson        2020-09-24  742  	genpd->status = GENPD_STATE_ON;
+afece3ab9a3640f Thara Gopinath     2017-07-14  743  	genpd_update_accounting(genpd);
+afece3ab9a3640f Thara Gopinath     2017-07-14  744  
+3f241775c30365c Rafael J. Wysocki  2011-08-08  745  	return 0;
+9e08cf429697090 Rafael J. Wysocki  2011-08-08  746  
+9e08cf429697090 Rafael J. Wysocki  2011-08-08  747   err:
+29e47e2173349ee Ulf Hansson        2015-09-02  748  	list_for_each_entry_continue_reverse(link,
+8d87ae48ced2dff Kees Cook          2020-07-08  749  					&genpd->child_links,
+8d87ae48ced2dff Kees Cook          2020-07-08  750  					child_node) {
+8d87ae48ced2dff Kees Cook          2020-07-08  751  		genpd_sd_counter_dec(link->parent);
+8d87ae48ced2dff Kees Cook          2020-07-08  752  		genpd_lock_nested(link->parent, depth + 1);
+8d87ae48ced2dff Kees Cook          2020-07-08  753  		genpd_power_off(link->parent, false, depth + 1);
+8d87ae48ced2dff Kees Cook          2020-07-08  754  		genpd_unlock(link->parent);
+29e47e2173349ee Ulf Hansson        2015-09-02  755  	}
+9e08cf429697090 Rafael J. Wysocki  2011-08-08  756  
+3f241775c30365c Rafael J. Wysocki  2011-08-08  757  	return ret;
+3f241775c30365c Rafael J. Wysocki  2011-08-08  758  }
+3f241775c30365c Rafael J. Wysocki  2011-08-08  759  
+ea71c59669f17d0 Ulf Hansson        2019-10-16  760  static int genpd_dev_pm_start(struct device *dev)
+ea71c59669f17d0 Ulf Hansson        2019-10-16  761  {
+ea71c59669f17d0 Ulf Hansson        2019-10-16  762  	struct generic_pm_domain *genpd = dev_to_genpd(dev);
+ea71c59669f17d0 Ulf Hansson        2019-10-16  763  
+ea71c59669f17d0 Ulf Hansson        2019-10-16  764  	return genpd_start_dev(genpd, dev);
+ea71c59669f17d0 Ulf Hansson        2019-10-16  765  }
+ea71c59669f17d0 Ulf Hansson        2019-10-16  766  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  767  static int genpd_dev_pm_qos_notifier(struct notifier_block *nb,
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  768  				     unsigned long val, void *ptr)
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  769  {
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  770  	struct generic_pm_domain_data *gpd_data;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  771  	struct device *dev;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  772  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  773  	gpd_data = container_of(nb, struct generic_pm_domain_data, nb);
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  774  	dev = gpd_data->base.dev;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  775  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  776  	for (;;) {
+f38d1a6d002526a Ulf Hansson        2022-05-11  777  		struct generic_pm_domain *genpd = ERR_PTR(-ENODATA);
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  778  		struct pm_domain_data *pdd;
+66d29d802ef3bf5 Ulf Hansson        2022-05-11  779  		struct gpd_timing_data *td;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  780  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  781  		spin_lock_irq(&dev->power.lock);
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  782  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  783  		pdd = dev->power.subsys_data ?
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  784  				dev->power.subsys_data->domain_data : NULL;
+b4883ca449473e8 Viresh Kumar       2017-05-16  785  		if (pdd) {
+66d29d802ef3bf5 Ulf Hansson        2022-05-11  786  			td = to_gpd_data(pdd)->td;
+f38d1a6d002526a Ulf Hansson        2022-05-11  787  			if (td) {
+66d29d802ef3bf5 Ulf Hansson        2022-05-11  788  				td->constraint_changed = true;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  789  				genpd = dev_to_genpd(dev);
+f38d1a6d002526a Ulf Hansson        2022-05-11  790  			}
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  791  		}
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  792  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  793  		spin_unlock_irq(&dev->power.lock);
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  794  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  795  		if (!IS_ERR(genpd)) {
+35241d12f750d2f Lina Iyer          2016-10-14  796  			genpd_lock(genpd);
+f38d1a6d002526a Ulf Hansson        2022-05-11  797  			genpd->gd->max_off_time_changed = true;
+35241d12f750d2f Lina Iyer          2016-10-14  798  			genpd_unlock(genpd);
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  799  		}
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  800  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  801  		dev = dev->parent;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01 @802  		if (!dev || dev->power.ignore_children)
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  803  			break;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  804  	}
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  805  
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  806  	return NOTIFY_DONE;
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  807  }
+6ff7bb0d02f8296 Rafael J. Wysocki  2012-05-01  808  
+
+:::::: The code at line 603 was first introduced by commit
+:::::: 29e47e2173349ee06bd339f7753821c720d50923 PM / Domains: Try power off masters in error path of __pm_genpd_poweron()
+
+:::::: TO: Ulf Hansson <ulf.hansson@linaro.org>
+:::::: CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
