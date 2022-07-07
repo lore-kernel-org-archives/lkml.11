@@ -2,188 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 608D8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbiGGGmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 02:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
+        id S233015AbiGGGmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 02:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiGGGmU (ORCPT
+        with ESMTP id S230500AbiGGGmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 02:42:20 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6F72A256
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 23:42:19 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id a11so21045613ljb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 23:42:19 -0700 (PDT)
+        Thu, 7 Jul 2022 02:42:45 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD3A2A25D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 23:42:44 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id i7so30929256ybe.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 23:42:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=hnjLXi2LmIH+UgfU8ixxSLckYEWNRqYn9cqFQwLWQeE=;
-        b=toYNMIhjw3zUKrvNpHagoGcH5EtKQz4DGr2meqexVDX6IzpASPVmaA9hb/FPlHmm5c
-         bhxOBegO/QSUri9ZpZxGXnCF+Pr3j2by7xFPCDMlixXs3pI0K605Ik5jWv9EZuQ8hmFe
-         PRF+C9x3npyTVL/6pVpnQNVI/mYDFFmgHaGcKjsIFd3ta7fp4s9OpyWQ54Cxm9gwfRsH
-         txmp4WFaKf37H4dS10OmzLPLHF7YAQqIK0RkFJoHGj4IB4I/VDzJVmweG5lB7TcwOCMB
-         nrpr3W8IHE0owATfnb7aOBEuJZ1g99CKYJayxFFo41Mj52TFIixz+dtOJxfI2cP+D8Hu
-         BFcA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ARyEMGb7Gnx1ypJRSOXqpnOMXk+sCah5U8o5NgEKH1k=;
+        b=iE917FCok5mxNe/aLMhgBfhOys9PvD4Yb4s41S/7YjiGTqswIGTDw8aH4V7b/t00YC
+         ktREKQDgcRDXcyi5hc/YAn+BkQn0zU06fzE3eCCKBvjQkq2x8I/TQXqtAgfYKQ9+hODj
+         beamcGmWCjM+xCzAC4UR3hxz7i99sF7jtWvmBnYPJWUA4hdmebmQaozASUXDiJXCV923
+         o9Bmf0D3xhdaJ1JGNqmuIGaI90P/tt3u2LV5xtGY4kXBgT/HeksRaUlonaDhypa9K6JB
+         HoKFrQG/yTcu4abVuLVdTbPs65kBoyA7xOw2kkA4MyQ77QvKApVIkA9gym3kpU7Ra+xl
+         1FiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hnjLXi2LmIH+UgfU8ixxSLckYEWNRqYn9cqFQwLWQeE=;
-        b=ee3aZQUdoAB7sdFGghxa8ny7DurJJHjpy+y/6RP51f/8ZP0AThNsJ3GuqLCY9+h7Dx
-         A8P3SH0BOyqucY5PHrquF5gQPiNP4rYTiTRViKNtPC5pLuXP+aqIjyeIlTv8kwLlNIc9
-         DQ8TPRTj28qaNNzSlq4yRrwPcCmjsE3XphawqfO9lLysbc8zU9PHC8J8cyepepZ3FC2I
-         Ur2+m+lnbH+56jVwmjCyk0aTrOMxyMbMcP0Y+U7CcNyUYI9igUIicDFBwvP5pGNBoHap
-         AObFDsafnK/kYU7IcU2y1jRwk5lN3c8aeFpBcwyQNlGpZ7DrqT1vV09B9OOearS3Ur2f
-         fGwg==
-X-Gm-Message-State: AJIora8I483ALtDlUxuQo0x3NZE6siNEcUesVWy4OnyRNJ1RNiufy0vn
-        Yr4XYMVKcjN6rtfFnKkv5xsHmg==
-X-Google-Smtp-Source: AGRyM1uDdSjYPsmbKdg3GRGvmgEpINkxNaKizM6XnuV48C+ytoXH4X21JeE7++9G2phIVJaKly/nXA==
-X-Received: by 2002:a2e:3a05:0:b0:25d:3be2:afcb with SMTP id h5-20020a2e3a05000000b0025d3be2afcbmr5687106lja.188.1657176137674;
-        Wed, 06 Jul 2022 23:42:17 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id v12-20020a2e87cc000000b00258e91823f3sm6654704ljj.31.2022.07.06.23.42.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 23:42:17 -0700 (PDT)
-Message-ID: <1a180643-e688-f577-7313-a59b944f9466@linaro.org>
-Date:   Thu, 7 Jul 2022 08:42:15 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ARyEMGb7Gnx1ypJRSOXqpnOMXk+sCah5U8o5NgEKH1k=;
+        b=w7dqx2sAL9qTZ+WrpuQ8OIAcVnl/vL7ihUXh8lgIW5+6yfgeG90HlUzqEEa3h+Cy7F
+         PalKw2Qxwa3PIMhYUraGbLiFA9wlEfjojI1Z8nVAVXXrMQwTGmdxCmEyR97RAwy4iR0o
+         SwOZWP57+51riSwvVtJE/HUeHz+DGpsS3J6+W45Y4lYJh9Ty0pYOJWbMp8fGLIOYiQSV
+         JSZOkKsIUers+4s9D6gUBTYASf2mSaa/24lYfX1rKQixf7WMrHM5AHBO4unFO1MkC4q7
+         m+L2h3/beXHjHvWvKNfF83k1BvxixPy4Eoa5n0NuPfpid/Po0UgQB0w0Ux9e51NkZjNO
+         wmGQ==
+X-Gm-Message-State: AJIora+Yd2wt2cRQS+0LhyWuJVZz3JtQ37wjLrvelDvSUDrwx1fBWoqY
+        rRXfXuMSXvBLOLBjWDSf8J6df9JPBaAdE+efkMe08A==
+X-Google-Smtp-Source: AGRyM1tIPV6TJ2LPOCvsfP03cd5AzLoNkKLey0F6Ow1kxwN4IraGTOqnKESKrsnuLLMVHaQKfcWtxGYX2FbIbmpsVCE=
+X-Received: by 2002:a25:9382:0:b0:66d:ae8e:19e8 with SMTP id
+ a2-20020a259382000000b0066dae8e19e8mr41176715ybm.236.1657176163646; Wed, 06
+ Jul 2022 23:42:43 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v7 1/3] dt-bindings: mfd: Convert atmel-flexcom to
- json-schema
-Content-Language: en-US
-To:     Kavyasree.Kotagiri@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
-        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
-        UNGLinuxDriver@microchip.com
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220706110619.71729-1-kavyasree.kotagiri@microchip.com>
- <20220706110619.71729-2-kavyasree.kotagiri@microchip.com>
- <fca15370-f977-687a-ff62-22ae43046b58@linaro.org>
- <PH0PR11MB487299A211568CC3614682BC92839@PH0PR11MB4872.namprd11.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <PH0PR11MB487299A211568CC3614682BC92839@PH0PR11MB4872.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220702045254.22922-1-vincent.guittot@linaro.org> <e830e6eb-6606-74f1-c356-cb61c6f46e99@huawei.com>
+In-Reply-To: <e830e6eb-6606-74f1-c356-cb61c6f46e99@huawei.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Thu, 7 Jul 2022 08:42:32 +0200
+Message-ID: <CAKfTPtA1fARYDTapz3LL=-XOhJ5=TAj8YP0RP6ANit_67XhE0g@mail.gmail.com>
+Subject: Re: [PATCH] sched/fair: fix case with reduced capacity CPU
+To:     Zhang Qiao <zhangqiao22@huawei.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org, david.chen@nutanix.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/07/2022 07:29, Kavyasree.Kotagiri@microchip.com wrote:
->>> Convert the Atmel flexcom device tree bindings to json schema.
->>>
->>> Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
->>> ---
->>> v6 -> v7:
->>>  - Change filename to atmel,sama5d2-flexcom.yaml
->>>  - Add #address-cells, #size-cells to flexcom node - Fixed warnings.
->>>
->>> v5 -> v6:
->>>  - Removed spi node from example as suggested by Rob and
->>>    also pattern properties(spi dt-bindings conversion to yaml patch is under
->> review).
->>>    Once that is accepted, I will add back spi example through new patch.
->>>
->>> v4 -> v5:
->>>  - Fixed indentations.
->>>
->>> v3 -> v4:
->>>  - Corrected format of enum used for compatible string.
->>>
->>> v2 -> v3:
->>>  - used enum for compatible string.
->>>  - changed irq flag to IRQ_TYPE_LEVEL_HIGH in example.
->>>  - fixed dtschema errors.
->>>
->>> v1 -> v2:
->>>  - Fix title.
->>>
->>>  .../bindings/mfd/atmel,sama5d2-flexcom.yaml   | 74
->> +++++++++++++++++++
->>>  .../devicetree/bindings/mfd/atmel-flexcom.txt | 63 ----------------
->>>  2 files changed, 74 insertions(+), 63 deletions(-)
->>>  create mode 100644
->> Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml
->>>  delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-
->> flexcom.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/mfd/atmel,sama5d2-
->> flexcom.yaml b/Documentation/devicetree/bindings/mfd/atmel,sama5d2-
->> flexcom.yaml
->>> new file mode 100644
->>> index 000000000000..864f490ffb83
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/mfd/atmel,sama5d2-
->> flexcom.yaml
->>> @@ -0,0 +1,74 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/mfd/atmel,sama5d2-flexcom.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Atmel Flexcom (Flexible Serial Communication Unit)
->>> +
->>> +maintainers:
->>> +  - Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
->>> +
->>> +description:
->>> +  The Atmel Flexcom is just a wrapper which embeds a SPI controller,
->>> +  an I2C controller and an USART. Only one function can be used at a
->>> +  time and is chosen at boot time according to the device tree.
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - atmel,sama5d2-flexcom
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  "#address-cells":
->>> +    const: 1
->>> +
->>> +  "#size-cells":
->>> +    const: 1
->>> +
->>> +  ranges:
->>> +    description:
->>> +      One range for the full I/O register region. (including USART,
->>> +      TWI and SPI registers).
->>> +    items:
->>> +      maxItems: 3
->>> +
->>> +  atmel,flexcom-mode:
->>> +    description: |
->>> +      Specifies the flexcom mode as follows:
->>> +      1: USART
->>> +      2: SPI
->>> +      3: I2C.
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    enum: [1, 2, 3]
->>> +
->>
->> As pointed out by Rob's bot - why do you not allow the protocol-specific
->> children here? spi, serial etc?
->>
-> usart/serial, spi and i2c dt-bindings are in .txt format. So, I cannot refer them here. Like I mentioned in v5 -> v6 changes description, spi dt-bindings conversion is under discussion. For now, I am removing child nodes from example. I will add it through new patch once below bindings are accepted:
-> https://patchwork.kernel.org/project/linux-arm-kernel/patch/20220629125804.137099-1-sergiu.moga@microchip.com/
+On Tue, 5 Jul 2022 at 10:23, Zhang Qiao <zhangqiao22@huawei.com> wrote:
+>
+>
+>
+> =E5=9C=A8 2022/7/2 12:52, Vincent Guittot =E5=86=99=E9=81=93:
+> > The capacity of the CPU available for CFS tasks can be reduced because =
+of
+> > other activities running on the latter. In such case, it's worth trying=
+ to
+> > move CFS tasks on a CPU with more available capacity.
+> >
+> > The rework of the load balance has filterd the case when the CPU is
+> > classified to be fully busy but its capacity is reduced.
+> >
+> > Check if CPU's capacity is reduced while gathering load balance statist=
+ics
+> > and classify it group_misfit_task instead of group_fully_busy so we can
+> > try to move the load on another CPU.
+> >
+> > Reported-by: David Chen <david.chen@nutanix.com>
+> > Reported-by: Zhang Qiao <zhangqiao22@huawei.com>
+> > Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+> > ---
+> >
+> > David, Zhang,
+> >
+> > I haven't put your tested-by because I have reworked and cleaned the pa=
+tch to
+> > cover more cases.
+> >
+> > Could you run some tests with this version ?
+>
+> I tested with this version, it is ok.
+>
+> Tested-by: Zhang Qiao <zhangqiao22@huawei.com>
 
-No one talks about example. Your schema does not allow any child nodes
-now, which is not correct. You must describe these children - even if
-their schema is not ready. In such case just type:object, description
-and maybe compatibles.
+Thanks
 
-I don't understand why you cannot refer to them here.
+>
+> Thanks
+>
+> >
 
-Best regards,
-Krzysztof
+> >
