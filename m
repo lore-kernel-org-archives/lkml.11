@@ -2,130 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D9F0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ADCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234864AbiGGFbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 01:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52890 "EHLO
+        id S234983AbiGGFfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 01:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiGGFbl (ORCPT
+        with ESMTP id S229553AbiGGFfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 01:31:41 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E943134A;
-        Wed,  6 Jul 2022 22:31:40 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2675RHEq027963;
-        Thu, 7 Jul 2022 05:31:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=JahQI0wCVfTKzSS0T0XiXQw2qvRF9QGjCY1nJJFl4jc=;
- b=ru9n4cpowQfkTMW3feGOO7rrlP31Wqk+hcC8Tyoroe7ez4SsgNs0csDyeK5q1Gjutwqj
- tOuiwaxjT6iScsplRE/VTE+qWTLHVCt04YPRLgAewKg24A7q14qWijUUhQIP65KtUpf/
- Is9BqBflmo4zPp43oESs2/sfyyUTs8cg/6VuyFJLWMpzVckmVKF5pVuDPj2Xj1rBubrc
- Su4e/Y+AjiTW7oixZKTfcQGtsfMD/9eiMyPRZwd7ni4/XZ1JEXQiNSme4mwwTVZKiWjt
- 0y8vBzpALFkqmApbYb3tVvHNStH0pGN3J8biGQnPHHsPt5zVSFRF/iOxF5qDxc4qu24d sA== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h5sbug1pn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 05:31:28 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2675M4V3004211;
-        Thu, 7 Jul 2022 05:31:20 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3h4usd229n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 05:31:20 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2675VIZ422610420
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 7 Jul 2022 05:31:18 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 103884C044;
-        Thu,  7 Jul 2022 05:31:18 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 84FF44C040;
-        Thu,  7 Jul 2022 05:31:15 +0000 (GMT)
-Received: from [9.43.98.185] (unknown [9.43.98.185])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  7 Jul 2022 05:31:15 +0000 (GMT)
-Message-ID: <474e1842-03bb-6621-f1f3-4dba74be41f1@linux.ibm.com>
-Date:   Thu, 7 Jul 2022 11:01:14 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 07/12] docs: ABI: sysfs-bus-nvdimm
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Madhavan Srinivasan <maddy@in.ibm.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1656759988.git.mchehab@kernel.org>
- <38a59ea8cc8581a3009d269c9f1cd4cf07b347dc.1656759989.git.mchehab@kernel.org>
-From:   kajoljain <kjain@linux.ibm.com>
-In-Reply-To: <38a59ea8cc8581a3009d269c9f1cd4cf07b347dc.1656759989.git.mchehab@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: KF_vX-_4Sv3kGHA3aSGvUYcmWlQNdRu8
-X-Proofpoint-GUID: KF_vX-_4Sv3kGHA3aSGvUYcmWlQNdRu8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 7 Jul 2022 01:35:09 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61A33138E;
+        Wed,  6 Jul 2022 22:35:06 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LdlVD4v1Kz4xXD;
+        Thu,  7 Jul 2022 15:35:00 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657172101;
+        bh=Er96BYX0qV8YNs6ECQ777qibN0NojAhA5cN7YVJsaWw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=U22eI7OHVcB5/ykIOyZaYdFiYaWDdY+iktdHr4AbKE/0D8RCMOhSa2L4Cw60O+UFD
+         e6muaas5Z3hbqhwrS9XGlJtekQ08IztaQNtyQ6z7ohMz8rGFVJ+LCejZwK5NUwu5IH
+         Xqwmlo2t1gneqxqqm7DnANyJsauYWHgMRuK8AxcS+HN5OMdHw7i1APDbfCKHEWswGr
+         VxomGud5rV/CbE5HGuQISrQOwOFB1GOCWE4pcKXcLfs+uXsgusqlKn0KZ2lrNlnNcO
+         u2jHZzChaFjkcDhdG8Tq7SF5fS5u+gkiOPaRyUA0WQH8v6oo2vQrcWuW5q/A+cjH21
+         0aSMrQtNOqaSw==
+Date:   Thu, 7 Jul 2022 15:21:42 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the phy-next tree with the drm-msm tree
+Message-ID: <20220707152142.060c5b6f@canb.auug.org.au>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_03,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- mlxlogscore=999 malwarescore=0 spamscore=0 lowpriorityscore=0 bulkscore=0
- clxscore=1011 priorityscore=1501 suspectscore=0 impostorscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207070021
+Content-Type: multipart/signed; boundary="Sig_/TeUkG8KjfcZ_x6OL7Km577L";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+--Sig_/TeUkG8KjfcZ_x6OL7Km577L
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 7/2/22 16:37, Mauro Carvalho Chehab wrote:
-> Add blank lines, as this is required by code-block markup syntax.
-> 
-> Fix this warning:
-> 	Documentation/ABI/testing/sysfs-bus-nvdimm:11: WARNING: Unexpected indentation.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> 
+Today's linux-next merge of the phy-next tree got a conflict in:
 
-Patch looks fine to me.
+  drivers/gpu/drm/msm/dp/dp_parser.h
 
-Reviewed-By: Kajol Jain<kjain@linux.ibm.com>
+between commit:
 
-Thanks,
-Kajol Jain
+  50b1131e0674 ("drm/msm/dp: rewrite dss_module_power to use bulk clock fun=
+ctions")
 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/12] at: https://lore.kernel.org/all/cover.1656759988.git.mchehab@kernel.org/
-> 
->  Documentation/ABI/testing/sysfs-bus-nvdimm | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-nvdimm b/Documentation/ABI/testing/sysfs-bus-nvdimm
-> index 1c1f5acbf53d..eeabba807e4b 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-nvdimm
-> +++ b/Documentation/ABI/testing/sysfs-bus-nvdimm
-> @@ -18,9 +18,11 @@ Description:	(RO) Attribute group to describe the magic bits
->  		Each attribute under this group defines a bit range of the
->  		perf_event_attr.config. Supported attribute is listed
->  		below::
-> +
->  		  event  = "config:0-4"  - event ID
->  
->  		For example::
-> +
->  			ctl_res_cnt = "event=0x1"
->  
->  What:           /sys/bus/event_source/devices/nmemX/events
+from the drm-msm tree and commit:
+
+  fa384dd8b9b8 ("drm/msm/dp: delete vdda regulator related functions from e=
+DP/DP controller")
+
+from the phy-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/gpu/drm/msm/dp/dp_parser.h
+index 9abddc6d50c0,47430e3a97bf..000000000000
+--- a/drivers/gpu/drm/msm/dp/dp_parser.h
++++ b/drivers/gpu/drm/msm/dp/dp_parser.h
+@@@ -100,16 -99,6 +98,11 @@@ struct dp_reg_entry=20
+  	int disable_load;
+  };
+ =20
+- struct dp_regulator_cfg {
+- 	int num;
+- 	struct dp_reg_entry regs[DP_DEV_REGULATOR_MAX];
+- };
+-=20
+ +struct dss_module_power {
+ +	unsigned int num_clk;
+ +	struct clk_bulk_data *clocks;
+ +};
+ +
+  /**
+   * struct dp_parser - DP parser's data exposed to clients
+   *
+
+--Sig_/TeUkG8KjfcZ_x6OL7Km577L
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGbWYACgkQAVBC80lX
+0GyCvAgAicMjd/akoL0/+CQJJXCFHdV7CbTbiySm2H2lVdBwL0D8OmJDHx7J/lvG
+SUwSf0b50XCY2/0lKwt0LcAshGrZtrV/YXRX4jKrWoudBq3S0axeSFQx81YrgcTF
+sO2hx0K89bDDX/Tg2B0LCdJc300BWitSSnUbLkSQhfyR4BmaS+td8uGeNGx7adv8
+NjZZkAgBh5yPcy3V0fhO85tNBJXpBrovqMFQ6BeghukCZyiskF5bmBt58byBXTwp
+w3zRHb+F6i+Xa1YfKsU852QPL9+a0UUkNWhuTNLpb1AfEIiza9oc/gM/q3MyyBHx
+ZG3tmzAkm+zieJE52jNLx2PUv4TY+A==
+=3qvA
+-----END PGP SIGNATURE-----
+
+--Sig_/TeUkG8KjfcZ_x6OL7Km577L--
