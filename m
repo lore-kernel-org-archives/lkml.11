@@ -2,147 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 048FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B2B5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234396AbiGGI1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 04:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46150 "EHLO
+        id S235162AbiGGI1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 04:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234945AbiGGI05 (ORCPT
+        with ESMTP id S234945AbiGGI1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 04:26:57 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9041A3BB
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:26:55 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id h17so12068734wrx.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 01:26:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=QTKsDc0N/t7R2FE7e8qc9b6f62szw20LTPOT6cDttmI=;
-        b=HyIH7xk6yru9oy170K9g2hvgVus86Ui4axzJlhxfhcliJroS1jnyBoVRj4ODf7WNYA
-         Ly800IqWmeVLmbjCEBNNXPbMVnz22YErTPPKsFhcRQXrAXGtMSAbl+5p3TCRL/JpXMye
-         TEv7EhT8dG3VKbRQZgzc87k2mkmm9ZAdSNN1y4xoI3NGqDVTVQ1mHzS6Xmu1cZkiOwLr
-         84LowuZVRAX6B5RZ0jcB/8uo1Jo7lHfQNwxE97Y2W7f+hGYR10ZeTt/NjYOButhf4VD6
-         k0p7UpKWV5SyxHaBSgbkARVDkc1/CL3FNPglG0F3zIg9HEAO6LUJppCQT0kF3OPVMwmg
-         iCkA==
+        Thu, 7 Jul 2022 04:27:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02BCB14D21
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657182421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hyQUq78HZYV0U5amrGZK5Au62aqwa+QCBY5NRkOA5vM=;
+        b=Za1c3dchr9VjWfrfMwzbmap30VjOuSjq8jpKqxO9feLQkidfcNtGkfSjYRLrw51CdMSVyZ
+        l44mgb8yrPR6nw82yuQHX1wVC+3EzdKglDHla7aTQdVHH5nWJLpiQjnkSR/zQ2waM5ZAk4
+        fvM/tVl90P8vzI3fQNWZwyxjYvzfwjo=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-297-hp2mYy4NONukDtTQ4jzcxA-1; Thu, 07 Jul 2022 04:26:59 -0400
+X-MC-Unique: hp2mYy4NONukDtTQ4jzcxA-1
+Received: by mail-ej1-f72.google.com with SMTP id sg40-20020a170907a42800b00722faf0aacbso4466460ejc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 01:26:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=QTKsDc0N/t7R2FE7e8qc9b6f62szw20LTPOT6cDttmI=;
-        b=K+MY5Tad8snq7nBpgIasL6TdDKUZQbGW1egT2yKe06wmyZfutmGRroOgUj+QAJ4/KK
-         Xleg0ADNiHkwF9Ld0w7k2MMuUrUh15+qeJZI27H6f/5cygLOYIdeWnD9SYgrmVCQN9qc
-         y+Krg0dYJqGq8xvuR8r4otNh63PMJi+Zd/RrTIboJ1MWz2ETJ/AE3n0NLdKAswHb66o2
-         g3fLZZ4Tf6luXqBzIQD2tfsFuWASZFlzA9lLojam531LnPIO/F7BeHd+yELwgnbhUuW5
-         KGku5bcISrsPK7SR+3NM9ta3zk9HJliowifpoWs1vHcvEMom9Qu0TSEYjFo+4N22IEi0
-         am8Q==
-X-Gm-Message-State: AJIora9DYS+ab+esIup4QdTxHU4C00UzGqPCyA+elRCenyPesN9rEBOT
-        0wLmrCqTgIPBfaZKrmqn/LA=
-X-Google-Smtp-Source: AGRyM1tS+6lW63F88bR6HiGjHZ5SprOSCNjOdDOL1OoF+m3XQ5fOHIjiZGDgv7z3ySy8RO9u5xquXg==
-X-Received: by 2002:adf:f20e:0:b0:21d:8aa6:69da with SMTP id p14-20020adff20e000000b0021d8aa669damr47390wro.66.1657182414269;
-        Thu, 07 Jul 2022 01:26:54 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id v16-20020a5d4a50000000b0021d7d251c76sm3852686wrs.46.2022.07.07.01.26.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 01:26:53 -0700 (PDT)
-Message-ID: <95151159-19fc-891f-65dc-2b66e2b96357@gmail.com>
-Date:   Thu, 7 Jul 2022 10:26:52 +0200
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=hyQUq78HZYV0U5amrGZK5Au62aqwa+QCBY5NRkOA5vM=;
+        b=lVmGSf5uJ6xKg19jmxNkSz2t7HGXtgOQ7GGw1W/A9NOgvn5FIIbOqoLE7ATddkSBAD
+         v7VMKw7fItHoHLrXijuqb27yTQiJ037pJmXeY+vWer0++CUgeNovFmDohIyguz34HaNG
+         aoYFbPArsKw7vv/XUv6B30X9/zGFHalxkNAm+EjfIq7YGxn+w2KcQ6x+yAGyBNAqwpJh
+         nQOD8InMoywZrrxruRd07pJAWB5K7DphTa4j0nFCHyT33or2SgjXVr6VOAWbj1ZM7NYA
+         q8OCvmjjyyAUWL35RN/ypVsTQnDbHXV0inbS0ahYhV8BMfFKB5USTKwNkrBXMeAZYhik
+         rksQ==
+X-Gm-Message-State: AJIora8DRN+DZObUkEFGbWLJ6TJsJnUmYq4NYTywCVftKgkCVb+DsG/E
+        HL34rB++Na2V2nIiI9Ua38Ac8uoTdcXmm1viz9CeZZP5XbQsbGuhxOGwlghI1hzW6QdRnI9ZH7K
+        IMuOuTH5ujZ+thpLgcl+C/EQm
+X-Received: by 2002:a05:6402:c0b:b0:43a:25ff:ff08 with SMTP id co11-20020a0564020c0b00b0043a25ffff08mr32234926edb.148.1657182418713;
+        Thu, 07 Jul 2022 01:26:58 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uvaDV9BbuUE121Sm+1DSqPLexh4d8iG52AgkDo+XRYCQ8whzlmbqjuBkwqDmHZx8J/VKLzYA==
+X-Received: by 2002:a05:6402:c0b:b0:43a:25ff:ff08 with SMTP id co11-20020a0564020c0b00b0043a25ffff08mr32234901edb.148.1657182418538;
+        Thu, 07 Jul 2022 01:26:58 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id eo7-20020a056402530700b0043a78236cd2sm5689000edb.89.2022.07.07.01.26.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 01:26:58 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Wang Guangju <wangguangju@baidu.com>
+Cc:     linux-kernel@vger.kernel.org, wangguangju@baidu.com,
+        seanjc@google.com, pbonzini@redhat.com, jmattson@google.com,
+        wanpengli@tencent.com, bp@alien8.de, joro@8bytes.org,
+        suravee.suthikulpanit@amd.com, hpa@zytor.com, tglx@linutronix.de,
+        mingo@redhat.com, kvm@vger.kernel.org
+Subject: Re: [PATCH] KVM: x86: Add EOI exit bitmap handlers for Hyper-V
+ SynIC vectors
+In-Reply-To: <20220705083732.168-1-wangguangju@baidu.com>
+References: <20220705083732.168-1-wangguangju@baidu.com>
+Date:   Thu, 07 Jul 2022 10:26:56 +0200
+Message-ID: <87v8s9qqen.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 -next] soc: mediatek: SVS: Use the new PM macros
-Content-Language: en-US
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-To:     Jin Xiaoyun <jinxiaoyun2@huawei.com>,
-        angelogioacchino.delregno@collabora.com, khilman@baylibre.com,
-        zhengbin13@huawei.com, gaochao49@huawei.com
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
- <20220623030931.2816013-1-jinxiaoyun2@huawei.com>
- <d17549d3-a111-53b4-4576-2f5b6581c830@gmail.com>
- <952582d8-1e02-8407-0f90-d54d327056ad@gmail.com>
-In-Reply-To: <952582d8-1e02-8407-0f90-d54d327056ad@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Wang Guangju <wangguangju@baidu.com> writes:
+
+> From: wangguangju <wangguangju@baidu.com>
+>
+> Hyper-V SynIC vectors were added into EOI exit bitmap in func
+> synic_set_sint().But when the Windows VM VMEXIT due to
+> EXIT_REASON_EOI_INDUCED, there are no EOI exit bitmap handlers
+> for Hyper-V SynIC vectors.
+
+My take:
+
+"When EOI virtualization is performed on VMX,
+kvm_apic_set_eoi_accelerated() is called upon EXIT_REASON_EOI_INDUCED
+but unlike its non-accelerated apic_set_eoi() sibling, Hyper-V SINT
+vectors are left unhandled.
+"
+
+>
+> This patch fix it.
+>
+> Change-Id: I2404ebf7bda60326be3f6786e0e34e63aa81bbd4
+
+In case this is not something publicly available it doesn't belong to
+kernel changelog as it doesn't bring any value.
+
+> Signed-off-by: wangguangju <wangguangju@baidu.com>
+> ---
+>  arch/x86/kvm/lapic.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+> index 0e68b4c..59096f8 100644
+> --- a/arch/x86/kvm/lapic.c
+> +++ b/arch/x86/kvm/lapic.c
+> @@ -1303,6 +1303,10 @@ void kvm_apic_set_eoi_accelerated(struct kvm_vcpu *vcpu, int vector)
+>  
+>  	trace_kvm_eoi(apic, vector);
+>  
+> +	if (to_hv_vcpu(apic->vcpu) &&
+> +	    test_bit(vector, to_hv_synic(apic->vcpu)->vec_bitmap))
+> +		kvm_hv_synic_send_eoi(apic->vcpu, vector);
+> +
+>  	kvm_ioapic_send_eoi(apic, vector);
+>  	kvm_make_request(KVM_REQ_EVENT, apic->vcpu);
 
 
-On 23/06/2022 14:03, Matthias Brugger wrote:
-> 
-> 
-> On 23/06/2022 13:59, Matthias Brugger wrote:
->>
->>
->> On 23/06/2022 05:09, Jin Xiaoyun wrote:
->>> Use DEFINE_SIMPLE_DEV_PM_OPS() instead of the SIMPLE_DEV_PM_OPS()
->>> macro, along with using pm_sleep_ptr() as this driver doesn't handle
->>> runtime PM.
->>>
->>> Fix build error:
->>> drivers/soc/mediatek/mtk-svs.c:1515:12: error: ‘svs_resume’ defined but not 
->>> used [-Werror=unused-function]
->>> drivers/soc/mediatek/mtk-svs.c:1481:12: error: ‘svs_suspend’ defined but not 
->>> used [-Werror=unused-function]
->>>
->>> Signed-off-by: Jin Xiaoyun <jinxiaoyun2@huawei.com>
->>> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> 
-> I never did give my Reviewed-by for that. Please only add these tags if you got 
-> it explicetely.
-> 
-> Regards,
-> Matthias
-> 
->>> ---
->>> v1->v2:
->>> - Remove the #ifdef CONFIG_PM guard around the suspend/resume functions
->>> - Use DEFINE_SIMPLE_DEV_PM_OPS along with using pm_sleep_ptr()
->>> ---
->>>   drivers/soc/mediatek/mtk-svs.c | 4 ++--
->>>   1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
->>> index 606a00a2e57d..fae7376bd083 100644
->>> --- a/drivers/soc/mediatek/mtk-svs.c
->>> +++ b/drivers/soc/mediatek/mtk-svs.c
->>> @@ -2381,13 +2381,13 @@ static int svs_probe(struct platform_device *pdev)
->>>       return ret;
->>>   }
->>>
->>> -static SIMPLE_DEV_PM_OPS(svs_pm_ops, svs_suspend, svs_resume);
->>> +static DEFINE_SIMPLE_DEV_PM_OPS(svs_pm_ops, svs_suspend, svs_resume);
->>>
->>>   static struct platform_driver svs_driver = {
->>>       .probe    = svs_probe,
->>>       .driver    = {
->>>           .name        = "mtk-svs",
->>> -        .pm        = &svs_pm_ops,
->>> +        .pm        = pm_sleep_ptr(&svs_pm_ops),
->>
->> Why do we need that? From my understanding DEFINE_SIMPLE_DEV_PM_OPS() sets 
->> runtime_suspend_fn, runtime_resume_fn and idle_fn to NULL.
->>
+This whole part:
 
-As I didn't see any response from you on that, I went ahead and applied
-20220622175649.1856337-1-nathan@kernel.org
+	if (to_hv_vcpu(apic->vcpu) &&
+	    test_bit(vector, to_hv_synic(apic->vcpu)->vec_bitmap))
+		kvm_hv_synic_send_eoi(apic->vcpu, vector);
 
-Regards,
-Matthias
+	kvm_ioapic_send_eoi(apic, vector);
+	kvm_make_request(KVM_REQ_EVENT, apic->vcpu);
 
->> Regards,
->> Matthias
->>
->>>           .of_match_table    = of_match_ptr(svs_of_match),
->>>       },
->>>   };
->>> -- 
->>> 2.25.1
->>>
+could be split into an inline function, something like (completely
+untested):
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 6ff17d5a2ae3..9d19c7c738c0 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -1269,6 +1269,16 @@ static void kvm_ioapic_send_eoi(struct kvm_lapic *apic, int vector)
+        kvm_ioapic_update_eoi(apic->vcpu, vector, trigger_mode);
+ }
+ 
++static inline void apic_set_eoi_vector(struct kvm_lapic *apic, int vector)
++{
++       if (to_hv_vcpu(apic->vcpu) &&
++           test_bit(vector, to_hv_synic(apic->vcpu)->vec_bitmap))
++               kvm_hv_synic_send_eoi(apic->vcpu, vector);
++
++       kvm_ioapic_send_eoi(apic, vector);
++       kvm_make_request(KVM_REQ_EVENT, apic->vcpu);
++}
++
+ static int apic_set_eoi(struct kvm_lapic *apic)
+ {
+        int vector = apic_find_highest_isr(apic);
+@@ -1285,12 +1295,8 @@ static int apic_set_eoi(struct kvm_lapic *apic)
+        apic_clear_isr(vector, apic);
+        apic_update_ppr(apic);
+ 
+-       if (to_hv_vcpu(apic->vcpu) &&
+-           test_bit(vector, to_hv_synic(apic->vcpu)->vec_bitmap))
+-               kvm_hv_synic_send_eoi(apic->vcpu, vector);
++       apic_set_eoi_vector(apic, vector);
+ 
+-       kvm_ioapic_send_eoi(apic, vector);
+-       kvm_make_request(KVM_REQ_EVENT, apic->vcpu);
+        return vector;
+ }
+ 
+@@ -1304,8 +1310,7 @@ void kvm_apic_set_eoi_accelerated(struct kvm_vcpu *vcpu, int vector)
+ 
+        trace_kvm_eoi(apic, vector);
+ 
+-       kvm_ioapic_send_eoi(apic, vector);
+-       kvm_make_request(KVM_REQ_EVENT, apic->vcpu);
++       apic_set_eoi_vector(apic, vector);
+ }
+ EXPORT_SYMBOL_GPL(kvm_apic_set_eoi_accelerated);
+
+
+>  }
+
+-- 
+Vitaly
+
