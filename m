@@ -2,146 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E31A0CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43E6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234149AbiGGCov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50116 "EHLO
+        id S234606AbiGGCqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiGGCot (ORCPT
+        with ESMTP id S229681AbiGGCqF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:44:49 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67B62E6A6;
-        Wed,  6 Jul 2022 19:44:48 -0700 (PDT)
+        Wed, 6 Jul 2022 22:46:05 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63BF2E6AA;
+        Wed,  6 Jul 2022 19:46:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657161888; x=1688697888;
-  h=message-id:subject:from:to:cc:in-reply-to:references:
-   content-transfer-encoding:mime-version:date;
-  bh=Gb3nr30qWpCvqvwt/EmXMfqV47lb+zWrxN4Q99RWa5Q=;
-  b=fQ+o2HVkYa6hF2IvUL9W7rnKdueBOU+lUXW00eWsWr6fxbHxQb9a8EOf
-   7IMkSSJA0WOAIKGwYR8IagyYq4PcFBrP8JG7DFfXEoqgyWz8Tm6/X4JLf
-   A4IgfiBTrTafFh5Z71v7CDiAPjec+5igD8UVROFjD1b7WIqp+BCeXImg4
-   QL4N687BDQxdCUsR0yg2Kw0AM0y1+trcCmy4NHTQoiUJu6Vpf4Vf2XvBT
-   kJyH1TRoWy6t8Y1X6mk9/jPAzilRmxJ5wliyqTCCg+pcEaYvNjI1Wa7RB
-   Ask0AXxppIY6+RvWPN0KRzFI4JeY61PC15miO9LNQadfQ6wKfcX9tNuby
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="283939646"
+  t=1657161964; x=1688697964;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4Xwt8GMLeZ+6uehHIAwOZAA1CwoXjtTpcqmFLE7r9jA=;
+  b=hEf/s9F6fEI+sMD8ZSv8cvn0JLnLbXzPM7YxIy4IwkHhoE9IsUtGkSvA
+   sLpGZPE1Hcl9ov0nrHqvr3mBh3h3HVYsqznVAQtdR5pKgp+GAu2cl9QUB
+   Y7tm2g6p3JQMZvOfM0qh3L80RXO9qfSWjA57d5lBL0nCIoQukzimeSCTy
+   c1Q6iehqdJVVs3RJYtV27aR62f63YWTItMv5GvotBOCtjCfAWL8Bry655
+   zJcTa2gsqfT6iBsESkxvdIovBNsZK0jaFwMDjV8R1Oih9pQNw8qXXsImA
+   Ts6nUmIiywswNOgH6TIN1O1Q/SHgooYJilqMXEa14ywJZ/hxRDNy2wll1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="309470872"
 X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="283939646"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 19:44:48 -0700
+   d="scan'208";a="309470872"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 19:46:04 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="683153469"
-Received: from toddpric-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.213.182.230])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 19:44:45 -0700
-Message-ID: <202a463dd5443ccf2dc502e496e7d45ba5f05440.camel@intel.com>
-Subject: Re: [PATCH v5 12/22] x86/virt/tdx: Convert all memory regions in
- memblock to TDX memory
-From:   Kai Huang <kai.huang@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-In-Reply-To: <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
-References: <cover.1655894131.git.kai.huang@intel.com>
-         <8288396be7fedd10521a28531e138579594d757a.1655894131.git.kai.huang@intel.com>
-         <20d63398-928f-0c6f-47ec-8e225c049ad8@intel.com>
-         <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="650931332"
+Received: from yy-desk-7060.sh.intel.com (HELO localhost) ([10.239.159.76])
+  by fmsmga008.fm.intel.com with ESMTP; 06 Jul 2022 19:46:02 -0700
+Date:   Thu, 7 Jul 2022 10:46:02 +0800
+From:   Yuan Yao <yuan.yao@linux.intel.com>
+To:     isaku.yamahata@intel.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v7 010/102] x86/virt/tdx: Add a helper function to return
+ system wide info about TDX module
+Message-ID: <20220707024602.i5ym5nlnps3cjvj6@yy-desk-7060>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <2e722b58684c3cfbedda7d2a5a446255784a615e.1656366338.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-Date:   Thu, 07 Jul 2022 14:37:46 +1200
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2e722b58684c3cfbedda7d2a5a446255784a615e.1656366338.git.isaku.yamahata@intel.com>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 27, 2022 at 02:53:02PM -0700, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+>
+> TDX KVM needs system-wide information about the TDX module, struct
+> tdsysinfo_struct.  Add a helper function tdx_get_sysinfo() to return it
+> instead of KVM getting it with various error checks.  Move out the struct
+> definition about it to common place tdx_host.h.
 
-> > > +/*
-> > > + * Walks over all memblock memory regions that are intended to be
-> > > + * converted to TDX memory.  Essentially, it is all memblock memory
-> > > + * regions excluding the low memory below 1MB.
-> > > + *
-> > > + * This is because on some TDX platforms the low memory below 1MB is
-> > > + * not included in CMRs.  Excluding the low 1MB can still guarantee
-> > > + * that the pages managed by the page allocator are always TDX memor=
-y,
-> > > + * as the low 1MB is reserved during kernel boot and won't end up to
-> > > + * the ZONE_DMA (see reserve_real_mode()).
-> > > + */
-> > > +#define memblock_for_each_tdx_mem_pfn_range(i, p_start, p_end, p_nid=
-)	\
-> > > +	for_each_mem_pfn_range(i, MAX_NUMNODES, p_start, p_end, p_nid)	\
-> > > +		if (!pfn_range_skip_lowmem(p_start, p_end))
-> >=20
-> > Let's summarize where we are at this point:
-> >=20
-> > 1. All RAM is described in memblocks
-> > 2. Some memblocks are reserved and some are free
-> > 3. The lower 1MB is marked reserved
-> > 4. for_each_mem_pfn_range() walks all reserved and free memblocks, so w=
-e
-> >    have to exclude the lower 1MB as a special case.
-> >=20
-> > That seems superficially rather ridiculous.  Shouldn't we just pick a
-> > memblock iterator that skips the 1MB?  Surely there is such a thing.
->=20
-> Perhaps you are suggesting we should always loop the _free_ ranges so we =
-don't
-> need to care about the first 1MB which is reserved?
->=20
-> The problem is some reserved memory regions are actually later freed to t=
-he page
-> allocator, for example, initrd.  So to cover all those 'late-freed-reserv=
-ed-
-> regions', I used for_each_mem_pfn_range(), instead of for_each_free_mem_r=
-ange().
->=20
-> Btw, I do have a checkpatch warning around this code:
->=20
-> ERROR: Macros with complex values should be enclosed in parentheses
-> #109: FILE: arch/x86/virt/vmx/tdx/tdx.c:377:
-> +#define memblock_for_each_tdx_mem_pfn_range(i, p_start, p_end, p_nid)	\
-> +	for_each_mem_pfn_range(i, MAX_NUMNODES, p_start, p_end, p_nid)	\
-> +		if (!pfn_range_skip_lowmem(p_start, p_end))
->=20
-> But it looks like a false positive to me.
+Please correct the tdx_host.h to tdx.h or arch/x86/include/asm/tdx.h
 
-Hi Dave,
-
-Sorry to ping. Just double check, any comments around here, ..
-
->=20
-> > Or, should we be doing something different with the 1MB in the memblock
-> > structure?
->=20
-> memblock APIs are used by other kernel components.  I don't think we shou=
-ld
-> modify memblock code behaviour for TDX.  Do you have any specific suggest=
-ion?
->=20
-> One possible option I can think is explicitly "register" memory regions a=
-s TDX
-> memory when they are firstly freed to the page allocator. =20
-
-[...]
-
->=20
-> This will require new data structures to represent TDX memblock and the c=
-ode to
-> create, insert and merge contiguous TDX memblocks, etc.  The advantage is=
- we can
-> just iterate those TDX memblocks when constructing TDMRs.
->=20
->=20
-
-And here?
-
+>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>  arch/x86/include/asm/tdx.h  | 55 +++++++++++++++++++++++++++++++++++++
+>  arch/x86/virt/vmx/tdx/tdx.c | 20 +++++++++++---
+>  arch/x86/virt/vmx/tdx/tdx.h | 52 -----------------------------------
+>  3 files changed, 71 insertions(+), 56 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+> index 801f6e10b2db..dfea0dd71bc1 100644
+> --- a/arch/x86/include/asm/tdx.h
+> +++ b/arch/x86/include/asm/tdx.h
+> @@ -89,11 +89,66 @@ static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
+>  #endif /* CONFIG_INTEL_TDX_GUEST && CONFIG_KVM_GUEST */
+>
+>  #ifdef CONFIG_INTEL_TDX_HOST
+> +struct tdx_cpuid_config {
+> +	u32	leaf;
+> +	u32	sub_leaf;
+> +	u32	eax;
+> +	u32	ebx;
+> +	u32	ecx;
+> +	u32	edx;
+> +} __packed;
+> +
+> +#define TDSYSINFO_STRUCT_SIZE		1024
+> +#define TDSYSINFO_STRUCT_ALIGNMENT	1024
+> +
+> +struct tdsysinfo_struct {
+> +	/* TDX-SEAM Module Info */
+> +	u32	attributes;
+> +	u32	vendor_id;
+> +	u32	build_date;
+> +	u16	build_num;
+> +	u16	minor_version;
+> +	u16	major_version;
+> +	u8	reserved0[14];
+> +	/* Memory Info */
+> +	u16	max_tdmrs;
+> +	u16	max_reserved_per_tdmr;
+> +	u16	pamt_entry_size;
+> +	u8	reserved1[10];
+> +	/* Control Struct Info */
+> +	u16	tdcs_base_size;
+> +	u8	reserved2[2];
+> +	u16	tdvps_base_size;
+> +	u8	tdvps_xfam_dependent_size;
+> +	u8	reserved3[9];
+> +	/* TD Capabilities */
+> +	u64	attributes_fixed0;
+> +	u64	attributes_fixed1;
+> +	u64	xfam_fixed0;
+> +	u64	xfam_fixed1;
+> +	u8	reserved4[32];
+> +	u32	num_cpuid_config;
+> +	/*
+> +	 * The actual number of CPUID_CONFIG depends on above
+> +	 * 'num_cpuid_config'.  The size of 'struct tdsysinfo_struct'
+> +	 * is 1024B defined by TDX architecture.  Use a union with
+> +	 * specific padding to make 'sizeof(struct tdsysinfo_struct)'
+> +	 * equal to 1024.
+> +	 */
+> +	union {
+> +		struct tdx_cpuid_config	cpuid_configs[0];
+> +		u8			reserved5[892];
+> +	};
+> +} __packed __aligned(TDSYSINFO_STRUCT_ALIGNMENT);
+> +
+>  bool platform_tdx_enabled(void);
+>  int tdx_init(void);
+> +const struct tdsysinfo_struct *tdx_get_sysinfo(void);
+>  #else	/* !CONFIG_INTEL_TDX_HOST */
+>  static inline bool platform_tdx_enabled(void) { return false; }
+>  static inline int tdx_init(void)  { return -ENODEV; }
+> +struct tdsysinfo_struct;
+> +static inline const struct tdsysinfo_struct *tdx_get_sysinfo(void) { return NULL; }
+>  #endif	/* CONFIG_INTEL_TDX_HOST */
+>
+>  #endif /* !__ASSEMBLY__ */
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+> index f9a6f8bdade8..14f53494156c 100644
+> --- a/arch/x86/virt/vmx/tdx/tdx.c
+> +++ b/arch/x86/virt/vmx/tdx/tdx.c
+> @@ -364,9 +364,9 @@ static int check_cmrs(struct cmr_info *cmr_array, int *actual_cmr_num)
+>  	return 0;
+>  }
+>
+> -static int tdx_get_sysinfo(struct tdsysinfo_struct *tdsysinfo,
+> -			   struct cmr_info *cmr_array,
+> -			   int *actual_cmr_num)
+> +static int __tdx_get_sysinfo(struct tdsysinfo_struct *tdsysinfo,
+> +			     struct cmr_info *cmr_array,
+> +			     int *actual_cmr_num)
+>  {
+>  	struct tdx_module_output out;
+>  	u64 ret;
+> @@ -393,6 +393,18 @@ static int tdx_get_sysinfo(struct tdsysinfo_struct *tdsysinfo,
+>  	return check_cmrs(cmr_array, actual_cmr_num);
+>  }
+>
+> +const struct tdsysinfo_struct *tdx_get_sysinfo(void)
+> +{
+> +       const struct tdsysinfo_struct *r = NULL;
+> +
+> +       mutex_lock(&tdx_module_lock);
+> +       if (tdx_module_status == TDX_MODULE_INITIALIZED)
+> +	       r = &tdx_sysinfo;
+> +       mutex_unlock(&tdx_module_lock);
+> +       return r;
+> +}
+> +EXPORT_SYMBOL_GPL(tdx_get_sysinfo);
+> +
+>  /*
+>   * Skip the memory region below 1MB.  Return true if the entire
+>   * region is skipped.  Otherwise, the updated range is returned.
+> @@ -1116,7 +1128,7 @@ static int init_tdx_module(void)
+>  	if (ret)
+>  		goto out;
+>
+> -	ret = tdx_get_sysinfo(&tdx_sysinfo, tdx_cmr_array, &tdx_cmr_num);
+> +	ret = __tdx_get_sysinfo(&tdx_sysinfo, tdx_cmr_array, &tdx_cmr_num);
+>  	if (ret)
+>  		goto out;
+>
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+> index e0309558be13..c08e4ee2d0bf 100644
+> --- a/arch/x86/virt/vmx/tdx/tdx.h
+> +++ b/arch/x86/virt/vmx/tdx/tdx.h
+> @@ -65,58 +65,6 @@ struct cmr_info {
+>  #define MAX_CMRS			32
+>  #define CMR_INFO_ARRAY_ALIGNMENT	512
+>
+> -struct cpuid_config {
+> -	u32	leaf;
+> -	u32	sub_leaf;
+> -	u32	eax;
+> -	u32	ebx;
+> -	u32	ecx;
+> -	u32	edx;
+> -} __packed;
+> -
+> -#define TDSYSINFO_STRUCT_SIZE		1024
+> -#define TDSYSINFO_STRUCT_ALIGNMENT	1024
+> -
+> -struct tdsysinfo_struct {
+> -	/* TDX-SEAM Module Info */
+> -	u32	attributes;
+> -	u32	vendor_id;
+> -	u32	build_date;
+> -	u16	build_num;
+> -	u16	minor_version;
+> -	u16	major_version;
+> -	u8	reserved0[14];
+> -	/* Memory Info */
+> -	u16	max_tdmrs;
+> -	u16	max_reserved_per_tdmr;
+> -	u16	pamt_entry_size;
+> -	u8	reserved1[10];
+> -	/* Control Struct Info */
+> -	u16	tdcs_base_size;
+> -	u8	reserved2[2];
+> -	u16	tdvps_base_size;
+> -	u8	tdvps_xfam_dependent_size;
+> -	u8	reserved3[9];
+> -	/* TD Capabilities */
+> -	u64	attributes_fixed0;
+> -	u64	attributes_fixed1;
+> -	u64	xfam_fixed0;
+> -	u64	xfam_fixed1;
+> -	u8	reserved4[32];
+> -	u32	num_cpuid_config;
+> -	/*
+> -	 * The actual number of CPUID_CONFIG depends on above
+> -	 * 'num_cpuid_config'.  The size of 'struct tdsysinfo_struct'
+> -	 * is 1024B defined by TDX architecture.  Use a union with
+> -	 * specific padding to make 'sizeof(struct tdsysinfo_struct)'
+> -	 * equal to 1024.
+> -	 */
+> -	union {
+> -		struct cpuid_config	cpuid_configs[0];
+> -		u8			reserved5[892];
+> -	};
+> -} __packed __aligned(TDSYSINFO_STRUCT_ALIGNMENT);
+> -
+>  struct tdmr_reserved_area {
+>  	u64 offset;
+>  	u64 size;
+> --
+> 2.25.1
+>
