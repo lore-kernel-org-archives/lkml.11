@@ -2,155 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7213CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235876AbiGGQxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
+        id S235662AbiGGQzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235727AbiGGQxI (ORCPT
+        with ESMTP id S230313AbiGGQzv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:53:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAE559252;
-        Thu,  7 Jul 2022 09:53:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06D3F6244C;
-        Thu,  7 Jul 2022 16:53:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D7E8C3411E;
-        Thu,  7 Jul 2022 16:53:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657212786;
-        bh=oeKhu9Proyv+SOwlbKwi9FoGyKNdIXPkHb7LOnZiNeE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lvEUcujjIvCPcMQbsplCbc1Rnnwk5iAOmHFwVZRzfggqKe6/44ptYgU/JBH8Irsnd
-         EpvBJXHZ7OxrQFvthDQWiYQDtQYcxY9rz11Qzg9xW5tIl0mrxnWAoEeTWz1thhX+40
-         V3CnEcAGHvtN4SJcQEpf3OP0I5I6fPR2BQWXz912Z3UYeRd/zVL7Uu+sO2irn/tWAq
-         mjFitbJXq7FwPoM6LqfPDo2GCZKds7oJStVlaMHUQFaSCOLx1+zi4vXa0k4heta/v6
-         so6TGqxu4Htgi8/EMyZKWv2Fggnaaeo8dVNvqKBNp9Gf217HY41QZ2Apypd71aCU/m
-         v95Ojz+5a7l4w==
-Date:   Thu, 7 Jul 2022 18:02:48 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     ChiYuan Huang <u0084500@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        cy_huang <cy_huang@richtek.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] iio: adc: Add rtq6056 support
-Message-ID: <20220707180248.2f8d1b0f@jic23-huawei>
-In-Reply-To: <CADiBU38FbZ87EHn_UDy-rS6V2bGDdLZJOcqNZsS03MzbNaVaKA@mail.gmail.com>
-References: <1656469212-12717-1-git-send-email-u0084500@gmail.com>
-        <1656469212-12717-3-git-send-email-u0084500@gmail.com>
-        <CAHp75Vd2bxFA5PmjEtgAjJfCf9YZENq_fb9b2VHmMmmHdqGJSw@mail.gmail.com>
-        <CADiBU384ZwKL_+i1zRL9qfVt-NLo=pnf8zrGna4Sxt+toYZdWg@mail.gmail.com>
-        <CADiBU3_sU8bj29x2Qs9y9fM2YDYcKvNBkBuzfpzuCkAjSeTu+Q@mail.gmail.com>
-        <CAHp75VeiuJjiPFFh0pEGGH4+UEn0g5902UhAJL93Ho2WvH0_gg@mail.gmail.com>
-        <CADiBU38FbZ87EHn_UDy-rS6V2bGDdLZJOcqNZsS03MzbNaVaKA@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Thu, 7 Jul 2022 12:55:51 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5F11D335;
+        Thu,  7 Jul 2022 09:55:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aRRgHLikBi/dXAgUX5JzoxuGvwHkH2eK3aHr/Fj2C01sVUF9wJlyWe46spABlI/pDean1g2L7xFTEcZd3e8l9N6CX1R5pi3PmLemJn4R25MkrBRExUsEGlqXOYF8H9s7Sn/x61q2y6QpW4TtkBcvNFApuT6NI4cU4+3HqTPCYTu7cqD2MDEY4HcfLCkSik4TQO8x1XV1YLNfVWZPnMb8eSQGjRIfvWtpwRFsQthJgDrMfVG5Snnk3/tCkfmAGFDZSi/do/52NRWNPzA9zcOihrGmJq5pScPvQSlHXrpsTB5imkNhRN0fpOKg8sN7Py9yO/Uk5W9O/idS4HEg3cMPgg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DE1xs5A8thrUl5LPVV7c/9fZki/WFGQ1WGIKHjPsX8k=;
+ b=WMxwQlHI/F8NdBCBoSl+52UOgiawNypMbdfXMhmmm98PC8PikqdpRCq3YPcFdINA2HpFAsN4XG4/L7PPfLAypcsB3AOrm5Ca2/P7GX0ogY1mZEGzDVmYNRs3G9qIM/G1ZOnTM3pHtkrCP6RW4+j6QYxmagZBgVFEwGFesjZAl2fmto7Eb+s/kRk2hc0aEQw07fWvOugDB73ui5V5rsGlAxJ2WVpke9bF7QVrvAtIepRVe/d04iRqc89cTrC6+sIUD22tDhQC57mYFHaq2BEdiDMrskF8QnojmK8rh1EtYYHAV9xzfkKm8WS6kcK/IWKFS2CiICY9baCH0qwiePQAvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=intel.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DE1xs5A8thrUl5LPVV7c/9fZki/WFGQ1WGIKHjPsX8k=;
+ b=aGquq+dbGnnAzbUhdSfb7ZiS6MX883syOZpztsor+5XLIFXW/NwGMo2SnGjJoHWAUd3ca4gVbx+2j3MfzTg74r+kpYeshwOg6oODuT0mps+BoATuPnDVRt7WYzkpcgGouG0qIJJP7NP9+M1PuCcqMv6p4sJqrp1fWd9IJVBxXvY=
+Received: from BN9P223CA0012.NAMP223.PROD.OUTLOOK.COM (2603:10b6:408:10b::17)
+ by CY4PR12MB1416.namprd12.prod.outlook.com (2603:10b6:903:44::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.18; Thu, 7 Jul
+ 2022 16:55:48 +0000
+Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10b:cafe::ba) by BN9P223CA0012.outlook.office365.com
+ (2603:10b6:408:10b::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15 via Frontend
+ Transport; Thu, 7 Jul 2022 16:55:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 16:55:47 +0000
+Received: from pyuan-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 7 Jul
+ 2022 11:55:40 -0500
+From:   Perry Yuan <Perry.Yuan@amd.com>
+To:     <rafael.j.wysocki@intel.com>, <viresh.kumar@linaro.org>,
+        <Ray.Huang@amd.com>, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Huang Rui <ray.huang@amd.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Perry Yuan <Perry.Yuan@amd.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>
+CC:     <Deepak.Sharma@amd.com>, <Mario.Limonciello@amd.com>,
+        <Nathan.Fontenot@amd.com>, <Alexander.Deucher@amd.com>,
+        <Jinzhou.Su@amd.com>, <Xinmei.Huang@amd.com>,
+        <Xiaojian.Du@amd.com>, <Li.Meng@amd.com>
+Subject: [PATCH 02/12] cpufreq: amd-pstate: enable AMD Precision Boost mode switch
+Date:   Thu, 7 Jul 2022 12:55:21 -0400
+Message-ID: <20220707165522.212990-1-Perry.Yuan@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e440c9b4-e136-4bb6-e215-08da60398a5d
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1416:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9tCIUVGvmgusYDmk5/HMVr+tVNSehD6/srb/IR7pJAWatVSTzplAKy6ofMt2uoYjWScbzc5MSFEC/+yXSCVjYExUONOauTSg8vvnGlDebZFIfk43FA9eiz6l82tHk71NkUZCvmNnxNmwKP3YYTy5KRZ2pxAuD0UvDSCjA9iYPhdP39kYmn9KaC8QxYNPVJDikfhhunZCLx/I4z44haC1RbHz18bT5Fval7b/GjQkIdC4UYcNNMi4aE1GyLLYRockuEmExIL8BvLwhQ9K6P/peCRnl8ixytgWFRSd2JhGy+Ehr1lNoZf7ul0wsUpxG4tu1p4PrD4nNgb/JJdfelushEW1Vlnm+Xu73z44qWwvydT/X6DwuCYfmXFSf11mX4LNZZq3WXokQ6lhK+Lq+OUvIc8BG/theH0g9xzJIPrtqxJvkxxEGk/xFXykfzmh1SpnGHTWOB9coEV25izNi3MhS3bvaBM7tyfyxLnHSkTdPQB1/aCzsAo5AspN1nFVPan+tdNf1O8cbrxjCTLRG1VHwQ85BvMVM82r0X8uHt2OLxIo4nPf5RmNn0B++rwtVZXJ6VN26XSFKraPdaZJCGB5zMAHnyfKv4JuLc7x4B/84STiATPpD1jPisLrlKD7++gTo62Q1/33yE5xU3bNyrVzRX+pdCgvbbFfM3Udr9mM6sikjBNtZxnFXdU7QDLgHGacmLoBRoYuv2TsP+ILg6vcpV/+VnfrUUx3PfYjoJZuYxX4JcXi3qVFHCRGTT5KC2Jt3C0WlciaB5c1AE5ptjdsrTBo7/X+Zn9lsfQFF7/gLmmSaUtGaKl2f6dpl+bA4kN+AK2Ap+UKQmUMi45KGXCu2vY9mHfrRT6ilM61XGsxrUqKGu7yxMSxxizc0Bx/cK0TG5k7raqeEtX73ag3dqVqvQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(396003)(136003)(376002)(46966006)(36840700001)(40470700004)(8676002)(70206006)(70586007)(82310400005)(4326008)(5660300002)(356005)(8936002)(921005)(86362001)(2906002)(336012)(7416002)(82740400003)(81166007)(426003)(47076005)(83380400001)(41300700001)(16526019)(7696005)(40480700001)(6666004)(1076003)(40460700003)(110136005)(36860700001)(54906003)(2616005)(478600001)(186003)(36756003)(316002)(26005)(34020700004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 16:55:47.6376
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e440c9b4-e136-4bb6-e215-08da60398a5d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1416
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Jul 2022 09:41:39 +0800
-ChiYuan Huang <u0084500@gmail.com> wrote:
+Add support to switch AMD precision boost state to scale cpu max
+frequency that will help to improve the processor throughput.
 
-> Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=
-=9C=885=E6=97=A5 =E9=80=B1=E4=BA=8C =E6=B8=85=E6=99=A85:52=E5=AF=AB=E9=81=
-=93=EF=BC=9A
-> >
-> > On Mon, Jul 4, 2022 at 9:27 AM ChiYuan Huang <u0084500@gmail.com> wrote=
-: =20
-> > > ChiYuan Huang <u0084500@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=9C=884=
-=E6=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8A=E5=8D=8811:16=E5=AF=AB=E9=81=93=EF=
-=BC=9A =20
-> > > > Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B4=
-7=E6=9C=881=E6=97=A5 =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=886:05=E5=AF=AB=E9=
-=81=93=EF=BC=9A =20
-> > > > > On Wed, Jun 29, 2022 at 4:23 AM cy_huang <u0084500@gmail.com> wro=
-te: =20
-> >
-> > ...
-> > =20
-> > > > > > +       *val =3D DIV_ROUND_UP(1000000, sample_time); =20
-> > > > >
-> > > > > USEC_PER_SEC ?
-> > > > > =20
-> > > > No, sample time is (vshunt convesion time + vbus conversion time) *
-> > > > average sample.
-> > > > And the sample freq returns the unit by HZ (sample frequency per se=
-cond)
-> > > > =20
-> > > The 'sample time' is unit by micro-second like as you mentioned. =20
-> >
-> > Ah, then it should be MICRO, so we will get Hz.
-> > =20
-> > > > > > +       return IIO_VAL_INT;
-> > > > > > +} =20
-> >
-> > ...
-> > =20
-> > > > > > +       struct {
-> > > > > > +               u16 vals[RTQ6056_MAX_CHANNEL];
-> > > > > > +               int64_t timestamp;
-> > > > > > +       } data __aligned(8); =20
-> > > > >
-> > > > > Hmm... alignment of this struct will be at least 4 bytes, but
-> > > > > shouldn't we rather be sure that the timestamp member is aligned
-> > > > > properly? Otherwise this seems fragile and dependent on
-> > > > > RTQ6056_MAX_CHANNEL % 4 =3D=3D 0.
-> > > > > =20
-> > > > Yap, from the 'max channel', it already guarantee this struct will =
-be
-> > > > aligned at lease 4.
-> > > > Actually, It can be removed. =20
-> >
-> > I think for the safest side it should be given to the timestamp member.=
- No?
-> > =20
-> Sorry, following your comment, Why to use 'align' for the timestamp membe=
-r?
-> the data member already guarantee 2 * 4 =3D 8 byte, then timestamp will
-> be 8 byte aligned, right?
->=20
-> what you mentioned is to put __aligned(8) only for timestamp.
->=20
-> I try to put aligned in two ways ( one is only for timestamp, another
-> is the whole struct). the result is the same.
-> From my thinking, in this case, the struct is already 8 byte aligned
-> for timestamp member. don't you think to put 'aligned' is redundant?
+when set boost state to be enabled, user will need to execute below commands,
+the CPU will reach absolute maximum performance level or the highest perf which
+CPU physical support. This performance level may not be sustainable for
+long durations, it will help to improve the IO workload tasks.
 
-On the 8 byte alignment question...  Look up alignment of s64 on x86_32...
-It's 4 byte aligned. We had a lot of 'fun' fixing this a few years ago.
+* turn on CPU boost state under root
+  echo 1 > /sys/devices/system/cpu/cpufreq/boost
 
-So the marking of __aligned(8) for the timestamp does 2 things (and it
-takes a fairly close reading of the c spec to check this).
+If user set boost off,the CPU can reach to the maximum sustained
+performance level of the process, that level is the process can maintain
+continously working and definitely it can save some power compared to
+boost on mode.
 
-1) Forces alignment of the timestamp. Needed so we can cheaply write
-the timestamp
-2) Forces alignment of the containing structure.
+* turn off CPU boost state under root
+  echo 0 > /sys/devices/system/cpu/cpufreq/boost
 
-The combination of these 2 enforces the padding being
-consistent across architectures whether or not they align s64 to
-4 or 8 bytes.  This last part is the subtle element that
-explains why on some architectures you need the __aligned(8) on the
-timestamp not the outer structure.
+Signed-off-by: Perry Yuan <Perry.Yuan@amd.com>
+---
+ arch/x86/include/asm/msr-index.h |  2 ++
+ drivers/cpufreq/amd-pstate.c     | 22 +++++++++++++++++++---
+ 2 files changed, 21 insertions(+), 3 deletions(-)
 
-Jonathan
-
-
-
-
-> > --
-> > With Best Regards,
-> > Andy Shevchenko =20
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index 869508de8269..b952fd6d6916 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -559,6 +559,8 @@
+ #define AMD_CPPC_MIN_PERF(x)		(((x) & 0xff) << 8)
+ #define AMD_CPPC_DES_PERF(x)		(((x) & 0xff) << 16)
+ #define AMD_CPPC_ENERGY_PERF_PREF(x)	(((x) & 0xff) << 24)
++#define AMD_CPPC_PRECISION_BOOST_BIT	25
++#define AMD_CPPC_PRECISION_BOOST_ENABLED	BIT_ULL(AMD_CPPC_PRECISION_BOOST_BIT)
+ 
+ /* AMD Performance Counter Global Status and Control MSRs */
+ #define MSR_AMD64_PERF_CNTR_GLOBAL_STATUS	0xc0000300
+diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
+index 9ac75c1cde9c..188e055e24a2 100644
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -122,6 +122,7 @@ struct amd_cpudata {
+ 
+ 	u64 freq;
+ 	bool	boost_supported;
++	u64 	cppc_hw_conf_cached;
+ };
+ 
+ static inline int pstate_enable(bool enable)
+@@ -438,18 +439,27 @@ static int amd_pstate_set_boost(struct cpufreq_policy *policy, int state)
+ {
+ 	struct amd_cpudata *cpudata = policy->driver_data;
+ 	int ret;
++	u64 value;
+ 
+ 	if (!cpudata->boost_supported) {
+ 		pr_err("Boost mode is not supported by this processor or SBIOS\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (state)
++	ret = rdmsrl_on_cpu(cpudata->cpu, MSR_AMD_CPPC_HW_CTL, &value);
++	if (ret)
++		return ret;
++
++	if (state) {
++		value |= AMD_CPPC_PRECISION_BOOST_ENABLED;
+ 		policy->cpuinfo.max_freq = cpudata->max_freq;
+-	else
++	} else {
++		value &= ~AMD_CPPC_PRECISION_BOOST_ENABLED;
+ 		policy->cpuinfo.max_freq = cpudata->nominal_freq;
+-
++	}
+ 	policy->max = policy->cpuinfo.max_freq;
++	WRITE_ONCE(cpudata->cppc_hw_conf_cached, value);
++	wrmsrl_on_cpu(cpudata->cpu, MSR_AMD_CPPC_HW_CTL, value);
+ 
+ 	ret = freq_qos_update_request(&cpudata->req[1],
+ 				      policy->cpuinfo.max_freq);
+@@ -478,6 +488,7 @@ static int amd_pstate_cpu_init(struct cpufreq_policy *policy)
+ 	int min_freq, max_freq, nominal_freq, lowest_nonlinear_freq, ret;
+ 	struct device *dev;
+ 	struct amd_cpudata *cpudata;
++	u64 value;
+ 
+ 	dev = get_cpu_device(policy->cpu);
+ 	if (!dev)
+@@ -542,6 +553,11 @@ static int amd_pstate_cpu_init(struct cpufreq_policy *policy)
+ 
+ 	policy->driver_data = cpudata;
+ 
++	ret = rdmsrl_on_cpu(cpudata->cpu, MSR_AMD_CPPC_HW_CTL, &value);
++	if (ret)
++		return ret;
++	WRITE_ONCE(cpudata->cppc_hw_conf_cached, value);
++
+ 	amd_pstate_boost_init(cpudata);
+ 
+ 	return 0;
+-- 
+2.25.1
 
