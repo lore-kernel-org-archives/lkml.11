@@ -2,126 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0AE6CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235139AbiGGHvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 03:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
+        id S235118AbiGGHwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 03:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235117AbiGGHvB (ORCPT
+        with ESMTP id S234977AbiGGHwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 03:51:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 031E733A18
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 00:50:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657180257;
+        Thu, 7 Jul 2022 03:52:22 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18A7B45;
+        Thu,  7 Jul 2022 00:52:19 -0700 (PDT)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7A0C624000F;
+        Thu,  7 Jul 2022 07:52:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1657180337;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+6vKb5qtW2WQk3PF9/RN812iqCXsUylPTfCM4P31gZ0=;
-        b=Z9/dRsgWOW1aq8VVcce7SDWbhH4blf5vJqWJFFf8luO3qJI/54bMxFmLmUUajfrDcCiL0q
-        FlHWlxvDCExwmI+THavvOsRuEa119rLr82g/xq61SJceD+W6v3CpydQIynJSU4EaELWDOI
-        vHUuqOpUOiDnjntdw+XZOCagrlSKQGg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-wNPe_FNrO0C3mx6E--qHdQ-1; Thu, 07 Jul 2022 03:50:56 -0400
-X-MC-Unique: wNPe_FNrO0C3mx6E--qHdQ-1
-Received: by mail-wm1-f71.google.com with SMTP id m17-20020a05600c3b1100b003a04a2f4936so9200357wms.6
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 00:50:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+6vKb5qtW2WQk3PF9/RN812iqCXsUylPTfCM4P31gZ0=;
-        b=xHdJZ0dlkEcyiTxKMhLLr78O06seZKz0mF7/roaD2w6RWSxwLiWxDpo9ztM7q1Aksc
-         to2cQI3Z5gXlQCJgj7WqpeFAaqmJgIdeJCr5zVEhndvUUi6/xzkaltQ9MZKcMI6ZCpf1
-         eQ+mw65lYcW08N6PqIz03KVhklQ5SsZa8jwGsXJmRO1TQKBa3/zUo6be9XGSr8jhJtWi
-         uQlNlXSOwFb2zJpkjHRdklZ5RveOMT8K3SStfGuPP2JXyVbB4f9+C45O2nXQrJ0ctBpp
-         PGrX6X0tkaNttGhzpErG/uTx5xobIiuVi9BLcOHKMPk02GoPCT4Pkvv7PCibWbrn4Pz9
-         KKVA==
-X-Gm-Message-State: AJIora9vO0mGqOcj/CjPEj5jDqGpFEeLcc8iQx4hTPPHb5XbIds8PpFp
-        IzISMdpYEsT2EJ8/349uBct7VkY5eu+atTNoaL0y06bvCUwm13xpmffcS7BJe2YhH+1SM4wTmAF
-        ZX/t8wGv5BDRStnC8T8uqosQW
-X-Received: by 2002:adf:fa04:0:b0:21d:1864:3172 with SMTP id m4-20020adffa04000000b0021d18643172mr44359074wrr.292.1657180254792;
-        Thu, 07 Jul 2022 00:50:54 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s+oP8nKMiKtM5JWiNW2EmP7v5KZWVhT1rv4ikXnOMyupFZ/UG6Ka+8OsYj9pCbnG7pzppYQQ==
-X-Received: by 2002:adf:fa04:0:b0:21d:1864:3172 with SMTP id m4-20020adffa04000000b0021d18643172mr44359057wrr.292.1657180254605;
-        Thu, 07 Jul 2022 00:50:54 -0700 (PDT)
-Received: from debian.home (2a01cb058d1194004161f17a6a9ad508.ipv6.abo.wanadoo.fr. [2a01:cb05:8d11:9400:4161:f17a:6a9a:d508])
-        by smtp.gmail.com with ESMTPSA id u6-20020a5d5146000000b0020fcc655e4asm38297650wrt.5.2022.07.07.00.50.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 00:50:54 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 09:50:52 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Justin Stitt <justinstitt@google.com>
-Cc:     James Chapman <jchapman@katalix.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] net: l2tp: fix clang -Wformat warning
-Message-ID: <20220707075052.GA3912@debian.home>
-References: <20220706230833.535238-1-justinstitt@google.com>
+        bh=XlhJMe5eaAfucFNFw5DBnfmQ57zoA/G09jp+D3Ly4pU=;
+        b=F5qIWeZE6+voZZFvqFrGd6OTrFVjxy6GGTxVWW1otoWxpwHffWNwiS9yg6YliSWJ6oOmE0
+        Pn9TobsV410XCrOqt2b7FUl5efbnf4DLJqx1ysYOtLEaTSfMw0UFt7J4HGlPt9z4OKtJpk
+        6HSz+YzU+eZ7zNk6AVHmXEo5NWvFQiahHafGm47iXkpAEg8vK63HMqFSwAGlZRlkgKG2Pn
+        RtbZKViwdSU3C6lB7QJ7UMxcB8ioZdI+jzYhcaXhvfSZMueHxPR1eNlpmEVdb6B2zILmW0
+        235E7rDpjU4wYMa5zTh3OinBuzjxplR5pM/gSykulsdT74x43pKR2k6GlWNj3g==
+Date:   Thu, 7 Jul 2022 09:52:14 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Mining Lin <mimi05633@gmail.com>
+Cc:     Benjamin Fair <benjaminfair@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Patrick Venture <venture@google.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, a.zummo@towertech.it,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING <KFTING@nuvoton.com>, ctcchien@nuvoton.com,
+        Medad Young <medadyoung@gmail.com>,
+        CS20 MYLin1 <mylin1@nuvoton.com>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] RTC: nuvoton: Add NCT3018Y real time clock driver
+Message-ID: <YsaQrksj8jBhJYGP@mail.local>
+References: <20220527084647.30835-1-ctcchien@nuvoton.com>
+ <20220527084647.30835-4-ctcchien@nuvoton.com>
+ <YrYd+FkiFPz84twJ@mail.local>
+ <CAHpyw9cdmCSZEE4ZbpnehpyvFhpPWA+_E5zXzJerNX9xqYet5Q@mail.gmail.com>
+ <CAL3ZnpzSm7f1L2MMuDr9_vg3TQuk3PSr46fwmJTMz4sA2sdCJg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220706230833.535238-1-justinstitt@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAL3ZnpzSm7f1L2MMuDr9_vg3TQuk3PSr46fwmJTMz4sA2sdCJg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 04:08:33PM -0700, Justin Stitt wrote:
-> When building with clang we encounter this warning:
-> | net/l2tp/l2tp_ppp.c:1557:6: error: format specifies type 'unsigned
-> | short' but the argument has type 'u32' (aka 'unsigned int')
-> | [-Werror,-Wformat] session->nr, session->ns,
+On 07/07/2022 15:17:28+0800, Mining Lin wrote:
+> Dear Alexandre,
 > 
-> Both session->nr and session->ns are of type u32. The format specifier
-> previously used is `%hu` which would truncate our unsigned integer from
-> 32 to 16 bits. This doesn't seem like intended behavior, if it is then
-> perhaps we need to consider suppressing the warning with pragma clauses.
-
-pppol2tp_seq_session_show() is only called for L2TPv2 sessions, where
-ns and nr are 2 bytes long (L2TPv3 uses 3 bytes, hence the u32 type in
-the generic l2tp_session structure). So %hu shouldn't truncate anything
-here.
-
-However %u doesn't harm and is cleaner than silencing the warning with
-pragma.
-
-Acked-by: Guillaume Nault <gnault@redhat.com>
-
-
-> This patch should get us closer to the goal of enabling the -Wformat
-> flag for Clang builds.
+> Thank you for your comments.
+> I will refine and reply below.
 > 
-> Link: https://github.com/ClangBuiltLinux/linux/issues/378
-> Signed-off-by: Justin Stitt <justinstitt@google.com>
-> ---
->  net/l2tp/l2tp_ppp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Thanks.
+> Best Regards,
+> Mia
 > 
-> diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
-> index 8be1fdc68a0b..db2e584c625e 100644
-> --- a/net/l2tp/l2tp_ppp.c
-> +++ b/net/l2tp/l2tp_ppp.c
-> @@ -1553,7 +1553,7 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
->  		   session->lns_mode ? "LNS" : "LAC",
->  		   0,
->  		   jiffies_to_msecs(session->reorder_timeout));
-> -	seq_printf(m, "   %hu/%hu %ld/%ld/%ld %ld/%ld/%ld\n",
-> +	seq_printf(m, "   %u/%u %ld/%ld/%ld %ld/%ld/%ld\n",
->  		   session->nr, session->ns,
->  		   atomic_long_read(&session->stats.tx_packets),
->  		   atomic_long_read(&session->stats.tx_bytes),
-> -- 
-> 2.37.0.rc0.161.g10f37bed90-goog
+> Medad Young <medadyoung@gmail.com> 於 2022年7月7日 週四 下午1:31寫道：
+> >
+> > Hello Alexandre,
+> >
+> > Thanks for your comments.
+> > I add Mining Lin <mimi05633@gmail.com> into this mail thread,
+> > and she is going to follow up this RTC driver.
+> > She will be in charge of maintaining this driver.
+> >
+> > Alexandre Belloni <alexandre.belloni@bootlin.com> 於 2022年6月25日 週六 凌晨4:26寫道：
+> > >
+> > > Hello,
+> > >
+> > > Please run ./scripts/checkpatch.pl --strict on your patch, there are a
+> > > bunch of issues.
+> > >
+> [Mia] I will run ./scripts/checkpatch.pl --strict on my patch to fix issues.
+> 
+> > > On 27/05/2022 16:46:47+0800, medadyoung@gmail.com wrote:
+> > > > +static int nct3018y_set_alarm_mode(struct i2c_client *client, bool on)
+> > > > +{
+> > > > +     int err, flags;
+> > > > +
+> > > > +     dev_dbg(&client->dev, "%s:on:%d\n", __func__, on);
+> > > > +
+> > > > +     flags =  i2c_smbus_read_byte_data(client, NCT3018Y_REG_CTRL);
+> > > > +     if (flags < 0) {
+> > > > +             dev_err(&client->dev,
+> > > > +                     "Failed to read NCT3018Y_REG_CTRL\n");
+> > >
+> > > You should cut down on the number of error messages, they are usually
+> > > not useful as the user doesn't have any specific action after getting
+> > > one of them apart from trying the action once again. Also, this will
+> > > make your code shorter. dev_dbg is fine.
+> > >
+> [Mia] I will modify dev_err to dev_dbg if there is an error and nothing to do.
+> 
+> > > > +/*
+> > > > + * In the routines that deal directly with the nct3018y hardware, we use
+> > > > + * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
+> > > > + */
+> > > > +static int nct3018y_rtc_read_time(struct device *dev, struct rtc_time *tm)
+> > > > +{
+> > > > +     struct i2c_client *client = to_i2c_client(dev);
+> > > > +     unsigned char buf[10];
+> > > > +     int err;
+> > > > +
+> > >
+> > > You should still return an error if the time is invalid there but without
+> > > an error message.
+> > >
+> [Mia] I will verify the time by rtc_valid_tm(tm).
 > 
 
+No, I meant checking NCT3018Y_REG_ST as was done in the previous
+revisions of the series
+
+> > > > +static struct clk *nct3018y_clkout_register_clk(struct nct3018y *nct3018y)
+> > > > +{
+> > > > +     struct i2c_client *client = nct3018y->client;
+> > > > +     struct device_node *node = client->dev.of_node;
+> > > > +     struct clk *clk;
+> > > > +     struct clk_init_data init;
+> > > > +     int flags, err;
+> > > > +
+> > > > +     /* disable the clkout output */
+> > > > +     flags = 0;
+> > > > +     err = i2c_smbus_write_byte_data(client, NCT3018Y_REG_CLKO, flags);
+> > >
+> > > BTW, this introduces a glitch in the clock output if the clock is
+> > > actually used. Maybe you could just rely on the CCF core to disable this
+> > > clock when there are no users.
+> > >
+> [Mia] Do you mean there is no need to disable the clock output here?
+> 
+
+The CCF will disable the clock at boot time if there are no users
+
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
