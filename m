@@ -2,53 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB08ECCA480
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:11:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235010AbiGGKLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
+        id S235181AbiGGKLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235192AbiGGKLl (ORCPT
+        with ESMTP id S235246AbiGGKLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Jul 2022 06:11:41 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC2D64F668;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6F0450706;
         Thu,  7 Jul 2022 03:11:39 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o9OTx-0007T4-00; Thu, 07 Jul 2022 12:11:37 +0200
+        id 1o9OTx-0007T4-02; Thu, 07 Jul 2022 12:11:37 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 748C9C02A1; Thu,  7 Jul 2022 11:22:06 +0200 (CEST)
-Date:   Thu, 7 Jul 2022 11:22:06 +0200
+        id 74EE3C02B6; Thu,  7 Jul 2022 12:06:30 +0200 (CEST)
+Date:   Thu, 7 Jul 2022 12:06:30 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Hongchen Zhang <zhanghongchen@loongson.cn>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MIPS: fix pmd_mkinvalid
-Message-ID: <20220707092206.GA9894@alpha.franken.de>
-References: <1657181495-33004-1-git-send-email-zhanghongchen@loongson.cn>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Sander Vanheule <sander@svanheule.net>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        Hauke Mehrtens <hauke@hauke-m.de>, git@birger-koblitz.de,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second
+ VPE
+Message-ID: <20220707100630.GC9894@alpha.franken.de>
+References: <20220702190705.5319-1-olek2@wp.pl>
+ <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
+ <87fsjen2kl.wl-maz@kernel.org>
+ <20220706081901.GA10797@alpha.franken.de>
+ <CAFBinCAsj=RNvitj2tXJU6pTLSbanRXdKM9H4vyF=N9N=PP06g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1657181495-33004-1-git-send-email-zhanghongchen@loongson.cn>
+In-Reply-To: <CAFBinCAsj=RNvitj2tXJU6pTLSbanRXdKM9H4vyF=N9N=PP06g@mail.gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 04:11:35PM +0800, Hongchen Zhang wrote:
-> When a pmd entry is invalidated by pmd_mkinvalid,pmd_present should
-> return true.
-> So introduce a _PMD_PRESENT_INVALID_SHIFT bit to check if a pmd is
-> present but invalidated by pmd_mkinvalid.
+On Wed, Jul 06, 2022 at 11:56:47AM +0200, Martin Blumenstingl wrote:
+> Without this patch all interrupts are fine on VPE 0 and with SMP disabled.
 
-What problem are you trying to fix ? What are the symptoms ?
+I fully understand the problem. But not everybody uses this interrupt
+setup, so changing generic code will have effects there too.
 
-> Reported-by: kernel test robot <lkp@intel.com>
+> - why can MIPS CPU interrupt 6 and 7 be enabled unconditionally while
+> 2-5 cannot be enabled unconditionally?
 
-the test robot showed problems with your last version of the patch,
-which hasn't been integrated into at least the MIPS tree, so no
-need to that.
+7 is timer interrupt and is usually wired for 34K cpus and 6 is
+performance counter hopefully handled as well. And I agree that
+this still isn't the best approach here
+
+> - seeing that there's also a mips_gic_present() check in the opposite
+> case of what Aleksander's patch modifies: does this indicate that
+> unmasking CPU interrupt lines for VPE 1 is not handled by the MIPS CPU
+> interrupt controller driver at all at this point (and if so: do you
+> have any suggestions how to properly fix this)?
+
+I haven't checked how GIC is integrated. Iirc it does something similair
+to Lantiq's irq controller and hides all CPU internal interrupts behind
+it.
+
+So I see two solutions for your problem.
+
+1. Add "mti,cpu-interrupt-controller" to the DT and wire it up
+2. Create your own struct plat_smp_ops using vsmp_smp_ops as
+   a template and overload .boot_secondary
 
 Thomas.
 
