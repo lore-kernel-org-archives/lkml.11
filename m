@@ -2,122 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81951CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FFCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236357AbiGGO6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:58:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
+        id S236386AbiGGO64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236731AbiGGO6P (ORCPT
+        with ESMTP id S236732AbiGGO6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Jul 2022 10:58:15 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2077.outbound.protection.outlook.com [40.107.94.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF4157211;
-        Thu,  7 Jul 2022 07:57:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N2lWLjhETk+s10eIJCEOWBZx0SKZY2YuhMdoUgp1AkG4gi3aWCjpzK2ZvWVtCbEwsUSeVShX6L8cOv5NBYXkkv9onpKsjtFDZtq2IxIKa5VJLtI2yC8u9Ey7poD8btXo6R/OsEwPyn8KE+9wgHJH9ayes302SkSaNBfDokeL2I51u9jF9z0UC2Ir5qHmlzopX24D+1Pc6QZzgVgI26Zx2phZ3bjMtEezROj2Y5ALWM9VZfBujACU042IEKNjG370Q/+L1x5Pyjyo1WB7Wlu8zlexP5Int6Z79g3YJb7ifQJy31mIv/RcqbexeJ14TlxeWSNLWijFvn4XOh+fLOkDcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OkRCCnbBVTcnaaYk2jJpsvVHgcNeoCBmI/bF0X5uH94=;
- b=XYMejtbYCGlMLV7nz5Z9S2CdItfras1kZeau1vJ8O+JWG+WJMmEmG9HDiL9Y3oHZY4sEADRVORGJxERXFUhhqXIasEdeCjiTKNa6xh9SV+A4T32HssnGWS/C4xuNXY+e0wBrhkH6kPvPGi1ZXx780nOL/4mOC7KAn61ULhAsSw14ud9va0+/KW3hMSkN9ogH1V61xAwYel/HFWNOQvgtAg3dgULFG4TNvzjVdTz3FQt9Wbz64nTZ0EAm+zZWK3nC8M+iZPa41UakqRDtDJI40dXN41oLZiaUAv4Jqxyi2zlC4WZb9CoeP8K32RByFIarbQTPPgcv4ELkzVCkd2i/1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OkRCCnbBVTcnaaYk2jJpsvVHgcNeoCBmI/bF0X5uH94=;
- b=OkqjhMEmMOlzoYge2AAycqMhMbhDzNJkoRzzGmOfkbaz4yC+DQ/oXS9ufa1zNwk06H/+99WshZ7McPJFHJJkX+vWs6SnH5oueAS8HTFN+irGsAkqITO68xPiI54kXYdRZCoBPT3XXmaJ3U7Mhmhrzk+vujv+sKDup7szg6TBlSFqz0pcch9UUJ8NeoyD7l05lm/bHcCi8KJeNZwpGhzp6YQed40B/YSM9QCtkQT2u+Ch1IHvlIMlRN3EFTga8L4UMNWJzooh3F5zpJNFM+SGZZMyX1/WxkpQHlODiPr6KmhhB62dEsWAhJKoV/dr89v41iaGxEEbsByv58zRJ+rM7w==
-Received: from DM6PR04CA0010.namprd04.prod.outlook.com (2603:10b6:5:334::15)
- by MWHPR12MB1613.namprd12.prod.outlook.com (2603:10b6:301:11::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.18; Thu, 7 Jul
- 2022 14:57:40 +0000
-Received: from DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:334:cafe::ea) by DM6PR04CA0010.outlook.office365.com
- (2603:10b6:5:334::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14 via Frontend
- Transport; Thu, 7 Jul 2022 14:57:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT067.mail.protection.outlook.com (10.13.172.76) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 14:57:39 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 7 Jul
- 2022 14:57:39 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 7 Jul 2022
- 07:57:38 -0700
-Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 7 Jul 2022 07:57:35 -0700
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <dmaengine@vger.kernel.org>, <jonathanh@nvidia.com>,
-        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        <thierry.reding@gmail.com>, <vkoul@kernel.org>,
-        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-CC:     <akhilrajeev@nvidia.com>
-Subject: [PATCH v2 0/3] Add compatible for Tegra234 GPCDMA
-Date:   Thu, 7 Jul 2022 20:27:26 +0530
-Message-ID: <20220707145729.41876-1-akhilrajeev@nvidia.com>
-X-Mailer: git-send-email 2.17.1
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 3EBAA57272
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:57:43 -0700 (PDT)
+Received: (qmail 427876 invoked by uid 1000); 7 Jul 2022 10:57:42 -0400
+Date:   Thu, 7 Jul 2022 10:57:42 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Maxim Devaev <mdevaev@gmail.com>
+Cc:     linux-usb@vger.kernel.org, balbi@kernel.org,
+        gregkh@linuxfoundation.org, caihuoqing@baidu.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] usb: gadget: f_mass_storage: forced_eject attribute
+Message-ID: <Ysb0ZiEveXvmrC2f@rowland.harvard.edu>
+References: <20220706185936.24692-1-mdevaev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f8c4b805-038a-4a54-9126-08da602909c2
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1613:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zIYZ8jynY/OVjY0Z2l3N2irIRlfwM668yIYqel05CaOV269z30eEU47NwIzy2ye/vp2PRQrJm2IJLZ3sg9D2QJsxxMcmjqzbf8fBtrupgrhxawmrHSTrziz1bw10Ji1IJSWqS1VNmO4zcphrw4ZvcEJ3EFHHUwA8Bg8Ffaivcsih3wVe55jZrsMjVpemO7MTgiYHe+hhbGlrCwB9u+GG2q9eEBKvMCFvU+0wCbtAGQXQSRaOwoDAbfl5E6bHyuIax3k4K/0Q41mF84gj95cl3ehYZq8EKFWv23cf8G6AQ10to1PVqlpuALH5yyk3V6hud8A71uolNE2QOCDF7iAU5NgcqlYQEdWNQJw+VK9aDxPBKeGFtZr4WjdKNQATBrEBBEhs23xQHJ8gU6n8lHKC+LZLc+FgAgImamU/HATo5ZjQZeVFFEGMQhwOZzx4VNQo1N8RyFqWcQ6CeUs7PWtjaIpVdRHcJj7vOuvzVsfAF5M+4kZGd9s/uUgAj7z7w0x05khF85qwsY7dPAjtwUn4CosFkmNOyce48tWXXAodKm+Kp/cn2lM66ePOwzxJXW9MfAR3IjCjQ4rEeDQvo//tcc20CE3gM3JECQUPUDme78zenVuZ8qb70cbtCHwF0Z14XMBtFNz5UHAak9FbPK5Q/KmUkop4LC84dKKtQGcYfvPSD7aaEcVjUX8tqe8YPFlv1svitrKBuMz1p97IHo4t3JAJDGgzx/qQRp5wdxxRlnMs2mUEzFvsc0u82mnRhrPBp47xasqzfXY1KQSZmo9as0A32HhC5L+CORoX0y7Hr4k6S4WGVTDhKR3boKni/FkiYVLE6XOhJ1V0IQOyrSMUe5FQ3067BV5aXahtB2Wony5UIQdXu3lHzu/AAtt+rQj4sXmR2INpumLeHz1BYnD6YqebzSDeaPjMSRGYB/JCDuM=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(136003)(39860400002)(346002)(36840700001)(46966006)(40470700004)(40460700003)(36860700001)(110136005)(4744005)(2616005)(107886003)(1076003)(186003)(6666004)(26005)(478600001)(7696005)(316002)(8676002)(8936002)(356005)(2906002)(36756003)(70206006)(70586007)(82310400005)(4326008)(41300700001)(83380400001)(86362001)(5660300002)(921005)(336012)(47076005)(82740400003)(81166007)(40480700001)(426003)(83996005)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:57:39.8768
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8c4b805-038a-4a54-9126-08da602909c2
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1613
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706185936.24692-1-mdevaev@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tegra234 supports recovery of a channel hung in pause flush mode.
-This could happen when the client bus gets corrupted or if the end
-device ceases to send/receive data.
+On Wed, Jul 06, 2022 at 09:59:37PM +0300, Maxim Devaev wrote:
+> It allows to reset prevent_medium_removal flag and "eject" the image.
+> 
+> The patch is a completely alternative implementation of the previously
+> proposed [1], the idea of which was born after the mentioned discussion.
 
-Add a separate compatible for Tegra234 so that this scenario can be
-handled in the driver.
+Generally quite good, but the documentation needs some improvement.
 
-v1->v2:
-    * split device tree change to a different patch.
-    * Update commit message
+> Signed-off-by: Maxim Devaev <mdevaev@gmail.com>
+> Link: https://lore.kernel.org/lkml/20220406092445.215288-1-mdevaev@gmail.com [1]
+> ---
+>  .../testing/configfs-usb-gadget-mass-storage  |  6 +++++
+>  Documentation/usb/gadget-testing.rst          |  6 +++++
+>  Documentation/usb/mass-storage.rst            |  9 +++++++
+>  drivers/usb/gadget/function/f_mass_storage.c  | 25 +++++++++++++++++++
+>  drivers/usb/gadget/function/storage_common.c  | 11 ++++++++
+>  drivers/usb/gadget/function/storage_common.h  |  2 ++
+>  6 files changed, 59 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+> index c86b63a7bb43..87859ef40579 100644
+> --- a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+> +++ b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+> @@ -32,4 +32,10 @@ Description:
+>  				being a CD-ROM.
+>  		nofua		Flag specifying that FUA flag
+>  				in SCSI WRITE(10,12)
+> +		forced_eject	This write-only flag only makes sence when
 
-Akhil R (3):
-  dt-bindings: dmaengine: Add compatible for Tegra234
-  dmaengine: tegra: Add terminate() for Tegra234
-  arm64: tegra: Update compatible for Tegra234 GPCDMA
+s/flag/file/
 
- .../bindings/dma/nvidia,tegra186-gpc-dma.yaml |  1 +
- arch/arm64/boot/dts/nvidia/tegra234.dtsi      |  5 ++--
- drivers/dma/tegra186-gpc-dma.c                | 26 +++++++++++++++++--
- 3 files changed, 28 insertions(+), 4 deletions(-)
+Instead of "only makes sense" (note the spelling), how about "is useful 
+only" or "operates only"?
 
--- 
-2.17.1
+By the way, what does happen if someone writes to this attribute file 
+before the function is active?  Have you tested this?
 
+> +				the function is active. It causes a forced
+> +				detaching of the backing file from the LUN,
+
+Slightly improved wording: "It causes the backing file to be forcibly 
+detached from the LUN".
+
+> +				regardless of whether the host has allowed it.
+> +				Any non-zero number of bytes written will
+> +				result in ejection.
+
+Doesn't a zero-byte write also work?
+
+The same suggested changes apply to the documentation added below.
+
+>  		===========	==============================================
+> diff --git a/Documentation/usb/gadget-testing.rst b/Documentation/usb/gadget-testing.rst
+> index c18113077889..1481173d8719 100644
+> --- a/Documentation/usb/gadget-testing.rst
+> +++ b/Documentation/usb/gadget-testing.rst
+> @@ -333,6 +333,12 @@ In each lun directory there are the following attribute files:
+>  			being a CD-ROM.
+>  	nofua		Flag specifying that FUA flag
+>  			in SCSI WRITE(10,12)
+> +	forced_eject	This write-only flag only makes sence when
+> +			the function is active. It causes a forced
+> +			detaching of the backing file from the LUN,
+> +			regardless of whether the host has allowed it.
+> +			Any non-zero number of bytes written will
+> +			result in ejection.
+>  	=============== ==============================================
+>  
+>  Testing the MASS STORAGE function
+> diff --git a/Documentation/usb/mass-storage.rst b/Documentation/usb/mass-storage.rst
+> index d181b47c3cb6..f72e59237bce 100644
+> --- a/Documentation/usb/mass-storage.rst
+> +++ b/Documentation/usb/mass-storage.rst
+> @@ -181,6 +181,15 @@ sysfs entries
+>      Reflects the state of nofua flag for given logical unit.  It can
+>      be read and written.
+>  
+> +  - forced_eject
+> +
+> +    When written into, it allows to detach the backing file for given
+
+This should be phrased in the same way as above.  The file doesn't 
+"allow" anything; it _causes_ the backing file to be detached.
+
+> +    logical unit, regardless of whether the host has allowed it.
+
+Same as above, use "LUN" here instead of "logical unit".
+
+Alan Stern
+
+> +    The content doesn't matter, any non-zero number of bytes will
+> +    lead the forced eject.
+> +
+> +    Can not be read.
+> +
+>    Other then those, as usual, the values of module parameters can be
+>    read from /sys/module/g_mass_storage/parameters/* files.
+>  
+> diff --git a/drivers/usb/gadget/function/f_mass_storage.c b/drivers/usb/gadget/function/f_mass_storage.c
+> index 6ad669dde41c..00cac2a38178 100644
+> --- a/drivers/usb/gadget/function/f_mass_storage.c
+> +++ b/drivers/usb/gadget/function/f_mass_storage.c
+> @@ -2520,10 +2520,21 @@ static ssize_t file_store(struct device *dev, struct device_attribute *attr,
+>  	return fsg_store_file(curlun, filesem, buf, count);
+>  }
+>  
+> +static ssize_t forced_eject_store(struct device *dev,
+> +				  struct device_attribute *attr,
+> +				  const char *buf, size_t count)
+> +{
+> +	struct fsg_lun		*curlun = fsg_lun_from_dev(dev);
+> +	struct rw_semaphore	*filesem = dev_get_drvdata(dev);
+> +
+> +	return fsg_store_forced_eject(curlun, filesem, buf, count);
+> +}
+> +
+>  static DEVICE_ATTR_RW(nofua);
+>  /* mode wil be set in fsg_lun_attr_is_visible() */
+>  static DEVICE_ATTR(ro, 0, ro_show, ro_store);
+>  static DEVICE_ATTR(file, 0, file_show, file_store);
+> +static DEVICE_ATTR_WO(forced_eject);
+>  
+>  /****************************** FSG COMMON ******************************/
+>  
+> @@ -2677,6 +2688,7 @@ static struct attribute *fsg_lun_dev_attrs[] = {
+>  	&dev_attr_ro.attr,
+>  	&dev_attr_file.attr,
+>  	&dev_attr_nofua.attr,
+> +	&dev_attr_forced_eject.attr,
+>  	NULL
+>  };
+>  
+> @@ -3090,6 +3102,18 @@ static ssize_t fsg_lun_opts_inquiry_string_store(struct config_item *item,
+>  
+>  CONFIGFS_ATTR(fsg_lun_opts_, inquiry_string);
+>  
+> +static ssize_t fsg_lun_opts_forced_eject_store(struct config_item *item,
+> +					       const char *page, size_t len)
+> +{
+> +	struct fsg_lun_opts *opts = to_fsg_lun_opts(item);
+> +	struct fsg_opts *fsg_opts = to_fsg_opts(opts->group.cg_item.ci_parent);
+> +
+> +	return fsg_store_forced_eject(opts->lun, &fsg_opts->common->filesem,
+> +				      page, len);
+> +}
+> +
+> +CONFIGFS_ATTR_WO(fsg_lun_opts_, forced_eject);
+> +
+>  static struct configfs_attribute *fsg_lun_attrs[] = {
+>  	&fsg_lun_opts_attr_file,
+>  	&fsg_lun_opts_attr_ro,
+> @@ -3097,6 +3121,7 @@ static struct configfs_attribute *fsg_lun_attrs[] = {
+>  	&fsg_lun_opts_attr_cdrom,
+>  	&fsg_lun_opts_attr_nofua,
+>  	&fsg_lun_opts_attr_inquiry_string,
+> +	&fsg_lun_opts_attr_forced_eject,
+>  	NULL,
+>  };
+>  
+> diff --git a/drivers/usb/gadget/function/storage_common.c b/drivers/usb/gadget/function/storage_common.c
+> index b859a158a414..8cd95bf7831f 100644
+> --- a/drivers/usb/gadget/function/storage_common.c
+> +++ b/drivers/usb/gadget/function/storage_common.c
+> @@ -519,4 +519,15 @@ ssize_t fsg_store_inquiry_string(struct fsg_lun *curlun, const char *buf,
+>  }
+>  EXPORT_SYMBOL_GPL(fsg_store_inquiry_string);
+>  
+> +ssize_t fsg_store_forced_eject(struct fsg_lun *curlun, struct rw_semaphore *filesem,
+> +			       const char *buf, size_t count)
+> +{
+> +	int ret;
+> +
+> +	curlun->prevent_medium_removal = 0;
+> +	ret = fsg_store_file(curlun, filesem, "", 0);
+> +	return ret < 0 ? ret : count;
+> +}
+> +EXPORT_SYMBOL_GPL(fsg_store_forced_eject);
+> +
+>  MODULE_LICENSE("GPL");
+> diff --git a/drivers/usb/gadget/function/storage_common.h b/drivers/usb/gadget/function/storage_common.h
+> index bdeb1e233fc9..0a544a82cbf8 100644
+> --- a/drivers/usb/gadget/function/storage_common.h
+> +++ b/drivers/usb/gadget/function/storage_common.h
+> @@ -219,5 +219,7 @@ ssize_t fsg_store_removable(struct fsg_lun *curlun, const char *buf,
+>  			    size_t count);
+>  ssize_t fsg_store_inquiry_string(struct fsg_lun *curlun, const char *buf,
+>  				 size_t count);
+> +ssize_t fsg_store_forced_eject(struct fsg_lun *curlun, struct rw_semaphore *filesem,
+> +			       const char *buf, size_t count);
+>  
+>  #endif /* USB_STORAGE_COMMON_H */
+> -- 
+> 2.37.0
+> 
