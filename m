@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 731E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235422AbiGGLeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42626 "EHLO
+        id S235428AbiGGLeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235301AbiGGLdy (ORCPT
+        with ESMTP id S235385AbiGGLdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Jul 2022 07:33:54 -0400
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53572B186
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 04:33:50 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20220707113348b365bb8b4603bba964
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE54A30564
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 04:33:52 -0700 (PDT)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220707113350cce0cc7fefb8b37d1a
         for <linux-kernel@vger.kernel.org>;
-        Thu, 07 Jul 2022 13:33:48 +0200
+        Thu, 07 Jul 2022 13:33:51 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=W67wyaO2xOIGG6zFJudTz0xEL57vL/G0q650GVjP03A=;
- b=kmKdDPslDJwc7czA7+rVfAQ4TQp7gcPPw6Al9Bxkuqc0SMZPS5Jku/OaSNd/j1xu1iynBK
- 1MDSYH+qTNxqxcLE+FYivPbx4MNXrCdL+gY5zDoaj7mwJdGkfbJ0QHJYNkEP1jkXU8uA7h8e
- uZkNEcCBlX2xcGxnPByns0/Ff6iIA=;
+ bh=dmsPVO/ob5l26R3xUoVk7IKDPFVjQUBwffjZsB2FjME=;
+ b=fuObogHGxaCf7YeIywwKa5Xb2x6mvl0/hoF9lr59apW4GkCU+2bVT63otI8wa2OumikRrI
+ zgNJqEPWYJSghpEz4UjJZ0dY2Y4HEe3XwwQOjDwzUgiAZL66ybOUyuSZguSPwwO0G4AczqyE
+ 7gFuuqdAlJPUCvtv8sOobgf2hYafQ=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 2/4] tty: n_gsm: fix DM command
-Date:   Thu,  7 Jul 2022 13:32:21 +0200
-Message-Id: <20220707113223.3685-2-daniel.starke@siemens.com>
+Subject: [PATCH v2 4/4] tty: n_gsm: fix missing corner cases in gsmld_poll()
+Date:   Thu,  7 Jul 2022 13:32:23 +0200
+Message-Id: <20220707113223.3685-4-daniel.starke@siemens.com>
 In-Reply-To: <20220707113223.3685-1-daniel.starke@siemens.com>
 References: <20220707113223.3685-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -45,35 +45,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.3.3 defines the DM response. There exists
-no DM command. However, the current implementation incorrectly sends DM as
-command in case of unexpected UIH frames in gsm_queue().
-Correct this behavior by always sending DM as response.
+gsmld_poll() currently fails to handle the following corner cases correctly:
+- remote party closed the associated tty
+
+Add the missing checks and map those to EPOLLHUP.
+Reorder the checks to group them by their reaction.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-No changes have been applied compared to v1.
+Check for valid pointer in tty->disc_data has been removed compared to v1.
+
+Link: https://lore.kernel.org/all/17759c4b-5858-12bb-4beb-c4a1d58c89ae@kernel.org/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 1a70e7ae90cc..90060018928f 100644
+index 51447ccccbab..caa5c14ed57f 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2207,7 +2207,7 @@ static void gsm_queue(struct gsm_mux *gsm)
- 	case UIH:
- 	case UIH|PF:
- 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
--			gsm_command(gsm, address, DM|PF);
-+			gsm_response(gsm, address, DM|PF);
- 			return;
- 		}
- 		dlci->data(dlci, gsm->buf, gsm->len);
+@@ -3053,12 +3053,15 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
+ 
+ 	poll_wait(file, &tty->read_wait, wait);
+ 	poll_wait(file, &tty->write_wait, wait);
++
++	if (gsm->dead)
++		mask |= EPOLLHUP;
+ 	if (tty_hung_up_p(file))
+ 		mask |= EPOLLHUP;
++	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
++		mask |= EPOLLHUP;
+ 	if (!tty_is_writelocked(tty) && tty_write_room(tty) > 0)
+ 		mask |= EPOLLOUT | EPOLLWRNORM;
+-	if (gsm->dead)
+-		mask |= EPOLLHUP;
+ 	return mask;
+ }
+ 
 -- 
 2.34.1
 
