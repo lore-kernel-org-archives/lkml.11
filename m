@@ -2,147 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9465AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235227AbiGGKEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
+        id S234508AbiGGKJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232388AbiGGKEd (ORCPT
+        with ESMTP id S231710AbiGGKJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:04:33 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234A74506F;
-        Thu,  7 Jul 2022 03:04:31 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LdsT94X8Gz4xRC;
-        Thu,  7 Jul 2022 20:04:29 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657188269;
-        bh=i2dbOs/VUUaAO1Ljbk+HDAfdNK0zAjx0vQPqkcIQrxk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ar6bBk0KHYvZQmWIpTGFDS0n/4a9ezDkUaZiDHD+oWpeYqso2NT9xolx/9pVErXsP
-         omsZzMRqJRoDfiIsEIwM7n16eFHQdU4D0mZzU2MFDi+VYCWQviVBaJvo05m0Y6ey+o
-         iqe6v5T3y+mKJlOjZUcIUEfNBIGq/p4yMxQksWqYopc97g/q949xOXP7kcdNh3AvcE
-         K6HVdVYX8OxZCZcoGwCHr13YQr5b2So1kCKDcjBe1HbXma6iJP8WT+55SiOBq5vpyU
-         de/6uP8Xl5f45VGbghdpejqbudPcNv3j/gvLXiXzQWdhuGIsdBas6bAUSkPBslBU0z
-         s/PVm669L09UQ==
-Date:   Thu, 7 Jul 2022 20:04:28 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Cc:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the sound-asoc tree
-Message-ID: <20220707200428.3eb1a20e@canb.auug.org.au>
+        Thu, 7 Jul 2022 06:09:04 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5AF4F1B3;
+        Thu,  7 Jul 2022 03:09:00 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id l42so638035wms.5;
+        Thu, 07 Jul 2022 03:09:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=U5N9NRe+aarCaMPvgWomO4spTpGm8g7FmpQ6Wwxj0Ec=;
+        b=A4uxkAtMfuXZg8gnB/LkNTJPBjzYjXrBAu1Q9OmTfLske6rnBlRW99zlg+T3wf9Njb
+         wmyupiAck9Arjv7wjo08zJIwD28JQ1A1zJKEZqDG032fPLLAYwOWHcSlkMz62KOt5zyB
+         aklySu8q9v4uYNLygt0tZq2fUd9kC7nR3NRpzdwsgoEBcMcey1Jm7HnTt/jZRvUJGU4g
+         crxxxa5/BfuIBuEuhuZat1pQEV7yml4TiLL0Pwuf8eL3Cga/Q516cFt3vZRtlPn4uxgL
+         RYbA307x6uxTbMDXR7lXrAUWZNqf13aY8T6izpLPoETZ8qiwasptSIc8J5cdnXbAZQy9
+         EEMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=U5N9NRe+aarCaMPvgWomO4spTpGm8g7FmpQ6Wwxj0Ec=;
+        b=oRuq1gd7nDoXGN7wq/gbvkoS/98CqQVddDY/8qJ30TpT2VLjiAoniw2YBKhcu++vQn
+         as8GLyspbUVmClj73buk7c3gI4I86DY0+1j1HzDEZAn0Bsx4fvDKMF21p1rblGTtL5cy
+         fU7NiUefg7t8sSjuTk5Xf5tcLD0ZWIWCAqHmmLkZ/7Vc8dTdH5vzHgNDD5aeiLG7Qlej
+         kIwbjRir0LNa6Rq28rMzGiIVRwXvhzL4L7s4lUNruFqsO0bMvWFTPV9EJuV74PyWc4YJ
+         Iu29wdzBog1MPlqN5dJu8SDaskY+5psWP30GCc85WimzQ8ES0Z76yRBkMivNbfH36TST
+         Bt0w==
+X-Gm-Message-State: AJIora/oM+Ai/P4ztnb5DA3+pnZgFpUKbaBJVK0vnmr0bEhhEYFADMgN
+        ZxC1E8/pO/jsGV2O3/gjdPw=
+X-Google-Smtp-Source: AGRyM1uOUlKx7fBRdBFHJa8xYeDNvkh9UirCJO4JvVwjt0+70qyCMuYlvn/y0H472lwD8+AcArb4Ug==
+X-Received: by 2002:a05:600c:2049:b0:3a0:536b:c01b with SMTP id p9-20020a05600c204900b003a0536bc01bmr3589496wmg.151.1657188539215;
+        Thu, 07 Jul 2022 03:08:59 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id v7-20020adfa1c7000000b0021d6924b777sm11754085wrv.115.2022.07.07.03.08.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 03:08:58 -0700 (PDT)
+Message-ID: <a0b81490-619b-6e80-472d-8e83ee4a1b86@gmail.com>
+Date:   Thu, 7 Jul 2022 12:08:57 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/j3ysHYpGTAI_Szgav8uDv3+";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/2] Add mt8186 mutex support for mdp3
+Content-Language: en-US
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+References: <20220705122627.2273-1-allen-kh.cheng@mediatek.com>
+ <8b70f376-5f83-a713-c5de-ed5bba68c937@gmail.com>
+In-Reply-To: <8b70f376-5f83-a713-c5de-ed5bba68c937@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/j3ysHYpGTAI_Szgav8uDv3+
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-After merging the sound-asoc tree, today's linux-next build (powerpc
-allyesconfig) failed like this:
+On 06/07/2022 16:17, Matthias Brugger wrote:
+> 
+> 
+> On 05/07/2022 14:26, Allen-KH Cheng wrote:
+>> This series are based on matthias.bgg/linux.git, for-next and provide
+>> mt8186 mutex support for Media Data Path 3 (MDP3).
+>>
+>> Allen-KH Cheng (2):
+>>    dt-bindings: soc: mediatek: add mdp3 mutex support for mt8186
+>>    soc: mediatek: mutex: add mt8186 mutex mod settings for mdp3
+> 
+> Whole series applied to v5.19-next/soc
+> 
 
-sound/soc/amd/acp-es8336.c: In function 'st_es8336_late_probe':
-sound/soc/amd/acp-es8336.c:204:33: error: invalid use of undefined type 'st=
-ruct acpi_device'
-  204 |                 put_device(&adev->dev);
-      |                                 ^~
-sound/soc/soc-acpi.c:34:1: error: redefinition of 'snd_soc_acpi_find_machin=
-e'
-   34 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from sound/soc/soc-acpi.c:9:
-include/sound/soc-acpi.h:38:1: note: previous definition of 'snd_soc_acpi_f=
-ind_machine' with type 'struct snd_soc_acpi_mach *(struct snd_soc_acpi_mach=
- *)'
-   38 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~
-sound/soc/soc-acpi.c: In function 'snd_soc_acpi_find_package':
-sound/soc/soc-acpi.c:58:36: error: implicit declaration of function 'acpi_f=
-etch_acpi_dev'; did you mean 'device_match_acpi_dev'? [-Werror=3Dimplicit-f=
-unction-declaration]
-   58 |         struct acpi_device *adev =3D acpi_fetch_acpi_dev(handle);
-      |                                    ^~~~~~~~~~~~~~~~~~~
-      |                                    device_match_acpi_dev
-sound/soc/soc-acpi.c:58:36: error: initialization of 'struct acpi_device *'=
- from 'int' makes pointer from integer without a cast [-Werror=3Dint-conver=
-sion]
-sound/soc/soc-acpi.c:64:25: error: invalid use of undefined type 'struct ac=
-pi_device'
-   64 |         if (adev && adev->status.present && adev->status.functional=
-) {
-      |                         ^~
-sound/soc/soc-acpi.c:64:49: error: invalid use of undefined type 'struct ac=
-pi_device'
-   64 |         if (adev && adev->status.present && adev->status.functional=
-) {
-      |                                                 ^~
-sound/soc/soc-acpi.c:80:26: error: implicit declaration of function 'acpi_e=
-xtract_package' [-Werror=3Dimplicit-function-declaration]
-   80 |                 status =3D acpi_extract_package(myobj,
-      |                          ^~~~~~~~~~~~~~~~~~~~
-sound/soc/soc-acpi.c: At top level:
-sound/soc/soc-acpi.c:95:6: error: redefinition of 'snd_soc_acpi_find_packag=
-e_from_hid'
-   95 | bool snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from sound/soc/soc-acpi.c:9:
-include/sound/soc-acpi.h:44:1: note: previous definition of 'snd_soc_acpi_f=
-ind_package_from_hid' with type 'bool(const u8 *, struct snd_soc_acpi_packa=
-ge_context *)' {aka '_Bool(const unsigned char *, struct snd_soc_acpi_packa=
-ge_context *)'}
-   44 | snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sound/soc/soc-acpi.c:109:27: error: redefinition of 'snd_soc_acpi_codec_lis=
-t'
-  109 | struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
-      |                           ^~~~~~~~~~~~~~~~~~~~~~~
-In file included from sound/soc/soc-acpi.c:9:
-include/sound/soc-acpi.h:51:41: note: previous definition of 'snd_soc_acpi_=
-codec_list' with type 'struct snd_soc_acpi_mach *(void *)'
-   51 | static inline struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(voi=
-d *arg)
-      |                                         ^~~~~~~~~~~~~~~~~~~~~~~
+We would need clarification if the HW block for MDP3 mutex is different from the 
+one used for the disp mutex. It does not seem so. In this case we can just add a 
+node on the corresponding address in the DTS.
 
-Caused by commit
+Regards,
+Matthias
 
-  f94fa8405801 ("ASoC: amd: enable machine driver build for Jadeite platfor=
-m")
-
-I have reverted that commit for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/j3ysHYpGTAI_Szgav8uDv3+
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGr6wACgkQAVBC80lX
-0GzyRwf/e3jCKJhGWJjtf3gEUDsnMAAgkYg8UGWHhi4z2wi7eQujHgCgnEOxypti
-ZPL3omrSzMd66G7SOyTzgtlds5m/JIT1CRwwp0wjQ8Mq55szZqHb6YmFKGnOIefL
-aybl+0Wd4Unvg4S8+TvgsDdrwE2me6OtGDCUYilKtrsnfB+onYibn0hK91oC2kOl
-1+jKCU0DV1y6wHDjDohATt/tczfub+t7r0KB2os1OVM6NCNhLVpYjKlGGeL7XQGI
-P8FVdGNF48QGtbc03L+W7culE9hCR2HIS4/x2jQrfppPiDRHY35YGn81YEZMbIoE
-iVqFq5p3rIheEJXf1L91QzKmaNcYhQ==
-=fDIi
------END PGP SIGNATURE-----
-
---Sig_/j3ysHYpGTAI_Szgav8uDv3+--
+> Thanks
+> 
+>>
+>>   .../bindings/soc/mediatek/mediatek,mutex.yaml |  1 +
+>>   drivers/soc/mediatek/mtk-mutex.c              | 23 +++++++++++++++++++
+>>   include/linux/soc/mediatek/mtk-mutex.h        |  2 ++
+>>   3 files changed, 26 insertions(+)
+>>
