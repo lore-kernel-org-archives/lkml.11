@@ -2,186 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5395ECCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 739C9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236180AbiGGQgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
+        id S236216AbiGGQgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235405AbiGGQgj (ORCPT
+        with ESMTP id S235405AbiGGQgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:36:39 -0400
-Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F98345054;
-        Thu,  7 Jul 2022 09:36:38 -0700 (PDT)
-Received: from relayfre-01.paragon-software.com (unknown [172.30.72.12])
-        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 784E61D5D;
-        Thu,  7 Jul 2022 16:35:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1657211733;
-        bh=u1JrIeuaLqGDHjQvEYZJzgoBWDe5t+TsYMJ94XUgDBg=;
-        h=Date:To:CC:From:Subject;
-        b=W+iNGlFbw4MDmBwPubUZCsxpWZ+fz/CX4rpS+TTtMLNiESJIk9TygE/X0btO+npaM
-         Ss3EjNCDGbjNNWFzx3m/5icfPJ1DBoE95G6jizg5yZz7jlsx9otB6rrzq2vJFTWLEa
-         t9tdbun8vPeOpTSc2zfK4LLbZtU4J6lddI77vcjM=
-Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
-        by relayfre-01.paragon-software.com (Postfix) with ESMTPS id 0BA4820F5;
-        Thu,  7 Jul 2022 16:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1657211796;
-        bh=u1JrIeuaLqGDHjQvEYZJzgoBWDe5t+TsYMJ94XUgDBg=;
-        h=Date:To:CC:From:Subject;
-        b=owc2eDIrKMMVinRIr3kOMRsMcHDcUeze6pEoD47ZnesYUKUsOpSo8lxdyaYk8iH0J
-         t32gXu2IpRibhzDCiwDOZ+tvElEXIo3M8Tzlrs3PcvG4CIq3mgLEJXlYtQpcpTe2H+
-         F9W08ArWyQ1cwsEg/ssQ/XWxqJMI3KHUP/ZFWt/0=
-Received: from [172.30.8.65] (172.30.8.65) by
- vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 7 Jul 2022 19:36:35 +0300
-Message-ID: <24343399-2866-2a52-ef86-3b1722fc04cd@paragon-software.com>
-Date:   Thu, 7 Jul 2022 19:36:35 +0300
+        Thu, 7 Jul 2022 12:36:46 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6741E45054
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:36:45 -0700 (PDT)
+Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: bbeckett)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 290C766019BA;
+        Thu,  7 Jul 2022 17:36:43 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657211803;
+        bh=2wQM6XEEejfV8LYpxGFHtQpBTSKwot13+IyHpuiYCD4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ve17BHAf5KRJstJ1jlE211WFFbp+2rBtP2t/SZIJX2VbFiL232u9jHaou5SCTdovK
+         ddD8gtqXsek/EsVOmIugvVEw0cDSqiJdDa2/ctuS9mCCDIAHq128sYOXKYCZzeEIfs
+         8r/ZYIUDk1xhWgHnQARgbFKne+5PTc8X3q69NHaI3V2/+hdZSVYN031l4ww177Qdt3
+         cuQgG8WXhuIkSYTSjyBC2EGHpE47NM2zic87htOpOlkhEVgBwhwLYPCWnbbawg+tya
+         8ju4HPKBe9fWSR4nE0q+UJn78mvvHxhlipS/TwLjho7RUdApT0qGqzlFJfYb0+eP5B
+         6aRgi//Ne8ghA==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v9 01/11] drm/i915/ttm: dont trample cache_level overrides during ttm move
+Date:   Thu,  7 Jul 2022 16:35:56 +0000
+Message-Id: <20220707163606.1474111-2-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220707163606.1474111-1-bob.beckett@collabora.com>
+References: <20220707163606.1474111-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     <ntfs3@lists.linux.dev>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH] fs/ntfs3: Make MFT zone less fragmented
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.30.8.65]
-X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
- vdlg-exch-02.paragon-software.com (172.30.1.105)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now we take free space after the MFT zone if the MFT zone shrinks.
+Various places within the driver override the default chosen cache_level.
+Before ttm, these overrides were permanent until explicitly changed again
+or for the lifetime of the buffer.
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+TTM movement code came along and decided that it could make that
+decision at that time, which is usually well after object creation, so
+overrode the cache_level decision and reverted it back to its default
+decision.
+
+Add logic to indicate whether the caching mode has been set by anything
+other than the move logic. If so, assume that the code that overrode the
+defaults knows best and keep it.
+
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
-  fs/ntfs3/fsntfs.c  | 39 +++++++++++++++++++++++++--------------
-  fs/ntfs3/ntfs_fs.h |  1 +
-  fs/ntfs3/super.c   |  7 +++++++
-  3 files changed, 33 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
+ 4 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/fs/ntfs3/fsntfs.c b/fs/ntfs3/fsntfs.c
-index c53dd4c9e47b..ed9a1b851ce9 100644
---- a/fs/ntfs3/fsntfs.c
-+++ b/fs/ntfs3/fsntfs.c
-@@ -783,7 +783,7 @@ int ntfs_clear_mft_tail(struct ntfs_sb_info *sbi, size_t from, size_t to)
-   */
-  int ntfs_refresh_zone(struct ntfs_sb_info *sbi)
-  {
--	CLST zone_limit, zone_max, lcn, vcn, len;
-+	CLST lcn, vcn, len;
-  	size_t lcn_s, zlen;
-  	struct wnd_bitmap *wnd = &sbi->used.bitmap;
-  	struct ntfs_inode *ni = sbi->mft.ni;
-@@ -792,16 +792,6 @@ int ntfs_refresh_zone(struct ntfs_sb_info *sbi)
-  	if (wnd_zone_len(wnd))
-  		return 0;
-  
--	/*
--	 * Compute the MFT zone at two steps.
--	 * It would be nice if we are able to allocate 1/8 of
--	 * total clusters for MFT but not more then 512 MB.
--	 */
--	zone_limit = (512 * 1024 * 1024) >> sbi->cluster_bits;
--	zone_max = wnd->nbits >> 3;
--	if (zone_max > zone_limit)
--		zone_max = zone_limit;
--
-  	vcn = bytes_to_cluster(sbi,
-  			       (u64)sbi->mft.bitmap.nbits << sbi->record_bits);
-  
-@@ -815,7 +805,7 @@ int ntfs_refresh_zone(struct ntfs_sb_info *sbi)
-  	lcn_s = lcn + 1;
-  
-  	/* Try to allocate clusters after last MFT run. */
--	zlen = wnd_find(wnd, zone_max, lcn_s, 0, &lcn_s);
-+	zlen = wnd_find(wnd, sbi->zone_max, lcn_s, 0, &lcn_s);
-  	if (!zlen) {
-  		ntfs_notice(sbi->sb, "MftZone: unavailable");
-  		return 0;
-@@ -1398,7 +1388,7 @@ int ntfs_write_bh(struct ntfs_sb_info *sbi, struct NTFS_RECORD_HEADER *rhdr,
-  		if (buffer_locked(bh))
-  			__wait_on_buffer(bh);
-  
--		lock_buffer(nb->bh[idx]);
-+		lock_buffer(bh);
-  
-  		bh_data = bh->b_data + off;
-  		end_data = Add2Ptr(bh_data, op);
-@@ -2427,7 +2417,7 @@ static inline void ntfs_unmap_and_discard(struct ntfs_sb_info *sbi, CLST lcn,
-  
-  void mark_as_free_ex(struct ntfs_sb_info *sbi, CLST lcn, CLST len, bool trim)
-  {
--	CLST end, i;
-+	CLST end, i, zone_len, zlen;
-  	struct wnd_bitmap *wnd = &sbi->used.bitmap;
-  
-  	down_write_nested(&wnd->rw_lock, BITMAP_MUTEX_CLUSTERS);
-@@ -2462,6 +2452,27 @@ void mark_as_free_ex(struct ntfs_sb_info *sbi, CLST lcn, CLST len, bool trim)
-  		ntfs_unmap_and_discard(sbi, lcn, len);
-  	wnd_set_free(wnd, lcn, len);
-  
-+	/* append to MFT zone, if possible. */
-+	zone_len = wnd_zone_len(wnd);
-+	zlen = min(zone_len + len, sbi->zone_max);
-+
-+	if (zlen == zone_len) {
-+		/* MFT zone already has maximum size. */
-+	} else if (!zone_len) {
-+		/* Create MFT zone. */
-+		wnd_zone_set(wnd, lcn, zlen);
-+	} else {
-+		CLST zone_lcn = wnd_zone_bit(wnd);
-+
-+		if (lcn + len == zone_lcn) {
-+			/* Append into head MFT zone. */
-+			wnd_zone_set(wnd, lcn, zlen);
-+		} else if (zone_lcn + zone_len == lcn) {
-+			/* Append into tail MFT zone. */
-+			wnd_zone_set(wnd, zone_lcn, zlen);
-+		}
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+index 06b1b188ce5a..519887769c08 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+ 
+ 	obj->cache_level = cache_level;
++	obj->ttm.cache_level_override = true;
+ 
+ 	if (cache_level != I915_CACHE_NONE)
+ 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+index 2c88bdb8ff7c..6632ed52e919 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+@@ -605,6 +605,7 @@ struct drm_i915_gem_object {
+ 		struct i915_gem_object_page_iter get_io_page;
+ 		struct drm_i915_gem_object *backup;
+ 		bool created:1;
++		bool cache_level_override:1;
+ 	} ttm;
+ 
+ 	/*
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 4c25d9b2f138..27d59639177f 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -1241,6 +1241,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
+ 	i915_gem_object_init_memory_region(obj, mem);
+ 	i915_ttm_adjust_domains_after_move(obj);
+ 	i915_ttm_adjust_gem_after_move(obj);
++	obj->ttm.cache_level_override = false;
+ 	i915_gem_object_unlock(obj);
+ 
+ 	return 0;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index a10716f4e717..4c1de0b4a10f 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -123,9 +123,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
+ 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
+ 		I915_BO_FLAG_STRUCT_PAGE;
+ 
+-	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
+-					   bo->ttm);
+-	i915_gem_object_set_cache_coherency(obj, cache_level);
++	if (!obj->ttm.cache_level_override) {
++		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
++						   bo->resource, bo->ttm);
++		i915_gem_object_set_cache_coherency(obj, cache_level);
++		obj->ttm.cache_level_override = false;
 +	}
-+
-  out:
-  	up_write(&wnd->rw_lock);
-  }
-diff --git a/fs/ntfs3/ntfs_fs.h b/fs/ntfs3/ntfs_fs.h
-index cf1fa69a0eb8..54c20700afd3 100644
---- a/fs/ntfs3/ntfs_fs.h
-+++ b/fs/ntfs3/ntfs_fs.h
-@@ -220,6 +220,7 @@ struct ntfs_sb_info {
-  
-  	u32 flags; // See NTFS_FLAGS_XXX.
-  
-+	CLST zone_max; // Maximum MFT zone length in clusters
-  	CLST bad_clusters; // The count of marked bad clusters.
-  
-  	u16 max_bytes_per_attr; // Maximum attribute size in record.
-diff --git a/fs/ntfs3/super.c b/fs/ntfs3/super.c
-index eacea72ff92f..6fad173a8b8f 100644
---- a/fs/ntfs3/super.c
-+++ b/fs/ntfs3/super.c
-@@ -867,6 +867,13 @@ static int ntfs_init_from_boot(struct super_block *sb, u32 sector_size,
-  	sb->s_maxbytes = 0xFFFFFFFFull << sbi->cluster_bits;
-  #endif
-  
-+	/*
-+	 * Compute the MFT zone at two steps.
-+	 * It would be nice if we are able to allocate 1/8 of
-+	 * total clusters for MFT but not more then 512 MB.
-+	 */
-+	sbi->zone_max = min_t(CLST, 0x20000000 >> sbi->cluster_bits, clusters >> 3);
-+
-  	err = 0;
-  
-  out:
+ }
+ 
+ /**
 -- 
-2.37.0
+2.25.1
 
