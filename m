@@ -2,142 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFC0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF79CCA481
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236055AbiGGRKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 13:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        id S236529AbiGGRM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 13:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbiGGRKQ (ORCPT
+        with ESMTP id S232016AbiGGRMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 13:10:16 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242B82C65E;
-        Thu,  7 Jul 2022 10:10:15 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id p4so1740327wms.0;
-        Thu, 07 Jul 2022 10:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VA3SbJt6EBSMC9jnydWIaREGnbjiJhUGWyogd1VBc60=;
-        b=bFUBCIKLe6IQ6qKpFInDA68vnotWBxMQeNgiY+32c5hZkyDPLBon+btxmBjOaT4Y00
-         JEGKosj0QpNEYt24iNH0xhzZFolz6hudOUcUNksNXyUHGLj0VzjJJrQdoICPPCeQAoH0
-         DNvlgcB66YwPwmwNcbRIrvhSVV1O2QMWt3cEd+xRKme9rXjw1u541IIxhfiBT+M0zYzF
-         Mqaras7dlF18CgSZuMfGSCvJ5Z8yuTSqJm/NBEIIdZ0jcHSzXf7rD1600FpqAYDYVz37
-         VcIBDJZVjXEDiihGtQUD991TWP3ma0P3tfhIYqHjumqI0h3Y8MFStDNct6Mqh9AEK/bq
-         I9Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VA3SbJt6EBSMC9jnydWIaREGnbjiJhUGWyogd1VBc60=;
-        b=yotboA+zNabKqkvIrAcpVN69GKoODNhAjSN7Mj8t5se0Z1kTk+6G/FRVSFWEUP0Lho
-         DOxVyty0/cFdjBi9H7lZRUFpSF3JYbFJuUVDcrurMJrPKz4+eAjmDprgYt+PNjTmke85
-         6+Jy3UBlnPbf1ll9qtzU3Ox76QD3r5ic/FvYf0avbt5Min6gWIYGFzh9597FRS625KDV
-         FPQe/YgyQXzb9xW/fWpEi7JbuG4p0FLJ5N3AlC03CuhbqS1sJ2BBcqPFsqsdfhkkLZbZ
-         lIB4W6iA8xIwLf1NeMxIVP1yfH+XcP+5ze4w086BsTd9GBUK2O2XxKJOf1XW5Vw8VEZC
-         KIIg==
-X-Gm-Message-State: AJIora+LMSy0jXCNjT8XayIGcz3UKnZX7xWwRy8/ox7Ta+/NaKQzl0bY
-        K6exh4oncB7mZHX7cvegqm7JISPiB2O4w2+KBV9RIp1LjoQ=
-X-Google-Smtp-Source: AGRyM1uKOuyzI23A8kLJo8W49G7VbTQ+827LPYXQYYmMTeuOaUGs/FqsFT/Z7LFMdUkclpe5ALdeM3qoqjfBfNwZMXk=
-X-Received: by 2002:a05:600c:3593:b0:3a1:8909:b5b2 with SMTP id
- p19-20020a05600c359300b003a18909b5b2mr5728498wmq.77.1657213813592; Thu, 07
- Jul 2022 10:10:13 -0700 (PDT)
+        Thu, 7 Jul 2022 13:12:54 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590955A2F7;
+        Thu,  7 Jul 2022 10:12:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eOA2TMoJwhQqk7dk2MaH7pX7OpMCkb983yqolPrTtCBK5Q3QkA5zInsXUWEyLeAJ3Ei22GuC8cbDnq3zIyrl3OC5QIlaqRTMrSjr63/YotUbHS6nsXCgmmtU/xuSeq9boDDvBdYHWuU6IeSCADdYjqA6OtJY4k7h6PjuuctFbLRYigQu5SFV7owqh8jyZb8wzk0bIOidvpiLaJWfyE3rerWAIVE2FRJcWUwYD39nFuml2EgR/WUscClfyRRFRGwPpjyyD2cIJyk2oQdLSd6+cJA5P8PR1FfOi8bKfSx+CJ5WYaYJuZcZw1x/xF0RNX4SKj/8zoqeI4KTHJMEJXXIRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zCm6O0YicY8j1qKhujU6AubwGfSH1urWRCyC+VTLzdw=;
+ b=lNd6KWSv5ijBFZY7bNvNbgdS5dP47bSUr7Bf2SuEHgseKI76uJe8+TSKVgwlY81qw9zE6f4IQ2DpRPelwDUjRTRjdgGfueeU9JMZPnkhugN+1/TUyM4WBNtHQpXV0wsIwvssXFJ/xvNU6whUAv+zKzzpqi8zzCCBNzOJMG/RCuZVBD2SeyZzYSGSz1M1xDSfwJBMN2OYI/Netor+/tjFE5IisnVoOM3WkFbei0ip6jKAdaNyEUurr8NGueWDetMEeNXIMRYuj0/TLzsFqv+637GxZ8E2J98gEg+2UyE/F9H4cZIGtW/t8cvGA1g07ULDR7qAmBa0h+QA7AL0arGxvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=linux.ibm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zCm6O0YicY8j1qKhujU6AubwGfSH1urWRCyC+VTLzdw=;
+ b=B2uak7AWNTdkMEDQeGcqYaPIo2P6AcYAP7pRU3aE7f6Y8RELGR3YDQIa2fD1glwDNVg5tRtmr6E5DmCOoGcxDppWKNnhyQ1i2lDPv+mLg4UTqFvqjv+KdeGU71mFCRwx5fxkjlOplV6mYVC+/DI/QGXivtWqQYDrAdm0DP3XqcpckL1pjWl3uNCKy4fSyUpcJC2hdGldu74UIrHTGoDE+Nn6RYXWQ17ZRzSlPs8zgvQNmNsqrneYe+h3T3qnnbTCKqWcb1O7kCQwnq7fTvYXqnQwOV5Xj9QpyV6l3NJ/OdjkxUAwrZJ2n5GB8DQPMLH3ULTpVMSSrIgRAvxPTTeO4A==
+Received: from BN9PR03CA0550.namprd03.prod.outlook.com (2603:10b6:408:138::15)
+ by BL0PR12MB5537.namprd12.prod.outlook.com (2603:10b6:208:1cc::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Thu, 7 Jul
+ 2022 17:12:51 +0000
+Received: from BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:138:cafe::dd) by BN9PR03CA0550.outlook.office365.com
+ (2603:10b6:408:138::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15 via Frontend
+ Transport; Thu, 7 Jul 2022 17:12:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT068.mail.protection.outlook.com (10.13.177.69) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 17:12:51 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 7 Jul 2022 17:12:44 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Thu, 7 Jul 2022 10:12:43 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
+ Transport; Thu, 7 Jul 2022 10:12:42 -0700
+Date:   Thu, 7 Jul 2022 10:12:41 -0700
+From:   Nicolin Chen <nicolinc@nvidia.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+CC:     "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "hca@linux.ibm.com" <hca@linux.ibm.com>,
+        "gor@linux.ibm.com" <gor@linux.ibm.com>,
+        "agordeev@linux.ibm.com" <agordeev@linux.ibm.com>,
+        "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>,
+        "svens@linux.ibm.com" <svens@linux.ibm.com>,
+        "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>,
+        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
+        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        "tvrtko.ursulin@linux.intel.com" <tvrtko.ursulin@linux.intel.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "farman@linux.ibm.com" <farman@linux.ibm.com>,
+        "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+        "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+        "vneethv@linux.ibm.com" <vneethv@linux.ibm.com>,
+        "oberpar@linux.ibm.com" <oberpar@linux.ibm.com>,
+        "freude@linux.ibm.com" <freude@linux.ibm.com>,
+        "akrowiak@linux.ibm.com" <akrowiak@linux.ibm.com>,
+        "jjherne@linux.ibm.com" <jjherne@linux.ibm.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "jchrist@linux.ibm.com" <jchrist@linux.ibm.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
+Subject: Re: [RFT][PATCH v2 1/9] vfio: Make vfio_unpin_pages() return void
+Message-ID: <YscUCe+2sXdDiQWq@Asurada-Nvidia>
+References: <20220706062759.24946-1-nicolinc@nvidia.com>
+ <20220706062759.24946-2-nicolinc@nvidia.com>
+ <BN9PR11MB527643D01DFF0AFCED1614488C839@BN9PR11MB5276.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <1657210262-17166-1-git-send-email-quic_akhilpo@quicinc.com> <20220707213950.3.I4ac27a0b34ea796ce0f938bb509e257516bc6f57@changeid>
-In-Reply-To: <20220707213950.3.I4ac27a0b34ea796ce0f938bb509e257516bc6f57@changeid>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Thu, 7 Jul 2022 10:10:01 -0700
-Message-ID: <CAF6AEGudkkUvYjy_7engFGrQy2scdskmc1SRpKN3x0MOxOr1ug@mail.gmail.com>
-Subject: Re: [PATCH 3/7] drm/msm: Fix cx collapse issue during recovery
-To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
-Cc:     freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Douglas Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB527643D01DFF0AFCED1614488C839@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5e1701f9-9a97-420b-a2bb-08da603becb1
+X-MS-TrafficTypeDiagnostic: BL0PR12MB5537:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: E3EtjXtySVw3iVeC8HyiwgH+GKSQdY2D8G1Z1uIA8rJprqRgHtvkPdg8LmBSW2yRshP+LUXWq5YXekymlB3Uqe1+9j2GeBElOFeUYinAQ4/TuWZ+GUNCOqONr1L28g99oVfEkI0Gifj/9OX+D1/OlF4VP107R7SrMXGKKPD1z24FUzKSl8e4oZ6jndIoXqiSxUt4WuEjSpefcX8l14r6Z275lq786cPLUQEikndm2aZEX8+ptJ0zLB0d+jwplY0XRhmU+mQSrfG9GoDQf+3nu6aI3LbEm4gB/5GuiC1XGqAqtRkMdVVHLVSHyuWK3frp6ZcDaHPS3LI+2sM+WhN1iRmBtk6wzsBAMMnZWZZ107OwAgwL2BSgwS/csuPzgUQ47qIaJaMEEjE8n4YsKwAtxj/1xeEmzc9mSfJ3heI0iKr1MTlDArrbRw3c711feX37ZgjXUoF0baafOCQrzUL1mS9QqwpJBpY7R+T3ybsHEUxDkaHB+NhFN9R5bReezutEusQ8PvIuVN7IKX98Q0KISATmPHjz3Zi9E27ruwB3CeB49DydcDlqfhhHf5QH1i6AyED/z0ZCmmf607ZXDyOba9g58NUBjnAKQ/hNOmOe99H6XheYesk0zlJD/c7iz3L2ANhvO7Wu8Zn+BAIu3Po9sGRTr4/2Xn7z7YEJoR4JurhLI7QiCWftlcs5aG5H+M8dV21VtPSvduw2zCXifdIY6R/bW1QdFihXv/+DLboNHCPeuQbkmj6WxH/PYXU+z4W0xV9/myO7PAMoxqPRKo+BoFdioo9y2DssvlEIIrqGANedBRZoy7/h7MOCQKqRmJHnFrf9cxyu4Rjae4hYopuHxZ3IxzbUeJ4ZXWCFN3eVyItaamohRaNuR2UPOIF/OH6O
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(136003)(346002)(376002)(36840700001)(40470700004)(46966006)(7416002)(7406005)(8936002)(82740400003)(186003)(70206006)(70586007)(5660300002)(47076005)(6862004)(2906002)(426003)(336012)(33716001)(8676002)(356005)(4326008)(36860700001)(26005)(55016003)(9686003)(82310400005)(478600001)(41300700001)(81166007)(86362001)(54906003)(40480700001)(316002)(40460700003)(36900700001)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 17:12:51.5029
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e1701f9-9a97-420b-a2bb-08da603becb1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5537
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 9:11 AM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
->
-> There are some hardware logic under CX domain. For a successful
-> recovery, we should ensure cx headswitch collapses to ensure all the
-> stale states are cleard out. This is especially true to for a6xx family
-> where we can GMU co-processor.
->
-> Currently, cx doesn't collapse due to a devlink between gpu and its
-> smmu. So the *struct gpu device* needs to be runtime suspended to ensure
-> that the iommu driver removes its vote on cx gdsc.
->
-> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
-> ---
->
->  drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 16 ++++++++++++++--
->  drivers/gpu/drm/msm/msm_gpu.c         |  2 --
->  2 files changed, 14 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> index 42ed9a3..57a7ad5 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -1210,8 +1210,20 @@ static void a6xx_recover(struct msm_gpu *gpu)
->          */
->         gmu_write(&a6xx_gpu->gmu, REG_A6XX_GMU_GMU_PWR_COL_KEEPALIVE, 0);
->
-> -       gpu->funcs->pm_suspend(gpu);
-> -       gpu->funcs->pm_resume(gpu);
-> +       /*
-> +        * Now drop all the pm_runtime usage count to allow cx gdsc to collapse.
-> +        * First drop the usage count from all active submits
-> +        */
-> +       for (i = gpu->active_submits; i > 0; i--)
-> +               pm_runtime_put(&gpu->pdev->dev);
+On Thu, Jul 07, 2022 at 08:42:28AM +0000, Tian, Kevin wrote:
+> External email: Use caution opening links or attachments
+> 
+> 
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Wednesday, July 6, 2022 2:28 PM
+> >
+> > There's only one caller that checks its return value with a WARN_ON_ONCE,
+> > while all other callers do not check return value at all. So simplify the
+> > API to return void by embedding similar WARN_ON_ONCEs.
+> 
+> While this change keeps the similar effect as before it leads to different
+> policy for same type of errors between pin and unpin paths:
 
-Would pm_runtime_force_suspend/resume() work instead?
+I think it's because of the policy that an undo function should not
+fail. Meanwhile, indulging faulty inputs isn't good either.
 
-BR,
--R
+> e.g.
+> 
+> vfio_unpin_pages():
+>         if (WARN_ON_ONCE(!user_pfn || !npage || !vfio_assert_device_open(device)))
+>                 return;
+> 
+> vfio_pin_pages():
+>         if (!user_pfn || !phys_pfn || !npage ||
+>             !vfio_assert_device_open(device))
+>                 return -EINVAL;
+> 
+> It sounds a bit weird when reading related code...
 
-> +
-> +       /* And the final one from recover worker */
-> +       pm_runtime_put_sync(&gpu->pdev->dev);
-> +
-> +       for (i = gpu->active_submits; i > 0; i--)
-> +               pm_runtime_get(&gpu->pdev->dev);
-> +
-> +       pm_runtime_get_sync(&gpu->pdev->dev);
->
->         msm_gpu_hw_init(gpu);
->  }
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> index f75ff4b..48171b6 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.c
-> +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> @@ -444,9 +444,7 @@ static void recover_worker(struct kthread_work *work)
->                 /* retire completed submits, plus the one that hung: */
->                 retire_submits(gpu);
->
-> -               pm_runtime_get_sync(&gpu->pdev->dev);
->                 gpu->funcs->recover(gpu);
-> -               pm_runtime_put_sync(&gpu->pdev->dev);
->
->                 /*
->                  * Replay all remaining submits starting with highest priority
-> --
-> 2.7.4
->
+Any better way to handle this?
