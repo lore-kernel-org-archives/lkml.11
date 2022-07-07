@@ -2,94 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5EAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33258C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234747AbiGGCWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35524 "EHLO
+        id S234798AbiGGCXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbiGGCWi (ORCPT
+        with ESMTP id S230246AbiGGCXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:22:38 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACAC2F390
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:22:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657160557; x=1688696557;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Ma0fFXFw3M8lIkxpmBs0YMy6P2ngSlPcwZQt0WJ6T3A=;
-  b=J5VgCn6scDc+YsrUa7jCztYYPkHpHGfKtXSZN2xbY8jXgZ2+oNOQS7Bc
-   gS+F01H2rYRWN+i79NaLybuBPEsSmdfvW7QM2TNAbxcVwSiu9rrXUvhGT
-   Ez0MiqFu+kFPD8lDyKE1rmuNWSSc4tmRuO98RDG6rUjok15gF+BCaIlpG
-   cO3LuvuXbrhaqGm+0Kc4ho+pokjZHjoeUPvt9LyeQy2VOpjsAbK0H2Rip
-   csnZTMNpDzGksxDyx12kzZo6koqyjQrTRVfBJOFBLNz7V6kaX6b1Q75c6
-   Hpsv32DWSeos1xqS0swzxxZFPe1GwpfaeSth7fe9yeXrH1j7J+Rnz2M5Y
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="347896517"
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="347896517"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 19:22:36 -0700
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="650925601"
-Received: from hualiu-mobl1.ccr.corp.intel.com (HELO [10.249.171.209]) ([10.249.171.209])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 19:22:34 -0700
-Message-ID: <c2a378eb-0107-ea10-1b9a-a8bdfd7ec71a@linux.intel.com>
-Date:   Thu, 7 Jul 2022 10:22:32 +0800
+        Wed, 6 Jul 2022 22:23:01 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895622F38D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:22:56 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LdgCd5c3Dz1DDN6;
+        Thu,  7 Jul 2022 10:22:05 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 10:22:51 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
+ 2022 10:22:50 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-xtensa@linux-xtensa.org>
+CC:     <chris@zankel.net>, <jcmvbkbc@gmail.com>
+Subject: [PATCH -next v2] xtensa: iss: fix handling error cases in iss_net_configure()
+Date:   Thu, 7 Jul 2022 10:32:29 +0800
+Message-ID: <20220707023229.2580893-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <sivanich@hpe.com>,
-        "Anderson, Russ" <russ.anderson@hpe.com>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/6] iommu/vt-d: Refactor iommu information of each
- domain
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>
-References: <20220702015610.2849494-1-baolu.lu@linux.intel.com>
- <20220702015610.2849494-4-baolu.lu@linux.intel.com>
- <BN9PR11MB52764D1132C2AB21B0A2A1B48C839@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52764D1132C2AB21B0A2A1B48C839@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/7 09:01, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Saturday, July 2, 2022 9:56 AM
->>
->> -out_unlock:
->> +	set_bit(num, iommu->domain_ids);
->> +	info->refcnt	= 1;
->> +	info->did	= num;
->> +	info->iommu	= iommu;
->> +	domain->nid	= iommu->node;
-> 
-> One nit. this line should be removed as it's incorrect to blindly update
-> domain->nid and we should just leave to domain_update_iommu_cap()
-> to decide the right node. Otherwise this causes a policy conflict as
-> here it is the last attached device deciding the node which is different
-> from domain_update_iommu_cap() which picks the node of the first
-> attached device.
+The 'pdev' and 'netdev' need be release in error cases of iss_net_configure().
+In orde to fix this, add two labels for error case to release them.
 
-Agreed and updated. Thank you!
+And Change the return type of iss_net_configure() to void, because it's not used.
 
-> 
-> Otherwise,
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Fixes: 7282bee78798 ("[PATCH] xtensa: Architecture support for Tensilica Xtensa Part 8")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+v2:
+  change return type of iss_net_configure() to void
+---
+ arch/xtensa/platforms/iss/network.c | 33 ++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
 
-Best regards,
-baolu
+diff --git a/arch/xtensa/platforms/iss/network.c b/arch/xtensa/platforms/iss/network.c
+index fd84d4891758..aeb5828a639c 100644
+--- a/arch/xtensa/platforms/iss/network.c
++++ b/arch/xtensa/platforms/iss/network.c
+@@ -472,16 +472,15 @@ static const struct net_device_ops iss_netdev_ops = {
+ 	.ndo_set_rx_mode	= iss_net_set_multicast_list,
+ };
+ 
+-static int iss_net_configure(int index, char *init)
++static void iss_net_configure(int index, char *init)
+ {
+ 	struct net_device *dev;
+ 	struct iss_net_private *lp;
+-	int err;
+ 
+ 	dev = alloc_etherdev(sizeof(*lp));
+ 	if (dev == NULL) {
+ 		pr_err("eth_configure: failed to allocate device\n");
+-		return 1;
++		return;
+ 	}
+ 
+ 	/* Initialize private element. */
+@@ -509,7 +508,7 @@ static int iss_net_configure(int index, char *init)
+ 	if (!tuntap_probe(lp, index, init)) {
+ 		pr_err("%s: invalid arguments. Skipping device!\n",
+ 		       dev->name);
+-		goto errout;
++		goto err_free_netdev;
+ 	}
+ 
+ 	pr_info("Netdevice %d (%pM)\n", index, dev->dev_addr);
+@@ -517,7 +516,8 @@ static int iss_net_configure(int index, char *init)
+ 	/* sysfs register */
+ 
+ 	if (!driver_registered) {
+-		platform_driver_register(&iss_net_driver);
++		if (platform_driver_register(&iss_net_driver))
++			goto err_free_netdev;
+ 		driver_registered = 1;
+ 	}
+ 
+@@ -527,7 +527,8 @@ static int iss_net_configure(int index, char *init)
+ 
+ 	lp->pdev.id = index;
+ 	lp->pdev.name = DRIVER_NAME;
+-	platform_device_register(&lp->pdev);
++	if (platform_device_register(&lp->pdev))
++		goto err_free_netdev;
+ 	SET_NETDEV_DEV(dev, &lp->pdev.dev);
+ 
+ 	dev->netdev_ops = &iss_netdev_ops;
+@@ -536,23 +537,21 @@ static int iss_net_configure(int index, char *init)
+ 	dev->irq = -1;
+ 
+ 	rtnl_lock();
+-	err = register_netdevice(dev);
+-	rtnl_unlock();
+-
+-	if (err) {
++	if (register_netdevice(dev)) {
++		rtnl_unlock();
+ 		pr_err("%s: error registering net device!\n", dev->name);
+-		/* XXX: should we call ->remove() here? */
+-		free_netdev(dev);
+-		return 1;
++		goto err_unregister_device;
+ 	}
++	rtnl_unlock();
+ 
+ 	timer_setup(&lp->tl, iss_net_user_timer_expire, 0);
+ 
+-	return 0;
++	return;
+ 
+-errout:
+-	/* FIXME: unregister; free, etc.. */
+-	return -EIO;
++err_unregister_device:
++	platform_device_unregister(&lp->pdev);
++err_free_netdev:
++	free_netdev(dev);
+ }
+ 
+ /* ------------------------------------------------------------------------- */
+-- 
+2.25.1
+
