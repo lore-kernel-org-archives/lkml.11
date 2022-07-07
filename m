@@ -2,177 +2,487 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59514C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:30:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D78ECCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236612AbiGGSaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54948 "EHLO
+        id S236219AbiGGScq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236602AbiGGS3F (ORCPT
+        with ESMTP id S236715AbiGGScc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:29:05 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4865C941;
-        Thu,  7 Jul 2022 11:27:59 -0700 (PDT)
-Date:   Thu, 07 Jul 2022 18:27:57 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657218478;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Dlp6ugu6EIX2hP43ShKsfqp4OKuqHqy+MCaV0DyiPc=;
-        b=zKAUj5cdRyymYEU4YZHhF/rFO2pyzHp64DvecohMYbIFYDbvzu8mTWhot8Q+kDMcxYW8K/
-        iMjupEcpsQPUlF+i5KRmlfRiwXGD9wqal0/jHph9sJpK7t0BazQrDYWig3h0RLeo+iG8y4
-        6yYaJcYHbW05y7Ivrus1zWN+F9CCYOLydO2HJaxPB0mxBh/vujzUUxcNM+gwGWMq7H0hwY
-        FlggEaJuQQCoQ8IbDjZr/+5FPYZ1rIGovyyuyrd4ABGTsqg1N1SQ9jnEQ5Xk2/KWnlanSp
-        zHWopzy2MZXNVicOVPgKzw5FlqHT5P8y0Xx5b8/mMOmz++O/3maS7eSYXxkvog==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657218478;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Dlp6ugu6EIX2hP43ShKsfqp4OKuqHqy+MCaV0DyiPc=;
-        b=JteTpFnZrPm9lXxOZrv3LS9MiC/X1emktOYhN+netZmvb7Lx5crioul3XowIfF2ZdbH/eS
-        qzqWDFKYgbEzwgAg==
-From:   "tip-bot2 for Reinette Chatre" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/sgx] x86/sgx: Add short descriptions to ENCLS wrappers
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: =?utf-8?q?=3C5e78a1126711cbd692d5b8132e0683873398f69e=2E16521?=
- =?utf-8?q?37848=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
-References: =?utf-8?q?=3C5e78a1126711cbd692d5b8132e0683873398f69e=2E165213?=
- =?utf-8?q?7848=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
-MIME-Version: 1.0
-Message-ID: <165721847710.15455.8884335128575566784.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+        Thu, 7 Jul 2022 14:32:32 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF1A73587
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:30:23 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 145so20007262pga.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 11:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=EcaR7sUyYFP2OmusRM8Gf5Bz7jjDf0GWRUDsDTZ0oxM=;
+        b=WPhGXbw4V0ZxkVpnmSE+5tFzsUusYUqm+4lVRhwHobGFm6D1g1b4+uJzbMSrpeVPZ8
+         z8+mOzxyTKxqGh5LAPSIuPpK3t2tu3CfAQgpPn8KhlRUHbI2KuoUAdmZzuqVjYMoBUz8
+         RSxp1X9xlR3+zanxGkFDPbRw0l61ZDhCE0mQ4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=EcaR7sUyYFP2OmusRM8Gf5Bz7jjDf0GWRUDsDTZ0oxM=;
+        b=DadHav0x/XG/LrXvJKiBQh0l6qkpBLuzfQC+5KTOv6bSrAWWvY5nlQtUEc3k6nmGPB
+         2xDMyfSbR97ZVKf6ID6q/tejI8rfMwOX70U0xFqz2YAmNej3Vp0DW9ghGv8C3ZCBmy+R
+         X/AjPWOIFi5XiB7binlolV40QtfO6+dcY/vv0dX4WuODl6FuaiGrzR6qegSVJmrcqSG1
+         EdlVAb33d2qkxhelk+DJFTAq8WbY09Z114ooV4OpsL/PNrONCjjPfFunx2h0a6kRqiGR
+         /hOuVQLZUIxgdTbO5GGlsxQ6jHAJVxTG0nJWFclK/Nz3iwmWdZO/WRSsg0CH6rm0Yuu4
+         6lcQ==
+X-Gm-Message-State: AJIora/TYaRhLllUfJ7+wLQpI1Hth7zVaaRuFXkY9l91xHZCqflwM/9M
+        iUEjFOcGtHuM9cGqam8BXNLgLA==
+X-Google-Smtp-Source: AGRyM1sIipm971ZqE89vxyMR6A9r0jRVO+ByhiVDOSeV0G11NXpRaleySzrZb3j/tFPOUKz2DeefPQ==
+X-Received: by 2002:a17:90b:507:b0:1ee:de8c:6aa2 with SMTP id r7-20020a17090b050700b001eede8c6aa2mr6879982pjz.105.1657218621336;
+        Thu, 07 Jul 2022 11:30:21 -0700 (PDT)
+Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.252.250])
+        by smtp.gmail.com with ESMTPSA id pj9-20020a17090b4f4900b001ef92e0e7c1sm7132234pjb.10.2022.07.07.11.30.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 11:30:20 -0700 (PDT)
+From:   Vikas Gupta <vikas.gupta@broadcom.com>
+To:     jiri@nvidia.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, dsahern@kernel.org,
+        stephen@networkplumber.org, edumazet@google.com, pabeni@redhat.com,
+        ast@kernel.org, leon@kernel.org, linux-doc@vger.kernel.org,
+        corbet@lwn.net, michael.chan@broadcom.com,
+        andrew.gospodarek@broadcom.com,
+        Vikas Gupta <vikas.gupta@broadcom.com>
+Subject: [PATCH net-next v2 1/3] devlink: introduce framework for selftests
+Date:   Thu,  7 Jul 2022 23:59:48 +0530
+Message-Id: <20220707182950.29348-2-vikas.gupta@broadcom.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220707182950.29348-1-vikas.gupta@broadcom.com>
+References: <20220628164241.44360-1-vikas.gupta@broadcom.com>
+ <20220707182950.29348-1-vikas.gupta@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000045a54e05e33b47ab"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/sgx branch of tip:
+--00000000000045a54e05e33b47ab
 
-Commit-ID:     4c3f73584c0c0152b75dd6a090558ada39601159
-Gitweb:        https://git.kernel.org/tip/4c3f73584c0c0152b75dd6a090558ada39601159
-Author:        Reinette Chatre <reinette.chatre@intel.com>
-AuthorDate:    Tue, 10 May 2022 11:08:37 -07:00
-Committer:     Dave Hansen <dave.hansen@linux.intel.com>
-CommitterDate: Thu, 07 Jul 2022 10:13:01 -07:00
+Add a framework for running selftests.
+Framework exposes devlink commands and test suite(s) to the user
+to execute and query the supported tests by the driver.
 
-x86/sgx: Add short descriptions to ENCLS wrappers
+Below are new entries in devlink_nl_ops
+devlink_nl_cmd_selftests_show: To query the supported selftests
+by the driver.
+devlink_nl_cmd_selftests_run: To execute selftests. Users can
+provide a test mask for executing group tests or standalone tests.
 
-The SGX ENCLS instruction uses EAX to specify an SGX function and
-may require additional registers, depending on the SGX function.
-ENCLS invokes the specified privileged SGX function for managing
-and debugging enclaves. Macros are used to wrap the ENCLS
-functionality and several wrappers are used to wrap the macros to
-make the different SGX functions accessible in the code.
+Documentation/networking/devlink/ path is already part of MAINTAINERS &
+the new files come under this path. Hence no update needed to the
+MAINTAINERS
 
-The wrappers of the supported SGX functions are cryptic. Add short
-descriptions of each as a comment.
-
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Link: https://lkml.kernel.org/r/5e78a1126711cbd692d5b8132e0683873398f69e.1652137848.git.reinette.chatre@intel.com
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 ---
- arch/x86/kernel/cpu/sgx/encls.h | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ .../networking/devlink/devlink-selftests.rst  |  34 +++++
+ include/net/devlink.h                         |  30 ++++
+ include/uapi/linux/devlink.h                  |  26 ++++
+ net/core/devlink.c                            | 144 ++++++++++++++++++
+ 4 files changed, 234 insertions(+)
+ create mode 100644 Documentation/networking/devlink/devlink-selftests.rst
 
-diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
-index fa04a73..0e22fa8 100644
---- a/arch/x86/kernel/cpu/sgx/encls.h
-+++ b/arch/x86/kernel/cpu/sgx/encls.h
-@@ -136,57 +136,71 @@ static inline bool encls_failed(int ret)
- 	ret;						\
- 	})
+diff --git a/Documentation/networking/devlink/devlink-selftests.rst b/Documentation/networking/devlink/devlink-selftests.rst
+new file mode 100644
+index 000000000000..796d38f77038
+--- /dev/null
++++ b/Documentation/networking/devlink/devlink-selftests.rst
+@@ -0,0 +1,34 @@
++.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++
++=================
++Devlink Selftests
++=================
++
++The ``devlink-selftests`` API allows executing selftests on the device.
++
++Tests Mask
++==========
++The ``devlink-selftests`` command should be run with a mask indicating
++the tests to be executed.
++
++Tests Description
++=================
++The following is a list of tests that drivers may execute.
++
++.. list-table:: List of tests
++   :widths: 5 90
++
++   * - Name
++     - Description
++   * - ``DEVLINK_SELFTEST_FLASH``
++     - Runs a flash test on the device.
++
++example usage
++-------------
++
++.. code:: shell
++
++    # Query selftests supported on the device
++    $ devlink dev selftests show DEV
++    # Executes selftests on the device
++    $ devlink dev selftests run DEV test {flash | all}
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 2a2a2a0c93f7..cb7c378cf720 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1215,6 +1215,18 @@ enum {
+ 	DEVLINK_F_RELOAD = 1UL << 0,
+ };
  
-+/* Initialize an EPC page into an SGX Enclave Control Structure (SECS) page. */
- static inline int __ecreate(struct sgx_pageinfo *pginfo, void *secs)
- {
- 	return __encls_2(ECREATE, pginfo, secs);
++#define DEVLINK_SELFTEST_FLASH_TEST_NAME "flash"
++
++static inline const char *devlink_selftest_name(int test)
++{
++	switch (test) {
++	case DEVLINK_SELFTEST_FLASH_BIT:
++		return DEVLINK_SELFTEST_FLASH_TEST_NAME;
++	default:
++		return "unknown";
++	}
++}
++
+ struct devlink_ops {
+ 	/**
+ 	 * @supported_flash_update_params:
+@@ -1509,6 +1521,24 @@ struct devlink_ops {
+ 				    struct devlink_rate *parent,
+ 				    void *priv_child, void *priv_parent,
+ 				    struct netlink_ext_ack *extack);
++	/**
++	 * selftests_show() - Shows selftests supported by device
++	 * @devlink: Devlink instance
++	 * @extack: extack for reporting error messages
++	 *
++	 * Return: test mask supported by driver
++	 */
++	u32 (*selftests_show)(struct devlink *devlink,
++			      struct netlink_ext_ack *extack);
++	/**
++	 * selftests_run() - Runs selftests
++	 * @devlink: Devlink instance
++	 * @tests_mask: tests to be run by driver
++	 * @results: test results by driver
++	 * @extack: extack for reporting error messages
++	 */
++	void (*selftests_run)(struct devlink *devlink, u32 tests_mask,
++			      u8 *results, struct netlink_ext_ack *extack);
+ };
+ 
+ void *devlink_priv(struct devlink *devlink);
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index b3d40a5d72ff..1dba262328b9 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -136,6 +136,9 @@ enum devlink_command {
+ 	DEVLINK_CMD_LINECARD_NEW,
+ 	DEVLINK_CMD_LINECARD_DEL,
+ 
++	DEVLINK_CMD_SELFTESTS_SHOW,
++	DEVLINK_CMD_SELFTESTS_RUN,
++
+ 	/* add new commands above here */
+ 	__DEVLINK_CMD_MAX,
+ 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+@@ -276,6 +279,25 @@ enum {
+ #define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
+ 	(_BITUL(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
+ 
++/* Commonly used test cases */
++enum {
++	DEVLINK_SELFTEST_FLASH_BIT,
++
++	__DEVLINK_SELFTEST_MAX_BIT,
++	DEVLINK_SELFTEST_MAX_BIT = __DEVLINK_SELFTEST_MAX_BIT - 1
++};
++
++#define DEVLINK_SELFTEST_FLASH _BITUL(DEVLINK_SELFTEST_FLASH_BIT)
++
++#define DEVLINK_SELFTESTS_MASK \
++	(_BITUL(__DEVLINK_SELFTEST_MAX_BIT) - 1)
++
++enum {
++	DEVLINK_SELFTEST_SKIP,
++	DEVLINK_SELFTEST_PASS,
++	DEVLINK_SELFTEST_FAIL
++};
++
+ /**
+  * enum devlink_trap_action - Packet trap action.
+  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
+@@ -576,6 +598,10 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
+ 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
+ 
++	DEVLINK_ATTR_SELFTESTS_MASK,		/* u32 */
++	DEVLINK_ATTR_TEST_RESULT,		/* nested */
++	DEVLINK_ATTR_TEST_NAME,			/* string */
++	DEVLINK_ATTR_TEST_RESULT_VAL,		/* u8 */
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index db61f3a341cb..0b7341ab6379 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4794,6 +4794,136 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
+ 	return ret;
  }
  
-+/* Hash a 256 byte region of an enclave page to SECS:MRENCLAVE. */
- static inline int __eextend(void *secs, void *addr)
- {
- 	return __encls_2(EEXTEND, secs, addr);
- }
++static int devlink_selftest_name_put(struct sk_buff *skb, int test)
++{
++	const char *name = devlink_selftest_name(test);
++	if (nla_put_string(skb, DEVLINK_ATTR_TEST_NAME, name))
++		return -EMSGSIZE;
++
++	return 0;
++}
++
++static int devlink_nl_cmd_selftests_show(struct sk_buff *skb,
++					 struct genl_info *info)
++{
++	struct devlink *devlink = info->user_ptr[0];
++	struct sk_buff *msg;
++	unsigned long tests;
++	int err = 0;
++	void *hdr;
++	int test;
++
++	if (!devlink->ops->selftests_show)
++		return -EOPNOTSUPP;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
++			  &devlink_nl_family, 0, DEVLINK_CMD_SELFTESTS_SHOW);
++	if (!hdr)
++		goto free_msg;
++
++	if (devlink_nl_put_handle(msg, devlink))
++		goto genlmsg_cancel;
++
++	tests = devlink->ops->selftests_show(devlink, info->extack);
++
++	for_each_set_bit(test, &tests, __DEVLINK_SELFTEST_MAX_BIT) {
++		err = devlink_selftest_name_put(msg, test);
++		if (err)
++			goto genlmsg_cancel;
++	}
++
++	genlmsg_end(msg, hdr);
++
++	return genlmsg_reply(msg, info);
++
++genlmsg_cancel:
++	genlmsg_cancel(msg, hdr);
++free_msg:
++	nlmsg_free(msg);
++	return err;
++}
++
++static int devlink_selftest_result_put(struct sk_buff *skb, int test,
++				       u8 result)
++{
++	const char *name = devlink_selftest_name(test);
++	struct nlattr *result_attr;
++
++	result_attr = nla_nest_start_noflag(skb, DEVLINK_ATTR_TEST_RESULT);
++	if (!result_attr)
++		return -EMSGSIZE;
++
++	if (nla_put_string(skb, DEVLINK_ATTR_TEST_NAME, name) ||
++	    nla_put_u8(skb, DEVLINK_ATTR_TEST_RESULT_VAL, result))
++		goto nla_put_failure;
++
++	nla_nest_end(skb, result_attr);
++
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(skb, result_attr);
++	return -EMSGSIZE;
++}
++
++static int devlink_nl_cmd_selftests_run(struct sk_buff *skb,
++					struct genl_info *info)
++{
++	u8 test_results[DEVLINK_SELFTEST_MAX_BIT + 1] = {};
++	struct devlink *devlink = info->user_ptr[0];
++	unsigned long tests;
++	struct sk_buff *msg;
++	u32 tests_mask;
++	void *hdr;
++	int err = 0;
++	int test;
++
++	if (!devlink->ops->selftests_run)
++		return -EOPNOTSUPP;
++
++	if (!info->attrs[DEVLINK_ATTR_SELFTESTS_MASK])
++		return -EINVAL;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
++			  &devlink_nl_family, 0, DEVLINK_CMD_SELFTESTS_RUN);
++	if (!hdr)
++		goto free_msg;
++
++	if (devlink_nl_put_handle(msg, devlink))
++		goto genlmsg_cancel;
++
++	tests_mask = nla_get_u32(info->attrs[DEVLINK_ATTR_SELFTESTS_MASK]);
++
++	devlink->ops->selftests_run(devlink, tests_mask, test_results,
++				    info->extack);
++	tests = tests_mask;
++
++	for_each_set_bit(test, &tests, __DEVLINK_SELFTEST_MAX_BIT) {
++		err = devlink_selftest_result_put(msg, test,
++						  test_results[test]);
++		if (err)
++			goto genlmsg_cancel;
++	}
++
++	genlmsg_end(msg, hdr);
++
++	return genlmsg_reply(msg, info);
++
++genlmsg_cancel:
++	genlmsg_cancel(msg, hdr);
++free_msg:
++	nlmsg_free(msg);
++	return err;
++}
++
+ static const struct devlink_param devlink_param_generic[] = {
+ 	{
+ 		.id = DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
+@@ -9000,6 +9130,8 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+ 	[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] = { .type = NLA_NUL_STRING },
+ 	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
+ 	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
++	[DEVLINK_ATTR_SELFTESTS_MASK] = NLA_POLICY_MASK(NLA_U32,
++							DEVLINK_SELFTESTS_MASK),
+ };
  
-+/*
-+ * Associate an EPC page to an enclave either as a REG or TCS page
-+ * populated with the provided data.
-+ */
- static inline int __eadd(struct sgx_pageinfo *pginfo, void *addr)
- {
- 	return __encls_2(EADD, pginfo, addr);
- }
+ static const struct genl_small_ops devlink_nl_ops[] = {
+@@ -9361,6 +9493,18 @@ static const struct genl_small_ops devlink_nl_ops[] = {
+ 		.doit = devlink_nl_cmd_trap_policer_set_doit,
+ 		.flags = GENL_ADMIN_PERM,
+ 	},
++	{
++		.cmd = DEVLINK_CMD_SELFTESTS_SHOW,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = devlink_nl_cmd_selftests_show,
++		.flags = GENL_ADMIN_PERM,
++	},
++	{
++		.cmd = DEVLINK_CMD_SELFTESTS_RUN,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = devlink_nl_cmd_selftests_run,
++		.flags = GENL_ADMIN_PERM,
++	},
+ };
  
-+/* Finalize enclave build, initialize enclave for user code execution. */
- static inline int __einit(void *sigstruct, void *token, void *secs)
- {
- 	return __encls_ret_3(EINIT, sigstruct, secs, token);
- }
- 
-+/* Disassociate EPC page from its enclave and mark it as unused. */
- static inline int __eremove(void *addr)
- {
- 	return __encls_ret_1(EREMOVE, addr);
- }
- 
-+/* Copy data to an EPC page belonging to a debug enclave. */
- static inline int __edbgwr(void *addr, unsigned long *data)
- {
- 	return __encls_2(EDGBWR, *data, addr);
- }
- 
-+/* Copy data from an EPC page belonging to a debug enclave. */
- static inline int __edbgrd(void *addr, unsigned long *data)
- {
- 	return __encls_1_1(EDGBRD, *data, addr);
- }
- 
-+/* Track that software has completed the required TLB address clears. */
- static inline int __etrack(void *addr)
- {
- 	return __encls_ret_1(ETRACK, addr);
- }
- 
-+/* Load, verify, and unblock an EPC page. */
- static inline int __eldu(struct sgx_pageinfo *pginfo, void *addr,
- 			 void *va)
- {
- 	return __encls_ret_3(ELDU, pginfo, addr, va);
- }
- 
-+/* Make EPC page inaccessible to enclave, ready to be written to memory. */
- static inline int __eblock(void *addr)
- {
- 	return __encls_ret_1(EBLOCK, addr);
- }
- 
-+/* Initialize an EPC page into a Version Array (VA) page. */
- static inline int __epa(void *addr)
- {
- 	unsigned long rbx = SGX_PAGE_TYPE_VA;
-@@ -194,6 +208,7 @@ static inline int __epa(void *addr)
- 	return __encls_2(EPA, rbx, addr);
- }
- 
-+/* Invalidate an EPC page and write it out to main memory. */
- static inline int __ewb(struct sgx_pageinfo *pginfo, void *addr,
- 			void *va)
- {
+ static struct genl_family devlink_nl_family __ro_after_init = {
+-- 
+2.31.1
+
+
+--00000000000045a54e05e33b47ab
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+I7qKxvF8Yo7eGTnHRTa99J+6yTd88AKVuhM5TEhpC8cS7qvrQXJje+Uing2xWC4FH76LEWIFH0Pt
+x8C1WoCU0ClXHU/XfzH2mYrFANBSCeP1Co6QdEfRAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGHZpa2FzLmd1cHRhQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUc6J11rH3s6PyZQ0zIVZHIuP20Yw
+DQYJKoZIhvcNAQELBQADggEBALvCjXn9gy9a2nU/Ey0nphGZefIP33ggiyuKnmqwBt7Wk/uDHIIc
+kkIlqtTbo0x0PqphS9A23CxCDjKqZq2WN34fL5MMW83nrK0vqnPloCaxy9/6yuLbottBY4STNuvA
+mQ//Whh+PE+DZadqiDbxXbos3IH8AeFXH4A1zIqIrc0Um2/CSD/T6pvu9QrchtvemfP0z/f1Bk+8
+QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
+PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJV01h7Gy2UuXF9PkKzqyEGAOHy4qs5VXWaD
+wqyHRAKkMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcwNzE4
+MzAyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQAT9oreYTotqPdWrS3swhb1fvUIU5IiUIyXgTP4/sdQy8ACTkdTdTyh
+nh983ZKqbbIQRrLw5OSbwDTi0MnQ2iyZxA0H6eZAITflbfp8H7ka2z3WScQMOlJDs5iOsv94SiJT
+NWe3V2y4oYgcoJhcZOlAZR8NR+b0NursKwUP9+Qdoj2NdbXFetHgWWBGXdurqrr8K3Loied29Lut
+bCS+VSdg6EWnhHH5DqJak5TPqSHG/z4Nb1qIu/CW06Et3BNI+J0SC0Bvk/wannac/P0hi9bYtiX6
+p1yE0K6cgvOdjSjCCrj7oGC8zlzclZpTw+CKJONQ3tYjez/HnY+u1RTn+kdI
+--00000000000045a54e05e33b47ab--
