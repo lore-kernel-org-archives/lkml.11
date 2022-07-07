@@ -2,93 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F96C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235479AbiGGQG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
+        id S235521AbiGGQGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235240AbiGGQG0 (ORCPT
+        with ESMTP id S235304AbiGGQGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:06:26 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A934223BDA
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:06:25 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-10c0430e27dso14362128fac.4
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 09:06:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3KlngvhzlHv//Aw94U6o8uXkEGL1TJzk0ioCEsHw+Kc=;
-        b=GZvWYcAh+OWZgVydsmjmbePbME9JyCG76d439vCGFfmMR8VdLPCOwSMWi8WhkkNp7w
-         9Nl98EYi/ppokXWBUf6AfxaVCVoaGJUiylpZp9YylhBSDjOoc+yWQAvzxG8YJjXsIPAA
-         al95Ts8eL1g8vZkmwJ4Nz+m8e3S0pW+KAPuHn3ly+VVHz0MKdDQuW/8luK5zYd6workG
-         DRr6T9q3//IPZSOX9/q+IDxFjpyTupula4v92+SLrVtchNQQoE+HqxOpGqfgChpU+m3c
-         yDY0uk5+6jiTInqrRZUxMGFdkH+e3h7BT8Y/Twp3W8RZXJxN61hsbMCcW5pMYuEfeWmm
-         3Mxw==
+        Thu, 7 Jul 2022 12:06:41 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8E92E9CA
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:06:40 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id j17-20020a056e02219100b002dc4e721203so577647ila.22
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 09:06:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3KlngvhzlHv//Aw94U6o8uXkEGL1TJzk0ioCEsHw+Kc=;
-        b=EN9OLFsiOGdUc0Z8mr+FbJIQWjTH5gKP5XsKYE3JgkTfrkIhyQag1vo8qFaUEsIfdY
-         s73FkKag0oVil70RtoFZAytoTj+7Vbkb0QB19cGL1ozjNOfMY8tAiovREpT4+rCTnS5J
-         yflV6NLeXUriVzYwzvOa+bIYEpw1hUtrbr9nfE61XDrj7e2cGAJjWjCAFgUb2ODaFxvM
-         OSp2vUoRk0onzvbWwk5YHOGwqSD9KTnLG9Mf/RRcnUYfxJC678pcapjOjSqKf8clkQB2
-         I1EnQFULfkOHJDQcz8cyQF1y7iLwFNJPJGuPwE5bJWLAju8Fd+mo13A2pnjveT6MY9an
-         hyCg==
-X-Gm-Message-State: AJIora89dGOwCFMA1cfbSI7nwKhxVg3PwySWmguXH3N52WDljxBN5IqM
-        qtSAn74yQnwybuTTS21n8ZYd9qCUeacBrw==
-X-Google-Smtp-Source: AGRyM1vuD9r47ZSbnPGKPZeS6dWqxyqpb3lWuImpBmJPWpgLB3c5thuSzE98szGbobbrHBIzm4S8/w==
-X-Received: by 2002:a05:6870:a786:b0:fe:3c4d:6cd7 with SMTP id x6-20020a056870a78600b000fe3c4d6cd7mr3418636oao.118.1657209984240;
-        Thu, 07 Jul 2022 09:06:24 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id w13-20020a056830410d00b0061c1bc2c769sm239947ott.56.2022.07.07.09.06.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 09:06:23 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Johan Hovold <johan+linaro@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: qcom: sc8280xp: Add lost ranges for timer
-Date:   Thu,  7 Jul 2022 09:08:58 -0700
-Message-Id: <20220707160858.3178771-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:cc;
+        bh=Ef6EaxbhRWWl9yGrcwKYUAdX/pBweihX45OfiVsisKs=;
+        b=CTahiq79S9pNoMM9UnaoP0omDXc7tZByLiUFLy4aJVv0iW+DI6GT5klUgfly43m0h9
+         zSvz0kA9OMWfzW+1b7Ddy5qHOOyOvyUwfGeko+LRWK/sTZ690jcpzeTT1cDnlbTqYMhX
+         ZTPxNETWmaXtyrR/r1rAgTJHh6HwCjkjaqXgsF9D6HWGQSa2Fff5Id1N95nYmuryXRuw
+         zXsKRJrUdVW14d6gCjx2BByaVsLNoDSGUdUAply6ZyEVc/X9+gzEzp/NHhZjFqWmlRMf
+         AFRM445MJZORL547FS5LEMRUKoDDClDDUiX1lyTV0TmoUgQCplA8KO7VyfSLPf0cHsAj
+         5D1A==
+X-Gm-Message-State: AJIora92hkSKKNS/cHPQHRcwKfum4r7t35TjeFgP2L1bdFztDX0c4fGr
+        kK2qjVcgHAkZikUozoYipNqlv9YqzeD2ln+g0Hqf4hBnU3FK
+X-Google-Smtp-Source: AGRyM1vkNnDgKntPM6HUPetN4DNdMynXMRpG/oOB+J/sKZ78p6g+lQqAwILEx+ChV3Fpo28F7D7DSvqk9IFongu276gGFPQ8e6Fl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:1310:b0:33f:1f49:26be with SMTP id
+ r16-20020a056638131000b0033f1f4926bemr1563287jad.141.1657210000099; Thu, 07
+ Jul 2022 09:06:40 -0700 (PDT)
+Date:   Thu, 07 Jul 2022 09:06:40 -0700
+In-Reply-To: <20220707160545.7731-1-code@siddh.me>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005fcfa605e339458c@google.com>
+Subject: Re: [syzbot] linux-next boot error: general protection fault in add_mtd_device
+From:   syzbot <syzbot+fe013f55a2814a9e8cfd@syzkaller.appspotmail.com>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     code@siddh.me, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-next@vger.kernel.org,
+        miquel.raynal@bootlin.com, richard@nod.at, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com, vigneshr@ti.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The timer node needs ranges specified to map the 1-cell children to the
-2-cell address range used in /soc. This addition never made it into the
-patch that was posted and merged, so add it now.
+> #syz test linux-next master
 
-Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+"linux-next" does not look like a valid git repo address.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-index 2bdb42c88311..37a4cd6f85b6 100644
---- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-@@ -1667,6 +1667,7 @@ timer@17c20000 {
- 			reg = <0x0 0x17c20000 0x0 0x1000>;
- 			#address-cells = <1>;
- 			#size-cells = <1>;
-+			ranges = <0 0 0 0x20000000>;
- 
- 			frame@17c21000 {
- 				frame-number = <0>;
--- 
-2.35.1
-
+>
