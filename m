@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 788B8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 01:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A67E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 01:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234764AbiGGB0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 21:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
+        id S234733AbiGGB3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 21:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiGGB0v (ORCPT
+        with ESMTP id S229869AbiGGB3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 21:26:51 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE71D2E9CD;
-        Wed,  6 Jul 2022 18:26:48 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lddzm2g3nz4xXj;
-        Thu,  7 Jul 2022 11:26:44 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657157204;
-        bh=QNLWE/k+VusIo03qhTqVGkLaFHv3Y8wqyv5WGDliXc8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=O4xiZQzyhgTC6IvrHadLPrqBZG/6IER1aMM4s56vxUIpvf8bstEVc1H2welgVDMbj
-         9GlZWafM26NrbW2XNShly+aIJRJuYMlKvEaka2mBoS7ceopcHY7Dlc5ek40uPds66U
-         grwfQbK0DKJK2RnppZwoLxAU6PvRozJ8w9YvxmWLaEyKoJ9jMVFiXzry5qT2Q3EAxe
-         q+2B29n9gcwqXqnq07Jpl6ITwCiQhJ/G2fhPmxy4i1meSg/hHU+AFcdn+SjRhfASNg
-         l24Z6ilF/rxQkg8yBjJSLt0pLi4PYdofRuKu0ELQO448BQUke0qYYoy82+oA/nsJX2
-         yYoDRZm8mbfxA==
-Date:   Thu, 7 Jul 2022 10:52:43 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Amadeusz =?UTF-8?B?U8WCYXdpxYRz?= =?UTF-8?B?a2k=?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the sound-asoc tree
-Message-ID: <20220707105243.7952b5e6@canb.auug.org.au>
-In-Reply-To: <YsV7jC2eoEx6G3qH@sirena.org.uk>
-References: <20220706115529.7deea289@canb.auug.org.au>
-        <YsV7jC2eoEx6G3qH@sirena.org.uk>
+        Wed, 6 Jul 2022 21:29:46 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 503DF2E6AF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 18:29:44 -0700 (PDT)
+Received: from [198.18.0.1] (unknown [192.168.200.1])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxb9MBN8Zi8O8NAA--.1018S3;
+        Thu, 07 Jul 2022 09:29:38 +0800 (CST)
+Message-ID: <730cb4c4-a6a3-783e-3e4c-7c2bdc35c088@loongson.cn>
+Date:   Thu, 7 Jul 2022 09:29:37 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Qxu3fVwru.D9wnUu74y0uUZ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] LoongArch: Clean useless vcsr in loongarch_fpu.
+Content-Language: en-US
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Xi Ruoyao <xry111@xry111.site>,
+        Huacai Chen <chenhuacai@kernel.org>
+Cc:     Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220704153612.314112-1-huqi@loongson.cn>
+ <4273e104-8392-6a06-5d18-a1933978d8c3@xen0n.name>
+ <22a1ba993e298ce12a374decefebeca484240883.camel@xry111.site>
+ <16c9ccaa5e5a2ffd39272cff6f66e487c659b571.camel@xry111.site>
+ <CAAhV-H5+qd1ZrOqE8fgRmWshXy57AfEFpyKSK8ZstZZEQ53owQ@mail.gmail.com>
+ <ac46f5cb4c8d1154cfc3e862fb5211e869839c9a.camel@xry111.site>
+ <c824b9ca-c9c4-1912-7845-99a0989277a4@loongson.cn>
+ <9d064771-9402-4e84-96f8-4713cddf42f2@www.fastmail.com>
+From:   Qi Hu <huqi@loongson.cn>
+In-Reply-To: <9d064771-9402-4e84-96f8-4713cddf42f2@www.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Dxb9MBN8Zi8O8NAA--.1018S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7tr4DXr45CryUur17tF17trb_yoW8KrW3pF
+        4fWa1FyFs3Jr1Yvw4vvw4kKay5ua1xG3yUJrnIv34jvwnrtw13KFWrAFs8Ca4fJr1IyF4Y
+        qr4jqr97ZayDZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
+X-CM-SenderInfo: pkxtxqxorr0wxvrqhubq/1tbiAQAACV3QvPxtUgABs7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Qxu3fVwru.D9wnUu74y0uUZ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi Mark,
-
-On Wed, 6 Jul 2022 13:09:48 +0100 Mark Brown <broonie@kernel.org> wrote:
+On 2022/7/7 04:49, Jiaxun Yang wrote:
 >
-> On Wed, Jul 06, 2022 at 11:55:29AM +1000, Stephen Rothwell wrote:
->=20
-> > After merging the sound-asoc tree, today's linux-next build (x86_64
-> > allmodconfig) failed like this: =20
->=20
-> Which toolchain do you use?  I've been using GCC 10 since it seems to be
-> what Linus is using, anything else I try has tended to get spurious
-> failures in from his tree.
+> 在2022年7月6日七月 上午5:00，Qi Hu写道：
+>> On 2022/7/6 10:51, Xi Ruoyao wrote:
+>>> On Wed, 2022-07-06 at 10:35 +0800, Huacai Chen wrote:
+>>>
+>>>> Maybe Xuerui and Ruoyao have some misunderstanding. LSX/LASX will
+>>>> surely be upstream, this has nothing to do with cleanup VCSR16.
+>>>> Because FP/LSX/LASX share the same control bits in FCSR now.
+>>> My guess:
+>>>
+>>> Almost all behavior of vector unit is controlled by FCSR (for example,
+>>> the rounding of both FPU and vector unit should be controlled by FCSR
+>>> altogether), except one bit similar to the bit 24 of MSACSR ("flush to
+>>> zero") is in VCSR [^1].  And "flush to zero" is not really useful so it
+>>> will be removed in 3A6000, and we'll not use it for 3A5000.
+>> Actually, flush to zero has been removed in 3A5000.
+>>> [^1]: A more bold guess: the hardware engineers could have just said
+>>> "let's wire this register called MSACSR in GS464V as FCSR16/VCSR in
+>>> LA464, maybe it will be useful and who knows?"  But now in practice it's
+>>> not useful.
+>>>
+>>> Am I correct?
+>> The hardware(LA464) has removed the vcsr("has but not use" is
+>> incorrect), and here are some details:
+>>
+>> - For all FP operations, including LSX/LASX, they are controlled by
+>> fcsr0/1/2/3.
+>>
+>> - For LSX/LASX other operations, they are *not* controlled by any other
+>> CSR now. And fcsr16 to fcsr31 are reserved to control these operations
+>> (now they are *undefined*).
+> Sorry but what do you meant by “these” here?
+"These operations" means "LSX/LASX other operations", except its 
+floating-point operations.
+> If it means LSX/LASX, are you trying to say that future chip’s LSX/LASX won’t be
+> compatible with present 3A5000? As your said fcsr16 and fcsr31 are undefined
+> for now.
+>
+> Thanks
+> -
 
-$ x86_64-linux-gnu-gcc --version
-x86_64-linux-gnu-gcc (Debian 11.2.0-9) 11.2.0
+"not compatible" is incorrect. If future chips add new features to 
+define and use these registers, some bits in CPUCFG should be set, like 
+CPUID in X86.
 
---=20
-Cheers,
-Stephen Rothwell
+And at that time, if the applications do not use these new features(like 
+some old apps), they can run at *default* state which is the same as 
+current 3A5000.
 
---Sig_/Qxu3fVwru.D9wnUu74y0uUZ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+So, "reserved" is just to prepare for adding something, not "incompatible".
 
------BEGIN PGP SIGNATURE-----
+Thanks.
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGLlsACgkQAVBC80lX
-0GwSFAf+LvTE544Tx79wOVfrcDOv2h8X4ohcZN7fn7ue9nQgUuYOpUSIv0umTinX
-lhAJCcSBtpS2WJyL9agwqIDynAYb4lSdNMBu/vi/vskLpUK6uOqs77ci82frgjPB
-9gbwgVkS1dvV9DcE4IEiNjgwRnMCpAOyFsHjkM4RL3yP1S50xpdrAdRF7a7CwHxy
-9A2YHIDUBIr/TS+9vbniXZvbcTrzL/8kV9aGcFdB9s/24JW5I0TZAeGp73HYHXvL
-V8halFLVaMAc5Z5asUK8PXaTxEYUGE7JMo0asaJ32Zs2y2uWAPHbfDggFoxuKCPE
-IBLSHrAgwOV02iUR/LZFWf85yjXAXQ==
-=26x9
------END PGP SIGNATURE-----
+>> - Flush to zero(MSACSR.FS) is removed and not supported.
+>>
+>> - If you use "movfcsr2gr" to read the fcsr16, the value is *UNDEFINED*.
 
---Sig_/Qxu3fVwru.D9wnUu74y0uUZ--
