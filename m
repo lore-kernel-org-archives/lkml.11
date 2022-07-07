@@ -2,285 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAED2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbiGGKNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:13:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
+        id S235240AbiGGKN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234163AbiGGKNh (ORCPT
+        with ESMTP id S235161AbiGGKNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:13:37 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3661CFF1;
-        Thu,  7 Jul 2022 03:13:35 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id y8so16755810eda.3;
-        Thu, 07 Jul 2022 03:13:35 -0700 (PDT)
+        Thu, 7 Jul 2022 06:13:55 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE1B4F1B4
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:13:53 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31cf1adbf92so38384157b3.4
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:13:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iMZJTyLzHVlGJbjHHwMCbTzqcWe51RNsAkxUieZWJ7k=;
-        b=VCmv0d/idVqsawSw4dNf5d4cG0+v2rlO5EjSeZ+YH70p7NLFR9qk1Haac7TZTyy5cL
-         43pM5tnNFlL4x7fzQbZi4SXIelrYvz/HuQTkFsbtbgDvxYHH3+EPp38na0bnUU8J415J
-         kfascdyDtgisfsEn7UH0U0Ryh6mCx2hlAGTXwy5movjtrpy5KyxmheLiOcAGEPpHYfKg
-         inVARqNn4DJUxZAT5BCouPPQGoRbVW84oaJPQAoOULhoAeKxtaPeW1HeGT57nxMTofuB
-         S+QGZrpQW6cdzr0ALDenkWVBoQT4qzaA361Aex08eAeoHwH7cm+u0gIwT46Il/4bM9gj
-         3hSw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kPWo2TmGl+9OHVe70g4XsibJyi/n5Q+LOKMuqK03HYA=;
+        b=NQ9bRvc9vYE+J89XD7PO1q7mkA13sA71QpWW5mmA90B7A5ldxeO5Pue7F+raM4qwVK
+         7PTHolsnOA/QyktohmZhPj4QG3UIvIpNp6w9MLNizTeJjag2aCzvouMmjQ9Dozewakdc
+         p4i/vm4y5Nmon2hCM/O7ALNrjqnKceKFdes1VyKc/SalQalLTfdWnmAh7Vwzs1r7ruCh
+         OUfVLilKCmffj87sOoCilovelYVOLN3BusHLwHcUPsRgZhy97AzywVaFtQwi1DidwQIA
+         X12W1N7SYNR1CXBtk3ROP3Pi0XB9JcdnT6cLBwsgEJdcJY7RXrVrnlkBNVXz8wM9DCz5
+         jhBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iMZJTyLzHVlGJbjHHwMCbTzqcWe51RNsAkxUieZWJ7k=;
-        b=Vuf+/3+F6nVvmiCIiB0RvRiA/9E+dyFmV0+lYJZc1/4yUe9Hy90Rd4o3Dwn20Sz0M/
-         AdNqt7H994acaaa2lsCaxHm+ZKBXDXkn5P/ODfE8l1vm4lvr+ZU/GTioAL7mHBzwbs05
-         et2Cku+lQOb5sL3X2cJ33m7DwfcM73Xy+lWQt7tmrXTzN5gbNakzNkXCc3RLMiVKbtws
-         l5OJ4kLdDl4tIal0rYd/OvEVZen1sk/v/ES1t+iYTacrds8lAEf5Vr+YcdVmdhWskB++
-         dybIhlCe4NYTLGdLn9GiolXEv0btK30GyhPY+pjHj/eZOEVbsmV5KwPikxcQXe492a4y
-         wYig==
-X-Gm-Message-State: AJIora8n0Fj4nYAgDjZAmWbF3pmQa9XsZNvHTseSfRiE+3RtPaflvLNn
-        mTO1GgyoiGi5SoMBN6OqNWQ=
-X-Google-Smtp-Source: AGRyM1sw0JAFEwAiQV7xSiDul0CqnEeHUwawcBNUdD4JRsjNVHXM3EDtYp5uVPB0LbB62B8i4MaDsw==
-X-Received: by 2002:a05:6402:540c:b0:434:d965:f8a with SMTP id ev12-20020a056402540c00b00434d9650f8amr60896932edb.30.1657188814150;
-        Thu, 07 Jul 2022 03:13:34 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id kv12-20020a17090778cc00b0072ac3f06615sm6235747ejc.133.2022.07.07.03.13.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 03:13:33 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [PATCH v4 3/3] clk: qcom: lcc-ipq806x: convert to parent data
-Date:   Thu,  7 Jul 2022 12:13:26 +0200
-Message-Id: <20220707101326.30880-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220707101326.30880-1-ansuelsmth@gmail.com>
-References: <20220707101326.30880-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kPWo2TmGl+9OHVe70g4XsibJyi/n5Q+LOKMuqK03HYA=;
+        b=4fOTzNoi38PANYOyNodk3mngh0tcgsXSEU4/Siol6s4+m0LiYSvN7dGC7tud+vgrsr
+         teP95TC7NddKSpSamCbjbTV4CdrbOl60Gy4ljFMG3mwwfLf8MuWH2fktkRoDpTuhSktV
+         WswI01Gre69FFtOt5uwj+hWmNYjqaLz0cpx/+R9S/1a669mk7Iw3LmpvNnDTGXD2HWqA
+         aGRe5ithVk3QVApMojkeUbdVUiWjgxl6YjlSFpz1JEh0QwagFvsxqbfD+8w1i5vMQEv0
+         /4ELyFPeOSohhI9EQLdAOG+PNX8jmI02YB0kXBeBmZ6Nt8Rq41g2qM9TcKMu4GaBOTol
+         zjSQ==
+X-Gm-Message-State: AJIora8O+YJZyPBV5JmL6cGL7iwP2/sn53sI4sgklPr3JSu6QfVDiF8D
+        6SrABCz08z4f8G3FHd07n+3MNGF+xhk84DMFT5IjMA==
+X-Google-Smtp-Source: AGRyM1vadqM77gQ/U73N1rxYJChYky+4QRezCslan02cQ8qsw+iLZ89lKnRN4bUYz8lDps/Q7HOvTFEAYhyq8/bzdD0=
+X-Received: by 2002:a81:e17:0:b0:31c:a24c:9ee6 with SMTP id
+ 23-20020a810e17000000b0031ca24c9ee6mr21067667ywo.362.1657188832898; Thu, 07
+ Jul 2022 03:13:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-5-glider@google.com>
+In-Reply-To: <20220701142310.2188015-5-glider@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Thu, 7 Jul 2022 12:13:17 +0200
+Message-ID: <CANpmjNN28k3B1-nX=gtdJxZ4MS=bF+CuPG1EFp5fC2TDQUU=4Q@mail.gmail.com>
+Subject: Re: [PATCH v4 04/45] x86: asm: instrument usercopy in get_user() and __put_user_size()
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert lcc-ipq806x driver to parent_data API.
+On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
+>
+> Use hooks from instrumented.h to notify bug detection tools about
+> usercopy events in get_user() and put_user_size().
+>
+> It's still unclear how to instrument put_user(), which assumes that
+> instrumentation code doesn't clobber RAX.
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
-v4:
-- Fix compilation error
-v3:
- - Inline pxo pll4 parent
- - Change .name from pxo to pxo_board
+do_put_user_call() has a comment about KASAN clobbering %ax, doesn't
+this also apply to KMSAN? If not, could we have a <asm/instrumented.h>
+that provides helpers to push registers on the stack and pop them back
+on return?
 
- drivers/clk/qcom/lcc-ipq806x.c | 77 ++++++++++++++++++----------------
- 1 file changed, 42 insertions(+), 35 deletions(-)
+Also it seems the test robot complained about this patch.
 
-diff --git a/drivers/clk/qcom/lcc-ipq806x.c b/drivers/clk/qcom/lcc-ipq806x.c
-index ba90bebba597..52711ca59345 100644
---- a/drivers/clk/qcom/lcc-ipq806x.c
-+++ b/drivers/clk/qcom/lcc-ipq806x.c
-@@ -34,7 +34,9 @@ static struct clk_pll pll4 = {
- 	.status_bit = 16,
- 	.clkr.hw.init = &(struct clk_init_data){
- 		.name = "pll4",
--		.parent_names = (const char *[]){ "pxo" },
-+		.parent_data = (const struct clk_parent_data*[]){
-+			{ .fw_name = "pxo", .name = "pxo_board" },
-+		},
- 		.num_parents = 1,
- 		.ops = &clk_pll_ops,
- 	},
-@@ -64,9 +66,9 @@ static const struct parent_map lcc_pxo_pll4_map[] = {
- 	{ P_PLL4, 2 }
- };
- 
--static const char * const lcc_pxo_pll4[] = {
--	"pxo",
--	"pll4_vote",
-+static const struct clk_parent_data lcc_pxo_pll4[] = {
-+	{ .fw_name = "pxo", .name = "pxo" },
-+	{ .fw_name = "pll4_vote", .name = "pll4_vote" },
- };
- 
- static struct freq_tbl clk_tbl_aif_mi2s[] = {
-@@ -131,18 +133,14 @@ static struct clk_rcg mi2s_osr_src = {
- 		.enable_mask = BIT(9),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_osr_src",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_ops,
- 			.flags = CLK_SET_RATE_GATE,
- 		},
- 	},
- };
- 
--static const char * const lcc_mi2s_parents[] = {
--	"mi2s_osr_src",
--};
--
- static struct clk_branch mi2s_osr_clk = {
- 	.halt_reg = 0x50,
- 	.halt_bit = 1,
-@@ -152,7 +150,9 @@ static struct clk_branch mi2s_osr_clk = {
- 		.enable_mask = BIT(17),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_osr_clk",
--			.parent_names = lcc_mi2s_parents,
-+			.parent_hws = (const struct clk_hw*[]){
-+				&mi2s_osr_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -167,7 +167,9 @@ static struct clk_regmap_div mi2s_div_clk = {
- 	.clkr = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_div_clk",
--			.parent_names = lcc_mi2s_parents,
-+			.parent_hws = (const struct clk_hw*[]){
-+				&mi2s_osr_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_regmap_div_ops,
- 		},
-@@ -183,7 +185,9 @@ static struct clk_branch mi2s_bit_div_clk = {
- 		.enable_mask = BIT(15),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_bit_div_clk",
--			.parent_names = (const char *[]){ "mi2s_div_clk" },
-+			.parent_hws = (const struct clk_hw*[]){
-+				&mi2s_div_clk.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -191,6 +195,10 @@ static struct clk_branch mi2s_bit_div_clk = {
- 	},
- };
- 
-+static const struct clk_parent_data lcc_mi2s_bit_div_codec_clk[] = {
-+	{ .hw = &mi2s_bit_div_clk.clkr.hw, },
-+	{ .fw_name = "mi2s_codec_clk", .name = "mi2s_codec_clk" },
-+};
- 
- static struct clk_regmap_mux mi2s_bit_clk = {
- 	.reg = 0x48,
-@@ -199,11 +207,8 @@ static struct clk_regmap_mux mi2s_bit_clk = {
- 	.clkr = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_bit_clk",
--			.parent_names = (const char *[]){
--				"mi2s_bit_div_clk",
--				"mi2s_codec_clk",
--			},
--			.num_parents = 2,
-+			.parent_data = lcc_mi2s_bit_div_codec_clk,
-+			.num_parents = ARRAY_SIZE(lcc_mi2s_bit_div_codec_clk),
- 			.ops = &clk_regmap_mux_closest_ops,
- 			.flags = CLK_SET_RATE_PARENT,
- 		},
-@@ -245,8 +250,8 @@ static struct clk_rcg pcm_src = {
- 		.enable_mask = BIT(9),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "pcm_src",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_ops,
- 			.flags = CLK_SET_RATE_GATE,
- 		},
-@@ -262,7 +267,9 @@ static struct clk_branch pcm_clk_out = {
- 		.enable_mask = BIT(11),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "pcm_clk_out",
--			.parent_names = (const char *[]){ "pcm_src" },
-+			.parent_hws = (const struct clk_hw*[]){
-+				&pcm_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -270,6 +277,11 @@ static struct clk_branch pcm_clk_out = {
- 	},
- };
- 
-+static const struct clk_parent_data lcc_pcm_clk_out_codec_clk[] = {
-+	{ .hw = &pcm_clk_out.clkr.hw, },
-+	{ .fw_name = "pcm_codec_clk", .name = "pcm_codec_clk" },
-+};
-+
- static struct clk_regmap_mux pcm_clk = {
- 	.reg = 0x54,
- 	.shift = 10,
-@@ -277,11 +289,8 @@ static struct clk_regmap_mux pcm_clk = {
- 	.clkr = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "pcm_clk",
--			.parent_names = (const char *[]){
--				"pcm_clk_out",
--				"pcm_codec_clk",
--			},
--			.num_parents = 2,
-+			.parent_data = lcc_pcm_clk_out_codec_clk,
-+			.num_parents = ARRAY_SIZE(lcc_pcm_clk_out_codec_clk),
- 			.ops = &clk_regmap_mux_closest_ops,
- 			.flags = CLK_SET_RATE_PARENT,
- 		},
-@@ -325,18 +334,14 @@ static struct clk_rcg spdif_src = {
- 		.enable_mask = BIT(9),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "spdif_src",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_ops,
- 			.flags = CLK_SET_RATE_GATE,
- 		},
- 	},
- };
- 
--static const char * const lcc_spdif_parents[] = {
--	"spdif_src",
--};
--
- static struct clk_branch spdif_clk = {
- 	.halt_reg = 0xd4,
- 	.halt_bit = 1,
-@@ -346,7 +351,9 @@ static struct clk_branch spdif_clk = {
- 		.enable_mask = BIT(12),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "spdif_clk",
--			.parent_names = lcc_spdif_parents,
-+			.parent_hws = (const struct clk_hw*[]){
-+				&spdif_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -384,8 +391,8 @@ static struct clk_rcg ahbix_clk = {
- 		.enable_mask = BIT(11),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "ahbix",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_lcc_ops,
- 		},
- 	},
--- 
-2.36.1
-
+> Signed-off-by: Alexander Potapenko <glider@google.com>
+> ---
+> Link: https://linux-review.googlesource.com/id/Ia9f12bfe5832623250e20f1859fdf5cc485a2fce
+> ---
+>  arch/x86/include/asm/uaccess.h | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+> index 913e593a3b45f..1a8b5a234474f 100644
+> --- a/arch/x86/include/asm/uaccess.h
+> +++ b/arch/x86/include/asm/uaccess.h
+> @@ -5,6 +5,7 @@
+>   * User space memory access functions
+>   */
+>  #include <linux/compiler.h>
+> +#include <linux/instrumented.h>
+>  #include <linux/kasan-checks.h>
+>  #include <linux/string.h>
+>  #include <asm/asm.h>
+> @@ -99,11 +100,13 @@ extern int __get_user_bad(void);
+>         int __ret_gu;                                                   \
+>         register __inttype(*(ptr)) __val_gu asm("%"_ASM_DX);            \
+>         __chk_user_ptr(ptr);                                            \
+> +       instrument_copy_from_user_before((void *)&(x), ptr, sizeof(*(ptr))); \
+>         asm volatile("call __" #fn "_%P4"                               \
+>                      : "=a" (__ret_gu), "=r" (__val_gu),                \
+>                         ASM_CALL_CONSTRAINT                             \
+>                      : "0" (ptr), "i" (sizeof(*(ptr))));                \
+>         (x) = (__force __typeof__(*(ptr))) __val_gu;                    \
+> +       instrument_copy_from_user_after((void *)&(x), ptr, sizeof(*(ptr)), 0); \
+>         __builtin_expect(__ret_gu, 0);                                  \
+>  })
+>
+> @@ -248,7 +251,9 @@ extern void __put_user_nocheck_8(void);
+>
+>  #define __put_user_size(x, ptr, size, label)                           \
+>  do {                                                                   \
+> +       __typeof__(*(ptr)) __pus_val = x;                               \
+>         __chk_user_ptr(ptr);                                            \
+> +       instrument_copy_to_user(ptr, &(__pus_val), size);               \
+>         switch (size) {                                                 \
+>         case 1:                                                         \
+>                 __put_user_goto(x, ptr, "b", "iq", label);              \
+> @@ -286,6 +291,7 @@ do {                                                                        \
+>  #define __get_user_size(x, ptr, size, label)                           \
+>  do {                                                                   \
+>         __chk_user_ptr(ptr);                                            \
+> +       instrument_copy_from_user_before((void *)&(x), ptr, size);      \
+>         switch (size) {                                                 \
+>         case 1: {                                                       \
+>                 unsigned char x_u8__;                                   \
+> @@ -305,6 +311,7 @@ do {                                                                        \
+>         default:                                                        \
+>                 (x) = __get_user_bad();                                 \
+>         }                                                               \
+> +       instrument_copy_from_user_after((void *)&(x), ptr, size, 0);    \
+>  } while (0)
+>
+>  #define __get_user_asm(x, addr, itype, ltype, label)                   \
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
