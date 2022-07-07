@@ -2,94 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A9BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9148FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbiGGCzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57108 "EHLO
+        id S234835AbiGGC4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234841AbiGGCzo (ORCPT
+        with ESMTP id S234687AbiGGC4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:55:44 -0400
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668982E9FE
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:55:43 -0700 (PDT)
-Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 86E7B1008B38D;
-        Thu,  7 Jul 2022 10:44:52 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 0172A200A52B4;
-        Thu,  7 Jul 2022 10:44:50 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
-        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id kpTCTY_YsFCG; Thu,  7 Jul 2022 10:44:49 +0800 (CST)
-Received: from localhost.localdomain (unknown [202.120.40.82])
-        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 9FFD1200A5BFF;
-        Thu,  7 Jul 2022 10:44:39 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     eperezma@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, sgarzare@redhat.com,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [PATCH v2 3/4] virtio_test: use random length scatterlists to test descriptor chain
-Date:   Thu,  7 Jul 2022 10:44:08 +0800
-Message-Id: <20220707024409.1869-4-qtxuning1999@sjtu.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220707024409.1869-1-qtxuning1999@sjtu.edu.cn>
-References: <20220707024409.1869-1-qtxuning1999@sjtu.edu.cn>
+        Wed, 6 Jul 2022 22:56:22 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171C02F647;
+        Wed,  6 Jul 2022 19:56:21 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ldgwl36WZzcmy1;
+        Thu,  7 Jul 2022 10:54:15 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 10:56:17 +0800
+Message-ID: <cb0966da-c8e8-6c08-4204-327ce7f11576@huawei.com>
+Date:   Thu, 7 Jul 2022 10:56:16 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH bpf-next v6 0/4] bpf trampoline for arm64
+Content-Language: en-US
+To:     Will Deacon <will@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        Catalin Marinas <Catalin.Marinas@arm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <James.Morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+References: <20220625161255.547944-1-xukuohai@huawei.com>
+ <d3c1f1ed-353a-6af2-140d-c7051125d023@iogearbox.net>
+ <20220705160045.GA1240@willie-the-truck> <YsWzfPUmgtRZi/ny@myrica>
+ <20220706161125.GB3204@willie-the-truck>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <20220706161125.GB3204@willie-the-truck>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prior implementation only use one descriptor for each io event, which
-does't test code of descriptor chain. More importantly, one descriptor
-will not use indirect feature even indirect feature is specified. Use
-random length scatterlists here to test descriptor chain.
+On 7/7/2022 12:11 AM, Will Deacon wrote:
+> On Wed, Jul 06, 2022 at 05:08:49PM +0100, Jean-Philippe Brucker wrote:
+>> On Tue, Jul 05, 2022 at 05:00:46PM +0100, Will Deacon wrote:
+>>>> Given you've been taking a look and had objections in v5, would be great if
+>>> you
+>>>> can find some cycles for this v6.
+>>>
+>>> Mark's out at the moment, so I wouldn't hold this series up pending his ack.
+>>> However, I agree that it would be good if _somebody_ from the Arm side can
+>>> give it the once over, so I've added Jean-Philippe to cc in case he has time
+>>> for a quick review.
+>>
+>> I'll take a look. Sorry for not catching this earlier, all versions of the
+>> series somehow ended up in my spams :/
+> 
+> Yeah, same here. It was only Daniel's mail that hit my inbox!
+> 
+> Will
+> .
 
-Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
----
- tools/virtio/virtio_test.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+Sorry, there is a misconfiguration in the huawei.com mail server:
 
-diff --git a/tools/virtio/virtio_test.c b/tools/virtio/virtio_test.c
-index 1ecd64271..363695b33 100644
---- a/tools/virtio/virtio_test.c
-+++ b/tools/virtio/virtio_test.c
-@@ -20,6 +20,7 @@
- #include "../../drivers/vhost/test.h"
- 
- #define RANDOM_BATCH -1
-+#define MAX_SG_FRAGS 8UL
- #define ALIGN 4096
- #define RINGSIZE   256
- #define TEST_BUF_NUM 0x100000
-@@ -172,7 +173,8 @@ static void wait_for_interrupt(struct vdev_info *dev)
- static void run_test(struct vdev_info *dev, struct vq_info *vq,
- 		     bool delayed, int batch, int reset_n, int bufs)
- {
--	struct scatterlist sl;
-+	struct scatterlist sg[MAX_SG_FRAGS];
-+	int sg_size = 0;
- 	long started = 0, completed = 0, next_reset = reset_n;
- 	long completed_before, started_before;
- 	int r, test = 1;
-@@ -197,8 +199,11 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
- 
- 			while (started < bufs &&
- 			       (started - completed) < batch) {
--				sg_init_one(&sl, dev->buf, dev->buf_size);
--				r = virtqueue_add_outbuf(vq->vq, &sl, 1,
-+				sg_size = random() % (MAX_SG_FRAGS - 1) + 1;
-+				sg_init_table(sg, sg_size);
-+				for (int i = 0; i < sg_size; ++i)
-+					sg_set_buf(&sg[i], dev->buf + i, 0x1);
-+				r = virtqueue_add_outbuf(vq->vq, sg, sg_size,
- 							 dev->buf + started,
- 							 GFP_ATOMIC);
- 				if (unlikely(r != 0)) {
--- 
-2.17.1
+https://lore.kernel.org/all/20220523152516.7sr247i3bzwhr44w@quack3.lan/
 
+Our IT admins are working on this issue and hopefully they'll fix it soon.
