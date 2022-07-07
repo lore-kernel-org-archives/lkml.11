@@ -2,205 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D728FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C1EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235092AbiGGJgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
+        id S235061AbiGGJiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbiGGJgl (ORCPT
+        with ESMTP id S231752AbiGGJiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:36:41 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55DE933E3D;
-        Thu,  7 Jul 2022 02:36:40 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id f39so30140942lfv.3;
-        Thu, 07 Jul 2022 02:36:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uk6eRcniuhN5P9bQg4gHK3VjMm5IPigYNw1THcOSKvQ=;
-        b=FyW9C9qfEZR7mIZPF8S5ycmEPLrPFTBUXsb+qNIX6ciPJNlJ5nK62YzBOuRXszQ5qS
-         ly6Kg2bk4jh0p4SYd83cpL8Xi7/FgvBXqHjjCwMdawTMnRoHjXIZOtkcLU6vcnW8IKex
-         TyttroUtcTPW6/lNBnrgkX44TNj4pc0mOud8iCQEDrcKAVaAVikMuym8H4OZ9L02bXxf
-         lSF/zq4wUUjdloN5t7rje790Ofi7sIHes0cLDnYZ0avFnmwUBkjMP7vY8hdmuvyJN752
-         DzHCyWeGBxXRNNRH/sAhIBDfV8iRhR7hG0QwMSSP/RWspZsu3IpF/f07KyCfN8/mgrN9
-         gDWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uk6eRcniuhN5P9bQg4gHK3VjMm5IPigYNw1THcOSKvQ=;
-        b=WtDiXkJX0mW9fdrZPMpI7HEnpdU6fKSNfPp/5L49XRmErcv8Zp9QWZgyCSk9VOv9cQ
-         SWgMnzoADv6bAsYYBDnIt+qZW0U3FwLzSbpHBv28gO3qcylJJdGnUHfot4CK3FrWuHRM
-         ltQIPh5NGNlBdYOoDB4CLIPYgELwjVnm1PZUqorJDBq2ZhaLYfvzlPecVRCykiQ3m4sD
-         J7kf18H7qeFSUVAh39L43wGJ+dLVb9BIrKd04RxBxA2MPNIu1xvGfNAbdcQcCbPdKfc8
-         Rl/YCRdnG+gqNPltMZUWgJoNjOWk/F2vj77vaL51JM7MQBe0cehvS4sOEsUx6rRFXEPt
-         kRGg==
-X-Gm-Message-State: AJIora9A3Xy14oLlI62bRb6QvhlNlNkjeoXIIQu/UraO12te7llobJXx
-        AUuBJ3EyLNxj68pDzHQ1E6Vq3o02KB1vC5EiMpw=
-X-Google-Smtp-Source: AGRyM1s/3fGanv457EEA0rSnHymLVsgKvtRdCMQ/zbb9LZ8KzRNHq3RmIRwPJjpEQWKBjKorkI/YCRyBMceDO+VGtDE=
-X-Received: by 2002:a05:6512:31d5:b0:47f:718a:3459 with SMTP id
- j21-20020a05651231d500b0047f718a3459mr30234854lfe.480.1657186598284; Thu, 07
- Jul 2022 02:36:38 -0700 (PDT)
+        Thu, 7 Jul 2022 05:38:03 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D6D4505C;
+        Thu,  7 Jul 2022 02:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1657186680; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kXIlb6hdJqwtDzPJXzLaKXuJUAGqwuysqFCgGoS6L9w=;
+        b=NKmYCqFt+Bn8O5D8zNt1stEVUcLMJ7FFoyccHrpplWfWGAESaQJEK3TE3fjxpPWPw8ONIu
+        nf1ZpMQezjE6AGoRvyNUsoBGTqXM+YDCpHOsJaYgPQdcEBsrW4/JIoiG1eHRwFFCA0acF0
+        BtHJn3OyliNtw4dXcHcKuDRuodF9K6U=
+Date:   Thu, 07 Jul 2022 10:37:49 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 05/11] ASoC: jz4740-i2s: Remove unused SoC version IDs
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, linux-mips@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Message-Id: <1F9NER.E4VHP6MF1K5A2@crapouillou.net>
+In-Reply-To: <20220706211330.120198-6-aidanmacdonald.0x0@gmail.com>
+References: <20220706211330.120198-1-aidanmacdonald.0x0@gmail.com>
+        <20220706211330.120198-6-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-References: <20220527084647.30835-1-ctcchien@nuvoton.com> <20220527084647.30835-4-ctcchien@nuvoton.com>
- <YrYd+FkiFPz84twJ@mail.local> <CAHpyw9cdmCSZEE4ZbpnehpyvFhpPWA+_E5zXzJerNX9xqYet5Q@mail.gmail.com>
- <CAL3ZnpzSm7f1L2MMuDr9_vg3TQuk3PSr46fwmJTMz4sA2sdCJg@mail.gmail.com> <YsaQrksj8jBhJYGP@mail.local>
-In-Reply-To: <YsaQrksj8jBhJYGP@mail.local>
-From:   Mining Lin <mimi05633@gmail.com>
-Date:   Thu, 7 Jul 2022 17:36:26 +0800
-Message-ID: <CAL3ZnpxwEhH4bu8pmCCCkVG=bUHGvoTKSa1NgVJaEeEtcbGCBQ@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] RTC: nuvoton: Add NCT3018Y real time clock driver
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Benjamin Fair <benjaminfair@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Patrick Venture <venture@google.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, a.zummo@towertech.it,
-        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
-        KFTING <KFTING@nuvoton.com>, ctcchien@nuvoton.com,
-        Medad Young <medadyoung@gmail.com>,
-        CS20 MYLin1 <mylin1@nuvoton.com>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-rtc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Alexandre,
 
-Thank you for your comment and response.
-I will refine again and reply below.
 
-Thanks.
-Best Regards,
-Mia
+Le mer., juil. 6 2022 at 22:13:24 +0100, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> Using version IDs makes the code hard to follow -- it's better to
+> describe the functional differences between SoCs instead. Remove
+> the IDs since they're no longer used.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-Alexandre Belloni <alexandre.belloni@bootlin.com> =E6=96=BC 2022=E5=B9=B47=
-=E6=9C=887=E6=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=883:52=E5=AF=AB=E9=
-=81=93=EF=BC=9A
->
-> On 07/07/2022 15:17:28+0800, Mining Lin wrote:
-> > Dear Alexandre,
-> >
-> > Thank you for your comments.
-> > I will refine and reply below.
-> >
-> > Thanks.
-> > Best Regards,
-> > Mia
-> >
-> > Medad Young <medadyoung@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=9C=887=
-=E6=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=881:31=E5=AF=AB=E9=81=93=EF=BC=
-=9A
-> > >
-> > > Hello Alexandre,
-> > >
-> > > Thanks for your comments.
-> > > I add Mining Lin <mimi05633@gmail.com> into this mail thread,
-> > > and she is going to follow up this RTC driver.
-> > > She will be in charge of maintaining this driver.
-> > >
-> > > Alexandre Belloni <alexandre.belloni@bootlin.com> =E6=96=BC 2022=E5=
-=B9=B46=E6=9C=8825=E6=97=A5 =E9=80=B1=E5=85=AD =E5=87=8C=E6=99=A84:26=E5=AF=
-=AB=E9=81=93=EF=BC=9A
-> > > >
-> > > > Hello,
-> > > >
-> > > > Please run ./scripts/checkpatch.pl --strict on your patch, there ar=
-e a
-> > > > bunch of issues.
-> > > >
-> > [Mia] I will run ./scripts/checkpatch.pl --strict on my patch to fix is=
-sues.
-> >
-> > > > On 27/05/2022 16:46:47+0800, medadyoung@gmail.com wrote:
-> > > > > +static int nct3018y_set_alarm_mode(struct i2c_client *client, bo=
-ol on)
-> > > > > +{
-> > > > > +     int err, flags;
-> > > > > +
-> > > > > +     dev_dbg(&client->dev, "%s:on:%d\n", __func__, on);
-> > > > > +
-> > > > > +     flags =3D  i2c_smbus_read_byte_data(client, NCT3018Y_REG_CT=
-RL);
-> > > > > +     if (flags < 0) {
-> > > > > +             dev_err(&client->dev,
-> > > > > +                     "Failed to read NCT3018Y_REG_CTRL\n");
-> > > >
-> > > > You should cut down on the number of error messages, they are usual=
-ly
-> > > > not useful as the user doesn't have any specific action after getti=
-ng
-> > > > one of them apart from trying the action once again. Also, this wil=
-l
-> > > > make your code shorter. dev_dbg is fine.
-> > > >
-> > [Mia] I will modify dev_err to dev_dbg if there is an error and nothing=
- to do.
-> >
-> > > > > +/*
-> > > > > + * In the routines that deal directly with the nct3018y hardware=
-, we use
-> > > > > + * rtc_time -- month 0-11, hour 0-23, yr =3D calendar year-epoch=
-.
-> > > > > + */
-> > > > > +static int nct3018y_rtc_read_time(struct device *dev, struct rtc=
-_time *tm)
-> > > > > +{
-> > > > > +     struct i2c_client *client =3D to_i2c_client(dev);
-> > > > > +     unsigned char buf[10];
-> > > > > +     int err;
-> > > > > +
-> > > >
-> > > > You should still return an error if the time is invalid there but w=
-ithout
-> > > > an error message.
-> > > >
-> > [Mia] I will verify the time by rtc_valid_tm(tm).
-> >
->
-> No, I meant checking NCT3018Y_REG_ST as was done in the previous
-> revisions of the series
->
-[Mia] I will check NCT3018Y_REG_ST as was done in the previous revisions.
+Acked-by: Paul Cercueil <paul@crapouillou.net>
 
-> > > > > +static struct clk *nct3018y_clkout_register_clk(struct nct3018y =
-*nct3018y)
-> > > > > +{
-> > > > > +     struct i2c_client *client =3D nct3018y->client;
-> > > > > +     struct device_node *node =3D client->dev.of_node;
-> > > > > +     struct clk *clk;
-> > > > > +     struct clk_init_data init;
-> > > > > +     int flags, err;
-> > > > > +
-> > > > > +     /* disable the clkout output */
-> > > > > +     flags =3D 0;
-> > > > > +     err =3D i2c_smbus_write_byte_data(client, NCT3018Y_REG_CLKO=
-, flags);
-> > > >
-> > > > BTW, this introduces a glitch in the clock output if the clock is
-> > > > actually used. Maybe you could just rely on the CCF core to disable=
- this
-> > > > clock when there are no users.
-> > > >
-> > [Mia] Do you mean there is no need to disable the clock output here?
-> >
->
-> The CCF will disable the clock at boot time if there are no users
->
-[Mia] I will remove disable clock output. Thank you so much for your reply.
+Cheers,
+-Paul
 
+> ---
+>  sound/soc/jz4740/jz4740-i2s.c | 12 ------------
+>  1 file changed, 12 deletions(-)
+>=20
+> diff --git a/sound/soc/jz4740/jz4740-i2s.c=20
+> b/sound/soc/jz4740/jz4740-i2s.c
+> index cbb89f724f64..8bb9449d13d3 100644
+> --- a/sound/soc/jz4740/jz4740-i2s.c
+> +++ b/sound/soc/jz4740/jz4740-i2s.c
+> @@ -81,15 +81,7 @@
+>  #define I2SDIV_IDV_SHIFT 8
+>  #define I2SDIV_IDV_MASK (0xf << I2SDIV_IDV_SHIFT)
+>=20
+> -enum jz47xx_i2s_version {
+> -	JZ_I2S_JZ4740,
+> -	JZ_I2S_JZ4760,
+> -	JZ_I2S_JZ4770,
+> -	JZ_I2S_JZ4780,
+> -};
+> -
+>  struct i2s_soc_info {
+> -	enum jz47xx_i2s_version version;
+>  	struct snd_soc_dai_driver *dai;
+>=20
+>  	struct reg_field field_rx_fifo_thresh;
+> @@ -406,7 +398,6 @@ static struct snd_soc_dai_driver jz4740_i2s_dai =3D=20
+> {
+>  };
+>=20
+>  static const struct i2s_soc_info jz4740_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4740,
+>  	.dai =3D &jz4740_i2s_dai,
+>  	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 12, 15),
+>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 8, 11),
+> @@ -415,7 +406,6 @@ static const struct i2s_soc_info=20
+> jz4740_i2s_soc_info =3D {
+>  };
+>=20
+>  static const struct i2s_soc_info jz4760_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4760,
+>  	.dai =3D &jz4740_i2s_dai,
+>  	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 24, 27),
+>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+> @@ -442,7 +432,6 @@ static struct snd_soc_dai_driver jz4770_i2s_dai =3D=20
+> {
+>  };
+>=20
+>  static const struct i2s_soc_info jz4770_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4770,
+>  	.dai =3D &jz4770_i2s_dai,
+>  	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 24, 27),
+>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+> @@ -451,7 +440,6 @@ static const struct i2s_soc_info=20
+> jz4770_i2s_soc_info =3D {
+>  };
+>=20
+>  static const struct i2s_soc_info jz4780_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4780,
+>  	.dai =3D &jz4770_i2s_dai,
+>  	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 24, 27),
+>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
 > --
-> Alexandre Belloni, co-owner and COO, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
+> 2.35.1
+>=20
+
+
