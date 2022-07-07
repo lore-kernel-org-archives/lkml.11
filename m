@@ -2,96 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9F9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8CBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235882AbiGGNZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46122 "EHLO
+        id S235522AbiGGN0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235689AbiGGNZK (ORCPT
+        with ESMTP id S235536AbiGGN0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:25:10 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545EB31361;
-        Thu,  7 Jul 2022 06:25:08 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 814EC22248;
-        Thu,  7 Jul 2022 15:25:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657200306;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rfVNhUaiKivo0ZTq1LnzNfkdUYyvDKnK+aAp1PrLvvg=;
-        b=pnqNtZBCzcBWgRXo3iY/d2uLR1qZ/2SmpKnl/Fea/BBL079ibUmVQhZxGKbJF0xZuZACMy
-        Wy3KHt2IdZyBim6IK7CSsWN6mMXI5vyCTDw+S60k41acOzemU9EIaj8b8sYCMjBn5zsj2L
-        6cM2vMRFCGX8/fB0Y69wgZs5XNcXPNQ=
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 2/2] ARM: dts: kswitch-d10: enable the USB device port
-Date:   Thu,  7 Jul 2022 15:25:00 +0200
-Message-Id: <20220707132500.1708020-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220707132500.1708020-1-michael@walle.cc>
-References: <20220707132500.1708020-1-michael@walle.cc>
+        Thu, 7 Jul 2022 09:26:30 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F636F38
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:26:29 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id o25so32438084ejm.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 06:26:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:references
+         :content-language:in-reply-to:content-transfer-encoding;
+        bh=tY+0rSpG+ZxXV+LTASZJ6bTVvc9zmnwhvcgsYdewKjY=;
+        b=eR0NPHfeCZJcxvvNLj3EOkJxWQDpR/Eb5D2PFyz6aFjx2DRChup1t5WFyR7BGJzesm
+         DWMQvB2BsKR59CDK53jPhjmQ4MwaIT8ct13ffZ462U+OX5sTWWiim3eyUQncdvhnEWPB
+         TN+VsOvZfWeogNz+Rk2TSVP5Ikwimv/kdHkJIZN0I0b4ph8AsBPUffj0C5qzilyYYEtc
+         TPkilbl4gKDyA/+DxaELAcjqn75dw4okkgnpcfPbGP5QY+9zEqJ/BcfreEpYmJzI1mi+
+         8xMXhTJ6rbgVCxHTYZd+mhEGotatvQLXYVNiOdDwDhbBbm1UHuIw9C6IeRtIntzdnpnr
+         46ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=tY+0rSpG+ZxXV+LTASZJ6bTVvc9zmnwhvcgsYdewKjY=;
+        b=zuxAYJhvf3H2Qe2TdlPnKc7tepIxNvCLmX3FNzq3YUDZHiG/3J2S9ptxr7YSsflsYj
+         muVAfM66ROB4wyWVR7UnQEfVKSIecp/i4mluSrRaWBj9fjhx08b/oj0tOtGBeYV9R17E
+         Wb6mzioEqgvTeeXxm0eL8sVeTMQhv2sfJts2W0/szut3yr9IFlJlvfkfTCK31FYaZxNQ
+         iGsBfokpeVR/JNPMAfhxfaCVNbD8UA4D0DyvvhFIcY8HTdBoBpnYK72C6vIW06Rq+K3F
+         g6mcfxq0O/3mCh4lNTr/GvBtsZQH/ko9KGnXQ2/1CNBoZn4YbNEh1xdVreuG87eZWJ+F
+         iIMg==
+X-Gm-Message-State: AJIora8yUyeNtQerjg/nNFSiBSku32Hl1F1+OLiKpReipclLDaDFkooS
+        MyqYZ68KacWlYO8uzW2sI2I=
+X-Google-Smtp-Source: AGRyM1sCxqJXUtbAo18g4/JnTc6tlKx5d/XCM0uIc9SjG1CbReo2KzjxCELFlHxOK5vODLQv5cQK5g==
+X-Received: by 2002:a17:906:604f:b0:718:e9e8:9d2a with SMTP id p15-20020a170906604f00b00718e9e89d2amr44599520ejj.315.1657200387717;
+        Thu, 07 Jul 2022 06:26:27 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c093:600::1:3fc3])
+        by smtp.gmail.com with ESMTPSA id f15-20020a170906084f00b00718d18a1860sm18905324ejd.61.2022.07.07.06.26.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 06:26:27 -0700 (PDT)
+Message-ID: <0ef5a253-f554-4abd-e376-e37a3fbf67fb@gmail.com>
+Date:   Thu, 7 Jul 2022 14:26:22 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in pty_close
+To:     syzbot <syzbot+49950ba66096b1f0209b@syzkaller.appspotmail.com>,
+        axboe@kernel.dk, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000b0ddbe05e3340a3a@google.com>
+Content-Language: en-US
+In-Reply-To: <000000000000b0ddbe05e3340a3a@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that there is driver support for the USB device, enable it.
+On 7/7/22 10:52, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
+> git tree:       linux-next
+> console+strace: https://syzkaller.appspot.com/x/log.txt?x=14be3e84080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+> dashboard link: https://syzkaller.appspot.com/bug?extid=49950ba66096b1f0209b
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116d8ff4080000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13993e97f00000
+> 
+> The issue was bisected to:
+> 
+> commit a18427bb2d9b2c8bbacccd4f862b7b6b0a83ab75
+> Author: Pavel Begunkov <asml.silence@gmail.com>
+> Date:   Thu Jun 23 13:24:49 2022 +0000
+> 
+>      io_uring: optimise submission side poll_refs
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-changes since v1:
- - add pinctrl node, Thanks Claudiu
+#syz test: git@github.com:isilence/linux.git poll-syz
 
- .../boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi   | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1025755c080000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1225755c080000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1425755c080000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+49950ba66096b1f0209b@syzkaller.appspotmail.com
+> Fixes: a18427bb2d9b ("io_uring: optimise submission side poll_refs")
+> 
+> ==================================================================
+> BUG: KASAN: use-after-free in __wake_up_common+0x637/0x650 kernel/sched/wait.c:100
+> Read of size 8 at addr ffff8880253cdfb0 by task syz-executor106/3800
+> 
+> CPU: 0 PID: 3800 Comm: syz-executor106 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+> Call Trace:
+>   <TASK>
+>   __dump_stack lib/dump_stack.c:88 [inline]
+>   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>   print_address_description mm/kasan/report.c:317 [inline]
+>   print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+>   kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+>   __wake_up_common+0x637/0x650 kernel/sched/wait.c:100
+>   __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:137
+>   pty_close+0x224/0x4f0 drivers/tty/pty.c:68
+>   tty_release+0x45e/0x1200 drivers/tty/tty_io.c:1758
+>   __fput+0x277/0x9d0 fs/file_table.c:317
+>   task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+>   ptrace_notify+0x114/0x140 kernel/signal.c:2353
+>   ptrace_report_syscall include/linux/ptrace.h:420 [inline]
+>   ptrace_report_syscall_exit include/linux/ptrace.h:482 [inline]
+>   syscall_exit_work kernel/entry/common.c:249 [inline]
+>   syscall_exit_to_user_mode_prepare+0x129/0x280 kernel/entry/common.c:276
+>   __syscall_exit_to_user_mode_work kernel/entry/common.c:281 [inline]
+>   syscall_exit_to_user_mode+0x9/0x50 kernel/entry/common.c:294
+>   do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> RIP: 0033:0x7f4caf4b25d9
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f4caf45f268 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: 0000000000006a00 RBX: 00007f4caf5394e0 RCX: 00007f4caf4b25d9
+> RDX: 000000000000ff2e RSI: 0000000020000080 RDI: 0000000000000007
+> RBP: 00007f4caf506074 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f4caf5394e8
+> R13: 0000000020004400 R14: 6d74702f7665642f R15: 0000000000000006
+>   </TASK>
+> 
+> Allocated by task 3801:
+>   kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+>   kasan_set_track mm/kasan/common.c:45 [inline]
+>   set_alloc_info mm/kasan/common.c:436 [inline]
+>   ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+>   ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+>   __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+>   kmalloc include/linux/slab.h:600 [inline]
+>   __io_queue_proc+0x2dc/0x950 io_uring/poll.c:429
+>   poll_wait include/linux/poll.h:49 [inline]
+>   n_tty_poll+0xb4/0x8a0 drivers/tty/n_tty.c:2425
+>   tty_poll+0x139/0x1b0 drivers/tty/tty_io.c:2212
+>   vfs_poll include/linux/poll.h:88 [inline]
+>   __io_arm_poll_handler+0x488/0x1060 io_uring/poll.c:511
+>   io_arm_poll_handler+0x5c6/0xce0 io_uring/poll.c:638
+>   io_queue_async+0xc1/0x3e0 io_uring/io_uring.c:1753
+>   io_queue_sqe io_uring/io_uring.c:1787 [inline]
+>   io_submit_sqe io_uring/io_uring.c:2036 [inline]
+>   io_submit_sqes+0x15fc/0x1ec0 io_uring/io_uring.c:2147
+>   __do_sys_io_uring_enter+0xb85/0x1eb0 io_uring/io_uring.c:3087
+>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> 
+> Freed by task 3803:
+>   kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+>   kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+>   kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+>   ____kasan_slab_free mm/kasan/common.c:366 [inline]
+>   ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:328
+>   kasan_slab_free include/linux/kasan.h:200 [inline]
+>   slab_free_hook mm/slub.c:1754 [inline]
+>   slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
+>   slab_free mm/slub.c:3534 [inline]
+>   kfree+0xe2/0x4d0 mm/slub.c:4562
+>   io_clean_op+0x1b1/0xa40 io_uring/io_uring.c:1555
+>   io_dismantle_req io_uring/io_uring.c:930 [inline]
+>   io_free_req+0xc9/0x299 io_uring/io_uring.c:940
+>   io_put_req_find_next io_uring/io_uring.c:1236 [inline]
+>   io_wq_free_work.cold+0x62/0x67 io_uring/io_uring.c:1636
+>   io_worker_handle_work+0xc48/0x1c60 io_uring/io-wq.c:590
+>   io_wqe_worker+0x640/0xe90 io_uring/io-wq.c:634
+>   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+> 
+> The buggy address belongs to the object at ffff8880253cdf80
+>   which belongs to the cache kmalloc-64 of size 64
+> The buggy address is located 48 bytes inside of
+>   64-byte region [ffff8880253cdf80, ffff8880253cdfc0)
+> 
+> The buggy address belongs to the physical page:
+> page:ffffea000094f340 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x253cd
+> flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+> raw: 00fff00000000200 ffffea0000963c00 dead000000000003 ffff888011841640
+> raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 11, tgid 11 (kworker/u4:1), ts 9976176866, free_ts 0
+>   prep_new_page mm/page_alloc.c:2535 [inline]
+>   get_page_from_freelist+0x210d/0x3a30 mm/page_alloc.c:4282
+>   __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5506
+>   alloc_pages+0x1aa/0x310 mm/mempolicy.c:2280
+>   alloc_slab_page mm/slub.c:1824 [inline]
+>   allocate_slab+0x27e/0x3d0 mm/slub.c:1969
+>   new_slab mm/slub.c:2029 [inline]
+>   ___slab_alloc+0x89d/0xef0 mm/slub.c:3031
+>   __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
+>   slab_alloc_node mm/slub.c:3209 [inline]
+>   slab_alloc mm/slub.c:3251 [inline]
+>   __kmalloc+0x3a2/0x450 mm/slub.c:4420
+>   kmalloc include/linux/slab.h:605 [inline]
+>   kzalloc include/linux/slab.h:733 [inline]
+>   lsm_task_alloc security/security.c:615 [inline]
+>   security_task_alloc+0x10b/0x250 security/security.c:1655
+>   copy_process+0x23e0/0x7080 kernel/fork.c:2219
+>   kernel_clone+0xe7/0xab0 kernel/fork.c:2652
+>   user_mode_thread+0xad/0xe0 kernel/fork.c:2721
+>   call_usermodehelper_exec_work kernel/umh.c:174 [inline]
+>   call_usermodehelper_exec_work+0xcc/0x180 kernel/umh.c:160
+>   process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+>   worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+>   kthread+0x2e9/0x3a0 kernel/kthread.c:376
+>   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+> page_owner free stack trace missing
+> 
+> Memory state around the buggy address:
+>   ffff8880253cde80: 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc
+>   ffff8880253cdf00: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>> ffff8880253cdf80: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>                                       ^
+>   ffff8880253ce000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>   ffff8880253ce080: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> ==================================================================
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
 
-diff --git a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-index 5a6c5f7c371a..3eecaa1b7205 100644
---- a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-+++ b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-@@ -76,6 +76,12 @@ usart0_pins: usart0-pins {
- 		pins = "GPIO_25", "GPIO_26";
- 		function = "fc0_b";
- 	};
-+
-+	usbs_a_pins: usbs-a-pins {
-+		/* VBUS_DET */
-+		pins = "GPIO_66";
-+		function = "gpio";
-+	};
- };
- 
- &mdio0 {
-@@ -200,6 +206,13 @@ &switch {
- 	status = "okay";
- };
- 
-+&udc {
-+	pinctrl-0 = <&usbs_a_pins>;
-+	pinctrl-names = "default";
-+	atmel,vbus-gpio = <&gpio 66 GPIO_ACTIVE_HIGH>;
-+	status = "okay";
-+};
-+
- &watchdog {
- 	status = "okay";
- };
 -- 
-2.30.2
-
+Pavel Begunkov
