@@ -2,93 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94236C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B22DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235575AbiGGOpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:45:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38806 "EHLO
+        id S235959AbiGGOpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235872AbiGGOpU (ORCPT
+        with ESMTP id S230209AbiGGOpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:45:20 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EAC828E1F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:45:18 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5BC03106F;
-        Thu,  7 Jul 2022 07:45:18 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A8A383F66F;
-        Thu,  7 Jul 2022 07:45:15 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 15:44:04 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     "tarumizu.kohei@fujitsu.com" <tarumizu.kohei@fujitsu.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 5/8] arm64: Create cache sysfs directory without ACPI
- PPTT for hardware prefetch control
-Message-ID: <20220707144404.pm3qtgfo6fsik77d@bogus>
-References: <20220125071414.811344-1-tarumizu.kohei@fujitsu.com>
- <20220125071414.811344-6-tarumizu.kohei@fujitsu.com>
- <20220126103614.pcrcuc2kzklkq3xa@bogus>
- <OSBPR01MB2037E92722D372D48F54438E80269@OSBPR01MB2037.jpnprd01.prod.outlook.com>
- <4b99cf3c-f40b-cba7-2fa2-b6b311859776@arm.com>
+        Thu, 7 Jul 2022 10:45:31 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFA62656C;
+        Thu,  7 Jul 2022 07:45:30 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id r14so20875084wrg.1;
+        Thu, 07 Jul 2022 07:45:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0vvOcF04of4eueNy3j0/G+PNUIgeaFTAvFOiC1ayUAM=;
+        b=YoegBB6KD2BGYIwIFRuRldiaXMtgQZEaon/lxSPUd/NBq5ujfuIiFdwN/Kk9CF9tdK
+         m+6sCUv0gqnFnqu1i4kEiFHay3+ZgSbUYH0IYJipabvCJ44Sp+uN70qHfJu5fLygqBPa
+         RtMkk5Ds78rZTaUGBBpLJpWrCGF8x5kF+uXNKwMO2PWTawaAacXeEytSLMnJhtR/gxi9
+         JJbw9w1+8kwfDx8c7MaYBsGSME72NkmqggVbbgq/+NLCfOjNrTAEbUMcRunSdX+kzWhN
+         KBdcIAGmcDoC7+3rGU+TOcT8NGPMjoU1GQkBes2xKamQp69VvQO7yGZvMHVtH7HDFoi6
+         uhKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0vvOcF04of4eueNy3j0/G+PNUIgeaFTAvFOiC1ayUAM=;
+        b=B+xY3EEGh4DAuSnsdUm8GU7EdXQUM+lYz89INk4KDPJCD9s8lHQunWGrnxoRyTJo45
+         76drmDvfvBiG5Q9TV7+c9JYMcFzbtvc5N6zXsZA5CSbihcvv7EoP7CWd/zrCINHTJImU
+         jHazvF9Jts/Qsw2qvwiHJQlrCkk/qyhMF2+So9e1BmQm/ZIBHTV3l98whUnNOSr2oTUW
+         OsDp/PDWxH7oIBIPFcI0OSU5ljBntvDKOQh1QAqGXOh5PxduTIx304/mDl9aHuSWmf5J
+         L8852YK+AfaTTkDcP/E3Q7IY68v0NTnVRbhzHp3WUiBMx+O+3hxasReMUtPHicQ6beuI
+         z5/A==
+X-Gm-Message-State: AJIora/QNgo15qnVGC4ThiOtF6pejgLHvSxuJgErpdGNx4FN6ueDkMqN
+        6KSIdUI6aAuoIuM6ykQLv1+t/ryBnBPLtQ==
+X-Google-Smtp-Source: AGRyM1tfcd/EN9bNHOdB0lihfDHNkoRbGPVjLa6AfF628mIVWi+vg43I+Azq7HsKQTP5OitdCjQiuA==
+X-Received: by 2002:a05:6000:1ac7:b0:21d:134e:5d74 with SMTP id i7-20020a0560001ac700b0021d134e5d74mr44844340wry.78.1657205128650;
+        Thu, 07 Jul 2022 07:45:28 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id g3-20020a05600c140300b0039c96b97359sm29684100wmi.37.2022.07.07.07.45.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 07:45:27 -0700 (PDT)
+Message-ID: <4447e5dc-8c79-7260-2d65-d86b5416d9a2@gmail.com>
+Date:   Thu, 7 Jul 2022 16:45:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4b99cf3c-f40b-cba7-2fa2-b6b311859776@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] arm64: dts: mt7622: fix BPI-R64 WPS button
+Content-Language: en-US
+To:     Nick Hainke <vincent@systemli.org>,
+        linux-mediatek@lists.infradead.org
+Cc:     INAGAKI Hiroshi <musashino.open@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Ryder Lee <ryder.lee@mediatek.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220630111746.4098-1-vincent@systemli.org>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220630111746.4098-1-vincent@systemli.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 09:37:57AM -0500, Jeremy Linton wrote:
-> Hi,
-> 
-> On 2/1/22 05:56, tarumizu.kohei@fujitsu.com wrote:
-> > > I am assuming this is ACPI enabled system.
-> > 
-> > Yes, it is ACPI enabled system.
-> > 
-> > > This looks bit hacky in my opinion. Before I explore better way of adding it, I would
-> > > like to check if you have explored ways to add PPTT reading these registers from
-> > > UEFI/EDK2 as PPTT has other topology information which you will need anyways.
-> > > That would simplify handling of these cacheinfo sysfs in the kernel. Let me know
-> > > what are your thoughts ?
-> > 
-> > The latest firmware of ARM64 machine, FX700 with the A64FX processor
-> > does not support PPTT.
-> > I think adding PPTT is the best way to generate cacheinfo sysfs.
-> > However, it is difficult to modify the firmware to add PPTT, so
-> > it is not clear when it will be possible.
-> > Therefore, I would like to implement the function in the kernel on
-> > the condition that firmware does not support PPTT.
-> 
-> As a bit of a late comment here, I assume you tried injecting the PPTT via
-> the initrd (directions in admin-guide/acpi/initrd_table_override.txt) then?
-> That is one of the usual kernel workarounds for broken/missing ACPI tables.
-> 
-> As mentioned above, besides not providing appropriate topology information
-> to userspace, not having the PPTT is also possibly causing suboptimal
-> scheduling decisions in the kernel itself.
-> 
 
-Thanks a lot for the suggestion Jeremy. For some reason, I missed to follow
-up on this after my initial response. Anyways I agree injecting PPTT via
-initrd is a good compromise on systems that are shipped without or broken
-PPTT. I have tested that to be fully functional on v5.19-rc* on one of
-the servers shipped with broken PPTT.
 
--- 
-Regards,
-Sudeep
+On 30/06/2022 13:16, Nick Hainke wrote:
+> The bananapi R64 (BPI-R64) experiences wrong WPS button signals.
+> In OpenWrt pushing the WPS button while powering on the device will set
+> it to recovery mode. Currently, this also happens without any user
+> interaction. In particular, the wrong signals appear while booting the
+> device or restarting it, e.g. after doing a system upgrade. If the
+> device is in recovery mode the user needs to manually power cycle or
+> restart it.
+> 
+> The official BPI-R64 sources set the WPS button to GPIO_ACTIVE_LOW in
+> the device tree. This setting seems to suppress the unwanted WPS button
+> press signals. So this commit changes the button from GPIO_ACTIVE_HIGH to
+> GPIO_ACTIVE_LOW.
+> 
+> The official BPI-R64 sources can be found on
+> https://github.com/BPI-SINOVOIP/BPI-R64-openwrt
+> 
+> Fixes: 0b6286dd96c0 ("arm64: dts: mt7622: add bananapi BPI-R64 board")
+> 
+> Suggested-by: INAGAKI Hiroshi <musashino.open@gmail.com>
+> Signed-off-by: Nick Hainke <vincent@systemli.org>
+
+Applied, thanks!
+
+> ---
+>   arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+> index 2b9bf8dd14ec..7538918c7a82 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+> +++ b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+> @@ -49,7 +49,7 @@ factory {
+>   		wps {
+>   			label = "wps";
+>   			linux,code = <KEY_WPS_BUTTON>;
+> -			gpios = <&pio 102 GPIO_ACTIVE_HIGH>;
+> +			gpios = <&pio 102 GPIO_ACTIVE_LOW>;
+>   		};
+>   	};
+>   
