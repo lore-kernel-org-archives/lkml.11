@@ -2,117 +2,306 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B40DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C57C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236082AbiGGPBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 11:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
+        id S236197AbiGGPBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 11:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236118AbiGGPBi (ORCPT
+        with ESMTP id S235371AbiGGPBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 11:01:38 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A665017068;
-        Thu,  7 Jul 2022 08:01:37 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 267F1V9o066777;
-        Thu, 7 Jul 2022 10:01:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657206091;
-        bh=XOH9YNTfoGbrNEDgBlKe0BZK5m9Ciqon/unFihTQeyc=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=XSObTcqMqCA8aQ6Y4lTIxPb3yvtPGkbq78LY8lUiqK/K5FV0vt5dLtmjXwGYOT444
-         bghT9SwGBC3G9tX9m5J/J/FaY1GHvz9SKMzTIKVKeJI36PQgS2/92jGUQJUA11TmC5
-         u0purN4QsfoTTLLUko+/qDLsrfwE4hhk+XMO9YvI=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 267F1Vdr052741
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Jul 2022 10:01:31 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
- Jul 2022 10:01:31 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 7 Jul 2022 10:01:31 -0500
-Received: from [10.250.33.129] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 267F1UX6061311;
-        Thu, 7 Jul 2022 10:01:30 -0500
-Message-ID: <cb353a3c-96e7-f770-c8bd-17b8a4b4b3e0@ti.com>
-Date:   Thu, 7 Jul 2022 10:01:30 -0500
+        Thu, 7 Jul 2022 11:01:44 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 734AA2BDF;
+        Thu,  7 Jul 2022 08:01:43 -0700 (PDT)
+Received: from x64host.home (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7014820CD165;
+        Thu,  7 Jul 2022 08:01:42 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7014820CD165
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1657206103;
+        bh=G21EJ7SE+XCC9ZZMsTm4WIVXZYvt5Jnw7LGE7kc6+dk=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=ZQJIpVH5rS7VIG12aACYGcGJNPvADzsro7W8i4AjYnknKRhsGshuf222V7fq6vg5M
+         kEXc/KPgv5JEy5TeRlizs79B2aL9d8DzrJ6284Srytd2opCjm5RN/fAsxMA0iLfOqN
+         JKa6zsgQwRXzbWHZYUxhaakBdbgSWGzRlV85onNA=
+From:   madvenka@linux.microsoft.com
+To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
+        ardb@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        madvenka@linux.microsoft.com
+Subject: [PATCH v16 1/1] arm64: Make the unwind loop similar to other architectures
+Date:   Thu,  7 Jul 2022 10:01:34 -0500
+Message-Id: <20220707150134.4614-2-madvenka@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220707150134.4614-1-madvenka@linux.microsoft.com>
+References: <1be3f2d391cd5d29da988242375c5fbc79aebb8f>
+ <20220707150134.4614-1-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 1/4] arm64: dts: ti: k3-am65-main: Disable RNG node
-Content-Language: en-US
-To:     Bryan Brattlof <bb@ti.com>
-CC:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220706190838.26074-1-afd@ti.com>
- <20220707144400.tk3wmpeijdhuxpzv@bryanbrattlof.com>
-From:   Andrew Davis <afd@ti.com>
-In-Reply-To: <20220707144400.tk3wmpeijdhuxpzv@bryanbrattlof.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/7/22 9:44 AM, Bryan Brattlof wrote:
-> Hi Andrew
-> 
-> On July  6, 2022 thus sayeth Andrew Davis:
->> The hardware random number generator is used by OP-TEE and is access is
->> denied to other users with SoC level bus firewalls. Any access to this
->> device from Linux will result in firewall errors. Disable this node.
->>
->> Signed-off-by: Andrew Davis <afd@ti.com>
->> ---
->>
->> Changes from v1:
->>   - Added comment in dtsi file
->>
->>   arch/arm64/boot/dts/ti/k3-am65-main.dtsi | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
->> index e749343accedd..9de5a8294acd6 100644
->> --- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
->> +++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
->> @@ -127,6 +127,7 @@ rng: rng@4e10000 {
->>   			reg = <0x0 0x4e10000 0x0 0x7d>;
->>   			interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
->>   			clocks = <&k3_clks 136 1>;
->> +			status = "disabled"; /* Used by OP-TEE */
-> 
-> Just curious about how we should document disabling nodes. I was
-> assuming the reasoning should be described in the bindings?
-> 
-> I would like to start disabling nodes by default in our dtsi files and
-> enabling them in our top dts file, making it easier for others to use
-> our device tree for a more focused purpose than our dev boards. I just
-> didn't know where I should document why I disabled the nodes :)
-> 
+From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-This got push-back last time this was suggested, I'll have to lookup
-the history. IIRC we landed on the other way around, all things should
-be described by default, then the specific board can enable/disable
-what is not used as needed.
+Change the unwind loop to this
+==============================
 
-I was worried this topic would come up with this patch series and was
-almost just going to delete the whole RNG node instead of disabling it
-to avoid that. My reasoning for disabling here anyway is that this device
-*cannot* be used by *any* board, it is not just a board level configuration
-decision like disabling I2C nodes by default or similar that was proposed
-last time we had the "nodes disabled by default" discussion.
+	for (unwind_start(&state, task, regs); !unwind_done(state);
+	     unwind_next(state)) {
 
-Andrew
+		if (unwind_failed(state)) {
+			/* PC is suspect. Cannot consume it. */
+			return;
+		}
 
-> ~Bryan
+		if (!consume_entry(cookie, state->pc)) {
+			/* Caller terminated the unwind. */
+			return;
+		}
+	}
+
+unwind_start()
+==============
+
+Define this new function to perform all of the initialization prior to
+doing a stack trace. So, the unwind_init_*() functions will be called
+from here.
+
+unwind_done()
+=============
+
+Define this new helper function to return true upon reaching the end
+of the stack successfully.
+
+unwind_failed()
+===============
+
+Define this new helper function to return true if any type of stack
+corruption is detected.
+
+unwind_next()
+=============
+
+Change this function to record stack corruption or other failures in the
+state rather than return an error.
+
+Use the unwind loop directly in arch_stack_walk()
+=================================================
+
+Remove the unwind() function. Instead, inline the unwind loop in
+arch_stack_walk().
+
+In the future, arch_stack_walk_reliable() will also inline the unwind
+loop and add reliability checks to the loop.
+
+Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+---
+ arch/arm64/kernel/stacktrace.c | 121 ++++++++++++++++++++++-----------
+ 1 file changed, 81 insertions(+), 40 deletions(-)
+
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index fcaa151b81f1..3ddf0f9ae081 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -40,6 +40,12 @@
+  *               value.
+  *
+  * @task:        The task being unwound.
++ *
++ * @final_fp:    Pointer to the final frame.
++ *
++ * @done:        Unwind completed successfully.
++ *
++ * @failed:      Unwind failed.
+  */
+ struct unwind_state {
+ 	unsigned long fp;
+@@ -51,6 +57,9 @@ struct unwind_state {
+ 	struct llist_node *kr_cur;
+ #endif
+ 	struct task_struct *task;
++	unsigned long final_fp;
++	bool done;
++	bool failed;
+ };
+ 
+ static void unwind_init_common(struct unwind_state *state,
+@@ -73,6 +82,26 @@ static void unwind_init_common(struct unwind_state *state,
+ 	bitmap_zero(state->stacks_done, __NR_STACK_TYPES);
+ 	state->prev_fp = 0;
+ 	state->prev_type = STACK_TYPE_UNKNOWN;
++	state->done = false;
++	state->failed = false;
++
++	/* Stack trace terminates here. */
++	state->final_fp = (unsigned long)task_pt_regs(task)->stackframe;
++}
++
++static inline bool unwind_final_frame(struct unwind_state *state)
++{
++	return state->fp == state->final_fp;
++}
++
++static inline bool unwind_done(struct unwind_state *state)
++{
++	return state->done;
++}
++
++static inline bool unwind_failed(struct unwind_state *state)
++{
++	return state->failed;
+ }
+ 
+ /*
+@@ -133,24 +162,31 @@ static inline void unwind_init_from_task(struct unwind_state *state,
+  * records (e.g. a cycle), determined based on the location and fp value of A
+  * and the location (but not the fp value) of B.
+  */
+-static int notrace unwind_next(struct unwind_state *state)
++static void notrace unwind_next(struct unwind_state *state)
+ {
+ 	struct task_struct *tsk = state->task;
+ 	unsigned long fp = state->fp;
+ 	struct stack_info info;
+ 
+-	/* Final frame; nothing to unwind */
+-	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
+-		return -ENOENT;
++	if (unwind_final_frame(state)) {
++		state->done = true;
++		return;
++	}
+ 
+-	if (fp & 0x7)
+-		return -EINVAL;
++	if (fp & 0x7) {
++		state->failed = true;
++		return;
++	}
+ 
+-	if (!on_accessible_stack(tsk, fp, 16, &info))
+-		return -EINVAL;
++	if (!on_accessible_stack(tsk, fp, 16, &info)) {
++		state->failed = true;
++		return;
++	}
+ 
+-	if (test_bit(info.type, state->stacks_done))
+-		return -EINVAL;
++	if (test_bit(info.type, state->stacks_done)) {
++		state->failed = true;
++		return;
++	}
+ 
+ 	/*
+ 	 * As stacks grow downward, any valid record on the same stack must be
+@@ -166,8 +202,10 @@ static int notrace unwind_next(struct unwind_state *state)
+ 	 * stack.
+ 	 */
+ 	if (info.type == state->prev_type) {
+-		if (fp <= state->prev_fp)
+-			return -EINVAL;
++		if (fp <= state->prev_fp) {
++			state->failed = true;
++			return;
++		}
+ 	} else {
+ 		__set_bit(state->prev_type, state->stacks_done);
+ 	}
+@@ -195,8 +233,10 @@ static int notrace unwind_next(struct unwind_state *state)
+ 		 */
+ 		orig_pc = ftrace_graph_ret_addr(tsk, NULL, state->pc,
+ 						(void *)state->fp);
+-		if (WARN_ON_ONCE(state->pc == orig_pc))
+-			return -EINVAL;
++		if (WARN_ON_ONCE(state->pc == orig_pc)) {
++			state->failed = true;
++			return;
++		}
+ 		state->pc = orig_pc;
+ 	}
+ #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
+@@ -204,26 +244,9 @@ static int notrace unwind_next(struct unwind_state *state)
+ 	if (is_kretprobe_trampoline(state->pc))
+ 		state->pc = kretprobe_find_ret_addr(tsk, (void *)state->fp, &state->kr_cur);
+ #endif
+-
+-	return 0;
+ }
+ NOKPROBE_SYMBOL(unwind_next);
+ 
+-static void notrace unwind(struct unwind_state *state,
+-			   stack_trace_consume_fn consume_entry, void *cookie)
+-{
+-	while (1) {
+-		int ret;
+-
+-		if (!consume_entry(cookie, state->pc))
+-			break;
+-		ret = unwind_next(state);
+-		if (ret < 0)
+-			break;
+-	}
+-}
+-NOKPROBE_SYMBOL(unwind);
+-
+ static bool dump_backtrace_entry(void *arg, unsigned long where)
+ {
+ 	char *loglvl = arg;
+@@ -257,21 +280,39 @@ void show_stack(struct task_struct *tsk, unsigned long *sp, const char *loglvl)
+ 	barrier();
+ }
+ 
++static __always_inline void unwind_start(struct unwind_state *state,
++					 struct task_struct *task,
++					 struct pt_regs *regs)
++{
++	if (regs)
++		unwind_init_from_regs(state, regs);
++	else if (task == current)
++		unwind_init_from_caller(state);
++	else
++		unwind_init_from_task(state, task);
++
++}
++
+ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 			      void *cookie, struct task_struct *task,
+ 			      struct pt_regs *regs)
+ {
+ 	struct unwind_state state;
+ 
+-	if (regs) {
+-		if (task != current)
++	if (regs && task != current)
++		return;
++
++	for (unwind_start(&state, task, regs); !unwind_done(&state);
++	     unwind_next(&state)) {
++
++		if (unwind_failed(&state)) {
++			/* PC is suspect. Cannot consume it. */
+ 			return;
+-		unwind_init_from_regs(&state, regs);
+-	} else if (task == current) {
+-		unwind_init_from_caller(&state);
+-	} else {
+-		unwind_init_from_task(&state, task);
+-	}
++		}
+ 
+-	unwind(&state, consume_entry, cookie);
++		if (!consume_entry(cookie, state.pc)) {
++			/* Caller terminated the unwind. */
++			return;
++		}
++	}
+ }
+-- 
+2.25.1
+
