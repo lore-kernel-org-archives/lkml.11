@@ -2,130 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F23DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B992C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbiGGF6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 01:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40750 "EHLO
+        id S234309AbiGGF6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 01:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiGGF6a (ORCPT
+        with ESMTP id S229927AbiGGF6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 01:58:30 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BB9624B;
-        Wed,  6 Jul 2022 22:58:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657173508; x=1688709508;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1mcSycqF0G5MTVNt6gTs3pvaqAtfai1uUIeXSb6aiy0=;
-  b=QVsfqVSWEBVXtAOABtDxkmwihRsrYQ/JO/Hv3R+CM6Tu6tqR7BIpVvK4
-   qvTpS8LRp9UYdnXw9QYT605YBCZVm+bfBlL+fskviJCED8JxW+eZ2G8t/
-   vtjTPjv5vsDaMKckW5BhauCG+UdHeX0ojOnJhytWYf8aCnRj604UIm7L9
-   lVXpmh2B38C8Cj3hYKH/1iY2EB15iszADOzpWjw5UgRkVE2QpmnNX7TsU
-   ubw+LBq4Xgp7J1w9532rrzCllhIShq5MveYk7wprTbV9q7k5tgfxsgQxn
-   ZHz4Hn3Ve+HavAXEaiZlcbHxi3fEedxcxpyMeA8iwiKHvqq5cavGShuNP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="283963220"
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="283963220"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 22:58:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="735843781"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Jul 2022 22:58:25 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9KWu-000LcW-Ty;
-        Thu, 07 Jul 2022 05:58:24 +0000
-Date:   Thu, 7 Jul 2022 13:57:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Christian Marangi <ansuelsmth@gmail.com>
-Subject: Re: [PATCH v3 3/3] clk: qcom: lcc-ipq806x: convert to parent data
-Message-ID: <202207071312.S69DPP30-lkp@intel.com>
-References: <20220706221327.14169-3-ansuelsmth@gmail.com>
+        Thu, 7 Jul 2022 01:58:45 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E967B2F013;
+        Wed,  6 Jul 2022 22:58:44 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 96BA568AA6; Thu,  7 Jul 2022 07:58:40 +0200 (CEST)
+Date:   Thu, 7 Jul 2022 07:58:40 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Anvin <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-hyperv@vger.kernel.org, x86@kernel.org
+Subject: Re: [RFC PATCH 2/2] dma-direct: Fix dma_direct_{alloc,free}() for
+ Hyperv-V IVMs
+Message-ID: <20220707055840.GA13401@lst.de>
+References: <20220706195027.76026-1-parri.andrea@gmail.com> <20220706195027.76026-3-parri.andrea@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706221327.14169-3-ansuelsmth@gmail.com>
+In-Reply-To: <20220706195027.76026-3-parri.andrea@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christian,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on clk/clk-next]
-[also build test ERROR on linus/master v5.19-rc5 next-20220706]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Christian-Marangi/dt-bindings-clock-add-pcm-reset-for-ipq806x-lcc/20220707-061833
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git clk-next
-config: riscv-randconfig-r022-20220706 (https://download.01.org/0day-ci/archive/20220707/202207071312.S69DPP30-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 66ae1d60bb278793fd651cece264699d522bab84)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/c0d7cedbc9ad0201d611bbb386c4fda498e5449d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Christian-Marangi/dt-bindings-clock-add-pcm-reset-for-ipq806x-lcc/20220707-061833
-        git checkout c0d7cedbc9ad0201d611bbb386c4fda498e5449d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/clk/qcom/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/clk/qcom/lcc-ipq806x.c:38:6: error: designator in initializer for scalar type 'const struct clk_parent_data *'
-                           { .fw_name = "pxo", .name = "pxo_board" },
-                             ^~~~~~~~~~~~~~~~
-   1 error generated.
+On Wed, Jul 06, 2022 at 09:50:27PM +0200, Andrea Parri (Microsoft) wrote:
+> @@ -305,6 +306,21 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>  		ret = page_address(page);
+>  		if (dma_set_decrypted(dev, ret, size))
+>  			goto out_free_pages;
+> +#ifdef CONFIG_HAS_IOMEM
+> +		/*
+> +		 * Remap the pages in the unencrypted physical address space
+> +		 * when dma_unencrypted_base is set (e.g., for Hyper-V AMD
+> +		 * SEV-SNP isolated guests).
+> +		 */
+> +		if (dma_unencrypted_base) {
+> +			phys_addr_t ret_pa = virt_to_phys(ret);
+> +
+> +			ret_pa += dma_unencrypted_base;
+> +			ret = memremap(ret_pa, size, MEMREMAP_WB);
+> +			if (!ret)
+> +				goto out_encrypt_pages;
+> +		}
+> +#endif
 
 
-vim +38 drivers/clk/qcom/lcc-ipq806x.c
+So:
 
-    26	
-    27	static struct clk_pll pll4 = {
-    28		.l_reg = 0x4,
-    29		.m_reg = 0x8,
-    30		.n_reg = 0xc,
-    31		.config_reg = 0x14,
-    32		.mode_reg = 0x0,
-    33		.status_reg = 0x18,
-    34		.status_bit = 16,
-    35		.clkr.hw.init = &(struct clk_init_data){
-    36			.name = "pll4",
-    37			.parent_data = (const struct clk_parent_data*[]){
-  > 38				{ .fw_name = "pxo", .name = "pxo_board" },
-    39			}
-    40			.num_parents = 1,
-    41			.ops = &clk_pll_ops,
-    42		},
-    43	};
-    44	
+this needs to move into dma_set_decrypted, otherwise we don't handle
+the dma_alloc_pages case (never mind that this is pretty unreadable).
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Which then again largely duplicates the code in swiotlb.  So I think
+what we need here is a low-level helper that does the
+set_memory_decrypted and memremap.  I'm not quite sure where it
+should go, but maybe some of the people involved with memory
+encryption might have good ideas.  unencrypted_base should go with
+it and then both swiotlb and dma-direct can call it.
+
+> +	/*
+> +	 * If dma_unencrypted_base is set, the virtual address returned by
+> +	 * dma_direct_alloc() is in the vmalloc address range.
+> +	 */
+> +	if (!dma_unencrypted_base && is_vmalloc_addr(cpu_addr)) {
+>  		vunmap(cpu_addr);
+>  	} else {
+>  		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+>  			arch_dma_clear_uncached(cpu_addr, size);
+> +#ifdef CONFIG_HAS_IOMEM
+> +		if (dma_unencrypted_base) {
+> +			memunmap(cpu_addr);
+> +			/* re-encrypt the pages using the original address */
+> +			cpu_addr = page_address(pfn_to_page(PHYS_PFN(
+> +					dma_to_phys(dev, dma_addr))));
+> +		}
+> +#endif
+>  		if (dma_set_encrypted(dev, cpu_addr, size))
+
+Same on the unmap side.  It might also be worth looking into reordering
+the checks in some form instead o that raw dma_unencrypted_base check
+before the unmap.
