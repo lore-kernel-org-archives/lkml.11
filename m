@@ -2,73 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B716C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D179C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234748AbiGGEmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 00:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
+        id S234806AbiGGEpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 00:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiGGEmr (ORCPT
+        with ESMTP id S229775AbiGGEpP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 00:42:47 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A322F037;
-        Wed,  6 Jul 2022 21:42:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=AbIgiz4HdWTHJrDcwgiMjNLozJ+fa1Um61VNXrTWXuw=; b=JLXuMSRapJzauQSgyJpNyTpYAj
-        FHX1E3ZNecpiiGROvvfEp8SwwbAs3xM7y7Gtww8T317u7YSPOLnT7Om54pv+VxZCzOcBD9Wf617/U
-        yOM3KkO/FIEZ72d73h5KUdTJADuM8/wuU5dGtUEIr5/LNK4TbRZbdy1IB+ApOtViLobIewkOar6fx
-        R3cwAKogG84EkVmlNXr2awmyI///KOGitJJfgjGOjUVyoRiDbY1Blylwee9XOgx/Ql13EuncLaMeN
-        BEww+BEZ9E4q+i0/JKMTPE9dGNbmok0FTBvCd/LTdoUoZvgdVi9X+x9JeWzH7MYTDSb8xYIOZYUSB
-        ZG3eBhbw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o9JLc-00DW1r-FB; Thu, 07 Jul 2022 04:42:40 +0000
-Date:   Wed, 6 Jul 2022 21:42:40 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc:     ntfs3@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 0/2] fs/ntfs3: Refactoring and improving logic in run_pack
-Message-ID: <YsZkQAsKC6qxY8gi@infradead.org>
-References: <d578fcbe-e1f7-ffc7-2535-52eecb271a01@paragon-software.com>
+        Thu, 7 Jul 2022 00:45:15 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205AE2BB18;
+        Wed,  6 Jul 2022 21:45:14 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266Hhdh4020671;
+        Wed, 6 Jul 2022 21:45:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=KS6RS8kf2c79HPY9AnLR7F25XLDNzTId92D/q4/EwdU=;
+ b=iV0zsnI9wXAjP2GeIOWDPMnASfp9AVO/KNvdCEUV/520UM2OcgPDngrlZIhGUacAScTF
+ y3cnsK4yeb+nWHBRuro9M6IIFCCcWGStXXYpoUYxw4vyMP5+RiyK8A41wTGFmUtNfVo7
+ TAY2W+kSVZrsKoD51VnXPQh6KjPiOU8chk/KxJXILa7BKBm2gjeHDXAVTeor1Em2Tzuh
+ Bs81cAKsOFH7vdLWWheBgAyxrqLbMeGemyIqeDYE6xnKfl+BT4HVjVAsyYZMrr5ACuO9
+ B/nOMjymCucy4FQdCFIuBL0JxO/SlckNLPyfruCUCc3/mQdba+F7OMAYSwflzkb4ahVi dg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h56wt48f5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 21:45:01 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Jul
+ 2022 21:44:59 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Wed, 6 Jul 2022 21:44:59 -0700
+Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
+        by maili.marvell.com (Postfix) with ESMTP id B78103F706D;
+        Wed,  6 Jul 2022 21:44:56 -0700 (PDT)
+From:   Ratheesh Kannoth <rkannoth@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        Ratheesh Kannoth <rkannoth@marvell.com>
+Subject: [PATCH V2 00/12] *** Exact Match Table ***
+Date:   Thu, 7 Jul 2022 10:13:52 +0530
+Message-ID: <20220707044404.2723378-1-rkannoth@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d578fcbe-e1f7-ffc7-2535-52eecb271a01@paragon-software.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: nT236jV-9f4ak_1CbhISyDp16tgps3G7
+X-Proofpoint-GUID: nT236jV-9f4ak_1CbhISyDp16tgps3G7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_02,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Konstantin,
+*** Exact match table and Field hash support for CN10KB silicon ***
 
-now that you have time to actively work on the ntfs3 driver again, can
-you consider looking into converting the I/O path to iomap, as already
-request during the merge?  Getting drivers off the old buffer head based
-I/O helpers is something we need to address in the coming years, so
-any relatively simple and actually maintained file system would be a
-good start.
+ChangeLog
+---------
+  1) V0 to V1
+     a) Removed change IDs from all patches.
 
-On Wed, Jul 06, 2022 at 08:31:25PM +0300, Konstantin Komarov wrote:
-> 2 patches:
-> - some comments and making function static;
-> - improving speed of run_pack by checking runs in advance
-> 
-> Konstantin Komarov (2):
->   fs/ntfs3: Added comments to frecord functions
->   fs/ntfs3: Check possible errors in run_pack in advance
-> 
->  fs/ntfs3/bitmap.c  |  3 +--
->  fs/ntfs3/frecord.c |  8 ++++----
->  fs/ntfs3/ntfs_fs.h |  1 -
->  fs/ntfs3/run.c     | 41 +++++++++++++++++++++++------------------
->  4 files changed, 28 insertions(+), 25 deletions(-)
-> 
-> -- 
-> 2.37.0
-> 
----end quoted text---
+  2) V1 to V2
+     a)Fixed all compile warnings and cleanly compiled all patches.
+
+Ratheesh Kannoth (11):
+
+These patch series enables exact match table in CN10KB silicon. Legacy
+silicon used NPC mcam to do packet fields/channel matching for NPC rules.
+NPC mcam resources exahausted as customer use case increased.
+Supporting many DMAC filter becomes a challenge, as RPM based filter
+count is less. Exact match table has 4way 2K entry table and a 32 entry
+fully associative cam table. Second table is to handle hash
+table collision over flow in 4way 2K entry table. Enabling exact match table
+results in KEX key to be appended with Hit/Miss status. This can be used
+to match in NPC mcam for a more generic rule and drop those packets than
+having DMAC drop rules for each DMAC entry in NPC mcam.
+
+  octeontx2-af: Exact match support
+  octeontx2-af: Exact match scan from kex profile
+  octeontx2-af: devlink configuration support
+  octeontx2-af: FLR handler for exact match table.
+  octeontx2-af: Drop rules for NPC MCAM
+  octeontx2-af: Debugsfs support for exact match.
+  octeontx2: Modify mbox request and response structures
+  octeontx2-af: Wrapper functions for mac addr add/del/update/reset
+  octeontx2-af: Invoke exact match functions if supported
+  octeontx2-pf: Add support for exact match table.
+  octeontx2-af: Enable Exact match flag in kex profile
+
+Suman Ghosh (1):
+  octeontx2-af: Support to hash reduce of actual field into MCAM key
+
+ .../ethernet/marvell/octeontx2/af/Makefile    |    2 +-
+ First patch in the series "octeontx2-af: Support to hash reduce of actual field into MCAM key"
+ introduced new C file. Makefile is modified to compile the same.
+
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |   41 +-
+ Mbox request and response structures requires modification. RPM based DMAC filter can be modified at any location
+ in the RPM filter table as entry's location has no relation to content. But for NPC exact match's 2K, 4way table
+ is based on hash. This means that modification of an entry may fail if hash mismatches. In these cases, we need
+ to delete existing entry and create a new entry in a different slot determined by hash value. This index has to
+ be returned to caller.
+
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |   25 +
+ New data types (enums and macros) for this feature.
+
+ .../marvell/octeontx2/af/npc_profile.h        |    5 +-
+ Kex profile changes to add exact match HIT bit in the Key. Inorder to accommodate this nibble, NPC_PARSE_NIBBLE_ERRCODE
+ is deleted as it is not used.
+
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   17 +
+ Exact match HW capability flag is initialized to false. FLR handler changes to invoke rvu_npc_exact_reset()
+ to free all exact match resources in case of interface reset.
+
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   24 +-
+ Exact match table info is defined in rvu_hwinfo structure. This table structure is heap allocated and maintains
+ all information about available/free/allocated resources.
+
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |   41 +-
+ As of today, RPM based DMAC filter is configured upon user command. Each of these mbox handler is trapped and
+ checked for NPC exact match support. If support is enabled, invokes Exact match API instead of RPM dmac based calls.
+
+ .../marvell/octeontx2/af/rvu_debugfs.c        |  179 ++
+ Three debugfs entries would be created if Exact match table is supported.
+	1. exact_entries : List out npc exact match entries
+	2. exact_info : Info related exact match tables (mem and cam table)
+	3. exact_drop_cnt: Drop packet counter for each NPC mcam drop rule.
+
+ .../marvell/octeontx2/af/rvu_devlink.c        |   71 +-
+ Devlink provides flexibility to user to switch to RPM based DMAC filters on CN10KB silicon. Please note that
+ devlink command fails if user added DMAC filters prior to devlink command to disable exact match table.
+
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |    7 +
+ Promiscous mode enable must disable this Exact match table based drop rule on NPC mcam. set rx mode routine
+ calls enable/disable corresponding NPC exact drop rule when promiscous mode is toggled.
+
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   |   51 +-
+ APIs to reserve NPC mcam entries. This is used to reserve and configure NPC drop rules.
+
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |  162 +-
+ For each PF, there is a drop rule installed in NPC mcam. This installation is done during rvu probe itself.
+ Drop rule has multicast and broadcast bits turned off. This means that broadcast and multicast packets will
+ never get dropped irrespective of NPC exact match table. This rule action is drop if exact table match bit
+ 0 and channel is matched. This means if there is no hit is exact match table and channel match, packets will
+ be dropped.
+
+ .../marvell/octeontx2/af/rvu_npc_fs.h         |   17 +
+
+ .../marvell/octeontx2/af/rvu_npc_hash.c       | 1958 +++++++++++++++++
+ New file added. This file implements add/del/update to exact match table,
+ probing of the feature and invokes function to install drop ruleis in NPC mcam.
+
+ .../marvell/octeontx2/af/rvu_npc_hash.h       |  233 ++
+ function declarations for rvu_npc_hash.c
+
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   15 +
+ Register access macros for NPC exact match.
+
+ .../marvell/octeontx2/nic/otx2_common.h       |   10 +-
+ Since NPC exact match table has more entries than RPM DMAC filter, size of bmap_to_dmacindex is
+ increased from 8 to 32bit. Maximum number of dmac entries available also increased (increased the size of bitmap)
+
+ .../marvell/octeontx2/nic/otx2_dmac_flt.c     |   46 +-
+ .../marvell/octeontx2/nic/otx2_flows.c        |   40 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |    2 +-
+ Above change in marvell/octeontx2/nic/otx2_common.h, require corresponding modification in these 3 C files.
+ Please note that we need to modify/change existing entry index as mentioned in description of
+ net/ethernet/marvell/octeontx2/af/mbox.h in this cover letter.
+
+ 20 files changed, 2879 insertions(+), 67 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
+
+--
+2.25.1
