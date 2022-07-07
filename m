@@ -2,60 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE33C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 23:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD01C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 23:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236729AbiGGXQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 19:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
+        id S236763AbiGGXQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 19:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236556AbiGGXP5 (ORCPT
+        with ESMTP id S236089AbiGGXQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 19:15:57 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F7327FD5
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 16:15:56 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id z12so18695048wrq.7
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 16:15:56 -0700 (PDT)
+        Thu, 7 Jul 2022 19:16:16 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91869675B3
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 16:16:15 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-101b4f9e825so27274945fac.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 16:16:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=izEW/QlWsYwAv1ZochY3FjaPww57C5kdq40cLp75WW8=;
-        b=bN/UI+7lQeB65atynzKqp9nMLADS1qCkhGg5AFy7k9JTlnDD+Zfmk48B2FRQd+hC0Z
-         U4CKu5nG4vjGJCXcV2zhrMRVj5UyORVGZ0Wvcq6fki/MJbwmIrZUPJ6dJ5thhHkq+45r
-         trErrsYkpiZKrv56HldNIjMgl5ylRyWM2frA870ii9xsEWsxGBxvQw9GZER8kL4TcltL
-         A9S9IZChyrVI1WMBCy00qnuXGolCRiTd3a6aLoa4W8Ximf+e2l9LEQ0uIXtbfAokdAId
-         ANb1ZhVUMrfkHBXJMCKs8voDoToWbTf2WtwrcXSUQTDgagsSYKsBMdxLfxtkqPy6PGSe
-         /AOg==
+        bh=K3GtFLT5VlHIMmMMlLDEGSWPueKfPOd59FonXvTzyyE=;
+        b=HaK0sV1wqReBsLI5fYuywyIsK7IX8zq2V0C3U4KAcNkLTQILSU0CP1lyPlfvHr/WjE
+         ml4+0viUos4z0FKMiUTBEsAoq8Ap4hrnsoMbZ0HSP7e2jfzz3EkamK/Xh1IpCL4rNM4N
+         Dg4wb7cLNpQ1RoXtxw3Jy84B5I77DPJiLZGzZe/bafVfYgYzcth9XVL9Xd0SX/n6CQGL
+         4PR+uqHrcTllvDEvJnumD1+mSOyMkCyyh3Oci8R5OBrliZA49RzOfx249nS99Cyeq5rN
+         GDrP6FHYvFgDoQBvMJ6iZ4gXG0MdSnSQIJc2886+NJr+7Ivvx1X90mqi595it9vWKc4+
+         MnHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=izEW/QlWsYwAv1ZochY3FjaPww57C5kdq40cLp75WW8=;
-        b=ABf0PpGHGyqHjfTa2D2zQp/7jHpqf757bJ2TchFm/V6ecRWLHP60WGbzzKaddgtuuS
-         14j8ZfnAbjN6QF0F2n7EBPCSjz6qrOGJ4wu8bLwySXHQ5up4V7DHfjpjf39V0kBxNP/8
-         X7KdTm7nV3ReMYwpfcaIBfMCnf5VjrVh5SY+D/pb4ulblvJUAfzNPVkMGO5e4aeRidQx
-         T5PQe+aczUZaDWSrejF4RDG2it4jmWFOyE6dWAcM/8tf0316rV8poghXGNccf8Ku1lGw
-         MXpC8VbpA3wExhAkpM1vWgn43C8HwDfpKUTsUqI4HnaYa81WHY84emVwxInNIlCNfKe9
-         7dfQ==
-X-Gm-Message-State: AJIora9vy+Ht5D+99fYBhHCqVevMsIA8bZX4v+UTdcznRZOkV/3Dfbiw
-        EPjjBlFq2PV9Fr6JR7uzR+g=
-X-Google-Smtp-Source: AGRyM1vb1t9Pd03LkoGzBnp8Qn8oJ174NaaaEi0Rd2+luP9y+glv1E3K+ONHUCDrq6cJFue2klElbQ==
-X-Received: by 2002:adf:f9c9:0:b0:21d:2cec:63e9 with SMTP id w9-20020adff9c9000000b0021d2cec63e9mr276271wrr.301.1657235755382;
-        Thu, 07 Jul 2022 16:15:55 -0700 (PDT)
-Received: from localhost.localdomain (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
-        by smtp.gmail.com with ESMTPSA id r129-20020a1c4487000000b003a0499df21asm229785wma.25.2022.07.07.16.15.53
+        bh=K3GtFLT5VlHIMmMMlLDEGSWPueKfPOd59FonXvTzyyE=;
+        b=79x1hbOS/pBxY6O24RCJ0aO6aQPIybSWGNqc4yCIk2dguReCVswaSeuBKu7SqgftbD
+         QFDwOjCvyBT6zX+WrXCzMfHq4ocN4ePZSLK+Nr+AgryRzVVvxEdpqh3TGc4gPVlAUTNT
+         vHYnRmNFGEVA6taCFINajjIAWyWWJoPdqwytr8HSkDvtKZybrx0mMgYPT7DdW0CIcU/V
+         3pF09cyRX5qOlh5Xu+qHawYTcydrxIDdn1hpqR5Jcs6y94LXTh1rO8AE8Ai3GDKULItk
+         1ri+FDjhE+4rj3IVv6Dk+3RDqLcA8EQ6dBL8bDP5sbNoxF+qJoiN/Ed0s+4z5/EYJwn6
+         8Ilg==
+X-Gm-Message-State: AJIora+yjmGXeolpfwFKdEVfI+1elNApvgdxJmrTTulSICmDiA4+lhzI
+        rPTl9yvOPyTW+damAcE0BeNntA==
+X-Google-Smtp-Source: AGRyM1uog+T7XWwPK+NaACTq1k/xU9UmzU4HnRc/BXdZwD6n3ZAmkFK6NlgZF1pL5XX4Au8NK3SRUg==
+X-Received: by 2002:a05:6870:a70c:b0:10c:3bb7:ea15 with SMTP id g12-20020a056870a70c00b0010c3bb7ea15mr3640528oam.69.1657235774716;
+        Thu, 07 Jul 2022 16:16:14 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id cg10-20020a056830630a00b006190efaf118sm2177606otb.66.2022.07.07.16.16.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 16:15:54 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Eric Biederman <ebiederm@xmission.com>, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: [PATCH v2] kexec: Replace kmap() with kmap_local_page()
-Date:   Fri,  8 Jul 2022 01:15:50 +0200
-Message-Id: <20220707231550.1484-1-fmdefrancesco@gmail.com>
+        Thu, 07 Jul 2022 16:16:14 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linus.walleij@linaro.org, brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>,
+        John Hentges <jhentges@accesio.com>,
+        Jay Dolan <jay.dolan@accesio.com>,
+        Fred Eckert <Frede@cmslaser.com>,
+        Paul Demetrotion <pdemetrotion@winsystems.com>,
+        techsupport@winsystems.com
+Subject: [PATCH v2 0/6] gpio: Implement and utilize register structures for ISA drivers
+Date:   Thu,  7 Jul 2022 14:10:02 -0400
+Message-Id: <cover.1657216200.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,70 +67,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() and kmap_atomic() are being deprecated in favor of
-kmap_local_page().
+Changes in v2:
+ - Implement support for the Intel 8255 interface as a new gpio-i8255
+   module; common code among gpio-104-dio-48e, gpio-104-idi-48, and
+   gpio-gpio-mm are consolidated in the gpio-i8255 module
+ - Refactor the gpio-104-dio-48e, gpio-104-idi-48, and gpio-gpio-mm to
+   utilize the new gpio-i8255 functions; this greatly simplifies the
+   changes for these drivers
 
-With kmap_local_page(), the mappings are per thread, CPU local and not
-globally visible. Furthermore, the mappings can be acquired from any
-context (including interrupts).
+The PC104/ISA drivers were updated to use I/O memory accessor calls such
+as ioread8()/iowrite8() in a previous patch series [1]. This
+patchset is a continuation of the effort to improve the code readability
+and reduce magic numbers by implementing and utilizing named register
+data structures.
 
-Therefore, use kmap_local_page() in kexec_core.c because these mappings are
-per thread, CPU local, and not globally visible.
+One of the benefits is that we can now observe more easily similarities
+in devices that share similar interfaces; such as the i8255 interfaces
+used by the 104-DIO-48E, 104-IDI-48, and GPIO-MM drivers -- as well as
+the similar interface used by the 104-IDIO-16 and PCI-IDIO-16 drivers.
 
-Tested on a QEMU + KVM 32-bits VM booting a kernel with HIGHMEM64GB
-enabled.
+A new module supporting the Intel 8255 interface is introduced to
+consolidate the common code found among the 104-DIO-48E, 104-IDI-48, and
+GPIO-MM drivers.
 
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
+[1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
 
-v1->v2: A sentence of the commit message contained an error due to a
-mistake in copy-pasting from a previous patch. Replace "aio.c" with
-"kexec_core.c".
+William Breathitt Gray (6):
+  gpio: i8255: Introduce the i8255 module
+  gpio: 104-dio-48e: Implement and utilize register structures
+  gpio: 104-idi-48: Implement and utilize register structures
+  gpio: gpio-mm: Implement and utilize register structures
+  gpio: 104-idio-16: Implement and utilize register structures
+  gpio: ws16c48: Implement and utilize register structures
 
- kernel/kexec_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ MAINTAINERS                     |   6 +
+ drivers/gpio/Kconfig            |   6 +
+ drivers/gpio/Makefile           |   1 +
+ drivers/gpio/gpio-104-dio-48e.c | 224 +++++++++-------------------
+ drivers/gpio/gpio-104-idi-48.c  | 123 +++++++---------
+ drivers/gpio/gpio-104-idio-16.c |  58 +++++---
+ drivers/gpio/gpio-gpio-mm.c     | 177 +++++------------------
+ drivers/gpio/gpio-i8255.c       | 249 ++++++++++++++++++++++++++++++++
+ drivers/gpio/gpio-ws16c48.c     | 119 ++++++++++-----
+ include/linux/gpio/i8255.h      |  34 +++++
+ 10 files changed, 575 insertions(+), 422 deletions(-)
+ create mode 100644 drivers/gpio/gpio-i8255.c
+ create mode 100644 include/linux/gpio/i8255.h
 
-diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-index 4d34c78334ce..6f98274765d4 100644
---- a/kernel/kexec_core.c
-+++ b/kernel/kexec_core.c
-@@ -814,7 +814,7 @@ static int kimage_load_normal_segment(struct kimage *image,
- 		if (result < 0)
- 			goto out;
- 
--		ptr = kmap(page);
-+		ptr = kmap_local_page(page);
- 		/* Start with a clear page */
- 		clear_page(ptr);
- 		ptr += maddr & ~PAGE_MASK;
-@@ -827,7 +827,7 @@ static int kimage_load_normal_segment(struct kimage *image,
- 			memcpy(ptr, kbuf, uchunk);
- 		else
- 			result = copy_from_user(ptr, buf, uchunk);
--		kunmap(page);
-+		kunmap_local(ptr);
- 		if (result) {
- 			result = -EFAULT;
- 			goto out;
-@@ -878,7 +878,7 @@ static int kimage_load_crash_segment(struct kimage *image,
- 			goto out;
- 		}
- 		arch_kexec_post_alloc_pages(page_address(page), 1, 0);
--		ptr = kmap(page);
-+		ptr = kmap_local_page(page);
- 		ptr += maddr & ~PAGE_MASK;
- 		mchunk = min_t(size_t, mbytes,
- 				PAGE_SIZE - (maddr & ~PAGE_MASK));
-@@ -894,7 +894,7 @@ static int kimage_load_crash_segment(struct kimage *image,
- 		else
- 			result = copy_from_user(ptr, buf, uchunk);
- 		kexec_flush_icache_page(page);
--		kunmap(page);
-+		kunmap_local(ptr);
- 		arch_kexec_pre_free_pages(page_address(page), 1);
- 		if (result) {
- 			result = -EFAULT;
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
 2.36.1
 
