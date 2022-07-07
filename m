@@ -2,512 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13864C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2141C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236316AbiGGPbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 11:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
+        id S235806AbiGGPdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 11:33:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236036AbiGGPbD (ORCPT
+        with ESMTP id S235470AbiGGPdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 11:31:03 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305B931DC4;
-        Thu,  7 Jul 2022 08:31:01 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267EHRZ2012226;
-        Thu, 7 Jul 2022 11:30:45 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3h5u9s2qtg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 11:30:45 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 267FUiwk010663
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Jul 2022 11:30:44 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 7 Jul 2022 11:30:43 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 7 Jul 2022 11:30:43 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 7 Jul 2022 11:30:43 -0400
-Received: from euswvd-wpr-621.reddog.microsoft.com ([10.140.226.135])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 267FTmbJ008137;
-        Thu, 7 Jul 2022 11:30:33 -0400
-From:   Atif Ofluoglu <Atif.Ofluoglu@analog.com>
-To:     <linux@roeck-us.net>
-CC:     <jdelvare@suse.com>, <linux-hwmon@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Atif Ofluoglu <atif.ofluoglu@analog.com>,
-        Atif Ofluoglu <Atif.Ofluoglu@analog.com>
-Subject: [PATCH 1/2] hwmon: (pmbus/max20754) Add support for MAX20754
-Date:   Thu, 7 Jul 2022 15:29:17 +0000
-Message-ID: <3659043f92b0ca9e538679e00f7dcc214525ff2e.1657204859.git.atif.ofluoglu@analog.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1657204859.git.atif.ofluoglu@analog.com>
-References: <cover.1657204859.git.atif.ofluoglu@analog.com>
+        Thu, 7 Jul 2022 11:33:16 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A05F31389
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 08:33:14 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id c20so960497qtw.8
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 08:33:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fLPqNOuxkhng0+VfusSfgGkkAqcB1Q6iFCv9UoVontQ=;
+        b=BDKkvsKU3sn42yDWiGzbpEF9p5SV1Dz/09dCOmImNJBbAP2CeP8HMOCqAggGGxMP8W
+         0UbRAdgvZA7Eg2wcj6YNM/h7ICwhoANe2veeMegkwrxmqfl+Ocge6dDwjTMN6H3K6BgI
+         YbFYGc/MP2anQkgQeeH8xvKXHG1ndJqEuuLN2Fo56DIW3SYjA8RcHXTKluBhn3vEm0qW
+         TNJvLy/Bvdlanl4tU4dSr2Q2fcn2rBTmuFlJZ7EI3JpzjYGVliasoq/rxodlhmDx0N5m
+         ZYaPVz/wW3jGhqush/vob0PDp70Uk9f/rXPPoriWMM0TEgl9VynMo2OQNmrqz+2JO+yN
+         OIWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fLPqNOuxkhng0+VfusSfgGkkAqcB1Q6iFCv9UoVontQ=;
+        b=H/JpqPifrgZ+kvCxBZ3JBt00oRfNy4VOCgXY5xC5QA0L1atE8tZ60xU7QSau+gh4vU
+         682/tGUcaEPz8xzSafWGHwnIubqZeWn7MNg8VLyYdkEqbAfkow3+JJimYJ0OlCR1iKbP
+         150i2cybik7AG9BI2ExIITG3BNZphIwQ3aL5ZLGz/ks8Kt+QKd9iJxADXwskON1co/Pm
+         nqDjfvhvxskAmnPdAxNXqGY5rZHSX3eR8jhSfU0ebRQNDZMPqoXRGuvOAE5NuFd3yJWg
+         Zta0ZoT/PduOE/jkOwRVFF3VTzp1UJnIMm4+weE4Jz1UHtePvzSfO0grWbAbiL6e0lhO
+         1j7w==
+X-Gm-Message-State: AJIora/VbfUHynvMacXPk21o8lqKqerLXSYzsIDtsag3Z36FiLU/RQ+0
+        cmI8DICW0gpqnX7hoBnhBDvO2l7JWGRxoCPPQuQaAw==
+X-Google-Smtp-Source: AGRyM1v2sny/0726HNQOlkXr40uwbBva0ycqSItDJC34DLwjRoq2GI9FOyav66XsWjyidLsuRaZEf1w+PSHx+h2/ceU=
+X-Received: by 2002:ac8:5c96:0:b0:31a:c19a:7da1 with SMTP id
+ r22-20020ac85c96000000b0031ac19a7da1mr38432079qta.62.1657207993411; Thu, 07
+ Jul 2022 08:33:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 05orWxmTXXV64X_Viz6w8lSbS_noqW9b
-X-Proofpoint-ORIG-GUID: 05orWxmTXXV64X_Viz6w8lSbS_noqW9b
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_12,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501 mlxscore=0
- clxscore=1015 impostorscore=0 mlxlogscore=999 suspectscore=0 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207070061
+References: <1657040445-13067-1-git-send-email-quic_vpolimer@quicinc.com>
+ <1657040445-13067-2-git-send-email-quic_vpolimer@quicinc.com>
+ <5d469759-0619-eece-902d-df8ac6583f22@linaro.org> <BN0PR02MB8173DF17816659868604A82EE4839@BN0PR02MB8173.namprd02.prod.outlook.com>
+In-Reply-To: <BN0PR02MB8173DF17816659868604A82EE4839@BN0PR02MB8173.namprd02.prod.outlook.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Thu, 7 Jul 2022 18:33:02 +0300
+Message-ID: <CAA8EJpoYj_-bY8CSPdE=mBkZbnffgUXX+LzEXKWHQ3yhS4GmvA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/7] drm/msm/disp/dpu1: clear dpu_assign_crtc and get
+ crtc from drm_enc instead of dpu_enc
+To:     Vinod Polimera <vpolimer@qti.qualcomm.com>
+Cc:     "Vinod Polimera (QUIC)" <quic_vpolimer@quicinc.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "robdclark@gmail.com" <robdclark@gmail.com>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "swboyd@chromium.org" <swboyd@chromium.org>,
+        "Kalyan Thota (QUIC)" <quic_kalyant@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        "Vishnuvardhan Prodduturi (QUIC)" <quic_vproddut@quicinc.com>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atif Ofluoglu <atif.ofluoglu@analog.com>
+On Thu, 7 Jul 2022 at 17:39, Vinod Polimera <vpolimer@qti.qualcomm.com> wrote:
+>
+> > NAK. Quoting the documentation:
+> >
+> > only really meaningful for non-atomic drivers. Atomic drivers should
+> > instead check &drm_connector_state.crtc.
+> >
+> > Please adjust according to the documentation.
+>    drm_enc gets the crtc info already from new connector state as part of drm_atomic_helper_update_legacy_modeset_state.
+>    So drm_enc->crtc will be valid as we access it as part of modeset enable/disable.
+>                          ```connector->encoder->crtc = new_conn_state->crtc;```.
 
-Signed-off-by: Atif Ofluoglu <Atif.Ofluoglu@analog.com>
----
- drivers/hwmon/pmbus/Kconfig    |   9 +
- drivers/hwmon/pmbus/Makefile   |   1 +
- drivers/hwmon/pmbus/max20754.c | 390 +++++++++++++++++++++++++++++++++
- 3 files changed, 400 insertions(+)
- create mode 100644 drivers/hwmon/pmbus/max20754.c
+drm_atomic_helper_update_legacy_modeset_state():
 
-diff --git a/drivers/hwmon/pmbus/Kconfig b/drivers/hwmon/pmbus/Kconfig
-index dfae76db65ae..f259b8739766 100644
---- a/drivers/hwmon/pmbus/Kconfig
-+++ b/drivers/hwmon/pmbus/Kconfig
-@@ -254,6 +254,15 @@ config SENSORS_MAX20751
- 	  This driver can also be built as a module. If so, the module will
- 	  be called max20751.
- 
-+config SENSORS_MAX20754
-+	tristate "Maxim MAX20754"
-+	help
-+	  If you say yes here you get hardware monitoring support for Maxim
-+	  MAX20754.
-+
-+	  This driver can also be built as a module. If so, the module will
-+	  be called max20754.
-+
- config SENSORS_MAX31785
- 	tristate "Maxim MAX31785 and compatibles"
- 	help
-diff --git a/drivers/hwmon/pmbus/Makefile b/drivers/hwmon/pmbus/Makefile
-index 4678fba5012c..b8b1d8a84b3b 100644
---- a/drivers/hwmon/pmbus/Makefile
-+++ b/drivers/hwmon/pmbus/Makefile
-@@ -27,6 +27,7 @@ obj-$(CONFIG_SENSORS_MAX16064)	+= max16064.o
- obj-$(CONFIG_SENSORS_MAX16601)	+= max16601.o
- obj-$(CONFIG_SENSORS_MAX20730)	+= max20730.o
- obj-$(CONFIG_SENSORS_MAX20751)	+= max20751.o
-+obj-$(CONFIG_SENSORS_MAX20751)	+= max20754.o
- obj-$(CONFIG_SENSORS_MAX31785)	+= max31785.o
- obj-$(CONFIG_SENSORS_MAX34440)	+= max34440.o
- obj-$(CONFIG_SENSORS_MAX8688)	+= max8688.o
-diff --git a/drivers/hwmon/pmbus/max20754.c b/drivers/hwmon/pmbus/max20754.c
-new file mode 100644
-index 000000000000..5e29e8f8009b
---- /dev/null
-+++ b/drivers/hwmon/pmbus/max20754.c
-@@ -0,0 +1,390 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Maxim MAX20754 Dual-Output, Configurable Multiphase
-+ * Power-Supply Controller with PMBus Interface
-+ * and Internal Buck Converter Driver
-+ *
-+ * Author: Atif Emre Ofluoglu <atif.ofluoglu@analog.com>
-+ * Copyright (C) 2022 Analog Devices
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under  the terms of  the GNU General  Public License as published
-+ * by the Free Software Foundation;  either version 2 of the  License,
-+ * or (at your option) any later version.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/hwmon.h>
-+#include <linux/hwmon-sysfs.h>
-+#include "pmbus.h"
-+
-+enum chips { max20754 };
-+
-+#define MAX20754_NUM_PHASES 6
-+#define MAX20754_LINEAR_EXPONENT -10
-+
-+struct max20754_data {
-+	enum chips id;
-+	struct pmbus_driver_info info;
-+	struct i2c_client *rail2;
-+	bool smbus_i2c_block_read;
-+};
-+
-+#define to_max20754_data(x) container_of(x, struct max20754_data, info)
-+
-+enum max20754_reg_index {
-+	operation_index,
-+	on_off_config_index,
-+	vout_command_index,
-+	num_regs,
-+};
-+
-+static const u8 max20754_regs[num_regs][2] = {
-+	[operation_index] = {PMBUS_OPERATION, 1},
-+	[on_off_config_index] = {PMBUS_ON_OFF_CONFIG, 1},
-+	[vout_command_index] = {PMBUS_VOUT_COMMAND, 2},
-+};
-+
-+static u16 val_to_linear16(int val)
-+{
-+	return ((u16)val * 1000LL) >> -MAX20754_LINEAR_EXPONENT;
-+}
-+
-+static long linear16_to_val(s64 val)
-+{
-+	if (val == 0)
-+		return 0;
-+
-+	val <<= -MAX20754_LINEAR_EXPONENT;
-+	val = DIV_ROUND_CLOSEST_ULL(val, 1000);
-+	val = clamp_val(val, 0, 0xffff);
-+	return val;
-+}
-+
-+static int max20754_read_block_data(struct i2c_client *client, int reg,
-+				    u8 length, u8 *values)
-+{
-+	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
-+	struct max20754_data *data = to_max20754_data(info);
-+	int ret;
-+
-+	if (data->smbus_i2c_block_read) {
-+		ret = i2c_smbus_read_i2c_block_data(client, reg, length, values);
-+		if (ret < 1)
-+			return ret;
-+		ret = ret - 1;
-+		memcpy(values, &values[1], ret);
-+	} else {
-+		ret = i2c_smbus_read_block_data(client, reg, values);
-+	}
-+
-+	return ret;
-+}
-+
-+static int max20754_read_word(struct i2c_client *client, int page, int phase,
-+			      int reg)
-+{
-+	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
-+	struct max20754_data *data = to_max20754_data(info);
-+
-+	if (reg > 0xFF)
-+		return -ENXIO;
-+
-+	if (reg == PMBUS_MFR_VOUT_MAX)
-+		reg = PMBUS_VOUT_MAX;
-+
-+	switch (page) {
-+	case 0:		/* RAIL1 */
-+		return i2c_smbus_read_word_data(client, reg);
-+	case 1:		/* RAIL2 */
-+		return i2c_smbus_read_word_data(data->rail2, reg);
-+	default:
-+		return -ENODATA;
-+	}
-+
-+	return -ENODATA;
-+}
-+
-+static int max20754_write_word(struct i2c_client *client, int page, int reg, u16 value)
-+{
-+	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
-+	struct max20754_data *data = to_max20754_data(info);
-+
-+	switch (reg) {
-+	case PMBUS_OPERATION:
-+		if (value >= 0x90 && value <= 0x93)
-+			return -EOPNOTSUPP;
-+		break;
-+	case PMBUS_MFR_VOUT_MAX:
-+		reg = PMBUS_VOUT_MAX;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	switch (page) {
-+	case 0:		/* RAIL1 */
-+		return i2c_smbus_write_word_data(client, reg, value);
-+	case 1:		/* RAIL2 */
-+		return i2c_smbus_write_word_data(data->rail2, reg, value);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return -ENODATA;
-+}
-+
-+static int max20754_read_byte(struct i2c_client *client, int page, int reg)
-+{
-+	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
-+	struct max20754_data *data = to_max20754_data(info);
-+	int vout_mode;
-+
-+	if (reg == PMBUS_VOUT_MODE) {
-+		vout_mode = i2c_smbus_read_byte_data(client, reg);
-+		if (vout_mode != 0x2C)
-+			vout_mode = 0x16;
-+		return vout_mode;
-+	}
-+
-+	switch (page) {
-+	case 0:		/* RAIL1 */
-+		return i2c_smbus_read_byte_data(client, reg);
-+	case 1:		/* RAIL2 */
-+		return i2c_smbus_read_byte_data(data->rail2, reg);
-+	default:
-+		return -ENODATA;
-+	}
-+	return -ENODATA;
-+}
-+
-+static int max20754_write_byte(struct i2c_client *client, int page, u8 reg)
-+{
-+	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
-+	struct max20754_data *data = to_max20754_data(info);
-+
-+	if (reg == PMBUS_CLEAR_FAULTS) {
-+		switch (page) {
-+		case 0:
-+			return i2c_smbus_write_byte(client, reg);
-+		case 1:
-+			return i2c_smbus_write_byte(data->rail2, reg);
-+		default:
-+			return -ENODATA;
-+		}
-+	}
-+	return -ENODATA;
-+}
-+
-+static int max20754_identify(struct i2c_client *client,
-+			     struct pmbus_driver_info *info)
-+{
-+	struct device *dev = &client->dev;
-+	u8 buf[9] = {0};
-+	int ret;
-+
-+	ret = max20754_read_block_data(client,
-+				       PMBUS_IC_DEVICE_ID, 9,
-+				       buf);
-+
-+	if (ret < 0 || ret < 8)
-+		return -ENODEV;
-+
-+	/*
-+	 * PMBUS_IC_DEVICE_ID is expected to return "MAX20754"
-+	 */
-+
-+	if (strncmp(buf, "MAX20754", 8)) {
-+		buf[ret] = '\0';
-+		dev_err(dev, "Unsupported chip '%s'\n", buf);
-+		return -ENODEV;
-+	}
-+
-+	return 0;
-+}
-+
-+static ssize_t max20754_register_store(struct device *dev,
-+				       struct device_attribute *attr, const char *buf,
-+				       size_t count)
-+{
-+	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
-+	struct i2c_client *client = to_i2c_client(dev->parent);
-+	const struct pmbus_driver_info *info = pmbus_get_driver_info(client);
-+	struct max20754_data *data = to_max20754_data(info);
-+
-+	u8 cmd = max20754_regs[sattr->index][0];
-+	u8 reg_size = max20754_regs[sattr->index][1];
-+	u8 rail_number = sattr->nr;
-+	long val = 0;
-+	int ret;
-+
-+	ret = kstrtol(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (rail_number == 1)
-+		client = data->rail2;
-+
-+	if (cmd == PMBUS_VOUT_COMMAND)
-+		val = linear16_to_val(val);
-+
-+	switch (reg_size) {
-+	case 1:
-+		ret = i2c_smbus_write_byte_data(client, cmd, val);
-+		break;
-+	case 2:
-+		ret = i2c_smbus_write_word_data(client, cmd, val);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	return count;
-+}
-+
-+static ssize_t max20754_register_show(struct device *dev,
-+				      struct device_attribute *attr, char *buf)
-+{
-+	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
-+	struct i2c_client *client = to_i2c_client(dev->parent);
-+
-+	int ret_val = 0;
-+	u8 cmd = max20754_regs[sattr->index][0];
-+	u8 reg_size = max20754_regs[sattr->index][1];
-+	u8 rail_number = sattr->nr;
-+
-+	switch (reg_size) {
-+	case 1:
-+		ret_val = max20754_read_byte(client, rail_number, cmd);
-+		break;
-+	case 2:
-+		ret_val = max20754_read_word(client, rail_number, 0, cmd);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (ret_val < 0)
-+		return -ENODATA;
-+
-+	if (cmd == PMBUS_VOUT_COMMAND)
-+		ret_val = val_to_linear16(ret_val);
-+
-+	return sprintf(buf, "%d\n", ret_val);
-+}
-+
-+#define MAX20754_REGISTER_ATTR_RW(__name, __reg_index, __size) \
-+	SENSOR_DEVICE_ATTR_2_RW(__name, max20754_register, __size, __reg_index)
-+
-+static MAX20754_REGISTER_ATTR_RW(operation, operation_index, 0);
-+static MAX20754_REGISTER_ATTR_RW(on_off_config, on_off_config_index, 0);
-+
-+static MAX20754_REGISTER_ATTR_RW(vout1_command, vout_command_index, 0);
-+static MAX20754_REGISTER_ATTR_RW(vout2_command, vout_command_index, 1);
-+
-+static struct attribute *max20754_attrs[] = {
-+	&sensor_dev_attr_operation.dev_attr.attr,
-+	&sensor_dev_attr_on_off_config.dev_attr.attr,
-+	&sensor_dev_attr_vout1_command.dev_attr.attr,
-+	&sensor_dev_attr_vout2_command.dev_attr.attr,
-+	NULL
-+};
-+ATTRIBUTE_GROUPS(max20754);
-+
-+static struct pmbus_driver_info max20754_info = {
-+	.pages = 2,
-+	.format[PSC_VOLTAGE_IN] = linear,
-+	.format[PSC_VOLTAGE_OUT] = linear,
-+	.vrm_version[0] = vr12,
-+	.format[PSC_TEMPERATURE] = linear,
-+	.format[PSC_CURRENT_OUT] = linear,
-+	.format[PSC_POWER] = linear,
-+	.func[0] = PMBUS_HAVE_VIN | PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT |
-+		PMBUS_HAVE_STATUS_INPUT | PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT |
-+		PMBUS_HAVE_TEMP | PMBUS_HAVE_TEMP2 | PMBUS_HAVE_STATUS_TEMP,
-+	.func[1] = PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT | PMBUS_HAVE_STATUS_INPUT |
-+		PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT |
-+		PMBUS_HAVE_TEMP2 | PMBUS_HAVE_STATUS_TEMP,
-+	.identify = max20754_identify,
-+	.read_byte_data = max20754_read_byte,
-+	.read_word_data = max20754_read_word,
-+	.write_byte = max20754_write_byte,
-+	.write_word_data = max20754_write_word,
-+};
-+
-+static void max20754_remove(void *_data)
-+{
-+	struct max20754_data *data = _data;
-+
-+	i2c_unregister_device(data->rail2);
-+}
-+
-+static int max20754_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct max20754_data *data;
-+	bool i2c_block_data_ok = false;
-+	int ret = 0;
-+
-+	ret = i2c_check_functionality(client->adapter,
-+				      I2C_FUNC_SMBUS_READ_BYTE_DATA |
-+				      I2C_FUNC_SMBUS_READ_BLOCK_DATA);
-+
-+	if (!ret) {
-+		ret = i2c_check_functionality(client->adapter,
-+					      I2C_FUNC_SMBUS_READ_BYTE_DATA |
-+					      I2C_FUNC_SMBUS_I2C_BLOCK);
-+		if (!ret)
-+			return -ENODEV;
-+
-+		i2c_block_data_ok = true;
-+	}
-+
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->rail2 = i2c_new_dummy_device(client->adapter, client->addr + 1);
-+	if (IS_ERR(data->rail2)) {
-+		dev_err(dev, "Failed to register rail2 client\n");
-+		return PTR_ERR(data->rail2);
-+	}
-+	ret = devm_add_action_or_reset(dev, max20754_remove, data);
-+	if (ret)
-+		return ret;
-+
-+	data->info = max20754_info;
-+	data->info.groups = max20754_groups;
-+	data->smbus_i2c_block_read = i2c_block_data_ok;
-+
-+	return pmbus_do_probe(client, &data->info);
-+}
-+
-+static const struct i2c_device_id max20754_id[] = {
-+	{"max20754", max20754},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, max20754_id);
-+
-+static struct i2c_driver max20754_driver = {
-+	.driver = {
-+		   .name = "max20754",
-+		   },
-+	.probe_new = max20754_probe,
-+	.remove = pmbus_do_remove,
-+	.id_table = max20754_id,
-+};
-+
-+module_i2c_driver(max20754_driver);
-+
-+MODULE_AUTHOR("Atif Emre Ofluoglu <atif.ofluoglu@analog.com>");
-+MODULE_DESCRIPTION("PMBus driver for Maxim MAX20754");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(PMBUS);
+ * Since these updates are not synchronized with lockings, only code paths
+ * called from &drm_mode_config_helper_funcs.atomic_commit_tail can look at the
+ * legacy state filled out by this helper. Defacto this means this helper and
+ * the legacy state pointers are only really useful for transitioning an
+ * existing driver to the atomic world.
+
+So please change the code to use drm_connector_state.crtc.
+
+Dixi.
+
+>
+> Thanks,
+> Vinod P.
+>
+> > -----Original Message-----
+> > From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> > Sent: Wednesday, July 6, 2022 12:34 AM
+> > To: Vinod Polimera (QUIC) <quic_vpolimer@quicinc.com>; dri-
+> > devel@lists.freedesktop.org; linux-arm-msm@vger.kernel.org;
+> > freedreno@lists.freedesktop.org; devicetree@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org; robdclark@gmail.com;
+> > dianders@chromium.org; swboyd@chromium.org; Kalyan Thota (QUIC)
+> > <quic_kalyant@quicinc.com>; Kuogee Hsieh (QUIC)
+> > <quic_khsieh@quicinc.com>; Vishnuvardhan Prodduturi (QUIC)
+> > <quic_vproddut@quicinc.com>; bjorn.andersson@linaro.org; Aravind
+> > Venkateswaran (QUIC) <quic_aravindh@quicinc.com>; Abhinav Kumar
+> > (QUIC) <quic_abhinavk@quicinc.com>; Sankeerth Billakanti (QUIC)
+> > <quic_sbillaka@quicinc.com>
+> > Subject: Re: [PATCH v4 1/7] drm/msm/disp/dpu1: clear dpu_assign_crtc and
+> > get crtc from drm_enc instead of dpu_enc
+> >
+> > WARNING: This email originated from outside of Qualcomm. Please be wary
+> > of any links or attachments, and do not enable macros.
+> >
+> > On 05/07/2022 20:00, Vinod Polimera wrote:
+> > > Update crtc retrieval from dpu_enc to drm_enc, since new links get set
+> > > as part of the update legacy mode set. The dpu_enc->crtc cache is no
+> > > more needed, hence cleaning it as part of this change.
+> >
+> > NAK. Quoting the documentation:
+> >
+> > only really meaningful for non-atomic drivers. Atomic drivers should
+> > instead check &drm_connector_state.crtc.
+> >
+> > Please adjust according to the documentation.
+> > >
+> > > Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+> > > ---
+> > >   drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  4 ----
+> > >   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 18 +++---------------
+> > >   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  8 --------
+> > >   3 files changed, 3 insertions(+), 27 deletions(-)
+> > >
+> > > diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> > b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> > > index b56f777..f91e3d1 100644
+> > > --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> > > +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> > > @@ -972,7 +972,6 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
+> > >                */
+> > >               if (dpu_encoder_get_intf_mode(encoder) == INTF_MODE_VIDEO)
+> > >                       release_bandwidth = true;
+> > > -             dpu_encoder_assign_crtc(encoder, NULL);
+> > >       }
+> > >
+> > >       /* wait for frame_event_done completion */
+> > > @@ -1042,9 +1041,6 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
+> > >       trace_dpu_crtc_enable(DRMID(crtc), true, dpu_crtc);
+> > >       dpu_crtc->enabled = true;
+> > >
+> > > -     drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state-
+> > >encoder_mask)
+> > > -             dpu_encoder_assign_crtc(encoder, crtc);
+> > > -
+> > >       /* Enable/restore vblank irq handling */
+> > >       drm_crtc_vblank_on(crtc);
+> > >   }
+> > > diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> > b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> > > index 52516eb..5629c0b 100644
+> > > --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> > > +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> > > @@ -1254,8 +1254,8 @@ static void dpu_encoder_vblank_callback(struct
+> > drm_encoder *drm_enc,
+> > >       dpu_enc = to_dpu_encoder_virt(drm_enc);
+> > >
+> > >       spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> > > -     if (dpu_enc->crtc)
+> > > -             dpu_crtc_vblank_callback(dpu_enc->crtc);
+> > > +     if (drm_enc->crtc)
+> > > +             dpu_crtc_vblank_callback(drm_enc->crtc);
+> > >       spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+> > >
+> > >       atomic_inc(&phy_enc->vsync_cnt);
+> > > @@ -1280,18 +1280,6 @@ static void
+> > dpu_encoder_underrun_callback(struct drm_encoder *drm_enc,
+> > >       DPU_ATRACE_END("encoder_underrun_callback");
+> > >   }
+> > >
+> > > -void dpu_encoder_assign_crtc(struct drm_encoder *drm_enc, struct
+> > drm_crtc *crtc)
+> > > -{
+> > > -     struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
+> > > -     unsigned long lock_flags;
+> > > -
+> > > -     spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> > > -     /* crtc should always be cleared before re-assigning */
+> > > -     WARN_ON(crtc && dpu_enc->crtc);
+> > > -     dpu_enc->crtc = crtc;
+> > > -     spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+> > > -}
+> > > -
+> > >   void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder
+> > *drm_enc,
+> > >                                       struct drm_crtc *crtc, bool enable)
+> > >   {
+> > > @@ -1302,7 +1290,7 @@ void dpu_encoder_toggle_vblank_for_crtc(struct
+> > drm_encoder *drm_enc,
+> > >       trace_dpu_enc_vblank_cb(DRMID(drm_enc), enable);
+> > >
+> > >       spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> > > -     if (dpu_enc->crtc != crtc) {
+> > > +     if (drm_enc->crtc != crtc) {
+> > >               spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+> > >               return;
+> > >       }
+> > > diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+> > b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+> > > index 781d41c..edba815 100644
+> > > --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+> > > +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+> > > @@ -39,14 +39,6 @@ struct msm_display_info {
+> > >   };
+> > >
+> > >   /**
+> > > - * dpu_encoder_assign_crtc - Link the encoder to the crtc it's assigned to
+> > > - * @encoder: encoder pointer
+> > > - * @crtc:    crtc pointer
+> > > - */
+> > > -void dpu_encoder_assign_crtc(struct drm_encoder *encoder,
+> > > -                          struct drm_crtc *crtc);
+> > > -
+> > > -/**
+> > >    * dpu_encoder_toggle_vblank_for_crtc - Toggles vblank interrupts on or
+> > off if
+> > >    *  the encoder is assigned to the given crtc
+> > >    * @encoder:        encoder pointer
+> >
+> >
+> > --
+> > With best wishes
+> > Dmitry
+
+
+
 -- 
-2.25.1
-
+With best wishes
+Dmitry
