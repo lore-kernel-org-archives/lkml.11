@@ -2,138 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D97CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 20:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C485ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 20:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236637AbiGGUHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 16:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
+        id S236800AbiGGUIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 16:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236518AbiGGUHq (ORCPT
+        with ESMTP id S236518AbiGGUIK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 16:07:46 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C12860501;
-        Thu,  7 Jul 2022 13:07:45 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id n10so2509441wrc.4;
-        Thu, 07 Jul 2022 13:07:45 -0700 (PDT)
+        Thu, 7 Jul 2022 16:08:10 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4325C9FB
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 13:08:09 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id e132so20449328pgc.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 13:08:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rTCSXAVDcHhaWmF5B1mtYzKPQt4FAy2X4j0BObLT6Xs=;
-        b=IeURnp416D4+YsTeFKP2dgsRCa/QZTTbliByXDOLciA/80Uy5ICS87ZoiMZ3O59n2n
-         pj4mBx9veTy4ym/9LoDGKlSQSDVMi4U+VXiKCMrPGzHzJpOhL0bfZ7Y3PSFhprcuzqWP
-         Kja9EN3vE9GVptFD3uu8YOyIEYaJwh/fSVOXkrAzjsQozGYIkLrizM+lAeVOcyg04e6t
-         lDAG6JQ06DeC+u3KciW2NQj3T1X/pBM3XBXlOHiEHOYrSaxNuAUXlSg5ECzS0itAy7YA
-         53I2Bfv+CLcK3u+rqhU0jbvYEg6oN5smI8O22ZHL+dLCzyApmOeR1d4HQO8m1mSnAGxF
-         Ld7w==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cFtvjAz52PfP2pPD+ElBW0/QBf2EF5ZKVG4poUQicBo=;
+        b=mP6SCv4ZYKPXIVkeWPvSzYVLVZhUki25eBM3YjhHa4kfvUF6M24odaSonkI7GHxDgl
+         q8l7jb+yebppC1HydPiKCkfhvmANyTWfCu52lX2gIwEpQBnE29Hb8QHYalq/BA13UOjv
+         +Zyr+YT7RtoA7XbaOypkXR3a1booylX88aVw60q9E8Hgv256LIL7u283VOkjfSc/SkGk
+         xBZgDfQP4w+8tYaciO9M9qkbnh1pzs5vOsjgxpOmnkZpqJo64Sb1mOLl2eYm3CP/azOl
+         MjvEVEDBMn2QuzM5ShiwcRwk74T7S++IlrVOEUYGSFYHaFxUDcAizX/UA4mV7JIntHW7
+         0e3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rTCSXAVDcHhaWmF5B1mtYzKPQt4FAy2X4j0BObLT6Xs=;
-        b=buxEGvScTIvqF4eH4cXJzKoZbA9+wYwc31EjcC7LT6/SfSk04foXdjF4/sEId03TXq
-         1EQv9kyhQ7EdNDQLQnLhnlo99xBXnG68zQaSm767ooeI3hjnZ4VNACh4FEZESsWmgTCR
-         8uManJcSthiXlHhaRWXG88TSGfSmC6Eqv5qK67ENHaiKqXyGD8u15eEqxl/BbJ5TuV9L
-         KhzT4SNPcvnR1/5wITpFAUa0QKyPuD46PNvBb5x9af3bWJ7Q0zqquGy/oZVH+zIdtADu
-         0iKADBesb96xQoIR9R6O1ZtpGAlmptPWED5vxrg+A4S3RMj4JkBY88HWA5JGNTkWPqXA
-         KSGQ==
-X-Gm-Message-State: AJIora/HxsASj2y2jsqo6hv3huzIoEJRT9qwdIzcnEnz/9E8qBeyCo0/
-        R/dhlSmkaRd3ae1uaaVFqGc=
-X-Google-Smtp-Source: AGRyM1vip8b5inVLn8Zh2y8lxHZ//ajL4cRb/xdWnfmA56uw+IgIBLYInrGJCfNuexzpzmxCqScMFg==
-X-Received: by 2002:a5d:4e04:0:b0:21d:6ec3:38a2 with SMTP id p4-20020a5d4e04000000b0021d6ec338a2mr17906129wrt.362.1657224463909;
-        Thu, 07 Jul 2022 13:07:43 -0700 (PDT)
-Received: from localhost.localdomain (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
-        by smtp.gmail.com with ESMTPSA id n17-20020a05600c3b9100b0039ee391a024sm25096752wms.14.2022.07.07.13.07.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cFtvjAz52PfP2pPD+ElBW0/QBf2EF5ZKVG4poUQicBo=;
+        b=d9URePyzJP8fXnfpvUoV+bv89TKxCizUJlHND3DMh0Q31I0yu24+STPyqo1dtmhc8D
+         00nN5TbiGezo05Zg0fQVcq0U2Jkeog5TaHDw356/0N5GPw+DyJspwAKz/L28ZtWi4QXD
+         ZoEJO5+OhLAJJ8NlxP2hNihNIGL80EWy4xG7dg7eetK08k3WqtsZ/UGOXuQpPa3ZGaPR
+         8c16f12muY0017fvQ8gsyD4nl0tO1VZ9+PyO17QKuk7UHQpQYoeE2ki/fAxsJMjS1DMP
+         0CvqlNJ6yQzF1TKBh3DEKojneAmS9icaPqTpw060WLQYZ/EtvvbxsD6qPjtOiRQSWPY4
+         SVjA==
+X-Gm-Message-State: AJIora9vwYqr06f0cQZK/y93KJf14X9u/ZfbxQ3aFZxCQT3dxafgNwhd
+        JZoG1xVNHuMInc8rzHuJIqrgfqqF/zpfNA==
+X-Google-Smtp-Source: AGRyM1vO+9LD36zGVYjZHKVETQF42VSn4ohks+4f4YrWxIjNuhp8m2LWNGsH0so1jBJkR3/GbUBuuQ==
+X-Received: by 2002:a17:902:d28a:b0:16b:e4d6:6534 with SMTP id t10-20020a170902d28a00b0016be4d66534mr23220212plc.68.1657224488885;
+        Thu, 07 Jul 2022 13:08:08 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id w8-20020a627b08000000b00528c6c7bb65sm2244075pfc.83.2022.07.07.13.08.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 13:07:42 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Martiros Shakhzadyan <vrzh@vrzh.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [RESEND PATCH 3/3] staging: media: atomisp: Use kmap_local_page() in hmm_store()
-Date:   Thu,  7 Jul 2022 22:07:18 +0200
-Message-Id: <20220707200718.26398-4-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220707200718.26398-1-fmdefrancesco@gmail.com>
-References: <20220707200718.26398-1-fmdefrancesco@gmail.com>
+        Thu, 07 Jul 2022 13:08:08 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 20:08:04 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     Michael Roth <michael.roth@amd.com>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        "Nikunj A. Dadhania" <nikunj@amd.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86 <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Jun Nakajima <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>, mhocko@suse.com
+Subject: Re: [PATCH v6 6/8] KVM: Handle page fault for private memory
+Message-ID: <Ysc9JDcVAnlVrGC8@google.com>
+References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
+ <20220519153713.819591-7-chao.p.peng@linux.intel.com>
+ <b3ce0855-0e4b-782a-599c-26590df948dd@amd.com>
+ <20220624090246.GA2181919@chaop.bj.intel.com>
+ <CAGtprH82H_fjtRbL0KUxOkgOk4pgbaEbAydDYfZ0qxz41JCnAQ@mail.gmail.com>
+ <20220630222140.of4md7bufd5jv5bh@amd.com>
+ <4fe3b47d-e94a-890a-5b87-6dfb7763bc7e@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4fe3b47d-e94a-890a-5b87-6dfb7763bc7e@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() is being deprecated in favor of kmap_local_page()
-where it is feasible. The same is true for kmap_atomic().
+On Fri, Jul 01, 2022, Xiaoyao Li wrote:
+> On 7/1/2022 6:21 AM, Michael Roth wrote:
+> > On Thu, Jun 30, 2022 at 12:14:13PM -0700, Vishal Annapurve wrote:
+> > > With transparent_hugepages=always setting I see issues with the
+> > > current implementation.
 
-In file pci/hmm/hmm.c, function hmm_store() test if we are in atomic
-context and, if so, it calls kmap_atomic(), if not, it calls kmap().
+...
 
-First of all, in_atomic() shouldn't be used in drivers. This macro
-cannot always detect atomic context; in particular, it cannot know
-about held spinlocks in non-preemptible kernels.
+> > > Looks like with transparent huge pages enabled kvm tried to handle the
+> > > shared memory fault on 0x84d gfn by coalescing nearby 4K pages
+> > > to form a contiguous 2MB page mapping at gfn 0x800, since level 2 was
+> > > requested in kvm_mmu_spte_requested.
+> > > This caused the private memory contents from regions 0x800-0x84c and
+> > > 0x86e-0xa00 to get unmapped from the guest leading to guest vm
+> > > shutdown.
+> > 
+> > Interesting... seems like that wouldn't be an issue for non-UPM SEV, since
+> > the private pages would still be mapped as part of that 2M mapping, and
+> > it's completely up to the guest as to whether it wants to access as
+> > private or shared. But for UPM it makes sense this would cause issues.
+> > 
+> > > 
+> > > Does getting the mapping level as per the fault access type help
+> > > address the above issue? Any such coalescing should not cross between
+> > > private to
+> > > shared or shared to private memory regions.
+> > 
+> > Doesn't seem like changing the check to fault->is_private would help in
+> > your particular case, since the subsequent host_pfn_mapping_level() call
+> > only seems to limit the mapping level to whatever the mapping level is
+> > for the HVA in the host page table.
+> > 
+> > Seems like with UPM we need some additional handling here that also
+> > checks that the entire 2M HVA range is backed by non-private memory.
+> > 
+> > Non-UPM SNP hypervisor patches already have a similar hook added to
+> > host_pfn_mapping_level() which implements such a check via RMP table, so
+> > UPM might need something similar:
+> > 
+> >    https://github.com/AMDESE/linux/commit/ae4475bc740eb0b9d031a76412b0117339794139
+> > 
+> > -Mike
+> > 
+> 
+> For TDX, we try to track the page type (shared, private, mixed) of each gfn
+> at given level. Only when the type is shared/private, can it be mapped at
+> that level. When it's mixed, i.e., it contains both shared pages and private
+> pages at given level, it has to go to next smaller level.
+> 
+> https://github.com/intel/tdx/commit/ed97f4042eb69a210d9e972ccca6a84234028cad
 
-Notwithstanding what it is said above, this code doesn't need to care
-whether or not it is executing in atomic context. It can simply use
-kmap_local_page() / kunmap_local() that can instead do the mapping /
-unmapping regardless of the context.
+Hmm, so a new slot->arch.page_attr array shouldn't be necessary, KVM can instead
+update slot->arch.lpage_info on shared<->private conversions.  Detecting whether
+a given range is partially mapped could get nasty if KVM defers tracking to the
+backing store, but if KVM itself does the tracking as was previously suggested[*],
+then updating lpage_info should be relatively straightfoward, e.g. use
+xa_for_each_range() to see if a given 2mb/1gb range is completely covered (fully
+shared) or not covered at all (fully private).
 
-With kmap_local_page(), the mapping is per thread, CPU local and not
-globally visible. Therefore, hmm_store()() is a function where the use
-of kmap_local_page() in place of both kmap() and kmap_atomic() is
-correctly suited.
-
-Convert the calls of kmap() / kunmap() and kmap_atomic() /
-kunmap_atomic() to kmap_local_page() / kunmap_local() and drop the
-unnecessary tests which test if the code is in atomic context.
-
-Tested-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- drivers/staging/media/atomisp/pci/hmm/hmm.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/staging/media/atomisp/pci/hmm/hmm.c b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-index 46ac082cd3f1..54188197c3dc 100644
---- a/drivers/staging/media/atomisp/pci/hmm/hmm.c
-+++ b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-@@ -482,10 +482,7 @@ int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
- 		idx = (virt - bo->start) >> PAGE_SHIFT;
- 		offset = (virt - bo->start) - (idx << PAGE_SHIFT);
- 
--		if (in_atomic())
--			des = (char *)kmap_atomic(bo->page_obj[idx].page);
--		else
--			des = (char *)kmap(bo->page_obj[idx].page);
-+		des = (char *)kmap_local_page(bo->page_obj[idx].page);
- 
- 		if (!des) {
- 			dev_err(atomisp_dev,
-@@ -512,14 +509,7 @@ int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
- 
- 		clflush_cache_range(des, len);
- 
--		if (in_atomic())
--			/*
--			 * Note: kunmap_atomic requires return addr from
--			 * kmap_atomic, not the page. See linux/highmem.h
--			 */
--			kunmap_atomic(des - offset);
--		else
--			kunmap(bo->page_obj[idx].page);
-+		kunmap_local(des);
- 	}
- 
- 	return 0;
--- 
-2.36.1
-
+[*] https://lore.kernel.org/all/YofeZps9YXgtP3f1@google.com
