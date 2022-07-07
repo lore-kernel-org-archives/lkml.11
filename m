@@ -2,118 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EDEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3334C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235948AbiGGSKJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40250 "EHLO
+        id S235680AbiGGSPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232340AbiGGSKC (ORCPT
+        with ESMTP id S235575AbiGGSPq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:10:02 -0400
-Received: from srv6.fidu.org (srv6.fidu.org [IPv6:2a01:4f8:231:de0::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F24F237FF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:10:00 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by srv6.fidu.org (Postfix) with ESMTP id F3539C8009A;
-        Thu,  7 Jul 2022 20:09:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        tuxedocomputers.com; h=content-transfer-encoding:mime-version
-        :references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from; s=default; t=1657217397; x=1659031798; bh=dJ
-        JoXrGDVHikR0rNuf8Zm1ygRJi+F4cuAxXmhFMTy3Y=; b=O8hKuRvOCpAZr1Kakl
-        maXNIf5t5Fc0MxjPOgDdusIhRJGJwIT1ume5bF9eeHUG0yugKqPPNfNxbt9OfAoN
-        UnJhOqKLkZYGOpESci86qUjOXrU3NGVaTPdsjbxQ77lPb0vp1O3CvY5fzedF39Vq
-        76lDEdhOubc3nWTb5QLSOPUmA=
-X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
-Received: from srv6.fidu.org ([127.0.0.1])
-        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
-        with LMTP id bx4ZQWgbx0Un; Thu,  7 Jul 2022 20:09:57 +0200 (CEST)
-Received: from wsembach-tuxedo.fritz.box (host-212-18-30-247.customer.m-online.net [212.18.30.247])
-        (Authenticated sender: wse@tuxedocomputers.com)
-        by srv6.fidu.org (Postfix) with ESMTPA id 9F02AC8009E;
-        Thu,  7 Jul 2022 20:09:57 +0200 (CEST)
-From:   Werner Sembach <wse@tuxedocomputers.com>
-To:     rafael@kernel.org, lenb@kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] ACPI: video: Shortening quirk list by identifying Clevo by board_name only
-Date:   Thu,  7 Jul 2022 20:09:53 +0200
-Message-Id: <20220707180953.605246-2-wse@tuxedocomputers.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220707180953.605246-1-wse@tuxedocomputers.com>
-References: <20220707180953.605246-1-wse@tuxedocomputers.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 7 Jul 2022 14:15:46 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B6622BE2
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:15:44 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id 138-20020a621890000000b00527c88db25fso7723038pfy.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 11:15:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=WyqPYSVnBKbl/nr40y7sE7AfbPIEB8jJthH3qsZRwTA=;
+        b=dnqfTJXGdi0+0FQWJVIluP9qFR8tn9FFDKE/o7TQ9D9+9nSIvt3ROmw8bwLqp/nk0a
+         bf0FuVwic/qm0DrYAJCc1pFXDdpTPmT0tSbEICTZ+pfYV8DKzRFTdF+141+GjWUjwQRp
+         QzLvsqovmrnEMyfDJ/7HdhFzKkCciuR3Qi1ipw5Cf7TI8Nz9EV4yYk3UBrTQYNHllrja
+         bTeWVLAzCLBiMBiVRXMeEqceXRlQr+0luk8omnYLqhs/NFnKe48+83GAn6wUStYTqssD
+         8UL1kyN+jlNMOBCpH9Uw7CRSsyrrMlr41sMk6fy8bYqO6OEoVY1b3mo2E3g0pxJf4FgO
+         JoHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=WyqPYSVnBKbl/nr40y7sE7AfbPIEB8jJthH3qsZRwTA=;
+        b=uidyiecalRas3QKBE/4vMuhg01/GOzsjlyhHHoI4/2sTe5RNCBhOAB5hEpa7XXna99
+         lButno22Oa5tX4OZMFAG1yh9dSd77b/vT8oF+4wBLb4fIzQOlkbITxx4PEoXD5VHveWd
+         I6V0y7fTNZ8K+82aYOACnS9hez6XWnkHuVIEiTrRXjcvxIbBknPPG15PjULJ30agYZ7B
+         CvUPjxZD1V8qlmSH+491d3/xniclxA5kXLSfuNoRzKIyRGwWl5XMxM5OjMMShYj9oqMQ
+         5KCAs4AGfaoq7nPyPFmb0G65buqUwX5bcDhAZFmyibfzfxbJtbB0E7TGs+ksY+yO/7aH
+         j8xw==
+X-Gm-Message-State: AJIora9sfBPAdo8BMzy2xjzjTuoDbQG1GJJPM84QGU7xvxcQkCQgGDMs
+        t8a6oRfpnyMEpBoauOUsecpka89B363QC++EmA==
+X-Google-Smtp-Source: AGRyM1vSxJ9bzN8oLzDMI9yoXtg62L3jELXqZ7ufsfb/vBottKkE9UgYhVK36UnCmznaz0cAiYEvHbEc1ywsdTpTaw==
+X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:4640:519a:f833:9a5])
+ (user=justinstitt job=sendgmr) by 2002:aa7:8e86:0:b0:528:c755:1d96 with SMTP
+ id a6-20020aa78e86000000b00528c7551d96mr5326209pfr.30.1657217744245; Thu, 07
+ Jul 2022 11:15:44 -0700 (PDT)
+Date:   Thu,  7 Jul 2022 11:15:32 -0700
+Message-Id: <20220707181532.762452-1-justinstitt@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH] net: ipv4: esp4: fix clang -Wformat warning
+From:   Justin Stitt <justinstitt@google.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Justin Stitt <justinstitt@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Taking a recent change in the i8042 quirklist to this one: Clevo
-board_names are somewhat unique, and if not: The generic Board_-/Sys_Vendor
-string "Notebook" doesn't help much anyway. So identifying the devices just
-by the board_name helps keeping the list significantly shorter and might
-even hit more devices requiring the fix.
+When building with Clang we encounter this warning:
+| net/ipv4/esp4.c:1114:5: error: format specifies type 'unsigned short'
+| but the argument has type 'int' [-Werror,-Wformat]
+| aalg_desc->uinfo.auth.icv_fullbits / 8);
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Fixes: c844d22fe0c0 ("ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU")
-Cc: stable@vger.kernel.org
+`aalg_desc->uinfo.auth.icv_fullbits` is a u16 but due to default
+argument promotion becomes an int.
+
+Variadic functions (printf-like) undergo default argument promotion.
+Documentation/core-api/printk-formats.rst specifically recommends using
+the promoted-to-type's format flag.
+
+As per C11 6.3.1.1:
+(https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf) `If an int
+can represent all values of the original type ..., the value is
+converted to an int; otherwise, it is converted to an unsigned int.
+These are called the integer promotions.` Thus it makes sense to change
+%hu to %d not only to follow this standard but to suppress the warning
+as well.
+
+Nathan also mentions: This solution is in line with printk-formats.rst
+after commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use
+of unnecessary %h[xudi] and %hh[xudi]").
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Suggested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Justin Stitt <justinstitt@google.com>
 ---
- drivers/acpi/video_detect.c | 34 ----------------------------------
- 1 file changed, 34 deletions(-)
+This is the exact same issue (and fix) as:
+https://lore.kernel.org/all/20220707173040.704116-1-justinstitt@google.com/
 
-diff --git a/drivers/acpi/video_detect.c b/drivers/acpi/video_detect.c
-index cdde2e069d63..6615f59ab7fd 100644
---- a/drivers/acpi/video_detect.c
-+++ b/drivers/acpi/video_detect.c
-@@ -430,23 +430,6 @@ static const struct dmi_system_id video_detect_dmi_table[] = {
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xRU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
- 		},
- 	},
-@@ -470,23 +453,6 @@ static const struct dmi_system_id video_detect_dmi_table[] = {
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xNU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
- 		},
- 	},
+This really should have been a 2-patch series but I've been going
+through warnings and systematically fixing them whilst submitting
+patches as I go.
+
+ net/ipv4/esp4.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index b21238df3301..de48dcac18eb 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -1108,7 +1108,7 @@ static int esp_init_authenc(struct xfrm_state *x)
+ 		err = -EINVAL;
+ 		if (aalg_desc->uinfo.auth.icv_fullbits / 8 !=
+ 		    crypto_aead_authsize(aead)) {
+-			pr_info("ESP: %s digestsize %u != %hu\n",
++			pr_info("ESP: %s digestsize %u != %d\n",
+ 				x->aalg->alg_name,
+ 				crypto_aead_authsize(aead),
+ 				aalg_desc->uinfo.auth.icv_fullbits / 8);
 -- 
-2.34.1
+2.37.0.rc0.161.g10f37bed90-goog
 
