@@ -2,99 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C622BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F30FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbiGGISo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 04:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60870 "EHLO
+        id S235039AbiGGIS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 04:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235545AbiGGIRq (ORCPT
+        with ESMTP id S234919AbiGGISA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 04:17:46 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57988564CA
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:16:04 -0700 (PDT)
-Date:   Thu, 07 Jul 2022 08:15:55 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657181756;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DD+NDpqm5I36QU55M3gfvR6ksTUNVcDNJp9Awm7EMaY=;
-        b=D2SfCCrMGUV310c6hy5yZr61+cEWLhR24lIQJeXJQ1cJWk+kA1O9guw7iSJjfpzWQcl7H/
-        KJXh61L0q1lVfY2w8URxlf/x666JQvAZZnfBImN67z7GVDA3D7e8k/a00NwKxwAoNmyRwu
-        ZFtDSQtj3w7z1YVN7EgokWnwAmbGwdZXUl7fDZa2AqJ9RGN44a8Qdq/dcdsWyiCKgSDiqO
-        7307bb4oonY7i/yvxOqc4eTZqWLPo5SdritlFi02WPN2x2X/q+rII6aHuds5cx17x6zaI4
-        xiCP3C+du2yCu+bBLzc9aVO5+ZxBQo7HoAzGWNWu6dDEMUKltKVHpllJ1R7sQQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657181756;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DD+NDpqm5I36QU55M3gfvR6ksTUNVcDNJp9Awm7EMaY=;
-        b=w66UehvxuH3OkeyEeDlLtMyWUlyDhqve3D4Om2GS23PBS1loQVdn+2GOFBRJbk2bUmggA2
-        ufwNXrGcXJRfGuCA==
-From:   "irqchip-bot for Antonio Borneo" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] genirq: Don't return error on missing
- optional irq_request_resources()
-Cc:     Antonio Borneo <antonio.borneo@foss.st.com>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220512160544.13561-1-antonio.borneo@foss.st.com>
-References: <20220512160544.13561-1-antonio.borneo@foss.st.com>
+        Thu, 7 Jul 2022 04:18:00 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7F14F188;
+        Thu,  7 Jul 2022 01:16:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657181788; x=1688717788;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=pK51D6/KCwtEn5SHEF/Xv6jcS3+colyLJ58dPARzfUo=;
+  b=cxcilQOVnEKZZ2/buX8s4HciTC4d0flRA3S95co9JgqWQYnagCEhjV/x
+   /5jdat9odiYuWFquys7/8+UUgf3UnHXKljWFgTfziSZXFJ/Y0WNWTNOjs
+   ZuXj43jOYKkUc9HiUy4f2EoItAY8JQoeK/Jc4Q/byF96fE4zlKKGfwhQJ
+   g=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Jul 2022 01:16:28 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 01:16:28 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 7 Jul 2022 01:16:27 -0700
+Received: from c-skakit-linux.qualcomm.com (10.49.16.6) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 7 Jul 2022 01:16:23 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
+CC:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Taniya Das <tdas@codeaurora.org>, <mka@chromium.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Taniya Das <quic_tdas@quicinc.com>,
+        "Satya Priya" <quic_c_skakit@quicinc.com>
+Subject: [PATCH V2] arm64: dts: qcom: sc7280: Update lpassaudio clock controller for resets
+Date:   Thu, 7 Jul 2022 13:45:39 +0530
+Message-ID: <1657181739-32052-1-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Message-ID: <165718175501.15455.15982341933411923765.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+From: Taniya Das <quic_tdas@quicinc.com>
 
-Commit-ID:     95001b756467ecc9f5973eb5e74e97699d9bbdf1
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/95001b756467ecc9f5973eb5e74e97699d9bbdf1
-Author:        Antonio Borneo <antonio.borneo@foss.st.com>
-AuthorDate:    Thu, 12 May 2022 18:05:44 +02:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Thu, 07 Jul 2022 09:04:13 +01:00
+The lpass audio supports TX/RX/WSA block resets. Disable the LPASS PIL
+clock by default, boards can enable it if needed.
 
-genirq: Don't return error on missing optional irq_request_resources()
+Also to keep consistency update lpasscore to lpass_core.
 
-Function irq_chip::irq_request_resources() is reported as optional
-in the declaration of struct irq_chip.
-If the parent irq_chip does not implement it, we should ignore it
-and return.
-
-Don't return error if the functions is missing.
-
-Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220512160544.13561-1-antonio.borneo@foss.st.com
+Fixes: 9499240d15f2 ("arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers")
+Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 ---
- kernel/irq/chip.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Changes since V1:
+ - Updated the phandle reference in lpass_aon node.
+ - As per Matthias' comment updated the commit text.
 
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 886789d..c190405 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -1516,7 +1516,8 @@ int irq_chip_request_resources_parent(struct irq_data *data)
- 	if (data->chip->irq_request_resources)
- 		return data->chip->irq_request_resources(data);
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 40e700c..73dddca 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -2174,6 +2174,7 @@
+ 			clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
+ 			clock-names = "iface";
+ 			#clock-cells = <1>;
++			status = "disabled";
+ 		};
  
--	return -ENOSYS;
-+	/* no error on missing optional irq_chip::irq_request_resources */
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(irq_chip_request_resources_parent);
+ 		lpass_audiocc: clock-controller@3300000 {
+@@ -2185,6 +2186,7 @@
+ 			power-domains = <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
+ 			#clock-cells = <1>;
+ 			#power-domain-cells = <1>;
++			#reset-cells = <1>;
+ 		};
  
+ 		lpass_aon: clock-controller@3380000 {
+@@ -2192,13 +2194,13 @@
+ 			reg = <0 0x03380000 0 0x30000>;
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>,
+ 			       <&rpmhcc RPMH_CXO_CLK_A>,
+-			       <&lpasscore LPASS_CORE_CC_CORE_CLK>;
++			       <&lpass_core LPASS_CORE_CC_CORE_CLK>;
+ 			clock-names = "bi_tcxo", "bi_tcxo_ao", "iface";
+ 			#clock-cells = <1>;
+ 			#power-domain-cells = <1>;
+ 		};
+ 
+-		lpasscore: clock-controller@3900000 {
++		lpass_core: clock-controller@3900000 {
+ 			compatible = "qcom,sc7280-lpasscorecc";
+ 			reg = <0 0x03900000 0 0x50000>;
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>;
+-- 
+2.7.4
+
