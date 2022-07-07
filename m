@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24448C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 325F5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234768AbiGGHfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 03:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51188 "EHLO
+        id S234787AbiGGHfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 03:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234330AbiGGHfS (ORCPT
+        with ESMTP id S231710AbiGGHf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 03:35:18 -0400
+        Thu, 7 Jul 2022 03:35:29 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C751331938;
-        Thu,  7 Jul 2022 00:35:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275B231DE1;
+        Thu,  7 Jul 2022 00:35:22 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266NFQsQ008099;
-        Thu, 7 Jul 2022 00:35:05 -0700
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266NFQTQ008098;
+        Thu, 7 Jul 2022 00:35:17 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=4ryphqqg33oxrCnq2mO9yJq/yaotRzQGFweKh1sh8Qw=;
- b=eaxP3nTdZRyGO5N2z/0XbL0WL0GcwCHCorYUwQYNRuuMEvg4Z2Cq5Ipml6pM0+0cFG/x
- swojWSGe11o7RQGqeosHQs44jZMoUNq8P26sSN7D6cjTQwEqUp6EWA/+o5Cbp0Iz7JlJ
- 75Tjba4ijeh5pOjWsiua0Z2ghYEKrppg5CLgzMWG/kPP8tcFvn++FO/q/kmxAT2UwSkR
- 3UMQyqnol0Da+HKW2UpCCiEyzXyqrxYyiK2/x3VXlIk9aiA76fJEZy8CtJjuokcdwk5C
- Uf2OkDrQIunjPYmGtMxOFHz97Pup+7JcWbSjitRmastnpyEfHVAT/3sLS1JZIFjZq7fz PA== 
+ bh=ZSk/a5kvKGgnF6HkXBA27+cNCJVtIZvIFDYoJIKOcyw=;
+ b=Wtg3sly+u4hTG0WOjNdOeuJQpQOstNtl5ICT0VnR5ybge9MnGad4NNR0OMergq7w2UOv
+ EQ65q5FOVCZmnZ7vzlM18TWIK/WDRoEnLGlwL016zDdYJK4MYOdnoBSwbRcv3T0aP6vx
+ ux0iDoreIFfh+T9pwGo8Ih35dDZUv8H/ONEstiEx5zw0mxN06pG7fVReGItnoBRsuUKB
+ uex8OOmwfe2eDlQ0fCVUpzlpi+e3XGi4Jg3dTRvozs220zPj2SKwQwOx5pUKaNFU5RMt
+ YaSfKn420hOGn3x5/xparM503LLinvFvrOQSjMSkbK5y4wFKp1IMM3AKknl+0gwMdfov rA== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h5kwj1gu6-1
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h5kwj1guk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 00:35:05 -0700
+        Thu, 07 Jul 2022 00:35:16 -0700
 Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Jul
- 2022 00:35:03 -0700
+ 2022 00:35:15 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Jul 2022 00:35:03 -0700
+ Transport; Thu, 7 Jul 2022 00:35:15 -0700
 Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
-        by maili.marvell.com (Postfix) with ESMTP id 88A233F70BE;
-        Thu,  7 Jul 2022 00:35:01 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id E99273F706B;
+        Thu,  7 Jul 2022 00:35:12 -0700 (PDT)
 From:   Ratheesh Kannoth <rkannoth@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [net-next PATCH V3 04/12] octeontx2-af: devlink configuration support
-Date:   Thu, 7 Jul 2022 13:03:45 +0530
-Message-ID: <20220707073353.2752279-5-rkannoth@marvell.com>
+Subject: [net-next PATCH V3 08/12] octeontx2: Modify mbox request and response structures
+Date:   Thu, 7 Jul 2022 13:03:49 +0530
+Message-ID: <20220707073353.2752279-9-rkannoth@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220707073353.2752279-1-rkannoth@marvell.com>
 References: <20220707073353.2752279-1-rkannoth@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Sdnq1e-DB3baJj2HqFjGsDf_KuIO9aTs
-X-Proofpoint-GUID: Sdnq1e-DB3baJj2HqFjGsDf_KuIO9aTs
+X-Proofpoint-ORIG-GUID: R2lWhkUfRrxuvFXgdnoXJPj8i5aES53_
+X-Proofpoint-GUID: R2lWhkUfRrxuvFXgdnoXJPj8i5aES53_
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-07_05,2022-06-28_01,2022-06-22_01
@@ -63,181 +63,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CN10KB silicon supports Exact match feature. This feature can be disabled
-through devlink configuration. Devlink command fails if DMAC filter rules
-are already present. Once disabled, legacy RPM based DMAC filters will be
-configured.
+Exact match table modification requires wider fields as it has
+more number of slots to fill in. Modifying an entry in exact match
+table may cause hash collision and may be required to delete entry
+from 4-way 2K table and add to fully associative 32 entry CAM table.
 
 Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
 ---
- .../marvell/octeontx2/af/rvu_devlink.c        | 71 ++++++++++++++++++-
- .../marvell/octeontx2/af/rvu_npc_hash.c       | 29 ++++++++
- .../marvell/octeontx2/af/rvu_npc_hash.h       |  3 +
- 3 files changed, 101 insertions(+), 2 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  | 27 ++++++++++++++-----
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  4 +--
+ .../marvell/octeontx2/nic/otx2_dmac_flt.c     |  2 +-
+ 3 files changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-index d0ab8f233a02..88dee589cb21 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-@@ -10,6 +10,7 @@
- #include "rvu.h"
- #include "rvu_reg.h"
- #include "rvu_struct.h"
-+#include "rvu_npc_hash.h"
- 
- #define DRV_NAME "octeontx2-af"
- 
-@@ -1436,14 +1437,75 @@ static int rvu_af_dl_dwrr_mtu_get(struct devlink *devlink, u32 id,
- enum rvu_af_dl_param_id {
- 	RVU_AF_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
- 	RVU_AF_DEVLINK_PARAM_ID_DWRR_MTU,
-+	RVU_AF_DEVLINK_PARAM_ID_NPC_EXACT_FEATURE_DISABLE,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 38e064bdaf72..430aa8a05c23 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -169,9 +169,10 @@ M(CGX_GET_PHY_FEC_STATS, 0x219, cgx_get_phy_fec_stats, msg_req, msg_rsp) \
+ M(CGX_FEATURES_GET,	0x21B, cgx_features_get, msg_req,		\
+ 			       cgx_features_info_msg)			\
+ M(RPM_STATS,		0x21C, rpm_stats, msg_req, rpm_stats_rsp)	\
+-M(CGX_MAC_ADDR_RESET,	0x21D, cgx_mac_addr_reset, msg_req, msg_rsp)	\
++M(CGX_MAC_ADDR_RESET,	0x21D, cgx_mac_addr_reset, cgx_mac_addr_reset_req, \
++							msg_rsp) \
+ M(CGX_MAC_ADDR_UPDATE,	0x21E, cgx_mac_addr_update, cgx_mac_addr_update_req, \
+-			       msg_rsp)					\
++						    cgx_mac_addr_update_rsp) \
+ M(CGX_PRIO_FLOW_CTRL_CFG, 0x21F, cgx_prio_flow_ctrl_cfg, cgx_pfc_cfg,  \
+ 				 cgx_pfc_rsp)                               \
+ /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
+@@ -455,6 +456,7 @@ struct cgx_fec_stats_rsp {
+ struct cgx_mac_addr_set_or_get {
+ 	struct mbox_msghdr hdr;
+ 	u8 mac_addr[ETH_ALEN];
++	u32 index;
  };
  
-+static int rvu_af_npc_exact_feature_get(struct devlink *devlink, u32 id,
-+					struct devlink_param_gset_ctx *ctx)
-+{
-+	struct rvu_devlink *rvu_dl = devlink_priv(devlink);
-+	struct rvu *rvu = rvu_dl->rvu;
-+	bool enabled;
-+
-+	enabled = rvu_npc_exact_has_match_table(rvu);
-+
-+	snprintf(ctx->val.vstr, sizeof(ctx->val.vstr), "%s",
-+		 enabled ? "enabled" : "disabled");
-+
-+	return 0;
-+}
-+
-+static int rvu_af_npc_exact_feature_disable(struct devlink *devlink, u32 id,
-+					    struct devlink_param_gset_ctx *ctx)
-+{
-+	struct rvu_devlink *rvu_dl = devlink_priv(devlink);
-+	struct rvu *rvu = rvu_dl->rvu;
-+
-+	rvu_npc_exact_disable_feature(rvu);
-+
-+	return 0;
-+}
-+
-+static int rvu_af_npc_exact_feature_validate(struct devlink *devlink, u32 id,
-+					     union devlink_param_value val,
-+					     struct netlink_ext_ack *extack)
-+{
-+	struct rvu_devlink *rvu_dl = devlink_priv(devlink);
-+	struct rvu *rvu = rvu_dl->rvu;
-+	u64 enable;
-+
-+	if (kstrtoull(val.vstr, 10, &enable)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Only 1 value is supported");
-+		return -EINVAL;
-+	}
-+
-+	if (enable != 1) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Only disabling exact match feature is supported");
-+		return -EINVAL;
-+	}
-+
-+	if (rvu_npc_exact_can_disable_feature(rvu))
-+		return 0;
-+
-+	NL_SET_ERR_MSG_MOD(extack,
-+			   "Can't disable exact match feature; Please try before any configuration");
-+	return -EFAULT;
-+}
-+
- static const struct devlink_param rvu_af_dl_params[] = {
- 	DEVLINK_PARAM_DRIVER(RVU_AF_DEVLINK_PARAM_ID_DWRR_MTU,
- 			     "dwrr_mtu", DEVLINK_PARAM_TYPE_U32,
- 			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
- 			     rvu_af_dl_dwrr_mtu_get, rvu_af_dl_dwrr_mtu_set,
- 			     rvu_af_dl_dwrr_mtu_validate),
-+	DEVLINK_PARAM_DRIVER(RVU_AF_DEVLINK_PARAM_ID_NPC_EXACT_FEATURE_DISABLE,
-+			     "npc_exact_feature_disable", DEVLINK_PARAM_TYPE_STRING,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     rvu_af_npc_exact_feature_get,
-+			     rvu_af_npc_exact_feature_disable,
-+			     rvu_af_npc_exact_feature_validate),
+ /* Structure for requesting the operation to
+@@ -470,7 +472,7 @@ struct cgx_mac_addr_add_req {
+  */
+ struct cgx_mac_addr_add_rsp {
+ 	struct mbox_msghdr hdr;
+-	u8 index;
++	u32 index;
  };
  
- /* Devlink switch mode */
-@@ -1501,6 +1563,7 @@ int rvu_register_dl(struct rvu *rvu)
- {
- 	struct rvu_devlink *rvu_dl;
- 	struct devlink *dl;
-+	size_t size;
- 	int err;
+ /* Structure for requesting the operation to
+@@ -478,7 +480,7 @@ struct cgx_mac_addr_add_rsp {
+  */
+ struct cgx_mac_addr_del_req {
+ 	struct mbox_msghdr hdr;
+-	u8 index;
++	u32 index;
+ };
  
- 	dl = devlink_alloc(&rvu_devlink_ops, sizeof(struct rvu_devlink),
-@@ -1522,8 +1585,12 @@ int rvu_register_dl(struct rvu *rvu)
- 		goto err_dl_health;
- 	}
+ /* Structure for response against the operation to
+@@ -486,7 +488,7 @@ struct cgx_mac_addr_del_req {
+  */
+ struct cgx_max_dmac_entries_get_rsp {
+ 	struct mbox_msghdr hdr;
+-	u8 max_dmac_filters;
++	u32 max_dmac_filters;
+ };
  
--	err = devlink_params_register(dl, rvu_af_dl_params,
--				      ARRAY_SIZE(rvu_af_dl_params));
-+	/* Register exact match devlink only for CN10K-B */
-+	size = ARRAY_SIZE(rvu_af_dl_params);
-+	if (!rvu_npc_exact_has_match_table(rvu))
-+		size -= 1;
+ struct cgx_link_user_info {
+@@ -587,10 +589,20 @@ struct cgx_set_link_mode_rsp {
+ 	int status;
+ };
+ 
++struct cgx_mac_addr_reset_req {
++	struct mbox_msghdr hdr;
++	u32 index;
++};
 +
-+	err = devlink_params_register(dl, rvu_af_dl_params, size);
- 	if (err) {
- 		dev_err(rvu->dev,
- 			"devlink params register failed with error %d", err);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-index 7d3683035ab4..444d2b9a4b29 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-@@ -1154,6 +1154,35 @@ static int __maybe_unused rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 c
+ struct cgx_mac_addr_update_req {
+ 	struct mbox_msghdr hdr;
+ 	u8 mac_addr[ETH_ALEN];
+-	u8 index;
++	u32 index;
++};
++
++struct cgx_mac_addr_update_rsp {
++	struct mbox_msghdr hdr;
++	u32 index;
+ };
+ 
+ #define RVU_LMAC_FEAT_FC		BIT_ULL(0) /* pause frames */
+@@ -1636,6 +1648,9 @@ enum cgx_af_status {
+ 	LMAC_AF_ERR_PERM_DENIED		= -1103,
+ 	LMAC_AF_ERR_PFC_ENADIS_PERM_DENIED       = -1104,
+ 	LMAC_AF_ERR_8023PAUSE_ENADIS_PERM_DENIED = -1105,
++	LMAC_AF_ERR_EXACT_MATCH_TBL_ADD_FAILED = -1108,
++	LMAC_AF_ERR_EXACT_MATCH_TBL_DEL_FAILED = -1109,
++	LMAC_AF_ERR_EXACT_MATCH_TBL_LOOK_UP_FAILED = -1110,
+ };
+ 
+ #endif /* MBOX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index 97a633c1d395..0d86f3e68fa0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -1089,7 +1089,7 @@ int rvu_mbox_handler_cgx_set_link_mode(struct rvu *rvu,
  	return 0;
  }
  
-+/**
-+ *	rvu_npc_exact_can_disable_feature - Check if feature can be disabled.
-+ *      @rvu: resource virtualization unit.
-+ *	Return: True if exact match feature is supported.
-+ */
-+bool rvu_npc_exact_can_disable_feature(struct rvu *rvu)
-+{
-+	struct npc_exact_table *table = rvu->hw->table;
-+	bool empty;
-+
-+	if (!rvu->hw->cap.npc_exact_match_enabled)
-+		return false;
-+
-+	mutex_lock(&table->lock);
-+	empty = list_empty(&table->lhead_gbl);
-+	mutex_unlock(&table->lock);
-+
-+	return empty;
-+}
-+
-+/**
-+ *	rvu_npc_exact_disable_feature - Disable feature.
-+ *      @rvu: resource virtualization unit.
-+ */
-+void rvu_npc_exact_disable_feature(struct rvu *rvu)
-+{
-+	rvu->hw->cap.npc_exact_match_enabled = false;
-+}
-+
- /**
-  *      rvu_npc_exact_init - initialize exact match table
-  *      @rvu: resource virtualization unit.
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
-index f2346aa79ce2..7adb5c5c5082 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
-@@ -185,4 +185,7 @@ int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id);
- u32 rvu_npc_exact_get_max_entries(struct rvu *rvu);
- int rvu_npc_exact_init(struct rvu *rvu);
+-int rvu_mbox_handler_cgx_mac_addr_reset(struct rvu *rvu, struct msg_req *req,
++int rvu_mbox_handler_cgx_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_reset_req *req,
+ 					struct msg_rsp *rsp)
+ {
+ 	int pf = rvu_get_pf(req->hdr.pcifunc);
+@@ -1104,7 +1104,7 @@ int rvu_mbox_handler_cgx_mac_addr_reset(struct rvu *rvu, struct msg_req *req,
  
-+bool rvu_npc_exact_can_disable_feature(struct rvu *rvu);
-+void rvu_npc_exact_disable_feature(struct rvu *rvu);
-+
- #endif /* RVU_NPC_HASH_H */
+ int rvu_mbox_handler_cgx_mac_addr_update(struct rvu *rvu,
+ 					 struct cgx_mac_addr_update_req *req,
+-					 struct msg_rsp *rsp)
++					 struct cgx_mac_addr_update_rsp *rsp)
+ {
+ 	int pf = rvu_get_pf(req->hdr.pcifunc);
+ 	u8 cgx_id, lmac_id;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
+index 2ec800f741d8..142d87722bed 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
+@@ -93,7 +93,7 @@ static int otx2_dmacflt_do_remove(struct otx2_nic *pfvf, const u8 *mac,
+ 
+ static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
+ {
+-	struct msg_req *req;
++	struct cgx_mac_addr_reset_req *req;
+ 	int err;
+ 
+ 	mutex_lock(&pf->mbox.lock);
 -- 
 2.25.1
 
