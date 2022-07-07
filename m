@@ -2,149 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488BBCCA480
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 20:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222A2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 20:52:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236587AbiGGUvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 16:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44952 "EHLO
+        id S236216AbiGGUwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 16:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236533AbiGGUvg (ORCPT
+        with ESMTP id S236533AbiGGUwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 16:51:36 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA652CE06;
-        Thu,  7 Jul 2022 13:51:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=TTdDoMIncBueyDVjmYEyIZn/enGMqk78p+ra2MsjS+w=; b=sE7/kRbdlSv7EDNBiYq9turMip
-        Y8jFHim2VJqGyNd6kV+yyl+ghqx0wWjY1oAiKWWvg1OEtRazc2fwps6uBk2W/rAY6QjFvLj3AdcQK
-        NjzHVTWhmxPc8gfHjR0GL/zj+HVMZ1CmupVS4UZZqcjbz8BNmmW8+/IvXVqDA36+u3l3XcpEFhFSQ
-        TWPZ0amSSofhK9YDY4uV5jWZHbMQjPj+zWVwcLWCoEupQm21QzaYFo6WKR5PF7M4AdVOVKeBkAytS
-        btzrXPQ2hDd3Km43Qd42cgGLAXZBmv2WuEUPASG78hGx1ea8ym3uKyTgvrtiaQEfTl5URkscMo0KZ
-        Pud0lScw==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o9YSz-000B7y-VT; Thu, 07 Jul 2022 20:51:18 +0000
-Message-ID: <a2984435-6c8f-aee2-1e42-efc0b7cc4078@infradead.org>
-Date:   Thu, 7 Jul 2022 13:51:15 -0700
+        Thu, 7 Jul 2022 16:52:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA15C2CE06;
+        Thu,  7 Jul 2022 13:52:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AE01B823F8;
+        Thu,  7 Jul 2022 20:52:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24291C3411E;
+        Thu,  7 Jul 2022 20:52:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657227136;
+        bh=C5j6BsRufj9BLbgYGWTFLET+b6juH4piBX2x0kDV7/Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CW7f4s6N8sTBE7PN2cHRx95/tgRe9oJUJaYXaliWJPEWsu4rFJxhayz9fwhdHQTve
+         qwuz7HcRg9Wv/wntzMb2+LF/WF7EI0g4vEulpY7fZYrQULMZgINQaZipwbJmHFQlwp
+         sH3uNGIxffJGTuGr49ybp8zPM7AchQ3dE8HxFTqgsyUXJHBCSyLDdVuejfNnMGJTbV
+         6VMudIrIrM8COezsWmeIeedBxhCT79dEGeLI17ICfgSlH+V30/gYIecSIqsrweTmfe
+         9eWQ0VTfrAMZHpPhvIsyhogvAJa0DMrvxW2c+JG7/gY9boXsGd6GvOBRZkAOd+cnGn
+         LwCglif9kezSw==
+Date:   Thu, 7 Jul 2022 22:52:09 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        anand.gore@broadcom.com, dan.beygelman@broadcom.com,
+        kursad.oney@broadcom.com, joel.peshkin@broadcom.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jan Dabros <jsd@semihalf.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Jie Deng <jie.deng@intel.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Tyrone Ting <kfting@nuvoton.com>, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH 5/8] i2c: brcmstb: bcmbca: Replace ARCH_BCM_63XX
+ with ARCH_BCMBCA
+Message-ID: <YsdHeR5JexIjgoUk@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        anand.gore@broadcom.com, dan.beygelman@broadcom.com,
+        kursad.oney@broadcom.com, joel.peshkin@broadcom.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jan Dabros <jsd@semihalf.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Jie Deng <jie.deng@intel.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Sven Peter <sven@svenpeter.dev>, Tyrone Ting <kfting@nuvoton.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220707065800.261269-1-william.zhang@broadcom.com>
+ <20220707065800.261269-5-william.zhang@broadcom.com>
+ <c546adbe-482a-1fe2-039a-b5780a0fdbcf@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5 5/6] HID: add spi-hid, transport driver for HID over
- SPI bus
-Content-Language: en-US
-To:     Jarrett Schultz <jaschultzms@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Dmitry Antipov <dmanti@microsoft.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Jarrett Schultz <jaschultz@microsoft.com>
-References: <20220707165902.3184-1-jaschultzMS@gmail.com>
- <20220707165902.3184-6-jaschultzMS@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220707165902.3184-6-jaschultzMS@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/pH9AIyaXjkzaF7l"
+Content-Disposition: inline
+In-Reply-To: <c546adbe-482a-1fe2-039a-b5780a0fdbcf@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
 
-On 7/7/22 09:59, Jarrett Schultz wrote:
-> From: Jarrett Schultz <jaschultz@microsoft.com>
-> 
-> This driver follows HID Over SPI Protocol Specification 1.0 available at
-> https://www.microsoft.com/en-us/download/details.aspx?id=103325. The
-> initial version of the driver does not support: 1) multi-fragment input
-> reports, 2) sending GET_INPUT and COMMAND output report types and
-> processing their respective acknowledge input reports, and 3) device
-> sleep power state.
-> 
-> Signed-off-by: Dmitry Antipov <dmanti@microsoft.com>
+--/pH9AIyaXjkzaF7l
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Missing your (Jarrett's) Signed-off-by: here.
 
-More below...
+> Alternatively, we can merge these patches through the Broadcom ARM SoC pull
+> request(s) to ensure they all land at the same time.
 
-> ---
->  drivers/hid/Kconfig                 |    2 +
->  drivers/hid/Makefile                |    1 +
->  drivers/hid/spi-hid/Kconfig         |   25 +
->  drivers/hid/spi-hid/Makefile        |   12 +
->  drivers/hid/spi-hid/spi-hid-core.c  | 1326 +++++++++++++++++++++++++++
->  drivers/hid/spi-hid/spi-hid-core.h  |  188 ++++
->  drivers/hid/spi-hid/spi-hid-of.c    |  141 +++
->  drivers/hid/spi-hid/spi-hid-of.h    |   30 +
->  drivers/hid/spi-hid/spi-hid_trace.h |  194 ++++
->  drivers/hid/spi-hid/trace.c         |    9 +
->  10 files changed, 1928 insertions(+)
->  create mode 100644 drivers/hid/spi-hid/Kconfig
->  create mode 100644 drivers/hid/spi-hid/Makefile
->  create mode 100644 drivers/hid/spi-hid/spi-hid-core.c
->  create mode 100644 drivers/hid/spi-hid/spi-hid-core.h
->  create mode 100644 drivers/hid/spi-hid/spi-hid-of.c
->  create mode 100644 drivers/hid/spi-hid/spi-hid-of.h
->  create mode 100644 drivers/hid/spi-hid/spi-hid_trace.h
->  create mode 100644 drivers/hid/spi-hid/trace.c
-> 
+That's what I assumed (and also prefer), so I acked the I2C patch. Let
+me know, guys, if I should pick it instead.
 
-> diff --git a/drivers/hid/spi-hid/Kconfig b/drivers/hid/spi-hid/Kconfig
-> new file mode 100644
-> index 000000000000..37302d658162
-> --- /dev/null
-> +++ b/drivers/hid/spi-hid/Kconfig
-> @@ -0,0 +1,25 @@
-> +#
-> +# Copyright (c) 2021 Microsoft Corporation
-> +#
-> +# This program is free software; you can redistribute it and/or modify it
-> +# under the terms of the GNU General Public License version 2 as published by
-> +# the Free Software Foundation.
-> +#
 
-Please just use SPDX tags instead of all of that.
-See other hid/Kconfig files for examples.
+--/pH9AIyaXjkzaF7l
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +menu "SPI HID support"
-> +	depends on SPI
-> +
-> +config SPI_HID
-> +	tristate "HID over SPI transport layer"
-> +	default n
-> +	depends on SPI && INPUT && OF
-> +	select HID
-> +	help
-> +	  Say Y here if you use a keyboard, a touchpad, a touchscreen, or any
-> +	  other HID based devices which is connected to your computer via SPI.
+-----BEGIN PGP SIGNATURE-----
 
-	        HID-based devices which are connected
-(or)
-	        HID-based device which is connected
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLHR3YACgkQFA3kzBSg
+Kbaj8g/+LWgKrDdaU+VhuMnNpy+GStDWvwNnnOT2vnY2AdmtpOQoi27GeY2aPPGY
+ldPJ+wWwcKWTyNSbwGDxKsEqC4Yik+Lb4v9RmQgX7VSeGJ3JxBYPNGf9nr0Cw+Wz
+mlrHo2Qvsj7MiVpNVeSaj6kVeD2O3+8Yq5o0zTf5i/xUECEwwgsQy88sLmKS58dF
+fr2J6Vh8Id9H/l7hlimEFhXfBJdVOjaH6R+eniQltzEoLWkbYRQgosNFgs6FJMXm
+Q1T4aqriOtuTVqvYCWRuWDkUYVsJDayx78C+GExrKJ7SfTmfsvkk17ypOBGHRZkg
+7Wjja7z3kQKeHQAdE7THoFr9P+LTkXRpNEiGFzWT5h7i5LWvxY2nD4qHT/XhEWhN
+Lg5TwqQzvDJTgd0PkwxYm5jaBLyiBGVqdB3fWMhsaEd7ribCTDDL6DbDo/ySX/3h
+YeJmiXqYBTMDnKqri09Ob9bkgpwX8EDkfZjxRGV/xMWudfzJ+UsbynGMEKnLQGpG
+Ue/Q9iKiG7f2D484KviB5ATOVZiIt6Mk9ONqT4nF9Gi6gzL4FboPGaUZlQkJrAGJ
+wQGOBasqMkkbawxqfB5l4kHLqReSjGGAJYepjo0XgSX7g5hNBkWDkDkRiazo1CNe
+RicROp9uza9pLj8D3+ZO7lt/v5pYIqNr3ijptK7im+JemMAn6dk=
+=fp9m
+-----END PGP SIGNATURE-----
 
-> +
-> +	  If unsure, say N.
-> +
-> +	  This support is also available as a module.  If so, the module
-> +	  will be called spi-hid.
-> +
-> +endmenu
-
--- 
-~Randy
+--/pH9AIyaXjkzaF7l--
