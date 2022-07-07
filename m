@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF7EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE841C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbiGGGZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 02:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
+        id S234923AbiGGGZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 02:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234843AbiGGGZ2 (ORCPT
+        with ESMTP id S234846AbiGGGZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Jul 2022 02:25:28 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655D610B0;
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E212A964;
         Wed,  6 Jul 2022 23:25:25 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2676PMXr079999;
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2676PMc8027406;
         Thu, 7 Jul 2022 01:25:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
         s=ti-com-17Q1; t=1657175122;
-        bh=qrw4XVHNrZye88ZfJWhQes3lr/b67tipTURWg7X+C7s=;
+        bh=VAflBJuCcU62/ArqheoABMhl2sg0hYzkfyl+//WYhNA=;
         h=From:To:Subject:Date:In-Reply-To:References;
-        b=xLz609ID3ShAlW+cV/s8V8RfRl8dve2KDau5fwxE7SUhdpYtsSTbRtihJv5eQ2iEj
-         Ee1Hvp/6ny20dOj5voCgOEOeXIX8pT1YbZZuZO8rw1SkUsNR0+f6ZT3eYvumtpCudN
-         1LmcU65Mzldeyq9EplUvjANXWdQs4a/lykTqoEYs=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2676PH7N047414
+        b=mXiOGmQcYrF6J8xdEoQFURLKsTy3b2gokcS74p0pN/Qg18OaBY2ArF6D61RO5tkmf
+         u3tTY0lx2QyvXDaQl+VYqCxFpdqXGQIvuhNiCIuehpk8r1olaSwauLV5mAQh08EA1e
+         o6vrGbIudh0U1leeQEBj0PBWTTFjxCYBqJ0sl9JE=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2676PMv0012122
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
         Thu, 7 Jul 2022 01:25:22 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
- Jul 2022 01:25:17 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ Jul 2022 01:25:22 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 7 Jul 2022 01:25:17 -0500
+ Frontend Transport; Thu, 7 Jul 2022 01:25:22 -0500
 Received: from ubuntu.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2676P51V106842;
-        Thu, 7 Jul 2022 01:25:16 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2676P51X106842;
+        Thu, 7 Jul 2022 01:25:20 -0500
 From:   Matt Ranostay <mranostay@ti.com>
 To:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH RESEND 4/6] arm64: dts: ti: k3-j721s2-common-proc-board: Enable SERDES0
-Date:   Wed, 6 Jul 2022 23:25:01 -0700
-Message-ID: <20220707062503.295663-5-mranostay@ti.com>
+Subject: [PATCH RESEND 6/6] arm64: dts: k3-j721s2: Add support for OSPI Flashes
+Date:   Wed, 6 Jul 2022 23:25:03 -0700
+Message-ID: <20220707062503.295663-7-mranostay@ti.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220707062503.295663-1-mranostay@ti.com>
 References: <20220707062503.295663-1-mranostay@ti.com>
@@ -59,56 +59,129 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Aswath Govindraju <a-govindraju@ti.com>
 
-Configure first lane to PCIe, the second lane to USB and the last two lanes
-to eDP. Also, add sub-nodes to SERDES0 DT node to represent SERDES0 is
-connected to PCIe.
+J721S2 has an OSPI NOR flash on its SOM connected the OSPI0 instance and a
+QSPI NOR flash on the common processor board connected to the OSPI1
+instance. Add support for the same
 
 Acked-by: Matt Ranostay <mranostay@ti.com>
 Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- .../dts/ti/k3-j721s2-common-proc-board.dts    | 22 +++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ .../dts/ti/k3-j721s2-common-proc-board.dts    | 34 +++++++++++++++
+ arch/arm64/boot/dts/ti/k3-j721s2-som-p0.dtsi  | 42 +++++++++++++++++++
+ 2 files changed, 76 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts
-index b210cc07c539..791f235bd95f 100644
+index aa75dc541842..cb99a97af426 100644
 --- a/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts
 +++ b/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts
-@@ -9,6 +9,9 @@
- 
- #include "k3-j721s2-som-p0.dtsi"
- #include <dt-bindings/net/ti-dp83867.h>
-+#include <dt-bindings/phy/phy-cadence.h>
-+#include <dt-bindings/phy/phy.h>
-+#include <dt-bindings/mux/ti-serdes.h>
- 
- / {
- 	compatible = "ti,j721s2-evm", "ti,j721s2";
-@@ -350,6 +353,25 @@ &cpsw_port1 {
- 	phy-handle = <&phy0>;
+@@ -206,6 +206,20 @@ mcu_mcan1_gpio_pins_default: mcu-mcan1-gpio-pins-default {
+ 			J721S2_WKUP_IOPAD(0x0c8, PIN_INPUT, 7) /* (C28) WKUP_GPIO0_2 */
+ 		>;
+ 	};
++
++	mcu_fss0_ospi1_pins_default: mcu-fss0-ospi1-pins-default {
++		pinctrl-single,pins = <
++			J721S2_WKUP_IOPAD(0x040, PIN_OUTPUT, 0) /* (A19) MCU_OSPI1_CLK */
++			J721S2_WKUP_IOPAD(0x05c, PIN_OUTPUT, 0) /* (D20) MCU_OSPI1_CSn0 */
++			J721S2_WKUP_IOPAD(0x060, PIN_OUTPUT, 0) /* (C21) MCU_OSPI1_CSn1 */
++			J721S2_WKUP_IOPAD(0x04c, PIN_INPUT, 0) /* (D21) MCU_OSPI1_D0 */
++			J721S2_WKUP_IOPAD(0x050, PIN_INPUT, 0) /* (G20) MCU_OSPI1_D1 */
++			J721S2_WKUP_IOPAD(0x054, PIN_INPUT, 0) /* (C20) MCU_OSPI1_D2 */
++			J721S2_WKUP_IOPAD(0x058, PIN_INPUT, 0) /* (A20) MCU_OSPI1_D3 */
++			J721S2_WKUP_IOPAD(0x048, PIN_INPUT, 0) /* (B19) MCU_OSPI1_DQS */
++			J721S2_WKUP_IOPAD(0x044, PIN_INPUT, 0) /* (B20) MCU_OSPI1_LBCLKO */
++		>;
++	};
  };
  
-+&serdes_ln_ctrl {
-+	idle-states = <J721S2_SERDES0_LANE0_PCIE1_LANE0>, <J721S2_SERDES0_LANE1_USB>,
-+		      <J721S2_SERDES0_LANE2_EDP_LANE2>, <J721S2_SERDES0_LANE3_EDP_LANE3>;
-+};
+ &main_gpio2 {
+@@ -394,6 +408,26 @@ &usb0 {
+ 	maximum-speed = "high-speed";
+ };
+ 
++&ospi1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mcu_fss0_ospi1_pins_default>;
 +
-+&serdes_refclk {
-+	clock-frequency = <100000000>;
-+};
-+
-+&serdes0 {
-+	serdes0_pcie_link: phy@0 {
-+		reg = <0>;
-+		cdns,num-lanes = <1>;
-+		#phy-cells = <0>;
-+		cdns,phy-type = <PHY_TYPE_PCIE>;
-+		resets = <&serdes_wiz0 1>;
++	flash@0{
++		compatible = "jedec,spi-nor";
++		reg = <0x0>;
++		spi-tx-bus-width = <1>;
++		spi-rx-bus-width = <4>;
++		spi-max-frequency = <40000000>;
++		cdns,tshsl-ns = <60>;
++		cdns,tsd2d-ns = <60>;
++		cdns,tchsh-ns = <60>;
++		cdns,tslch-ns = <60>;
++		cdns,read-delay = <2>;
++		#address-cells = <1>;
++		#size-cells = <1>;
 +	};
 +};
 +
  &mcu_mcan0 {
  	pinctrl-names = "default";
  	pinctrl-0 = <&mcu_mcan0_pins_default>;
+diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-som-p0.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-som-p0.dtsi
+index 76f0ceacb6d4..a05c17dd69b6 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721s2-som-p0.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721s2-som-p0.dtsi
+@@ -39,6 +39,28 @@ transceiver0: can-phy0 {
+ 	};
+ };
+ 
++&wkup_pmx0 {
++	mcu_fss0_ospi0_pins_default: mcu-fss0-ospi0-pins-default {
++		pinctrl-single,pins = <
++			J721S2_WKUP_IOPAD(0x000, PIN_OUTPUT, 0) /* (D19) MCU_OSPI0_CLK */
++			J721S2_WKUP_IOPAD(0x02c, PIN_OUTPUT, 0) /* (F15) MCU_OSPI0_CSn0 */
++			J721S2_WKUP_IOPAD(0x030, PIN_OUTPUT, 0) /* (G17) MCU_OSPI0_CSn1 */
++			J721S2_WKUP_IOPAD(0x038, PIN_OUTPUT, 0) /* (F14) MCU_OSPI0_CSn2 */
++			J721S2_WKUP_IOPAD(0x03c, PIN_OUTPUT, 0) /* (F17) MCU_OSPI0_CSn3 */
++			J721S2_WKUP_IOPAD(0x00c, PIN_INPUT, 0) /* (C19) MCU_OSPI0_D0 */
++			J721S2_WKUP_IOPAD(0x010, PIN_INPUT, 0) /* (F16) MCU_OSPI0_D1 */
++			J721S2_WKUP_IOPAD(0x014, PIN_INPUT, 0) /* (G15) MCU_OSPI0_D2 */
++			J721S2_WKUP_IOPAD(0x018, PIN_INPUT, 0) /* (F18) MCU_OSPI0_D3 */
++			J721S2_WKUP_IOPAD(0x01c, PIN_INPUT, 0) /* (E19) MCU_OSPI0_D4 */
++			J721S2_WKUP_IOPAD(0x020, PIN_INPUT, 0) /* (G19) MCU_OSPI0_D5 */
++			J721S2_WKUP_IOPAD(0x024, PIN_INPUT, 0) /* (F19) MCU_OSPI0_D6 */
++			J721S2_WKUP_IOPAD(0x028, PIN_INPUT, 0) /* (F20) MCU_OSPI0_D7 */
++			J721S2_WKUP_IOPAD(0x008, PIN_INPUT, 0) /* (E18) MCU_OSPI0_DQS */
++			J721S2_WKUP_IOPAD(0x004, PIN_INPUT, 0) /* (E20) MCU_OSPI0_LBCLKO */
++		>;
++	};
++};
++
+ &main_pmx0 {
+ 	main_i2c0_pins_default: main-i2c0-pins-default {
+ 		pinctrl-single,pins = <
+@@ -78,6 +100,26 @@ &main_mcan16 {
+ 	phys = <&transceiver0>;
+ };
+ 
++&ospi0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mcu_fss0_ospi0_pins_default>;
++
++	flash@0 {
++		compatible = "jedec,spi-nor";
++		reg = <0x0>;
++		spi-tx-bus-width = <8>;
++		spi-rx-bus-width = <8>;
++		spi-max-frequency = <25000000>;
++		cdns,tshsl-ns = <60>;
++		cdns,tsd2d-ns = <60>;
++		cdns,tchsh-ns = <60>;
++		cdns,tslch-ns = <60>;
++		cdns,read-delay = <4>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++	};
++};
++
+ &mailbox0_cluster0 {
+ 	status = "disabled";
+ };
 -- 
 2.36.1
 
