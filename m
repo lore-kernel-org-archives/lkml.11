@@ -2,341 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D79CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235348AbiGGLl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
+        id S235405AbiGGLnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235040AbiGGLlz (ORCPT
+        with ESMTP id S232504AbiGGLn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 07:41:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E36B4F657
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 04:41:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657194112;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Hp9kplYxVeJvkCLXKH0+FwQt5V99ulIS4aLbfHs6BEI=;
-        b=bJvugkng8m0VfJmz7rsUCPiy9aTZwbonyA1qtv1anzwvl1lhVzqg8357mHcvCbVnLLHl9/
-        JRmRu7WQWPBvr9aAueFmZDdBiIKp2o32NDG5p8lOBcTUxJlMTOjlQOM8qkQ7ytL9SJFVBw
-        /QPI9vZ1P+kJb+/F+LzdU9i0xITreYc=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-472-DORqGTjyOPmmyKnD383gCw-1; Thu, 07 Jul 2022 07:41:51 -0400
-X-MC-Unique: DORqGTjyOPmmyKnD383gCw-1
-Received: by mail-lf1-f71.google.com with SMTP id bp15-20020a056512158f00b0047f603e5f92so6280971lfb.20
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 04:41:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=Hp9kplYxVeJvkCLXKH0+FwQt5V99ulIS4aLbfHs6BEI=;
-        b=gBFc238ltbRWSnYww2mojca7iMTl5esTKAHNr+w5m8UNeZB38z/EgWr7OmKGKGJ6qI
-         vHdYggm1kpW4n0HZwZ/iUcuflvyM5oXw1V08aNzE0y4KTSBBiCUFmG1ilO4Sl9o/5GBP
-         F5jBV9uu6eWeBH8vodNwAKBZy8QHvUi9AdU8AJexvh3qVBzbky9g1bHiW6Gz4pSFLzmE
-         QUIKCxC5Jhta6n4f04ctucBhGLPHYampLAAZFdSCwRO5Y1ztvsf3w2FIfybJ6/DAl+AA
-         csYb9RfZkcnZkzVCvR7BFaqjjz8Xkp/a1bYebWT7et6L21dmxly6t19AmTLklx1LUp6k
-         3qWg==
-X-Gm-Message-State: AJIora8DxN5D7PhNmIXBvYQBZPPZrCRLvnDhv20Ux9UY2LtJEolLNq9i
-        JUS4xmZsHBM3OBxzglvrxemwwGu+k7zjViNqfxbFhdeUdoDpnf2MAy+s3CDYJ2AF54wCat5L20e
-        OpG0RsxWb+J2uR5eB0kqrxhCl
-X-Received: by 2002:a05:6512:2815:b0:47f:634b:8e8c with SMTP id cf21-20020a056512281500b0047f634b8e8cmr30273564lfb.213.1657194109710;
-        Thu, 07 Jul 2022 04:41:49 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tJvp1yW45Ik/b6uKDWK3rNW6z1PBOcgEu1Fiv4mR++0nJOx9+MEbwWB4l6FhGZ5EGZCX6dxg==
-X-Received: by 2002:a05:6512:2815:b0:47f:634b:8e8c with SMTP id cf21-20020a056512281500b0047f634b8e8cmr30273536lfb.213.1657194109352;
-        Thu, 07 Jul 2022 04:41:49 -0700 (PDT)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id o4-20020a056512050400b004785b66a9a4sm3100587lfb.126.2022.07.07.04.41.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 04:41:48 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <29c66391-e229-0692-7072-72bd56aa8da3@redhat.com>
-Date:   Thu, 7 Jul 2022 13:41:47 +0200
+        Thu, 7 Jul 2022 07:43:27 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BBF28D;
+        Thu,  7 Jul 2022 04:43:24 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ldvcv1r6zzkWmC;
+        Thu,  7 Jul 2022 19:41:19 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 19:43:22 +0800
+CC:     <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
+        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <acme@kernel.org>,
+        <jonathan.cameron@huawei.com>, <john.garry@huawei.com>,
+        <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
+        <suzuki.poulose@arm.com>, <mark.rutland@arm.com>,
+        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+        <peterz@infradead.org>, <mingo@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>, <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v9 7/8] docs: trace: Add HiSilicon PTT device driver
+ documentation
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+References: <20220606115555.41103-1-yangyicong@hisilicon.com>
+ <20220606115555.41103-8-yangyicong@hisilicon.com>
+ <20220706175751.GA2546265@p14s>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <75afb15e-9fc2-d14a-c72d-dc33589cfc0e@huawei.com>
+Date:   Thu, 7 Jul 2022 19:43:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Cc:     brouer@redhat.com, John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xdp-hints@xdp-project.net
-Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce
- and use Generic Hints/metadata
-Content-Language: en-US
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
- <62bbedf07f44a_2181420830@john.notmuch> <87iloja8ly.fsf@toke.dk>
- <20220704154440.7567-1-alexandr.lobakin@intel.com> <87a69o94wz.fsf@toke.dk>
- <20220705154120.22497-1-alexandr.lobakin@intel.com> <87pmij75r1.fsf@toke.dk>
- <20220706135023.1464979-1-alexandr.lobakin@intel.com>
- <87edyxaks0.fsf@toke.dk>
-In-Reply-To: <87edyxaks0.fsf@toke.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220706175751.GA2546265@p14s>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 07/07/2022 01.22, Toke Høiland-Jørgensen wrote:
-> Alexander Lobakin <alexandr.lobakin@intel.com> writes:
+On 2022/7/7 1:57, Mathieu Poirier wrote:
+> Hi,
 > 
->> From: Toke H??iland-J??rgensen <toke@redhat.com>
->> Date: Tue, 05 Jul 2022 20:51:14 +0200
->>
->>> Alexander Lobakin <alexandr.lobakin@intel.com> writes:
->>>
->>> [... snipping a bit of context here ...]
->>>
->>>>>>> Yeah, I'd agree this kind of configuration is something that can be
->>>>>>> added later, and also it's sort of orthogonal to the consumption of the
->>>>>>> metadata itself.
->>>>>>>
->>>>>>> Also, tying this configuration into the loading of an XDP program is a
->>>>>>> terrible interface: these are hardware configuration options, let's just
->>>>>>> put them into ethtool or 'ip link' like any other piece of device
->>>>>>> configuration.
->>>>>>
->>>>>> I don't believe it fits there, especially Ethtool. Ethtool is for
->>>>>> hardware configuration, XDP/AF_XDP is 95% software stuff (apart from
->>>>>> offload bits which is purely NFP's for now).
->>>>>
->>>>> But XDP-hints is about consuming hardware features. When you're
->>>>> configuring which metadata items you want, you're saying "please provide
->>>>> me with these (hardware) features". So ethtool is an excellent place to
->>>>> do that :)
->>>>
->>>> With Ethtool you configure the hardware, e.g. it won't strip VLAN
->>>> tags if you disable rx-cvlan-stripping. With configuring metadata
->>>> you only tell what you want to see there, don't you?
->>>
->>> Ah, I think we may be getting closer to identifying the disconnect
->>> between our way of thinking about this!
->>>
->>> In my mind, there's no separate "configuration of the metadata" step.
->>> You simply tell the hardware what features you want (say, "enable
->>> timestamps and VLAN offload"), and the driver will then provide the
->>> information related to these features in the metadata area
->>> unconditionally. All XDP hints is about, then, is a way for the driver
->>> to inform the rest of the system how that information is actually laid
->>> out in the metadata area.
->>>
->>> Having a separate configuration knob to tell the driver "please lay out
->>> these particular bits of metadata this way" seems like a totally
->>> unnecessary (and quite complicated) feature to have when we can just let
->>> the driver decide and use CO-RE to consume it?
->>
->> Magnus (he's currently on vacation) told me it would be useful for
->> AF_XDP to enable/disable particular metadata, at least from perf
->> perspective. 
+> I have started looking at this set.
 
-I have recently talked to Magnus (in person at Kernel Recipes), where I
-tried to convey my opinion, which is:  At least for existing hardware
-hints, we need to respect the existing Linux kernel's config interfaces,
-and not invent yet-another-way to configure these.
-(At least for now) the kernel module defined structs in C-code is the 
-source of truth, and we consume these layouts via BTF information 
-provided by the kernel for our XDP-hints.
+Thanks!
 
-
->> Let's say, just fetching of one "checksum ok" bit in
->> the driver is faster than walking through all the descriptor words
->> and driver logics (i.e. there's several hundred locs in ice which
->> just parse descriptor data and build an skb or metadata from it).
->> But if we would just enable/disable corresponding features through
->> Ethtool, that would hurt XDP_PASS. Maybe it's a bad example, but
->> what if I want to have only RSS hash in the metadata (and don't
->> want to spend cycles on parsing the rest), but at the same time
->> still want skb path to have checksum status to not die at CPU
->> checksum calculation?
 > 
-> Hmm, so this feels a little like a driver-specific optimisation? I.e.,
-> my guess is that not all drivers have a measurable overhead for pulling
-> out the metadata. Also, once the XDP metadata bits are in place, we can
-> move in the direction of building SKBs from the same source, so I'm not
-> sure it's a good idea to assume that the XDP metadata is separate from
-> what the stack consumes...
-
-I agree.
-
-> In any case, if such an optimisation does turn out to be useful, we can
-> add it later (backed by rigorous benchmarks, of course), so I think we
-> can still start with the simple case and iterate from there?
-
-For every element in the generic hints data-structure, we already have a
-per-element enable/disable facilities.  As they are already controlled
-by ethtool.  Except the timestamping, which can be enabled via a sockopt.
-I don't see a benefit of creating another layer (of if-statements) that
-are also required to get the HW hint written to XDP-hints metadata area.
-
-
-
->>>>>> I follow that way:
->>>>>>
->>>>>> 1) you pick a program you want to attach;
->>>>>> 2) usually they are written for special needs and usecases;
->>>>>> 3) so most likely that program will be tied with metadata/driver/etc
->>>>>>     in some way;
->>>>>> 4) so you want to enable Hints of a particular format primarily for
->>>>>>     this program and usecase, same with threshold and everything
->>>>>>     else.
->>>>>>
->>>>>> Pls explain how you see it, I might be wrong for sure.
->>>>>
->>>>> As above: XDP hints is about giving XDP programs (and AF_XDP consumers)
->>>>> access to metadata that is not currently available. Tying the lifetime
->>>>> of that hardware configuration (i.e., which information to provide) to
->>>>> the lifetime of an XDP program is not a good interface: for one thing,
->>>>> how will it handle multiple programs? What about when XDP is not used at
->>>>
->>>> Multiple progs is stuff I didn't cover, but will do later (as you
->>>> all say to me, "let's start with something simple" :)). Aaaand
->>>> multiple XDP progs (I'm not talking about attaching progs in
->>>> differeng modes) is not a kernel feature, rather a libpf feature,
->>>> so I believe it should be handled there later...
->>>
->>> Right, but even if we don't *implement* it straight away we still need
->>> to take it into consideration in the design. And expecting libxdp to
->>> arbitrate between different XDP programs' metadata formats sounds like a
->>> royal PITA :)
->>>
->>>>> all but you still want to configure the same features?
->>>>
->>>> What's the point of configuring metadata when there are no progs
->>>> attached? To configure it once and not on every prog attach? I'm
->>>> not saying I don't like it, just want to clarify.
->>>
->>> See above: you turn on the features because you want the stack to
->>> consume them.
->>>
->>>> Maybe I need opinions from some more people, just to have an
->>>> overview of how most of folks see it and would like to configure
->>>> it. 'Cause I heard from at least one of the consumers that
->>>> libpf API is a perfect place for Hints to him :)
->>>
->>> Well, as a program author who wants to consume hints, you'd use
->>> lib{bpf,xdp} APIs to do so (probably in the form of suitable CO-RE
->>> macros)...
->>>
->>>>> In addition, in every other case where we do dynamic data access (with
->>>>> CO-RE) the BPF program is a consumer that modifies itself to access the
->>>>> data provided by the kernel. I get that this is harder to achieve for
->>>>> AF_XDP, but then let's solve that instead of making a totally
->>>>> inconsistent interface for XDP.
->>>>
->>>> I also see CO-RE more fitting and convenient way to use them, but
->>>> didn't manage to solve two things:
->>>>
->>>> 1) AF_XDP programs, so what to do with them? Prepare patches for
->>>>     LLVM to make it able to do CO-RE on AF_XDP program load? Or
->>>>     just hardcode them for particular usecases and NICs? What about
->>>>     "general-purpose" programs?
->>>
->>> You provide a library to read the fields. Jesper actually already
->>> implemented this, did you look at his code?
->>>
->>> https://github.com/xdp-project/bpf-examples/tree/master/AF_XDP-interaction
->>>
->>> It basically builds a lookup table at load-time using BTF information
->>> from the kernel, keyed on BTF ID and field name, resolving them into
->>> offsets. It's not quite the zero-overhead of CO-RE, but it's fairly
->>> close and can be improved upon (CO-RE for userspace being one way of
->>> doing that).
+> On Mon, Jun 06, 2022 at 07:55:54PM +0800, Yicong Yang wrote:
+>> Document the introduction and usage of HiSilicon PTT device driver.
 >>
->> Aaaah, sorry, I completely missed that. I thought of something
->> similar as well, but then thought "variable field offsets, that
->> would annihilate optimization and performance", and our Xsk team
->> is super concerned about performance hits when using Hints.
->>
->>>
->>>>     And if hardcode, what's the point then to do Generic Hints at
->>>>     all? Then all it needs is making driver building some meta in
->>>>     front of frames via on-off button and that's it? Why BTF ID in
->>>>     the meta then if consumers will access meta hardcoded (via CO-RE
->>>>     or literally hardcoded, doesn't matter)?
->>>
->>> You're quite right, we could probably implement all the access to
->>> existing (fixed) metadata without using any BTF at all - just define a
->>> common struct and some flags to designate which fields are set. In my
->>> mind, there are a couple of reasons for going the BTF route instead:
->>>
->>> - We can leverage CO-RE to get close to optimal efficiency in field
->>>    access.
->>>
->>> and, more importantly:
->>>
->>> - It's infinitely extensible. With the infrastructure in place to make
->>>    it really easy to consume metadata described by BTF, we lower the bar
->>>    for future innovation in hardware offloads. Both for just adding new
->>>    fixed-function stuff to hardware, but especially for fully
->>>    programmable hardware.
->>
->> Agree :) That libxdp lookup translator fixed lots of stuff in my
->> mind.
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>> ---
+>>  Documentation/trace/hisi-ptt.rst | 307 +++++++++++++++++++++++++++++++
+>>  Documentation/trace/index.rst    |   1 +
 > 
-> Great! Looks like we're slowly converging towards a shared
-> understanding, then! :)
+> The "get_maintainer" script clearly indicates that Jonathan Corbet maintains the
+> Documentation directory and yet he is not CC'ed on this patch, nor is the
+> linux-doc mainling list.  As such, it would not be possible to merge this
+> patchset.
 > 
->>>> 2) In-kernel metadata consumers? Also do CO-RE? Otherwise, with no
->>>>     generic metadata structure they won't be able to benefit from
->>>>     Hints. But I guess we still need to provide kernel with meta?
->>>>     Or no?
->>>
->>> In the short term, I think the "generic structure" approach is fine for
->>> leveraging this in the stack. Both your and Jesper's series include
->>> this, and I think that's totally fine. Longer term, if it turns out to
->>> be useful to have something more dynamic for the stack consumption as
->>> well, we could extend it to be CO-RE based as well (most likely by
->>> having the stack load a "translator" BPF program or something along
->>> those lines).
+
+sorry for missing. +cc'ed.
+
+>>  2 files changed, 308 insertions(+)
+>>  create mode 100644 Documentation/trace/hisi-ptt.rst
 >>
->> Oh, that translator prog sounds nice BTW!
+>> diff --git a/Documentation/trace/hisi-ptt.rst b/Documentation/trace/hisi-ptt.rst
+>> new file mode 100644
+>> index 000000000000..0a3112244d40
+>> --- /dev/null
+>> +++ b/Documentation/trace/hisi-ptt.rst
+>> @@ -0,0 +1,307 @@
+>> +.. SPDX-License-Identifier: GPL-2.0
+>> +
+>> +======================================
+>> +HiSilicon PCIe Tune and Trace device
+>> +======================================
+>> +
+>> +Introduction
+>> +============
+>> +
+>> +HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex
+>> +integrated Endpoint (RCiEP) device, providing the capability
+>> +to dynamically monitor and tune the PCIe link's events (tune),
+>> +and trace the TLP headers (trace). The two functions are independent,
+>> +but is recommended to use them together to analyze and enhance the
+>> +PCIe link's performance.
+>> +
+>> +On Kunpeng 930 SoC, the PCIe Root Complex is composed of several
+>> +PCIe cores. Each PCIe core includes several Root Ports and a PTT
+>> +RCiEP, like below. The PTT device is capable of tuning and
+>> +tracing the links of the PCIe core.
+>> +::
+>> +
+>> +          +--------------Core 0-------+
+>> +          |       |       [   PTT   ] |
+>> +          |       |       [Root Port]---[Endpoint]
+>> +          |       |       [Root Port]---[Endpoint]
+>> +          |       |       [Root Port]---[Endpoint]
+>> +    Root Complex  |------Core 1-------+
+>> +          |       |       [   PTT   ] |
+>> +          |       |       [Root Port]---[ Switch ]---[Endpoint]
+>> +          |       |       [Root Port]---[Endpoint] `-[Endpoint]
+>> +          |       |       [Root Port]---[Endpoint]
+>> +          +---------------------------+
+>> +
+>> +The PTT device driver registers one PMU device for each PTT device.
+>> +The name of each PTT device is composed of 'hisi_ptt' prefix with
+>> +the id of the SICL and the Core where it locates. The Kunpeng 930
+>> +SoC encapsulates multiple CPU dies (SCCL, Super CPU Cluster) and
+>> +IO dies (SICL, Super I/O Cluster), where there's one PCIe Root
+>> +Complex for each SICL.
+>> +::
+>> +
+>> +    /sys/devices/hisi_ptt<sicl_id>_<core_id>
 > 
-> Yeah, it's only a rough idea Jesper and I discussed at some point, but I
-> think it could have potential (see also point above re: making XDP hints
-> *the* source of metadata for the whole stack; wouldn't it be nice if
-> drivers didn't have to deal with the intricacies of assembling SKBs?).
+> All entries added to sysfs should have corresponding documentation.  See [1] and
+> [2] for details and [3] for an example.
+> 
+> [1]. https://elixir.bootlin.com/linux/latest/source/Documentation/ABI/README
+> [2]. https://elixir.bootlin.com/linux/latest/source/Documentation/ABI/testing
+> [3]. https://elixir.bootlin.com/linux/latest/source/Documentation/ABI/testing/sysfs-bus-coresight-devices-etm4x
+> 
 
-Yes, this is the longer term goal, but we should take this in steps.
-(Thus, my patchset[0] focuses on the existing xdp_hints_common).
+ok. I'll add a patch for ABI description. Thanks for the reference.
 
-Eventually (pipe-dream?), I would like to add a new BPF-hook that runs
-in the step converting xdp_frame to SKB (today handled in function
-__xdp_build_skb_from_frame).  This "translator" BPF program should be
-tied/loaded per net_device, which makes it easier to consume the driver
-specific/dynamic XDP-hints layouts and BPF-code can be smaller as it
-only need to CO-RE handle xdp-hints structs known for this driver.
-Default BPF-prog should be provided and maintained by driver
-maintainers, but can be replaced by end-users.
+>> +
+>> +Tune
+>> +====
+>> +
+>> +PTT tune is designed for monitoring and adjusting PCIe link parameters (events).
+>> +Currently we support events in 4 classes. The scope of the events
+>> +covers the PCIe core to which the PTT device belongs.
+>> +
+>> +Each event is presented as a file under $(PTT PMU dir)/tune, and
+>> +a simple open/read/write/close cycle will be used to tune the event.
+>> +::
+>> +
+>> +    $ cd /sys/devices/hisi_ptt<sicl_id>_<core_id>/tune
+>> +    $ ls
+>> +    qos_tx_cpl    qos_tx_np    qos_tx_p
+>> +    tx_path_rx_req_alloc_buf_level
+>> +    tx_path_tx_req_alloc_buf_level
+> 
+> These look overly long... How about watermark_rx and watermark_tx?
+> 
 
---Jesper
+These are gotten from the hardware manual and abbreviated. These events are highly connected
+to the hardware desgin so I think it's better to keep consistence. The watermark_{rx, tx} will
+become ambigious when we add more events for Rx path or other Tx path events.
 
-[0] 
-https://lore.kernel.org/bpf/165643378969.449467.13237011812569188299.stgit@firesoul/
+The event code is composed of two parts. First part (tx_path) describes which path it belongs to
+and second part describes the function ({rx,tx}_req_alloc_buf_level). We called the link path
+between CPU and PCIe RC as Rx path and the path between PCIe RC to the PCIe link as Tx path.
+So we need to have tx_path prefix for the Tx path and {rx, tx}_req_alloc_buf_level for the
+requested watermark of {inbound, outbound} buffer allocation. Indeed we have other Tx path
+buffer events which are not exported in this series.
 
+
+>> +    $ cat qos_tx_dp
+>> +    1
+>> +    $ echo 2 > qos_tx_dp
+>> +    $ cat qos_tx_dp
+>> +    2
+>> +
+>> +Current value (numerical value) of the event can be simply read
+>> +from the file, and the desired value written to the file to tune.
+>> +
+>> +1. Tx path QoS control
+>> +------------------------
+>> +
+>> +The following files are provided to tune the QoS of the tx path of
+>> +the PCIe core.
+>> +
+>> +- qos_tx_cpl: weight of Tx completion TLPs
+>> +- qos_tx_np: weight of Tx non-posted TLPs
+>> +- qos_tx_p: weight of Tx posted TLPs
+>> +
+>> +The weight influences the proportion of certain packets on the PCIe link.
+>> +For example, for the storage scenario, increase the proportion
+>> +of the completion packets on the link to enhance the performance as
+>> +more completions are consumed.
+>> +
+>> +The available tune data of these events is [0, 1, 2].
+>> +Writing a negative value will return an error, and out of range
+>> +values will be converted to 2. Note that the event value just
+>> +indicates a probable level, but is not precise.
+>> +
+>> +2. Tx path buffer control
+>> +-------------------------
+>> +
+>> +Following files are provided to tune the buffer of tx path of the PCIe core.
+>> +
+>> +- tx_path_rx_req_alloc_buf_level: watermark of Rx requested
+>> +- tx_path_tx_req_alloc_buf_level: watermark of Tx requested
+>> +
+>> +These events influence the watermark of the buffer allocated for each
+>> +type. Rx means the inbound while Tx means outbound. The packets will
+>> +be stored in the buffer first and then transmitted either when the
+>> +watermark reached or when timed out. For a busy direction, you should
+>> +increase the related buffer watermark to avoid frequently posting and
+>> +thus enhance the performance. In most cases just keep the default value.
+>> +
+>> +The available tune data of above events is [0, 1, 2].
+>> +Writing a negative value will return an error, and out of range
+>> +values will be converted to 2. Note that the event value just
+>> +indicates a probable level, but is not precise.
+> 
+> This is useful documentation but it also should be found in the ABI
+> documentation referred to above.
+> 
+>> +
+>> +Trace
+>> +=====
+>> +
+>> +PTT trace is designed for dumping the TLP headers to the memory, which
+>> +can be used to analyze the transactions and usage condition of the PCIe
+>> +Link. You can choose to filter the traced headers by either requester ID,
+>> +or those downstream of a set of Root Ports on the same core of the PTT
+>> +device. It's also supported to trace the headers of certain type and of
+>> +certain direction.
+>> +
+>> +You can use the perf command `perf record` to set the parameters, start
+>> +trace and get the data. It's also supported to decode the trace
+>> +data with `perf report`. The control parameters for trace is inputted
+>> +as event code for each events, which will be further illustrated later.
+>> +An example usage is like
+>> +::
+>> +
+>> +    $ perf record -e hisi_ptt0_2/filter=0x80001,type=1,direction=1,
+>> +      format=1/ -- sleep 5
+>> +
+>> +This will trace the TLP headers downstream root port 0000:00:10.1 (event
+>> +code for event 'filter' is 0x80001) with type of posted TLP requests,
+>> +direction of inbound and traced data format of 8DW.
+>> +
+>> +1. filter
+>> +---------
+>> +
+>> +The TLP headers to trace can be filtered by the Root Ports or the requester
+>> +ID of the endpoints, which are located on the same core of the PTT device.
+>> +You can set the filter by specifying the `filter` parameter which is required
+>> +to start the trace. The parameter value is 20 bit. The supported filters and
+>> +related values are outputted through `available_root_port_filters` and
+>> +`available_requester_filters` sysfs attributes for Root Ports and Requesters
+>> +respectively.
+>> +::
+>> +
+>> +    $ cat available_root_port_filters
+>> +    0000:00:10.0	0x80001
+>> +    0000:00:11.0	0x80004
+>> +    $ cat available_requester_filters
+>> +    0000:01:00.0	0x00100
+>> +    0000:01:00.1	0x00101
+> 
+> If I remember correctly, one of the rule for sysfs is one line per entry.
+> 
+
+Since one PTT devices may support several Root Ports and Endpoints on its core, I find no better
+way to make this information convenient and easy to use for the users to collect. So maybe this
+canbe an exception and there seems to have some limited examples like
+/sys/devices/system/node/node<N>/{meminfo, vmstat, meminfo}.
+
+>> +
+>> +Note that multiple Root Ports can be specified at one time, but only
+>> +one Endpoint function can be specified in one trace. Specifying both
+>> +Root Port and function at the same time is not supported.
+>> +
+>> +If no filter is available, reading the related filter sysfs attribute
+>> +will get an empty string.
+>> +::
+>> +
+>> +    $ cat available_root_port_filters
+>> +
+>> +    $ cat available_requester_filters
+> 
+> Those too look overly long, and where to find them is not documented.  As such
+> users have to guest that it must be somewhere under
+> /sys/devices/hisi_ptt<sicl_id>_<core_id>/.
+> 
+
+Since Root Port and Requester are PCIe terminologies so it's better to have them
+embedded to make it clear. Maybe 'available' can be removed.
+
+Will have all these sysfs attributes documented.
+
+> More comments tomorrow.
+> 
+
+Thanks,
+Yicong
