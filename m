@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E7DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33826C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234957AbiGGCcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
+        id S234961AbiGGCcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234904AbiGGCbn (ORCPT
+        with ESMTP id S234883AbiGGCbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 22:31:43 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6632F3BA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:37 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id w83so21985911oiw.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:37 -0700 (PDT)
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73E72F646
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:39 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id s188so21721373oib.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bVfzu+P0/Oi1+cRUnIH8jaYLfFSf5xLGdlqYMAcLIvY=;
-        b=FA5W3T3WzmlVkVU0ONj1xGpRqwnNZRR+tv6ANOHX/iyqk5TpX64sRJeD2K0jGaX4T8
-         0c0vsqmJrhfuKfno+nc9ZGz55HYHL2q7533MI781e+p+DuL0MeXWRd9mQX3ivPB48rPN
-         f+yS5qzH6zq3K/9MBMSaYsBkMz8Ny3DRfZG7jK23RpSR0Z5FZv7iQwDWoLsWN7fGIuS8
-         cAL5Bbmm3S1/wLYpu7AdzEiagzfDq0L2Y20e8ZeDD0lP0IT6Bl8EXwSZrt2YHg8RrdGJ
-         GNNpNnbpR6stsP5c5PacByui9PROhTeoRhaDxS9UZO+b9oKBPSxSK0gcvUZiyLS2taSk
-         TbWg==
+        bh=1ch/3x2mGssm8qBEpggkAFFiBWCJh9rWPZpVFB+JcTU=;
+        b=vRJyAYL0VzceK0mW/2KKFNzbEbpWd/O5CdknxxDR+koJ42kwAdu8uK6uUSNk0RtczI
+         vI00ieUmNlrZXPjIYS0E6Lv0A0JggxlqwFPaRP9Z3EojQhWuFKhcU9cO31dth9ZaXfAV
+         e2Mj3rzD2SRZt04IHEMQQ9VB8DlhiVEWkzeivjICGx4Tq92mDWauW+Z60F2L13mIgBf5
+         fCZhhdrI7yqfzI4/ve9NkqlkVPmd5XV6o5PHNH70PcHGChvogBwZJpTejB8ZJEPvIDRY
+         iMtV4qJEV2pjhAYHamFOToWKSl1qKI95YdWtFrwVkq9kRLJhpTKrhkGP+XRSqmgmJ+Fz
+         uF+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bVfzu+P0/Oi1+cRUnIH8jaYLfFSf5xLGdlqYMAcLIvY=;
-        b=iR6/hlqMA38WyIOdcKa/S0urBbd6hXnFVFFjS93x6mN46enY83aZ3PQR92lH3btV66
-         LM2umr8gpmxaeaF5ROGwjjcsi/8Q2WkxqXi7GgksRouBBJX6yUYJQg+4V3kkxKS8gJ2H
-         t5ZdEzhrnMSL9VxOlcva6Yss2MjE6wydN30MViHfisV2yKpp1HvjJDjgI/zse2VN8cAw
-         b8QiFkNaXciBe9VQe99Cfpz1vKER+IbJBum0w5NPTJpxkKpzvGHK3R3MRF6JtifJkL/E
-         yOIqHdt/Dm8z/FitKlVjUvnMWOy7XTun/1w2nJwR/leaYYfWL4KD35lBQmxCLOAAT4bz
-         1YLA==
-X-Gm-Message-State: AJIora83yOzrWFa6rEdiVENpBk9i5V9pKgwUSNmuWyi1lz0WDytys4nO
-        iCJ7WUUzkjuQfuoqBgSVTDj4zg==
-X-Google-Smtp-Source: AGRyM1sElFX4lFVOUCQI81ddsk2vbxl1O099fV4OwQsh3Zi0iYQpUVONOWqWpAQow86XpfARyajMMw==
-X-Received: by 2002:a05:6808:1aaf:b0:32e:fec8:b67c with SMTP id bm47-20020a0568081aaf00b0032efec8b67cmr1086419oib.118.1657161096800;
-        Wed, 06 Jul 2022 19:31:36 -0700 (PDT)
+        bh=1ch/3x2mGssm8qBEpggkAFFiBWCJh9rWPZpVFB+JcTU=;
+        b=5HgIUO9dIFJq2vli6y4Z74oPiCfjw+CjnqkUyZgJOk1l2VyVjGuJWH2tVcoKQQeEvg
+         zWQ8zZsPnPZ+m2h/Ri3QeM73CpGjnRCs172uYvhiZZ6x45q96Z6zTMa8qhYFhjY3t8i1
+         +C/26jrCv0oy/JBOdSkudcKcC+DZIhwV36W8GTSOe2uh8iXs53YTxONnEZC6rRjX6dEL
+         EbaHOMigi++PkP5UyhjXfIyoFjeVgSwf2/fb/cajB3XX+bqRblsmCoo6eSafepPjIhdH
+         TFw7JwLosyZde0w+hhM/73YoM1YjC/bwk1dlw8hhVKTHkosKZfHfmlHHXf0in/lfEhx/
+         Vcjw==
+X-Gm-Message-State: AJIora/Erulq9o/1A00hZPlxK3mbmF1FGP6krf7QhkPQBxFuUAayM6Ou
+        m1+AK4GC7QBPMPSsE/fjEsVaSw==
+X-Google-Smtp-Source: AGRyM1uHq9ZHuymbi/mIRAGAFY8gONPHVHl0zZUZjWFV6tqb5bWY5UZFoNFjqtdtsMVJnMl7tnlD4A==
+X-Received: by 2002:a05:6808:1719:b0:335:216e:dc01 with SMTP id bc25-20020a056808171900b00335216edc01mr1104566oib.275.1657161098927;
+        Wed, 06 Jul 2022 19:31:38 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.35
+        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 19:31:36 -0700 (PDT)
+        Wed, 06 Jul 2022 19:31:38 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Dylan Van Assche <me@dylanvanassche.be>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: (subset) [PATCH] arm64: dts: qcom/sdm845-shift-axolotl: Enable pmi9889 LPG LED
-Date:   Wed,  6 Jul 2022 21:31:14 -0500
-Message-Id: <165716107314.864223.10951283216862917482.b4-ty@linaro.org>
+To:     vkoul@kernel.org, robh+dt@kernel.org, sean@poorly.run,
+        agross@kernel.org, dianders@chromium.org,
+        devicetree@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        robdclark@gmail.com, swboyd@chromium.org
+Cc:     linux-arm-msm@vger.kernel.org, quic_aravindh@quicinc.com,
+        freedreno@lists.freedesktop.org, quic_mkrishn@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_kalyant@quicinc.coml,
+        quic_sbillaka@quicinc.com, linux-kernel@vger.kernel.org
+Subject: Re: (subset) [PATCH] arm64: dta: qcom: sc7180: delete vdda-1p2 and vdda-0p9 from mdss_dp
+Date:   Wed,  6 Jul 2022 21:31:16 -0500
+Message-Id: <165716107315.864223.1202817730153711160.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220512054439.13971-1-me@dylanvanassche.be>
-References: <20220512054439.13971-1-me@dylanvanassche.be>
+In-Reply-To: <1656690436-15221-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1656690436-15221-1-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,20 +70,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 07:44:39 +0200, Dylan Van Assche wrote:
-> Enables the RGB notification LED on the SHIFT 6mq (sdm845-shift-axolotl)
-> with the Qualcomm Light Pulse Generator bindings by Bjorn Andersson [1].
-> Patches are merged in for-next branch of linux-leds.
-> Tested these changes on the SHIFT 6mq.
+On Fri, 1 Jul 2022 08:47:16 -0700, Kuogee Hsieh wrote:
+> Both vdda-1p2-supply and vdda-0p9-supply regulators are controlled
+> by dp combo phy. Therefore remove them from dp controller.
 > 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/commit/?h=for-next&id=a8e53db46f19f67be6a26488aafb7d10c78e33bd
 > 
-> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: qcom/sdm845-shift-axolotl: Enable pmi9889 LPG LED
-      commit: 8b936253e3dad69506cb47043dd6451a0a14cf22
+[1/1] arm64: dta: qcom: sc7180: delete vdda-1p2 and vdda-0p9 from mdss_dp
+      commit: 154fd146a446c0fffa81d72c78611b0ce26b2718
 
 Best regards,
 -- 
