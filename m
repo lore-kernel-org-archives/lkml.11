@@ -2,95 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7A6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4298C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236179AbiGGRRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 13:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
+        id S235976AbiGGRSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 13:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbiGGRRI (ORCPT
+        with ESMTP id S235803AbiGGRSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 13:17:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAD85A47C;
-        Thu,  7 Jul 2022 10:17:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 980CD61147;
-        Thu,  7 Jul 2022 17:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EE89C3411E;
-        Thu,  7 Jul 2022 17:17:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657214227;
-        bh=kr28mPaitT2hXZx987lyh9NyAySJXLUdOKVygYD27Oo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LLRdvuDrJUqZukDOtd4VwKGYbJakodGU28aqB7NORti+i68Ni0MSuktfoXMDjgm4A
-         J4d2qxdecv4ucF3wTGKNSrJ4yBKitwVg9iD/dNHx78NZfAMBo5W3n7ddXm9Duuk9My
-         GTRlzZKRiLLkthtHbxaKM5hCui7uLCnCte8HvDBa2VATdV/YhOKWAPzNLz1/RzUqyA
-         uRYJ59NvG2JMQfiRWStd8yK11yWew8tQ18VvID5f1XRA51rHmKRteh6LSOJU4qGm2n
-         n5fCtIAuDKncVzT2IfxwU5EgsEnMywxktn77JaGrp/VNhnVccJrTCRdKwJ+WN8HDeY
-         +JRRxlu+LSqQw==
-Date:   Thu, 7 Jul 2022 10:17:04 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Daniel Kolesa <daniel@octaforge.org>,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        llvm@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH] x86/Kconfig: Fix CONFIG_CC_HAS_SANE_STACKPROTECTOR when
- cross compiling with clang
-Message-ID: <YscVEIBtyoX2jrBV@dev-arch.thelio-3990X>
-References: <20220617180845.2788442-1-nathan@kernel.org>
- <842b718f-8207-1565-3373-61098a4c2d33@intel.com>
+        Thu, 7 Jul 2022 13:18:31 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC7E200;
+        Thu,  7 Jul 2022 10:18:28 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 267HHYF0046858;
+        Thu, 7 Jul 2022 12:17:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657214254;
+        bh=0YT4EV5cBfAPoVqhlohBFaPjrHZ4lvPAYsZOML+lEwk=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=IGMxW4tPAGw7ngaSL1sq+JiJgEXkUbZCGnWuZHsMG47G9zANDKB9XQhidQJxXDnkW
+         x54bFr6nt4WJQmoBnzx68pqiWLdVZ1rIwupWHPkbOaYR78l16SCJO9mJsMmaiUeWN7
+         CfdCC+xs+2txuhyW7XYCHprFkmZLgpUS9l3asdm8=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 267HHY3u059121
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 7 Jul 2022 12:17:34 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
+ Jul 2022 12:17:34 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 7 Jul 2022 12:17:34 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 267HHYHH007768;
+        Thu, 7 Jul 2022 12:17:34 -0500
+Date:   Thu, 7 Jul 2022 12:17:34 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Andrew Davis <afd@ti.com>
+CC:     Bryan Brattlof <bb@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/4] arm64: dts: ti: k3-am65-main: Disable RNG node
+Message-ID: <20220707171734.e22t5rx5ux7k5kcr@magnetize>
+References: <20220706190838.26074-1-afd@ti.com>
+ <20220707144400.tk3wmpeijdhuxpzv@bryanbrattlof.com>
+ <cb353a3c-96e7-f770-c8bd-17b8a4b4b3e0@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <842b718f-8207-1565-3373-61098a4c2d33@intel.com>
+In-Reply-To: <cb353a3c-96e7-f770-c8bd-17b8a4b4b3e0@ti.com>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 03:25:51PM -0700, Dave Hansen wrote:
-> On 6/17/22 11:08, Nathan Chancellor wrote:
-> > When clang is invoked without a '--target' flag, code is generated for
-> > the default target, which is usually the host (it is configurable via
-> > cmake). As a result, the has-stack-protector scripts will generate code
-> > for the default target but check for x86 specific segment registers,
-> > which cannot succeed if the default target is not x86.
+On 10:01-20220707, Andrew Davis wrote:
+> On 7/7/22 9:44 AM, Bryan Brattlof wrote:
+> > Hi Andrew
+> > 
+> > On July  6, 2022 thus sayeth Andrew Davis:
+> > > The hardware random number generator is used by OP-TEE and is access is
+> > > denied to other users with SoC level bus firewalls. Any access to this
+> > > device from Linux will result in firewall errors. Disable this node.
+> > > 
+> > > Signed-off-by: Andrew Davis <afd@ti.com>
+> > > ---
+> > > 
+> > > Changes from v1:
+> > >   - Added comment in dtsi file
+> > > 
+> > >   arch/arm64/boot/dts/ti/k3-am65-main.dtsi | 1 +
+> > >   1 file changed, 1 insertion(+)
+> > > 
+> > > diff --git a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> > > index e749343accedd..9de5a8294acd6 100644
+> > > --- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> > > +++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> > > @@ -127,6 +127,7 @@ rng: rng@4e10000 {
+> > >   			reg = <0x0 0x4e10000 0x0 0x7d>;
+> > >   			interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
+> > >   			clocks = <&k3_clks 136 1>;
+> > > +			status = "disabled"; /* Used by OP-TEE */
+> > 
+> > Just curious about how we should document disabling nodes. I was
+> > assuming the reasoning should be described in the bindings?
+> > 
+> > I would like to start disabling nodes by default in our dtsi files and
+> > enabling them in our top dts file, making it easier for others to use
+> > our device tree for a more focused purpose than our dev boards. I just
+> > didn't know where I should document why I disabled the nodes :)
+> > 
 > 
-> I guess the real root cause here is the direct use of '$(CC)' without
-> any other flags.  Adding '$(CLANG_FLAGS)' seems like a pretty normal
-> fix, like in scripts/Kconfig.include.
+> This got push-back last time this was suggested, I'll have to lookup
+> the history. IIRC we landed on the other way around, all things should
+> be described by default, then the specific board can enable/disable
+> what is not used as needed.
 
-Right, also see the following commits for other areas where this was
-addressed.
+See thread https://lore.kernel.org/linux-arm-kernel/YiizsYnKB0X9bDY2@atomide.com/
 
-58d746c119df ("efi/libstub: Add $(CLANG_FLAGS) to x86 flags")
-d5cbd80e302d ("x86/boot: Add $(CLANG_FLAGS) to compressed KBUILD_CFLAGS")
-8abe7fc26ad8 ("x86/build: Propagate $(CLANG_FLAGS) to $(REALMODE_FLAGS)")
-
-> I suspect there's another one of these here:
 > 
-> 	arch/x86/um/vdso/Makefile:      cmd_vdso = $(CC) -nostdlib -o $@
-> 
-> but I wouldn't be surprised if UML doesn't work with clang in the first
-> place.
+> I was worried this topic would come up with this patch series and was
+> almost just going to delete the whole RNG node instead of disabling it
+> to avoid that. My reasoning for disabling here anyway is that this device
+> *cannot* be used by *any* board, it is not just a board level configuration
+> decision like disabling I2C nodes by default or similar that was proposed
+> last time we had the "nodes disabled by default" discussion.
 
-We have started testing UML with clang and it does work but I suspect
-there is little value to cross compiling a UML kernel, as it has to run
-in an x86 userland anyways, rather than through QEMU or other
-virtualization solutions. That is not something I plan to do anyways.
-If someone does and a fix similar to this one is needed, it can be done
-at that time.
+Hmm.. If that is the case, then why even have it in dts - is that
+because of cases where OPTEE is'nt the TEE and users may want to
+directly use it? OR is it because OPTEE can potentially use device tree
+itself and discover the rng location from dt?
 
-Thank you for picking up this change!
 
-Cheers,
-Nathan
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
