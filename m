@@ -2,90 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD19C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D76CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236339AbiGGQsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
+        id S236356AbiGGQuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235978AbiGGQsH (ORCPT
+        with ESMTP id S236110AbiGGQuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:48:07 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81C554D4C7;
-        Thu,  7 Jul 2022 09:48:06 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9D9491063;
-        Thu,  7 Jul 2022 09:48:06 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E99803F792;
-        Thu,  7 Jul 2022 09:48:04 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 17:48:01 +0100
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Michal Suchanek <msuchanek@suse.de>
-Cc:     linux-sunxi@lists.linux.dev, Icenowy Zheng <icenowy@aosc.xyz>,
+        Thu, 7 Jul 2022 12:50:15 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D202A422;
+        Thu,  7 Jul 2022 09:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=ICKmcbHRvrSyUczplI8Beeso0lINOUsmLC2dkDv7txo=; b=1W
+        XLVkE4BimNam9FMNOjWyPAdSc/dGRpLNZ4NxYgKyHqxkskxphYQ9ZTIuTBlFn8t4LPg3Ot4MlkB65
+        +qIeMQ5wsdCaoLzzFFJWOMAI1wI5M3iUFe6ZWV8q1OZ+whh2xtALwjZak/wYIbz8cr7oafhgTfDCK
+        yx0yc4ncLG1hx6U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o9UhU-009bFU-2G; Thu, 07 Jul 2022 18:50:00 +0200
+Date:   Thu, 7 Jul 2022 18:50:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sunxi: dts: Fix SPI NOR campatible on Orange Pi Zero
-Message-ID: <20220707174801.36e010da@donnerap.cambridge.arm.com>
-In-Reply-To: <20220707163855.18838-1-msuchanek@suse.de>
-References: <20220707163855.18838-1-msuchanek@suse.de>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+Subject: Re: [PATCH 00/11] ARM: dts: mvebu: Add definitions for PCIe legacy
+ INTx interrupts
+Message-ID: <YscOuEUws9E9nnmm@lunn.ch>
+References: <20220706183114.30783-1-pali@kernel.org>
+ <YsX2Wvtz7hEpJ6X+@lunn.ch>
+ <20220707163818.620ccb95@dellmb>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220707163818.620ccb95@dellmb>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  7 Jul 2022 18:38:55 +0200
-Michal Suchanek <msuchanek@suse.de> wrote:
-
-Hi,
-
-> Without "jedec,spi-nor" compatible the flash memory cannot be probed by
-> u-boot.
+On Thu, Jul 07, 2022 at 04:38:18PM +0200, Marek Behún wrote:
+> On Wed, 6 Jul 2022 22:53:46 +0200
+> Andrew Lunn <andrew@lunn.ch> wrote:
 > 
-> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-> ---
->  arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> > On Wed, Jul 06, 2022 at 08:31:03PM +0200, Pali Rohár wrote:
+> > > This patch series add definitions for PCIe legacy INTx interrupts into
+> > > every DTS file used by the pci-mvebu.c controller driver.  
+> > 
+> > What you fail to explain in the commit message is Why?
+> > 
+> >      Andrew
 > 
-> diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-> index f19ed981da9d..d114bbc5f441 100644
-> --- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-> +++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-> @@ -169,7 +169,7 @@ &spi0 {
->  	flash@0 {
->  		#address-cells = <1>;
->  		#size-cells = <1>;
-> -		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
-> +		compatible = "mxicy,mx25l1606e", "winbond,w25q128", "jedec,spi-nor";
+> Hi Andrew,
+> 
+> this is required for example in a scenario where a driver requests only
+> one of the legacy interrupts (INTA). Without this change, the driver
+> would be notified on events on all 4 (INTA, INTB, INTC, INTD), even if
+> it requested only one of them.
 
-Naming three compatible strings violates the binding:
-arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dtb: flash@0: compatible: 'oneOf' conditional failed, one must be fixed:
-        ['mxicy,mx25l1606e', 'winbond,w25q128', 'jedec,spi-nor'] is too long
-        'mxicy,mx25l1606e' is not one of ['issi,is25lp016d', 'micron,mt25qu02g', 'mxicy,mx25r1635f', 'mxicy,mx25u6435f', 'mxicy,mx25v8035f', 'spansion,s25sl12801', 'spansion,s25fs512s']
-        'jedec,spi-nor' was expected
-        From schema: Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml
+O.K, so please add that to the commit message.
 
-Not entirely sure why it didn't scream before, actually, because to me it
-looks like ending in jedec,spi-nor is mandatory.
-Anyway, IIUC the Macronix chip was the one shipped with the (later)
-boards, so we should use just that and "jedec,spi-nor".
-The actual vendor would be detected at runtime anyway.
+Is this purely theoretical, or are there known broken platforms out
+there?  Should a subset of these patches be added to stable?
 
-Cheers,
-Andre
-
->  		reg = <0>;
->  		spi-max-frequency = <40000000>;
->  	};
-
+	Andrew
