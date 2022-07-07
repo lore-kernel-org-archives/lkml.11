@@ -2,178 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6ABC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 269A2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235510AbiGGOlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
+        id S235926AbiGGOmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235982AbiGGOla (ORCPT
+        with ESMTP id S235828AbiGGOmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:41:30 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0EF31DF4
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:41:29 -0700 (PDT)
-Received: from mail-yw1-f174.google.com ([209.85.128.174]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MA7Su-1oJt652ehm-00BbuM for <linux-kernel@vger.kernel.org>; Thu, 07 Jul
- 2022 16:41:27 +0200
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-31c86fe1dddso124494707b3.1
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 07:41:27 -0700 (PDT)
-X-Gm-Message-State: AJIora/2p63JSg5OpuJ6f2F31WNWvTf5mESUM6zvGnmSgrhz64XwHZuW
-        ZLqS9fZ13SlJ27vYb39oqom4twlcWV7tyeWPlck=
-X-Google-Smtp-Source: AGRyM1ugCMrUPgxLUvxIRQZLC1zdIj2O+Vxq6ia7yT/fLej4bF43FUE/j7cYL5pmPy3Gz3VGYzGIau7ei5jBYmPiCD0=
-X-Received: by 2002:a0d:df0f:0:b0:31b:e000:7942 with SMTP id
- i15-20020a0ddf0f000000b0031be0007942mr50077266ywe.320.1657204886416; Thu, 07
- Jul 2022 07:41:26 -0700 (PDT)
+        Thu, 7 Jul 2022 10:42:13 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD6A32062;
+        Thu,  7 Jul 2022 07:42:12 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id o19-20020a05600c4fd300b003a0489f414cso10829128wmq.4;
+        Thu, 07 Jul 2022 07:42:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hFBY/59HAcFXCoUkn6tpERfsKHI5WTonhgCZoTEbwOg=;
+        b=AAATC3IjXA6RsahrVYilBmFfSZ0oguDLc8FvDpacKln1dFLCUvEQZ2nN6IR5h+zGC5
+         PNRYRY5SuGZH+FdXjM8eG/xR1tcE0uouLFZTBfR9y52L9t+jidmQiVG5ghkp4MJVDPHA
+         ASvn0USJ5JXe7VcHNYfvMklfuUa6H6TrV329QRNRhYi4O3EXbpt872KWynvrNWeDLfc1
+         Mt+1UO2Bxdt1Jb1oILXZxD8BAL6ZyjOTVWnDjIk9/0ho1F8YK0Qeul64ZQPAx+N+5vb+
+         itGx7lAflAgy8SaDBo5AXQP3SRjLEqcsoRiwcABoep6kSXWxQ2CDdkSe9McOVTvUyNsA
+         2GWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hFBY/59HAcFXCoUkn6tpERfsKHI5WTonhgCZoTEbwOg=;
+        b=D+83TAFB9N9N7swm6PJB7FjzoS0JLqL33IpqZoEJOdgGgD88hvsqFmfTrIzFvEWCWS
+         ecBa6P5VhoZpwS+FDSpbn4YCFDhb4IZZv3DDDmzrZWmWTuVDJXgTzbY8nzut3vb2ujxZ
+         eAJz11G1EqnDLAckCx7iX9KMTeAXKSVEIKvtDXn+6LO8/1heRjds8XXgm7pyyu7j01ZL
+         PQ1e4I2vrnNeYat8d471SOzJ/dkZAObOKzceOmwm6rmC622ZlyNohxpwTUtoNfxulUfS
+         nscXPnR+3r7odZqRBjckoPuCsdiuPIioBsJC67Oc6zcp3EWaFp+nCFo1D90v8LY2F8wv
+         8MGw==
+X-Gm-Message-State: AJIora/TQAZYvQjMOC2JRS9fMS0RZbc8JcC61Q/L1exwjUfStnNwur/g
+        VQeJfoS7cMYUie+8FUQfWaw=
+X-Google-Smtp-Source: AGRyM1sWtLR8zgi6kzKF2OShM6ctfTjiFq7rNCAiC2vlw6wFlKpTJ4dcj02VoAJ2FYooe9pPWq0Fog==
+X-Received: by 2002:a05:600c:4e8d:b0:3a1:2e4d:1dd2 with SMTP id f13-20020a05600c4e8d00b003a12e4d1dd2mr5074937wmq.85.1657204931102;
+        Thu, 07 Jul 2022 07:42:11 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id x2-20020adfdd82000000b0021d62e30a62sm14467685wrl.50.2022.07.07.07.42.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 07:42:10 -0700 (PDT)
+Message-ID: <0958f352-2eaa-d051-ec14-a379bb2c0d8c@gmail.com>
+Date:   Thu, 7 Jul 2022 16:42:08 +0200
 MIME-Version: 1.0
-References: <20220707110511.52129-1-zhengqi.arch@bytedance.com>
- <20220707110511.52129-3-zhengqi.arch@bytedance.com> <CAK8P3a1-rL391dp33D5r+SgQ+L0u7Neta_-DZoZL=+c1zPtNQg@mail.gmail.com>
- <42bfd82c-b3fb-c942-d6f2-ae5adec90a26@bytedance.com>
-In-Reply-To: <42bfd82c-b3fb-c942-d6f2-ae5adec90a26@bytedance.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 7 Jul 2022 16:41:08 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a17A1t=qkyToQNVnuVfGPp-7VpFx5qJ-gmpyrkJ3yRXTw@mail.gmail.com>
-Message-ID: <CAK8P3a17A1t=qkyToQNVnuVfGPp-7VpFx5qJ-gmpyrkJ3yRXTw@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] arm64: support HAVE_IRQ_EXIT_ON_IRQ_STACK
-To:     Qi Zheng <zhengqi.arch@bytedance.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:lYjdV6iRvmKX6gHHIsoRJjfmbtBpvuRfe0a+FzlTlroi9hWEZZF
- vLvI/I95iGhdYnIR7wRtYdxLCu0vqfz5YeB5OCxi/BAkFgUcNqJmx/Hfp3NkMHXCufR9T6R
- 7nwFRS4VUDShHEtGGle9AVwYkW8S3Belopo46QXYBhAWzeDAnGAKCdBLlNqIv8OMVyESlnH
- Z+DTs0lH131ygUrQrZ4vw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:h6omgu/DZns=:RLyckYvvWyeEmv1+hHo7ac
- iFwaeM+arwfyQDYBpnTQoZg0ZrwOKYu5iZWLOseTlb/dGzoEEAIsuuTwhonPzizhl4/SpPgz0
- bDqLjyrxaYXcBgDs3Iu1DYlj8O3y3/Y7Upy1kvcjYV+9bCh6MW/Q13ubp3kErX5bzGpgKRajG
- iT71heKw2HGGgALf5fumyXW8NHiAh+rkt6GQmxrDyPVFgHHBrj3pieuQEaRtSmb8XttTLmynk
- xk2drbfPWh8ALOYjQSnvIqlW3Fb+R621PvFeuZbdyF/coYgclCWp5/tXQKN7cTwD9c7X9U6+9
- PskKSFHRBC3hhxM1bMW8zS/50yV6+39Xk55pwh9D9EVaNUxZb2dVnTMpnBPJ+0uWvya5ajNF0
- /VrbzD0Iqm+8TAZy/5x12u7MgV3IlBiSnQ9BvbYQmVhf34zZGgWNjhKuiqWRypw1lHrqSTkNr
- E+GSVMIScZVReZltMHCLEyFEPA6+A+e9Z1XLsUiVLi1SwLvCPqjswQpmPOhiSJg8HbAh0/SKW
- qwp5LBmi98+zsAjAfCPlpTjGNerW3p0HGDa3uqikqB8EvOmWPAXVEiO9eZxIfAUZ/bak981ZC
- ZaOlkPP0+ZrL4Xzc0B+eOd4+irB6dyrRFE5OBPBp8Bi310XX8IZbg8XnwBeT2fdmsYoB46Rl3
- XxVK2ahlTudVypma7rtYLqNwUfQl9sfshvj3DQ9nx24SxCv9EO4rmS4jjHd9O5GN6+RIsXQmc
- 6t1xpWMsc8FbdI4GT13PsCaK2gV0dg/R2yaOV8VouMXFRbxH/IzWZ8qOaGiiOQiQ4uC8fmiGe
- N4sBSR+v4TLqvxNCA44yL36aIV6L4bDnG1XPprd4rkY/56FSWQKhRgXInOgiX99Md7Q9AA6Kw
- e0mqgZPE2uzNJP1DfGRQ==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 00/11] MT8195 Chromebooks devicetrees - Google Tomato
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, hsinyi@chromium.org,
+        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
+        gtk3@inbox.ru, luca@z3ntu.xyz, sam.shih@mediatek.com,
+        sean.wang@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wenst@chromium.org
+References: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 3:38 PM Qi Zheng <zhengqi.arch@bytedance.com> wrote:
-> On 2022/7/7 20:49, Arnd Bergmann wrote:
-> > On Thu, Jul 7, 2022 at 1:05 PM Qi Zheng <zhengqi.arch@bytedance.com> wrote:
->           * Restore the SP from the FP, and restore the FP and LR from
-> the frame
->           * record.
->           */
-> -       mov     sp, x29
-> +999:   mov     sp, x29
->          ldp     x29, x30, [sp], #16
->   #ifdef CONFIG_SHADOW_CALL_STACK
->          ldp     scs_sp, xzr, [sp], #16
->
-> But this also requires a new parameter in do_interrupt_handler.
->
-> I also considered implementing call_on_irq_stack() for nmi and irq
-> separately, but later think it's unnecessary.
 
-What I had in mind was something along the lines of
 
-diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
-index 56cefd33eb8e..432042b91588 100644
---- a/arch/arm64/kernel/entry-common.c
-+++ b/arch/arm64/kernel/entry-common.c
-@@ -270,10 +270,7 @@ static void do_interrupt_handler(struct pt_regs *regs,
- {
-        struct pt_regs *old_regs = set_irq_regs(regs);
+On 04/07/2022 12:13, AngeloGioacchino Del Regno wrote:
+> This is the first part for upstreaming Google's Cherry Tomato
+> Chromebook (Acer Chromebook Spin 513): in this series, we introduce
+> the devicetrees for the four revisions of this Chromebook and enable
+> every controller and feature that can be added as per the current
+> state of the main SoC devicetrees (mt8195.dtsi) and its PMIC
+> devicetree (mt6359.dtsi).
+> 
+> More parts will come as soon as more support will be added by
+> MediaTek in the mt8195 devicetree.
+> 
 
--       if (on_thread_stack())
--               call_on_irq_stack(regs, handler);
--       else
--               handler(regs);
-+       handler(regs);
+Series applied, thanks!
 
-        set_irq_regs(old_regs);
- }
-@@ -473,16 +470,31 @@ static void noinstr el1_interrupt(struct pt_regs *regs,
-                __el1_irq(regs, handler);
- }
-
--asmlinkage void noinstr el1h_64_irq_handler(struct pt_regs *regs)
-+static void noinstr el1_irq(struct pt_regs *regs)
- {
-        el1_interrupt(regs, handle_arch_irq);
- }
-
--asmlinkage void noinstr el1h_64_fiq_handler(struct pt_regs *regs)
-+asmlinkage void noinstr el1h_64_irq_handler(struct pt_regs *regs)
-+{
-+       if (on_thread_stack())
-+               call_on_irq_stack(regs, el1_irq);
-+       else
-+               el1_irq(regs);
-+}
-+
-+static void noinstr el1_fiq(struct pt_regs *regs)
- {
-        el1_interrupt(regs, handle_arch_fiq);
- }
-
-+asmlinkage void noinstr el1h_64_fiq_handler(struct pt_regs *regs)
-+{
-+        if (on_thread_stack())
-+               call_on_irq_stack(regs, el1_fiq);
-+       else
-+               el1_fiq(regs);
-+}
-+
- asmlinkage void noinstr el1h_64_error_handler(struct pt_regs *regs)
- {
-        unsigned long esr = read_sysreg(esr_el1);
-@@ -713,7 +731,7 @@ static void noinstr
-__el0_irq_handler_common(struct pt_regs *regs)
-
- asmlinkage void noinstr el0t_64_irq_handler(struct pt_regs *regs)
- {
--       __el0_irq_handler_common(regs);
-+       call_on_irq_stack(regs, __el0_irq_handler_common);
- }
-
- static void noinstr __el0_fiq_handler_common(struct pt_regs *regs)
-@@ -723,7 +741,7 @@ static void noinstr
-__el0_fiq_handler_common(struct pt_regs *regs)
-
- asmlinkage void noinstr el0t_64_fiq_handler(struct pt_regs *regs)
- {
--       __el0_fiq_handler_common(regs);
-+       call_on_irq_stack(regs, __el0_fiq_handler_common);
- }
-
- static void noinstr __el0_error_handler_common(struct pt_regs *regs)
-@@ -807,12 +825,12 @@ asmlinkage void noinstr
-el0t_32_sync_handler(struct pt_regs *regs)
-
- asmlinkage void noinstr el0t_32_irq_handler(struct pt_regs *regs)
- {
--       __el0_irq_handler_common(regs);
-+       call_on_irq_stack(regs, __el0_irq_handler_common);
- }
-
- asmlinkage void noinstr el0t_32_fiq_handler(struct pt_regs *regs)
- {
--       __el0_fiq_handler_common(regs);
-+       call_on_irq_stack(regs, __el0_fiq_handler_common);
- }
-
- asmlinkage void noinstr el0t_32_error_handler(struct pt_regs *regs)
-
-Not sure if that works.
-
-        Arnd
+> Note: This series will introduce a dtbs_check warning about a failure
+>        to match compatible for 'mediatek,mt6359': that's expected, as
+>        this is defined in devicetree/bindings/mfd/mt6397.txt (so there
+>        is no schema, yet).
+> 
+> Changes in v2:
+>   - Added changes from Nìcolas' review
+>   - Changed board 'model' from 'MediaTek Tomato' to 'Acer Tomato'
+> 
+> This series depends on the following fixes:
+> [1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220630110453.186526-1-angelogioacchino.delregno@collabora.com/
+> [2]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220630122334.216903-1-angelogioacchino.delregno@collabora.com/
+> [3]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220630131543.225554-1-angelogioacchino.delregno@collabora.com/
+> 
+> 
+> And it depends on Nìcolas' dt-bindings patch for the [01/11] to
+> apply cleanly (this is done to keep mediatek.yaml ordered):
+> [4]: https://lore.kernel.org/all/20220629155956.1138955-2-nfraprado@collabora.com/
+> 
+> 
+> AngeloGioacchino Del Regno (11):
+>    dt-bindings: arm: mediatek: Add MT8195 Cherry Tomato Chromebooks
+>    arm64: dts: mediatek: Introduce MT8195 Cherry platform's Tomato
+>    arm64: dts: mediatek: cherry: Add platform regulators layout and
+>      config
+>    arm64: dts: mediatek: cherry: Assign interrupt line to MT6359 PMIC
+>    arm64: dts: mediatek: cherry: Add support for internal eMMC storage
+>    arm64: dts: mediatek: cherry: Document gpios and add default pin
+>      config
+>    arm64: dts: mediatek: cherry: Enable I2C and SPI controllers
+>    arm64: dts: mediatek: cherry: Enable T-PHYs and USB XHCI controllers
+>    arm64: dts: mediatek: cherry: Enable MT6360 sub-pmic on I2C7
+>    arm64: dts: mediatek: cherry: Enable support for the SPI NOR flash
+>    arm64: dts: mediatek: cherry: Add I2C-HID touchscreen on I2C4
+> 
+>   .../devicetree/bindings/arm/mediatek.yaml     |  13 +
+>   arch/arm64/boot/dts/mediatek/Makefile         |   3 +
+>   .../dts/mediatek/mt8195-cherry-tomato-r1.dts  |  15 +
+>   .../dts/mediatek/mt8195-cherry-tomato-r2.dts  |  35 +
+>   .../dts/mediatek/mt8195-cherry-tomato-r3.dts  |  36 +
+>   .../boot/dts/mediatek/mt8195-cherry.dtsi      | 702 ++++++++++++++++++
+>   6 files changed, 804 insertions(+)
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r2.dts
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r3.dts
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+> 
