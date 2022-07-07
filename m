@@ -2,133 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8959AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1473EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236072AbiGGQu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
+        id S236362AbiGGQub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiGGQuY (ORCPT
+        with ESMTP id S235541AbiGGQu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:50:24 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2073.outbound.protection.outlook.com [40.107.237.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B762A42C;
-        Thu,  7 Jul 2022 09:50:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OEMAW2rXOmBviFpyzw/QcNqZJ4gkXXCSRUSxR/hRNEv+6xufm8rvDbLrR4YVLNCxh3q826ufuRSG2CIQCj2BaoeXXNE7MwXtr9JSOkLrLJDVqI1c4y8LKITFzwYRlLrwdO50ziIrNLArnA1ouFmzm/HpMUFMZbY87GWl/V6opUYKlF6h0+zhFIBR428wTQmWDlctpLPuQbXwDoMULho+69lPUX6PYJC/t1q33PwtlQmJRk0NS2MP/gYGvBuKjcyx6TW/mGFjLTenP2QYA8oLLVwsATCm2VBT7kV5sujXEoLQr2w1IfqpO/BMKV9XkyPTtCaC850KgEYDFl9d/Rg68Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xGgrjFhgAW9cB4WIvzoVfI2lbC+F4aSnWXizFzjh000=;
- b=Rvlr6NBa6kQf+FG+B9qImBzpz7cQurJ+4oXfGpOzF7iLb9YR9WoF6ADJoIiY81WUsAnG9qMfdVnQuWSvVNa9bNV87yjG/LSmbwC4NsF6wVDgRohJmJE5wLqoBxaROA98y4HVb1Q1lat5m41K9zySw3hfmNQwdW8lzoW5jcd38AiMuKhfGtYY/rNJH9TfQv9ii3elY7o6uq91ZtGCNNDRHmlX4X6xM9W/ZERIl7r7DujhHwdrLmKTIXrIcOmusopJ5AQHxtcXrcIZ7m75Q/Lx9bhJy/yguGynjear5MdTpgnLTiEVdc+RRbCytFItRK/s+ile2TaZtcncJ6Boq21T6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=intel.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xGgrjFhgAW9cB4WIvzoVfI2lbC+F4aSnWXizFzjh000=;
- b=Zvp5JsZ5uEgMqLl66NmrWO9JpzUeNJ2FYjdSQ/uZFeJAhacIxp76Ll8v2KdK+tk9hRrvm2tOwr4bpiv7EOjGK7SYeAMkwhGmyv3+wrHeQrFs5Ecz9gvpaTjPxmFf7ROo7shdM5r4CbrCVqDlBqsN02hVCx62sjXShlxqd1fE60M=
-Received: from DM6PR21CA0006.namprd21.prod.outlook.com (2603:10b6:5:174::16)
- by CY4PR12MB1735.namprd12.prod.outlook.com (2603:10b6:903:122::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.18; Thu, 7 Jul
- 2022 16:50:20 +0000
-Received: from DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:174:cafe::30) by DM6PR21CA0006.outlook.office365.com
- (2603:10b6:5:174::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.5 via Frontend
- Transport; Thu, 7 Jul 2022 16:50:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT003.mail.protection.outlook.com (10.13.173.162) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 16:50:20 +0000
-Received: from pyuan-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 7 Jul
- 2022 11:50:16 -0500
-From:   Perry Yuan <Perry.Yuan@amd.com>
-To:     <rafael.j.wysocki@intel.com>, <viresh.kumar@linaro.org>,
-        <Ray.Huang@amd.com>
-CC:     <Deepak.Sharma@amd.com>, <Mario.Limonciello@amd.com>,
-        <Nathan.Fontenot@amd.com>, <Alexander.Deucher@amd.com>,
-        <Jinzhou.Su@amd.com>, <Xinmei.Huang@amd.com>,
-        <Xiaojian.Du@amd.com>, <Li.Meng@amd.com>,
-        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Perry Yuan <Perry.Yuan@amd.com>
-Subject: [PATCH 00/12] AMD Pstate Enhancement And Issue Fixs
-Date:   Thu, 7 Jul 2022 12:49:44 -0400
-Message-ID: <20220707164944.210616-1-Perry.Yuan@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 7 Jul 2022 12:50:28 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985D22B193
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:50:27 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id bs20so23587155qtb.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 09:50:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AeoVWyPwz07I1Nnl+i5YaHasVV89GCVp9lVH7dgFfZI=;
+        b=OjqVvRiVRowBZwupb4NlAztpG6HNYwWnsO7LCVOXX4ya4p6OQXqlTgmqeeoVkAPcwH
+         Sr6IlnQMvf3pyZmfgUXn5ML7PPPr2bRJZkd7d5PgTSHYO8YleLCKsCXo7w5vQwcPuOxw
+         Vw6S+g1DUYdE4m53IUoa+ifXUqFDyTL1o6CA6LNWKNVWskuf2II/KLBoEToNHo8QmMgZ
+         2JqBudIH2nwMKFx8PQW3r5F8Zs+ZeHeLr54qQFJ5EptiQ/tScZR3bMdQIVHhxBXQMJB+
+         DDEo61htHR4MRoI6oMxdst2vH4tuACf7RWlWDjekFKnPFPq35kuXzz1Nuu+JSysoCaQD
+         eFwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AeoVWyPwz07I1Nnl+i5YaHasVV89GCVp9lVH7dgFfZI=;
+        b=ifosHTPHSun0ibGHry3aTdDFGUscsUztA3rlwSru08gQm+Y0ghUVofF09QUkBQ6Bem
+         NbI0fLa1u2nvKDOfmhZXwucDa+70KeyRnvlLypYgrGm/KcNHBgfWaZ2FOxT9uNCsrLC4
+         JlwbTVuxwju0zy+7zRWb+qVnndBnS5/Ed+5qxzH+qxX57nxXayJTgBtgSs8EI1vgBkBZ
+         Fevy0VN+XdpUs46NuW1mB++mPAaR5Coxh/5dlisMqZcpoqUJxG12CHO3dUiR/KL91PVW
+         31FFJl7ikQanTs2F/B9QKV+WcGijWfUBdb6W0BoYzndB7soKzKTq524WmgeSA8AbMHry
+         bKIw==
+X-Gm-Message-State: AJIora81JHEvo9g6UD2ef6nFjf+eBJVte2kMVgV0tIbbe1TsbwuLsCvX
+        mXprdAlGRz0JfsRizkSPkfE=
+X-Google-Smtp-Source: AGRyM1twDaEtb0efCyo0nv2A1ZhFcHGO7F4Hv+XMGFBXaLbdmRg7pk2Mwix2+6/nBPTpCMGRRCCS8A==
+X-Received: by 2002:a05:6214:500e:b0:473:2eec:3633 with SMTP id jo14-20020a056214500e00b004732eec3633mr3269042qvb.106.1657212626649;
+        Thu, 07 Jul 2022 09:50:26 -0700 (PDT)
+Received: from MBP.hobot.cc (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id m14-20020a05620a290e00b006b46ad28ba7sm10565856qkp.84.2022.07.07.09.50.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 07 Jul 2022 09:50:25 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, vschneid@redhat.com
+Cc:     linux-kernel@vger.kernel.org, Schspa Shi <schspa@gmail.com>
+Subject: [PATCH v3] sched/rt: fix bad task migration for rt tasks
+Date:   Fri,  8 Jul 2022 00:50:14 +0800
+Message-Id: <20220707165014.77127-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8c64e86b-5550-4c81-af21-08da6038c766
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1735:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Nap2iXX6XJyL+YTuY1Rzf9oLa/eq6tc3Gk4LxyT/HTnmhEj6ywyyvdIcx+57GQI9C/02e3IijxCwGFE4tmwg9oaaZFx9cncfj69ExtjnHRIY6ZrXsS/hZ0RYg0tcPTzp1IXP6PPCsItEP9yywPzYo1Y3zT+JEJ2ZSADFznI3vqyV10dN6oERnzUViGWw1hj6HqpQGa3dFjo+80Eq8b+FtD1cvl6hcWc8w47+jpyFNP9UZ6e7xvanenEax0Qt1kMvQQAePfJVzqIHYPgswPL3lXsPiytZruUuJT8Y2WjdioiqwmyFbcIDOoYhMlr1ZN9bNuHBvgj5/penSuKcduE5fuerkqe3t8gil2sHpkKXHWSXyAdBHA016u3bm3gf98U41j9tn9Ges3XObHQalHY411ufNkEA0dTF4H7raw44hGSh0d7S9WXGolgMRaQa/c8ERMHmEZv9LGCKWAsXF3rATCHyKv28r2TyBE6HEv3LyIEUxJ1tIzFYqqdZ028YM0HXFrBGNKzMP8jPWt7yjbU/NqrQ/kDZ1z5a28dY99M6MRT9wC4/hrGOHAErTL342MZtMp0CbSLTxy3DMmZdpcwk8um3wpg4SjtaGESEfCYKhcZyZQpcr0b15EQNq95rAARDJs+H1thKqcPLBgNwNIIeqF//SoU08AWD4JZzIzL1RJ2OPD61LGqIbXT2uHOaiv3C1IxauzjDjhId14s+cJrQu2DLWfHkc81HuXiFE8TN0MCSJpqQAeaU+BhCiBPC87SJ9O/QkezZ0INMmQIOM92167lJu7IhxeGKFdPNxFGFmMY2otggefivRZ1akWI2/yLNxcQ9YA+ktceyqsfY+LbtXxsKegao6wXBlW2FMtL7W2XFH6foB8qouXEQv3PHuftd
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(39860400002)(376002)(136003)(40470700004)(46966006)(36840700001)(4326008)(8676002)(41300700001)(70586007)(6636002)(36860700001)(86362001)(40480700001)(6666004)(2906002)(7696005)(70206006)(356005)(82740400003)(8936002)(40460700003)(26005)(83380400001)(5660300002)(34020700004)(186003)(81166007)(478600001)(426003)(336012)(47076005)(82310400005)(1076003)(316002)(2616005)(110136005)(54906003)(16526019)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 16:50:20.5239
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c64e86b-5550-4c81-af21-08da6038c766
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1735
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds support for precision boost hardware control
-for AMD processors.
+Commit 95158a89dd50 ("sched,rt: Use the full cpumask for balancing")
+allow find_lock_lowest_rq to pick a task with migration disabled.
+This commit is intended to push the current running task on this CPU
+away.
 
-Meanwhile the patchset fixs lowest perf query and desired perf scope issues. 
-Update transition delay and latency default value to meet SMU firmware requirement.
-and do some code cleanups,
-It also exports cpufreq cpu release and acquire for coming amd-pstate epp mode driver
+There is a race scenarios, which allows a migration disabled task to
+be migrated to another CPU.
 
-The patch series are tested on the AMD mobile and EYPC server systems.
+When there is a RT task with higher priority, rt sched class was
+intended to migrate higher priority task to lowest rq via push_rt_tasks,
+this BUG will happen here.
 
-Perry Yuan (12):
-  x86/msr: Add the MSR definition for AMD CPPC hardware control.
-  cpufreq: amd-pstate: enable AMD Precision Boost mode switch
-  cpufreq: amd-pstate: cleanup the unused and duplicated headers
-    declaration
-  cpufreq: amd-pstate: prefetch cppc_req_cached value in
-    amd_pstate_cpu_init()
-  cpufreq: amd-pstate: simplify cpudata pointer assignment
-  cpufreq: amd_pstate: fix wrong lowest perf fetch
-  cpufreq: amd_pstate: map desired perf into pstate scope for powersave
-    governor
-  cpufreq: amd-pstate: fix white-space
-  cpufreq: amd-pstate: update pstate frequency transition delay time
-  cpufreq: cpufreq: export cpufreq cpu release and acquire
-  cpufreq: amd-pstate: add ACPI disabled check
-  cpufreq: amd_pstate: update transition delay time to 1ms
+With the system running on PREEMPT_RT, rt_spin_lock will disable
+migration, this will make the problem easier to reproduce.
 
- arch/x86/include/asm/msr-index.h |  3 ++
- drivers/acpi/cppc_acpi.c         |  3 ++
- drivers/cpufreq/amd-pstate.c     | 57 +++++++++++++++++++-------------
- drivers/cpufreq/cpufreq.c        |  2 ++
- 4 files changed, 42 insertions(+), 23 deletions(-)
+I have seen this crash on PREEMPT_RT, from the logs, there is a race
+when trying to migrate higher priority tasks to the lowest rq.
 
+Please refer to the following scenarios.
+
+           CPU0                                  CPU1
+------------------------------------------------------------------
+push_rt_task
+  check is_migration_disabled(next_task)
+                                        task not running and
+                                        migration_disabled == 0
+  find_lock_lowest_rq(next_task, rq);
+    _double_lock_balance(this_rq, busiest);
+      raw_spin_rq_unlock(this_rq);
+      double_rq_lock(this_rq, busiest);
+        <<wait for busiest rq>>
+                                            <wakeup>
+                                        task become running
+                                        migrate_disable();
+                                          <context out>
+  deactivate_task(rq, next_task, 0);
+  set_task_cpu(next_task, lowest_rq->cpu);
+    WARN_ON_ONCE(is_migration_disabled(p));
+      ---------OOPS-------------
+
+Crash logs as fellowing:
+[123671.996430] WARNING: CPU: 2 PID: 13470 at kernel/sched/core.c:2485
+set_task_cpu+0x8c/0x108
+[123671.996800] pstate: 20400009 (nzCv daif +PAN -UAO -TCO BTYPE=--)
+[123671.996811] pc : set_task_cpu+0x8c/0x108
+[123671.996820] lr : set_task_cpu+0x7c/0x108
+[123671.996828] sp : ffff80001268bd30
+[123671.996832] pmr_save: 00000060
+[123671.996835] x29: ffff80001268bd30 x28: ffff0001a3d68e80
+[123671.996844] x27: ffff80001225f4a8 x26: ffff800010ab62cb
+[123671.996854] x25: ffff80026d95e000 x24: 0000000000000005
+[123671.996864] x23: ffff00019746c1b0 x22: 0000000000000000
+[123671.996873] x21: ffff00027ee33a80 x20: 0000000000000000
+[123671.996882] x19: ffff00019746ba00 x18: 0000000000000000
+[123671.996890] x17: 0000000000000000 x16: 0000000000000000
+[123671.996899] x15: 000000000000000a x14: 000000000000349e
+[123671.996908] x13: ffff800012f4503d x12: 0000000000000001
+[123671.996916] x11: 0000000000000000 x10: 0000000000000000
+[123671.996925] x9 : 00000000000c0000 x8 : ffff00027ee58700
+[123671.996933] x7 : ffff00027ee8da80 x6 : ffff00027ee8e580
+[123671.996942] x5 : ffff00027ee8dcc0 x4 : 0000000000000005
+[123671.996951] x3 : ffff00027ee8e338 x2 : 0000000000000000
+[123671.996959] x1 : 00000000000000ff x0 : 0000000000000002
+[123671.996969] Call trace:
+[123671.996975]  set_task_cpu+0x8c/0x108
+[123671.996984]  push_rt_task.part.0+0x144/0x184
+[123671.996995]  push_rt_tasks+0x28/0x3c
+[123671.997002]  task_woken_rt+0x58/0x68
+[123671.997009]  ttwu_do_wakeup+0x5c/0xd0
+[123671.997019]  ttwu_do_activate+0xc0/0xd4
+[123671.997028]  try_to_wake_up+0x244/0x288
+[123671.997036]  wake_up_process+0x18/0x24
+[123671.997045]  __irq_wake_thread+0x64/0x80
+[123671.997056]  __handle_irq_event_percpu+0x110/0x124
+[123671.997064]  handle_irq_event_percpu+0x50/0xac
+[123671.997072]  handle_irq_event+0x84/0xfc
+
+To fix it, we need to check migration_disabled flag again and retry
+to retry to push the current running task on this CPU away.
+
+Fixes: 95158a89dd50 ("sched,rt: Use the full cpumask for balancing")
+
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+
+--
+
+Changelog:
+v1 -> v2:
+        - Modify commit message to add fixed commit information.
+        - Going to retry to push the current running task on this CPU
+          away, instead doing nothing for this migrate disabled task.
+v2 -> v3:
+        - Change migration disabled check to the correct position
+---
+ kernel/sched/core.c |  6 ++++++
+ kernel/sched/rt.c   | 11 +++++++++++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index da0bf6fe9ecdc..3003baa28d2d8 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2512,6 +2512,11 @@ int push_cpu_stop(void *arg)
+ 	if (!lowest_rq)
+ 		goto out_unlock;
+ 
++	if (unlikely(is_migration_disabled(p))) {
++		p->migration_flags |= MDF_PUSH;
++		goto out_double_unlock;
++	}
++
+ 	// XXX validate p is still the highest prio task
+ 	if (task_rq(p) == rq) {
+ 		deactivate_task(rq, p, 0);
+@@ -2520,6 +2525,7 @@ int push_cpu_stop(void *arg)
+ 		resched_curr(lowest_rq);
+ 	}
+ 
++out_double_unlock:
+ 	double_unlock_balance(rq, lowest_rq);
+ 
+ out_unlock:
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 8c9ed96648409..7948c9cfb472d 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -2153,6 +2153,17 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		goto retry;
+ 	}
+ 
++	/*
++	 * It is possible the task has running for a while, we need to check
++	 * task migration disable flag again. If task migration is disabled,
++	 * the retry code will retry to push the current running task on this
++	 * CPU away.
++	 */
++	if (unlikely(is_migration_disabled(next_task))) {
++		put_task_struct(next_task);
++		goto retry;
++	}
++
+ 	deactivate_task(rq, next_task, 0);
+ 	set_task_cpu(next_task, lowest_rq->cpu);
+ 	activate_task(lowest_rq, next_task, 0);
 -- 
-2.25.1
+2.37.0
 
