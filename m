@@ -2,86 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899AFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236073AbiGGRxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 13:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
+        id S235948AbiGGR67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 13:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235636AbiGGRxd (ORCPT
+        with ESMTP id S235807AbiGGR6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 13:53:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD48213D2E
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 10:53:32 -0700 (PDT)
+        Thu, 7 Jul 2022 13:58:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C127E240AD;
+        Thu,  7 Jul 2022 10:58:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5662F620B7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 17:53:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93487C3411E;
-        Thu,  7 Jul 2022 17:53:30 +0000 (UTC)
-Date:   Thu, 7 Jul 2022 13:53:29 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] sched/rt: fix bad task migration for rt tasks
-Message-ID: <20220707135329.08cf74b0@gandalf.local.home>
-In-Reply-To: <20220707165014.77127-1-schspa@gmail.com>
-References: <20220707165014.77127-1-schspa@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1336B82299;
+        Thu,  7 Jul 2022 17:58:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D59E9C3411E;
+        Thu,  7 Jul 2022 17:58:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657216727;
+        bh=iL3xIVjNybuWSiJjZ22VYxa1SB6+T14cOhJZN7GXylI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LDQrMLNrzJ6N5uQHsqODYBfAgEIQ1w+ISzrC5bbPvDpbr2SISXO3U+dJkEYXLD9NI
+         XePnOs2Zx7ktshBV61vIp6UjBVtCr4FRvRJEwIDt+yLsC6nOQxgNGBLqp8MBLnCQHC
+         EmNXV/y2HBtC+S64KN8I97tX+RoapjOxA1jU5layGe7ejrTCiXIjsp6bDAZm5IFmrx
+         tkoJKWxC/gfjGH/gGL+uAg/hb5pE488qNrC3VuV8AE+SivhrvRXbYCmCgifSTO/TEX
+         XGONNh3hPdOJM+3i/UJhczZgbt8Xgeuo9EkFSfphoDEXVCNYbg95xUqVA1EIJ1e3JE
+         TfXjIBUtptDOg==
+Date:   Thu, 7 Jul 2022 10:58:45 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] net: rxrpc: fix clang -Wformat warning
+Message-ID: <Ysce1Xur72MYp0/d@dev-arch.thelio-3990X>
+References: <20220706235648.594609-1-justinstitt@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706235648.594609-1-justinstitt@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri,  8 Jul 2022 00:50:14 +0800
-Schspa Shi <schspa@gmail.com> wrote:
+Hi Justin,
 
-> Please refer to the following scenarios.
-
-I'm not sure this is what is happening. Do you have a trace to back this up?
-
+On Wed, Jul 06, 2022 at 04:56:48PM -0700, Justin Stitt wrote:
+> When building with Clang we encounter this warning:
+> | net/rxrpc/rxkad.c:434:33: error: format specifies type 'unsigned short'
+> | but the argument has type 'u32' (aka 'unsigned int') [-Werror,-Wformat]
+> | _leave(" = %d [set %hx]", ret, y);
 > 
->            CPU0                                  CPU1
-> ------------------------------------------------------------------
-> push_rt_task
->   check is_migration_disabled(next_task)
->                                         task not running and
->                                         migration_disabled == 0
->   find_lock_lowest_rq(next_task, rq);
->     _double_lock_balance(this_rq, busiest);
->       raw_spin_rq_unlock(this_rq);
->       double_rq_lock(this_rq, busiest);
->         <<wait for busiest rq>>
->                                             <wakeup>
+> y is a u32 but the format specifier is `%hx`. Going from unsigned int to
+> short int results in a loss of data. This is surely not intended
+> behavior. If it is intended, the warning should be suppressed through
+> other means.
+> 
+> This patch should get us closer to the goal of enabling the -Wformat
+> flag for Clang builds.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> Signed-off-by: Justin Stitt <justinstitt@google.com>
+> ---
+>  net/rxrpc/rxkad.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
+> index 08aab5c01437..aa180464ec37 100644
+> --- a/net/rxrpc/rxkad.c
+> +++ b/net/rxrpc/rxkad.c
+> @@ -431,7 +431,7 @@ static int rxkad_secure_packet(struct rxrpc_call *call,
+>  		break;
+>  	}
+>  
+> -	_leave(" = %d [set %hx]", ret, y);
+> +	_leave(" = %d [set %u]", ret, y);
 
-Here's the problem I have. next_task is queued on CPU0, (otherwise CPU0
-would not be pushing it). As CPU0 is currently running push_rt_task, how
-did next_task start running to set its migrate_disable flag?
+Should this just become %x to keep printing it as a hexidecimal number?
 
-Even if it was woken up on another CPU and ran there, by setting
-migrate_disable, it would not be put back to CPU0, because its
-migrate_disable flag is set (if it is, then there's the bug).
+Cheers,
+Nathan
 
-After releasing the rq lock and retaking it, we check that the next_task is
-still the next task on CPU0 to push.
-
-
->                                         task become running
->                                         migrate_disable();
->                                           <context out>
->   deactivate_task(rq, next_task, 0);
->   set_task_cpu(next_task, lowest_rq->cpu);
->     WARN_ON_ONCE(is_migration_disabled(p));
->       ---------OOPS-------------
-
-I don't see how this can happen.
-
--- Steve
+>  	return ret;
+>  }
+>  
+> -- 
+> 2.37.0.rc0.161.g10f37bed90-goog
+> 
