@@ -2,75 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234982AbiGGDAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 23:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60446 "EHLO
+        id S234993AbiGGDAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 23:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234895AbiGGDAR (ORCPT
+        with ESMTP id S234906AbiGGDAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 23:00:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648382FFC4;
-        Wed,  6 Jul 2022 20:00:16 -0700 (PDT)
+        Wed, 6 Jul 2022 23:00:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3692F3BF;
+        Wed,  6 Jul 2022 20:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5B5C62162;
-        Thu,  7 Jul 2022 03:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 12327C341D2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B368DB81FF1;
+        Thu,  7 Jul 2022 03:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 144EEC341D4;
         Thu,  7 Jul 2022 03:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657162815;
-        bh=eQg95j9MS8oSrF+FZix091yuv4/xQ7WMtBdaRKbDzXY=;
+        bh=i48NrE/vFNFSuqXPKlsGMWYna9TAb9tFN3I8/qt+QcU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ke7l0Kv8+4CE63vq9BphytQ61Yqjj2/2+DiAXkLc3AZ3HDk3NcpN4jfG4Eva07L3q
-         VN193mKLwp8ngETbp07HWChhQV3+nHzhKen6bA4WJNbgaIbutmlPoPE8ncqyAFmOv6
-         Q21eeW/mjGpzOxvpwq3/vkxkuZ+Zbh5nSpXcab6/9baW+ikoF1oW23sJv21qo0zXVb
-         m/ZikDsSQ+QUb7w7iddwIqcaWyGnvYtQdBYlfgp6mK8f5wxZmrcvEVceHh3RJeKLuM
-         v5B+8Jq0RGkMi4ZNhI/lF03354QZ10YE3p15tccSxaXsg0Mso2438TWH0C8HOW4PPv
-         wqVfYfqxxUbJA==
+        b=BDtSXzYvWFM9aYhF/+tWuSfrJPX2LboOM9P11f24OmrWS2CWFTgfKL0WGjhHXD53N
+         uLMzxGdy4eg6tj9qk0ekCoEzlYbjrpt7HdDq/Ygmd6F8gTB8jU//3A2Nnp29EQei2a
+         Sq/tJnjkFxFVnVyou8495Yxziwfb1gP6vk4+N2sYpdLtyNrMHo1TlSEZVJsjQObanr
+         bjKgaejSBI8fa4+xHO5paE6T4pbAfxQtqiIWRNzmIrvPShcXJG2NgHl51sjUJTWXo/
+         0kuXFvJCGoAob3tRZN31AaFbeOCn6TJd6gYwGX2PgCGaXj8D+bgSr4SNy672Xvfadl
+         wKVjttG7kB6qg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EDDBBE45BE1;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E6552E45BE2;
         Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] sfc/siena: Use the bitmap API to allocate bitmaps
+Subject: Re: [PATCH 1/2] qed: Use the bitmap API to allocate bitmaps
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165716281497.11165.11472596147049333164.git-patchwork-notify@kernel.org>
+Message-Id: <165716281494.11165.14076578722724177412.git-patchwork-notify@kernel.org>
 Date:   Thu, 07 Jul 2022 03:00:14 +0000
-References: <717ba530215f4d7ce9fedcc73d98dba1f70d7f71.1657049636.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <717ba530215f4d7ce9fedcc73d98dba1f70d7f71.1657049636.git.christophe.jaillet@wanadoo.fr>
+References: <d61ec77ce0b92f7539c6a144106139f8d737ec29.1657053343.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <d61ec77ce0b92f7539c6a144106139f8d737ec29.1657053343.git.christophe.jaillet@wanadoo.fr>
 To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+Cc:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  5 Jul 2022 21:34:08 +0200 you wrote:
+On Tue,  5 Jul 2022 22:36:16 +0200 you wrote:
 > Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 > 
 > It is less verbose and it improves the semantic.
 > 
 > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
->  drivers/net/ethernet/sfc/siena/farch.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  drivers/net/ethernet/qlogic/qed/qed_rdma.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 
 Here is the summary with links:
-  - sfc/siena: Use the bitmap API to allocate bitmaps
-    https://git.kernel.org/netdev/net-next/c/820aceb53c75
+  - [1/2] qed: Use the bitmap API to allocate bitmaps
+    https://git.kernel.org/netdev/net-next/c/291dbea16c71
+  - [2/2] qed: Use bitmap_empty()
+    https://git.kernel.org/netdev/net-next/c/7ed5f2454acf
 
 You are awesome, thank you!
 -- 
