@@ -2,96 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E49E2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B529CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236561AbiGGSzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
+        id S236579AbiGGS5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236355AbiGGSzv (ORCPT
+        with ESMTP id S236357AbiGGS5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:55:51 -0400
-Received: from ewsoutbound.kpnmail.nl (ewsoutbound.kpnmail.nl [195.121.94.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2412B630
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:55:49 -0700 (PDT)
-X-KPN-MessageId: a57e30ab-fe25-11ec-8ee3-005056992ed3
-Received: from smtp.kpnmail.nl (unknown [10.31.155.7])
-        by ewsoutbound.so.kpn.org (Halon) with ESMTPS
-        id a57e30ab-fe25-11ec-8ee3-005056992ed3;
-        Thu, 07 Jul 2022 20:50:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kpnmail.nl; s=kpnmail01;
-        h=mime-version:message-id:date:subject:to:from;
-        bh=MGz8SrgGh5/hCflKLJeJ+jAX4G1tQH6YpgJmkmIE+nw=;
-        b=itT0+T0YCiVzm54Bfoh+ODsU+3bm5N4I20lJgwqKalFNXpCLG+ljr9vonvNUWkD9PLYAN0cf2XdIt
-         lMEoLfIuXKyfobK3hv4P/o7z8NrvOyhhwjs9mPtDiUOuGtP3isT5RcIdkw4YEyEpDP/mzUtNKPbO9N
-         0pXjYnfJGln0iUX0=
-X-KPN-MID: 33|lBCj8tP3hSBtrfO5Tokf0TYKY+xl1N9saTTr9uJ3VHzpxCLYRJlHmQZ23abroOJ
- kw3pIsu4nbusocAEv7SPmG4MtyMrol/abn3ppE+HwaA4=
-X-KPN-VerifiedSender: No
-X-CMASSUN: 33|cqXLFDEyk0g+mW407f2sKvaVuzLvoBkAk/A9yYS7N3NZp30e/6G1pTZP6M8b3LY
- iRZajsG+2gpSiY+FYCW0JLg==
-X-Originating-IP: 80.61.163.207
-Received: from copland.sibelius.xs4all.nl (80-61-163-207.fixed.kpn.net [80.61.163.207])
-        by smtp.xs4all.nl (Halon) with ESMTPSA
-        id 6c789f36-fe26-11ec-8bc8-005056998788;
-        Thu, 07 Jul 2022 20:55:52 +0200 (CEST)
-From:   Mark Kettenis <kettenis@openbsd.org>
-To:     Conor Dooley <mail@conchuod.ie>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Emil Renner Berthing <kernel@esmil.dk>
-Cc:     Mark Kettenis <kettenis@openbsd.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] riscv: dts: starfive: correct number of external interrupts
-Date:   Thu,  7 Jul 2022 20:55:28 +0200
-Message-Id: <20220707185529.19509-1-kettenis@openbsd.org>
-X-Mailer: git-send-email 2.36.1
+        Thu, 7 Jul 2022 14:57:00 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE442B630;
+        Thu,  7 Jul 2022 11:57:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657220220; x=1688756220;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kHqtFBMY6Tn6eM/gP2+igQSJe/Rgt1sUEEGEuK+ZNpA=;
+  b=OlIg0/mil2xVN2WaFZqS9tdfb8J5cnJxObWupARAsrm7v39mz9YSeHCn
+   BHxT7I8bk7jgqfXzj39F5R8qLFVm9uDbciB6clkQyV/C+iqLkhCrHMZN3
+   kNhcXnBbLT/PRTXzv+zRGNyjM+UmxDS9ib2V0Vr5gEsYJZLprkrALyRsA
+   eMCUkVMTmFyoRBLq6NP2627UQ+amOmadRSRIdnShzPBCk7UiY+lBtkEKY
+   miJkxXonu0m6Xd6CYvQyggbKLv1VisXWeKh9GhB+88H/irSwgkGJhXjRk
+   +pLoDprxOUloA/9Quj6zXouRz9L/wWB1j+Orn/Zg0Hy9L4SHHmoJy/Tns
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="370415396"
+X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
+   d="scan'208";a="370415396"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 11:56:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
+   d="scan'208";a="736072664"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Jul 2022 11:56:57 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9WgL-000MKq-8P;
+        Thu, 07 Jul 2022 18:56:57 +0000
+Date:   Fri, 8 Jul 2022 02:56:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Atif Ofluoglu <Atif.Ofluoglu@analog.com>, linux@roeck-us.net
+Cc:     kbuild-all@lists.01.org, jdelvare@suse.com,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Atif Ofluoglu <atif.ofluoglu@analog.com>
+Subject: Re: [PATCH 1/2] hwmon: (pmbus/max20754) Add support for MAX20754
+Message-ID: <202207080255.fBmFH9Ry-lkp@intel.com>
+References: <3659043f92b0ca9e538679e00f7dcc214525ff2e.1657204859.git.atif.ofluoglu@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3659043f92b0ca9e538679e00f7dcc214525ff2e.1657204859.git.atif.ofluoglu@analog.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PLIC integrated on the Vic_U7_Core integrated on the StarFive
-JH7100 SoC actually supports 133 external interrupts.  127 of these
-are exposed to the outside world; the remainder are used by other
-devices that are part of the core-complex such as the L2 cache
-controller.  But all 133 interrupts are external interrupts as far
-as the PLIC is concerned.  Fix the property so that the driver can
-manage these additional interrupts, which is important since the
-interrupts for the L2 cache controller are enabled by default.
+Hi Atif,
 
-Fixes: ec85362fb121 ("RISC-V: Add initial StarFive JH7100 device tree")
-Signed-off-by: Mark Kettenis <kettenis@openbsd.org>
----
+Thank you for the patch! Yet something to improve:
 
-ChangeLog:
+[auto build test ERROR on groeck-staging/hwmon-next]
+[also build test ERROR on linus/master v5.19-rc5 next-20220707]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-v2: - Fix commit message
+url:    https://github.com/intel-lab-lkp/linux/commits/Atif-Ofluoglu/Adding-MAX20754-support/20220707-233249
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-next
+config: arc-randconfig-r043-20220707 (https://download.01.org/0day-ci/archive/20220708/202207080255.fBmFH9Ry-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/52ef0855bc74f95cd6c170b5475a3e957d7e1028
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Atif-Ofluoglu/Adding-MAX20754-support/20220707-233249
+        git checkout 52ef0855bc74f95cd6c170b5475a3e957d7e1028
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/hwmon/pmbus/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/hwmon/pmbus/max20754.c:381:19: error: 'pmbus_do_remove' undeclared here (not in a function); did you mean 'pmbus_do_probe'?
+     381 |         .remove = pmbus_do_remove,
+         |                   ^~~~~~~~~~~~~~~
+         |                   pmbus_do_probe
 
 
- arch/riscv/boot/dts/starfive/jh7100.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+vim +381 drivers/hwmon/pmbus/max20754.c
 
-diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi b/arch/riscv/boot/dts/starfive/jh7100.dtsi
-index 69f22f9aad9d..f48e232a72a7 100644
---- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
-+++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
-@@ -118,7 +118,7 @@ plic: interrupt-controller@c000000 {
- 			interrupt-controller;
- 			#address-cells = <0>;
- 			#interrupt-cells = <1>;
--			riscv,ndev = <127>;
-+			riscv,ndev = <133>;
- 		};
- 
- 		clkgen: clock-controller@11800000 {
+   375	
+   376	static struct i2c_driver max20754_driver = {
+   377		.driver = {
+   378			   .name = "max20754",
+   379			   },
+   380		.probe_new = max20754_probe,
+ > 381		.remove = pmbus_do_remove,
+   382		.id_table = max20754_id,
+   383	};
+   384	
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
