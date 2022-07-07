@@ -2,110 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5235CCCA483
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 249E8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235503AbiGGO7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
+        id S236398AbiGGO7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236746AbiGGO6T (ORCPT
+        with ESMTP id S235292AbiGGO6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:58:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6CB23C32
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:57:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657205868;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BPPyfbm7cP61/jDVpNfbjlUmaFCLU4YcNzeyYG8WmXc=;
-        b=dBXBk+Df5Pj5p9vcoHut1p1ZjxXRc/8OnZzY1jwPeKahGX59HI/vT+unF7GRzTWeHVVh/E
-        oxm+PFujqoznfgYyF4rONJhpXMUj582AAosA1ugTk6Dv3Ln8RyT30z0gi25Sn4Uq1xgnPl
-        fMs4xlXlTvNad9fFSNCdi9v7HN8ID9w=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-606-K19ejAFcN4mbz_bQygF27Q-1; Thu, 07 Jul 2022 10:57:47 -0400
-X-MC-Unique: K19ejAFcN4mbz_bQygF27Q-1
-Received: by mail-wm1-f70.google.com with SMTP id v8-20020a05600c214800b003a1819451b1so9663273wml.7
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 07:57:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=BPPyfbm7cP61/jDVpNfbjlUmaFCLU4YcNzeyYG8WmXc=;
-        b=a8U8e+5UvxsrFVlsPS+dg4ezc4iipzJy+hlj7586KH6Qa9lwoGNXXYcghwLTY9fnaa
-         4mn6sMbEeRg5e0z/tH8KObZhhxJnTbLBoDcrYXKtfJu83JJ8QMjmMEs4meYgXmdd2jFB
-         u51Xbv51fPYKCJrR7VMI6LofJWQyOeJAQgbXueNSY3U1N0+t8nyTOOj00r1HvUuu1+jZ
-         TiLiAzch4LDenLTZu5hHbmSSi0ave3OSaV+TEiHEzIgckra6kyJAslz1XiukqAYQLW7M
-         o4bVVhlkfeKOIm0xUj991IvUCQvIEqj/XOWoL24uKhuEtb5FM1pEYLf/BK004/fzqeB3
-         AqYg==
-X-Gm-Message-State: AJIora+BuXR9yj6490PqoVitJWTW2dnRmskgYx0bTws3bx9WSJqU0hyq
-        pjb7YKDR6KWISUDkMha0c1WZvpCuuUYeOJJ4IXdGexAZCLkmK2OXUc7usSC18swf0GTfWvAxRAk
-        sjXklOil9Q8MZRaUb19As9z7dtaf71QLOjwZbLiUa9D92/BHagr55Ww1OrVLK95GYdoRyzbyF4m
-        CW
-X-Received: by 2002:a05:600c:3511:b0:3a1:9992:f72f with SMTP id h17-20020a05600c351100b003a19992f72fmr5166870wmq.164.1657205866263;
-        Thu, 07 Jul 2022 07:57:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u0/E4oQnfuVVwr2Quhckj80YkdpdC1DUvgHP9mLEG3FQiLuZoO9arVkl3lDbI9tW7XUnCGwg==
-X-Received: by 2002:a05:600c:3511:b0:3a1:9992:f72f with SMTP id h17-20020a05600c351100b003a19992f72fmr5166839wmq.164.1657205866008;
-        Thu, 07 Jul 2022 07:57:46 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id y8-20020adfee08000000b0021d6e49e4ebsm9673078wrn.10.2022.07.07.07.57.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 07:57:45 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 22/28] KVM: VMX: Clear controls obsoleted by EPT at
- runtime, not setup
-In-Reply-To: <CALMp9eRA0v6BK6KG81ZE_iLKF6VNXxemN=E4gAE4AM-V4gkdHQ@mail.gmail.com>
-References: <20220629150625.238286-1-vkuznets@redhat.com>
- <20220629150625.238286-23-vkuznets@redhat.com>
- <CALMp9eRA0v6BK6KG81ZE_iLKF6VNXxemN=E4gAE4AM-V4gkdHQ@mail.gmail.com>
-Date:   Thu, 07 Jul 2022 16:57:44 +0200
-Message-ID: <87wncpotqv.fsf@redhat.com>
+        Thu, 7 Jul 2022 10:58:24 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2057.outbound.protection.outlook.com [40.107.244.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454B7564F0;
+        Thu,  7 Jul 2022 07:57:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j8JoHqyH/4wN4bsl9KR8t2Iph8KdqvOi4LG+sH7MSXnU0ZaBy2BsU5ZoDEsbA9Y30cjtSQHffYhAxXWqrEsgdNL/euNO9cYwT0J6CzNsMAGwhAbgissQC+EsiWJC5RXisgrewwUtU/6BS5HjRzGZElH8K+6RuBTt0nBscPeTcIAr8QYVJtdghqhMs0Y2HbAfrBzeJH452cGpeb0ucQpDmeDJr0QTiukk07mJ2D7vA5J5ZExQhzFFSaXHGvYyHsrrZDt3oAKM0SiOFZA1jwVwI3/n/MEe8RYE3x11HzXu7wBlTaPIEQfqru0H+EFTSvKkOrQ/MpV32FM4k0uOZPB6Ug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ksKAQuV2Ap3SOQbtAa7geciJy15Si/B42n/BPU0MkOM=;
+ b=OUQtPJRf7UCEC/OB8TLRSVTSMW0RzhGyiU1JlJFrtY1xaeeOPFFZ9A7fs0qbNdhvC3tcJu582sNqjmh6gxgmR+PcT2ezk/fnA/ME0qQ2mAKiEyEhWCiP7d7rTg2ttRQ4+ooI+ljGypVu8JNYq+9mTEt+UL3TjlRExV+gMtZfbZ6Kb0wbFnEVYZtcZSQ5OH76CsUeDqkHhckOebslw05C3sDfhpH+Qo/D569Nb1iopO9aL7Vh4O2Vu+y872qD2mbp8u3JEDVKHdoYSlZOy5K/bASAHx1Wd76qYr/Ekk9WaZRkrhpmSa67wCXwsj27SeFaH4gqCry1U43r3CkucBjPyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ksKAQuV2Ap3SOQbtAa7geciJy15Si/B42n/BPU0MkOM=;
+ b=Rh6eM9IINixvwFG5j8tu00TpioozU8mjQtxtnlzDJclYpPtU/Pn92Tm71MkWcLmvH7b2FU5myEYnXCZK5aZwXSZmipIfi24Nj+ffN55Nkrcn1ChRAuM8ZJ7Vd00/TfVJXKc5WJQSyvUrXm7eEjGbQPMniJXd7iF/2KtIQoukuAruG2gWlWhVujUlQXO9P08xMdejN4O/Jo9E3ZIE24fWbyVZkms3xXUWQRP8HOSIKAVzMWRm9rySPwFdeynMMA4F5UX33meqMj3u3N2deBB5Xfl4W1I+2Mm4vpzFjy0/K6S15U2Ob/Fk7elhm7C4q7l6OW97N940EPJcGL8RheLnYA==
+Received: from DS7PR06CA0032.namprd06.prod.outlook.com (2603:10b6:8:54::17) by
+ MWHPR12MB1711.namprd12.prod.outlook.com (2603:10b6:300:10a::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Thu, 7 Jul
+ 2022 14:57:54 +0000
+Received: from DM6NAM11FT008.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:54:cafe::a9) by DS7PR06CA0032.outlook.office365.com
+ (2603:10b6:8:54::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.17 via Frontend
+ Transport; Thu, 7 Jul 2022 14:57:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT008.mail.protection.outlook.com (10.13.172.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 14:57:53 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 7 Jul
+ 2022 14:57:53 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 7 Jul 2022
+ 07:57:52 -0700
+Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server id 15.2.986.26 via Frontend
+ Transport; Thu, 7 Jul 2022 07:57:49 -0700
+From:   Akhil R <akhilrajeev@nvidia.com>
+To:     <dmaengine@vger.kernel.org>, <jonathanh@nvidia.com>,
+        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
+        <thierry.reding@gmail.com>, <vkoul@kernel.org>,
+        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+CC:     <akhilrajeev@nvidia.com>
+Subject: [PATCH v2 1/3] dt-bindings: dmaengine: Add compatible for Tegra234
+Date:   Thu, 7 Jul 2022 20:27:27 +0530
+Message-ID: <20220707145729.41876-2-akhilrajeev@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220707145729.41876-1-akhilrajeev@nvidia.com>
+References: <20220707145729.41876-1-akhilrajeev@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ac39e963-6ab2-445b-366a-08da602911fc
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1711:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sTj25w1HQhYFjjFv7qdSMzrTDgAtLhVpNV6IK8O+ihMnjWMMJX7dAcB0qjifu3FaR0rwS3CZpgVRH8800vLPffNA1P7OpgcbI5ciQlk5hCKOsqRGxSKdNu8Gy2Ko9YrUUrMuf/oLpvQvUuIRm4q9GNn7T52a54LOWcTsrcHSbpw5MxcW5tW/0LltgiA6OlQxnPGPrKjcVj0unz5yJB+GnOWKMPp9OSj/iL63YIniZVmG2eR01E9TKHgnagaxaD06KQpjxOE3uBSmaG1dtJQMyO+pz5dIIGQBizPFySb8VIivXtJmQhiM/3r+Snfsr3BNjTFW9iUzxklmAAFY9n+CIkTxLVoB+OVQgz/zGR+OkQdnvQYBoBIqyI4mNkh4KM3No1iqVoSvxVXynUhPQ1NSQDNhhR6Bpw4kgeplbV7zDkf8jb5wt1w43SfVfzwS6wAi1i33uEQ2O8wG1fgjbTThJ4mseDlcTLJmi1A+ADBZj3mfLs3L9/ATtv+Ifuj9tlpsn8u3IVkDce/xbhrBM3V7Rw1jTwtP53lw39TQtlhXyX2eqdMYYyILnaiLuHusSnZNAFP/+Jz0UT5g0zewybs1mKVkfCOgCmwPhsxQfWv75vL12/gOOhi0e92CN9m3mA2o+xy9mXp7nYbc9ly8fm4BQJbyeeDxGbvRQ50jyX4Prjsh4w1+e+YazUReWrSj3h7G/IJj7PHAEopkz9iWCUSvfQWtytKNWmyBPIrkU5oZMFFDYlyUyCMnEwy+KG1xETXF+JpcX2KymTAOPmtckjQISRt0yTEZqSWyjTKltdMzDIpq+N9NcVwcEqN0n66VnQDXVeQyi/M0rMyE0MzKiNSRvteI2veGSvXu4J8CrI98Aw9FaJxfJR6XsmmZhkUx01q15iAhWWnIX9sZQgSArhlEgelree6hk4sQCrKA6c54F14=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(39860400002)(396003)(36840700001)(46966006)(40470700004)(110136005)(81166007)(70586007)(70206006)(86362001)(478600001)(36756003)(426003)(6666004)(336012)(47076005)(356005)(921005)(7696005)(41300700001)(107886003)(8676002)(316002)(4326008)(186003)(2616005)(1076003)(26005)(82310400005)(2906002)(40480700001)(5660300002)(8936002)(4744005)(40460700003)(82740400003)(36860700001)(36900700001)(2101003)(83996005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:57:53.6763
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ac39e963-6ab2-445b-366a-08da602911fc
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT008.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1711
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jim Mattson <jmattson@google.com> writes:
+Document the compatible string used by GPCDMA controller for Tegra234.
 
-> On Wed, Jun 29, 2022 at 8:07 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
->>
->> From: Sean Christopherson <seanjc@google.com>
->>
->> Clear the CR3 and INVLPG interception controls at runtime based on
->> whether or not EPT is being _used_, as opposed to clearing the bits at
->> setup if EPT is _supported_ in hardware, and then restoring them when EPT
->> is not used.  Not mucking with the base config will allow using the base
->> config as the starting point for emulating the VMX capability MSRs.
->>
->> Signed-off-by: Sean Christopherson <seanjc@google.com>
->> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Nit: These controls aren't "obsoleted" by EPT; they're just no longer
-> required.
+Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+---
+ .../devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml         | 1 +
+ 1 file changed, 1 insertion(+)
 
-Sean,
-
-I'm going to update the subject line to "KVM: VMX: Clear controls
-unneded with EPT at runtime, not setup" retaining your authorship in v3
-(if there are no objections, of course).
-
->
-> Reviewed-by: Jim Mattson <jmattson@google.com>
->
-
-Thanks!
-
+diff --git a/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml b/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
+index 9dd1476d1849..81f3badbc8ec 100644
+--- a/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
++++ b/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
+@@ -23,6 +23,7 @@ properties:
+     oneOf:
+       - const: nvidia,tegra186-gpcdma
+       - items:
++          - const: nvidia,tegra234-gpcdma
+           - const: nvidia,tegra194-gpcdma
+           - const: nvidia,tegra186-gpcdma
+ 
 -- 
-Vitaly
+2.17.1
 
