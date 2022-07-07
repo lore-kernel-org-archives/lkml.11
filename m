@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19781C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EE0CCA483
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236728AbiGGV6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 17:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
+        id S236875AbiGGV6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 17:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236233AbiGGV6W (ORCPT
+        with ESMTP id S236810AbiGGV6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 17:58:22 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB7F5A47D;
-        Thu,  7 Jul 2022 14:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657231101; x=1688767101;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=5/T7qOJPEL0MkmUxuGXLljoqiSl5+J7fMt/QUylbKvY=;
-  b=fjckSr78XiFRo5QSjL6t3Ht8AK+LAwQ1kViul7l5bWfBHOhVtVwfSFAR
-   fpAxInOt3p8kHWkCRaBZ4wVLIhCxLrXsR0A4rqefScUUKaAxDFJajhaUQ
-   iXttc8vHOKOmR4KVwR/Xic+4Tjxi7B9gsVvxumraYE6p/CpiGmfnV55bY
-   o/biSeRrELs8cpw8qe+XrkIgQK+bX+A1Kblt6Vr8e/CMXkZTc8FfI7OCd
-   KV0qOQgOa7YE2kVCwE6eBW0HZv0Tq+7KmpLNy80jerh3fgQnwpcO4woVh
-   EpadxnhzJkYUV+9AiiRUtbXVPlZgjps2mbJl2tvrT/j/KSpb6fRHYsbnG
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="103554639"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jul 2022 14:58:20 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 7 Jul 2022 14:58:19 -0700
-Received: from ryan-Precision-5560.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 7 Jul 2022 14:58:19 -0700
-From:   <Ryan.Wanner@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Ryan Wanner <Ryan.Wanner@microchip.com>
-Subject: [PATCH v3] ARM: dts: at91: sama5d2: Fix typo in i2s1 node
-Date:   Thu, 7 Jul 2022 14:58:12 -0700
-Message-ID: <20220707215812.193008-1-Ryan.Wanner@microchip.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 7 Jul 2022 17:58:33 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8B2C1E3D7;
+        Thu,  7 Jul 2022 14:58:32 -0700 (PDT)
+Received: from localhost.localdomain (unknown [98.59.227.103])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 39EB52044E3A;
+        Thu,  7 Jul 2022 14:58:32 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 39EB52044E3A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1657231112;
+        bh=2Ap9b42+7PS01tMomF0UoTpbPfyX7eb8WdCg4A5a8S0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bGpxt66uQtd1VhAvn5csr2ozPYzS0YfJpTagNp2yUMxoH5Z6FmQy9uIONqDtoYNnF
+         W7HOLIKFYPhSr+faQMGJiYbAFauPw9/vFIisWJ4iMtEK5DodUcRJiLt3b84vuwQ8jK
+         9AlxpoPcEwEZpyOAgFGFWz/UKWfE/btp4oraSFvs=
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     rostedt@goodmis.org, mhiramat@kernel.org,
+        mathieu.desnoyers@efficios.com
+Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 1/7] tracing/user_events: Remove BROKEN and restore user_events.h location
+Date:   Thu,  7 Jul 2022 14:58:22 -0700
+Message-Id: <20220707215828.2021-2-beaub@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220707215828.2021-1-beaub@linux.microsoft.com>
+References: <20220707215828.2021-1-beaub@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryan Wanner <Ryan.Wanner@microchip.com>
+After having discussions and addressing the ABI issues user_events can
+be now marked as working and used by others.
 
-Typo in i2s1 causing errors in dt binding validation.
-Changed assigned-parens to assigned-clock-parents and
-to match i2s0 node formatting.
+As part of the BROKEN status, user_events.h was moved from its original
+uapi location to the kernel location. This needs to be moved back so
+it can be used by others.
 
-Fixes: 1ca81883c557 ("ARM: dts: at91: sama5d2: add nodes for I2S controllers")
+Link: https://lore.kernel.org/all/20220330155835.5e1f6669@gandalf.local.home
+Link: https://lkml.kernel.org/r/20220330201755.29319-1-mathieu.desnoyers@efficios.com
+Link: https://lore.kernel.org/all/2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com/
+Link: https://lore.kernel.org/all/1651771383.54437.1652370439159.JavaMail.zimbra@efficios.com/
 
-Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
 ---
-changes in v2:
--corrected subject and tags
-changes in v1:
--corrected formatting issues
+ include/{ => uapi}/linux/user_events.h | 0
+ kernel/trace/Kconfig                   | 1 -
+ kernel/trace/trace_events_user.c       | 5 -----
+ 3 files changed, 6 deletions(-)
+ rename include/{ => uapi}/linux/user_events.h (100%)
 
- arch/arm/boot/dts/sama5d2.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
-index 89c71d419f82..659a17fc755c 100644
---- a/arch/arm/boot/dts/sama5d2.dtsi
-+++ b/arch/arm/boot/dts/sama5d2.dtsi
-@@ -1124,7 +1124,7 @@ AT91_XDMAC_DT_PERID(33))>,
- 				clocks = <&pmc PMC_TYPE_PERIPHERAL 55>, <&pmc PMC_TYPE_GCK 55>;
- 				clock-names = "pclk", "gclk";
- 				assigned-clocks = <&pmc PMC_TYPE_CORE PMC_I2S1_MUX>;
--				assigned-parrents = <&pmc PMC_TYPE_GCK 55>;
-+				assigned-clock-parents = <&pmc PMC_TYPE_GCK 55>;
- 				status = "disabled";
- 			};
+diff --git a/include/linux/user_events.h b/include/uapi/linux/user_events.h
+similarity index 100%
+rename from include/linux/user_events.h
+rename to include/uapi/linux/user_events.h
+diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+index 2c43e327a619..9bb54c0b3b2d 100644
+--- a/kernel/trace/Kconfig
++++ b/kernel/trace/Kconfig
+@@ -767,7 +767,6 @@ config USER_EVENTS
+ 	bool "User trace events"
+ 	select TRACING
+ 	select DYNAMIC_EVENTS
+-	depends on BROKEN || COMPILE_TEST # API needs to be straighten out
+ 	help
+ 	  User trace events are user-defined trace events that
+ 	  can be used like an existing kernel trace event.  User trace
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index 4afc41e321ac..7bff4c8b90f2 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -19,12 +19,7 @@
+ #include <linux/tracefs.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
+-/* Reminder to move to uapi when everything works */
+-#ifdef CONFIG_COMPILE_TEST
+-#include <linux/user_events.h>
+-#else
+ #include <uapi/linux/user_events.h>
+-#endif
+ #include "trace.h"
+ #include "trace_dynevent.h"
  
 -- 
-2.34.1
+2.25.1
 
