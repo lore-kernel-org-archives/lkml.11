@@ -2,204 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65B1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF37CCCA481
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 15:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235902AbiGGP2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 11:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        id S235938AbiGGP3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 11:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231897AbiGGP2w (ORCPT
+        with ESMTP id S235982AbiGGP3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 11:28:52 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F244D17042
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 08:28:49 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id l81so23792823oif.9
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 08:28:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i5AE8o89mnGPcosRIRhrsVkWToKcuuB5h1wqp957T/0=;
-        b=vZnql2KWKVCzhxPaXfTaqmisk8cjDnIVfdnb/TKBxne5cNdOvIpRvrtRcPltQs3kSE
-         3nDfTq3nIRJSDr+cVXgHI4HYtQhiFyr+9qSO/N56ojyRY9YqXxzQmQ6G8yCxnurG/mWe
-         giCosSuT7OCE/WQr9iGKvroqZ4mlgzzhMleGzfhZrbs3dgqKRN/VHzhNK0k2as4XSR76
-         AnO9oN7NYt1p7eSJYxNxfPXZWpERt7voJJfkVsILDXZLJLW4Lx3KX7UqMh9LmkC2VuGH
-         ZWFtgqXmst83bgG6bugZR6FqiDPZCcnk1faNC0Eo5Xkq8yGZP/HTe5Fy9lRNEizKoW0Z
-         AJRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i5AE8o89mnGPcosRIRhrsVkWToKcuuB5h1wqp957T/0=;
-        b=3YqFHeqDKVcQbOrgg/0Wfhq6QCe39Iw2rvQmdToSNb3dk4TTqMEj3zb6zk+AEKNSeF
-         Sb0if9Jevt7I0l1VQSFm5Ua9fUnpwGVmmltyCqG90P56w6J3m/oPj0WHU2v/ypa+FZWG
-         mouxomO5V+zwkYK4Pa3bd6jmKqtQLSpwMZ+9tZJuNKV/TRPG1v57vcw3oY3lZxmk7Plx
-         XumOomxchIlSyCMVkrndPxb010A259gUuJSTOFjD7z0Rg7plRMmmnitcKbxpkklFz8Nc
-         QA5R7uezHkRY7PA6CouniKYTnYlEJgrnNNvuFuw+w6sDOQaA1S1vxNfFGEIvnJSnuvij
-         oYVg==
-X-Gm-Message-State: AJIora+sWWXpAWm95FxFpk1Q4/K0CffinIdHzVTczj7TlSkddub6Q+C/
-        rQmV9+F58AE9na8Ee/vfg0u6vg==
-X-Google-Smtp-Source: AGRyM1v0p45heGfLNOXJAW3K1vcnOUrkm24+ImaKNgVgiVn0QiJINRs1nHObgKf7rHCAOqQAnMw9Ew==
-X-Received: by 2002:a05:6808:1204:b0:325:7ce2:77f6 with SMTP id a4-20020a056808120400b003257ce277f6mr2913189oil.165.1657207727810;
-        Thu, 07 Jul 2022 08:28:47 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id z18-20020a056808065200b0032ba1b363d2sm15593991oih.55.2022.07.07.08.28.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 08:28:47 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 10:28:45 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org
-Subject: Re: [PATCH v14 00/12] Add soundcard support for sc7280 based
- platforms.
-Message-ID: <Ysb7rZ4tIpN9fm8w@builder.lan>
-References: <1657200184-29565-1-git-send-email-quic_srivasam@quicinc.com>
+        Thu, 7 Jul 2022 11:29:49 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73881902A;
+        Thu,  7 Jul 2022 08:29:46 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 31FD41886E58;
+        Thu,  7 Jul 2022 15:29:44 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 0997825032B7;
+        Thu,  7 Jul 2022 15:29:43 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id DCF02A1E00B8; Thu,  7 Jul 2022 15:29:42 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from wse-c0127.vestervang (unknown [208.127.141.28])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 770249120FED;
+        Thu,  7 Jul 2022 15:29:41 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v4 net-next 0/6] Extend locked port feature with FDB locked flag (MAC-Auth/MAB)
+Date:   Thu,  7 Jul 2022 17:29:24 +0200
+Message-Id: <20220707152930.1789437-1-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657200184-29565-1-git-send-email-quic_srivasam@quicinc.com>
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 07 Jul 08:22 CDT 2022, Srinivasa Rao Mandadapu wrote:
+This patch set extends the locked port feature for devices
+that are behind a locked port, but do not have the ability to
+authorize themselves as a supplicant using IEEE 802.1X.
+Such devices can be printers, meters or anything related to
+fixed installations. Instead of 802.1X authorization, devices
+can get access based on their MAC addresses being whitelisted.
 
-> This patch set is to add bolero digital macros, WCD and maxim codecs nodes
-> for audio on sc7280 based platforms.
-> 
-> This patch set depends on:
->     [LPASS DTS: wcd related pinmux reorg]
->     -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=657389
->     [Clock DTS: reset control changes]
->     -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638002
->     [Clock: External MCLK and reset control driver changes]
->     -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=650267
+For an authorization daemon to detect that a device is trying
+to get access through a locked port, the bridge will add the
+MAC address of the device to the FDB with a locked flag to it.
+Thus the authorization daemon can catch the FDB add event and
+check if the MAC address is in the whitelist and if so replace
+the FDB entry without the locked flag enabled, and thus open
+the port for the device.
 
-As far as I understand I can't apply this series until Taniya's clock
-patches has been picked up?
+This feature is known as MAC-Auth or MAC Authentication Bypass
+(MAB) in Cisco terminology, where the full MAB concept involves
+additional Cisco infrastructure for authorization. There is no
+real authentication process, as the MAC address of the device
+is the only input the authorization daemon, in the general
+case, has to base the decision if to unlock the port or not.
 
->     [Clock DTS: lpasscc node disable and lpasscore node name changes]
->     -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=657325
+With this patch set, an implementation of the offloaded case is
+supplied for the mv88e6xxx driver. When a packet ingresses on
+a locked port, an ATU miss violation event will occur. When
+handling such ATU miss violation interrupts, the MAC address of
+the device is added to the FDB with a zero destination port
+vector (DPV) and the MAC address is communicated through the
+switchdev layer to the bridge, so that a FDB entry with the
+locked flag enabled can be added.
 
-You're the author of these 3 other patch sets, so why are you asking me
-to stitch them together, instead of just sending me one series that I
-can easily apply.
+Log:
+	v3:	Added timers and lists in the driver (mv88e6xxx)
+		to keep track of and remove locked entries.
 
-If you want your patches merged, make it easy for the maintainer to
-merge them!
+	v4:	Leave out enforcing a limit to the number of
+		locked entries in the bridge.
+		Removed the timers in the driver and use the
+		worker only. Add locked FDB flag to all drivers
+		using port_fdb_add() from the dsa api and let
+		all drivers ignore entries with this flag set.
+		Change how to get the ageing timeout of locked
+		entries. See global1_atu.c and switchdev.c.
+		Use struct mv88e6xxx_port for locked entries
+		variables instead of struct dsa_port.
 
-Regards,
-Bjorn
+Hans Schultz (6):
+  net: bridge: add locked entry fdb flag to extend locked port feature
+  net: switchdev: add support for offloading of fdb locked flag
+  drivers: net: dsa: add locked fdb entry flag to drivers
+  net: dsa: mv88e6xxx: allow reading FID when handling ATU violations
+  net: dsa: mv88e6xxx: mac-auth/MAB implementation
+  selftests: forwarding: add test of MAC-Auth Bypass to locked port
+    tests
 
-> 
-> Changes Since V13:
->     -- Move digital codecs enabling to separate wcd specific dtsi file in CRD 3.0+ patches.
->     -- Remove redundant output high setting in wcd reset node.
->     -- Revert external mclk name.
->     -- Update dependency list.
->     -- Rebase as per latest kernel repository.
-> Changes Since V12:
->     -- Update 'lpasscore' clock node name to lpass_core to match latest clock patches.
->     -- Update external mclk0 name and it's source node.
->     -- Move sound node to separate wcd specific dtsi file.
->     -- Move CRD specific lpass_cpu node Enabling to separate wcd specific dtsi file.
->     -- Update dependency list.
-> Changes Since V11:
->     -- Remove output-low pinconf setting in wcd-reset-n-sleep node.
->     -- Update dependency list.
-> Changes Since V10:
->     -- Modify digital macro codecs pin control labels.
->     -- Updated dependency list.
-> Changes Since V9:
->     -- Move wcd codec and digital codec nodes to sc7280-qcard file.
->     -- Modify the reg property as per link number in sound node.
->     -- Fix the us-euro pin control usage in wcd codec node.
->     -- Move wcd pin control nodes to specific crd board files.
->     -- Sort max98360a codec node in alphabetical order.
->     -- Modify the commit messages.
-> Changes Since V8:
->     -- Split patches as per sc7280 CRD revision 3, 4 and 5 boards.
->     -- Add corresponding dt nodes for herobrine crd boards.
->     -- Update dai-link node names as per dt-bindings in sound node.
->     -- Add reg property in sound node as per dt-bindings which was removed in previous series.
->     -- Fix typo errors.
->     -- Update wcd codec pin control properties in board specific files.
-> Changes Since V7:
->     -- Remove redundant interrupt names in soundwire node.
->     -- Fix typo errors.
->     -- Remove redundant reg property in sound node.
->     -- Rebased on top of latest kernel tip.
-> Changes Since V6:
->     -- Modify link-names and audio routing in a sound node.
->     -- Move amp_en pin control node to appropriate consumer patch.
->     -- Split patches as per digital macro codecs and board specific codecs and sort it.
->     -- Modify label and node names to lpass specific.
-> Changes Since V5:
->     -- Move soc specific bolero digital codec nodes to soc specific file.
->     -- Bring wcd938x codec reset pin control and US/EURO HS selection nodes from other series.
->     -- Change node name and remove redundant status property in sound node.
-> Changes Since V4:
->     -- Update nodes in sorting order.
->     -- Update DTS node names as per dt-bindings.
->     -- Update Node properties in proper order.
->     -- Update missing pinctrl properties like US/EURO HS selection, wcd reset control.
->     -- Remove redundant labels.
->     -- Remove unused size cells and address cells in tx macro node.
->     -- Keep all same nodes at one place, which are defined in same file.
->     -- Add max98360a codec node to herobrine board specific targets.
-> Changes Since V3:
->     -- Move digital codec macro nodes to board specific dtsi file.
->     -- Update pin controls in lpass cpu node.
->     -- Update dependency patch list.
->     -- Create patches on latest kernel.
-> Changes Since V2:
->     -- Add power domains to digital codec macro nodes.
->     -- Change clock node usage in lpass cpu node.
->     -- Add codec mem clock to lpass cpu node.
->     -- Modify the node names to be generic.
->     -- Move sound and codec nodes to root node.
->     -- sort dai links as per reg.
->     -- Fix typo errors.
-> Changes Since V1:
->     -- Update the commit message of cpu node patch.
->     -- Add gpio control property to support Euro headset in wcd938x node.
->     -- Fix clock properties in lpass cpu and digital codec macro node.
-> 
-> Srinivasa Rao Mandadapu (12):
->   arm64: dts: qcom: sc7280: Add nodes for soundwire and va tx rx digital
->     macro codecs
->   arm64: dts: qcom: sc7280: Enable digital codecs and soundwire for CRD
->     1.0/2.0 and IDP boards
->   arm64: dts: qcom: sc7280: Enable digital codecs and soundwire for CRD
->     3.0/3.1
->   arm64: dts: qcom: sc7280: Add wcd9385 codec node for CRD 1.0/2.0 and
->     IDP boards
->   arm64: dts: qcom: sc7280: Add wcd9385 codec node for CRD 3.0/3.1
->   arm64: dts: qcom: sc7280: Add max98360a codec for CRD 1.0/2.0 and IDP
->     boards
->   arm64: dts: qcom: sc7280: herobrine: Add max98360a codec node
->   arm64: dts: qcom: sc7280: Add lpass cpu node
->   arm64: dts: qcom: sc7280: Enable lpass cpu node for CRD 1.0/2.0 and
->     IDP boards.
->   arm64: dts: qcom: sc7280: Enable lpass cpu node for CRD 3.0/3.1
->   arm64: dts: qcom: sc7280: Add sound node for CRD 1.0/2.0 and IDP
->     boards
->   arm64: dts: qcom: sc7280: Add sound node for CRD 3.0/3.1
-> 
->  arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts         |  37 ++++
->  .../dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi   | 155 +++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi     |   8 +
->  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           | 216 +++++++++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi         |  73 +++++++
->  arch/arm64/boot/dts/qcom/sc7280.dtsi               | 190 ++++++++++++++++++
->  6 files changed, 679 insertions(+)
-> 
-> -- 
-> 2.7.4
-> 
+ drivers/net/dsa/b53/b53_common.c              |   5 +
+ drivers/net/dsa/b53/b53_priv.h                |   1 +
+ drivers/net/dsa/hirschmann/hellcreek.c        |   5 +
+ drivers/net/dsa/lan9303-core.c                |   5 +
+ drivers/net/dsa/lantiq_gswip.c                |   5 +
+ drivers/net/dsa/microchip/ksz9477.c           |   5 +
+ drivers/net/dsa/mt7530.c                      |   5 +
+ drivers/net/dsa/mv88e6xxx/Makefile            |   1 +
+ drivers/net/dsa/mv88e6xxx/chip.c              |  54 +++-
+ drivers/net/dsa/mv88e6xxx/chip.h              |  15 +
+ drivers/net/dsa/mv88e6xxx/global1.h           |   1 +
+ drivers/net/dsa/mv88e6xxx/global1_atu.c       |  32 +-
+ drivers/net/dsa/mv88e6xxx/port.c              |  30 +-
+ drivers/net/dsa/mv88e6xxx/port.h              |   2 +
+ drivers/net/dsa/mv88e6xxx/switchdev.c         | 280 ++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/switchdev.h         |  37 +++
+ drivers/net/dsa/ocelot/felix.c                |   5 +
+ drivers/net/dsa/qca8k.c                       |   5 +
+ drivers/net/dsa/sja1105/sja1105_main.c        |   5 +
+ include/net/dsa.h                             |   7 +
+ include/net/switchdev.h                       |   1 +
+ include/uapi/linux/neighbour.h                |   1 +
+ net/bridge/br.c                               |   3 +-
+ net/bridge/br_fdb.c                           |  19 +-
+ net/bridge/br_input.c                         |  10 +-
+ net/bridge/br_private.h                       |   5 +-
+ net/bridge/br_switchdev.c                     |   1 +
+ net/dsa/dsa_priv.h                            |   4 +-
+ net/dsa/port.c                                |   7 +-
+ net/dsa/slave.c                               |   4 +-
+ net/dsa/switch.c                              |  10 +-
+ .../net/forwarding/bridge_locked_port.sh      |  30 +-
+ 32 files changed, 566 insertions(+), 34 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.h
+
+-- 
+2.30.2
+
