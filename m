@@ -2,205 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BBFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:36:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D893EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235003AbiGGHg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 03:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
+        id S234947AbiGGHhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 03:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234766AbiGGHfr (ORCPT
+        with ESMTP id S234936AbiGGHgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 03:35:47 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736F131DE3;
-        Thu,  7 Jul 2022 00:35:46 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266NFiT8009486;
-        Thu, 7 Jul 2022 00:35:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=PmtGdV/W+//YE4u+RdrbbH0RFyIDykH/HVB0+3yd/0Q=;
- b=E8pkaTEsnxQU5i1iBpH8X0rrQXxsIUdXH/ahzLSpRLa1lPKXauf2vo6WNym3EvbD56Nt
- p5Ym4m9ZUtubbZIB+ikRr4MTDLzm7deRg1R1AKb7RAxf2LeH6knJPlagOMOt+xGl+PzP
- P3sh5oOKcDyKLHCte/4qeOq3R81i2TpMYPiu29H3RdIJP4XcMvchjaBPV47vZHonfDsm
- 2qrz7IEgPU5CEQJNzNBQt7Cs+qilg9N96pEELbRdEwOLxKHY3duQMkWTFrIqRjZh5AWK
- jmn+CHMKbrqHvsCdnTZbV0caWqUc30kXbRV7/LOJg27JffOG/rzmVWndy+wehufsBa68 tA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h5kwj1gut-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 00:35:29 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Jul
- 2022 00:35:21 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Jul 2022 00:35:21 -0700
-Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
-        by maili.marvell.com (Postfix) with ESMTP id 9DC263F7083;
-        Thu,  7 Jul 2022 00:35:18 -0700 (PDT)
-From:   Ratheesh Kannoth <rkannoth@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [net-next PATCH V3 10/12] octeontx2-af: Invoke exact match functions if supported
-Date:   Thu, 7 Jul 2022 13:03:51 +0530
-Message-ID: <20220707073353.2752279-11-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220707073353.2752279-1-rkannoth@marvell.com>
-References: <20220707073353.2752279-1-rkannoth@marvell.com>
+        Thu, 7 Jul 2022 03:36:54 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE98326D2;
+        Thu,  7 Jul 2022 00:36:08 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ldp9x3mG9z4xbm;
+        Thu,  7 Jul 2022 17:36:05 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657179366;
+        bh=vJnXxPcjofl/dIJrG3s69roSNP0Kb5CB+IRWv7rORRU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=gHtGI2X0vmZHZixH4ZZI+WRrjaGc64TL9zROPmNVrw30p9Y1UVdbPUlajGvYhwCjv
+         m86XwVgMJ4whkOqsU2S8nMlVOUJk2I/6+0IbydzL8efm0z45dTGdkfmrN2HDci05iT
+         I4p447ZUA8xXIQkhwVo8U3tHfUfv8cFB9HMO9el6ENsal+PFQkD6SFPpGHQLSTIrYY
+         JfytQO4kmg8BtO6UqgAdN/NuZ94GSuiZhOKSLnHMzgYQuO9rIMs3MEruV/a/F+Dn1r
+         Lji6kxxSEBuYjmZMFDwb5rY86N+0TtTyjasZOP62RNfdlQjfIjFH/PzmlREdL4sP0W
+         7BuqNfOZOFVjA==
+Date:   Thu, 7 Jul 2022 17:32:52 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Theodore Ts'o <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     PowerPC <linuxppc-dev@lists.ozlabs.org>,
+        Juerg Haefliger <juerg.haefliger@canonical.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the random tree with the powerpc tree
+Message-ID: <20220707173252.5fff21f2@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: lsX_EDHoq_w6AgC7beNtXzP29fLwuUGd
-X-Proofpoint-GUID: lsX_EDHoq_w6AgC7beNtXzP29fLwuUGd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_06,2022-06-28_01,2022-06-22_01
+Content-Type: multipart/signed; boundary="Sig_/e5AqtJECmuDQE_Wb4bb0LJU";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If exact match table is supported, call functions to add/del/update
-entries in exact match table instead of RPM dmac filters
+--Sig_/e5AqtJECmuDQE_Wb4bb0LJU
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
----
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 34 +++++++++++++++++++
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  7 ++++
- 2 files changed, 41 insertions(+)
+Hi all,
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 0d86f3e68fa0..5090ddcc7e8a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -475,6 +475,11 @@ void rvu_cgx_disable_dmac_entries(struct rvu *rvu, u16 pcifunc)
- 	if (!is_cgx_config_permitted(rvu, pcifunc))
- 		return;
- 
-+	if (rvu_npc_exact_has_match_table(rvu)) {
-+		rvu_npc_exact_reset(rvu, pcifunc);
-+		return;
-+	}
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 	cgx_dev = cgx_get_pdata(cgx_id);
- 	lmac_count = cgx_get_lmac_cnt(cgx_dev);
-@@ -585,6 +590,9 @@ int rvu_mbox_handler_cgx_mac_addr_set(struct rvu *rvu,
- 	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
- 		return -EPERM;
- 
-+	if (rvu_npc_exact_has_match_table(rvu))
-+		return rvu_npc_exact_mac_addr_set(rvu, req, rsp);
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 
- 	cgx_lmac_addr_set(cgx_id, lmac_id, req->mac_addr);
-@@ -603,6 +611,9 @@ int rvu_mbox_handler_cgx_mac_addr_add(struct rvu *rvu,
- 	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
- 		return -EPERM;
- 
-+	if (rvu_npc_exact_has_match_table(rvu))
-+		return rvu_npc_exact_mac_addr_add(rvu, req, rsp);
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 	rc = cgx_lmac_addr_add(cgx_id, lmac_id, req->mac_addr);
- 	if (rc >= 0) {
-@@ -623,6 +634,9 @@ int rvu_mbox_handler_cgx_mac_addr_del(struct rvu *rvu,
- 	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
- 		return -EPERM;
- 
-+	if (rvu_npc_exact_has_match_table(rvu))
-+		return rvu_npc_exact_mac_addr_del(rvu, req, rsp);
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 	return cgx_lmac_addr_del(cgx_id, lmac_id, req->index);
- }
-@@ -644,6 +658,11 @@ int rvu_mbox_handler_cgx_mac_max_entries_get(struct rvu *rvu,
- 		return 0;
- 	}
- 
-+	if (rvu_npc_exact_has_match_table(rvu)) {
-+		rsp->max_dmac_filters = rvu_npc_exact_get_max_entries(rvu);
-+		return 0;
-+	}
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 	rsp->max_dmac_filters = cgx_lmac_addr_max_entries_get(cgx_id, lmac_id);
- 	return 0;
-@@ -681,6 +700,10 @@ int rvu_mbox_handler_cgx_promisc_enable(struct rvu *rvu, struct msg_req *req,
- 	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
- 		return -EPERM;
- 
-+	/* Disable drop on non hit rule */
-+	if (rvu_npc_exact_has_match_table(rvu))
-+		return rvu_npc_exact_promisc_enable(rvu, req->hdr.pcifunc);
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 
- 	cgx_lmac_promisc_config(cgx_id, lmac_id, true);
-@@ -696,6 +719,10 @@ int rvu_mbox_handler_cgx_promisc_disable(struct rvu *rvu, struct msg_req *req,
- 	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
- 		return -EPERM;
- 
-+	/* Disable drop on non hit rule */
-+	if (rvu_npc_exact_has_match_table(rvu))
-+		return rvu_npc_exact_promisc_disable(rvu, req->hdr.pcifunc);
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 
- 	cgx_lmac_promisc_config(cgx_id, lmac_id, false);
-@@ -1099,6 +1126,10 @@ int rvu_mbox_handler_cgx_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_res
- 		return LMAC_AF_ERR_PERM_DENIED;
- 
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+
-+	if (rvu_npc_exact_has_match_table(rvu))
-+		return rvu_npc_exact_mac_addr_reset(rvu, req, rsp);
-+
- 	return cgx_lmac_addr_reset(cgx_id, lmac_id);
- }
- 
-@@ -1112,6 +1143,9 @@ int rvu_mbox_handler_cgx_mac_addr_update(struct rvu *rvu,
- 	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
- 		return LMAC_AF_ERR_PERM_DENIED;
- 
-+	if (rvu_npc_exact_has_match_table(rvu))
-+		return rvu_npc_exact_mac_addr_update(rvu, req, rsp);
-+
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 	return cgx_lmac_addr_update(cgx_id, lmac_id, req->mac_addr, req->index);
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 0fa625e2528e..1d3323da6930 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -14,6 +14,7 @@
- #include "npc.h"
- #include "cgx.h"
- #include "lmac_common.h"
-+#include "rvu_npc_hash.h"
- 
- static void nix_free_tx_vtag_entries(struct rvu *rvu, u16 pcifunc);
- static int rvu_nix_get_bpid(struct rvu *rvu, struct nix_bp_cfg_req *req,
-@@ -3792,9 +3793,15 @@ int rvu_mbox_handler_nix_set_rx_mode(struct rvu *rvu, struct nix_rx_mode *req,
- 		rvu_npc_install_promisc_entry(rvu, pcifunc, nixlf,
- 					      pfvf->rx_chan_base,
- 					      pfvf->rx_chan_cnt);
-+
-+		if (rvu_npc_exact_has_match_table(rvu))
-+			rvu_npc_exact_promisc_enable(rvu, pcifunc);
- 	} else {
- 		if (!nix_rx_multicast)
- 			rvu_npc_enable_promisc_entry(rvu, pcifunc, nixlf, false);
-+
-+		if (rvu_npc_exact_has_match_table(rvu))
-+			rvu_npc_exact_promisc_disable(rvu, pcifunc);
- 	}
- 
- 	return 0;
--- 
-2.25.1
+Today's linux-next merge of the random tree got a conflict in:
 
+  arch/powerpc/Kconfig
+
+between commit:
+
+  cea9d62b64c9 ("powerpc: Kconfig: Replace tabs with whitespaces")
+
+from the powerpc tree and commit:
+
+  a2ff4b7600cd ("random: remove CONFIG_ARCH_RANDOM")
+
+from the random tree.
+
+I fixed it up (the latter removed some lines updated by the former) and
+can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/e5AqtJECmuDQE_Wb4bb0LJU
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGjCUACgkQAVBC80lX
+0Gzc1wf9Ecu/28vZactDStc5fH3/HRfTbzKkFbYUF1KJILODaEiaY2CQpOsiD9OP
+gfgbJbZzimGQJXXsQef2Q8PFaZB54zryJIJz6NQmLOke380U7EFETj5uEPlhDP6i
+gahF6cUCQVq9UZvwd5dq38ZmeBW+xBQ3RYv0juOwphXzJuD40a98/yuaXUGgAaRA
+A+awkuyzhI+FiAPLHvyQOH5SC5fMgJYBEfJhnxBED3ciZ9xZ4V63352XhxU5cIyO
+QgLfcvXiviRQKWgklcBITAcmgmisf3RYytJAkzGoJ2Lh19fUlNl9wkztgCNrqQ94
+wpsHrq5MDnbLKNC6hY5OO0143Y5j0A==
+=fyUJ
+-----END PGP SIGNATURE-----
+
+--Sig_/e5AqtJECmuDQE_Wb4bb0LJU--
