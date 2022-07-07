@@ -2,77 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 596E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234993AbiGGDAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 23:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S235001AbiGGDAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 23:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234906AbiGGDAS (ORCPT
+        with ESMTP id S234900AbiGGDAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 23:00:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3692F3BF;
-        Wed,  6 Jul 2022 20:00:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60052A965;
+        Wed,  6 Jul 2022 20:00:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B368DB81FF1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 529C5B81FF0;
         Thu,  7 Jul 2022 03:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 144EEC341D4;
-        Thu,  7 Jul 2022 03:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EF119C341CB;
+        Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657162815;
-        bh=i48NrE/vFNFSuqXPKlsGMWYna9TAb9tFN3I8/qt+QcU=;
+        bh=odRgIWvrDMydZj1zXqpnhJanbUfaj1HRM7ILJa/0z80=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BDtSXzYvWFM9aYhF/+tWuSfrJPX2LboOM9P11f24OmrWS2CWFTgfKL0WGjhHXD53N
-         uLMzxGdy4eg6tj9qk0ekCoEzlYbjrpt7HdDq/Ygmd6F8gTB8jU//3A2Nnp29EQei2a
-         Sq/tJnjkFxFVnVyou8495Yxziwfb1gP6vk4+N2sYpdLtyNrMHo1TlSEZVJsjQObanr
-         bjKgaejSBI8fa4+xHO5paE6T4pbAfxQtqiIWRNzmIrvPShcXJG2NgHl51sjUJTWXo/
-         0kuXFvJCGoAob3tRZN31AaFbeOCn6TJd6gYwGX2PgCGaXj8D+bgSr4SNy672Xvfadl
-         wKVjttG7kB6qg==
+        b=j5D+I6kHOlEmipnGACrX+hPdTH/xsyHhzA4/NZb/9lekxunutJ28Cfjg5tU9LpEHl
+         rr0W1ML4sGPsD+Ooot4DeKA5FS/wlQRV3k1mFOxEfQ0GJQ3F+VNv01uBxk3tuSoXEZ
+         tTGtMFFL0dNQoqvsA28U9Aw7Fnie2FnuZf1jxkUVDb4Dh1gkyIWL13xJZtUJsgoyGb
+         Pv8zVhRYmhvaicEqKtdXu9n8GC7Sci7gWUrICWrkopNgG+7p4vYXAyUkpc6PpLFZpW
+         O6bVM1eaKQnk3X0lw2PXSyifb16C9phq3Vpf40+NfzL5+OpUyW00zmlKK/YsBRYfIS
+         ebBym7nVROcCQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E6552E45BE2;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6F15E45BE0;
         Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/2] qed: Use the bitmap API to allocate bitmaps
+Subject: Re: [PATCH] cnic: Use the bitmap API to allocate bitmaps
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165716281494.11165.14076578722724177412.git-patchwork-notify@kernel.org>
+Message-Id: <165716281487.11165.4392215303964464060.git-patchwork-notify@kernel.org>
 Date:   Thu, 07 Jul 2022 03:00:14 +0000
-References: <d61ec77ce0b92f7539c6a144106139f8d737ec29.1657053343.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <d61ec77ce0b92f7539c6a144106139f8d737ec29.1657053343.git.christophe.jaillet@wanadoo.fr>
+References: <521bd2a49be5d88e493bcfb63505d3df91a1c2d2.1657052743.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <521bd2a49be5d88e493bcfb63505d3df91a1c2d2.1657052743.git.christophe.jaillet@wanadoo.fr>
 To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  5 Jul 2022 22:36:16 +0200 you wrote:
+On Tue,  5 Jul 2022 22:25:58 +0200 you wrote:
 > Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 > 
 > It is less verbose and it improves the semantic.
 > 
 > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
->  drivers/net/ethernet/qlogic/qed/qed_rdma.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+>  drivers/net/ethernet/broadcom/cnic.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
 Here is the summary with links:
-  - [1/2] qed: Use the bitmap API to allocate bitmaps
-    https://git.kernel.org/netdev/net-next/c/291dbea16c71
-  - [2/2] qed: Use bitmap_empty()
-    https://git.kernel.org/netdev/net-next/c/7ed5f2454acf
+  - cnic: Use the bitmap API to allocate bitmaps
+    https://git.kernel.org/netdev/net-next/c/76d3c114706f
 
 You are awesome, thank you!
 -- 
