@@ -2,225 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E84BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCFCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236242AbiGGNt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
+        id S236339AbiGGNt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236106AbiGGNrq (ORCPT
+        with ESMTP id S236145AbiGGNs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:47:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6B72AE39;
-        Thu,  7 Jul 2022 06:47:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70F6C6220C;
-        Thu,  7 Jul 2022 13:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41877C36B18;
-        Thu,  7 Jul 2022 13:47:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657201660;
-        bh=HEgMwQ8qqlSDilU664H/drCY92HIR0qcwkEnBpKRAns=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M/o2sq2Fu3BxKJs2l2XTDmvxxvKPzPFF09ye+Vsgz0ilJRcMklgkOvqLNrM0n9i+j
-         HNHwDLat0CE8hy3JqpAaE4K7Ntp6h2gCtxtO3iz+PG2ONtok+UtXWwfW5Og0eDHRAz
-         JmWofbh6PCEg6DCgUe+Uni/4oMJvsvNvGSMHE4P+9Zxx23FF2PSG8No0PsOx1oJkGW
-         tPk73OWFDxC1lrSXqbtD1v18MzsHVUchElDRdkK9G8eCNSv6CklXiTClXgPtwa/yah
-         1fF23npCt7tyVX8wvxbDOdUQntPjJ/GaKBKE1F6X+Sl6vuLbPsbhov3PG8H3SDbUU7
-         A525jS5BYUo0w==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1o9Rr5-0000xP-9f; Thu, 07 Jul 2022 15:47:43 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 19/30] dt-bindings: phy: add QMP USB PHY schema
-Date:   Thu,  7 Jul 2022 15:47:14 +0200
-Message-Id: <20220707134725.3512-20-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220707134725.3512-1-johan+linaro@kernel.org>
-References: <20220707134725.3512-1-johan+linaro@kernel.org>
+        Thu, 7 Jul 2022 09:48:29 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903A31022;
+        Thu,  7 Jul 2022 06:48:27 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LdyPs15xgzkX62;
+        Thu,  7 Jul 2022 21:46:57 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 21:48:25 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
+ 2022 21:48:25 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH -next] bcm63xx_enet: change the driver variables to static
+Date:   Thu, 7 Jul 2022 21:58:01 +0800
+Message-ID: <20220707135801.1483941-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The QMP PHY DT schema is getting unwieldy. Break out the USB PHY
-binding in a separate file.
+bcm63xx_enetsw_driver and bcm63xx_enet_driver are only used in
+bcm63xx_enet.c now, change them to static.
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- ...com,qmp-phy.yaml => qcom,qmp-usb-phy.yaml} | 69 +++++--------------
- 1 file changed, 18 insertions(+), 51 deletions(-)
- rename Documentation/devicetree/bindings/phy/{qcom,qmp-phy.yaml => qcom,qmp-usb-phy.yaml} (82%)
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
-similarity index 82%
-rename from Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-rename to Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
-index 21d6ec875529..66cabf4d5722 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
-@@ -1,11 +1,10 @@
- # SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
--
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/phy/qcom,qmp-phy.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/phy/qcom,qmp-usb-phy.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+index 514d61dd91c7..fcaa6a2d067f 100644
+--- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+@@ -1935,7 +1935,7 @@ static int bcm_enet_remove(struct platform_device *pdev)
+ 	return 0;
+ }
  
--title: Qualcomm QMP PHY controller
-+title: Qualcomm QMP PHY controller (USB)
+-struct platform_driver bcm63xx_enet_driver = {
++static struct platform_driver bcm63xx_enet_driver = {
+ 	.probe	= bcm_enet_probe,
+ 	.remove	= bcm_enet_remove,
+ 	.driver	= {
+@@ -2756,7 +2756,7 @@ static int bcm_enetsw_remove(struct platform_device *pdev)
+ 	return 0;
+ }
  
- maintainers:
-   - Vinod Koul <vkoul@kernel.org>
-@@ -51,20 +50,20 @@ properties:
-   ranges: true
- 
-   clocks:
--    minItems: 1
-+    minItems: 3
-     maxItems: 4
- 
-   clock-names:
--    minItems: 1
-+    minItems: 3
-     maxItems: 4
- 
-   resets:
--    minItems: 1
--    maxItems: 3
-+    minItems: 2
-+    maxItems: 2
- 
-   reset-names:
--    minItems: 1
--    maxItems: 3
-+    minItems: 2
-+    maxItems: 2
- 
-   vdda-phy-supply: true
- 
-@@ -75,7 +74,7 @@ properties:
- patternProperties:
-   "^phy@[0-9a-f]+$":
-     type: object
--    description: one child node per PHY provided by this block
-+    description: single PHY-provider child node
- 
- required:
-   - compatible
-@@ -87,6 +86,8 @@ required:
-   - clock-names
-   - resets
-   - reset-names
-+  - vdda-phy-supply
-+  - vdda-pll-supply
- 
- additionalProperties: false
- 
-@@ -113,34 +114,7 @@ allOf:
-           items:
-             - const: phy
-             - const: common
--      required:
--        - vdda-phy-supply
--        - vdda-pll-supply
--  - if:
--      properties:
--        compatible:
--          contains:
--            enum:
--              - qcom,sdx55-qmp-usb3-uni-phy
--              - qcom,sdx65-qmp-usb3-uni-phy
--    then:
--      properties:
--        clocks:
--          maxItems: 3
--        clock-names:
--          items:
--            - const: aux
--            - const: cfg_ahb
--            - const: ref
--        resets:
--          maxItems: 2
--        reset-names:
--          items:
--            - const: phy
--            - const: common
--      required:
--        - vdda-phy-supply
--        - vdda-pll-supply
-+
-   - if:
-       properties:
-         compatible:
-@@ -149,6 +123,8 @@ allOf:
-               - qcom,ipq8074-qmp-usb3-phy
-               - qcom,msm8996-qmp-usb3-phy
-               - qcom,msm8998-qmp-usb3-phy
-+              - qcom,sdx55-qmp-usb3-uni-phy
-+              - qcom,sdx65-qmp-usb3-uni-phy
-     then:
-       properties:
-         clocks:
-@@ -164,9 +140,7 @@ allOf:
-           items:
-             - const: phy
-             - const: common
--      required:
--        - vdda-phy-supply
--        - vdda-pll-supply
-+
-   - if:
-       properties:
-         compatible:
-@@ -192,9 +166,7 @@ allOf:
-           items:
-             - const: phy
-             - const: common
--      required:
--        - vdda-phy-supply
--        - vdda-pll-supply
-+
-   - if:
-       properties:
-         compatible:
-@@ -217,9 +189,7 @@ allOf:
-           items:
-             - const: phy
-             - const: common
--      required:
--        - vdda-phy-supply
--        - vdda-pll-supply
-+
-   - if:
-       properties:
-         compatible:
-@@ -241,9 +211,6 @@ allOf:
-           items:
-             - const: phy_phy
-             - const: phy
--      required:
--        - vdda-phy-supply
--        - vdda-pll-supply
- 
- examples:
-   - |
+-struct platform_driver bcm63xx_enetsw_driver = {
++static struct platform_driver bcm63xx_enetsw_driver = {
+ 	.probe	= bcm_enetsw_probe,
+ 	.remove	= bcm_enetsw_remove,
+ 	.driver	= {
 -- 
-2.35.1
+2.25.1
 
