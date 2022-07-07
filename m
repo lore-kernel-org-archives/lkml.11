@@ -2,100 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F891C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD80C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234442AbiGGKBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59694 "EHLO
+        id S234829AbiGGKDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233004AbiGGKBw (ORCPT
+        with ESMTP id S233808AbiGGKDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:01:52 -0400
+        Thu, 7 Jul 2022 06:03:20 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06C614F19F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:01:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8817A4F1B9
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:03:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657188111;
+        s=mimecast20190719; t=1657188198;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9SHQnAznbKnOLY1gPlD68a+aIhyQn9db0oXlbPnBHao=;
-        b=DVNIBCl2mlAkqfhTd5KBK9HaK0PwHrCE0IaUBHAMloOMJZ7LQhC8zbBNQvpVf/NhrILIj4
-        tgVqBQMFoV11ZNviU8BhMgcsG8uICM3LOiLUImjrFMAfJ4wlUuoeVzkzDGJM/k2esKaWRr
-        LoPRYLrEV/P/BSTuPMG2utkDk0eA7gY=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=mNWEDxqg1cccxdZ0v7jY1fOIP46IJFXlMCuR5euWthM=;
+        b=f1IFVK7nDBX2AENHCVcb/SoyI+diJawPWoxWKRnxAW5MV4GfJU3nNCENBNgICgZIH66Suf
+        iZJXzlD11qq/f+VL6BhqOinXqyU6QbF+xnymgCx2o2qHCvcEBDpmSiDisgC4XHLAQ8GbYm
+        bseb1tPqxlAfR4Vf0OOcmKHjc7xa9gE=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-301-wksygBykMZ6bIp4-OZUYTA-1; Thu, 07 Jul 2022 06:01:47 -0400
-X-MC-Unique: wksygBykMZ6bIp4-OZUYTA-1
-Received: by mail-ej1-f71.google.com with SMTP id gr1-20020a170906e2c100b006fefea3ec0aso4554337ejb.14
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:01:47 -0700 (PDT)
+ us-mta-137-nSD097-XM8maOmZpphrJrw-1; Thu, 07 Jul 2022 06:03:17 -0400
+X-MC-Unique: nSD097-XM8maOmZpphrJrw-1
+Received: by mail-ed1-f70.google.com with SMTP id x8-20020a056402414800b0042d8498f50aso13750810eda.23
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:03:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=9SHQnAznbKnOLY1gPlD68a+aIhyQn9db0oXlbPnBHao=;
-        b=1oFxFj3VeUVr+T/YGMk0goumeXBJ+w0NJBMdP0G9oGYvS6zJi3LAwYyS/Oxg71VI00
-         pHZ7NUHCpoL8fISuTbJ3IyRQAEvG+t44wlon8/T8onMp+RuoUtvpahMXYn9A7tT/JlT+
-         2kib84zPaCvyBFoSkLqlzfzB+G3IOaReZOXlfaaQ7BAFg08AGZFrHmoKvkX9DyLMz+Nm
-         j64QHOjrbz1HYsmLVjnwIu5XtY+ibsnty3Xp4m2nprDjW7bn8Oo+mfnB83eAwIMwhIjb
-         hpqh2hiYN5Jv8J7p6MJsmFL0gAGIIYWzdm8/QEOtzRUw9EhpCIbZzWwTLDUR0umsGZXO
-         7yMA==
-X-Gm-Message-State: AJIora9unbYPu+fOWLchIUWtHAdo2yLjmFd0YoGDAp1qIkaZBnf2yVnH
-        nWCvqrEg/5q6QEcgzn02110Wp+MFqBknzR5x7f7Uhn664NXCAqizM1dj2OgCEIWa3kmu7FC1MhH
-        bCNWtTFzzMoG/pJfVoS9UZ85+EczZLk7zvWa3BavL6g1g77miNjc2FxyGMmX2LBW5wxqrsvTrxK
-        ZE
-X-Received: by 2002:a05:6402:2708:b0:435:da6f:3272 with SMTP id y8-20020a056402270800b00435da6f3272mr59104356edd.160.1657188106313;
-        Thu, 07 Jul 2022 03:01:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sa9itQk8MCQrfGJDkX4tSlr0nI31PyKDn+oNYxgsM/K4ovlzMK3VkwUF9dZvJf9KNmR/8YVg==
-X-Received: by 2002:a05:6402:2708:b0:435:da6f:3272 with SMTP id y8-20020a056402270800b00435da6f3272mr59104311edd.160.1657188106004;
-        Thu, 07 Jul 2022 03:01:46 -0700 (PDT)
+        bh=mNWEDxqg1cccxdZ0v7jY1fOIP46IJFXlMCuR5euWthM=;
+        b=us9/5O0DComZ4jCdMBXyqDZ04c9ZrfUqYTObYiDhvNdtKgV0s9kryGeKQhDGJnTRoo
+         oOQBpKYXUKkK0UWGk4uTwtphoWp8zUaqsYqUcXA7CCTEeve/57Eg7CK4M/h1Cqif0xGF
+         U29TaA4PScIfXP0kRUm3QcdqVX1MdLeJZ+g8fWzWM7TkS0mYk9ADmUXY7u+gWHfNxVXo
+         qsXz0hwayv8D6dtco5pBFRcapoJd4ifZjTXJaOS8ZHbCGJhzpylFLyodYZSCUGWK689k
+         Cb3kJ9mTQ2SvpGDWtwIyUFIal87IsmOIhdMedPU2mWegs86nMJHU95Be0WautQMmgZHp
+         F0hw==
+X-Gm-Message-State: AJIora/a1YhO9tTRtZwnuzRdzObNn2CvpCyPFd7/+AOq1eR6wESD/jzK
+        bALr8saN5VI5YuaFAcyyR+39tN9wM7fMMj9EGRgU+KRDey5awd59AUGfcg6lkMLrccSIlXKC158
+        UNJiwDRB0mlZQyVy0roUlYnC1RPVjtV5nmqIZb8SP9Prd7jliir2PbRCLDqJREhWnKYRrht9Ffl
+        2k
+X-Received: by 2002:a17:907:7f22:b0:726:8962:d5a6 with SMTP id qf34-20020a1709077f2200b007268962d5a6mr44679640ejc.717.1657188196265;
+        Thu, 07 Jul 2022 03:03:16 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u4TDOGXhUWTv81WhVbKpEdofsrU7RbUvvcAymyzuKgcvYHSqvCL2Hj13lnlsPJasUfZ5xXrA==
+X-Received: by 2002:a17:907:7f22:b0:726:8962:d5a6 with SMTP id qf34-20020a1709077f2200b007268962d5a6mr44679605ejc.717.1657188195954;
+        Thu, 07 Jul 2022 03:03:15 -0700 (PDT)
 Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id o13-20020a170906768d00b0072af6d20a9asm2372836ejm.75.2022.07.07.03.01.44
+        by smtp.gmail.com with ESMTPSA id ky6-20020a170907778600b0072b0d3ca423sm793207ejc.187.2022.07.07.03.03.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 03:01:45 -0700 (PDT)
+        Thu, 07 Jul 2022 03:03:15 -0700 (PDT)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 08/28] KVM: VMX: Support TSC scaling with enlightened
- VMCS
-In-Reply-To: <20220629150625.238286-9-vkuznets@redhat.com>
+Subject: Re: [PATCH v2 13/28] KVM: VMX: Get rid of eVMCS specific VMX
+ controls sanitization
+In-Reply-To: <YsYMPCr3/ig0xPFj@google.com>
 References: <20220629150625.238286-1-vkuznets@redhat.com>
- <20220629150625.238286-9-vkuznets@redhat.com>
-Date:   Thu, 07 Jul 2022 12:01:44 +0200
-Message-ID: <87let5qm0n.fsf@redhat.com>
+ <20220629150625.238286-14-vkuznets@redhat.com>
+ <YsYMPCr3/ig0xPFj@google.com>
+Date:   Thu, 07 Jul 2022 12:03:14 +0200
+Message-ID: <87ilo9qly5.fsf@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vitaly Kuznetsov <vkuznets@redhat.com> writes:
+Sean Christopherson <seanjc@google.com> writes:
 
-...
-
+> On Wed, Jun 29, 2022, Vitaly Kuznetsov wrote:
+>> With the updated eVMCSv1 definition, there's no known 'problematic'
+>> controls which are exposed in VMX control MSRs but are not present in
+>> eVMCSv1. Get rid of the filtering.
 >
-> While on it, update the comment why VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL/
-> VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL are kept filtered out
+> Ah, this patch is confusing until one realizes that this is dropping the "filtering"
+> for what controls/features _KVM_ uses, whereas nested_evmcs_filter_control_msr()
+> filters controls that are presented to L1.
+>
+> Can you add something to clarify that in the changelog?
 
-...
-
-> + *	While GUEST_IA32_PERF_GLOBAL_CTRL and HOST_IA32_PERF_GLOBAL_CTRL
-> + *	are present in eVMCSv1, Windows 11 still has issues booting when
-> + *	VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL/VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL
-> + *	are exposed to it, keep them filtered out.
-
-Finally, I got a piece of information from Microsoft on what's going on
-and it solves a lot of our problems. They did introduce a new PV feature
-bit indicating support for these new fields in eVMCSv1 and Win11 checks
-for its presence. This means that we do not need to play the 'eVMCS
-revisions' trick as CPUID information from VMM is enough.
+Yea, this is for KVM-on-Hyper-V only, I'll fix the changelog.
 
 -- 
 Vitaly
