@@ -2,85 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 904B8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B72CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235469AbiGGLpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51690 "EHLO
+        id S235090AbiGGLt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235193AbiGGLpd (ORCPT
+        with ESMTP id S235072AbiGGLty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 07:45:33 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07194F65D;
-        Thu,  7 Jul 2022 04:45:31 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=32;SR=0;TI=SMTPD_---0VIcuH0b_1657194323;
-Received: from 30.97.48.62(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VIcuH0b_1657194323)
-          by smtp.aliyun-inc.com;
-          Thu, 07 Jul 2022 19:45:25 +0800
-Message-ID: <12227412-1d79-4ff6-b4e6-0d438dac7359@linux.alibaba.com>
-Date:   Thu, 7 Jul 2022 19:45:29 +0800
+        Thu, 7 Jul 2022 07:49:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA3633357;
+        Thu,  7 Jul 2022 04:49:53 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LdvkZ41J6zTggP;
+        Thu,  7 Jul 2022 19:46:14 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 19:49:51 +0800
+Received: from [10.67.109.184] (10.67.109.184) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 19:49:51 +0800
+Subject: Re: [PATCH bpf-next v3 4/6] libbpf: Unify memory address casting
+ operation style
+To:     Daniel Borkmann <daniel@iogearbox.net>, <bpf@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+References: <20220530092815.1112406-1-pulehui@huawei.com>
+ <20220530092815.1112406-5-pulehui@huawei.com>
+ <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net>
+From:   Pu Lehui <pulehui@huawei.com>
+Message-ID: <62f154e1-5ffb-3f7b-adc6-766cb29a18b0@huawei.com>
+Date:   Thu, 7 Jul 2022 19:49:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 3/3] mm: Add kernel PTE level pagetable pages account
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     akpm@linux-foundation.org, rppt@linux.ibm.com, will@kernel.org,
-        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
-        peterz@infradead.org, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, kernel@xen0n.name,
-        tsbogend@alpha.franken.de, dave.hansen@linux.intel.com,
-        luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, hpa@zytor.com, arnd@arndb.de, guoren@kernel.org,
-        monstr@monstr.eu, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
-        x86@kernel.org, linux-arch@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linux-csky@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1657096412.git.baolin.wang@linux.alibaba.com>
- <398ead25695e530f766849be5edafaf62c1c864d.1657096412.git.baolin.wang@linux.alibaba.com>
- <YsWuC9+b3JaEAr0Q@casper.infradead.org>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <YsWuC9+b3JaEAr0Q@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.109.184]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 7/6/2022 11:45 PM, Matthew Wilcox wrote:
-> On Wed, Jul 06, 2022 at 04:59:17PM +0800, Baolin Wang wrote:
->> Now the kernel PTE level ptes are always protected by mm->page_table_lock
->> instead of split pagetable lock, so the kernel PTE level pagetable pages
->> are not accounted. Especially the vmalloc()/vmap() can consume lots of
->> kernel pagetable, so to get an accurate pagetable accounting, calling new
->> helpers page_{set,clear}_pgtable() when allocating or freeing a kernel
->> PTE level pagetable page.
+On 2022/5/31 5:03, Daniel Borkmann wrote:
+> On 5/30/22 11:28 AM, Pu Lehui wrote:
+>> The members of bpf_prog_info, which are line_info, jited_line_info,
+>> jited_ksyms and jited_func_lens, store u64 address pointed to the
+>> corresponding memory regions. Memory addresses are conceptually
+>> unsigned, (unsigned long) casting makes more sense, so let's make
+>> a change for conceptual uniformity.
 >>
->> Meanwhile converting architectures to use corresponding generic PTE pagetable
->> allocation and freeing functions.
+>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+>> ---
+>>   tools/lib/bpf/bpf_prog_linfo.c | 9 +++++----
+>>   1 file changed, 5 insertions(+), 4 deletions(-)
 >>
->> Note this patch only adds accounting to the page tables allocated after boot.
->>
->> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
->> Reported-by: kernel test robot <oliver.sang@intel.com>
+>> diff --git a/tools/lib/bpf/bpf_prog_linfo.c 
+>> b/tools/lib/bpf/bpf_prog_linfo.c
+>> index 5c503096ef43..7beb060d0671 100644
+>> --- a/tools/lib/bpf/bpf_prog_linfo.c
+>> +++ b/tools/lib/bpf/bpf_prog_linfo.c
+>> @@ -127,7 +127,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const 
+>> struct bpf_prog_info *info)
+>>       prog_linfo->raw_linfo = malloc(data_sz);
+>>       if (!prog_linfo->raw_linfo)
+>>           goto err_free;
+>> -    memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, 
+>> data_sz);
+>> +    memcpy(prog_linfo->raw_linfo, (void *)(unsigned 
+>> long)info->line_info,
+>> +           data_sz);
 > 
-> What does this Reported-by: even mean?  the kernel test robot told you
-> that the page tables weren't being accounted?
+> Took in patch 1-3, lgtm, thanks! My question around the cleanups in 
+> patch 4-6 ...
+> there are various other such cases e.g. in libbpf, perhaps makes sense 
+> to clean all
+> of them up at once and not just the 4 locations in here.
+> 
 
-I fixed an issue reported by this robot. OK, I can remove the tag.
+sorry for reply so late, I will take this soon.
 
-> I don't understand why we want to start accounting kernel page tables.
-> an we have a *discussion* about that with a sensible thread name instead
-> of just trying to sneak it in as patch 3/3?
-
-I think I have replied to you in below link [1]. The reason is we should 
-keep consistent with PMD or PUD pagetable allocation.
-
-[1] 
-https://lore.kernel.org/all/68a5286b-7ff3-2c4e-1ab2-305e7860a2f3@linux.alibaba.com/
+> Thanks,
+> Daniel
+> .
