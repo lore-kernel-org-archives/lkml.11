@@ -2,108 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CDD2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbiGGK32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
+        id S235223AbiGGKaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232161AbiGGK3Z (ORCPT
+        with ESMTP id S235136AbiGGKaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:29:25 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FF153D37;
-        Thu,  7 Jul 2022 03:29:24 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id x184so5099848pfx.2;
-        Thu, 07 Jul 2022 03:29:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xkSpYLA2hqfsxahuAfQtyWp9WK9S+AEkS7nnUigkbP4=;
-        b=Uy5v44vF9ZsC6U9vhuFog2+tIzl/k7lGP1idZ1pJFp3qODEFlxzooW77oadSFlrjw0
-         6aDNqySOr//5AIurRFLZi2V2Zbycp/HmFjwOs/xYcnRdgdhlPy6QLGEHIcjEY1KCyBwP
-         G3PsuIlZOt4D3WKq9Z7EwGDinu6OdVS1oxzbyhKfhy22wC2ZtbInbu171AfNg9u00Ngw
-         vagMIiliIX0AKs8Zd9dTbpkOOIVmRKa0qu5LLsqTPW9Mmj7f5qOhFV0KL6HXoLsWOwB4
-         R7R7RNiNU+J99Xs/BOLbJuV2MhWluVjq8byyqJ05Zk5of2D1PRWSlJYojCAQwZ1VMKAc
-         7VpQ==
+        Thu, 7 Jul 2022 06:30:02 -0400
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EAB53D1C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:30:00 -0700 (PDT)
+Received: by mail-pf1-f177.google.com with SMTP id y9so4259098pff.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:30:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xkSpYLA2hqfsxahuAfQtyWp9WK9S+AEkS7nnUigkbP4=;
-        b=7apW+kwLML1bis1UYH6wY8+TAv15wTBV0sP4n1iPdUovWu6hwZumOs6rJ/Q/lXXhjE
-         FZASq60h7tu5RQZZmGWrH7dBGuck7DoKAupSKyZutAFs4HBItTSPaQYXicTasHN32Qa7
-         WTMs8hPjjgEJ5ENV1YhGzuFXQrM3QacuoDK+fhO56h/Lm+HvUSziFerHuH4bN7WS0cgH
-         t+7MClAHbBwqVdnDNoWdPfsIsjfIztp/7lMRT5SjYC5tjUIzON1pe/J9fgTGklr4+AxO
-         uJ5bjLqmik1uVkoQ+7ZwnEabm/QRKHuwD+BG8oh1JR7tLFR9dZlU3MXN/clbPewJQGXL
-         wykQ==
-X-Gm-Message-State: AJIora9SolYOdAfFs2N+gIbntToMTYmyL25hs9QM4hj/qqjl0LrzOYf/
-        bljsW1bTCkoAr4gXufcOIsc=
-X-Google-Smtp-Source: AGRyM1vEWHbbgcYl0W0A1GHrpbNU7Fdbax7IR4Xy1VLt1k/b2LAsjPQRIy1XjDKHSuXn1eApEqYC7Q==
-X-Received: by 2002:a63:1724:0:b0:412:7bee:fdba with SMTP id x36-20020a631724000000b004127beefdbamr10476410pgl.340.1657189763823;
-        Thu, 07 Jul 2022 03:29:23 -0700 (PDT)
-Received: from sol (110-174-58-111.static.tpgi.com.au. [110.174.58.111])
-        by smtp.gmail.com with ESMTPSA id l15-20020a170902f68f00b0016c1948ef7esm452394plg.296.2022.07.07.03.29.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=/JzY69fgYbq8dtADJobUrT4pb7r35M4xnJaXr87cK3U=;
+        b=rgiYYPuFcJIxT6hilVKRcyC/Q3El0dVYuzJx4a5aYTWKaJo9v1ZUYz2wOeRkuMAWgr
+         wvG3S7B+tSIuH0otkB74xV1oF2m7oXx1fdh72/MroUP1H29jgOjNLfpFXlQTPe6cCaT2
+         +W3PxVJNBLiTTk+C1xmEXZa66ZzQACmEwDwjqqPnkptY36xPhDAoSuo+FKNXD4um5sAe
+         cUSyuGi/9flFykx8E9rbWdP6lbUVj/inSCPbxlo9IE4mgTwasNhCPdBgPRnnyMxS8QRZ
+         pckJtrANZkF5H69J6tl0zBe8dw2DuokZOES/m9WqtZOgLHstk1Cp8fJ0ciT3XJ3ek+Io
+         Oyvw==
+X-Gm-Message-State: AJIora8MDwszwFtuHYUNpq5k6BuYq+6WqxrG9wfdxIaMJnqOd3R2mf+i
+        u0FcxEzZFdQXQ/Qaz3tnjOd1eUFVXWI=
+X-Google-Smtp-Source: AGRyM1sP5WYD/HQ6rAdWuX3ltvmMcNxBEYTPCu9kKK5hzBuh5N6HbxYmHp/HV+1kgm1U4f9RpXQjfg==
+X-Received: by 2002:a05:6a00:1a15:b0:527:d02b:29c6 with SMTP id g21-20020a056a001a1500b00527d02b29c6mr49866585pfv.23.1657189800287;
+        Thu, 07 Jul 2022 03:30:00 -0700 (PDT)
+Received: from karthik-strix-linux.karthek.com ([61.3.52.131])
+        by smtp.gmail.com with ESMTPSA id f73-20020a62384c000000b005251ce498cfsm2725939pfa.191.2022.07.07.03.29.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 03:29:23 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 18:29:18 +0800
-From:   Kent Gibson <warthog618@gmail.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] gpiolib: cdev: fix null pointer dereference in
- linereq_free()
-Message-ID: <20220707102918.GA60169@sol>
-References: <20220706084507.2259415-1-warthog618@gmail.com>
- <20220706085025.GA2259579@sol>
- <20220707090006.GB57165@sol>
- <CAMRc=Mcqvp4oN_tHXS1cb0AnEOU=Znd4bmSwO4ZZ1GszRfXhSA@mail.gmail.com>
+        Thu, 07 Jul 2022 03:29:59 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 15:59:54 +0530
+From:   Karthik Alapati <mail@karthek.com>
+To:     Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: greybus: don't use index pointer after iter
+Message-ID: <Ysa1oopf0ELw+OfB@karthik-strix-linux.karthek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMRc=Mcqvp4oN_tHXS1cb0AnEOU=Znd4bmSwO4ZZ1GszRfXhSA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 12:19:15PM +0200, Bartosz Golaszewski wrote:
-> On Thu, Jul 7, 2022 at 11:00 AM Kent Gibson <warthog618@gmail.com> wrote:
-> >
-> > On Wed, Jul 06, 2022 at 04:50:25PM +0800, Kent Gibson wrote:
-> > > On Wed, Jul 06, 2022 at 04:45:07PM +0800, Kent Gibson wrote:
-> > > > This patch fixes a kernel NULL pointer dereference that is reported by
-> > > > gpio kselftests.
-> > > >
-> > >
-> > > Should be:
-> > >
-> > > Fix a kernel NULL pointer dereference reported by gpio kselftests.
-> > >
-> > > Sorry - I rushed this one a bit.
-> > >
-> >
-> > And I might not've been totally clear, but this bug is present in
-> > v5.19-rc1 onwards (when HTE was added), up to and including rc5.
-> >
-> > Would be good to get it fixed before v5.19 goes out the door.
-> >
-> > Cheers,
-> > Kent.
-> 
-> Yep, figured that out. Applied and fixed the commit message, thanks!
-> 
+There are some usages of index pointer of list(w) which may not point to
+the right entry when the required entry is not found and the list traversal
+completes with index pointer pointing to the last entry. So, use w_found
+flag to track the case where the entry is found.
 
-Good to hear.  I never got around to reviewing that final HTE patch
-and, while it did end up pretty close to what I expected, there are a
-few things that I would've done slightly differently that I'd like to
-tidy up.
-And also have the HTE specific code compiled out unless CONFIG_HTE is
-selected, as that is very likely to be the case for most builds.
-But that can wait for v5.20.
+Currently, When the condition (w->dapm != dapm) is true the loop continues
+and when it is not then it compares the name strings and breaks out of the
+loop if they match with w pointing to the right entry and it also breaks
+out of loop if they didn't match by additionally setting w to NULL. But
+what if the condition (w->dapm != dapm) is never false and the list
+traversal completes with w pointing to last entry then usage of it after
+the iter may not be correct. And there is no way to know whether the entry
+is found. So, if we introduce w_found to track when the entry is found
+then we can account for the case where the entry is not actually found and
+the list traversal completes.
 
-Cheers,
-Kent.
+Fixes coccinelle error:
+drivers/staging/greybus/audio_helper.c:135:7-8: ERROR:
+invalid reference to the index variable of the iterator on line 127
+
+Signed-off-by: Karthik Alapati <mail@karthek.com>
+---
+ drivers/staging/greybus/audio_helper.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/greybus/audio_helper.c b/drivers/staging/greybus/audio_helper.c
+index 843760675876..7c04897a22a2 100644
+--- a/drivers/staging/greybus/audio_helper.c
++++ b/drivers/staging/greybus/audio_helper.c
+@@ -116,6 +116,7 @@ int gbaudio_dapm_free_controls(struct snd_soc_dapm_context *dapm,
+ {
+ 	int i;
+ 	struct snd_soc_dapm_widget *w, *next_w;
++	bool w_found = false;
+ #ifdef CONFIG_DEBUG_FS
+ 	struct dentry *parent = dapm->debugfs_dapm;
+ 	struct dentry *debugfs_w = NULL;
+@@ -124,15 +125,18 @@ int gbaudio_dapm_free_controls(struct snd_soc_dapm_context *dapm,
+ 	mutex_lock(&dapm->card->dapm_mutex);
+ 	for (i = 0; i < num; i++) {
+ 		/* below logic can be optimized to identify widget pointer */
++		w_found = false
+ 		list_for_each_entry_safe(w, next_w, &dapm->card->widgets,
+ 					 list) {
+ 			if (w->dapm != dapm)
+ 				continue;
+-			if (!strcmp(w->name, widget->name))
++			if (!strcmp(w->name, widget->name)) {
++				w_found = true;
+ 				break;
++			}
+ 			w = NULL;
+ 		}
+-		if (!w) {
++		if (!w_found) {
+ 			dev_err(dapm->dev, "%s: widget not found\n",
+ 				widget->name);
+ 			widget++;
+-- 
+2.36.1
 
