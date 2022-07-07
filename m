@@ -2,122 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6197C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 971BAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235163AbiGGK2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54202 "EHLO
+        id S235242AbiGGK2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235165AbiGGK23 (ORCPT
+        with ESMTP id S235165AbiGGK2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:28:29 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2056.outbound.protection.outlook.com [40.107.94.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CA3289;
-        Thu,  7 Jul 2022 03:28:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dCqF9Tb34NnXDOqPjF/Zo4CxhqA24db67A9DMnj9JN2vG+CI8+JRGwP2aECZUcc1WeJxsn5LeKWEWianaSqCHYnsGDGNc3kAEbZuLpqzQfR6m7eYEbvp+A1xbEy5Ujrw0WdCzV+RN4cIlDt1KzR5O+I9pmLYg4ZNu9HpYn1NS+T7DCwAMziWdo+NwZyUQmkrN3/mn7J6CmfOfJ3X+LP8lxkIzqaRGdNgXy4pPSSLXg7GGnZzpRvIowY97fdX6jcU8wh8a6nGKnCM3wPTW+fLWiYybuZMHXBI/EKKMSRM+XazukjEudI7nmQcR7IwuCsFp/V8fd3iUHZeIzgVgZdv+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ksKAQuV2Ap3SOQbtAa7geciJy15Si/B42n/BPU0MkOM=;
- b=IMWYw3IJjU9Yb8VDbrBX9XVuklHbSBVTWPnfodONdiUz7khz6kc6yckRKhxSkf4yxTA2nPkWwMSxzZirBIPSbtAEI/V0K6B78ubWcS1O5BVD68ss8Mul0SVd3WvK0xLMklH1muR+fmW3HRl/9EnLDtFrF59hPGiRnNtyFWxhycMTrErICLjPnilD9cmzepKOBMWEjKqBuhiUN6GB3oKhQhmZwfjpr6VCEnpZmxx3zED93n4JILZwnIwqN+FpT4Ap2VtecIoGj4T94ZO709OD6L/RCcb91mJc8w95zufTPcHWlOijUndYqhSkAyx8or5uHpnEBFXnT8tNhBts1ILC0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ksKAQuV2Ap3SOQbtAa7geciJy15Si/B42n/BPU0MkOM=;
- b=NfM8siuPZCx5c4cN3SPHysY7U97VvS2zu+yVxEZYJOmq805uAOCHzyYxgapWNJGW3pxOUy6bXj2z6AS3NPx1i/+y8C1p2IoBsAAP071vExKOjx3FJHtt754B8d8GC67bM+m0PlGA+I5jkUH/NEMDVTNBWOusSGi47yjjJHqVgCgcJ3gXlCqe3PJGz1bnLvQkBxRARmwrhWoNXMoONQRSxzskhnrjOb41sRxjf+Z1wISNBPYEMyH45E7Ebr7qIOwhplXatpGMoiFjqcL7LGVxMNG21msAmBmAuldh1x3Yzi0UZ6PVquAvCe8zLQvK6h9thNaWIEikgtkf2CD47XPVvA==
-Received: from CO2PR04CA0190.namprd04.prod.outlook.com (2603:10b6:104:5::20)
- by DM6PR12MB2793.namprd12.prod.outlook.com (2603:10b6:5:4f::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Thu, 7 Jul
- 2022 10:28:23 +0000
-Received: from CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
- (2603:10b6:104:5:cafe::79) by CO2PR04CA0190.outlook.office365.com
- (2603:10b6:104:5::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17 via Frontend
- Transport; Thu, 7 Jul 2022 10:28:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT006.mail.protection.outlook.com (10.13.174.246) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 10:28:22 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 7 Jul
- 2022 10:28:22 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 7 Jul 2022
- 03:28:21 -0700
-Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 7 Jul 2022 03:28:18 -0700
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <dmaengine@vger.kernel.org>, <jonathanh@nvidia.com>,
-        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        <thierry.reding@gmail.com>, <vkoul@kernel.org>,
-        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-CC:     <akhilrajeev@nvidia.com>
-Subject: [PATCH 2/2] dt-bindings: dmaengine: Add compatible for Tegra234
-Date:   Thu, 7 Jul 2022 15:57:25 +0530
-Message-ID: <20220707102725.41383-3-akhilrajeev@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220707102725.41383-1-akhilrajeev@nvidia.com>
-References: <20220707102725.41383-1-akhilrajeev@nvidia.com>
+        Thu, 7 Jul 2022 06:28:42 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D0C2F64E;
+        Thu,  7 Jul 2022 03:28:41 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id y8so16804312eda.3;
+        Thu, 07 Jul 2022 03:28:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=u0grqM27ho+H910v/3h5J9J38TRWwOJg//0S3hrINWs=;
+        b=RAHhsOx1WYQmtl8aJ9hOVmvAwZIviDcDLPraefIX34HzrYSnbauWDMc+Yqo+BVLdyh
+         LwEkKsAOts4gLXgoy0A5iOrymg2gs/8WKzG2XOUYQacJh7ZdBXH6foa22vJkKzlvTZ5b
+         +DsCgmj+L9EPE8C+/JsopzQ1mCFxOvPnxps0Y7d1C0nrdCcIuEAf4dg/bQypJGb8cboP
+         HN6YdHbnv4keOK8vrE2+S4MAPTglkdBFoO7FtPj2XJc6mhCLwotN1ZXOqYPY/h1GSvUz
+         GtmZo0ghamPkXVVsyRA88+po3U/bJecBzDVDnN7H2rfb83us2v18GQdwvgdqEiVjQ2e9
+         C4xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=u0grqM27ho+H910v/3h5J9J38TRWwOJg//0S3hrINWs=;
+        b=vcf6oH3j2UMlNpYjdi0LsRAHGwRm/JsblkYETOoEJSiJpvk5ftryykkzPCW8OITAjR
+         KeMlBbyBI4CcuZ6bWKYQwlVIbIKWL+BPMPlHseh9X83r8toIAxy/Au6D50jWEcTl+rWc
+         jD7pSLKuZpaWKFqub57T6W1i6mnboaUzd3h3GCpGVGH6V2p+hEizEAjFmsvY6eYdUlVM
+         QP3lHDq5h9hr6KhVfQ0XG8Nn7bVoE2VIaMBll43WxE+A/0M04JWESqrJelZvCCHpg9h5
+         22YHbtIfZ1lsSgNFniNovg4AkkYiaGIO8fpNEamSKYaYHksLaKof6igA4CfIE3VUzWL/
+         S9Lw==
+X-Gm-Message-State: AJIora9iEDBB469kPtS0Nx+rAy9Pffm8hmZvc7TB7IMTIyzxwQDKPjnw
+        1JTLc7y5N+n15S5xqshUAa8=
+X-Google-Smtp-Source: AGRyM1t2CpvNY/yKG03SEm6y8oh/fn77inxA2FFCz8Ec+X+79ad5SkuvvkcbR9VjQvnkdsn3aZ3OPA==
+X-Received: by 2002:aa7:d702:0:b0:43a:5296:df67 with SMTP id t2-20020aa7d702000000b0043a5296df67mr28891799edq.314.1657189719583;
+        Thu, 07 Jul 2022 03:28:39 -0700 (PDT)
+Received: from skbuf ([188.25.231.143])
+        by smtp.gmail.com with ESMTPSA id f15-20020a1709062c4f00b007081282cbd8sm18701117ejh.76.2022.07.07.03.28.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 03:28:38 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 13:28:36 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next 1/1] net: dsa: mv88e6xxx: allow reading FID when
+ handling ATU violations
+Message-ID: <20220707102836.u7ig6rr2664mcrlf@skbuf>
+References: <20220706122502.1521819-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5a1d3c31-8603-455d-96c4-08da60036b28
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2793:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YUNyYTK5kAb/3GorHAQusz8/1SCDOA1Me3S3Axqi0dgSIAzADxKUAAYUkBAdHsHCAmJd8fgHQt5+jr8IBhQIbvQUKl6YNCzS4N1f9hcbAEm/o5YQgEVUfR4UeHKG178mx10kQyMNk19VpQl4Z4r4YaxJQnmcIBmHhPCgqYqCEaoqqJyDjpWcRCwPkfkl1tSeRasH7+IPhlWO4ihmAmVcKBtOrxNikK7lFE/oHFqR+NYZC+S1P6GDKx5Jbj9SAAE/MASyrWBbDGy2LobwoIVRI9Rd1AtZOmqWqP4YsdJOR4YXHOM0evee1Isx7m6NwlZjOeFt0CngGt8r1vuRgUlWB97KYp1zYfwniuCvi7y/Wyp24TkghQnMX6I3noJSCn4eZFTWLw8QCpDL0P93qhjHiBwwOZ/Px0s3y59h9wc4/YukCOc4ikrovX3amrgubTJidT57aaWwTwVzTdklCtk0Oc5jxgVNIcNiXTKf/cPIV5aGFdRskRnwFDT6FMbrda5Ovt4eWRoZi8SEk/JE44CZgvA79wkAoV55qxqzKqyUlmpIQhvA0wBBa0e59sgcHePnVI0jZKBlRIDa9JfcEycG/nCBaEz/lfd29y1XuIwEfHCqUg1YDr3tZ9Q6XJk2Zc5h1DhIY6qqdYY1xIPSnFikOH3zxYnfBSjWWLiIE1d+GB/6foP/KzfDZolbRasQkgPmVzaUptgz3oMXQz2UCDBxgMv0nQ3jvWTt7iZCDNH+HIKLBsnmEmMH1WIQurKY16Q8eOby+m/9E0lwCSOiP0WuIHtV4XB2hqTqi0IAQaPk9fxLphvze2DO31TCJ7l2UWlxOzbdRbMhzPmtyjCbi5mgRq+tdmgJCwZfNCFegYEgB/3lx78uZW81lMfkrUn6oWPvAYB5rUgGKsb+D0eqDawNcIsVMfUGeJWrD+cfXQpt0CY=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(39860400002)(346002)(376002)(46966006)(36840700001)(40470700004)(5660300002)(8936002)(4744005)(40460700003)(40480700001)(82310400005)(2906002)(36860700001)(82740400003)(86362001)(81166007)(36756003)(110136005)(478600001)(70206006)(70586007)(4326008)(8676002)(316002)(107886003)(1076003)(186003)(2616005)(47076005)(336012)(6666004)(41300700001)(7696005)(26005)(426003)(921005)(356005)(83996005)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 10:28:22.4243
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a1d3c31-8603-455d-96c4-08da60036b28
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2793
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706122502.1521819-1-netdev@kapio-technology.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the compatible string used by GPCDMA controller for Tegra234.
+On Wed, Jul 06, 2022 at 02:25:02PM +0200, Hans Schultz wrote:
+> For convenience the function mv88e6xxx_g1_atu_op() has been used to read
+> ATU violations, but the function has other purposes and does not enable
+> the possibility to read the FID when reading ATU violations.
+> 
+> The FID is needed to get hold of which VID was involved in the violation,
+> thus the need for future purposes to be able to read the FID.
 
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
----
- .../devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml         | 1 +
- 1 file changed, 1 insertion(+)
+Make no mistake, the existing code doesn't disallow reading back the FID
+during an ATU Get/Clear Violation operation, and your patch isn't
+"allowing" something that wasn't disallowed.
 
-diff --git a/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml b/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
-index 9dd1476d1849..81f3badbc8ec 100644
---- a/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
-+++ b/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
-@@ -23,6 +23,7 @@ properties:
-     oneOf:
-       - const: nvidia,tegra186-gpcdma
-       - items:
-+          - const: nvidia,tegra234-gpcdma
-           - const: nvidia,tegra194-gpcdma
-           - const: nvidia,tegra186-gpcdma
- 
--- 
-2.17.1
+The documentation for the ATU FID register says that its contents is
+ignored before the operation starts, and it contains the returned ATU
+entry's FID after the operation completes.
 
+So the change simply says: don't bother to write the ATU FID register
+with zero, it doesn't matter what this contains. This is probably true,
+but the patch needs to do what's written on the box.
+
+Please note that this only even matters at all for switches with
+mv88e6xxx_num_databases(chip) > 256, where MV88E6352_G1_ATU_FID is a
+dedicated register which this patch avoids writing. For other switches,
+the FID is embedded within MV88E6XXX_G1_ATU_CTL or MV88E6XXX_G1_ATU_OP.
+So _practically_, for those switches, you are still emitting the
+GET_CLR_VIOLATION ATU op with a FID of 0 whether you like it or not, and
+this patch introduces a (most likely irrelevant) discrepancy between the
+access methods for various switches.
+
+Please note that this observation is relevant for your future changes to
+read back the FID too. As I said here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220524152144.40527-4-schultz.hans+netdev@gmail.com/#24912482
+you can't just assume that the FID lies within the MV88E6352_G1_ATU_FID
+register, just look at the way it is packed within mv88e6xxx_g1_atu_op().
+You'll need to unpack it in the same way.
