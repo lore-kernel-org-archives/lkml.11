@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B265BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E743C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbiGGDA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 23:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
+        id S234966AbiGGDAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 23:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbiGGDAR (ORCPT
+        with ESMTP id S234815AbiGGDAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 23:00:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648B02FFC5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646A12F67F;
         Wed,  6 Jul 2022 20:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CA226215F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 786306215D;
         Thu,  7 Jul 2022 03:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E441DC341C6;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DBA4AC341CA;
         Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657162814;
-        bh=iDohzysbIgA5u75WBJw8oczhggVBq+2eCFWnUN7PnEw=;
+        bh=P0K6fp2IA+jZVSlzemEv5qVoKwTnr0GFLmMPri8B4/k=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DDI7I/Wc1taHL/CupzpcVQs4uncdo4CiJMW1qwPdefTP+0mytbYWJRjiFZTonyzgG
-         ik4BknlpmDodPEm85lryqGsVyCKwUZjya2rxprESjCLNQzEuBiuM2BL2higslh/gSC
-         3hcvbMVa0gqK/VqWQjrEqZ/jidY4Kg9IaFSszK4LAXWlw7bb88x2fpwzauj80Lh0Gt
-         Bttwy7xSaIe8z/axRrevDBwOn8SKa1scACLfG7jEoLdTqWwkLtjQIRsOWrgwPbjxGh
-         tt6WhD6CGtblseo8SMeAEHHG4jM8mflMgeOEflzC3J14ASAKTGNV8A9XVlTBdgVal3
-         inhMhzV03oG5w==
+        b=RUsNlXe2WsnK+RhQfV8e7bqZxpR7vMWdMg6+r1/ngcMgSgRis7Yf5QBYbbrGiVgB7
+         KQHRyiX2nrqwaTQlbRqDbrf9LY9u+TqyamOeYxYicBi8/3XfYW2y5ctpWwcIbA9P3D
+         +IdQPkFkayOCevmJP4Gu6i1dBlBailXdCp4jyF/INzBL5U5Q6YdDndpD7ceIVaEK1F
+         Tpp6IkfVhjZPwFsCL+l3OtlC3EY6M5Dikjb4FabJIFzfjS2oyYVT+meB6w9wIq8x1G
+         6P84doGL2DeEQJS/fXM6if98v623MlDYXuOmBRrZMdvMYMOD4VjzGz83hGJ3pSVkEl
+         pU9WeFSUGa/XA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CF63DE45BD8;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C79C4E45BDE;
         Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bnxt: Use the bitmap API to allocate bitmaps
+Subject: Re: [PATCH] sfc: falcon: Use the bitmap API to allocate bitmaps
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165716281484.11165.665441439830624792.git-patchwork-notify@kernel.org>
+Message-Id: <165716281481.11165.15348245264221582052.git-patchwork-notify@kernel.org>
 Date:   Thu, 07 Jul 2022 03:00:14 +0000
-References: <d508f3adf7e2804f4d3793271b82b196a2ccb940.1657052562.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <d508f3adf7e2804f4d3793271b82b196a2ccb940.1657052562.git.christophe.jaillet@wanadoo.fr>
+References: <c62c1774e6a34bc64323ce526b385aa87c1ca575.1657049799.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <c62c1774e6a34bc64323ce526b385aa87c1ca575.1657049799.git.christophe.jaillet@wanadoo.fr>
 To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     michael.chan@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        netdev@vger.kernel.org
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -58,19 +58,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  5 Jul 2022 22:22:59 +0200 you wrote:
+On Tue,  5 Jul 2022 21:36:51 +0200 you wrote:
 > Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 > 
 > It is less verbose and it improves the semantic.
 > 
 > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 ++----
+>  drivers/net/ethernet/sfc/falcon/farch.c | 6 ++----
 >  1 file changed, 2 insertions(+), 4 deletions(-)
 
 Here is the summary with links:
-  - bnxt: Use the bitmap API to allocate bitmaps
-    https://git.kernel.org/netdev/net-next/c/45262522d002
+  - sfc: falcon: Use the bitmap API to allocate bitmaps
+    https://git.kernel.org/netdev/net-next/c/ee4c0c5d2593
 
 You are awesome, thank you!
 -- 
