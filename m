@@ -2,172 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AEACCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9ADC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236966AbiGGWWE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:22:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50410 "EHLO
+        id S236977AbiGGWWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 18:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236962AbiGGWWC (ORCPT
+        with ESMTP id S236970AbiGGWWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 18:22:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DAC61D44;
-        Thu,  7 Jul 2022 15:22:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA5F562521;
-        Thu,  7 Jul 2022 22:22:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D19B9C3411E;
-        Thu,  7 Jul 2022 22:21:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657232520;
-        bh=RAEL+R/urENMNl/CEbjM0bPxIFEkYHtPp3+5kN2+06Q=;
-        h=Date:From:To:Cc:Subject:From;
-        b=mpX7UL4PDqQ1mkvQxSvzSenRO194+SoKz+hkMStc03u1pNadclt/kKtgT2r1lJRy9
-         0SC/4GTqwernZRtcSRjdcQ/knJ/1GgPCkotjqvY50B288gK1BGMJOLU0IsTre2drYs
-         qkN7baz9axYOP+6PGX7XjOLxQWmLZ6DTkfrUceYL+puGb0WsayQPlzj7c11fdnU4wU
-         0VpI8048u4oAcdtV5RDTKpm8s4KOj68MadgA+NYGxlMrfswFsustakdBXA0EsgQGEs
-         aVHls1AbVcYSMViodsRXCCtDLYFE4U4nM8lJh61b2lMhjurjIV561ei3v2WZ72WVyV
-         XwVDOahJmLz2g==
-Date:   Thu, 7 Jul 2022 17:21:57 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     linux-pci@vger.kernel.org
-Cc:     systemerror@guerrillamailblock.com,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [bugzilla-daemon@kernel.org: [Bug 216217] New: PCI e820 got screwed
- up, some systems completely fail to boot.]
-Message-ID: <20220707222157.GA339399@bhelgaas>
+        Thu, 7 Jul 2022 18:22:07 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A02761D4C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:22:06 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id j3so9334429pfb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:22:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1d8oUSgHflYddbSglWNBA8zQUNolQOQTA7TIi861ndw=;
+        b=n/XYJko9I2Vab10eSfGNHdTlWxcrLl2NLM/pY9JnXgKT8cJccpbSlK4P9XXGRIxhib
+         UWAU5BhKT099hQo8qZgPL2hvfirXJTyydcYp48nwQMSRMTSEyNUwA4gs7+Bu5LMCY6bo
+         S4x94Lj5FHH7rx9tDBxHDjeYTVeaHckI68jKw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1d8oUSgHflYddbSglWNBA8zQUNolQOQTA7TIi861ndw=;
+        b=R7WvYsDTci44Bj378axs+C+citjpCqkyya17NNKHSKExCcnslE02cC5q9twcMPL64z
+         yYZusdWVYwPy5wnOWjYNKF4inmZEyJCnWfpnQmoj31jJlopO7hendTzJbs55D8/AtQWN
+         4JQADbhwZqc9yk2SStEJRhfq/Q6bwQuCtT2qAo22uZDTG1a72FfmSaHq2TCz+lmVlaxz
+         Wpch9Pfq67ytuSwTejJrlpJcc/WL4zmdikXOcft81/snN0WEUVZVa18nBDBfGOn5TND4
+         tqkIzVT1OZFX1N2yEiSRRKYuEb1bv7t/nVfAaeQ8Ffi9+PWD5lDouVVRcO7CUwuWigxN
+         T19Q==
+X-Gm-Message-State: AJIora8a9ZnMJVZ/BJgn6ykrgbfAM8pMDS7rDcGrYfWsGWkYVEZV9UD6
+        E+R8f8kkIHy83EX2C969Qqt4XBi8eO0JNQ==
+X-Google-Smtp-Source: AGRyM1v3yQqQ+TNU43wur8Fhdh2vNt66qOELbhK2Z68f5Lwz32YRSI71HzG5/nHKgT3OD9oQ4ktf3g==
+X-Received: by 2002:a63:ea05:0:b0:411:f94f:b80f with SMTP id c5-20020a63ea05000000b00411f94fb80fmr275064pgi.189.1657232525017;
+        Thu, 07 Jul 2022 15:22:05 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id 66-20020a620445000000b005289bfcee91sm5545657pfe.59.2022.07.07.15.22.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 15:22:04 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v3 2/9] usb: typec: Add retimer handle to port
+Date:   Thu,  7 Jul 2022 22:20:09 +0000
+Message-Id: <20220707222045.1415417-3-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+In-Reply-To: <20220707222045.1415417-1-pmalani@chromium.org>
+References: <20220707222045.1415417-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ Forwarded message from bugzilla-daemon@kernel.org -----
+Similar to mux and orientation switch, add a handle for registered
+retimer to the port, so that it has handles to the various switches
+connected to it.
 
-Date: Thu, 07 Jul 2022 21:10:55 +0000
-From: bugzilla-daemon@kernel.org
-To: bjorn@helgaas.com
-Subject: [Bug 216217] New: PCI e820 got screwed up, some systems completely
-	fail to boot.
-Message-ID: <bug-216217-41252@https.bugzilla.kernel.org/>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
 
-https://bugzilla.kernel.org/show_bug.cgi?id=216217
+Changes since v2:
+- No changes.
 
-            Bug ID: 216217
-           Summary: PCI e820 got screwed up, some systems completely fail
-                    to boot.
-           Product: Drivers
-           Version: 2.5
-    Kernel Version: 5.19-rc4
-          Hardware: AMD
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: high
-          Priority: P1
-         Component: PCI
-          Assignee: drivers_pci@kernel-bugs.osdl.org
-          Reporter: systemerror@guerrillamailblock.com
-        Regression: No
+Changes since v1:
+- Relinquish retimer reference during typec_release.
 
-In last few recent mainline kernels something got completely screwed up in
-regard of e820 vs PCI on one of computer systems.
+ drivers/usb/typec/class.c | 9 +++++++++
+ drivers/usb/typec/class.h | 1 +
+ 2 files changed, 10 insertions(+)
 
-Kernels up to 5.16 booting just fine on mentioned system. However, around
-approx kernel 5.17 something changed in regard how PCI handles e820.
-Unfortunately it completely broken mentioned system to extent it FAILS TO BOOT
-with recent kernels.
-
-It looks like if PCI woefully fails resources reservations or so, this in turn
-results in failing to initialize numerous devices, ranging from GPU to
-networking, so overall system gets stuck without graphics (!!!) and generally
-stuck in the middle of boot.
-
-Details:
-Investigation shown commit around a2b36ffbf5b6ec301e61249c8b09e610bc80772f
-hints there were some changes on how PCI vs e820 handled and some bool boot
-parameter has been added to control PCI e820 behavior. Unfortunately with it
-default state kernels BACKFIRE on mentioned system and COMPLETELY FAIL TO BOOT.
-Which isn't anyhow acceptable state of things.
-
-I had to use "pci=no_e820" kernel command line as hinted, this restores sane
-PCI behavior so system could boot properly.
-
-Boot log upon use of this override suggests I should report this condition so
-future kernels suxx a bit less.
-
-Just in case... 
-[    0.000000] DMI: Gigabyte Technology Co., Ltd. GA-990FXA-UD5/GA-990FXA-UD5,
-BIOS F5 08/29/2011
-
-...
-
-[    2.534896] ACPI: Interpreter enabled
-[    2.534919] ACPI: PM: (supports S0 S3 S4 S5)
-[    2.534921] ACPI: Using IOAPIC for interrupt routing
-[    2.534960] PCI: Using host bridge windows from ACPI; if necessary, use
-"pci=nocrs" and report a bug
-[    2.534961] PCI: Ignoring E820 reservations for host bridge windows
-[    2.534962] PCI: Please notify linux-pci@vger.kernel.org so future kernels
-can this automatically
-[    2.535123] ACPI: Enabled 9 GPEs in block 00 to 1F
-[    2.539860] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
-[    2.539867] acpi PNP0A03:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM
-Segments MSI EDR HPX-Type3]
-[    2.540155] PCI host bridge to bus 0000:00
-
-I could collect other details if necessary.
-
--- 
-
-Sorry for the breakage and thanks for the report.
-
-For completeness, can you please collect the complete dmesg log and
-attach it to the bugzilla?
-
-If I understand correctly, v5.19-rc4 doesn't boot on this system.  If
-you add the "pci=no_e820" parameter, it does boot.
-
-We will need a quirk like the one below to make this work out of the
-box.  Would you mind testing it?  If it doesn't work, can you please
-collect the "dmidecode" output and attach it to the bugzilla also?
-
-
-diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
-index a4f43054bc79..04396dbdd1c5 100644
---- a/arch/x86/pci/acpi.c
-+++ b/arch/x86/pci/acpi.c
-@@ -190,6 +190,18 @@ static const struct dmi_system_id pci_crs_quirks[] __initconst = {
- 			DMI_MATCH(DMI_BOARD_NAME, "X170KM-G"),
- 		},
- 	},
-+
-+	/*
-+	 * See https://bugzilla.kernel.org/show_bug.cgi?id=216217
-+	 */
-+	{
-+		.callback = set_no_e820,
-+		.ident = "Gigabyte GA-990FXA-UD5",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Gigabyte Technology Co., Ltd."),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "GA-990FXA-UD5"),
-+		},
-+	},
- 	{}
- };
+diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+index 9062836bb638..f08e32d552b4 100644
+--- a/drivers/usb/typec/class.c
++++ b/drivers/usb/typec/class.c
+@@ -12,6 +12,7 @@
+ #include <linux/slab.h>
+ #include <linux/usb/pd_vdo.h>
+ #include <linux/usb/typec_mux.h>
++#include <linux/usb/typec_retimer.h>
  
-@@ -246,7 +258,7 @@ void __init pci_acpi_crs_quirks(void)
- 	printk(KERN_INFO "PCI: %s E820 reservations for host bridge windows\n",
- 	       pci_use_e820 ? "Using" : "Ignoring");
- 	if (pci_probe & (PCI_NO_E820 | PCI_USE_E820))
--		printk(KERN_INFO "PCI: Please notify linux-pci@vger.kernel.org so future kernels can this automatically\n");
-+		printk(KERN_INFO "PCI: Please notify linux-pci@vger.kernel.org so future kernels can do this automatically\n");
+ #include "bus.h"
+ #include "class.h"
+@@ -1736,6 +1737,7 @@ static void typec_release(struct device *dev)
+ 	ida_destroy(&port->mode_ids);
+ 	typec_switch_put(port->sw);
+ 	typec_mux_put(port->mux);
++	typec_retimer_put(port->retimer);
+ 	kfree(port->cap);
+ 	kfree(port);
  }
+@@ -2249,6 +2251,13 @@ struct typec_port *typec_register_port(struct device *parent,
+ 		return ERR_PTR(ret);
+ 	}
  
- #ifdef	CONFIG_PCI_MMCONFIG
++	port->retimer = typec_retimer_get(&port->dev);
++	if (IS_ERR(port->retimer)) {
++		ret = PTR_ERR(port->retimer);
++		put_device(&port->dev);
++		return ERR_PTR(ret);
++	}
++
+ 	ret = device_add(&port->dev);
+ 	if (ret) {
+ 		dev_err(parent, "failed to register port (%d)\n", ret);
+diff --git a/drivers/usb/typec/class.h b/drivers/usb/typec/class.h
+index 43fcf9e37a8c..673b2952b074 100644
+--- a/drivers/usb/typec/class.h
++++ b/drivers/usb/typec/class.h
+@@ -55,6 +55,7 @@ struct typec_port {
+ 	enum typec_orientation		orientation;
+ 	struct typec_switch		*sw;
+ 	struct typec_mux		*mux;
++	struct typec_retimer		*retimer;
+ 
+ 	const struct typec_capability	*cap;
+ 	const struct typec_operations   *ops;
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
+
