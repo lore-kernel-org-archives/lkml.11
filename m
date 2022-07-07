@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF843CCA485
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A621CCA48A
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235787AbiGGNsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S235947AbiGGNsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236071AbiGGNrn (ORCPT
+        with ESMTP id S236059AbiGGNrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:47:43 -0400
+        Thu, 7 Jul 2022 09:47:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A21821E05;
-        Thu,  7 Jul 2022 06:47:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1D720BC5;
+        Thu,  7 Jul 2022 06:47:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1F6D621B7;
-        Thu,  7 Jul 2022 13:47:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85568C341E3;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90CDD62099;
+        Thu,  7 Jul 2022 13:47:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51026C341D1;
         Thu,  7 Jul 2022 13:47:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657201659;
-        bh=IgzH4oqror/MFqSJ+VvgYEjCnBg367NQ22g2bUgcfic=;
+        bh=J/8h459IDkKsEYs+RBInatdxcAY4eLDkFMmL2VmniG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vjgz7iE5W4BW2xflygDBd5i3ygM5b5Fho2lCSLHMqZwKyqAeEVZmPAyL/tWapp+w1
-         zkDfLileU2pdolalyQ9igyjgih0Gzg5g6rQ49OKA/RtOjhAtd2Rl9b4uIGSkWRXgnL
-         4oZLgrgskJhkOFdl6Fce4zT5my7lfdOgsI6oZhKaSP9lpo/TQ9kfoD7zkavTV32J5I
-         l6KwhnkSse+Gt+SVNx5O+db5T01R/7mVsbA7kuCeA2Phgj2rPTeXYc4Tn1sw5CH4a1
-         yUg0u51rB+15+r2pYlDekqlOD7MRgjQu1CUF35CL4oPZmF4rCynenoZ2+m/8HBpnDG
-         8c9RnMLQOObjw==
+        b=jTZFwcHUmBT3iDbItyQw+hU2Oe7FYcgOqVHRlgYwiR9Xx5Ho8F2yuEaEN5PLPAhqS
+         sGLqi9tCMt3d2x5qt09pw0Y8X/OD1eAQWvOjNcRV8Bpqkq5kkB8V9zAM8sYFuQY3xy
+         d630J5HKvuwFfc3noFIf30uH79DmhaZXg/3LjPpoaVqpzVew6RfrIBwzl/WecZzbj+
+         dFzXnYV2rLzC4OFCJCTXB10WFr1FozvlASReLmcKQfECl4OI9z1RvR0GyThU5249SJ
+         R7jwExg8ZjNIgkABqj+ds6gWnNEvmHQIGPuh0sn3iTjjloJtQStRue+Kqc0u0IZbwt
+         YuGmqRz2iNxAA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o9Rr4-0000wQ-I5; Thu, 07 Jul 2022 15:47:42 +0200
+        id 1o9Rr3-0000vs-ON; Thu, 07 Jul 2022 15:47:41 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,10 +44,11 @@ Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Kishon Vijay Abraham I <kishon@ti.com>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 11/30] dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate reset names
-Date:   Thu,  7 Jul 2022 15:47:06 +0200
-Message-Id: <20220707134725.3512-12-johan+linaro@kernel.org>
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 02/30] dt-bindings: phy: qcom,qmp: sort compatible strings
+Date:   Thu,  7 Jul 2022 15:46:57 +0200
+Message-Id: <20220707134725.3512-3-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220707134725.3512-1-johan+linaro@kernel.org>
 References: <20220707134725.3512-1-johan+linaro@kernel.org>
@@ -57,62 +58,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deprecate the PHY node 'reset-names' property which specified that the
-reset name should have an unnecessary "lane" suffix.
+Sort the compatible strings alphabetically to make it easier to look up
+entries and add new ones.
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ .../devicetree/bindings/phy/qcom,qmp-phy.yaml        | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-index b7b115e021d4..4e710ef75523 100644
---- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-@@ -78,9 +78,10 @@ patternProperties:
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index f74b3bf34a23..38e0ade01687 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -38,15 +38,18 @@ properties:
+       - qcom,sdm845-qmp-ufs-phy
+       - qcom,sdm845-qmp-usb3-phy
+       - qcom,sdm845-qmp-usb3-uni-phy
++      - qcom,sdx55-qmp-pcie-phy
++      - qcom,sdx55-qmp-usb3-uni-phy
++      - qcom,sdx65-qmp-usb3-uni-phy
+       - qcom,sm6115-qmp-ufs-phy
+       - qcom,sm6350-qmp-ufs-phy
+       - qcom,sm8150-qmp-ufs-phy
+       - qcom,sm8150-qmp-usb3-phy
+       - qcom,sm8150-qmp-usb3-uni-phy
+-      - qcom,sm8250-qmp-ufs-phy
+       - qcom,sm8250-qmp-gen3x1-pcie-phy
+       - qcom,sm8250-qmp-gen3x2-pcie-phy
+       - qcom,sm8250-qmp-modem-pcie-phy
++      - qcom,sm8250-qmp-ufs-phy
+       - qcom,sm8250-qmp-usb3-phy
+       - qcom,sm8250-qmp-usb3-uni-phy
+       - qcom,sm8350-qmp-ufs-phy
+@@ -56,9 +59,6 @@ properties:
+       - qcom,sm8450-qmp-gen4x2-pcie-phy
+       - qcom,sm8450-qmp-ufs-phy
+       - qcom,sm8450-qmp-usb3-phy
+-      - qcom,sdx55-qmp-pcie-phy
+-      - qcom,sdx55-qmp-usb3-uni-phy
+-      - qcom,sdx65-qmp-usb3-uni-phy
  
-       resets:
-         items:
--          - description: PHY (lane) reset
-+          - description: PHY reset
- 
-       reset-names:
-+        deprecated: true
-         items:
-           - enum:
-               - lane0
-@@ -100,7 +101,6 @@ patternProperties:
-       - reg
-       - clocks
-       - resets
--      - reset-names
-       - "#clock-cells"
-       - clock-output-names
-       - "#phy-cells"
-@@ -152,7 +152,6 @@ examples:
- 
-             clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
-             resets = <&gcc GCC_PCIE_0_PHY_BCR>;
--            reset-names = "lane0";
- 
-             #clock-cells = <0>;
-             clock-output-names = "pcie_0_pipe_clk_src";
-@@ -167,7 +166,6 @@ examples:
- 
-             clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
-             resets = <&gcc GCC_PCIE_1_PHY_BCR>;
--            reset-names = "lane1";
- 
-             #clock-cells = <0>;
-             clock-output-names = "pcie_1_pipe_clk_src";
-@@ -182,7 +180,6 @@ examples:
- 
-             clocks = <&gcc GCC_PCIE_2_PIPE_CLK>;
-             resets = <&gcc GCC_PCIE_2_PHY_BCR>;
--            reset-names = "lane2";
- 
-             #clock-cells = <0>;
-             clock-output-names = "pcie_2_pipe_clk_src";
+   reg:
+     minItems: 1
+@@ -277,12 +277,12 @@ allOf:
+           contains:
+             enum:
+               - qcom,msm8998-qmp-ufs-phy
++              - qcom,sc8180x-qmp-ufs-phy
++              - qcom,sc8280xp-qmp-ufs-phy
+               - qcom,sdm845-qmp-ufs-phy
+               - qcom,sm6350-qmp-ufs-phy
+               - qcom,sm8150-qmp-ufs-phy
+               - qcom,sm8250-qmp-ufs-phy
+-              - qcom,sc8180x-qmp-ufs-phy
+-              - qcom,sc8280xp-qmp-ufs-phy
+     then:
+       properties:
+         clocks:
 -- 
 2.35.1
 
