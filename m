@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB7F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiGGLIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
+        id S235249AbiGGLMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235385AbiGGLII (ORCPT
+        with ESMTP id S234746AbiGGLMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 07:08:08 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741DE57272;
-        Thu,  7 Jul 2022 04:08:06 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 267B7v5f013468;
-        Thu, 7 Jul 2022 06:07:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657192077;
-        bh=y/Z39qua67dgp5zkofpHim547GKv+6IKE9vJapd+IGg=;
-        h=From:To:CC:Subject:Date;
-        b=hJydOVYEQNmdNd1rcNhGayOMOWU1tqkcYvyPBM9pu8G0/OMnqSK9gFQ/BVLQM7nF5
-         lBFMeRZi5DBsxlAcBtQGcoOAwkQ31+XPuqMXwxNytoUXCIFsm3M1NxcOJmVmXQvOC7
-         PtlkId1A1GQaMe6gcLLZ12ZX5mzpwQoC3NyRGMfA=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 267B7vle063776
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Jul 2022 06:07:57 -0500
-Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
- Jul 2022 06:07:57 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 7 Jul 2022 06:07:57 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 267B7u35020504;
-        Thu, 7 Jul 2022 06:07:57 -0500
-From:   Jayesh Choudhary <j-choudhary@ti.com>
-To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
-CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <j-keerthy@ti.com>, <linux-crypto@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <vigneshr@ti.com>, <j-choudhary@ti.com>
-Subject: [PATCH] dt-bindings: crypto: ti,sa2ul: drop dma-coherent property
-Date:   Thu, 7 Jul 2022 16:37:56 +0530
-Message-ID: <20220707110756.16169-1-j-choudhary@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 7 Jul 2022 07:12:52 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C0AD32EDF;
+        Thu,  7 Jul 2022 04:12:50 -0700 (PDT)
+Received: from [10.180.13.185] (unknown [10.180.13.185])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxaeCxv8ZiOf0OAA--.37662S3;
+        Thu, 07 Jul 2022 19:12:49 +0800 (CST)
+Subject: Re: [PATCH] MIPS: fix pmd_mkinvalid
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1657181495-33004-1-git-send-email-zhanghongchen@loongson.cn>
+ <20220707092206.GA9894@alpha.franken.de>
+From:   Hongchen Zhang <zhanghongchen@loongson.cn>
+Message-ID: <bfb97f6b-7a39-8253-bc14-08f2f54ed312@loongson.cn>
+Date:   Thu, 7 Jul 2022 19:12:49 +0800
+User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220707092206.GA9894@alpha.franken.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9AxaeCxv8ZiOf0OAA--.37662S3
+X-Coremail-Antispam: 1UD129KBjvdXoWruw43Aw4kXF1kGF1UWry8Xwb_yoWDtwc_uF
+        s2kr4rGw1DZa1rKFWUKw47ZrySkrZrJrW8X34kWrsF9FWkWan5Ar4qg3sFg3WkCws5JFyU
+        CF98uFy2qryI9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbx8YjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z2
+        80aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAK
+        zVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx
+        8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21lc2xS
+        Y4AK6svPMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
+        AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUXVWUAwCI
+        c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
+        AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWU
+        JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07bOoG
+        dUUUUU=
+X-CM-SenderInfo: x2kd0w5krqwupkhqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-crypto driver itself is not dma-coherent. It is the dmaengine
-that moves data and the buffers are to be mapped to the
-dmaengine provider. So this property should be dropped.
+On 2022/7/7 下午5:22, Thomas Bogendoerfer wrote:
+> On Thu, Jul 07, 2022 at 04:11:35PM +0800, Hongchen Zhang wrote:
+>> When a pmd entry is invalidated by pmd_mkinvalid,pmd_present should
+>> return true.
+>> So introduce a _PMD_PRESENT_INVALID_SHIFT bit to check if a pmd is
+>> present but invalidated by pmd_mkinvalid.
+> 
+> What problem are you trying to fix ? What are the symptoms ?
+> 
+>> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> the test robot showed problems with your last version of the patch,
+> which hasn't been integrated into at least the MIPS tree, so no
+> need to that.
+> 
+> Thomas.
+> 
 
-Fixes: 2ce9a7299bf6 ('dt-bindings: crypto: Add TI SA2UL crypto accelerator documentation')
-Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
----
- .../devicetree/bindings/crypto/ti,sa2ul.yaml        | 13 -------------
- 1 file changed, 13 deletions(-)
+Hi Thomas,
+   The idea come from the commit:
+   b65399f6111b(arm64/mm: Change THP helpers to comply with generic MM 
+  semantics).
+   There is an problem now:
+	    CPU 0		CPU 1
+	pmdp_invalidate		do_page_fault		
+	...			  __handle_mm_fault
+				    is_swap_pmd == true
+				    trigger VM_BUG_ON() ?
+	set_pmd_at
+   the reason is that pmd_present return true,after this commit
+   pmd_present will return false,and the VM_BUG_ON will not be triggered.
+   Like arm64 does,we can introduce a new bit to fix this.
 
-diff --git a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
-index 02f47c2e7998..0c15fefb6671 100644
---- a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
-+++ b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
-@@ -35,8 +35,6 @@ properties:
-       - const: rx1
-       - const: rx2
- 
--  dma-coherent: true
--
-   "#address-cells":
-     const: 2
- 
-@@ -72,16 +70,6 @@ required:
-   - dmas
-   - dma-names
- 
--if:
--  properties:
--    compatible:
--      enum:
--        - ti,j721e-sa2ul
--        - ti,am654-sa2ul
--then:
--  required:
--    - dma-coherent
--
- additionalProperties: false
- 
- examples:
-@@ -95,5 +83,4 @@ examples:
-         dmas = <&main_udmap 0xc000>, <&main_udmap 0x4000>,
-                <&main_udmap 0x4001>;
-         dma-names = "tx", "rx1", "rx2";
--        dma-coherent;
-     };
--- 
-2.17.1
+Thanks.
 
