@@ -2,95 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C642C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02076CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:53:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235364AbiGGKxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43918 "EHLO
+        id S235275AbiGGKxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235362AbiGGKxM (ORCPT
+        with ESMTP id S233512AbiGGKxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:53:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5FE257221;
-        Thu,  7 Jul 2022 03:53:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32EA5622DE;
-        Thu,  7 Jul 2022 10:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B113C341CB;
-        Thu,  7 Jul 2022 10:53:10 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Kuo/M9df"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1657191186;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z0hiP75bywalq4wJilKlgvi8A6ckY7G9OfIHBXYukrA=;
-        b=Kuo/M9dfJqc4ZchaoFkxvgAKDC6qHrotNcISSxGj8w/TAIjLGVbjHYVB9tng1J858d5/u7
-        xTOgzzWFfIG/1JhP/Qj/E2mboSq0H4eMiO7v8S72hddr0+zvGlgoUAz3o0lGZhqGCmJ4dR
-        Ybtcc05oJ0w2SETQHQLKSrey07t/Prs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d3b5aa04 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 7 Jul 2022 10:53:06 +0000 (UTC)
-Received: by mail-il1-f172.google.com with SMTP id p13so10810521ilq.0;
-        Thu, 07 Jul 2022 03:53:06 -0700 (PDT)
-X-Gm-Message-State: AJIora/9epNUg7spD+TwL/8R5TFIAWCPvRvHBJ/eJna9EQ3KU8+j2OLg
-        2bRqp82w1BZ25yt19sdYs3htLk2RCEH/gKxfRjg=
-X-Google-Smtp-Source: AGRyM1uPG2aPUQGnUtUd1utWCbj/p/OG8HUm8NCM64ilDZ1INtOsvBMn+v+G15oROID8oYLRYjIM7z8FWS+ahoTmFss=
-X-Received: by 2002:a05:6e02:20cb:b0:2dc:28d0:b8a5 with SMTP id
- 11-20020a056e0220cb00b002dc28d0b8a5mr7727958ilq.160.1657191185406; Thu, 07
- Jul 2022 03:53:05 -0700 (PDT)
+        Thu, 7 Jul 2022 06:53:18 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074D657228
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:53:18 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id ez10so1565906ejc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:53:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/MdPU7/0LhUESABqOcsJRA8NbvdGq3zsY92OcPiOhSc=;
+        b=wEf+WpAM38MWTewyyu9oF3P+XqIq5idiDLfWgfEIJrYheTo8xBuCKSvl9H99kcUTDZ
+         kUerrZi0GlhDFjaTQzg544xMdL07XfP77NjR/PlZB66hEvmE08EBIrmso0LEjgVw19QK
+         WJeFgRsjGU74J7nz0IKXIXNT2AS9+Nwlfh/Mtwq83/f3f/alfn0rnxEZ3+OjqwEdVywI
+         75nAi+HXNi0h5EJBqXBpSBOYZMUgaTOena6exxvQ+vg3ind7cNMS7Nme4F9veyCOAqJd
+         xg6fXwSTLm+dpoQxCFDWOMnh2yfVaCCAeNsFXCGAXQqG+ZMfc3SxttsLeGypVm6eHOGf
+         wEEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/MdPU7/0LhUESABqOcsJRA8NbvdGq3zsY92OcPiOhSc=;
+        b=M5ttEcqu+jreLRkUwT7tJruhnyYuXFRG+pm1aDl1eNVyKvskUnWOgeJYlbmV8/QMcF
+         duSjQhg2g09No/x6/a5ASBXUgbRJuOHPvrMrgjMt1dX9RV+57EWEcreILjwLXN10mvnz
+         qMZBbGUQAKBdbbke4XHUaMAEweIMd0Z6KSc75/9zq4FhAbEkLpabRYeAsJ2P7Iu0Hjqb
+         tWeEUpoWC35O8WaErvZO0XH4nrLB2lWF3OsD+aazKTGZq2NIiZA5lo79+7CpomlV76eb
+         QiLpdQEtn/Gl6flEaLJmucTkKJUNYQXXnmRgts2kgmoywwi+GVWRxGeymVyqHykYKyvM
+         0r0g==
+X-Gm-Message-State: AJIora+6Q5lx17is2PhHyswLxSBtyjeLX8AONC+/6HQW5UqjJp3sy6yn
+        DXKn75I0f7rcKdxGGHbgWcVKKUDHN+xelbrpn14/Nb/jfseC7g==
+X-Google-Smtp-Source: AGRyM1tG+R5xjPewg3TqpK5d5/L3gIH6N57ZzdlDvPbR39hXy+R0tUkD/nSkx2YVxrSf1tB/Ezq9w8FA+u47jlY7iyU=
+X-Received: by 2002:a17:907:16a6:b0:726:574d:d31f with SMTP id
+ hc38-20020a17090716a600b00726574dd31fmr43051467ejc.514.1657191196466; Thu, 07
+ Jul 2022 03:53:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220707173252.5fff21f2@canb.auug.org.au>
-In-Reply-To: <20220707173252.5fff21f2@canb.auug.org.au>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 7 Jul 2022 12:52:54 +0200
-X-Gmail-Original-Message-ID: <CAHmME9qCTZpRKrvXVDhCGTD6z15BwDFupX0Z5QwhoWCCT2w2Fw@mail.gmail.com>
-Message-ID: <CAHmME9qCTZpRKrvXVDhCGTD6z15BwDFupX0Z5QwhoWCCT2w2Fw@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the random tree with the powerpc tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        PowerPC <linuxppc-dev@lists.ozlabs.org>,
-        Juerg Haefliger <juerg.haefliger@canonical.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220612144854.2223873-1-alvin@pqrs.dk> <20220612144854.2223873-2-alvin@pqrs.dk>
+In-Reply-To: <20220612144854.2223873-2-alvin@pqrs.dk>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Thu, 7 Jul 2022 12:53:05 +0200
+Message-ID: <CAG3jFysYKJc3Ar99HsoSri+wxW2=KOdSwwsU9qBpypxrNCMaiQ@mail.gmail.com>
+Subject: Re: [PATCH RESEND 1/2] drm: bridge: adv7511: fix CEC power down
+ control register offset
+To:     alvin@pqrs.dk
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Archit Taneja <architt@codeaurora.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+On Sun, 12 Jun 2022 at 16:49, Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
+>
+> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+>
+> The ADV7511_REG_CEC_CTRL =3D 0xE2 register is part of the main register
+> map - not the CEC register map. As such, we shouldn't apply an offset to
+> the register address. Doing so will cause us to address a bogus register
+> for chips with a CEC register map offset (e.g. ADV7533).
+>
+> Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+> ---
+>  drivers/gpu/drm/bridge/adv7511/adv7511.h     | 5 +----
+>  drivers/gpu/drm/bridge/adv7511/adv7511_cec.c | 4 ++--
+>  2 files changed, 3 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/b=
+ridge/adv7511/adv7511.h
+> index 9e3bb8a8ee40..46ae6c0d9aa5 100644
+> --- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
+> +++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+> @@ -406,10 +406,7 @@ void adv7511_cec_irq_process(struct adv7511 *adv7511=
+, unsigned int irq1);
+>  #else
+>  static inline int adv7511_cec_init(struct device *dev, struct adv7511 *a=
+dv7511)
+>  {
+> -       unsigned int offset =3D adv7511->type =3D=3D ADV7533 ?
+> -                                               ADV7533_REG_CEC_OFFSET : =
+0;
+> -
+> -       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset,
+> +       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL,
+>                      ADV7511_CEC_CTRL_POWER_DOWN);
+>         return 0;
+>  }
+> diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c b/drivers/gpu/d=
+rm/bridge/adv7511/adv7511_cec.c
+> index 399f625a50c8..6d067fa54bea 100644
+> --- a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
+> +++ b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
+> @@ -347,7 +347,7 @@ int adv7511_cec_init(struct device *dev, struct adv75=
+11 *adv7511)
+>                 goto err_cec_alloc;
+>         }
+>
+> -       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset, 0);
+> +       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL, 0);
+>         /* cec soft reset */
+>         regmap_write(adv7511->regmap_cec,
+>                      ADV7511_REG_CEC_SOFT_RESET + offset, 0x01);
+> @@ -374,7 +374,7 @@ int adv7511_cec_init(struct device *dev, struct adv75=
+11 *adv7511)
+>         dev_info(dev, "Initializing CEC failed with error %d, disabling C=
+EC\n",
+>                  ret);
+>  err_cec_parse_dt:
+> -       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset,
+> +       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL,
+>                      ADV7511_CEC_CTRL_POWER_DOWN);
+>         return ret =3D=3D -EPROBE_DEFER ? ret : 0;
+>  }
+> --
+> 2.36.1
+>
 
-On Thu, Jul 7, 2022 at 9:36 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> Today's linux-next merge of the random tree got a conflict in:
->
->   arch/powerpc/Kconfig
->
-> between commit:
->
->   cea9d62b64c9 ("powerpc: Kconfig: Replace tabs with whitespaces")
->
-> from the powerpc tree and commit:
->
->   a2ff4b7600cd ("random: remove CONFIG_ARCH_RANDOM")
->
-> from the random tree.
->
-> I fixed it up (the latter removed some lines updated by the former) and
-> can carry the fix as necessary. This is now fixed as far as linux-next
-> is concerned, but any non trivial conflicts should be mentioned to your
-> upstream maintainer when your tree is submitted for merging.  You may
-> also want to consider cooperating with the maintainer of the conflicting
-> tree to minimise any particularly complex conflicts.
-
-Oh darn. Any clever tricks to prevent the merge conflict from
-happening? Or is this trivial enough that we'll let Linus deal with
-it?
-
-Jason
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
