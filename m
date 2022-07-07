@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F266FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236529AbiGGTrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 15:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
+        id S236790AbiGGTrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 15:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235961AbiGGTrB (ORCPT
+        with ESMTP id S236631AbiGGTrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 15:47:01 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A5559277;
-        Thu,  7 Jul 2022 12:46:57 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id r21so5417085eju.0;
-        Thu, 07 Jul 2022 12:46:57 -0700 (PDT)
+        Thu, 7 Jul 2022 15:47:03 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67FE59244;
+        Thu,  7 Jul 2022 12:46:54 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id v12so11818366edc.10;
+        Thu, 07 Jul 2022 12:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=I3O9KA8l0ZyZWk4PrHMwkxFP5JEBmMEH3qlexm1SaGo=;
-        b=HwLSwtkKtvR1JYRcZtIwcC4yQ+vua1ftIKD9bu7kpfEy4Cm3W8mblgbzmNPr73P/h/
-         /4rPSpd9ODBgzWlhRj8NI6n+CqEoXlLf5JuCM6cu9k4JNYBDelbQyeT5aoJ/d+GkZM/4
-         fvgXUgbJudUuxFavxVMK6/qk2tZDOkhN+WxmxgEPt4/sQ8GNYhxfTFQmnLuau0h73YKB
-         CTqf2mABEU25rfu8arQIyQ+JFpWEjFYVntJJA6e7vE0AZ0nlrFHn4si5uXvNgtd+RxCS
-         2pyvxrKFbyXqnzB/cg0rDl3FAPT4KU6JODXjBqljMnJ+8PeVHvfjCXht9gv4Pd9jUfgB
-         0VGA==
+        bh=G5dmS78zz1zwy89jfeWA97TI8jj2tS8e0cDJN/8sutk=;
+        b=QN0fskPgk1K9lhN3aO2dm5FSQxJQ/Yi9ty3yx86aq8RWe0W2ujYIfeNZ54HzCh+KZf
+         H/4GBrWRcKSIn1cdwUfBFLh85Koj9MduC44GtMF5GQ1W3ykhQAU9BMdMTTF8AVAByfxW
+         ovcl56s64uqWxO0zpKfCTVSc1r1rmroGVVEyCEoDW125R12eyJOdDpHpOMyUc/szWkqK
+         VKmITqT1taSJRAA4GyLxR8znJIm2P1bq5M9m8zx/QBdeWsjQtowrvbc5ofqZTi1l/vRM
+         RZWusfTtL+FNIFlZcLdKbCrYxarWmwRa1FWnG9KpLvzcH5yZlik9nE5/ccp9bz3/Aiar
+         7kgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=I3O9KA8l0ZyZWk4PrHMwkxFP5JEBmMEH3qlexm1SaGo=;
-        b=02OLcVJ6kPlraXU5cvF2tk19RWA66Rk/OGpIHrk3y0NsyOedsJOAsCIgL7icWrxC6P
-         RBK+D58k+UvLsZWct8YwkcWwatEa18kAXlHxky99Qha4Hau/KaSoqAl58ef5sg38ycRa
-         /TJu7CbwK8M1KgFlH/I9RivH2fwZPk+h5jwdh9XupqfEWvtKvo5Aoyne1++aEDeQ7haP
-         TLhXra+FFuTRaUdZB+c/P2wa7nLMYVXkVBQT2bYhNNPDTMcebtoIHz8LqIu0z0mGih0p
-         2W7d68jL+VlTQnfUUr+M+p+O1BZZBGPkMUugeBJNRsMF5ZhGyW7MDsNXevMBwU0Vi4et
-         h3qQ==
-X-Gm-Message-State: AJIora/bT3GSQrDvRukk9G0AxN0a0pm47AlNPqz/leEP5A1XKSBwVBlD
-        gQr/x7P1TTyxX+WmBlYpU/Q=
-X-Google-Smtp-Source: AGRyM1vlnCepxfEnkz/UpZMQDzyxm0F292miVG6p+EZfseDNlA70THgCrx3IUvfsU++monQQt7zpnw==
-X-Received: by 2002:a17:907:1b03:b0:6ff:78d4:c140 with SMTP id mp3-20020a1709071b0300b006ff78d4c140mr48043015ejc.554.1657223216723;
-        Thu, 07 Jul 2022 12:46:56 -0700 (PDT)
+        bh=G5dmS78zz1zwy89jfeWA97TI8jj2tS8e0cDJN/8sutk=;
+        b=oeHBXuaLCYdVr6yipXWTlHDCwiQISbRW7fc0GwTPOmudMdGOXxycWDShkg7Vq3ssXN
+         XfsbfeWwVwmgd1xeX4ChEr4QKD5KdhtG5A+0v1X5fxycnwZKkmvpXLWd5wTPwFJaOHQk
+         kSRk2j1N30WFJC7zYKSGgbjTJNK4EUCQiC/Rb8hb7+cetykYdFC+RMBKVI3zRFLay500
+         rvwnlcDiEA48njFcX4QLaFcglwC2LDEihi1Wzx+vXHFzce+AsN7Wit94rD41Y2yCvlXC
+         6f0KrLG+f9DhqwEpPXxxuaiMTk7MfSailPNgm41o68XijawyFvMuYHr22P6+9hgPvPSL
+         UKpA==
+X-Gm-Message-State: AJIora8wcLNQEc39Lv7uKScV/8gvLyhLIMsMX3UDRwiPpE8rjIfWlmeo
+        oaouGB8mqpbdW1NTXl1fYf1D2keXgXU=
+X-Google-Smtp-Source: AGRyM1tazEHDxc6kwjfkZuNdpd1A3Q2t59CObFU0/AXY62YGlqvsdleAQ1yghbC2dS996dH6A7LnrA==
+X-Received: by 2002:a05:6402:1d53:b0:43a:9ba7:315b with SMTP id dz19-20020a0564021d5300b0043a9ba7315bmr6425080edb.350.1657223213482;
+        Thu, 07 Jul 2022 12:46:53 -0700 (PDT)
 Received: from localhost (92.40.202.166.threembb.co.uk. [92.40.202.166])
-        by smtp.gmail.com with ESMTPSA id g17-20020aa7c591000000b0043a4a5813d8sm10624117edq.2.2022.07.07.12.46.55
+        by smtp.gmail.com with ESMTPSA id g3-20020a1709061c8300b0070759e37183sm19311041ejh.59.2022.07.07.12.46.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 12:46:56 -0700 (PDT)
+        Thu, 07 Jul 2022 12:46:53 -0700 (PDT)
 From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 To:     paul@crapouillou.net, lgirdwood@gmail.com, broonie@kernel.org,
         perex@perex.cz, tiwai@suse.com
 Cc:     linux-mips@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 11/11] ASoC: jz4740-i2s: Refactor DAI probe/remove ops as component ops
-Date:   Thu,  7 Jul 2022 20:46:55 +0100
-Message-Id: <20220707194655.312892-12-aidanmacdonald.0x0@gmail.com>
+Subject: [PATCH v2 09/11] ASoC: jz4740-i2s: Support continuous sample rate
+Date:   Thu,  7 Jul 2022 20:46:53 +0100
+Message-Id: <20220707194655.312892-10-aidanmacdonald.0x0@gmail.com>
 In-Reply-To: <20220707194655.312892-1-aidanmacdonald.0x0@gmail.com>
 References: <20220707194655.312892-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
@@ -64,107 +64,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move most of the DAI probe/remove logic into component ops.
-This makes things more consistent because the AIC clock is
-now managed solely from the component side. And it makes it
-easier to add codec switching support later on.
+The I2S controller on JZ47xx SoCs doesn't impose restrictions on
+sample rate and the driver doesn't make any assumptions about it,
+so the DAI should advertise a continuous sample rate range.
 
+Acked-by: Paul Cercueil <paul@crapouillou.net>
 Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 ---
- sound/soc/jz4740/jz4740-i2s.c | 53 +++++++++++++++++++----------------
- 1 file changed, 29 insertions(+), 24 deletions(-)
+ sound/soc/jz4740/jz4740-i2s.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s.c
-index 5db73f12efcf..e39ba4911678 100644
+index 9be2f3f1b376..70b9d28a40ce 100644
 --- a/sound/soc/jz4740/jz4740-i2s.c
 +++ b/sound/soc/jz4740/jz4740-i2s.c
-@@ -306,32 +306,10 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
- static int jz4740_i2s_dai_probe(struct snd_soc_dai *dai)
- {
- 	struct jz4740_i2s *i2s = snd_soc_dai_get_drvdata(dai);
--	int ret;
--
--	ret = clk_prepare_enable(i2s->clk_aic);
--	if (ret)
--		return ret;
- 
- 	snd_soc_dai_init_dma_data(dai, &i2s->playback_dma_data,
- 		&i2s->capture_dma_data);
- 
--	regmap_write(i2s->regmap, JZ_REG_AIC_CONF, JZ_AIC_CONF_RESET);
--
--	regmap_write(i2s->regmap, JZ_REG_AIC_CONF,
--		     JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
--		     JZ_AIC_CONF_I2S | JZ_AIC_CONF_INTERNAL_CODEC);
--
--	regmap_field_write(i2s->field_rx_fifo_thresh, 7);
--	regmap_field_write(i2s->field_tx_fifo_thresh, 8);
--
--	return 0;
--}
--
--static int jz4740_i2s_dai_remove(struct snd_soc_dai *dai)
--{
--	struct jz4740_i2s *i2s = snd_soc_dai_get_drvdata(dai);
--
--	clk_disable_unprepare(i2s->clk_aic);
- 	return 0;
- }
- 
-@@ -351,7 +329,6 @@ static const struct snd_soc_dai_ops jz4740_i2s_dai_ops = {
- 
- static struct snd_soc_dai_driver jz4740_i2s_dai = {
- 	.probe = jz4740_i2s_dai_probe,
--	.remove = jz4740_i2s_dai_remove,
+@@ -391,13 +391,13 @@ static struct snd_soc_dai_driver jz4740_i2s_dai = {
  	.playback = {
  		.channels_min = 1,
  		.channels_max = 2,
-@@ -389,7 +366,6 @@ static const struct i2s_soc_info jz4760_i2s_soc_info = {
- 
- static struct snd_soc_dai_driver jz4770_i2s_dai = {
- 	.probe = jz4740_i2s_dai_probe,
--	.remove = jz4740_i2s_dai_remove,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.capture = {
+ 		.channels_min = 2,
+ 		.channels_max = 2,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.symmetric_rate = 1,
+@@ -429,13 +429,13 @@ static struct snd_soc_dai_driver jz4770_i2s_dai = {
  	.playback = {
  		.channels_min = 1,
  		.channels_max = 2,
-@@ -459,8 +435,37 @@ static int jz4740_i2s_resume(struct snd_soc_component *component)
- 	return 0;
- }
- 
-+static int jz4740_i2s_probe(struct snd_soc_component *component)
-+{
-+	struct jz4740_i2s *i2s = snd_soc_component_get_drvdata(component);
-+
-+	ret = clk_prepare_enable(i2s->clk_aic);
-+	if (ret)
-+		return ret;
-+
-+	regmap_write(i2s->regmap, JZ_REG_AIC_CONF, JZ_AIC_CONF_RESET);
-+
-+	regmap_write(i2s->regmap, JZ_REG_AIC_CONF,
-+		     JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
-+		     JZ_AIC_CONF_I2S | JZ_AIC_CONF_INTERNAL_CODEC);
-+
-+	regmap_field_write(i2s->field_rx_fifo_thresh, 7);
-+	regmap_field_write(i2s->field_tx_fifo_thresh, 8);
-+
-+	return 0;
-+}
-+
-+static void jz4740_i2s_remove(struct snd_soc_component *component)
-+{
-+	struct jz4740_i2s *i2s = snd_soc_component_get_drvdata(component);
-+
-+	clk_disable_unprepare(i2s->clk_aic);
-+}
-+
- static const struct snd_soc_component_driver jz4740_i2s_component = {
- 	.name			= "jz4740-i2s",
-+	.probe			= jz4740_i2s_probe,
-+	.remove			= jz4740_i2s_remove,
- 	.suspend		= jz4740_i2s_suspend,
- 	.resume			= jz4740_i2s_resume,
- 	.legacy_dai_naming	= 1,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.capture = {
+ 		.channels_min = 2,
+ 		.channels_max = 2,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.ops = &jz4740_i2s_dai_ops,
 -- 
 2.35.1
 
