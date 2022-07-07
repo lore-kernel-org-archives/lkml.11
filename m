@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B40CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E1AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235556AbiGGO2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
+        id S235762AbiGGO3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiGGO2o (ORCPT
+        with ESMTP id S235704AbiGGO31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:28:44 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29622101F4;
-        Thu,  7 Jul 2022 07:28:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657204123; x=1688740123;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=lew5L0hGNEdLY7OPIiUC+eu2JioJ0wYpzwTmjdjpnes=;
-  b=U5Ru64LGpnc0wjSm9dNqi0OizmYopDiAw+7j01KZuCzMm2qrjjyitjmP
-   9PA87CxbPNyMrK9QV7sJ18ZFgCG0gjUWem6xlQGepEYrFhNBwY0g95uzk
-   fZgWRCKCRecKZstoUGITtBNHiSqCOgu89IolBCfMJPrsRupjRXj8dET2b
-   GViYTzcr7W5334WGB95D0rcd/EXzrmvm1quFdDNH2NZAdvNqadZRc6ncn
-   qrwyWtO12uAEPUkZiti/DVGWsd6IImirO8lbDnuYeFDDta/di3WAJVsl7
-   KivyHPCXGgnuH4xfT2X3TAxpUe1KAYFy3HwYBxGyh2bvXV4iW5HIwq5TS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="263820686"
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="263820686"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 07:28:42 -0700
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="568539686"
-Received: from nmajidi-mobl.amr.corp.intel.com (HELO [10.251.17.238]) ([10.251.17.238])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 07:28:41 -0700
-Message-ID: <880f3991-09e5-2f96-d5ba-213cff05c458@intel.com>
-Date:   Thu, 7 Jul 2022 07:26:30 -0700
+        Thu, 7 Jul 2022 10:29:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176192F3BF;
+        Thu,  7 Jul 2022 07:29:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7559062257;
+        Thu,  7 Jul 2022 14:29:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D7AC3411E;
+        Thu,  7 Jul 2022 14:29:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657204161;
+        bh=zLD3ibeCNmnWU+a69Z0emMZcp26tTKwlO4zz96FbD0g=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=maRDDBMgpVM7fxUdnMeRfdk3VmVe4hlaYoXjem1uVpqSzXY0m9K4pU+JTM43k+UPb
+         NlM3+TPLZhsf0AnRYmlKBis7SKeZcMcDTq92FHLkXq5Nw6gTo4e5c/VRxRNwNtz983
+         pNReb28HmulV/A8oPyF16vyCvv8WohY+HWc3e4ZAmwT5U8CgV1HjuAcIk59UMcfO8K
+         axsTbDiiyrcDVjpkJ3Tgx0FJgADtX5Meq2nNcqcB6efkIxxfPBAlGupKm0973r77Pg
+         olkbKa7YqQ+6Y/o2snnuHIDBjkuSitUc/4RX/5hwNii58Pq96537koR72FGru57zm/
+         GHViebz5g5BpQ==
+Message-ID: <1d0fec7d-ed83-e1ff-92a1-e721bcc50298@kernel.org>
+Date:   Thu, 7 Jul 2022 17:29:16 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v5 12/22] x86/virt/tdx: Convert all memory regions in
- memblock to TDX memory
+Subject: Re: [PATCH v4 4/5] interconnect: qcom: icc-rpm: Support multiple
+ buckets
 Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1655894131.git.kai.huang@intel.com>
- <8288396be7fedd10521a28531e138579594d757a.1655894131.git.kai.huang@intel.com>
- <20d63398-928f-0c6f-47ec-8e225c049ad8@intel.com>
- <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Leo Yan <leo.yan@linaro.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220705072336.742703-1-leo.yan@linaro.org>
+ <20220705072336.742703-5-leo.yan@linaro.org>
+From:   Georgi Djakov <djakov@kernel.org>
+In-Reply-To: <20220705072336.742703-5-leo.yan@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/26/22 23:16, Kai Huang wrote:
-> On Fri, 2022-06-24 at 12:40 -0700, Dave Hansen wrote:
->>> +/*
->>> + * Walks over all memblock memory regions that are intended to be
->>> + * converted to TDX memory.  Essentially, it is all memblock memory
->>> + * regions excluding the low memory below 1MB.
->>> + *
->>> + * This is because on some TDX platforms the low memory below 1MB is
->>> + * not included in CMRs.  Excluding the low 1MB can still guarantee
->>> + * that the pages managed by the page allocator are always TDX memory,
->>> + * as the low 1MB is reserved during kernel boot and won't end up to
->>> + * the ZONE_DMA (see reserve_real_mode()).
->>> + */
->>> +#define memblock_for_each_tdx_mem_pfn_range(i, p_start, p_end, p_nid)	\
->>> +	for_each_mem_pfn_range(i, MAX_NUMNODES, p_start, p_end, p_nid)	\
->>> +		if (!pfn_range_skip_lowmem(p_start, p_end))
->>
->> Let's summarize where we are at this point:
->>
->> 1. All RAM is described in memblocks
->> 2. Some memblocks are reserved and some are free
->> 3. The lower 1MB is marked reserved
->> 4. for_each_mem_pfn_range() walks all reserved and free memblocks, so we
->>    have to exclude the lower 1MB as a special case.
->>
->> That seems superficially rather ridiculous.  Shouldn't we just pick a
->> memblock iterator that skips the 1MB?  Surely there is such a thing.
-> 
-> Perhaps you are suggesting we should always loop the _free_ ranges so we don't
-> need to care about the first 1MB which is reserved?
-> 
-> The problem is some reserved memory regions are actually later freed to the page
-> allocator, for example, initrd.  So to cover all those 'late-freed-reserved-
-> regions', I used for_each_mem_pfn_range(), instead of for_each_free_mem_range().
 
-Why not just entirely remove the lower 1MB from the memblock structure
-on TDX systems?  Do something equivalent to adding this on the kernel
-command line:
-
-	memmap=1M$0x0
-
-> Btw, I do have a checkpatch warning around this code:
+On 5.07.22 10:23, Leo Yan wrote:
+> The current interconnect rpm driver uses a single aggregate bandwidth to
+> calculate the clock rates for both active and sleep clocks; therefore,
+> it has no chance to separate bandwidth requests for these two kinds of
+> clocks.
 > 
-> ERROR: Macros with complex values should be enclosed in parentheses
-> #109: FILE: arch/x86/virt/vmx/tdx/tdx.c:377:
-> +#define memblock_for_each_tdx_mem_pfn_range(i, p_start, p_end, p_nid)	\
-> +	for_each_mem_pfn_range(i, MAX_NUMNODES, p_start, p_end, p_nid)	\
-> +		if (!pfn_range_skip_lowmem(p_start, p_end))
+> This patch studies the implementation from interconnect rpmh driver to
+> support multiple buckets.  The rpmh driver provides three buckets for
+> AMC, WAKE, and SLEEP; this driver only needs to use WAKE and SLEEP
+> buckets, but we keep the same way with rpmh driver, this can allow us to
+> reuse the DT binding and avoid to define duplicated data structures.
 > 
-> But it looks like a false positive to me.
+> This patch introduces two callbacks: qcom_icc_pre_bw_aggregate() is used
+> to clean up bucket values before aggregate bandwidth requests, and
+> qcom_icc_bw_aggregate() is to aggregate bandwidth for buckets.
+> 
+> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> ---
+>   drivers/interconnect/qcom/icc-rpm.c | 51 ++++++++++++++++++++++++++++-
+>   drivers/interconnect/qcom/icc-rpm.h |  6 ++++
+>   2 files changed, 56 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/interconnect/qcom/icc-rpm.c b/drivers/interconnect/qcom/icc-rpm.c
+> index 8c9d5cc7276c..b025fc6b97c9 100644
+> --- a/drivers/interconnect/qcom/icc-rpm.c
+> +++ b/drivers/interconnect/qcom/icc-rpm.c
+> @@ -254,6 +254,54 @@ static int __qcom_icc_set(struct icc_node *n, struct qcom_icc_node *qn,
+>   	return 0;
+>   }
+>   
+> +/**
+> + * qcom_icc_rpm_pre_bw_aggregate - cleans up values before re-aggregate requests
 
-I think it doesn't like the if().
+This does not match with the name of the function below.
+
+> + * @node: icc node to operate on
+> + */
+> +static void qcom_icc_pre_bw_aggregate(struct icc_node *node)
+> +{
+> +	struct qcom_icc_node *qn;
+> +	size_t i;
+> +
+> +	qn = node->data;
+> +	for (i = 0; i < QCOM_ICC_NUM_BUCKETS; i++) {
+> +		qn->sum_avg[i] = 0;
+> +		qn->max_peak[i] = 0;
+> +	}
+> +}
+> +
+[..]
+Thanks,
+Georgi
