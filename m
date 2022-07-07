@@ -2,201 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC11C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3583C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbiGGJkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
+        id S235259AbiGGJkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235189AbiGGJkE (ORCPT
+        with ESMTP id S235143AbiGGJki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:40:04 -0400
+        Thu, 7 Jul 2022 05:40:38 -0400
 Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4511813FA7;
-        Thu,  7 Jul 2022 02:40:03 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id d16so19155569wrv.10;
-        Thu, 07 Jul 2022 02:40:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AD31277C;
+        Thu,  7 Jul 2022 02:40:37 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id n10so183222wrc.4;
+        Thu, 07 Jul 2022 02:40:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=OUVPcq4q3E4bhVRZ+lHAS4gY3QFj2Ligmd2Amh/NpBM=;
-        b=cgcPPB2i6sWifOs6kPfLkJDu6QyNBgvnYiAW+eD3N7VX9ur4tjhvpsY2jeYTx9kbl5
-         0OOea+sl6H45lrQu3944DtOZgS3MIaqdbPo7xg8loq10oFF/3cNiApRxvKUSQ2mcBaZ8
-         mngsc/FQomfaMPav2kxUBKocvvUwos8tG2r7eU4GTSEncvjVUQyUnQK70J4Q7aJ2yB0P
-         qZ8IFhuOYXNFkYuLjq8AXNb8p38UtdzMSiO/HFxKHD1Z9/KNh0RHs4WdV2dahZHeWjLk
-         L5w6OmYZob+etg5OMpa+Zc4qf1kO61HZIHPeGrYHRIx2zgKCUKNNovexWSJWRQYXM8Gh
-         zVkw==
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=KzcoFhGBop3Dr3qrgA6FnfDOc9NV/gjra01y9OpQ03E=;
+        b=d4C8549OVT/OTfYI2dsl8Y3TYD1BSb9zXe1l4DYZ3uv6ATbmseapVMOFsMRQZVrpQI
+         DRYfZ4FQx0DrPKMqL+e29YpcSB1APqwPtOZ4QvVvAGP85zNjBVbxry4jWgE7cbIvE/Ob
+         hLlI9AypWPX8S5/ClEvxWwZZgQIethgKSRjwFoCYgpL39mwjbas4a3GGPstHsBYggdCy
+         25hCt+2fGMEg0pel3fMAgp1qlveIatuxMRbQ0Na0T5jS68EmMb8jFaHoYoyjK3+komvK
+         IC0yx5aZ1+B/DwBMKfJCFe7A6P7eIVA7NWP494X3rx5ZJYJGSLCllcVYHoBN6vaFQEsb
+         lVxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=OUVPcq4q3E4bhVRZ+lHAS4gY3QFj2Ligmd2Amh/NpBM=;
-        b=lupHC/uFgwjUiA/YvaSpIXufq8BN/aqZ2fhoJmESgwHC58RL1eZClmpGjuJAGylTxY
-         i5oQu7N3CALTkgFOIALgpjA0iqXMvgks9K6dGcfdukFzElVSabfPU4/VaPjxr/sN3FqK
-         ipf01l4husEW/BVhg+kgrqcQTzHPxqFZaIivYh00p7s3YsGpWyHZQbxslsOsfZYnRvXd
-         8PE8barXglPKhQzn+u+Xtlg8uTxutbxlfbrmwWA4pBkbIKjYdS037tu24l31UJEVfJuA
-         LZ/wziQ+O+ICHlHD+w518W+xZ2ZQ2ZVhpGq+EX8U+xFje0S4/364Kb3kdgNu3bMLB6Nn
-         Bsiw==
-X-Gm-Message-State: AJIora9W7QybbwPmTkX+J1NUCzfAGWbNSc7NB0THCmn5dId1YkcAjx9v
-        DNqlk1+b7sRyu79Vnglj5Ec/ZTvuClJMn9Eu
-X-Google-Smtp-Source: AGRyM1s6r93NBy8U+IzwmI6xLdJA4hfOwghOpUgOiLfmSmEXkggIy53JffKlIDobnT9i2qxfZrxgLA==
-X-Received: by 2002:a5d:4402:0:b0:21d:8093:138c with SMTP id z2-20020a5d4402000000b0021d8093138cmr5079378wrq.535.1657186801740;
-        Thu, 07 Jul 2022 02:40:01 -0700 (PDT)
-Received: from localhost.localdomain ([87.200.95.144])
-        by smtp.gmail.com with ESMTPSA id j14-20020a5d564e000000b0021d68d3a27dsm13831314wrw.45.2022.07.07.02.39.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 02:40:01 -0700 (PDT)
-From:   Christian Hewitt <christianshewitt@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=KzcoFhGBop3Dr3qrgA6FnfDOc9NV/gjra01y9OpQ03E=;
+        b=UBecljXSqu3PlcyTjw1O5UtPpNUtYNyxe+whkTLK9ztqggihxqDQ5VO9cO/5/YwuA/
+         Q1uuv2vrw7G+mi3g3xCNlJUQnu3txkckncwObfjHRZCTt9/gKWb4znenlYzznuCdQ99g
+         9W2CYO6ws07RJC5ql6rHn0v1ONSkO0UWhCZk6p9fy8pwFusTftNvCkfS4r5RuFyFvPv9
+         PgzjJ5VXs9Faw5ezhxpyqW0Unrq8sMSlVvDwa8FkrsmU9cqt5RfeqOMOQxapby5eEQbq
+         c+C9qGKHRD1UJI3u+47P6gHTYuz6ECOwgTsEzoZJELfc+e0RfP9CxKZmvQd87MQVI/LL
+         wjMA==
+X-Gm-Message-State: AJIora/6B1LjnWC7BmtUZXZG+fbd+vJZu5GDvfjymqk2BsNUZJLkZ0e/
+        Zl2wqjIrGwHxmOO2npnWCZSZPjoIhygGEQ==
+X-Google-Smtp-Source: AGRyM1talsypiyhvDrz+cqTOcMGBF2fEVNMqtrU/unM4e6cE62b3PJIhpaTGU+Cj8oBlP8vh9KBoLA==
+X-Received: by 2002:adf:e112:0:b0:21d:7195:3a8d with SMTP id t18-20020adfe112000000b0021d71953a8dmr13968308wrz.371.1657186836348;
+        Thu, 07 Jul 2022 02:40:36 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id h4-20020a5d4304000000b0021b829d111csm38650085wrq.112.2022.07.07.02.40.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 02:40:35 -0700 (PDT)
+Message-ID: <0f758c3d-a1cd-5e28-d3bb-70833b53c14b@gmail.com>
+Date:   Thu, 7 Jul 2022 11:40:34 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v11 0/3] Add basic node support for MediaTek MT8186 SoC
+Content-Language: en-US
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Hewitt <christianshewitt@gmail.com>,
-        Furkan Kardame <furkan@fkardame.com>
-Subject: [PATCH 2/2] arm64: dts: meson: add support for Beelink GT1 Ultimate
-Date:   Thu,  7 Jul 2022 09:39:54 +0000
-Message-Id: <20220707093954.21716-2-christianshewitt@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220707093954.21716-1-christianshewitt@gmail.com>
-References: <20220707093954.21716-1-christianshewitt@gmail.com>
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>, hsinyi@chromium.org
+References: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
+ <37fb545a-bc45-65b0-b67b-5ef1b0346777@gmail.com>
+In-Reply-To: <37fb545a-bc45-65b0-b67b-5ef1b0346777@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Beelink GT1 Ultimate is based on the Amlogic S912 (Q200)
-reference design with the following specifications:
 
-- 3GB DDR3 RAM
-- 32GB eMMC
-- HDMI 2.1 video
-- S/PDIF optical output
-- 10/100/1000 Ethernet
-- AP6356S Wireless (802.11 a/b/g/n, BT 4.2)
-- 3x USB 2.0 ports
-- IR receiver
-- 1x micro SD card slot
-- 1x Power LED (white)
-- 1x Reset button (internal)
 
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
----
- arch/arm64/boot/dts/amlogic/Makefile          |  1 +
- .../dts/amlogic/meson-gxm-gt1-ultimate.dts    | 91 +++++++++++++++++++
- 2 files changed, 92 insertions(+)
- create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxm-gt1-ultimate.dts
+On 22/06/2022 17:40, Matthias Brugger wrote:
+> 
+> 
+> On 20/05/2022 14:22, Allen-KH Cheng wrote:
+>> MT8186 is a SoC based on 64bit ARMv8 architecture.
+>> It contains 6 CA55 and 2 CA76 cores.
+>> MT8186 share many HW IP with MT65xx series.
+>>
+>> This patchset was tested on MT8186 evaluation board to shell.
+>>
+> 
+> Applied, thanks!
+> 
 
-diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
-index 8773211df50e..641399fcbdd9 100644
---- a/arch/arm64/boot/dts/amlogic/Makefile
-+++ b/arch/arm64/boot/dts/amlogic/Makefile
-@@ -43,6 +43,7 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-libretech-cc-v2.dtb
- dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-libretech-cc.dtb
- dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-nexbox-a95x.dtb
- dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-p212.dtb
-+dtb-$(CONFIG_ARCH_MESON) += meson-gxm-gt1-ultimate.dtb
- dtb-$(CONFIG_ARCH_MESON) += meson-gxm-khadas-vim2.dtb
- dtb-$(CONFIG_ARCH_MESON) += meson-gxm-mecool-kiii-pro.dtb
- dtb-$(CONFIG_ARCH_MESON) += meson-gxm-minix-neo-u9h.dtb
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-gt1-ultimate.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-gt1-ultimate.dts
-new file mode 100644
-index 000000000000..2c267884cc16
---- /dev/null
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxm-gt1-ultimate.dts
-@@ -0,0 +1,91 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright (c) Christian Hewitt <christianshewitt@gmail.com>
-+ */
-+
-+/dts-v1/;
-+
-+#include "meson-gxm.dtsi"
-+#include "meson-gx-p23x-q20x.dtsi"
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
-+
-+/ {
-+	compatible = "azw,gt1-ultimate", "amlogic,s912", "amlogic,meson-gxm";
-+	model = "Beelink GT1 Ultimate";
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led-white {
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_POWER;
-+			gpios = <&gpio_ao GPIOAO_9 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+			panic-indicator;
-+		};
-+	};
-+
-+	adc-keys {
-+		compatible = "adc-keys";
-+		io-channels = <&saradc 0>;
-+		io-channel-names = "buttons";
-+		keyup-threshold-microvolt = <1710000>;
-+
-+		button-function {
-+			label = "update";
-+			linux,code = <KEY_VENDOR>;
-+			press-threshold-microvolt = <10000>;
-+		};
-+	};
-+};
-+
-+&ethmac {
-+	pinctrl-0 = <&eth_pins>;
-+	pinctrl-names = "default";
-+	phy-handle = <&external_phy>;
-+	amlogic,tx-delay-ns = <2>;
-+	phy-mode = "rgmii";
-+};
-+
-+&external_mdio {
-+	external_phy: ethernet-phy@0 {
-+		/* Realtek RTL8211F (0x001cc916) */
-+		reg = <0>;
-+		max-speed = <1000>;
-+
-+		reset-assert-us = <10000>;
-+		reset-deassert-us = <80000>;
-+		reset-gpios = <&gpio GPIOZ_14 GPIO_ACTIVE_LOW>;
-+
-+		interrupt-parent = <&gpio_intc>;
-+		/* MAC_INTR on GPIOZ_15 */
-+		interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
-+	};
-+};
-+
-+&ir {
-+	linux,rc-map-name = "rc-beelink-gs1";
-+};
-+
-+&sd_emmc_a {
-+	brcmf: wifi@1 {
-+		reg = <1>;
-+		compatible = "brcm,bcm4329-fmac";
-+	};
-+};
-+
-+&uart_A {
-+	status = "okay";
-+	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
-+	pinctrl-names = "default";
-+	uart-has-rtscts;
-+
-+	bluetooth {
-+		compatible = "brcm,bcm43438-bt";
-+		shutdown-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
-+		max-speed = <2000000>;
-+		clocks = <&wifi32k>;
-+		clock-names = "lpo";
-+	};
-+};
--- 
-2.17.1
+Based on the review from Angelo I dropped patch 3 from the tree. Please address 
+the issues and submit again.
 
+Regards,
+Matthias
+
+>> Based on next-20220519, linux-next/master
+>>
+>> changes since v9:
+>>   - remove some merged PATCHs from series
+>>   - reorder nodes in dts (cpu-map)
+>>   - remove okay status in auxadc
+>>   - remove unnecessary suffix node name for i2c
+>>   - add pwm node
+>>   - add dsi-phy node
+>>   - add dpi node
+>>
+>> changes since v9:
+>>   - add one space before equal sign of drive-strength-adv
+>>   - corect compatible name for big cores (ca76)
+>>   - use upper case of address in pinctrl
+>>   - add pwrap node
+>>   - add pwm node
+>>
+>> changes since v8:
+>>   - change name from pins_bus to pins-sda-scl
+>>   - correct email address
+>>   - add capacity-dmips-mhz for each CPU
+>>   - add ppi-partitions in gic node
+>>   - change name to power-domain
+>>   - remove status "okay" in scp node
+>>   - update timer and pericfg compatible in series
+>>
+>> changes since v7:
+>>   - add scp&auxadc node
+>>
+>> changes since v6:
+>>   - remove unnecessary blank line
+>>
+>> changes since v5:
+>>   - replace Mediatek a to MediaTek
+>>   - use GPL-2.0-only OR BSD-2-Clause
+>>
+>> changes since v4:
+>>   - correct driver clock of mt8186
+>>   - add power domains controller and clock controllers
+>>   - add pinctrl, usb host, spi and i2c nodes
+>>   - add node status in mt8186-evb.dts
+>>   - correct some dtbs_check warnings
+>>
+>> changes since v3:
+>>   - remove serial, mmc and phy patch from series. (already merged)
+>>   - remove mcusysoff node
+>>   - move oscillator nodes at the head of dts
+>>   - change name from usb-phy to t-phy
+>>
+>> changes since v2:
+>>   - add soc {} in mt8186.dtsi
+>>
+>> changes since v1:
+>>   - add dt-bindings: arm: Add compatible for MediaTek MT8186
+>>
+>> Allen-KH Cheng (3):
+>>    dt-bindings: arm: mediatek: Add mt8186 pericfg compatible
+>>    dt-bindings: arm: Add compatible for MediaTek MT8186
+>>    arm64: dts: Add MediaTek SoC MT8186 dts and evaluation board and
+>>      Makefile
+>>
+>>   .../devicetree/bindings/arm/mediatek.yaml     |    4 +
+>>   .../arm/mediatek/mediatek,pericfg.yaml        |    1 +
+>>   arch/arm64/boot/dts/mediatek/Makefile         |    1 +
+>>   arch/arm64/boot/dts/mediatek/mt8186-evb.dts   |  232 ++++
+>>   arch/arm64/boot/dts/mediatek/mt8186.dtsi      | 1016 +++++++++++++++++
+>>   5 files changed, 1254 insertions(+)
+>>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+>>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8186.dtsi
+>>
