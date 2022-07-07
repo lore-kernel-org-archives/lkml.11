@@ -2,146 +2,463 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCF4BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 239C6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236599AbiGGS5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
+        id S236602AbiGGS6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236503AbiGGS5B (ORCPT
+        with ESMTP id S236053AbiGGS6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:57:01 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F922C676
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:57:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657220220; x=1688756220;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LcZZRvy8+Gv5ome0QZnwsPgoMphmJXtBO7K/+rZX4c4=;
-  b=mtMBPekUe872IRjWtLxUbS51/7jl6odKt6zakT/FuKuuhKzvqng28g+j
-   Yi3TldE+jtROJmnJUXHWJVKLOq3l9K13TWMAMwtBbU7POHfl4a4vAoYyf
-   F3bFaAa60gtlFPdPGanIFkFv8EpMBmbCNFRyASrYGgi6oIaijbXY3Ir5u
-   ZWucOCq7h4wHrUZ5plifvtgXhaLuhlWDcT4rf2kHsoW274TZko7WWOOVb
-   uoRmv31GqW1tQqXfHxNZ2FjcB4AW+hZckKvP5RDLRbN04z80meOQjpZPT
-   aKpVEo1ataQoZPkPvgjkklsVkthKBCN+2BA5eWyeU2GMEIAVJdtRQDR4H
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284841500"
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="284841500"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 11:57:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="651252244"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 07 Jul 2022 11:56:57 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9WgL-000MKo-7A;
-        Thu, 07 Jul 2022 18:56:57 +0000
-Date:   Fri, 8 Jul 2022 02:56:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     kbuild-all@lists.01.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] powerpc: Remove asm/prom.h from asm/mpc52xx.h and
- asm/pci.h
-Message-ID: <202207080212.NBrIIaUw-lkp@intel.com>
-References: <22ac0b64b6c6ef6cc6a74739eb213a81372835ed.1657204012.git.christophe.leroy@csgroup.eu>
+        Thu, 7 Jul 2022 14:58:33 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F520140AD
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:58:31 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id h5so11567923ili.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 11:58:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oQPSH9SWdzDj3/e0BMmAev7GJ+pdJy3w6jaxeInTct0=;
+        b=WXzJcVBElv+MVR0EADFm8RcL6SSGuURNI8Boer+g1cp3L6I+MDVhKHXUtCsvolmk0v
+         q7pH6hvcmNj3nUP1pL5aG7Z1v3wuSmeHgrORfy7QSr6U1FT9/xvo/Cer9UVWFY4rqn4t
+         9+sor0J2Ek9fpmMEG1WGU2ius/ZExpaJPEHGM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oQPSH9SWdzDj3/e0BMmAev7GJ+pdJy3w6jaxeInTct0=;
+        b=YTOOH0k4fe8UJmJrleWPwxXNRX6xI4kSQvHNYYkWpL7uswvfDyrfZa8/YE5fOJMXIU
+         LS3hBUCF6cIfDn8KNqKaKmWMFFlSAy63ixFaY4Dvbl7FzCah2DIFgsZ0dCDE2AcLpV9w
+         VHkL9yWtkGA27xjv2JfmY7Blzn9wvDVE4CUx3b4Po8WqaSsSHxyT7W2FGSDTIh52WqLn
+         1UGgTa2bAgpCqa/dtqo2Ybd86XKB4md9r3k+be6NFfROhiNfbozo8wwO/sIbDixgCcNY
+         DC51p/a8A+E+cWGYcamtVI8HZKUyNSUOW4YNcixwRJ/WZeVh7cGBtQMoC0UEP0tYzl2U
+         zAbg==
+X-Gm-Message-State: AJIora+LNbYpuGnhroRZHyXuccxQAg1AK7r+jbSa5ikfA4dUDTrVVUji
+        tBBJ8IUMmeytOnL+aEa+rQPMXyQQvXZ1vpEOzuO9P1QgVJMUXA==
+X-Google-Smtp-Source: AGRyM1vCDn92fMp+WPQ9BT9c2HEtobp+veAd/ELloOL6ff2j5nRVow+7YlFWPCloO5WKHpp30zqdP2A5siJvI7VPyKw=
+X-Received: by 2002:a92:cda7:0:b0:2dc:335d:fabd with SMTP id
+ g7-20020a92cda7000000b002dc335dfabdmr6755739ild.16.1657220310681; Thu, 07 Jul
+ 2022 11:58:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <22ac0b64b6c6ef6cc6a74739eb213a81372835ed.1657204012.git.christophe.leroy@csgroup.eu>
+References: <20220617084210.907-1-ignat@cloudflare.com> <87a675dc70199baf013b417c55275ee1@linux.ibm.com>
+In-Reply-To: <87a675dc70199baf013b417c55275ee1@linux.ibm.com>
+From:   Ignat Korchagin <ignat@cloudflare.com>
+Date:   Thu, 7 Jul 2022 19:58:19 +0100
+Message-ID: <CALrw=nG6y46XO9VQ1JsMNAX1keXTMFeb2U8g6tpVys-KhbeAZQ@mail.gmail.com>
+Subject: Re: [PATCH v2] crypto: rsa - implement Chinese Remainder Theorem for
+ faster private key operations
+To:     freude@linux.ibm.com
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        kernel test robot <lkp@intel.com>, egorenar@linux.ibm.com,
+        jchrist@linux.ibm.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On Thu, Jul 7, 2022 at 6:29 PM Harald Freudenberger
+<freude@linux.ibm.com> wrote:
+>
+> On 2022-06-17 10:42, Ignat Korchagin wrote:
+> > Changes from v1:
+> >   * exported mpi_sub and mpi_mul, otherwise the build fails when RSA is
+> > a module
+> >
+> > The kernel RSA ASN.1 private key parser already supports only private
+> > keys with
+> > additional values to be used with the Chinese Remainder Theorem [1],
+> > but these
+> > values are currently not used.
+> >
+> > This rudimentary CRT implementation speeds up RSA private key
+> > operations for the
+> > following Go benchmark up to ~3x.
+> >
+> > This implementation also tries to minimise the allocation of additional
+> > MPIs,
+> > so existing MPIs are reused as much as possible (hence the variable
+> > names are a
+> > bit weird).
+> >
+> > The benchmark used:
+> >
+> > ```
+> > package keyring_test
+> >
+> > import (
+> >       "crypto"
+> >       "crypto/rand"
+> >       "crypto/rsa"
+> >       "crypto/x509"
+> >       "io"
+> >       "syscall"
+> >       "testing"
+> >       "unsafe"
+> > )
+> >
+> > type KeySerial int32
+> > type Keyring int32
+> >
+> > const (
+> >       KEY_SPEC_PROCESS_KEYRING Keyring = -2
+> >       KEYCTL_PKEY_SIGN                 = 27
+> > )
+> >
+> > var (
+> >       keyTypeAsym = []byte("asymmetric\x00")
+> >       sha256pkcs1 = []byte("enc=pkcs1 hash=sha256\x00")
+> > )
+> >
+> > func (keyring Keyring) LoadAsym(desc string, payload []byte)
+> > (KeySerial, error) {
+> >       cdesc := []byte(desc + "\x00")
+> >       serial, _, errno := syscall.Syscall6(syscall.SYS_ADD_KEY,
+> > uintptr(unsafe.Pointer(&keyTypeAsym[0])),
+> > uintptr(unsafe.Pointer(&cdesc[0])),
+> > uintptr(unsafe.Pointer(&payload[0])), uintptr(len(payload)),
+> > uintptr(keyring), uintptr(0))
+> >       if errno == 0 {
+> >               return KeySerial(serial), nil
+> >       }
+> >
+> >       return KeySerial(serial), errno
+> > }
+> >
+> > type pkeyParams struct {
+> >       key_id         KeySerial
+> >       in_len         uint32
+> >       out_or_in2_len uint32
+> >       __spare        [7]uint32
+> > }
+> >
+> > // the output signature buffer is an input parameter here, because we
+> > want to
+> > // avoid Go buffer allocation leaking into our benchmarks
+> > func (key KeySerial) Sign(info, digest, out []byte) error {
+> >       var params pkeyParams
+> >       params.key_id = key
+> >       params.in_len = uint32(len(digest))
+> >       params.out_or_in2_len = uint32(len(out))
+> >
+> >       _, _, errno := syscall.Syscall6(syscall.SYS_KEYCTL, KEYCTL_PKEY_SIGN,
+> > uintptr(unsafe.Pointer(&params)), uintptr(unsafe.Pointer(&info[0])),
+> > uintptr(unsafe.Pointer(&digest[0])), uintptr(unsafe.Pointer(&out[0])),
+> > uintptr(0))
+> >       if errno == 0 {
+> >               return nil
+> >       }
+> >
+> >       return errno
+> > }
+> >
+> > func BenchmarkSign(b *testing.B) {
+> >       priv, err := rsa.GenerateKey(rand.Reader, 2048)
+> >       if err != nil {
+> >               b.Fatalf("failed to generate private key: %v", err)
+> >       }
+> >
+> >       pkcs8, err := x509.MarshalPKCS8PrivateKey(priv)
+> >       if err != nil {
+> >               b.Fatalf("failed to serialize the private key to PKCS8 blob: %v",
+> > err)
+> >       }
+> >
+> >       serial, err := KEY_SPEC_PROCESS_KEYRING.LoadAsym("test rsa key",
+> > pkcs8)
+> >       if err != nil {
+> >               b.Fatalf("failed to load the private key into the keyring: %v", err)
+> >       }
+> >
+> >       b.Logf("loaded test rsa key: %v", serial)
+> >
+> >       digest := make([]byte, 32)
+> >       _, err = io.ReadFull(rand.Reader, digest)
+> >       if err != nil {
+> >               b.Fatalf("failed to generate a random digest: %v", err)
+> >       }
+> >
+> >       sig := make([]byte, 256)
+> >       for n := 0; n < b.N; n++ {
+> >               err = serial.Sign(sha256pkcs1, digest, sig)
+> >               if err != nil {
+> >                       b.Fatalf("failed to sign the digest: %v", err)
+> >               }
+> >       }
+> >
+> >       err = rsa.VerifyPKCS1v15(&priv.PublicKey, crypto.SHA256, digest, sig)
+> >       if err != nil {
+> >               b.Fatalf("failed to verify the signature: %v", err)
+> >       }
+> > }
+> > ```
+> >
+> > [1]:
+> > https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Using_the_Chinese_remainder_algorithm
+> >
+> > Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > ---
+> >  crypto/rsa.c      | 78 ++++++++++++++++++++++++++++++++++++++++++++---
+> >  lib/mpi/mpi-add.c |  2 +-
+> >  lib/mpi/mpi-mul.c |  1 +
+> >  3 files changed, 75 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/crypto/rsa.c b/crypto/rsa.c
+> > index 39e04176b04b..0e555ee4addb 100644
+> > --- a/crypto/rsa.c
+> > +++ b/crypto/rsa.c
+> > @@ -17,6 +17,11 @@ struct rsa_mpi_key {
+> >       MPI n;
+> >       MPI e;
+> >       MPI d;
+> > +     MPI p;
+> > +     MPI q;
+> > +     MPI dp;
+> > +     MPI dq;
+> > +     MPI qinv;
+> >  };
+> >
+> >  /*
+> > @@ -35,16 +40,49 @@ static int _rsa_enc(const struct rsa_mpi_key *key,
+> > MPI c, MPI m)
+> >
+> >  /*
+> >   * RSADP function [RFC3447 sec 5.1.2]
+> > - * m = c^d mod n;
+> > + * m_1 = c^dP mod p;
+> > + * m_2 = c^dQ mod q;
+> > + * h = (m_1 - m_2) * qInv mod p;
+> > + * m = m_2 + q * h;
+> >   */
+> > -static int _rsa_dec(const struct rsa_mpi_key *key, MPI m, MPI c)
+> > +static int _rsa_dec_crt(const struct rsa_mpi_key *key, MPI
+> > m_or_m1_or_h, MPI c)
+> >  {
+> > +     MPI m2, m12_or_qh;
+> > +     int ret = -ENOMEM;
+> > +
+> >       /* (1) Validate 0 <= c < n */
+> >       if (mpi_cmp_ui(c, 0) < 0 || mpi_cmp(c, key->n) >= 0)
+> >               return -EINVAL;
+> >
+> > -     /* (2) m = c^d mod n */
+> > -     return mpi_powm(m, c, key->d, key->n);
+> > +     m2 = mpi_alloc(0);
+> > +     m12_or_qh = mpi_alloc(0);
+> > +     if (!m2 || !m12_or_qh)
+> > +             goto err_free_mpi;
+> > +
+> > +     /* (2i) m_1 = c^dP mod p */
+> > +     ret = mpi_powm(m_or_m1_or_h, c, key->dp, key->p);
+> > +     if (ret)
+> > +             goto err_free_mpi;
+> > +
+> > +     /* (2i) m_2 = c^dQ mod q */
+> > +     ret = mpi_powm(m2, c, key->dq, key->q);
+> > +     if (ret)
+> > +             goto err_free_mpi;
+> > +
+> > +     /* (2iii) h = (m_1 - m_2) * qInv mod p */
+> > +     mpi_sub(m12_or_qh, m_or_m1_or_h, m2);
+> > +     mpi_mulm(m_or_m1_or_h, m12_or_qh, key->qinv, key->p);
+> > +
+> > +     /* (2iv) m = m_2 + q * h */
+> > +     mpi_mul(m12_or_qh, key->q, m_or_m1_or_h);
+> > +     mpi_addm(m_or_m1_or_h, m2, m12_or_qh, key->n);
+> > +
+> > +     ret = 0;
+> > +
+> > +err_free_mpi:
+> > +     mpi_free(m12_or_qh);
+> > +     mpi_free(m2);
+> > +     return ret;
+> >  }
+> >
+> >  static inline struct rsa_mpi_key *rsa_get_key(struct crypto_akcipher
+> > *tfm)
+> > @@ -112,7 +150,7 @@ static int rsa_dec(struct akcipher_request *req)
+> >       if (!c)
+> >               goto err_free_m;
+> >
+> > -     ret = _rsa_dec(pkey, m, c);
+> > +     ret = _rsa_dec_crt(pkey, m, c);
+> >       if (ret)
+> >               goto err_free_c;
+> >
+> > @@ -134,9 +172,19 @@ static void rsa_free_mpi_key(struct rsa_mpi_key
+> > *key)
+> >       mpi_free(key->d);
+> >       mpi_free(key->e);
+> >       mpi_free(key->n);
+> > +     mpi_free(key->p);
+> > +     mpi_free(key->q);
+> > +     mpi_free(key->dp);
+> > +     mpi_free(key->dq);
+> > +     mpi_free(key->qinv);
+> >       key->d = NULL;
+> >       key->e = NULL;
+> >       key->n = NULL;
+> > +     key->p = NULL;
+> > +     key->q = NULL;
+> > +     key->dp = NULL;
+> > +     key->dq = NULL;
+> > +     key->qinv = NULL;
+> >  }
+> >
+> >  static int rsa_check_key_length(unsigned int len)
+> > @@ -217,6 +265,26 @@ static int rsa_set_priv_key(struct
+> > crypto_akcipher *tfm, const void *key,
+> >       if (!mpi_key->n)
+> >               goto err;
+> >
+> > +     mpi_key->p = mpi_read_raw_data(raw_key.p, raw_key.p_sz);
+> > +     if (!mpi_key->p)
+> > +             goto err;
+> > +
+> > +     mpi_key->q = mpi_read_raw_data(raw_key.q, raw_key.q_sz);
+> > +     if (!mpi_key->q)
+> > +             goto err;
+> > +
+> > +     mpi_key->dp = mpi_read_raw_data(raw_key.dp, raw_key.dp_sz);
+> > +     if (!mpi_key->dp)
+> > +             goto err;
+> > +
+> > +     mpi_key->dq = mpi_read_raw_data(raw_key.dq, raw_key.dq_sz);
+> > +     if (!mpi_key->dq)
+> > +             goto err;
+> > +
+> > +     mpi_key->qinv = mpi_read_raw_data(raw_key.qinv, raw_key.qinv_sz);
+> > +     if (!mpi_key->qinv)
+> > +             goto err;
+> > +
+> >       if (rsa_check_key_length(mpi_get_size(mpi_key->n) << 3)) {
+> >               rsa_free_mpi_key(mpi_key);
+> >               return -EINVAL;
+> > diff --git a/lib/mpi/mpi-add.c b/lib/mpi/mpi-add.c
+> > index 2cdae54c1bd0..9056fc5167fc 100644
+> > --- a/lib/mpi/mpi-add.c
+> > +++ b/lib/mpi/mpi-add.c
+> > @@ -138,7 +138,7 @@ void mpi_sub(MPI w, MPI u, MPI v)
+> >       mpi_add(w, u, vv);
+> >       mpi_free(vv);
+> >  }
+> > -
+> > +EXPORT_SYMBOL_GPL(mpi_sub);
+> >
+> >  void mpi_addm(MPI w, MPI u, MPI v, MPI m)
+> >  {
+> > diff --git a/lib/mpi/mpi-mul.c b/lib/mpi/mpi-mul.c
+> > index 8f5fa200f297..7f4eda8560dc 100644
+> > --- a/lib/mpi/mpi-mul.c
+> > +++ b/lib/mpi/mpi-mul.c
+> > @@ -82,6 +82,7 @@ void mpi_mul(MPI w, MPI u, MPI v)
+> >       if (tmp_limb)
+> >               mpi_free_limb_space(tmp_limb);
+> >  }
+> > +EXPORT_SYMBOL_GPL(mpi_mul);
+> >
+> >  void mpi_mulm(MPI w, MPI u, MPI v, MPI m)
+> >  {
+> > --
+> > 2.36.1
+>
+> Hello Ignat
+> on s390 the linux-next kernel gives me this during startup:
+Hi Harald,
 
-I love your patch! Yet something to improve:
+The issue has been reported previously and I've submitted a follow up patch: [1]
 
-[auto build test ERROR on powerpc/next]
-[also build test ERROR on mkp-scsi/for-next jejb-scsi/for-next linus/master v5.19-rc5 next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+[1]: https://patchwork.kernel.org/project/linux-crypto/patch/20220704103840.924-1-ignat@cloudflare.com/
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Christophe-Leroy/video-fbdev-offb-Include-missing-linux-platform_device-h/20220707-222906
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
-config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20220708/202207080212.NBrIIaUw-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0e553b9abdcfd7c1f63b072e9d9280ce759c0c3c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Christophe-Leroy/video-fbdev-offb-Include-missing-linux-platform_device-h/20220707-222906
-        git checkout 0e553b9abdcfd7c1f63b072e9d9280ce759c0c3c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kernel/
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: alg: akcipher: decrypt test
+> failed. err -22
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: alg: akcipher: test 1 failed
+> for rsa-generic, err=-22
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: ------------[ cut here
+> ]------------
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: alg: self-tests for
+> rsa-generic (rsa) failed (rc=-22)
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: WARNING: CPU: 6 PID: 111 at
+> crypto/testmgr.c:5773 alg_test+0x348/0x4d0
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: Modules linked in:
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: CPU: 6 PID: 111 Comm:
+> cryptomgr_test Not tainted 5.19.0-rc5-next-20220706 #1
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: Hardware name: IBM 8561 T01
+> 703 (LPAR)
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: Krnl PSW : 0704d00180000000
+> 00000000f8b15ab4 (alg_test+0x34c/0x4d0)
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:            R:0 T:1 IO:1 EX:1
+> Key:0 M:1 W:0 P:0 AS:3 CC:1 PM:0 RI:0 EA:3
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: Krnl GPRS: c0000000fffeffff
+> 0000000080000000 0000000000000035 0000000000000000
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:            0000000000000001
+> 0000000000000001 000000008da15c80 000000000000000d
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:            000000008da15c00
+> 00000000ffffffff 00000380000000b6 ffffffffffffffea
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:            000000008cd53200
+> 00000000fb19dfd0 00000000f8b15ab0 0000038004847cf8
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: Krnl Code: 00000000f8b15aa4:
+> c02000523738        larl        %r2,00000000f955c914
+>                                                       00000000f8b15aaa:
+> c0e5002d52a7        brasl        %r14,00000000f90bfff8
+>                                                      #00000000f8b15ab0:
+> af000000                mc        0,0
+>                                                      >00000000f8b15ab4:
+> b904002b                lgr        %r2,%r11
+>                                                       00000000f8b15ab8:
+> eb6ff1300004        lmg        %r6,%r15,304(%r15)
+>                                                       00000000f8b15abe:
+> 07fe                bcr        15,%r14
+>                                                       00000000f8b15ac0:
+> 47000700                bc        0,1792
+>                                                       00000000f8b15ac4:
+> 1829                lr        %r2,%r9
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: Call Trace:
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:  [<00000000f8b15ab4>]
+> alg_test+0x34c/0x4d0
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: ([<00000000f8b15ab0>]
+> alg_test+0x348/0x4d0)
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:  [<00000000f8b13b98>]
+> cryptomgr_test+0x68/0x70
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:  [<00000000f83b4be8>]
+> kthread+0x138/0x150
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:  [<00000000f832f91c>]
+> __ret_from_fork+0x3c/0x58
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:  [<00000000f90ecf6a>]
+> ret_from_fork+0xa/0x40
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: no locks held by
+> cryptomgr_test/111.
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: Last Breaking-Event-Address:
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel:  [<00000000f90c005e>]
+> __warn_printk+0x66/0x70
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: irq event stamp: 729
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: hardirqs last  enabled at
+> (737): [<00000000f841f3b4>] __up_console_sem+0x8c/0xc0
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: hardirqs last disabled at
+> (744): [<00000000f841f396>] __up_console_sem+0x6e/0xc0
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: softirqs last  enabled at (0):
+> [<00000000f837d6da>] copy_process+0x7fa/0x17d0
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: softirqs last disabled at (0):
+> [<0000000000000000>] 0x0
+> Jul 07 11:50:28 t35lp54.lnxne.boe kernel: ---[ end trace
+> 0000000000000000 ]---
+>
+> I tracked this down with git bisect to exactly your patch.
+> Looks like the testmanager needs an update also ... maybe use CRT
+> formated keys instead of ME keys ?!?
+>
+> regards
+> Harald Freudenberger
+>
+>
+>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> arch/powerpc/kernel/prom.c:891:5: error: no previous prototype for 'of_get_ibm_chip_id' [-Werror=missing-prototypes]
-     891 | int of_get_ibm_chip_id(struct device_node *np)
-         |     ^~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
-
-
-vim +/of_get_ibm_chip_id +891 arch/powerpc/kernel/prom.c
-
-b27652dd2174df1 Kevin Hao              2013-12-24  871  
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  872  /*******
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  873   *
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  874   * New implementation of the OF "find" APIs, return a refcounted
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  875   * object, call of_node_put() when done.  The device tree and list
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  876   * are protected by a rw_lock.
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  877   *
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  878   * Note that property management will need some locking as well,
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  879   * this isn't dealt with yet.
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  880   *
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  881   *******/
-9b6b563c0d2d25e Paul Mackerras         2005-10-06  882  
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  883  /**
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  884   * of_get_ibm_chip_id - Returns the IBM "chip-id" of a device
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  885   * @np: device node of the device
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  886   *
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  887   * This looks for a property "ibm,chip-id" in the node or any
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  888   * of its parents and returns its content, or -1 if it cannot
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  889   * be found.
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  890   */
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15 @891  int of_get_ibm_chip_id(struct device_node *np)
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  892  {
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  893  	of_node_get(np);
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  894  	while (np) {
-1856f50c66dff0a Christophe Jaillet     2015-10-16  895  		u32 chip_id;
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  896  
-1856f50c66dff0a Christophe Jaillet     2015-10-16  897  		/*
-1856f50c66dff0a Christophe Jaillet     2015-10-16  898  		 * Skiboot may produce memory nodes that contain more than one
-1856f50c66dff0a Christophe Jaillet     2015-10-16  899  		 * cell in chip-id, we only read the first one here.
-1856f50c66dff0a Christophe Jaillet     2015-10-16  900  		 */
-1856f50c66dff0a Christophe Jaillet     2015-10-16  901  		if (!of_property_read_u32(np, "ibm,chip-id", &chip_id)) {
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  902  			of_node_put(np);
-1856f50c66dff0a Christophe Jaillet     2015-10-16  903  			return chip_id;
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  904  		}
-16c1d606263ea37 Michael Ellerman       2015-10-26  905  
-16c1d606263ea37 Michael Ellerman       2015-10-26  906  		np = of_get_next_parent(np);
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  907  	}
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  908  	return -1;
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  909  }
-b130e7c04f1130f Dan Streetman          2015-05-07  910  EXPORT_SYMBOL(of_get_ibm_chip_id);
-b37193b71846858 Benjamin Herrenschmidt 2013-07-15  911  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Ignat
