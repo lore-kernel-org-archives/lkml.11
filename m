@@ -2,95 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4F0CCA481
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1959C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235162AbiGGIGF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 04:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
+        id S235165AbiGGIG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 04:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235149AbiGGIGD (ORCPT
+        with ESMTP id S233819AbiGGIG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 04:06:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E21425C5;
-        Thu,  7 Jul 2022 01:06:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D58F61F9D;
-        Thu,  7 Jul 2022 08:06:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E9C4C341CA;
-        Thu,  7 Jul 2022 08:06:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657181161;
-        bh=sfmXV4tMP+5FC7d+XgMFdRmfqhgCRC6kI6KR1vW5czg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=GAgMo0gS3gmNmDLrfo5hXZRhjDRnB0z6u0nQIlAHcNkUohsekUOT0arnNzkJk0PeJ
-         kiqvBbCCzpBZL91oWmRGYLhpwDY11jb6Z0rq5NZLwG8Hxv5Kwiw15K/zqV4hWGP/Ta
-         zxi3FIh5nbchm9t1YsRRUpPMK76SGBxSxqqqPZUGzp6nBJk9OwL5Y8aXFWn8NohlQb
-         X4Ih/hMPHwvhp6nrcI8M1tIMm3zt2XpD/4IXyn7659xU16Fb6aIhppwPfVhWqnlFIK
-         di8tTm83tOh09lNCQWY33uWGXxYdoYSNS/knPLKbFV5MUb1ypI/CG6QUgImE7U+hWb
-         mgNcvFDiEyjNA==
-Received: by mail-yb1-f169.google.com with SMTP id 76so15612381ybd.0;
-        Thu, 07 Jul 2022 01:06:01 -0700 (PDT)
-X-Gm-Message-State: AJIora9VSQIqnrJe48vZNHeihtCRv1YXzXLElTn1KlYTFsnQBpsGLgGL
-        1nttSYtnpPDb4IswdFdN8szFaeOY8gSKsWYvhXE=
-X-Google-Smtp-Source: AGRyM1vWsB1m06E0i839p0o7wq8aG5nv0UEyiO+bhht+9D2f833cmH7AafXMl6w9gYbck24GPqPDrwirxb/5d2EjiFU=
-X-Received: by 2002:a25:9f87:0:b0:669:4345:a8c0 with SMTP id
- u7-20020a259f87000000b006694345a8c0mr48554733ybq.472.1657181160664; Thu, 07
- Jul 2022 01:06:00 -0700 (PDT)
+        Thu, 7 Jul 2022 04:06:27 -0400
+Received: from ironport.ite.com.tw (60-251-196-230.hinet-ip.hinet.net [60.251.196.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D8C33E13
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:06:23 -0700 (PDT)
+Received: from unknown (HELO mse.ite.com.tw) ([192.168.35.30])
+  by ironport.ite.com.tw with ESMTP; 07 Jul 2022 16:06:21 +0800
+Received: from CSBMAIL1.internal.ite.com.tw (CSBMAIL1.internal.ite.com.tw [192.168.65.58])
+        by mse.ite.com.tw with ESMTP id 26786F0a042483;
+        Thu, 7 Jul 2022 16:06:15 +0800 (GMT-8)
+        (envelope-from allen.chen@ite.com.tw)
+Received: from VirtualBox.internal.ite.com.tw (192.168.70.46) by
+ CSBMAIL1.internal.ite.com.tw (192.168.65.58) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.14; Thu, 7 Jul 2022 16:06:14 +0800
+From:   allen <allen.chen@ite.com.tw>
+CC:     Allen Chen <allen.chen@ite.com.tw>,
+        Pin-yen Lin <treapking@google.com>,
+        Jau-Chih Tseng <Jau-Chih.Tseng@ite.com.tw>,
+        Kenneth Hung <Kenneth.Hung@ite.com.tw>,
+        Hermes Wu <Hermes.Wu@ite.com.tw>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/3] drm/bridge: it6505: Fixes bugs
+Date:   Thu, 7 Jul 2022 16:05:56 +0800
+Message-ID: <20220707080600.49041-1-allen.chen@ite.com.tw>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220614092047.572235-1-hch@lst.de> <20220629062837.GA17140@lst.de>
- <Yrv0HLSj3xAHa+av@kroah.com> <20220707045840.GA12672@lst.de>
-In-Reply-To: <20220707045840.GA12672@lst.de>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 7 Jul 2022 10:05:43 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1VFhruH=DVLtL7u5JhH9ayCxrKyNb23qsAR4JBLvrD4Q@mail.gmail.com>
-Message-ID: <CAK8P3a1VFhruH=DVLtL7u5JhH9ayCxrKyNb23qsAR4JBLvrD4Q@mail.gmail.com>
-Subject: Re: fully convert arm to use dma-direct v3
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.70.46]
+X-ClientProxiedBy: CSBMAIL1.internal.ite.com.tw (192.168.65.58) To
+ CSBMAIL1.internal.ite.com.tw (192.168.65.58)
+X-TM-SNTS-SMTP: C46E169DD7E906D2332A2008763020DBA6D15BA7325E0A4B5FBD7445B1C477EC2002:8
+X-MAIL: mse.ite.com.tw 26786F0a042483
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 6:58 AM Christoph Hellwig <hch@lst.de> wrote:
-> On Wed, Jun 29, 2022 at 08:41:32AM +0200, Greg Kroah-Hartman wrote:
-> > On Wed, Jun 29, 2022 at 08:28:37AM +0200, Christoph Hellwig wrote:
-> > > Any comments or additional testing?  It would be really great to get
-> > > this off the table.
-> >
-> > For the USB bits:
-> >
-> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
-> So given that we're not making any progress on getting anyone interested
-> on the series, I'm tempted to just pull it into the dma-mapping tree
-> this weekend so that we'll finally have all architectures using the
-> common code.
+From: allen chen <allen.chen@ite.com.tw>
 
-Yes, please do!
+This series fixes some it6505 driver bugs and improve computing time.
 
-Getting it into linux-next now should give plenty of time to test it
-with the automated kernelci and lkft systems, as well as Russell's
-Assabet. I'm sure we can fix up any regressions before this actually
-hits the 5.20 release.
+allen chen (3):
+  drm/bridge: it6505: Modified power sequence
+  drm/bridge: it6505: Add i2c api power on check
+  drm/bridge: it6505: Modified video clock calculation and video debug
+    message
 
-         Arnd
+ drivers/gpu/drm/bridge/ite-it6505.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
+
+-- 
+2.25.1
+
