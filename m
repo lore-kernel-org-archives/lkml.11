@@ -2,148 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33258C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120FBCCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234798AbiGGCXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
+        id S234842AbiGGCXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbiGGCXB (ORCPT
+        with ESMTP id S234835AbiGGCX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:23:01 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895622F38D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:22:56 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LdgCd5c3Dz1DDN6;
-        Thu,  7 Jul 2022 10:22:05 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Jul 2022 10:22:51 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
- 2022 10:22:50 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-xtensa@linux-xtensa.org>
-CC:     <chris@zankel.net>, <jcmvbkbc@gmail.com>
-Subject: [PATCH -next v2] xtensa: iss: fix handling error cases in iss_net_configure()
-Date:   Thu, 7 Jul 2022 10:32:29 +0800
-Message-ID: <20220707023229.2580893-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Jul 2022 22:23:28 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F40A13F34;
+        Wed,  6 Jul 2022 19:23:25 -0700 (PDT)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 7 Jul 2022 10:23:09
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.190.66.67]
+Date:   Thu, 7 Jul 2022 10:23:09 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net v2] net: rose: fix UAF bug caused by
+ rose_t0timer_expiry
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220706190237.477f24ee@kernel.org>
+References: <20220705125610.77971-1-duoming@zju.edu.cn>
+ <20220706190237.477f24ee@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Message-ID: <1dd7d69d.2fd66.181d677e20d.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgBnaTyNQ8ZiBJMAAA--.121W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkEAVZdtajsngABsr
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'pdev' and 'netdev' need be release in error cases of iss_net_configure().
-In orde to fix this, add two labels for error case to release them.
-
-And Change the return type of iss_net_configure() to void, because it's not used.
-
-Fixes: 7282bee78798 ("[PATCH] xtensa: Architecture support for Tensilica Xtensa Part 8")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  change return type of iss_net_configure() to void
----
- arch/xtensa/platforms/iss/network.c | 33 ++++++++++++++---------------
- 1 file changed, 16 insertions(+), 17 deletions(-)
-
-diff --git a/arch/xtensa/platforms/iss/network.c b/arch/xtensa/platforms/iss/network.c
-index fd84d4891758..aeb5828a639c 100644
---- a/arch/xtensa/platforms/iss/network.c
-+++ b/arch/xtensa/platforms/iss/network.c
-@@ -472,16 +472,15 @@ static const struct net_device_ops iss_netdev_ops = {
- 	.ndo_set_rx_mode	= iss_net_set_multicast_list,
- };
- 
--static int iss_net_configure(int index, char *init)
-+static void iss_net_configure(int index, char *init)
- {
- 	struct net_device *dev;
- 	struct iss_net_private *lp;
--	int err;
- 
- 	dev = alloc_etherdev(sizeof(*lp));
- 	if (dev == NULL) {
- 		pr_err("eth_configure: failed to allocate device\n");
--		return 1;
-+		return;
- 	}
- 
- 	/* Initialize private element. */
-@@ -509,7 +508,7 @@ static int iss_net_configure(int index, char *init)
- 	if (!tuntap_probe(lp, index, init)) {
- 		pr_err("%s: invalid arguments. Skipping device!\n",
- 		       dev->name);
--		goto errout;
-+		goto err_free_netdev;
- 	}
- 
- 	pr_info("Netdevice %d (%pM)\n", index, dev->dev_addr);
-@@ -517,7 +516,8 @@ static int iss_net_configure(int index, char *init)
- 	/* sysfs register */
- 
- 	if (!driver_registered) {
--		platform_driver_register(&iss_net_driver);
-+		if (platform_driver_register(&iss_net_driver))
-+			goto err_free_netdev;
- 		driver_registered = 1;
- 	}
- 
-@@ -527,7 +527,8 @@ static int iss_net_configure(int index, char *init)
- 
- 	lp->pdev.id = index;
- 	lp->pdev.name = DRIVER_NAME;
--	platform_device_register(&lp->pdev);
-+	if (platform_device_register(&lp->pdev))
-+		goto err_free_netdev;
- 	SET_NETDEV_DEV(dev, &lp->pdev.dev);
- 
- 	dev->netdev_ops = &iss_netdev_ops;
-@@ -536,23 +537,21 @@ static int iss_net_configure(int index, char *init)
- 	dev->irq = -1;
- 
- 	rtnl_lock();
--	err = register_netdevice(dev);
--	rtnl_unlock();
--
--	if (err) {
-+	if (register_netdevice(dev)) {
-+		rtnl_unlock();
- 		pr_err("%s: error registering net device!\n", dev->name);
--		/* XXX: should we call ->remove() here? */
--		free_netdev(dev);
--		return 1;
-+		goto err_unregister_device;
- 	}
-+	rtnl_unlock();
- 
- 	timer_setup(&lp->tl, iss_net_user_timer_expire, 0);
- 
--	return 0;
-+	return;
- 
--errout:
--	/* FIXME: unregister; free, etc.. */
--	return -EIO;
-+err_unregister_device:
-+	platform_device_unregister(&lp->pdev);
-+err_free_netdev:
-+	free_netdev(dev);
- }
- 
- /* ------------------------------------------------------------------------- */
--- 
-2.25.1
-
+SGVsbG8sCgpPbiBXZWQsIDYgSnVsIDIwMjIgMTk6MDI6MzcgLTA3MDAgSmFrdWIgS2ljaW5za2k6
+Cgo+IE9uIFR1ZSwgIDUgSnVsIDIwMjIgMjA6NTY6MTAgKzA4MDAgRHVvbWluZyBaaG91IHdyb3Rl
+Ogo+ID4gKwlkZWxfdGltZXJfc3luYygmcm9zZV9uZWlnaC0+dDB0aW1lcik7Cj4gCj4gLyoqCj4g
+ICogZGVsX3RpbWVyX3N5bmMgLSBkZWFjdGl2YXRlIGEgdGltZXIgYW5kIHdhaXQgZm9yIHRoZSBo
+YW5kbGVyIHRvIGZpbmlzaC4KPiBbLi4uXQo+ICAqIFN5bmNocm9uaXphdGlvbiBydWxlczogQ2Fs
+bGVycyBtdXN0IHByZXZlbnQgcmVzdGFydGluZyBvZiB0aGUgdGltZXIsCj4gICogb3RoZXJ3aXNl
+IHRoaXMgZnVuY3Rpb24gaXMgbWVhbmluZ2xlc3MuCj4gCj4gaG93IGlzIHRoZSByZXN0YXJ0aW5n
+IHByZXZlbnRlZD8gSWYgSSdtIGxvb2tpbmcgcmlnaHQgCj4gcm9zZV90MHRpbWVyX2V4cGlyeSgp
+IHJlYXJtcyB0aGUgdGltZXIuCgpUaGUgZGVsX3RpbWVyX3N5bmMoKSBjb3VsZCBzdG9wIHRoZSB0
+aW1lciB0aGF0IHJlc3RhcnQgaXRzZWxmIGluCml0cyB0aW1lciBjYWxsYmFjayBmdW5jdGlvbi4K
+ClRoZSByb290IGNhdXNlIGlzIHNob3duIGJlbG93IHdoaWNoIGlzIGEgcGFydCBvZiBjb2RlIGlu
+CmRlbF90aW1lcl9zeW5jOgoKCWRvIHsKCQlyZXQgPSB0cnlfdG9fZGVsX3RpbWVyX3N5bmModGlt
+ZXIpOwoKCQlpZiAodW5saWtlbHkocmV0IDwgMCkpIHsKCQkJZGVsX3RpbWVyX3dhaXRfcnVubmlu
+Zyh0aW1lcik7CgkJCWNwdV9yZWxheCgpOwoJCX0KCX0gd2hpbGUgKHJldCA8IDApOwoKaHR0cHM6
+Ly9lbGl4aXIuYm9vdGxpbi5jb20vbGludXgvbGF0ZXN0L3NvdXJjZS9rZXJuZWwvdGltZS90aW1l
+ci5jI0wxMzgxCgpJZiB0aGUgdGltZXIgY2FsbGJhY2sgZnVuY3Rpb24gaXMgcnVubmluZywgdGhl
+IHRyeV90b19kZWxfdGltZXJfc3luYwp3aWxsIHJldHVybiAtMS4gVGhlbiwgaXQgd2lsbCBsb29w
+IHVudGlsIHRoZSB0aW1lciBpcyBub3QgcXVldWVkIGFuZAp0aGUgaGFuZGxlciBpcyBub3QgcnVu
+bmluZyBvbiBhbnkgQ1BVLgoKQWx0aG91Z2ggdGhlIHRpbWVyIG1heSByZXN0YXJ0IGl0c2VsZiBp
+biB0aW1lciBjYWxsYmFjayBmdW5jdGlvbiwgdGhlCmRlbF90aW1lcl9zeW5jIGNvdWxkIGFsc28g
+c3RvcCBpdC4KCkluIG9yZGVyIHRvIGZ1cnRoZXIgcHJvdmUgdGhlIGRlbF90aW1lcl9zeW5jKCkg
+Y291bGQgc3RvcCB0aGUgdGltZXIgdGhhdApyZXN0YXJ0IGl0c2VsZiBpbiBpdHMgdGltZXIgaGFu
+ZGxlciwgSSB3cm90ZSB0aGUgZm9sbG93aW5nIGtlcm5lbCBtb2R1bGUKd2hvZXMgcGFydCBvZiBj
+b2RlIGlzIHNob3duIGJlbG93OgoKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KCnN0cnVjdCB0aW1lcl9saXN0IG15X3RpbWVy
+OwpzdGF0aWMgdm9pZCBteV90aW1lcl9jYWxsYmFjayhzdHJ1Y3QgdGltZXJfbGlzdCAqdGltZXIp
+OwpzdGF0aWMgdm9pZCBzdGFydF90aW1lcih2b2lkKTsKCnN0YXRpYyB2b2lkIHN0YXJ0X3RpbWVy
+KHZvaWQpewogICAgZGVsX3RpbWVyKCZteV90aW1lcik7CiAgICBteV90aW1lci5leHBpcmVzID0g
+amlmZmllcytIWjsKICAgIG15X3RpbWVyLmZ1bmN0aW9uID0gbXlfdGltZXJfY2FsbGJhY2s7CiAg
+ICBhZGRfdGltZXIoJm15X3RpbWVyKTsKfQoKc3RhdGljIHZvaWQgbXlfdGltZXJfY2FsbGJhY2so
+c3RydWN0IHRpbWVyX2xpc3QgKnRpbWVyKXsKICAgIHByaW50aygiSW4gbXlfdGltZXJfZnVuY3Rp
+b24iKTsKICAgIHByaW50aygidGhlIGppZmZpZXMgaXMgJWxkXG4iLGppZmZpZXMpOwogICAgc3Rh
+cnRfdGltZXIoKTsKfQoKc3RhdGljIGludCBfX2luaXQgZGVsX3RpbWVyX3N5bmNfaW5pdCh2b2lk
+KQp7CiAgICBpbnQgcmVzdWx0OwogICAgcHJpbnRrKCJteV90aW1lciB3aWxsIGJlIGNyZWF0ZS5c
+biIpOwogICAgcHJpbnRrKCJ0aGUgamlmZmllcyBpcyA6JWxkXG4iLCBqaWZmaWVzKTsKICAgIHRp
+bWVyX3NldHVwKCZteV90aW1lcixteV90aW1lcl9jYWxsYmFjaywwKTsKICAgIHJlc3VsdCA9IG1v
+ZF90aW1lcigmbXlfdGltZXIsamlmZmllcyArIFNJWFBfVFhERUxBWSk7CiAgICBwcmludGsoInRo
+ZSBtb2RfdGltZXIgaXMgOiVkXG5cbiIscmVzdWx0KTsKICAgIHJldHVybiAwOwp9CgpzdGF0aWMg
+dm9pZCBfX2V4aXQgZGVsX3RpbWVyX3N5bmNfZXhpdCh2b2lkKQp7CiAgICBpbnQgcmVzdWx0PWRl
+bF90aW1lcl9zeW5jKCZteV90aW1lcik7CiAgICBwcmludGsoInRoZSBkZWxfdGltZXJfc3luYyBp
+cyA6JWRcblxuIiwgcmVzdWx0KTsKfQoKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KClRoZSB0aW1lciBoYW5kbGVyIGlzIHJ1
+bm5pbmcgZnJvbSBpbnRlcnJ1cHRzIGFuZCBkZWxfdGltZXJfc3luYygpIGNvdWxkIHN0b3AKdGhl
+IHRpbWVyIHRoYXQgcmV3aW5kIGl0c2VsZiBpbiBpdHMgdGltZXIgaGFuZGxlciwgdGhlIHJlc3Vs
+dCBpcyBzaG93biBiZWxvdzoKCiMgaW5zbW9kIGRlbF90aW1lcl9zeW5jLmtvIApbICAxMDMuNTA1
+ODU3XSBteV90aW1lciB3aWxsIGJlIGNyZWF0ZS4KWyAgMTAzLjUwNTkyMl0gdGhlIGppZmZpZXMg
+aXMgOjQyOTQ3NzA4MzIKWyAgMTAzLjUwNjg0NV0gdGhlIG1vZF90aW1lciBpcyA6MApbICAxMDMu
+NTA2ODQ1XSAKIyBbICAxMDMuNTMyMzg5XSBJbiBteV90aW1lcl9mdW5jdGlvbgpbICAxMDMuNTMy
+NDUyXSB0aGUgamlmZmllcyBpcyA0Mjk0NzcwODU5ClsgIDEwNC41NzY3NjhdIEluIG15X3RpbWVy
+X2Z1bmN0aW9uClsgIDEwNC41NzcwOTZdIHRoZSBqaWZmaWVzIGlzIDQyOTQ3NzE5MDQKWyAgMTA1
+LjYwMDk0MV0gSW4gbXlfdGltZXJfZnVuY3Rpb24KWyAgMTA1LjYwMTA3Ml0gdGhlIGppZmZpZXMg
+aXMgNDI5NDc3MjkyOApbICAxMDYuNjI1Mzk3XSBJbiBteV90aW1lcl9mdW5jdGlvbgpbICAxMDYu
+NjI1NTczXSB0aGUgamlmZmllcyBpcyA0Mjk0NzczOTUyClsgIDEwNy42NDg5OTVdIEluIG15X3Rp
+bWVyX2Z1bmN0aW9uClsgIDEwNy42NDkyMTJdIHRoZSBqaWZmaWVzIGlzIDQyOTQ3NzQ5NzYKWyAg
+MTA4LjY3MzAzN10gSW4gbXlfdGltZXJfZnVuY3Rpb24KWyAgMTA4LjY3Mzc4N10gdGhlIGppZmZp
+ZXMgaXMgNDI5NDc3NjAwMQpybW1vZCBkZWxfdGltZXJfc3luYy5rbwpbICAxMDkuNjQ5NDgyXSB0
+aGUgZGVsX3RpbWVyX3N5bmMgaXMgOjEKWyAgMTA5LjY0OTQ4Ml0gCiMgCgpJZiB3ZSBjYWxsIGFu
+b3RoZXIgdGhyZWFkIHN1Y2ggYXMgYSB3b3JrX3F1ZXVlIG9yIHRoZSBjb2RlIGluIG90aGVyIHBs
+YWNlcwp0byByZXN0YXJ0IHRoZSB0aW1lciBpbnN0ZWFkIG9mIGluIGl0cyB0aW1lciBoYW5kbGVy
+LCB0aGUgZGVsX3RpbWVyX3N5bmMoKQpjb3VsZCBub3Qgc3RvcCBpdC4KCkJlc3QgcmVnYXJkcywK
+RHVvbWluZyBaaG91
