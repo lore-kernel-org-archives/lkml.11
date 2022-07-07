@@ -2,89 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2770AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0642FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbiGGFk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 01:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58586 "EHLO
+        id S232388AbiGGFlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 01:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbiGGFky (ORCPT
+        with ESMTP id S232283AbiGGFlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 01:40:54 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931BC31349;
-        Wed,  6 Jul 2022 22:40:53 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id a15so17196183pfv.13;
-        Wed, 06 Jul 2022 22:40:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ISrjqQrL8rQnKNyK/qFfZOQDFnDJ/r9wIWbFyBod+Kg=;
-        b=hKtm+niY+AJV9SEYku9YboGeIFFltORehU6DocXrQf9QdlbiE9wygVGKFwXYyi+Sv/
-         DUZX/3mKjcaSRhTPGV5RaEDoK3TjTkAky1GgFrDqNVdJhpIW5ISCc6o5n+SRBqIv2JSP
-         2/2fig1ybyJHfjAnrw2lve/r6SSXgkWyu0gOzGWQ18s7IZ4fY6DUNL4Q5mCGAQmYV2bn
-         uHDFzki8z/aEIWn/gnD5Sj3RTVLhq+lr2lNI33PU3aAVdteZGAPeNJn+TpBpWKQF0GWj
-         jqJt4nNL2buodc3Lzz5NevPUFu/GOU0nszpIEA+PptI32H1HBtE81neWMRF/NTZwsvI7
-         3b2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ISrjqQrL8rQnKNyK/qFfZOQDFnDJ/r9wIWbFyBod+Kg=;
-        b=oSGyy9ubb+HgXfMMypmejpW4dG1+W/72rcqf+9YpaVpXBiPW8ERT8Bs+GiDJOs9At1
-         WPx90a0I9ZOtELjFd+nS8bq10I1aTzolv1hhkP1ARzYVOWGLaPPNa5ZM1GXoJFAR4Nom
-         dF1D+eTq6JQcy1cBXvhCGi7SA9h0VzLYo+TBJwxhDYJmQ7w0frWS88Jt6QWCgiCPmJzp
-         8oyF0CKL6mv4qsArCERV5ZafhL5Yy5atDZ05tfv98GVkPge0ZcCraQcEA4x2CRcjqlbv
-         jm+g/fK5OcQKU/7Syr853yTA3ljhBy221JLHFriLQoE65lT9uAdVTN4G6eM/3LPsCM/s
-         ikUw==
-X-Gm-Message-State: AJIora8PTJsf99J+QxrQLQhOcds684XjnD0nUJtnwjJnEcxOyJ/xwY7c
-        PrjKZ5NvcrGEQF1Hw1la34Q=
-X-Google-Smtp-Source: AGRyM1s/kYsePIZm457Bu28zuLw524wO+eDxG9fJOLzpQrwXk78+NliKZhLEx0TN9xbMrCxKHRptDg==
-X-Received: by 2002:a65:490d:0:b0:40d:9867:2df with SMTP id p13-20020a65490d000000b0040d986702dfmr38447688pgs.171.1657172453073;
-        Wed, 06 Jul 2022 22:40:53 -0700 (PDT)
-Received: from debian.moxa.com ([123.51.145.104])
-        by smtp.gmail.com with ESMTPSA id u16-20020a170902e81000b0015e8d4eb2e3sm3954190plg.301.2022.07.06.22.40.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 22:40:52 -0700 (PDT)
-From:   Jimmy Chen <u7702045@gmail.com>
-X-Google-Original-From: Jimmy Chen <jimmy.chen@moxa.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>
-Cc:     Jimmy Chen <jimmy.chen@moxa.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: arm: fsl: Add Moxa UC8210/8220 series
-Date:   Thu,  7 Jul 2022 13:40:43 +0800
-Message-Id: <20220707054044.22266-1-jimmy.chen@moxa.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 7 Jul 2022 01:41:20 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84105313BF;
+        Wed,  6 Jul 2022 22:41:19 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LdldT27SRz4xXD;
+        Thu,  7 Jul 2022 15:41:17 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657172478;
+        bh=oj6dBw9Nm3G2bzkHq2OFfgBtAf6fr7vRnbnVheyfJkU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LfMlAW3Z1VIR/fnORqeeNPAYRDuzu1R10PDCB7YbG6EYdvM8GCZSj/xTJ/veu6DE8
+         1Yi14wdPq0tzaF029IfE48YNG091bC3xYm6rcNxmGlYr401MiIFLKzv0v6NpR2kZUb
+         7PngINVse+clPQZ+dhm/Mp2FNSWNMuoTHApmcDAI6U0yjolpI8bFb6FKFkbCkG7BVY
+         8Nf1/e8ZtPI8Jm0SrTONSakugXqN/v0Vz6zeGVVLOubuyg1V9tTK8ZFkEEtfUvKlD9
+         yohQwLSf2ApoHaEDS5kFuQeKb+jUtqJ+QVIP/VuHcCORekhiJzwCta/IeLn5kdl2PT
+         LjubKeOsNRs3w==
+Date:   Thu, 7 Jul 2022 15:28:31 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Vinod Koul <vkoul@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Subject: linux-next: manual merge of the soundwire tree with the sound-asoc
+ tree
+Message-ID: <20220707152831.57f1e92d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/u8xEwjcQIuXrB4pbi78Xe/X";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Moxa UC8210/8220 use Freescale i.MX7d CPU
+--Sig_/u8xEwjcQIuXrB4pbi78Xe/X
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jimmy Chen <jimmy.chen@moxa.com>
----
- Documentation/devicetree/bindings/arm/fsl.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+Hi all,
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index ef524378d449..00b2df05087e 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -767,6 +767,8 @@ properties:
-               - toradex,colibri-imx7d-emmc    # Colibri iMX7D 1GB (eMMC) Module
-               - zii,imx7d-rmu2            # ZII RMU2 Board
-               - zii,imx7d-rpu2            # ZII RPU2 Board
-+              - moxa,uc-8210              # MOXA UC-8210 board
-+              - moxa,uc-8220              # MOXA UC-8220 board
-           - const: fsl,imx7d
- 
-       - description: TQ-Systems TQMa7D SoM on MBa7x board
--- 
-2.20.1
+Today's linux-next merge of the soundwire tree got a conflict in:
 
+  drivers/soundwire/intel.c
+
+between commit:
+
+  ca68202098a4 ("soundwire: intel: Migrate to new style legacy DAI naming f=
+lag")
+
+from the sound-asoc tree and commit:
+
+  3e9c9f90573f ("soundwire: intel: use pm_runtime_resume() on component pro=
+be")
+
+from the soundwire tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/soundwire/intel.c
+index 0268fa527c0c,95ce292994cc..000000000000
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@@ -1097,9 -1114,9 +1114,10 @@@ static const struct snd_soc_dai_ops int
+  };
+ =20
+  static const struct snd_soc_component_driver dai_component =3D {
+ -	.name           =3D "soundwire",
+ -	.probe		=3D intel_component_probe,
+ -	.suspend	=3D intel_component_dais_suspend
+ +	.name			=3D "soundwire",
+++	.probe			=3D intel_component_probe,
+ +	.suspend		=3D intel_component_dais_suspend,
+ +	.legacy_dai_naming	=3D 1,
+  };
+ =20
+  static int intel_create_dai(struct sdw_cdns *cdns,
+
+--Sig_/u8xEwjcQIuXrB4pbi78Xe/X
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGbv8ACgkQAVBC80lX
+0Gx+uggAn1PSacDabrsol1tUCJl6nVH3Ta6gtZWkhpj1eSkwg7YAZ7jnufkD7zdY
+D62nM3D+pEr70snw8luril0KGPOZqhFu5wwQkZTjUvpN7BHte2sUs6L6vP2fZp0C
+CE9xkYS7TmcGLt4MZAwrJEWwNpouEglr8yvAukpqu6zH+kgcXa2679nIqHjH/cPO
+Zc0M3QPMDj7MINia069iVg+c/ZUOMVdM8nhM9WT3fyR7Bu+Xu1JqIJDXe2+Zvk6Z
+W55KBZn/w9GxPbHzUCZBu8eWDNQmK66fCfat4PXDBQVI4dKQjhuhxaWXTIWFRKGF
+cN8aJkFMqHiqkq3SmdzzyhI2CNUeUw==
+=OZ1O
+-----END PGP SIGNATURE-----
+
+--Sig_/u8xEwjcQIuXrB4pbi78Xe/X--
