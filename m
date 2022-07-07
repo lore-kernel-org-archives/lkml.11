@@ -2,86 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C27DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235153AbiGGJT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        id S235180AbiGGJUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231770AbiGGJT5 (ORCPT
+        with ESMTP id S230222AbiGGJUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:19:57 -0400
-Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D143932EC7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:19:55 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id CIB00150;
-        Thu, 07 Jul 2022 17:19:50 +0800
-Received: from localhost.localdomain (10.200.104.82) by
- jtjnmail201611.home.langchao.com (10.100.2.11) with Microsoft SMTP Server id
- 15.1.2507.9; Thu, 7 Jul 2022 17:19:51 +0800
-From:   Deming Wang <wangdeming@inspur.com>
-To:     <mpe@ellerman.id.au>
-CC:     <benh@kernel.crashing.org>, <paulus@samba.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        Deming Wang <wangdeming@inspur.com>
-Subject: [PATCH] KVM: PPC: Use the arg->size directly for kvm_vm_ioctl_create_spapr_tce
-Date:   Sun, 3 Jul 2022 13:29:32 -0400
-Message-ID: <20220703172932.11329-1-wangdeming@inspur.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 7 Jul 2022 05:20:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10A932EC7
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:20:47 -0700 (PDT)
+Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1o9Ngi-0006DF-SW; Thu, 07 Jul 2022 11:20:44 +0200
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Julia Lawall <Julia.Lawall@inria.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>
+Cc:     linux-kernel@vger.kernel.org, cocci@inria.fr,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Subject: [PATCH] coccinelle: api: explicitly request exclusive reset controls
+Date:   Thu,  7 Jul 2022 11:20:30 +0200
+Message-Id: <20220707092030.3319988-1-p.zabel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.200.104.82]
-tUid:   20227071719503b43df983e69e9535cfd506721407631
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::28
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use arg->size directly may be better for code readability.Because, the
-variable of size has not been found for special purpose  at present.
-Also,We can reduce the use of a variable.
+Match deprecated reset_control_get API calls and replace them with the
+corresponding _exclusive variants with the reset-exclusive.cocci rule,
+to hopefully advance the API transition started with commit a53e35db70d1
+("reset: Ensure drivers are explicit when requesting reset lines").
 
-Signed-off-by: Deming Wang <wangdeming@inspur.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
 ---
- arch/powerpc/kvm/book3s_64_vio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ scripts/coccinelle/api/reset-exclusive.cocci | 49 ++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+ create mode 100644 scripts/coccinelle/api/reset-exclusive.cocci
 
-diff --git a/arch/powerpc/kvm/book3s_64_vio.c b/arch/powerpc/kvm/book3s_64_vio.c
-index d6589c4fe889..5f74ffb88e82 100644
---- a/arch/powerpc/kvm/book3s_64_vio.c
-+++ b/arch/powerpc/kvm/book3s_64_vio.c
-@@ -294,14 +294,14 @@ long kvm_vm_ioctl_create_spapr_tce(struct kvm *kvm,
- 	struct kvmppc_spapr_tce_table *stt = NULL;
- 	struct kvmppc_spapr_tce_table *siter;
- 	struct mm_struct *mm = kvm->mm;
--	unsigned long npages, size = args->size;
-+	unsigned long npages;
- 	int ret;
- 
- 	if (!args->size || args->page_shift < 12 || args->page_shift > 34 ||
- 		(args->offset + args->size > (ULLONG_MAX >> args->page_shift)))
- 		return -EINVAL;
- 
--	npages = kvmppc_tce_pages(size);
-+	npages = kvmppc_tce_pages(args->size);
- 	ret = account_locked_vm(mm, kvmppc_stt_pages(npages), true);
- 	if (ret)
- 		return ret;
-@@ -314,7 +314,7 @@ long kvm_vm_ioctl_create_spapr_tce(struct kvm *kvm,
- 	stt->liobn = args->liobn;
- 	stt->page_shift = args->page_shift;
- 	stt->offset = args->offset;
--	stt->size = size;
-+	stt->size = args->size;
- 	stt->kvm = kvm;
- 	mutex_init(&stt->alloc_lock);
- 	INIT_LIST_HEAD_RCU(&stt->iommu_tables);
+diff --git a/scripts/coccinelle/api/reset-exclusive.cocci b/scripts/coccinelle/api/reset-exclusive.cocci
+new file mode 100644
+index 000000000000..c5d6938ca542
+--- /dev/null
++++ b/scripts/coccinelle/api/reset-exclusive.cocci
+@@ -0,0 +1,49 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/// Explicitly request exclusive reset controls. The implicitly exclusive reset
++/// control request functions are deprecated.
++///
++// Confidence: High
++// Copyright: (C) 2022 Philipp Zabel.
++// Comments:
++// Options: --no-includes --include-headers
++// Keywords: reset_control_get
++
++virtual patch
++virtual report
++
++@depends on patch@
++expression x;
++@@
++
++ x =
++(
++-devm_reset_control_get
+++devm_reset_control_get_exclusive
++|
++-devm_reset_control_get_optional
+++devm_reset_control_get_optional_exclusive
++|
++-of_reset_control_get
+++of_reset_control_get_exclusive
++|
++-of_reset_control_get_by_index
+++of_reset_control_get_exclusive_by_index
++|
++-devm_reset_control_get_by_index
+++devm_reset_control_get_exclusive_by_index
++)
++ (...)
++
++@r depends on !patch exists@
++expression x;
++position p;
++@@
++
++*x = \(devm_reset_control_get@p\|devm_reset_control_get_optional@p\|of_reset_control_get@p\|of_rset_control_get_by_index@p\|devm_reset_control_get_by_index@p\)(...)
++
++@script:python depends on report@
++p << r.p;
++@@
++
++msg = "ERROR: explicitly request exclusive reset controls with reset_control_get_exclusive() and variants"
++coccilib.report.print_report(p[0], msg)
 -- 
-2.27.0
+2.30.2
 
