@@ -2,126 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1371AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 737BAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236378AbiGGStu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
+        id S236417AbiGGSt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235452AbiGGSts (ORCPT
+        with ESMTP id S236380AbiGGStz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:49:48 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087D7201A6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:49:47 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id ay25so1534341wmb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 11:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=By3T6Z5JDK5VvmvI0n3THPKQqdtLxJBkH/DaezIVYE0=;
-        b=UcJwhV8pPQf4CAMOaf2znH1HntdU1cBMU8tyt9pzArCbkZGGDwErnBt8m86tQK9dxa
-         HcLrCVCOdiHht2vDiwCi4rzwEvLi5Cmu6JhEAmHMJvK2W1eODp6clKPUTA4El1iWyRQY
-         6RXW5TWyrX9LsIxjY64M6+jfyEpylCJGLL3Ii2DxkW9GhJG4CtiXaB1YsrKPcnTfmvno
-         Bg7chmUDKYbyao8BwLr4ICGm+tOc99ag/ZCBIvshf5C3c9gois6pyyQuiNsTbhC2LswA
-         ZLJqpybLLTbFd5bYNrRA+1YcC1AQwEvEPq2PA5vjU57nBou97z3stLYQNuOO+lZspdfB
-         FfIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=By3T6Z5JDK5VvmvI0n3THPKQqdtLxJBkH/DaezIVYE0=;
-        b=SqeAjO0vXlqmUrYuuD/SA+44DyRG89qNaVgWXjllw87Gu0JvXnd8YM+4nNoyhcfZ9q
-         raP9rC4mvofE+Zpn5zzV/vm91z8uCkWLuqmx7yH+u1ZqzbIl7fNkPJMcPJWlUy4qzwhk
-         fUvbCC4xnFo0fvb8LWz2XkfdKxhTlDbCum5lqgsojJZ/Qnjmv8nFryOyereoedcNGsU5
-         gpxtfCxwltsjuuSq0+LYnnbTQmMX6mzTKkL/RhhHcceO3WQ7fY7Mxhn4CGXfLRPh3fWY
-         KpgD3UAmxF83fKKUxHiT7JMf4G30lrM7CEOzALGnzH9fxgVb6FzFHyIX1wzYGTBMqtnb
-         qszg==
-X-Gm-Message-State: AJIora8xVnNPfTMg1gIMNKvVRgmBv8ASxMUHJFiL0DJB1kpeaUF0jcTz
-        SuiC+D4cYBOgY3mbA64Sk9s=
-X-Google-Smtp-Source: AGRyM1uvGngSRhvIh90pdnM0bN+cxnFl4K5RjbtOcM7uxxaM69tVEFlfF+Ip5tKu6NDKHKV07V4/9w==
-X-Received: by 2002:a1c:19c3:0:b0:39c:6479:3ca with SMTP id 186-20020a1c19c3000000b0039c647903camr6037084wmz.27.1657219785494;
-        Thu, 07 Jul 2022 11:49:45 -0700 (PDT)
-Received: from localhost.localdomain (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
-        by smtp.gmail.com with ESMTPSA id z5-20020adfe545000000b0021b81855c1csm47280088wrm.27.2022.07.07.11.49.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 11:49:43 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Eric Biederman <ebiederm@xmission.com>, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: [PATCH] kexec: Replace kmap() with kmap_local_page()
-Date:   Thu,  7 Jul 2022 20:49:39 +0200
-Message-Id: <20220707184939.6086-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 7 Jul 2022 14:49:55 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134202124D;
+        Thu,  7 Jul 2022 11:49:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657219792; x=1688755792;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pvJunDBsIn7RdpHLctPDPVxQZI1uLLjQpB8iFbP0Gyk=;
+  b=FkhZuhXxF9PRyfHdVSGYWoEPVg6pl4rKLVbiDLLB5Xtoe8ao8W5KMI5S
+   fWkCAALKJVuslK+dMQ8JQb9wZFUlq+BYnjknVzths1sKq/o+FAca7/JS5
+   Ujk3nch1Pv5Avxv+8w4lR/qePx0LxKflQD58mKh335TAQb+6RksR8qcNR
+   dqeh+b7HJI4uQ93O1lS8lDJPq/gXJk6RZ0i38Om0AEAiMVizeerQ+B+Fi
+   PlrVabTDJaT09D4VLCEo1qrla2fItsM1t9nO6BIUv1xLyNzggZIooZ9J6
+   w7yT5pTjYSREV825lqKGXVMdTOeMZ7NfQGXH5OlCRTYifBVg2TEkdi6gT
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
+   d="scan'208";a="163810703"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jul 2022 11:49:51 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 7 Jul 2022 11:49:50 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 7 Jul 2022 11:49:48 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <linus.walleij@linaro.org>, <kavyasree.kotagiri@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <colin.foster@in-advantage.com>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
+        "Horatiu Vultur" <horatiu.vultur@microchip.com>
+Subject: [PATCH 0/2] pinctrl: ocelot: Add fixes for ocelot driver
+Date:   Thu, 7 Jul 2022 20:53:40 +0200
+Message-ID: <20220707185342.2697569-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() and kmap_atomic() are being deprecated in favor of
-kmap_local_page().
+The patch series fixes 2 issues with pincfg.
+- first issue is that on lan966x uses different offsets than sparx5
+  so it can't use directly the ocelot_confops
+- second issue is pincfg stop working when regmap support was addded.
 
-With kmap_local_page(), the mappings are per thread, CPU local and not
-globally visible. Furthermore, the mappings can be acquired from any
-context (including interrupts).
+Horatiu Vultur (2):
+  pinctrl: ocelot: Fix pincfg for lan966x
+  pinctrl: ocelot: Fix pincfg
 
-Therefore, use kmap_local_page() in aio.c because these mappings are per
-thread, CPU local, and not globally visible.
+ drivers/pinctrl/pinctrl-ocelot.c | 222 +++++++++++++++++++------------
+ 1 file changed, 138 insertions(+), 84 deletions(-)
 
-Tested on a QEMU + KVM 32-bits VM booting a kernel with HIGHMEM64GB
-enabled.
-
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- kernel/kexec_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-index 4d34c78334ce..6f98274765d4 100644
---- a/kernel/kexec_core.c
-+++ b/kernel/kexec_core.c
-@@ -814,7 +814,7 @@ static int kimage_load_normal_segment(struct kimage *image,
- 		if (result < 0)
- 			goto out;
- 
--		ptr = kmap(page);
-+		ptr = kmap_local_page(page);
- 		/* Start with a clear page */
- 		clear_page(ptr);
- 		ptr += maddr & ~PAGE_MASK;
-@@ -827,7 +827,7 @@ static int kimage_load_normal_segment(struct kimage *image,
- 			memcpy(ptr, kbuf, uchunk);
- 		else
- 			result = copy_from_user(ptr, buf, uchunk);
--		kunmap(page);
-+		kunmap_local(ptr);
- 		if (result) {
- 			result = -EFAULT;
- 			goto out;
-@@ -878,7 +878,7 @@ static int kimage_load_crash_segment(struct kimage *image,
- 			goto out;
- 		}
- 		arch_kexec_post_alloc_pages(page_address(page), 1, 0);
--		ptr = kmap(page);
-+		ptr = kmap_local_page(page);
- 		ptr += maddr & ~PAGE_MASK;
- 		mchunk = min_t(size_t, mbytes,
- 				PAGE_SIZE - (maddr & ~PAGE_MASK));
-@@ -894,7 +894,7 @@ static int kimage_load_crash_segment(struct kimage *image,
- 		else
- 			result = copy_from_user(ptr, buf, uchunk);
- 		kexec_flush_icache_page(page);
--		kunmap(page);
-+		kunmap_local(ptr);
- 		arch_kexec_pre_free_pages(page_address(page), 1);
- 		if (result) {
- 			result = -EFAULT;
 -- 
-2.36.1
+2.33.0
 
