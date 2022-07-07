@@ -2,201 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAB4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79501C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 08:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235500AbiGGIVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 04:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39882 "EHLO
+        id S235481AbiGGIVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 04:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235303AbiGGIUT (ORCPT
+        with ESMTP id S235477AbiGGIU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 04:20:19 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398A24F64E
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:19:15 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id r18so22141567edb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 01:19:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xK6L9kQL/su+qUtSf+q4avn5i0/HUMQbVZpZK/zoTOQ=;
-        b=TIQ4acE2XR+YDLnijnmuxoNvn/IXoCYF3tvh2p55MVItZZGqVDvlehlrnTjQdhPsL8
-         GgtlVkEptPTHBmPpTYW1cZWmm8UhayN0dN7GGWfvE6j4WsOKyAn3Xfz0T6sLBq1Q2zRX
-         d094EZrlUe7reGHGv4BME4f9WPDTQXvHzdBSdWI+6zbKBVhwRX4/dt5gNaFPMe+JUcBr
-         06bqQarW2uI6Pn/kUqu1efXSUAtnjialv2TOyS3MGufB3gtZ+gPxAz6ipR7U8seOEgB1
-         y6KpVCN1BcwGbzkuJcoxbJ0XJ51m/GTw3tIepBftzSbv+jIy4ia/Ix2kkNgF/cf3fXYl
-         Z2QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xK6L9kQL/su+qUtSf+q4avn5i0/HUMQbVZpZK/zoTOQ=;
-        b=DkrKQtM8Lz8JhqxrIiiJv0jBV82oeYFrszov46Sz/R5ER3tBk5mdz165Igd5Qrjbkn
-         aOS58pHwhTgYgyZ9N8/vUlyLEOx3CvEVs6mVGY36Mt0byBlO/bYY390Dmlv4ZAlG+6k0
-         Jh8/AeV6vTt9ViLZvq+4+cGtEdJRSJx6aARWi3l6qiJZrj2OSmGtbV4l9O71REIfT383
-         kCS5Ge8Vmp/5onCACZRpRsa3lHTGMMqbkRJtwUcl3texWAdQG9bhkOy6SfyaBMYbwfjj
-         r4b7W35d9K4B2XKBvRVOaIjOJLxpu3m8922VkRXUXV5v8NsHO/YmuqlAtJmdtH+az6GI
-         Ygfw==
-X-Gm-Message-State: AJIora9JgrEBU3E+26Rhx3cOmg3Yfzdhu6mLEt83wKM7O7fAsUZleuJM
-        LFR5rT/d6GH8O/URsjTjCCkVaRfhU7B0qto3
-X-Google-Smtp-Source: AGRyM1tIDL7TShlQb5VPGfvVkaMpDi6zcLKk1STvcR0DpWXiacRbz0pBhiu6c4MxsSOtUSMP7bXTOg==
-X-Received: by 2002:aa7:dcd5:0:b0:43a:70f7:8e4d with SMTP id w21-20020aa7dcd5000000b0043a70f78e4dmr21884954edu.85.1657181953398;
-        Thu, 07 Jul 2022 01:19:13 -0700 (PDT)
-Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id f13-20020a170906824d00b00726e108b566sm12871779ejx.173.2022.07.07.01.19.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 01:19:13 -0700 (PDT)
-From:   Naresh Solanki <naresh.solanki@9elements.com>
-X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
-To:     linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Naresh Solanki <Naresh.Solanki@9elements.com>
-Subject: [PATCH v4 4/4] regulator: output-supply: Add Notification support
-Date:   Thu,  7 Jul 2022 10:18:26 +0200
-Message-Id: <20220707081826.953449-5-Naresh.Solanki@9elements.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220707081826.953449-1-Naresh.Solanki@9elements.com>
-References: <20220707081826.953449-1-Naresh.Solanki@9elements.com>
+        Thu, 7 Jul 2022 04:20:56 -0400
+X-Greylist: delayed 542 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Jul 2022 01:19:28 PDT
+Received: from mail.joindesign.com.pl (mail.joindesign.com.pl [94.177.251.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E057FD71
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 01:19:28 -0700 (PDT)
+Received: by mail.joindesign.com.pl (Postfix, from userid 1001)
+        id C3847A25F4; Thu,  7 Jul 2022 09:11:04 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=joindesign.com.pl;
+        s=mail; t=1657181470;
+        bh=TUR+TUpWbFBLvN6YS9BQhbkv1+KYroy8ia0GqWH3fZc=;
+        h=Date:From:To:Subject:From;
+        b=h2SFYujlB67FYUd2n+d9Whn2F4l4YpOObO2ex5v1l05jeWwD+uslZrcfp9R8gmp5N
+         ++fy38uxDcygs/6Bih66S6Xd209MqvN8Zj9Oe0hUAYHA47xmaEifNd0mbL0QTvPT1Y
+         L3HWo0qrl8RuTf3XM8jurfZlQcvmYq8fTQ3IH2pqfBM0HVzyNOIJyaXhzFj6rVmfeP
+         wnkeg+Ac29Jeq3Kx4XTrcuVIxOL6FH97+XXRa0wZQ5cUx/7p75cDa+0EJg6qO0Z4LM
+         IE1cBtncWM4RC9/54FmmMKXdj2CIAJR2flLC7XwTNzu94Sk/33+uXax4ioOVDkqbR2
+         9BWf0UbYXJX2g==
+Received: by mail.joindesign.com.pl for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 08:10:58 GMT
+Message-ID: <20220707074500-0.1.1v.dgz6.0.r70m6o9jsq@joindesign.com.pl>
+Date:   Thu,  7 Jul 2022 08:10:58 GMT
+From:   "Antoni Sabat" <antoni.sabat@joindesign.com.pl>
+To:     <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?Q?Zabezpieczenie_p=C5=82ynno=C5=9Bci_finansowej?=
+X-Mailer: mail.joindesign.com.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Rudolph <patrick.rudolph@9elements.com>
+Dzie=C5=84 dobry,
 
-Add notification support to output-supply driver to receive regulator
-events.
+od wielu lat zawodowo pracuj=C4=99 jako ekspert finansowy.=20
 
-During runtime, regulator may encounter events like over/under voltage,
-over current etc. & its useful to report to userspace to take necessary
-corrective action.
+Dla przedsi=C4=99biorc=C3=B3w, kt=C3=B3rzy korzystaj=C4=85 z mojej pomocy=
+, szanse na uzyskanie dodatkowych =C5=9Brodk=C3=B3w z banku (a tak=C5=BCe=
+ z UE) wzrastaj=C4=85 wielokrotnie.=20
 
-If sysfs notification is desired then that can be enabled using
-regulator-notify-enable property.
-This is very useful in situation wherein immediate responsive action
-needs to be taken upon receiving events & delayed response is not
-acceptable depending on criticality of the received event.
+Gwarantuje Pa=C5=84stwu najdogodniejsze warunki, kt=C3=B3re cz=C4=99sto s=
+=C4=85 nierealne w przypadku indywidualnego sk=C5=82adania wniosku. Proce=
+sy i formalno=C5=9Bci, kt=C3=B3re ci=C4=85gn=C4=99=C5=82y si=C4=99 tygodn=
+iami, finalizowa=C5=82em w kilka dni.=20
 
-Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
-Signed-off-by: Naresh Solanki <Naresh.Solanki@9elements.com>
----
- drivers/regulator/userspace-consumer.c | 50 ++++++++++++++++++++++++--
- 1 file changed, 48 insertions(+), 2 deletions(-)
+Czy chcieliby Pa=C5=84stwo pozyska=C4=87 dodatkowy kapita=C5=82 na rozw=C3=
+=B3j dzia=C5=82alno=C5=9Bci lub jej stabilne funkcjonowanie?=20
 
-diff --git a/drivers/regulator/userspace-consumer.c b/drivers/regulator/userspace-consumer.c
-index b424a0ddf582..0cf2724b5c37 100644
---- a/drivers/regulator/userspace-consumer.c
-+++ b/drivers/regulator/userspace-consumer.c
-@@ -22,14 +22,33 @@
- 
- struct userspace_consumer_data {
- 	const char *name;
--
-+	bool notify_enable;
-+	struct notifier_block nb;
- 	struct mutex lock;
- 	bool enabled;
-+	unsigned long events;
-+	struct kobject *kobj;
- 
- 	int num_supplies;
- 	struct regulator_bulk_data *supplies;
- };
- 
-+static DEFINE_MUTEX(events_lock);
-+
-+static ssize_t events_show(struct device *dev,
-+			  struct device_attribute *attr, char *buf)
-+{
-+	struct userspace_consumer_data *data = dev_get_drvdata(dev);
-+	unsigned long e;
-+
-+	mutex_lock(&events_lock);
-+	e = data->events;
-+	data->events = 0;
-+	mutex_unlock(&events_lock);
-+
-+	return sprintf(buf, "0x%lx\n", e);
-+}
-+
- static ssize_t name_show(struct device *dev,
- 			 struct device_attribute *attr, char *buf)
- {
-@@ -88,12 +107,14 @@ static ssize_t state_store(struct device *dev, struct device_attribute *attr,
- 	return count;
- }
- 
-+static DEVICE_ATTR_RO(events);
- static DEVICE_ATTR_RO(name);
- static DEVICE_ATTR_RW(state);
- 
- static struct attribute *attributes[] = {
- 	&dev_attr_name.attr,
- 	&dev_attr_state.attr,
-+	&dev_attr_events.attr,
- 	NULL,
- };
- 
-@@ -101,6 +122,22 @@ static const struct attribute_group attr_group = {
- 	.attrs	= attributes,
- };
- 
-+static int regulator_userspace_notify(struct notifier_block *nb,
-+				      unsigned long event,
-+				      void *ignored)
-+{
-+	struct userspace_consumer_data *data =
-+		container_of(nb, struct userspace_consumer_data, nb);
-+
-+	mutex_lock(&events_lock);
-+	data->events |= event;
-+	mutex_unlock(&events_lock);
-+
-+	sysfs_notify(data->kobj, NULL, dev_attr_events.attr.name);
-+
-+	return NOTIFY_OK;
-+}
-+
- static struct regulator_userspace_consumer_data *get_pdata_from_dt_node(
- 		struct platform_device *pdev)
- {
-@@ -139,7 +176,7 @@ static int regulator_userspace_consumer_probe(struct platform_device *pdev)
- {
- 	struct regulator_userspace_consumer_data *pdata;
- 	struct userspace_consumer_data *drvdata;
--	int ret;
-+	int ret, i;
- 
- 	pdata = dev_get_platdata(&pdev->dev);
- 	if (!pdata && pdev->dev.of_node) {
-@@ -159,6 +196,7 @@ static int regulator_userspace_consumer_probe(struct platform_device *pdev)
- 	drvdata->name = pdata->name;
- 	drvdata->num_supplies = pdata->num_supplies;
- 	drvdata->supplies = pdata->supplies;
-+	drvdata->kobj = &pdev->dev.kobj;
- 
- 	mutex_init(&drvdata->lock);
- 
-@@ -183,7 +221,15 @@ static int regulator_userspace_consumer_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	drvdata->nb.notifier_call = regulator_userspace_notify;
-+	for (i = 0; i < drvdata->num_supplies; i++) {
-+		ret = devm_regulator_register_notifier(drvdata->supplies[i].consumer, &drvdata->nb);
-+		if (ret)
-+			goto err_enable;
-+	}
-+
- 	drvdata->enabled = pdata->init_on;
-+
- 	platform_set_drvdata(pdev, drvdata);
- 
- 	return 0;
--- 
-2.35.3
-
+Pozdrawiam
+Antoni Sabat
