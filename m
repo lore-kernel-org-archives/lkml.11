@@ -2,129 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87763C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13230C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236703AbiGGVzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 17:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
+        id S236792AbiGGV42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 17:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236597AbiGGVzo (ORCPT
+        with ESMTP id S236218AbiGGV41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 17:55:44 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1362F017
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 14:55:43 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id t19so32750269lfl.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 14:55:43 -0700 (PDT)
+        Thu, 7 Jul 2022 17:56:27 -0400
+Received: from mail-io1-xd49.google.com (mail-io1-xd49.google.com [IPv6:2607:f8b0:4864:20::d49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DE15A472
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 14:56:26 -0700 (PDT)
+Received: by mail-io1-xd49.google.com with SMTP id s7-20020a5d9287000000b00678b8aa9e1aso3956328iom.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 14:56:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VjkruDOfgtNG2P/JMcjrgptBtGqklTPONWmMneNgjdQ=;
-        b=e3OSeiKAf4U5yFmmwkZ2dAxTav20lD5wJSygHmb3mnxTpWLPRf52/0elcJ8FeLFhmi
-         gQFBr+IzK1Mh4zYLL2TsMa4jJAoMTtzJEp/Djbh46Q2DUOgg6acWK/9ARh3VRLaWdk0n
-         wdaqkoWOkrMuvyG9exWEh+M2dhFWvl9O3Vt9rB0RWAfVQADTWrJQkW1zfuuJimBh6oxO
-         2F/drv67/O28bGQDl7glDEo6GEq11cNnbCenXJASchGcJUhdioC17tAc6LL7eaLvCf9W
-         BmKuwNJb13KBzv3QZf0dC+R5kn9KL1DMRtUCbKdOTWQmE6fyLBBFuzPPapvHyUn8nAsO
-         wrDg==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ri5AY5SwLbhVC5p/TahumKhee43SBZlNLqy+ZUco6ig=;
+        b=lmPgZdfN7Gh79v3TGk4Il8Vo1qV9GsbTBrp8014DAaz6sauD8K+WKJJ8F89b2CLGCF
+         bWLCIVYAVlfPnQDbHrcDbRACwLqDzZgXCJo0olHVjXs3bALhJiIonqcXzFFYRDH8yUmD
+         umS0DiWRAR7uKJNqsp6+QOTblfr7K8L5a7j+RM1HnAbIIaB6tWVO59iT9q8ygeZCpfsR
+         N2telE6tmklDdOy0WbAQrQB7dP9gIYUxlcKQBhHb/jGHu+doSiINBGv0cRij7P8a7uJ/
+         A3yy2oEjB+1Zi6om7pKr7vdSAqHx1f3iI79AN3akeW18kC0/50lec/0q7C6dXpkN8lqg
+         QQ4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VjkruDOfgtNG2P/JMcjrgptBtGqklTPONWmMneNgjdQ=;
-        b=Qi7xvD2IR81VCpZGH6dLOwZ2icQXi2/AmkrXfOKr/MP4R5kkZo4BfDXqrQJ/LYdVRL
-         XOUvgkrJcRQKood1WK0Jj6kIGk9qjX/TaWF9J8Jq4IPChL6PMGYd1+sGYw3vwxWziqqO
-         dIE7nXlvN4Gxpqf68JORFTB4kHMTly8EQZddTRkuNQ2NU7s34fkSShhViubfzzCx1rJQ
-         BXmpTlP63Gs0CdnzC0q6j1On/h6I4+NrEc6xfIcxZpilJIDVHUB78XDqUXn9Y8EkWqKa
-         mhit/GCvQQ+WG3ZN5jA+tRx1A3sbU28tioE5V/TN3Ii2B2kiFv4PVln8T+2ulq8eR1c+
-         q/WQ==
-X-Gm-Message-State: AJIora+0mDFoKVxE8M4INzgYz1+mQbwxdb/l0cfd1EuIwlKAsloWLSUh
-        57gUI8hDcigPRSyhUnZc+cvfcSed9+b3GTVq41vSyQ==
-X-Google-Smtp-Source: AGRyM1ulUqkyJL4RyJoqEjTlne97SVueY82GDwdi25+K4J351aeav1qr4l9IpBkvU0Q3fMqjGn/UQn1tge7LHhB3t4o=
-X-Received: by 2002:a05:6512:3c97:b0:481:1a82:9d6b with SMTP id
- h23-20020a0565123c9700b004811a829d6bmr191230lfv.626.1657230941216; Thu, 07
- Jul 2022 14:55:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220702151020.2524220-1-trix@redhat.com>
-In-Reply-To: <20220702151020.2524220-1-trix@redhat.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 7 Jul 2022 14:55:29 -0700
-Message-ID: <CAKwvOdkeo75+BNrbH+6VHjHB_Md4VFdxy+Pgd3icxsTPCMka4g@mail.gmail.com>
-Subject: Re: [PATCH] iwlwifi: mvm: return an error if setting tbl_rev fails
-To:     Tom Rix <trix@redhat.com>
-Cc:     gregory.greenman@intel.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        nathan@kernel.org, luciano.coelho@intel.com,
-        ayala.barazani@intel.com, miriam.rachel.korenblit@intel.com,
-        johannes.berg@intel.com, matt.chen@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ri5AY5SwLbhVC5p/TahumKhee43SBZlNLqy+ZUco6ig=;
+        b=cAzpCO8R7Z7FhoeOPiZD91HQpH7N6YRsPMH/2RasXI2WCTOhNKjcfgGP1VXGYpLlrt
+         9P4tlaDPdUxwcVafLJw7zf0QeXd5cKOwaO0tx7i31LhZGJgaiYmMztXXBcnVzs5bzB37
+         gAf0k6HN3rUZ8AsEZHdbSoIWnKsvChNgcNUcdaulJoas/x++IaSA7T+4Sl7lezHpmfBq
+         vK5vkJiIEYdJrx5LNM+LVfcIaMC1fFGm+2MaoACQ0ZxMHcuTEl1SOGLzY3X2InPo3XjH
+         uvn2mrqARLlWGP4ZuezgJfYPDYdx9oCk1a4tVLkFjaYAHZ5H3U6FMlIYBdJN2r6vdlZK
+         nC7Q==
+X-Gm-Message-State: AJIora9Igmz4IZdv1IekqNQfbvKNgaw/+XOu40XGDP12k1AZXHIDXLou
+        VguO/vQKl+gGqdiRqT8Hf8wXE3CHoa19Tw==
+X-Google-Smtp-Source: AGRyM1uO7QVBsH1j2gKzpmtJAG5Lj7xPEqLW5pD1TNv8qWmSC/LpIVdTNrwsWja/8PSQQ9jsVjor1XBKUNCMVg==
+X-Received: from riochico.c.googlers.com ([fda3:e722:ac3:cc00:2b:ff92:c0a8:b3e])
+ (user=rsilvera job=sendgmr) by 2002:a05:6638:12d6:b0:339:d556:efb4 with SMTP
+ id v22-20020a05663812d600b00339d556efb4mr190869jas.215.1657230985632; Thu, 07
+ Jul 2022 14:56:25 -0700 (PDT)
+Date:   Thu,  7 Jul 2022 21:56:06 +0000
+Message-Id: <20220707215606.2409166-1-rsilvera@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v2] perf inject: Add a command line option to specify build ids
+From:   Raul Silvera <rsilvera@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Raul Silvera <rsilvera@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 2, 2022 at 8:10 AM Tom Rix <trix@redhat.com> wrote:
->
-> clang static analysis reports
-> drivers/net/wireless/intel/iwlwifi/fw/acpi.c:1048:17: warning: Assigned value is garbage or undefined [core.uninitialized.Assign]
->         fwrt->ppag_ver = tbl_rev;
->                        ^ ~~~~~~~
-> tbl_rev is optionaly set by a series of calls to iwl_acpi_get_wifi_pkg()
-> and then jumping to the read_table when a call is successful.  The
-> error case when all the call fails is not handled.  On all failed,
-> the code flow falls through to the read_table label.  Add an error
-> handler for the all fail case.
->
-> Fixes: e8e10a37c51c ("iwlwifi: acpi: move ppag code from mvm to fw/acpi")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/net/wireless/intel/iwlwifi/fw/acpi.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-> index e6d64152c81a..1ef1e26c3206 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-> @@ -1044,6 +1044,9 @@ int iwl_acpi_get_ppag_table(struct iwl_fw_runtime *fwrt)
->                 goto read_table;
+This commit adds the option --known-build-ids to perf inject.
+It allows the user to explicitly specify the build id for a given
+path, instead of retrieving it from the current system. This is
+useful in cases where a perf.data file is processed on a different
+system from where it was collected, or if some of the binaries are
+no longer available.
 
-Thanks for the patch!
+The build ids and paths are specified in pairs in the command line.
+Using the file:// specifier, build ids can be loaded from a file
+directly generated by perf buildid-list. This is convenient to copy
+build ids from one perf.data file to another.
 
-I wonder why the pre-existing code had a goto to a label that was the
-subsequent statement? That's strange; maybe something was in between
-them before, was removed, and that wasn't cleaned up?
+** Example: In this example we use perf record to create two
+perf.data files, one with build ids and another without, and use
+perf buildid-list and perf inject to copy the build ids from the
+first file to the second.
 
-I think the whole `if (!IS_ERR(wifi_pkg))` block would be clearer if this was:
+ $ perf record ls /tmp
+ $ perf record --no-buildid -o perf.data.no-buildid ls /tmp
+ $ perf buildid-list > /tmp/build-ids.txt
+ $ perf inject -b --known-build-ids='file:///tmp/build-ids.txt' \
+        -i perf.data.no-buildid -o perf.data.buildid
 
-...
-wifi_pkg = iwl_acpi_get_wifi_pkg(fwrt->dev, data,
-    ACPI_PPAG_WIFI_DATA_SIZE_V1, &tbl_rev);
-if (IS_ERR(wifi_pkg) || tbl_rev != 0) {
-    ret = -EINVAL;
-    goto out_free;
-}
-num_sub_bands = IWL_NUM_SUB_BANDS_V1;
-IWL_DEBUG_RADIO(fwrt, "Reading PPAG table v1 (tbl_rev=0)\n");
-read_table:
-...
+Signed-off-by: Raul Silvera <rsilvera@google.com>
+---
+ V1 -> V2: Cleaned up patch description, deleted the strlist during
+           cleanup, and updated validation of the build id strings
 
-rather than the existing spaghetti. Apologies for my formatting.
+ tools/perf/builtin-inject.c | 60 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
->         }
->
-> +       ret = -EINVAL;
-> +       goto out_free;
-> +
->  read_table:
->         fwrt->ppag_ver = tbl_rev;
->         flags = &wifi_pkg->package.elements[1];
-> --
-> 2.27.0
->
-
-
+diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
+index a75bf11585b5..4efb992ed1a0 100644
+--- a/tools/perf/builtin-inject.c
++++ b/tools/perf/builtin-inject.c
+@@ -21,6 +21,7 @@
+ #include "util/data.h"
+ #include "util/auxtrace.h"
+ #include "util/jit.h"
++#include "util/string2.h"
+ #include "util/symbol.h"
+ #include "util/synthetic-events.h"
+ #include "util/thread.h"
+@@ -35,6 +36,7 @@
+ 
+ #include <linux/list.h>
+ #include <linux/string.h>
++#include <ctype.h>
+ #include <errno.h>
+ #include <signal.h>
+ 
+@@ -59,6 +61,8 @@ struct perf_inject {
+ 	struct itrace_synth_opts itrace_synth_opts;
+ 	char			event_copy[PERF_SAMPLE_MAX_SIZE];
+ 	struct perf_file_section secs[HEADER_FEAT_BITS];
++	const char		*known_build_ids_source;
++	struct strlist		*known_build_ids;
+ };
+ 
+ struct event_entry {
+@@ -570,9 +574,45 @@ static int dso__read_build_id(struct dso *dso)
+ 	return dso->has_build_id ? 0 : -1;
+ }
+ 
++static bool perf_inject__lookup_known_build_id(struct perf_inject *inject,
++					       struct dso *dso)
++{
++	struct str_node *pos;
++	int bid_len;
++
++	strlist__for_each_entry(pos, inject->known_build_ids) {
++		const char *build_id, *dso_name;
++
++		build_id = skip_spaces(pos->s);
++		dso_name = strchr(build_id, ' ');
++		if (dso_name == NULL)
++			continue;
++		bid_len = dso_name - pos->s;
++		dso_name = skip_spaces(dso_name);
++		if (strcmp(dso->long_name, dso_name))
++			continue;
++		if (bid_len % 2 != 0 || bid_len >= SBUILD_ID_SIZE)
++			return false;
++		for (int ix = 0; 2 * ix + 1 < bid_len; ++ix) {
++			if (!isxdigit(build_id[2 * ix]) ||
++			    !isxdigit(build_id[2 * ix + 1]))
++				return false;
++
++			dso->bid.data[ix] = (hex(build_id[2 * ix]) << 4 |
++					     hex(build_id[2 * ix + 1]));
++		}
++		dso->bid.size = bid_len / 2;
++		dso->has_build_id = 1;
++		return true;
++	}
++	return false;
++}
++
+ static int dso__inject_build_id(struct dso *dso, struct perf_tool *tool,
+ 				struct machine *machine, u8 cpumode, u32 flags)
+ {
++	struct perf_inject *inject = container_of(tool, struct perf_inject,
++						  tool);
+ 	int err;
+ 
+ 	if (is_anon_memory(dso->long_name) || flags & MAP_HUGETLB)
+@@ -580,6 +620,10 @@ static int dso__inject_build_id(struct dso *dso, struct perf_tool *tool,
+ 	if (is_no_dso_memory(dso->long_name))
+ 		return 0;
+ 
++	if (inject->known_build_ids != NULL &&
++	    perf_inject__lookup_known_build_id(inject, dso))
++		return 1;
++
+ 	if (dso__read_build_id(dso) < 0) {
+ 		pr_debug("no build_id found for %s\n", dso->long_name);
+ 		return -1;
+@@ -1082,6 +1126,9 @@ int cmd_inject(int argc, const char **argv)
+ 			    "Inject build-ids into the output stream"),
+ 		OPT_BOOLEAN(0, "buildid-all", &inject.build_id_all,
+ 			    "Inject build-ids of all DSOs into the output stream"),
++		OPT_STRING(0, "known-build-ids", &inject.known_build_ids_source,
++			   "buildid path [buildid path...]",
++			   "build-ids to use for specific files"),
+ 		OPT_STRING('i', "input", &inject.input_name, "file",
+ 			   "input file name"),
+ 		OPT_STRING('o', "output", &inject.output.path, "file",
+@@ -1215,6 +1262,18 @@ int cmd_inject(int argc, const char **argv)
+ 		 */
+ 		inject.tool.ordered_events = true;
+ 		inject.tool.ordering_requires_timestamps = true;
++		if (inject.known_build_ids_source != NULL) {
++			struct strlist *known_build_ids;
++
++			known_build_ids = strlist__new(
++			    inject.known_build_ids_source, NULL);
++
++			if (known_build_ids == NULL) {
++				pr_err("Couldn't parse known build ids.\n");
++				goto out_delete;
++			}
++			inject.known_build_ids = known_build_ids;
++		}
+ 	}
+ 
+ 	if (inject.sched_stat) {
+@@ -1241,6 +1300,7 @@ int cmd_inject(int argc, const char **argv)
+ 	ret = __cmd_inject(&inject);
+ 
+ out_delete:
++	strlist__delete(inject.known_build_ids);
+ 	zstd_fini(&(inject.session->zstd_data));
+ 	perf_session__delete(inject.session);
+ out_close_output:
 -- 
-Thanks,
-~Nick Desaulniers
+2.37.0.rc0.161.g10f37bed90-goog
+
