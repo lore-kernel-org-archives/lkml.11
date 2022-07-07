@@ -2,114 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78769C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236790AbiGGTrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 15:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        id S236533AbiGGTtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 15:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236631AbiGGTrD (ORCPT
+        with ESMTP id S235546AbiGGTtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 15:47:03 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67FE59244;
-        Thu,  7 Jul 2022 12:46:54 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id v12so11818366edc.10;
-        Thu, 07 Jul 2022 12:46:54 -0700 (PDT)
+        Thu, 7 Jul 2022 15:49:04 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDB7A19A
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 12:49:03 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id 70so6372022pfx.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 12:49:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G5dmS78zz1zwy89jfeWA97TI8jj2tS8e0cDJN/8sutk=;
-        b=QN0fskPgk1K9lhN3aO2dm5FSQxJQ/Yi9ty3yx86aq8RWe0W2ujYIfeNZ54HzCh+KZf
-         H/4GBrWRcKSIn1cdwUfBFLh85Koj9MduC44GtMF5GQ1W3ykhQAU9BMdMTTF8AVAByfxW
-         ovcl56s64uqWxO0zpKfCTVSc1r1rmroGVVEyCEoDW125R12eyJOdDpHpOMyUc/szWkqK
-         VKmITqT1taSJRAA4GyLxR8znJIm2P1bq5M9m8zx/QBdeWsjQtowrvbc5ofqZTi1l/vRM
-         RZWusfTtL+FNIFlZcLdKbCrYxarWmwRa1FWnG9KpLvzcH5yZlik9nE5/ccp9bz3/Aiar
-         7kgg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EYaArLalh3vKqmHzN7sOkOTeCFEK/B7AHrbYIKq7Ujc=;
+        b=Q0WYshBBeT6ZxdWTRwTPDWFChC7wBx9FCQ8gIJTTtvHFspcUsZHN+UMZh+l1AdVgXy
+         Wv+8LexaGNng6kyz/w9rOCulD2fmPxek1BAN3SSMDm4gvo6fcXjQAJPc2wAVu3CoUbI+
+         NKZzzhjZ5snuKW5tpGxkxKxxCUuh9COXOxjMjTFTk3AyKPWzHHjzrtZJtOPZ6hBCT60w
+         +qt7RGNXU+sm1JghaKsSYjnd6HoMJfWpTCPOmU3mg1fDGwSREFfwTJFg/wQVkwFhPwQw
+         FBjPqWbMBjl9ZeX0Lqk2FEKoo658Ra9ohFc40tnLEjuyCuSKXvB7+LVlhrzqcCoquqtk
+         9LTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G5dmS78zz1zwy89jfeWA97TI8jj2tS8e0cDJN/8sutk=;
-        b=oeHBXuaLCYdVr6yipXWTlHDCwiQISbRW7fc0GwTPOmudMdGOXxycWDShkg7Vq3ssXN
-         XfsbfeWwVwmgd1xeX4ChEr4QKD5KdhtG5A+0v1X5fxycnwZKkmvpXLWd5wTPwFJaOHQk
-         kSRk2j1N30WFJC7zYKSGgbjTJNK4EUCQiC/Rb8hb7+cetykYdFC+RMBKVI3zRFLay500
-         rvwnlcDiEA48njFcX4QLaFcglwC2LDEihi1Wzx+vXHFzce+AsN7Wit94rD41Y2yCvlXC
-         6f0KrLG+f9DhqwEpPXxxuaiMTk7MfSailPNgm41o68XijawyFvMuYHr22P6+9hgPvPSL
-         UKpA==
-X-Gm-Message-State: AJIora8wcLNQEc39Lv7uKScV/8gvLyhLIMsMX3UDRwiPpE8rjIfWlmeo
-        oaouGB8mqpbdW1NTXl1fYf1D2keXgXU=
-X-Google-Smtp-Source: AGRyM1tazEHDxc6kwjfkZuNdpd1A3Q2t59CObFU0/AXY62YGlqvsdleAQ1yghbC2dS996dH6A7LnrA==
-X-Received: by 2002:a05:6402:1d53:b0:43a:9ba7:315b with SMTP id dz19-20020a0564021d5300b0043a9ba7315bmr6425080edb.350.1657223213482;
-        Thu, 07 Jul 2022 12:46:53 -0700 (PDT)
-Received: from localhost (92.40.202.166.threembb.co.uk. [92.40.202.166])
-        by smtp.gmail.com with ESMTPSA id g3-20020a1709061c8300b0070759e37183sm19311041ejh.59.2022.07.07.12.46.52
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EYaArLalh3vKqmHzN7sOkOTeCFEK/B7AHrbYIKq7Ujc=;
+        b=HSLrp9xuaYTFnh9edPv10nTrB8o+CggP3tDubfAHV3n915hLZOaqVD1LLWxfnjE+Ru
+         lqRyroYnRsQFIlRpQvoj7un7iUcSvtbo0lvHD4vhX4x0KbfBaJ0OEQT42LO1xZs3eMPm
+         vaHgF9FrgV29aRvPzLpC3zSjzZUJ28FnVq7r3hs6S+5rfVAAuWrf/zQ8/0lyWHYUQFR+
+         cPYHJKjA12cai3Vnvo2m8x7QDopqniQAlmFmez4gfm9tjeGCYWHiovKAyILYzOGxZzm1
+         UbkgU/RQNgYgI0Tm46FEfD6m665dWXuJalHP8rBQhmW/2GiK1JrKEhxRG3zxak1Jngwf
+         uuuw==
+X-Gm-Message-State: AJIora99iv6YoYUV2akR8gx+4UQNORRMBsN3zAssmWZ4ElKWZGtvw83m
+        oAd3g/noKl9P+9MfbolLlsle3Q==
+X-Google-Smtp-Source: AGRyM1sWcRwIaJVLhlHKG5va7QGy+rUdBqqQm/zt44lD62bNFFQKXhZnCRnq002LeeICAsJeYAVX4w==
+X-Received: by 2002:a17:90a:930b:b0:1ed:5441:1fff with SMTP id p11-20020a17090a930b00b001ed54411fffmr7163591pjo.238.1657223342509;
+        Thu, 07 Jul 2022 12:49:02 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id d15-20020a621d0f000000b005289e190956sm5171644pfd.177.2022.07.07.12.49.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 12:46:53 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     paul@crapouillou.net, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com
-Cc:     linux-mips@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/11] ASoC: jz4740-i2s: Support continuous sample rate
-Date:   Thu,  7 Jul 2022 20:46:53 +0100
-Message-Id: <20220707194655.312892-10-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220707194655.312892-1-aidanmacdonald.0x0@gmail.com>
-References: <20220707194655.312892-1-aidanmacdonald.0x0@gmail.com>
+        Thu, 07 Jul 2022 12:49:01 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 19:48:57 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Mingwei Zhang <mizhang@google.com>
+Cc:     Ben Gardon <bgardon@google.com>,
+        LKML <linux-kernel@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH v3 02/11] KVM: selftests: Dump VM stats in binary stats
+ test
+Message-ID: <Ysc4qQzwUeKxj5ok@google.com>
+References: <20220330174621.1567317-1-bgardon@google.com>
+ <20220330174621.1567317-3-bgardon@google.com>
+ <YlCSWH4pob00vZq3@google.com>
+ <CAL715W+9U=5rp3+j3wG46t0Uvq-UAOFduC-AXz-Z9ZJVQXDzDg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL715W+9U=5rp3+j3wG46t0Uvq-UAOFduC-AXz-Z9ZJVQXDzDg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The I2S controller on JZ47xx SoCs doesn't impose restrictions on
-sample rate and the driver doesn't make any assumptions about it,
-so the DAI should advertise a continuous sample rate range.
+On Thu, Jun 30, 2022, Mingwei Zhang wrote:
+> On Fri, Apr 8, 2022 at 12:52 PM Sean Christopherson <seanjc@google.com> wrote:
+> >
+> > On Wed, Mar 30, 2022, Ben Gardon wrote:
+> > > Add kvm_util library functions to read KVM stats through the binary
+> > > stats interface and then dump them to stdout when running the binary
+> > > stats test. Subsequent commits will extend the kvm_util code and use it
+> > > to make assertions in a test for NX hugepages.
+> >
+> > Why?  Spamming my console with info that has zero meaning to me and is useless
+> > when the test passes is not helpful.  Even on failure, I don't see what the user
+> > is going to do with this information, all of the asserts are completly unrelated
+> > to the stats themselves.
+> 
+> Debugging could be another reason, I suspect? I remember when I tried
+> to use the interface, there is really no API that tells me "did I add
+> this stat successfully and/or correctly?" I think having a general
+> print so that developer/debugging folk could just 'grep mystat' to
+> verify that would be helpful in the future.
+> 
+> Otherwise, they have to write code themselves to do the dirty print...
 
-Acked-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- sound/soc/jz4740/jz4740-i2s.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s.c
-index 9be2f3f1b376..70b9d28a40ce 100644
---- a/sound/soc/jz4740/jz4740-i2s.c
-+++ b/sound/soc/jz4740/jz4740-i2s.c
-@@ -391,13 +391,13 @@ static struct snd_soc_dai_driver jz4740_i2s_dai = {
- 	.playback = {
- 		.channels_min = 1,
- 		.channels_max = 2,
--		.rates = SNDRV_PCM_RATE_8000_48000,
-+		.rates = SNDRV_PCM_RATE_CONTINUOUS,
- 		.formats = JZ4740_I2S_FMTS,
- 	},
- 	.capture = {
- 		.channels_min = 2,
- 		.channels_max = 2,
--		.rates = SNDRV_PCM_RATE_8000_48000,
-+		.rates = SNDRV_PCM_RATE_CONTINUOUS,
- 		.formats = JZ4740_I2S_FMTS,
- 	},
- 	.symmetric_rate = 1,
-@@ -429,13 +429,13 @@ static struct snd_soc_dai_driver jz4770_i2s_dai = {
- 	.playback = {
- 		.channels_min = 1,
- 		.channels_max = 2,
--		.rates = SNDRV_PCM_RATE_8000_48000,
-+		.rates = SNDRV_PCM_RATE_CONTINUOUS,
- 		.formats = JZ4740_I2S_FMTS,
- 	},
- 	.capture = {
- 		.channels_min = 2,
- 		.channels_max = 2,
--		.rates = SNDRV_PCM_RATE_8000_48000,
-+		.rates = SNDRV_PCM_RATE_CONTINUOUS,
- 		.formats = JZ4740_I2S_FMTS,
- 	},
- 	.ops = &jz4740_i2s_dai_ops,
--- 
-2.35.1
-
+I've no objection to adding a --verbose option or a #define of some form, but make
+it opt-in, not on by default.
