@@ -2,87 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70531CCA481
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762C9CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236597AbiGGS6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53182 "EHLO
+        id S236614AbiGGS7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236605AbiGGS6n (ORCPT
+        with ESMTP id S235560AbiGGS7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:58:43 -0400
-X-Greylist: delayed 136 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Jul 2022 11:58:37 PDT
-Received: from p3plsmtpa11-09.prod.phx3.secureserver.net (p3plsmtpa11-09.prod.phx3.secureserver.net [68.178.252.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF40F313BF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:58:37 -0700 (PDT)
-Received: from localhost ([82.17.115.212])
-        by :SMTPAUTH: with ESMTPA
-        id 9WfjoIiykskDW9WfkoGRQw; Thu, 07 Jul 2022 11:56:21 -0700
-X-CMAE-Analysis: v=2.4 cv=Xs8/hXJ9 c=1 sm=1 tr=0 ts=62c72c55
- a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
- a=IkcTkHD0fZMA:10 a=eTMhzGaj8ZgCguw-XMsA:9 a=QEXdDO2ut3YA:10
-X-SECURESERVER-ACCT: atomlin@atomlin.com
-Date:   Thu, 7 Jul 2022 19:56:19 +0100
-From:   Aaron Tomlin <atomlin@atomlin.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Aaron Tomlin <atomlin@redhat.com>, rostedt@goodmis.org,
-        cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        christophe.leroy@csgroup.eu, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        ghalat@redhat.com, oleksandr@natalenko.name, neelx@redhat.com,
-        daniel.thompson@linaro.org, hch@infradead.org, tglx@linutronix.de,
-        linux-rt-users@vger.kernel.org
-Subject: Re: [PATCH v2] module: kallsyms: Ensure preemption in add_kallsyms()
- with PREEMPT_RT
-Message-ID: <20220707185619.sryhytlfkolmklnn@ava.usersys.com>
-References: <20220704161753.4033684-1-atomlin@redhat.com>
- <YsXNVSAtO+VDggcI@bombadil.infradead.org>
- <20220707165750.tk4fadpv3d4zr2mb@ava.usersys.com>
- <YscV7ujYs6Q60N+E@bombadil.infradead.org>
+        Thu, 7 Jul 2022 14:59:33 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239F027FE0;
+        Thu,  7 Jul 2022 11:59:31 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1o9Wid-00047U-6c; Thu, 07 Jul 2022 20:59:19 +0200
+Date:   Thu, 7 Jul 2022 20:59:19 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Will Deacon <will@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
+        regressions@lists.linux.dev, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Kajetan Puchalski <kajetan.puchalski@arm.com>
+Subject: Re: [PATCH nf v3] netfilter: conntrack: fix crash due to confirmed
+ bit load reordering
+Message-ID: <20220707185919.GA14663@breakpoint.cc>
+References: <20220706124007.GB7996@breakpoint.cc>
+ <20220706145004.22355-1-fw@strlen.de>
+ <20220707081949.GA4057@willie-the-truck>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YscV7ujYs6Q60N+E@bombadil.infradead.org>
-X-CMAE-Envelope: MS4xfGEMyf6Pz6mlMCSJNtHLJiYMh7dgsvwhNEd4JPCgr+M9xzhH21w9OoBC0LiHe0S66f3rKR/w8RiPmVGRg6390rdCCMs//UhGAo2BvKBdnklQnxf8+gFT
- 1MhEawYd4UqLCWcXpEk3+GrGzN9EIURTCAroHzZLExclzNaTkGCvHNxGJxzeS74uTqi5JPWp8JrAgO05BGu4tBYo3WT8m97ptLDry6Gmc35loe3tDxVjlacs
- CsqNlDPolZvTBv1oOEImTbHehwgM0YHlNMD4L7hjHvFvPUhXQG+PqHkr/Otf0+9oHNZjkS9DrTmiDtX5lRIxk0dkF4Noo1/MwaHMF56zY38O0OB/d4viQf1Z
- 4QM9vOKQ/xsFbnPG14tezHJOQmHcpFEmB7Z33etagOYbihoQRMyASRKfqPeG6tlhrZ+xwx4S5AKoYScqAlYTdAaAwf01QRjtA0itnBcqGYRk60dattexZee0
- aD18YX/UGoaGphq3kh90S78TQVaXbrcvY1WDwS8/+DmS/gZ1/Cnjj+ZqFv1dDQWt1Q7w7Wsb/IKW7yDYZRLOyA+QvHxFkwKUxzUMraJ5yyVUC5A6fe5XffHB
- /wObdG1dGe0QNfR1UNQB1yw31rZNsVt8nEYLs5WGSQc/VcURgsGfRQI2YaAxqAWEuyIgmx9Turs4kQ79ttJEiOLSIs3j7NYqbD1nDcuOMyk2LlcNgKA7h4MO
- 8wclV0+bWyY=
+In-Reply-To: <20220707081949.GA4057@willie-the-truck>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-07-07 10:20 -0700, Luis Chamberlain wrote:
-> This is incredibly important information which should be added to the
-> commit log, specialy as PREEMPT_RT=y becomes a first class citizen.
-
-Understood.
-
+Will Deacon <will@kernel.org> wrote:
+> On Wed, Jul 06, 2022 at 04:50:04PM +0200, Florian Westphal wrote:
+> >  net/netfilter/nf_conntrack_core.c       | 22 ++++++++++++++++++++++
+> >  net/netfilter/nf_conntrack_netlink.c    |  1 +
+> >  net/netfilter/nf_conntrack_standalone.c |  3 +++
+> >  3 files changed, 26 insertions(+)
 > 
-> > So, I would say this was a regression since earlier preemption was
-> > not disabled and we would dereference RCU-protected pointers explicitly
-> > i.e. without using the more appropriate rcu_dereference() family
-> > of primitives. That being said, these pointers cannot change in this
-> > context as explained previously.
-> > 
-> > Would the above be suitable - just to confirm before I send another
-> > iteration?
-> 
-> Yes, I would send this to Linus for the rc series. Please adjust the
-> commit log with all this information.
+> Acked-by: Will Deacon <will@kernel.org>
 
-Will do.
-
-> BTW I think there is just one more fix pending from you right?
-
-Yes - I will send/or prepare it as a partial revert:
-'s/strscpy/strlcpy/' with a brief explanation.
-
-
-Kind regards,
-
--- 
-Aaron Tomlin
+Thanks, I pushed this patch to nf.git.
