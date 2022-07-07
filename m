@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 541CCCCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 795B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiGGKQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
+        id S235280AbiGGKQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235280AbiGGKQc (ORCPT
+        with ESMTP id S235261AbiGGKQc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Jul 2022 06:16:32 -0400
 Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4850E4F673;
-        Thu,  7 Jul 2022 03:16:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA72450710;
+        Thu,  7 Jul 2022 03:16:30 -0700 (PDT)
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 267AG4OB082090;
-        Thu, 7 Jul 2022 05:16:04 -0500
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 267AG85j082105;
+        Thu, 7 Jul 2022 05:16:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657188964;
-        bh=sW5gI6HYnTdz5TO9TTaO/3u/2ZnabasMP4Tl8TiyKVY=;
-        h=From:To:CC:Subject:Date;
-        b=Kw76MCeerkplZkTKHq5TQna2G4UbXOTlgmP2GTBr60Nc8NbCcY46mTPEGS8HOmSv7
-         HpS84garLjILYMGyaly5ajcf2NbHWB7zhfj2HkbLUO9SLDXAgwbhLY4RBfzhGkhDP8
-         flNBCcGvVTj2koM44VCVrkq8sPZGaBYU1Qewob8s=
-Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 267AG4SU012976
+        s=ti-com-17Q1; t=1657188968;
+        bh=FCfeSAVIXn31RuA7TtOC2epsDGJpus3TXJZvO1LdB2U=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=t8lxK+3hwFtvTBy4FPJjtpNxOTotZDI2TumShb5VV8Xi38bXw89cE8WryxAe1sShg
+         ug8NrLvulnUxN33Icwp14KuX9hxju/fO8QdVdl+GdY69kaIFS7MR5pfX9/7ZiUBSZE
+         E3nMDeJ7pHZKEKgC9Uj1x+0mc9zIBSxprZquSlxA=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 267AG8Ys013006
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Jul 2022 05:16:04 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 7 Jul 2022 05:16:08 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
- Jul 2022 05:16:04 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ Jul 2022 05:16:08 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 7 Jul 2022 05:16:04 -0500
+ Frontend Transport; Thu, 7 Jul 2022 05:16:08 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 267AG3mM126559;
-        Thu, 7 Jul 2022 05:16:04 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 267AG7kn006615;
+        Thu, 7 Jul 2022 05:16:07 -0500
 From:   Rahul T R <r-ravikumar@ti.com>
 To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>
@@ -51,11 +51,14 @@ CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
         <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
         <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
         <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
-        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH v6 0/5] Add support for CDNS DSI J721E wrapper
-Date:   Thu, 7 Jul 2022 15:45:56 +0530
-Message-ID: <20220707101601.7081-1-r-ravikumar@ti.com>
+        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v6 2/5] dt-bindings: display: bridge: cdns,dsi: Add compatible for dsi on j721e
+Date:   Thu, 7 Jul 2022 15:45:58 +0530
+Message-ID: <20220707101601.7081-3-r-ravikumar@ti.com>
 X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220707101601.7081-1-r-ravikumar@ti.com>
+References: <20220707101601.7081-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -64,59 +67,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following series of patches adds supports for CDNS DSI
-bridge on j721e.
+Add compatible to support dsi bridge on j721e
 
-v6:
- - Dropped generic definations for properties like reg, resets etc..
- - Fixed the defination for port@0 and port@1
- - removed the ti,sn65dsi86 node from the example, which is not related
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/display/bridge/cdns,dsi.yaml     | 25 ++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-v5:
- - Remove power-domain property in the conversion commit
- - Add power-domain only for j721e compatible
- - Fix white space error in one of the commit
-
-v4:
- - split conversion txt to yaml
- - seperate commit for addinig new compatible
- - conditionally limit the items for reg property, based on the compatible
-
-v3:
- - Convert cdns-dsi.txt binding to yaml
- - Move the bridge under display/bridge/cadence
- - Add new compatible to enable the wrapper module
-
-v2:
- - Moved setting DPI0 to bridge_enable, since it
-   should be done after pm_runtime_get
-
-Rahul T R (5):
-  dt-bindings: display: bridge: Convert cdns,dsi.txt to yaml
-  dt-bindings: display: bridge: cdns,dsi: Add compatible for dsi on
-    j721e
-  drm/bridge: cdns-dsi: Move to drm/bridge/cadence
-  drm/bridge: cdns-dsi: Create a header file
-  drm/bridge: cdns-dsi: Add support for J721E wrapper
-
- .../bindings/display/bridge/cdns,dsi.txt      | 112 ----
- .../bindings/display/bridge/cdns,dsi.yaml     | 180 +++++++
- drivers/gpu/drm/bridge/Kconfig                |  11 -
- drivers/gpu/drm/bridge/Makefile               |   1 -
- drivers/gpu/drm/bridge/cadence/Kconfig        |  21 +
- drivers/gpu/drm/bridge/cadence/Makefile       |   3 +
- .../{cdns-dsi.c => cadence/cdns-dsi-core.c}   | 483 ++----------------
- .../gpu/drm/bridge/cadence/cdns-dsi-core.h    | 471 +++++++++++++++++
- .../gpu/drm/bridge/cadence/cdns-dsi-j721e.c   |  51 ++
- .../gpu/drm/bridge/cadence/cdns-dsi-j721e.h   |  18 +
- 10 files changed, 781 insertions(+), 570 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
- create mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
- rename drivers/gpu/drm/bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c} (65%)
- create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
- create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.c
- create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.h
-
+diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+index 3161c33093c1..23060324d16e 100644
+--- a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+@@ -16,9 +16,15 @@ properties:
+   compatible:
+     enum:
+       - cdns,dsi
++      - ti,j721e-dsi
+ 
+   reg:
+-    maxItems: 1
++    minItems: 1
++    items:
++      - description:
++          Register block for controller's registers.
++      - description:
++          Register block for wrapper settings registers in case of TI J7 SoCs.
+ 
+   clocks:
+     items:
+@@ -67,6 +73,23 @@ properties:
+ allOf:
+   - $ref: ../dsi-controller.yaml#
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: ti,j721e-dsi
++    then:
++      properties:
++        reg:
++          minItems: 2
++          maxItems: 2
++        power-domains:
++          maxItems: 1
++    else:
++      properties:
++        reg:
++          maxItems: 1
++
+ required:
+   - compatible
+   - reg
 -- 
 2.37.0
 
