@@ -2,129 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C20C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C07C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 19:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236730AbiGGTQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 15:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36218 "EHLO
+        id S236736AbiGGTQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 15:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236675AbiGGTPx (ORCPT
+        with ESMTP id S236740AbiGGTQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 15:15:53 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2874859248;
-        Thu,  7 Jul 2022 12:15:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=bv+xibSJuetvs73oiK2dm/107wfS06Uz0XkG7QDbNRQ=; b=dDmRm6VLL+LC8JDXhKPueTtiJc
-        6OLJbYTl27c7Fd09ewO6WEJnNvGwLoRs8jH7GWqusbF/o3JTqwnZiUt++KN7eIZzq87AXo53gndkS
-        N+hCRy3OEFASOwkCK+G4Zs/qXXm5TM5xa95JHw6gzCLK+hJDayNtP8G9w9xHjgXXficzZcAcWXj4c
-        bU18gYOvikwKCSkZXz3yKA2ttil5g3OsZhwGP1EAX7xlQyHeWICSBmcebZf1ziJ5d2etxCPUZVqRg
-        UOyzywEXH0w0aESWOiSleyzTB75ymxmT+rh7aNTsXS2iuGlvNDscr2Z+w5MLVCAl2VR+PzGPXHtHN
-        gCidj5+A==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1o9Wyb-0099KT-L6; Thu, 07 Jul 2022 13:15:50 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1o9Wya-001ERV-AV; Thu, 07 Jul 2022 13:15:48 -0600
-From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Guoqing Jiang <guoqing.jiang@linux.dev>,
-        David Sloan <David.Sloan@eideticom.com>,
-        Logan Gunthorpe <logang@deltatee.com>
-Date:   Thu,  7 Jul 2022 13:15:32 -0600
-Message-Id: <20220707191533.293795-2-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220707191533.293795-1-logang@deltatee.com>
-References: <20220707191533.293795-1-logang@deltatee.com>
+        Thu, 7 Jul 2022 15:16:08 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9515C9C7
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 12:16:04 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id l40-20020a05600c1d2800b003a18adff308so11801251wms.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 12:16:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=of729cYQdZdatbdtOkxwYpHbBpVYD6mDwvI8OalqF/o=;
+        b=V9nrML7ATfHvbYWklR0Oe2gzTDbjRLUtkda6dyGevx7bagNTD65ZqDTlKZirih5aQ1
+         nkX0TTKbRtilcre9JSlFYoQn3qcIXVkpQdvAbeJAItCMbjV9BvZD23iO9tn/VrjBpGru
+         KZFli/CXWr3kFMVrmqXy+YPpEv3+dBG02Y6iuCQ9sqm8XAx/uLSHgUEXqjDzq3oXUdbQ
+         mId9ygf9HdZzddUVAEuV/UqJOTkNMagpstdk+z9MSsEAraL5XHdPvcnaYEogTvZsdLjm
+         haswyT1lsFEWpC18LYFOZ0t0WcKCbZDLQKiRF/HBqnJeGP4KN6guHx1djhwXS5SfZ2Hz
+         vXCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=of729cYQdZdatbdtOkxwYpHbBpVYD6mDwvI8OalqF/o=;
+        b=KaDbQr2lq1udHICxZlWMbCFu+KMITs961GH8Xfrt3uv4PQWxbLm/Am8dF6Rger5MI/
+         uQHdEqdco0f45ptcVd++rJ9PbxSV3Bw0BrgwLhXngsKY05vLv6q6FwrdLSVIRhM0/42d
+         WTL3wEVJEtruo5R8fLEZxOG6z1HmcgmJVyTgY8zf6eZOAD7XcUpvcdzqpn5wB84igAiz
+         oXnPgJpZCbKF1JXo1ceQor+JK1tRIlccuESqcYzF55k+zVSSi1lb4a1VPG0eXkD7V5gD
+         3T+MOb+UrdrLRbSBpctDB+jvVziSsA1idqFMx83yaBNj73bogc7dgUMpLlD3qvp5EA7D
+         +vRg==
+X-Gm-Message-State: AJIora/diyFojnwAHucUXZuj+4zjPX0jD9AHPDGggy0+4k7vvUO1yLFy
+        1E7v0AL0LjaN6IN8H6CWdJ0hhBl7iwoE65VoX8Jj
+X-Google-Smtp-Source: AGRyM1ujmYeLrS7g423s1azgK9mH3+K6H5JmKsA3Sj8Nhk0vm63Rpr3/GjZGXw6pIRtiE3dUUVQupoL7Ac9kaUGVDh0=
+X-Received: by 2002:a05:600c:4f85:b0:3a1:a8e7:232a with SMTP id
+ n5-20020a05600c4f8500b003a1a8e7232amr6425558wmq.158.1657221363107; Thu, 07
+ Jul 2022 12:16:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, guoqing.jiang@linux.dev, David.Sloan@eideticom.com, logang@deltatee.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH 1/2] md/raid5: Fix sectors_to_do bitmap overflow in raid5_make_request()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+References: <20220706234003.66760-1-kuniyu@amazon.com> <20220706234003.66760-11-kuniyu@amazon.com>
+In-Reply-To: <20220706234003.66760-11-kuniyu@amazon.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 7 Jul 2022 15:15:52 -0400
+Message-ID: <CAHC9VhQMigGi65-j0c9WBN+dWLjjaYqTti-eP99c1RRrQzWj5g@mail.gmail.com>
+Subject: Re: [PATCH v2 net 10/12] cipso: Fix data-races around sysctl.
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For unaligned IO that have nearly maximum sectors, the number of stripes
-will end up being one greater than the size of the bitmap. When this
-happens, the last stripe in the IO will not be processed as it should
-be, resulting in data corruption.
+On Wed, Jul 6, 2022 at 7:43 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> While reading cipso sysctl variables, they can be changed concurrently.
+> So, we need to add READ_ONCE() to avoid data-races.
+>
+> Fixes: 446fda4f2682 ("[NetLabel]: CIPSOv4 engine")
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+> CC: Paul Moore <paul@paul-moore.com>
 
-However, this is not normally seen when the backing block devices have
-4K physical block sizes seeing the block layer will split the request
-before that happens.
+Thanks for the patch, this looks good to me.  However, in the future
+you should probably drop the extra "---" separator (just leave the one
+before the diffstat below) and move my "Cc:" up above "Fixes:".
 
-To fix this increase the bitmap size by one bit and ensure the full
-number of stripes are checked when calling find_first_bit().
+Acked-by: Paul Moore <paul@paul-moore.com>
 
-Reported-by: David Sloan <David.Sloan@eideticom.com>
-Fixes: a5b9c6a653fb ("md/raid5: Pivot raid5_make_request()")
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
----
- drivers/md/raid5.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+> ---
+>  Documentation/networking/ip-sysctl.rst |  2 +-
+>  net/ipv4/cipso_ipv4.c                  | 12 +++++++-----
+>  2 files changed, 8 insertions(+), 6 deletions(-)
+>
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 9f41961d11d5..0e58001f8580 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -1085,7 +1085,7 @@ cipso_cache_enable - BOOLEAN
+>  cipso_cache_bucket_size - INTEGER
+>         The CIPSO label cache consists of a fixed size hash table with each
+>         hash bucket containing a number of cache entries.  This variable limits
+> -       the number of entries in each hash bucket; the larger the value the
+> +       the number of entries in each hash bucket; the larger the value is, the
+>         more CIPSO label mappings that can be cached.  When the number of
+>         entries in a given hash bucket reaches this limit adding new entries
+>         causes the oldest entry in the bucket to be removed to make room.
+> diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+> index 62d5f99760aa..6cd3b6c559f0 100644
+> --- a/net/ipv4/cipso_ipv4.c
+> +++ b/net/ipv4/cipso_ipv4.c
+> @@ -239,7 +239,7 @@ static int cipso_v4_cache_check(const unsigned char *key,
+>         struct cipso_v4_map_cache_entry *prev_entry = NULL;
+>         u32 hash;
+>
+> -       if (!cipso_v4_cache_enabled)
+> +       if (!READ_ONCE(cipso_v4_cache_enabled))
+>                 return -ENOENT;
+>
+>         hash = cipso_v4_map_cache_hash(key, key_len);
+> @@ -296,13 +296,14 @@ static int cipso_v4_cache_check(const unsigned char *key,
+>  int cipso_v4_cache_add(const unsigned char *cipso_ptr,
+>                        const struct netlbl_lsm_secattr *secattr)
+>  {
+> +       int bkt_size = READ_ONCE(cipso_v4_cache_bucketsize);
+>         int ret_val = -EPERM;
+>         u32 bkt;
+>         struct cipso_v4_map_cache_entry *entry = NULL;
+>         struct cipso_v4_map_cache_entry *old_entry = NULL;
+>         u32 cipso_ptr_len;
+>
+> -       if (!cipso_v4_cache_enabled || cipso_v4_cache_bucketsize <= 0)
+> +       if (!READ_ONCE(cipso_v4_cache_enabled) || bkt_size <= 0)
+>                 return 0;
+>
+>         cipso_ptr_len = cipso_ptr[1];
+> @@ -322,7 +323,7 @@ int cipso_v4_cache_add(const unsigned char *cipso_ptr,
+>
+>         bkt = entry->hash & (CIPSO_V4_CACHE_BUCKETS - 1);
+>         spin_lock_bh(&cipso_v4_cache[bkt].lock);
+> -       if (cipso_v4_cache[bkt].size < cipso_v4_cache_bucketsize) {
+> +       if (cipso_v4_cache[bkt].size < bkt_size) {
+>                 list_add(&entry->list, &cipso_v4_cache[bkt].list);
+>                 cipso_v4_cache[bkt].size += 1;
+>         } else {
+> @@ -1199,7 +1200,8 @@ static int cipso_v4_gentag_rbm(const struct cipso_v4_doi *doi_def,
+>                 /* This will send packets using the "optimized" format when
+>                  * possible as specified in  section 3.4.2.6 of the
+>                  * CIPSO draft. */
+> -               if (cipso_v4_rbm_optfmt && ret_val > 0 && ret_val <= 10)
+> +               if (READ_ONCE(cipso_v4_rbm_optfmt) && ret_val > 0 &&
+> +                   ret_val <= 10)
+>                         tag_len = 14;
+>                 else
+>                         tag_len = 4 + ret_val;
+> @@ -1603,7 +1605,7 @@ int cipso_v4_validate(const struct sk_buff *skb, unsigned char **option)
+>                          * all the CIPSO validations here but it doesn't
+>                          * really specify _exactly_ what we need to validate
+>                          * ... so, just make it a sysctl tunable. */
+> -                       if (cipso_v4_rbm_strictvalid) {
+> +                       if (READ_ONCE(cipso_v4_rbm_strictvalid)) {
+>                                 if (cipso_v4_map_lvl_valid(doi_def,
+>                                                            tag[3]) < 0) {
+>                                         err_offset = opt_iter + 3;
+> --
+> 2.30.2
 
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index 184145b49b7c..e37ed93d130f 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -5872,8 +5872,11 @@ struct stripe_request_ctx {
- 	/* last sector in the request */
- 	sector_t last_sector;
- 
--	/* bitmap to track stripe sectors that have been added to stripes */
--	DECLARE_BITMAP(sectors_to_do, RAID5_MAX_REQ_STRIPES);
-+	/*
-+	 * bitmap to track stripe sectors that have been added to stripes
-+	 * add one to account for unaligned requests
-+	 */
-+	DECLARE_BITMAP(sectors_to_do, RAID5_MAX_REQ_STRIPES + 1);
- 
- 	/* the request had REQ_PREFLUSH, cleared after the first stripe_head */
- 	bool do_flush;
-@@ -6046,7 +6049,7 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 	const int rw = bio_data_dir(bi);
- 	enum stripe_result res;
- 	DEFINE_WAIT(w);
--	int s;
-+	int s, stripe_cnt;
- 
- 	if (unlikely(bi->bi_opf & REQ_PREFLUSH)) {
- 		int ret = log_handle_flush_request(conf, bi);
-@@ -6090,9 +6093,9 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 	ctx.last_sector = bio_end_sector(bi);
- 	bi->bi_next = NULL;
- 
--	bitmap_set(ctx.sectors_to_do, 0,
--		   DIV_ROUND_UP_SECTOR_T(ctx.last_sector - logical_sector,
--					 RAID5_STRIPE_SECTORS(conf)));
-+	stripe_cnt = DIV_ROUND_UP_SECTOR_T(ctx.last_sector - logical_sector,
-+					   RAID5_STRIPE_SECTORS(conf));
-+	bitmap_set(ctx.sectors_to_do, 0, stripe_cnt);
- 
- 	pr_debug("raid456: %s, logical %llu to %llu\n", __func__,
- 		 bi->bi_iter.bi_sector, ctx.last_sector);
-@@ -6137,8 +6140,8 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 			continue;
- 		}
- 
--		s = find_first_bit(ctx.sectors_to_do, RAID5_MAX_REQ_STRIPES);
--		if (s == RAID5_MAX_REQ_STRIPES)
-+		s = find_first_bit(ctx.sectors_to_do, stripe_cnt);
-+		if (s == stripe_cnt)
- 			break;
- 
- 		logical_sector = ctx.first_sector +
 -- 
-2.30.2
-
+paul-moore.com
