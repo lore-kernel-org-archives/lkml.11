@@ -2,136 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B067AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5C0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237077AbiGGWdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        id S236688AbiGGWg0 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 18:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237023AbiGGWcw (ORCPT
+        with ESMTP id S236498AbiGGWgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 18:32:52 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0C2675B6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:32:45 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id q18-20020a9d7c92000000b00616b27cda7cso14993457otn.9
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:32:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gpnGP72y7AlRDZxLLIIKCxGjGB4QqIYx1EtuBERrAGY=;
-        b=KfAsVex69jTCIdg5XmbRjXWWWy/S0Tca6CS8SwDAmazdBPIoDnrCREhbjrLFevHaGt
-         6ufFk77dMvGWeRIVQPkT2IDgHAiRo2457GzNSRpAj0LvK9u6HolMJoALdrhWiSJY3cDP
-         lupYF3+zn3pi6FeorsgnBUBjJN6/6EstmhD80=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gpnGP72y7AlRDZxLLIIKCxGjGB4QqIYx1EtuBERrAGY=;
-        b=lVQe8khsnVeieqTROpknLFOIs1qHp1wGcR6Bav3gryySPszeB37gGE3IchcSbG1w5K
-         kJhzFQVNlJBr7yrMjTX8X0qRKxcyXbJNWMFg8tTxlxuk2IPTlafPrl7UKWN3sJ/ine1U
-         Uhvf56AhsBqc9KV8sFXaK0zxTx7ub4l9imJxgNhbaMoGdB5aynccwNbnv3bSGyHrB4lZ
-         oRMo0vZPA7fdYkhY4bywP+kXzbfaHGA7z1YzIyQe/+0ssXUi7ZmwCzGyAkNTycwuM+5U
-         oottcUz3QA/t25Tyy4RO90ugTl1fNO8AyJfOCulAAD1ET13RjvOOPVDjtQ29/WfJYj+e
-         86yA==
-X-Gm-Message-State: AJIora/E4E/vz0TmDckfiH02ZFbahxf7l8+XS3oMfr7awKWX/DSJBrsM
-        Y4cf1bEKvpgz2tg9MT/amkrKog==
-X-Google-Smtp-Source: AGRyM1sGIyzyI1rIE0sIpG00vgHQmsRFAehgN6hwD9szVgsHUkRW2ie4sEb+YtA6SNwdPP9ZDtc8qw==
-X-Received: by 2002:a9d:4c0e:0:b0:616:dd87:cb91 with SMTP id l14-20020a9d4c0e000000b00616dd87cb91mr182367otf.185.1657233164958;
-        Thu, 07 Jul 2022 15:32:44 -0700 (PDT)
-Received: from localhost.localdomain ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id i16-20020a05683033f000b00616b835f5e7sm16246222otu.43.2022.07.07.15.32.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 15:32:43 -0700 (PDT)
-From:   Frederick Lawler <fred@cloudflare.com>
-To:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, Frederick Lawler <fred@cloudflare.com>
-Subject: [PATCH v2 4/4] selinux: Implement create_user_ns hook
-Date:   Thu,  7 Jul 2022 17:32:28 -0500
-Message-Id: <20220707223228.1940249-5-fred@cloudflare.com>
+        Thu, 7 Jul 2022 18:36:24 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562F3CF3
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:36:23 -0700 (PDT)
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267KPgr9030911
+        for <linux-kernel@vger.kernel.org>; Thu, 7 Jul 2022 15:36:22 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h5nw2f4t0-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:36:22 -0700
+Received: from twshared0725.22.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 7 Jul 2022 15:36:20 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id 573139D349C0; Thu,  7 Jul 2022 15:36:02 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>
+CC:     <daniel@iogearbox.net>, <kernel-team@fb.com>, <x86@kernel.org>,
+        <dave.hansen@linux.intel.com>, <rick.p.edgecombe@intel.com>,
+        <mcgrof@kernel.org>, Song Liu <song@kernel.org>
+Subject: [PATCH v6 bpf-next 1/5] module: introduce module_alloc_huge
+Date:   Thu, 7 Jul 2022 15:35:42 -0700
+Message-ID: <20220707223546.4124919-2-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220707223228.1940249-1-fred@cloudflare.com>
-References: <20220707223228.1940249-1-fred@cloudflare.com>
+In-Reply-To: <20220707223546.4124919-1-song@kernel.org>
+References: <20220707223546.4124919-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: ppJdlkVR-KXkW7_QqeH5SFWvvN0yJ9wg
+X-Proofpoint-ORIG-GUID: ppJdlkVR-KXkW7_QqeH5SFWvvN0yJ9wg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_17,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unprivileged user namespace creation is an intended feature to enable
-sandboxing, however this feature is often used to as an initial step to
-perform a privilege escalation attack.
+Introduce module_alloc_huge, which allocates huge page backed memory in
+module memory space. The primary user of this memory is bpf_prog_pack
+(multiple BPF programs sharing a huge page).
 
-This patch implements a new namespace { userns_create } access control
-permission to restrict which domains allow or deny user namespace
-creation. This is necessary for system administrators to quickly protect
-their systems while waiting for vulnerability patches to be applied.
-
-This permission can be used in the following way:
-
-        allow domA_t domB_t : namespace { userns_create };
-
-Signed-off-by: Frederick Lawler <fred@cloudflare.com>
-
+Signed-off-by: Song Liu <song@kernel.org>
 ---
-Changes since v1:
-- Introduce this patch
----
- security/selinux/hooks.c            | 9 +++++++++
- security/selinux/include/classmap.h | 2 ++
- 2 files changed, 11 insertions(+)
+ arch/x86/kernel/module.c     | 21 +++++++++++++++++++++
+ include/linux/moduleloader.h |  5 +++++
+ kernel/module/main.c         |  8 ++++++++
+ 3 files changed, 34 insertions(+)
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index beceb89f68d9..73fbcb434fe0 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -4227,6 +4227,14 @@ static void selinux_task_to_inode(struct task_struct *p,
- 	spin_unlock(&isec->lock);
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index b98ffcf4d250..63f6a16c70dc 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -86,6 +86,27 @@ void *module_alloc(unsigned long size)
+ 	return p;
  }
  
-+static int selinux_userns_create(const struct cred *cred)
++void *module_alloc_huge(unsigned long size)
 +{
-+	u32 sid = current_sid();
++	gfp_t gfp_mask = GFP_KERNEL;
++	void *p;
 +
-+	return avc_has_perm(&selinux_state, sid, sid, SECCLASS_NAMESPACE,
-+						NAMESPACE__USERNS_CREATE, NULL);
++	if (PAGE_ALIGN(size) > MODULES_LEN)
++		return NULL;
++
++	p = __vmalloc_node_range(size, MODULE_ALIGN,
++				 MODULES_VADDR + get_module_load_offset(),
++				 MODULES_END, gfp_mask, PAGE_KERNEL,
++				 VM_DEFER_KMEMLEAK | VM_ALLOW_HUGE_VMAP,
++				 NUMA_NO_NODE, __builtin_return_address(0));
++	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
++		vfree(p);
++		return NULL;
++	}
++
++	return p;
 +}
 +
- /* Returns error only if unable to parse addresses */
- static int selinux_parse_skb_ipv4(struct sk_buff *skb,
- 			struct common_audit_data *ad, u8 *proto)
-@@ -7117,6 +7125,7 @@ static struct security_hook_list selinux_hooks[] __lsm_ro_after_init = {
- 	LSM_HOOK_INIT(task_movememory, selinux_task_movememory),
- 	LSM_HOOK_INIT(task_kill, selinux_task_kill),
- 	LSM_HOOK_INIT(task_to_inode, selinux_task_to_inode),
-+	LSM_HOOK_INIT(create_user_ns, selinux_userns_create),
+ #ifdef CONFIG_X86_32
+ int apply_relocate(Elf32_Shdr *sechdrs,
+ 		   const char *strtab,
+diff --git a/include/linux/moduleloader.h b/include/linux/moduleloader.h
+index 9e09d11ffe5b..d34743a88938 100644
+--- a/include/linux/moduleloader.h
++++ b/include/linux/moduleloader.h
+@@ -26,6 +26,11 @@ unsigned int arch_mod_section_prepend(struct module *mod, unsigned int section);
+    sections.  Returns NULL on failure. */
+ void *module_alloc(unsigned long size);
  
- 	LSM_HOOK_INIT(ipc_permission, selinux_ipc_permission),
- 	LSM_HOOK_INIT(ipc_getsecid, selinux_ipc_getsecid),
-diff --git a/security/selinux/include/classmap.h b/security/selinux/include/classmap.h
-index ff757ae5f253..9943e85c6b3e 100644
---- a/security/selinux/include/classmap.h
-+++ b/security/selinux/include/classmap.h
-@@ -254,6 +254,8 @@ const struct security_class_mapping secclass_map[] = {
- 	  { COMMON_FILE_PERMS, NULL } },
- 	{ "io_uring",
- 	  { "override_creds", "sqpoll", NULL } },
-+	{ "namespace",
-+	  { "userns_create", NULL } },
- 	{ NULL }
-   };
++/* Allocator used for allocating memory in module memory space. If size is
++ * greater than PMD_SIZE, allow using huge pages. Returns NULL on failure.
++ */
++void *module_alloc_huge(unsigned long size);
++
+ /* Free memory returned from module_alloc. */
+ void module_memfree(void *module_region);
  
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index fed58d30725d..349b2a8bd20f 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -1613,6 +1613,14 @@ void * __weak module_alloc(unsigned long size)
+ 			NUMA_NO_NODE, __builtin_return_address(0));
+ }
+ 
++void * __weak module_alloc_huge(unsigned long size)
++{
++	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
++				    GFP_KERNEL, PAGE_KERNEL_EXEC,
++				    VM_FLUSH_RESET_PERMS | VM_ALLOW_HUGE_VMAP,
++				    NUMA_NO_NODE, __builtin_return_address(0));
++}
++
+ bool __weak module_init_section(const char *name)
+ {
+ 	return strstarts(name, ".init");
 -- 
 2.30.2
 
