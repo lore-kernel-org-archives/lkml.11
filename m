@@ -2,93 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252BFCCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7845BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236291AbiGGRVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 13:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
+        id S236495AbiGGRVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 13:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236314AbiGGRUy (ORCPT
+        with ESMTP id S236078AbiGGRUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 13:20:54 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5763335D;
-        Thu,  7 Jul 2022 10:20:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=H/z41n38fMrVHxK1y42Tj7P6QUPD60u5+XY8Ng8yfX4=; b=4Sn1wsXPrs/yPqmi1PLgRr5BWp
-        FHSQgVgDsdRtzm9v9KaJo4XwQvosGgRCB7c7Aj9ffpCIFDLnjZke7fTotJFHHaB3oPbWA0shGuBnZ
-        Qu/XhyKGfvyau20y8SvAUG6NuttXxvPKwYkrbpWh2+fZH9g+37n5HSanJywA/TwDrh1UXDuz+WpMg
-        t9l5gG9ew20hIBgsxIUM1HmFi4Eplosy6rE0RonRn+oVCf3LWSQosjXtELHUJ882+qdzGFUSaPwvF
-        21DHzBDyfz13iiBdtvfoh8DHWaYMKFlAZK2Gq7gH7w4otB1Q/j1xwhfdPKeGGB8o18f4nvkhbUrsH
-        3Tc6zh2g==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o9VBG-00HCSD-Gf; Thu, 07 Jul 2022 17:20:46 +0000
-Date:   Thu, 7 Jul 2022 10:20:46 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     rostedt@goodmis.org, cl@linux.com, pmladek@suse.com,
-        mbenes@suse.cz, christophe.leroy@csgroup.eu,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-modules@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com, oleksandr@natalenko.name, neelx@redhat.com,
-        daniel.thompson@linaro.org, hch@infradead.org, tglx@linutronix.de,
-        linux-rt-users@vger.kernel.org
-Subject: Re: [PATCH v2] module: kallsyms: Ensure preemption in add_kallsyms()
- with PREEMPT_RT
-Message-ID: <YscV7ujYs6Q60N+E@bombadil.infradead.org>
-References: <20220704161753.4033684-1-atomlin@redhat.com>
- <YsXNVSAtO+VDggcI@bombadil.infradead.org>
- <20220707165750.tk4fadpv3d4zr2mb@ava.usersys.com>
+        Thu, 7 Jul 2022 13:20:53 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473AF32EE0;
+        Thu,  7 Jul 2022 10:20:52 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267GTFGl031893;
+        Thu, 7 Jul 2022 17:20:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=k4rfDl5sjXMkFxZKUuEqZdOSLHex7NUKzrZWhtsr1fw=;
+ b=f76k/c9NQoNQ7bJd2TOlGpyCs1UzTl3Ys5xO5nmAcYZ8XFuVUW4s1LCvIyRk5S66hk4V
+ SJuq/RATDpVbe3sNai8RP8mRRyWcfXMWjjaWRiCcXTomEkrPf795fVc5Fl60SZlTrf2i
+ vGItuldfmdl1iweiZp0qh/G/hfMfBP5uroUzw9o/qhxHB2/VXHnFPDLv0CSSVV5Puj4i
+ D2pby0O5M8a1jOa4gCNXRPC1zQwWY/w0NYoqcCBa4ERZo662i/izf4TzXBIxEJilpRcn
+ oTrqCwVppjYYZyOUpdOXqny1UmunNzodpQAi6PT0QH1uiHeiD2HUl4o1y6rGqedJ+VRW Bw== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h63261dgd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 17:20:42 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 267HKdwo014711;
+        Thu, 7 Jul 2022 17:20:41 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma02dal.us.ibm.com with ESMTP id 3h4ugffxda-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 17:20:41 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 267HKdHm31850918
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 7 Jul 2022 17:20:39 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9DC1678066;
+        Thu,  7 Jul 2022 17:20:39 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F018D7805C;
+        Thu,  7 Jul 2022 17:20:38 +0000 (GMT)
+Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu,  7 Jul 2022 17:20:38 +0000 (GMT)
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     nayna@linux.ibm.com, nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Rob Herring <robh@kernel.org>, Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH v6 2/6] drivers: of: kexec ima: Support 32-bit platforms
+Date:   Thu,  7 Jul 2022 13:20:22 -0400
+Message-Id: <20220707172026.831614-3-stefanb@linux.ibm.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220707172026.831614-1-stefanb@linux.ibm.com>
+References: <20220707172026.831614-1-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707165750.tk4fadpv3d4zr2mb@ava.usersys.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: yuXUVVtSElzAROTmWPmNq0f1dHZot4in
+X-Proofpoint-GUID: yuXUVVtSElzAROTmWPmNq0f1dHZot4in
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_13,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 suspectscore=0
+ adultscore=0 phishscore=0 mlxlogscore=999 mlxscore=0 priorityscore=1501
+ impostorscore=0 bulkscore=0 malwarescore=0 lowpriorityscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207070068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 05:57:50PM +0100, Aaron Tomlin wrote:
-> On Wed 2022-07-06 10:58 -0700, Luis Chamberlain wrote:
-> > Hey Aaron, thanks again!
-> 
-> Hi Luis,
-> 
-> No problem :)
-> 
-> > On Mon, Jul 04, 2022 at 05:17:53PM +0100, Aaron Tomlin wrote:
-> > > To disable preemption in the context of add_kallsyms() is incorrect.
-> > 
-> > Why, what broke? Did this used to work? Was the commit in question a
-> > regression then? Clarifying all this will help a lot.
-> 
-> Sorry for the confusion! If I understand correctly, nothing broke
-> intrinsically.
-> 
-> Rather with commit 08126db5ff73 ("module: kallsyms: Fix suspicious rcu
-> usage") under PREEMPT_RT=y, by disabling preemption, I introduced an
-> unbounded latency since the loop is not fixed which is generally frowned
-> upon.
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-This is incredibly important information which should be added to the
-commit log, specialy as PREEMPT_RT=y becomes a first class citizen.
+RISC-V recently added kexec_file() support, which uses enables kexec
+IMA.  We're the first 32-bit platform to support this, so we found a
+build bug.
 
-> So, I would say this was a regression since earlier preemption was
-> not disabled and we would dereference RCU-protected pointers explicitly
-> i.e. without using the more appropriate rcu_dereference() family
-> of primitives. That being said, these pointers cannot change in this
-> context as explained previously.
-> 
-> Would the above be suitable - just to confirm before I send another
-> iteration?
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+---
+ drivers/of/kexec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Yes, I would send this to Linus for the rc series. Please adjust the
-commit log with all this information.
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index 91b04b04eec4..c4f9b6655a2e 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -253,8 +253,8 @@ static int setup_ima_buffer(const struct kimage *image, void *fdt,
+ 	if (ret)
+ 		return -EINVAL;
+ 
+-	pr_debug("IMA buffer at 0x%llx, size = 0x%zx\n",
+-		 image->ima_buffer_addr, image->ima_buffer_size);
++	pr_debug("IMA buffer at 0x%pa, size = 0x%zx\n",
++		 &image->ima_buffer_addr, image->ima_buffer_size);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
 
-BTW I think there is just one more fix pending from you right?
-
-  Luis
