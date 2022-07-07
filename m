@@ -2,137 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D971C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B716C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234806AbiGGE0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 00:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
+        id S234748AbiGGEmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 00:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234374AbiGGE01 (ORCPT
+        with ESMTP id S229553AbiGGEmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 00:26:27 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976EE2FFEF;
-        Wed,  6 Jul 2022 21:26:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657167986; x=1688703986;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mUwoibGeugF+/wW/Tc5Uyi0nUEtbEwOV+QQCFB3AJ90=;
-  b=flAewpisXAin/uNlltTMdvMGpFc70ewdBzHGgn3kB6Yek4UN8pHlJIJa
-   +GNTSSJJkn0CWun/4M/4aZWQWI7kpnQhIvSFY+Wobv15vkFypv5kYto0R
-   wHEM0u4WdYsRaDe9L8zZWNeoHT6+mdbNOuO5OsiGmkWUmQ/5LpOUuYDaS
-   tkDgkwP5se2tl8wj9DEf9nO75Lhv6H5xTOt1QPUcUG233oX8WK5+XCo9w
-   G647y2xDrzzw5zC7WU+C1eIf3uroASVKtHYPFGpcZ2RFMiPZ3tCBF18Sa
-   kgl4uq9lSPXSIs5/WqVBxM7ZJqt73JJYHaRdjtToBQQAfstRtmaJ/3mlF
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="284667315"
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="284667315"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 21:26:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="661227632"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Jul 2022 21:26:22 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9J5p-000LXW-R8;
-        Thu, 07 Jul 2022 04:26:21 +0000
-Date:   Thu, 7 Jul 2022 12:25:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     kbuild-all@lists.01.org, bleung@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: Re: [PATCH v2 6/9] platform/chrome: cros_typec_switch: Add event
- check
-Message-ID: <202207071256.63ElDHIG-lkp@intel.com>
-References: <20220706171601.807042-7-pmalani@chromium.org>
+        Thu, 7 Jul 2022 00:42:47 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A322F037;
+        Wed,  6 Jul 2022 21:42:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=AbIgiz4HdWTHJrDcwgiMjNLozJ+fa1Um61VNXrTWXuw=; b=JLXuMSRapJzauQSgyJpNyTpYAj
+        FHX1E3ZNecpiiGROvvfEp8SwwbAs3xM7y7Gtww8T317u7YSPOLnT7Om54pv+VxZCzOcBD9Wf617/U
+        yOM3KkO/FIEZ72d73h5KUdTJADuM8/wuU5dGtUEIr5/LNK4TbRZbdy1IB+ApOtViLobIewkOar6fx
+        R3cwAKogG84EkVmlNXr2awmyI///KOGitJJfgjGOjUVyoRiDbY1Blylwee9XOgx/Ql13EuncLaMeN
+        BEww+BEZ9E4q+i0/JKMTPE9dGNbmok0FTBvCd/LTdoUoZvgdVi9X+x9JeWzH7MYTDSb8xYIOZYUSB
+        ZG3eBhbw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o9JLc-00DW1r-FB; Thu, 07 Jul 2022 04:42:40 +0000
+Date:   Wed, 6 Jul 2022 21:42:40 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc:     ntfs3@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 0/2] fs/ntfs3: Refactoring and improving logic in run_pack
+Message-ID: <YsZkQAsKC6qxY8gi@infradead.org>
+References: <d578fcbe-e1f7-ffc7-2535-52eecb271a01@paragon-software.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706171601.807042-7-pmalani@chromium.org>
+In-Reply-To: <d578fcbe-e1f7-ffc7-2535-52eecb271a01@paragon-software.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prashant,
+Hi Konstantin,
 
-I love your patch! Perhaps something to improve:
+now that you have time to actively work on the ntfs3 driver again, can
+you consider looking into converting the I/O path to iomap, as already
+request during the merge?  Getting drivers off the old buffer head based
+I/O helpers is something we need to address in the coming years, so
+any relatively simple and actually maintained file system would be a
+good start.
 
-[auto build test WARNING on usb/usb-testing]
-[cannot apply to chrome-platform/for-next linus/master balbi-usb/testing/next peter-chen-usb/for-usb-next v5.19-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Prashant-Malani/platform-chrome-Type-C-switch-driver-and-Type-C-framework-updates/20220707-012614
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220707/202207071256.63ElDHIG-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/60e03c1b36c0e3533e481b44152faab38448be5b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Prashant-Malani/platform-chrome-Type-C-switch-driver-and-Type-C-framework-updates/20220707-012614
-        git checkout 60e03c1b36c0e3533e481b44152faab38448be5b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/platform/chrome/ kernel/bpf/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/platform/chrome/cros_typec_switch.c:81:6: warning: no previous prototype for 'cros_typec_check_event' [-Wmissing-prototypes]
-      81 | bool cros_typec_check_event(struct cros_typec_switch_data *sdata, int port_num, u32 mask)
-         |      ^~~~~~~~~~~~~~~~~~~~~~
-   drivers/platform/chrome/cros_typec_switch.c:159:6: warning: no previous prototype for 'cros_typec_unregister_switches' [-Wmissing-prototypes]
-     159 | void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/platform/chrome/cros_typec_switch.c:170:5: warning: no previous prototype for 'cros_typec_register_retimer' [-Wmissing-prototypes]
-     170 | int cros_typec_register_retimer(struct cros_typec_port *port, struct fwnode_handle *fwnode)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/cros_typec_check_event +81 drivers/platform/chrome/cros_typec_switch.c
-
-    80	
-  > 81	bool cros_typec_check_event(struct cros_typec_switch_data *sdata, int port_num, u32 mask)
-    82	{
-    83		struct ec_response_typec_status resp;
-    84		struct ec_params_typec_status req = {
-    85			.port = port_num,
-    86		};
-    87		int ret;
-    88	
-    89		ret = cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_STATUS, &req, sizeof(req),
-    90				      &resp, sizeof(resp));
-    91		if (ret < 0) {
-    92			dev_warn(sdata->dev, "EC_CMD_TYPEC_STATUS failed for port: %d\n", port_num);
-    93			return false;
-    94		}
-    95	
-    96		if (resp.events & mask)
-    97			return true;
-    98	
-    99		return false;
-   100	}
-   101	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On Wed, Jul 06, 2022 at 08:31:25PM +0300, Konstantin Komarov wrote:
+> 2 patches:
+> - some comments and making function static;
+> - improving speed of run_pack by checking runs in advance
+> 
+> Konstantin Komarov (2):
+>   fs/ntfs3: Added comments to frecord functions
+>   fs/ntfs3: Check possible errors in run_pack in advance
+> 
+>  fs/ntfs3/bitmap.c  |  3 +--
+>  fs/ntfs3/frecord.c |  8 ++++----
+>  fs/ntfs3/ntfs_fs.h |  1 -
+>  fs/ntfs3/run.c     | 41 +++++++++++++++++++++++------------------
+>  4 files changed, 28 insertions(+), 25 deletions(-)
+> 
+> -- 
+> 2.37.0
+> 
+---end quoted text---
