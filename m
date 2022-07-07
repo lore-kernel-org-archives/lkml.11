@@ -2,101 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C442EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72441C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235492AbiGGO1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
+        id S235551AbiGGO1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:27:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235488AbiGGO1p (ORCPT
+        with ESMTP id S235054AbiGGO1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:27:45 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A0B2B1BE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:27:44 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4LdzJm3j8Vz9tGb;
-        Thu,  7 Jul 2022 16:27:36 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 0uB7LieCrfBd; Thu,  7 Jul 2022 16:27:36 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4LdzJk1VrLz9tGf;
-        Thu,  7 Jul 2022 16:27:34 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 248418B768;
-        Thu,  7 Jul 2022 16:27:34 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id CacGwGZP75Y9; Thu,  7 Jul 2022 16:27:34 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.233.174])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E548F8B79F;
-        Thu,  7 Jul 2022 16:27:33 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 267ERT5t537825
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 7 Jul 2022 16:27:29 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 267ERTZ3537824;
-        Thu, 7 Jul 2022 16:27:29 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v2 4/4] powerpc: Finally remove unnecessary headers from asm/prom.h
-Date:   Thu,  7 Jul 2022 16:27:04 +0200
-Message-Id: <f1903e53ce71685cda46e8c6be0d287d4a580143.1657204012.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <d107b9ed8b4ba5d10d1df7ba6317c36d07f2317e.1657204012.git.christophe.leroy@csgroup.eu>
-References: <d107b9ed8b4ba5d10d1df7ba6317c36d07f2317e.1657204012.git.christophe.leroy@csgroup.eu>
+        Thu, 7 Jul 2022 10:27:48 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA1A2B256;
+        Thu,  7 Jul 2022 07:27:47 -0700 (PDT)
+Received: from andrey-lpc.intra.ispras.ru (unknown [83.149.199.65])
+        by mail.ispras.ru (Postfix) with ESMTPS id 68A9940D4004;
+        Thu,  7 Jul 2022 14:27:46 +0000 (UTC)
+From:   Andrey Strachuk <strochuk@ispras.ru>
+To:     Jeff Mahoney <jeffm@suse.com>
+Cc:     Andrey Strachuk <strochuk@ispras.ru>,
+        reiserfs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Subject: [PATCH] reiserfs: removed useless condition from if
+Date:   Thu,  7 Jul 2022 17:27:45 +0300
+Message-Id: <20220707142745.14572-1-strochuk@ispras.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1657204023; l=1143; s=20211009; h=from:subject:message-id; bh=rhMeWgMRVJCcnZ4LkUB/MevA+zWJ66UrLEuQIoq1Yg0=; b=G0WIU5plSD2sEfmcdSgEna8elpVP61NvtTlhaaMw66yT1yvcEWW3qjOj+ROYRKaqeu/UL0wjcfGB D3tj5DR6Cw+0SvKw0X80RUXMkYFouOfW5/q3muvsCeQC4RFDcpge
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove all headers included from asm/prom.h which are not used
-by asm/prom.h itself.
+At line 1001, bi is compared with NULL.
 
-Declare struct device_node and struct property locally to
-avoid including of.h
+982	struct buffer_head *bh = bi->bi_bh;
+983	int nr, free_space;
+984	struct block_head *blkh;
+985	struct item_head *ih;
+986	int i;
+987	int last_loc, unmoved_loc;
+988
+989	blkh = B_BLK_HEAD(bh);
+990	nr = blkh_nr_item(blkh);
+991	free_space = blkh_free_space(blkh);
+992
+993	/* check free space */
+994	RFALSE(free_space < paste_size,
+995	       "vs-10175: not enough free space: needed %d, available %d",
+996	       paste_size, free_space);
+997
+998	#ifdef CONFIG_REISERFS_CHECK
+999		if (zeros_number > paste_size) {
+1000			struct super_block *sb = NULL;
+1001			if (bi && bi->tb)
+1002				sb = bi->tb->tb_sb;
+1003			print_cur_tb("10177");
+1004			reiserfs_panic(sb, "vs-10177",
+1005				       "zeros_number == %d, paste_size == %d",
+1006				       zeros_number, paste_size);
+1007		}
+1008	#endif				/* CONFIG_REISERFS_CHECK */
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+However, it cannot be NULL because kernel crashes
+at line 982 otherwise.
+The patch removes useless comparison.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+Fixes: c3a9c2109f84 ("reiserfs: rework reiserfs_panic")
 ---
- arch/powerpc/include/asm/prom.h | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ fs/reiserfs/lbalance.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/include/asm/prom.h b/arch/powerpc/include/asm/prom.h
-index 6f109b5cb84e..2e82820fbd64 100644
---- a/arch/powerpc/include/asm/prom.h
-+++ b/arch/powerpc/include/asm/prom.h
-@@ -12,16 +12,10 @@
-  * Updates for PPC64 by Peter Bergner & David Engebretsen, IBM Corp.
-  */
- #include <linux/types.h>
--#include <asm/irq.h>
--#include <linux/atomic.h>
- #include <asm/firmware.h>
- 
--/* These includes should be removed once implicit includes are cleaned up. */
--#include <linux/of.h>
--#include <linux/of_fdt.h>
--#include <linux/of_address.h>
--#include <linux/of_irq.h>
--#include <linux/platform_device.h>
-+struct device_node;
-+struct property;
- 
- #define OF_DT_BEGIN_NODE	0x1		/* Start of node, full name */
- #define OF_DT_END_NODE		0x2		/* End node */
+diff --git a/fs/reiserfs/lbalance.c b/fs/reiserfs/lbalance.c
+index 7f868569d4d0..0a530ea06d4e 100644
+--- a/fs/reiserfs/lbalance.c
++++ b/fs/reiserfs/lbalance.c
+@@ -998,7 +998,7 @@ void leaf_paste_in_buffer(struct buffer_info *bi, int affected_item_num,
+ #ifdef CONFIG_REISERFS_CHECK
+ 	if (zeros_number > paste_size) {
+ 		struct super_block *sb = NULL;
+-		if (bi && bi->tb)
++		if (bi->tb)
+ 			sb = bi->tb->tb_sb;
+ 		print_cur_tb("10177");
+ 		reiserfs_panic(sb, "vs-10177",
 -- 
-2.36.1
+2.25.1
 
