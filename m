@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F96C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B07F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235521AbiGGQGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
+        id S235567AbiGGQGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235304AbiGGQGl (ORCPT
+        with ESMTP id S235526AbiGGQGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:06:41 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8E92E9CA
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:06:40 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id j17-20020a056e02219100b002dc4e721203so577647ila.22
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 09:06:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:cc;
-        bh=Ef6EaxbhRWWl9yGrcwKYUAdX/pBweihX45OfiVsisKs=;
-        b=CTahiq79S9pNoMM9UnaoP0omDXc7tZByLiUFLy4aJVv0iW+DI6GT5klUgfly43m0h9
-         zSvz0kA9OMWfzW+1b7Ddy5qHOOyOvyUwfGeko+LRWK/sTZ690jcpzeTT1cDnlbTqYMhX
-         ZTPxNETWmaXtyrR/r1rAgTJHh6HwCjkjaqXgsF9D6HWGQSa2Fff5Id1N95nYmuryXRuw
-         zXsKRJrUdVW14d6gCjx2BByaVsLNoDSGUdUAply6ZyEVc/X9+gzEzp/NHhZjFqWmlRMf
-         AFRM445MJZORL547FS5LEMRUKoDDClDDUiX1lyTV0TmoUgQCplA8KO7VyfSLPf0cHsAj
-         5D1A==
-X-Gm-Message-State: AJIora92hkSKKNS/cHPQHRcwKfum4r7t35TjeFgP2L1bdFztDX0c4fGr
-        kK2qjVcgHAkZikUozoYipNqlv9YqzeD2ln+g0Hqf4hBnU3FK
-X-Google-Smtp-Source: AGRyM1vkNnDgKntPM6HUPetN4DNdMynXMRpG/oOB+J/sKZ78p6g+lQqAwILEx+ChV3Fpo28F7D7DSvqk9IFongu276gGFPQ8e6Fl
-MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1310:b0:33f:1f49:26be with SMTP id
- r16-20020a056638131000b0033f1f4926bemr1563287jad.141.1657210000099; Thu, 07
- Jul 2022 09:06:40 -0700 (PDT)
-Date:   Thu, 07 Jul 2022 09:06:40 -0700
-In-Reply-To: <20220707160545.7731-1-code@siddh.me>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005fcfa605e339458c@google.com>
-Subject: Re: [syzbot] linux-next boot error: general protection fault in add_mtd_device
-From:   syzbot <syzbot+fe013f55a2814a9e8cfd@syzkaller.appspotmail.com>
-To:     Siddh Raman Pant <code@siddh.me>
-Cc:     code@siddh.me, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-next@vger.kernel.org,
-        miquel.raynal@bootlin.com, richard@nod.at, sfr@canb.auug.org.au,
+        Thu, 7 Jul 2022 12:06:45 -0400
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1687B2E9CA
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:06:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1657209967; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=ajmrtNb+aAAH0PerbDvalHj+zAqt6OQ7qHTE5aoNT180K/9GCYjFuyBT3qNgL3PtlSL5UCnOEWOsnfU5ZgVWFND9BLC/LoZRhe3Spxrx40FmmAxsvNTcUsrUm2B/0onZfcTr84YD7SiPFNYY0Jm/zNEFUR/TxdlOJq/AuKKcYkw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1657209967; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=+eQqgz8qWKtIP9TBIA7Um8SNanpPTx4XyuYdwKxD60M=; 
+        b=GIRCrebO+4YsJCYuIrJJKUIEIEYSvfTpg4YdV0O80ZziaijSSrnCiI+hjGm/K2T/l9dEaurcNnTjByBBVCU9AlxGiO2/wKscyANUbFfnGsIFGPMG5GoDh0pwh+Xa2gyBi+Lurgd9IfE+gMYw1DuNCvJlQKILt5R+pkNqKb+jsWw=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657209967;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+        bh=+eQqgz8qWKtIP9TBIA7Um8SNanpPTx4XyuYdwKxD60M=;
+        b=YlRccmHs/gYXMcKcuHKxkZSL+by/K19C6xMNfjaWGjXVKvU6Kbll84LvysTm40Xf
+        F3ZfW1AbhTQjXmF+tehwYTLB+SSijmTR0Indt2zhsvDW0+BwGQ0jAKuysge779WhwEX
+        HYvt5LgENVZp4ooMvRucOlJo5maIhlbwesFNZgCM=
+Received: from localhost.localdomain (103.249.233.159 [103.249.233.159]) by mx.zoho.in
+        with SMTPS id 1657209966196325.0145447766257; Thu, 7 Jul 2022 21:36:06 +0530 (IST)
+From:   Siddh Raman Pant <code@siddh.me>
+To:     syzbot+fe013f55a2814a9e8cfd@syzkaller.appspotmail.com
+Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-next@vger.kernel.org, miquel.raynal@bootlin.com,
+        richard@nod.at, sfr@canb.auug.org.au,
         syzkaller-bugs@googlegroups.com, vigneshr@ti.com
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20220707160545.7731-1-code@siddh.me>
+Subject: Re: [syzbot] linux-next boot error: general protection fault in add_mtd_device
+Date:   Thu,  7 Jul 2022 21:35:45 +0530
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <00000000000040624a05e2a6f2db@google.com>
+References: <00000000000040624a05e2a6f2db@google.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> #syz test linux-next master
+#syz test linux-next master
 
-"linux-next" does not look like a valid git repo address.
-
->
