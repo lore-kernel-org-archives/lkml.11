@@ -2,521 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B52AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 083D0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236168AbiGGQMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47672 "EHLO
+        id S235939AbiGGQMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235926AbiGGQLm (ORCPT
+        with ESMTP id S236119AbiGGQLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:11:42 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2080.outbound.protection.outlook.com [40.107.95.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79D12725
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:11:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sg/9Xf33ZP8p+8UVYxT1cTqG/oblGivI4Ui/m6tRizHsoj3dxZ7wcZX7FcYIPmqR1tzESW+RhUYn/Q4n4Kz4vWXZVvoEY1vgCjsmyg0ch03RYC4SGOUtQ7VjSt62UMRMZRSyy/hGEXhfAKZQy2lm+e79Cz+IiAQIk0tQo18IhzWIXB0Nzi8HLwDqUHZW/4VqBV1GB26el8BqUCEnfhS6m/LOAHbNaTnrM3kI2yUa0NVkWiD9xgPiu9Jeh4pG2PwUzyDgY3UyKuVQFDJ4uakq8GvugABKsgtPbMHggfA9RHR8GmFhU3M06YpCqv8dHJfwyQ4nqsOQY+6H0g1BwMMoeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iVN2oFVOQJ8vjJNN6T1MdsmxzYyEqvYsGBUboAKD4u8=;
- b=CPXpCit9JJ81Lwu3YvkKMnT+hSPRC/wfKIsOK/rLZscJu8LPtsrI0SE1YnW42lVYUqN00pih2pwu3igyhGj1z0zSvMR+0xhKJMJvFhs5sSF98vBltfXyMBIl/b+A33EcfiMtZb99MKWqhmdyJkdhfZlkEgKJuo/Kp5+f161gr5KAtBSGCHQJ8p2U/e85GBg7xWfOHawuzZf82DzuMQpQGA98yqeaXq7KJquJmN5tqMKOOFf5RsJecTRu7oAGz7pnW2usnd3xWK3q8ibJiazq84XGtUD+UNKtkYWrbVv0ZqtSXZ22s7jFSo23+H51Auaionz/qbeV944d3hlU7iir1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iVN2oFVOQJ8vjJNN6T1MdsmxzYyEqvYsGBUboAKD4u8=;
- b=QbtRZ9ieusdfq8Qxy9P9uWMaH9jY9dERjFBHlK6PT64RKTm7tBXe3CCQGT15KZpAYcp8NLoZbq+GtQ9ooI+m3Lku41E6qfAeuESv7g2V7pxzU6l2LdvxKSeAm+N0UWrfTh/U26bx+tQIX7GpofZ/Bm6c/StdtCpPsI861P+LKNA=
-Received: from BN6PR20CA0057.namprd20.prod.outlook.com (2603:10b6:404:151::19)
- by DM6PR12MB3258.namprd12.prod.outlook.com (2603:10b6:5:187::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Thu, 7 Jul
- 2022 16:10:59 +0000
-Received: from BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:151:cafe::5f) by BN6PR20CA0057.outlook.office365.com
- (2603:10b6:404:151::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.19 via Frontend
- Transport; Thu, 7 Jul 2022 16:10:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT036.mail.protection.outlook.com (10.13.177.168) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.16 via Frontend Transport; Thu, 7 Jul 2022 16:10:59 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 7 Jul
- 2022 11:10:58 -0500
-Received: from sof-System-Product-Name.amd.com (10.180.168.240) by
- SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.28
- via Frontend Transport; Thu, 7 Jul 2022 11:10:53 -0500
-From:   V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
-        <Sunil-kumar.Dommati@amd.com>, <venkataprasad.potturu@amd.com>,
-        <ssabakar@amd.com>,
-        V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        "Julia Lawall" <Julia.Lawall@inria.fr>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Meng Tang" <tangmeng@uniontech.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "open list" <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 2/3] ASoC: amd: acp: ACP code generic to support newer platforms
-Date:   Thu, 7 Jul 2022 21:41:41 +0530
-Message-ID: <20220707161142.491034-3-Vsujithkumar.Reddy@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220707161142.491034-1-Vsujithkumar.Reddy@amd.com>
-References: <20220707161142.491034-1-Vsujithkumar.Reddy@amd.com>
+        Thu, 7 Jul 2022 12:11:41 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFEE21D
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 09:10:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1657210235;
+        bh=NN/0vA6OVRB9hbRmvxOKPBcC3OaWeALfMawHvX5MLqY=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=CQ+hJiBgxPholSi43up0qCOC64mNJc6a71fr8R1L/Anq2I40q1O0LiB3ONAk4JDRN
+         eEDWAGgsZnvdf9TOuswaMnX0LX6k2Vl8+axqND0R6EJ6Y98BxypvUSPq4HQbGPYCmD
+         6a/E0Q16Ih+I69qXari+jsHdBwPz0aWltQc6Vs7o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.77.44] ([80.245.77.44]) by web-mail.gmx.net
+ (3c-app-gmx-bap68.server.lan [172.19.172.68]) (via HTTP); Thu, 7 Jul 2022
+ 18:10:35 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 59016f6c-d239-4d90-7f46-08da60334825
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3258:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RLBCJXJsA9OYNqFV2+8XsIq/3F4hqJbl6ByHZxNEv5AWZqk9J1AWc23RYmQ173QqVSkG5YkJTuo/yWh29XjJ2j0zb6E1TYMYPhcnUOEmOlD/fCvmN0MMOfjaeinjRGuy8JQ93iYDLwdVVFzbMvnl0oe0bC5SA605VylSzvWkr3Aq28vJ7uB6Eo7BO1EiWoOD4sFBgFSU8BJQp3nLz1JrUqvE/8Qyo5jtMImvBPEvqZNfPjXVHAGUcchwLn9S237B8NsCBuPq/zZ3z2R5PdkoHuioSeNf4DLKkbYTF3AMIm3IQsxAVpk2T7zMPi/NT7zPu6vq5mq6ecNMxrc/K/emO3GEOSjYJdegb8yd9QP06XHv3+NlzRTvh/v6+ORsEJBQ7GCbXEJwScPsZ5zBjk4Rl6MXuHXAiv/LANMXDIOq4kELP19EpKwRDAqSMRJd79qNwEcOT7SHTrv3yMs+jSg8SrwZkHe62U6CXd4wrz+106BOK2w68+O5O1zmMJPMcvs03UZr0CxeuSpXej+ob1LNHfXFuNjsvYTp/paLJQCWR45MGOTIqyPKKSWXwgWPt98qGKXiuJObps1hdKAA04v1a2xDaMdfkJDgmzMaeVpjrPkWJlZB5mD78RhaBbUMxlW3goM5iseCwMSoRD96npwsiPPK82+2MxSFfliUBblDMWTuXKrObRRNrOhnWwvyjWnXwipmm2s2ZV18tWyrYo3NZglVG08TcwIuQhZXRJXMnILc40ViFr5Rf+FY0um7574fY3Y2URpAnKsmkYxv0Pddau+UhbmRqXl8Ts5to7buO4fRYpCcsZ+Jp8XI+RsktWlD+1AtrNlAxalX0/UyCEcnIsAh+A+pGCZbS8F8+cy4lCmgvowaQK6DF5SsxT5Ijo+nFujc17XE5JslVqUs8KnavA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(136003)(396003)(46966006)(40470700004)(36840700001)(86362001)(81166007)(478600001)(316002)(6666004)(30864003)(41300700001)(2906002)(34020700004)(1076003)(70206006)(2616005)(8676002)(82740400003)(4326008)(356005)(186003)(36756003)(70586007)(40480700001)(82310400005)(8936002)(83380400001)(26005)(54906003)(110136005)(426003)(336012)(47076005)(7416002)(36860700001)(5660300002)(40460700003)(7696005)(41533002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 16:10:59.5580
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59016f6c-d239-4d90-7f46-08da60334825
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3258
+Message-ID: <trinity-54ed588d-4b2c-4177-83b0-4eda8ff16a42-1657210235522@3c-app-gmx-bap68>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>
+Subject: [BUG] USB broken on rk3568 based R2Pro
+Content-Type: text/plain; charset=UTF-8
+Date:   Thu, 7 Jul 2022 18:10:35 +0200
+Importance: normal
+Sensitivity: Normal
+X-Priority: 3
+X-Provags-ID: V03:K1:zUnx7/bZtgmbV9sg5VG+TjiBYWfl3ircR+UQUSbzUh3Yh0EGP+vG35CXWfQOs95HWDyj3
+ 7zkMzLOKfYyLN9PoKNFZ6tUO5Ye2KBV2YnmAPRvS5Y8nVR2ynDjy0mRzoxO04wMrf4Iy1TxRZOik
+ vfOmmR5vnEC3/RCoGedP85cWc+QZhaXXujqjpdGTYUi9OD21inUohospvKd1Pb4+e/blyIIDyiiC
+ Phwb7NCOHjh5jObQB9ku7J7ZGgQnmtBbnLcrRz7WxglSF+Nmt/tsgQnnu0JrrZ0I/e2iGXvItooR
+ 9s=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:tAuzQFDEqhE=:igPVA6BhQjlvhITOkxIREd
+ OemjZvdV1IEOxQeQaiZWwQfrUKOkbkFQGGPXuAgV+HS4yqDbw+FB3/7aBXYCy5PLXYqAEXDOu
+ GBeS47Q6jfNww7F2Gd0b9in7V/oy7g3D6wt3KcEvY6qxRsAWVH9QqvMxc+HQHfexY3lgdF4Yl
+ SLAKAqouatBUjPqG9Aq6ygjQDV8/bIn4P3yt7MXxYMhzhkqSK1CKLQ7KupGl+Q+0oaHZVvHF6
+ Ipya7PKkhLTsBZRjEeC07L46YAN1kQCqKzbReT7+HpiKxrQTeRakuKBs8x1laxB5kCWrzMVr4
+ BnDvLDxfympk/8UVPBE+Ioz0um5IJ0r0gUKDTnsN2BSSD/Z5sZALdEzxyQ+JJcuw5/zI4gAqB
+ XdC6+NzK02IOpEANKXMQniSr1CSzmfmuskfyUm1/W7ADb41ZTMa0p7CUFAi6tE+XsIbukBBgW
+ v79JNJM/2kaoWhID3VelXjGTA9C7FlI8KAeaLF4yHDTKntn/+3N7GS2mQaCbewq3JE7O7CcOn
+ DbZOFNNfd8W+PwDiXZLrXl60/uXwtC2YaGwnYSzqs6SF3hD1GD4Uwz+5uSDo3STwz6D01OTYf
+ aEVDfttviC4wDRLDHHuh1QsFKuq2yikYBltCtsnC4rptItQAyhbUsP2rILLVjkGy8mxo+gzrI
+ gHj6Cyo+NUVI8rTPuEPhvCoaLyRgFcIHpCW55rn4Jp7k7Ij2ueW9tlVMr7NvGogjKOyDBM+WK
+ qSvhzJXvyE3tkQIhk6RJP/IpT4W1tE5S1ni2q57gPpG5SOoWa5uI9Xw9OtlhQpsSSvVIyI4Xc
+ YmEkYs/
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ADD Generic code to support to newer platforms, add
-control threshold, irq control macros ,added structure for register
-offset differences.
+Hi,
 
-Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
----
- sound/soc/amd/acp/acp-i2s.c          | 34 +++++++++++++++----------
- sound/soc/amd/acp/acp-pdm.c          |  8 +++---
- sound/soc/amd/acp/acp-platform.c     | 16 +++++++-----
- sound/soc/amd/acp/acp-renoir.c       | 38 ++++++++++++++++++++--------
- sound/soc/amd/acp/amd.h              | 24 +++++++++++++-----
- sound/soc/amd/acp/chip_offset_byte.h | 12 +++++----
- 6 files changed, 86 insertions(+), 46 deletions(-)
+i noticed that upper usb-Port (otg) is broken on my Bananapi R2Pro with 5.=
+19-rc1, works with 5.18.0
 
-diff --git a/sound/soc/amd/acp/acp-i2s.c b/sound/soc/amd/acp/acp-i2s.c
-index ce9aca8dd6f5..a736c00db86e 100644
---- a/sound/soc/amd/acp/acp-i2s.c
-+++ b/sound/soc/amd/acp/acp-i2s.c
-@@ -199,6 +199,7 @@ static int acp_i2s_prepare(struct snd_pcm_substream *substream, struct snd_soc_d
- {
- 	struct device *dev = dai->component->dev;
- 	struct acp_dev_data *adata = dev_get_drvdata(dev);
-+	struct acp_resource *rsrc = adata->rsrc;
- 	struct acp_stream *stream = substream->runtime->private_data;
- 	u32 reg_dma_size = 0, reg_fifo_size = 0, reg_fifo_addr = 0;
- 	u32 phy_addr = 0, acp_fifo_addr = 0, ext_int_ctrl;
-@@ -208,7 +209,7 @@ static int acp_i2s_prepare(struct snd_pcm_substream *substream, struct snd_soc_d
- 	case I2S_SP_INSTANCE:
- 		if (dir == SNDRV_PCM_STREAM_PLAYBACK) {
- 			reg_dma_size = ACP_I2S_TX_DMA_SIZE;
--			acp_fifo_addr = ACP_SRAM_PTE_OFFSET +
-+			acp_fifo_addr = rsrc->sram_pte_offset +
- 						SP_PB_FIFO_ADDR_OFFSET;
- 			reg_fifo_addr =	ACP_I2S_TX_FIFOADDR;
- 			reg_fifo_size = ACP_I2S_TX_FIFOSIZE;
-@@ -217,7 +218,7 @@ static int acp_i2s_prepare(struct snd_pcm_substream *substream, struct snd_soc_d
- 			writel(phy_addr, adata->acp_base + ACP_I2S_TX_RINGBUFADDR);
- 		} else {
- 			reg_dma_size = ACP_I2S_RX_DMA_SIZE;
--			acp_fifo_addr = ACP_SRAM_PTE_OFFSET +
-+			acp_fifo_addr = rsrc->sram_pte_offset +
- 						SP_CAPT_FIFO_ADDR_OFFSET;
- 			reg_fifo_addr = ACP_I2S_RX_FIFOADDR;
- 			reg_fifo_size = ACP_I2S_RX_FIFOSIZE;
-@@ -228,7 +229,7 @@ static int acp_i2s_prepare(struct snd_pcm_substream *substream, struct snd_soc_d
- 	case I2S_BT_INSTANCE:
- 		if (dir == SNDRV_PCM_STREAM_PLAYBACK) {
- 			reg_dma_size = ACP_BT_TX_DMA_SIZE;
--			acp_fifo_addr = ACP_SRAM_PTE_OFFSET +
-+			acp_fifo_addr = rsrc->sram_pte_offset +
- 						BT_PB_FIFO_ADDR_OFFSET;
- 			reg_fifo_addr = ACP_BT_TX_FIFOADDR;
- 			reg_fifo_size = ACP_BT_TX_FIFOSIZE;
-@@ -237,7 +238,7 @@ static int acp_i2s_prepare(struct snd_pcm_substream *substream, struct snd_soc_d
- 			writel(phy_addr, adata->acp_base + ACP_BT_TX_RINGBUFADDR);
- 		} else {
- 			reg_dma_size = ACP_BT_RX_DMA_SIZE;
--			acp_fifo_addr = ACP_SRAM_PTE_OFFSET +
-+			acp_fifo_addr = rsrc->sram_pte_offset +
- 						BT_CAPT_FIFO_ADDR_OFFSET;
- 			reg_fifo_addr = ACP_BT_RX_FIFOADDR;
- 			reg_fifo_size = ACP_BT_RX_FIFOSIZE;
-@@ -255,11 +256,13 @@ static int acp_i2s_prepare(struct snd_pcm_substream *substream, struct snd_soc_d
- 	writel(acp_fifo_addr, adata->acp_base + reg_fifo_addr);
- 	writel(FIFO_SIZE, adata->acp_base + reg_fifo_size);
- 
--	ext_int_ctrl = readl(adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
--	ext_int_ctrl |= BIT(I2S_RX_THRESHOLD) | BIT(BT_RX_THRESHOLD)
--			| BIT(I2S_TX_THRESHOLD) | BIT(BT_TX_THRESHOLD);
-+	ext_int_ctrl = readl(ACP_EXTERNAL_INTR_CNTL(adata, rsrc->irqp_used));
-+	ext_int_ctrl |= BIT(I2S_RX_THRESHOLD(rsrc->offset)) |
-+			BIT(BT_RX_THRESHOLD(rsrc->offset)) |
-+			BIT(I2S_TX_THRESHOLD(rsrc->offset)) |
-+			BIT(BT_TX_THRESHOLD(rsrc->offset));
- 
--	writel(ext_int_ctrl, adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
-+	writel(ext_int_ctrl, ACP_EXTERNAL_INTR_CNTL(adata, rsrc->irqp_used));
- 
- 	return 0;
- }
-@@ -268,28 +271,30 @@ static int acp_i2s_startup(struct snd_pcm_substream *substream, struct snd_soc_d
- {
- 	struct acp_stream *stream = substream->runtime->private_data;
- 	struct device *dev = dai->component->dev;
-+	struct acp_dev_data *adata = dev_get_drvdata(dev);
-+	struct acp_resource *rsrc = adata->rsrc;
- 	unsigned int dir = substream->stream;
- 	unsigned int irq_bit = 0;
- 
- 	switch (dai->driver->id) {
- 	case I2S_SP_INSTANCE:
- 		if (dir == SNDRV_PCM_STREAM_PLAYBACK) {
--			irq_bit = BIT(I2S_TX_THRESHOLD);
-+			irq_bit = BIT(I2S_TX_THRESHOLD(rsrc->offset));
- 			stream->pte_offset = ACP_SRAM_SP_PB_PTE_OFFSET;
- 			stream->fifo_offset = SP_PB_FIFO_ADDR_OFFSET;
- 		} else {
--			irq_bit = BIT(I2S_RX_THRESHOLD);
-+			irq_bit = BIT(I2S_RX_THRESHOLD(rsrc->offset));
- 			stream->pte_offset = ACP_SRAM_SP_CP_PTE_OFFSET;
- 			stream->fifo_offset = SP_CAPT_FIFO_ADDR_OFFSET;
- 		}
- 		break;
- 	case I2S_BT_INSTANCE:
- 		if (dir == SNDRV_PCM_STREAM_PLAYBACK) {
--			irq_bit = BIT(BT_TX_THRESHOLD);
-+			irq_bit = BIT(BT_TX_THRESHOLD(rsrc->offset));
- 			stream->pte_offset = ACP_SRAM_BT_PB_PTE_OFFSET;
- 			stream->fifo_offset = BT_PB_FIFO_ADDR_OFFSET;
- 		} else {
--			irq_bit = BIT(BT_RX_THRESHOLD);
-+			irq_bit = BIT(BT_RX_THRESHOLD(rsrc->offset));
- 			stream->pte_offset = ACP_SRAM_BT_CP_PTE_OFFSET;
- 			stream->fifo_offset = BT_CAPT_FIFO_ADDR_OFFSET;
- 		}
-@@ -319,6 +324,7 @@ int asoc_acp_i2s_probe(struct snd_soc_dai *dai)
- {
- 	struct device *dev = dai->component->dev;
- 	struct acp_dev_data *adata = dev_get_drvdata(dev);
-+	struct acp_resource *rsrc = adata->rsrc;
- 	unsigned int val;
- 
- 	if (!adata->acp_base) {
-@@ -326,8 +332,8 @@ int asoc_acp_i2s_probe(struct snd_soc_dai *dai)
- 		return -EINVAL;
- 	}
- 
--	val = readl(adata->acp_base + ACP_I2S_PIN_CONFIG);
--	if (val != I2S_MODE) {
-+	val = readl(adata->acp_base + rsrc->i2s_pin_cfg_offset);
-+	if (val != rsrc->i2s_mode) {
- 		dev_err(dev, "I2S Mode not supported val %x\n", val);
- 		return -EINVAL;
- 	}
-diff --git a/sound/soc/amd/acp/acp-pdm.c b/sound/soc/amd/acp/acp-pdm.c
-index 7a0b26a30051..66ec6b6a5972 100644
---- a/sound/soc/amd/acp/acp-pdm.c
-+++ b/sound/soc/amd/acp/acp-pdm.c
-@@ -160,9 +160,9 @@ static int acp_dmic_dai_startup(struct snd_pcm_substream *substream,
- 	stream->reg_offset = ACP_REGION2_OFFSET;
- 
- 	/* Enable DMIC Interrupts */
--	ext_int_ctrl = readl(adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
-+	ext_int_ctrl = readl(ACP_EXTERNAL_INTR_CNTL(adata, 0));
- 	ext_int_ctrl |= PDM_DMA_INTR_MASK;
--	writel(ext_int_ctrl, adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
-+	writel(ext_int_ctrl, ACP_EXTERNAL_INTR_CNTL(adata, 0));
- 
- 	return 0;
- }
-@@ -175,9 +175,9 @@ static void acp_dmic_dai_shutdown(struct snd_pcm_substream *substream,
- 	u32 ext_int_ctrl;
- 
- 	/* Disable DMIC interrupts */
--	ext_int_ctrl = readl(adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
-+	ext_int_ctrl = readl(ACP_EXTERNAL_INTR_CNTL(adata, 0));
- 	ext_int_ctrl |= ~PDM_DMA_INTR_MASK;
--	writel(ext_int_ctrl, adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
-+	writel(ext_int_ctrl, ACP_EXTERNAL_INTR_CNTL(adata, 0));
- }
- 
- const struct snd_soc_dai_ops acp_dmic_dai_ops = {
-diff --git a/sound/soc/amd/acp/acp-platform.c b/sound/soc/amd/acp/acp-platform.c
-index 3c4fd8b80589..e93c9e478cfa 100644
---- a/sound/soc/amd/acp/acp-platform.c
-+++ b/sound/soc/amd/acp/acp-platform.c
-@@ -91,6 +91,7 @@ EXPORT_SYMBOL_NS_GPL(acp_machine_select, SND_SOC_ACP_COMMON);
- static irqreturn_t i2s_irq_handler(int irq, void *data)
- {
- 	struct acp_dev_data *adata = data;
-+	struct acp_resource *rsrc = adata->rsrc;
- 	struct acp_stream *stream;
- 	u16 i2s_flag = 0;
- 	u32 val, i;
-@@ -98,12 +99,13 @@ static irqreturn_t i2s_irq_handler(int irq, void *data)
- 	if (!adata)
- 		return IRQ_NONE;
- 
--	val = readl(adata->acp_base + ACP_EXTERNAL_INTR_STAT);
-+	val = readl(ACP_EXTERNAL_INTR_STAT(adata, rsrc->irqp_used));
- 
- 	for (i = 0; i < ACP_MAX_STREAM; i++) {
- 		stream = adata->stream[i];
- 		if (stream && (val & stream->irq_bit)) {
--			writel(stream->irq_bit, adata->acp_base + ACP_EXTERNAL_INTR_STAT);
-+			writel(stream->irq_bit,
-+			       ACP_EXTERNAL_INTR_STAT(adata, rsrc->irqp_used));
- 			snd_pcm_period_elapsed(stream->substream);
- 			i2s_flag = 1;
- 			break;
-@@ -118,6 +120,7 @@ static irqreturn_t i2s_irq_handler(int irq, void *data)
- 
- static void config_pte_for_stream(struct acp_dev_data *adata, struct acp_stream *stream)
- {
-+	struct acp_resource *rsrc = adata->rsrc;
- 	u32 pte_reg, pte_size, reg_val;
- 
- 	/* Use ATU base Group5 */
-@@ -126,7 +129,7 @@ static void config_pte_for_stream(struct acp_dev_data *adata, struct acp_stream
- 	stream->reg_offset = 0x02000000;
- 
- 	/* Group Enable */
--	reg_val = ACP_SRAM_PTE_OFFSET;
-+	reg_val = rsrc->sram_pte_offset;
- 	writel(reg_val | BIT(31), adata->acp_base + pte_reg);
- 	writel(PAGE_SIZE_4K_ENABLE,  adata->acp_base + pte_size);
- }
-@@ -135,6 +138,7 @@ static void config_acp_dma(struct acp_dev_data *adata, int cpu_id, int size)
- {
- 	struct acp_stream *stream = adata->stream[cpu_id];
- 	struct snd_pcm_substream *substream = stream->substream;
-+	struct acp_resource *rsrc = adata->rsrc;
- 	dma_addr_t addr = substream->dma_buffer.addr;
- 	int num_pages = (PAGE_ALIGN(size) >> PAGE_SHIFT);
- 	u32 low, high, val;
-@@ -146,9 +150,9 @@ static void config_acp_dma(struct acp_dev_data *adata, int cpu_id, int size)
- 		/* Load the low address of page int ACP SRAM through SRBM */
- 		low = lower_32_bits(addr);
- 		high = upper_32_bits(addr);
--		writel(low, adata->acp_base + ACP_SCRATCH_REG_0 + val);
-+		writel(low, adata->acp_base + rsrc->scratch_reg_offset + val);
- 		high |= BIT(31);
--		writel(high, adata->acp_base + ACP_SCRATCH_REG_0 + val + 4);
-+		writel(high, adata->acp_base + rsrc->scratch_reg_offset + val + 4);
- 
- 		/* Move to next physically contiguous page */
- 		val += 8;
-@@ -187,7 +191,7 @@ static int acp_dma_open(struct snd_soc_component *component, struct snd_pcm_subs
- 	}
- 	runtime->private_data = stream;
- 
--	writel(1, adata->acp_base + ACP_EXTERNAL_INTR_ENB);
-+	writel(1, ACP_EXTERNAL_INTR_ENB(adata));
- 
- 	return ret;
- }
-diff --git a/sound/soc/amd/acp/acp-renoir.c b/sound/soc/amd/acp/acp-renoir.c
-index 8375c00ff4c3..2a89a0d2e601 100644
---- a/sound/soc/amd/acp/acp-renoir.c
-+++ b/sound/soc/amd/acp/acp-renoir.c
-@@ -39,6 +39,17 @@
- #define ACP_ERROR_MASK 0x20000000
- #define ACP_EXT_INTR_STAT_CLEAR_MASK 0xFFFFFFFF
- 
-+static struct acp_resource rsrc = {
-+	.offset = 20,
-+	.no_of_ctrls = 1,
-+	.irqp_used = 0,
-+	.irq_reg_offset = 0x1800,
-+	.i2s_pin_cfg_offset = 0x1400,
-+	.i2s_mode = 0x04,
-+	.scratch_reg_offset = 0x12800,
-+	.sram_pte_offset = 0x02052800,
-+};
-+
- static struct snd_soc_acpi_codecs amp_rt1019 = {
- 	.num_codecs = 1,
- 	.codecs = {"10EC1019"}
-@@ -186,20 +197,24 @@ static int acp3x_reset(void __iomem *base)
- 	return readl_poll_timeout(base + ACP_SOFT_RESET, val, !val, DELAY_US, ACP_TIMEOUT);
- }
- 
--static void acp3x_enable_interrupts(void __iomem *base)
-+static void acp3x_enable_interrupts(struct acp_dev_data *adata)
- {
-+	struct acp_resource *rsrc = adata->rsrc;
- 	u32 ext_intr_ctrl;
- 
--	writel(0x01, base + ACP_EXTERNAL_INTR_ENB);
--	ext_intr_ctrl = readl(base + ACP_EXTERNAL_INTR_CNTL);
-+	writel(0x01, ACP_EXTERNAL_INTR_ENB(adata));
-+	ext_intr_ctrl = readl(ACP_EXTERNAL_INTR_CNTL(adata, rsrc->irqp_used));
- 	ext_intr_ctrl |= ACP_ERROR_MASK;
--	writel(ext_intr_ctrl, base + ACP_EXTERNAL_INTR_CNTL);
-+	writel(ext_intr_ctrl, ACP_EXTERNAL_INTR_CNTL(adata, rsrc->irqp_used));
- }
- 
--static void acp3x_disable_interrupts(void __iomem *base)
-+static void acp3x_disable_interrupts(struct acp_dev_data *adata)
- {
--	writel(ACP_EXT_INTR_STAT_CLEAR_MASK, base + ACP_EXTERNAL_INTR_STAT);
--	writel(0x00, base + ACP_EXTERNAL_INTR_ENB);
-+	struct acp_resource *rsrc = adata->rsrc;
-+
-+	writel(ACP_EXT_INTR_STAT_CLEAR_MASK,
-+	       ACP_EXTERNAL_INTR_STAT(adata, rsrc->irqp_used));
-+	writel(0x00, ACP_EXTERNAL_INTR_ENB(adata));
- }
- 
- static int rn_acp_init(void __iomem *base)
-@@ -218,8 +233,6 @@ static int rn_acp_init(void __iomem *base)
- 	if (ret)
- 		return ret;
- 
--	acp3x_enable_interrupts(base);
--
- 	return 0;
- }
- 
-@@ -227,8 +240,6 @@ static int rn_acp_deinit(void __iomem *base)
- {
- 	int ret = 0;
- 
--	acp3x_disable_interrupts(base);
--
- 	/* Reset */
- 	ret = acp3x_reset(base);
- 	if (ret)
-@@ -290,11 +301,13 @@ static int renoir_audio_probe(struct platform_device *pdev)
- 	adata->dev = dev;
- 	adata->dai_driver = acp_renoir_dai;
- 	adata->num_dai = ARRAY_SIZE(acp_renoir_dai);
-+	adata->rsrc = &rsrc;
- 
- 	adata->machines = snd_soc_acpi_amd_acp_machines;
- 	acp_machine_select(adata);
- 
- 	dev_set_drvdata(dev, adata);
-+	acp3x_enable_interrupts(adata);
- 	acp_platform_register(dev);
- 
- 	return 0;
-@@ -303,11 +316,14 @@ static int renoir_audio_probe(struct platform_device *pdev)
- static int renoir_audio_remove(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-+	struct acp_dev_data *adata = dev_get_drvdata(dev);
- 	struct acp_chip_info *chip;
- 	int ret;
- 
- 	chip = dev_get_platdata(&pdev->dev);
- 
-+	acp3x_disable_interrupts(adata);
-+
- 	ret = rn_acp_deinit(chip->base);
- 	if (ret)
- 		dev_err(&pdev->dev, "ACP de-init Failed (%pe)\n", ERR_PTR(ret));
-diff --git a/sound/soc/amd/acp/amd.h b/sound/soc/amd/acp/amd.h
-index 8fd38bf4d3bd..186cb8b26175 100644
---- a/sound/soc/amd/acp/amd.h
-+++ b/sound/soc/amd/acp/amd.h
-@@ -32,13 +32,12 @@
- #define ACP3x_I2STDM_REG_END		0x1242410
- #define ACP3x_BT_TDM_REG_START		0x1242800
- #define ACP3x_BT_TDM_REG_END		0x1242810
--#define I2S_MODE			0x04
--#define I2S_RX_THRESHOLD		27
--#define I2S_TX_THRESHOLD		28
--#define BT_TX_THRESHOLD			26
--#define BT_RX_THRESHOLD			25
- 
--#define ACP_SRAM_PTE_OFFSET		0x02052800
-+#define THRESHOLD(bit, base)	((bit) + (base))
-+#define I2S_RX_THRESHOLD(base)	THRESHOLD(7, base)
-+#define I2S_TX_THRESHOLD(base)	THRESHOLD(8, base)
-+#define BT_TX_THRESHOLD(base)	THRESHOLD(6, base)
-+#define BT_RX_THRESHOLD(base)	THRESHOLD(5, base)
- 
- #define ACP_SRAM_SP_PB_PTE_OFFSET	0x0
- #define ACP_SRAM_SP_CP_PTE_OFFSET	0x100
-@@ -92,6 +91,17 @@ struct acp_stream {
- 	u32 fifo_offset;
- };
- 
-+struct acp_resource {
-+	int offset;
-+	int no_of_ctrls;
-+	int irqp_used;
-+	u32 irq_reg_offset;
-+	u32 i2s_pin_cfg_offset;
-+	int i2s_mode;
-+	u64 scratch_reg_offset;
-+	u64 sram_pte_offset;
-+};
-+
- struct acp_dev_data {
- 	char *name;
- 	struct device *dev;
-@@ -106,6 +116,8 @@ struct acp_dev_data {
- 
- 	struct snd_soc_acpi_mach *machines;
- 	struct platform_device *mach_dev;
-+
-+	struct acp_resource *rsrc;
- };
- 
- extern const struct snd_soc_dai_ops asoc_acp_cpu_dai_ops;
-diff --git a/sound/soc/amd/acp/chip_offset_byte.h b/sound/soc/amd/acp/chip_offset_byte.h
-index 88f6fa597cd6..fff7e80475ba 100644
---- a/sound/soc/amd/acp/chip_offset_byte.h
-+++ b/sound/soc/amd/acp/chip_offset_byte.h
-@@ -20,11 +20,13 @@
- #define ACP_SOFT_RESET                          0x1000
- #define ACP_CONTROL                             0x1004
- 
--#define ACP_EXTERNAL_INTR_ENB                         0x1800
--#define ACP_EXTERNAL_INTR_CNTL                        0x1804
--#define ACP_EXTERNAL_INTR_STAT                        0x1808
--#define ACP_I2S_PIN_CONFIG                            0x1400
--#define ACP_SCRATCH_REG_0                             0x12800
-+#define ACP_EXTERNAL_INTR_REG_ADDR(adata, offset, ctrl) \
-+	(adata->acp_base + adata->rsrc->irq_reg_offset + offset + (ctrl * 0x04))
-+
-+#define ACP_EXTERNAL_INTR_ENB(adata) ACP_EXTERNAL_INTR_REG_ADDR(adata, 0x0, 0x0)
-+#define ACP_EXTERNAL_INTR_CNTL(adata, ctrl) ACP_EXTERNAL_INTR_REG_ADDR(adata, 0x4, ctrl)
-+#define ACP_EXTERNAL_INTR_STAT(adata, ctrl) ACP_EXTERNAL_INTR_REG_ADDR(adata, \
-+	(0x4 + (adata->rsrc->no_of_ctrls * 0x04)), ctrl)
- 
- /* Registers from ACP_AUDIO_BUFFERS block */
- 
--- 
-2.25.1
+this port is a usb3 (xhci) port which includes an usb2-phy and should supp=
+ort otg, but i still want
+to use it in host-only mode (USB-A socket).
+
+already tried setting dr_mode in dts back to "host" as this was changed in=
+ rk356x.dtsi by this commit:
+
+bc405bb3eeee 2022-04-25 arm64: dts: rockchip: enable otg/drd operation of =
+usb_host0_xhci in rk356x
+
+i see no error in dmesg and usb-controllers seem to be initialized complet=
+ely (visible in lsusb).
+
+r2pro has ID-Pin not connected, so i tried also peters Patch without succe=
+ss :(
+
+0901c01f8ac4 2022-06-21 phy: rockchip-inno-usb2: Sync initial otg state
+
+
+so i tried bisect which seems to point to wrong commit (not related)...
+
+$ git bisect log
+git bisect start
+# bad: [f2906aa863381afb0015a9eb7fefad885d4e5a56] Linux 5.19-rc1
+git bisect bad f2906aa863381afb0015a9eb7fefad885d4e5a56
+# good: [4b0986a3613c92f4ec1bdc7f60ec66fea135991f] Linux 5.18
+git bisect good 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+# good: [4b0986a3613c92f4ec1bdc7f60ec66fea135991f] Linux 5.18
+git bisect good 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+# good: [2518f226c60d8e04d18ba4295500a5b0b8ac7659] Merge tag 'drm-next-202=
+2-05-25' of git://anongit.freedesktop.org/drm/drm
+git bisect good 2518f226c60d8e04d18ba4295500a5b0b8ac7659
+# good: [aef1ff15927421a55312b4b9b2881a89a344bd80] Merge tag 'jfs-5.19' of=
+ https://github.com/kleikamp/linux-shaggy
+git bisect good aef1ff15927421a55312b4b9b2881a89a344bd80
+# good: [09a018176ba246f00d6b6b526047d38dcd2955d3] Merge tag 'arm-late-5.1=
+9' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
+git bisect good 09a018176ba246f00d6b6b526047d38dcd2955d3
+# good: [54c2cc79194c961a213c1d375fe3aa4165664cc4] Merge tag 'usb-5.19-rc1=
+' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb
+git bisect good 54c2cc79194c961a213c1d375fe3aa4165664cc4
+# bad: [7036440eab3e2d47a775d4616909f8235488d714] ARM: omap1: enable multi=
+platform
+git bisect bad 7036440eab3e2d47a775d4616909f8235488d714
+# good: [46ee6bcac9838b7f74ff91f9cf38511c901ea9c5] Merge tag 'mhi-for-v5.1=
+9' of git://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi into char-wor=
+k-next
+git bisect good 46ee6bcac9838b7f74ff91f9cf38511c901ea9c5
+# bad: [dc6a7effb48e7267c9f1314e3aa8cfe539bd6096] Merge tag 'lkdtm-next' o=
+f https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux into char-mis=
+c-next
+git bisect bad dc6a7effb48e7267c9f1314e3aa8cfe539bd6096
+# bad: [fa5602c62544ea5303ce870a9a3318fa7695ffc2] Merge tag 'soundwire-5.1=
+9-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/soundwire in=
+to char-misc-next
+git bisect bad fa5602c62544ea5303ce870a9a3318fa7695ffc2
+# bad: [f1b8d3358af77fc453d6b781f40ee7342a230672] phy: core: Add documenta=
+tion of phy operation order
+git bisect bad f1b8d3358af77fc453d6b781f40ee7342a230672
+# bad: [2404387f521eda1d0eded58411bac2c719985d9c] phy/rockchip: Use of_dev=
+ice_get_match_data()
+git bisect bad 2404387f521eda1d0eded58411bac2c719985d9c
+# bad: [45d1f841d5a4afb415415f9f87c9d4ce15e19f42] dt-bindings: phy: uniphi=
+er-usb3hs: Fix incorrect clock-names and reset-names
+git bisect bad 45d1f841d5a4afb415415f9f87c9d4ce15e19f42
+# bad: [6f3652c952d8d8d22da1d535c470906da6e1afde] phy: qcom-qmp: Add SM635=
+0 UFS PHY support
+git bisect bad 6f3652c952d8d8d22da1d535c470906da6e1afde
+# bad: [082ffee0505810bba7c4add343fa178861e26212] dt-bindings: phy: qcom,q=
+mp: Add SM6350 UFS PHY bindings
+git bisect bad 082ffee0505810bba7c4add343fa178861e26212
+# bad: [e4d4371253029528c02bfb43a46c252e1c3d035f] phy: phy-can-transceiver=
+: Add support for setting mux
+git bisect bad e4d4371253029528c02bfb43a46c252e1c3d035f
+# first bad commit: [e4d4371253029528c02bfb43a46c252e1c3d035f] phy: phy-ca=
+n-transceiver: Add support for setting mux
+
+have not replaced dtb while testing to exclude these changes
+
+i looked through commits between good-bad-change and there are some for th=
+e rockchip-inno-usb2-phy where i guess the problem is located
+
+git log --oneline 46ee6bcac9838b7f74ff91f9cf38511c901ea9c5..dc6a7effb48e72=
+67c9f1314e3aa8cfe539bd6096
+
+issue is maybe extcon (pointing to the usb2-phy) related as 5.18 uses extc=
+on for this port.
+
+Tried to find something in sysfs/debugfs, but without success.
+
+maybe anyone has an idea? anything i can try/readout (sysfs/debugfs).
+
+regards Frank
 
