@@ -2,229 +2,589 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 008A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 642B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:37:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234797AbiGGOg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
+        id S235804AbiGGOhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:37:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiGGOgT (ORCPT
+        with ESMTP id S235522AbiGGOhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:36:19 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C937330F78;
-        Thu,  7 Jul 2022 07:36:18 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 864521FF23;
-        Thu,  7 Jul 2022 14:36:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1657204577; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cWjrqcATzVV6eVe/rdJaf9LDLbrld0qRdei0I3FGkZg=;
-        b=STxmJggoMW+nOY3BkzmSLvaZ8q0hAfh27PR6qoZ7+qUhc/BvuhszQfvW0QCan1rD80ByWe
-        v0dkC484V+/Ed4OrPQ1ZDylK3vc80WnujoEp400XDI73wMGQNRhXvuQaNMTJ8L9+aOEifK
-        qOP0HqXX3WUZMUK2x0WxopRfATNE2VA=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 187BD13461;
-        Thu,  7 Jul 2022 14:36:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id KlCLBGHvxmLbNAAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 07 Jul 2022 14:36:17 +0000
-Message-ID: <d262b7dd-d7eb-0251-e3c7-0bb0a626749d@suse.com>
-Date:   Thu, 7 Jul 2022 16:36:16 +0200
+        Thu, 7 Jul 2022 10:37:36 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C817830F6F
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:37:34 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LdzXF3FXLz9tGv;
+        Thu,  7 Jul 2022 16:37:33 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id iJ6FvwFZK3aL; Thu,  7 Jul 2022 16:37:33 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LdzXC0r97z9tGm;
+        Thu,  7 Jul 2022 16:37:31 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0B44A8B79F;
+        Thu,  7 Jul 2022 16:37:31 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id Qo8hBSmdXVji; Thu,  7 Jul 2022 16:37:30 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.233.174])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 971128B768;
+        Thu,  7 Jul 2022 16:37:30 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 267EbKLf538802
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 7 Jul 2022 16:37:20 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 267EbK5R538801;
+        Thu, 7 Jul 2022 16:37:20 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH v5 2/2] powerpc: Remove remaining parts of oprofile
+Date:   Thu,  7 Jul 2022 16:37:18 +0200
+Message-Id: <298432fe1a14c0a415760011d72c3f0999efd5e2.1657204631.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20c0ee7f99dbf0dbf8658df6b39f84753e6db1ef.1657204631.git.christophe.leroy@csgroup.eu>
+References: <20c0ee7f99dbf0dbf8658df6b39f84753e6db1ef.1657204631.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 12/22] x86/virt/tdx: Convert all memory regions in
- memblock to TDX memory
-Content-Language: en-US
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1655894131.git.kai.huang@intel.com>
- <8288396be7fedd10521a28531e138579594d757a.1655894131.git.kai.huang@intel.com>
- <20d63398-928f-0c6f-47ec-8e225c049ad8@intel.com>
- <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
- <880f3991-09e5-2f96-d5ba-213cff05c458@intel.com>
-From:   Juergen Gross <jgross@suse.com>
-In-Reply-To: <880f3991-09e5-2f96-d5ba-213cff05c458@intel.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------F3C1K8B7yXSI9xP782UHBXAx"
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1657204637; l=19575; s=20211009; h=from:subject:message-id; bh=8dsuXKsr+EcAYiJoq6Rw/QJc5SSX4Q6267Nj3A9IGjo=; b=IN4VJxnS2jFgiGRIgyGwRZsrgGnrL+Zgdz3zUixl4ZWk5wBj6xiS0F1J1r5Wg5URS7cCMtELM1al GARXKt3DBoVVhtsFRHsrB30pUdhk7UWHQOte5kEnPMcx171/y2YI
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------F3C1K8B7yXSI9xP782UHBXAx
-Content-Type: multipart/mixed; boundary="------------6vbT3KQ0DMdFpqJBtkiCsLIO";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Dave Hansen <dave.hansen@intel.com>, Kai Huang <kai.huang@intel.com>,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc: seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
- tony.luck@intel.com, rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
- dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
- kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
- isaku.yamahata@intel.com
-Message-ID: <d262b7dd-d7eb-0251-e3c7-0bb0a626749d@suse.com>
-Subject: Re: [PATCH v5 12/22] x86/virt/tdx: Convert all memory regions in
- memblock to TDX memory
-References: <cover.1655894131.git.kai.huang@intel.com>
- <8288396be7fedd10521a28531e138579594d757a.1655894131.git.kai.huang@intel.com>
- <20d63398-928f-0c6f-47ec-8e225c049ad8@intel.com>
- <76d7604ff21b26252733165478d5c54035d84d98.camel@intel.com>
- <880f3991-09e5-2f96-d5ba-213cff05c458@intel.com>
-In-Reply-To: <880f3991-09e5-2f96-d5ba-213cff05c458@intel.com>
+Commit 9850b6c69356 ("arch: powerpc: Remove oprofile") removed
+oprofile.
 
---------------6vbT3KQ0DMdFpqJBtkiCsLIO
-Content-Type: multipart/mixed; boundary="------------1HLgyr0hiDN7IbIizjL28Rim"
+Remove all remaining parts of it.
 
---------------1HLgyr0hiDN7IbIizjL28Rim
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+ arch/powerpc/include/asm/cputable.h       |  3 -
+ arch/powerpc/kernel/cputable.c            | 67 +----------------------
+ arch/powerpc/kernel/dt_cpu_ftrs.c         |  4 --
+ arch/powerpc/platforms/cell/spufs/spufs.h |  2 +-
+ arch/powerpc/platforms/ps3/Kconfig        |  2 +-
+ 5 files changed, 4 insertions(+), 74 deletions(-)
 
-T24gMDcuMDcuMjIgMTY6MjYsIERhdmUgSGFuc2VuIHdyb3RlOg0KPiBPbiA2LzI2LzIyIDIz
-OjE2LCBLYWkgSHVhbmcgd3JvdGU6DQo+PiBPbiBGcmksIDIwMjItMDYtMjQgYXQgMTI6NDAg
-LTA3MDAsIERhdmUgSGFuc2VuIHdyb3RlOg0KPj4+PiArLyoNCj4+Pj4gKyAqIFdhbGtzIG92
-ZXIgYWxsIG1lbWJsb2NrIG1lbW9yeSByZWdpb25zIHRoYXQgYXJlIGludGVuZGVkIHRvIGJl
-DQo+Pj4+ICsgKiBjb252ZXJ0ZWQgdG8gVERYIG1lbW9yeS4gIEVzc2VudGlhbGx5LCBpdCBp
-cyBhbGwgbWVtYmxvY2sgbWVtb3J5DQo+Pj4+ICsgKiByZWdpb25zIGV4Y2x1ZGluZyB0aGUg
-bG93IG1lbW9yeSBiZWxvdyAxTUIuDQo+Pj4+ICsgKg0KPj4+PiArICogVGhpcyBpcyBiZWNh
-dXNlIG9uIHNvbWUgVERYIHBsYXRmb3JtcyB0aGUgbG93IG1lbW9yeSBiZWxvdyAxTUIgaXMN
-Cj4+Pj4gKyAqIG5vdCBpbmNsdWRlZCBpbiBDTVJzLiAgRXhjbHVkaW5nIHRoZSBsb3cgMU1C
-IGNhbiBzdGlsbCBndWFyYW50ZWUNCj4+Pj4gKyAqIHRoYXQgdGhlIHBhZ2VzIG1hbmFnZWQg
-YnkgdGhlIHBhZ2UgYWxsb2NhdG9yIGFyZSBhbHdheXMgVERYIG1lbW9yeSwNCj4+Pj4gKyAq
-IGFzIHRoZSBsb3cgMU1CIGlzIHJlc2VydmVkIGR1cmluZyBrZXJuZWwgYm9vdCBhbmQgd29u
-J3QgZW5kIHVwIHRvDQo+Pj4+ICsgKiB0aGUgWk9ORV9ETUEgKHNlZSByZXNlcnZlX3JlYWxf
-bW9kZSgpKS4NCj4+Pj4gKyAqLw0KPj4+PiArI2RlZmluZSBtZW1ibG9ja19mb3JfZWFjaF90
-ZHhfbWVtX3Bmbl9yYW5nZShpLCBwX3N0YXJ0LCBwX2VuZCwgcF9uaWQpCVwNCj4+Pj4gKwlm
-b3JfZWFjaF9tZW1fcGZuX3JhbmdlKGksIE1BWF9OVU1OT0RFUywgcF9zdGFydCwgcF9lbmQs
-IHBfbmlkKQlcDQo+Pj4+ICsJCWlmICghcGZuX3JhbmdlX3NraXBfbG93bWVtKHBfc3RhcnQs
-IHBfZW5kKSkNCj4+Pg0KPj4+IExldCdzIHN1bW1hcml6ZSB3aGVyZSB3ZSBhcmUgYXQgdGhp
-cyBwb2ludDoNCj4+Pg0KPj4+IDEuIEFsbCBSQU0gaXMgZGVzY3JpYmVkIGluIG1lbWJsb2Nr
-cw0KPj4+IDIuIFNvbWUgbWVtYmxvY2tzIGFyZSByZXNlcnZlZCBhbmQgc29tZSBhcmUgZnJl
-ZQ0KPj4+IDMuIFRoZSBsb3dlciAxTUIgaXMgbWFya2VkIHJlc2VydmVkDQo+Pj4gNC4gZm9y
-X2VhY2hfbWVtX3Bmbl9yYW5nZSgpIHdhbGtzIGFsbCByZXNlcnZlZCBhbmQgZnJlZSBtZW1i
-bG9ja3MsIHNvIHdlDQo+Pj4gICAgIGhhdmUgdG8gZXhjbHVkZSB0aGUgbG93ZXIgMU1CIGFz
-IGEgc3BlY2lhbCBjYXNlLg0KPj4+DQo+Pj4gVGhhdCBzZWVtcyBzdXBlcmZpY2lhbGx5IHJh
-dGhlciByaWRpY3Vsb3VzLiAgU2hvdWxkbid0IHdlIGp1c3QgcGljayBhDQo+Pj4gbWVtYmxv
-Y2sgaXRlcmF0b3IgdGhhdCBza2lwcyB0aGUgMU1CPyAgU3VyZWx5IHRoZXJlIGlzIHN1Y2gg
-YSB0aGluZy4NCj4+DQo+PiBQZXJoYXBzIHlvdSBhcmUgc3VnZ2VzdGluZyB3ZSBzaG91bGQg
-YWx3YXlzIGxvb3AgdGhlIF9mcmVlXyByYW5nZXMgc28gd2UgZG9uJ3QNCj4+IG5lZWQgdG8g
-Y2FyZSBhYm91dCB0aGUgZmlyc3QgMU1CIHdoaWNoIGlzIHJlc2VydmVkPw0KPj4NCj4+IFRo
-ZSBwcm9ibGVtIGlzIHNvbWUgcmVzZXJ2ZWQgbWVtb3J5IHJlZ2lvbnMgYXJlIGFjdHVhbGx5
-IGxhdGVyIGZyZWVkIHRvIHRoZSBwYWdlDQo+PiBhbGxvY2F0b3IsIGZvciBleGFtcGxlLCBp
-bml0cmQuICBTbyB0byBjb3ZlciBhbGwgdGhvc2UgJ2xhdGUtZnJlZWQtcmVzZXJ2ZWQtDQo+
-PiByZWdpb25zJywgSSB1c2VkIGZvcl9lYWNoX21lbV9wZm5fcmFuZ2UoKSwgaW5zdGVhZCBv
-ZiBmb3JfZWFjaF9mcmVlX21lbV9yYW5nZSgpLg0KPiANCj4gV2h5IG5vdCBqdXN0IGVudGly
-ZWx5IHJlbW92ZSB0aGUgbG93ZXIgMU1CIGZyb20gdGhlIG1lbWJsb2NrIHN0cnVjdHVyZQ0K
-PiBvbiBURFggc3lzdGVtcz8gIERvIHNvbWV0aGluZyBlcXVpdmFsZW50IHRvIGFkZGluZyB0
-aGlzIG9uIHRoZSBrZXJuZWwNCj4gY29tbWFuZCBsaW5lOg0KPiANCj4gCW1lbW1hcD0xTSQw
-eDANCj4gDQo+PiBCdHcsIEkgZG8gaGF2ZSBhIGNoZWNrcGF0Y2ggd2FybmluZyBhcm91bmQg
-dGhpcyBjb2RlOg0KPj4NCj4+IEVSUk9SOiBNYWNyb3Mgd2l0aCBjb21wbGV4IHZhbHVlcyBz
-aG91bGQgYmUgZW5jbG9zZWQgaW4gcGFyZW50aGVzZXMNCj4+ICMxMDk6IEZJTEU6IGFyY2gv
-eDg2L3ZpcnQvdm14L3RkeC90ZHguYzozNzc6DQo+PiArI2RlZmluZSBtZW1ibG9ja19mb3Jf
-ZWFjaF90ZHhfbWVtX3Bmbl9yYW5nZShpLCBwX3N0YXJ0LCBwX2VuZCwgcF9uaWQpCVwNCj4+
-ICsJZm9yX2VhY2hfbWVtX3Bmbl9yYW5nZShpLCBNQVhfTlVNTk9ERVMsIHBfc3RhcnQsIHBf
-ZW5kLCBwX25pZCkJXA0KPj4gKwkJaWYgKCFwZm5fcmFuZ2Vfc2tpcF9sb3dtZW0ocF9zdGFy
-dCwgcF9lbmQpKQ0KPj4NCj4+IEJ1dCBpdCBsb29rcyBsaWtlIGEgZmFsc2UgcG9zaXRpdmUg
-dG8gbWUuDQo+IA0KPiBJIHRoaW5rIGl0IGRvZXNuJ3QgbGlrZSB0aGUgaWYoKS4NCg0KSSB0
-aGluayBpdCBpcyByaWdodC4NCg0KQ29uc2lkZXI6DQoNCmlmIChhKQ0KICAgICBtZW1ibG9j
-a19mb3JfZWFjaF90ZHhfbWVtX3Bmbl9yYW5nZSguLi4pDQogICAgICAgICBmdW5jKCk7DQpl
-bHNlDQogICAgIG90aGVyX2Z1bmMoKTsNCg0KDQpKdWVyZ2VuDQo=
---------------1HLgyr0hiDN7IbIizjL28Rim
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+diff --git a/arch/powerpc/include/asm/cputable.h b/arch/powerpc/include/asm/cputable.h
+index 549eb6dd146f..ae8c3e13cfce 100644
+--- a/arch/powerpc/include/asm/cputable.h
++++ b/arch/powerpc/include/asm/cputable.h
+@@ -70,9 +70,6 @@ struct cpu_spec {
+ 	/* Used to restore cpu setup on secondary processors and at resume */
+ 	cpu_restore_t	cpu_restore;
+ 
+-	/* Used by oprofile userspace to select the right counters */
+-	char		*oprofile_cpu_type;
+-
+ 	/* Name of processor class, for the ELF AT_PLATFORM entry */
+ 	char		*platform;
+ 
+diff --git a/arch/powerpc/kernel/cputable.c b/arch/powerpc/kernel/cputable.c
+index a5dbfccd2047..d8e42ef750f1 100644
+--- a/arch/powerpc/kernel/cputable.c
++++ b/arch/powerpc/kernel/cputable.c
+@@ -149,7 +149,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.pmc_type		= PPC_PMC_IBM,
+ 		.cpu_setup		= __setup_cpu_ppc970,
+ 		.cpu_restore		= __restore_cpu_ppc970,
+-		.oprofile_cpu_type	= "ppc64/970",
+ 		.platform		= "ppc970",
+ 	},
+ 	{	/* PPC970FX */
+@@ -166,7 +165,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.pmc_type		= PPC_PMC_IBM,
+ 		.cpu_setup		= __setup_cpu_ppc970,
+ 		.cpu_restore		= __restore_cpu_ppc970,
+-		.oprofile_cpu_type	= "ppc64/970",
+ 		.platform		= "ppc970",
+ 	},
+ 	{	/* PPC970MP DD1.0 - no DEEPNAP, use regular 970 init */
+@@ -183,7 +181,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.pmc_type		= PPC_PMC_IBM,
+ 		.cpu_setup		= __setup_cpu_ppc970,
+ 		.cpu_restore		= __restore_cpu_ppc970,
+-		.oprofile_cpu_type	= "ppc64/970MP",
+ 		.platform		= "ppc970",
+ 	},
+ 	{	/* PPC970MP */
+@@ -200,7 +197,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.pmc_type		= PPC_PMC_IBM,
+ 		.cpu_setup		= __setup_cpu_ppc970MP,
+ 		.cpu_restore		= __restore_cpu_ppc970,
+-		.oprofile_cpu_type	= "ppc64/970MP",
+ 		.platform		= "ppc970",
+ 	},
+ 	{	/* PPC970GX */
+@@ -216,7 +212,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 8,
+ 		.pmc_type		= PPC_PMC_IBM,
+ 		.cpu_setup		= __setup_cpu_ppc970,
+-		.oprofile_cpu_type	= "ppc64/970",
+ 		.platform		= "ppc970",
+ 	},
+ 	{	/* Power5 GR */
+@@ -230,7 +225,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power5",
+ 		.platform		= "power5",
+ 	},
+ 	{	/* Power5++ */
+@@ -243,7 +237,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.icache_bsize		= 128,
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+-		.oprofile_cpu_type	= "ppc64/power5++",
+ 		.platform		= "power5+",
+ 	},
+ 	{	/* Power5 GS */
+@@ -257,7 +250,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power5+",
+ 		.platform		= "power5+",
+ 	},
+ 	{	/* POWER6 in P5+ mode; 2.04-compliant processor */
+@@ -269,7 +261,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.mmu_features		= MMU_FTRS_POWER5,
+ 		.icache_bsize		= 128,
+ 		.dcache_bsize		= 128,
+-		.oprofile_cpu_type	= "ppc64/ibm-compat-v1",
+ 		.platform		= "power5+",
+ 	},
+ 	{	/* Power6 */
+@@ -284,7 +275,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power6",
+ 		.platform		= "power6x",
+ 	},
+ 	{	/* 2.05-compliant processor, i.e. Power6 "architected" mode */
+@@ -296,7 +286,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.mmu_features		= MMU_FTRS_POWER6,
+ 		.icache_bsize		= 128,
+ 		.dcache_bsize		= 128,
+-		.oprofile_cpu_type	= "ppc64/ibm-compat-v1",
+ 		.platform		= "power6",
+ 	},
+ 	{	/* 2.06-compliant processor, i.e. Power7 "architected" mode */
+@@ -309,7 +298,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.mmu_features		= MMU_FTRS_POWER7,
+ 		.icache_bsize		= 128,
+ 		.dcache_bsize		= 128,
+-		.oprofile_cpu_type	= "ppc64/ibm-compat-v1",
+ 		.cpu_setup		= __setup_cpu_power7,
+ 		.cpu_restore		= __restore_cpu_power7,
+ 		.machine_check_early	= __machine_check_early_realmode_p7,
+@@ -325,7 +313,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.mmu_features		= MMU_FTRS_POWER8,
+ 		.icache_bsize		= 128,
+ 		.dcache_bsize		= 128,
+-		.oprofile_cpu_type	= "ppc64/ibm-compat-v1",
+ 		.cpu_setup		= __setup_cpu_power8,
+ 		.cpu_restore		= __restore_cpu_power8,
+ 		.machine_check_early	= __machine_check_early_realmode_p8,
+@@ -341,7 +328,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.mmu_features		= MMU_FTRS_POWER9,
+ 		.icache_bsize		= 128,
+ 		.dcache_bsize		= 128,
+-		.oprofile_cpu_type	= "ppc64/ibm-compat-v1",
+ 		.cpu_setup		= __setup_cpu_power9,
+ 		.cpu_restore		= __restore_cpu_power9,
+ 		.platform		= "power9",
+@@ -356,7 +342,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.mmu_features		= MMU_FTRS_POWER10,
+ 		.icache_bsize		= 128,
+ 		.dcache_bsize		= 128,
+-		.oprofile_cpu_type	= "ppc64/ibm-compat-v1",
+ 		.cpu_setup		= __setup_cpu_power10,
+ 		.cpu_restore		= __restore_cpu_power10,
+ 		.platform		= "power10",
+@@ -373,7 +358,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power7",
+ 		.cpu_setup		= __setup_cpu_power7,
+ 		.cpu_restore		= __restore_cpu_power7,
+ 		.machine_check_early	= __machine_check_early_realmode_p7,
+@@ -391,7 +375,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power7",
+ 		.cpu_setup		= __setup_cpu_power7,
+ 		.cpu_restore		= __restore_cpu_power7,
+ 		.machine_check_early	= __machine_check_early_realmode_p7,
+@@ -409,7 +392,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power8",
+ 		.cpu_setup		= __setup_cpu_power8,
+ 		.cpu_restore		= __restore_cpu_power8,
+ 		.machine_check_early	= __machine_check_early_realmode_p8,
+@@ -427,7 +409,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power8",
+ 		.cpu_setup		= __setup_cpu_power8,
+ 		.cpu_restore		= __restore_cpu_power8,
+ 		.machine_check_early	= __machine_check_early_realmode_p8,
+@@ -445,7 +426,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power8",
+ 		.cpu_setup		= __setup_cpu_power8,
+ 		.cpu_restore		= __restore_cpu_power8,
+ 		.machine_check_early	= __machine_check_early_realmode_p8,
+@@ -463,7 +443,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power9",
+ 		.cpu_setup		= __setup_cpu_power9,
+ 		.cpu_restore		= __restore_cpu_power9,
+ 		.machine_check_early	= __machine_check_early_realmode_p9,
+@@ -481,7 +460,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power9",
+ 		.cpu_setup		= __setup_cpu_power9,
+ 		.cpu_restore		= __restore_cpu_power9,
+ 		.machine_check_early	= __machine_check_early_realmode_p9,
+@@ -499,7 +477,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power9",
+ 		.cpu_setup		= __setup_cpu_power9,
+ 		.cpu_restore		= __restore_cpu_power9,
+ 		.machine_check_early	= __machine_check_early_realmode_p9,
+@@ -517,7 +494,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power9",
+ 		.cpu_setup		= __setup_cpu_power9,
+ 		.cpu_restore		= __restore_cpu_power9,
+ 		.machine_check_early	= __machine_check_early_realmode_p9,
+@@ -535,7 +511,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/power10",
+ 		.cpu_setup		= __setup_cpu_power10,
+ 		.cpu_restore		= __restore_cpu_power10,
+ 		.machine_check_early	= __machine_check_early_realmode_p10,
+@@ -554,7 +529,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.dcache_bsize		= 128,
+ 		.num_pmcs		= 4,
+ 		.pmc_type		= PPC_PMC_IBM,
+-		.oprofile_cpu_type	= "ppc64/cell-be",
+ 		.platform		= "ppc-cell-be",
+ 	},
+ 	{	/* PA Semi PA6T */
+@@ -570,7 +544,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.pmc_type		= PPC_PMC_PA6T,
+ 		.cpu_setup		= __setup_cpu_pa6t,
+ 		.cpu_restore		= __restore_cpu_pa6t,
+-		.oprofile_cpu_type	= "ppc64/pa6t",
+ 		.platform		= "pa6t",
+ 	},
+ 	{	/* default match */
+@@ -734,7 +707,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.cpu_setup		= __setup_cpu_750,
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc750",
+-		.oprofile_cpu_type      = "ppc/750",
+ 	},
+ 	{	/* 745/755 */
+ 		.pvr_mask		= 0xfffff000,
+@@ -765,7 +737,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.cpu_setup		= __setup_cpu_750,
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc750",
+-		.oprofile_cpu_type      = "ppc/750",
+ 	},
+ 	{	/* 750FX rev 2.0 must disable HID0[DPM] */
+ 		.pvr_mask		= 0xffffffff,
+@@ -781,7 +752,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.cpu_setup		= __setup_cpu_750,
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc750",
+-		.oprofile_cpu_type      = "ppc/750",
+ 	},
+ 	{	/* 750FX (All revs except 2.0) */
+ 		.pvr_mask		= 0xffff0000,
+@@ -797,7 +767,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.cpu_setup		= __setup_cpu_750fx,
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc750",
+-		.oprofile_cpu_type      = "ppc/750",
+ 	},
+ 	{	/* 750GX */
+ 		.pvr_mask		= 0xffff0000,
+@@ -813,7 +782,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.cpu_setup		= __setup_cpu_750fx,
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc750",
+-		.oprofile_cpu_type      = "ppc/750",
+ 	},
+ 	{	/* 740/750 (L2CR bit need fixup for 740) */
+ 		.pvr_mask		= 0xffff0000,
+@@ -891,7 +859,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -908,7 +875,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -925,7 +891,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -942,7 +907,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -959,7 +923,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -976,7 +939,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -993,7 +955,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -1010,7 +971,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -1026,7 +986,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -1043,7 +1002,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -1060,7 +1018,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.num_pmcs		= 6,
+ 		.pmc_type		= PPC_PMC_G4,
+ 		.cpu_setup		= __setup_cpu_745x,
+-		.oprofile_cpu_type      = "ppc/7450",
+ 		.machine_check		= machine_check_generic,
+ 		.platform		= "ppc7450",
+ 	},
+@@ -1172,7 +1129,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.cpu_setup		= __setup_cpu_603,
+ 		.machine_check		= machine_check_83xx,
+ 		.num_pmcs		= 4,
+-		.oprofile_cpu_type	= "ppc/e300",
+ 		.platform		= "ppc603",
+ 	},
+ 	{	/* e300c4 (e300c1, plus one IU) */
+@@ -1188,7 +1144,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.cpu_setup		= __setup_cpu_603,
+ 		.machine_check		= machine_check_83xx,
+ 		.num_pmcs		= 4,
+-		.oprofile_cpu_type	= "ppc/e300",
+ 		.platform		= "ppc603",
+ 	},
+ #endif
+@@ -1884,7 +1839,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.icache_bsize		= 32,
+ 		.dcache_bsize		= 32,
+ 		.num_pmcs		= 4,
+-		.oprofile_cpu_type	= "ppc/e500",
+ 		.cpu_setup		= __setup_cpu_e500v1,
+ 		.machine_check		= machine_check_e500,
+ 		.platform		= "ppc8540",
+@@ -1903,7 +1857,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.icache_bsize		= 32,
+ 		.dcache_bsize		= 32,
+ 		.num_pmcs		= 4,
+-		.oprofile_cpu_type	= "ppc/e500",
+ 		.cpu_setup		= __setup_cpu_e500v2,
+ 		.machine_check		= machine_check_e500,
+ 		.platform		= "ppc8548",
+@@ -1922,7 +1875,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.icache_bsize		= 64,
+ 		.dcache_bsize		= 64,
+ 		.num_pmcs		= 4,
+-		.oprofile_cpu_type	= "ppc/e500mc",
+ 		.cpu_setup		= __setup_cpu_e500mc,
+ 		.machine_check		= machine_check_e500mc,
+ 		.platform		= "ppce500mc",
+@@ -1943,7 +1895,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.icache_bsize		= 64,
+ 		.dcache_bsize		= 64,
+ 		.num_pmcs		= 4,
+-		.oprofile_cpu_type	= "ppc/e500mc",
+ 		.cpu_setup		= __setup_cpu_e5500,
+ #ifndef CONFIG_PPC32
+ 		.cpu_restore		= __restore_cpu_e5500,
+@@ -1965,7 +1916,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
+ 		.icache_bsize		= 64,
+ 		.dcache_bsize		= 64,
+ 		.num_pmcs		= 6,
+-		.oprofile_cpu_type	= "ppc/e6500",
+ 		.cpu_setup		= __setup_cpu_e6500,
+ #ifndef CONFIG_PPC32
+ 		.cpu_restore		= __restore_cpu_e6500,
+@@ -2033,23 +1983,10 @@ static struct cpu_spec * __init setup_cpu_spec(unsigned long offset,
+ 		t->pmc_type = old.pmc_type;
+ 
+ 		/*
+-		 * If we have passed through this logic once before and
+-		 * have pulled the default case because the real PVR was
+-		 * not found inside cpu_specs[], then we are possibly
+-		 * running in compatibility mode. In that case, let the
+-		 * oprofiler know which set of compatibility counters to
+-		 * pull from by making sure the oprofile_cpu_type string
+-		 * is set to that of compatibility mode. If the
+-		 * oprofile_cpu_type already has a value, then we are
+-		 * possibly overriding a real PVR with a logical one,
+-		 * and, in that case, keep the current value for
+-		 * oprofile_cpu_type. Furthermore, let's ensure that the
++		 * Let's ensure that the
+ 		 * fix for the PMAO bug is enabled on compatibility mode.
+ 		 */
+-		if (old.oprofile_cpu_type != NULL) {
+-			t->oprofile_cpu_type = old.oprofile_cpu_type;
+-			t->cpu_features |= old.cpu_features & CPU_FTR_PMAO_BUG;
+-		}
++		t->cpu_features |= old.cpu_features & CPU_FTR_PMAO_BUG;
+ 	}
+ 
+ 	*PTRRELOC(&cur_cpu_spec) = &the_cpu_spec;
+diff --git a/arch/powerpc/kernel/dt_cpu_ftrs.c b/arch/powerpc/kernel/dt_cpu_ftrs.c
+index 2ad365c21afa..fc800a9fb2c4 100644
+--- a/arch/powerpc/kernel/dt_cpu_ftrs.c
++++ b/arch/powerpc/kernel/dt_cpu_ftrs.c
+@@ -102,7 +102,6 @@ static struct cpu_spec __initdata base_cpu_spec = {
+ 	.dcache_bsize		= 32, /* cache info init.             */
+ 	.num_pmcs		= 0,
+ 	.pmc_type		= PPC_PMC_DEFAULT,
+-	.oprofile_cpu_type	= NULL,
+ 	.cpu_setup		= NULL,
+ 	.cpu_restore		= __restore_cpu_cpufeatures,
+ 	.machine_check_early	= NULL,
+@@ -387,7 +386,6 @@ static int __init feat_enable_pmu_power8(struct dt_cpu_feature *f)
+ 
+ 	cur_cpu_spec->num_pmcs		= 6;
+ 	cur_cpu_spec->pmc_type		= PPC_PMC_IBM;
+-	cur_cpu_spec->oprofile_cpu_type	= "ppc64/power8";
+ 
+ 	return 1;
+ }
+@@ -423,7 +421,6 @@ static int __init feat_enable_pmu_power9(struct dt_cpu_feature *f)
+ 
+ 	cur_cpu_spec->num_pmcs		= 6;
+ 	cur_cpu_spec->pmc_type		= PPC_PMC_IBM;
+-	cur_cpu_spec->oprofile_cpu_type	= "ppc64/power9";
+ 
+ 	return 1;
+ }
+@@ -449,7 +446,6 @@ static int __init feat_enable_pmu_power10(struct dt_cpu_feature *f)
+ 
+ 	cur_cpu_spec->num_pmcs          = 6;
+ 	cur_cpu_spec->pmc_type          = PPC_PMC_IBM;
+-	cur_cpu_spec->oprofile_cpu_type = "ppc64/power10";
+ 
+ 	return 1;
+ }
+diff --git a/arch/powerpc/platforms/cell/spufs/spufs.h b/arch/powerpc/platforms/cell/spufs/spufs.h
+index afc1d6604d12..23c6799cfa5a 100644
+--- a/arch/powerpc/platforms/cell/spufs/spufs.h
++++ b/arch/powerpc/platforms/cell/spufs/spufs.h
+@@ -76,7 +76,7 @@ struct spu_context {
+ 	struct address_space *mss;	   /* 'mss' area mappings. */
+ 	struct address_space *psmap;	   /* 'psmap' area mappings. */
+ 	struct mutex mapping_lock;
+-	u64 object_id;		   /* user space pointer for oprofile */
++	u64 object_id;		   /* user space pointer for GNU Debugger */
+ 
+ 	enum { SPU_STATE_RUNNABLE, SPU_STATE_SAVED } state;
+ 	struct mutex state_mutex;
+diff --git a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
+index 610682caabc4..a44869e5ea70 100644
+--- a/arch/powerpc/platforms/ps3/Kconfig
++++ b/arch/powerpc/platforms/ps3/Kconfig
+@@ -165,7 +165,7 @@ config PS3_LPM
+ 
+ 	  If you intend to use the advanced performance monitoring and
+ 	  profiling support of the Cell processor with programs like
+-	  oprofile and perfmon2, then say Y or M, otherwise say N.
++	  perfmon2, then say Y or M, otherwise say N.
+ 
+ config PS3GELIC_UDBG
+ 	bool "PS3 udbg output via UDP broadcasts on Ethernet"
+-- 
+2.36.1
 
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------1HLgyr0hiDN7IbIizjL28Rim--
-
---------------6vbT3KQ0DMdFpqJBtkiCsLIO--
-
---------------F3C1K8B7yXSI9xP782UHBXAx
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmLG72AFAwAAAAAACgkQsN6d1ii/Ey+9
-qwf6Am3O65pQZqby5HsdE4B92FYp0KPBJ4u31LgS1BwNR5momE7y5zjNXNde+Krqgij4n3tC2tso
-BsnzvrnhJl1S08LM2+HBm+0eIqN/60DY+htnTOqmolJOhX1+N8zWgaLQvtPVn3rvb2FvJZib5hOg
-9p7VlbqNSjO8qeU13C2E19mzvHn2XQdwpxChg2XyAuG9iH/Vgk3pJrJYrOS0A8QeieMFnvVLEW8G
-u3W0+i6BmHmOyt0mrFAjVz2jG1zMaUvo5boxYyQa4m/oxpFKJioFwOWdsg+jQY/MFOv5d8vZr+OC
-ysx83fTTi5EjKeUx8FSIKl8Iug1JrW+YP1rGLGbHFw==
-=3RoI
------END PGP SIGNATURE-----
-
---------------F3C1K8B7yXSI9xP782UHBXAx--
