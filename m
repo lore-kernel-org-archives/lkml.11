@@ -2,90 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65562C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 12:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49249C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 12:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235704AbiGGM64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 08:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55060 "EHLO
+        id S235707AbiGGM7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 08:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235832AbiGGM6m (ORCPT
+        with ESMTP id S235519AbiGGM7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 08:58:42 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF469631A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 05:58:40 -0700 (PDT)
-Received: from mail-yb1-f175.google.com ([209.85.219.175]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N0qmr-1nLzpL2Vcr-00wlg4 for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022
- 14:58:38 +0200
-Received: by mail-yb1-f175.google.com with SMTP id 64so23082853ybt.12
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 05:58:38 -0700 (PDT)
-X-Gm-Message-State: AJIora/Jh4bFRBOY75/n0BhavboDhPra6WEeuoDgeGpLtXc5oA+fNtzU
-        wL5IJ2mUdf9Hv0I4dFxRIleYbVj5tRd4aWJMUdo=
-X-Google-Smtp-Source: AGRyM1uX1VubXKRKAhrgEy4zsIF4xDfIjrS0y1PZaFYEmVVlCmS2hLH5NANA7MGYxLWc2r2GdTcZjF+dyth/NlYbv8w=
-X-Received: by 2002:a05:6902:120f:b0:668:2228:9627 with SMTP id
- s15-20020a056902120f00b0066822289627mr50808203ybu.134.1657198717455; Thu, 07
- Jul 2022 05:58:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220707110511.52129-1-zhengqi.arch@bytedance.com> <20220707110511.52129-2-zhengqi.arch@bytedance.com>
-In-Reply-To: <20220707110511.52129-2-zhengqi.arch@bytedance.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 7 Jul 2022 14:58:21 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0h1rFot013raf+O49pvV0JtyBX4Hwp3dt_85jzsJv3ww@mail.gmail.com>
-Message-ID: <CAK8P3a0h1rFot013raf+O49pvV0JtyBX4Hwp3dt_85jzsJv3ww@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] arm64: run softirqs on the per-CPU IRQ stack
-To:     Qi Zheng <zhengqi.arch@bytedance.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Fbdeyp6aStkOat7X8aZFib1kvwr8Isk9MFjCz1eXuG/SgWwXr/U
- BUcJh3NX8kyDmBp3379Xups9tIZwPHGqUaFDF5Nv7/opVqRJaRXN4mA5z6JCGoJwpDIThPX
- lHEO0PnKqm1WUQQ0ve0cOs61wQhQuZaQa1zSJtZHe8eighgifnGgZusqtHJtX/ujHW2Ejda
- Lt4H873QtslRqX4oivACw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Asw8vCdvcxc=:Dc+rVX/pwIMghXDnEzcqOT
- 8hH4+83KwV/2qLcWPHAg7pPvJtikGRUlF2W3iEyo2ylpPw03WTKa+dw/MZJRajtRHpXaE4V4F
- da6Z9olr2BeUKOYWEVwoC+ha9tlJT9VSY39Ws2nk2XYw4a7JlYWafmtUcB2x+P693Q2wsPZyT
- uYi3OLtOC78r0M4QzA16f0FTb5GfrzrQVwJjcovOXiSjuhS5nXm7E0ckc+kXEc47Ld6ZNVxP0
- NkwfoIqO0zeCT4PnyiFEy3YAJPGKDbjprSiQdqlY89IDsL79zzL8/mIxlPAPU5NVBPeIUvBQc
- FE8zCDzlMWTZYTyfdD8dW0dV+F7dpI++RuMBLEMAnswNOO/u7C1Tco+iuP+IR4Utu5r8sOebw
- 2XdQ9ef5+HTW1TMyFiLPYfj83R+qi1imA/r9CLUncTH4fcJ+pTv82SF93qBAjzspGiUWYb0bw
- UJ3rluGbhYB3wvvKmlAmmCEVU8JJi+AhwO5MbX9rsoZZE8/GqGPCF49CD40iiC34blMh0C+Fw
- oXl2Y+LIZ/OfOUCIGT+PB0229dJjy7e1cIHrHBg+UgeIp5yn4MoXBU7F254kguyysMPl0txZ2
- 0XidCgK7h1fyd09SOOjL1HmXQpE25HfjZ2gX1JVE3ZeU3MYcVN111xJyWTII2wKd8R9DWTYeW
- ih59/yabSqGhJxgEhHC6Shok5ryqouwyQSpNrp9fvmOKN4kMHikXMyRaAkgNpJGQ+QpaUkpgk
- y575zpB/vrbQEQeEXVoBOZbmE5mahxBqBJIivBedMPtglLjd8i2E0+ILrvjKzuOhwaNteeAW0
- xHlH70O9nz8YyMOcKcyC3GFkUSMzuSKut2lSs7qyhus72oXedSQpECylzK01ZuNdtr832HCB5
- 5ANW3TrZvXaogcQtOWxw6Goa+ITkMEJfqmFUIuTdM=
+        Thu, 7 Jul 2022 08:59:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6F613E16
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 05:59:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADC21612C3
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 12:59:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09DBDC3411E;
+        Thu,  7 Jul 2022 12:59:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657198749;
+        bh=GL7/L+N8uPKWABVlRV+BfAz/iipWdU1VftMQQqJwNrA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dejzk4g+RkGEdCUI4uLj7Me9FpG2nKWWgkHNZkSRS0blSsbjUHPoM/Rw6sh4sUpW9
+         1asDjOMI9aJV36KR+VpeNF7z8qMTPAQAhENSBPvf3zG4dhwW8Hwmlay50uFWsk/+Vs
+         HyUcyav4XzkUCgWYG3p6vEN/Mvw7uF1bLjhVecxzgKfXOI8IhEpPLpHDp4zrwrwjWZ
+         Vg8RTcZRwVjMNbgGSkUyRwUqvaUQNM7kUvaWYlFQBDY525bIMTXVzR3+bApON4i+dI
+         6soOERXDuDJfYug2dvBw+7eQVjan2AQktB49jW/4Il1xPi45aLAeOwW6d91ZHeSKU1
+         Ems1ZCZKtz1rw==
+Received: from [185.201.63.253] (helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o9R62-005v5W-Lf;
+        Thu, 07 Jul 2022 13:59:06 +0100
+Date:   Thu, 07 Jul 2022 13:59:02 +0100
+Message-ID: <87y1x5krjd.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V14 14/15] irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC for LoongArch
+In-Reply-To: <1656837932-18257-15-git-send-email-lvjianmin@loongson.cn>
+References: <1656837932-18257-1-git-send-email-lvjianmin@loongson.cn>
+        <1656837932-18257-15-git-send-email-lvjianmin@loongson.cn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.201.63.253
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 1:05 PM Qi Zheng <zhengqi.arch@bytedance.com> wrote:
->
-> Currently arm64 supports per-CPU IRQ stack, but softirqs
-> are still handled in the task context.
->
-> Since any call to local_bh_enable() at any level in the task's
-> call stack may trigger a softirq processing run, which could
-> potentially cause a task stack overflow if the combined stack
-> footprints exceed the stack's size, let's run these softirqs
-> on the IRQ stack as well.
->
-> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+On Sun, 03 Jul 2022 09:45:31 +0100,
+Jianmin Lv <lvjianmin@loongson.cn> wrote:
+> 
+> For LoongArch, ACPI_IRQ_MODEL_LPIC is introduced, and then the
+> callback acpi_get_gsi_domain_id and acpi_gsi_to_irq_fallback are
+> implemented.
+> 
+> The acpi_get_gsi_domain_id callback returns related fwnode handle
+> of irqdomain for different GSI range.
+> 
+> The acpi_gsi_to_irq_fallback will create new mapping for gsi when
+> the mapping of it is not found.
+> 
+> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+> ---
+>  drivers/acpi/bus.c                  |  3 +++
+>  drivers/irqchip/irq-loongarch-cpu.c | 37 +++++++++++++++++++++++++++++++++++++
+>  include/linux/acpi.h                |  1 +
+>  3 files changed, 41 insertions(+)
+> 
+> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+> index 86fa61a..63fbf00 100644
+> --- a/drivers/acpi/bus.c
+> +++ b/drivers/acpi/bus.c
+> @@ -1145,6 +1145,9 @@ static int __init acpi_bus_init_irq(void)
+>  	case ACPI_IRQ_MODEL_PLATFORM:
+>  		message = "platform specific model";
+>  		break;
+> +	case ACPI_IRQ_MODEL_LPIC:
+> +		message = "LPIC";
+> +		break;
+>  	default:
+>  		pr_info("Unknown interrupt routing model\n");
+>  		return -ENODEV;
+> diff --git a/drivers/irqchip/irq-loongarch-cpu.c b/drivers/irqchip/irq-loongarch-cpu.c
+> index c2f7411..1b241d7 100644
+> --- a/drivers/irqchip/irq-loongarch-cpu.c
+> +++ b/drivers/irqchip/irq-loongarch-cpu.c
+> @@ -15,6 +15,41 @@
+>  
+>  static struct irq_domain *irq_domain;
+>  
+> +static int lpic_gsi_to_irq(u32 gsi)
+> +{
+> +	/* Only pch irqdomain transferring is required for LoongArch. */
+> +	if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
+> +		return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_HIGH);
+> +	return -1;
 
-I think this is the correct approach, but your patch conflicts with another
-patch I have queued up in the asm-generic tree, see
-https://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git/commit/?h=asm-generic&id=f2c5092190f21
+The expected return value on failure is 0 (which indicates that no
+interrupt was mapped). Here, things will break as acpi_gsi_to_irq()
+stores the result as unsigned, and compares the result to 0.
 
-Please adapt accordingly.
+	M.
 
-Are there any architectures left that use IRQ stacks but don't
-set HAVE_SOFTIRQ_ON_OWN_STACK? If not, we could
-also consider removing the Kconfig symbol and just requiring
-it to be done this way (for non-PREEMPT_RT).
-
-        Arnd
+-- 
+Without deviation from the norm, progress is not possible.
