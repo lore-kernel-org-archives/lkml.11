@@ -2,116 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235259AbiGGNnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
+        id S235480AbiGGNnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235391AbiGGNnN (ORCPT
+        with ESMTP id S235424AbiGGNnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:43:13 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C274D2FFF0
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:43:12 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id z14so18647465pgh.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 06:43:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=I8iO68hJz6Yfwz7R2uCfN3QtiaJzykCjLD9OoW4WaLA=;
-        b=K0YSWaDf2aj8LSLW6AXBC+0ZYT8Q7zUSw+DKjWrKr2TuprS/EuA9FjkyoXMAnoCJbf
-         o8VWEjiEF4FNvBGOE8SmByLi8D5+qqoHV25LguA5qk+COOoi8T5zySQgyuVMOjrid87z
-         h3YtR2yWp1igmlhchyWtWzjYboXfqezyX89RtTszmdHjpRgP2wHgvZtd6AFwFlp6/plQ
-         APHDUroH0NrV6d4AXwL5NLnzNJkWsYOPEOPlHK5VO0DH0HkP1xXZWppOZA5TrcWAh6BW
-         r9V3RkfXof3VEcwcjU/6tH1ponl09PDzqGLvcRfx24Aw6E88UaXWsm9eEPpo58TsxrNc
-         KH5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=I8iO68hJz6Yfwz7R2uCfN3QtiaJzykCjLD9OoW4WaLA=;
-        b=P4g8NinNUuGG0OeWh4JJ6cMbOXFOmPKw2cuy4kSJNbVYb6h1BszaXxqNMTpJn29uI8
-         1QMu6+rgQicyQ8zhhXMJVqFjgJda2GEFXHM5gS8YN2D5tjGi6lvljPZKAR4QbC+lA1U0
-         TsBcUK9OjqwPWDDdhf4b1VIv4yAve0/wHDCm9a+tb9YzC7xhtZ9BenWmpKIBDntGcU3o
-         zw9barE1cT5atVIqA6+1JXarYYHEoVsA5LP+7IwbSt+F/QB1v/+3i06a6j1I0NcvBdrN
-         cEAxeP7cQP94E0IoE7sOX7Fw6pZJhZVZKlOupwwk/Ihmn5hCM6KkZCm7WImM1FXxx2mY
-         Aktg==
-X-Gm-Message-State: AJIora9ZiFIHzkBKsMKIF8pr+18h4U3LYIkSuoTMemz9NgjJ4sYARaB8
-        NprOjk2bDhbueLoWNE0bEu0/Zg==
-X-Google-Smtp-Source: AGRyM1ts6OQrEELFTByvGQUHG6vkur40IAu8he4bkhUKC+YWK8eyEqHzzt/cmPBer5uPxag2k9NT7g==
-X-Received: by 2002:a17:90b:1c0d:b0:1ef:a676:8e0a with SMTP id oc13-20020a17090b1c0d00b001efa6768e0amr5241084pjb.88.1657201392364;
-        Thu, 07 Jul 2022 06:43:12 -0700 (PDT)
-Received: from [10.70.252.135] ([139.177.225.229])
-        by smtp.gmail.com with ESMTPSA id n9-20020a17090b0d0900b001ef8912f763sm8693482pjz.7.2022.07.07.06.43.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 06:43:09 -0700 (PDT)
-Message-ID: <6802d78e-5aeb-6115-a4ec-73be78ccc577@bytedance.com>
-Date:   Thu, 7 Jul 2022 21:43:00 +0800
+        Thu, 7 Jul 2022 09:43:39 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A1013D11
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:43:36 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LdyH55BXxzhZFF;
+        Thu,  7 Jul 2022 21:41:05 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 21:43:33 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
+ 2022 21:43:32 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <dri-devel@lists.freedesktop.org>
+CC:     <msp@baylibre.com>, <vkoul@kernel.org>, <chunkuang.hu@kernel.org>
+Subject: [PATCH -next] phy: phy-mtk-dp: change mtk_dp_phy_driver to static
+Date:   Thu, 7 Jul 2022 21:53:09 +0800
+Message-ID: <20220707135309.801181-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0
-Subject: Re: [RFC PATCH 1/2] arm64: run softirqs on the per-CPU IRQ stack
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-References: <20220707110511.52129-1-zhengqi.arch@bytedance.com>
- <20220707110511.52129-2-zhengqi.arch@bytedance.com>
- <CAK8P3a0h1rFot013raf+O49pvV0JtyBX4Hwp3dt_85jzsJv3ww@mail.gmail.com>
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-In-Reply-To: <CAK8P3a0h1rFot013raf+O49pvV0JtyBX4Hwp3dt_85jzsJv3ww@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+mtk_dp_phy_driver is only used in phy-mtk-dp.c now, change it to static.
 
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/phy/mediatek/phy-mtk-dp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 2022/7/7 20:58, Arnd Bergmann wrote:
-> On Thu, Jul 7, 2022 at 1:05 PM Qi Zheng <zhengqi.arch@bytedance.com> wrote:
->>
->> Currently arm64 supports per-CPU IRQ stack, but softirqs
->> are still handled in the task context.
->>
->> Since any call to local_bh_enable() at any level in the task's
->> call stack may trigger a softirq processing run, which could
->> potentially cause a task stack overflow if the combined stack
->> footprints exceed the stack's size, let's run these softirqs
->> on the IRQ stack as well.
->>
->> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
-> 
-> I think this is the correct approach, but your patch conflicts with another
-> patch I have queued up in the asm-generic tree, see
-> https://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git/commit/?h=asm-generic&id=f2c5092190f21
-> 
-> Please adapt accordingly.
-
-OK, will do in the next version.
-
-> 
-> Are there any architectures left that use IRQ stacks but don't
-> set HAVE_SOFTIRQ_ON_OWN_STACK? If not, we could
-> also consider removing the Kconfig symbol and just requiring
-> it to be done this way (for non-PREEMPT_RT).
-
-I haven't taken a close look at other architectures than x86 and arm,
-but I think it's a good idea.
-
-Thanks,
-Qi
-
-> 
->          Arnd
-
+diff --git a/drivers/phy/mediatek/phy-mtk-dp.c b/drivers/phy/mediatek/phy-mtk-dp.c
+index 715bd2336c17..31266e7ca324 100644
+--- a/drivers/phy/mediatek/phy-mtk-dp.c
++++ b/drivers/phy/mediatek/phy-mtk-dp.c
+@@ -189,7 +189,7 @@ static int mtk_dp_phy_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-struct platform_driver mtk_dp_phy_driver = {
++static struct platform_driver mtk_dp_phy_driver = {
+ 	.probe = mtk_dp_phy_probe,
+ 	.driver = {
+ 		.name = "mediatek-dp-phy",
 -- 
-Thanks,
-Qi
+2.25.1
+
