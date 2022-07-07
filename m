@@ -2,149 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77BAFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 311CBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236290AbiGGOym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43428 "EHLO
+        id S236302AbiGGOyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235645AbiGGOyS (ORCPT
+        with ESMTP id S236113AbiGGOyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:54:18 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EE72711
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:53:26 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id v185so17040734ioe.11
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 07:53:26 -0700 (PDT)
+        Thu, 7 Jul 2022 10:54:23 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3ED167C0
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:53:31 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id y9so5653183pff.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 07:53:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7RZhPlwt1IWmYSR6QIVRvM1HZdmbksMxnLZ6G0dxCYQ=;
-        b=dbVWNRlsTl7pk7ptifukmXY/Z4krWR8gWS1OPftdqSoHwDjWWnGVMVy30wrrJmPKKM
-         m0ZjLpTxKOMe2z/X6TWznoYb3kbkXITLAxeWjACt51IJ9WoapHp2v1xGaRa9UDPSfk7X
-         GpEOzxaenVdYrb//0k6tqNyS2ahPCcwz9r6jjuTurfbgqiOUgMcHkoLGNCx80BPAwRkb
-         cqxPGv08JM1nzHaSW8paawSNd7Zk81EwVEk0stflMy7AX3tTrPs4FAgk+NK+wQg+euEt
-         BYzYXF1shibZRX60BLl6dzud3s0hIauMRUtUgOp2j6JbGhDl4wOG53FHmw1ki6dzr9De
-         07dQ==
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fCJ8QaefSod2FLdMLTYJXcVAzkRtmLMvuXzW7AhKtNg=;
+        b=ohr/MWgS1UQ+/RqKaVwpKraOsQZDAN9is50wEwY0SGO1YKNeTXChx9AZGHKtXsBBmy
+         Mbp1n9fspU0TeIVN1VIrNZ7vPZzdDx1q/Eo3o+Na38S4wjuQ9jCi/QPL3PhU9kb/Nz/N
+         sL7Rz0wsEVRNOzl7JGtvop7SVc9OQepRnfWrIGfdYy3U3WujeOLTny3Fd6p4OIHTVuHw
+         4ONX7nnB1kHQspD5L7+rNnmUdBwLlETywejxdMnqyA0LRUWtz6nWWNUkg71C2DAp9YiA
+         Lh8Sf6yiCI4CbfCT+V+YntxYuQbEXcjqhGU/Hp7/b8bbJY6ZjnWH/G9c31yRwu+6L7qe
+         nZhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7RZhPlwt1IWmYSR6QIVRvM1HZdmbksMxnLZ6G0dxCYQ=;
-        b=WOj8ZTj0pfqkDJTIDFKRJc4+1b/TeXfIqnF1zSugPUdV/JO0sk23ysAQ88n6GUfofn
-         szUENSUq9GSLEHejI6RzqfZG6txLiTA0EL8Gu24dsO4wCNSMwDJDyC5ZyVnVbCbj6T8g
-         F8V6bh9VH5VXnTHEK5tL4OwshGzAtCOq0lBpeS2/sIbsCyaLsDwfwu0jTae5BTLX9eID
-         R6TwhNdSEqGrP7ho2SzMDxDat8Ye8Y59IKY/X1NZb8n/4mCmDhjWo5/YScYR3W1kB92P
-         9hhW8nRF80kQerHWjERuP80utOGgMjJSPpPE6OoQYql2oyJFDADCodC05I1P+R+a/6Pp
-         pS+A==
-X-Gm-Message-State: AJIora9Dg8rgBWmhGLBQg06E75NRldA+EWsCXqfWAL0ZjVze7wCgZJdx
-        edYp7YW3z8BUn/quiJKT4bA=
-X-Google-Smtp-Source: AGRyM1trLe7RvY+9Rq0/Nq/y6Bbr3vIvsEr0rsX6bbBeVsNbTLy47V5SXuWGN+FGfuJ/2U+3fJpyLw==
-X-Received: by 2002:a05:6602:154b:b0:675:8bce:8a5 with SMTP id h11-20020a056602154b00b006758bce08a5mr24784705iow.108.1657205605448;
-        Thu, 07 Jul 2022 07:53:25 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id w1-20020a5ed601000000b00675305c58bdsm14794205iom.18.2022.07.07.07.53.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 07:53:24 -0700 (PDT)
-Message-ID: <15fe441c-205e-2953-44b4-d3c377cba7b1@gmail.com>
-Date:   Thu, 7 Jul 2022 16:53:21 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fCJ8QaefSod2FLdMLTYJXcVAzkRtmLMvuXzW7AhKtNg=;
+        b=JRLSrHCeO0JNG8qkPcqx1oAaXtVaULiJQTv0YcGxTLa8Psm+VAqQOsdZPfvUkhSgPb
+         PTmoB2KFjfJ8VwfxUncQwO5YNcK8NhIv9IQJMuMJ9wSGVeVDz1AOzRplHjChHIqtg64k
+         61VP0lfi7CMZTXpANcGrRiOTdC7fr46fjwCWqSEAAkp+DfkS6skMzBjji8OnyBSyH4uK
+         LjUGU6RoRi0jK/YcuimV1PdjEsx8OfWqeFtBAd3n63t6LWIiwT57wQa8JC+0KfprM5+G
+         0uNsvv5jDD2E9tDXHL1PT8pqWOZuoluAtjiBz5Mbj7REqy8VKt66ghn0CvxSctGxdELK
+         YXVQ==
+X-Gm-Message-State: AJIora99esYKNscDP1yii5Ys2KbIZAJgFoInxQ9OxuPjb4Sauc1qTb7F
+        63UXzjbBc+O9ZZexfleq8UpN/NSxkrp4yQ==
+X-Google-Smtp-Source: AGRyM1snRoAR3IesxARH9go1XUXWfZLlCv+MUuUz10z6M/0+3rvZbNtTwjV0qKUuBZJUWXwPPcq4Ag==
+X-Received: by 2002:a17:903:124c:b0:16b:a568:996d with SMTP id u12-20020a170903124c00b0016ba568996dmr45373917plh.169.1657205610537;
+        Thu, 07 Jul 2022 07:53:30 -0700 (PDT)
+Received: from anup-ubuntu64-vm.. ([223.226.40.162])
+        by smtp.gmail.com with ESMTPSA id b26-20020aa7951a000000b0052535e7c489sm27144231pfp.114.2022.07.07.07.53.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 07:53:29 -0700 (PDT)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH 3/5] RISC-V: KVM: Add G-stage ioremap() and iounmap() functions
+Date:   Thu,  7 Jul 2022 20:22:46 +0530
+Message-Id: <20220707145248.458771-4-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220707145248.458771-1-apatel@ventanamicro.com>
+References: <20220707145248.458771-1-apatel@ventanamicro.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 2/2] arm64: dts: mt8183: Add panel rotation
-Content-Language: en-US
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        Rob Clark <robdclark@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220530113033.124072-1-hsinyi@chromium.org>
- <20220530113033.124072-2-hsinyi@chromium.org>
- <CAJMQK-jw+sgunEwgEQAw-V8DAbybZ7WVnZJ6vwOdzQ+-SX_bQg@mail.gmail.com>
- <c3286fc9-06ed-d1e1-a731-94cdefdf7fab@gmail.com>
- <CAJMQK-gJ4AoNQtLeKoOO=GLLtjDRhCdVnYuPJSBD4ZnFWJ5qrw@mail.gmail.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <CAJMQK-gJ4AoNQtLeKoOO=GLLtjDRhCdVnYuPJSBD4ZnFWJ5qrw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The in-kernel AIA IMSIC support requires on-demand mapping / unmapping
+of Guest IMSIC address to Host IMSIC guest files. To help achieve this,
+we add kvm_riscv_stage2_ioremap() and kvm_riscv_stage2_iounmap()
+functions. These new functions for updating G-stage page table mappings
+will be called in atomic context so we have special "in_atomic" parameter
+for this purpose.
 
+Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+---
+ arch/riscv/include/asm/kvm_host.h |  5 +++++
+ arch/riscv/kvm/mmu.c              | 18 ++++++++++++++----
+ 2 files changed, 19 insertions(+), 4 deletions(-)
 
-On 17/06/2022 16:25, Hsin-Yi Wang wrote:
-> On Fri, Jun 17, 2022 at 10:10 PM Matthias Brugger
-> <matthias.bgg@gmail.com> wrote:
->>
->> Hi Hsin-Yi Wang,
->>
->> On 06/06/2022 17:29, Hsin-Yi Wang wrote:
->>> On Mon, May 30, 2022 at 7:30 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
->>>>
->>>> krane, kakadu, and kodama boards have a default panel rotation.
->>>>
->>>> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
->>>> Reviewed-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
->>>> Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
->>>> ---
->>>
->>> Hi Matthias,
->>>
->>> The series ("Add a panel API to return panel orientation") might land
->>> in drm-misc. With this series applied, we can add this patch to give
->>> the correct default orientation for mt8183 kukui devices.
->>> I didn't send this patch again with the series, since they might land
->>> in different trees.
->>>
->>
->> I had a look on Linux next (next-20220617) and wasn't able to find the mtk_dsi.c
->> changes. What is the status of this?
->>
-> The mtk_dsi change got dropped. The latest is this series:
-> https://lore.kernel.org/lkml/20220609072722.3488207-1-hsinyi@chromium.org/,
-> still waiting to be picked or others' comments.
-> 
+diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
+index 59a0cf2ca7b9..60c517e4d576 100644
+--- a/arch/riscv/include/asm/kvm_host.h
++++ b/arch/riscv/include/asm/kvm_host.h
+@@ -284,6 +284,11 @@ void kvm_riscv_hfence_vvma_gva(struct kvm *kvm,
+ void kvm_riscv_hfence_vvma_all(struct kvm *kvm,
+ 			       unsigned long hbase, unsigned long hmask);
+ 
++int kvm_riscv_gstage_ioremap(struct kvm *kvm, gpa_t gpa,
++			     phys_addr_t hpa, unsigned long size,
++			     bool writable, bool in_atomic);
++void kvm_riscv_gstage_iounmap(struct kvm *kvm, gpa_t gpa,
++			      unsigned long size);
+ int kvm_riscv_gstage_map(struct kvm_vcpu *vcpu,
+ 			 struct kvm_memory_slot *memslot,
+ 			 gpa_t gpa, unsigned long hva, bool is_write);
+diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
+index b75d4e200064..f7862ca4c4c6 100644
+--- a/arch/riscv/kvm/mmu.c
++++ b/arch/riscv/kvm/mmu.c
+@@ -343,8 +343,9 @@ static void gstage_wp_memory_region(struct kvm *kvm, int slot)
+ 	kvm_flush_remote_tlbs(kvm);
+ }
+ 
+-static int gstage_ioremap(struct kvm *kvm, gpa_t gpa, phys_addr_t hpa,
+-			  unsigned long size, bool writable)
++int kvm_riscv_gstage_ioremap(struct kvm *kvm, gpa_t gpa,
++			     phys_addr_t hpa, unsigned long size,
++			     bool writable, bool in_atomic)
+ {
+ 	pte_t pte;
+ 	int ret = 0;
+@@ -353,6 +354,7 @@ static int gstage_ioremap(struct kvm *kvm, gpa_t gpa, phys_addr_t hpa,
+ 	struct kvm_mmu_memory_cache pcache;
+ 
+ 	memset(&pcache, 0, sizeof(pcache));
++	pcache.gfp_custom = (in_atomic) ? GFP_ATOMIC | __GFP_ACCOUNT : 0;
+ 	pcache.gfp_zero = __GFP_ZERO;
+ 
+ 	end = (gpa + size + PAGE_SIZE - 1) & PAGE_MASK;
+@@ -382,6 +384,13 @@ static int gstage_ioremap(struct kvm *kvm, gpa_t gpa, phys_addr_t hpa,
+ 	return ret;
+ }
+ 
++void kvm_riscv_gstage_iounmap(struct kvm *kvm, gpa_t gpa, unsigned long size)
++{
++	spin_lock(&kvm->mmu_lock);
++	gstage_unmap_range(kvm, gpa, size, false);
++	spin_unlock(&kvm->mmu_lock);
++}
++
+ void kvm_arch_mmu_enable_log_dirty_pt_masked(struct kvm *kvm,
+ 					     struct kvm_memory_slot *slot,
+ 					     gfn_t gfn_offset,
+@@ -517,8 +526,9 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
+ 				goto out;
+ 			}
+ 
+-			ret = gstage_ioremap(kvm, gpa, pa,
+-					     vm_end - vm_start, writable);
++			ret = kvm_riscv_gstage_ioremap(kvm, gpa, pa,
++						       vm_end - vm_start,
++						       writable, false);
+ 			if (ret)
+ 				break;
+ 		}
+-- 
+2.34.1
 
-I saw this got merged, so merging this patch now.
-
-Thanks!
-
-> If the dts patch is picked without the drm series, there will be a
-> WARN, but won't affect boot or display up.
-> 
-> 
->> Regards,
->> Matthias
->>
->>> Thanks.
->>>
->>>>    arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 1 +
->>>>    1 file changed, 1 insertion(+)
->>>>
->>>> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
->>>> index 8d5bf73a9099..f0dd5a06629d 100644
->>>> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
->>>> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
->>>> @@ -276,6 +276,7 @@ panel: panel@0 {
->>>>                   avee-supply = <&ppvarp_lcd>;
->>>>                   pp1800-supply = <&pp1800_lcd>;
->>>>                   backlight = <&backlight_lcd0>;
->>>> +               rotation = <270>;
->>>>                   port {
->>>>                           panel_in: endpoint {
->>>>                                   remote-endpoint = <&dsi_out>;
->>>> --
->>>> 2.36.1.124.g0e6072fb45-goog
->>>>
