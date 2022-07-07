@@ -2,112 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50897C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A52DCCA480
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235754AbiGGNeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
+        id S235493AbiGGNe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235291AbiGGNeJ (ORCPT
+        with ESMTP id S235156AbiGGNe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:34:09 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FDE1CFC4;
-        Thu,  7 Jul 2022 06:34:08 -0700 (PDT)
-Received: from mail-yb1-f171.google.com ([209.85.219.171]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1McpS0-1nZYrM3AEE-00Zzku; Thu, 07 Jul 2022 15:34:06 +0200
-Received: by mail-yb1-f171.google.com with SMTP id i7so32518489ybe.11;
-        Thu, 07 Jul 2022 06:34:06 -0700 (PDT)
-X-Gm-Message-State: AJIora+EskzTZXtVd0fRmEneRTGVHGos1q2KEFvCT/HqBOu0hC4JaL1i
-        tzELlgr6qEEpZNgv5IdlkJR6srMP5aUP7OEk9ig=
-X-Google-Smtp-Source: AGRyM1uVpCRoROO6rAh+vA5ak8N4SGshcVRH0JW9GvyB4UqceUAu6tZ1eCC16Bwe+GMTjR8QSqM1egSeZk3ZR5FMhlQ=
-X-Received: by 2002:a25:7c41:0:b0:66d:766a:4815 with SMTP id
- x62-20020a257c41000000b0066d766a4815mr46624953ybc.480.1657200845543; Thu, 07
- Jul 2022 06:34:05 -0700 (PDT)
+        Thu, 7 Jul 2022 09:34:57 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818CD26562
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:34:56 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id o7so2019356lfq.9
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 06:34:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=voTpSZAXwWS8odcK2HkFOPNwTAarw+MRkXZUy15BjQQ=;
+        b=s4W5VELoJo+1tawR1mDEEFeoZbx0tVeCLTDy9tAkyxEnXCi6mvDPF9o9jCpqEejKs5
+         KQzI2htz78DE+bBBZ1R20kYDv9ClwnwmkLTKYIurC8t89L52jPGPZC+rG83sGLtuu3L6
+         28O8j9b8MEKXoHRDcbgsAXji5Gh+hsfotx92SoAOBxPv7GZc60neO//0baUS7OoWJNHG
+         g8KqWXfV9gZqnXebCesVK+i6EaILObEBinmy8q4W094TnSukMJNiEEWEfYTnbOJAvcvF
+         UisCLla1vNNHVz+8FR+fh2xdEGnLk2s50GrPtaBZt9vdrxaYhgIoOxLK+x/10wMkjn/W
+         cPpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=voTpSZAXwWS8odcK2HkFOPNwTAarw+MRkXZUy15BjQQ=;
+        b=YqgQzVIgTfzgsEOYzc12Peo324TpczFae9osFzSZzcg7TvNSGD8tp4Km0PVb3e1d+k
+         53PiYXulNApJPWOPQOEIp40MuUhyoYE117CePdAKkit7ATV6QGo5Dc4nz4iyWK6/uCtY
+         7SQQadtmNrCXGjwfD+ftBv+7TH8bX//m+CxnBoWDtdG9OcvyUgfAgf3mfoYJZgM3P60W
+         P9LzjheVnUPk6w+ZusDbDEPlJIoQ6eH/mnqCVfXjry1RWDDLE5KEt7yLLCuj64m0lOzy
+         blBapg2xlZI0FnNnLayRjPS5Akx7fuAc/vWXuwu1L3/T7AlAEXJr17XlRzGKVC1boJ8q
+         MYkQ==
+X-Gm-Message-State: AJIora9XFE0NljeIV7wlf/CuS/bddS9zjyw+y3EvL2j01z+dqHoUV+oM
+        B/EUmnKVWVCckZLUqjQiHvEYN6LYEZQFVQ==
+X-Google-Smtp-Source: AGRyM1vRcFCaiMIiX5IoI+FclOGigIEzTMDrnYhUmigt1L5drBH+zSyZplQxOyEfLZCbKuJ17XIngQ==
+X-Received: by 2002:a05:6512:102a:b0:47f:a442:7178 with SMTP id r10-20020a056512102a00b0047fa4427178mr31562321lfr.30.1657200894881;
+        Thu, 07 Jul 2022 06:34:54 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id g1-20020a0565123b8100b0047255d21179sm6844146lfv.168.2022.07.07.06.34.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 06:34:54 -0700 (PDT)
+Message-ID: <cab173ce-9c7c-9985-277c-3498d82b8400@linaro.org>
+Date:   Thu, 7 Jul 2022 16:34:52 +0300
 MIME-Version: 1.0
-References: <20220707132054.GA10610@logan-ThinkPad-T14-Gen-1>
-In-Reply-To: <20220707132054.GA10610@logan-ThinkPad-T14-Gen-1>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 7 Jul 2022 15:33:48 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0P2u+LdXcU7As=dfNbg_J2eWfhgB9TT1-xVyH0v6OM5Q@mail.gmail.com>
-Message-ID: <CAK8P3a0P2u+LdXcU7As=dfNbg_J2eWfhgB9TT1-xVyH0v6OM5Q@mail.gmail.com>
-Subject: Re: [PATCH v3] The Yosemite V3.5 is a facebook multi-node server
- platform that host four OCP server. The BMC in the Yosemite V3.5 platform
- based on AST2600 SoC.
-To:     Logananth Sundararaj <logananth13.hcl@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        SoC Team <soc@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        garnermic@gmail.com, thangavel.k@hcl.com, naveen.mosess@hcl.com,
-        patrick@stwcx.xyz, velumanit@hcl.com
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Ff4asemPkgpc3YgLJGPo+gGxHZPG4OGQORdlP3XswYqIxQVv9m5
- 0JTGQNJ2vXX18oqbh1UGTJpZNS7riFtZ2v+dLDNrH1XkSXIkkrZfjaXSef5SWwU4FmY51zc
- 3GCxzBjcuJHUr9Shbf0pQzQX42Ifs9oflNzlQicmSPfeJl0s+0C+B7Cw45CwTP6Q/orK5WH
- lw0Jab6s3K9H4OLj3s/XA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/KuZVDTAKcg=:/JVMEnND1FLr9TIGB4Cros
- rvifjyuwXtp+vn/NIRnsBFxErQaE/gdqgeUqJSKBUlpjuRgY205s+U1Hb815t2Q0o4/nTqmiT
- NZV+yPoYTEMlNXe9o15lXVqvOjs5a2uv+qrnsweH4OFa2P0FUiNerE7HsWR6y+X4tUyu6w9eW
- IKsyrTwGAI/iW6KXNnqaxUSd9Aa5dHRAyAeAbbs+jhgwWAF6W4/gz528mXzPYgyjkB7VBvI1o
- yq0O10e7rhwfG+MxVUsNKggEHsAWE5nXLuncz25b23iWAm383L8XHVQJ4YzPtiksHBLolmu03
- ENr+paIkXos+N6FmJTrlxeiR3AGC1+cTTvEq2VklwwzcePw0hzneP+ulg0PmFUvkmzb70DvUb
- MPrbiH6xStbVRtaDmz+u3KFCfYXlhuqyMirFPwxmXDJIleBJkKhlrxVI5V6Id57XAyD3tW2AG
- aXMxBdY1lygzt+1y0guRKqntUyWvXEuD8YCxqVhplKoING+4UR+aNg+kzIR85/6TqRbNvYpre
- IcdSN3bTLUU9v3GqvolDwpuipiunR065ZKDjGrbBYb0nzpkmuL7xCwt3cvkohECbryGInELLm
- BFKk7ayfQjuEuhQEVlWTC1lRdtkkCZpadJlrB4Bx9z+i17xICwtntFN7no0mJ3KpzehhzbS02
- GLAFnRUwxDcSsblsXBn6g5ZKF7WcbKVVGPdw4VE2owZ0pwRLz2q/MCO3y8JDSkcjgtSVsf/wC
- qzPQ8/zIUpYqx4fBy69xYbbUuON4toLMywzKXs3PkjWjXEj3Qs60MFmvfKqUTPaPO1XJyI1gj
- NvM019vy+aEtKT4oC2kvE5C6fSV0g7673HlDqWW5W4G3EjwxFN/jtetVMknU9bHD0SRIt8Vzw
- 0IHdQdM8x0+V0nouyjQ5R+UgyavmiupxWwt78PqdQ=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 02/10] dt-bindings: PCI: qcom: Fix msi-interrupt
+ conditional
+Content-Language: en-GB
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220629141000.18111-1-johan+linaro@kernel.org>
+ <20220629141000.18111-3-johan+linaro@kernel.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220629141000.18111-3-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 3:20 PM Logananth Sundararaj
-<logananth13.hcl@gmail.com> wrote:
->
-> This patch adds linux device tree entry related to
-> Yosemite V3.5 specific devices connected to BMC SoC.
->
-> Signed-off-by: Logananth Sundararaj <logananth_s@hcl.com>
+On 29/06/2022 17:09, Johan Hovold wrote:
+> Fix the msi-interrupt conditional which always evaluated to false due to
+> a misspelled property name ("compatibles" in plural).
+> 
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+
+Fixes: 6700a9b00f0a ("dt-bindings: PCI: qcom: Do not require resets on 
+msm8996 platforms")
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
 
-Something went wrong with the patch description, it looks like you dropped
-the subject and sent the first paragraph as the subject instead.
+> ---
+>   Documentation/devicetree/bindings/pci/qcom,pcie.yaml | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+> index ed9f9462a758..a1b4fc70e162 100644
+> --- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+> @@ -628,7 +628,7 @@ allOf:
+>       # On older chipsets it's always 1 msi interrupt
+>     - if:
+>         properties:
+> -        compatibles:
+> +        compatible:
+>             contains:
+>               enum:
+>                 - qcom,pcie-msm8996
 
-> +/ {
-> +       model = "Facebook fby35";
-> +       compatible = "facebook,fby35", "aspeed,ast2600";
-> +
-> +       aliases {
-> +               serial4 = &uart5;
-> +       };
 
-Why not start at serial0 here?
-
-> +       chosen {
-> +               stdout-path = &uart5;
-> +               bootargs = "console=ttyS4,57600n8 root=/dev/ram rw vmalloc=384M";
-> +       };
-
-The bootargs should really come from the boot loader.
-
-Why do you need the vmalloc=384M? That seems excessive.
-
-> +
-> +       memory@80000000 {
-> +               device_type = "memory";
-> +               reg = <0x80000000 0x80000000>;
-> +       };
-
-The memory location and size is usually also set by the boot loader
-
-        Arnd
+-- 
+With best wishes
+Dmitry
