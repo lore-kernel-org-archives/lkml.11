@@ -2,90 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1D3CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D71C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235984AbiGGNhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
+        id S235991AbiGGNhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235519AbiGGNhi (ORCPT
+        with ESMTP id S235519AbiGGNhu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:37:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C6D2655A;
-        Thu,  7 Jul 2022 06:37:37 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ldy6t2L1czTgpp;
-        Thu,  7 Jul 2022 21:33:58 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Jul 2022 21:37:35 +0800
-Received: from k04.huawei.com (10.67.174.115) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Jul 2022 21:37:35 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, "Pu Lehui" <pulehui@huawei.com>
-Subject: [PATCH bpf-next] samples: bpf: Fix cross-compiling error about bpftool
-Date:   Thu, 7 Jul 2022 22:08:11 +0800
-Message-ID: <20220707140811.603590-1-pulehui@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 7 Jul 2022 09:37:50 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99741EAEF
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:37:49 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g1so15546957edb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 06:37:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=IfZQ5gf6I0wnqhKd/NWryvEg+xuPTzb9q9RJYF/x4hI=;
+        b=DR1QzbDxXP/SdV+7VElfFmnVdNSMGD70rpBpE8Ki4gmT7lATSzJZCToOknrKmCO+CX
+         PyrVLj0sg8UqEHYMv0Z0WMABq3ppLWO2JP6V3UmlCDxCV2Dppnf4iSf6kPKrcfLMdvWB
+         SJ8WPoH3qKlplUmD4IHLgWRME7l2fjo+TJLHK0AtdahGX7CwwmshrFAIcHCR1GbsoAmE
+         zebSO7WJr8ztBjJUVtkiTRngXqNvehcH4D03qonP6flUF5tRAVaP5ayjeZVprwtamWco
+         r6f8UGCMVpj7KN43eceGJjuecix5jiU22/qzRiowwl0ACmk/WEtKFKElpFuwU7//31JT
+         lb+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IfZQ5gf6I0wnqhKd/NWryvEg+xuPTzb9q9RJYF/x4hI=;
+        b=fraQx+YgfGyMSgHHZxmvjt6JdVNwWvLrTJssLs41g/K58r2sSHtc13n+6yGmhfoiIf
+         qUhmMHSusfgi/vK2e5EBb3JlpsNqpGOKat+TvAb3VCwKt4hBDIyNxUVYJqzNC2YvHVYB
+         YmUit/AexOPzecsn1we15dLA6AQ+3THfG2Bve57VA6NV/Zfjigxo1wOtCU6+9TEI3nmq
+         4uXF4SCt+K+Vit3RnABTR6/6DRf3Q0fCn4e3rDfEjHIWuLDAIRgRaaVEeoQzC93924CY
+         gQGGvE8wzNWiq1hVQK9BMDNqhE4StK1Mbo4fx87+0DFTdgt2Cy4r37zJ4/pdZHBWuykR
+         KCiQ==
+X-Gm-Message-State: AJIora8tuoRgMph7PmhRcmvPLMd6DQbWbYmwYETrc7iZuev+0iWChq6D
+        MX7vl5a3mu98xwftTqK69gs=
+X-Google-Smtp-Source: AGRyM1stGUOKzLD1ycd4kXtJRDhMWSm9EKgOzNeHZ46NGDu8hpWmb7Mn7tYGrWMga94c8P9YklK2zw==
+X-Received: by 2002:aa7:cd91:0:b0:438:33a1:d5aa with SMTP id x17-20020aa7cd91000000b0043833a1d5aamr56730529edv.157.1657201068450;
+        Thu, 07 Jul 2022 06:37:48 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c092:600::2:338f])
+        by smtp.gmail.com with ESMTPSA id m11-20020a50ef0b000000b0043a6c9e50f4sm8904918eds.29.2022.07.07.06.37.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 06:37:47 -0700 (PDT)
+Message-ID: <2041c8d8-e57d-01bf-1378-3ad2c72f69d6@gmail.com>
+Date:   Thu, 7 Jul 2022 14:37:42 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.115]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [syzbot] KASAN: use-after-free Read in pty_close
+Content-Language: en-US
+To:     syzbot <syzbot+49950ba66096b1f0209b@syzkaller.appspotmail.com>,
+        axboe@kernel.dk, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <00000000000045b69505e33720b0@google.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <00000000000045b69505e33720b0@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, when cross compiling bpf samples, the host side
-cannot use arch-specific bpftool to generate vmlinux.h or
-skeleton. We need to compile the bpftool with the host
-compiler.
+On 7/7/22 14:33, syzbot wrote:
+> Hello,
+> 
+> syzbot tried to test the proposed patch but the build/boot failed:
 
-Signed-off-by: Pu Lehui <pulehui@huawei.com>
----
- samples/bpf/Makefile | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+#syz test: https://github.com/isilence/linux.git poll-syz
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 5002a5b9a7da..fe54a8c8f312 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
-+-include tools/scripts/Makefile.include
- 
- BPF_SAMPLES_PATH ?= $(abspath $(srctree)/$(src))
- TOOLS_PATH := $(BPF_SAMPLES_PATH)/../../tools
-@@ -283,11 +284,10 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
- BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
- BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
- BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
--$(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
-+$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
- 	    $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
--		OUTPUT=$(BPFTOOL_OUTPUT)/ \
--		LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
--		LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
-+		ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD) \
-+		OUTPUT=$(BPFTOOL_OUTPUT)/
- 
- $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
- 	$(call msg,MKDIR,$@)
+
+> failed to checkout kernel repo git@github.com:isilence/linux.git/poll-syz: failed to run ["git" "fetch" "--force" "eab646780d8603fd6348e6bccafebcb1c0ddc5bc" "poll-syz"]: exit status 128
+> Host key verification failed.
+> fatal: Could not read from remote repository.
+> 
+> Please make sure you have the correct access rights
+> and the repository exists.
+> 
+> 
+> 
+> Tested on:
+> 
+> commit:         [unknown
+> git tree:       git@github.com:isilence/linux.git poll-syz
+> dashboard link: https://syzkaller.appspot.com/bug?extid=49950ba66096b1f0209b
+> compiler:
+> 
+> Note: no patches were applied.
+
 -- 
-2.25.1
-
+Pavel Begunkov
