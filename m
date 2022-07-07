@@ -2,158 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B13A9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A70F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235304AbiGGOXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
+        id S235276AbiGGO07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235267AbiGGOXr (ORCPT
+        with ESMTP id S232153AbiGGO06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:23:47 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59AA627B0C;
-        Thu,  7 Jul 2022 07:23:46 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bk26so11487733wrb.11;
-        Thu, 07 Jul 2022 07:23:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:in-reply-to:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=NUHMqETelgKBMcAu+0SqzcDlAwUOK8yrepUxvvqttSY=;
-        b=ebmq4wsrTY7n81CmTuWPBXuy4+uRkMUymgPTu0tKIVyN3L5u8nQrKnWTVjCaLhDc0w
-         q7F6sxxzi2FkCeK1lP1JWVi5yr59dT5rzsbmiraV7gwO9+wnvKoRo3Ka9gynQfMjM2S3
-         41mn87tBr98ibvSQfvdtmdIpkx4a4avfL5VsWRTJc1cmdEIegImJ9ypk3Dl2lR/fIMzL
-         DRyWfUOyasTKkbhrEdHHsrjoNC6crbz/7XeKhlXevNx7unwyCBxegVMv/LdxBwGwKqjS
-         aHZ/6K3NoiNbaCVSA5Qt4EPsekOnrYvbmnVkr3p6fES4TxvdTVHrinPHSPaLte2C2LQB
-         x0pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=NUHMqETelgKBMcAu+0SqzcDlAwUOK8yrepUxvvqttSY=;
-        b=FBqd863WWIgr7F634qkoJnm+7V9aBe7AStoElYOzOtAIP5zIY3mn/iDGysWGSvD1ZD
-         +E/anRGalGNI+D3Nlw9FfXtJNpvGsT+Wm51zw4Z5ZjAYZEHrqSWJT6Tvx4ZUdqUMibI7
-         QNXxEdgRcV0PgIrfD0pQ89xr5W5tDZJ21PqoNoR9Oohqgu7LN0KPPoC+/zIuqQ0EixC7
-         Xy111ehsR4iuXap8EDJfVc81v1tM2MhWLlhNO0H8xnl44MBfpCpHNt+a0Q3myWg4ATc0
-         W4YNCmyGGlV1AfKylTO9J6E+fFG7Z7A4A3AxpFCn89LsOHK8KjsPzzHDblUuuQ6dcNFm
-         gC3g==
-X-Gm-Message-State: AJIora+rEM/DbTp8JefnNapXki3ShPSjxPDanIMzV42aI4MlE0kVIkf6
-        BRmw03ZZjGyXuuPFNrBlpHQ=
-X-Google-Smtp-Source: AGRyM1vc0Rv/d4m30UdfyxezbdL00+nDaA1k0pzbL7Tp7PXXN6jWmgpXSBJiOt5Y38DOzQCsYh8kug==
-X-Received: by 2002:a5d:6da3:0:b0:21b:aaf5:b814 with SMTP id u3-20020a5d6da3000000b0021baaf5b814mr42352435wrs.140.1657203824787;
-        Thu, 07 Jul 2022 07:23:44 -0700 (PDT)
-Received: from localhost (92.40.203.179.threembb.co.uk. [92.40.203.179])
-        by smtp.gmail.com with ESMTPSA id p15-20020a05600c204f00b0039c5cecf206sm28717513wmg.4.2022.07.07.07.23.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 07:23:44 -0700 (PDT)
-References: <20220706211330.120198-1-aidanmacdonald.0x0@gmail.com>
- <20220706211330.120198-10-aidanmacdonald.0x0@gmail.com>
- <HU9NER.25VYXWS2PRRL2@crapouillou.net>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, linux-mips@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/11] ASoC: jz4740-i2s: Make the PLL clock name
- SoC-specific
-In-reply-to: <HU9NER.25VYXWS2PRRL2@crapouillou.net>
-Date:   Thu, 07 Jul 2022 15:24:52 +0100
-Message-ID: <rQqB9wAMTrydT1hKl1pUshBKW82RHbiR@localhost>
+        Thu, 7 Jul 2022 10:26:58 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3254127CEC
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:26:57 -0700 (PDT)
+Received: from andrey-lpc.intra.ispras.ru (unknown [83.149.199.65])
+        by mail.ispras.ru (Postfix) with ESMTPS id 8FF2D40D4004;
+        Thu,  7 Jul 2022 14:26:53 +0000 (UTC)
+From:   Andrey Strachuk <strochuk@ispras.ru>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     Andrey Strachuk <strochuk@ispras.ru>, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Subject: [PATCH] efs: removed useless conditional checks in function
+Date:   Thu,  7 Jul 2022 17:26:52 +0300
+Message-Id: <20220707142652.14447-1-strochuk@ispras.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+At lines 300 and 305, variable "bh" is compared with NULL.
 
-Paul Cercueil <paul@crapouillou.net> writes:
+-----------------------------------------------------------
+293	exts = (efs_extent *) bh->b_data;
+294
+295	extent_copy(&(exts[ioffset]), &ext);
+296
+297	if (ext.cooked.ex_magic != 0) {
+298		pr_err("extent %d has bad magic number in block %d\n",
+299		       cur, iblock);
+300		if (bh) brelse(bh);
+301		return 0;
+302	}
+303
+304	if ((result = efs_extent_check(&ext, block, sb))) {
+305		if (bh) brelse(bh);
+306		in->lastextent = cur;
+307		return result;
+308	}
+-----------------------------------------------------------
 
-> Le mer., juil. 6 2022 at 22:13:28 +0100, Aidan MacDonald
-> <aidanmacdonald.0x0@gmail.com> a =C3=A9crit :
->> On some Ingenic SoCs, such as the X1000, there is a programmable
->> divider used to generate the I2S system clock from a PLL, rather
->> than a fixed PLL/2 clock. It doesn't make much sense to call the
->> clock "pll half" on those SoCs, so the clock name should really be
->> a SoC-dependent value.
->
-> Do you really need the .set_sysclk() callback? I've never seen it used on=
- any
-> of the Ingenic boards I have, so to me it's pretty much dead code. Unless=
- you
-> do use this callback, I'd suggest to drop this patch until you do need it.
->
-> Cheers,
-> -Paul
->
+However, it cannot be NULL because kernel crashes at
+line 293 otherwise.
+The patch removes useless comparisons.
 
-Yes, one of my boards has an external codec (AK4376) that needs the
-sysclock and I've patched simple-card to be able to set a non-zero
-sysclock ID.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->> ---
->>  sound/soc/jz4740/jz4740-i2s.c | 8 +++++++-
->>  1 file changed, 7 insertions(+), 1 deletion(-)
->> diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s=
-.c
->> index 3a21ee9d34d1..80b355d715ce 100644
->> --- a/sound/soc/jz4740/jz4740-i2s.c
->> +++ b/sound/soc/jz4740/jz4740-i2s.c
->> @@ -71,6 +71,8 @@ struct i2s_soc_info {
->>  	struct reg_field field_tx_fifo_thresh;
->>  	struct reg_field field_i2sdiv_capture;
->>  	struct reg_field field_i2sdiv_playback;
->> +
->> +	const char *pll_clk_name;
->>  };
->>  struct jz4740_i2s {
->> @@ -265,7 +267,7 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai =
-*dai,
->> int clk_id,
->>  		clk_set_parent(i2s->clk_i2s, parent);
->>  		break;
->>  	case JZ4740_I2S_CLKSRC_PLL:
->> -		parent =3D clk_get(NULL, "pll half");
->> +		parent =3D clk_get(NULL, i2s->soc_info->pll_clk_name);
->>  		if (IS_ERR(parent))
->>  			return PTR_ERR(parent);
->>  		clk_set_parent(i2s->clk_i2s, parent);
->> @@ -387,6 +389,7 @@ static const struct i2s_soc_info jz4740_i2s_soc_info=
- =3D {
->>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 8, 11),
->>  	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
->>  	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
->> +	.pll_clk_name		=3D "pll half",
->>  };
->>  static const struct i2s_soc_info jz4760_i2s_soc_info =3D {
->> @@ -395,6 +398,7 @@ static const struct i2s_soc_info jz4760_i2s_soc_info=
- =3D {
->>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
->>  	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
->>  	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
->> +	.pll_clk_name		=3D "pll half",
->>  };
->>  static struct snd_soc_dai_driver jz4770_i2s_dai =3D {
->> @@ -421,6 +425,7 @@ static const struct i2s_soc_info jz4770_i2s_soc_info=
- =3D {
->>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
->>  	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
->>  	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
->> +	.pll_clk_name		=3D "pll half",
->>  };
->>  static const struct i2s_soc_info jz4780_i2s_soc_info =3D {
->> @@ -429,6 +434,7 @@ static const struct i2s_soc_info jz4780_i2s_soc_info=
- =3D {
->>  	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
->>  	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
->>  	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
->> +	.pll_clk_name		=3D "pll half",
->>  };
->>  static const struct snd_soc_component_driver jz4740_i2s_component =3D {
->> --
->> 2.35.1
->>=20
+Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+---
+ fs/efs/inode.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/efs/inode.c b/fs/efs/inode.c
+index 3ba94bb005a6..a88a0600cdfb 100644
+--- a/fs/efs/inode.c
++++ b/fs/efs/inode.c
+@@ -297,12 +297,12 @@ efs_block_t efs_map_block(struct inode *inode, efs_block_t block) {
+ 		if (ext.cooked.ex_magic != 0) {
+ 			pr_err("extent %d has bad magic number in block %d\n",
+ 			       cur, iblock);
+-			if (bh) brelse(bh);
++			brelse(bh);
+ 			return 0;
+ 		}
+ 
+ 		if ((result = efs_extent_check(&ext, block, sb))) {
+-			if (bh) brelse(bh);
++			brelse(bh);
+ 			in->lastextent = cur;
+ 			return result;
+ 		}
+-- 
+2.25.1
 
