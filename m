@@ -2,112 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FEDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbiGGJsf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49350 "EHLO
+        id S230005AbiGGJtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbiGGJsb (ORCPT
+        with ESMTP id S234132AbiGGJtN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:48:31 -0400
-Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com [136.143.188.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C28DF69;
-        Thu,  7 Jul 2022 02:48:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1657187276; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=IeW7CmKisiJaE3pVWkI/F+5MdcngjRiLaAY1zVvmVucvGKqAP3KI50yY1wpVc5qSJtkOGqTpZkTEpmuDn9oKzJwQrL6XeKVEWmC8Cb3WY5IZdIOlaDLLnhdjpqSUHZMObhB4JsofAm+c27oYXEUM91okzF7La277sAlWgHDJ/HY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1657187276; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=AxgMRIxlOM7se1RN4hoSSzKpsvEX8snGSo/jMnDX/Ek=; 
-        b=KBTUiCEn80z6AHIupkVuG2OQijhEML5J0n1ZUPb1eKfyKwV7YDU/Ruv0U5oPN6j8WkBOtxx7eaC27lbQdF5QV1C30jfSQMB30NBgHV9fWPfTUcJNHoTGQIRqpQJPgTb4Cj3StZY2mQnWCYUIBuVCgGftCqymIpMHe6oJWurUaJE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=apertussolutions.com;
-        spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
-        dmarc=pass header.from=<dpsmith@apertussolutions.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657187276;
-        s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=AxgMRIxlOM7se1RN4hoSSzKpsvEX8snGSo/jMnDX/Ek=;
-        b=bNuNz5RLnm0oVDSPCegtHT9bLWpV9KooJQzx/hs9cDw7HfHcJYg/XFxb2wrvhPBs
-        IuN/dTS0HjbgUYS4kuPBAerNnc1UDtc8HSUUMAAzfgc3xaYh+Mb67J1c/fXDXR7Xxnm
-        NSenPKAzT0UAOe+5hVwNwALsCBMddgv5NNyIDGYM=
-Received: from [10.10.1.164] (static-72-81-132-2.bltmmd.fios.verizon.net [72.81.132.2]) by mx.zohomail.com
-        with SMTPS id 1657187267545698.9829943472045; Thu, 7 Jul 2022 02:47:47 -0700 (PDT)
-Message-ID: <b1e7b545-8e66-5dc0-ff5a-9f69d1751a5f@apertussolutions.com>
-Date:   Thu, 7 Jul 2022 05:46:40 -0400
+        Thu, 7 Jul 2022 05:49:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28FD04D4E1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:49:12 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2DF301063;
+        Thu,  7 Jul 2022 02:49:12 -0700 (PDT)
+Received: from bogus (unknown [10.57.39.193])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C3D023F792;
+        Thu,  7 Jul 2022 02:49:07 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 10:47:56 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Atish Patra <atishp@atishpatra.org>
+Cc:     Conor Dooley <mail@conchuod.ie>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Zong Li <zong.li@sifive.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jonas Hahnfeld <hahnjo@hahnjo.de>, Guo Ren <guoren@kernel.org>,
+        Anup Patel <anup@brainfault.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Brice Goglin <Brice.Goglin@inria.fr>
+Subject: Re: [PATCH] riscv: arch-topology: fix default topology reporting
+Message-ID: <20220707094756.rftfann3rcixdfp4@bogus>
+References: <20220706184558.2557301-1-mail@conchuod.ie>
+ <CAOnJCUL-RCkXi=1GSEipYmf1qMxkOASr_H65kGU+5c=AqJBZKA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: Linux DRTM on UEFI platforms
-Content-Language: en-US
-To:     The development of GNU GRUB <grub-devel@gnu.org>,
-        Brendan Trotter <btrotter@gmail.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        James Morris <jmorris@namei.org>
-References: <20220329174057.GA17778@srcf.ucam.org>
- <f9622b47-c45f-8c91-cb85-e5db7fd541cf@apertussolutions.com>
- <CAMj1kXEUT8BK_akqjF1Wx0JkLniFyV_h9s1TfQnPqfxCHsKfWw@mail.gmail.com>
- <7aab2990-9c57-2456-b08d-299ae96ac919@apertussolutions.com>
- <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
-From:   "Daniel P. Smith" <dpsmith@apertussolutions.com>
-In-Reply-To: <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOnJCUL-RCkXi=1GSEipYmf1qMxkOASr_H65kGU+5c=AqJBZKA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/5/22 20:03, Brendan Trotter wrote:
-> Hi,
-
-Greetings!
-
-Not sure why I got dropped from distro, but no worries.
-
-> On Wed, Jul 6, 2022 at 4:52 AM Daniel P. Smith
-> <dpsmith@apertussolutions.com> wrote:
->> On 6/10/22 12:40, Ard Biesheuvel wrote:> On Thu, 19 May 2022 at 22:59,
->> To help provide clarity, consider the following flows for comparison,
->>
->> Normal/existing efi-stub:
->>    EFI -> efi-stub -> head_64.S
->>
->> Proposed secure launch:
->>    EFI -> efi-stub -> dl-handler -> [cpu] -> sl_stub ->head_64.S
+On Wed, Jul 06, 2022 at 02:38:01PM -0700, Atish Patra wrote:
+> On Wed, Jul 6, 2022 at 11:46 AM Conor Dooley <mail@conchuod.ie> wrote:
+> >
+> > From: Conor Dooley <conor.dooley@microchip.com>
+> >
+> > RISC-V has no sane defaults to fall back on where there is no cpu-map
+> > in the devicetree.
+> > Without sane defaults, the package, core and thread IDs are all set to
+> > -1. This causes user-visible inaccuracies for tools like hwloc/lstopo
+> > which rely on the sysfs cpu topology files to detect a system's
+> > topology.
+> >
+> > Add sane defaults in ~the exact same way as ARM64.
+> >
+> > CC: stable@vger.kernel.org
+> > Fixes: 03f11f03dbfe ("RISC-V: Parse cpu topology during boot.")
+> > Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
+> > Link: https://github.com/open-mpi/hwloc/issues/536
+> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> > ---
+> >
+> > Sudeep suggested that this be backported rather than the changes to
+> > the devicetrees adding cpu-map since that property is optional.
+> > That patchset is still valid in it's own right.
+> >
+> >  arch/riscv/include/asm/topology.h | 13 +++++++++++++
+> >  arch/riscv/kernel/Makefile        |  1 +
+> >  arch/riscv/kernel/smpboot.c       |  4 ++++
+> >  arch/riscv/kernel/topology.c      | 32 +++++++++++++++++++++++++++++++
+> >  4 files changed, 50 insertions(+)
+> >  create mode 100644 arch/riscv/include/asm/topology.h
+> >  create mode 100644 arch/riscv/kernel/topology.c
+> >
+> > diff --git a/arch/riscv/include/asm/topology.h b/arch/riscv/include/asm/topology.h
+> > new file mode 100644
+> > index 000000000000..36bc6ecda898
+> > --- /dev/null
+> > +++ b/arch/riscv/include/asm/topology.h
+> > @@ -0,0 +1,13 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > +/*
+> > + * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries
+> > + */
+> > +
+> > +#ifndef _ASM_RISCV_TOPOLOGY_H
+> > +#define _ASM_RISCV_TOPOLOGY_H
+> > +
+> > +#include <asm-generic/topology.h>
+> > +
+> > +void store_cpu_topology(unsigned int cpuid);
+> > +
+> > +#endif /* _ASM_RISCV_TOPOLOGY_H */
+> > diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+> > index c71d6591d539..9518882ba6f9 100644
+> > --- a/arch/riscv/kernel/Makefile
+> > +++ b/arch/riscv/kernel/Makefile
+> > @@ -50,6 +50,7 @@ obj-y += riscv_ksyms.o
+> >  obj-y  += stacktrace.o
+> >  obj-y  += cacheinfo.o
+> >  obj-y  += patch.o
+> > +obj-y  += topology.o
+> >  obj-y  += probes/
+> >  obj-$(CONFIG_MMU) += vdso.o vdso/
+> >
+> > diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
+> > index f1e4948a4b52..d551c7f452d4 100644
+> > --- a/arch/riscv/kernel/smpboot.c
+> > +++ b/arch/riscv/kernel/smpboot.c
+> > @@ -32,6 +32,7 @@
+> >  #include <asm/sections.h>
+> >  #include <asm/sbi.h>
+> >  #include <asm/smp.h>
+> > +#include <asm/topology.h>
+> >
+> >  #include "head.h"
+> >
+> > @@ -40,6 +41,8 @@ static DECLARE_COMPLETION(cpu_running);
+> >  void __init smp_prepare_boot_cpu(void)
+> >  {
+> >         init_cpu_topology();
+> > +
+> > +       store_cpu_topology(smp_processor_id());
+> >  }
+> >
+> >  void __init smp_prepare_cpus(unsigned int max_cpus)
+> > @@ -161,6 +164,7 @@ asmlinkage __visible void smp_callin(void)
+> >         mmgrab(mm);
+> >         current->active_mm = mm;
+> >
+> > +       store_cpu_topology(curr_cpuid);
+> >         notify_cpu_starting(curr_cpuid);
+> >         numa_add_cpu(curr_cpuid);
+> >         update_siblings_masks(curr_cpuid);
+> > diff --git a/arch/riscv/kernel/topology.c b/arch/riscv/kernel/topology.c
+> > new file mode 100644
+> > index 000000000000..db72862bd5b5
+> > --- /dev/null
+> > +++ b/arch/riscv/kernel/topology.c
+> > @@ -0,0 +1,32 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries
+> > + *
+> > + * Based on the arm64 version, which was in turn based on arm32, which was
+> > + * ultimately based on sh's.
+> > + * The arm64 version was listed as:
+> > + * Copyright (C) 2011,2013,2014 Linaro Limited.
+> > + */
+> > +
+> > +#include <linux/arch_topology.h>
+> > +#include <linux/topology.h>
+> > +#include <asm/topology.h>
+> > +
+> > +void store_cpu_topology(unsigned int cpuid)
+> > +{
+> > +       struct cpu_topology *cpuid_topo = &cpu_topology[cpuid];
+> > +
+> > +       if (cpuid_topo->package_id != -1)
+> > +               goto topology_populated;
+> > +
+> > +       cpuid_topo->thread_id = -1;
+> > +       cpuid_topo->core_id = cpuid;
+> > +       cpuid_topo->package_id = cpu_to_node(cpuid);
+> > +
+> > +       pr_debug("CPU%u: package %d core %d thread %d\n",
+> > +                cpuid, cpuid_topo->package_id, cpuid_topo->core_id,
+> > +                cpuid_topo->thread_id);
+> > +
+> > +topology_populated:
+> > +       update_siblings_masks(cpuid);
+> > +}
+> >
 > 
-> For more clarity; the entire point is to ensure that the kernel only
-> has to trust itself and the CPU/TPM hardware (and does not have to
-> trust a potentially malicious boot loader)..Any attempt to avoid a
-> one-off solution for Linux is an attempt to weaken security.
+> This function is pretty much the same as the arm64 one except the
+> UP/mpidr check.
+> Can we move this to the common code as well ?
+>
 
-Please elaborate so I might understand how this entrypoint allows for 
-the kernel to only trust itself and the CPU/TPM.
+While I completely agree with the idea, not sure if that makes backports
+(if required) any difficult. If so, I would rather keep this way for a
+release and then move both to the common place in arch_topology.
 
-> The only correct approach is "efi-stub -> head_64.S -> kernel's own
-> secure init"; where (on UEFI systems) neither GRUB nor Trenchboot has
-> a valid reason to exist and should never be installed.
+> > base-commit: b6f1f2fa2bddd69ff46a190b8120bd440fd50563
+> > --
+> > 2.37.0
+> >
 > 
 > 
-> Cheers,
-> 
-> Brendan
+> -- 
+> Regards,
+> Atish
 
-v/r,
-dps
+-- 
+Regards,
+Sudeep
