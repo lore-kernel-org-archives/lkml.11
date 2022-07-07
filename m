@@ -2,167 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 878F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D431C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234864AbiGGCxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
+        id S234709AbiGGCzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234737AbiGGCxw (ORCPT
+        with ESMTP id S234177AbiGGCzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:53:52 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB922E9FA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:53:47 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id i126so22006635oih.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:53:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=f4gaIJzDqBtSQKdyRb4t4FRZSvTpNHgxc06VwJFCJAs=;
-        b=Vb9qqr0pPGtHzU++ok/knruEFhsnCHW0Qb+VtlleGiMOcXFwk1s5K0QVkmOC7TgX5+
-         lTJlFpiGLm9oqhfUYgFHkGAD9DAm8JfHyZ6fdllezSHyxoopNETQ4vlhpx8atXQPqaEW
-         arraTAUcOGYzdBB52FQ6ANzdcFxLeNWdA1/WpSV+xAam34kv/iRHkByIs1joKQJ5CsLE
-         +AbTk+0wIVZCMFwh0T2+LGpzPxwjMGVafogxno2IL/P/cMbFa6QR33AXZaZYjBI+01Fk
-         TTe41DWfUk5tnPZ8fnefR04310nvHPBZqIsHgYCq56BJIoNEADadGFqyn4xHpVC727aD
-         Pmjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f4gaIJzDqBtSQKdyRb4t4FRZSvTpNHgxc06VwJFCJAs=;
-        b=Z/0iuwKPeCidzqV1isS++u5c4FeWx5Z3vPQ7otmS+n8/ZTx85cxti3qQrXm5NU4Wj5
-         3fi3sF4gyAOwZDeGbVZII+XB3HaEs+9JkwqCCQ4UVzvTecAUxAHpwFC4OXubAsx2garR
-         jwQfrRAVTeKYqAfRFIxVx0Dy0iEXvZ58gQoGJ4vdbd1DaywCbOIIgwqxcVndvtKHVlYN
-         Vn3kXM/nKB3IWxjWg3//apefObpLBiEu4Fb0/JTXs6hDCjLo2wKVPH390TgBd7XWxsdP
-         g1J8/OI5XE8ofkZP1TdTGg9Vo8fp8QtkYQzcOkZPdoTmVMzAA624qW6KNBznJKxNC7ib
-         n8Yg==
-X-Gm-Message-State: AJIora8xv8p6sxe+kwinafqCOTgNR1ZNnCNLEyeqQWnpK1kdNHX0JsoA
-        DXLj/eAgH9WUXLLggLQjiiq0TQ==
-X-Google-Smtp-Source: AGRyM1svAYUXqzvpRaXYAeKIXNDjL2uNhdgk3jFmzNDfwIYkLys7rdcETxbCrhpx2JKvEfFTixdjDg==
-X-Received: by 2002:a05:6808:170c:b0:335:1d14:f99d with SMTP id bc12-20020a056808170c00b003351d14f99dmr1039582oib.243.1657162427267;
-        Wed, 06 Jul 2022 19:53:47 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id u13-20020a056870f28d00b001048b819e13sm21166966oap.8.2022.07.06.19.53.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 19:53:46 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 21:53:45 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org
-Subject: Re: [PATCH 1/3] hwspinlock: qcom: Add support for mmio usage to
- sfpb-mutex
-Message-ID: <YsZKuUAc2iHWg9kN@builder.lan>
-References: <20220707013017.26654-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707013017.26654-1-ansuelsmth@gmail.com>
+        Wed, 6 Jul 2022 22:55:19 -0400
+X-Greylist: delayed 653 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 19:55:17 PDT
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CB82ED6B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:55:17 -0700 (PDT)
+Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 13BF41008B392;
+        Thu,  7 Jul 2022 10:44:57 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 35268200C91EC;
+        Thu,  7 Jul 2022 10:44:57 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Tnu6H11dLAu7; Thu,  7 Jul 2022 10:44:57 +0800 (CST)
+Received: from localhost.localdomain (unknown [202.120.40.82])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 474E4200A4ED3;
+        Thu,  7 Jul 2022 10:44:49 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     jasowang@redhat.com, mst@redhat.com
+Cc:     eperezma@redhat.com, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, sgarzare@redhat.com,
+        Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Subject: [PATCH v2 4/4] virtio_test: enable indirection feature
+Date:   Thu,  7 Jul 2022 10:44:09 +0800
+Message-Id: <20220707024409.1869-5-qtxuning1999@sjtu.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220707024409.1869-1-qtxuning1999@sjtu.edu.cn>
+References: <20220707024409.1869-1-qtxuning1999@sjtu.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 06 Jul 20:30 CDT 2022, Christian Marangi wrote:
+Prior implementation don't use indirection feature because there is only
+one descriptor for every io event, actually prior implementation don't
+support indirection because vhost can't translate and find the indirect
+descriptors. This commit enable virtio_test malloc indirect descriptors
+in a indirect buffer and map this buffer to vhost, thus resolve this
+problem.
 
-> Allow sfpb-mutex to use mmio in addition to syscon.
-> 
+Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+---
+ tools/virtio/virtio_test.c | 50 ++++++++++++++++++++++++++++++++------
+ 1 file changed, 42 insertions(+), 8 deletions(-)
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+diff --git a/tools/virtio/virtio_test.c b/tools/virtio/virtio_test.c
+index 363695b33..dca408a5c 100644
+--- a/tools/virtio/virtio_test.c
++++ b/tools/virtio/virtio_test.c
+@@ -25,7 +25,7 @@
+ #define RINGSIZE   256
+ #define TEST_BUF_NUM 0x100000
+ #define BUF_SIZE   1024
+-/* Unused */
++#define INDIRECTS_SIZE   (RINGSIZE * sizeof(struct vring_desc) * 8)
+ void *__kmalloc_fake, *__kfree_ignore_start, *__kfree_ignore_end;
+ 
+ struct vq_info {
+@@ -47,6 +47,8 @@ struct vdev_info {
+ 	int nvqs;
+ 	void *buf;
+ 	size_t buf_size;
++	void *indirects;
++	size_t indirects_size;
+ 	struct vhost_memory *mem;
+ };
+ 
+@@ -131,6 +133,8 @@ static void vq_info_add(struct vdev_info *dev, int num)
+ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
+ {
+ 	int r;
++	int nregions = 2;
++
+ 	memset(dev, 0, sizeof *dev);
+ 	dev->vdev.features = features;
+ 	INIT_LIST_HEAD(&dev->vdev.vqs);
+@@ -138,19 +142,25 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
+ 	dev->buf_size = BUF_SIZE;
+ 	dev->buf = malloc(dev->buf_size);
+ 	assert(dev->buf);
+-        dev->control = open("/dev/vhost-test", O_RDWR);
++	dev->indirects_size = INDIRECTS_SIZE;
++	dev->indirects = malloc(dev->indirects_size);
++	assert(dev->indirects);
++	dev->control = open("/dev/vhost-test", O_RDWR);
+ 	assert(dev->control >= 0);
+ 	r = ioctl(dev->control, VHOST_SET_OWNER, NULL);
+ 	assert(r >= 0);
+ 	dev->mem = malloc(offsetof(struct vhost_memory, regions) +
+-			  sizeof dev->mem->regions[0]);
++			(sizeof(dev->mem->regions[0])) * nregions);
+ 	assert(dev->mem);
+ 	memset(dev->mem, 0, offsetof(struct vhost_memory, regions) +
+-                          sizeof dev->mem->regions[0]);
+-	dev->mem->nregions = 1;
++			(sizeof(dev->mem->regions[0])) * nregions);
++	dev->mem->nregions = nregions;
+ 	dev->mem->regions[0].guest_phys_addr = (long)dev->buf;
+ 	dev->mem->regions[0].userspace_addr = (long)dev->buf;
+ 	dev->mem->regions[0].memory_size = dev->buf_size;
++	dev->mem->regions[1].guest_phys_addr = (long)dev->indirects;
++	dev->mem->regions[1].userspace_addr = (long)dev->indirects;
++	dev->mem->regions[1].memory_size = dev->indirects_size;
+ 	r = ioctl(dev->control, VHOST_SET_MEM_TABLE, dev->mem);
+ 	assert(r >= 0);
+ }
+@@ -170,6 +180,19 @@ static void wait_for_interrupt(struct vdev_info *dev)
+ 		}
+ }
+ 
++static int test_virtqueue_add_outbuf(struct virtqueue *vq,
++				     struct scatterlist *sg, unsigned int num,
++				     void *data, void *indirects)
++{
++	int r;
++
++	__kmalloc_fake = indirects;
++	r = virtqueue_add_outbuf(vq, sg, num, data,
++				 GFP_ATOMIC);
++	__kmalloc_fake = NULL;
++	return r;
++}
++
+ static void run_test(struct vdev_info *dev, struct vq_info *vq,
+ 		     bool delayed, int batch, int reset_n, int bufs)
+ {
+@@ -181,6 +204,7 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
+ 	unsigned len;
+ 	long long spurious = 0;
+ 	const bool random_batch = batch == RANDOM_BATCH;
++	void *indirects;
+ 
+ 	r = ioctl(dev->control, VHOST_TEST_RUN, &test);
+ 	assert(r >= 0);
+@@ -188,10 +212,15 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
+ 		next_reset = INT_MAX;
+ 	}
+ 
++	/* Don't kfree indirects. */
++	__kfree_ignore_start = dev->indirects;
++	__kfree_ignore_end = dev->indirects + dev->indirects_size;
++
+ 	for (;;) {
+ 		virtqueue_disable_cb(vq->vq);
+ 		completed_before = completed;
+ 		started_before = started;
++		indirects = dev->indirects;
+ 		do {
+ 			const bool reset = completed > next_reset;
+ 			if (random_batch)
+@@ -203,9 +232,13 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
+ 				sg_init_table(sg, sg_size);
+ 				for (int i = 0; i < sg_size; ++i)
+ 					sg_set_buf(&sg[i], dev->buf + i, 0x1);
+-				r = virtqueue_add_outbuf(vq->vq, sg, sg_size,
+-							 dev->buf + started,
+-							 GFP_ATOMIC);
++
++				// use indirects buffer repeatedly
++				if (indirects + sg_size * sizeof(struct vring_desc) >
++						dev->indirects + dev->indirects_size)
++					indirects = dev->indirects;
++				r = test_virtqueue_add_outbuf(vq->vq, sg, sg_size,
++							      dev->buf + started, indirects);
+ 				if (unlikely(r != 0)) {
+ 					if (r == -ENOSPC &&
+ 					    started > started_before)
+@@ -216,6 +249,7 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
+ 				}
+ 
+ 				++started;
++				indirects += sg_size * sizeof(struct vring_desc);
+ 			}
+ 			if (unlikely(!virtqueue_kick(vq->vq))) {
+ 				r = -1;
+-- 
+2.17.1
 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  drivers/hwspinlock/qcom_hwspinlock.c | 32 ++++++++++++++++++++++------
->  1 file changed, 25 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/hwspinlock/qcom_hwspinlock.c b/drivers/hwspinlock/qcom_hwspinlock.c
-> index 364710966665..23c913095bd0 100644
-> --- a/drivers/hwspinlock/qcom_hwspinlock.c
-> +++ b/drivers/hwspinlock/qcom_hwspinlock.c
-> @@ -19,6 +19,11 @@
->  #define QCOM_MUTEX_APPS_PROC_ID	1
->  #define QCOM_MUTEX_NUM_LOCKS	32
->  
-> +struct qcom_hwspinlock_of_data {
-> +	u32 offset;
-> +	u32 stride;
-> +};
-> +
->  static int qcom_hwspinlock_trylock(struct hwspinlock *lock)
->  {
->  	struct regmap_field *field = lock->priv;
-> @@ -63,9 +68,20 @@ static const struct hwspinlock_ops qcom_hwspinlock_ops = {
->  	.unlock		= qcom_hwspinlock_unlock,
->  };
->  
-> +static const struct qcom_hwspinlock_of_data of_sfpb_mutex = {
-> +	.offset = 0x4,
-> +	.stride = 0x4,
-> +};
-> +
-> +/* All modern platform has offset 0 and stride of 4k */
-> +static const struct qcom_hwspinlock_of_data of_tcsr_mutex = {
-> +	.offset = 0,
-> +	.stride = 0x1000,
-> +};
-> +
->  static const struct of_device_id qcom_hwspinlock_of_match[] = {
-> -	{ .compatible = "qcom,sfpb-mutex" },
-> -	{ .compatible = "qcom,tcsr-mutex" },
-> +	{ .compatible = "qcom,sfpb-mutex", .data = &of_sfpb_mutex },
-> +	{ .compatible = "qcom,tcsr-mutex", .data = &of_tcsr_mutex },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, qcom_hwspinlock_of_match);
-> @@ -101,7 +117,7 @@ static struct regmap *qcom_hwspinlock_probe_syscon(struct platform_device *pdev,
->  	return regmap;
->  }
->  
-> -static const struct regmap_config tcsr_mutex_config = {
-> +static const struct regmap_config qcom_hwspinlock_mmio_config = {
-
-Any objections against me skipping this rename when applying the patch?
-Just to keep the patch to the point?
-
-Regards,
-Bjorn
-
->  	.reg_bits		= 32,
->  	.reg_stride		= 4,
->  	.val_bits		= 32,
-> @@ -112,18 +128,20 @@ static const struct regmap_config tcsr_mutex_config = {
->  static struct regmap *qcom_hwspinlock_probe_mmio(struct platform_device *pdev,
->  						 u32 *offset, u32 *stride)
->  {
-> +	const struct qcom_hwspinlock_of_data *data;
->  	struct device *dev = &pdev->dev;
->  	void __iomem *base;
->  
-> -	/* All modern platform has offset 0 and stride of 4k */
-> -	*offset = 0;
-> -	*stride = 0x1000;
-> +	data = of_device_get_match_data(dev);
-> +
-> +	*offset = data->offset;
-> +	*stride = data->stride;
->  
->  	base = devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(base))
->  		return ERR_CAST(base);
->  
-> -	return devm_regmap_init_mmio(dev, base, &tcsr_mutex_config);
-> +	return devm_regmap_init_mmio(dev, base, &qcom_hwspinlock_mmio_config);
->  }
->  
->  static int qcom_hwspinlock_probe(struct platform_device *pdev)
-> -- 
-> 2.36.1
-> 
