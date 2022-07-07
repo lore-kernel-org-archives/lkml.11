@@ -2,182 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 909E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232684AbiGGHac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 03:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S233281AbiGGHaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 03:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbiGGHaa (ORCPT
+        with ESMTP id S230028AbiGGHat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 03:30:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 512F91263B
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 00:30:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657179028;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cbmLgCmTysRy8uiXuxZ5jhXX1Rk2OR8KTMlastRWZ0Y=;
-        b=gsMJjNqz4RxDTbauLB/3Jh4o5IDPL4F/dsLmBc9JmoR3e9zSb+kjs5hawEwlFuTAzswSjF
-        DbbYE2+HPZzw08j91NKZEkb9uhDgYPTTu9FEuGEuaaegBennn+O6tj64y2XUJKmelKymxn
-        xw+glUWsVVG1ED4/nWntzzg84ZuVhak=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-478-jUnkMlYvPC2GZC0S-eZMzQ-1; Thu, 07 Jul 2022 03:30:27 -0400
-X-MC-Unique: jUnkMlYvPC2GZC0S-eZMzQ-1
-Received: by mail-wr1-f70.google.com with SMTP id m7-20020adfa3c7000000b0021d7ae39d1dso941079wrb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 00:30:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=cbmLgCmTysRy8uiXuxZ5jhXX1Rk2OR8KTMlastRWZ0Y=;
-        b=LgOl84eVdrq6OKB8X+XK5nGmWsDQrlPzXEHpCZkNLsR85/ujbspWXZPMTMubpc4AJN
-         DHJgI78x3KLc4tsDDcOYDmuM6uCsfXlGiOQ9zM1ZpKCR2BCVV8rs72kD69r/fsKhIkbY
-         yYZNdH94qa89gl8aHlX2gxDqI4KGC6vAfVsZ09OqanLeI50clpvrI1pL7q3gODfOzwvd
-         NPoaoKM+muNaywTzhfbgD/Q0QvoYnGotBm0VOpbjkKueQM0qWowLbW9khbA2Z3m5aoJV
-         xgzl70G/eNfARIIEI2UseK5ko6SUwXxaVgilYMJuo8R/lAESsS/+Snwp3giSks49KteW
-         UZjQ==
-X-Gm-Message-State: AJIora81JajkcKaJr5mpBsHjvrCdmIWE3lSRwPbLQuq42yzfMUw7nGBD
-        16FYnJSaEQgAMO5lYQ5pvfTCC2vb/CAAekwuSU+LHAyeQSTJrZ2Dbw9WdVtqECGWxKECMMPFkk0
-        sd/7ZR0+59v+Shg9+YqDnuf0+
-X-Received: by 2002:a5d:6d0a:0:b0:21d:6f28:5ead with SMTP id e10-20020a5d6d0a000000b0021d6f285eadmr13900880wrq.95.1657179025874;
-        Thu, 07 Jul 2022 00:30:25 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1seYbB1t0jf8+m8X4AxKyZNme7pt0Y06tR2WH42ONzW+bn03fpq5uQ+FvQAPGqPA7KRlSoeBw==
-X-Received: by 2002:a5d:6d0a:0:b0:21d:6f28:5ead with SMTP id e10-20020a5d6d0a000000b0021d6f285eadmr13900855wrq.95.1657179025614;
-        Thu, 07 Jul 2022 00:30:25 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
-        by smtp.gmail.com with ESMTPSA id p9-20020a5d4e09000000b0021d8190e9cfsm2014707wrt.40.2022.07.07.00.30.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 00:30:25 -0700 (PDT)
-Message-ID: <e454f6de32de3be092260d19da24f58635eb6e49.camel@redhat.com>
-Subject: Re: [PATCH net v3] net: ethernet: ti: am65-cpsw: Fix devlink port
- register sequence
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>, davem@davemloft.net,
-        kuba@kernel.org, linux@armlinux.org.uk
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kishon@ti.com, vigneshr@ti.com, grygorii.strashko@ti.com
-Date:   Thu, 07 Jul 2022 09:30:24 +0200
-In-Reply-To: <20220706070208.12207-1-s-vadapalli@ti.com>
-References: <20220706070208.12207-1-s-vadapalli@ti.com>
+        Thu, 7 Jul 2022 03:30:49 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D05331235;
+        Thu,  7 Jul 2022 00:30:44 -0700 (PDT)
+X-UUID: d2c34ff1fee144f4b921b7d1d663d878-20220707
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:6841d9ae-7ef7-40e6-9bc8-40cef7c34611,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:50
+X-CID-INFO: VERSION:1.1.8,REQID:6841d9ae-7ef7-40e6-9bc8-40cef7c34611,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:50
+X-CID-META: VersionHash:0f94e32,CLOUDID:5e91a763-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:95ab2f9f30ad,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: d2c34ff1fee144f4b921b7d1d663d878-20220707
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <johnson.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 583295451; Thu, 07 Jul 2022 15:30:41 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 7 Jul 2022 15:30:40 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 7 Jul 2022 15:30:40 +0800
+Message-ID: <3216ec92952c7d722feaeb76986e0a6a54340646.camel@mediatek.com>
+Subject: Re: [PATCH] dt-bindings: mmc: Add compatible for MediaTek MT8188
+From:   Johnson Wang <johnson.wang@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <ulf.hansson@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-mmc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 7 Jul 2022 15:30:40 +0800
+In-Reply-To: <41e17a56-5cb0-8e90-c7ae-a7a56de986d0@linaro.org>
+References: <20220707054710.1396-1-johnson.wang@mediatek.com>
+         <41e17a56-5cb0-8e90-c7ae-a7a56de986d0@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-07-06 at 12:32 +0530, Siddharth Vadapalli wrote:
-> Renaming interfaces using udevd depends on the interface being registered
-> before its netdev is registered. Otherwise, udevd reads an empty
-> phys_port_name value, resulting in the interface not being renamed.
+On Thu, 2022-07-07 at 08:46 +0200, Krzysztof Kozlowski wrote:
+> On 07/07/2022 07:47, Johnson Wang wrote:
+> > This commit adds dt-binding documentation of mmc for MediaTek
+> > MT8188 SoC
+> > platform.
+> > 
+> > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> > ---
+> >  Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > index 2a2e9fa8c188..3fbf33ad4f7c 100644
+> > --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > @@ -32,6 +32,9 @@ properties:
+> >        - items:
+> >            - const: mediatek,mt8186-mmc
+> >            - const: mediatek,mt8183-mmc
+> > +      - items:
+> > +          - const: mediatek,mt8188-mmc
 > 
-> Fix this by registering the interface before registering its netdev
-> by invoking am65_cpsw_nuss_register_devlink() before invoking
-> register_netdev() for the interface.
+> You duplicate quite a lot. Use enum.
 > 
-> Move the function call to devlink_port_type_eth_set(), invoking it after
-> register_netdev() is invoked, to ensure that netlink notification for the
-> port state change is generated after the netdev is completely initialized.
-> 
-> Fixes: 58356eb31d60 ("net: ti: am65-cpsw-nuss: Add devlink support")
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> ---
-> Changelog:
-> v2 -> v3:
-> 1. Add error handling to unregister devlink.
-> 
-> v1-> v2:
-> 1. Add Fixes tag in commit message.
-> 2. Update patch subject to include "net".
-> 3. Invoke devlink_port_type_eth_set() after register_netdev() is called.
-> 4. Update commit message describing the cause for moving the call to
->    devlink_port_type_eth_set().
-> 
-> v2: https://lore.kernel.org/r/20220704073040.7542-1-s-vadapalli@ti.com/
-> v1: https://lore.kernel.org/r/20220623044337.6179-1-s-vadapalli@ti.com/
-> 
->  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 17 ++++++++++-------
->  1 file changed, 10 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> index fb92d4c1547d..f4a6b590a1e3 100644
-> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> @@ -2467,7 +2467,6 @@ static int am65_cpsw_nuss_register_devlink(struct am65_cpsw_common *common)
->  				port->port_id, ret);
->  			goto dl_port_unreg;
->  		}
-> -		devlink_port_type_eth_set(dl_port, port->ndev);
->  	}
->  	devlink_register(common->devlink);
->  	return ret;
-> @@ -2511,6 +2510,7 @@ static void am65_cpsw_unregister_devlink(struct am65_cpsw_common *common)
->  static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->  {
->  	struct device *dev = common->dev;
-> +	struct devlink_port *dl_port;
->  	struct am65_cpsw_port *port;
->  	int ret = 0, i;
->  
-> @@ -2527,6 +2527,10 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->  		return ret;
->  	}
->  
-> +	ret = am65_cpsw_nuss_register_devlink(common);
-> +	if (ret)
-> +		return ret;
-> +
->  	for (i = 0; i < common->port_num; i++) {
->  		port = &common->ports[i];
->  
-> @@ -2539,25 +2543,24 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->  				i, ret);
->  			goto err_cleanup_ndev;
->  		}
-> +
-> +		dl_port = &port->devlink_port;
-> +		devlink_port_type_eth_set(dl_port, port->ndev);
->  	}
->  
->  	ret = am65_cpsw_register_notifiers(common);
->  	if (ret)
->  		goto err_cleanup_ndev;
->  
-> -	ret = am65_cpsw_nuss_register_devlink(common);
-> -	if (ret)
-> -		goto clean_unregister_notifiers;
-> -
->  	/* can't auto unregister ndev using devm_add_action() due to
->  	 * devres release sequence in DD core for DMA
->  	 */
->  
->  	return 0;
-> -clean_unregister_notifiers:
-> -	am65_cpsw_unregister_notifiers(common);
-> +
->  err_cleanup_ndev:
->  	am65_cpsw_nuss_cleanup_ndev(common);
-> +	am65_cpsw_unregister_devlink(common);
+> Best regards,
+> Krzysztof
 
-It looks strange that there is no error path leading to
-am65_cpsw_unregister_devlink() only.
+Hi Krzysztof,
 
-Why we don't need to call it when/if devm_request_irq() fails? 
+Thanks for you suggestion.
 
-Not strictly related to this patch, but it looks like there is another
-suspect cleanup point: if a 'register_netdev()' call fails, the cleanup
-code will still call unregister_netdev() on the relevant device and the
-later ones, hitting a WARN_ON(1) in unregister_netdevice_many().
+I will use 'enum' to place this compatible strings.
 
-Thanks!
+Just like this:
+- items:
+    - enum:
+        - mediatek,mt8186-mmc
+        - mediatek,mt8188-mmc
+        - mediatek,mt8192-mmc
+        - mediatek,mt8195-mmc
+    - const: mediatek,mt8183-mmc
 
-Paolo
+Moreover, it seems that missing an "items:" between oneOf and enum in
+the compatible property.
+Is my understanding wrong?
+
+BRs,
+Johnson Wang
+
 
