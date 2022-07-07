@@ -2,125 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDE6CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A77C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233652AbiGGFse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 01:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
+        id S234217AbiGGFvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 01:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbiGGFsb (ORCPT
+        with ESMTP id S232283AbiGGFvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 01:48:31 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61BA33B
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 22:48:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657172906; x=1688708906;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CVTdAenqViN5CKy4mkseosvPlqOI4FT220hqm4xY8DM=;
-  b=YUGgErUR7CsOve7q96b2CHD1VGxxB05JWS+HSOAMYJPF9gLob26DgIXX
-   E9l5ZddfXAUz0+3abK2ubU8ZVOMGCUi28HF0B92uWencd7HzZ2AECMdZv
-   oDPIl1ojHZ5Tz782+Xv6pFUogTL2mQBPpYCFo2CQeOPssiJQxpRLh6XgH
-   hSS9kb1BjpogFK1DY3WLrOt/oDprsHI9G31y4SMhk8Hd/8QSLo4+uyncI
-   mXfj6BRa+9YCTJEVkjoh0JHgIP0K4SpiuRbWSSAh4tr1dyQzXOQsvWgEX
-   TNUTnr4Q4I4oi0gayvsXfGmXqluJq6OqIxNOnsjzC1zvMtNBC4XWHib7e
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="370254539"
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="370254539"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 22:48:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="543690962"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 06 Jul 2022 22:48:25 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9KNE-000Lbq-Bs;
-        Thu, 07 Jul 2022 05:48:24 +0000
-Date:   Thu, 7 Jul 2022 13:47:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_devlink_locking 29/31]
- drivers/net/netdevsim/dev.c:946:30: warning: variable 'nsim_bus_dev' set but
- not used
-Message-ID: <202207071338.SYuecpQ6-lkp@intel.com>
+        Thu, 7 Jul 2022 01:51:38 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391413190F;
+        Wed,  6 Jul 2022 22:51:37 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LdlsM52Gyz4xDB;
+        Thu,  7 Jul 2022 15:51:35 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657173095;
+        bh=erYmuSJaMtl8QYRptXou9ckJfT4DVP+Ob8Y99LsPIIQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=KTCiubXGeq/ezk3XpWKJRGf+qY2LCpDHkWIkYFtrIL0oqL46DIa08cNx12lmMpIdQ
+         WQKEZREJA76/pqiK/fcT5XF6UkGnGwS0x8gmYEA65Z4yDzbs+j6MH0tx/zdgdJWDg7
+         GlL2OjHa8elDXaO1EUhWueWH3Zep3wRQltci5IrIFOobDO+bi3DCeAB6AzmVy12H9v
+         R2Bab9BUQ5mTdnvNSb/xrDPvbF0eA6JUs0U8j+icvCjg3kFLjXY0wc0zPjY02YDlHh
+         XAyGcDu2dz2c+X9BfFjilDP7mCErSgC3cviYYYOuP4oQ7kM0nN9kB8vFStiEs9V3Vl
+         p8JaGYJZniQ9g==
+Date:   Thu, 7 Jul 2022 15:39:40 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the phy-next tree
+Message-ID: <20220707153941.668cd6d5@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: multipart/signed; boundary="Sig_/hXdHKrv=JBiP0DAOAy4IOBz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_devlink_locking
-head:   34fad48fbf94ea603412cfc9375b958ef38fa3e0
-commit: 1b1a655315d99a84b3f065d9f950fab8358114d5 [29/31] netdevsim: convert driver to devlink unlocked API during init/fini
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220707/202207071338.SYuecpQ6-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/1b1a655315d99a84b3f065d9f950fab8358114d5
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_devlink_locking
-        git checkout 1b1a655315d99a84b3f065d9f950fab8358114d5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/gpio/ drivers/net/netdevsim/ drivers/tty/serial/
+--Sig_/hXdHKrv=JBiP0DAOAy4IOBz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Hi all,
 
-All warnings (new ones prefixed by >>):
+After merging the phy-next tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-   drivers/net/netdevsim/dev.c: In function 'nsim_dev_reload_down':
->> drivers/net/netdevsim/dev.c:946:30: warning: variable 'nsim_bus_dev' set but not used [-Wunused-but-set-variable]
-     946 |         struct nsim_bus_dev *nsim_bus_dev;
-         |                              ^~~~~~~~~~~~
-   drivers/net/netdevsim/dev.c: In function 'nsim_dev_reload_up':
-   drivers/net/netdevsim/dev.c:970:30: warning: variable 'nsim_bus_dev' set but not used [-Wunused-but-set-variable]
-     970 |         struct nsim_bus_dev *nsim_bus_dev;
-         |                              ^~~~~~~~~~~~
+drivers/phy/qualcomm/phy-qcom-qmp-combo.c: In function 'qcom_qmp_phy_combo_=
+vreg_init':
+drivers/phy/qualcomm/phy-qcom-qmp-combo.c:2004:9: error: 'Return' undeclare=
+d (first use in this function)
+ 2004 |         Return 0;
+      |         ^~~~~~
+drivers/phy/qualcomm/phy-qcom-qmp-combo.c:2004:9: note: each undeclared ide=
+ntifier is reported only once for each function it appears in
+drivers/phy/qualcomm/phy-qcom-qmp-combo.c:2004:15: error: expected ';' befo=
+re numeric constant
+ 2004 |         Return 0;
+      |               ^~
+      |               ;
+drivers/phy/qualcomm/phy-qcom-qmp-combo.c:2005:1: error: control reaches en=
+d of non-void function [-Werror=3Dreturn-type]
+ 2005 | }
+      | ^
+cc1: all warnings being treated as errors
 
+Caused by commit
 
-vim +/nsim_bus_dev +946 drivers/net/netdevsim/dev.c
+  6bd9a9be5d73 ("phy: qcom-qmp: add regulator_set_load to dp phy")
 
-75ba029f3c07f47 Jiri Pirko      2019-10-03  940  
-070c63f20f6c739 Jiri Pirko      2019-10-03  941  static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
-dc64cc7c63102ac Moshe Shemesh   2020-10-07  942  				enum devlink_reload_action action, enum devlink_reload_limit limit,
-dc64cc7c63102ac Moshe Shemesh   2020-10-07  943  				struct netlink_ext_ack *extack)
-97691069dc5a413 Jiri Pirko      2019-09-12  944  {
-75ba029f3c07f47 Jiri Pirko      2019-10-03  945  	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-23809a726c0d004 Leon Romanovsky 2021-08-05 @946  	struct nsim_bus_dev *nsim_bus_dev;
-23809a726c0d004 Leon Romanovsky 2021-08-05  947  
-1b1a655315d99a8 Jiri Pirko      2022-07-01  948  	devl_lock(devlink);
-23809a726c0d004 Leon Romanovsky 2021-08-05  949  	nsim_bus_dev = nsim_dev->nsim_bus_dev;
-75ba029f3c07f47 Jiri Pirko      2019-10-03  950  
-155ddfc5e54a68f Jiri Pirko      2019-10-06  951  	if (nsim_dev->dont_allow_reload) {
-155ddfc5e54a68f Jiri Pirko      2019-10-06  952  		/* For testing purposes, user set debugfs dont_allow_reload
-155ddfc5e54a68f Jiri Pirko      2019-10-06  953  		 * value to true. So forbid it.
-155ddfc5e54a68f Jiri Pirko      2019-10-06  954  		 */
-f9867b51d268d6f Colin Ian King  2019-10-08  955  		NL_SET_ERR_MSG_MOD(extack, "User forbid the reload for testing purposes");
-1b1a655315d99a8 Jiri Pirko      2022-07-01  956  		devl_unlock(devlink);
-155ddfc5e54a68f Jiri Pirko      2019-10-06  957  		return -EOPNOTSUPP;
-155ddfc5e54a68f Jiri Pirko      2019-10-06  958  	}
-155ddfc5e54a68f Jiri Pirko      2019-10-06  959  
-75ba029f3c07f47 Jiri Pirko      2019-10-03  960  	nsim_dev_reload_destroy(nsim_dev);
-1b1a655315d99a8 Jiri Pirko      2022-07-01  961  	devl_unlock(devlink);
-97691069dc5a413 Jiri Pirko      2019-09-12  962  	return 0;
-97691069dc5a413 Jiri Pirko      2019-09-12  963  }
-97691069dc5a413 Jiri Pirko      2019-09-12  964  
+I have used the phy-next tree from next-20220706 for today.
 
-:::::: The code at line 946 was first introduced by commit
-:::::: 23809a726c0d004b9d2474333181f8da07360469 netdevsim: Forbid devlink reload when adding or deleting ports
+--=20
+Cheers,
+Stephen Rothwell
 
-:::::: TO: Leon Romanovsky <leonro@nvidia.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
+--Sig_/hXdHKrv=JBiP0DAOAy4IOBz
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGcZ0ACgkQAVBC80lX
+0GwG+wf9Es2SHRQKBPZh9aMsmTol3LYUzu0T6EkF/k4fC2WDXfOBH2u6N+FATLI3
+CEWsdG+BAyTQQ7qQBYCSi7h4hJtNz3Kg7IW6j2nnMcb1w7PGdnSk87amiTW4Dy+s
+tWgnrO5DBMJvBGJeuIR0PjYtgfdwyHGceCXBulV7+X9anxeeKvJq/WSWwwFslHME
+SCMsxuvbcye+8dVgQdw3U8/pYum73P5M41HNlVkpq84ZOUa4lkFWHxwIBxthNiUx
+5d/bn8XOYTVvGMA4m4bx/sMaV63Btzr1BimlyGfd+CkWM+LTHEysL7j9EbSt3w6y
+yF1BP16QnqSErlhaZnBw88X1C4tRwg==
+=iJLV
+-----END PGP SIGNATURE-----
+
+--Sig_/hXdHKrv=JBiP0DAOAy4IOBz--
