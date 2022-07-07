@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68135C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E159ACCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 06:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234782AbiGGGZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 02:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
+        id S234854AbiGGGZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 02:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234748AbiGGGZT (ORCPT
+        with ESMTP id S234775AbiGGGZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 02:25:19 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DCC10B0;
-        Wed,  6 Jul 2022 23:25:18 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2676PAXg027357;
-        Thu, 7 Jul 2022 01:25:10 -0500
+        Thu, 7 Jul 2022 02:25:21 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C055914095;
+        Wed,  6 Jul 2022 23:25:20 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2676PFD6079973;
+        Thu, 7 Jul 2022 01:25:15 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657175111;
-        bh=BA3dRH6WkPJBb1d5dncmA5rdblpKkGp3owPvjBdVKeM=;
+        s=ti-com-17Q1; t=1657175115;
+        bh=AYEf6gwAH8Cx8+7cbizE4cA7eC7HZ8FPs5Eo6CFAG1E=;
         h=From:To:Subject:Date:In-Reply-To:References;
-        b=pp95UiqCbksyOJN1esrO6rQdGlko0yEQBIgKIGoJU3uJpgjx7kObDqfB8Czxs/Wyj
-         5lvxmXP4nX4syp02BWkp44DUDaFTlBivCuWuxpGblTysN/b5I4sW0dMZZy3mwuBErS
-         n2aKASX9Phgj5gCGhViXve6NzqxP/IdLIMHIYZEU=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2676PAwt058679
+        b=dbnm2geERQQJ/gR/5p1R5q6Qp8qGs2hu5RDdXIVsZkg9cO2pnqQOriFheV2Skq1Gf
+         RBWbxFoTiULOFpEcz71Wly646u2cv2LKR1otKvovsDBl/y8MTMgCCdMmGF+QVn87av
+         Vy/loSsSPsx6NaRE+Am5Ax4n+c9vEccN40JaRjYk=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2676PFWO119125
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Jul 2022 01:25:10 -0500
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 7 Jul 2022 01:25:15 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
- Jul 2022 01:25:10 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ Jul 2022 01:25:15 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 7 Jul 2022 01:25:10 -0500
+ Frontend Transport; Thu, 7 Jul 2022 01:25:15 -0500
 Received: from ubuntu.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2676P51S106842;
-        Thu, 7 Jul 2022 01:25:09 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2676P51U106842;
+        Thu, 7 Jul 2022 01:25:13 -0500
 From:   Matt Ranostay <mranostay@ti.com>
 To:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH RESEND 1/6] arm64: dts: ti: k3-j721s2-main: Add support for USB
-Date:   Wed, 6 Jul 2022 23:24:58 -0700
-Message-ID: <20220707062503.295663-2-mranostay@ti.com>
+Subject: [PATCH RESEND 3/6] arm64: dts: ti: k3-j721s2-mcu-wakeup: Add support of OSPI
+Date:   Wed, 6 Jul 2022 23:25:00 -0700
+Message-ID: <20220707062503.295663-4-mranostay@ti.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220707062503.295663-1-mranostay@ti.com>
 References: <20220707062503.295663-1-mranostay@ti.com>
@@ -59,74 +59,63 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Aswath Govindraju <a-govindraju@ti.com>
 
-Add support for single instance of USB 3.0 controller in J721S2 SoC.
+Add support for two instance of OSPI in J721S2 SoC.
 
 Acked-by: Matt Ranostay <mranostay@ti.com>
 Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi | 42 ++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ .../boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi     | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-index 34e7d577ae13..f7e359da8690 100644
---- a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-@@ -26,6 +26,20 @@ l3cache-sram@200000 {
+diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi
+index 4d1bfabd1313..7bc268f27030 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi
+@@ -299,4 +299,44 @@ cpts@3d000 {
+ 			ti,cpts-periodic-outputs = <2>;
  		};
  	};
- 
-+	scm_conf: scm-conf@104000 {
-+		compatible = "ti,j721e-system-controller", "syscon", "simple-mfd";
-+		reg = <0x00 0x00104000 0x00 0x18000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x00 0x00 0x00104000 0x18000>;
 +
-+		usb_serdes_mux: mux-controller@0 {
-+			compatible = "mmio-mux";
-+			#mux-control-cells = <1>;
-+			mux-reg-masks = <0x0 0x8000000>; /* USB0 to SERDES0 lane 1/3 mux */
-+		};
-+	};
-+
- 	gic500: interrupt-controller@1800000 {
- 		compatible = "arm,gic-v3";
- 		#address-cells = <2>;
-@@ -686,6 +700,34 @@ cpts@310d0000 {
- 		};
- 	};
- 
-+	usbss0: cdns-usb@4104000 {
-+		compatible = "ti,j721e-usb";
-+		reg = <0x00 0x04104000 0x00 0x100>;
-+		clocks = <&k3_clks 360 16>, <&k3_clks 360 15>;
-+		clock-names = "ref", "lpm";
-+		assigned-clocks = <&k3_clks 360 16>; /* USB2_REFCLK */
-+		assigned-clock-parents = <&k3_clks 360 17>;
-+		power-domains = <&k3_pds 360 TI_SCI_PD_EXCLUSIVE>;
++	fss: syscon@47000000 {
++		compatible = "syscon", "simple-mfd";
++		reg = <0x0 0x47000000 0x0 0x100>;
 +		#address-cells = <2>;
 +		#size-cells = <2>;
 +		ranges;
-+		dma-coherent;
 +
-+		usb0: usb@6000000 {
-+			compatible = "cdns,usb3";
-+			reg = <0x00 0x06000000 0x00 0x10000>,
-+			      <0x00 0x06010000 0x00 0x10000>,
-+			      <0x00 0x06020000 0x00 0x10000>;
-+			reg-names = "otg", "xhci", "dev";
-+			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "host", "peripheral", "otg";
-+			maximum-speed = "super-speed";
-+			dr_mode = "otg";
++		ospi0: spi@47040000 {
++			compatible = "ti,am654-ospi", "cdns,qspi-nor";
++			reg = <0x00 0x47040000 0x00 0x100>,
++			      <0x5 0x0000000 0x1 0x0000000>;
++			interrupts = <GIC_SPI 840 IRQ_TYPE_LEVEL_HIGH>;
++			cdns,fifo-depth = <256>;
++			cdns,fifo-width = <4>;
++			cdns,trigger-address = <0x0>;
++			clocks = <&k3_clks 109 5>;
++			assigned-clocks = <&k3_clks 109 5>;
++			assigned-clock-parents = <&k3_clks 109 7>;
++			assigned-clock-rates = <166666666>;
++			power-domains = <&k3_pds 109 TI_SCI_PD_EXCLUSIVE>;
++			#address-cells = <1>;
++			#size-cells = <0>;
 +		};
-+	};
 +
- 	main_mcan0: can@2701000 {
- 		compatible = "bosch,m_can";
- 		reg = <0x00 0x02701000 0x00 0x200>,
++		ospi1: spi@47050000 {
++			compatible = "ti,am654-ospi", "cdns,qspi-nor";
++			reg = <0x00 0x47050000 0x00 0x100>,
++			      <0x7 0x0000000 0x1 0x0000000>;
++			interrupts = <GIC_SPI 841 IRQ_TYPE_LEVEL_HIGH>;
++			cdns,fifo-depth = <256>;
++			cdns,fifo-width = <4>;
++			cdns,trigger-address = <0x0>;
++			clocks = <&k3_clks 110 5>;
++			power-domains = <&k3_pds 110 TI_SCI_PD_EXCLUSIVE>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++	};
+ };
 -- 
 2.36.1
 
