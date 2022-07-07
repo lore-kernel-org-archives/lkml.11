@@ -2,121 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6B0CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:51:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8FECCA482
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235106AbiGGJv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
+        id S235192AbiGGJwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235026AbiGGJvy (ORCPT
+        with ESMTP id S235129AbiGGJv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:51:54 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DC064D4F2
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:51:52 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A332A1063;
-        Thu,  7 Jul 2022 02:51:52 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 731493F792;
-        Thu,  7 Jul 2022 02:51:48 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 10:50:37 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Thu, 7 Jul 2022 05:51:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4214D4F3;
+        Thu,  7 Jul 2022 02:51:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50F2162221;
+        Thu,  7 Jul 2022 09:51:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F47C341C8;
+        Thu,  7 Jul 2022 09:51:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657187515;
+        bh=X9w7uVsbJ8D49JtdMTWnUpAeLaS1lt4n7lQokogX2X8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VYhIUy8P5C0fo+IEGbD1P2twNLp/9Prh3hbA4Ac2TUtNf6wbiQW6v8U+NGUVOMovg
+         GoP/iCZm4XFmCW7IL54ueWlsfOWZ/ULGilnEKbEeeu8r0A+laqd2DMt/m/5gzrU6Lb
+         w3Yqm6UP/mHsRK05etjucasJv9hYUzuvO9m3DT+Ypj7oaiMki5MINfyhPxd2YZbhgU
+         4EU6I5t/ft9ygpj2JcSKHnraPG8oV0WsTyRxWdraQh88+k2x5xiAz62FJxDbnvCqvq
+         LEJNMtZQutndXtu0t8hOQKO7ECUOltn3sO7x/0t+nSk5GYOCqe56df3jNqNtwtxSRA
+         iqWUG3EoNBTdw==
+Received: from [185.201.63.253] (helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o9OAq-005snH-U1;
+        Thu, 07 Jul 2022 10:51:53 +0100
+Date:   Thu, 07 Jul 2022 10:51:33 +0100
+Message-ID: <87a69lmesa.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zong Li <zong.li@sifive.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>, Guo Ren <guoren@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Brice Goglin <Brice.Goglin@inria.fr>
-Subject: Re: [PATCH] riscv: arch-topology: fix default topology reporting
-Message-ID: <20220707095037.i2pjcc7zcf4pi3ht@bogus>
-References: <20220706184558.2557301-1-mail@conchuod.ie>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706184558.2557301-1-mail@conchuod.ie>
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH RFC 1/2] dt-bindings: interrupt-controller: sifive,plic: Document Renesas RZ/Five SoC
+In-Reply-To: <20220706215827.GA572635-robh@kernel.org>
+References: <20220524172214.5104-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <20220524172214.5104-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <20220605142333.GA3439339-robh@kernel.org>
+        <CA+V-a8smk8TqyWpm1KXo-3dKnCAodKsiYsaqnK_3ubfXE9YauQ@mail.gmail.com>
+        <20220706215827.GA572635-robh@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.201.63.253
+X-SA-Exim-Rcpt-To: robh@kernel.org, prabhakar.csengg@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com, tglx@linutronix.de, krzysztof.kozlowski+dt@linaro.org, palmer@dabbelt.com, paul.walmsley@sifive.com, sagar.kadam@sifive.com, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, phil.edworthy@renesas.com, biju.das.jz@bp.renesas.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 07:45:59PM +0100, Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
+On Wed, 06 Jul 2022 22:58:27 +0100,
+Rob Herring <robh@kernel.org> wrote:
 > 
-> RISC-V has no sane defaults to fall back on where there is no cpu-map
-> in the devicetree.
-> Without sane defaults, the package, core and thread IDs are all set to
-> -1. This causes user-visible inaccuracies for tools like hwloc/lstopo
-> which rely on the sysfs cpu topology files to detect a system's
-> topology.
+> On Fri, Jun 24, 2022 at 10:59:40AM +0100, Lad, Prabhakar wrote:
+> > Hi Rob,
+> > 
+> > Thank you for the review.
+> > 
+> > On Sun, Jun 5, 2022 at 3:23 PM Rob Herring <robh@kernel.org> wrote:
+> > >
+> > > On Tue, May 24, 2022 at 06:22:13PM +0100, Lad Prabhakar wrote:
+> > > > Document Renesas RZ/Five (R9A07G043) SoC.
+> > > >
+> > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > > > ---
+> > > >  .../sifive,plic-1.0.0.yaml                    | 38 +++++++++++++++++--
+> > > >  1 file changed, 35 insertions(+), 3 deletions(-)
+> > > >
+> > > > diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > > > index 27092c6a86c4..78ff31cb63e5 100644
+> > > > --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > > > +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > > > @@ -28,7 +28,10 @@ description:
+> > > >
+> > > >    While the PLIC supports both edge-triggered and level-triggered interrupts,
+> > > >    interrupt handlers are oblivious to this distinction and therefore it is not
+> > > > -  specified in the PLIC device-tree binding.
+> > > > +  specified in the PLIC device-tree binding for SiFive PLIC (and similar PLIC's),
+> > > > +  but for the Renesas RZ/Five Soc (AX45MP AndesCore) which has NCEPLIC100 we need
+> > > > +  to specify the interrupt type as the flow for EDGE interrupts is different
+> > > > +  compared to LEVEL interrupts.
+> > > >
+> > > >    While the RISC-V ISA doesn't specify a memory layout for the PLIC, the
+> > > >    "sifive,plic-1.0.0" device is a concrete implementation of the PLIC that
+> > > > @@ -57,6 +60,7 @@ properties:
+> > > >            - enum:
+> > > >                - allwinner,sun20i-d1-plic
+> > > >            - const: thead,c900-plic
+> > > > +      - const: renesas-r9a07g043-plic
 > 
-> Add sane defaults in ~the exact same way as ARM64.
+> Also, this should be 'renesas,r9...'
 > 
-> CC: stable@vger.kernel.org
-> Fixes: 03f11f03dbfe ("RISC-V: Parse cpu topology during boot.")
-> Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
-> Link: https://github.com/open-mpi/hwloc/issues/536
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
+> > > >
+> > > >    reg:
+> > > >      maxItems: 1
+> > > > @@ -64,8 +68,7 @@ properties:
+> > > >    '#address-cells':
+> > > >      const: 0
+> > > >
+> > > > -  '#interrupt-cells':
+> > > > -    const: 1
+> > > > +  '#interrupt-cells': true
+> > > >
+> > > >    interrupt-controller: true
+> > > >
+> > > > @@ -91,6 +94,35 @@ required:
+> > > >    - interrupts-extended
+> > > >    - riscv,ndev
+> > > >
+> > > > +if:
+> > > > +  properties:
+> > > > +    compatible:
+> > > > +      contains:
+> > > > +        const: renesas-r9a07g043-plic
+> > > > +then:
+> > > > +  properties:
+> > > > +    clocks:
+> > > > +      maxItems: 1
+> > > > +
+> > > > +    resets:
+> > > > +      maxItems: 1
+> > > > +
+> > > > +    power-domains:
+> > > > +      maxItems: 1
+> > >
+> > > Did you test this? The above properties won't be allowed because of
+> > > additionalProperties below. You need to change it to
+> > > 'unevaluatedProperties' or move these to the top level.
+> > >
+> > Yes I have run the dt_binding check.
+> > 
+> > So with the below diff it does complain about the missing properties.
+> > 
+> > prasmi@prasmi:~/work/renasas/renesas-drivers$ git diff
+> > Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > index 20ded037d444..bb14a4b1ec0a 100644
+> > --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > @@ -130,7 +130,7 @@ examples:
+> >      plic: interrupt-controller@c000000 {
+> >        #address-cells = <0>;
+> >        #interrupt-cells = <1>;
+> > -      compatible = "sifive,fu540-c000-plic", "sifive,plic-1.0.0";
+> > +      compatible = "renesas-r9a07g043-plic";
+> >        interrupt-controller;
+> >        interrupts-extended = <&cpu0_intc 11>,
+> >                              <&cpu1_intc 11>, <&cpu1_intc 9>,
+> > prasmi@prasmi:~/work/renasas/renesas-drivers$ make ARCH=riscv
+> > CROSS_COMPILE=riscv64-linux-gnu- dt_binding_check
+> >   LINT    Documentation/devicetree/bindings
+> >   CHKDT   Documentation/devicetree/bindings/processed-schema.json
+> >   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+> >   DTEX    Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.example.dts
+> >   DTC     Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.example.dtb
+> >   CHECK   Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.example.dtb
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.example.dtb:
+> > interrupt-controller@c000000: #interrupt-cells:0:0: 2 was expected
+> >     From schema:
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.example.dtb:
+> > interrupt-controller@c000000: 'clocks' is a required property
+> >     From schema:
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.example.dtb:
+> > interrupt-controller@c000000: 'resets' is a required property
+> >     From schema:
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.example.dtb:
+> > interrupt-controller@c000000: 'power-domains' is a required property
+> >     From schema:
+> > /home/prasmi/work/renasas/renesas-drivers/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> > prasmi@prasmi:~/work/renasas/renesas-drivers$
+> > prasmi@prasmi:~/work/renasas/renesas-drivers$
+> > 
+> > Is there something I'm missing here?
 > 
-> Sudeep suggested that this be backported rather than the changes to
-> the devicetrees adding cpu-map since that property is optional.
-> That patchset is still valid in it's own right.
+> You've said these properties are required, but you didn't add them.
 > 
->  arch/riscv/include/asm/topology.h | 13 +++++++++++++
->  arch/riscv/kernel/Makefile        |  1 +
->  arch/riscv/kernel/smpboot.c       |  4 ++++
->  arch/riscv/kernel/topology.c      | 32 +++++++++++++++++++++++++++++++
->  4 files changed, 50 insertions(+)
->  create mode 100644 arch/riscv/include/asm/topology.h
->  create mode 100644 arch/riscv/kernel/topology.c
-> 
+> If you don't have the above 3 properties, then it's not going to 
+> complain that they are present. But it will when you do add them for the 
+> reason I gave.
 
-[...]
+Can you please have a look at the latest instance[1][2] of this
+series, as posted by Samuel? I've provisionally queued it, but only on
+the provision that you would eventually ack these patches.
 
-> diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
-> index f1e4948a4b52..d551c7f452d4 100644
-> --- a/arch/riscv/kernel/smpboot.c
-> +++ b/arch/riscv/kernel/smpboot.c
-> @@ -32,6 +32,7 @@
->  #include <asm/sections.h>
->  #include <asm/sbi.h>
->  #include <asm/smp.h>
-> +#include <asm/topology.h>
->  
->  #include "head.h"
->  
+Thanks,
 
-[...]
+	M.
 
->  void __init smp_prepare_cpus(unsigned int max_cpus)
-> @@ -161,6 +164,7 @@ asmlinkage __visible void smp_callin(void)
->  	mmgrab(mm);
->  	current->active_mm = mm;
->  
-> +	store_cpu_topology(curr_cpuid);
->  	notify_cpu_starting(curr_cpuid);
->  	numa_add_cpu(curr_cpuid);
->  	update_siblings_masks(curr_cpuid);
-
-If the above store_cpu_topology calls update_siblings_masks if required,
-probably you can drop this explicit call here.
+[1] https://lore.kernel.org/r/20220630100241.35233-2-samuel@sholland.org
+[2] https://lore.kernel.org/r/20220630100241.35233-4-samuel@sholland.org
 
 -- 
-Regards,
-Sudeep
+Without deviation from the norm, progress is not possible.
