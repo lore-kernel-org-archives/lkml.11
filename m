@@ -2,144 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF97C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3DBCCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiGGSXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
+        id S236194AbiGGSYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236162AbiGGSXP (ORCPT
+        with ESMTP id S235637AbiGGSYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:23:15 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5B05A2EC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:23:14 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id k14so23972182qtm.3
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 11:23:13 -0700 (PDT)
+        Thu, 7 Jul 2022 14:24:00 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5648D205F3;
+        Thu,  7 Jul 2022 11:23:59 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id j3so8398331pfb.6;
+        Thu, 07 Jul 2022 11:23:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=feedback-id:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=X9++tSx2Q3dj3EHyHS7CfMESdH5gB/pHrn+gp7alMx8=;
-        b=S76hnCfbZLLhsSMFlS7ANwjphG7JK3MWk31F3dawY39musHG348HfcivgF3JYcY+3S
-         g+4BLwc+Z7gkqHVJbyF3S98/D/OIA2CpGaTJnWtDIXt1L/aF5AqEgeh2fyswPVnaZOLe
-         zUI9ICqEZmOYh7uuqi7WsUT/fHChUWekg24wI9JB68aF+/V60mPpa5bjRmGAh6WvYBT6
-         RxKgk9esNU6ooySEyU1PPRVNQTLRtZkwwJx70YwHkRLXemIwmeicp3izuMIkvZB7Lorq
-         wSxQ1IHt0WLt7tNkbRZSc6izM/uD3DlDiCB/v1vCQH70Rbzvse2BRSEZNqwd6SbtkqLY
-         hGyw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hQHooeYpBPLqhLw4iyaicqWZ8U8iT/gDaXg8Zs9aODs=;
+        b=Sx5FRvZ7QwI1k5mlx5HVc8zV8L6yX8BkzuLV6xWaMYwxoV9IEmxav452EFSv1yaRTg
+         6M1f/Zr4ijUYy3UQeqKtjrfc41NnV117hgRxVDKfruhh6G1V0nGzk2OQVqmrQikUniul
+         AkJD85s/nJQVbExGSDJK3Wy+q93j1ASFedP+Ck4MiZL6OOllxLimyBmeGFwyxngUvHJh
+         4NQiYwY1QTsPZhlKYVmVZOb4FacQZ/3GTthgegHvJIdrVQPHZShTniSSvPO+Y0Iq+gM/
+         8Xv6RNkMduZJ7MY5fQ1BisYQTMmlmYlcyil4ysUeNllSstSSfGJ9BA8R6W8F07krorZM
+         6rMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:feedback-id:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=X9++tSx2Q3dj3EHyHS7CfMESdH5gB/pHrn+gp7alMx8=;
-        b=LnbtzoWddlXspe3YH5iQbUKp1N6WBArM8lUgeCCej/BUeGrFYoz2EQ/lx6lL6t/aFE
-         8IJTWIdPF97rgfr93U9RLz7sQR6GGhWQmFs5ZeiGIS7avvVVO5Fdjaswz14wEabKroIt
-         McT8wh0tAhmLDuWuE6saQ0Q+jvF8P2NF32atfnwxLlHPSOP46UEI5vCOGeh0D4prVqwA
-         mz/O4eF5rgd6jZjI0dtsRqJFkNtXNFcjUGjJnKWv0cieElSVYCrYqeJX0qtNaHpxGIw2
-         5i6YErmr7hccpctdkcF9Hq5rKPuWMwl8sNyjzfYCDLqYp1LtdTJCZj56NggiSMTfLoCx
-         WkZg==
-X-Gm-Message-State: AJIora+MrEW/XGC97APgF0fNhHAP+5+WgOvdqJu3xWW5IwGsWZOUar6k
-        vhkHQai9fcQ7uFiBrGciDXRokBS6NFM=
-X-Google-Smtp-Source: AGRyM1vXnAuklTIZkLgGDtsx8EUI/3UNljPEcljnMc0WDF9aRi/cs08AsfrDjVMQNsV2RIHUGLgA7w==
-X-Received: by 2002:a05:6214:2525:b0:473:10e:a109 with SMTP id gg5-20020a056214252500b00473010ea109mr15914143qvb.42.1657218193151;
-        Thu, 07 Jul 2022 11:23:13 -0700 (PDT)
-Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
-        by smtp.gmail.com with ESMTPSA id g6-20020ac842c6000000b00317ccc66971sm26441441qtm.52.2022.07.07.11.23.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hQHooeYpBPLqhLw4iyaicqWZ8U8iT/gDaXg8Zs9aODs=;
+        b=4I7WjUhhVVxftbZHkqf819lHlZ6PmxG9VhDM2tjS/tGVmyuT9ECBQ+i7gnw8edmCxo
+         kdAqJZRmPwqscvuI4BlLHv5Z6g6623GxWdwkTNn4JuO4jif4rUbwxRqndVbd05U//DSX
+         EqqNKYRKGaR9HJIqGt+2EjfSy/nCDN1Xrseu3Rm4AHFvx8awlXokZ/i/tqN65ODpkt05
+         DMZuml6tF7vdm2pXoC22ZKxNecMnDTUUltW53LhQV5NuVJOlGXz7EymoqI31m7gcFgIr
+         SZzKcUSknChK/LOL+hQrXB4YDYkpKormnZD5zJHUJup2M05p6uYghJlNm2260u9NvQqB
+         XyPQ==
+X-Gm-Message-State: AJIora8ISDASUxODQ7NQQuBOyP/9mKqU7KuDtIRE75PU/sMO2DrRRMlL
+        G9KuTxVPX2DJ6oibSnt54JIo+PzrD+8=
+X-Google-Smtp-Source: AGRyM1uU7YSCIUD0jrjk1cuFuvNKKMo0gPiJm0l1nzNXzfY/UMVr9kZrx4Ww+2U3XI1Kk8Pv4SIWNQ==
+X-Received: by 2002:a17:90b:4f48:b0:1ed:45e5:dc8c with SMTP id pj8-20020a17090b4f4800b001ed45e5dc8cmr6732899pjb.131.1657218238815;
+        Thu, 07 Jul 2022 11:23:58 -0700 (PDT)
+Received: from prasmi.domain.name ([103.219.60.85])
+        by smtp.gmail.com with ESMTPSA id o12-20020a170902d4cc00b0016a3f9e4865sm28589279plg.148.2022.07.07.11.23.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 11:23:12 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 1ADDE27C0054;
-        Thu,  7 Jul 2022 14:23:11 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 07 Jul 2022 14:23:12 -0400
-X-ME-Sender: <xms:jyTHYuLVOYbgOft9Vo2f6sMKoGfGNBl1V2KSpS2fobAUQzG2aNeK5A>
-    <xme:jyTHYmI5F41EyDDCz_DgFvSy5mZlxiNmRSrT66AA4ed_d2X-wHWgGboNQrPckYo69
-    pmxp99dcsThnE_q_g>
-X-ME-Received: <xmr:jyTHYuvSKcq9pjS5Tc0mGEfiN93jRNU4U8n4A0RhTZCKySmKssVyYncFd2d0gQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeihedguddvgecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeeuohhq
-    uhhnucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrghilhdrtghomheqnecuggftrf
-    grthhtvghrnhephedugfduffffteeutddvheeuveelvdfhleelieevtdeguefhgeeuveei
-    udffiedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epsghoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedt
-    ieegqddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpeepghhmrghilhdrtghomhesfh
-    higihmvgdrnhgrmhgv
-X-ME-Proxy: <xmx:jyTHYjZc1SbwHqBeNy3T_zask3AoGkiNCJSBSDIyTof1el_XE8Ulog>
-    <xmx:jyTHYlaLvEs6WP0Q9NtxJ4jk2ioN2rf-DpCNo2SxI382IRR45f88Ng>
-    <xmx:jyTHYvAzpSw9NT4lA4GDcUOR1YIxydLlVZa1Q3XVXtse8amzqd8Ctg>
-    <xmx:jyTHYjNMb5ISBLsO9NaBwFRPsccnawrIUYrUp69ZL6QNu-sPWj7ftA>
-Feedback-ID: iad51458e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 7 Jul 2022 14:23:11 -0400 (EDT)
-Date:   Thu, 7 Jul 2022 11:22:15 -0700
-From:   Boqun Feng <boqun.feng@gmail.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mike Stowell <mstowell@redhat.com>
-Subject: Re: [PATCH v3] locking/rtmutex: Limit # of lock stealing for non-RT
- waiters
-Message-ID: <YsckV+iWLxPC+eH5@boqun-archlinux>
-References: <20220706135916.980580-1-longman@redhat.com>
- <f3051cbb-313c-ba88-66c9-3f8f8d88d806@redhat.com>
+        Thu, 07 Jul 2022 11:23:58 -0700 (PDT)
+From:   prabhakar.csengg@gmail.com
+X-Google-Original-From: prabhakar.mahadev-lad.rj@bp.renesas.com
+To:     Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-gpio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v8 0/6] Renesas RZ/G2L IRQC support
+Date:   Thu,  7 Jul 2022 19:23:08 +0100
+Message-Id: <20220707182314.66610-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f3051cbb-313c-ba88-66c9-3f8f8d88d806@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 10:03:10AM -0400, Waiman Long wrote:
-> On 7/6/22 09:59, Waiman Long wrote:
-> > Commit 48eb3f4fcfd3 ("locking/rtmutex: Implement equal priority lock
-> > stealing") allows unlimited number of lock stealing's for non-RT
-> > tasks. That can lead to lock starvation of non-RT top waiter tasks if
-> > there is a constant incoming stream of non-RT lockers. This can cause
-> > rcu_preempt self-detected stall or even task lockup in PREEMPT_RT kernel.
-> > For example,
-> > 
-> > [77107.424943] rcu: INFO: rcu_preempt self-detected stall on CPU
-> > [ 1249.921363] INFO: task systemd:2178 blocked for more than 622 seconds.
-> > 
-> > Avoiding this problem and ensuring forward progress by limiting the
-> > number of times that a lock can be stolen from each waiter. This patch
-> > sets a threshold of 32. That number is arbitrary and can be changed
-> > if needed.
-> > 
-> > Fixes: 48eb3f4fcfd3 ("locking/rtmutex: Implement equal priority lock stealing")
-> > Signed-off-by: Waiman Long <longman@redhat.com>
-> > ---
-> >   kernel/locking/rtmutex.c        | 9 ++++++---
-> >   kernel/locking/rtmutex_common.h | 8 ++++++++
-> >   2 files changed, 14 insertions(+), 3 deletions(-)
-> > 
-> >   [v3: Increase threshold to 32 and add rcu_preempt self-detected stall]
-> 
-> Note that I decided to increase the threshold to 32 from 10 to reduce the
-> potential performance impact of this change, if any. We also found out that
-> this patch can fix some of the rcu_preempt self-detected stall problems that
-> we saw with the PREEMPT_RT kernel. So I added that information in the patch
-> description.
-> 
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Have you considered (and tested) whether we can set the threshold
-directly proportional to nr_cpu_ids? Because IIUC, the favorable case
-for lock stealing is that every CPU gets a chance to steal once. If one
-CPU can steal twice, 1) either there is a context switch between two
-tasks, which costs similarly as waking up the waiter, or 2) a task drops
-and re-graps a lock, which means the task wants to yield to other
-waiters of the lock.
+Hi All,
 
-Regards,
-Boqun
+The RZ/G2L Interrupt Controller is a front-end for the GIC found on
+Renesas RZ/G2L SoC's with below pins:
+- IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI
+  interrupts
+- GPIO pins used as external interrupt input pins out of GPIOINT0-122 a
+  maximum of only 32 can be mapped to 32 GIC SPI interrupts,
+- NMI edge select.
 
-> Cheers,
-> Longman
-> 
+                                                             _____________
+                                                             |    GIC     |
+                                                             |  ________  |
+                                      ____________           | |        | |
+NMI --------------------------------->|          |  SPI0-479 | | GIC-600| |
+             _______                  |          |------------>|        | |
+             |      |                 |          |  PPI16-31 | |        | |
+             |      | IRQ0-IRQ7       |   IRQC   |------------>|        | |
+P0_P48_4 --->| GPIO |---------------->|          |           | |________| |
+             |      |GPIOINT0-122     |          |           |            |
+             |      |---------------->| TINT0-31 |           |            |
+             |______|                 |__________|           |____________|
+
+The proposed patches add hierarchical IRQ domain, one in IRQC driver and
+another in pinctrl driver. Upon interrupt requests map the interrupt to
+GIC. Out of GPIOINT0-122 only 32 can be mapped to GIC SPI, this mapping is
+handled by the pinctrl and IRQC driver.
+
+Cheers,
+Prabhakar
+
+v7->v8
+* Fixed return value in case of devm_reset_control_get_exclusive() failure.
+* Included patch [0] from Marc ([0] https://git.kernel.org/pub/scm/linux/kernel/
+  git/maz/arm-platforms.git/patch/?id=178b7e21459e9a7e2a2c369711ef0cc9b1cfbcd7)
+
+v6->v7:
+* Used devm_reset_control_get_exclusive() instead of
+  devm_reset_control_get_exclusive_by_index()
+* Included RB tag from Linus for patch 5/5
+* Switched to newer version of populate_parent_alloc_arg() (patch depends
+  on https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git/
+  patch/?id=178b7e21459e9a7e2a2c369711ef0cc9b1cfbcd7)
+
+v5->v6:
+* Fixed review comments pointed by Marc
+* Included Ack from Rob
+
+v4->v5:
+* Updated commit message for patch 3/5
+* Dropped interrupt-parent from and included RB tag from Geert
+  for patch 4/5
+* Implemented init_valid_mask() callback
+* Dropped ngirq patch from previous series
+* Dropped patches 4/7 and 5/7 from previous patch series will handle
+  it separately.
+
+v3->v4:
+* Updated description for interrupts-cells property in patch #1
+* Dropped the patch which overriding free callback in gpiolib
+* Used devm helpers in patch#2
+* Patch #4, #5 and #6 are newly added
+* In patch #7 dropped using gpio offset as hwirq
+* Implemented immutable GPIO in patch #7
+* Implemented child_offset_to_irq() callback in patch #7
+
+v2->v3:
+* Updated description for interrupts-cells property in patch #1
+* Included RB tag from Geert for binding patch
+* Fixed review comments pointed by Geert, Biju and Sergei.
+
+v1->v2:
+* Included RB tag from Rob
+* Fixed review comments pointed by Geert
+* included GPIO driver changes
+
+RFCV4 -> V1:
+* Used unevaluatedProperties.
+* Altered the sequence of reg property
+* Set the parent type
+* Used raw_spin_lock() instead of raw_spin_lock_irqsave()
+* Simplified parsing IRQ map.
+* Will send the GPIO and pinctrl changes as part of separate series
+
+RFC v4:
+* Used locking while RMW
+* Now using interrupts property instead of interrupt-map
+* Patch series depends on [0]
+* Updated binding doc
+* Fixed comments pointed by Andy
+
+[0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
+20220316200633.28974-1-prabhakar.mahadev-lad.rj@xxxxxxxxxxxxxx/
+
+RFC v3:
+-> Re-structured the driver as a hierarchical irq domain instead of chained
+-> made use of IRQCHIP_* macros
+-> dropped locking
+-> Added support for IRQ0-7 interrupts
+-> Introduced 2 new patches for GPIOLIB
+-> Switched to using GPIOLIB for irqdomains in pinctrl
+
+RFC v2: https://patchwork.kernel.org/project/linux-renesas-soc/cover/
+20210921193028.13099-1-prabhakar.mahadev-lad.rj@xxxxxxxxxxxxxx/
+
+RFC v1: https://patchwork.kernel.org/project/linux-renesas-soc/cover/
+20210803175109.1729-1-prabhakar.mahadev-lad.rj@xxxxxxxxxxxxxx/
+
+Lad Prabhakar (5):
+  dt-bindings: interrupt-controller: Add Renesas RZ/G2L Interrupt
+    Controller
+  irqchip: Add RZ/G2L IA55 Interrupt Controller driver
+  gpio: gpiolib: Allow free() callback to be overridden
+  dt-bindings: pinctrl: renesas,rzg2l-pinctrl: Document the properties
+    to handle GPIO IRQ
+  pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to handle GPIO
+    interrupt
+
+Marc Zyngier (1):
+  gpio: Remove dynamic allocation from populate_parent_alloc_arg()
+
+ .../renesas,rzg2l-irqc.yaml                   | 133 ++++++
+ .../pinctrl/renesas,rzg2l-pinctrl.yaml        |  15 +
+ drivers/gpio/gpio-msc313.c                    |  15 +-
+ drivers/gpio/gpio-tegra.c                     |  15 +-
+ drivers/gpio/gpio-tegra186.c                  |  15 +-
+ drivers/gpio/gpio-thunderx.c                  |  15 +-
+ drivers/gpio/gpio-visconti.c                  |  15 +-
+ drivers/gpio/gpiolib.c                        |  51 ++-
+ drivers/irqchip/Kconfig                       |   8 +
+ drivers/irqchip/Makefile                      |   1 +
+ drivers/irqchip/irq-renesas-rzg2l.c           | 393 ++++++++++++++++++
+ drivers/pinctrl/qcom/pinctrl-spmi-gpio.c      |  15 +-
+ drivers/pinctrl/renesas/pinctrl-rzg2l.c       | 233 +++++++++++
+ include/linux/gpio/driver.h                   |  42 +-
+ 14 files changed, 862 insertions(+), 104 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
+ create mode 100644 drivers/irqchip/irq-renesas-rzg2l.c
+
+-- 
+2.25.1
+
