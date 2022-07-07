@@ -2,156 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5824AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235573AbiGGRqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 13:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
+        id S231875AbiGGRri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 13:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235806AbiGGRp7 (ORCPT
+        with ESMTP id S233757AbiGGRrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 13:45:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36D95C970
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 10:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657215958; x=1688751958;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cWJOUy1nIQhBbWGNLoGxZAU40Vqt24Kx+Nx/iFznGTU=;
-  b=awXUWInlLa08Myloa9XO1sDewJKwgimjD31hJjw8lVId/MAT6sdGreS7
-   HtTX/rZY6Htw1Y3t3pTRhoYHqoAPASM5vG9mlEeVe/E0BEwH1Xoyv0C59
-   SKjNIAuRKjH7e6sK6FRCiBrKv2cmpd/Vuhgfx4gXYQHe8qOgYglrExrMC
-   Kx0IZnbA4S8OYbGeawUS1hc3KwMtYv8QzWNT23OkiMrK2tEEj6Qzgu34f
-   AzKEHc5Hf/qxmn2TaZ8I6bA2R5L5CwFq08a9g6+TS7FeZ5gFBsA/V1Squ
-   QGyrCaeYt2/S8UvXaTbFoe6mwX2mNoSzUl7vFGFlE1yS2akXmV6DuQqCf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284108548"
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="284108548"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 10:45:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="568611280"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 07 Jul 2022 10:45:54 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9VZa-000MGw-8F;
-        Thu, 07 Jul 2022 17:45:54 +0000
-Date:   Fri, 8 Jul 2022 01:45:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Karthik Alapati <mail@karthek.com>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, Shuah Khan <skhan@linuxfoundation.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        Thu, 7 Jul 2022 13:47:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02EE55C97D;
+        Thu,  7 Jul 2022 10:47:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47E32620A6;
+        Thu,  7 Jul 2022 17:47:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56393C3411E;
+        Thu,  7 Jul 2022 17:47:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657216041;
+        bh=Om5lyrI/FUfOSiu1TyYTkifd9deSCv6M320djg1nrZM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UG3QjZNLJDSaydTOuou9yLJk6u83CwpZbBj5O+2xK1GfiiaPV42R0bXH1JtEnday0
+         VD8rGxK/iCJnQiv8eJhawEFOgxSSlbP+IMuWmfz05KTZ70HwZ1bZInOG0kRjWwB4oz
+         /rYHtW+c6EhbNGb8LoEYFGQ+qQQsFvoepBMdDdBZx2Y9wKK5ika0GmVDbUGqaysUns
+         Ymmd/E5JeU7n1pm72iF1aMQRgTHulPBLzXEIqitMDXSW6+Pkak3P9AvRCRbbF9xdlD
+         sTw1r+Th1KduLILQQctDHy+F9Mo8g5U4kU8vZGJLN5zDSh/26hWksF8pEhMWFRGMxb
+         AxpQbzIyw3J1Q==
+Date:   Thu, 7 Jul 2022 18:57:03 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: greybus: don't use index pointer after iter
-Message-ID: <202207080123.R3ePp3SE-lkp@intel.com>
-References: <Ysa1oopf0ELw+OfB@karthik-strix-linux.karthek.com>
+Subject: Re: [PATCH v2 03/10] iio: adc: mcp3911: add support for buffers
+Message-ID: <20220707185703.4a5a3a30@jic23-huawei>
+In-Reply-To: <Yr1fqi/49l1nWYtt@gmail.com>
+References: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
+        <20220625103853.2470346-3-marcus.folkesson@gmail.com>
+        <20220625124537.163bf426@jic23-huawei>
+        <Yr1fqi/49l1nWYtt@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ysa1oopf0ELw+OfB@karthik-strix-linux.karthek.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Karthik,
 
-Thank you for the patch! Perhaps something to improve:
+> > >  static const struct iio_info mcp3911_info = {
+> > >  	.read_raw = mcp3911_read_raw,
+> > >  	.write_raw = mcp3911_write_raw,
+> > > @@ -303,7 +353,7 @@ static int mcp3911_probe(struct spi_device *spi)
+> > >  		goto clk_disable;
+> > >  
+> > >  	indio_dev->name = spi_get_device_id(spi)->name;
+> > > -	indio_dev->modes = INDIO_DIRECT_MODE;
+> > > +	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;  
+> > 
+> > The core sets INDIO_BUFFER_TRIGGERED as part of devm_iio_triggered_buffer_setup()
+> > so you need to set DIRECT_MODE here (that one isn't visible to the core)  
+> 
+> Ok, thank you. I sent patches that fixes this in two other ADC-drivers
+> as well to avoid more people following the same thing.
 
-[auto build test WARNING on v5.19-rc5]
-[also build test WARNING on linus/master]
-[cannot apply to staging/staging-testing next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Thanks. Much appreciated!
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Karthik-Alapati/staging-greybus-don-t-use-index-pointer-after-iter/20220707-183311
-base:    88084a3df1672e131ddc1b4e39eeacfd39864acf
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220708/202207080123.R3ePp3SE-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/bc295082ef055003c6018b57d3c56c5aefcb65c5
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Karthik-Alapati/staging-greybus-don-t-use-index-pointer-after-iter/20220707-183311
-        git checkout bc295082ef055003c6018b57d3c56c5aefcb65c5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/staging/greybus/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/staging/greybus/audio_helper.c: In function 'gbaudio_dapm_free_controls':
-   drivers/staging/greybus/audio_helper.c:128:32: error: expected ';' before 'for'
-     128 |                 w_found = false
-         |                                ^
-         |                                ;
->> drivers/staging/greybus/audio_helper.c:119:14: warning: variable 'w_found' set but not used [-Wunused-but-set-variable]
-     119 |         bool w_found = false;
-         |              ^~~~~~~
->> drivers/staging/greybus/audio_helper.c:118:41: warning: unused variable 'next_w' [-Wunused-variable]
-     118 |         struct snd_soc_dapm_widget *w, *next_w;
-         |                                         ^~~~~~
-
-
-vim +/w_found +119 drivers/staging/greybus/audio_helper.c
-
-   112	
-   113	int gbaudio_dapm_free_controls(struct snd_soc_dapm_context *dapm,
-   114				       const struct snd_soc_dapm_widget *widget,
-   115				       int num)
-   116	{
-   117		int i;
- > 118		struct snd_soc_dapm_widget *w, *next_w;
- > 119		bool w_found = false;
-   120	#ifdef CONFIG_DEBUG_FS
-   121		struct dentry *parent = dapm->debugfs_dapm;
-   122		struct dentry *debugfs_w = NULL;
-   123	#endif
-   124	
-   125		mutex_lock(&dapm->card->dapm_mutex);
-   126		for (i = 0; i < num; i++) {
-   127			/* below logic can be optimized to identify widget pointer */
-   128			w_found = false
-   129			list_for_each_entry_safe(w, next_w, &dapm->card->widgets,
-   130						 list) {
-   131				if (w->dapm != dapm)
-   132					continue;
-   133				if (!strcmp(w->name, widget->name)) {
-   134					w_found = true;
-   135					break;
-   136				}
-   137				w = NULL;
-   138			}
-   139			if (!w_found) {
-   140				dev_err(dapm->dev, "%s: widget not found\n",
-   141					widget->name);
-   142				widget++;
-   143				continue;
-   144			}
-   145			widget++;
-   146	#ifdef CONFIG_DEBUG_FS
-   147			if (!parent)
-   148				debugfs_w = debugfs_lookup(w->name, parent);
-   149			debugfs_remove(debugfs_w);
-   150			debugfs_w = NULL;
-   151	#endif
-   152			gbaudio_dapm_free_widget(w);
-   153		}
-   154		mutex_unlock(&dapm->card->dapm_mutex);
-   155		return 0;
-   156	}
-   157	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
