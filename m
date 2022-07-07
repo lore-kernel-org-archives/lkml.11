@@ -2,102 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2B2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235040AbiGGKDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
+        id S235227AbiGGKEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235161AbiGGKDq (ORCPT
+        with ESMTP id S232388AbiGGKEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:03:46 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC083192C
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:03:45 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id v14so25583978wra.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:03:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=t0vZOGzWGZ/XO6zAE9EANkv0Ksk8cGK1twtf6zicImM=;
-        b=kznfz8BZq2mc6CDFmmSESwHqfYtxDnIQcY3udHhOo5r4x7ew35us/9p0iWIfwJwKfv
-         FKHSR/kazvJsEtK+ZxxdYyMBQqKz01aiywfvbDtuh8S+551PWf0sNMw1N/eJlVlMQnG8
-         fn4YijInV79eZvhrTHH/o5crrzrgk1ZLXFWYrPBG+CL5RVRzGGuSfg14/FCbLRZec7dn
-         tYlkSqbyKi6AP+4xr49K/LTyy04hmcDDt6kkkEJFXGy3IdiY/XdW5p1zDgtp8PdwSdGI
-         gTqR/jNliQ1gf99f8/j6WzlNeqPjuYXoxuuAGyNRX7RqmHVpv8gh7eO5UoZytJtNttrq
-         prag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=t0vZOGzWGZ/XO6zAE9EANkv0Ksk8cGK1twtf6zicImM=;
-        b=vNn4BGBIvCPwb0wUXz7Xp5zZ6eGydssor0JxJDOTtvZ/D1JQsPew+VQhLUXXMrSTQF
-         O3JTM/nbkRMLRb1KXtjbBW5cRmOxcQTwrAcL9zgWxZtqJHIsIVUTZ6lrl4XSBAgcwBNY
-         DqrNV3PIAIkksb9i7olQZjsJk4e1pJPb9dyokhQRS5m9g5aB8+wfTZFEqNBVmmBSSskW
-         ae7nPpKKbpohRG99cACwxDoL+jgoCgIgtdYSplVWQRk4IohicxFMAKek8RZ7ghjc06Gi
-         d9PlxeOYrpgV3UdERX0F9pqFCcdkPGnD27ZB+5Uf9iry2+YLZGCHLvjIFfgLJPhmlhz4
-         2yqg==
-X-Gm-Message-State: AJIora8OJ8pitIL2NTB3Nk8rGVJx2nqTpq+utgnQIs0hiYwwdmnLQ4p9
-        hIi4ZzG5SN2z1D7w0BXw27v0lA==
-X-Google-Smtp-Source: AGRyM1shZYWd4bEBmVlz7fWpCBjNR12KwTWTJeKuIpR9ErTrkaVkZ5U1PJdsIhR7FR75vPQYLUsd3Q==
-X-Received: by 2002:a5d:6d06:0:b0:21b:c433:d1f6 with SMTP id e6-20020a5d6d06000000b0021bc433d1f6mr42623372wrq.717.1657188223813;
-        Thu, 07 Jul 2022 03:03:43 -0700 (PDT)
-Received: from localhost.localdomain ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id h14-20020a5d548e000000b0021d7ad6b9fdsm4612034wrv.57.2022.07.07.03.03.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 03:03:43 -0700 (PDT)
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Mike Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org,
+        Thu, 7 Jul 2022 06:04:33 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234A74506F;
+        Thu,  7 Jul 2022 03:04:31 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LdsT94X8Gz4xRC;
+        Thu,  7 Jul 2022 20:04:29 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657188269;
+        bh=i2dbOs/VUUaAO1Ljbk+HDAfdNK0zAjx0vQPqkcIQrxk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ar6bBk0KHYvZQmWIpTGFDS0n/4a9ezDkUaZiDHD+oWpeYqso2NT9xolx/9pVErXsP
+         omsZzMRqJRoDfiIsEIwM7n16eFHQdU4D0mZzU2MFDi+VYCWQviVBaJvo05m0Y6ey+o
+         iqe6v5T3y+mKJlOjZUcIUEfNBIGq/p4yMxQksWqYopc97g/q949xOXP7kcdNh3AvcE
+         K6HVdVYX8OxZCZcoGwCHr13YQr5b2So1kCKDcjBe1HbXma6iJP8WT+55SiOBq5vpyU
+         de/6uP8Xl5f45VGbghdpejqbudPcNv3j/gvLXiXzQWdhuGIsdBas6bAUSkPBslBU0z
+         s/PVm669L09UQ==
+Date:   Thu, 7 Jul 2022 20:04:28 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Cc:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm@vger.kernel.org, Abel Vesa <abel.vesa@linaro.org>
-Subject: [RFC PATCH 4/4] clk: Skip disabling clocks if they have consumers
-Date:   Thu,  7 Jul 2022 13:03:09 +0300
-Message-Id: <20220707100309.1357663-4-abel.vesa@linaro.org>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220707100309.1357663-1-abel.vesa@linaro.org>
-References: <20220707100309.1357663-1-abel.vesa@linaro.org>
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the sound-asoc tree
+Message-ID: <20220707200428.3eb1a20e@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/j3ysHYpGTAI_Szgav8uDv3+";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a clock has already consumers, it should be considered as used.
-So clk_disable_unused should leave it as is.
+--Sig_/j3ysHYpGTAI_Szgav8uDv3+
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
----
- drivers/clk/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Hi all,
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index e412e83a6e28..6cce31ea4f72 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -1228,6 +1228,9 @@ static void __init clk_unprepare_unused_subtree(struct clk_core *core)
- 	hlist_for_each_entry(child, &core->children, child_node)
- 		clk_unprepare_unused_subtree(child);
- 
-+	if (core->consumers_count)
-+		return;
-+
- 	if (core->prepare_count)
- 		return;
- 
-@@ -1259,6 +1262,9 @@ static void __init clk_disable_unused_subtree(struct clk_core *core)
- 	hlist_for_each_entry(child, &core->children, child_node)
- 		clk_disable_unused_subtree(child);
- 
-+	if (core->consumers_count)
-+		return;
-+
- 	if (core->flags & CLK_OPS_PARENT_ENABLE)
- 		clk_core_prepare_enable(core->parent);
- 
--- 
-2.34.3
+After merging the sound-asoc tree, today's linux-next build (powerpc
+allyesconfig) failed like this:
 
+sound/soc/amd/acp-es8336.c: In function 'st_es8336_late_probe':
+sound/soc/amd/acp-es8336.c:204:33: error: invalid use of undefined type 'st=
+ruct acpi_device'
+  204 |                 put_device(&adev->dev);
+      |                                 ^~
+sound/soc/soc-acpi.c:34:1: error: redefinition of 'snd_soc_acpi_find_machin=
+e'
+   34 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from sound/soc/soc-acpi.c:9:
+include/sound/soc-acpi.h:38:1: note: previous definition of 'snd_soc_acpi_f=
+ind_machine' with type 'struct snd_soc_acpi_mach *(struct snd_soc_acpi_mach=
+ *)'
+   38 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~
+sound/soc/soc-acpi.c: In function 'snd_soc_acpi_find_package':
+sound/soc/soc-acpi.c:58:36: error: implicit declaration of function 'acpi_f=
+etch_acpi_dev'; did you mean 'device_match_acpi_dev'? [-Werror=3Dimplicit-f=
+unction-declaration]
+   58 |         struct acpi_device *adev =3D acpi_fetch_acpi_dev(handle);
+      |                                    ^~~~~~~~~~~~~~~~~~~
+      |                                    device_match_acpi_dev
+sound/soc/soc-acpi.c:58:36: error: initialization of 'struct acpi_device *'=
+ from 'int' makes pointer from integer without a cast [-Werror=3Dint-conver=
+sion]
+sound/soc/soc-acpi.c:64:25: error: invalid use of undefined type 'struct ac=
+pi_device'
+   64 |         if (adev && adev->status.present && adev->status.functional=
+) {
+      |                         ^~
+sound/soc/soc-acpi.c:64:49: error: invalid use of undefined type 'struct ac=
+pi_device'
+   64 |         if (adev && adev->status.present && adev->status.functional=
+) {
+      |                                                 ^~
+sound/soc/soc-acpi.c:80:26: error: implicit declaration of function 'acpi_e=
+xtract_package' [-Werror=3Dimplicit-function-declaration]
+   80 |                 status =3D acpi_extract_package(myobj,
+      |                          ^~~~~~~~~~~~~~~~~~~~
+sound/soc/soc-acpi.c: At top level:
+sound/soc/soc-acpi.c:95:6: error: redefinition of 'snd_soc_acpi_find_packag=
+e_from_hid'
+   95 | bool snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from sound/soc/soc-acpi.c:9:
+include/sound/soc-acpi.h:44:1: note: previous definition of 'snd_soc_acpi_f=
+ind_package_from_hid' with type 'bool(const u8 *, struct snd_soc_acpi_packa=
+ge_context *)' {aka '_Bool(const unsigned char *, struct snd_soc_acpi_packa=
+ge_context *)'}
+   44 | snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sound/soc/soc-acpi.c:109:27: error: redefinition of 'snd_soc_acpi_codec_lis=
+t'
+  109 | struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from sound/soc/soc-acpi.c:9:
+include/sound/soc-acpi.h:51:41: note: previous definition of 'snd_soc_acpi_=
+codec_list' with type 'struct snd_soc_acpi_mach *(void *)'
+   51 | static inline struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(voi=
+d *arg)
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~
+
+Caused by commit
+
+  f94fa8405801 ("ASoC: amd: enable machine driver build for Jadeite platfor=
+m")
+
+I have reverted that commit for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/j3ysHYpGTAI_Szgav8uDv3+
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGr6wACgkQAVBC80lX
+0GzyRwf/e3jCKJhGWJjtf3gEUDsnMAAgkYg8UGWHhi4z2wi7eQujHgCgnEOxypti
+ZPL3omrSzMd66G7SOyTzgtlds5m/JIT1CRwwp0wjQ8Mq55szZqHb6YmFKGnOIefL
+aybl+0Wd4Unvg4S8+TvgsDdrwE2me6OtGDCUYilKtrsnfB+onYibn0hK91oC2kOl
+1+jKCU0DV1y6wHDjDohATt/tczfub+t7r0KB2os1OVM6NCNhLVpYjKlGGeL7XQGI
+P8FVdGNF48QGtbc03L+W7culE9hCR2HIS4/x2jQrfppPiDRHY35YGn81YEZMbIoE
+iVqFq5p3rIheEJXf1L91QzKmaNcYhQ==
+=fDIi
+-----END PGP SIGNATURE-----
+
+--Sig_/j3ysHYpGTAI_Szgav8uDv3+--
