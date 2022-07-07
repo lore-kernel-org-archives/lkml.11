@@ -2,141 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83359C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C39D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235223AbiGGKlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        id S235273AbiGGKld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235129AbiGGKlP (ORCPT
+        with ESMTP id S234163AbiGGKlc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:41:15 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1628F33A39
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:41:11 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LdtFn0QyMzkWvL;
-        Thu,  7 Jul 2022 18:39:41 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Jul 2022 18:41:09 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
- 2022 18:41:08 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <anton@tuxera.com>, <akpm@linux-foundation.org>
-CC:     <linux-ntfs-dev@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <chenxiaosong2@huawei.com>,
-        <liuyongqiang13@huawei.com>, <yi.zhang@huawei.com>,
-        <zhangxiaoxu5@huawei.com>
-Subject: [PATCH v2] ntfs: fix use-after-free in ntfs_ucsncmp()
-Date:   Thu, 7 Jul 2022 18:53:29 +0800
-Message-ID: <20220707105329.4020708-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 7 Jul 2022 06:41:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A20214F66E
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:41:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657190490;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pwcg7T0JuistTDUMjOvWrknPf1gKH9MIp+DFOaxmRLk=;
+        b=fuEJw9ZUNg++bNFtkFC9byvxVKJ6yTXhgMsCSuFedlwBv1V6aeUQR/QnZ5PuvCdl5abyeH
+        7iQ0iSIojp6Rxc0amaXsctVpDqGpiUFHxTvrJf0yzWyht9hCI+o9kOfbc5d16KpCFDOYzh
+        gHQRL7w73huf8Fw7s36uOTJNTBFjMCM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-651-832HTB9TN7-LqQ0KG56UMQ-1; Thu, 07 Jul 2022 06:41:29 -0400
+X-MC-Unique: 832HTB9TN7-LqQ0KG56UMQ-1
+Received: by mail-wm1-f70.google.com with SMTP id j19-20020a05600c191300b003a048196712so9390909wmq.4
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:41:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Pwcg7T0JuistTDUMjOvWrknPf1gKH9MIp+DFOaxmRLk=;
+        b=wc5sb7NxF/Y3r63XIOfz4micGTVOZF/jH7PiBUNoaeZN7F1O0Ho+b49P1ZHCSePtMJ
+         2xIQ1l08ii4QThTz+gZgExEanXCXyrHI8XaPiRafYPSv5qNqxDIuJ2kRemWXXf2NhLmj
+         VblHVyoJJ+xSYKXkmxgB0kDkSE8o2ls9LhPRCWpExAoRgUrLDBNp5pAdY5j0/MgJ6bEL
+         Alt2RvWauhJU9TQizO8NSodqC7rDgB2mUe6E1lq+jaMYaL2cGm2zSeoQwFutvU5JfTux
+         Yxmd/qtlbis5WpmNuoAUQ0RzEHimRlz96SEMiCDimgkgJYtHAuC/EY2U3h0lKeKDheTk
+         6meg==
+X-Gm-Message-State: AJIora/qpkd3b3gJEcsOXcupIcEYnuZYupjK/TzwRAp0TvoninhSzif1
+        BGUtdD9c1cXJipTwLFHk83Z2WJmgNVrAd6Am6EU4UYSYo1tOxnMxqMubKN63aR6LC35ggqqck2w
+        +ZA8Bs62WRTR+DXfR13IeilZDwDGpSXBP8myNBnJysR6O5g4fPUgpI5Flz3tzhYG7SaSNu+nwX+
+        RJ
+X-Received: by 2002:a05:6000:1449:b0:21b:b171:5eb8 with SMTP id v9-20020a056000144900b0021bb1715eb8mr42593899wrx.634.1657190488473;
+        Thu, 07 Jul 2022 03:41:28 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1umfdWDsVBEWSxSBLaDDZ9YXVnNYpWt9Xos/OmPvPmnoyKP3JJo7OU6aWB2hLTWYc0keDEnWg==
+X-Received: by 2002:a05:6000:1449:b0:21b:b171:5eb8 with SMTP id v9-20020a056000144900b0021bb1715eb8mr42593876wrx.634.1657190488245;
+        Thu, 07 Jul 2022 03:41:28 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id n35-20020a05600c3ba300b003a039054567sm28432130wms.18.2022.07.07.03.41.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 03:41:27 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Jim Mattson <jmattson@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 20/28] KVM: VMX: Add missing VMENTRY controls to
+ vmcs_config
+In-Reply-To: <CALMp9eTVAOCvWQ-3A6VmwhJk6skES9phMPC3O-za7Rk05SfVTg@mail.gmail.com>
+References: <20220629150625.238286-1-vkuznets@redhat.com>
+ <20220629150625.238286-21-vkuznets@redhat.com>
+ <CALMp9eTVAOCvWQ-3A6VmwhJk6skES9phMPC3O-za7Rk05SfVTg@mail.gmail.com>
+Date:   Thu, 07 Jul 2022 12:41:26 +0200
+Message-ID: <87fsjdqk6h.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reported use-after-free bug as follows:
+Jim Mattson <jmattson@google.com> writes:
 
-==================================================================
-BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
-Read of size 2 at addr ffff8880751acee8 by task a.out/879
+> On Wed, Jun 29, 2022 at 8:07 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
+>>
+>> As a preparation to reusing the result of setup_vmcs_config() in
+>> nested VMX MSR setup, add the VMENTRY controls which KVM doesn't
+>> use but supports for nVMX to KVM_OPT_VMX_VM_ENTRY_CONTROLS and
+>> filter them out in vmx_vmentry_ctrl().
+>>
+>> No functional change intended.
+>>
+>> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+>> ---
+>>  arch/x86/kvm/vmx/vmx.c | 3 +++
+>>  arch/x86/kvm/vmx/vmx.h | 4 +++-
+>>  2 files changed, 6 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+>> index e5ab77ed37e4..b774b6391e0e 100644
+>> --- a/arch/x86/kvm/vmx/vmx.c
+>> +++ b/arch/x86/kvm/vmx/vmx.c
+>> @@ -4179,6 +4179,9 @@ static u32 vmx_vmentry_ctrl(void)
+>>  {
+>>         u32 vmentry_ctrl = vmcs_config.vmentry_ctrl;
+>>
+>> +       /* Not used by KVM but supported for nesting. */
+>> +       vmentry_ctrl &= ~(VM_ENTRY_SMM | VM_ENTRY_DEACT_DUAL_MONITOR);
+>> +
+>
+> LOL! KVM does not emulate the dual-monitor treatment of SMIs and SMM.
+> Do we actually claim to support these VM-entry controls today?!?
+>
 
-CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x1c0/0x2b0
- print_address_description.constprop.0.cold+0xd4/0x484
- print_report.cold+0x55/0x232
- kasan_report+0xbf/0xf0
- ntfs_ucsncmp+0x123/0x130
- ntfs_are_names_equal.cold+0x2b/0x41
- ntfs_attr_find+0x43b/0xb90
- ntfs_attr_lookup+0x16d/0x1e0
- ntfs_read_locked_attr_inode+0x4aa/0x2360
- ntfs_attr_iget+0x1af/0x220
- ntfs_read_locked_inode+0x246c/0x5120
- ntfs_iget+0x132/0x180
- load_system_files+0x1cc6/0x3480
- ntfs_fill_super+0xa66/0x1cf0
- mount_bdev+0x38d/0x460
- legacy_get_tree+0x10d/0x220
- vfs_get_tree+0x93/0x300
- do_new_mount+0x2da/0x6d0
- path_mount+0x496/0x19d0
- __x64_sys_mount+0x284/0x300
- do_syscall_64+0x3b/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3f2118d9ea
-Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
-RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
-R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+No, just a brainfart on my side, nested_vmx_setup_ctls_msrs() filters
+them out too. I'll drop the patch.
 
-The buggy address belongs to the physical page:
-page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
-memcg:ffff888101f7e180
-anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
-raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
-raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
-page dumped because: kasan: bad access detected
+>>         if (vmx_pt_mode_is_system())
+>>                 vmentry_ctrl &= ~(VM_ENTRY_PT_CONCEAL_PIP |
+>>                                   VM_ENTRY_LOAD_IA32_RTIT_CTL);
+>> diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+>> index d4503a38735b..7ada8410a037 100644
+>> --- a/arch/x86/kvm/vmx/vmx.h
+>> +++ b/arch/x86/kvm/vmx/vmx.h
+>> @@ -479,7 +479,9 @@ static inline u8 vmx_get_rvi(void)
+>>                 __KVM_REQ_VMX_VM_ENTRY_CONTROLS
+>>  #endif
+>>  #define KVM_OPT_VMX_VM_ENTRY_CONTROLS                          \
+>> -       (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL |                  \
+>> +       (VM_ENTRY_SMM |                                         \
+>> +       VM_ENTRY_DEACT_DUAL_MONITOR |                           \
+>> +       VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL |                   \
+>>         VM_ENTRY_LOAD_IA32_PAT |                                \
+>>         VM_ENTRY_LOAD_IA32_EFER |                               \
+>>         VM_ENTRY_LOAD_BNDCFGS |                                 \
+>> --
+>> 2.35.3
+>>
+>
 
-Memory state around the buggy address:
- ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-                                                          ^
- ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
-name string is out of bounds.
-
-Fix this by adding sanity check on end address of attibute name string.
-
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
-v1 -> v2: remove redundant statement
-
- fs/ntfs/attrib.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
-index 4de597a83b88..9ab8766872d2 100644
---- a/fs/ntfs/attrib.c
-+++ b/fs/ntfs/attrib.c
-@@ -592,8 +592,12 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
- 		a = (ATTR_RECORD*)((u8*)ctx->attr +
- 				le32_to_cpu(ctx->attr->length));
- 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
--		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
--				le32_to_cpu(ctx->mrec->bytes_allocated))
-+		u8 *mrec_end = (u8 *)ctx->mrec +
-+		               le32_to_cpu(ctx->mrec->bytes_allocated);
-+		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
-+		               a->name_length;
-+		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
-+		    name_end > mrec_end)
- 			break;
- 		ctx->attr = a;
- 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
 -- 
-2.31.1
+Vitaly
 
