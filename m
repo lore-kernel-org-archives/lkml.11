@@ -2,113 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCA2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9261DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234696AbiGGCqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
+        id S234608AbiGGCvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234632AbiGGCqI (ORCPT
+        with ESMTP id S229775AbiGGCvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:46:08 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9386C2F3A7
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:46:07 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-10c0d96953fso10085553fac.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:46:07 -0700 (PDT)
+        Wed, 6 Jul 2022 22:51:45 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0452F3B9
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:51:44 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id z8-20020a056902054800b0066e2f4d7ae8so8979214ybs.18
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RSHQWkovr83QuNDZMnV0Uka1kuFVRZuDsMTfWh9lJ2Y=;
-        b=tuQoN6u9YrZctKw257A+8+huZEKUkRHbB/ZNuWPgKot44jR1nkVLR7jLgZs+7CUeU1
-         90R8Tmk+I3T3d9wMEY97BgwFXWSBnnzo4OzAuMXNuPxY2We3P8APGT5GzFVhEcV+4Zo0
-         shdWX2KUTUk8WS5sW8F9SzWlxjvKviZx+Uh11WqfJPkLB1mFt29a66XUC1pblwp9psGN
-         xoyHukYAD+JwgB7WvtKvaTh94kbYNEbcJCZQwDE8u6nIE7t/vD4MUn2SNq0Eo465iaMg
-         chnrXpqHz65N1nxdBFcZ+o/ge5cO/dJfIyauHYUQl/UGHPQbPGo+A/77VU6t2ORZNiRp
-         n+Ag==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=7LPSlq7Trkpni6Jiwio8XRfrUDHcOcS9L2wBFBR2Vzo=;
+        b=abzazCQT38DTazMiKkJ2tFav1z5MzZhausH2mwikpoIfOK5eCPul9C4byXwCWzLOXT
+         xhWQL709yuL0pVbkXWaW5K+AjBEWpvihA98fJhwMJn/OIqLAXF6Shi6B+NSxcOw+wHZf
+         pcnPXwc4JBaHkMYDqlIlE7KjNr/uDUgN5443g6weKVY1Z73u+0XxnMPkxh+Imd8V66x7
+         snjGnB4jYIyvwGmkLd6IxcgwES5AtwFd2OBUt6eZsu/RHseCE/L6WO04BAMXge5uscNA
+         UuwnwCqOHx5M8cjTWO77p1d3CrFvCp7ePhNo+QPLwaetw2HcmdKMBnorMsRG2/SIUD+4
+         Q7UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RSHQWkovr83QuNDZMnV0Uka1kuFVRZuDsMTfWh9lJ2Y=;
-        b=iRMYy2z8KS9qHt1eMcrgW+xsWrVynfcbHlEC4DFlhObR9pzwQOPA3zkNShLzKgXCUP
-         0tvgXLl/mkyA+4bRuoRQRnHgSPt4nAi171dJ6DjmaG0MbV+7tATx+fgLaxbdCFtHXnH9
-         /Xr850P65o4NgrW1wxsI9sIPw/2VplEGJajAg0QxoSFcazLllheUqInNV+QHlvaf1CbG
-         bDyXqLf+0xcPAj2ogYkKMb+FDRsK/pm+FAzIyo15Qp5zS7aFrV9P0JiLn2vUizqcKpht
-         wC0R9x3/0zdthXFdrWikrAHms0KU0eLQM9yii0ogmvZc2pAMrZeDL1BcT/JJS+LhGgqN
-         NiLQ==
-X-Gm-Message-State: AJIora/QjYhiREp1I39PDsccMWBeZ3YOksKLeDuoMucKU2Hkrg1l1emx
-        AHk3+vHbtgcupQRBrXGnzuEZjw==
-X-Google-Smtp-Source: AGRyM1uOHdRlfRwW7UE6JgQ2/iUk746TxWu0nBI+IMaIMBvcmiy6MQqTjTlpq1uIIXwhippN7/qWTw==
-X-Received: by 2002:a05:6870:ac14:b0:10c:1d60:d4d2 with SMTP id kw20-20020a056870ac1400b0010c1d60d4d2mr1257153oab.58.1657161966982;
-        Wed, 06 Jul 2022 19:46:06 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id r6-20020a056870580600b001089aef1815sm16450814oap.20.2022.07.06.19.46.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 19:46:06 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 00/14] arm64: dts: qcom: QMP PHY fixes
-Date:   Wed,  6 Jul 2022 21:46:04 -0500
-Message-Id: <165716195971.869883.8845615807571040314.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220705114032.22787-1-johan+linaro@kernel.org>
-References: <20220705114032.22787-1-johan+linaro@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=7LPSlq7Trkpni6Jiwio8XRfrUDHcOcS9L2wBFBR2Vzo=;
+        b=a7Aa73mnw2UPRdxFLGiUZzR8XDRrf1k+qpJXMsqJZOtmNqTlfOzmV5h+I9FGtz0E7P
+         p9N8/N1LOEZHxsIJBuBB+0TGhiQvk1HRBtLT1EP/+QLPYg2dKgZaGHtVY8txNQPezixM
+         xwspkoo11yF1ekyKMT/PZ//xNHlc4/WLnBLgLpKVqY6dUMI0/fHiFB8UUj2P9Pe/WAym
+         JQ/OsIYtDcL/vofi43QkqbD/+gyVgAD1n/0+0IRRBjHyzXiM7/HSKritaY9zjD1zv5jA
+         sautt6oOXhGuz70+DybN/bijdKUG9cAs/II1eKBTsdR8MYQF75YwwpO39gDfx3z8iEUx
+         oPFA==
+X-Gm-Message-State: AJIora8ikkz5wuP4u5a2NhhMXCRA2SEXPEb9mSpEoIi8leb06UtsisTQ
+        dxHeCEtQnU4d733iWBuAqLPYCIv4wDr//ctDjLzcRi2GUyGfcLJIMdL//HXYX+WDZePhJphHEI7
+        LMYwYSm2UkA7R0LXRugkeJi863WQF1luS+worahsBoUArIJE/oysZe0DZGbIfHv4H/mQ=
+X-Google-Smtp-Source: AGRyM1sv2sZJGNvWqq79iz8jLwYOOA59LiIbMmIQLBcMUQ60SAqPfvBk+4L77cgS6cOmbTQVOiDruUFRyg==
+X-Received: from timvp.bld.corp.google.com ([2620:15c:183:200:7d77:c591:814b:4db6])
+ (user=timvp job=sendgmr) by 2002:a25:3414:0:b0:66e:4752:b055 with SMTP id
+ b20-20020a253414000000b0066e4752b055mr21451158yba.40.1657162303830; Wed, 06
+ Jul 2022 19:51:43 -0700 (PDT)
+Date:   Wed,  6 Jul 2022 20:51:39 -0600
+Message-Id: <20220706205136.v2.1.Ic7a7c81f880ab31533652e0928aa6e687bb268b5@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v2] platform/chrome: cros_ec: Send host event for prepare/complete
+From:   Tim Van Patten <timvp@google.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     rrangel@chromium.org, robbarnes@google.com,
+        Tim Van Patten <timvp@google.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Jul 2022 13:40:18 +0200, Johan Hovold wrote:
-> Here's a bunch of fixes for PHY related DT issues found while amending
-> the current QMP PHY schema:
-> 
-> 	https://lore.kernel.org/r/20220705094239.17174-1-johan+linaro@kernel.org
-> 
-> Included are also some cleanups of the MS8996 PCIe PHY node which make
-> the node match the new binding example.
-> 
-> [...]
+Update cros_ec_lpc_pm_ops to call cros_ec_lpc_suspend() during PM
+.prepare() and cros_ec_lpc_resume() during .complete. This allows the
+EC to log entry/exit of AP's suspend/resume more accurately.
 
-Applied, thanks!
+Signed-off-by: Tim Van Patten <timvp@google.com>
+---
 
-[01/14] arm64: dts: qcom: sc7280: drop PCIe PHY clock index
-        commit: 531c738fb36069d60aff267a0b25533a35d59fd0
-[02/14] arm64: dts: qcom: sm8250: add missing PCIe PHY clock-cells
-        commit: d9fd162ce764c227fcfd4242f6c1639895a9481f
-[03/14] arm64: dts: qcom: ipq6018: drop USB PHY clock index
-        commit: 9215a64a0776c4797ed08520655fba7e85530156
-[04/14] arm64: dts: qcom: ipq8074: drop USB PHY clock index
-        commit: de9e7f77d8694ed6f5064fe865711b5f8321c09d
-[05/14] arm64: dts: qcom: msm8996: drop USB PHY clock index
-        (no commit info)
-[06/14] arm64: dts: qcom: msm8998: drop USB PHY clock index
-        commit: ed9cbbcb8c6a1925db7995214602c6a8983ff870
-[07/14] arm64: dts: qcom: sm8350: drop USB PHY clock index
-        commit: af5515543b9b5999d547f4f2afcad95f0aff5b1d
-[08/14] arm64: dts: qcom: sm8450: drop USB PHY clock index
-        commit: 0aaa0a9a4745ff4b4ffeed80ce3463c9c8c0f693
-[09/14] arm64: dts: qcom: sc8280xp: drop UFS PHY clock-cells
-        commit: 119feff14672af57cc62d2e1350a34e4aa3c5f10
-[10/14] arm64: dts: qcom: sm8250: drop UFS PHY clock-cells
-        commit: be18bc7bd9e82e2d08095d9ed0d9978dcb707e7c
-[11/14] arm64: dts: qcom: sm8450: drop UFS PHY clock-cells
-        commit: e30d9f1e58c0f860b8a740c63527106146f0f3fd
-[12/14] arm64: dts: qcom: msm8996: add missing PCIe PHY clock-cells
-        (no commit info)
-[13/14] arm64: dts: qcom: msm8996: use non-empty ranges for PCIe PHYs
-        commit: 3a5da59af38d77088aa5226208cca0beb9125485
-[14/14] arm64: dts: qcom: msm8996: clean up PCIe PHY node
-        commit: 02d99d4cfe0984ea05edfbcbae2c9660a05f7b11
+Changes in v2:
+- Include cros_ec_resume() return value in dev_info() output.
+- Guard setting .prepare/.complete with #ifdef CONFIG_PM_SLEEP.
 
-Best regards,
+ drivers/platform/chrome/cros_ec_lpc.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
+index 7677ab3c0ead9..ce49fbc4ed2e1 100644
+--- a/drivers/platform/chrome/cros_ec_lpc.c
++++ b/drivers/platform/chrome/cros_ec_lpc.c
+@@ -534,19 +534,27 @@ static int cros_ec_lpc_suspend(struct device *dev)
+ {
+ 	struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
+ 
++	dev_info(dev, "Prepare EC suspend\n");
++
+ 	return cros_ec_suspend(ec_dev);
+ }
+ 
+-static int cros_ec_lpc_resume(struct device *dev)
++static void cros_ec_lpc_resume(struct device *dev)
+ {
+ 	struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
++	int ret;
++
++	ret = cros_ec_resume(ec_dev);
+ 
+-	return cros_ec_resume(ec_dev);
++	dev_info(dev, "EC resume completed: ret = %d\n", ret);
+ }
+ #endif
+ 
+ static const struct dev_pm_ops cros_ec_lpc_pm_ops = {
+-	SET_LATE_SYSTEM_SLEEP_PM_OPS(cros_ec_lpc_suspend, cros_ec_lpc_resume)
++#ifdef CONFIG_PM_SLEEP
++	.prepare = cros_ec_lpc_suspend,
++	.complete = cros_ec_lpc_resume
++#endif
+ };
+ 
+ static struct platform_driver cros_ec_lpc_driver = {
 -- 
-Bjorn Andersson <bjorn.andersson@linaro.org>
+2.37.0.rc0.161.g10f37bed90-goog
+
