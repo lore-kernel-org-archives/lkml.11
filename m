@@ -2,99 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11645CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00091CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236762AbiGGVMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 17:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59224 "EHLO
+        id S236679AbiGGVTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 17:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236777AbiGGVM2 (ORCPT
+        with ESMTP id S236225AbiGGVTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 17:12:28 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1C3D2FFCE;
-        Thu,  7 Jul 2022 14:12:26 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id k30so16556487edk.8;
-        Thu, 07 Jul 2022 14:12:26 -0700 (PDT)
+        Thu, 7 Jul 2022 17:19:49 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC398313A8;
+        Thu,  7 Jul 2022 14:19:46 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id y141so21848637pfb.7;
+        Thu, 07 Jul 2022 14:19:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E7lBX2NVyR4wLZQ7armge/PHuuUWSeFzw9RQb5K1xo8=;
-        b=WtBL5NKziFNuFTThNyyKxNqq993+zYRIUkT4vjvf6Boey1TYr16Iy6Kg5WLl0accKf
-         M3R3r0q5cjZhKBrhC9F9Pts9C/B1qSR9RpD87Et+zf1VDKnlCjjQtaOl+FxU5cHCdQFE
-         qNvHSRvgbBlLaOzHhWtRzkJOzd6WJ3Pjb8lA48fKI1LdbRfNt4V2peiD0LbFdI/eU0BO
-         Hikqrd9EUNEUs/L5yQnYPwFDZW7qx3ed2N1uIurkM9Ul1Wntrc5LOR9dQeXdpfT9Kjmg
-         JtRAfK2OS+/rk+0JTFTLdpdFS88Nke5QOhX6rtFm/D/ylsf/SIIBskXzaByujWUh0b9c
-         SnBQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6Mqly/bmUD1+v4qx6JacIhpg9Ul0/6TMbAP2G8iAsIU=;
+        b=Jy4LjqYXsHRJLEuWMy15VqPLyEiaTsf1cyTgG4LnEAnQ7+ZyzBgRaBgfsI3OLsSR25
+         AuLZIiP5ku1xcxEhyGX5xE6iCy8uPyufdJk38lQyS+2dEFVCnjKfrxa9QjazqgFtkLNt
+         XalKugilrwzxZdCPatAWtUZ10lmpfA0Dtsql+0SPL9T2QedYTIpGZoBWxMfR+mvz1XxA
+         oIianSf1mDs/H+/vYnKJFDZ2HpWIwjTIINByzQRlhyKgKGjFW1OTLD/crJxSprvn7wwb
+         D0tbQYBroY3kOJ8Syaut1HUYM0gwZXrTTqT3pWsLinpnHkfx4W6B1d29eeE02zENM2E5
+         4wOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E7lBX2NVyR4wLZQ7armge/PHuuUWSeFzw9RQb5K1xo8=;
-        b=DzxBdO3dxLcqcfvL3/3ljhb6k1IFgLrDyJlPbxLcBRoU7FFFL1ur0sTPv0JL/XoEIE
-         t8hM0fSaTV0E2HwshM2kInFzhBrZUASOtKRgf1PUe98bCceKVmtkd1T9MV7/Aw6Cv11+
-         lpFtYq5cNmzz/Km4l2pxZr2VrrBc5DZDpHbppbF5J8vJvYMnNaWVEqJ6e98wtlhYmDnm
-         wr+WKINWz9mSXrdptxhmMmcUGzOVBBb3FOONUafqP6SVWA0dHqxaU0YJQNO6Vn+OPcKw
-         zB/d0cmsDfWIksicjzwaKwQH0bB74FgxNKjfVCW7KG0d4tAJjkWyopKjtq2/FlYrxTyy
-         oMaw==
-X-Gm-Message-State: AJIora9J/T6imWWFIoK8xozmy9a0sXAYo4IiR6xxvOXOkIHNWzo0MXv0
-        wDOiCAGtjI1Dw1bSXmWMNtokU0pvP9NUaAcFRPGVBbld9/98uQ==
-X-Google-Smtp-Source: AGRyM1uu3GWZeriqyMwRw43BUsAdyD5/Ff+Q6S+6/8raxI7MhcRy13mOivlcRjUlnjBx7zoR3TsKjCB8RuKwpaY+71w=
-X-Received: by 2002:a05:6402:42cb:b0:43a:5df2:bb5d with SMTP id
- i11-20020a05640242cb00b0043a5df2bb5dmr138776edc.36.1657228345125; Thu, 07 Jul
- 2022 14:12:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6Mqly/bmUD1+v4qx6JacIhpg9Ul0/6TMbAP2G8iAsIU=;
+        b=L/qETWjrX7A90bI8m0ja6buSlEPyCLCrGbLW/L9m9U1k0oPqeECVT20nSb5DCzHtb/
+         cLgDTz9yYVELo4zvl/gpp0DtJ0JX1359nal9O50Mv6mLKfyfnI7pjRUDxw28unPEOJh3
+         vbhf+71Zl34U7QEivlKHRC2SkY335HXqp8SwqR8c5H9xdipFEmPAV/HbEiBQ00ambkeG
+         bWIGZ4pTv7v+rRL9FP56r81qKJqvtFhe0MfvWNOMG7DaKypyRfzZPRc7+pMYCE5V/6xc
+         Qle4gjqj6EqEnTHR3o5G3YvRwnspNK5AdGFNSdQbNdBSjEJwjRdL6b3CqLHMgLDKeb89
+         iJAg==
+X-Gm-Message-State: AJIora8vHH7VqyhCu7dBjYmoa1pWOmvybzPG+ZN+eNfE39SLEatkWCYy
+        EXmjsyiYkDLT88FAIOcrf7Q=
+X-Google-Smtp-Source: AGRyM1t5W9ZMr1j90syEK2lDjCt9pxLeU/e2mHN5T0KEFQkQACvggQZHVEjihw+PqNIHYc4CePKp/g==
+X-Received: by 2002:a63:5cd:0:b0:412:b163:b7e1 with SMTP id 196-20020a6305cd000000b00412b163b7e1mr51911pgf.451.1657228786230;
+        Thu, 07 Jul 2022 14:19:46 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id h12-20020a170902f70c00b0016bfa1a5170sm5207389plo.285.2022.07.07.14.19.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 14:19:45 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Fernando Ramos <greenfoo@u92.eu>,
+        Mark Yacoub <markyacoub@google.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm/dpu: Fix for non-visible planes
+Date:   Thu,  7 Jul 2022 14:20:00 -0700
+Message-Id: <20220707212003.1710163-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220707125242.425242-1-21cnbao@gmail.com> <20220707125242.425242-4-21cnbao@gmail.com>
- <be65d342-0d4d-473c-2ba8-bc58b708bfac@intel.com>
-In-Reply-To: <be65d342-0d4d-473c-2ba8-bc58b708bfac@intel.com>
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Fri, 8 Jul 2022 09:12:14 +1200
-Message-ID: <CAGsJ_4zdAjBVbmWXC_M=530QwC=SnuK9783dcaNSCywZAJwgsw@mail.gmail.com>
-Subject: Re: [PATCH 3/4] mm: rmap: Extend tlbbatch APIs to fit new platforms
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LAK <linux-arm-kernel@lists.infradead.org>, x86 <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Darren Hart <darren@os.amperecomputing.com>,
-        Yicong Yang <yangyicong@hisilicon.com>, huzhanyuan@oppo.com,
-        =?UTF-8?B?5p2O5Z+56ZSLKHdpbmsp?= <lipeifeng@oppo.com>,
-        =?UTF-8?B?5byg6K+X5piOKFNpbW9uIFpoYW5nKQ==?= 
-        <zhangshiming@oppo.com>, =?UTF-8?B?6YOt5YGl?= <guojian@oppo.com>,
-        real mz <realmz6@gmail.com>,
-        Barry Song <v-songbaohua@oppo.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Nadav Amit <namit@vmware.com>,
-        Mel Gorman <mgorman@suse.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 4:43 AM Dave Hansen <dave.hansen@intel.com> wrote:
->
-> On 7/7/22 05:52, Barry Song wrote:
-> >  static inline void arch_tlbbatch_add_mm(struct arch_tlbflush_unmap_batch *batch,
-> > -                                     struct mm_struct *mm)
-> > +                                     struct mm_struct *mm,
-> > +                                     struct vm_area_struct *vma,
-> > +                                     unsigned long uaddr)
-> >  {
->
-> It's not a huge deal, but could we pass 'vma' _instead_ of 'mm'?  The
-> implementations could then just use vma->vm_mm instead of the passed-in mm.
+From: Rob Clark <robdclark@chromium.org>
 
-Yes, Dave. Peter made the same suggestion in 4/4.
-will get this fixed in v2.
+Fixes `kms_cursor_crc --run-subtest cursor-offscreen`.. when the cursor
+moves offscreen the plane becomes non-visible, so we need to skip over
+it in crtc atomic test and mixer setup.
 
-Thanks
-Barry
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+index 4dd0ce09ca74..4ba000951a90 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+@@ -422,6 +422,9 @@ static void _dpu_crtc_blend_setup_mixer(struct drm_crtc *crtc,
+ 		if (!state)
+ 			continue;
+ 
++		if (!state->visible)
++			continue;
++
+ 		pstate = to_dpu_plane_state(state);
+ 		fb = state->fb;
+ 
+@@ -1195,6 +1198,9 @@ static int dpu_crtc_atomic_check(struct drm_crtc *crtc,
+ 		if (cnt >= DPU_STAGE_MAX * 4)
+ 			continue;
+ 
++		if (!pstate->visible)
++			continue;
++
+ 		pstates[cnt].dpu_pstate = dpu_pstate;
+ 		pstates[cnt].drm_pstate = pstate;
+ 		pstates[cnt].stage = pstate->normalized_zpos;
+-- 
+2.36.1
+
