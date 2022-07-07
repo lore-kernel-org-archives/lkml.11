@@ -2,306 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F81ECCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D77CDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235252AbiGGKV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
+        id S234803AbiGGK2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234762AbiGGKVt (ORCPT
+        with ESMTP id S232195AbiGGK2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:21:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 613222BFE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:21:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657189307;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=2Ycw1zECzq4gnTY7RXP2JL3HSW+2VoZY5kcSb6tFb0Q=;
-        b=DAS8+3BWIYhQp2P7ThA+nx5nygnYYYgcwRhBtsEXQc4iGFW/Q9keGXgfwUyTwJuo2Upo0L
-        vl79PYhRGTrIPD8SX7Lz+Am4TiWYi9LDNUyfui5dyXoSlBPNG82vk4/9QQSyIRLz4Dv5S9
-        G5ejPZQLf1twtv7kRhFbOruA39iW7DI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-171-2IuL0U8gPamSaXLqmhfnag-1; Thu, 07 Jul 2022 06:21:42 -0400
-X-MC-Unique: 2IuL0U8gPamSaXLqmhfnag-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CD478811E76;
-        Thu,  7 Jul 2022 10:21:41 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.194.92])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 94CB7492C3B;
-        Thu,  7 Jul 2022 10:21:40 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking for 5.19-rc6
-Date:   Thu,  7 Jul 2022 12:21:25 +0200
-Message-Id: <20220707102125.212793-1-pabeni@redhat.com>
+        Thu, 7 Jul 2022 06:28:02 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2061.outbound.protection.outlook.com [40.107.244.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2471253D15;
+        Thu,  7 Jul 2022 03:28:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NHvwOwQ4SRE2jaKEhgOwmSEHRnz11GF97RlUaQGfblByC+ScdE2XUcUnKFnEqb8Ot2x9k/Ygv+JdnZ4RKk3m9d6UJIz5DiomcXR8Q6ZkOgwoZoHPWfZNnYhvarZrM+7ERR7nxuNEp9haADixGkmnHlv5mOrYk4zrQKcFAmRz2CesJPqBszOG8jRopOaodKaiyFBUkWm+sUSayMZkO93dgI8XKAy4QpynpIubqYUHJmS9Z/N8AE//SL4J/MDvWGlg6HKxbG4o1r+J3+psnkPtvxweJdS/n1CXPWgFYgn/Fu5ihcjGkbOqjIy3gKZ2Xsx+Ul6MK0t/stbYI9yTLIGmOA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZM1zSxmI+2H2m75r4qrM/SZXreN6axvHp5gdZKoF5aE=;
+ b=BDcJ7DNXqJn6caPnAveIv4npFqouIhcl4sqZqMs+xbk1thMJGXatzpbAtAq3ucQdotazr74n094Bp2cqHzSYyINWB3PwrInAX6esyVRC6O3EgMoz4cXioS93lWSw2lUm7eitm8WLl6vTz5aUjEUHtwtU1lP1ObbR08MRrVDuN1FMjyL7FTT9zZP05b3bS3b6jC3KW8Z4bTXWd376SavPDhLcg5SxY19Wg11TXnpDvejgDJeMcYTP/5GHbZIw8aGSco0Rj+Aaf3q5GrDTgZLURTuaKjl6zSUCdaXqhdSQwK/ckeUU3qRGh8viyP/kN9/LmG547hEDqphH4OiKYCwIbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZM1zSxmI+2H2m75r4qrM/SZXreN6axvHp5gdZKoF5aE=;
+ b=qarWfpLIbJLkybaSHW+y7F8sFnXNIFxv8LQZXtsXVR0iFWC1KndrmQC9wQ+3DFAuTJupCf3qy36bfmf195sPHRlUUCeGl7UFV9Xh6Wxdcuilsb+xrhZPlK7XZXpTXe+HGi/gfHauFabDcgaKUSPcLAl//qrB2aypn5jZfKya5Rlyzvs1FvbroxgeaGqgRYsH4vsOPM9QPUO1MGqPfKa9ZOnkL3xldGN24gvbDNZ+L1b02Eiz0ioqUN/y2OQTjwueRGWrFvLQLnoFl05owo1W70UznPFqPqtexCoaIoOAFoMXCKjcthcZ2ke3nMphl1lTt2O5LdsiHXb7qct5vWH/kg==
+Received: from MWHPR07CA0020.namprd07.prod.outlook.com (2603:10b6:300:116::30)
+ by BN6PR12MB1332.namprd12.prod.outlook.com (2603:10b6:404:15::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Thu, 7 Jul
+ 2022 10:27:59 +0000
+Received: from CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:116:cafe::39) by MWHPR07CA0020.outlook.office365.com
+ (2603:10b6:300:116::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16 via Frontend
+ Transport; Thu, 7 Jul 2022 10:27:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ CO1NAM11FT064.mail.protection.outlook.com (10.13.175.77) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Thu, 7 Jul 2022 10:27:59 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 7 Jul
+ 2022 10:27:58 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 7 Jul 2022
+ 03:27:57 -0700
+Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.986.26 via Frontend
+ Transport; Thu, 7 Jul 2022 03:27:54 -0700
+From:   Akhil R <akhilrajeev@nvidia.com>
+To:     <dmaengine@vger.kernel.org>, <jonathanh@nvidia.com>,
+        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
+        <thierry.reding@gmail.com>, <vkoul@kernel.org>,
+        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+CC:     <akhilrajeev@nvidia.com>
+Subject: [PATCH 0/2] Add compatible for Tegra234 GPCDMA
+Date:   Thu, 7 Jul 2022 15:57:23 +0530
+Message-ID: <20220707102725.41383-1-akhilrajeev@nvidia.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4741a9c5-42d3-4995-8acf-08da60035d70
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1332:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8oDVUVl88LQveVMUty/Ynwm/j5/jvKXu9mgUZ/yVqQQ2ToW9hDF81veWomPwJkDT3mq2L9vkv0+cyHGTf4kKg3xFR9/E/BQ1GZfl7XSMbFRIrBMPgPtS1HRtdhA7XzMT3zvC3lMeYubqyaJ543/f0qWVmS6cC1JJ34cax80KjNRukBHmEoHMdeTIrFEXe1aKatDFX/luGMdm6vhfOLED0tldSwcI+ud/gLbjiFfNMritA4LeU0/o1wMcZ+XzDiqFh1ESi9r4AyOyOBGcSjxYyVsIJSken5R5H/+2OqPzHyFphz6N9vGhE7clZtN3F5hYsvrKzQ07THf5UiiqUuBJJUt+D+auYvDwT2GXpEVERw2lxFxShJ8noRSmSvzUKcyCNsWMeW+16isSxF8sR+yX70ze7W3D4ETTQW/sXp4OVdQMuAKSXgl77j9FxNITzljk+263A06xZzPFJt92I9g5ZESnJ0W30VN5i45zAz0k/k2IQUvSSlE36hgr85G58xWYA+qz9vQfyfEv2QGRrd1fZz1c6bzSkhTrxmAwUuDlJGLhXvVCxvnj7np5RI9pTCno7J9SKnfp1HsDlvUscq6mzLn4PH/y310xjkyPJ4j8rqK1noAecTxOeozpJFUdTNqWfS8q+Plvtw0ZMCemMMQkOOUBUIAu7bIW4az/1hfu3NKvA8+ibHxGWMIpWKIj03fQ/6S8YwFAl4wGB//H0aTloW1GkRlj4VlqrLLi0VhjMjKeC5T5nU9FIabpo2kvz4WdMZtd9Zl9XNF0PtxrZn7djU4eVuk3meZQ4V+vg+h8klTV6pBpWYSMWkPqBquwZn164/Zdv2PggHd8fToPgKna5bW+rhfoARaJErqeIKMSVdQ5MOyM/6gVYGwbGSMj59TxdiwLPM3VJe6QxHLCp1154Kjua9XPrktQPqu1cmvlSEI=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(136003)(39860400002)(346002)(40470700004)(46966006)(36840700001)(2906002)(8936002)(5660300002)(81166007)(36756003)(82740400003)(70206006)(86362001)(8676002)(356005)(40460700003)(4326008)(40480700001)(478600001)(4744005)(70586007)(186003)(921005)(6666004)(2616005)(316002)(36860700001)(41300700001)(336012)(47076005)(83380400001)(7696005)(110136005)(1076003)(26005)(107886003)(426003)(82310400005)(2101003)(36900700001)(83996005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 10:27:59.4077
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4741a9c5-42d3-4995-8acf-08da60035d70
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1332
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus!
+Tegra234 supports recovery of a channel hung in pause flush mode.
+This could happen when the client bus gets corrupted or if the end
+device ceases to send/receive data.
 
-No known regressions on our radar at this point.
+Add a separate compatible for Tegra234 so that this scenario can be
+handled in the driver.
 
-The following changes since commit 5e8379351dbde61ea383e514f0f9ecb2c047cf4e:
+Akhil R (2):
+  dmaengine: tegra: Add terminate() for Tegra234
+  dt-bindings: dmaengine: Add compatible for Tegra234
 
-  Merge tag 'net-5.19-rc5' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-06-30 15:26:55 -0700)
+ .../bindings/dma/nvidia,tegra186-gpc-dma.yaml |  1 +
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi      |  5 ++--
+ drivers/dma/tegra186-gpc-dma.c                | 26 +++++++++++++++++--
+ 3 files changed, 28 insertions(+), 4 deletions(-)
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-rc6
-
-for you to fetch changes up to 07266d066301b97ad56a693f81b29b7ced429b27:
-
-  Merge branch 'wireguard-patches-for-5-19-rc6' (2022-07-06 20:04:10 -0700)
-
-----------------------------------------------------------------
-Networking fixes for 5.19-rc6, including fixes from bpf, netfilter,
-can, bluetooth
-
-Current release - regressions:
-  - bluetooth: fix deadlock on hci_power_on_sync.
-
-Previous releases - regressions:
-  - sched: act_police: allow 'continue' action offload
-
-  - eth: usbnet: fix memory leak in error case
-
-  - eth: ibmvnic: properly dispose of all skbs during a failover.
-
-Previous releases - always broken:
-  - bpf:
-    - fix insufficient bounds propagation from adjust_scalar_min_max_vals
-    - clear page contiguity bit when unmapping pool
-
-  - netfilter: nft_set_pipapo: release elements in clone from abort path
-
-  - mptcp: netlink: issue MP_PRIO signals from userspace PMs
-
-  - can:
-    - rcar_canfd: fix data transmission failed on R-Car V3U
-    - gs_usb: gs_usb_open/close(): fix memory leak
-
-Misc:
-  - add Wenjia as SMC maintainer
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      bpf, docs: Better scale maintenance of BPF subsystem
-
-Daniel Borkmann (4):
-      bpf: Fix incorrect verifier simulation around jmp32's jeq/jne
-      bpf: Fix insufficient bounds propagation from adjust_scalar_min_max_vals
-      bpf, selftests: Add verifier test case for imm=0,umin=0,umax=1 scalar
-      bpf, selftests: Add verifier test case for jmp32's jeq/jne
-
-David S. Miller (5):
-      Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-      Merge branch 'netdev-docs'
-      Merge branch 'act_police-continue-offload-fix'
-      Merge branch 'mptcp-path-manager-fixes'
-
-Duoming Zhou (1):
-      net: rose: fix UAF bug caused by rose_t0timer_expiry
-
-Duy Nguyen (1):
-      can: rcar_canfd: Fix data transmission failed on R-Car V3U
-
-Gal Pressman (1):
-      Revert "tls: rx: move counting TlsDecryptErrors for sync"
-
-Geliang Tang (1):
-      mptcp: update MIB_RMSUBFLOW in cmd_sf_destroy
-
-Hangbin Liu (1):
-      selftests/net: fix section name when using xdp_dummy.o
-
-Heiner Kallweit (1):
-      r8169: fix accessing unset transport header
-
-Ivan Malov (1):
-      xsk: Clear page contiguity bit when unmapping pool
-
-Jakub Kicinski (7):
-      Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      docs: netdev: document that patch series length limit
-      docs: netdev: document reverse xmas tree
-      docs: netdev: add a cheat sheet for the rules
-      Merge tag 'linux-can-fixes-for-5.19-20220704' of git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can
-      Merge tag 'for-net-2022-07-05' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth
-      Merge branch 'wireguard-patches-for-5-19-rc6'
-
-Jason A. Donenfeld (5):
-      wireguard: selftests: set fake real time in init
-      wireguard: selftests: use virt machine on m68k
-      wireguard: selftests: always call kernel makefile
-      wireguard: selftests: use microvm on x86
-      crypto: s390 - do not depend on CRYPTO_HW for SIMD implementations
-
-Jimmy Assarsson (3):
-      can: kvaser_usb: replace run-time checks with struct kvaser_usb_driver_info
-      can: kvaser_usb: kvaser_usb_leaf: fix CAN clock frequency regression
-      can: kvaser_usb: kvaser_usb_leaf: fix bittiming limits
-
-Karsten Graul (1):
-      MAINTAINERS: add Wenjia as SMC maintainer
-
-Kishen Maloor (2):
-      mptcp: netlink: issue MP_PRIO signals from userspace PMs
-      selftests: mptcp: userspace PM support for MP_PRIO signals
-
-Li kunyu (1):
-      net: usb: Fix typo in code
-
-Liang He (1):
-      can: grcan: grcan_probe(): remove extra of_node_get()
-
-Lukasz Cieplicki (1):
-      i40e: Fix dropped jumbo frames statistics
-
-Marc Kleine-Budde (5):
-      can: m_can: m_can_chip_config(): actually enable internal timestamping
-      can: m_can: m_can_{read_fifo,echo_tx_event}(): shift timestamp to full 32 bits
-      can: mcp251xfd: mcp251xfd_stop(): add missing hrtimer_cancel()
-      can: mcp251xfd: mcp251xfd_register_get_dev_id(): use correct length to read dev_id
-      can: mcp251xfd: mcp251xfd_register_get_dev_id(): fix endianness conversion
-
-Masami Hiramatsu (Google) (1):
-      fprobe, samples: Add module parameter descriptions
-
-Mat Martineau (2):
-      mptcp: Avoid acquiring PM lock for subflow priority changes
-      mptcp: Acquire the subflow socket lock before modifying MP_PRIO flags
-
-Michael Walle (1):
-      net: lan966x: hardcode the number of external ports
-
-Norbert Zulinski (1):
-      i40e: Fix VF's MAC Address change on VM
-
-Oliver Hartkopp (1):
-      can: bcm: use call_rcu() instead of costly synchronize_rcu()
-
-Oliver Neukum (1):
-      usbnet: fix memory leak in error case
-
-Pablo Neira Ayuso (2):
-      netfilter: nf_tables: stricter validation of element data
-      netfilter: nft_set_pipapo: release elements in clone from abort path
-
-Paolo Abeni (3):
-      Merge branch 'fix-bridge_vlan_aware-sh-and-bridge_vlan_unaware-sh-with-iff_unicast_flt'
-      mptcp: fix locking in mptcp_nl_cmd_sf_destroy()
-      mptcp: fix local endpoint accounting
-
-Rhett Aultman (1):
-      can: gs_usb: gs_usb_open/close(): fix memory leak
-
-Rick Lindsley (1):
-      ibmvnic: Properly dispose of all skbs during a failover.
-
-Srinivas Neeli (1):
-      Revert "can: xilinx_can: Limit CANFD brp to 2"
-
-Thomas Kopp (2):
-      can: mcp251xfd: mcp251xfd_regmap_crc_read(): improve workaround handling for mcp2517fd
-      can: mcp251xfd: mcp251xfd_regmap_crc_read(): update workaround broken CRC on TBC register
-
-Vasyl Vavrychuk (1):
-      Bluetooth: core: Fix deadlock on hci_power_on_sync.
-
-Vlad Buslov (2):
-      net/sched: act_police: allow 'continue' action offload
-      net/mlx5e: Fix matchall police parameters validation
-
-Vladimir Oltean (3):
-      selftests: forwarding: fix flood_unicast_test when h2 supports IFF_UNICAST_FLT
-      selftests: forwarding: fix learning_test when h1 supports IFF_UNICAST_FLT
-      selftests: forwarding: fix error message in learning_test
-
-Vladis Dronov (1):
-      wireguard: Kconfig: select CRYPTO_CHACHA_S390
-
- Documentation/process/maintainer-netdev.rst        |  36 +++
- MAINTAINERS                                        | 116 +++++++--
- crypto/Kconfig                                     | 114 +++++++++
- drivers/crypto/Kconfig                             | 115 ---------
- drivers/net/Kconfig                                |   1 +
- drivers/net/can/grcan.c                            |   1 -
- drivers/net/can/m_can/m_can.c                      |   8 +-
- drivers/net/can/rcar/rcar_canfd.c                  |   5 +-
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c     |   6 +-
- drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c   |  22 +-
- drivers/net/can/usb/gs_usb.c                       |  23 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb.h        |  25 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c   | 285 ++++++++++++---------
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c  |   4 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c   | 119 +++++----
- drivers/net/can/xilinx_can.c                       |   4 +-
- drivers/net/ethernet/ibm/ibmvnic.c                 |   9 +
- drivers/net/ethernet/intel/i40e/i40e.h             |  16 ++
- drivers/net/ethernet/intel/i40e/i40e_main.c        |  73 ++++++
- drivers/net/ethernet/intel/i40e/i40e_register.h    |  13 +
- drivers/net/ethernet/intel/i40e/i40e_type.h        |   1 +
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c |   4 +
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  13 +-
- .../net/ethernet/microchip/lan966x/lan966x_main.c  |   8 +-
- .../net/ethernet/microchip/lan966x/lan966x_main.h  |   1 +
- drivers/net/ethernet/realtek/r8169_main.c          |  10 +-
- drivers/net/usb/catc.c                             |   2 +-
- drivers/net/usb/usbnet.c                           |  17 +-
- include/net/flow_offload.h                         |   1 +
- kernel/bpf/verifier.c                              | 113 ++++----
- net/bluetooth/hci_core.c                           |   3 +
- net/bluetooth/hci_sync.c                           |   1 -
- net/can/bcm.c                                      |  18 +-
- net/mptcp/options.c                                |   3 +
- net/mptcp/pm_netlink.c                             |  46 +++-
- net/mptcp/pm_userspace.c                           |  51 +++-
- net/mptcp/protocol.c                               |   9 +-
- net/mptcp/protocol.h                               |   9 +-
- net/netfilter/nf_tables_api.c                      |   9 +-
- net/netfilter/nft_set_pipapo.c                     |  48 ++--
- net/rose/rose_route.c                              |   4 +-
- net/sched/act_police.c                             |   2 +-
- net/tls/tls_sw.c                                   |   8 +-
- net/xdp/xsk_buff_pool.c                            |   1 +
- samples/fprobe/fprobe_example.c                    |   7 +
- tools/testing/selftests/bpf/verifier/jmp32.c       |  21 ++
- tools/testing/selftests/bpf/verifier/jump.c        |  22 ++
- tools/testing/selftests/net/forwarding/lib.sh      |   6 +-
- tools/testing/selftests/net/mptcp/pm_nl_ctl.c      |  73 +++++-
- tools/testing/selftests/net/mptcp/userspace_pm.sh  |  32 +++
- tools/testing/selftests/net/udpgro.sh              |   2 +-
- tools/testing/selftests/net/udpgro_bench.sh        |   2 +-
- tools/testing/selftests/net/udpgro_frglist.sh      |   2 +-
- tools/testing/selftests/net/udpgro_fwd.sh          |   2 +-
- tools/testing/selftests/net/veth.sh                |   6 +-
- tools/testing/selftests/wireguard/qemu/Makefile    |  20 +-
- .../selftests/wireguard/qemu/arch/arm.config       |   1 +
- .../selftests/wireguard/qemu/arch/armeb.config     |   1 +
- .../selftests/wireguard/qemu/arch/i686.config      |   8 +-
- .../selftests/wireguard/qemu/arch/m68k.config      |  10 +-
- .../selftests/wireguard/qemu/arch/mips.config      |   1 +
- .../selftests/wireguard/qemu/arch/mipsel.config    |   1 +
- .../selftests/wireguard/qemu/arch/powerpc.config   |   1 +
- .../selftests/wireguard/qemu/arch/x86_64.config    |   7 +-
- tools/testing/selftests/wireguard/qemu/init.c      |  11 +
- 65 files changed, 1089 insertions(+), 524 deletions(-)
+-- 
+2.17.1
 
