@@ -2,85 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38217C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 383C1CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236861AbiGGWQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        id S236921AbiGGWRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 18:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236216AbiGGWQI (ORCPT
+        with ESMTP id S236973AbiGGWRX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 18:16:08 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5B15C9CE;
-        Thu,  7 Jul 2022 15:16:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657232168; x=1688768168;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BM2zMPU85nbWlOcfoqMc00B4n9YA5LFINlWt3reCGNg=;
-  b=L4f8IQ4jUCiTNRrWWOhJP+m2xminJSU1KLDNH8zD4WtAMmGGXxwZUpX2
-   MBbyX2LKmJ666PszdcsHOYX4GQBASMhqXNdztHO3ypV+W+uupIQVtEIpd
-   voopSYIeIbW0RWz3KOvSinrQqZERzPrqUNYmCx7N466L/OhB7Udy7scwN
-   0=;
-X-IronPort-AV: E=Sophos;i="5.92,253,1650931200"; 
-   d="scan'208";a="215922474"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 07 Jul 2022 22:15:54 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com (Postfix) with ESMTPS id A286F81080;
-        Thu,  7 Jul 2022 22:15:50 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Thu, 7 Jul 2022 22:15:49 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.50) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Thu, 7 Jul 2022 22:15:46 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <paul@paul-moore.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <keescook@chromium.org>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
-        <mcgrof@kernel.org>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <yzaikin@google.com>
-Subject: Re: [PATCH v2 net 10/12] cipso: Fix data-races around sysctl.
-Date:   Thu, 7 Jul 2022 15:15:37 -0700
-Message-ID: <20220707221537.29461-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAHC9VhQMigGi65-j0c9WBN+dWLjjaYqTti-eP99c1RRrQzWj5g@mail.gmail.com>
-References: <CAHC9VhQMigGi65-j0c9WBN+dWLjjaYqTti-eP99c1RRrQzWj5g@mail.gmail.com>
+        Thu, 7 Jul 2022 18:17:23 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748476069A;
+        Thu,  7 Jul 2022 15:17:20 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id BEE9D1FE4F;
+        Thu,  7 Jul 2022 22:17:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1657232238;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NQHmVjONVW9HBKDyRt/r720zRRw/7ufnQWCuHyx0tgU=;
+        b=AMLeYp46gfvG5OYYxmSHWOSsVg611S1x9HIxx7i+TiQtZPqjK2maEGSUNwIj/8obkAs562
+        OWF3HprbsH9qOre8WT3mc3sEyZpJnU9XWg00WpuULWoTPQI6yg5Turmn189fxjet5IkYMX
+        CrpP8iAff/ueR9FinnanBd2Bd0ZETEQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1657232238;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NQHmVjONVW9HBKDyRt/r720zRRw/7ufnQWCuHyx0tgU=;
+        b=m4FLEyUovO/d2M2Y+OmpP71OLh3JnFbHASJneI4PmA085VBRoatYjaKxq1b/EMn+MhkxMh
+        nQihNDqak0uDA9Aw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5E63A13461;
+        Thu,  7 Jul 2022 22:17:18 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id NUQBFm5bx2ImXwAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 07 Jul 2022 22:17:18 +0000
+Date:   Fri, 8 Jul 2022 00:12:31 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "James E. J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        John David Anglin <dave.anglin@bell.net>,
+        linux-parisc@vger.kernel.org
+Subject: Re: [PATCH v6 0/2] btrfs: Replace kmap() with kmap_local_page() in
+ zstd.c
+Message-ID: <20220707221231.GS15169@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>, Nick Terrell <terrelln@fb.com>,
+        linux-btrfs@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "James E. J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        John David Anglin <dave.anglin@bell.net>,
+        linux-parisc@vger.kernel.org
+References: <20220706111520.12858-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.50]
-X-ClientProxiedBy: EX13D36UWB002.ant.amazon.com (10.43.161.149) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706111520.12858-1-fmdefrancesco@gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 7 Jul 2022 15:15:52 -0400
-> On Wed, Jul 6, 2022 at 7:43 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > While reading cipso sysctl variables, they can be changed concurrently.
-> > So, we need to add READ_ONCE() to avoid data-races.
-> >
-> > Fixes: 446fda4f2682 ("[NetLabel]: CIPSOv4 engine")
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> > CC: Paul Moore <paul@paul-moore.com>
+On Wed, Jul 06, 2022 at 01:15:18PM +0200, Fabio M. De Francesco wrote:
+> This is a little series which serves the purpose to replace kmap() with
+> kmap_local_page() in btrfs/zstd.c. Actually this task is only accomplished
+> in patch 2/2.
 > 
-> Thanks for the patch, this looks good to me.  However, in the future
-> you should probably drop the extra "---" separator (just leave the one
-> before the diffstat below) and move my "Cc:" up above "Fixes:".
+> Instead patch 1/2 is a pre-requisite for the above-mentioned replacement,
+> however, above all else, it has the purpose to conform the prototypes of
+> __kunmap_{local,atomic}() to their own correct semantics. Since those
+> functions don't make changes to the memory pointed by their arguments,
+> change the type of those arguments to become pointers to const void.
 > 
-> Acked-by: Paul Moore <paul@paul-moore.com>
+> v5 -> v6: Delete an unnecessary assignment in 2/2 (thanks to Ira Weiny).
+> 
+> v4 -> v5: Use plain page_address() for pages which cannot come from Highmem
+> (instead of kmapping them); remove unnecessary initializations to NULL
+> in 2/2 (thanks to Ira Weiny).
+> 
+> v3 -> v4: Resend and add linux-mm to the list of recipients (thanks to
+> Andrew Morton).
+> 
+> Fabio M. De Francesco (2):
+>   highmem: Make __kunmap_{local,atomic}() take "const void *"
+>   btrfs: Replace kmap() with kmap_local_page() in zstd.c
 
-I was wondering if both CC and Acked-by should stay in each commit, but
-will do so in the next time.
+Added to the kmap patch queue, thanks. With all the other conversion
+there are 5 patches
 
-Thank you for taking a look!
+  highmem: Make __kunmap_{local,atomic}() take const void pointer
+  btrfs: zstd: replace kmap() with kmap_local_page()
+  btrfs: zlib: replace kmap() with kmap_local_page() in zlib_compress_pages()
+  btrfs: zlib: replace kmap() with kmap_local_page() in zlib_decompress_bio()
+  btrfs: replace kmap_atomic() with kmap_local_page()
+
+and there are no kmap or kmap_atomic left in fs/btrfs, scheduled for 5.20.
