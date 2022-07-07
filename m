@@ -2,96 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 01:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D20C7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 01:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234848AbiGGBdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 21:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
+        id S234863AbiGGBdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 21:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbiGGBdd (ORCPT
+        with ESMTP id S234862AbiGGBdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 21:33:33 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B6F2CDC8;
-        Wed,  6 Jul 2022 18:33:32 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2671XMtl113088;
-        Wed, 6 Jul 2022 20:33:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657157602;
-        bh=3Nx6G+cOPkCmsqougOzbxAPbtnwI3F7UdtXvOeI5+7w=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=o98SkFh0HY7ekDfpnGd+8EQ77tTD5d2sfujI+fgT50c/OjY18c7OKYO1lc2/JDlLV
-         h/Mc3suT3WHJtJvymNSFZnmOV7/jsiQevwv7U8lJOvGM2eeRJEaYFQh2j8BLKc+7ym
-         tK1A/z32QFTCB5HVw9Y/6pOKGT3vS8AD1T42sq5Y=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2671XLWl043040
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Jul 2022 20:33:22 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Jul 2022 20:33:21 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Jul 2022 20:33:21 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2671XL0J121987;
-        Wed, 6 Jul 2022 20:33:21 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     <vigneshr@ti.com>
-CC:     Nishanth Menon <nm@ti.com>, <devicetree@vger.kernel.org>,
-        <kristo@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>
-Subject: Re: [PATCH] arm64: dts: ti: k3-am642-sk: Add pinmux corresponding to main_uart0
-Date:   Wed, 6 Jul 2022 20:33:19 -0500
-Message-ID: <165715756351.14068.13347195026320424503.b4-ty@ti.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220516113417.3516-1-a-govindraju@ti.com>
-References: <20220516113417.3516-1-a-govindraju@ti.com>
+        Wed, 6 Jul 2022 21:33:44 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F3E23A;
+        Wed,  6 Jul 2022 18:33:41 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ldf7m1QfVz4xD9;
+        Thu,  7 Jul 2022 11:33:39 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657157620;
+        bh=o2mvmB8hCKA7jsrgS0QGh/u8Z4/iePcfoI4h8hcwjg4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=V872+8ryHnBgymafsjtHcruTlVU+nP5ZES9bPmwkgjODC/p3V+dNTNgQxFYPgPmba
+         TtTHMP5hohqp3yjn29PQbUku4wsXYilaYhbwvtU4Di6HmR2UvXqUHeggJqGkA5/fAL
+         hL5V4DC8RHEj7XtVuxtTQ4DRrBUQiGu3iveGvBlNUsvBenIkzzMgzHlkhXvARIlmGE
+         E0XG8s26oAgnJmsqVRQuegA6Y+mR+hPitOzJmLjaTV7nHhtrR8AqLlOM+JoLnOXN7c
+         bC+egvGygPgtoB2VFUbI/1pfUXmQWxL7zgJskCDYbKnkyXoudvMAZzouR6w9Cbq+9q
+         Op37xbHW47DrA==
+Date:   Thu, 7 Jul 2022 11:00:15 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Ratheesh Kannoth <rkannoth@marvell.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20220707110015.3549e789@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; boundary="Sig_/kw9F5Dw.1YnB.dLGxmFw.ch";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aswath Govindraju,
+--Sig_/kw9F5Dw.1YnB.dLGxmFw.ch
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 16 May 2022 17:04:17 +0530, Aswath Govindraju wrote:
-> Add pinmux details required for the zeroth instance of main UART.
-> 
-> 
+Hi all,
 
-I have applied the following to branch ti-k3-dts-next on [1].
-Thank you!
+After merging the net-next tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-[1/1] arm64: dts: ti: k3-am642-sk: Add pinmux corresponding to main_uart0
-      commit: c553bf25f0f4135e17cf064a6875d5cbc43b0956
+In file included from drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.=
+c:14:
+drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h:15120:28: error: 'n=
+pc_mkex_default' defined but not used [-Werror=3Dunused-variable]
+15120 | static struct npc_mcam_kex npc_mkex_default =3D {
+      |                            ^~~~~~~~~~~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h:15000:30: error: 'n=
+pc_lt_defaults' defined but not used [-Werror=3Dunused-variable]
+15000 | static struct npc_lt_def_cfg npc_lt_defaults =3D {
+      |                              ^~~~~~~~~~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h:14901:31: error: 'n=
+pc_kpu_profiles' defined but not used [-Werror=3Dunused-variable]
+14901 | static struct npc_kpu_profile npc_kpu_profiles[] =3D {
+      |                               ^~~~~~~~~~~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h:483:38: error: 'ikp=
+u_action_entries' defined but not used [-Werror=3Dunused-variable]
+  483 | static struct npc_kpu_profile_action ikpu_action_entries[] =3D {
+      |                                      ^~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+Caused by commit
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+  c6238bc0614d ("octeontx2-af: Drop rules for NPC MCAM")
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+I do wonder why static structs are declared in a header file ...
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+I have used the net-next tree from next-20220706 for today.
 
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/kw9F5Dw.1YnB.dLGxmFw.ch
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLGMB8ACgkQAVBC80lX
+0Gwqtwf/QHFMflRfq7shMIVehGd1lTrxfD85OiFJRAnmZzYyh/aRB73JlujeV5pR
+oWoDyqFXxvgyog6YmTeQFYnVLP4KJPUbLpqSbBVqE8iuCMgoe0DvLOnYKKsBgZ7w
+FHq5S6Z7iIqhxOQPrNn06Jq78wGZduDYyXiM6GcU7fhnGRyg0Wgsr7FzvUoXLRe2
+a1hEupgb5QD2WLRyL3jyguE9wJqElyh/pcpZ+SzCZ/Cabn6xkioM1nDclqELdZQB
+pnoBI+7T1dkLALUjdwgRJnGrkLwyFRxp74BVabw2dJWukQQb2ldLRyJ8mgo5q7LT
+LZHjmLcWSIfi1Ou0Vnq3yE4R2B8K+w==
+=d1Hc
+-----END PGP SIGNATURE-----
+
+--Sig_/kw9F5Dw.1YnB.dLGxmFw.ch--
