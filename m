@@ -2,133 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 20:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7750C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 20:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236599AbiGGUxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 16:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        id S236472AbiGGUyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 16:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236145AbiGGUxO (ORCPT
+        with ESMTP id S236145AbiGGUyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 16:53:14 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Jul 2022 13:53:12 PDT
-Received: from alln-iport-6.cisco.com (alln-iport-6.cisco.com [173.37.142.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE0E2CE3B;
-        Thu,  7 Jul 2022 13:53:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=2562; q=dns/txt; s=iport;
-  t=1657227192; x=1658436792;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IGkApyCOPj4WsvWkXi+ev19llmpNYiOROU+qzijV/Sw=;
-  b=S7nv4NzhWjbjEb0JbQAwE75XDfzAcW0Ojozrk8d/xv+a2dBO0bbieBu6
-   rxQe2q3ZPAG6B2JmnSpaXvu4zlbWoYb7TH0CHjY4G3SFeMjLWAprpQlKm
-   /Hku5D/w10tCZhpmcR1V1pnTWN6c3lZlBNT2TahZ+9SMZ517Kkm7y/F7U
-   A=;
-X-IronPort-AV: E=Sophos;i="5.92,253,1650931200"; 
-   d="scan'208";a="930279870"
-Received: from alln-core-6.cisco.com ([173.36.13.139])
-  by alln-iport-6.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 07 Jul 2022 20:52:09 +0000
-Received: from localhost.cisco.com ([10.193.101.253])
-        (authenticated bits=0)
-        by alln-core-6.cisco.com (8.15.2/8.15.2) with ESMTPSA id 267Kq06B003512
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 7 Jul 2022 20:52:08 GMT
-From:   Karan Tilak Kumar <kartilak@cisco.com>
-To:     sebaddel@cisco.com
-Cc:     arulponn@cisco.com, djhawar@cisco.com, gcboffa@cisco.com,
-        satishkh@cisco.com, gvaradar@cisco.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Karan Tilak Kumar <kartilak@cisco.com>
-Subject: [PATCH] scsi: fnic: refactor code in fnic probe to initialize scsi layer
-Date:   Thu,  7 Jul 2022 13:51:55 -0700
-Message-Id: <20220707205155.692688-1-kartilak@cisco.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 7 Jul 2022 16:54:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095F719281;
+        Thu,  7 Jul 2022 13:54:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD317B823F8;
+        Thu,  7 Jul 2022 20:54:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBAC7C3411E;
+        Thu,  7 Jul 2022 20:54:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657227246;
+        bh=uQAyobK6yKXVb4BXuOxq/raZz11LUeChS71KkW7tWKs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ieL1U9MW2ZG6Zv85PHOylr8gVwMe0JYSNKpjdTc2fxOtsilWrZDRYJ5samyxz8eMJ
+         YNpy5kewnJfc7pSx+MOLMeGPtFUrd4KQNvg6C7ofLeMyfBipw9k6R8r8KKmmIqxBCH
+         BrxmdpTAjpcLJE3iEnP6CkvGPycJT4YmR6rHhJhJfq8/HtO5AFOa6ZDNFekbZreKr1
+         h6C4gggsdcxvXxQbt3VOZwqihyJ+dF64MUAeq/BCdGsOU5I7Qd6PwPCPKBe/FijmlH
+         EAToCVao1vBlCZhm2IbhIEI7ETzaLtKUCYNUty9rnnHVS3g/01kQi58LZarh99dtDg
+         pHAoZKfljkwmA==
+Date:   Thu, 7 Jul 2022 22:54:02 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Conor.Dooley@microchip.com
+Cc:     linux-i2c@vger.kernel.org, ben.dooks@codethink.co.uk,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Daire.McNamara@microchip.com
+Subject: Re: [PATCH v7 1/2] i2c: add support for microchip fpga i2c
+ controllers
+Message-ID: <YsdH6oDsW6Dn7zl+@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>, Conor.Dooley@microchip.com,
+        linux-i2c@vger.kernel.org, ben.dooks@codethink.co.uk,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Daire.McNamara@microchip.com
+References: <20220706141313.2504237-1-conor.dooley@microchip.com>
+ <YsXhyB9GrfUQjy4n@shikoro>
+ <0e28e644-a25a-173b-caeb-826cc4fb4537@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-User: kartilak@cisco.com
-X-Outbound-SMTP-Client: 10.193.101.253, [10.193.101.253]
-X-Outbound-Node: alln-core-6.cisco.com
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/Pqu5MabrEmHzPoQ"
+Content-Disposition: inline
+In-Reply-To: <0e28e644-a25a-173b-caeb-826cc4fb4537@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor code from fnic probe into a different function so that
-scsi layer initialization code is grouped together.
-Also, add log messages for better debugging.
 
-Signed-off-by: Gian Carlo Boffa <gcboffa@cisco.com>
-Signed-off-by: Arulprabhu Ponnusamy <arulponn@cisco.com>
-Signed-off-by: Karan Tilak Kumar <kartilak@cisco.com>
----
- drivers/scsi/fnic/fnic_main.c | 45 ++++++++++++++++++++++++++---------
- 1 file changed, 34 insertions(+), 11 deletions(-)
+--/Pqu5MabrEmHzPoQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/scsi/fnic/fnic_main.c b/drivers/scsi/fnic/fnic_main.c
-index 51e7c344ddc3..a666bf90f384 100644
---- a/drivers/scsi/fnic/fnic_main.c
-+++ b/drivers/scsi/fnic/fnic_main.c
-@@ -556,6 +556,39 @@ static void fnic_set_vlan(struct fnic *fnic, u16 vlan_id)
- 	vnic_dev_set_default_vlan(fnic->vdev, vlan_id);
- }
- 
-+static int fnic_scsi_drv_init(struct fnic *fnic)
-+{
-+	struct Scsi_Host *host = fnic->lport->host;
-+
-+	/* Configure maximum outstanding IO reqs*/
-+	if (fnic->config.io_throttle_count != FNIC_UCSM_DFLT_THROTTLE_CNT_BLD)
-+		host->can_queue = min_t(u32, FNIC_MAX_IO_REQ,
-+					max_t(u32, FNIC_MIN_IO_REQ,
-+					fnic->config.io_throttle_count));
-+
-+	fnic->fnic_max_tag_id = host->can_queue;
-+	host->max_lun = fnic->config.luns_per_tgt;
-+	host->max_id = FNIC_MAX_FCP_TARGET;
-+	host->max_cmd_len = FCOE_MAX_CMD_LEN;
-+
-+	host->nr_hw_queues = fnic->wq_copy_count;
-+	if (host->nr_hw_queues > 1)
-+		shost_printk(KERN_ERR, host,
-+				"fnic: blk-mq is not supported");
-+
-+	host->nr_hw_queues = fnic->wq_copy_count = 1;
-+
-+	shost_printk(KERN_INFO, host,
-+			"fnic: can_queue: %d max_lun: %llu",
-+			host->can_queue, host->max_lun);
-+
-+	shost_printk(KERN_INFO, host,
-+			"fnic: max_id: %d max_cmd_len: %d nr_hw_queues: %d",
-+			host->max_id, host->max_cmd_len, host->nr_hw_queues);
-+
-+	return 0;
-+}
-+
- static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct Scsi_Host *host;
-@@ -696,17 +729,7 @@ static int fnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_out_dev_close;
- 	}
- 
--	/* Configure Maximum Outstanding IO reqs*/
--	if (fnic->config.io_throttle_count != FNIC_UCSM_DFLT_THROTTLE_CNT_BLD) {
--		host->can_queue = min_t(u32, FNIC_MAX_IO_REQ,
--					max_t(u32, FNIC_MIN_IO_REQ,
--					fnic->config.io_throttle_count));
--	}
--	fnic->fnic_max_tag_id = host->can_queue;
--
--	host->max_lun = fnic->config.luns_per_tgt;
--	host->max_id = FNIC_MAX_FCP_TARGET;
--	host->max_cmd_len = FCOE_MAX_CMD_LEN;
-+	fnic_scsi_drv_init(fnic);
- 
- 	fnic_get_res_counts(fnic);
- 
--- 
-2.31.1
 
+> Already upstream :)
+> Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
+
+Oops, I only checked commits in master..next :D Thanks for the heads up!
+
+
+--/Pqu5MabrEmHzPoQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLHR+oACgkQFA3kzBSg
+KbaXbA//boPXkya367wWNavYryeCbB8fwgD6sVybTUWCPgTSP7Uo//N4GRK40ovn
+SbZoO9d8TowKZSIOyc0KtYU3J/SP7CMWdZqulh2puXG/JsYyBuvCVUUneq9tzvk5
+7vZ+9i8XyNXdCdxyKTXOqpuZPI0T1stlY8RqlH/0iMgo5wgpX+IEKy3Xe/dJYK7W
+NTCS9+NtWjJisOtO2oB680uzvcnwd3quPcWoe+wvcteMvGD9I31O08Lgv2WWbCHs
+aN35/VWCDN6kAaz3LmRLosl3mQbXvM9HplPt6i2UaM0wBEutkmMlfKx5Y1xCgQJp
+e9BWzjLk7EyDAtaoRvTmENj1sI//p78LtZEJl8CO7ymyFNvmB8qmQXuffP1UvFFl
+hGJLTEEh/8mvgiQJnKaZYRZqaT9tPgjGqi+/MHkDjjd4du+sxizd0TeG7n9K7qpL
+/Y0a6FKrGr5ZwwR5ggo+SQ1YM/0pCuaFMyOH05olDusfZ+Ld0ZLFwWWJOuE3uoKr
+sbKjv21Bbvw06ZUyUkXFAMIsWYzqnArfX8/Pn96AqQ8TiZJwjtbmO+hkUxPtNTZs
+GP8KEhPInuMikpIWINChrEPFv8EWSekOklAlfPeUL3M6LuKzZyv6NHIRoUP5GsZ8
+HXd60tvF+AFOpflHUD4/Qz99mL6Bi7Xw6XuUGJ5/Sl5qr0lKwtk=
+=36FT
+-----END PGP SIGNATURE-----
+
+--/Pqu5MabrEmHzPoQ--
