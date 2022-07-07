@@ -2,84 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0405C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiGGKaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57522 "EHLO
+        id S234884AbiGGKef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235321AbiGGKan (ORCPT
+        with ESMTP id S233305AbiGGKed (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:30:43 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A075720F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:30:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657189839; x=1688725839;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7tQQX/smw29lp1drVhlqhkUlpjGeGjwP8YJ/+5wpbNs=;
-  b=IbmM1+41O2VQpTH3hhrhFFuJiH7MHRbdJHXwVo3+Wopi2ctyDUcSRBK5
-   mRiSPvgVSEgZJobTYQMFtdA+XJUOrLZu14IOK9YwWP9Z+sn/8Gej98JvW
-   lLjws7FpMYlsGJr5az9xBX+SsR9Iq8ZCbpofBcu5DklHP5AWn1pYXvHEf
-   ypJXp4+DyFtvlBClskD0O4u7V45ZHP/D23CUC4dim0SNGb/n7HuWMFbtz
-   lGSHa+6xudjP9StNjeH8unHiUOiSqhpHmHdQur8ZtRt7p/wuU7O561a/I
-   l6n6CeyvOCYnRzldGPDI9E9K0vsZJGoKOMceMmyHpmb91la2delpDctK7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="284732769"
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="284732769"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 03:30:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="770385508"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 07 Jul 2022 03:30:38 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9OmL-000Lrw-Oi;
-        Thu, 07 Jul 2022 10:30:37 +0000
-Date:   Thu, 7 Jul 2022 18:29:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Oded Gabbay <ogabbay@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [ogabbay:habanalabs-next 52/76] ERROR: modpost: "__divdi3"
- [drivers/misc/habanalabs/habanalabs.ko] undefined!
-Message-ID: <202207071847.f6UdRWG9-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 7 Jul 2022 06:34:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CFA732068
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:34:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 080EDB82104
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 10:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC4DC3411E;
+        Thu,  7 Jul 2022 10:34:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657190069;
+        bh=FpJWKY13PUMMJsUpFy0Yaj3jOBe8ueGiOuxegiTyxVc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=piO5ThK0gBRk07wa7koK/7JGXPIOrZErY840kRzzFKBp2szAra/726/H4uGQsbDys
+         oh1OvZ4/yifZ60pX0SWiqRBMiPCxsBDXpZgiyJAAc2TBHMcGJKOlKooITExVTnnwJV
+         //IOS7yjWN/V9JwIQ57r6czMFX/ikoBfesHa9fFrk7SYYR5sDmAQqje2HIdvr1odbM
+         +1VVzyCQwyvTEhekNufTWBUtctj2OJVFu8XjUiK7uPxbzd7RjfkXPfNiVXRy6Hn/QS
+         WemAQrShL2oUtjloIeHsvkjNXx8HlwiG92g9cfw+c+1fxSAwY5NBSrvl3Jzoag0rri
+         K9k0TJkvhX3Zw==
+Received: from [185.201.63.253] (helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o9Oq2-005tL3-Tc;
+        Thu, 07 Jul 2022 11:34:27 +0100
+Date:   Thu, 07 Jul 2022 11:34:06 +0100
+Message-ID: <874jztmctd.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V14 10/15] irqchip/loongson-liointc: Add ACPI init support
+In-Reply-To: <1656837932-18257-11-git-send-email-lvjianmin@loongson.cn>
+References: <1656837932-18257-1-git-send-email-lvjianmin@loongson.cn>
+        <1656837932-18257-11-git-send-email-lvjianmin@loongson.cn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.201.63.253
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git habanalabs-next
-head:   0af9772bc4c189e29557a0e1f3af22918f51ccaa
-commit: c5c630faa00de0cc343fa0e5a236ed117ef454a3 [52/76] habanalabs: add gaudi2 asic-specific code
-config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220707/202207071847.f6UdRWG9-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=c5c630faa00de0cc343fa0e5a236ed117ef454a3
-        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
-        git fetch --no-tags ogabbay habanalabs-next
-        git checkout c5c630faa00de0cc343fa0e5a236ed117ef454a3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Sun, 03 Jul 2022 09:45:27 +0100,
+Jianmin Lv <lvjianmin@loongson.cn> wrote:
+> 
+> From: Huacai Chen <chenhuacai@loongson.cn>
+> 
+> LIOINTC stands for "Legacy I/O Interrupts" that described in Section
+> 11.1 of "Loongson 3A5000 Processor Reference Manual". For more
+> information please refer Documentation/loongarch/irq-chip-model.rst.
+> 
+> Co-developed-by: Jianmin Lv <lvjianmin@loongson.cn>
+> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+> ---
+>  arch/loongarch/include/asm/irq.h       |   4 +-
+>  arch/loongarch/kernel/irq.c            |   1 -
+>  drivers/irqchip/irq-loongson-liointc.c | 227 ++++++++++++++++++++++-----------
+>  3 files changed, 154 insertions(+), 78 deletions(-)
+> 
+> diff --git a/arch/loongarch/include/asm/irq.h b/arch/loongarch/include/asm/irq.h
+> index 8775dc6..b4c7956 100644
+> --- a/arch/loongarch/include/asm/irq.h
+> +++ b/arch/loongarch/include/asm/irq.h
+> @@ -97,7 +97,7 @@ static inline void eiointc_enable(void)
+>  
+>  struct irq_domain *loongarch_cpu_irq_init(void);
+>  
+> -struct irq_domain *liointc_acpi_init(struct irq_domain *parent,
+> +int liointc_acpi_init(struct irq_domain *parent,
+>  					struct acpi_madt_lio_pic *acpi_liointc);
+>  struct irq_domain *eiointc_acpi_init(struct irq_domain *parent,
+>  					struct acpi_madt_eio_pic *acpi_eiointc);
+> @@ -122,7 +122,7 @@ int pch_pic_acpi_init(struct irq_domain *parent,
+>  extern struct acpi_madt_bio_pic *acpi_pchpic[MAX_IO_PICS];
+>  
+>  extern struct irq_domain *cpu_domain;
+> -extern struct irq_domain *liointc_domain;
+> +extern struct fwnode_handle *liointc_handle;
+>  extern struct fwnode_handle *pch_lpc_handle;
+>  extern struct fwnode_handle *pch_pic_handle[MAX_IO_PICS];
+>  
+> diff --git a/arch/loongarch/kernel/irq.c b/arch/loongarch/kernel/irq.c
+> index ce21281..b04201c 100644
+> --- a/arch/loongarch/kernel/irq.c
+> +++ b/arch/loongarch/kernel/irq.c
+> @@ -26,7 +26,6 @@
+>  EXPORT_PER_CPU_SYMBOL(irq_stat);
+>  
+>  struct irq_domain *cpu_domain;
+> -struct irq_domain *liointc_domain;
+>  
+>  /*
+>   * 'what should we do if we get a hw irq event on an illegal vector'.
+> diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
+> index 8d05d8b..526ade4 100644
+> --- a/drivers/irqchip/irq-loongson-liointc.c
+> +++ b/drivers/irqchip/irq-loongson-liointc.c
+> @@ -23,7 +23,7 @@
+>  #endif
+>  
+>  #define LIOINTC_CHIP_IRQ	32
+> -#define LIOINTC_NUM_PARENT 4
+> +#define LIOINTC_NUM_PARENT	4
+>  #define LIOINTC_NUM_CORES	4
+>  
+>  #define LIOINTC_INTC_CHIP_START	0x20
+> @@ -58,6 +58,8 @@ struct liointc_priv {
+>  	bool				has_lpc_irq_errata;
+>  };
+>  
+> +struct fwnode_handle *liointc_handle;
+> +
+>  static void liointc_chained_handle_irq(struct irq_desc *desc)
+>  {
+>  	struct liointc_handler_data *handler = irq_desc_get_handler_data(desc);
+> @@ -153,97 +155,82 @@ static void liointc_resume(struct irq_chip_generic *gc)
+>  	irq_gc_unlock_irqrestore(gc, flags);
+>  }
+>  
+> -static const char * const parent_names[] = {"int0", "int1", "int2", "int3"};
+> -static const char * const core_reg_names[] = {"isr0", "isr1", "isr2", "isr3"};
+> +static int parent_irq[LIOINTC_NUM_PARENT];
+> +static u32 parent_int_map[LIOINTC_NUM_PARENT];
+> +static const char *const parent_names[] = {"int0", "int1", "int2", "int3"};
+> +static const char *const core_reg_names[] = {"isr0", "isr1", "isr2", "isr3"};
+>  
+> -static void __iomem *liointc_get_reg_byname(struct device_node *node,
+> -						const char *name)
+> +#ifdef CONFIG_ACPI
+> +static int liointc_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
+> +			     const u32 *intspec, unsigned int intsize,
+> +			     unsigned long *out_hwirq, unsigned int *out_type)
+>  {
+> -	int index = of_property_match_string(node, "reg-names", name);
+> -
+> -	if (index < 0)
+> -		return NULL;
+> -
+> -	return of_iomap(node, index);
+> +	if (WARN_ON(intsize < 1))
+> +		return -EINVAL;
+> +	*out_hwirq = intspec[0] - GSI_MIN_CPU_IRQ;
+> +	*out_type = IRQ_TYPE_NONE;
+> +	return 0;
+>  }
+>  
+> -static int __init liointc_of_init(struct device_node *node,
+> -				  struct device_node *parent)
+> +const struct irq_domain_ops acpi_irq_gc_ops = {
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This should be static.
 
-Note: the ogabbay/habanalabs-next HEAD 0af9772bc4c189e29557a0e1f3af22918f51ccaa builds fine.
-      It only hurts bisectability.
+> +	.map	= irq_map_generic_chip,
+> +	.unmap  = irq_unmap_generic_chip,
+> +	.xlate	= liointc_domain_xlate,
+> +};
+> +#endif
+> +
+> +static int liointc_init(phys_addr_t addr, unsigned long size, int revision,
+> +		struct fwnode_handle *domain_handle, struct device_node *node)
+>  {
+> +	int i, err;
+> +	void __iomem *base;
+> +	struct irq_chip_type *ct;
+>  	struct irq_chip_generic *gc;
+>  	struct irq_domain *domain;
+> -	struct irq_chip_type *ct;
+>  	struct liointc_priv *priv;
+> -	void __iomem *base;
+> -	u32 of_parent_int_map[LIOINTC_NUM_PARENT];
+> -	int parent_irq[LIOINTC_NUM_PARENT];
+> -	bool have_parent = FALSE;
+> -	int sz, i, err = 0;
+>  
+>  	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+>  	if (!priv)
+>  		return -ENOMEM;
+>  
+> -	if (of_device_is_compatible(node, "loongson,liointc-2.0")) {
+> -		base = liointc_get_reg_byname(node, "main");
+> -		if (!base) {
+> -			err = -ENODEV;
+> -			goto out_free_priv;
+> -		}
+> +	base = ioremap(addr, size);
+> +	if (!base)
+> +		goto out_free_priv;
+>  
+> -		for (i = 0; i < LIOINTC_NUM_CORES; i++)
+> -			priv->core_isr[i] = liointc_get_reg_byname(node, core_reg_names[i]);
+> -		if (!priv->core_isr[0]) {
+> -			err = -ENODEV;
+> -			goto out_iounmap_base;
+> -		}
+> -	} else {
+> -		base = of_iomap(node, 0);
+> -		if (!base) {
+> -			err = -ENODEV;
+> -			goto out_free_priv;
+> -		}
+> +	for (i = 0; i < LIOINTC_NUM_CORES; i++)
+> +		priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
+>  
+> -		for (i = 0; i < LIOINTC_NUM_CORES; i++)
+> -			priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
+> -	}
+> +	for (i = 0; i < LIOINTC_NUM_PARENT; i++)
+> +		priv->handler[i].parent_int_map = parent_int_map[i];
+>  
+> -	for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
+> -		parent_irq[i] = of_irq_get_byname(node, parent_names[i]);
+> -		if (parent_irq[i] > 0)
+> -			have_parent = TRUE;
+> -	}
+> -	if (!have_parent) {
+> -		err = -ENODEV;
+> -		goto out_iounmap_isr;
+> -	}
+> +	if (revision > 1) {
+> +		for (i = 0; i < LIOINTC_NUM_CORES; i++) {
+> +			int index = of_property_match_string(node,
+> +					"reg-names", core_reg_names[i]);
+>  
+> -	sz = of_property_read_variable_u32_array(node,
+> -						"loongson,parent_int_map",
+> -						&of_parent_int_map[0],
+> -						LIOINTC_NUM_PARENT,
+> -						LIOINTC_NUM_PARENT);
+> -	if (sz < 4) {
+> -		pr_err("loongson-liointc: No parent_int_map\n");
+> -		err = -ENODEV;
+> -		goto out_iounmap_isr;
+> -	}
+> +			if (index < 0)
+> +				return -EINVAL;
+>  
+> -	for (i = 0; i < LIOINTC_NUM_PARENT; i++)
+> -		priv->handler[i].parent_int_map = of_parent_int_map[i];
+> +			priv->core_isr[i] = of_iomap(node, index);
+> +		}
+> +	}
+>  
+>  	/* Setup IRQ domain */
+> -	domain = irq_domain_add_linear(node, 32,
+> +#ifdef CONFIG_ACPI
+> +	domain = irq_domain_create_linear(domain_handle, LIOINTC_CHIP_IRQ,
+> +					&acpi_irq_gc_ops, priv);
+> +#else
+> +	domain = irq_domain_create_linear(domain_handle, LIOINTC_CHIP_IRQ,
+>  					&irq_generic_chip_ops, priv);
+> +#endif
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+This feels wrong. The ACPI vs OF decision should be a runtime
+one. Maybe you don't have that issue yet because MIPS is only OF and
+LoongArch only ACPI, but it remains that this should be done
+dynamically.
 
->> ERROR: modpost: "__divdi3" [drivers/misc/habanalabs/habanalabs.ko] undefined!
-ERROR: modpost: "__udivdi3" [drivers/misc/habanalabs/habanalabs.ko] undefined!
+Please try to rewrite it as:
+
+	if (!acpi_disabled)
+		[... ACPI stuff ...]
+	else
+		[... OF stuff ...]
+
+This should apply to all other cases where you have similar distinctions.
+
+Thanks,
+
+	M.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Without deviation from the norm, progress is not possible.
