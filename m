@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5543DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4CFCCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235934AbiGGQMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        id S236145AbiGGQMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbiGGQMC (ORCPT
+        with ESMTP id S235303AbiGGQM1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:12:02 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8130A4D169;
-        Thu,  7 Jul 2022 09:11:35 -0700 (PDT)
+        Thu, 7 Jul 2022 12:12:27 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507BF57234;
+        Thu,  7 Jul 2022 09:11:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657210295; x=1688746295;
+  t=1657210307; x=1688746307;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=zSICPVFeoGuXrSUUGgngblxqjcM4vvGDmp0pX37kGv4=;
-  b=wANNrb18x4qEDxnUOGAYmpYLKOHYio3tAan8POfeQrfAcjg0dNnbM/29
-   DgJYSvmnvPzAxAPUUakMyPDpRF02RSDCr7uYc1gET6z5AKf+r1hVgncgv
-   6LLinRtJdtHhpXiyTPClL0f0j3SK6xX6+ua0woCuk7mitz0C5OL7lFIl6
-   s=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Jul 2022 09:11:35 -0700
+  bh=PjK+PZByDhJInr5VJSdek3gudLVUzwq0d5oNXpz6Ros=;
+  b=PS2nI/injzR/CscgBpHdyHJC1k0snF45uCk9/nT82ULJHoGLPqybNjM8
+   80OLEGyYVUndwW18HWZJN6SLebcZcXsEkvRF33KS3w//uaX5whh0vdRgK
+   lGqk1AdpnFKSamVPYh3WjvnbogqFii4cj43sRBPT+gxJsIbgyZp8258qY
+   Q=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Jul 2022 09:11:47 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 09:11:35 -0700
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 09:11:46 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Jul 2022 09:11:34 -0700
+ 15.2.986.22; Thu, 7 Jul 2022 09:11:45 -0700
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Jul 2022 09:11:29 -0700
+ 15.2.986.22; Thu, 7 Jul 2022 09:11:40 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
@@ -49,13 +49,15 @@ CC:     Jordan Crouse <jordan@cosmicpenguin.net>,
         Jonathan Marek <jonathan@marek.ca>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/7] drm/msm: Remove unnecessary pm_runtime_get/put
-Date:   Thu, 7 Jul 2022 21:40:56 +0530
-Message-ID: <20220707213950.1.Icf1e8f0c9b3e7e9933c3b48c70477d0582f3243f@changeid>
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 3/7] drm/msm: Fix cx collapse issue during recovery
+Date:   Thu, 7 Jul 2022 21:40:58 +0530
+Message-ID: <20220707213950.3.I4ac27a0b34ea796ce0f938bb509e257516bc6f57@changeid>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1657210262-17166-1-git-send-email-quic_akhilpo@quicinc.com>
 References: <1657210262-17166-1-git-send-email-quic_akhilpo@quicinc.com>
@@ -68,37 +70,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We already enable gpu power from msm_gpu_submit(), so avoid a duplicate
-pm_runtime_get/put from msm_job_run().
+There are some hardware logic under CX domain. For a successful
+recovery, we should ensure cx headswitch collapses to ensure all the
+stale states are cleard out. This is especially true to for a6xx family
+where we can GMU co-processor.
+
+Currently, cx doesn't collapse due to a devlink between gpu and its
+smmu. So the *struct gpu device* needs to be runtime suspended to ensure
+that the iommu driver removes its vote on cx gdsc.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
 
- drivers/gpu/drm/msm/msm_ringbuffer.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 16 ++++++++++++++--
+ drivers/gpu/drm/msm/msm_gpu.c         |  2 --
+ 2 files changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_ringbuffer.c b/drivers/gpu/drm/msm/msm_ringbuffer.c
-index 4306632..82bee84 100644
---- a/drivers/gpu/drm/msm/msm_ringbuffer.c
-+++ b/drivers/gpu/drm/msm/msm_ringbuffer.c
-@@ -29,8 +29,6 @@ static struct dma_fence *msm_job_run(struct drm_sched_job *job)
- 		msm_gem_unlock(obj);
- 	}
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 42ed9a3..57a7ad5 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -1210,8 +1210,20 @@ static void a6xx_recover(struct msm_gpu *gpu)
+ 	 */
+ 	gmu_write(&a6xx_gpu->gmu, REG_A6XX_GMU_GMU_PWR_COL_KEEPALIVE, 0);
  
--	pm_runtime_get_sync(&gpu->pdev->dev);
--
- 	/* TODO move submit path over to using a per-ring lock.. */
- 	mutex_lock(&gpu->lock);
+-	gpu->funcs->pm_suspend(gpu);
+-	gpu->funcs->pm_resume(gpu);
++	/*
++	 * Now drop all the pm_runtime usage count to allow cx gdsc to collapse.
++	 * First drop the usage count from all active submits
++	 */
++	for (i = gpu->active_submits; i > 0; i--)
++		pm_runtime_put(&gpu->pdev->dev);
++
++	/* And the final one from recover worker */
++	pm_runtime_put_sync(&gpu->pdev->dev);
++
++	for (i = gpu->active_submits; i > 0; i--)
++		pm_runtime_get(&gpu->pdev->dev);
++
++	pm_runtime_get_sync(&gpu->pdev->dev);
  
-@@ -38,8 +36,6 @@ static struct dma_fence *msm_job_run(struct drm_sched_job *job)
- 
- 	mutex_unlock(&gpu->lock);
- 
--	pm_runtime_put(&gpu->pdev->dev);
--
- 	return dma_fence_get(submit->hw_fence);
+ 	msm_gpu_hw_init(gpu);
  }
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index f75ff4b..48171b6 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -444,9 +444,7 @@ static void recover_worker(struct kthread_work *work)
+ 		/* retire completed submits, plus the one that hung: */
+ 		retire_submits(gpu);
  
+-		pm_runtime_get_sync(&gpu->pdev->dev);
+ 		gpu->funcs->recover(gpu);
+-		pm_runtime_put_sync(&gpu->pdev->dev);
+ 
+ 		/*
+ 		 * Replay all remaining submits starting with highest priority
 -- 
 2.7.4
 
