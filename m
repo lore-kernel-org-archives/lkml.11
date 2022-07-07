@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53485C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D87CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 11:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234713AbiGGLwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
+        id S235337AbiGGLwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235223AbiGGLvy (ORCPT
+        with ESMTP id S235299AbiGGLv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 07:51:54 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D4A53D0D;
-        Thu,  7 Jul 2022 04:51:53 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id v16so14509975wrd.13;
-        Thu, 07 Jul 2022 04:51:53 -0700 (PDT)
+        Thu, 7 Jul 2022 07:51:56 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D5353D16;
+        Thu,  7 Jul 2022 04:51:55 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id f2so20573459wrr.6;
+        Thu, 07 Jul 2022 04:51:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ejPnmCaORJdrMyGe4YE1VTQPE0oM/mTMwJ4lvV5CWyQ=;
-        b=SK3A5sYXIVyTW3AVh10tPpO6KnSEQ4egjekYG6KZGAt+mCECxdG6mTPJ2p8ZWL5QFQ
-         ouawLTWIMwVli8N8ljpIQvzIt1i0bcfMVXvjSO0cxiykpwts/Nc3OtQWaCnnhpW0SLUf
-         hnfyQe2KuUpjk20kTFc92AmVn7sy9HrrlYiKEy2IqYe3NX9aOTLZZC6teTEa5va2mxPp
-         t4mNV5ffHSaQrinWTcwMLEMTjEPiP9JKHC2ioeb+nFpvVg6r+Sobu680b3CcqD5L4vIz
-         GO7Dn53HG5Tkza0e34Z6SuUNCsNlFa4EJsGADSd7+mXJD2RaMMQXYzRrdJBBJPHn11v7
-         uhmg==
+        bh=ESIcpqEeOE2H9HSAO2IL96J2/r6CeXO4wnI7QDaH5RY=;
+        b=ETAGPzQ+PnLOB4EYa0scFESA86bruvRcElk9b9Y4U3QaxLYnY3HEapY5KF7vHHOhcE
+         Jru5X2GfLfm4tWBUt2/5iGhEt26ap25EeNSY5wfDQ6ilDrmZdzjKNLxcOunXTdpQI5Tb
+         zoIsE6RmmQFZlv1kJrIUiMzftPYNnBXaCRl8PdLF9ghbDgEPlnQN4G9mp6vwoIss3VOs
+         ipfLivLlFlbnldpMsLc4y75Hpx/lSQmTNwxiNCl4uKOC5/UoP7HCIx9FTW4QAh7lJvH3
+         aYXy15Nuc9rL3Y6/tjZqBccAULgSunpasWfIdooNQLiLGIgpJ4mzfxFfHG9FyzEVB98w
+         fRpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ejPnmCaORJdrMyGe4YE1VTQPE0oM/mTMwJ4lvV5CWyQ=;
-        b=HQx/x8KbUSLgCPo/6ynmRb1OkoDXs6/ntbBIye0XmJtU7lQkSS8bVubGcI1VaOXGW+
-         T8zU9BouiqgjdQcaizIigWy4P6qz48ibCz+BISKTR5e1quLTgpLhczPkrXWia3xoRcWA
-         qxSr533mFRyjps291nG5nMh2VOPP36Zb4CcsfPBkYfj7KHUp0m7G8R0sU9PHZ1JkS2b+
-         b/LQ8CWJnuU5cov2M1tvBjJ9sutjnSXYgG3vpSthf5c81w5PosSmB0W64FjzBc/3tlNl
-         Zgj3f2NOhQvlnqumzouRQYjPH/ZvjwkBuib8WQuwJzlKzlRFJuhBJV97HMePtSO5ikmh
-         8qfw==
-X-Gm-Message-State: AJIora/X41tyvQGKCwWbuZowgg/RHofLRBqAI+3CB2bNIf9Iv7jIWlwe
-        d8kBwIKVwBPh4OCEurt/YJWiEaceQCsryK3QU9Y=
-X-Google-Smtp-Source: AGRyM1uytWO0KV2ZLFjSm4t05Yvv+I9jZy5pafRH9FHurUA3jy0l6i365aVoG7gkydeS5fXo6NxPTw==
-X-Received: by 2002:adf:ec0f:0:b0:21d:7771:c3cb with SMTP id x15-20020adfec0f000000b0021d7771c3cbmr10846010wrn.81.1657194711560;
-        Thu, 07 Jul 2022 04:51:51 -0700 (PDT)
+        bh=ESIcpqEeOE2H9HSAO2IL96J2/r6CeXO4wnI7QDaH5RY=;
+        b=EmXa4TvjUczQpIbt3fmcfInfALHw1SiYglHtJlAlIa8OJMgafUqQpTQpe1IT88PoeI
+         OyygbNd67MS3iCzAc6tKJro8D9LkabqzQmmOzhuucaG0BEpm1wIKTKxVMXlgH1+vOjQo
+         8Rof+UCt/p37EhZwk8NxWV215/EqRacEMT6Lv1IBjZfzcjDgRsTm6rk55uiOo1RdeOPC
+         uW01cR+XR33Gx8NT2zSr1MroDSKZa8wxL+WGXHuFTe/7cXkEOz115Ehh1AmpzEUL8C2A
+         g28FyJRi4xP46YY1/FkqJAItyOndlwrJmfbHoSRrRDhhA1PPrcfpbo8L9M1c/hu2EACw
+         V5Sw==
+X-Gm-Message-State: AJIora8FfxcS/iwUTp7zn7IFLFNkmP+8ARSV/ShLi3/Jq2YhYCzCrJSD
+        cXpN0df8dD3sTlubWpdkmCDS+g/c0uCr63U3ayc=
+X-Google-Smtp-Source: AGRyM1v14X8QuP8NSNXvusQcO1+QkRk5Shvjz3de8tUHmqUpdtLeG5GxP3tUhITkWq0urrK3mZ3Z/A==
+X-Received: by 2002:a05:6000:49:b0:21d:78fe:34b2 with SMTP id k9-20020a056000004900b0021d78fe34b2mr9887745wrx.200.1657194713955;
+        Thu, 07 Jul 2022 04:51:53 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.51.50
+        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.51.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 04:51:51 -0700 (PDT)
+        Thu, 07 Jul 2022 04:51:53 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v4 04/27] skbuff: add SKBFL_DONT_ORPHAN flag
-Date:   Thu,  7 Jul 2022 12:49:35 +0100
-Message-Id: <c1dd557e091e21937baa088308770121017daa8c.1657194434.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v4 06/27] net: Allow custom iter handler in msghdr
+Date:   Thu,  7 Jul 2022 12:49:37 +0100
+Message-Id: <968c344a59315ec5d0095584a95bb7dd5a3ac617.1657194434.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657194434.git.asml.silence@gmail.com>
 References: <cover.1657194434.git.asml.silence@gmail.com>
@@ -69,56 +69,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We don't want to list every single ubuf_info callback in
-skb_orphan_frags(), add a flag controlling the behaviour.
+From: David Ahern <dsahern@kernel.org>
 
+Add support for custom iov_iter handling to msghdr. The idea is that
+in-kernel subsystems want control over how an SG is split.
+
+Signed-off-by: David Ahern <dsahern@kernel.org>
+[pavel: move callback into msghdr]
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 8 +++++---
- net/core/skbuff.c      | 2 +-
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ include/linux/skbuff.h |  7 ++++---
+ include/linux/socket.h |  4 ++++
+ net/core/datagram.c    | 14 ++++++++++----
+ net/core/skbuff.c      |  2 +-
+ 4 files changed, 19 insertions(+), 8 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index d3d10556f0fa..8e12b3b9ad6c 100644
+index 8e12b3b9ad6c..a8a2dd4cfdfd 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -686,10 +686,13 @@ enum {
- 	 * charged to the kernel memory.
- 	 */
- 	SKBFL_PURE_ZEROCOPY = BIT(2),
-+
-+	SKBFL_DONT_ORPHAN = BIT(3),
+@@ -1776,13 +1776,14 @@ void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref);
+ void msg_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *uarg,
+ 			   bool success);
+ 
+-int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+-			    struct iov_iter *from, size_t length);
++int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
++			    struct sk_buff *skb, struct iov_iter *from,
++			    size_t length);
+ 
+ static inline int skb_zerocopy_iter_dgram(struct sk_buff *skb,
+ 					  struct msghdr *msg, int len)
+ {
+-	return __zerocopy_sg_from_iter(skb->sk, skb, &msg->msg_iter, len);
++	return __zerocopy_sg_from_iter(msg, skb->sk, skb, &msg->msg_iter, len);
+ }
+ 
+ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 7bac9fc1cee0..3c11ef18a9cf 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -14,6 +14,8 @@ struct file;
+ struct pid;
+ struct cred;
+ struct socket;
++struct sock;
++struct sk_buff;
+ 
+ #define __sockaddr_check_size(size)	\
+ 	BUILD_BUG_ON(((size) > sizeof(struct __kernel_sockaddr_storage)))
+@@ -70,6 +72,8 @@ struct msghdr {
+ 	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
+ 	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
+ 	struct ubuf_info *msg_ubuf;
++	int (*sg_from_iter)(struct sock *sk, struct sk_buff *skb,
++			    struct iov_iter *from, size_t length);
  };
  
- #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
--#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY)
-+#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY | \
-+				 SKBFL_DONT_ORPHAN)
- 
- /*
-  * The callback notifies userspace to release buffers when skb DMA is done in
-@@ -3182,8 +3185,7 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
- {
- 	if (likely(!skb_zcopy(skb)))
- 		return 0;
--	if (!skb_zcopy_is_nouarg(skb) &&
--	    skb_uarg(skb)->callback == msg_zerocopy_callback)
-+	if (skb_shinfo(skb)->flags & SKBFL_DONT_ORPHAN)
- 		return 0;
- 	return skb_copy_ubufs(skb, gfp_mask);
+ struct user_msghdr {
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 50f4faeea76c..b3c05efd659f 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -613,10 +613,16 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
  }
+ EXPORT_SYMBOL(skb_copy_datagram_from_iter);
+ 
+-int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+-			    struct iov_iter *from, size_t length)
++int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
++			    struct sk_buff *skb, struct iov_iter *from,
++			    size_t length)
+ {
+-	int frag = skb_shinfo(skb)->nr_frags;
++	int frag;
++
++	if (msg && msg->sg_from_iter && msg->msg_ubuf == skb_zcopy(skb))
++		return msg->sg_from_iter(sk, skb, from, length);
++
++	frag = skb_shinfo(skb)->nr_frags;
+ 
+ 	while (length && iov_iter_count(from)) {
+ 		struct page *pages[MAX_SKB_FRAGS];
+@@ -702,7 +708,7 @@ int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *from)
+ 	if (skb_copy_datagram_from_iter(skb, 0, from, copy))
+ 		return -EFAULT;
+ 
+-	return __zerocopy_sg_from_iter(NULL, skb, from, ~0U);
++	return __zerocopy_sg_from_iter(NULL, NULL, skb, from, ~0U);
+ }
+ EXPORT_SYMBOL(zerocopy_sg_from_iter);
+ 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 09f56bfa2771..fc22b3d32052 100644
+index fc22b3d32052..f5a3ebbc1f7e 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -1193,7 +1193,7 @@ static struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size)
- 	uarg->len = 1;
- 	uarg->bytelen = size;
- 	uarg->zerocopy = 1;
--	uarg->flags = SKBFL_ZEROCOPY_FRAG;
-+	uarg->flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
- 	refcount_set(&uarg->refcnt, 1);
- 	sock_hold(sk);
+@@ -1358,7 +1358,7 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+ 	if (orig_uarg && uarg != orig_uarg)
+ 		return -EEXIST;
+ 
+-	err = __zerocopy_sg_from_iter(sk, skb, &msg->msg_iter, len);
++	err = __zerocopy_sg_from_iter(msg, sk, skb, &msg->msg_iter, len);
+ 	if (err == -EFAULT || (err == -EMSGSIZE && skb->len == orig_len)) {
+ 		struct sock *save_sk = skb->sk;
  
 -- 
 2.36.1
