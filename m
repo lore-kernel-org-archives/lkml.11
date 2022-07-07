@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C96CCA485
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE432CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234177AbiGGCbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S234905AbiGGCby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233563AbiGGCbe (ORCPT
+        with ESMTP id S234898AbiGGCbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:31:34 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5D92E697
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:33 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-10bffc214ffso12960661fac.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:33 -0700 (PDT)
+        Wed, 6 Jul 2022 22:31:36 -0400
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706352F3B2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:35 -0700 (PDT)
+Received: by mail-oo1-xc30.google.com with SMTP id o73-20020a4a2c4c000000b004284fd4e052so3246184ooo.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=a2fsWEYDy5HVGsxX1nYjTzR5R0rzwCTEFX3d1N+MLTI=;
-        b=qc2sJ22ZsnoeotICjEWAb51bRikbbNwwrB8mFNdJBPzTDPZZdeK5bmnhmtWMmxc2w1
-         Yr4D5UqwTdy/Y8s5b57b6cEclhg3kn1P973pZGDjkQS3Sq05P3A2i5LlLRe88aNz/Cx/
-         gPGgvOGgJW7Tvi/+0lpI3RqTF4tqbDmnxKp4UKh5FQL/oTBGCkB0JrTTUtbuXEJxPhUo
-         ZX+MKPz+Os+Qrpksf5yIlTPkhDNgECorVR8UmaKc5BE3kmIas3dx2vaiKCE/nsv/UWeh
-         dR9JSyrg+Tqy4t+guUlvjUq2QsexEWCjCH2DKj0H+3BCeHZ8Y2PAudVw6go4UKilJsBG
-         lrEQ==
+        bh=HmbEGlmgz9inbfRdXswr9utl0AqPzk/QhsgAgC2XwtI=;
+        b=YyOkcEg1nXPEDqSuGVhcQUNsQITymByi5yzjSWlSBOLOKxn3jtVcDA7Mf63TCJY4M9
+         GzIw1SPZvg/bVpWePYmPt2Q+m4Z1Cr/1119jMXw6Ox7x/Nc6CJjZY+moFhobFXpNwJwq
+         5/07tq+5L6LQMRa0wlUU43WSJUBnHwK0dPbkAgKY5go9qxbk2ENeLW4pVpAuji62cYN8
+         GYCIdi6CGEjxqWqxtEnQrlySvW57u5tTEtYBvz0VjoFea0f3Ik8+caczfrzS6NrT0rpG
+         Tfbt1VVLfBTqjuSO1V1kg2B4xQT17JnpVNOejc8E0YhhKK4VPGq58MgDDU63k/XBVjIg
+         xrbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=a2fsWEYDy5HVGsxX1nYjTzR5R0rzwCTEFX3d1N+MLTI=;
-        b=wtpA5CtC8eISM6aAIEG/lQpwZbUIAmOSPmj1uJ84DZbDgK3HqTyyrpiiNSEDGKsHKx
-         cbC923bzsq4opMlDQI45V5l1Qn4/PhZhDp2pmK5W1NXOKLVjxi5Z340qRp57/7OEz8OB
-         53tTlls4tgqFHluyEBWJf57iEm441LETjNYEeWsNB8a5n4J8Kd7WDtIngTZNmKwQ8N/6
-         mbmQfei6wtxpnzzgaqCscInHrt9E18hKYdmIK9pJpxEfJOZ/zLaXeiWhzUAOuPqmMtrn
-         cXzPrdXoej07gJMkUC2QeKc9N/02C0jgeMzxhDw2aS2/77Fd+DT96IK9arRfl+Ra5I3w
-         y0Og==
-X-Gm-Message-State: AJIora9ezFtWFwqAnImLkvUocXbJHQxT25avfuO/fdjUmpI47rTHUcfZ
-        r3IZ+gZynOveowFLctQ5ACHocg==
-X-Google-Smtp-Source: AGRyM1sXCgqsVNj0bWlzx7mvQYO7A7NtC7TFwgnHORKj7G9N7grp5+VF6lKUhrJY1285aUOqIPn2Fw==
-X-Received: by 2002:a05:6870:73d1:b0:101:a857:67f1 with SMTP id a17-20020a05687073d100b00101a85767f1mr1281508oan.28.1657161092802;
-        Wed, 06 Jul 2022 19:31:32 -0700 (PDT)
+        bh=HmbEGlmgz9inbfRdXswr9utl0AqPzk/QhsgAgC2XwtI=;
+        b=HqQ69kERLtKbC2L9DBXkSDOGwWf3TellpH3P1kB1CFw+/kH5NdWMaX7DBJD+N5T2oS
+         wnFTkyXPmvrN6PBol21PGogts4FsfT8OQvuOD/X/7bqaVoC7QxyP3kiWD5wEW4UrrL5+
+         McPUGaKiwh7gt2cQ8wseGpNIix9muEzIRU3GH2vTRzyDrmZKOuGcVr0Hy3qfTasSlSpa
+         BabmKqDbJL5N4sza/HltUXkK2OSaNKPdewQei8wxS/p1a9dqQqcZ7yK1cb/ShzFeYsLa
+         Y1R7WdCtTRBwm8wSYm5Zi0YIi4YM3EMa8vYfA3f6GHv+gZ38s4PaELHQyAz+24pO7DuF
+         JAVA==
+X-Gm-Message-State: AJIora9FNSUj20Xh7b1Z1MmhNy2Ze+EWWYVhMZbBd4iISPcXnW+m0UDu
+        I2BwZeNbT9S5UvnvU5sBsu0LZA==
+X-Google-Smtp-Source: AGRyM1uOLxFCyR+T8i4wtTM/J6Zo80ApbrLtbf6uQPT2Q3Bx1WlzbF4CUac/xbzPFJxqb8NG09f/YQ==
+X-Received: by 2002:a4a:e9a7:0:b0:428:89cf:34d3 with SMTP id t7-20020a4ae9a7000000b0042889cf34d3mr6714117ood.41.1657161094760;
+        Wed, 06 Jul 2022 19:31:34 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.31
+        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 19:31:32 -0700 (PDT)
+        Wed, 06 Jul 2022 19:31:34 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     linux-arm-msm@vger.kernel.org, martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        Andy Gross <agross@kernel.org>, marijn.suijten@somainline.org,
-        jamipkettunen@somainline.org, linux-kernel@vger.kernel.org
-Subject: Re: (subset) [PATCH] soc/qcom: Make QCOM_RPMPD select PM_GENERIC_DOMAINS/_OF
-Date:   Wed,  6 Jul 2022 21:31:10 -0500
-Message-Id: <165716107314.864223.6479279277048954413.b4-ty@linaro.org>
+To:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        Will Deacon <will@kernel.org>, Andy Gross <agross@kernel.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Georgi Djakov <djakov@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>
+Subject: Re: (subset) [PATCH v8 3/4] arm64: defconfig: enable Qualcomm Bandwidth Monitor
+Date:   Wed,  6 Jul 2022 21:31:12 -0500
+Message-Id: <165716107315.864223.9487866032857198134.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220701073700.17124-1-konrad.dybcio@somainline.org>
-References: <20220701073700.17124-1-konrad.dybcio@somainline.org>
+In-Reply-To: <20220704121730.127925-4-krzysztof.kozlowski@linaro.org>
+References: <20220704121730.127925-1-krzysztof.kozlowski@linaro.org> <20220704121730.127925-4-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,20 +70,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 09:37:00 +0200, Konrad Dybcio wrote:
-> The driver uses generic genpd OF APIs and with a very minimal config
-> where nothing else selects them, this driver will not probe, as
-> of_genpd_add_provider_onecell will return -EOPNOTSUPP.
-> 
-> Make sure to select these in Kconfig to prevent that.
+On Mon, 4 Jul 2022 14:17:29 +0200, Krzysztof Kozlowski wrote:
+> Enable the Qualcomm Bandwidth Monitor to allow scaling interconnects
+> depending on bandwidth usage between CPU and memory.  This is used
+> already on Qualcomm SDM845 SoC.
 > 
 > 
-> [...]
 
 Applied, thanks!
 
-[1/1] soc/qcom: Make QCOM_RPMPD select PM_GENERIC_DOMAINS/_OF
-      commit: 7d0221fb59125181a31ef3a561306c70fb238bc7
+[3/4] arm64: defconfig: enable Qualcomm Bandwidth Monitor
+      commit: 76f11e77f919397f31198354cd0e0bd8e76f8748
 
 Best regards,
 -- 
