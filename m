@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C6DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 447C6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 07:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230148AbiGGHAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 03:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
+        id S230419AbiGGHAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 03:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235062AbiGGG7S (ORCPT
+        with ESMTP id S235048AbiGGG7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 02:59:18 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CC13204F
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 23:58:56 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id z25so11985877lfr.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 23:58:56 -0700 (PDT)
+        Thu, 7 Jul 2022 02:59:44 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0A6DFE1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 23:59:24 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id e20so800737lfq.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 23:59:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :references:from:in-reply-to:content-transfer-encoding;
-        bh=hvUzTt/hWuggOtdt8jKqR4jgNLkATU6+KSsc3GgXz+c=;
-        b=VgBQJmVRd2BDZ9PeNdyrJAOvcPlTYn2PPTUzcs9LnhK0yYy8j3p18dyh+DltJm8dJV
-         z5+zQAs1wXeP3uhRq9AQC8OzSDDtPUAo6vlVNuX/ASq0wzPGOeYTSRYuUEdE3OEQRwHq
-         uvqil25uIWpRmRZGgE2D3hZvmIVKnN6Aitk9Hlz8izL9eN+AyJw0KGlm21FTXk0SptZU
-         emsKK8QHsgseMyHsQD6JlLI9hSu3khmWuA9TIVNKrWUQrRSbrvxdVhkREjKXrdJilvtJ
-         i5OGUPPoDjPWPb6xwEvEUz53MsRb3W6PMPaOgcy7EZdalm1MWbIB4ypuw9cAhxrIyxyJ
-         0bag==
+        bh=iD4mGg+qM8HG6/1MdfbFXBy3mtObyupuyZ17+Do+v7o=;
+        b=ONpy15sjpZhrdm7lyMQyfqEirPUf4QXweXCqJDoF3TmiXGQBcXclsdsNCXlcl8/U+7
+         DHpIipWoFQ2JGNOTVXBFjUvRiXX+brHFVQw8VAqi+cqWUBrcnRSHcuuubuR7WylgjEUT
+         W06VefkS0KRN8y7Xd5+RYq7YlxaY6rVJFYxsccYJVMzwiREVouKmUB0Vz3SiNdExmagD
+         7LpZ1RJHWjIPqKx0E1eONMR9prhM8FrLTy9c7lR9slmEaI6LhQNJIo67MldHHf87cekH
+         4rOck3CrGYOAexdyBOYaJspX7yERoJnZxnOurumSYlJtITEDcY6heba9W0bFQOI0Vt3F
+         7wcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=hvUzTt/hWuggOtdt8jKqR4jgNLkATU6+KSsc3GgXz+c=;
-        b=Eg6j6PEGJQtv0FdXtG8EJIie8UmxLr8D3ysuwjFC3wiLxx+PpgQfnhBr8U40fibBkX
-         XBeD1Y6966n47uEE+RQGHMERvf/iSLXz9oYzglhQZqXBCsixcz0nv9oBVGahkoPSeCpm
-         gu2LNWRajDuel4ZwrFxsxZ2uuraQHcBrR32fCmDxhumrIIm/37KrL6QwIK1MhdMk5puB
-         DOX7tlr/2ecmCFwD6tfOWw6GsfNe6CxNksRV3Jc6Xv9kH3BkoQyKlL7oo8em5JxmTiW8
-         w3MNECkqq2bhaOTQl3628j3k2HIV19jao+9D9Du0HZT49nuIiq8F4WLWILkK8nT+I3hc
-         jcjA==
-X-Gm-Message-State: AJIora/jl93VUoGJJEFLqwkbMDSqQpU2L2dBwYzz/EKkDidJjGNXaLKL
-        /BBsA0ksc+q/MmWFdYooWlzB4g==
-X-Google-Smtp-Source: AGRyM1tDaP3INpKJsy7RLE6N1Scip5mqFubiHpw1TEPBwZruoEcL5MnxC3Ndykpp+awMhrLd/txSqg==
-X-Received: by 2002:a05:6512:ac7:b0:488:de2d:ba23 with SMTP id n7-20020a0565120ac700b00488de2dba23mr223870lfu.653.1657177134963;
-        Wed, 06 Jul 2022 23:58:54 -0700 (PDT)
+        bh=iD4mGg+qM8HG6/1MdfbFXBy3mtObyupuyZ17+Do+v7o=;
+        b=zSreeJoN8d93dol0vFW5Z1Oar7tWX1nIajMRatT09hdi9wrn1vRcR0OZigI0naY+55
+         ikE616in1XDot3zMFzse5WO5xwCZ0GQsDOGaLBCg/4xY21zNZoLkeyWj3wovq0Gi+fAH
+         KWBVKKOU8wK4eeF2ZLb7EVeUMChEIKVWQxWGs0ICotkx/zshFwlsQ3exiaE4H+CTK6Ao
+         5txQqrwiC4rY2E2/BUCkSGyT241jMrlOUTbFnKYnE+DP6fV7W2SNK38+ZQEta6/yGtnC
+         HyIX2E128sSeFtLRAadxOPwxdv8m3Rs2g4vec4d1mCIbe6sttQFb+u4Ebj3F0LorZclS
+         ozMw==
+X-Gm-Message-State: AJIora+3ASxtbMLcxn/QIWE6HR112yw6umdth717IrPkj5RZIJK/GIkn
+        /Po6m7vIRafU0R1xaVOKkfFmLQ==
+X-Google-Smtp-Source: AGRyM1tMrmU5392DvadV6XBmRrqfiY+I0d31ph62y1mTwXDIkZJ91YrBcx12opHaqwcWL7mnx0+fZQ==
+X-Received: by 2002:a05:6512:3146:b0:482:e8c8:1a7f with SMTP id s6-20020a056512314600b00482e8c81a7fmr9900182lfi.62.1657177163289;
+        Wed, 06 Jul 2022 23:59:23 -0700 (PDT)
 Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id h4-20020ac250c4000000b00483e5f0192esm1252115lfm.87.2022.07.06.23.58.53
+        by smtp.gmail.com with ESMTPSA id bp23-20020a056512159700b0047f65b60323sm6681329lfb.3.2022.07.06.23.59.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 23:58:54 -0700 (PDT)
-Message-ID: <95062dd8-0bc3-c350-7fd1-a02dfc4ef1d7@linaro.org>
-Date:   Thu, 7 Jul 2022 08:58:52 +0200
+        Wed, 06 Jul 2022 23:59:22 -0700 (PDT)
+Message-ID: <379291a5-c48d-7d78-fdec-9b67d6b71fd9@linaro.org>
+Date:   Thu, 7 Jul 2022 08:59:21 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH 2/3] ARM: dts: qcom: add missing hwlock for ipq8064 dtsi
+Subject: Re: [PATCH 3/3] ARM: dts: qcom: add missing smem compatible for
+ ipq8064 dtsi
 Content-Language: en-US
 To:     Christian Marangi <ansuelsmth@gmail.com>,
         Andy Gross <agross@kernel.org>,
@@ -67,9 +68,9 @@ To:     Christian Marangi <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org
 References: <20220707013017.26654-1-ansuelsmth@gmail.com>
- <20220707013017.26654-2-ansuelsmth@gmail.com>
+ <20220707013017.26654-3-ansuelsmth@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220707013017.26654-2-ansuelsmth@gmail.com>
+In-Reply-To: <20220707013017.26654-3-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -77,7 +78,8 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 07/07/2022 03:30, Christian Marangi wrote:
-> Add missing hwlock for ipq8064 dtsi provided by qcom,sfpb-mutex.
+> Add missing smem compatible and hwlocks binding for ipq8064 dtsi
+> smem node.
 > 
 > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 
