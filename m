@@ -2,126 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCF0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 04:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234986AbiGGEvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 00:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
+        id S235028AbiGGEvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 00:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbiGGEvs (ORCPT
+        with ESMTP id S234958AbiGGEvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 00:51:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 237581F2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 21:51:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657169506;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=87bVrTbuZnkI9JON9lK1BDOmGkuN19p3yyqcX4byQZM=;
-        b=TZ3YlRVhmvueJLTZjQx4jXiHw4Fj2NCSpMf/Fo7y6E3Euo4J+oxLqIhRrRwaP88RhiB7oZ
-        WTY8pLkwLAkKOr9oUcxTkII4lr0ituMO2Wghb8mzPqy87FPqf8HkUjOrBH7cn7J/2WmHcx
-        O5u17rzfmwvCGDa7HtQnvJpz0CVKu6c=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-577-oZ2oLL6SNuSPtwqvr2Bujw-1; Thu, 07 Jul 2022 00:51:42 -0400
-X-MC-Unique: oZ2oLL6SNuSPtwqvr2Bujw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D9BB1101A586;
-        Thu,  7 Jul 2022 04:51:41 +0000 (UTC)
-Received: from lxbceph1.gsslab.pek2.redhat.com (unknown [10.72.47.117])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B3DB718EC9;
-        Thu,  7 Jul 2022 04:51:36 +0000 (UTC)
-From:   xiubli@redhat.com
-To:     dhowells@redhat.com, idryomov@gmail.com, jlayton@kernel.org
-Cc:     marc.dionne@auristor.com, willy@infradead.org,
-        keescook@chromium.org, kirill.shutemov@linux.intel.com,
-        william.kucharski@oracle.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-cachefs@redhat.com, vshankar@redhat.com,
-        Xiubo Li <xiubli@redhat.com>
-Subject: [PATCH v3 0/2] netfs: fix the crash when unlocking the folio
-Date:   Thu,  7 Jul 2022 12:51:10 +0800
-Message-Id: <20220707045112.10177-1-xiubli@redhat.com>
+        Thu, 7 Jul 2022 00:51:50 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB841F2;
+        Wed,  6 Jul 2022 21:51:49 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266HhdhT020671;
+        Wed, 6 Jul 2022 21:51:40 -0700
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2176.outbound.protection.outlook.com [104.47.73.176])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h56wt496p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 21:51:40 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jLySFbaluxiJw546cY8KgNVJhZ/AXIM/It2zwNI7y1SfnXYHDVVL9NR+N0grTJKlaTE/o2gupsnS0QN+IMUZrZjTHU8Jxs70HFEojq1oUkEpcsbHKbIb9mym9QKXVaTrBRrIGXcZJKA2KjQOXt163L9BI/W7WGy61cc1pifOVSEWKuh67rG37PCFE7ZfOqyptv66RTDaI5HXqmCwTdgQMWuK33/kMaZWy52fQrNbexcudoEXFBmBymPDA+EkPSQcsns81LlEow1wtWw+iYwyI57QH9n5B8wcG+BGlItaqNtFosjf808JtN8FZh80DsMWzg9GlVLjDu7dGTYGkMq0WQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wUEmTTEWvlKAnKGoeTp1X0LFAxsH8FHMN5HkhW3ZQzE=;
+ b=aeVJ8tYtpDu7z6npcTKJmhF3d7LcH9FatG68918OLrRXp+RmDwtKovpO3LOXUrsEzxGojYdOtcXKBIHRXO9u5v6NKuGYUABTvBqYALk5WY34ntqXU93jZOTdj0OCPBHgTdPkcby4OcW/84YNJer7Iudl9pCJ/OS1V1oYxT89usvPr2GaP9yDvfdTVu4k4IoW2QYFGyoQd1zpqk9Qgth4qYL7z0/f6s/yvdv7Orm+LO1zuEVcu+66992a3aSsokSEtKehaHWnO8c0vCLFwTJhzraaodU4LiiEkamJT4SyAe+pl0nfKEe2Sk4WLdHp4sbVDh41y7LzgouI9jnKZCKmyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wUEmTTEWvlKAnKGoeTp1X0LFAxsH8FHMN5HkhW3ZQzE=;
+ b=FQy2EauoY2Msxm/MMQgGi/BhEqWMZe88dEje6B2ktJXq2Ahlr0rMDgeoE9QhW/pxkFMk/J+cXHyeGSIyw8rZr3f7YvzkHF9Yo4auIwN1MuFXp3tWuctrgBq6onQ4z2ZPu+yJQbYvy0tqldF0bkTwNPUjII2FXi/ovHSKxrp3AVU=
+Received: from MWHPR1801MB1918.namprd18.prod.outlook.com
+ (2603:10b6:301:68::33) by CO6PR18MB4483.namprd18.prod.outlook.com
+ (2603:10b6:303:13d::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Thu, 7 Jul
+ 2022 04:51:37 +0000
+Received: from MWHPR1801MB1918.namprd18.prod.outlook.com
+ ([fe80::25:41d7:9bd1:6237]) by MWHPR1801MB1918.namprd18.prod.outlook.com
+ ([fe80::25:41d7:9bd1:6237%6]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
+ 04:51:37 +0000
+From:   Ratheesh Kannoth <rkannoth@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        kernel test robot <lkp@intel.com>
+Subject: RE: [EXT] Re: [PATCH] octeontx2-af: Fix compiler warnings.
+Thread-Topic: [EXT] Re: [PATCH] octeontx2-af: Fix compiler warnings.
+Thread-Index: AQHYkTjAAhqUvWsfYkWmtIlmY2EPMq1yHj0AgAA44/A=
+Date:   Thu, 7 Jul 2022 04:51:37 +0000
+Message-ID: <MWHPR1801MB191884C850E0A6AE3162F73BD3839@MWHPR1801MB1918.namprd18.prod.outlook.com>
+References: <20220706130241.2452196-1-rkannoth@marvell.com>
+ <20220706182446.2fb0e78d@kernel.org>
+In-Reply-To: <20220706182446.2fb0e78d@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 93974daf-c8b7-4ffa-68e6-08da5fd45fd7
+x-ms-traffictypediagnostic: CO6PR18MB4483:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XmfhGhOuzTnbeAXbta/2xRjjHDVmATDhX/Imkzuam9zEUL3cUZ7qGamqXgSvOHGPE/zZB3rt3NdnYfpHbfIpfEvB8wy64BvX65pevgPXCnvMrbfQGueDWRxrdfgkeP4bEmavYHs5DpXeCV4E266T3aY4tGVpF5dYYctKdHf+4nFIawLY3Eifq7gYrzy91zhb8HzumBFpDdjtOMKRhls2ymltrb1zp1cySQvNteuxxoOi2RHBtDcwQbCzlrESzlK4CBo5vKo7NYB4A6aGq4aggSSH3aBe21y0Ef8VibgWLHFfIyItiG886CDsJwSwA/Mdq+2JZLds84Pa9tjTfqZrmtLYyazBDDSBahV5SsTqbYU7iXL8K5WIkxrvmJaUnfW/6j5YSm3seFIQK/40AGNGgwbyrJiHuvVBbImHqStND2jqlIZ9cLyjGT53KwjLM7UOW74b3gqgKZTjJCdQBRpz5fycZIaZOlkAPCIX5yFtijd2RMJxs4LpH8c9YtZpU1PT/S47nKFjrvMcY4tG3FPsd5Zak8nVAFvHJDMkFbvKRXRhZnpl1fXYtMlr9ZLqmsuWdteI4Qcl1qmHbqRT9H78GPYOfakI+HVHt0/+zoL8i/wOE1AG0snhrei6jtSIcXtf+VIzsLSF58YCQyBw+ndxHj8gNJHyQ3tncdEDefJ+K5+l9bdmYj/CYJJs2hUEHN79oUKKMQxM/SFSKnqSRQZMZWtrYIGn4zJJtenAFijNN2DUW1x0PIoRvRFzsyz6sx13TwNswqAlQ7bxG2OlnMOjmtgTfd0idg5qXDJN4ppSfvj4DJK5XSotu7SE5d4Gyaeu
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1801MB1918.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(366004)(396003)(376002)(136003)(41300700001)(71200400001)(316002)(38070700005)(33656002)(26005)(9686003)(6506007)(83380400001)(6916009)(53546011)(54906003)(7696005)(38100700002)(52536014)(2906002)(8936002)(5660300002)(478600001)(8676002)(66446008)(86362001)(186003)(4326008)(122000001)(66556008)(66476007)(64756008)(66946007)(76116006)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z20xQ1ROSUhZMmpnd0UyZkpJZmFWd0pvRy95MWdYYVQxTUZLcnlhMHRYbVRJ?=
+ =?utf-8?B?QmVuZnJOVWJId0ZpS0hLUDd0ekZVV3lnS0tEQS95cmZvaWhkYTFWaHlJOG9P?=
+ =?utf-8?B?ZWZsN3MzaE9xQzJxdkY2d1dkUXlzbUVvTU40MjJBcUttVzJieEdaRTFJOGV5?=
+ =?utf-8?B?anRIc1J0Z3dET3ZiYngwSGk0TE8xSEdWVkxSaTI5U0txWENzNnVoaFQyTGtk?=
+ =?utf-8?B?ak5tWHRSZXdsRnRSM1prc3pocFV1akkzZk5ITHRLQ0ZZTjgwTEhZUWYzLzJT?=
+ =?utf-8?B?T09vOEdPQTZZL0s2MnNqcHZTVnhxL2V0aFVUQ0pCUkdCUnZZUVhaeUk2R2ds?=
+ =?utf-8?B?b2orMkN3YStDMDkyRVNlYnhYd0lRbTUwRm1uV25Nc2tQUW5JOHc0NFBURlhz?=
+ =?utf-8?B?Tm55Wnp3LzNZOU5UNHdmYlZ6dGZhQXllOUgxSXFwRi9WaWJxZ3ZOWUhzdGFt?=
+ =?utf-8?B?NmUwWVBBZ0RuNkMycTUvWlIydm5DVGFRYUE1OVd0OG1uWStEcXpGTHduU1dr?=
+ =?utf-8?B?ZzQzd1lyOHJxRnNDNWZCTi9kYkhYK3lpNlE5RGkwaEZNSk1ldEw4S0hyelBC?=
+ =?utf-8?B?azkxcDBtaFYvUzFUbWFkT2hhMXlhRyszZGUrOHRUcVl2am51SzY5aTVBS3B0?=
+ =?utf-8?B?Smt6S05SQTRIUy9UMTViUGpsUlM4cUN4dFY4S2x5bXdvaVNNQm4rYXNjYUxt?=
+ =?utf-8?B?NHB3dVVoU2tlQVF5MjNCOWdjV3lPQVZHQ0E3QkdFMXJzM0M3RmYwcW93cGpM?=
+ =?utf-8?B?OERpTkw5N1UzYzdaMmxteUhyQUVBbW9rc3dncWhRbXdTTXpHZVcyT3FVa21O?=
+ =?utf-8?B?cksxQVFUTkt2ZXlVeG9pd20xOGh4aFhhQThRUExrYXhCamcwTzJTTnBjZHJU?=
+ =?utf-8?B?TkswRENJR285OU1JS0tZQ3FWRDVnNGRFK2JibEM4cjRlZHBBcllxN2oyY3pQ?=
+ =?utf-8?B?Ujh3bVZpNnBDNVYxdVgwUXpwUC9nSmxqVDhJRFo2Z2wrb0VOWnY5RG9DV0xh?=
+ =?utf-8?B?NkZ0T2Jja3pPcnI0TFVzNGVCZ2lXRnMxU0FBRS9QblgvUkxtQmh4cTR4bEFX?=
+ =?utf-8?B?YzhXLy9hTUVib1pMM0tkRWIwakVhYzZiU3MvL1I5dG9leVBlanUwSFlYb3hG?=
+ =?utf-8?B?QXlzd2MwODNYdVVKS1RMREJvVzVGK3ZLeVRLSGh4eVBQcXZ0cVVXSGJpTFhH?=
+ =?utf-8?B?YUxJRWV2V3crYzdDREVoYTM0VnB3c0sxNkc4dkZOMDhYWUhMYkFJRjNoWUpt?=
+ =?utf-8?B?YlR4RnNKSWcxODZLSzl4Uy9uMkQwc1YrbUZkamR3bWZNTFdzbWUzbFRwbHQz?=
+ =?utf-8?B?NWZ0cnRiZm1FTEJ5MTBMVVVZUkxRTGl3aEN0TmJSVU05bnBrNjJOSjVtZWUy?=
+ =?utf-8?B?VldaTjZMNTh2akhyWk1IWC9LOUlqckM2ZytoaUtrTDZkejByOHNSK0NJWmNk?=
+ =?utf-8?B?THhIUmVBall0ZHhycmR5cjlDOE5aT3FBcEljMTZnNEpGQnc0Z3dwMGpreU1E?=
+ =?utf-8?B?Q0J2RFMxMnhtZmF4Q2x5aStHOGE2amZCNmVNTVNKT0h2VW9LV3pnb251bklx?=
+ =?utf-8?B?ZHFNb1ZaRi9WQTNjVEwxU0ZhdTExazR2R3pxdVFWRzdTcGJneGxwWDlVRmFT?=
+ =?utf-8?B?N05hZDRla2tsUm1YdVQ0UXBqMTBwZTFnd3Q5MlBLNEZIU1RIOEhjZkhtTWFh?=
+ =?utf-8?B?dXFhaDNPVUtLc2I3UG1hc2xTUi9QbmdqQ2dJVm1YVHJ4NlQ0VDcvWEhYS1Ny?=
+ =?utf-8?B?RS9PZFBnSDhsaHJWajRzcy9Pck40Q3VyNGwzcVVKTXdScEhHZmRlRm9TS2t1?=
+ =?utf-8?B?OXZ2VG5nQXZRajNNbk5mWXVCMjhaNWRneW5QTVo3RmNCUlFGemZHTERrTzQ4?=
+ =?utf-8?B?aTY1VWpCUzQya3dNOUZqTnNuR0MzUHEwNWpIbWZGa2dWdEs5UzljSWcvT1JY?=
+ =?utf-8?B?a0hXT3RqUWFPSVB2dzY5dE1YSUFsb21odFVTVUY0dlFFRDNEQlgxdkFETE9B?=
+ =?utf-8?B?RTF6S0xnMys1ajh3SE5nQ1huaStOWWg3czZ3STZUUVppV1E4TUgrSXZhQXJk?=
+ =?utf-8?B?R2JWb2hGaTNXVlBYQ0dSS3JlbTFYT0FmakphUG1jeHhYT3c4ZWxxazJNc3NZ?=
+ =?utf-8?Q?z+Wr3GDVR9A48x89PAN5Wq4wY?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1801MB1918.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93974daf-c8b7-4ffa-68e6-08da5fd45fd7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 04:51:37.1692
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jOvuuQv1qrRFlCSbMEljh8iYHIrH+kkWoVpq66L1pnq6qHFpRYJCwYmYOwNwBtrKzoVk/U0HYNDWjDkOGR00KQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR18MB4483
+X-Proofpoint-ORIG-GUID: RjTXDXSfRu6Xx7g8d3jHiZRshOqaGxgt
+X-Proofpoint-GUID: RjTXDXSfRu6Xx7g8d3jHiZRshOqaGxgt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_02,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
-
-V3:
-- s/struct folio *folio/struct folio **folio/
-
-V2:
-- Add error_unlocked lable and rename error lable to error_locked.
-
-
-kernel: page:00000000c9746ff1 refcount:2 mapcount:0 mapping:00000000dc2785bb index:0x1 pfn:0x141afc
-kernel: memcg:ffff88810f766000
-kernel: aops:ceph_aops [ceph] ino:100000005e7 dentry name:"postgresql-Fri.log" 
-kernel: flags: 0x5ffc000000201c(uptodate|dirty|lru|private|node=0|zone=2|lastcpupid=0x7ff)
-kernel: raw: 005ffc000000201c ffffea000a9eeb48 ffffea00060ade48 ffff888193ed8228
-kernel: raw: 0000000000000001 ffff88810cc96500 00000002ffffffff ffff88810f766000
-kernel: page dumped because: VM_BUG_ON_FOLIO(!folio_test_locked(folio))
-kernel: ------------[ cut here ]------------
-kernel: kernel BUG at mm/filemap.c:1559!
-kernel: invalid opcode: 0000 [#1] PREEMPT SMP PTI
-kernel: CPU: 4 PID: 131697 Comm: postmaster Tainted: G S                5.19.0-rc2-ceph-g822a4c74e05d #1
-kernel: Hardware name: Supermicro SYS-5018R-WR/X10SRW-F, BIOS 2.0 12/17/2015
-kernel: RIP: 0010:folio_unlock+0x26/0x30
-kernel: Code: 00 0f 1f 00 0f 1f 44 00 00 48 8b 07 a8 01 74 0e f0 80 27 fe 78 01 c3 31 f6 e9 d6 fe ff ff 48 c7 c6 c0 81 37 82 e8 aa 64 04 00 <0f> 0b 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8b 87 b8 01 00 00
-kernel: RSP: 0018:ffffc90004377bc8 EFLAGS: 00010246
-kernel: RAX: 000000000000003f RBX: ffff888193ed8228 RCX: 0000000000000001
-kernel: RDX: 0000000000000000 RSI: ffffffff823a3569 RDI: 00000000ffffffff
-kernel: RBP: ffffffff828a0058 R08: 0000000000000001 R09: 0000000000000001
-kernel: R10: 000000007c6b0fd2 R11: 0000000000000034 R12: 0000000000000001
-kernel: R13: 00000000fffffe00 R14: ffffea000506bf00 R15: ffff888193ed8000
-kernel: FS:  00007f4993626340(0000) GS:ffff88885fd00000(0000) knlGS:0000000000000000
-kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-kernel: CR2: 0000555789ee8000 CR3: 000000017a52a006 CR4: 00000000001706e0
-kernel: Call Trace:
-kernel: <TASK>
-kernel: netfs_write_begin+0x130/0x950 [netfs]
-kernel: ceph_write_begin+0x46/0xd0 [ceph]
-kernel: generic_perform_write+0xef/0x200
-kernel: ? file_update_time+0xd4/0x110
-kernel: ceph_write_iter+0xb01/0xcd0 [ceph]
-kernel: ? lock_is_held_type+0xe3/0x140
-kernel: ? new_sync_write+0x106/0x180
-kernel: new_sync_write+0x106/0x180
-kernel: vfs_write+0x29a/0x3a0
-kernel: ksys_write+0x5c/0xd0
-kernel: do_syscall_64+0x34/0x80
-kernel: entry_SYSCALL_64_after_hwframe+0x46/0xb0
-kernel: RIP: 0033:0x7f49903205c8
-kernel: Code: 89 02 48 c7 c0 ff ff ff ff eb b3 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 d5 3f 2a 00 8b 00 85 c0 75 17 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 41 54 49 89 d4 55
-kernel: RSP: 002b:00007fff104bd178 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-kernel: RAX: ffffffffffffffda RBX: 0000000000000048 RCX: 00007f49903205c8
-kernel: RDX: 0000000000000048 RSI: 000055944d3c1ea0 RDI: 000000000000000b
-kernel: RBP: 000055944d3c1ea0 R08: 000055944d3963d0 R09: 00007fff1055b080
-kernel: R10: 0000000000000000 R11: 0000000000000246 R12: 000055944d3962f0
-kernel: R13: 0000000000000048 R14: 00007f49905bb880 R15: 0000000000000048
-kernel: </TASK>
-
-
-Xiubo Li (2):
-  netfs: do not unlock and put the folio twice
-  afs: unlock the folio when vnode is marked deleted
-
- fs/afs/file.c            | 10 ++++++++--
- fs/ceph/addr.c           | 11 ++++++-----
- fs/netfs/buffered_read.c | 18 ++++++++++--------
- include/linux/netfs.h    |  2 +-
- 4 files changed, 25 insertions(+), 16 deletions(-)
-
--- 
-2.36.0.rc1
-
+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEpha3ViIEtpY2luc2tpIDxrdWJhQGtl
+cm5lbC5vcmc+IA0KU2VudDogVGh1cnNkYXksIEp1bHkgNywgMjAyMiA2OjU1IEFNDQpUbzogUmF0
+aGVlc2ggS2Fubm90aCA8cmthbm5vdGhAbWFydmVsbC5jb20+DQpDYzogbmV0ZGV2QHZnZXIua2Vy
+bmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgU3VuaWwgS292dnVyaSBHb3V0
+aGFtIDxzZ291dGhhbUBtYXJ2ZWxsLmNvbT47IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGVkdW1hemV0
+QGdvb2dsZS5jb207IHBhYmVuaUByZWRoYXQuY29tOyBrYnVpbGQtYWxsQGxpc3RzLjAxLm9yZzsg
+a2VybmVsIHRlc3Qgcm9ib3QgPGxrcEBpbnRlbC5jb20+DQpTdWJqZWN0OiBbRVhUXSBSZTogW1BB
+VENIXSBvY3Rlb250eDItYWY6IEZpeCBjb21waWxlciB3YXJuaW5ncy4NCg0KRXh0ZXJuYWwgRW1h
+aWwNCg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLQ0KT24gV2VkLCA2IEp1bCAyMDIyIDE4OjMyOjQxICswNTMwIFJh
+dGhlZXNoIEthbm5vdGggd3JvdGU6DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvb2N0
+ZW9udHgyL2FmL3J2dV9ucGNfaGFzaC5jOjM4ODo1OiANCj4gd2FybmluZzogbm8gcHJldmlvdXMg
+cHJvdG90eXBlIGZvciAncnZ1X2V4YWN0X2NhbGN1bGF0ZV9oYXNoJyANCj4gWy1XbWlzc2luZy1w
+cm90b3R5cGVzXQ0KPiAzODggfCB1MzIgcnZ1X2V4YWN0X2NhbGN1bGF0ZV9oYXNoKHN0cnVjdCBy
+dnUgKnJ2dSwgdTE2IGNoYW4sIHUxNiANCj4gY3R5cGUsIHU4ICptYWMsDQo+IHwgICAgIF5+fn5+
+fn5+fn5+fn5+fn5+fn5+fn5+fg0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL29jdGVv
+bnR4Mi9hZi9ydnVfbnBjX2hhc2guYzogSW4gZnVuY3Rpb24gJ3J2dV9ucGNfZXhhY3RfZ2V0X2Ry
+b3BfcnVsZV9pbmZvJzoNCj4gPj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9vY3Rlb250
+eDIvYWYvcnZ1X25wY19oYXNoLmM6MTA4MDoxNDogDQo+ID4+IHdhcm5pbmc6IHZhcmlhYmxlICdy
+Yycgc2V0IGJ1dCBub3QgdXNlZCBbLVd1bnVzZWQtYnV0LXNldC12YXJpYWJsZV0NCj4gMTA4MCB8
+ICAgICAgICAgYm9vbCByYzsNCj4gfCAgICAgICAgICAgICAgXn4NCj4gZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvbWFydmVsbC9vY3Rlb250eDIvYWYvcnZ1X25wY19oYXNoLmM6IEF0IHRvcCBsZXZlbDoN
+Cj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9vY3Rlb250eDIvYWYvcnZ1X25wY19oYXNo
+LmM6MTI0ODo1OiANCj4gd2FybmluZzogbm8gcHJldmlvdXMgcHJvdG90eXBlIGZvciAncnZ1X25w
+Y19leGFjdF9hZGRfdGFibGVfZW50cnknIA0KPiBbLVdtaXNzaW5nLXByb3RvdHlwZXNdDQo+IDEy
+NDggfCBpbnQgcnZ1X25wY19leGFjdF9hZGRfdGFibGVfZW50cnkoc3RydWN0IHJ2dSAqcnZ1LCB1
+OCBjZ3hfaWQsIA0KPiB1OCBsbWFjX2lkLCB1OCAqbWFjLA0KPiB8ICAgICBefn5+fn5+fn5+fn5+
+fn5+fn5+fn5+fn5+fn5+fg0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL29jdGVvbnR4
+Mi9hZi9ydnVfbnBjX2hhc2guYzogSW4gZnVuY3Rpb24gJ3J2dV9ucGNfZXhhY3RfYWRkX3RhYmxl
+X2VudHJ5JzoNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9vY3Rlb250eDIvYWYvcnZ1
+X25wY19oYXNoLmM6MTI1NDozMzogd2FybmluZzogdmFyaWFibGUgJ3RhYmxlJyBzZXQgYnV0IG5v
+dCB1c2VkIFstV3VudXNlZC1idXQtc2V0LXZhcmlhYmxlXQ0KPiAxMjU0IHwgICAgICAgICBzdHJ1
+Y3QgbnBjX2V4YWN0X3RhYmxlICp0YWJsZTsNCj4gfCAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIF5+fn5+DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvb2N0ZW9udHgyL2Fm
+L3J2dV9ucGNfaGFzaC5jOiBBdCB0b3AgbGV2ZWw6DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21h
+cnZlbGwvb2N0ZW9udHgyL2FmL3J2dV9ucGNfaGFzaC5jOjEzMjA6NTogDQo+IHdhcm5pbmc6IG5v
+IHByZXZpb3VzIHByb3RvdHlwZSBmb3IgJ3J2dV9ucGNfZXhhY3RfdXBkYXRlX3RhYmxlX2VudHJ5
+JyANCj4gWy1XbWlzc2luZy1wcm90b3R5cGVzXQ0KPiAxMzIwIHwgaW50IHJ2dV9ucGNfZXhhY3Rf
+dXBkYXRlX3RhYmxlX2VudHJ5KHN0cnVjdCBydnUgKnJ2dSwgdTggDQo+IGNneF9pZCwgdTggbG1h
+Y19pZCwNCj4gfCAgICAgXn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4NCg0KPlRoZXJl
+IGFyZSBhbHNvIHRoZXNlIHdhcm5pbmdzIG5vdCBmaXhlZCBieSB0aGUgZm9sbG93IHVwOg0KDQo+
+SW4gZmlsZSBpbmNsdWRlZCBmcm9tIC4uL2RyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvb2N0
+ZW9udHgyL2FmL3J2dV9ucGNfZnMuYzoxNDoNCj4uLi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2
+ZWxsL29jdGVvbnR4Mi9hZi9ucGNfcHJvZmlsZS5oOjE1MTIwOjI4OiBlcnJvcjog4oCYbnBjX21r
+ZXhfZGVmYXVsdOKAmSBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVdlcnJvcj11bnVzZWQtdmFyaWFi
+bGVdDQo+MTUxMjAgfCBzdGF0aWMgc3RydWN0IG5wY19tY2FtX2tleCBucGNfbWtleF9kZWZhdWx0
+ID0gew0KICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn5+
+DQo+Li4vZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9vY3Rlb250eDIvYWYvbnBjX3Byb2Zp
+bGUuaDoxNTAwMDozMDogZXJyb3I6IOKAmG5wY19sdF9kZWZhdWx0c+KAmSBkZWZpbmVkIGJ1dCBu
+b3QgdXNlZCBbLVdlcnJvcj11bnVzZWQtdmFyaWFibGVdDQo+MTUwMDAgfCBzdGF0aWMgc3RydWN0
+IG5wY19sdF9kZWZfY2ZnIG5wY19sdF9kZWZhdWx0cyA9IHsNCiA+ICAgICB8ICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+DQo+Li4vZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvbWFydmVsbC9vY3Rlb250eDIvYWYvbnBjX3Byb2ZpbGUuaDoxNDkwMTozMTogZXJyb3I6IOKA
+mG5wY19rcHVfcHJvZmlsZXPigJkgZGVmaW5lZCBidXQgbm90IHVzZWQgWy1XZXJyb3I9dW51c2Vk
+LXZhcmlhYmxlXQ0KPjE0OTAxIHwgc3RhdGljIHN0cnVjdCBucGNfa3B1X3Byb2ZpbGUgbnBjX2tw
+dV9wcm9maWxlc1tdID0gew0KID4gICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+Xn5+fn5+fn5+fn5+fn5+fg0KPi4uL2RyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvb2N0ZW9u
+dHgyL2FmL25wY19wcm9maWxlLmg6NDgzOjM4OiBlcnJvcjog4oCYaWtwdV9hY3Rpb25fZW50cmll
+c+KAmSBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVdlcnJvcj11bnVzZWQtdmFyaWFibGVdDQogPiA0
+ODMgfCBzdGF0aWMgc3RydWN0IG5wY19rcHVfcHJvZmlsZV9hY3Rpb24gaWtwdV9hY3Rpb25fZW50
+cmllc1tdID0gew0KICA+ICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IF5+fn5+fn5+fn5+fn5+fn5+fn4NCj5jYzE6IGFsbCB3YXJuaW5ncyBiZWluZyB0cmVhdGVkIGFz
+IGVycm9ycw0KDQo+QW5ub3lpbmdseSBrZXJuZWwgZGVmYXVsdHMgdG8gLVdlcnJvciBub3cgc28g
+dGhleSBicmVhayB0aGUgYnVpbGQgZm9yIG1lLCBhbmQgSSdtIG5vdCBpbW1lZGlhdGVseSBzdXJl
+IGhvdyB0byBmaXggdGhvc2UgZm9yIHlvdS4gU28gSSB0aGluayBJJ2xsIHJldmVydCB0aGUgdjIg
+YW5kIHlvdSBjYW4gcmVwb3N0IHYzIGFzIGlmIHYyID53YXNuJ3QgYXBwbGllZC4gU0c/DQoNClNv
+cnJ5IGZvciB0aGUgdHJvdWJsZS4gQ2xlYW5seSBjb21waWxlZCBwYXRjaGVzIGFuZCByZXBvc3Rl
+ZCBwYXRjaGVzLiAgUGxlYXNlIHJldmlldy4NCg0KVGhhbmtzLA0KUmF0aGVlc2gNCg0K
