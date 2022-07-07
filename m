@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 16:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236323AbiGGQNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
+        id S235804AbiGGQOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236272AbiGGQMh (ORCPT
+        with ESMTP id S235846AbiGGQMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:12:37 -0400
+        Thu, 7 Jul 2022 12:12:05 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A3A1D318;
-        Thu,  7 Jul 2022 09:12:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E5B4F64E;
+        Thu,  7 Jul 2022 09:11:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657210330; x=1688746330;
+  t=1657210301; x=1688746301;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=KkwelwdXDmhFR4sAJprFChmFv9QPBXU8ZPnRKHLF3Z0=;
-  b=UqHMszEIvHOliG/DuVYGoQp1AU6tU9K1vyeEzB2htc0M61vCkK//9KzY
-   Lo9plmTaMEmZorE8s5uX9oJPRozdlcGfQTh/nLqDIEFhewjmhFyIYKH7f
-   MVtYHunGjt++97MdF5gFaTTVw3rxYcxj8E8lyi1kMOoCk73+rLMMpOCwL
-   I=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jul 2022 09:12:10 -0700
+  bh=u8C85sP+kA9Rfj5hk8tCqrLJLi5CaJT9b3HkuUJZtuY=;
+  b=vYAKO0qIyloR3IMpUULh7IxpCF6+VhpOR2l8lRGe5Ze3UYZmi1F7gNGh
+   XQoERYP/tp8qR630fGuckRvsE6jsHpdR5ilz4zedvRx35CNNBrjF05G3w
+   h54nPPWHGPvbKenfrSJkQjdxdV74tlCI3/thnoEw1c+Ve66FJ+f+R7yfR
+   o=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jul 2022 09:11:41 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 09:12:09 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 09:11:40 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Jul 2022 09:12:08 -0700
+ 15.2.986.22; Thu, 7 Jul 2022 09:11:39 -0700
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Jul 2022 09:12:03 -0700
+ 15.2.986.22; Thu, 7 Jul 2022 09:11:34 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
@@ -49,15 +49,13 @@ CC:     Jordan Crouse <jordan@cosmicpenguin.net>,
         Jonathan Marek <jonathan@marek.ca>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Daniel Vetter" <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, Wang Qing <wangqing@vivo.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 7/7] drm/msm/a6xx: Handle GMU prepare-slumber hfi failure
-Date:   Thu, 7 Jul 2022 21:41:02 +0530
-Message-ID: <20220707213950.7.I54815c7c36b80d4725cd054e536365250454452f@changeid>
+        Sean Paul <sean@poorly.run>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/7] drm/msm: Correct pm_runtime votes in recover worker
+Date:   Thu, 7 Jul 2022 21:40:57 +0530
+Message-ID: <20220707213950.2.Ib07ecec3d5c17cb0e1efa6fcddaaa019ec2fb556@changeid>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1657210262-17166-1-git-send-email-quic_akhilpo@quicinc.com>
 References: <1657210262-17166-1-git-send-email-quic_akhilpo@quicinc.com>
@@ -70,32 +68,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When prepare-slumber hfi fails, we should follow a6xx_gmu_force_off()
-sequence.
+In the scenario where there is one a single submit which is hung, gpu is
+power collapsed when it is retired. Because of this, by the time we call
+reover(), gpu state would be already clear. Fix this by correctly
+managing the pm runtime votes.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
 
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_gpu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-index db05942..3d00ef9 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -1082,7 +1082,11 @@ static void a6xx_gmu_shutdown(struct a6xx_gmu *gmu)
- 		a6xx_bus_clear_pending_transactions(adreno_gpu);
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index eb8a666..f75ff4b 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -416,7 +416,6 @@ static void recover_worker(struct kthread_work *work)
+ 	/* Record the crash state */
+ 	pm_runtime_get_sync(&gpu->pdev->dev);
+ 	msm_gpu_crashstate_capture(gpu, submit, comm, cmd);
+-	pm_runtime_put_sync(&gpu->pdev->dev);
  
- 		/* tell the GMU we want to slumber */
--		a6xx_gmu_notify_slumber(gmu);
-+		ret = a6xx_gmu_notify_slumber(gmu);
-+		if (ret) {
-+			a6xx_gmu_force_off(gmu);
-+			return;
-+		}
+ 	kfree(cmd);
+ 	kfree(comm);
+@@ -464,6 +463,8 @@ static void recover_worker(struct kthread_work *work)
+ 		}
+ 	}
  
- 		ret = gmu_poll_timeout(gmu,
- 			REG_A6XX_GPU_GMU_AO_GPU_CX_BUSY_STATUS, val,
++	pm_runtime_put_sync(&gpu->pdev->dev);
++
+ 	mutex_unlock(&gpu->lock);
+ 
+ 	msm_gpu_retire(gpu);
 -- 
 2.7.4
 
