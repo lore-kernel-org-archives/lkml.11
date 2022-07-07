@@ -2,64 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79757CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 21:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236779AbiGGVWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 17:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35946 "EHLO
+        id S236793AbiGGVW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 17:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236555AbiGGVWN (ORCPT
+        with ESMTP id S236555AbiGGVWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 17:22:13 -0400
-Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C63831DFA;
-        Thu,  7 Jul 2022 14:22:12 -0700 (PDT)
-Received: from localhost.localdomain (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
-        by m-r1.th.seeweb.it (Postfix) with ESMTPA id 4C1641F9A9;
-        Thu,  7 Jul 2022 23:22:09 +0200 (CEST)
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        kernel test robot <lkp@intel.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] soc/qcom: Make QCOM_RPMPD depend on PM
-Date:   Thu,  7 Jul 2022 23:21:58 +0200
-Message-Id: <20220707212158.32684-1-konrad.dybcio@somainline.org>
-X-Mailer: git-send-email 2.37.0
+        Thu, 7 Jul 2022 17:22:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F049431DFD;
+        Thu,  7 Jul 2022 14:22:21 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3C06C1F9DA;
+        Thu,  7 Jul 2022 21:22:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1657228940;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M9nWttnTjLTkr2l2HLhvCYKnJfzWGL1Z7RGCnCMX74Y=;
+        b=R2GCZYHPoaP31/u/8x/YhrMoFV9db0/izqohgXrxXjlaJyxf4cgb0LjkM61lfUA6eFvbFY
+        jfsA+KZozvrHZJJkM2kP4CPvrLyWID5w371APXL54Zj5DpG15Jsh/M99zUJN3+rrXBwxYZ
+        qdOrC2dLNj61Rq1Q7bPyeYlj0nGw+vM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1657228940;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M9nWttnTjLTkr2l2HLhvCYKnJfzWGL1Z7RGCnCMX74Y=;
+        b=DGiS3u3YOVO8bYfWBg+pgVg46WS3cpIH9WCb/jITUr7D9+PDGVBiVsdZgE50iXBt+ikfn7
+        AVSi8en1MtmHD2CA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D70EA13461;
+        Thu,  7 Jul 2022 21:22:19 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id g0F9M4tOx2IITQAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 07 Jul 2022 21:22:19 +0000
+Date:   Thu, 7 Jul 2022 23:17:33 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Chris Down <chris@chrisdown.name>, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Gabriel Niebler <gniebler@suse.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ira Weiny <ira.weiny@intel.com>
+Subject: Re: [PATCH] btrfs: Convert zlib_compress_pages() to use
+ kmap_local_page()
+Message-ID: <20220707211732.GP15169@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        Chris Down <chris@chrisdown.name>, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Gabriel Niebler <gniebler@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>
+References: <20220627163305.24116-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627163305.24116-1-fmdefrancesco@gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-QCOM_RPMPD requires PM_GENERIC_DOMAINS/_OF, which in turns requires
-CONFIG_PM. I forgot about the latter in my earlier patch (it's still
-in -next as of the time of committing, hence no Fixes: tag). Fix it.
+On Mon, Jun 27, 2022 at 06:33:05PM +0200, Fabio M. De Francesco wrote:
+> The use of kmap() is being deprecated in favor of kmap_local_page(). With
+> kmap_local_page(), the mapping is per thread, CPU local and not globally
+> visible.
+> 
+> Therefore, use kmap_local_page() / kunmap_local() in zlib_compress_pages()
+> because in this function the mappings are per thread and are not visible
+> in other contexts. Furthermore, drop the mappings of "out_page" which is
+> allocated within zlib_compress_pages() with alloc_page(GFP_NOFS) and use
+> page_address() (thanks to David Sterba).
+> 
+> Tested with xfstests on a QEMU + KVM 32-bits VM with 4GB of RAM booting
+> a kernel with HIGHMEM64G enabled. This patch passes 26/26 tests of group
+> "compress".
+> 
+> Cc: Qu Wenruo <wqu@suse.com>
+> Suggested-by: David Sterba <dsterba@suse.com>
+> Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
----
- drivers/soc/qcom/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
-index a750714d5714..7e714327018f 100644
---- a/drivers/soc/qcom/Kconfig
-+++ b/drivers/soc/qcom/Kconfig
-@@ -129,6 +129,7 @@ config QCOM_RPMHPD
- 
- config QCOM_RPMPD
- 	tristate "Qualcomm RPM Power domain driver"
-+	depends on PM
- 	depends on QCOM_SMD_RPM
- 	select PM_GENERIC_DOMAINS
- 	select PM_GENERIC_DOMAINS_OF
--- 
-2.37.0
-
+Added to the kmap patch queue, thanks.
