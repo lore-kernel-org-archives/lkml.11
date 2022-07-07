@@ -2,139 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02076CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 656D9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235275AbiGGKxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
+        id S235303AbiGGKyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233512AbiGGKxS (ORCPT
+        with ESMTP id S235020AbiGGKx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:53:18 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074D657228
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:53:18 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ez10so1565906ejc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:53:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/MdPU7/0LhUESABqOcsJRA8NbvdGq3zsY92OcPiOhSc=;
-        b=wEf+WpAM38MWTewyyu9oF3P+XqIq5idiDLfWgfEIJrYheTo8xBuCKSvl9H99kcUTDZ
-         kUerrZi0GlhDFjaTQzg544xMdL07XfP77NjR/PlZB66hEvmE08EBIrmso0LEjgVw19QK
-         WJeFgRsjGU74J7nz0IKXIXNT2AS9+Nwlfh/Mtwq83/f3f/alfn0rnxEZ3+OjqwEdVywI
-         75nAi+HXNi0h5EJBqXBpSBOYZMUgaTOena6exxvQ+vg3ind7cNMS7Nme4F9veyCOAqJd
-         xg6fXwSTLm+dpoQxCFDWOMnh2yfVaCCAeNsFXCGAXQqG+ZMfc3SxttsLeGypVm6eHOGf
-         wEEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/MdPU7/0LhUESABqOcsJRA8NbvdGq3zsY92OcPiOhSc=;
-        b=M5ttEcqu+jreLRkUwT7tJruhnyYuXFRG+pm1aDl1eNVyKvskUnWOgeJYlbmV8/QMcF
-         duSjQhg2g09No/x6/a5ASBXUgbRJuOHPvrMrgjMt1dX9RV+57EWEcreILjwLXN10mvnz
-         qMZBbGUQAKBdbbke4XHUaMAEweIMd0Z6KSc75/9zq4FhAbEkLpabRYeAsJ2P7Iu0Hjqb
-         tWeEUpoWC35O8WaErvZO0XH4nrLB2lWF3OsD+aazKTGZq2NIiZA5lo79+7CpomlV76eb
-         QiLpdQEtn/Gl6flEaLJmucTkKJUNYQXXnmRgts2kgmoywwi+GVWRxGeymVyqHykYKyvM
-         0r0g==
-X-Gm-Message-State: AJIora+6Q5lx17is2PhHyswLxSBtyjeLX8AONC+/6HQW5UqjJp3sy6yn
-        DXKn75I0f7rcKdxGGHbgWcVKKUDHN+xelbrpn14/Nb/jfseC7g==
-X-Google-Smtp-Source: AGRyM1tG+R5xjPewg3TqpK5d5/L3gIH6N57ZzdlDvPbR39hXy+R0tUkD/nSkx2YVxrSf1tB/Ezq9w8FA+u47jlY7iyU=
-X-Received: by 2002:a17:907:16a6:b0:726:574d:d31f with SMTP id
- hc38-20020a17090716a600b00726574dd31fmr43051467ejc.514.1657191196466; Thu, 07
- Jul 2022 03:53:16 -0700 (PDT)
+        Thu, 7 Jul 2022 06:53:57 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B691F32EC9;
+        Thu,  7 Jul 2022 03:53:55 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2C2E41063;
+        Thu,  7 Jul 2022 03:53:55 -0700 (PDT)
+Received: from [10.57.11.194] (unknown [10.57.11.194])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1918F3F66F;
+        Thu,  7 Jul 2022 03:53:51 -0700 (PDT)
+Message-ID: <85d48b3c-2c13-f0b9-900a-b67471948b38@arm.com>
+Date:   Thu, 7 Jul 2022 11:53:50 +0100
 MIME-Version: 1.0
-References: <20220612144854.2223873-1-alvin@pqrs.dk> <20220612144854.2223873-2-alvin@pqrs.dk>
-In-Reply-To: <20220612144854.2223873-2-alvin@pqrs.dk>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Thu, 7 Jul 2022 12:53:05 +0200
-Message-ID: <CAG3jFysYKJc3Ar99HsoSri+wxW2=KOdSwwsU9qBpypxrNCMaiQ@mail.gmail.com>
-Subject: Re: [PATCH RESEND 1/2] drm: bridge: adv7511: fix CEC power down
- control register offset
-To:     alvin@pqrs.dk
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Archit Taneja <architt@codeaurora.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 1/4] PM: EM: convert power field to micro-Watts
+ precision and align drivers
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
+        rafael@kernel.org, dietmar.eggemann@arm.com, nm@ti.com,
+        sboyd@kernel.org, sudeep.holla@arm.com, cristian.marussi@arm.com,
+        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220707071555.10085-1-lukasz.luba@arm.com>
+ <20220707071555.10085-2-lukasz.luba@arm.com>
+ <20220707105307.wl2pnqbf3j4fo75z@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220707105307.wl2pnqbf3j4fo75z@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 12 Jun 2022 at 16:49, Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
->
-> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
->
-> The ADV7511_REG_CEC_CTRL =3D 0xE2 register is part of the main register
-> map - not the CEC register map. As such, we shouldn't apply an offset to
-> the register address. Doing so will cause us to address a bogus register
-> for chips with a CEC register map offset (e.g. ADV7533).
->
-> Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
-> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
-> ---
->  drivers/gpu/drm/bridge/adv7511/adv7511.h     | 5 +----
->  drivers/gpu/drm/bridge/adv7511/adv7511_cec.c | 4 ++--
->  2 files changed, 3 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/b=
-ridge/adv7511/adv7511.h
-> index 9e3bb8a8ee40..46ae6c0d9aa5 100644
-> --- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
-> +++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
-> @@ -406,10 +406,7 @@ void adv7511_cec_irq_process(struct adv7511 *adv7511=
-, unsigned int irq1);
->  #else
->  static inline int adv7511_cec_init(struct device *dev, struct adv7511 *a=
-dv7511)
->  {
-> -       unsigned int offset =3D adv7511->type =3D=3D ADV7533 ?
-> -                                               ADV7533_REG_CEC_OFFSET : =
-0;
-> -
-> -       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset,
-> +       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL,
->                      ADV7511_CEC_CTRL_POWER_DOWN);
->         return 0;
->  }
-> diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c b/drivers/gpu/d=
-rm/bridge/adv7511/adv7511_cec.c
-> index 399f625a50c8..6d067fa54bea 100644
-> --- a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
-> +++ b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
-> @@ -347,7 +347,7 @@ int adv7511_cec_init(struct device *dev, struct adv75=
-11 *adv7511)
->                 goto err_cec_alloc;
->         }
->
-> -       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset, 0);
-> +       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL, 0);
->         /* cec soft reset */
->         regmap_write(adv7511->regmap_cec,
->                      ADV7511_REG_CEC_SOFT_RESET + offset, 0x01);
-> @@ -374,7 +374,7 @@ int adv7511_cec_init(struct device *dev, struct adv75=
-11 *adv7511)
->         dev_info(dev, "Initializing CEC failed with error %d, disabling C=
-EC\n",
->                  ret);
->  err_cec_parse_dt:
-> -       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset,
-> +       regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL,
->                      ADV7511_CEC_CTRL_POWER_DOWN);
->         return ret =3D=3D -EPROBE_DEFER ? ret : 0;
->  }
-> --
-> 2.36.1
->
 
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
+
+On 7/7/22 11:53, Viresh Kumar wrote:
+> On 07-07-22, 08:15, Lukasz Luba wrote:
+>> The milli-Watts precision causes rounding errors while calculating
+>> efficiency cost for each OPP. This is especially visible in the 'simple'
+>> Energy Model (EM), where the power for each OPP is provided from OPP
+>> framework. This can cause some OPPs to be marked inefficient, while
+>> using micro-Watts precision that might not happen.
+>>
+>> Update all EM users which access 'power' field and assume the value is
+>> in milli-Watts.
+>>
+>> Solve also an issue with potential overflow in calculation of energy
+>> estimation on 32bit machine. It's needed now since the power value
+>> (thus the 'cost' as well) are higher.
+>>
+>> Example calculation which shows the rounding error and impact:
+>>
+>> power = 'dyn-power-coeff' * volt_mV * volt_mV * freq_MHz
+>>
+>> power_a_uW = (100 * 600mW * 600mW * 500MHz) / 10^6 = 18000
+>> power_a_mW = (100 * 600mW * 600mW * 500MHz) / 10^9 = 18
+>>
+>> power_b_uW = (100 * 605mW * 605mW * 600MHz) / 10^6 = 21961
+>> power_b_mW = (100 * 605mW * 605mW * 600MHz) / 10^9 = 21
+>>
+>> max_freq = 2000MHz
+>>
+>> cost_a_mW = 18 * 2000MHz/500MHz = 72
+>> cost_a_uW = 18000 * 2000MHz/500MHz = 72000
+>>
+>> cost_b_mW = 21 * 2000MHz/600MHz = 70 // <- artificially better
+>> cost_b_uW = 21961 * 2000MHz/600MHz = 73203
+>>
+>> The 'cost_b_mW' (which is based on old milli-Watts) is misleadingly
+>> better that the 'cost_b_uW' (this patch uses micro-Watts) and such
+>> would have impact on the 'inefficient OPPs' information in the Cpufreq
+>> framework. This patch set removes the rounding issue.
+>>
+>> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+>> ---
+>>   drivers/cpufreq/mediatek-cpufreq-hw.c |  7 ++--
+>>   drivers/cpufreq/scmi-cpufreq.c        |  6 +++
+>>   drivers/opp/of.c                      | 15 ++++----
+>>   drivers/powercap/dtpm_cpu.c           |  5 +--
+>>   drivers/thermal/cpufreq_cooling.c     | 13 ++++++-
+>>   drivers/thermal/devfreq_cooling.c     | 19 ++++++++--
+>>   include/linux/energy_model.h          | 54 +++++++++++++++++++--------
+>>   kernel/power/energy_model.c           | 24 ++++++++----
+>>   8 files changed, 100 insertions(+), 43 deletions(-)
+> 
+> Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+> 
+
+Thank you Viresh for the ACKs!
