@@ -2,105 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 143C8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2AFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbiGGSW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
+        id S235968AbiGGSWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235666AbiGGSWT (ORCPT
+        with ESMTP id S236156AbiGGSWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:22:19 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18A7564F3
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:22:18 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id e63-20020a253742000000b0066e1afdb46aso11400378yba.1
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 11:22:18 -0700 (PDT)
+        Thu, 7 Jul 2022 14:22:35 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF9F57271
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:22:33 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id dn9so28572016ejc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 11:22:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=R1WcdFk/TWy+sEGVd4Eg6xNGBTF47VVsySZzXRRJmuQ=;
-        b=p0IZo4quADAm9LtBXYER13jRilXxoEbNNtWctNbyaz94erFfW+/Ae4hr4rVCQ6taf0
-         RmvqWwPSaYaZpN4RAUiJKaeUTKAWY6RA2Ge7MirqMcudrm05hCquBdlmHuCtPCgW16Xz
-         8dFkgNLraPLJDys+pHz0L/ELmkfeGXC+ojce8v36eAWvM8/4fimra2bPU+YQzvuk8kTO
-         cMj85XWyMp3nRUmvJfof1bHn8YbcbePJGEB8tVkbFN0MosoJiWlKlcUiwIOFvOlp719z
-         KZr2S/fCabh/SdU+11LuCoGVEAFPO1dgHcFjbmOlMSMcFuvAaXi2snaZ6PZpE7Vsmds3
-         /0CA==
+        bh=j6ncolguiQ+DPHRmzlhAw1z57F0HnokCJKSQgzd3UQs=;
+        b=ohjqe3h1JnbCwaBEIZ2d69QR8cz52UUygEFiOvnMYGlCpXpnR1Qmj4YvAuvK0EJiWY
+         4FGWd1fhgqJ8Hh/fZ0Up/Iu7IjXoofz/xMywSFCvKE8NSlPntfPXJZXlicN6Xw2E9/6l
+         uFb+mi5Dacf9U9diBw77SQKNmaPSR3msiqmJY1fQA6skgYg/D7VFo/r7b52ybuRrtb1I
+         fEii4Ih35R9wz1QXi0i6uzhivzSvYEXvDYNQmTAK/sOTg+IckYEmgXnTc9rTEml/aFgo
+         y6NemwFJTWIUgYrRhYMmXfajWOACfbStbqrgZEYPmoeAnLoWh1oCHM4dWsKrmRJJnhxm
+         9FLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=R1WcdFk/TWy+sEGVd4Eg6xNGBTF47VVsySZzXRRJmuQ=;
-        b=faFzqzBs+JPHmIMOcRthLcT8HuowwPHkoKPV+mPaZNu7+tVbfgKXIzq8wV1jNFRWsk
-         dRuwC0+4HTBovqQSummjuKvMbo+PehForXajxERwm2j0f5ttQ3Oxi57GWTWwFHtawI0j
-         D2ezWiF6ufugy//HXf3LRI8MEBrKZo9DScM2ZnCeSk+hKtEFWIThDtV9JvYQjwLdeKVm
-         wrZyJLfKAxM7QQqIimkHPyyDhGSU4utrn4Qj1IS3ZzWWgKeAh6JQGN3RWp0VyCNxPFuV
-         YE+F5QhM5Jf8Bj5doUid0szjq9k61Nf01jOuHo96LHoqVweqt9LxemQwPfY1mEk/L3La
-         GL5g==
-X-Gm-Message-State: AJIora8hg29NzLG2mQ5UG5YjW0cge2LvWkLouj2xUcg345lMmreccio8
-        PBSwYXrK6Vmy2c2T/R/KQv8D1tVejDwIIYEr3A==
-X-Google-Smtp-Source: AGRyM1tmNx0T2KWxtxST94klObq1uh9KpQnah6fe41ByOMvHcjrVTSMEGMhluBFJBCjdo2HJ7Z4GUvoKoyA7AFMMDw==
-X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:4640:519a:f833:9a5])
- (user=justinstitt job=sendgmr) by 2002:a25:9345:0:b0:66e:3100:c83d with SMTP
- id g5-20020a259345000000b0066e3100c83dmr29236559ybo.185.1657218138053; Thu,
- 07 Jul 2022 11:22:18 -0700 (PDT)
-Date:   Thu,  7 Jul 2022 11:20:52 -0700
-In-Reply-To: <20220706235648.594609-1-justinstitt@google.com>
-Message-Id: <20220707182052.769989-1-justinstitt@google.com>
-Mime-Version: 1.0
-References: <20220706235648.594609-1-justinstitt@google.com>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v2] net: rxrpc: fix clang -Wformat warning
-From:   Justin Stitt <justinstitt@google.com>
-To:     justinstitt@google.com
-Cc:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        marc.dionne@auristor.com, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org, pabeni@redhat.com,
-        trix@redhat.com
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j6ncolguiQ+DPHRmzlhAw1z57F0HnokCJKSQgzd3UQs=;
+        b=IyNFIi+CoBywsG81TniDI+dpDLxAkGsBUXXcZZ7V1WbOJwPbOdmgud3Q5TnHFKFdXq
+         BvQby06cjUU3WsXKGjr4Bigx4gMClpo6dGTLQJxHHiuCXJ2zoggsxr9bMs9FNZAFWNoJ
+         e5BM6O+2pXuplvEveyenFSsyrNc88+WbI/jfIL+TlTx1AyIeiBj+mp77WSqrraZE7A9f
+         h/wvrnvWw83ymMbbj7UoKcOQHKzEUFlYcaoDPeoj2R2/ym7fzCMpZl0btnOPlqbzAbvn
+         bpatFXbJZ/MK6nQu8ht4f3TB3ut77ErX2XcW4fMHSanqo9D/yCI1BEwlNEH0Qsbi54O3
+         uncw==
+X-Gm-Message-State: AJIora9B6HW4t3oYm5+ahCgCGNNs+4Y0gBhShWoYgzOa5eB9rhMQuWwa
+        j94l65W+8F/L0Eh01sxCYomJcslYd0XQtFhuKgrHR0hK
+X-Google-Smtp-Source: AGRyM1vFFoUfixEhOUfl68/WDDiWcPlIS3gYGV84R38m2q33oIwZHt0dcJvwcUsnsfbSVJdNmTunjpQ6rR123O2EcU0=
+X-Received: by 2002:a17:907:a40f:b0:726:a8f5:1031 with SMTP id
+ sg15-20020a170907a40f00b00726a8f51031mr46947213ejc.185.1657218152576; Thu, 07
+ Jul 2022 11:22:32 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220706063951.54122-1-hbut_tan@163.com>
+In-Reply-To: <20220706063951.54122-1-hbut_tan@163.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu, 7 Jul 2022 14:22:20 -0400
+Message-ID: <CADnq5_NpXcua54cSeSGaG2X_afcvoGswKgSb=Gysr5gpoT0AHw@mail.gmail.com>
+Subject: Re: [PATCH] drm/amd/display: Fix unsigned expression compared with zero
+To:     Zhongjun Tan <hbut_tan@163.com>,
+        "Wentland, Harry" <Harry.Wentland@amd.com>
+Cc:     "Leo (Sunpeng) Li" <sunpeng.li@amd.com>,
+        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        Dave Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        cai.huoqing@linux.dev, Zhongjun Tan <tanzhongjun@coolpad.com>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building with Clang we encounter this warning:
-| net/rxrpc/rxkad.c:434:33: error: format specifies type 'unsigned short'
-| but the argument has type 'u32' (aka 'unsigned int') [-Werror,-Wformat]
-| _leave(" = %d [set %hx]", ret, y);
+On Wed, Jul 6, 2022 at 3:41 AM Zhongjun Tan <hbut_tan@163.com> wrote:
+>
+> From: Zhongjun Tan <tanzhongjun@coolpad.com>
+>
+> Fix unsigned expression compared with zero
+>
+> Signed-off-by: Zhongjun Tan <tanzhongjun@coolpad.com>
+> ---
+>  .../gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
+> index 548cdef8a8ad..21e4af38b8c1 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
+> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
+> @@ -244,8 +244,8 @@ static void handle_det_buf_split(struct display_mode_lib *mode_lib,
+>         bool req128_c = false;
+>         bool surf_linear = (pipe_src_param->sw_mode == dm_sw_linear);
+>         bool surf_vert = (pipe_src_param->source_scan == dm_vert);
+> -       unsigned int log2_swath_height_l = 0;
+> -       unsigned int log2_swath_height_c = 0;
+> +       int log2_swath_height_l = 0;
+> +       int log2_swath_height_c = 0;
 
-y is a u32 but the format specifier is `%hx`. Going from unsigned int to
-short int results in a loss of data. This is surely not intended
-behavior. If it is intended, the warning should be suppressed through
-other means.
+@Wentland, Harry Can you comment on the required range needed for
+these integers?  Maybe it would be better to just drop the comparisons
+with 0.
 
-This patch should get us closer to the goal of enabling the -Wformat
-flag for Clang builds.
+Alex
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Justin Stitt <justinstitt@google.com>
----
-diff from v1 -> v2: 
-* Change format specifier from %u to %x to properly represent hexadecimal.
-
- net/rxrpc/rxkad.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
-index 08aab5c01437..258917a714c8 100644
---- a/net/rxrpc/rxkad.c
-+++ b/net/rxrpc/rxkad.c
-@@ -431,7 +431,7 @@ static int rxkad_secure_packet(struct rxrpc_call *call,
- 		break;
- 	}
- 
--	_leave(" = %d [set %hx]", ret, y);
-+	_leave(" = %d [set %x]", ret, y);
- 	return ret;
- }
- 
--- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+>         unsigned int detile_buf_size_in_bytes = mode_lib->ip.det_buffer_size_kbytes * 1024;
+>
+>         full_swath_bytes_packed_l = rq_param->misc.rq_l.full_swath_bytes;
+> --
+> 2.29.0
+>
