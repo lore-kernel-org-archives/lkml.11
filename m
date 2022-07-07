@@ -2,94 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA5F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:29:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B22D0CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237028AbiGGW3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
+        id S237051AbiGGWaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 18:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236457AbiGGW3L (ORCPT
+        with ESMTP id S236457AbiGGWaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 18:29:11 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A7965D51
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:29:10 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id u12-20020a05600c210c00b003a02b16d2b8so75283wml.2
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:29:10 -0700 (PDT)
+        Thu, 7 Jul 2022 18:30:21 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279E665D5C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:30:21 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id b125so14488428qkg.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:30:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yBL3Qyiw2yU4MEqrOIkV21CEVLt8E6eaNuc5XFAqVgo=;
-        b=FIs7rf6SPWuGcAR0XCFWnjYw5T/OzNPnd9YSnTFkFAORauCxEU4Aczweq5XUCyU7kC
-         S6RAs/jQU9b9oym4qyKPg8K7NvN+W2Vqk+MfOsIkqhFSyTG7R1rpvU/VnfhMOfJKREgf
-         OYH40nwLHktSF2Fmgwdrt7PGSxYOuuMS6lwniQpOYOQjmOQCDMXunwkOoB/XcfAGxPcW
-         k9y2BBZmIKiNI1EcqHHmxgbwIveR1WuD4foEDFPBS0PYWKl80+8iwMicmElV0Yeuf3ah
-         6mq7A3UoXc8Kw2cdGowOwd4goKJ6pH1HhidVzp1le/gHe7ifDIu0YMC9wBqp2j4Shy5H
-         jCMw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Jw3Qfmu3T45z99OSd3EsU15JM25LaoYd7yNmPKrKK88=;
+        b=FOhnmRXS9NL3bEpaOsXAMBkVjpcC47K+YkIorSegkPqV3955JYCXCak9zQs5A4WKBL
+         MKFvHRj8NOI81W0zQ8iBeej32OqEeHxhKrliYNuYXJErIEe8W4OpZVNwcZVepivnJ8oW
+         tHFJOH5VoDsjhrdxuwxrqTte+9BSf+j1eeyJN8smjaaAek8+9hfTTRHMgsYC/mYr+OYx
+         W64vCy3SWfDiTyJfPzYyDd6E566Ykd3h2Aca/pnbUXWmgArSyGQF+Vq7/dwwJUKcwzYa
+         9jPKN6sCihez2/4c0MToyT6GegTJker5VEg3mFx5l4z4i0rvUQzfgNmd2NiGxGim42Hx
+         F7+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yBL3Qyiw2yU4MEqrOIkV21CEVLt8E6eaNuc5XFAqVgo=;
-        b=WFfrxvs73mKAgjbyZJKGyuzGlBpfFb3H9fqKBoOWjx9TDovFVAg2CrEBnZpzw0fIbb
-         WG7uM2QjSe/HvtsO57IQ73zdR3/CVFuglACAl4S8Z4ZsxA27rrTiUURaVzFtlDUXIZsv
-         2FRTz6Jz4FLczGrYt+8GjXfvo0/R9NXXrKmwt+oSgUzuhJKhxzVFVGVO1YIfv3o7e/kB
-         0k6jWNjU1HAeXyEAEfDbCL44MH0BFu8tuN7Vi9AcVPKRqO4fO5aAmR5835YadNAgMKJD
-         XSIBrHWuH4eq/XPWZSixIl+iUpE1L0YkIgyavzM62FCjBD4NVOu2YkMP1SIcf9nqiI+U
-         qeQg==
-X-Gm-Message-State: AJIora+V0Mo7apYxqtpvKaXLzNPncgpHY0q+SCcjYtbUku/PofIY6ahz
-        Of/SW/Xgm0WT+e98/MevDQ30jw==
-X-Google-Smtp-Source: AGRyM1vHQ4F1C7uBW7hPq+3do+lBz+obsL6jknlXj5UKr4APcprktMviJ51oUK55Q3Z3fUeppuJe/A==
-X-Received: by 2002:a05:600c:1d17:b0:3a0:481b:f1e1 with SMTP id l23-20020a05600c1d1700b003a0481bf1e1mr7023439wms.136.1657232949057;
-        Thu, 07 Jul 2022 15:29:09 -0700 (PDT)
-Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id r190-20020a1c2bc7000000b003a18de85a64sm148855wmr.24.2022.07.07.15.29.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Jw3Qfmu3T45z99OSd3EsU15JM25LaoYd7yNmPKrKK88=;
+        b=xEyI+g0rY+aBGUec/0TgcNsQuWct/HRxK+UAqgWQCEuY5eSPF4cD0dEXx+q4IpfseS
+         WMm15sYFeJtWBngbRS3bK/NgHHW6bc48UyQHQCmES53PIt1m8cPtAPNMfcm2OkeRHL5/
+         ZDrpny7bRG+hEteFMHJ5DuG88DLmQLm0kb/O+lwyOhUgX6F/9q6IQnidSsvIDOWpl3iK
+         GLJw1dGD6j7aUcrAR8zHuAVmP3rzmWzdzkxxiE4BRgllCkL8z/Zu1g/2Qr5LYFesB3qG
+         Qi86NKWDki0ZGTDPx1WCURvrB5Zi6t+DBef6qVzYk13Ftp6KiGmpni9F1VIJZjgTLVRx
+         0XdA==
+X-Gm-Message-State: AJIora8SvNaXdNkHZkVGnQr3YXTvvoCDYHSBArWsNejOkSHx61L5SOsz
+        EmDfHoDOUo5mk1GBHey5YHnGz8VWbx6OXw==
+X-Google-Smtp-Source: AGRyM1vC9fck9sm08lNxiiaZUV/ztwt7EeO4Xjib0s96dqs+u8o5jSybOIYnTBs3S4UVcRrGf5FF/w==
+X-Received: by 2002:a37:ac0f:0:b0:6b4:72de:2432 with SMTP id e15-20020a37ac0f000000b006b472de2432mr166511qkm.699.1657233020300;
+        Thu, 07 Jul 2022 15:30:20 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id e22-20020ac84b56000000b0031e9bd3586esm1527747qts.79.2022.07.07.15.30.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 15:29:08 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     zong.li@sifive.com, robh+dt@kernel.org, palmer@dabbelt.com,
-        daire.mcnamara@microchip.com, niklas.cassel@wdc.com,
-        hahnjo@hahnjo.de, kernel@esmil.dk, aou@eecs.berkeley.edu,
-        geert@linux-m68k.org, paul.walmsley@sifive.com, mail@conchuod.ie,
-        damien.lemoal@opensource.wdc.com, krzysztof.kozlowski+dt@linaro.org
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Brice.Goglin@inria.fr
-Subject: Re: (subset) [PATCH 0/5] RISC-V: Add cpu-map topology information nodes
-Date:   Thu,  7 Jul 2022 23:29:04 +0100
-Message-Id: <165723282709.4170238.17783892176422654947.b4-ty@microchip.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705190435.1790466-1-mail@conchuod.ie>
-References: <20220705190435.1790466-1-mail@conchuod.ie>
+        Thu, 07 Jul 2022 15:30:19 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Fred Eckert <Frede@cmslaser.com>
+Subject: [PATCH v2 0/2] iio: Implement and utilize register structures for ISA drivers
+Date:   Thu,  7 Jul 2022 13:21:23 -0400
+Message-Id: <cover.1657213745.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+Changes in v2:
+ - Rename 'ad' member to 'ssr_ad' to indicate access to Software Strobe
+   Register as well; relevant comments updated
+ - Dereference DAC channel address via array subscripts in the
+   stx104_write_raw() function in order to match rest of code
+ - Replace struct cio_dac_reg with direct u16 pointer to the DAC
+   address; this greatly simplifies the cio-dac patch
 
-On Tue, 5 Jul 2022 20:04:31 +0100, Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
-> 
-> It was reported to me that the Hive Unmatched incorrectly reports
-> its topology to hwloc, but the StarFive VisionFive did in [0] &
-> a subsequent off-list email from Brice (the hwloc maintainer).
-> This turned out not to be entirely true, the /downstream/ version
-> of the VisionFive does work correctly but not upstream, as the
-> downstream devicetree has a cpu-map node that was added recently.
-> 
-> [...]
+The STX104 and CIO-DAC drivers were updated to use I/O memory accessor
+calls such as ioread8()/iowrite8() in previous patch series [1]. This
+patch series is a continuation of the effort to improve the code
+readability and reduce magic numbers by implementing and utilizing named
+register data structures.
 
-Applied to dt-for-next, thanks!
+[1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
 
-[4/5] riscv: dts: microchip: Add mpfs' topology information
-      https://git.kernel.org/conor/c/88d319c6abae
+William Breathitt Gray (2):
+  iio: adc: stx104: Implement and utilize register structures
+  iio: dac: cio-dac: Cleanup indexing for DAC writes
 
-The rest is yours Palmer once reviewed :)
+ drivers/iio/adc/stx104.c  | 74 ++++++++++++++++++++++++++-------------
+ drivers/iio/dac/cio-dac.c | 10 +++---
+ 2 files changed, 55 insertions(+), 29 deletions(-)
 
-Thanks,
-Conor.
+
+base-commit: 338222d8e1121bcb78a86fb39982eddcc367a5bc
+-- 
+2.36.1
+
