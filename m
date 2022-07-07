@@ -2,193 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2739FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E19DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 22:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236904AbiGGWZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
+        id S236955AbiGGWZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 18:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231383AbiGGWZT (ORCPT
+        with ESMTP id S231383AbiGGWZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 18:25:19 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D5061D77
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 15:25:18 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id o18so19652425pgu.9
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 15:25:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ySuBOD6Wk3XGCffFBEm6ereJYHzD1HhIjVAepmGuLus=;
-        b=m6ML3qwJwRRDJtYpa4OS/Fw81GoVjPL/hGPb6qhjkXcq+fCwMb4vy4uvGrMbf+WRth
-         jX/Z5js7MqHdccR9CPeEJJl1XSOuMsj5FXSnoFIK7SkrHTTwk2U7NKAg0BELARiTE2cP
-         z2MF4eAsYC5dHNgeQozl45zi1dS+QiJJbkPe8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ySuBOD6Wk3XGCffFBEm6ereJYHzD1HhIjVAepmGuLus=;
-        b=hI8SUwRBIQMmPdnSgBH2mcZlS9es3Jq0d2dguhzNEoV+uqR5htLeVIKdrbcWRuH68n
-         nPu1MY2JHyoVHgbh/RDdJP2DMBfLhkg6dwXk0MI0aa1VxCNKzXtuKQ98Bkv15IiNrr1o
-         1n9dkFap81TJ6etfiQJTfAzeIvRQNO3I/NGsauc+OoQWXQYhK5W9dX8xaq2lkgwPvmqe
-         6102FSiHklTpGCrAggtQhTSzOX4pkw4gBQ5p2gM2goMeQOrMFYsXUhNkMmpiuM4ZmND+
-         TuQSvv6hZM69KfpexiEQa1dyyxXQKeBwVqQNROvWTUVODkNQ0XaoszCuTqQ2T/tSWYTj
-         BzLQ==
-X-Gm-Message-State: AJIora98dFpeHNSGNdtzg+ua1v/ekpY7xDhTCWYVf5wcPNDW1EwumBi1
-        gtgRn6ryvJTSvPZft1zwqOtWps24K6Lt/g==
-X-Google-Smtp-Source: AGRyM1u24A+fgEN+ITg8VBtY7hYsxlZKWWPqKb92e//MBPci4qHIz/AZuFO2WEo1YciLmQx+1g7w8A==
-X-Received: by 2002:a63:4d26:0:b0:411:83dd:2c3 with SMTP id a38-20020a634d26000000b0041183dd02c3mr298378pgb.508.1657232717576;
-        Thu, 07 Jul 2022 15:25:17 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 66-20020a620445000000b005289bfcee91sm5545657pfe.59.2022.07.07.15.25.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 15:25:17 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        kernel test robot <lkp@intel.com>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH v3 6/9] platform/chrome: cros_typec_switch: Add event check
-Date:   Thu,  7 Jul 2022 22:20:13 +0000
-Message-Id: <20220707222045.1415417-7-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220707222045.1415417-1-pmalani@chromium.org>
-References: <20220707222045.1415417-1-pmalani@chromium.org>
+        Thu, 7 Jul 2022 18:25:23 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2071.outbound.protection.outlook.com [40.107.104.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCB461D77;
+        Thu,  7 Jul 2022 15:25:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WfeNtPv+4mFQdNAJPXs7tipPfjCUiF6zYuLMSyKoADWRXmgPnUmtj0HvSlig82hau3QE/4iHm+z2pVbYNEH15902OXCbJQJ7VGrKqaifU6J85Uc0M2hZddk0nVMVnD3FsTjiFKn1Cn1OC/uXjiNvov9Q0iGlySx2uiYBvxeIWhkMEge1mtE8wdCgD9wFzCz0RN9mS7Ii/RlNIBq0k63SkFJnsD+TFhPP935udJv71wd91LzgKYbMCnZqxWVgg+5FsSMYlqrC+bialbg4ronwDfsWhXM8I/W7/reJ9RAsYYrYBpgZA7V1cY6zQ6/l6jUwz7zEs0BdSWfH9xtS5OZONA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6knciJHb+nbKJS0MKfWTbbhKCui61woVwt//KcNl7eI=;
+ b=j5vNuBUNWDz2AVS8N0mAjf9lnKFi+4WEL0wtycQhJId+lQIYDN60nVqdztf6aFhlxxRfSozaFKIj5dS+wwyn6GcuTaqGO2Ro9mV2x6m0CBuhlJqbv31ed7Te0Sf0yZjOtRaJejcFAgsNe3xNvFljFrieY3YLrPD7XiaIfMksDbl0+a2bgjvD3l4REaMbxQLK4bxL/kHtDNIElWdhn4IZPYCTIVToSLkqtznrfPubhwgxC5Z24cq9KIPeWUKs9pSYkKNjVRzcVAxB/kpaFsaSQytXKQqp43MyEE4Y6c/xtpc8QIwFdYTWFjSEZ1h08fkPWTHYhUI9MYApV1biyZN+GQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6knciJHb+nbKJS0MKfWTbbhKCui61woVwt//KcNl7eI=;
+ b=JwHAxbUr1bKziihYpYLBv8ZEuCFH6D9V9bA49Pp1o0ZjwJJgA+DgXNAI0yDhaC/csWQ8EmXsUKtG57Dyn1wojOuHBtUss85bVm8FxBl1TLluV26SGbBQj/j9RV7qztEK8T+hvXOA/aEIxFHJIjRf2/e3Kac8ez5W9rYZXFz11oA=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB8390.eurprd04.prod.outlook.com (2603:10a6:102:1c2::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Thu, 7 Jul
+ 2022 22:25:20 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5395.021; Thu, 7 Jul 2022
+ 22:25:20 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "shuah@kernel.org" <shuah@kernel.org>
+Subject: Re: [PATCH 0/2] selftests: forwarding: Install two missing tests
+Thread-Topic: [PATCH 0/2] selftests: forwarding: Install two missing tests
+Thread-Index: AQHYkglGod/4OBSADUyoR9bNezs0w61zfM6A
+Date:   Thu, 7 Jul 2022 22:25:19 +0000
+Message-ID: <20220707222519.movgavbpbptncuu6@skbuf>
+References: <20220707135532.1783925-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20220707135532.1783925-1-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5ce79f9b-050c-49f1-7da1-08da60679394
+x-ms-traffictypediagnostic: PAXPR04MB8390:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BQ+Ta2P+j4tohd1+Q2xe8wDX89orCOU3s69lB1IkO2q5BiS1MnLBVzHvBCY0K+ekwUPzShboJmipuNFufo/bxlEOHNOmq+29azgQe7ZoPVgT7W3eBfi1crU7JAWQ5b7KZ49KmoUfDrdYQRl+gCUXNPOPL/2zRA4wcvFowVWIIQS8y5VTAM6Vl/Qks1ryTONuLc+REEGEujpDPcAhfebxnCcuIOlda4sZzH+WCtmVM4DQFyxehTBEAFM44ns5/9ObSnS3OJhlhQQAWxJ8pfIrnmFGyvxBFEWREE2ldNTJM4SCsq5VOhRAfRO+VkK7XR0EsYeY8U1S25R4RhfI/h1qq2do6A/fFcDskQmxv0C+zWFqRqd2AYupOQg3hBfYh5z8G94sNckuTRCDEVmmM3pBQ2CUcrmN70RYzmpTvxOTo44S8hZF2F0LWHnMiPUyVpN83Eb+DYD+kT14i4JlMMCyS2r43QtOn584j3iuSiYqft//5AC7bOKydXVZ5SdFSooJpfYb/Zex2J3TTV48TLvtKMAhzt/pPt+fTtw6s+JS8R7fSlCBk9tWLk4wjRmALd2tjnCl4SOWEi4oJZoHGF/lqMGKXdVV/Oersj7EufmEtAL95R6uoP753QcFK9PNMdLRqeul33DOxE6M7fpmIFSmV+YNg34mob23L8xQVsCRLe+MHUL23Oz81C7U52emVymC3q9IlbxV4a/1bExqTUqsegVvYaDMKTT5on6RJWofF/2BxYMDV0gK8zkcvyUF7osEYAG8VFyAy/0vI5wap10By7ZY7thuqOkT9XCP6uA1iW1UROFUOaWyvpFkIJZ7/Rxy
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(346002)(366004)(396003)(136003)(376002)(39860400002)(91956017)(186003)(33716001)(1076003)(71200400001)(5660300002)(66556008)(66446008)(66946007)(76116006)(66476007)(64756008)(44832011)(6506007)(6512007)(9686003)(8936002)(478600001)(41300700001)(26005)(6486002)(122000001)(38070700005)(86362001)(316002)(8676002)(4326008)(38100700002)(6916009)(2906002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?tH/o0VqMOdTUg2Z+bvH0QPiRgmS+xMgM0XatjY9mlJalursZ/dHv0Zn/hDrG?=
+ =?us-ascii?Q?WsfEB62Kw4zap9ntDrd80sze1EnO/yHifLm6Dmgd4fzChohzHrFBQLDVzQy9?=
+ =?us-ascii?Q?OuQ7VnPqzYUT1AGu/3jye+f5I/pFTpR1kWSSFC1qOBBv/mzPstdyz0i/qinD?=
+ =?us-ascii?Q?6n3ZzZM8CqyQE4p4LdKqXAj4OXXjUimAbaR787/swZC5Bez7zoQB86Sx9JZv?=
+ =?us-ascii?Q?oEn2bGaV402VxSG4JqskaMCytBnrLY86M+Po/s6x91jf13bqXifmMHSeH5y5?=
+ =?us-ascii?Q?PEK5EgdDqfPKoBlx9Be7EgTr9vVdueLruos2hsnoGNAAhY54J7ysOpqhFzLt?=
+ =?us-ascii?Q?0Shzp1bt1h5pNlwhH1MUeyb28bcJRtJ56qGGNmOJLxtqCaPgZTUWsoQPpLu2?=
+ =?us-ascii?Q?ZEZ5v/NbOhg9coLmeyFcALjwBDG/g1IbqUbvWjA/an82VSu6jCq4HBAL8Aj/?=
+ =?us-ascii?Q?R+4AbM/OpA3Vb6Ax3/J0QUHjpJbf3r9yCd2a93ara+wDS46FZv5NZPRIIXCi?=
+ =?us-ascii?Q?YUR//Hp5LMZULFRZnUvCb2648h9oT6CFPrXeue4zDyoyIbVF5fsMSC3hFLPI?=
+ =?us-ascii?Q?HwkkU8Hc21MmuoTKtkOlN7U4qzEReHe1U3SV3Gc8swtag6lcFEdNnux94RyN?=
+ =?us-ascii?Q?Cg6IJrWQPpUEkBDHq7hiyZbIuV/0i1cGNT5IEsmMvlvSxqrp6LhsEJ4mQPto?=
+ =?us-ascii?Q?Ed0veK3psfowSmZ18UNP60tXjUISUxmaaBWk9cDIQ7zXWG/atbJ0zodAwh6y?=
+ =?us-ascii?Q?uXxCNU7a1XsOsoub7gSbB4D4QMj7c0NyH/rkGSJtEKVQ7iIDivfBFgR1NbW1?=
+ =?us-ascii?Q?UQ522xP4nmRCc+UOOVVQUTzhI/qD8o1hNr1DdCgBcuhFVPrltfu8HO7EHVce?=
+ =?us-ascii?Q?mdq18LWSsEDRj4RfLci7//i9nbXsVodebcyEcqGs3jz27fC1EFTRv5twizLf?=
+ =?us-ascii?Q?GKykcIySrkwEbZUNJii+kTDWu5Il63vDsNw4u7N9KLvJSj5Ea6runDy+phPx?=
+ =?us-ascii?Q?jIWa5GjgpIq3J7W6NS+uD8HoJ+X3LrpOLZoRa4GTrVYh6J6x6IyZ+xgMgDzG?=
+ =?us-ascii?Q?fLIWoY+MAKQKJmpO48olFvbFw7Z3dxHAPKfTV8Z/RnDEe3B7nppJhttfzwPi?=
+ =?us-ascii?Q?rZw8SzvWSy2mu2UWB0HuqWOLHSa3QgiHUPu1qn1D+fWYRpTURLB2VcIzLcVT?=
+ =?us-ascii?Q?7BMu1eeu1H0pbC1PuD+G0CXl6yeis/ltm5jMULpV/HrITF9wa6z+yuZsbD2F?=
+ =?us-ascii?Q?h1xxeJBUFSRj6q/OV7gEXFGOYyDgLjNGgLMUPQUDsrC2Yd9w/44BBwwMAwZR?=
+ =?us-ascii?Q?icv7j5ibWfXD2RTnL5aJAedlblZXRym8p/09LQQJ1WwKYBcF0NzLHPrGXbPB?=
+ =?us-ascii?Q?WXa4rZ5NQq8fI5TZDNmWsDZXuXtvx+RBK/jO6ZGBCo8rw0tWQRdMl5dB7QGG?=
+ =?us-ascii?Q?5Q/k7r8BEWLXIwHZ3zS263nnlA5mgpZj0SxhdByRDj7/mvMInZ6J1EMFI173?=
+ =?us-ascii?Q?psWP1JxAZiJ33YA/Vcfb0W2B/Mj/enVhDnv4gFxsgPV6+irq/7ClJNr9kSKJ?=
+ =?us-ascii?Q?41NSsxKmnuduVO/5TzQCLK4etYIgJcWiyARX/gU7QMIJCu2VQHO0cJ6tBUdh?=
+ =?us-ascii?Q?Qw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2D5D682C0E6F7D43989A29F36680B33D@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ce79f9b-050c-49f1-7da1-08da60679394
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 22:25:19.9601
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: uLlSJOAOVgiapTTsfqqrC33pLjsGSX5bpT9JmyYMTIBZ4ii3oqgSuenrC44uTjcLdWZNr6BP2W+vJQ2J155lFg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8390
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Chrome EC updates Type-C status events when mux set requests from
-the Application Processor (AP) are completed. Add a check to the
-flow of configuring muxes to look for this status done bit, so that
-the driver is aware that the mux set completed successfully or not.
+Hi Martin,
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+On Thu, Jul 07, 2022 at 03:55:30PM +0200, Martin Blumenstingl wrote:
+> For some distributions (e.g. OpenWrt) we don't want to rely on rsync
+> to copy the tests to the target as some extra dependencies need to be
+> installed. The Makefile in tools/testing/selftests/net/forwarding
+> already installs most of the tests.
+>=20
+> This series adds the two missing tests to the list of installed tests.
+> That way a downstream distribution can build a package using this
+> Makefile (and add dependencies there as needed).
 
-Changes since v2:
-- Fixed missing "static" identifier.
+Just for future reference, the netdev process is to mark patch sets such
+as this one with "PATCH net" since they fix a packaging problem with an
+rc kernel. There's more information about this in
+Documentation/process/maintainer-netdev.rst.
 
-Changes since v1:
-- No changes.
+Do we need to create a Makefile for the selftests symlinked by DSA in
+tools/testing/selftests/drivers/net/dsa/, for the symlinks to be
+installed, or how do you see this?
 
- drivers/platform/chrome/cros_typec_switch.c | 72 ++++++++++++++++++++-
- 1 file changed, 70 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
-index b50ecedce662..7c01957a032d 100644
---- a/drivers/platform/chrome/cros_typec_switch.c
-+++ b/drivers/platform/chrome/cros_typec_switch.c
-@@ -7,6 +7,8 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/delay.h>
-+#include <linux/jiffies.h>
- #include <linux/module.h>
- #include <linux/platform_data/cros_ec_commands.h>
- #include <linux/platform_data/cros_ec_proto.h>
-@@ -63,6 +65,40 @@ static int cros_typec_get_mux_state(unsigned long mode, struct typec_altmode *al
- 	return ret;
- }
- 
-+static int cros_typec_send_clear_event(struct cros_typec_switch_data *sdata, int port_num,
-+				       u32 events_mask)
-+{
-+	struct ec_params_typec_control req = {
-+		.port = port_num,
-+		.command = TYPEC_CONTROL_COMMAND_CLEAR_EVENTS,
-+		.clear_events_mask = events_mask,
-+	};
-+
-+	return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
-+			       sizeof(req), NULL, 0);
-+}
-+
-+static bool cros_typec_check_event(struct cros_typec_switch_data *sdata, int port_num, u32 mask)
-+{
-+	struct ec_response_typec_status resp;
-+	struct ec_params_typec_status req = {
-+		.port = port_num,
-+	};
-+	int ret;
-+
-+	ret = cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_STATUS, &req, sizeof(req),
-+			      &resp, sizeof(resp));
-+	if (ret < 0) {
-+		dev_warn(sdata->dev, "EC_CMD_TYPEC_STATUS failed for port: %d\n", port_num);
-+		return false;
-+	}
-+
-+	if (resp.events & mask)
-+		return true;
-+
-+	return false;
-+}
-+
- /*
-  * The Chrome EC treats both mode-switches and retimers as "muxes" for the purposes of the
-  * host command API. This common function configures and verifies the retimer/mode-switch
-@@ -71,12 +107,44 @@ static int cros_typec_get_mux_state(unsigned long mode, struct typec_altmode *al
- static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int port_num, int index,
- 				    unsigned long mode, struct typec_altmode *alt)
- {
--	int ret = cros_typec_get_mux_state(mode, alt);
-+	unsigned long end;
-+	u32 event_mask;
-+	u8 mux_state;
-+	int ret;
-+
-+	ret = cros_typec_get_mux_state(mode, alt);
-+	if (ret < 0)
-+		return ret;
-+	mux_state = (u8)ret;
- 
-+	/* Clear any old mux set done event. */
-+	if (index == 0)
-+		event_mask = PD_STATUS_EVENT_MUX_0_SET_DONE;
-+	else
-+		event_mask = PD_STATUS_EVENT_MUX_1_SET_DONE;
-+
-+	ret = cros_typec_send_clear_event(sdata, port_num, event_mask);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Send the set command. */
-+	ret = cros_typec_cmd_mux_set(sdata, port_num, index, mux_state);
- 	if (ret < 0)
- 		return ret;
- 
--	return cros_typec_cmd_mux_set(sdata, port_num, index, (u8)ret);
-+	/* Check for the mux set done event. */
-+	end = jiffies + msecs_to_jiffies(1000);
-+	do {
-+		if (cros_typec_check_event(sdata, port_num, event_mask))
-+			return 0;
-+
-+		usleep_range(500, 1000);
-+	} while (time_before(jiffies, end));
-+
-+	dev_err(sdata->dev, "Timed out waiting for mux set done on index: %d, state: %d\n",
-+		index, mux_state);
-+
-+	return -ETIMEDOUT;
- }
- 
- static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
--- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+The reason why I created the symlinks was to make use of the custom
+forwarding.config provided there, and also to reduce the clutter a bit
+and only focus on the selftests I felt were relevant for DSA for now.=
