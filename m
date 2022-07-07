@@ -2,176 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAEACCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E854C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235568AbiGGOe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56462 "EHLO
+        id S235619AbiGGOfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235851AbiGGOet (ORCPT
+        with ESMTP id S235440AbiGGOfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:34:49 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441C33192C;
-        Thu,  7 Jul 2022 07:34:44 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267EMp7g024940;
-        Thu, 7 Jul 2022 14:34:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=b6yhrdKbF0YKjPkBVtBY5kmJWk0TjiHRvpteUX/lDog=;
- b=PMzU2fckBEfHHfCp0zJoALW5rLTJLtUoHvudatexeBUR0P9yE9QE42BMukF/dVDUtiRl
- higkx8TGCSr03l43wNV3vDfJlWEDXOHoEMDhWF7+Rp94S6/Kr6dwNmkIXOi8lwpcGRz+
- vAC985JBR8Gdw/m9MqanjY0vh3FjMnlK5vu0KbVGAXnO7br7zm7ADcYUovIwvzjwXdIM
- ol30UoafrC/+fJcQA8+yGWiK/Y5JS3Zi2qUpIW0ge7jTT8x5HgyjXNMBJ+QIA9T/PVYB
- 0gk0AvMn4SAcmCy3uKIPvGXa/mRkTgskFe1t8iBL26lxNVRuKO+Ityx7KuIyqK7hlfdq uQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h60qp1m90-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 14:34:14 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 267EMwGr025696;
-        Thu, 7 Jul 2022 14:34:13 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h60qp1m8b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 14:34:13 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 267EOeXb023503;
-        Thu, 7 Jul 2022 14:34:12 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma04dal.us.ibm.com with ESMTP id 3h4uqy6peg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 14:34:12 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 267EYBXb34668804
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 7 Jul 2022 14:34:11 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 55A66BE05D;
-        Thu,  7 Jul 2022 14:34:11 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E392CBE051;
-        Thu,  7 Jul 2022 14:34:09 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  7 Jul 2022 14:34:09 +0000 (GMT)
-Message-ID: <3e4cd438-4596-1c0c-ac7e-9599d2325683@linux.ibm.com>
-Date:   Thu, 7 Jul 2022 10:34:09 -0400
+        Thu, 7 Jul 2022 10:35:46 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634192F67D
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 07:35:44 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id n8so23454512eda.0
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 07:35:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6R/ddtNSwfm7ty86Jg8Rk/94EllRS1alXZobv2bNWis=;
+        b=nop4+PYaSie6cLDfOoz79jPZj+LmcL3qmT5jqfFfbawptaU2DSYNGb9uCsJ6ie6CBA
+         044wbTmELbC6ll9dHCgX/qKoXRUW4Gt58A8QRV6+vaYK5VZxmSNh9JGnRQJEzvaXSXoZ
+         p894kw4QPJoW/iXmBPjcZx7ieiwtgw4Ew+ydA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6R/ddtNSwfm7ty86Jg8Rk/94EllRS1alXZobv2bNWis=;
+        b=TMZFG0EAwGDdec64Lu7gkRGJYY67OcHivW73cOq372L6z9Ti+K0yNL/VebqGAVZEeV
+         cwOj+PeZhvol/7TIaSeUWJrSdjwGK/shvQaAE8OCVNNSnvKCrUpPKAmg6tMR11BmiJWy
+         +tbbLFnhEAY0VHEgO/xewXKxpi3ukZ4pXKJwC/nezpvQ0P4ANDAHv9rb2+62i78/WQKK
+         sSqjV7Pcw2uVVNmjR57/J7LKF/zposUbZoo6j9DEayMuANzs5O4KYppMR8AeEakbU60r
+         1UR1t5+YO72f2738CO9ksjsWFTUX+EX+XVHBE74/t37YvqYO4We4szanrQu0lG1F0yFB
+         ZKxA==
+X-Gm-Message-State: AJIora920owBV7PSFxx+sAe8yjQvwd2hXRY/ObRoYHeUzXmJ+8k/Vtlu
+        WZ51erq3n7E/hyAM0vfasBCnHp4zGv5j9Ng07gA=
+X-Google-Smtp-Source: AGRyM1uWSae5yZ2vD2ebnA/MbiOf9usorJ1WcZYO4NaFjKA3QXmOI6ArMG7k4ReF+KWna2/7SdZEiA==
+X-Received: by 2002:a05:6402:22a1:b0:437:78c2:d02b with SMTP id cx1-20020a05640222a100b0043778c2d02bmr62070775edb.64.1657204542664;
+        Thu, 07 Jul 2022 07:35:42 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id z5-20020a1709063a0500b00722fadc4279sm18855873eje.124.2022.07.07.07.35.41
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 07:35:42 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id s1so26615381wra.9
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 07:35:41 -0700 (PDT)
+X-Received: by 2002:adf:d1c1:0:b0:21b:a5e9:b7b2 with SMTP id
+ b1-20020adfd1c1000000b0021ba5e9b7b2mr45296183wrd.405.1657204541324; Thu, 07
+ Jul 2022 07:35:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v12 02/26] securityfs: Extend securityfs with namespacing
- support
-Content-Language: en-US
-To:     "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        christian.brauner@ubuntu.com, containers@lists.linux.dev,
-        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
-        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
-        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
-        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
-        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        jpenumak@redhat.com, Christian Brauner <brauner@kernel.org>,
-        James Bottomley <James.Bottomley@HansenPartnership.com>
-References: <20220420140633.753772-1-stefanb@linux.ibm.com>
- <20220420140633.753772-3-stefanb@linux.ibm.com>
- <20220521022302.GA8575@mail.hallyn.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220521022302.GA8575@mail.hallyn.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: aRgPd1njpyoQFbwztZCX7-KjHUBD09kX
-X-Proofpoint-GUID: F_TjmUJIHRxjc33CqbbpfNQrapvur6FU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_11,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- mlxlogscore=999 clxscore=1011 lowpriorityscore=0 suspectscore=0 mlxscore=0
- impostorscore=0 priorityscore=1501 malwarescore=0 bulkscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207070055
+References: <20220707075151.67335-1-krzysztof.kozlowski@linaro.org> <20220707075151.67335-6-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220707075151.67335-6-krzysztof.kozlowski@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 7 Jul 2022 07:35:29 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XOGLH9UH4Bwd3E6RC_PT5A4bf20muhnZoW5Rb8O3b2LA@mail.gmail.com>
+Message-ID: <CAD=FV=XOGLH9UH4Bwd3E6RC_PT5A4bf20muhnZoW5Rb8O3b2LA@mail.gmail.com>
+Subject: Re: [PATCH 5/5] ARM: dts: qcom: align SDHCI clocks with DT schema
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
+On Thu, Jul 7, 2022 at 1:04 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> The DT schema expects clocks iface-core order.  No functional change.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  arch/arm/boot/dts/qcom-apq8084.dtsi    | 12 ++++++------
+>  arch/arm/boot/dts/qcom-ipq4019.dtsi    |  4 ++--
+>  arch/arm/boot/dts/qcom-msm8226.dtsi    | 18 +++++++++---------
+>  arch/arm/boot/dts/qcom-msm8974.dtsi    | 18 +++++++++---------
+>  arch/arm/boot/dts/qcom-msm8974pro.dtsi |  6 +++---
+>  5 files changed, 29 insertions(+), 29 deletions(-)
 
-On 5/20/22 22:23, Serge E. Hallyn wrote:
-> On Wed, Apr 20, 2022 at 10:06:09AM -0400, Stefan Berger wrote:
->> Enable multiple instances of securityfs by keying each instance with a
->> pointer to the user namespace it belongs to.
->>
->> Since we do not need the pinning of the filesystem for the virtualization
->> case, limit the usage of simple_pin_fs() and simpe_release_fs() to the
->> case when the init_user_ns is active. This simplifies the cleanup for the
->> virtualization case where usage of securityfs_remove() to free dentries
->> is therefore not needed anymore.
->>
->> For the initial securityfs, i.e. the one mounted in the host userns mount,
->> nothing changes. The rules for securityfs_remove() are as before and it is
->> still paired with securityfs_create(). Specifically, a file created via
->> securityfs_create_dentry() in the initial securityfs mount still needs to
->> be removed by a call to securityfs_remove(). Creating a new dentry in the
->> initial securityfs mount still pins the filesystem like it always did.
->> Consequently, the initial securityfs mount is not destroyed on
->> umount/shutdown as long as at least one user of it still has dentries that
->> it hasn't removed with a call to securityfs_remove().
->>
->> Prevent mounting of an instance of securityfs in another user namespace
->> than it belongs to. Also, prevent accesses to files and directories by
->> a user namespace that is neither the user namespace it belongs to
->> nor an ancestor of the user namespace that the instance of securityfs
->> belongs to. Do not prevent access if securityfs was bind-mounted and
->> therefore the init_user_ns is the owning user namespace.
->>
->> Suggested-by: Christian Brauner <brauner@kernel.org>
->> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
->> Signed-off-by: James Bottomley <James.Bottomley@HansenPartnership.com>
->>
->> ---
->> v11:
->>   - Formatted comment's first line to be '/*'
->> ---
->>   security/inode.c | 73 ++++++++++++++++++++++++++++++++++++++++--------
->>   1 file changed, 62 insertions(+), 11 deletions(-)
->>
->> diff --git a/security/inode.c b/security/inode.c
->> index 13e6780c4444..84c9396792a9 100644
->> --- a/security/inode.c
->> +++ b/security/inode.c
->> @@ -21,9 +21,38 @@
->>   #include <linux/security.h>
->>   #include <linux/lsm_hooks.h>
->>   #include <linux/magic.h>
->> +#include <linux/user_namespace.h>
->>   
->> -static struct vfsmount *mount;
->> -static int mount_count;
->> +static struct vfsmount *init_securityfs_mount;
->> +static int init_securityfs_mount_count;
->> +
->> +static int securityfs_permission(struct user_namespace *mnt_userns,
->> +				 struct inode *inode, int mask)
->> +{
->> +	int err;
->> +
->> +	err = generic_permission(&init_user_ns, inode, mask);
->> +	if (!err) {
->> +		/*
->> +		 * Unless bind-mounted, deny access if current_user_ns() is not
->> +		 * ancestor.
-> 
-> This comment has confused me the last few times I looked at this.  I see
-> now you're using "bind-mounted" as a shortcut for saying "bind mounted from
-> the init_user_ns into a child_user_ns container".  I do think that needs
-> to be made clearer in this comment.
-
-
-I rephrased the comment now.
-
-    Stefan
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
