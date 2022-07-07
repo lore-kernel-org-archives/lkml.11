@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E743C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 03:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234966AbiGGDAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 23:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
+        id S234974AbiGGDAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 23:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234815AbiGGDAR (ORCPT
+        with ESMTP id S234886AbiGGDAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Jul 2022 23:00:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646A12F67F;
-        Wed,  6 Jul 2022 20:00:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647342FFC2;
+        Wed,  6 Jul 2022 20:00:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 786306215D;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F8C46215B;
         Thu,  7 Jul 2022 03:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DBA4AC341CA;
-        Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 07E6CC341D0;
+        Thu,  7 Jul 2022 03:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657162814;
-        bh=P0K6fp2IA+jZVSlzemEv5qVoKwTnr0GFLmMPri8B4/k=;
+        s=k20201202; t=1657162815;
+        bh=4J4PQ9uv1asp0Vk3OGGwL6SJmMqMoMnptqZmjN/jiOA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RUsNlXe2WsnK+RhQfV8e7bqZxpR7vMWdMg6+r1/ngcMgSgRis7Yf5QBYbbrGiVgB7
-         KQHRyiX2nrqwaTQlbRqDbrf9LY9u+TqyamOeYxYicBi8/3XfYW2y5ctpWwcIbA9P3D
-         +IdQPkFkayOCevmJP4Gu6i1dBlBailXdCp4jyF/INzBL5U5Q6YdDndpD7ceIVaEK1F
-         Tpp6IkfVhjZPwFsCL+l3OtlC3EY6M5Dikjb4FabJIFzfjS2oyYVT+meB6w9wIq8x1G
-         6P84doGL2DeEQJS/fXM6if98v623MlDYXuOmBRrZMdvMYMOD4VjzGz83hGJ3pSVkEl
-         pU9WeFSUGa/XA==
+        b=ii26B/MqwP6zqbcfpkK5b0QCXTfUrmK0Fl8Ur+MHSgzkik8BW1zAFDU7E6sx1SUnz
+         Wk/YlViVMnwvqQhBQcU7QqwnaWiHz4DQXEPdQuWiWUjK72LS2BenK8273fnqlAJ7E4
+         ZLHM5QgPlym7t4O27J5P3F6CXwJjRUTInVw1lRESiGQof1ZRnzvldLyc8aKyI1v12A
+         9a2uxT6+GiK8ZH2pVkBUslyH7WQgCjjYBYX1d2fTlnhOATkef0o7XWkP/KuENk5cjY
+         SLg4GOlfd6uxk43dtl3tDyhhJios1bLNsUnQAl2XDIpBi6k+le0i7KSb4449LlSUvb
+         fOBJfVxdIODqA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C79C4E45BDE;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DE97BE45BDF;
         Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] sfc: falcon: Use the bitmap API to allocate bitmaps
+Subject: Re: [PATCH -next] net: dsa: b53: remove unnecessary spi_set_drvdata()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165716281481.11165.15348245264221582052.git-patchwork-notify@kernel.org>
+Message-Id: <165716281490.11165.7183920279535695114.git-patchwork-notify@kernel.org>
 Date:   Thu, 07 Jul 2022 03:00:14 +0000
-References: <c62c1774e6a34bc64323ce526b385aa87c1ca575.1657049799.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <c62c1774e6a34bc64323ce526b385aa87c1ca575.1657049799.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+References: <20220705131733.351962-1-yangyingliang@huawei.com>
+In-Reply-To: <20220705131733.351962-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, davem@davemloft.net
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -58,19 +56,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  5 Jul 2022 21:36:51 +0200 you wrote:
-> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+On Tue, 5 Jul 2022 21:17:33 +0800 you wrote:
+> Remove unnecessary spi_set_drvdata() in b53_spi_remove(), the
+> driver_data will be set to NULL in device_unbind_cleanup() after
+> calling ->remove().
 > 
-> It is less verbose and it improves the semantic.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > ---
->  drivers/net/ethernet/sfc/falcon/farch.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  drivers/net/dsa/b53/b53_spi.c | 2 --
+>  1 file changed, 2 deletions(-)
 
 Here is the summary with links:
-  - sfc: falcon: Use the bitmap API to allocate bitmaps
-    https://git.kernel.org/netdev/net-next/c/ee4c0c5d2593
+  - [-next] net: dsa: b53: remove unnecessary spi_set_drvdata()
+    https://git.kernel.org/netdev/net-next/c/6ca4b3932114
 
 You are awesome, thank you!
 -- 
