@@ -2,67 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33826C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0083C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 02:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234961AbiGGCcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 22:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S234748AbiGGCcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 22:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234883AbiGGCbn (ORCPT
+        with ESMTP id S234937AbiGGCbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 22:31:43 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73E72F646
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:39 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id s188so21721373oib.6
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:39 -0700 (PDT)
+        Wed, 6 Jul 2022 22:31:46 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AC12F3A7
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 19:31:43 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id n66so12824355oia.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 19:31:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1ch/3x2mGssm8qBEpggkAFFiBWCJh9rWPZpVFB+JcTU=;
-        b=vRJyAYL0VzceK0mW/2KKFNzbEbpWd/O5CdknxxDR+koJ42kwAdu8uK6uUSNk0RtczI
-         vI00ieUmNlrZXPjIYS0E6Lv0A0JggxlqwFPaRP9Z3EojQhWuFKhcU9cO31dth9ZaXfAV
-         e2Mj3rzD2SRZt04IHEMQQ9VB8DlhiVEWkzeivjICGx4Tq92mDWauW+Z60F2L13mIgBf5
-         fCZhhdrI7yqfzI4/ve9NkqlkVPmd5XV6o5PHNH70PcHGChvogBwZJpTejB8ZJEPvIDRY
-         iMtV4qJEV2pjhAYHamFOToWKSl1qKI95YdWtFrwVkq9kRLJhpTKrhkGP+XRSqmgmJ+Fz
-         uF+g==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=NcLAVkKmZdSDVuyeAAGgVZ26D1dnd1B8tl4ve71Ac80=;
+        b=fkdsEUTU9WqfeGDk88LEfKqKX+4wq7kWTjD3fi9qiBe6V9uuscz4fM9TZAcOfDipVN
+         99LY2Im/PHaJlUelVTilWvBhPHAGL7uQZwRPJInSdMtNQ5O27W0xxBKOwrNYe4NgqEwQ
+         tntu4PsrCdo0gLmOYaPrUlc7skH4PWH04O/EUhhc6RXUaLj7lxLWrNxYFVSaIDl8YKpG
+         bnH8DDqCI6X4nX/9EBh58GTLpUUmaRvdSbupQ6RUsOrKNfwSCZ5wMPO9pJHIp3tVlJ5d
+         kL4Rb1RZ7KMDltCaSnx7KBbYIDXX+0cjllG3XaoslO7dBtNe0rSpJ7WXA5lwtilRiMOq
+         aN8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1ch/3x2mGssm8qBEpggkAFFiBWCJh9rWPZpVFB+JcTU=;
-        b=5HgIUO9dIFJq2vli6y4Z74oPiCfjw+CjnqkUyZgJOk1l2VyVjGuJWH2tVcoKQQeEvg
-         zWQ8zZsPnPZ+m2h/Ri3QeM73CpGjnRCs172uYvhiZZ6x45q96Z6zTMa8qhYFhjY3t8i1
-         +C/26jrCv0oy/JBOdSkudcKcC+DZIhwV36W8GTSOe2uh8iXs53YTxONnEZC6rRjX6dEL
-         EbaHOMigi++PkP5UyhjXfIyoFjeVgSwf2/fb/cajB3XX+bqRblsmCoo6eSafepPjIhdH
-         TFw7JwLosyZde0w+hhM/73YoM1YjC/bwk1dlw8hhVKTHkosKZfHfmlHHXf0in/lfEhx/
-         Vcjw==
-X-Gm-Message-State: AJIora/Erulq9o/1A00hZPlxK3mbmF1FGP6krf7QhkPQBxFuUAayM6Ou
-        m1+AK4GC7QBPMPSsE/fjEsVaSw==
-X-Google-Smtp-Source: AGRyM1uHq9ZHuymbi/mIRAGAFY8gONPHVHl0zZUZjWFV6tqb5bWY5UZFoNFjqtdtsMVJnMl7tnlD4A==
-X-Received: by 2002:a05:6808:1719:b0:335:216e:dc01 with SMTP id bc25-20020a056808171900b00335216edc01mr1104566oib.275.1657161098927;
-        Wed, 06 Jul 2022 19:31:38 -0700 (PDT)
+        bh=NcLAVkKmZdSDVuyeAAGgVZ26D1dnd1B8tl4ve71Ac80=;
+        b=v3sXSWIBE3AUN44efCfleEN91y5hwYpDxzdzaHiKkiFI7+l2BwuxdRY/QEJ/1XwR6C
+         PeeRjUQP653dg7KLAwHifUHy9Kv7PB/Xur6zXrhIYFuENqAv9tv1zc5gTnz95sfHFoGM
+         3C1y1EIdPTkSZCcS/Fn+yCj8bfB99OIDUr8Wty65p7M0zKDG42894/9MzBe1IZpVpTxW
+         nWS7wyPF//IpmIBPTVevEJP5t4lQY13wZuFTzs6XJt5T0Uxc6Rqjs4UGx1h0X6+Q5Cdo
+         0bN5vac86ROnB3YPzfmXRcrIP52cROMeZS+BxGKlCDa1ox0e8rndy7RgokkR4qGCCbSh
+         PyUg==
+X-Gm-Message-State: AJIora+l4IOh3Jae6TqRqCOX5zUSzUeNSERYz9LW9cS9s1qGuU3OpbSW
+        /VGOQ2SSbv5qWVAwLC/I7DxjMw==
+X-Google-Smtp-Source: AGRyM1uatRWla1m1e6+KyVh4SO2oDHbDJfjt4mDT3FDNm5MlXwvAgQRwrOqjZvl8QUy6HG7hESpAdQ==
+X-Received: by 2002:a05:6808:1b0a:b0:339:c059:b8a5 with SMTP id bx10-20020a0568081b0a00b00339c059b8a5mr209187oib.97.1657161103171;
+        Wed, 06 Jul 2022 19:31:43 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.37
+        by smtp.gmail.com with ESMTPSA id x48-20020a056830247000b006168c71ca4asm17024469otr.56.2022.07.06.19.31.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 19:31:38 -0700 (PDT)
+        Wed, 06 Jul 2022 19:31:42 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     vkoul@kernel.org, robh+dt@kernel.org, sean@poorly.run,
-        agross@kernel.org, dianders@chromium.org,
-        devicetree@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        robdclark@gmail.com, swboyd@chromium.org
-Cc:     linux-arm-msm@vger.kernel.org, quic_aravindh@quicinc.com,
-        freedreno@lists.freedesktop.org, quic_mkrishn@quicinc.com,
-        quic_abhinavk@quicinc.com, quic_kalyant@quicinc.coml,
-        quic_sbillaka@quicinc.com, linux-kernel@vger.kernel.org
-Subject: Re: (subset) [PATCH] arm64: dta: qcom: sc7180: delete vdda-1p2 and vdda-0p9 from mdss_dp
-Date:   Wed,  6 Jul 2022 21:31:16 -0500
-Message-Id: <165716107315.864223.1202817730153711160.b4-ty@linaro.org>
+To:     linux-arm-msm@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        konrad.dybcio@somainline.org, Robert Marko <robimarko@gmail.com>,
+        robh+dt@kernel.org, agross@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: (subset) [PATCH] arm64: dts: ipq8074: move ARMv8 timer out of SoC node
+Date:   Wed,  6 Jul 2022 21:31:20 -0500
+Message-Id: <165716107315.864223.10367730438090581299.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1656690436-15221-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1656690436-15221-1-git-send-email-quic_khsieh@quicinc.com>
+In-Reply-To: <20220704113318.623102-1-robimarko@gmail.com>
+References: <20220704113318.623102-1-robimarko@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -70,16 +66,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 08:47:16 -0700, Kuogee Hsieh wrote:
-> Both vdda-1p2-supply and vdda-0p9-supply regulators are controlled
-> by dp combo phy. Therefore remove them from dp controller.
+On Mon, 4 Jul 2022 13:33:18 +0200, Robert Marko wrote:
+> The ARM timer is usually considered not part of SoC node, just like
+> other ARM designed blocks (PMU, PSCI).  This fixes dtbs_check warning:
+> 
+> arch/arm64/boot/dts/qcom/ipq8072-ax9000.dtb: soc: timer: {'compatible': ['arm,armv8-timer'], 'interrupts': [[1, 2, 3848], [1, 3, 3848], [1, 4, 3848], [1, 1, 3848]]} should not be valid under {'type': 'object'}
+> 	From schema: dtschema/schemas/simple-bus.yaml
 > 
 > 
+> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dta: qcom: sc7180: delete vdda-1p2 and vdda-0p9 from mdss_dp
-      commit: 154fd146a446c0fffa81d72c78611b0ce26b2718
+[1/1] arm64: dts: ipq8074: move ARMv8 timer out of SoC node
+      commit: 7d9c1da91a614d52b84a4628e21888bb5c526276
 
 Best regards,
 -- 
