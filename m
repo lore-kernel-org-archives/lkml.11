@@ -2,97 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C015C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 00:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77136C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 00:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234626AbiGGAAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 20:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
+        id S234684AbiGGAC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 20:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234577AbiGGAAq (ORCPT
+        with ESMTP id S234580AbiGGAC2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 20:00:46 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7202DA91
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 17:00:45 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id y18so15434026iof.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 17:00:44 -0700 (PDT)
+        Wed, 6 Jul 2022 20:02:28 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A362F2D1C5
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 17:02:27 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id s188so21447662oib.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Jul 2022 17:02:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vznw20ylo/oPgaF7mRf1/U3Zbr5N3zAqVrSkbulF/yc=;
-        b=V9hDvwROCjPX+C6R5oEgtSGo0ouHydzzG4Bq6xVSk72kofRyZf/rsK4i8982guV6zg
-         UP/eMqW5rYeyF9jJ1DHWFKmetqu6p1eWdZPpUv+Za8HwR619gCyxgN3ASHbtFMYi52TF
-         Y3Qs0+lsaUrM1CEu0ZgFo3fu41GHtcTwsUX8w=
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=PnPr/1wV1VsDM5AHnYfjPAu3D3lvVU7n3T6uqgg9/R0=;
+        b=cy5YW5oK8azkNdczvWFJwyh++jfARujG2dfBKCYuhU29WcT/XmK1mxCRYPxCTDuzHD
+         S930YX/X6BdzGqHueKcrrFx+425I4eqBGTp0flDBv9boMS5HM7KjVEznIn2TJd0cJpBS
+         pKupIMlhavC4356aVBEbh/9Lt/TaZMJ3fl0C4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vznw20ylo/oPgaF7mRf1/U3Zbr5N3zAqVrSkbulF/yc=;
-        b=Xw3uUvQrNxw0Jaja/ol4/7YTrDbCtviJJoCoQb42xctFcSNnTy3Vf5bEWBsvYHthL6
-         /wFjjWGq9btCETSDGghG3h6bYqqBVP0iWo9PkkGr6H0L70H1n5zPnjTxl6xkJTXo3jDS
-         E6UNd5dOFsfTD2RswkKlSo+RLpJ5kept31UfysRg+fIHl7RZFhJ9Hy/R4b74ClArlj/q
-         3blHeepK5nVNZu5hrCbLnoWDZCExKMUuSrA+UM7oxeQsuVvG7dRnxigLMsXtx5ay0iev
-         E7gAo7azOgtE6pMUAdadx9nje1rdpCn0oHAJVPMSzclLC0VxWg6hI7YAweLdHQBNBzZR
-         KI4g==
-X-Gm-Message-State: AJIora98CEJqgEMNUKHvzc2ZMLOCr6lKOAJynxITQlI1jhZp5sVOamlI
-        KEnfoVUjG4N+QLiGVOSyEVFtbw==
-X-Google-Smtp-Source: AGRyM1t/vmMhUrDmc0Oy+awh49RenWwNh9LI2T7h3qj65fAqYwLGFqSB7Pv71oM2BWXnUafmXP33Ig==
-X-Received: by 2002:a02:cf34:0:b0:339:e4de:6cb6 with SMTP id s20-20020a02cf34000000b00339e4de6cb6mr26020492jar.241.1657152044317;
-        Wed, 06 Jul 2022 17:00:44 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id z22-20020a5e8616000000b00674f8979801sm17453822ioj.0.2022.07.06.17.00.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 17:00:43 -0700 (PDT)
-Subject: Re: [PATCH 5.4 00/58] 5.4.204-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220705115610.236040773@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <a15b3a49-7ccc-4705-42c1-b181e6f5267b@linuxfoundation.org>
-Date:   Wed, 6 Jul 2022 18:00:43 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=PnPr/1wV1VsDM5AHnYfjPAu3D3lvVU7n3T6uqgg9/R0=;
+        b=4LOB5/5PqGQDazFdK2lA+Bb3XilYEgt1BKR+HhJBmA38vUwW9TmJWqaPDwY6ZBfC1w
+         n5OJ0RPidoQqKXlvLmBXDi4ZNzbxV6K+gGIwRiuf0M/FSwCtTj4QQUmx3ec8L6bOXlPA
+         IMJUA/rAaxSmkAl0iVxTlPupUNF3usq615Aw3Uacx2VNbX+49qR8pONbd+rEPwGs9dIg
+         PtdTquNLl46IdwWPZNA+yoy7dzp1uWqI49193MR1KBHpG1/KcJuG0RH3YBhO3TWM1OZu
+         MXkVhqfWhRAkYO0xGd6yThGYvoY8HlBFto7X/2KAB/X4bUpO1VhTxmH/T0JKTPZ/GE44
+         6jxw==
+X-Gm-Message-State: AJIora+k3ZLo5SKtyUGnLH0mB8M9LM8boCZjSVKuO2+QBYvsnzVJ6TgG
+        5IOJU7TzstJaYRr0Pmyx8xAIfTXwWv5KMpLmCvrCfA==
+X-Google-Smtp-Source: AGRyM1vW63Yppk8g9ETKCFgydRa/5t3+pkplkfQ29ri3PaE1IB+DZLPNqhEt4I43L+jR0L5u6CSyYIFc3FbBzB2Bd/k=
+X-Received: by 2002:a05:6808:171c:b0:334:9342:63ef with SMTP id
+ bc28-20020a056808171c00b00334934263efmr808946oib.63.1657152147038; Wed, 06
+ Jul 2022 17:02:27 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 6 Jul 2022 20:02:26 -0400
 MIME-Version: 1.0
-In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <Yr5xS/HCrBuNrn9N@builder.lan>
+References: <20220628201340.3981860-1-swboyd@chromium.org> <Yr5xS/HCrBuNrn9N@builder.lan>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 6 Jul 2022 20:02:26 -0400
+Message-ID: <CAE-0n51Ex7T+B0PwwYmH-o9VAy5PYgzGFb=bOTu8ae4t0sGZKw@mail.gmail.com>
+Subject: Re: [PATCH/RFC] clk: qcom: rpmh: Block system suspend if XO is enabled
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, patches@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, Taniya Das <quic_tdas@quicinc.com>,
+        Mike Tipton <quic_mdtipton@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/5/22 5:57 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.204 release.
-> There are 58 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Jul 2022 11:55:56 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.204-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Quoting Bjorn Andersson (2022-06-30 21:00:11)
+> On Tue 28 Jun 15:13 CDT 2022, Stephen Boyd wrote:
+>
+> > Tracking down what RPMh resource is blocking XO shutdown in suspend is
+> > hard. Largely because we need external debug tools to dump the RPMh
+> > internal state to figure out what resource is enabled. Instead of doing
+> > that, let's just block system wide suspend in the kernel if the RPMh XO
+> > resource is enabled by something in the kernel. This will help us narrow
+> > down XO shutdown failures to the XO clk, and not something else like an
+> > interconnect or regulator RPMh resource.
+> >
+> > I'm sending this as an RFC because it breaks suspend for me on Trogdor
+> > boards. I found out that the XO resource is always enabled on these
+> > devices because the audio driver leaves an audio clk always on. This
+> > means that the XO resource must not be used to determine if XO shutdown
+> > is achievable, or we're leaving power savings on the table.
+> >
+> > Cc: Taniya Das <quic_tdas@quicinc.com>
+> > Cc: Mike Tipton <quic_mdtipton@quicinc.com>
+> > Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>
+> > ---
+> >
+> > Please don't apply. It will break suspend on Trogdor boards.
+> >
+>
+> This seems like a useful debug feature for people outside of Qualcomm,
+> so I assume you're saying that we shouldn't merge it until someone has
+> fixed the audio driver? Or did you post it just as a debug tool?
+>
 
-Compiled and booted on my test system. No dmesg regressions.
+I mainly posted it to get a response from Qualcomm on what's going on. I
+haven't tried to fix the audio driver so far, but I can certainly look
+into it. The audio clk driver keeping XO on doesn't seem to matter for
+power because we're hitting the deepest of sleeps on Trogdor boards.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+I also realized that due to clk adoption logic we can't be certain that
+this driver's suspend function will be called after other clk providers
+that consume XO run their suspend functions. We can probably assume clk
+consumers that aren't providers will probe after clk-rpmh, so this check
+is generally safe because we don't have clk providers disabling clks
+during their suspend functions. It's just not totally safe.
 
-thanks,
--- Shuah
+Maybe this is a good reason to add some sort of suspend op to clk_ops
+and then call that during system wide suspend.
