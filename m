@@ -2,66 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8431C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D826C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 17:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235677AbiGGRos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 13:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        id S235754AbiGGRov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 13:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235552AbiGGRof (ORCPT
+        with ESMTP id S236612AbiGGRof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Jul 2022 13:44:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2107564F9;
-        Thu,  7 Jul 2022 10:44:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA2259262;
+        Thu,  7 Jul 2022 10:44:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86269B80522;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CFD2B822B1;
+        Thu,  7 Jul 2022 17:44:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A7073C385A5;
         Thu,  7 Jul 2022 17:44:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2CA52C3411E;
-        Thu,  7 Jul 2022 17:44:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657215871;
-        bh=yipsckzcPtD2I1U8bB0T6DXG2jxNDWbUWeVDZOK9WvE=;
+        s=k20201202; t=1657215872;
+        bh=U1VCIrQewkNZAM2m8EDq2BrG/uIYuRmlgn+CNmOPKlM=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=QLb35Bi/KPX0BUF2xOPLVzVSNcEcwBkuhpgDVZiITuZUkOOICTzpH9F+ROpu0R10J
-         SmEWxQuYCOU+W62h21eMG31tJhuhF4XZLL2DudGfJn6LansUL7hLT86D0hELVYEmSM
-         6Dlm/QlL6lHRQUa7kMYb+0ZrLRoevXJlENG56B6zI3PreUaX+vAXoiIUHeRDjN9RRw
-         J9xDyrqiaLtdcLXhRCefNrN1xUSGHu6KDpFaxKWmIVGbFE/YwAZeZwefsr9ZkoWewz
-         gppTMe5BjNprkgnItFudo02n9pN2WYy62WCJeA8EkD73ZMFWEJ89dqHMJDabrS7V/w
-         xz83Q46c5vy1g==
+        b=MVbnbtoiF1B3iIwdJ5l+vPtZVBAvKd9D7jlUH3gfGt5DCYtsQIT6sjG9oFQe8BLKt
+         q3GDFmSQirVd4el2lPaVI9cbU9lPO9kcXPZCZ7SOVE5pNYD0PyQNrRXIS2It2V3hNE
+         zH9Nrx4Vw0jnf3pwipgaas3qKk8ztMrOMAnS4gC8h0bmi2Cw24vReZ8OScZ/GOODfr
+         glW51NynbgSMHkN6YL/R6QQs6WvQJHkSYAWmdN7VU1Bqvgk0hxjedy+aEYOSpKpfKY
+         i4TXnEXaKVx7nK6jiQljp+uFPmvrq6dBdhCazX8KfypyJtZH+ff3vbDLfUSR5YJbik
+         r1S4309M8UcbA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1B354E45BD9;
-        Thu,  7 Jul 2022 17:44:31 +0000 (UTC)
-Subject: Re: [GIT PULL] pin control fixes for v5.19
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 90A4FE45BDD;
+        Thu,  7 Jul 2022 17:44:32 +0000 (UTC)
+Subject: Re: [GIT PULL] LoongArch fixes for v5.19-rc6
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CACRpkdYD-mnt-vypLAXP9J2pgzXOOYhS7fNeEKLK7T2q-45USg@mail.gmail.com>
-References: <CACRpkdYD-mnt-vypLAXP9J2pgzXOOYhS7fNeEKLK7T2q-45USg@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-gpio.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CACRpkdYD-mnt-vypLAXP9J2pgzXOOYhS7fNeEKLK7T2q-45USg@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-2
-X-PR-Tracked-Commit-Id: a1d4ef1adf8bbd302067534ead671a94759687ed
+In-Reply-To: <20220707130525.1434272-1-chenhuacai@loongson.cn>
+References: <20220707130525.1434272-1-chenhuacai@loongson.cn>
+X-PR-Tracked-List-Id: <loongarch.lists.linux.dev>
+X-PR-Tracked-Message-Id: <20220707130525.1434272-1-chenhuacai@loongson.cn>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git tags/loongarch-fixes-5.19-4
+X-PR-Tracked-Commit-Id: f0fbe652e8529a180630617a17cd5922298c4f13
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 651a8536572ae0dcce608b3e6720ae844155a787
-Message-Id: <165721587110.16533.6121533424382096395.pr-tracker-bot@kernel.org>
-Date:   Thu, 07 Jul 2022 17:44:31 +0000
-To:     Linus Walleij <linus.walleij@linaro.org>
+X-PR-Merge-Commit-Id: e8a4e1c1bb697b1d9fc48f0e56dc0f50bc024bee
+Message-Id: <165721587258.16533.14034112280835206934.pr-tracker-bot@kernel.org>
+Date:   Thu, 07 Jul 2022 17:44:32 +0000
+To:     Huacai Chen <chenhuacai@loongson.cn>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+        Arnd Bergmann <arnd@arndb.de>,
+        Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 7 Jul 2022 11:05:44 +0200:
+The pull request you sent on Thu,  7 Jul 2022 21:05:25 +0800:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-2
+> git://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git tags/loongarch-fixes-5.19-4
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/651a8536572ae0dcce608b3e6720ae844155a787
+https://git.kernel.org/torvalds/c/e8a4e1c1bb697b1d9fc48f0e56dc0f50bc024bee
 
 Thank you!
 
