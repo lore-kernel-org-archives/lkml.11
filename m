@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0537C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC70BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236173AbiGGNst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:48:49 -0400
+        id S236158AbiGGNsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:48:55 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236077AbiGGNrn (ORCPT
+        with ESMTP id S236116AbiGGNrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:47:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFB52C67A;
-        Thu,  7 Jul 2022 06:47:42 -0700 (PDT)
+        Thu, 7 Jul 2022 09:47:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED88C1F61F;
+        Thu,  7 Jul 2022 06:47:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0751E621AB;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD5B6B8222C;
         Thu,  7 Jul 2022 13:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BB60C36AF2;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A661C341FA;
         Thu,  7 Jul 2022 13:47:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657201659;
-        bh=qBf0wcLz/LdfsVz1XN93cwCxAidfoW7gmCoV+rfdsyc=;
+        s=k20201202; t=1657201660;
+        bh=Y+J7Plv+oHOVcHXQp7HO15QDcgjd2W96yFr9wmzsNjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a9N+H3mKSIstbB7YMkHGJv4IuhhPxUuu2MKuB1pTDD8kpLHu3JgXFewc8LzTINin2
-         B4K2uVP90FJmgc1oF374dJ+7BGjYfrgi3z74qQ+rAHM+II790J6oYkGmAsk+xWqGbq
-         FibU5leaia7gnnLxFGFBM7HT7KnGhUTsB88LkeebEsCF6Eas94n2ixx1iPehGIXYPU
-         B9NLAMH7hT3jv6zFRakVJoD6oKCbdJdsvvW9Yh5yv5U3W1BVV/shw6j0MPfRhR8nJy
-         +tgC+8FM/54f892fQOBxUfseNRV59j4W1rRxe7DIzySrCb2RpHaBP035nEMCzoqvxa
-         49A2A9Z0cIS5w==
+        b=jqKoKRNETCw8VvrS7CbL/LS2UraJauzpiKvDXgEfFi25I9n653jl6jW1jh0OEr+Tx
+         +P+kdsHhgv4l0pqJyP2E97Wjje9CLihdqoW0oU0y/89YDTpmZGiA6Pwm6WSTUZEkNn
+         uqu3QM9YeS7WK8UTyGn+pPDRP4vlSjl/gWdoME7qYJyxxjn0u67oYGVUpCo9FGTTtd
+         tvYKYLCEypoDtgagxnnyUvgw/lohWnzovnzUGE6NxaHjgtBlSoeNM8YRMyHZR71EZo
+         DnBoH4TgvnHXCQNOuqNKQQxf3HCz5gFJHgR/yK3R1JpaQgKu9MnQTXT8afU5aBSh+N
+         ADJglmaBRYeUA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o9Rr4-0000wO-Ep; Thu, 07 Jul 2022 15:47:42 +0200
+        id 1o9Rr4-0000wp-WB; Thu, 07 Jul 2022 15:47:43 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -45,9 +45,9 @@ Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 10/30] dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate PIPE clock names
-Date:   Thu,  7 Jul 2022 15:47:05 +0200
-Message-Id: <20220707134725.3512-11-johan+linaro@kernel.org>
+Subject: [PATCH v2 16/30] dt-bindings: phy: qcom,qmp-ufs: add missing SM8450 clock
+Date:   Thu,  7 Jul 2022 15:47:11 +0200
+Message-Id: <20220707134725.3512-17-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220707134725.3512-1-johan+linaro@kernel.org>
 References: <20220707134725.3512-1-johan+linaro@kernel.org>
@@ -57,58 +57,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deprecate the PHY node 'clock-names' property which specified that the
-PIPE clock name should have an unnecessary "lane" suffix.
+Add the missing "qref" clock used by the SM8450 UFS QMP PHY to the
+binding.
 
+Fixes: e04121ba1b08 ("dt-bindings: phy: qcom,qmp: Add SM8450 UFS phy compatible")
+Fixes: 07fa917a335e ("arm64: dts: qcom: sm8450: add ufs nodes")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml   | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ .../bindings/phy/qcom,qmp-ufs-phy.yaml        | 20 +++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-index 8125a91a3591..b7b115e021d4 100644
---- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-@@ -69,6 +69,7 @@ patternProperties:
-           - description: PIPE clock
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+index e9dfed29e996..7a1f80e2cf23 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+@@ -42,11 +42,11 @@ properties:
  
-       clock-names:
-+        deprecated: true
-         items:
-           - enum:
-               - pipe0
-@@ -98,7 +99,6 @@ patternProperties:
-     required:
-       - reg
-       - clocks
--      - clock-names
-       - resets
-       - reset-names
-       - "#clock-cells"
-@@ -151,7 +151,6 @@ examples:
-                   <0x1400 0x1dc>;
+   clocks:
+     minItems: 1
+-    maxItems: 2
++    maxItems: 3
  
-             clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
--            clock-names = "pipe0";
-             resets = <&gcc GCC_PCIE_0_PHY_BCR>;
-             reset-names = "lane0";
+   clock-names:
+     minItems: 1
+-    maxItems: 2
++    maxItems: 3
  
-@@ -167,7 +166,6 @@ examples:
-                   <0x2400 0x1dc>;
+   resets:
+     maxItems: 1
+@@ -117,6 +117,22 @@ allOf:
+             - const: ref
+             - const: ref_aux
  
-             clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
--            clock-names = "pipe1";
-             resets = <&gcc GCC_PCIE_1_PHY_BCR>;
-             reset-names = "lane1";
- 
-@@ -183,7 +181,6 @@ examples:
-                   <0x3400 0x1dc>;
- 
-             clocks = <&gcc GCC_PCIE_2_PIPE_CLK>;
--            clock-names = "pipe2";
-             resets = <&gcc GCC_PCIE_2_PHY_BCR>;
-             reset-names = "lane2";
- 
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,sm8450-qmp-ufs-phy
++    then:
++      properties:
++        clocks:
++          maxItems: 3
++        clock-names:
++          items:
++            - const: ref
++            - const: ref_aux
++            - const: qref
++
+ examples:
+   - |
+     #include <dt-bindings/clock/qcom,gcc-sc8280xp.h>
 -- 
 2.35.1
 
