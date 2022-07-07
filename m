@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA26DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FAEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236182AbiGGNti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
+        id S236303AbiGGNtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236105AbiGGNrq (ORCPT
+        with ESMTP id S236095AbiGGNrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:47:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985D320BC5;
-        Thu,  7 Jul 2022 06:47:44 -0700 (PDT)
+        Thu, 7 Jul 2022 09:47:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00D63190D;
+        Thu,  7 Jul 2022 06:47:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50AD3621E8;
-        Thu,  7 Jul 2022 13:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D33C385A2;
-        Thu,  7 Jul 2022 13:47:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2126B82223;
+        Thu,  7 Jul 2022 13:47:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 614DCC36AE5;
+        Thu,  7 Jul 2022 13:47:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657201660;
-        bh=VQUadDFBbQFYuXDZ/HGjADPkW/bOuUzGP4FBypSreuA=;
+        s=k20201202; t=1657201659;
+        bh=2V9aRAC2X1UCZ0ZViRkEIRSPpsay+FjbvSHDFWbB+HQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lcdbHxLG6/5FA8WMWB005w83E/3qJRlM0h5yqUe1jgPa5tyohYbvSYg4TAqkHGN5I
-         44PQdlaUEQJq5lv4FNXMl8Xxh8Dvjyeh697KeFcXpAkFrTu2dCvGk5Li/7FSFLQNI+
-         Vu+/edVmFdUtvIVQj2ed/0beT0bT32OTqgU0jQoSTn2x161oC/35BUjPADZChsIRaq
-         cNcIM4AgJax9k3CaoujRy5IR1DBqKiA0tC9NYgNbflqeMtotZSMFnkHs1qE0Nx4wCW
-         HyXVEhvsU2yJ9mv2QfRlLqpRa6Hsc+OPrRvUI0fH7RHXmHcxFAJQEMXhUxBnBIYFEV
-         wqEwl9h9jM3/Q==
+        b=fLgUXgdah3nbMnvAbNWI6gZKJtBQq0YUmCQjw8V6krIbgIOKoYTE3zolh6I+M9hRH
+         RtB39r51U7dsLy0WqkzH+YbIgNp1X5wKPbXM/a3ZN6vqOeQGysjlJzUOVkjkd2/Xly
+         4Tiqctx1VY2gqhrNUzN4CVqhhtCA2z2Ryi6JYDqhbSjUazsPXuxGe8Ma0xPF0f9/Fz
+         4i1a3L4I1z48rkcutP4BbKeH15npLDwLFnnjoxWgvnSEFlFTPF55lpn/E453hxctam
+         43wDnGrEyU1vZElwepfUmLkzwPxTzKDslR2z7bSjF/0z+bFn9yjkulnyK27Qa1mlvM
+         QdkXPfs6ddRHA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o9Rr5-0000wu-3A; Thu, 07 Jul 2022 15:47:43 +0200
+        id 1o9Rr4-0000w4-58; Thu, 07 Jul 2022 15:47:42 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,10 +44,11 @@ Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Kishon Vijay Abraham I <kishon@ti.com>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 17/30] dt-bindings: phy: qcom,qmp-ufs: add missing SM8150 power domain
-Date:   Thu,  7 Jul 2022 15:47:12 +0200
-Message-Id: <20220707134725.3512-18-johan+linaro@kernel.org>
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 07/30] dt-bindings: phy: qcom,qmp: drop child-node comment
+Date:   Thu,  7 Jul 2022 15:47:02 +0200
+Message-Id: <20220707134725.3512-8-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220707134725.3512-1-johan+linaro@kernel.org>
 References: <20220707134725.3512-1-johan+linaro@kernel.org>
@@ -57,29 +58,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing optional power-domains property used by the SM8150 UFS
-QMP PHY to the binding.
+Drop the redundant comment about child nodes being required that was
+copied from the old binding documentation.
 
-Fixes: fe75b0c4a691 ("arm64: dts: qcom: sm8150: Add ufs power-domain entries")
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-index 7a1f80e2cf23..0e76256e5636 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-@@ -48,6 +48,9 @@ properties:
-     minItems: 1
-     maxItems: 3
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index 7e0f798632f4..08a84af711ce 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -96,7 +96,6 @@ properties:
  
-+  power-domains:
-+    maxItems: 1
-+
-   resets:
-     maxItems: 1
+   vddp-ref-clk-supply: true
  
+-#Required nodes:
+ patternProperties:
+   "^phy@[0-9a-f]+$":
+     type: object
 -- 
 2.35.1
 
