@@ -2,96 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD80C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 10:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234829AbiGGKDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 06:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
+        id S235010AbiGGKDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 06:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233808AbiGGKDU (ORCPT
+        with ESMTP id S234991AbiGGKDo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 06:03:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8817A4F1B9
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:03:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657188198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mNWEDxqg1cccxdZ0v7jY1fOIP46IJFXlMCuR5euWthM=;
-        b=f1IFVK7nDBX2AENHCVcb/SoyI+diJawPWoxWKRnxAW5MV4GfJU3nNCENBNgICgZIH66Suf
-        iZJXzlD11qq/f+VL6BhqOinXqyU6QbF+xnymgCx2o2qHCvcEBDpmSiDisgC4XHLAQ8GbYm
-        bseb1tPqxlAfR4Vf0OOcmKHjc7xa9gE=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-137-nSD097-XM8maOmZpphrJrw-1; Thu, 07 Jul 2022 06:03:17 -0400
-X-MC-Unique: nSD097-XM8maOmZpphrJrw-1
-Received: by mail-ed1-f70.google.com with SMTP id x8-20020a056402414800b0042d8498f50aso13750810eda.23
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:03:17 -0700 (PDT)
+        Thu, 7 Jul 2022 06:03:44 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9998D26AF1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 03:03:41 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id l40-20020a05600c1d2800b003a18adff308so10888687wms.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 03:03:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+l1iL0NEuXMTD9v+9+cJIdeSZBJgkzTvXEeRZPmJDmc=;
+        b=ILohkxWDl/nTQzvdTCs8NkfmN8dgIhtrnAZn0crydzEMid/17eesAXMw1lryR8vUNg
+         dHI1vhLtMVAOnjEYS66sw8Gup4ggYg+CUi5ki4AFxTQ6PiYwpCAAsVzUbXDLHUYIUELv
+         MjNC3X6CyG8utflI11bDVMLJEKs7VPYAX3qji72TYPzL/dVnMe2nGVE+csd/enpKur7I
+         ANBa3Zt68bafqepLiOEsDK1FDotparNMJWyMg4jd3SwvnhdZhdMu1z49pR+JqBtso11p
+         JNndb2Cy1VMsZqu4m4q3+ojhf/3eu/CHbfeTw+Zw4c2NpERB0s5ihjz0LO0HlBmufvY0
+         jqtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=mNWEDxqg1cccxdZ0v7jY1fOIP46IJFXlMCuR5euWthM=;
-        b=us9/5O0DComZ4jCdMBXyqDZ04c9ZrfUqYTObYiDhvNdtKgV0s9kryGeKQhDGJnTRoo
-         oOQBpKYXUKkK0UWGk4uTwtphoWp8zUaqsYqUcXA7CCTEeve/57Eg7CK4M/h1Cqif0xGF
-         U29TaA4PScIfXP0kRUm3QcdqVX1MdLeJZ+g8fWzWM7TkS0mYk9ADmUXY7u+gWHfNxVXo
-         qsXz0hwayv8D6dtco5pBFRcapoJd4ifZjTXJaOS8ZHbCGJhzpylFLyodYZSCUGWK689k
-         Cb3kJ9mTQ2SvpGDWtwIyUFIal87IsmOIhdMedPU2mWegs86nMJHU95Be0WautQMmgZHp
-         F0hw==
-X-Gm-Message-State: AJIora/a1YhO9tTRtZwnuzRdzObNn2CvpCyPFd7/+AOq1eR6wESD/jzK
-        bALr8saN5VI5YuaFAcyyR+39tN9wM7fMMj9EGRgU+KRDey5awd59AUGfcg6lkMLrccSIlXKC158
-        UNJiwDRB0mlZQyVy0roUlYnC1RPVjtV5nmqIZb8SP9Prd7jliir2PbRCLDqJREhWnKYRrht9Ffl
-        2k
-X-Received: by 2002:a17:907:7f22:b0:726:8962:d5a6 with SMTP id qf34-20020a1709077f2200b007268962d5a6mr44679640ejc.717.1657188196265;
-        Thu, 07 Jul 2022 03:03:16 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u4TDOGXhUWTv81WhVbKpEdofsrU7RbUvvcAymyzuKgcvYHSqvCL2Hj13lnlsPJasUfZ5xXrA==
-X-Received: by 2002:a17:907:7f22:b0:726:8962:d5a6 with SMTP id qf34-20020a1709077f2200b007268962d5a6mr44679605ejc.717.1657188195954;
-        Thu, 07 Jul 2022 03:03:15 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id ky6-20020a170907778600b0072b0d3ca423sm793207ejc.187.2022.07.07.03.03.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+l1iL0NEuXMTD9v+9+cJIdeSZBJgkzTvXEeRZPmJDmc=;
+        b=nSzdJPsQB3/ToFMOeQDBwEzssW3e1kfJFyt8W9xwhBHpWaET1PIKqAFAKPHlzmQoA6
+         ZRQSijuvZimy/lch+BiQJRN/dWmCtC+HktSiTcYS8iPsLZ6+VpLpTRjHhUGZgD/Z552P
+         THLfhClnJWIP22P48iwYuCWZT9EtHeHOHfp4VMt0N6GNdSiaUJbUjfiNafDZ4p8BLLhG
+         H+ec5bFIdNsSzZLBAUPrgJqA2esQP+VIcICV4+JDio9IpvdMCeBkj90j/CxVuLC4+5P8
+         Rh9Lmu4CX6+wmF7yeUoOGQlEPbGhgTwYmYTkdZWuc9SRsC0HAd+9zMWF8Z+PudlhzANO
+         g0cg==
+X-Gm-Message-State: AJIora+MmOz26pgEval4ySaqjQuwvXSTmHLUQyVUnxhu3mGbDphvqlST
+        kelP4AXclWDTVCnqvqz+1iLcERRJvtgQdw==
+X-Google-Smtp-Source: AGRyM1vwP+rjkJ16/oi7CdPdPHtzE/ugfCPc/WqLwUxB+Yb4OogyiysKjo2MWcBXiuhJp86oGRPH5Q==
+X-Received: by 2002:a05:600c:40d7:b0:3a2:d438:4e33 with SMTP id m23-20020a05600c40d700b003a2d4384e33mr113235wmh.33.1657188220194;
+        Thu, 07 Jul 2022 03:03:40 -0700 (PDT)
+Received: from localhost.localdomain ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id h14-20020a5d548e000000b0021d7ad6b9fdsm4612034wrv.57.2022.07.07.03.03.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 03:03:15 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 13/28] KVM: VMX: Get rid of eVMCS specific VMX
- controls sanitization
-In-Reply-To: <YsYMPCr3/ig0xPFj@google.com>
-References: <20220629150625.238286-1-vkuznets@redhat.com>
- <20220629150625.238286-14-vkuznets@redhat.com>
- <YsYMPCr3/ig0xPFj@google.com>
-Date:   Thu, 07 Jul 2022 12:03:14 +0200
-Message-ID: <87ilo9qly5.fsf@redhat.com>
+        Thu, 07 Jul 2022 03:03:39 -0700 (PDT)
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     Mike Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-clk@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org, Abel Vesa <abel.vesa@linaro.org>
+Subject: [RFC PATCH 1/4] clk: Use clk_core_unlink_consumer on __clk_put
+Date:   Thu,  7 Jul 2022 13:03:06 +0300
+Message-Id: <20220707100309.1357663-1-abel.vesa@linaro.org>
+X-Mailer: git-send-email 2.34.3
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+For consistency, use clk_core_unlink_consumer rather then hlist_del
+directly, on __clk_put. Prepare lock is already acquired at that point.
 
-> On Wed, Jun 29, 2022, Vitaly Kuznetsov wrote:
->> With the updated eVMCSv1 definition, there's no known 'problematic'
->> controls which are exposed in VMX control MSRs but are not present in
->> eVMCSv1. Get rid of the filtering.
->
-> Ah, this patch is confusing until one realizes that this is dropping the "filtering"
-> for what controls/features _KVM_ uses, whereas nested_evmcs_filter_control_msr()
-> filters controls that are presented to L1.
->
-> Can you add something to clarify that in the changelog?
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+---
+ drivers/clk/clk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yea, this is for KVM-on-Hyper-V only, I'll fix the changelog.
-
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 7fc191c15507..e1d8245866b1 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -4347,7 +4347,7 @@ void __clk_put(struct clk *clk)
+ 		clk->exclusive_count = 0;
+ 	}
+ 
+-	hlist_del(&clk->clks_node);
++	clk_core_unlink_consumer(clk);
+ 	if (clk->min_rate > clk->core->req_rate ||
+ 	    clk->max_rate < clk->core->req_rate)
+ 		clk_core_set_rate_nolock(clk->core, clk->core->req_rate);
 -- 
-Vitaly
+2.34.3
 
