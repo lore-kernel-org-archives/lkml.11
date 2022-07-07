@@ -2,248 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A32BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 699EFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235063AbiGGJIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51162 "EHLO
+        id S235162AbiGGJJY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232646AbiGGJIj (ORCPT
+        with ESMTP id S235038AbiGGJJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:08:39 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB0F1C90D
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:08:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657184916; x=1688720916;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=K92sXVRr3OVAanF+nk1nqQI3Z2WShQWgeM5zAx+dTos=;
-  b=BU1yoVMAUH0tBBqMa3Rh6ZqvXQ2XjLX/OqACLwg+BLVVtWBbnWyuaUUL
-   GQcvC6TOdvKNzVHtKjuKC3q6gMj22JmBwIs4L3HW5aukky5fvEJchO+p+
-   RSUclDdY8fvTma9S2zXkfmqzd7geRieKkyQsW3L1xQzo/4UE5gy+hRL2L
-   gi5F+/ih/L+DmvN3hGDxKsetlVsIr/mUdmVKeqoHj+ssUaBemJinZW4ZW
-   TilsNB/dHhTXn31Vj/DeUr//28CBq8XJ8w1tPByxg/T4YHplCX6ByjfZR
-   OsmBUBfwFz55cebrVi7//MLdVlIdQvuCYWpvfP++gFEoWa3FWqzVynuvl
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="347958604"
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="347958604"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 02:08:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="626246852"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 07 Jul 2022 02:08:35 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9NUw-000Lnu-IA;
-        Thu, 07 Jul 2022 09:08:34 +0000
-Date:   Thu, 7 Jul 2022 17:08:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Li Zhengyu <lizhengyu3@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: arch/riscv/kernel/elf_kexec.c:352:9: error: unknown type name
- 'Elf_Rela'; did you mean 'Elf64_Rela'?
-Message-ID: <202207071735.mAMg0MAa-lkp@intel.com>
+        Thu, 7 Jul 2022 05:09:22 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2078.outbound.protection.outlook.com [40.107.101.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557AF1D30F;
+        Thu,  7 Jul 2022 02:09:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FZdB8qh1T4/kgk5EUo6DHTD1XFwXnMB750KmHPiQ0bIU4RgvMMwpSX1nv2maeWghgpcxg6rplR/dSOnd85biTZ/UWrBakKifESCJViBxgvTpSEtJg1niAxSsjtfswTQLXAEqTobYr7kkVX4F3etqSxAwN4gzgJn0N9tnpPQOz+Abzju5cX1Yze3vFHGt147LNzKfJU+rZfVy1gX9bHDQZNktnFijjswg+1gP69LPSz2e1yhGRw7gH3sr/uecd/m2LOXBq2WRtHM9CWdY7sMmEkxcQEcb1WYLIEw1LYf0rDNibMqB4QWWgTdnABKJdlfN/zY2+oZtiWFqMe7aTeNmWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ryOuf2/oSMKO22SiFIdWKjzU9qjqgacKOeo72IMqXF8=;
+ b=IJG2mzpdDEniLwqsMCbwdAzuhLWNF8QV9R8yiJ46uzKrYanTJfgztW2CKChbubqRoHOyfly0Tb9spS4NGCxXxY2fWAiVy0wrtreshh/9dEh4wgIbKuq307rp1S0x1qsoDsEBQ+QniFFrgX/6xTYIpXtwnM3Hq3n+3nM1d+U54qRQ83GLthKLHzjvOGk7/GyTfU7T99MWxGNQoa3IJ+GsGFPy10cLiu/Uzz2vXC4JlPpTElLNoTYK4DTX+vByuvwADG2smzgZhMd+lC73wuuthusoCxQxtQscItH6gGeOSQSxw0MZJ2XfvyjJe6mHOATMHN0NwEOUh0bg7iT+ctKhNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ryOuf2/oSMKO22SiFIdWKjzU9qjqgacKOeo72IMqXF8=;
+ b=Ktii2XQ7J9OcKIhddz90OCU9XzCdh01QttbO3texR6Thz/gz0T0KEUkiNsMHucJKTUQNN9RLlrFAuG2+o9dC8xdw0aho6Esj1o9OqQo5mhjRKP9ItI2bDjPIc9uRS1dU7da8VxNij8O0K8KQxvlS/13bLqT6jSnQUI8VtS/lhTDtBzcWKmFYict4KGrYLsc14d/gn6X3g+oSYAHJIvrrXI9zF9FiHWq6PSKMFUnPY0Em19wlwvF/Xq9MZIr8yCsHwt2ZAFnZSESnNS/xVpsS84trQoAYRk+zqr32pHXSAhAj145CC31yb/hyicv5aW7gXZOxzwwdGe7I0eLmBGBbzA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BN8PR12MB2900.namprd12.prod.outlook.com (2603:10b6:408:69::18)
+ by CH2PR12MB5531.namprd12.prod.outlook.com (2603:10b6:610:34::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Thu, 7 Jul
+ 2022 09:09:19 +0000
+Received: from BN8PR12MB2900.namprd12.prod.outlook.com
+ ([fe80::3904:2c16:b3b7:c5f3]) by BN8PR12MB2900.namprd12.prod.outlook.com
+ ([fe80::3904:2c16:b3b7:c5f3%5]) with mapi id 15.20.5395.022; Thu, 7 Jul 2022
+ 09:09:19 +0000
+Message-ID: <5c36260c-6bb6-7eb5-be82-c60cd927c02d@nvidia.com>
+Date:   Thu, 7 Jul 2022 14:39:08 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH V1] PCI: designware-ep: Fix DBI access before core init
+Content-Language: en-US
+To:     jingoohan1@gmail.com, gustavo.pimentel@synopsys.com,
+        lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kthota@nvidia.com, mmaddireddy@nvidia.com, sagar.tv@gmail.com
+References: <20220622040133.31058-1-vidyas@nvidia.com>
+From:   Vidya Sagar <vidyas@nvidia.com>
+In-Reply-To: <20220622040133.31058-1-vidyas@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA0PR01CA0082.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:ae::12) To BN8PR12MB2900.namprd12.prod.outlook.com
+ (2603:10b6:408:69::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bd301f66-8346-482c-049f-08da5ff85fde
+X-MS-TrafficTypeDiagnostic: CH2PR12MB5531:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: b1/Ca6ApgrYasfwuDDdsVZr1yDJUNK+TI8kWDv72QyleoZOd/RIzByYO0Sz7GIit0znSc9aLkVdJZdZB2hesawfwhE7hf/6prALjnqSJ6YaSRgvHybBdpQh3XZPH103YDJHj8yOiYkA/WGleKoa7RXFJHeCPUFgBYHE2mFnCv0CrDzoUi6Zf62jFlGb3aU7ZQfTC93QGjrn83a3K3AKmsfcMjisxHXrWzR8gB8xcmTH3vzlFfouG+lzg1Ujxi0L4jOqOspuqNX+w2bNKoZnzgQAcWqMzw/9tpbCtFDCw/3cFfr9ftOeN3u0BfjHOXO/osMJkBDbzI3vBqtjrslR0uOqysoTlPWCWCH96wzEZPD9OAuWPzgLGr+zHjd47uZ1rLhh7fkbUtv2+aEX1zP8OleM4fsWWROqBZ8L45k2lNg05AYRK8tK21UaRC3D+L7Tp2iRtSi1Ptg6IFh4Mtsa4HubhRpcZSNGmT4OljBVT6Kja5mgVTfEY9bkEob7NhiVmsmkVEA2oze0Z0u7ayG69TrkLEEjbRUJIRxkxZAqKomkCE7/65l1SGYaKR0sOQjFc3oddk/DiREvRVnA+O7hY9dAbpUGK4DJ2lQGZX9NCkyiz7dz2QSTHeN/caKekOKOd257jrMMC6CDCaJfKadXfJL2jPttspS6chlsEQwZ8W387iqyuYRi1suedGu3HP0sUCrYK8N4+MitqDXX4YF4tu8yDPVwukFe04qBJe8SDz9+46VSodiElLtoeKxuHnc2Ey5AQB+o9k2nMy+E+THc4Seen05QvkW0nCjyk6TVLytUQlRB46AS2Y3/NP8vB5XluwE2p/zQpedlbrBX559AAmzwNPjBS+KFTI7TclMKh86s=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB2900.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(396003)(366004)(136003)(39860400002)(316002)(83380400001)(186003)(31686004)(26005)(36756003)(6512007)(66556008)(66476007)(6506007)(5660300002)(86362001)(2906002)(8676002)(31696002)(4326008)(66946007)(38100700002)(478600001)(6666004)(6486002)(41300700001)(53546011)(2616005)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VWpXbHZjUWxDM2RzajkrTWEra044ajhjdEZ2ZkEyTk13YnBMQ3NiSXF6SmhX?=
+ =?utf-8?B?MTRnL2xpTFlPbE1sK05tOTdwcEVlZ05rY0k2MCsxVTQ1b1padThsb2JhRnRF?=
+ =?utf-8?B?YjhnbHBlYnlwdUljUkRBanFHYVRMa2xSWXpGenJBM3ZDbUhmK2hxS2xUSUlz?=
+ =?utf-8?B?NnhBcHpxTDlFMWZ0NWliYU1pUXZRMDVHWUdIc0p2Rm9aSi9nZXlWOElaUzVj?=
+ =?utf-8?B?OU5sQlp3YldEaHFaTGIxcDBXRHdoZkV5MUZxRHpCWFpuVXYrOHUwRW0rb0lI?=
+ =?utf-8?B?OVgxYWtkd1Z0S0xTeTBZWE5VN3U1YkVONVlFVHgvb3M3R2ZHZERxcDFjUDNJ?=
+ =?utf-8?B?bUxmSCtMbmFTa3dWYlB5UHVsWnlYNkluWW1UbW1Ibjkya0NZWUZrNzNBUnUy?=
+ =?utf-8?B?cWhTempqN1JxRjVVM0VoSVE0d3ZvV01ZeXphb1plbE9SYjc3VHRXSHF6VUVK?=
+ =?utf-8?B?Y2lhVExuaS9GNjNLS1NIUDZXMTNZeWpSVzlnQk12aFZtWlFMSUdUSFBNTERu?=
+ =?utf-8?B?VGcyRlhvM2J3RjY2VGJ6RXFFWjNNemFvRnBVR3kwZElHRTdNT2psbzhkdTEz?=
+ =?utf-8?B?WnFUTUdTaHhnOUo2b0VjWDB3WTJBbzRkTDNyTDhoNTB4UkhoZnFYQzhaVENW?=
+ =?utf-8?B?S3FMaFlmZC9xa1lucnQ1VDduQ1lkNVlRQldCRGlicDNiUUpKckUyYnl2Tm9o?=
+ =?utf-8?B?cFBsZjAwbUFUY1htNWoxcU94cGVBRGJxWElkM0VlTGdZakZBbSt5YUR0K09U?=
+ =?utf-8?B?T3lpRjlWZm9RaWV3VGdTZjBtdW54eVZxK3pxOVcwMXJ0NzFDVlVtTlJuU3JP?=
+ =?utf-8?B?SkZNWTZOekQzUkQ2dWI5TFRWMG1tU3hKRWpUMU5BZmN3ZllVV2EwL29iUW9F?=
+ =?utf-8?B?R3p3d3JmOHR0c3pXdVZSaENtODRHWTg2UDk1YklodlF5TWtyNFR4Ky9zY2lU?=
+ =?utf-8?B?ckg4WitiSmdCakxTWUhiZE93cm9uQk5jMmp0T1RWZXhpWnhMZTdJb2U4OGNt?=
+ =?utf-8?B?TzdpOThVanVXNm5wamVoQjNiRTFXTTJKSkhQYnpBTWtyZTdybFhuS3ZsV0tF?=
+ =?utf-8?B?RUlueUhybC9STWxZaXJaVERpRG5RakpwSm1tTzc0Z0x1UWt2cXdmYm00YkdQ?=
+ =?utf-8?B?QXdZODlqLytmc2FEQ0d3UlIraHJscG1mZk5oSmxLdXdGdmdOZjdnc1VENFNG?=
+ =?utf-8?B?Z0srS2VOK1BUM1UvTStQRis4MStlZ0h5VTMyQ3VNVUhtbjBWN0E1MHJOV2hs?=
+ =?utf-8?B?VVk0bTEzQWoyVDA4RmpSUUh6TkR6b1k2dG9rT1JEaGJLYXBJTDYwT3JpUzZj?=
+ =?utf-8?B?Nk5oQUtLdDY4bDFBMlJFQ2FxeEN1a0FXSzVhdEwwVVBYUGlpVzVtK2tzODlv?=
+ =?utf-8?B?QVM1R0VkM1UxNm44UGZpUUJ6UGlWOWFaTFQyVkpKeWI5SWRCa0ZlYlRQaU1T?=
+ =?utf-8?B?dUNETkM4c3ZURzBhUTlqeGFJOC9hRFNTZFJ1SkUvZDM5WEs0WTlYWWJoKzNU?=
+ =?utf-8?B?OTYrdEZ4ZTRmd1dRa1kydm9hSndkUk5JcnBCazF3b1hRV3ZmbWFRWmk0aFpo?=
+ =?utf-8?B?TVl3UXpSTzNyOC9RdEVTbFRxRnVxbDhmZ1lTRTVpSkZ1NldaaEJhY0lCYnF2?=
+ =?utf-8?B?eVo4bTJyZ2FnanhxMXF5c20xRk8rTHBCVjBsazZCakEwVVFISkxETjZkdUlu?=
+ =?utf-8?B?Y3JSZFltMnBvME54UHk4RHhvdExZeWczaEdja1lleWNTM3NDUFlGZXMvTDRB?=
+ =?utf-8?B?WFZsMXovOUcreG1GTlBYNU10UHVCZDA1MWpYVmFjYjdKK2s3SldYYkFtWVJk?=
+ =?utf-8?B?T3VzMFJkWUg2V2w3eVo1UmtIYjFiZTl6S1UrVDNPYjFzVEpLcDJWUmhmZ2hI?=
+ =?utf-8?B?YWlaaStlNmRlSmlTRXdYYWM3Y2xpUG13VURONzdyb2xmQ1JFR1h3TXRQZUVG?=
+ =?utf-8?B?R3VZdnRzNHVTYUhnWXhxT2JIQXV6SHlEblVmZ1FKSjQ2Uzd3VlNTL085Tk03?=
+ =?utf-8?B?TElKdUtyQ2dsTk5qRUV2TVZheCtGVjNHbERTcGVIOFlrOEpwQ21QS2dQZlVV?=
+ =?utf-8?B?Wi93eGxqZ0hZT2thTXRsejFwN3loTmdKUGo2eXdEWmVIVUpyN1FhWTUrMFlu?=
+ =?utf-8?Q?UUSbjedD6VHmfOxXWfZ8UQWic?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd301f66-8346-482c-049f-08da5ff85fde
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB2900.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 09:09:19.4385
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YKjQHyNWClPKtHk0KiNa0I5NRD728hsIpL8TwzKeI7Zz7QtdfSQzlHgeaKVmXWOAy0KFzNsMMBWjSNWdKfojZg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB5531
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Li,
+Hi,
+Anyone has review comments for this change?
+Without this change, Tegra194's endpoint mode is effectively broken.
 
-FYI, the error/warning still remains.
+Thanks & Regards,
+Vidya Sagar
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   9f09069cde34dcd86f5ecf3a3139fd752020812f
-commit: 838b3e28488f702e2b5477b393f009b2639d2b1a RISC-V: Load purgatory in kexec_file
-date:   7 weeks ago
-config: riscv-buildonly-randconfig-r001-20220707 (https://download.01.org/0day-ci/archive/20220707/202207071735.mAMg0MAa-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=838b3e28488f702e2b5477b393f009b2639d2b1a
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 838b3e28488f702e2b5477b393f009b2639d2b1a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/riscv/kernel/elf_kexec.c: In function 'arch_kexec_apply_relocations_add':
->> arch/riscv/kernel/elf_kexec.c:352:9: error: unknown type name 'Elf_Rela'; did you mean 'Elf64_Rela'?
-     352 |         Elf_Rela *relas;
-         |         ^~~~~~~~
-         |         Elf64_Rela
-   In file included from include/linux/elf.h:7,
-                    from arch/riscv/kernel/elf_kexec.c:15:
->> arch/riscv/kernel/elf_kexec.c:370:44: error: request for member 'r_info' in something not a structure or union
-     370 |                 sym += ELF64_R_SYM(relas[i].r_info);
-         |                                            ^
-   include/uapi/linux/elf.h:163:43: note: in definition of macro 'ELF64_R_SYM'
-     163 | #define ELF64_R_SYM(i)                  ((i) >> 32)
-         |                                           ^
->> arch/riscv/kernel/elf_kexec.c:379:32: error: request for member 'r_offset' in something not a structure or union
-     379 |                 loc += relas[i].r_offset;
-         |                                ^
->> arch/riscv/kernel/elf_kexec.c:392:32: error: request for member 'r_addend' in something not a structure or union
-     392 |                 val += relas[i].r_addend;
-         |                                ^
-   arch/riscv/kernel/elf_kexec.c:394:51: error: request for member 'r_offset' in something not a structure or union
-     394 |                 addr = section->sh_addr + relas[i].r_offset;
-         |                                                   ^
-   In file included from include/linux/elf.h:7,
-                    from arch/riscv/kernel/elf_kexec.c:15:
-   arch/riscv/kernel/elf_kexec.c:396:47: error: request for member 'r_info' in something not a structure or union
-     396 |                 r_type = ELF64_R_TYPE(relas[i].r_info);
-         |                                               ^
-   include/uapi/linux/elf.h:164:43: note: in definition of macro 'ELF64_R_TYPE'
-     164 | #define ELF64_R_TYPE(i)                 ((i) & 0xffffffff)
-         |                                           ^
-
-
-vim +352 arch/riscv/kernel/elf_kexec.c
-
-   318	
-   319	#define ENCODE_ITYPE_IMM(x) \
-   320		(RV_X(x, 0, 12) << 20)
-   321	#define ENCODE_BTYPE_IMM(x) \
-   322		((RV_X(x, 1, 4) << 8) | (RV_X(x, 5, 6) << 25) | \
-   323		(RV_X(x, 11, 1) << 7) | (RV_X(x, 12, 1) << 31))
-   324	#define ENCODE_UTYPE_IMM(x) \
-   325		(RV_X(x, 12, 20) << 12)
-   326	#define ENCODE_JTYPE_IMM(x) \
-   327		((RV_X(x, 1, 10) << 21) | (RV_X(x, 11, 1) << 20) | \
-   328		(RV_X(x, 12, 8) << 12) | (RV_X(x, 20, 1) << 31))
-   329	#define ENCODE_CBTYPE_IMM(x) \
-   330		((RV_X(x, 1, 2) << 3) | (RV_X(x, 3, 2) << 10) | (RV_X(x, 5, 1) << 2) | \
-   331		(RV_X(x, 6, 2) << 5) | (RV_X(x, 8, 1) << 12))
-   332	#define ENCODE_CJTYPE_IMM(x) \
-   333		((RV_X(x, 1, 3) << 3) | (RV_X(x, 4, 1) << 11) | (RV_X(x, 5, 1) << 2) | \
-   334		(RV_X(x, 6, 1) << 7) | (RV_X(x, 7, 1) << 6) | (RV_X(x, 8, 2) << 9) | \
-   335		(RV_X(x, 10, 1) << 8) | (RV_X(x, 11, 1) << 12))
-   336	#define ENCODE_UJTYPE_IMM(x) \
-   337		(ENCODE_UTYPE_IMM(RISCV_CONST_HIGH_PART(x)) | \
-   338		(ENCODE_ITYPE_IMM(RISCV_CONST_LOW_PART(x)) << 32))
-   339	#define ENCODE_UITYPE_IMM(x) \
-   340		(ENCODE_UTYPE_IMM(x) | (ENCODE_ITYPE_IMM(x) << 32))
-   341	
-   342	#define CLEAN_IMM(type, x) \
-   343		((~ENCODE_##type##_IMM((uint64_t)(-1))) & (x))
-   344	
-   345	int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
-   346					     Elf_Shdr *section,
-   347					     const Elf_Shdr *relsec,
-   348					     const Elf_Shdr *symtab)
-   349	{
-   350		const char *strtab, *name, *shstrtab;
-   351		const Elf_Shdr *sechdrs;
- > 352		Elf_Rela *relas;
-   353		int i, r_type;
-   354	
-   355		/* String & section header string table */
-   356		sechdrs = (void *)pi->ehdr + pi->ehdr->e_shoff;
-   357		strtab = (char *)pi->ehdr + sechdrs[symtab->sh_link].sh_offset;
-   358		shstrtab = (char *)pi->ehdr + sechdrs[pi->ehdr->e_shstrndx].sh_offset;
-   359	
-   360		relas = (void *)pi->ehdr + relsec->sh_offset;
-   361	
-   362		for (i = 0; i < relsec->sh_size / sizeof(*relas); i++) {
-   363			const Elf_Sym *sym;	/* symbol to relocate */
-   364			unsigned long addr;	/* final location after relocation */
-   365			unsigned long val;	/* relocated symbol value */
-   366			unsigned long sec_base;	/* relocated symbol value */
-   367			void *loc;		/* tmp location to modify */
-   368	
-   369			sym = (void *)pi->ehdr + symtab->sh_offset;
- > 370			sym += ELF64_R_SYM(relas[i].r_info);
-   371	
-   372			if (sym->st_name)
-   373				name = strtab + sym->st_name;
-   374			else
-   375				name = shstrtab + sechdrs[sym->st_shndx].sh_name;
-   376	
-   377			loc = pi->purgatory_buf;
-   378			loc += section->sh_offset;
- > 379			loc += relas[i].r_offset;
-   380	
-   381			if (sym->st_shndx == SHN_ABS)
-   382				sec_base = 0;
-   383			else if (sym->st_shndx >= pi->ehdr->e_shnum) {
-   384				pr_err("Invalid section %d for symbol %s\n",
-   385				       sym->st_shndx, name);
-   386				return -ENOEXEC;
-   387			} else
-   388				sec_base = pi->sechdrs[sym->st_shndx].sh_addr;
-   389	
-   390			val = sym->st_value;
-   391			val += sec_base;
- > 392			val += relas[i].r_addend;
-   393	
-   394			addr = section->sh_addr + relas[i].r_offset;
-   395	
-   396			r_type = ELF64_R_TYPE(relas[i].r_info);
-   397	
-   398			switch (r_type) {
-   399			case R_RISCV_BRANCH:
-   400				*(u32 *)loc = CLEAN_IMM(BTYPE, *(u32 *)loc) |
-   401					 ENCODE_BTYPE_IMM(val - addr);
-   402				break;
-   403			case R_RISCV_JAL:
-   404				*(u32 *)loc = CLEAN_IMM(JTYPE, *(u32 *)loc) |
-   405					 ENCODE_JTYPE_IMM(val - addr);
-   406				break;
-   407			/*
-   408			 * With no R_RISCV_PCREL_LO12_S, R_RISCV_PCREL_LO12_I
-   409			 * sym is expected to be next to R_RISCV_PCREL_HI20
-   410			 * in purgatory relsec. Handle it like R_RISCV_CALL
-   411			 * sym, instead of searching the whole relsec.
-   412			 */
-   413			case R_RISCV_PCREL_HI20:
-   414			case R_RISCV_CALL:
-   415				*(u64 *)loc = CLEAN_IMM(UITYPE, *(u64 *)loc) |
-   416					 ENCODE_UJTYPE_IMM(val - addr);
-   417				break;
-   418			case R_RISCV_RVC_BRANCH:
-   419				*(u32 *)loc = CLEAN_IMM(CBTYPE, *(u32 *)loc) |
-   420					 ENCODE_CBTYPE_IMM(val - addr);
-   421				break;
-   422			case R_RISCV_RVC_JUMP:
-   423				*(u32 *)loc = CLEAN_IMM(CJTYPE, *(u32 *)loc) |
-   424					 ENCODE_CJTYPE_IMM(val - addr);
-   425				break;
-   426			case R_RISCV_ADD32:
-   427				*(u32 *)loc += val;
-   428				break;
-   429			case R_RISCV_SUB32:
-   430				*(u32 *)loc -= val;
-   431				break;
-   432			/* It has been applied by R_RISCV_PCREL_HI20 sym */
-   433			case R_RISCV_PCREL_LO12_I:
-   434			case R_RISCV_ALIGN:
-   435			case R_RISCV_RELAX:
-   436				break;
-   437			default:
-   438				pr_err("Unknown rela relocation: %d\n", r_type);
-   439				return -ENOEXEC;
-   440			}
-   441		}
-   442		return 0;
-   443	}
-   444	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On 6/22/2022 9:31 AM, Vidya Sagar wrote:
+> Platforms that cannot support their core initialization without the
+> reference clock from the host, implement the feature 'core_init_notifier'
+> to indicate the DesignWare sub-system about when their core is getting
+> initialized. Any accesses to the core (Ex:- DBI) would result in system
+> hang in such systems (Ex:- tegra194). This patch moves any access to the
+> core to dw_pcie_ep_init_complete() API which is effectively called only
+> after the core initialization.
+> 
+> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+> ---
+>   .../pci/controller/dwc/pcie-designware-ep.c   | 88 +++++++++++--------
+>   1 file changed, 49 insertions(+), 39 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> index 0eda8236c125..9feec720175f 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-ep.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> @@ -639,9 +639,14 @@ static unsigned int dw_pcie_ep_find_ext_capability(struct dw_pcie *pci, int cap)
+>   int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
+>   {
+>   	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
+> +	struct dw_pcie_ep_func *ep_func;
+> +	struct device *dev = pci->dev;
+> +	struct pci_epc *epc = ep->epc;
+>   	unsigned int offset;
+>   	unsigned int nbars;
+>   	u8 hdr_type;
+> +	u8 func_no;
+> +	void *addr;
+>   	u32 reg;
+>   	int i;
+>   
+> @@ -654,6 +659,42 @@ int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
+>   		return -EIO;
+>   	}
+>   
+> +	dw_pcie_iatu_detect(pci);
+> +
+> +	ep->ib_window_map = devm_kcalloc(dev,
+> +					 BITS_TO_LONGS(pci->num_ib_windows),
+> +					 sizeof(long),
+> +					 GFP_KERNEL);
+> +	if (!ep->ib_window_map)
+> +		return -ENOMEM;
+> +
+> +	ep->ob_window_map = devm_kcalloc(dev,
+> +					 BITS_TO_LONGS(pci->num_ob_windows),
+> +					 sizeof(long),
+> +					 GFP_KERNEL);
+> +	if (!ep->ob_window_map)
+> +		return -ENOMEM;
+> +
+> +	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
+> +			    GFP_KERNEL);
+> +	if (!addr)
+> +		return -ENOMEM;
+> +	ep->outbound_addr = addr;
+> +
+> +	for (func_no = 0; func_no < epc->max_functions; func_no++) {
+> +		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
+> +		if (!ep_func)
+> +			return -ENOMEM;
+> +
+> +		ep_func->func_no = func_no;
+> +		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
+> +							      PCI_CAP_ID_MSI);
+> +		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
+> +							       PCI_CAP_ID_MSIX);
+> +
+> +		list_add_tail(&ep_func->list, &ep->func_list);
+> +	}
+> +
+>   	offset = dw_pcie_ep_find_ext_capability(pci, PCI_EXT_CAP_ID_REBAR);
+>   
+>   	dw_pcie_dbi_ro_wr_en(pci);
+> @@ -677,8 +718,6 @@ EXPORT_SYMBOL_GPL(dw_pcie_ep_init_complete);
+>   int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+>   {
+>   	int ret;
+> -	void *addr;
+> -	u8 func_no;
+>   	struct resource *res;
+>   	struct pci_epc *epc;
+>   	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
+> @@ -686,7 +725,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+>   	struct platform_device *pdev = to_platform_device(dev);
+>   	struct device_node *np = dev->of_node;
+>   	const struct pci_epc_features *epc_features;
+> -	struct dw_pcie_ep_func *ep_func;
+>   
+>   	INIT_LIST_HEAD(&ep->func_list);
+>   
+> @@ -708,8 +746,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+>   		}
+>   	}
+>   
+> -	dw_pcie_iatu_detect(pci);
+> -
+>   	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
+>   	if (!res)
+>   		return -EINVAL;
+> @@ -717,26 +753,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+>   	ep->phys_base = res->start;
+>   	ep->addr_size = resource_size(res);
+>   
+> -	ep->ib_window_map = devm_kcalloc(dev,
+> -					 BITS_TO_LONGS(pci->num_ib_windows),
+> -					 sizeof(long),
+> -					 GFP_KERNEL);
+> -	if (!ep->ib_window_map)
+> -		return -ENOMEM;
+> -
+> -	ep->ob_window_map = devm_kcalloc(dev,
+> -					 BITS_TO_LONGS(pci->num_ob_windows),
+> -					 sizeof(long),
+> -					 GFP_KERNEL);
+> -	if (!ep->ob_window_map)
+> -		return -ENOMEM;
+> -
+> -	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
+> -			    GFP_KERNEL);
+> -	if (!addr)
+> -		return -ENOMEM;
+> -	ep->outbound_addr = addr;
+> -
+>   	if (pci->link_gen < 1)
+>   		pci->link_gen = of_pci_get_max_link_speed(np);
+>   
+> @@ -753,20 +769,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+>   	if (ret < 0)
+>   		epc->max_functions = 1;
+>   
+> -	for (func_no = 0; func_no < epc->max_functions; func_no++) {
+> -		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
+> -		if (!ep_func)
+> -			return -ENOMEM;
+> -
+> -		ep_func->func_no = func_no;
+> -		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
+> -							      PCI_CAP_ID_MSI);
+> -		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
+> -							       PCI_CAP_ID_MSIX);
+> -
+> -		list_add_tail(&ep_func->list, &ep->func_list);
+> -	}
+> -
+>   	if (ep->ops->ep_init)
+>   		ep->ops->ep_init(ep);
+>   
+> @@ -790,6 +792,14 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+>   			return 0;
+>   	}
+>   
+> +	/*
+> +	 * NOTE:- Avoid accessing the hardware (Ex:- DBI space) before this
+> +	 * step as platforms that implement 'core_init_notifier' feature may
+> +	 * not have the hardware ready (i.e. core initialized) for access
+> +	 * (Ex: tegra194). Any hardware access on such platforms result
+> +	 * in system hard hang.
+> +	 */
+> +
+>   	return dw_pcie_ep_init_complete(ep);
+>   }
+>   EXPORT_SYMBOL_GPL(dw_pcie_ep_init);
+> 
