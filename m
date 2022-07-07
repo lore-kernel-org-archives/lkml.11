@@ -2,74 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 515A3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16088C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 09:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbiGGJnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 05:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        id S235156AbiGGJnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 05:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233783AbiGGJnC (ORCPT
+        with ESMTP id S233783AbiGGJnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 05:43:02 -0400
-X-Greylist: delayed 950 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Jul 2022 02:43:01 PDT
-Received: from baidu.com (mx20.baidu.com [111.202.115.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1B244D144
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 02:43:01 -0700 (PDT)
-Received: from BJHW-Mail-Ex06.internal.baidu.com (unknown [10.127.64.16])
-        by Forcepoint Email with ESMTPS id E9EBBC9604B2142022AB;
-        Thu,  7 Jul 2022 17:27:08 +0800 (CST)
-Received: from bjkjy-mail-ex25.internal.baidu.com (172.31.50.41) by
- BJHW-Mail-Ex06.internal.baidu.com (10.127.64.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Thu, 7 Jul 2022 17:27:10 +0800
-Received: from BC-Mail-Ex25.internal.baidu.com (172.31.51.19) by
- bjkjy-mail-ex25.internal.baidu.com (172.31.50.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.18; Thu, 7 Jul 2022 17:27:10 +0800
-Received: from BC-Mail-Ex25.internal.baidu.com ([172.31.51.19]) by
- BC-Mail-Ex25.internal.baidu.com ([172.31.51.19]) with mapi id 15.01.2308.020;
- Thu, 7 Jul 2022 17:27:10 +0800
-From:   "Wang,Guangju" <wangguangju@baidu.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "wanpengli@tencent.com" <wanpengli@tencent.com>,
-        "bp@alien8.de" <bp@alien8.de>, "joro@8bytes.org" <joro@8bytes.org>,
-        "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBLVk06IHg4NjogQWRkIEVPSSBleGl0IGJpdG1hcCBo?=
- =?gb2312?Q?andlers_for_Hyper-V_SynIC_vectors?=
-Thread-Topic: [PATCH] KVM: x86: Add EOI exit bitmap handlers for Hyper-V SynIC
- vectors
-Thread-Index: AQHYkEqBPHzJhkwNOk28KoTifs6bBK1yD/EAgACVoCA=
-Date:   Thu, 7 Jul 2022 09:27:10 +0000
-Message-ID: <4ba5a5a28a284f379b0f7832e20d1458@baidu.com>
-References: <20220705083732.168-1-wangguangju@baidu.com>
- <87v8s9qqen.fsf@redhat.com>
-In-Reply-To: <87v8s9qqen.fsf@redhat.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.192.211]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        Thu, 7 Jul 2022 05:43:07 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C2A45070;
+        Thu,  7 Jul 2022 02:43:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1657186985; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=i8p03/aknxZm4ISCg5osm/QCfwD06OLWvg98PIGVA6k=;
+        b=4SIGlYDYz6ZeZwMrdFwcHjdodvrTphUWQoqLzkb/6LkauADFI0vWu+8mpxaajfTFhrYj87
+        UHht/fC++I9qD2m9Mw2oNxWMBu2R3rOFRIB8frxKvS5vDhiJiRJAgBjkfneTYy4BzHYz+t
+        BaW4ijYk24naRuCXPWWhsdjRcMj/ph4=
+Date:   Thu, 07 Jul 2022 10:42:55 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 08/11] ASoC: jz4740-i2s: Align macro values and sort
+ includes
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, linux-mips@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Message-Id: <JN9NER.N2JY086JY5VK2@crapouillou.net>
+In-Reply-To: <20220706211330.120198-9-aidanmacdonald.0x0@gmail.com>
+References: <20220706211330.120198-1-aidanmacdonald.0x0@gmail.com>
+        <20220706211330.120198-9-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBUaGlzIHdob2xlIHBhcnQ6DQo+DQo+IAlpZiAodG9faHZfdmNwdShhcGljLT52Y3B1KSAmJg0K
-PgkgICAgdGVzdF9iaXQodmVjdG9yLCB0b19odl9zeW5pYyhhcGljLT52Y3B1KS0+dmVjX2JpdG1h
-cCkpDQo+CQlrdm1faHZfc3luaWNfc2VuZF9lb2koYXBpYy0+dmNwdSwgdmVjdG9yKTsNCj4NCj4J
-a3ZtX2lvYXBpY19zZW5kX2VvaShhcGljLCB2ZWN0b3IpOw0KPglrdm1fbWFrZV9yZXF1ZXN0KEtW
-TV9SRVFfRVZFTlQsIGFwaWMtPnZjcHUpOw0KDQo+IGNvdWxkIGJlIHNwbGl0IGludG8gYW4gaW5s
-aW5lIGZ1bmN0aW9uLCBzb21ldGhpbmcgbGlrZSAoY29tcGxldGVseQ0KPiB1bnRlc3RlZCk6DQoN
-ClRoYW5rIHlvdSwgSSB3aWxsIG1vZGlmeSBhbmQgdGVzdCBpdCBhbmQgdGhlbiBzZW5kIGEgbmV3
-IHBhdGNoLg0KDQotLQ0KV2FuZw0K
+
+
+Le mer., juil. 6 2022 at 22:13:27 +0100, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> Some purely cosmetic changes: line up all the macro values to
+> make things easier to read and sort the includes alphabetically.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+
+Acked-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
+> ---
+>  sound/soc/jz4740/jz4740-i2s.c | 66=20
+> +++++++++++++++++------------------
+>  1 file changed, 32 insertions(+), 34 deletions(-)
+>=20
+> diff --git a/sound/soc/jz4740/jz4740-i2s.c=20
+> b/sound/soc/jz4740/jz4740-i2s.c
+> index b8d2723c5f90..3a21ee9d34d1 100644
+> --- a/sound/soc/jz4740/jz4740-i2s.c
+> +++ b/sound/soc/jz4740/jz4740-i2s.c
+> @@ -4,6 +4,9 @@
+>   */
+>=20
+>  #include <linux/bitfield.h>
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/init.h>
+>  #include <linux/io.h>
+>  #include <linux/kernel.h>
+> @@ -13,11 +16,6 @@
+>  #include <linux/regmap.h>
+>  #include <linux/slab.h>
+>=20
+> -#include <linux/clk.h>
+> -#include <linux/delay.h>
+> -
+> -#include <linux/dma-mapping.h>
+> -
+>  #include <sound/core.h>
+>  #include <sound/pcm.h>
+>  #include <sound/pcm_params.h>
+> @@ -35,36 +33,36 @@
+>  #define JZ_REG_AIC_CLK_DIV	0x30
+>  #define JZ_REG_AIC_FIFO		0x34
+>=20
+> -#define JZ_AIC_CONF_OVERFLOW_PLAY_LAST BIT(6)
+> -#define JZ_AIC_CONF_INTERNAL_CODEC BIT(5)
+> -#define JZ_AIC_CONF_I2S BIT(4)
+> -#define JZ_AIC_CONF_RESET BIT(3)
+> -#define JZ_AIC_CONF_BIT_CLK_MASTER BIT(2)
+> -#define JZ_AIC_CONF_SYNC_CLK_MASTER BIT(1)
+> -#define JZ_AIC_CONF_ENABLE BIT(0)
+> -
+> -#define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE GENMASK(21, 19)
+> -#define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE GENMASK(18, 16)
+> -#define JZ_AIC_CTRL_ENABLE_RX_DMA BIT(15)
+> -#define JZ_AIC_CTRL_ENABLE_TX_DMA BIT(14)
+> -#define JZ_AIC_CTRL_MONO_TO_STEREO BIT(11)
+> -#define JZ_AIC_CTRL_SWITCH_ENDIANNESS BIT(10)
+> -#define JZ_AIC_CTRL_SIGNED_TO_UNSIGNED BIT(9)
+> +#define JZ_AIC_CONF_OVERFLOW_PLAY_LAST	BIT(6)
+> +#define JZ_AIC_CONF_INTERNAL_CODEC	BIT(5)
+> +#define JZ_AIC_CONF_I2S			BIT(4)
+> +#define JZ_AIC_CONF_RESET		BIT(3)
+> +#define JZ_AIC_CONF_BIT_CLK_MASTER	BIT(2)
+> +#define JZ_AIC_CONF_SYNC_CLK_MASTER	BIT(1)
+> +#define JZ_AIC_CONF_ENABLE		BIT(0)
+> +
+> +#define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE	GENMASK(21, 19)
+> +#define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE	GENMASK(18, 16)
+> +#define JZ_AIC_CTRL_ENABLE_RX_DMA	BIT(15)
+> +#define JZ_AIC_CTRL_ENABLE_TX_DMA	BIT(14)
+> +#define JZ_AIC_CTRL_MONO_TO_STEREO	BIT(11)
+> +#define JZ_AIC_CTRL_SWITCH_ENDIANNESS	BIT(10)
+> +#define JZ_AIC_CTRL_SIGNED_TO_UNSIGNED	BIT(9)
+>  #define JZ_AIC_CTRL_FLUSH		BIT(8)
+> -#define JZ_AIC_CTRL_ENABLE_ROR_INT BIT(6)
+> -#define JZ_AIC_CTRL_ENABLE_TUR_INT BIT(5)
+> -#define JZ_AIC_CTRL_ENABLE_RFS_INT BIT(4)
+> -#define JZ_AIC_CTRL_ENABLE_TFS_INT BIT(3)
+> -#define JZ_AIC_CTRL_ENABLE_LOOPBACK BIT(2)
+> -#define JZ_AIC_CTRL_ENABLE_PLAYBACK BIT(1)
+> -#define JZ_AIC_CTRL_ENABLE_CAPTURE BIT(0)
+> -
+> -#define JZ_AIC_I2S_FMT_DISABLE_BIT_CLK BIT(12)
+> -#define JZ_AIC_I2S_FMT_DISABLE_BIT_ICLK BIT(13)
+> -#define JZ_AIC_I2S_FMT_ENABLE_SYS_CLK BIT(4)
+> -#define JZ_AIC_I2S_FMT_MSB BIT(0)
+> -
+> -#define JZ_AIC_I2S_STATUS_BUSY BIT(2)
+> +#define JZ_AIC_CTRL_ENABLE_ROR_INT	BIT(6)
+> +#define JZ_AIC_CTRL_ENABLE_TUR_INT	BIT(5)
+> +#define JZ_AIC_CTRL_ENABLE_RFS_INT	BIT(4)
+> +#define JZ_AIC_CTRL_ENABLE_TFS_INT	BIT(3)
+> +#define JZ_AIC_CTRL_ENABLE_LOOPBACK	BIT(2)
+> +#define JZ_AIC_CTRL_ENABLE_PLAYBACK	BIT(1)
+> +#define JZ_AIC_CTRL_ENABLE_CAPTURE	BIT(0)
+> +
+> +#define JZ_AIC_I2S_FMT_DISABLE_BIT_CLK	BIT(12)
+> +#define JZ_AIC_I2S_FMT_DISABLE_BIT_ICLK	BIT(13)
+> +#define JZ_AIC_I2S_FMT_ENABLE_SYS_CLK	BIT(4)
+> +#define JZ_AIC_I2S_FMT_MSB		BIT(0)
+> +
+> +#define JZ_AIC_I2S_STATUS_BUSY		BIT(2)
+>=20
+>  struct i2s_soc_info {
+>  	struct snd_soc_dai_driver *dai;
+> --
+> 2.35.1
+>=20
+
+
