@@ -2,97 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D71C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2BCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 13:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235991AbiGGNhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 09:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
+        id S236006AbiGGNig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 09:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235519AbiGGNhu (ORCPT
+        with ESMTP id S236008AbiGGNic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 09:37:50 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99741EAEF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:37:49 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id g1so15546957edb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 06:37:49 -0700 (PDT)
+        Thu, 7 Jul 2022 09:38:32 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13BABE05
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 06:38:30 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id y141so19422258pfb.7
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 06:38:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=IfZQ5gf6I0wnqhKd/NWryvEg+xuPTzb9q9RJYF/x4hI=;
-        b=DR1QzbDxXP/SdV+7VElfFmnVdNSMGD70rpBpE8Ki4gmT7lATSzJZCToOknrKmCO+CX
-         PyrVLj0sg8UqEHYMv0Z0WMABq3ppLWO2JP6V3UmlCDxCV2Dppnf4iSf6kPKrcfLMdvWB
-         SJ8WPoH3qKlplUmD4IHLgWRME7l2fjo+TJLHK0AtdahGX7CwwmshrFAIcHCR1GbsoAmE
-         zebSO7WJr8ztBjJUVtkiTRngXqNvehcH4D03qonP6flUF5tRAVaP5ayjeZVprwtamWco
-         r6f8UGCMVpj7KN43eceGJjuecix5jiU22/qzRiowwl0ACmk/WEtKFKElpFuwU7//31JT
-         lb+A==
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LlviVCXS0LxCL+bJnFAHhOkhgq8+v6fBshCzSesvNtw=;
+        b=oH9YyaoyUyKsvbZpmdcgvnpmbKNHrqgce3SbHbSYwKi3+h3pQeSsVnm6ysuQ8qOfde
+         rkQHGHOndOVAcKf8VltPjUbp/I5Eyx3oIrnxNPXpKTnue2+/RH3kWAssInK/hUxSEHcR
+         uokKs+ggA1xJOiRO8Kyt1vPsxar2OsHhcp0Okp8sRfGQRXHiX0epJsjL97a87R0vm6tz
+         zPb+2KRq3MXn0prNxDg0ROoBrjgLHRNCAkVZKScK4qDVUFU/DR4I3czqG5zV9I2VpKV1
+         HGUojTOtPPnQej3Pbbljm0UvQXgVyEX7QdEnaUmAHctfz31nFppFMXyaCcP38sPFTlwK
+         Ft6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=IfZQ5gf6I0wnqhKd/NWryvEg+xuPTzb9q9RJYF/x4hI=;
-        b=fraQx+YgfGyMSgHHZxmvjt6JdVNwWvLrTJssLs41g/K58r2sSHtc13n+6yGmhfoiIf
-         qUhmMHSusfgi/vK2e5EBb3JlpsNqpGOKat+TvAb3VCwKt4hBDIyNxUVYJqzNC2YvHVYB
-         YmUit/AexOPzecsn1we15dLA6AQ+3THfG2Bve57VA6NV/Zfjigxo1wOtCU6+9TEI3nmq
-         4uXF4SCt+K+Vit3RnABTR6/6DRf3Q0fCn4e3rDfEjHIWuLDAIRgRaaVEeoQzC93924CY
-         gQGGvE8wzNWiq1hVQK9BMDNqhE4StK1Mbo4fx87+0DFTdgt2Cy4r37zJ4/pdZHBWuykR
-         KCiQ==
-X-Gm-Message-State: AJIora8tuoRgMph7PmhRcmvPLMd6DQbWbYmwYETrc7iZuev+0iWChq6D
-        MX7vl5a3mu98xwftTqK69gs=
-X-Google-Smtp-Source: AGRyM1stGUOKzLD1ycd4kXtJRDhMWSm9EKgOzNeHZ46NGDu8hpWmb7Mn7tYGrWMga94c8P9YklK2zw==
-X-Received: by 2002:aa7:cd91:0:b0:438:33a1:d5aa with SMTP id x17-20020aa7cd91000000b0043833a1d5aamr56730529edv.157.1657201068450;
-        Thu, 07 Jul 2022 06:37:48 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c092:600::2:338f])
-        by smtp.gmail.com with ESMTPSA id m11-20020a50ef0b000000b0043a6c9e50f4sm8904918eds.29.2022.07.07.06.37.47
+        bh=LlviVCXS0LxCL+bJnFAHhOkhgq8+v6fBshCzSesvNtw=;
+        b=7i2SPqz/Pknaqf8nFDR9ZRaVczTpy2P4VCKqWC6hMiBe+F955lYcWay0ikvw4EUDLz
+         9Vo9o7LAm99yEtckXynEQSlNCKszHYi+FXuN6JQirp8ntI3kR5Ob44/HP62n8yWIZOUx
+         K/ZfqgK8VzldCt0NIdH0+OTvwZNb3U2LjbW4x8x76YZvcvJBEOMdvLqsj2aC+Y+mYLmT
+         gWi4oXt+DNlq2ggOORhtR4dduKhW0+zzjGYeXayQlqdkAeUHXWoZJ8xKlKpuEbOWPvIp
+         hE4uLFijH5sRxZV5pLlGzLXi08xIu12+rOwRHq75f/mz4PfYlV82bChUnv6NcBnlKnJB
+         cU6w==
+X-Gm-Message-State: AJIora9L0SClT9aSnlesoj7v+usyFvtFlVgSQ5rs6wSgE7xUut0pZBEN
+        Qnq/kY8/TetyY6Rj0xFvc6i0mA==
+X-Google-Smtp-Source: AGRyM1stU+QWyhSOHZT4PMsgUj7J2gqqMP3AKDLS5nWJRDvNbdTETCmhrTOs/U6K7gXJaF+U8nVRCw==
+X-Received: by 2002:a17:903:3247:b0:16b:e386:dcc9 with SMTP id ji7-20020a170903324700b0016be386dcc9mr22830868plb.54.1657201110434;
+        Thu, 07 Jul 2022 06:38:30 -0700 (PDT)
+Received: from [10.70.252.135] ([139.177.225.229])
+        by smtp.gmail.com with ESMTPSA id l14-20020a170903244e00b0016c18f479d5sm999371pls.19.2022.07.07.06.38.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 06:37:47 -0700 (PDT)
-Message-ID: <2041c8d8-e57d-01bf-1378-3ad2c72f69d6@gmail.com>
-Date:   Thu, 7 Jul 2022 14:37:42 +0100
+        Thu, 07 Jul 2022 06:38:29 -0700 (PDT)
+Message-ID: <42bfd82c-b3fb-c942-d6f2-ae5adec90a26@bytedance.com>
+Date:   Thu, 7 Jul 2022 21:38:20 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [syzbot] KASAN: use-after-free Read in pty_close
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0
+Subject: Re: [RFC PATCH 2/2] arm64: support HAVE_IRQ_EXIT_ON_IRQ_STACK
 Content-Language: en-US
-To:     syzbot <syzbot+49950ba66096b1f0209b@syzkaller.appspotmail.com>,
-        axboe@kernel.dk, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <00000000000045b69505e33720b0@google.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <00000000000045b69505e33720b0@google.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220707110511.52129-1-zhengqi.arch@bytedance.com>
+ <20220707110511.52129-3-zhengqi.arch@bytedance.com>
+ <CAK8P3a1-rL391dp33D5r+SgQ+L0u7Neta_-DZoZL=+c1zPtNQg@mail.gmail.com>
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+In-Reply-To: <CAK8P3a1-rL391dp33D5r+SgQ+L0u7Neta_-DZoZL=+c1zPtNQg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/7/22 14:33, syzbot wrote:
-> Hello,
-> 
-> syzbot tried to test the proposed patch but the build/boot failed:
-
-#syz test: https://github.com/isilence/linux.git poll-syz
 
 
-> failed to checkout kernel repo git@github.com:isilence/linux.git/poll-syz: failed to run ["git" "fetch" "--force" "eab646780d8603fd6348e6bccafebcb1c0ddc5bc" "poll-syz"]: exit status 128
-> Host key verification failed.
-> fatal: Could not read from remote repository.
+On 2022/7/7 20:49, Arnd Bergmann wrote:
+> On Thu, Jul 7, 2022 at 1:05 PM Qi Zheng <zhengqi.arch@bytedance.com> wrote:
+>>
+>> Since softirqs are handled on the per-CPU IRQ stack,
+>> let's support HAVE_IRQ_EXIT_ON_IRQ_STACK which causes
+>> the core code to invoke __do_softirq() directly without
+>> going through do_softirq_own_stack().
+>>
+>> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
 > 
-> Please make sure you have the correct access rights
-> and the repository exists.
+> I think the idea is right, but the extra function pointer adds more complexity
+> than necessary:
 > 
+>>   static __always_inline void __el1_irq(struct pt_regs *regs,
+>>                                        void (*handler)(struct pt_regs *))
+>>   {
+>>          enter_from_kernel_mode(regs);
+>>
+>> -       irq_enter_rcu();
+>> -       do_interrupt_handler(regs, handler);
+>> -       irq_exit_rcu();
+>> +       do_interrupt_handler(regs, handler, irq_handler);
+>>
+>>          arm64_preempt_schedule_irq();
+>>
+>> @@ -699,9 +711,7 @@ static void noinstr el0_interrupt(struct pt_regs *regs,
+>>          if (regs->pc & BIT(55))
+>>                  arm64_apply_bp_hardening();
+>>
+>> -       irq_enter_rcu();
+>> -       do_interrupt_handler(regs, handler);
+>> -       irq_exit_rcu();
+>> +       do_interrupt_handler(regs, handler, irq_handler);
+>>
+>>          exit_to_user_mode(regs);
+>>   }
 > 
-> 
-> Tested on:
-> 
-> commit:         [unknown
-> git tree:       git@github.com:isilence/linux.git poll-syz
-> dashboard link: https://syzkaller.appspot.com/bug?extid=49950ba66096b1f0209b
-> compiler:
-> 
-> Note: no patches were applied.
+> Would it be possible to instead pull out the call_on_irq_stack() so these
+> two functions are instead called on the IRQ stack already?
 
--- 
-Pavel Begunkov
+Hi,
+
+Do you mean to modify call_on_irq_stack()?
+
+I have tried doing a conditional jump inside call_on_irq_stack() like
+this:
+
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -888,13 +888,22 @@ SYM_FUNC_START(call_on_irq_stack)
+
+         /* Move to the new stack and call the function there */
+         mov     sp, x16
+-       blr     x1
++
++       cmp     x2, #1
++       b.eq    99f
++
++       blr     x1
++       b       999f
++
++99:    bl      irq_enter_rcu
++       blr     x1
++       bl      irq_exit_rcu
+
+         /*
+          * Restore the SP from the FP, and restore the FP and LR from 
+the frame
+          * record.
+          */
+-       mov     sp, x29
++999:   mov     sp, x29
+         ldp     x29, x30, [sp], #16
+  #ifdef CONFIG_SHADOW_CALL_STACK
+         ldp     scs_sp, xzr, [sp], #16
+
+But this also requires a new parameter in do_interrupt_handler.
+
+I also considered implementing call_on_irq_stack() for nmi and irq
+separately, but later think it's unnecessary.
+
+> 
+>          Arnd
+
+Thanks,
+Qi
