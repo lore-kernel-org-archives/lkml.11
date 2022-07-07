@@ -2,217 +2,379 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 992FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 14:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235507AbiGGOLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
+        id S235576AbiGGOLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 10:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232153AbiGGOLP (ORCPT
+        with ESMTP id S232153AbiGGOLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 10:11:15 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCB12CC91;
-        Thu,  7 Jul 2022 07:11:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZRBlOfhOgJCINpRQZQmnUozF3S0FpDwOicx5oI4sKxgCDOnGSGdyta5xFxUIpvN52+1jVOVjhEwwq+6025P8JAVXM/91TE9NvNTIrUAebflPuRdgCUjDd+jfRIt9UTqgeznsU/wqc6xM90bKhtEl+KVQaON4hVW26so6ArgB6YeUqX2s3Z7PW3HjP20UPTm+PqbEb+/ZDxUSS8jc0bHLw/PZr/pdJ55ZTaavO3RT8tnMBov1uANIGqRJObBNxU08Q7daEnYyHOS55DnyoDLbRnZc7t0vKsVPifor3VYuVi9UZ3XwYLfktCC2kKYwaIFmFqd4n00kp9TDo0iF+K/4nw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2wS9YhSKqnr/Cx8rIRo4kY2ud2kLU+A9+ebNtFsilDI=;
- b=d1GTeuY5ydurqNETA+hyzaoJpGtW6RxsfCTtYPP4u1yGbCRObMRY19RaXxL2RwEhA3y/ov19el+1nuS6+qkAFOwp9XXF4bfQyhAWfSUXCn5o1/ANx+kTEOMgJbQPgR2g+LEe75Gf9t0e/iI2Rf69cn60tpUb05aYsLrLtZAHZ8kK7BKZt8ybv8uyPKSIzMdoME4rd33nX3pfMn0XJHbMt6S3ii553MWqIagqlLrxCZ/GtmjCNDEgJ068HwXvgWVTXbw3cY9UlCStcA313lx/AYarAkDPWFofPihfXvtQmXjj6DHx4qBfAMQ9GxS7K6hjcv7CMw2+syPWFGkFKjy6eg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2wS9YhSKqnr/Cx8rIRo4kY2ud2kLU+A9+ebNtFsilDI=;
- b=uc+dfXpyJ3ZgDeStLp6A+3GxXVnBCfDoN6eQpT2TKsyfZLGFCBwFACpGxkBhpVUWiLUoPFLOZ1uxnl5KhgOWjmGt9Tuo/Brc50QvwthTlS2N8KvOFP8Mi54K0tLpndvUmKKZ6QWsz2Y4A8y/QtmtLAAIYS4mbv7TMOsCKihdEEz5C4OHOsKq88EPc+opGLl7spIXyxY0oj+oNbXMcYZSuUt0xiM3uHDFYdUHhhL7lsQCkt5+pB9EY3aRTwC1K46w5fP/ZUoqVjxxcmjxtF5OgBCWpv1ll/jvpuZgowWTA4qXcVHixdGu4I4dDdImEIusxjqbPlyF7oJR5HfQl8hpKw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- DM4PR12MB6544.namprd12.prod.outlook.com (2603:10b6:8:8d::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5395.15; Thu, 7 Jul 2022 14:11:13 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::b148:f3bb:5247:a55d]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::b148:f3bb:5247:a55d%2]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
- 14:11:13 +0000
-Message-ID: <3be05c10-d26a-7dec-d642-4a3c36883a54@nvidia.com>
-Date:   Thu, 7 Jul 2022 15:11:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] dmaengine: tegra: Add terminate() for Tegra234
-Content-Language: en-US
-To:     Akhil R <akhilrajeev@nvidia.com>,
-        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-References: <20220707102725.41383-1-akhilrajeev@nvidia.com>
- <20220707102725.41383-2-akhilrajeev@nvidia.com>
- <1d0826ed-97e7-9571-b5e5-9da12286a626@nvidia.com>
- <SJ1PR12MB633907810FD7D59B7BF433A6C0839@SJ1PR12MB6339.namprd12.prod.outlook.com>
-From:   Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <SJ1PR12MB633907810FD7D59B7BF433A6C0839@SJ1PR12MB6339.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM6PR10CA0051.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:209:80::28) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
+        Thu, 7 Jul 2022 10:11:41 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360102CDFB;
+        Thu,  7 Jul 2022 07:11:40 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id l68so10712416wml.3;
+        Thu, 07 Jul 2022 07:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:in-reply-to:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=0FuWotIpEAG+1OspfsddrYU25zogAWYfMl06AMUfx5Q=;
+        b=CyDdK47JTYUX7TzbebFbhCc9/NXhPr+7Ik/noNLgoluzoop/bdBiEpA+A31e4HMb5U
+         DB5rufEvZeuR++dDasva4UUaCBx0H9n4wTkX73JWq4eyQ9Yhvf234y1NFwYKeyBpx5NO
+         hicZ9QMWyYT+NM29HzxnT0p5cy3Pz2dWwPQuVDuD77mZinxFvjdsj20g9zRhn1hqoStX
+         gj4OwWTLALoRJ2xth2HybCznzCBM/9/ouXtATcmQ0QJIa3hfbwbRv1BmlVHIGqxcxSRH
+         wbN/CypQ/G2NsKvB9fVR317+ZHQl+zcnhd6hITQWnMHexmX3uZaCdWsQbwP9wUpYcyLt
+         tRHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=0FuWotIpEAG+1OspfsddrYU25zogAWYfMl06AMUfx5Q=;
+        b=Dqf5K038yPHNHY5BsWTkqaFai81WC/ffXKM0GlPdmcngNnVfNa52n1agZLSe5rQMb+
+         ksrm0TWZ12EMSLYwBU1fBmCuLku3/wBbQIqV2tHmeu65dyvLilCwKpCB6EjO0aG4744U
+         VTVGV11Z3VbGiW0aGMhcRnatVC5NS3Jxq1m7TT+TQpzpM5VVC6m1Ul5GaMJbhzBIHT8I
+         y4F5d2ojgESRz7ciLjVmkFkPvYpqv/+4suuz+UUbgrwi4R70+Y8H/HjNvdV7Wl2ml0KA
+         nHWEpQupReRay5Prj59g/99Jn/SXN//iGigfPazqIwPM2sG1elPZk9dx0xOT1hHO0K4N
+         F2Jg==
+X-Gm-Message-State: AJIora+3DvDAdUweHIr1Ux7YJSHlLM+5U5LRF3/XACg2okfSwp+alzEO
+        Zze17PN2xsnnmJ83SA+tLhE=
+X-Google-Smtp-Source: AGRyM1uksjaOXTPtcxfAxHYdRCa5yx1hL6aRj0edWh9tfQta/eARGClVpvXqebJMhCHvB97tDeUysA==
+X-Received: by 2002:a05:600c:6024:b0:3a0:4ea4:cfa4 with SMTP id az36-20020a05600c602400b003a04ea4cfa4mr4786024wmb.119.1657203098524;
+        Thu, 07 Jul 2022 07:11:38 -0700 (PDT)
+Received: from localhost (92.40.203.183.threembb.co.uk. [92.40.203.183])
+        by smtp.gmail.com with ESMTPSA id o9-20020a05600c510900b003a02c21b7easm29849438wms.11.2022.07.07.07.11.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 07:11:38 -0700 (PDT)
+References: <20220706211330.120198-1-aidanmacdonald.0x0@gmail.com>
+ <20220706211330.120198-4-aidanmacdonald.0x0@gmail.com>
+ <5TCMER.XTCEJKYW8UD9@crapouillou.net>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, linux-mips@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/11] ASoC: jz4740-i2s: Convert to regmap API
+In-reply-to: <5TCMER.XTCEJKYW8UD9@crapouillou.net>
+Date:   Thu, 07 Jul 2022 15:12:46 +0100
+Message-ID: <Gxxqlw6y9IqFtK5yae8JZEBRwuGaYApg@localhost>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c54cea85-c3ca-45c6-0b76-08da60228c61
-X-MS-TrafficTypeDiagnostic: DM4PR12MB6544:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: paYT8SwtKpXddRSpUEUxmmiMXVnaWuFVxGb6TYsxD7DQyZv7F3/5KkvBUwseWwSc/pAFyb4tEUJRctjjPM0Nh7S33b0h4NPjeLSW/fU3Eod0k6cp/Hyoz1eABS8xK29UYeagBGmf5ZxEr7pZiWQfDVDPGTfVZ1NvyCBNCVK70mAvf3MfUwm3PVLmevl9/yKsT+Z4oOE9Eae96NTghxeKIFQCzIhwwJZIHmST6i3mCO8isWeXUucJ24+2+erOMiXa4nELmUW1O0FCBCDcWBdWi3wgxRTRpzp4WRSt8nkpmy71BtZ2xhE0wv213gojlEVW5qlGnumJhZ3lmza9R9JFXd4Led2VbJkjuGKQfxuS7zmi2pawSmBdVhAEbtMxycot/vp7W6QAcXsffty/b8nCbQ2oxyIxG0MZZlNeLnjnf50U26T+sInfJAZJ12QUPqsfqJj6h0x3t9XTFwGuxdyT/AiYCEYU4OLvDg+YoZdUolf5fjwondF6aWwZKhVjoKgAxWm2B5sNbvtn08a4Ua80jcfGegGkhn82b+sleCki1vqQ9Osj0wC9pGFgZK7TGEQj6cd9/xVcaY1LKJ+83JBZGVvcIR+DNTH9kkwPphWAr1WSseAkjAVXiia1n8/KS9fgYJD+YQs10iqby1CUIvr5zGXnst+UM1v5k4gggG1bnfbxv0W7Ltln3X+YK+nCpulUKMm0tzyMhnvxNt9IFVJMpFSThkB9AYj+YTPPC3fejU2PFG0bsP7jWlaKnFWFSrVNjU5/QCcIeiJI3BkF1WKIvGmCSuA+3o4b52ECurISjuqUMQNRC8EdrvuCJSKukhyiAEuYPoIGk7/DTxNtjljN66qA5Z1P2OQu00LCxhB1V5A=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(376002)(366004)(396003)(346002)(66946007)(86362001)(38100700002)(478600001)(66476007)(66556008)(2906002)(8676002)(31696002)(6506007)(5660300002)(2616005)(53546011)(921005)(8936002)(6486002)(6666004)(55236004)(41300700001)(110136005)(316002)(83380400001)(31686004)(186003)(36756003)(26005)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ckcxdlZ5cW9FdkUwb2MwQWplenVDQUVrWUtKVWN2NUxhNm1PTDUyUkV0UlZw?=
- =?utf-8?B?U1FIV2tMM2ttL2wzYUVCVUVkSXQ5QVZmRUtxc0tRVUdYWDFWNkNFOVpPNlQr?=
- =?utf-8?B?UEJrT3JvcFVBTVNjdGFkZEk1ekFPaGVmNWxKcUQxUms4UFEyeE1nK05BUC94?=
- =?utf-8?B?OTkrdXlmZnNGQ3RRWlZ6aTU3U08wb0ttYWN3TVcxU2dPZlZmMktoa2oxMnZ0?=
- =?utf-8?B?dDE4bVhNQ1VhRlR5YzVJTWtPaEtkbHRXV0luamd1OSsxRTdQMDFlNEtHVXFi?=
- =?utf-8?B?UFFVS3NxTWJlc0o1akJ4QktDR2IvSXBoRVprWmxIajBuNmxlRm1RSDdla2lr?=
- =?utf-8?B?enpEV3VIYnk1QWg1TUEzR01pT2lJdXVSTmYwczIzaWZnVERzMXhxYWs2TXJI?=
- =?utf-8?B?L0wwbER4UTZ6Zk1UUVlNYURYejhwOHRuZmQ3aktNcXBLSzZFdXVCNEZNYUw4?=
- =?utf-8?B?K2RQaitOK1lBVG9uYlJRcTZNbEZYUzB6QTlhZ0gwSnhtYWhMa0xJT2xDVzlp?=
- =?utf-8?B?YlV5NmJwOUZXS2dCcm8yZFdIVGw3WEg4TVl4ajFKbjJFUXRtRERSdkJlNmZ6?=
- =?utf-8?B?VWl1UUYwZk1mL0R4T2Q1bDZtdmFoWFplVWpYc2xzRUVaTVZmQk5IWHZCbnN0?=
- =?utf-8?B?NmZ4a1dnTlp0WTRMR21tR3FyUU1CdWZ4cytWclNFTUtYd09vNHFaWW94OC9B?=
- =?utf-8?B?RmVPYXZXNDk0SlFPOVhhbWxhYVVCT1pTaEpoRTVCWm9VVUtPWG16emRaRlRm?=
- =?utf-8?B?cEFkTnVoOWRZalRHd2o4ZWhZU3pZNnpXNkZOZ1FYSzRhMlJEWU9UaHFzUGlz?=
- =?utf-8?B?R2c4V3BsbnRVWDRCV2dUYXhpK2pZNlA3a1hKRnRvYmRzRW16dGlBSzRpbXo4?=
- =?utf-8?B?c2ZONVA3WkJZVk9CTGxOU1c0ektTbnAvUUw1dzVXeFM4Sy9DaG5OdmpZL2RM?=
- =?utf-8?B?ZllCdjFRQjkyU1VFajBXNHdHVm9xUk5DdjFxdFA1emFnMGE2TERTQldmQmlw?=
- =?utf-8?B?V2piSWp3dE5tUjZ2SmduaHVpNHdUSjRTRWNBMEc3MXhtWnI4aEJ6Q3BGOFNj?=
- =?utf-8?B?MTMzREZJWEpyTjZkZVRPTWRoSVNlTW40OWJhOXRBOU5hcjhYR2ltQUNiVDR5?=
- =?utf-8?B?aEhucEQydTBPdFlDMG1peENhbnJxL3hqQ3JwK202L21wK2RKSUhUU25Ed0cy?=
- =?utf-8?B?c00yUmpSYXk5TzlGc2JqTjNVRFNYSVltY1VXN3B3dXYwYUtmTklEazQyU1Uz?=
- =?utf-8?B?ZFFKdmpvRzdnZjhYYllNcW9sNlltMGpMbzAwcGxKdEI0S1hwN0RhOERhb1c2?=
- =?utf-8?B?YUpTV3U3ZTZWTEtQSWFySDlZdm1EWW5nQVh3OERHY3BuYXB0N2JFb05kWHcw?=
- =?utf-8?B?RGtrUDlQMkx3RVFKaUR5dnI4b05wV3N5U0hNWnlXZjlpZXo5a09TeUYrbzhO?=
- =?utf-8?B?ZVBmNHdIMndGelZMa2s4WkxhVTFCVVU5ckFtVUxFQmtIV2pDUkYySHN3aGlx?=
- =?utf-8?B?WjErRnpkdTNJYXlJcjNjcG1OT1NBejg5TXlPWExBTDl1LzJwUWhickhJVm5x?=
- =?utf-8?B?TytYTGNRTVAvRStCZnlNK0VhcTZUMjlIcEl3cEVJMXBxRlRVNytkSWVvS1A0?=
- =?utf-8?B?VEszTEFVcDh0T25mNERZZUJKWTZTYmdISi9xNmp5VEFVVUpocWtRWFBidlBh?=
- =?utf-8?B?eXJLSDJYckVGTTc2Vnl2b2VTZVRtSkpLNTlwU3F0eWtIc09TWXJ1Rlo5bnky?=
- =?utf-8?B?TEhoa2g5N1JjN1ZoZXgzeGNzb2ZwSTJZSE8rN2N1cGwrQ1hNYndwa2Q4angw?=
- =?utf-8?B?dTBCaDVyYkxOSXAxQkpXZnZ1Uk4wTlM1d2hZSXFzR0toNWdya3E4aUF3WlR4?=
- =?utf-8?B?NFpHVkV2UCtSVXFHSmJtMy9EUWtEUGlqUDFiL21VY01kdGNUMUF4eG80TkxF?=
- =?utf-8?B?L3k1cUNHa3VaL1RZeXludUd5K3ZUOW1WVDFYYjVvYWxOQ005YmhpVExjWEc3?=
- =?utf-8?B?dFl4RTNjdVpQeWVqREM2UmZnRVJFRENYNEZaMkVQODdvbXJnQUx6R0dmbHZY?=
- =?utf-8?B?QnVmUW9sZXdkK2twR0Rrd1pyd1hZeFU3aDF6VzhsdWFKb2ZNaDJVaWpndllM?=
- =?utf-8?Q?S7k0RONtjwoz/rplowhYX0Qyb?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c54cea85-c3ca-45c6-0b76-08da60228c61
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:11:12.9483
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ED1yhyP33O94olOKxCkDzEbK60peY1e+jTKxyHzI5zOv8wYpZNj3LMtrQ2h+D60aw25xxdDY6c86SI3MLu6COw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6544
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 07/07/2022 11:47, Akhil R wrote:
->> On 07/07/2022 11:27, Akhil R wrote:
->>> In certain cases where the DMA client bus gets corrupted or if the end
->>> device ceases to send/receive data, DMA can wait indefinitely for the
->>> data to be received/sent. Attempting to terminate the transfer will
->>> put the DMA in pause flush mode and it remains there.
->>>
->>> The channel is irrecoverable once this pause times out in Tegra194 and
->>> earlier chips. Whereas, from Tegra234, it can be recovered by
->>> disabling the channel and reprograming it.
->>>
->>> Hence add a new terminate() function that ignores the outcome of
->>> dma_pause() and disables the channel.
->>>
->>> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
->>> ---
->>>    arch/arm64/boot/dts/nvidia/tegra234.dtsi |  5 +++--
->>>    drivers/dma/tegra186-gpc-dma.c           | 26 ++++++++++++++++++++++--
->>>    2 files changed, 27 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
->>> b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
->>> index cf611eff7f6b..83d1ad7d3c8c 100644
->>> --- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
->>> +++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
->>> @@ -22,8 +22,9 @@
->>>    		ranges = <0x0 0x0 0x0 0x40000000>;
->>>
->>>    		gpcdma: dma-controller@2600000 {
->>> -			compatible = "nvidia,tegra194-gpcdma",
->>> -				      "nvidia,tegra186-gpcdma";
->>> +			compatible = "nvidia,tegra234-gpcdma",
->>> +				     "nvidia,tegra194-gpcdma",
->>> +				     "nvidia,tegra186-gpcdma";
->>>    			reg = <0x2600000 0x210000>;
->>>    			resets = <&bpmp TEGRA234_RESET_GPCDMA>;
->>>    			reset-names = "gpcdma";
->>
->> I think that this should be split into two patches.
->>
->>> diff --git a/drivers/dma/tegra186-gpc-dma.c
->>> b/drivers/dma/tegra186-gpc-dma.c index 05cd451f541d..fa9bda4a2bc6
->>> 100644
->>> --- a/drivers/dma/tegra186-gpc-dma.c
->>> +++ b/drivers/dma/tegra186-gpc-dma.c
->>> @@ -157,8 +157,8 @@
->>>     * If any burst is in flight and DMA paused then this is the time to complete
->>>     * on-flight burst and update DMA status register.
->>>     */
->>> -#define TEGRA_GPCDMA_BURST_COMPLETE_TIME	20
->>> -#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	100
->>> +#define TEGRA_GPCDMA_BURST_COMPLETE_TIME	10
->>> +#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	5000 /* 5
->> msec */
->>>
->>>    /* Channel base address offset from GPCDMA base address */
->>>    #define TEGRA_GPCDMA_CHANNEL_BASE_ADD_OFFSET	0x20000
->>> @@ -432,6 +432,17 @@ static int tegra_dma_device_resume(struct
->> dma_chan *dc)
->>>    	return 0;
->>>    }
->>>
->>> +static inline int tegra_dma_pause_noerr(struct tegra_dma_channel
->>> +*tdc) {
->>> +	/* Return 0 irrespective of PAUSE status.
->>> +	 * This is useful to recover channels that can exit out of flush
->>> +	 * state when the channel is disabled.
->>> +	 */
->>> +
->>> +	tegra_dma_pause(tdc);
->>> +	return 0;
->>> +}
->>
->> The commit message says that "add a new terminate() function that ignores the
->> outcome of dma_pause() and disables the channel". But I only see pause being
->> done here.
-> The function is set as .terminate() function in chip_data and is called during
-> terminate_all(). Since this return 0, tegra_dma_terminate_all() will proceed
-> and calls tegra_dma_disable() in the next step.
+Paul Cercueil <paul@crapouillou.net> writes:
 
+> Hi Aidan,
+>
+> Le mer., juil. 6 2022 at 22:13:22 +0100, Aidan MacDonald
+> <aidanmacdonald.0x0@gmail.com> a =C3=A9crit :
+>> Using regmap for accessing the AIC registers makes the driver a
+>> little easier to read, and later refactors can take advantage of
+>> regmap APIs to further simplify the driver.
+>> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+>> ---
+>>  sound/soc/jz4740/Kconfig      |  1 +
+>>  sound/soc/jz4740/jz4740-i2s.c | 99 +++++++++++++++--------------------
+>>  2 files changed, 42 insertions(+), 58 deletions(-)
+>> diff --git a/sound/soc/jz4740/Kconfig b/sound/soc/jz4740/Kconfig
+>> index e72f826062e9..dd3b4507fbe6 100644
+>> --- a/sound/soc/jz4740/Kconfig
+>> +++ b/sound/soc/jz4740/Kconfig
+>> @@ -3,6 +3,7 @@ config SND_JZ4740_SOC_I2S
+>>  	tristate "SoC Audio (I2S protocol) for Ingenic JZ4740 SoC"
+>>  	depends on MIPS || COMPILE_TEST
+>>  	depends on HAS_IOMEM
+>> +	select REGMAP_MMIO
+>>  	select SND_SOC_GENERIC_DMAENGINE_PCM
+>>  	help
+>>  	  Say Y if you want to use I2S protocol and I2S codec on Ingenic JZ4740
+>> diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s=
+.c
+>> index ecd8df70d39c..66a901f56392 100644
+>> --- a/sound/soc/jz4740/jz4740-i2s.c
+>> +++ b/sound/soc/jz4740/jz4740-i2s.c
+>> @@ -9,6 +9,7 @@
+>>  #include <linux/module.h>
+>>  #include <linux/mod_devicetable.h>
+>>  #include <linux/platform_device.h>
+>> +#include <linux/regmap.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/clk.h>
+>> @@ -94,7 +95,7 @@ struct i2s_soc_info {
+>>  struct jz4740_i2s {
+>>  	struct resource *mem;
+>> -	void __iomem *base;
+>> +	struct regmap *regmap;
+>>  	struct clk *clk_aic;
+>>  	struct clk *clk_i2s;
+>> @@ -105,39 +106,24 @@ struct jz4740_i2s {
+>>  	const struct i2s_soc_info *soc_info;
+>>  };
+>> -static inline uint32_t jz4740_i2s_read(const struct jz4740_i2s *i2s,
+>> -	unsigned int reg)
+>> -{
+>> -	return readl(i2s->base + reg);
+>> -}
+>> -
+>> -static inline void jz4740_i2s_write(const struct jz4740_i2s *i2s,
+>> -	unsigned int reg, uint32_t value)
+>> -{
+>> -	writel(value, i2s->base + reg);
+>> -}
+>> -
+>>  static int jz4740_i2s_startup(struct snd_pcm_substream *substream,
+>>  	struct snd_soc_dai *dai)
+>>  {
+>>  	struct jz4740_i2s *i2s =3D snd_soc_dai_get_drvdata(dai);
+>> -	uint32_t conf, ctrl;
+>>  	int ret;
+>>  	if (snd_soc_dai_active(dai))
+>>  		return 0;
+>> -	ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+>> -	ctrl |=3D JZ_AIC_CTRL_FLUSH;
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+>> +	regmap_write_bits(i2s->regmap, JZ_REG_AIC_CTRL,
+>> +			  JZ_AIC_CTRL_FLUSH, JZ_AIC_CTRL_FLUSH);
+>
+> I don't think you need regmap_write_bits() here, since there is no cache =
+to
+> bypass. You could use regmap_update_bits(), or even better, regmap_set_bi=
+ts().
+>
 
-That's fine, but it is not clear from the commit message.
+write_bits isn't _exactly_ just a cache bypass operation -- it means
+"write the register even if the value is the same as what was read."
+An update_bits doesn't necessarily perform a register write, even if
+there is no cache and the register is volatile.
 
-Jon
+The distinction shouldn't matter here, since the flush bit is supposed
+to be self-clearing. So I might as well use regmap_set_bits().
 
--- 
-nvpublic
+Also: I just noticed this will need to be a regmap field. It seems that
+all SoCs newer than jz4740 have separate transmit/receive flush bits.
+At least the JZ4760, JZ4780, and X1000 manuals say as much. Not sure
+about the JZ4770 since I don't have any documentation for that SoC.
+
+>>  	ret =3D clk_prepare_enable(i2s->clk_i2s);
+>>  	if (ret)
+>>  		return ret;
+>> -	conf =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CONF);
+>> -	conf |=3D JZ_AIC_CONF_ENABLE;
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
+>> +	regmap_update_bits(i2s->regmap, JZ_REG_AIC_CONF,
+>> +			   JZ_AIC_CONF_ENABLE, JZ_AIC_CONF_ENABLE);
+>
+> Use regmap_set_bits() when you want to set all the bits of the mask.
+>
+>>  	return 0;
+>>  }
+>> @@ -146,14 +132,12 @@ static void jz4740_i2s_shutdown(struct
+>> snd_pcm_substream *substream,
+>>  	struct snd_soc_dai *dai)
+>>  {
+>>  	struct jz4740_i2s *i2s =3D snd_soc_dai_get_drvdata(dai);
+>> -	uint32_t conf;
+>>  	if (snd_soc_dai_active(dai))
+>>  		return;
+>> -	conf =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CONF);
+>> -	conf &=3D ~JZ_AIC_CONF_ENABLE;
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
+>> +	regmap_update_bits(i2s->regmap, JZ_REG_AIC_CONF,
+>> +			   JZ_AIC_CONF_ENABLE, 0);
+>
+> Use regmap_clear_bits() when you want to clear all bits of the mask.
+>
+> Otherwise, looks fairly good!
+>
+> Cheers,
+> -Paul
+>
+
+Thanks, I didn't know about set/clear bits but that'll make it even
+simpler.
+
+>>  	clk_disable_unprepare(i2s->clk_i2s);
+>>  }
+>> @@ -162,8 +146,6 @@ static int jz4740_i2s_trigger(struct snd_pcm_substre=
+am
+>> *substream, int cmd,
+>>  	struct snd_soc_dai *dai)
+>>  {
+>>  	struct jz4740_i2s *i2s =3D snd_soc_dai_get_drvdata(dai);
+>> -
+>> -	uint32_t ctrl;
+>>  	uint32_t mask;
+>>  	if (substream->stream =3D=3D SNDRV_PCM_STREAM_PLAYBACK)
+>> @@ -171,38 +153,30 @@ static int jz4740_i2s_trigger(struct snd_pcm_subst=
+ream
+>> *substream, int cmd,
+>>  	else
+>>  		mask =3D JZ_AIC_CTRL_ENABLE_CAPTURE | JZ_AIC_CTRL_ENABLE_RX_DMA;
+>> -	ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+>> -
+>>  	switch (cmd) {
+>>  	case SNDRV_PCM_TRIGGER_START:
+>>  	case SNDRV_PCM_TRIGGER_RESUME:
+>>  	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+>> -		ctrl |=3D mask;
+>> +		regmap_update_bits(i2s->regmap, JZ_REG_AIC_CTRL, mask, mask);
+>>  		break;
+>>  	case SNDRV_PCM_TRIGGER_STOP:
+>>  	case SNDRV_PCM_TRIGGER_SUSPEND:
+>>  	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+>> -		ctrl &=3D ~mask;
+>> +		regmap_update_bits(i2s->regmap, JZ_REG_AIC_CTRL, mask, 0);
+>>  		break;
+>>  	default:
+>>  		return -EINVAL;
+>>  	}
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+>> -
+>>  	return 0;
+>>  }
+>>  static int jz4740_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+>>  {
+>>  	struct jz4740_i2s *i2s =3D snd_soc_dai_get_drvdata(dai);
+>> -
+>> -	uint32_t format =3D 0;
+>> -	uint32_t conf;
+>> -
+>> -	conf =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CONF);
+>> -
+>> -	conf &=3D ~(JZ_AIC_CONF_BIT_CLK_MASTER | JZ_AIC_CONF_SYNC_CLK_MASTER);
+>> +	const unsigned int conf_mask =3D JZ_AIC_CONF_BIT_CLK_MASTER |
+>> +				       JZ_AIC_CONF_SYNC_CLK_MASTER;
+>> +	unsigned int conf =3D 0, format =3D 0;
+>>  	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
+>>  	case SND_SOC_DAIFMT_BP_FP:
+>> @@ -238,8 +212,8 @@ static int jz4740_i2s_set_fmt(struct snd_soc_dai *da=
+i,
+>> unsigned int fmt)
+>>  		return -EINVAL;
+>>  	}
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_I2S_FMT, format);
+>> +	regmap_update_bits(i2s->regmap, JZ_REG_AIC_CONF, conf_mask, conf);
+>> +	regmap_write(i2s->regmap, JZ_REG_AIC_I2S_FMT, format);
+>>  	return 0;
+>>  }
+>> @@ -252,9 +226,9 @@ static int jz4740_i2s_hw_params(struct snd_pcm_subst=
+ream
+>> *substream,
+>>  	uint32_t ctrl, div_reg;
+>>  	int div;
+>> -	ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+>> +	regmap_read(i2s->regmap, JZ_REG_AIC_CTRL, &ctrl);
+>> +	regmap_read(i2s->regmap, JZ_REG_AIC_CLK_DIV, &div_reg);
+>> -	div_reg =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CLK_DIV);
+>>  	div =3D clk_get_rate(i2s->clk_i2s) / (64 * params_rate(params));
+>>  	switch (params_format(params)) {
+>> @@ -291,8 +265,8 @@ static int jz4740_i2s_hw_params(struct snd_pcm_subst=
+ream
+>> *substream,
+>>  		}
+>>  	}
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CLK_DIV, div_reg);
+>> +	regmap_write(i2s->regmap, JZ_REG_AIC_CTRL, ctrl);
+>> +	regmap_write(i2s->regmap, JZ_REG_AIC_CLK_DIV, div_reg);
+>>  	return 0;
+>>  }
+>> @@ -329,12 +303,10 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai
+>> *dai, int clk_id,
+>>  static int jz4740_i2s_suspend(struct snd_soc_component *component)
+>>  {
+>>  	struct jz4740_i2s *i2s =3D snd_soc_component_get_drvdata(component);
+>> -	uint32_t conf;
+>>  	if (snd_soc_component_active(component)) {
+>> -		conf =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CONF);
+>> -		conf &=3D ~JZ_AIC_CONF_ENABLE;
+>> -		jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
+>> +		regmap_update_bits(i2s->regmap, JZ_REG_AIC_CONF,
+>> +				   JZ_AIC_CONF_ENABLE, 0);
+>>  		clk_disable_unprepare(i2s->clk_i2s);
+>>  	}
+>> @@ -347,7 +319,6 @@ static int jz4740_i2s_suspend(struct snd_soc_compone=
+nt
+>> *component)
+>>  static int jz4740_i2s_resume(struct snd_soc_component *component)
+>>  {
+>>  	struct jz4740_i2s *i2s =3D snd_soc_component_get_drvdata(component);
+>> -	uint32_t conf;
+>>  	int ret;
+>>  	ret =3D clk_prepare_enable(i2s->clk_aic);
+>> @@ -361,9 +332,8 @@ static int jz4740_i2s_resume(struct snd_soc_component
+>> *component)
+>>  			return ret;
+>>  		}
+>> -		conf =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CONF);
+>> -		conf |=3D JZ_AIC_CONF_ENABLE;
+>> -		jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
+>> +		regmap_update_bits(i2s->regmap, JZ_REG_AIC_CONF,
+>> +				   JZ_AIC_CONF_ENABLE, JZ_AIC_CONF_ENABLE);
+>>  	}
+>>  	return 0;
+>> @@ -396,8 +366,8 @@ static int jz4740_i2s_dai_probe(struct snd_soc_dai *=
+dai)
+>>  			JZ_AIC_CONF_INTERNAL_CODEC;
+>>  	}
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, JZ_AIC_CONF_RESET);
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
+>> +	regmap_write(i2s->regmap, JZ_REG_AIC_CONF, JZ_AIC_CONF_RESET);
+>> +	regmap_write(i2s->regmap, JZ_REG_AIC_CONF, conf);
+>>  	return 0;
+>>  }
+>> @@ -495,11 +465,19 @@ static const struct of_device_id jz4740_of_matches=
+[] =3D
+>> {
+>>  };
+>>  MODULE_DEVICE_TABLE(of, jz4740_of_matches);
+>> +static const struct regmap_config jz4740_i2s_regmap_config =3D {
+>> +	.reg_bits	=3D 32,
+>> +	.reg_stride	=3D 4,
+>> +	.val_bits	=3D 32,
+>> +	.max_register	=3D JZ_REG_AIC_FIFO,
+>> +};
+>> +
+>>  static int jz4740_i2s_dev_probe(struct platform_device *pdev)
+>>  {
+>>  	struct device *dev =3D &pdev->dev;
+>>  	struct jz4740_i2s *i2s;
+>>  	struct resource *mem;
+>> +	void __iomem *regs;
+>>  	int ret;
+>>  	i2s =3D devm_kzalloc(dev, sizeof(*i2s), GFP_KERNEL);
+>> @@ -508,9 +486,9 @@ static int jz4740_i2s_dev_probe(struct platform_devi=
+ce
+>> *pdev)
+>>  	i2s->soc_info =3D device_get_match_data(dev);
+>> -	i2s->base =3D devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
+>> -	if (IS_ERR(i2s->base))
+>> -		return PTR_ERR(i2s->base);
+>> +	regs =3D devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
+>> +	if (IS_ERR(regs))
+>> +		return PTR_ERR(regs);
+>>  	i2s->playback_dma_data.maxburst =3D 16;
+>>  	i2s->playback_dma_data.addr =3D mem->start + JZ_REG_AIC_FIFO;
+>> @@ -526,6 +504,11 @@ static int jz4740_i2s_dev_probe(struct platform_dev=
+ice
+>> *pdev)
+>>  	if (IS_ERR(i2s->clk_i2s))
+>>  		return PTR_ERR(i2s->clk_i2s);
+>> +	i2s->regmap =3D devm_regmap_init_mmio(&pdev->dev, regs,
+>> +					    &jz4740_i2s_regmap_config);
+>> +	if (IS_ERR(i2s->regmap))
+>> +		return PTR_ERR(i2s->regmap);
+>> +
+>>  	platform_set_drvdata(pdev, i2s);
+>>  	ret =3D devm_snd_soc_register_component(dev, &jz4740_i2s_component,
+>> --
+>> 2.35.1
+>>=20
+
