@@ -2,133 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AADC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 18:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236544AbiGGSno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 14:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43102 "EHLO
+        id S236219AbiGGSpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 14:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235872AbiGGSnn (ORCPT
+        with ESMTP id S236199AbiGGSpQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 14:43:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8816330F5A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 11:43:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 7 Jul 2022 14:45:16 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A37A33E1E;
+        Thu,  7 Jul 2022 11:45:15 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19D4EB8215D
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 18:43:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABFFBC3411E;
-        Thu,  7 Jul 2022 18:43:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657219419;
-        bh=X91w2s3hUBEJKzueE4a8QnnBJdFZ4qmysMaFWqtieW8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RaYdur2UIQSvJZV5FQkxANnCQt0U0P0pzQmezpzqVeElD3fyiyWi5oueWfNNKCPoy
-         WuClWYYENFBlKMAjZnxj3838d6FtG58MNDul78DsgAfmnXRA44qqtLONw+ozeT3CFG
-         B1jR3HFVGJ/C5yuxgWQ6ALKXSds5lXEC2RdtcOoFpUvkQ+/yJOVpqL6ep40vaBOFkC
-         Ie2ov+8Rx6yYiY/Q6j7Y0mUmFZDhc3JyyhJyeCmAcwAydKKnxYKBAc8q9v/G+Nflp2
-         nXzJ/MORl7D6V68xPONc6ywJdgF+zvBRMx3TmlAXkTKZVeT0XbrcoagbmgjPAoKk97
-         zVENHjZIjlkAg==
-Received: by pali.im (Postfix)
-        id AC6DE7B1; Thu,  7 Jul 2022 20:43:36 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mtd: rawnand: fsl_elbc: Fix none ECC mode
-Date:   Thu,  7 Jul 2022 20:43:28 +0200
-Message-Id: <20220707184328.3845-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        by ms.lwn.net (Postfix) with ESMTPSA id 5F3B04E91;
+        Thu,  7 Jul 2022 18:45:15 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 5F3B04E91
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1657219515; bh=J5c8hy79DdtSV1ytf0aM7ul96dmS6b15P+GeZiqhtuQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=XarWzkSrfO6MjePvlab2tmpX87v9x+RVQ/TuS9/7cNcKLlMOGLFDI5VkSDy5NMKlg
+         FUCKoqiGWQEYswC5CCI/gXlmDmpwE/gfyn44RnCL60IdGnCfJ71rkms9Z2FRiU5AGc
+         yhpfcAWXO0X2AT7riMzr1b1wmkAEg6bEWT/1h2RWUxgpKR50p9E5oQ4aIxdYOCgvnr
+         gtwsYtB+FgIbGJPZ/sjG+83Jp5d4y2RQQi9MbFNbMwCsmf481JUQW4NDDSR9P1it0h
+         eDzhfe0czkB6pdGVUbUexaq1nYT5opt7blfwxr0vX0zpjoHJ3PecMDfUlrEFlrjnHc
+         2B/AySzNo+yQQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Akira Yokosawa <akiyks@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     ksummit-discuss@lists.linuxfoundation.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mchehab+huawei@kernel.org, Akira Yokosawa <akiyks@gmail.com>
+Subject: Re: [PATCH v2 0/5] Address some issues with sphinx detection
+In-Reply-To: <d0e1a08a-b965-ada6-e026-4e1cc38fbd90@gmail.com>
+References: <cover.1656756450.git.mchehab@kernel.org>
+ <d0e1a08a-b965-ada6-e026-4e1cc38fbd90@gmail.com>
+Date:   Thu, 07 Jul 2022 12:45:14 -0600
+Message-ID: <87ilo8bw3p.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit f6424c22aa36 ("mtd: rawnand: fsl_elbc: Make SW ECC work") added
-support for specifying ECC mode via DTS and skipping autodetection.
+Akira Yokosawa <akiyks@gmail.com> writes:
 
-But it broke explicit specification of HW ECC mode in DTS as correct
-settings for HW ECC mode are applied only when NONE mode or nothing was
-specified in DTS file.
+> TL;DR, my suggestion of options and defaults to sphinx-pre-install:
+>
+>     --no-pdf (default): for htmldocs only
+>     --no-virtualenv (default): distro Sphinx package
+>          (mention --virtualenv if distro Sphinx package is too young)
+>     --virtualenv: Sphinx by venv/virtualenv
+>     --pdf: for pdfdocs
+>         --no-cjk (default): don't bother with CJK pdfdocs
+>         --cjk: for CJK pdfdocs
+>                (print warning if user's distro doesn't support CJK)
+>
+> Thoughts?
 
-Also it started aliasing NONE mode to be same as when ECC mode was not
-specified and disallowed usage of ON_DIE mode.
+I think this makes sense.  As far as I can tell, PDF builds are a
+relative rarity these days, and most people would rather not have to
+deal with virtualenv if they can avoid it.  We should definitely
+emphasize native installs whenever that can work.
 
-Fix all these issues. Use autodetection of ECC mode only in case when mode
-was really not specified in DTS file by checking that ecc value is invalid.
-Set HW ECC settings either when HW ECC was specified in DTS or it was
-autodetected. And do not fail when ON_DIE mode is set.
+I'm planning to go ahead and apply Mauro's sphinx-pre-install patches
+since they make things better, but then we should look at these tweaks.
 
-Fixes: f6424c22aa36 ("mtd: rawnand: fsl_elbc: Make SW ECC work")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/mtd/nand/raw/fsl_elbc_nand.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+Thanks,
 
-diff --git a/drivers/mtd/nand/raw/fsl_elbc_nand.c b/drivers/mtd/nand/raw/fsl_elbc_nand.c
-index aab93b9e6052..a18d121396aa 100644
---- a/drivers/mtd/nand/raw/fsl_elbc_nand.c
-+++ b/drivers/mtd/nand/raw/fsl_elbc_nand.c
-@@ -726,36 +726,40 @@ static int fsl_elbc_attach_chip(struct nand_chip *chip)
- 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
- 	unsigned int al;
- 
--	switch (chip->ecc.engine_type) {
- 	/*
- 	 * if ECC was not chosen in DT, decide whether to use HW or SW ECC from
- 	 * CS Base Register
- 	 */
--	case NAND_ECC_ENGINE_TYPE_NONE:
-+	if (chip->ecc.engine_type == NAND_ECC_ENGINE_TYPE_INVALID) {
- 		/* If CS Base Register selects full hardware ECC then use it */
- 		if ((in_be32(&lbc->bank[priv->bank].br) & BR_DECC) ==
- 		    BR_DECC_CHK_GEN) {
--			chip->ecc.read_page = fsl_elbc_read_page;
--			chip->ecc.write_page = fsl_elbc_write_page;
--			chip->ecc.write_subpage = fsl_elbc_write_subpage;
--
- 			chip->ecc.engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
--			mtd_set_ooblayout(mtd, &fsl_elbc_ooblayout_ops);
--			chip->ecc.size = 512;
--			chip->ecc.bytes = 3;
--			chip->ecc.strength = 1;
- 		} else {
- 			/* otherwise fall back to default software ECC */
- 			chip->ecc.engine_type = NAND_ECC_ENGINE_TYPE_SOFT;
- 			chip->ecc.algo = NAND_ECC_ALGO_HAMMING;
- 		}
-+	}
-+
-+	switch (chip->ecc.engine_type) {
-+	/* if HW ECC was chosen, setup ecc and oob layout */
-+	case NAND_ECC_ENGINE_TYPE_ON_HOST:
-+		chip->ecc.read_page = fsl_elbc_read_page;
-+		chip->ecc.write_page = fsl_elbc_write_page;
-+		chip->ecc.write_subpage = fsl_elbc_write_subpage;
-+		mtd_set_ooblayout(mtd, &fsl_elbc_ooblayout_ops);
-+		chip->ecc.size = 512;
-+		chip->ecc.bytes = 3;
-+		chip->ecc.strength = 1;
- 		break;
- 
--	/* if SW ECC was chosen in DT, we do not need to set anything here */
-+	/* if none or SW ECC was chosen, we do not need to set anything here */
-+	case NAND_ECC_ENGINE_TYPE_NONE:
- 	case NAND_ECC_ENGINE_TYPE_SOFT:
-+	case NAND_ECC_ENGINE_TYPE_ON_DIE:
- 		break;
- 
--	/* should we also implement *_ECC_ENGINE_CONTROLLER to do as above? */
- 	default:
- 		return -EINVAL;
- 	}
--- 
-2.20.1
-
+jon
