@@ -2,81 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 12:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A68C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 12:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235847AbiGGMxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 08:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
+        id S235883AbiGGMxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 08:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235844AbiGGMxZ (ORCPT
+        with ESMTP id S235854AbiGGMx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 08:53:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D71FB2F384
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 05:53:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657198401;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qw238l4/II5ZS2Jgu7adObRZNkiqO5QpfrDEC+afXgc=;
-        b=fFOB5FpGYrx3JdZB+NZteMFDyH5pqeqVbktL5Vq3ojCR8rVMpzV6flgz4SD28QFl1RTDsn
-        BcmeeW4lmnODI4FOlda2JDjoxB18EoE0U/fpcGkSlCjZxoULx5NVJ3bU7wxBPJdG1ZrVoM
-        jSqhVIV+g40LvhcQeiQ86oKv9f+kOf8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-197-MpSypgCmMdKepNO5kg5jzw-1; Thu, 07 Jul 2022 08:53:18 -0400
-X-MC-Unique: MpSypgCmMdKepNO5kg5jzw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1490A80A0C5;
-        Thu,  7 Jul 2022 12:53:18 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.37.50])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7CE17404C321;
-        Thu,  7 Jul 2022 12:53:16 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220707045112.10177-2-xiubli@redhat.com>
-References: <20220707045112.10177-2-xiubli@redhat.com> <20220707045112.10177-1-xiubli@redhat.com>
-To:     xiubli@redhat.com
-Cc:     dhowells@redhat.com, idryomov@gmail.com, jlayton@kernel.org,
-        marc.dionne@auristor.com, willy@infradead.org,
-        keescook@chromium.org, kirill.shutemov@linux.intel.com,
-        william.kucharski@oracle.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-cachefs@redhat.com, vshankar@redhat.com
-Subject: Re: [PATCH v3 1/2] netfs: do not unlock and put the folio twice
+        Thu, 7 Jul 2022 08:53:28 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158DFCF9;
+        Thu,  7 Jul 2022 05:53:27 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id e132so18341270pgc.5;
+        Thu, 07 Jul 2022 05:53:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6hOJXYJTQiFMMMc5LL8OXOjbAEOIGj7/DEojQqeqmtE=;
+        b=nrNTLh5dPkoPJJ27EI8PkJlZZO7GsFZx7opX0T8UvM1J5eA0J0eT4vHf2MUS3ewfAl
+         FYh/eMc6wEExO54NSw9YKO2kSHlBcinWZodF+x+U+oz7JI2X9cWHBmNGhFnlaRTQ70UD
+         s765zJKqYUav6EwIEKQDKDpYCQ/4ZssXZLVwEesK4tDLlbrZTltsTvnGvPSgv55r0xuM
+         bnGzeo+AVVRMW57URUjGLslcMHanIz5/piUmtJrCgf/QqZQwLbfdac8WuAmbUGFQt4qa
+         44J7UJkocdhXL3nGxV56UBmrUwnDVBBXswUTlKxuI/JvxncWSZZBW0tYexzHGBHQ5FnU
+         F4Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6hOJXYJTQiFMMMc5LL8OXOjbAEOIGj7/DEojQqeqmtE=;
+        b=NLN51DIyhvFKsRz+kIptZVMzYpXAnkjUrml2TjzxwvFOT2uByfqG2uBYN/3PTQqsBM
+         LwBLSNHTcCxwhz6ZAtfTQUtn90Bg6C1gWZzRDi5fg+kL887bbYVkpmNc0KAFKUejoaau
+         WphYXSe++QvKFmiTGHbXdXnwKTFDxgfOtHNrtIv327Ky3J8O+j/Le8uKTzOofKKcLqRI
+         5bB7UTaKV1FY+ujHoiI0JonLWnhfo8RBTC2HVG922sVSz3syPD4DrbMjqdRYjNSRmzpq
+         DNcYq9G0YDS4xlnLF0ZKgUOcXDuFoLXp9ZTF4itt/xAL/6xDXjaWeZwYoSWgr9uZW9v3
+         sjYg==
+X-Gm-Message-State: AJIora/F0GKizgB447R2G99p082eIxIrCr2i3wuHcNXjW/C/+0ywlwiL
+        6IzB8raNwcO+lYTSQiXXXRc=
+X-Google-Smtp-Source: AGRyM1uZgm8qesTiPzIyn0Fdt/bFOX8tuNIMzYZlDgO6uvwzSy88a4q5p6lNgoDbQtEcMDOvySQXvg==
+X-Received: by 2002:a63:2115:0:b0:412:b292:1870 with SMTP id h21-20020a632115000000b00412b2921870mr4253648pgh.176.1657198406594;
+        Thu, 07 Jul 2022 05:53:26 -0700 (PDT)
+Received: from localhost.localdomain (47-72-206-164.dsl.dyn.ihug.co.nz. [47.72.206.164])
+        by smtp.gmail.com with ESMTPSA id a11-20020a1709027e4b00b0016a3b5a46f0sm27907831pln.241.2022.07.07.05.53.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 05:53:26 -0700 (PDT)
+From:   Barry Song <21cnbao@gmail.com>
+To:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
+        catalin.marinas@arm.com, will@kernel.org, linux-doc@vger.kernel.org
+Cc:     corbet@lwn.net, arnd@arndb.de, linux-kernel@vger.kernel.org,
+        darren@os.amperecomputing.com, yangyicong@hisilicon.com,
+        huzhanyuan@oppo.com, lipeifeng@oppo.com, zhangshiming@oppo.com,
+        guojian@oppo.com, realmz6@gmail.com,
+        Barry Song <v-songbaohua@oppo.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Nadav Amit <namit@vmware.com>,
+        Mel Gorman <mgorman@suse.de>
+Subject: [PATCH 3/4] mm: rmap: Extend tlbbatch APIs to fit new platforms
+Date:   Fri,  8 Jul 2022 00:52:41 +1200
+Message-Id: <20220707125242.425242-4-21cnbao@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220707125242.425242-1-21cnbao@gmail.com>
+References: <20220707125242.425242-1-21cnbao@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2435747.1657198395.1@warthog.procyon.org.uk>
-Date:   Thu, 07 Jul 2022 13:53:15 +0100
-Message-ID: <2435748.1657198395@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-xiubli@redhat.com wrote:
+From: Barry Song <v-songbaohua@oppo.com>
 
-> -error:
-> +error_locked:
->  	folio_unlock(folio);
->  	folio_put(folio);
-> +error_unlocked:
+Add vma and uaddr to tlbbatch APIs so that platforms like ARM64
+are able to apply these two parameters on their specific hard-
+ware features. For ARM64, this could be sending tlbi into hard-
+ware queues without waiting for its completion.
 
-I would do:
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Nadav Amit <namit@vmware.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Signed-off-by: Barry Song <v-songbaohua@oppo.com>
+---
+ arch/x86/include/asm/tlbflush.h |  4 +++-
+ mm/rmap.c                       | 12 ++++++++----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-	error:
-		if (folio) {
-			folio_unlock(folio);
-			folio_put(folio);
-		}
-
-David
+diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
+index 4af5579c7ef7..9fc48c103b31 100644
+--- a/arch/x86/include/asm/tlbflush.h
++++ b/arch/x86/include/asm/tlbflush.h
+@@ -251,7 +251,9 @@ static inline u64 inc_mm_tlb_gen(struct mm_struct *mm)
+ }
+ 
+ static inline void arch_tlbbatch_add_mm(struct arch_tlbflush_unmap_batch *batch,
+-					struct mm_struct *mm)
++					struct mm_struct *mm,
++					struct vm_area_struct *vma,
++					unsigned long uaddr)
+ {
+ 	inc_mm_tlb_gen(mm);
+ 	cpumask_or(&batch->cpumask, &batch->cpumask, mm_cpumask(mm));
+diff --git a/mm/rmap.c b/mm/rmap.c
+index d320c29a4ad8..2b5b740d0001 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -642,12 +642,14 @@ void try_to_unmap_flush_dirty(void)
+ #define TLB_FLUSH_BATCH_PENDING_LARGE			\
+ 	(TLB_FLUSH_BATCH_PENDING_MASK / 2)
+ 
+-static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable)
++static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable,
++				      struct vm_area_struct *vma,
++				      unsigned long uaddr)
+ {
+ 	struct tlbflush_unmap_batch *tlb_ubc = &current->tlb_ubc;
+ 	int batch, nbatch;
+ 
+-	arch_tlbbatch_add_mm(&tlb_ubc->arch, mm);
++	arch_tlbbatch_add_mm(&tlb_ubc->arch, mm, vma, uaddr);
+ 	tlb_ubc->flush_required = true;
+ 
+ 	/*
+@@ -737,7 +739,9 @@ void flush_tlb_batched_pending(struct mm_struct *mm)
+ 	}
+ }
+ #else
+-static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable)
++static void set_tlb_ubc_flush_pending(struct mm_struct *mm, bool writable,
++				      struct vm_area_struct *vma,
++				      unsigned long uaddr)
+ {
+ }
+ 
+@@ -1600,7 +1604,7 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
+ 				 */
+ 				pteval = ptep_get_and_clear(mm, address, pvmw.pte);
+ 
+-				set_tlb_ubc_flush_pending(mm, pte_dirty(pteval));
++				set_tlb_ubc_flush_pending(mm, pte_dirty(pteval), vma, address);
+ 			} else {
+ 				pteval = ptep_clear_flush(vma, address, pvmw.pte);
+ 			}
+-- 
+2.25.1
 
