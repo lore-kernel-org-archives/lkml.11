@@ -2,152 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E33C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F03A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Jul 2022 05:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234919AbiGGFTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 01:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
+        id S234951AbiGGFWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 01:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbiGGFTo (ORCPT
+        with ESMTP id S229538AbiGGFWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 01:19:44 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4143122B
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Jul 2022 22:19:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657171183; x=1688707183;
-  h=subject:references:in-reply-to:to:cc:from:message-id:
-   date:mime-version:content-transfer-encoding;
-  bh=JnsdlBnemi3+nXZhtC2fFwNrIgLD1cmfnw2eTSz6klU=;
-  b=SHS30CCIP6Zezj6UX6VpLhrvPqgOEYrk0MDqavfUzY/HWOxtIGFD5imI
-   zeRxjy/tO6FZ4ZeoXlaJmWtPIbg05Hh0aRJB9j/B0e9rzmIkC7FV7r37g
-   Rpwb2VetaFcQLWMhAJVV4uPGKgzZbYWBWv5RIxqKXNyOPGpqspZnK5w1m
-   33/i0MJ+Y3/2Jvyge9tKZtMmkrD5NcJPTvS34O5oiOih5o/ZcQkoO4Gf+
-   BNGImA0h4XqxdOvAWRjiXtgJYEG+1AidnCdDwr528Mfu50nd/Bp/mReys
-   NOLT4Pi5aU+l4QLapVOMuMR0FFY//yLdoXT9uMgf4a2uajuyxs917Jqvz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="266962546"
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="266962546"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 22:19:26 -0700
-X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="650975358"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.31.6]) ([10.255.31.6])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 22:19:23 -0700
-Subject: Re: [PATCH v2 3/4] drm/gem: rename struct drm_gem_dma_object.{paddr
- => dma_addr}
-References: <202207070426.Bj47lRp2-lkp@intel.com>
-In-Reply-To: <202207070426.Bj47lRp2-lkp@intel.com>
-To:     Danilo Krummrich <dakr@redhat.com>, daniel@ffwll.ch,
-        laurent.pinchart@ideasonboard.com, airlied@linux.ie,
-        tzimmermann@suse.de
-Cc:     kbuild-all@lists.01.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Danilo Krummrich <dakr@redhat.com>
-From:   kernel test robot <rong.a.chen@intel.com>
-X-Forwarded-Message-Id: <202207070426.Bj47lRp2-lkp@intel.com>
-Message-ID: <75985d03-11aa-1c0a-d1c0-6a6cbd56cbce@intel.com>
-Date:   Thu, 7 Jul 2022 13:19:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Thu, 7 Jul 2022 01:22:13 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E81731235;
+        Wed,  6 Jul 2022 22:22:12 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2675GvFU012386;
+        Thu, 7 Jul 2022 05:22:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=+1WB8LXMgfzVJPMaiZ9ErPb4Hm5qyRydXwOHGwyge80=;
+ b=c/dSRJBz/6HN0DoBULnK8QqcgKEEt+7r3gmAlAHGoQ1J6qkAUWvp9KHQD2F79ctUXknf
+ r4379Bt/Sn1Zq/j1mcilquud789K90lhBn0qy0VXna8h4MxrvEjRXOKwWfuTc46Qhbwc
+ 3pEJh5TzfytCiSsFTm94jtShdqVmHY221d7yPDSTBaljUsvCKfk4t+Ol1QeiomJZ4JhE
+ JmvtpIkhJUGxk8nN78e/aDgowt4gveFGUfinQP48nSN/qygHUCuNRm5hwe9bUPgU8140
+ hEsyO5/HILcgb5bEvsPEV2G+05GXBSPEXPCvtJgmmaP51p36BHeHcqcttGS++BJN+cYm lA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h5s6vg3g3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 05:22:03 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2675IJt6016252;
+        Thu, 7 Jul 2022 05:22:02 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h5s6vg3fg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 05:22:02 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2675M1Xo004196;
+        Thu, 7 Jul 2022 05:22:01 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 3h4usd21yc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 05:22:01 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2675LvbQ24641846
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 7 Jul 2022 05:21:57 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 85995AE045;
+        Thu,  7 Jul 2022 05:21:57 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1A700AE04D;
+        Thu,  7 Jul 2022 05:21:57 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.48.113])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Thu,  7 Jul 2022 05:21:57 +0000 (GMT)
+Date:   Thu, 7 Jul 2022 07:21:55 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Alexander Egorenkov <egorenar@linux.ibm.com>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH 1/1] s390/crash: allow multi-segment iterators
+Message-ID: <YsZtc9MV4buEfNKa@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <cover.1657049033.git.agordeev@linux.ibm.com>
+ <3e713ce3865246766feca8397af2860cbe46854d.1657049033.git.agordeev@linux.ibm.com>
+ <877d4q3b94.fsf@oc8242746057.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <877d4q3b94.fsf@oc8242746057.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: GBc8YupEPXwtRkZsnOsNhzGnc4Iph18j
+X-Proofpoint-ORIG-GUID: o5kDKAlqg0Xp9dR6bve_wgoCzY4vUnFN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_03,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 impostorscore=0 suspectscore=0 adultscore=0 spamscore=0
+ mlxlogscore=822 mlxscore=0 phishscore=0 malwarescore=0 clxscore=1015
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207070019
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Danilo,
+On Wed, Jul 06, 2022 at 10:18:15AM +0200, Alexander Egorenkov wrote:
+> > +	__iterate_and_advance(iter, csize, base, len, off,
+> > +		({ copy_oldmem_user(base, src + off, len) < 0 ? csize : 0; }),
+> > +		({ copy_oldmem_kernel(base, src + off, len) < 0 ? csize : 0; })
+> 
+> Question
+> --------
+> About return value of STEP in iterate_iovec().
+> We return "csize" in case copy_oldmem_*() fails.
+> If i'm not mistaken this could lead to an overflow in iterate_iovec():
+> 
+>   len -= (STEP);
+> 
+> Because len could be less than csize in case iovec consists of multiple
+> segments, one of which is less than csize.
+> 
+> Better to return len ?
 
-Thank you for the patch! Yet something to improve:
+It certainly better. I'll post the fixed version.
 
-[auto build test ERROR on v5.19-rc5]
-[also build test ERROR on linus/master]
-[cannot apply to drm-misc/drm-misc-next anholt/for-next 
-pinchartl-media/drm/du/next next-20220706]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> ({ copy_oldmem_user(base, src + off, len) < 0 ? len : 0; })
+> 
+> > +	)
+> >  	return csize;
+> >  }
+> 
+> Another thing is that now we never report any errors in contrast to
+> the version before. This is OK ?
 
-url: 
-https://github.com/intel-lab-lkp/linux/commits/Danilo-Krummrich/drm-rename-CMA-helpers-to-DMA-helpers/20220706-204716
-base:    88084a3df1672e131ddc1b4e39eeacfd39864acf
-config: arm-buildonly-randconfig-r003-20220706 
-(https://download.01.org/0day-ci/archive/20220707/202207070426.Bj47lRp2-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-         wget 
-https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross 
--O ~/bin/make.cross
-         chmod +x ~/bin/make.cross
-         # 
-https://github.com/intel-lab-lkp/linux/commit/54853a66aeea45ecb99d39dec51a7018803174e6
-         git remote add linux-review https://github.com/intel-lab-lkp/linux
-         git fetch --no-tags linux-review 
-Danilo-Krummrich/drm-rename-CMA-helpers-to-DMA-helpers/20220706-204716
-         git checkout 54853a66aeea45ecb99d39dec51a7018803174e6
-         # save the config file
-         mkdir build_dir && cp config build_dir/.config
-         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross 
-W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/drm/tilcdc/
+I think that is fine. It is consistent with other iterate_and_advance()
+uses and actually converted by read_from_oldmem() to -EFAULT in case of
+incomplete copy.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-    drivers/gpu/drm/tilcdc/tilcdc_crtc.c: In function 'set_scanout':
->> drivers/gpu/drm/tilcdc/tilcdc_crtc.c:72:22: error: 'struct drm_gem_dma_object' has no member named 'paddr'; did you mean 'vaddr'?
-       72 |         start = gem->paddr + fb->offsets[0] +
-          |                      ^~~~~
-          |                      vaddr
-
-
-vim +72 drivers/gpu/drm/tilcdc/tilcdc_crtc.c
-
-16ea975eac671fa Rob Clark        2013-01-08  61  2b2080d7e9ae246 Tomi 
-Valkeinen   2015-10-20  62  static void set_scanout(struct drm_crtc 
-*crtc, struct drm_framebuffer *fb)
-16ea975eac671fa Rob Clark        2013-01-08  63  {
-16ea975eac671fa Rob Clark        2013-01-08  64  	struct drm_device *dev 
-= crtc->dev;
-4c268d635f8d4f5 Daniel Schultz   2016-10-28  65  	struct 
-tilcdc_drm_private *priv = dev->dev_private;
-efb5bf503f38a8d Danilo Krummrich 2022-07-06  66  	struct 
-drm_gem_dma_object *gem;
-2b2080d7e9ae246 Tomi Valkeinen   2015-10-20  67  	dma_addr_t start, end;
-7eb9f069ff5dd39 Jyri Sarha       2016-08-26  68  	u64 dma_base_and_ceiling;
-16ea975eac671fa Rob Clark        2013-01-08  69  d47caa3aaf3da1e Danilo 
-Krummrich 2022-07-06  70  	gem = drm_fb_dma_get_gem_obj(fb, 0);
-16ea975eac671fa Rob Clark        2013-01-08  71  2b2080d7e9ae246 Tomi 
-Valkeinen   2015-10-20 @72  	start = gem->paddr + fb->offsets[0] +
-2b2080d7e9ae246 Tomi Valkeinen   2015-10-20  73  		crtc->y * 
-fb->pitches[0] +
-353c859899635ea Ville Syrjälä    2016-12-14  74  		crtc->x * 
-fb->format->cpp[0];
-16ea975eac671fa Rob Clark        2013-01-08  75  2b2080d7e9ae246 Tomi 
-Valkeinen   2015-10-20  76  	end = start + (crtc->mode.vdisplay * 
-fb->pitches[0]);
-16ea975eac671fa Rob Clark        2013-01-08  77  7eb9f069ff5dd39 Jyri 
-Sarha       2016-08-26  78  	/* Write LCDC_DMA_FB_BASE_ADDR_0_REG and 
-LCDC_DMA_FB_CEILING_ADDR_0_REG
-7eb9f069ff5dd39 Jyri Sarha       2016-08-26  79  	 * with a single 
-insruction, if available. This should make it more
-7eb9f069ff5dd39 Jyri Sarha       2016-08-26  80  	 * unlikely that LCDC 
-would fetch the DMA addresses in the middle of
-7eb9f069ff5dd39 Jyri Sarha       2016-08-26  81  	 * an update.
-7eb9f069ff5dd39 Jyri Sarha       2016-08-26  82  	 */
-4c268d635f8d4f5 Daniel Schultz   2016-10-28  83  	if (priv->rev == 1)
-4c268d635f8d4f5 Daniel Schultz   2016-10-28  84  		end -= 1;
-4c268d635f8d4f5 Daniel Schultz   2016-10-28  85  4c268d635f8d4f5 Daniel 
-Schultz   2016-10-28  86  	dma_base_and_ceiling = (u64)end << 32 | start;
-7eb9f069ff5dd39 Jyri Sarha       2016-08-26  87  	tilcdc_write64(dev, 
-LCDC_DMA_FB_BASE_ADDR_0_REG, dma_base_and_ceiling);
-16ea975eac671fa Rob Clark        2013-01-08  88  }
-16ea975eac671fa Rob Clark        2013-01-08  89
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thank you!
