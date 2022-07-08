@@ -2,324 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8DDC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1239C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237441AbiGHHPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56832 "EHLO
+        id S237374AbiGHHQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237374AbiGHHPb (ORCPT
+        with ESMTP id S237206AbiGHHQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:15:31 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B848B76E97;
-        Fri,  8 Jul 2022 00:15:30 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LfPbV6GXWzTgpm;
-        Fri,  8 Jul 2022 15:11:50 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 15:15:01 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 8 Jul
- 2022 15:15:01 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
-Subject: [PATCH v5 3/3] crypto: hisilicon/qm - defining the device isolation strategy
-Date:   Fri, 8 Jul 2022 15:08:20 +0800
-Message-ID: <20220708070820.43958-4-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220708070820.43958-1-yekai13@huawei.com>
-References: <20220708070820.43958-1-yekai13@huawei.com>
+        Fri, 8 Jul 2022 03:16:16 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D1E796BB;
+        Fri,  8 Jul 2022 00:16:15 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 264CB21A46;
+        Fri,  8 Jul 2022 07:16:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1657264573; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AR73VFU4xhO2Wv5kLjdkzS0nSTAgkRpNRvkdlCke4Ak=;
+        b=Bpppd1GEhso3X+/xusk2NqO2VthvZZ9NUM/R8rzwUFiPbL+NqMmBcNvU0Y72/EsGaFxXNU
+        4BfsCGl1HPqsjjHOq58R82LNgbxVRH9gj7A6ERHrhWCiuZKf6OaPTin+rWsQQgmPwARIQm
+        T7zP516fEPOXztnSV5wvWwaADdlN4KQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1657264573;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AR73VFU4xhO2Wv5kLjdkzS0nSTAgkRpNRvkdlCke4Ak=;
+        b=s1QhdVaXv0j+QjrUNzPD2yeNaEJaxE+XelKwd6DEh3mzpEv69+0f6R1pG8r2pcWrhF0928
+        rvplMhWpotDhgRBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E5A1E13A7D;
+        Fri,  8 Jul 2022 07:16:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id elb8NrzZx2IwDQAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Fri, 08 Jul 2022 07:16:12 +0000
+Message-ID: <98363f27-e7a4-7351-fad7-361f7e465b7e@suse.cz>
+Date:   Fri, 8 Jul 2022 09:16:12 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] clk: pistachio: Fix initconst confusion
+Content-Language: en-US
+To:     Stephen Boyd <sboyd@kernel.org>, mturquette@baylibre.com
+Cc:     mliska@suse.cz, linux-kernel@vger.kernel.org,
+        Andi Kleen <ak@linux.intel.com>, linux-clk@vger.kernel.org
+References: <20220623083217.26433-1-jslaby@suse.cz>
+ <20220624004225.0DE4AC3411D@smtp.kernel.org>
+ <0edab0e2-5355-a3da-445d-b6f45e3082ed@suse.cz>
+ <20220629082104.E25D2C34114@smtp.kernel.org>
+From:   Jiri Slaby <jslaby@suse.cz>
+In-Reply-To: <20220629082104.E25D2C34114@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define the device isolation strategy by the device driver. The
-user configures a frequency value by uacce interface. If the
-slot reset frequency exceeds the value of setting for a certain
-period of time, the device will not be available in user space.
-The time window is one hour. The VF device use the PF device
-isolation strategy. All the hardware errors are processed by PF
-driver. This solution can be used for other drivers.
+On 29. 06. 22, 10:21, Stephen Boyd wrote:
+> Quoting Jiri Slaby (2022-06-27 00:46:15)
+>> On 24. 06. 22, 2:42, Stephen Boyd wrote:
+>>> Quoting Jiri Slaby (2022-06-23 01:32:16)
+>>>> From: Andi Kleen <ak@linux.intel.com>
+>>>>
+>>>> A variable pointing to const isn't const itself. It'd have to contain
+>>>> "const" keyword after "*" too. Therefore, PNAME() cannot put the strings
+>>>> to "rodata".  Hence use __initdata instead of __initconst to fix this.
+>>>>
+>>>> [js] more explanatory commit message.
+>>>>
+>>>> Cc: Michael Turquette <mturquette@baylibre.com>
+>>>> Cc: Stephen Boyd <sboyd@kernel.org>
+>>>> Cc: linux-clk@vger.kernel.org
+>>>> Signed-off-by: Andi Kleen <ak@linux.intel.com>
+>>>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>>>> ---
+>>>>    drivers/clk/pistachio/clk.h | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/clk/pistachio/clk.h b/drivers/clk/pistachio/clk.h
+>>>> index f9c31e3a0e47..742e5fab00c0 100644
+>>>> --- a/drivers/clk/pistachio/clk.h
+>>>> +++ b/drivers/clk/pistachio/clk.h
+>>>> @@ -34,7 +34,7 @@ struct pistachio_mux {
+>>>>           const char **parents;
+>>>>    };
+>>>>    
+>>>> -#define PNAME(x) static const char *x[] __initconst
+>>>> +#define PNAME(x) static const char *x[] __initdata
+>>>
+>>> Can it be const char * const and left as __initconst?
+>>
+>> Let me check, IIRC the struct where this is assigned would need to be
+>> updated too.
+>>
+>> I will get into it only some time next week.
+>>
+> 
+> Ok, sounds good. This seems to at least compile locally.
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- drivers/crypto/hisilicon/qm.c | 163 +++++++++++++++++++++++++++++++---
- include/linux/hisi_acc_qm.h   |   9 ++
- 2 files changed, 160 insertions(+), 12 deletions(-)
+Yeah, that works. I've sent a v2.
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index ad83c194d664..8eb3b790a655 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -417,6 +417,16 @@ struct hisi_qm_resource {
- 	struct list_head list;
- };
- 
-+/**
-+ * struct qm_hw_err - Structure describing the device errors
-+ * @list: hardware error list
-+ * @timestamp: timestamp when the error occurred
-+ */
-+struct qm_hw_err {
-+	struct list_head list;
-+	unsigned long long timestamp;
-+};
-+
- struct hisi_qm_hw_ops {
- 	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
- 	void (*qm_db)(struct hisi_qm *qm, u16 qn,
-@@ -3410,6 +3420,111 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
- 	return 0;
- }
- 
-+/**
-+ * qm_hw_err_isolate() - Try to isolate the uacce device with its VFs
-+ * according to user's configuration of isolation strategy. Warning: this
-+ * API should be called while there the users on this device are suspended
-+ * by slot resetting preparation of PCI AER.
-+ * @qm: the uacce device
-+ */
-+static int qm_hw_err_isolate(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp, *hw_err;
-+	struct qm_err_isolate *isolate;
-+	u32 count = 0;
-+
-+	isolate = &qm->isolate_data;
-+
-+#define SECONDS_PER_HOUR	3600
-+
-+	/* All the hw errs are processed by PF driver */
-+	if (qm->uacce->is_vf || isolate->is_isolate ||
-+	    !isolate->hw_err_isolate_hz)
-+		return 0;
-+
-+	hw_err = kzalloc(sizeof(*hw_err), GFP_ATOMIC);
-+	if (!hw_err)
-+		return -ENOMEM;
-+
-+	mutex_lock(&isolate->isolate_lock);
-+	hw_err->timestamp = jiffies;
-+	list_for_each_entry_safe(err, tmp, &isolate->uacce_hw_errs, list) {
-+		if ((hw_err->timestamp - err->timestamp) / HZ >
-+		    SECONDS_PER_HOUR) {
-+			list_del(&err->list);
-+			kfree(err);
-+		} else {
-+			count++;
-+		}
-+	}
-+	list_add(&hw_err->list, &isolate->uacce_hw_errs);
-+	mutex_unlock(&isolate->isolate_lock);
-+
-+	if (count >= isolate->hw_err_isolate_hz)
-+		isolate->is_isolate = true;
-+
-+	return 0;
-+}
-+
-+static void qm_hw_err_destroy(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp;
-+
-+	mutex_lock(&qm->isolate_data.isolate_lock);
-+	list_for_each_entry_safe(err, tmp, &qm->isolate_data.uacce_hw_errs, list) {
-+		list_del(&err->list);
-+		kfree(err);
-+	}
-+	mutex_unlock(&qm->isolate_data.isolate_lock);
-+}
-+
-+static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+
-+	if (uacce->is_vf)
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+	else
-+		pf_qm = qm;
-+
-+	return pf_qm->isolate_data.is_isolate ?
-+			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
-+}
-+
-+static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
-+					  u32 freq)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+
-+	/* Must be set by PF */
-+	if (uacce->is_vf)
-+		return -EINVAL;
-+
-+	if (qm->isolate_data.is_isolate)
-+		return -EINVAL;
-+
-+	qm->isolate_data.hw_err_isolate_hz = freq;
-+
-+	/* After the policy is updated, need to reset the hardware err list */
-+	qm_hw_err_destroy(qm);
-+
-+	return 0;
-+}
-+
-+static u32 hisi_qm_isolate_strategy_read(struct uacce_device *uacce)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+
-+	if (uacce->is_vf) {
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+		return pf_qm->isolate_data.hw_err_isolate_hz;
-+	} else {
-+		return qm->isolate_data.hw_err_isolate_hz;
-+	}
-+}
-+
- static const struct uacce_ops uacce_qm_ops = {
- 	.get_available_instances = hisi_qm_get_available_instances,
- 	.get_queue = hisi_qm_uacce_get_queue,
-@@ -3419,8 +3534,22 @@ static const struct uacce_ops uacce_qm_ops = {
- 	.mmap = hisi_qm_uacce_mmap,
- 	.ioctl = hisi_qm_uacce_ioctl,
- 	.is_q_updated = hisi_qm_is_q_updated,
-+	.get_isolate_state = hisi_qm_get_isolate_state,
-+	.isolate_strategy_write = hisi_qm_isolate_strategy_write,
-+	.isolate_strategy_read = hisi_qm_isolate_strategy_read,
- };
- 
-+static void qm_remove_uacce(struct hisi_qm *qm)
-+{
-+	struct uacce_device *uacce = qm->uacce;
-+
-+	if (qm->use_sva) {
-+		qm_hw_err_destroy(qm);
-+		uacce_remove(uacce);
-+		qm->uacce = NULL;
-+	}
-+}
-+
- static int qm_alloc_uacce(struct hisi_qm *qm)
- {
- 	struct pci_dev *pdev = qm->pdev;
-@@ -3446,8 +3575,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 		qm->use_sva = true;
- 	} else {
- 		/* only consider sva case */
--		uacce_remove(uacce);
--		qm->uacce = NULL;
-+		qm_remove_uacce(qm);
- 		return -EINVAL;
- 	}
- 
-@@ -3479,6 +3607,8 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 	uacce->qf_pg_num[UACCE_QFRT_DUS]  = dus_page_nr;
- 
- 	qm->uacce = uacce;
-+	INIT_LIST_HEAD(&qm->isolate_data.uacce_hw_errs);
-+	mutex_init(&qm->isolate_data.isolate_lock);
- 
- 	return 0;
- }
-@@ -5109,6 +5239,12 @@ static int qm_controller_reset_prepare(struct hisi_qm *qm)
- 		return ret;
- 	}
- 
-+	if (qm->use_sva) {
-+		ret = qm_hw_err_isolate(qm);
-+		if (ret)
-+			pci_err(pdev, "failed to isolate hw err!\n");
-+	}
-+
- 	ret = qm_wait_vf_prepare_finish(qm);
- 	if (ret)
- 		pci_err(pdev, "failed to stop by vfs in soft reset!\n");
-@@ -5436,19 +5572,25 @@ static int qm_controller_reset(struct hisi_qm *qm)
- 	ret = qm_soft_reset(qm);
- 	if (ret) {
- 		pci_err(pdev, "Controller reset failed (%d)\n", ret);
--		qm_reset_bit_clear(qm);
--		return ret;
-+		goto err_reset;
- 	}
- 
- 	ret = qm_controller_reset_done(qm);
--	if (ret) {
--		qm_reset_bit_clear(qm);
--		return ret;
--	}
-+	if (ret)
-+		goto err_reset;
- 
- 	pci_info(pdev, "Controller reset complete\n");
- 
- 	return 0;
-+
-+err_reset:
-+	pci_err(pdev, "Controller reset failed (%d)\n", ret);
-+	qm_reset_bit_clear(qm);
-+
-+	/* if resetting fails, isolate the device */
-+	if (qm->use_sva && !qm->uacce->is_vf)
-+		qm->isolate_data.is_isolate = true;
-+	return ret;
- }
- 
- /**
-@@ -6246,10 +6388,7 @@ int hisi_qm_init(struct hisi_qm *qm)
- err_free_qm_memory:
- 	hisi_qm_memory_uninit(qm);
- err_alloc_uacce:
--	if (qm->use_sva) {
--		uacce_remove(qm->uacce);
--		qm->uacce = NULL;
--	}
-+	qm_remove_uacce(qm);
- err_irq_register:
- 	qm_irq_unregister(qm);
- err_pci_init:
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 116e8bd68c99..e7aa6a451ec9 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -271,6 +271,14 @@ struct hisi_qm_poll_data {
- 	u16 *qp_finish_id;
- };
- 
-+struct qm_err_isolate {
-+	struct mutex isolate_lock;
-+	/* user cfg freq which triggers isolation */
-+	u32 hw_err_isolate_hz;
-+	bool is_isolate;
-+	struct list_head uacce_hw_errs;
-+};
-+
- struct hisi_qm {
- 	enum qm_hw_ver ver;
- 	enum qm_fun_type fun_type;
-@@ -335,6 +343,7 @@ struct hisi_qm {
- 	struct qm_shaper_factor *factor;
- 	u32 mb_qos;
- 	u32 type_rate;
-+	struct qm_err_isolate isolate_data;
- };
- 
- struct hisi_qp_status {
+BTW is the code intended to put the actual strings to .init.rodata? As 
+that was never the case. Only those PNAME defined arrays (pointers to 
+strings) end up in .init.rodata now and the strings are in .rodata.
+
+> ----8<---
+> 
+> diff --git a/drivers/clk/pistachio/clk.h b/drivers/clk/pistachio/clk.h
+> index f9c31e3a0e47..8be02ac2d909 100644
+> --- a/drivers/clk/pistachio/clk.h
+> +++ b/drivers/clk/pistachio/clk.h
+> @@ -31,10 +31,10 @@ struct pistachio_mux {
+>   	unsigned int shift;
+>   	unsigned int num_parents;
+>   	const char *name;
+> -	const char **parents;
+> +	const char * const *parents;
+>   };
+>   
+> -#define PNAME(x) static const char *x[] __initconst
+> +#define PNAME(x) static const char * const x[] __initconst
+>   
+>   #define MUX(_id, _name, _pnames, _reg, _shift)			\
+>   	{							\
+
+
 -- 
-2.33.0
-
+js
+suse labs
