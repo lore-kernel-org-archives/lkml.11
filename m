@@ -2,107 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D34C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240493AbiGHVpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 17:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
+        id S240502AbiGHVpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 17:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239869AbiGHVpk (ORCPT
+        with ESMTP id S240497AbiGHVpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 17:45:40 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAEE23153;
-        Fri,  8 Jul 2022 14:45:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657316739; x=1688852739;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=scaxfi9b+Fo210pb1G9BZje6ENg5BFTq+IGw3i8M+wA=;
-  b=PwzEZkGfsh1SmLyzQm388P1bDpRy8j8yQHyJZ6QlnVrpfXJJZQUQ2NFy
-   cHBus/O3/eT33gqJvFAx1dahkXZTbWF1yOvYMvdMWNirAuH0bafeyrYnj
-   PgEdfqi+q2/5LO5/J//k52Jp7dLaCaXcAWTXSaZzKJbdCfZGSucX4Ve6P
-   56+JP8k3N+W6IvwmilnE/jeGQb1BZwCzOsKPwd/g3bgtJ7RSalPsTnmY8
-   XjdM+hMB6lWAXtSFwvyvSmdkySAY52Ypv0y1p2LO/ppxXbLMekW614YGu
-   yHtXXqBKAeDpEfQP5miK0QAl744+h2tcqqR6xZihlKsPx6j9ul1/zWWbE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="264151935"
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="264151935"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 14:45:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="569089890"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 08 Jul 2022 14:45:35 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 16091AD; Sat,  9 Jul 2022 00:45:43 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Rob Herring <robh@kernel.org>,
-        Frank Rowand <frank.rowand@sony.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v4 2/2] of: unittest: make unittest_gpio_remove() consistent with unittest_gpio_probe()
-Date:   Sat,  9 Jul 2022 00:45:39 +0300
-Message-Id: <20220708214539.7254-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220708214539.7254-1-andriy.shevchenko@linux.intel.com>
-References: <20220708214539.7254-1-andriy.shevchenko@linux.intel.com>
+        Fri, 8 Jul 2022 17:45:45 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212992AD5
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 14:45:44 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id n12so193930pfq.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 14:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=YBc9G5UuEAIKirG2rLX1ZWqv97wMz4nAZu2cr2x+2/o=;
+        b=cpWCgFQspdByfnqpqzsWdF0u6wqEPyvUe3n16GMOC9W3Cl1L81V+sLyBTRApTp3xRj
+         OW9hRrQsDMWvg24Vo9hNoeQBBe4tN8qslvg/MfEe6QUvWRB6niRDeQee7TKVz2JPFvEf
+         338NB4Q2OabrKxJZa24oo7uHPOISFdle6tJtvJ244NyEWersk1NYP+zJ80A6/ZZGUa5h
+         BCc2b3lWHqtTX2HO7X51nQkLKJ82/0N9gieovze9awQysbBrsySasIHdG4E7xeOOqwl8
+         JUhFutCz8mgbeyudWnj94E5DLvgkCEqRMtqVjapZufWVhuQbZSRXVuFY3t/EtUTOIsdv
+         KXTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=YBc9G5UuEAIKirG2rLX1ZWqv97wMz4nAZu2cr2x+2/o=;
+        b=Yl+Z/2hIIddYewu8V8hdgJmxXwgreeG4fVzKEDzxLI3229zMh96RZE9I+19JNQqxwT
+         UAm5STXcJkPZoSVJ+E6JzCbnhT1xS/2x291gudA3I1uOIjfL7EG2RFjlyqEQgQ9ryjqE
+         FqQ6r4UKz/yLrscoOYA5qOTShJQQFUHabf6lqM8jm0gZ1cg3AhhgRc9UPU/2wLlZ2X/d
+         7YmlNzxwJPb+mVAFDwQ+0R2LMt+UfcUz2f2K5EPbT4QGtTETb7giGiMTZJxQwLSQCad8
+         ZMFpEW3o7kk7mLrIqitqPpic6R4+O4pxJEz34LPydt39HUQ9cpkEWoQJzFP6XCJgDMxB
+         eGHg==
+X-Gm-Message-State: AJIora/M7DTk7tbNFkZJXto3fpf94DVXccuYalvwYdQdJGlRnHhYWmdQ
+        Z5Aejxh3RL/BnkTkReq2o+fJl6DkrbWSGw==
+X-Google-Smtp-Source: AGRyM1txfb5vm0s4osoLdd3ahuRLDA8B45uPIvFfp/fMN/NWmx+atJIJLE1Yyoiu+xDcEVPwHpnB6A==
+X-Received: by 2002:a63:4042:0:b0:411:bbfe:e736 with SMTP id n63-20020a634042000000b00411bbfee736mr5024669pga.1.1657316743257;
+        Fri, 08 Jul 2022 14:45:43 -0700 (PDT)
+Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id u17-20020a170902e5d100b0016bea2a0a8dsm1715plf.91.2022.07.08.14.45.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 14:45:42 -0700 (PDT)
+References: <20220708211755.73637-1-schspa@gmail.com>
+ <20220708172614.14191089@gandalf.local.home>
+User-agent: mu4e 1.7.5; emacs 28.1
+From:   Schspa Shi <schspa@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] sched/rt: fix bad task migration for rt tasks
+Date:   Sat, 09 Jul 2022 05:32:25 +0800
+In-reply-to: <20220708172614.14191089@gandalf.local.home>
+Message-ID: <m2v8s7mg78.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On the ->remove() stage the callback uses physical device node instead of one
-from GPIO chip and the variable name which is different to one used in
-unittest_gpio_probe(). Make these consistent with unittest_gpio_probe().
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: no changes
- drivers/of/unittest.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+Steven Rostedt <rostedt@goodmis.org> writes:
 
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index 5a842dfc27e8..eafa8ffefbd0 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -1620,20 +1620,19 @@ static int unittest_gpio_probe(struct platform_device *pdev)
- 
- static int unittest_gpio_remove(struct platform_device *pdev)
- {
--	struct unittest_gpio_dev *gdev = platform_get_drvdata(pdev);
-+	struct unittest_gpio_dev *devptr = platform_get_drvdata(pdev);
- 	struct device *dev = &pdev->dev;
--	struct device_node *np = pdev->dev.of_node;
- 
--	dev_dbg(dev, "%s for node @%pOF\n", __func__, np);
-+	dev_dbg(dev, "%s for node @%pfw\n", __func__, devptr->chip.fwnode);
- 
--	if (!gdev)
-+	if (!devptr)
- 		return -EINVAL;
- 
--	if (gdev->chip.base != -1)
--		gpiochip_remove(&gdev->chip);
-+	if (devptr->chip.base != -1)
-+		gpiochip_remove(&devptr->chip);
- 
- 	platform_set_drvdata(pdev, NULL);
--	kfree(gdev);
-+	kfree(devptr);
- 
- 	return 0;
- }
+> On Sat,  9 Jul 2022 05:17:54 +0800
+> Schspa Shi <schspa@gmail.com> wrote:
+>
+>> +++ b/kernel/sched/rt.c
+>> @@ -1998,11 +1998,14 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
+>>  			 * the mean time, task could have
+>>  			 * migrated already or had its affinity changed.
+>>  			 * Also make sure that it wasn't scheduled on its rq.
+>> +			 * It is possible the task has running for a while,
+>
+> I don't understand the "running for a while" part. That doesn't make sense.
+>
+
+When I say "run for a while" I mean as long as the task has
+run capability, we should check the migrate disabled flag again.
+
+> The only way this can happen is that it was scheduled, set
+> "migrate_disabled" and then got preempted where it's no longer on the run
+> queue.
+
+Yes, it is the only case.
+
+> -- Steve
+>
+>
+>> +			 * And we check task migration disable flag here.
+>>  			 */
+>>  			if (unlikely(task_rq(task) != rq ||
+>>  				     !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_mask) ||
+>>  				     task_running(rq, task) ||
+>>  				     !rt_task(task) ||
+>> +				     is_migration_disabled(task) ||
+>>  				     !task_on_rq_queued(task))) {
+>>  
+>>  				double_unlock_balance(rq, lowest_rq);
+
 -- 
-2.35.1
-
+BRs
+Schspa Shi
