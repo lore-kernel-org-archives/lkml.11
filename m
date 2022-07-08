@@ -2,245 +2,395 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B19DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FFBCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239999AbiGHTtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
+        id S239975AbiGHTwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238813AbiGHTt2 (ORCPT
+        with ESMTP id S238431AbiGHTw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:49:28 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2078.outbound.protection.outlook.com [40.107.93.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB428734F;
-        Fri,  8 Jul 2022 12:49:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZL7eC7qG3BH7kJSlRA1pn3xFgZrfdIcDlmWhoyeDrRkslfkZ0AtCJerIntXOK+U2WwzA8mSueIOTpTP06DOCgCSEwwqoZr2cu9kQYyrx7uaiqTupZ5Z6cqBT0gW9eRPxHoYren8TlWULV7Gzbx1P5ZcpEYILWUrIc1jexC7c+0kwS2+RQjXXiYmcs15X9ZepnOcUcThc0bGNZaW502atstcT0LKb1Oaa796DNmqa84iIYTYCXRr14fpNfCJe4RK+MnB8h7+hnDIZ4Ftt9rNNqMRluoDP/EkaLOqvrp1LHIIxreMYchxIsoN98XNAEpXGralFlBiBouHuFeN+3rhRLg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XEE9aUzFze7uv1ehjp1VnMiNmgbP2YgmfSYVP/oAUAY=;
- b=O3KtbMo8wtCd2CKX3mhvJYxG/KnV0A2c+pXbIi8CqJNMssBWe26VBV3RZ3VpMAK0RqwzkexM0EpeNbow872gvF4hHMm7yEBMKvI3j7D+Miwt6B8J80BI+zg1Kzw5WAOJUj0AV3lS6IiwGeukZlosL3wMdbYNp9IZ1SI0qqkhdvlnNUaAqy4EwrBPghv5Usy6CZ6qrMIUvKAFnjIDeebyh4Jg3UlcZ8JGDUBb8xcOLeNgddEAFLQ2cdhF6MFhEWfOkZhK7pUBC+1ObxIbGuHLlRGy0FmS057SFvlonWtGE0EnaL3wq6mkaEAP+YyxRLni7qXj/BFf629r7ymwZgSKZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XEE9aUzFze7uv1ehjp1VnMiNmgbP2YgmfSYVP/oAUAY=;
- b=gq6uywkGZWzToSRsAghxdRoZ8qNr/A9bPReV2ExData95yWzjzZwc/rrh77RNmoJkjcXbpdxoaEg1j0kN/JSIsd0m6owRh/4naTzBHNxE2P0ZZNrl4HKKShSaqn/gpspWJUombDKv0ix/SvpRD/KNnQtnWypieulUuPvaZfeLFY=
-Received: from BY3PR05MB8531.namprd05.prod.outlook.com (2603:10b6:a03:3ce::6)
- by BN7PR05MB5731.namprd05.prod.outlook.com (2603:10b6:408:e::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Fri, 8 Jul
- 2022 19:49:22 +0000
-Received: from BY3PR05MB8531.namprd05.prod.outlook.com
- ([fe80::a4f8:718a:b2a0:977f]) by BY3PR05MB8531.namprd05.prod.outlook.com
- ([fe80::a4f8:718a:b2a0:977f%6]) with mapi id 15.20.5417.021; Fri, 8 Jul 2022
- 19:49:21 +0000
-From:   Nadav Amit <namit@vmware.com>
-To:     Matthew Wilcox <willy@infradead.org>
-CC:     Ajay Kaher <akaher@vmware.com>, Bjorn Helgaas <helgaas@kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        Srivatsa Bhat <srivatsab@vmware.com>,
-        "srivatsa@csail.mit.edu" <srivatsa@csail.mit.edu>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Anish Swaminathan <anishs@vmware.com>,
-        Vasavi Sirnapalli <vsirnapalli@vmware.com>,
-        "er.ajay.kaher@gmail.com" <er.ajay.kaher@gmail.com>
-Subject: Re: [PATCH] MMIO should have more priority then IO
-Thread-Topic: [PATCH] MMIO should have more priority then IO
-Thread-Index: AQHYiw9NzqWSNRsR1kyxPrXhcjObWa1lHkCAgA7qdoCAAHWQAIAAP7qAgAATwgCAAAszgIAAAjYAgAASVwA=
-Date:   Fri, 8 Jul 2022 19:49:21 +0000
-Message-ID: <85071FE5-E37A-44CF-9EF7-CB80C116A876@vmware.com>
-References: <1656433761-9163-1-git-send-email-akaher@vmware.com>
- <20220628180919.GA1850423@bhelgaas>
- <25F843ED-7EB4-4D00-96CB-7DE1AC886460@vmware.com>
- <YsgplrrJnk5Ly19z@casper.infradead.org>
- <96D533E5-F3AF-4062-B095-8C143C307E37@vmware.com>
- <YshvnodeqmJV6uIJ@casper.infradead.org>
- <1A0FA5B7-39E8-4CAE-90DD-E260937F14E1@vmware.com>
- <Ysh63kRVGMFJMNfG@casper.infradead.org>
-In-Reply-To: <Ysh63kRVGMFJMNfG@casper.infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.100.31)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vmware.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 17e5a1b8-f748-48d5-b541-08da611af41d
-x-ms-traffictypediagnostic: BN7PR05MB5731:EE_
-x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: =?utf-8?B?TUczRENWWTZRT2Uwd2Zlb0tOOE1iY2JmMXYydWNJbk9OVVlUYTJhd0dhempG?=
- =?utf-8?B?cHJFemVkNkhNOGtUbDIxY2JZYlRJWW5JRk04bCtlbHlORHVoTFF4dHpvUzBm?=
- =?utf-8?B?bVZsMXJDdGRxbXdJYlpCa3VQMGIxUWxldE12UXRLdUsxZ0szbFV2RGFWdTBN?=
- =?utf-8?B?b1BZQ0pLZ3F5OVE3T2x2UXNJWDJMNFJFMzBmc0RUZVBweSswUUdZNW5jZ1lK?=
- =?utf-8?B?dG9vUCtQa3RyeG5sbEtTTFJhVUhzSWEvdGtXRzV1WS80N1h6dDZnNTJibXBK?=
- =?utf-8?B?ZjZnaUNqVWZMQzc5aVVVUEorWldOOGdJREZNT2srb0h5RWkwYUtBVGN0K1Bv?=
- =?utf-8?B?eXJiVjBkR25jY3Q0bmtDWmN2Q3o1dTB3Y0h1ZHIrTytDM3FWVzVJRWdGbWNB?=
- =?utf-8?B?d0krKytkWGovL1FZdjBHRjRISXZ5YnNQeS9pcThXU0d4VlNCNEs4LzF5NW4y?=
- =?utf-8?B?NTJjNE9hRDB2R1VDcHlLSFdJNENETFo5M2M1QW9HODl5OGhRTnNuZlJydkFB?=
- =?utf-8?B?MHlQRXhTN3dkREt2UG9MdDhuWU5yRXo2SjJRS3RRTjJQbW8wMDNialpibm02?=
- =?utf-8?B?WDZRdXovbE0yT21TbEtxVEdqUEd3ZGZXdU1Xa2hQcmVlNVBWZ2ZjcTdnT0hx?=
- =?utf-8?B?WGdxWk5TS1FpbUIwelRhcnBmanZqbHBJTUZFdkhQOHFWa0xJQWV2MkpCbXRm?=
- =?utf-8?B?UFlQVzZPNUNlamwwNDRSWFQrTVpBS1RBS1NFMDNZRWpnd1k1SWhVaE0rRlpW?=
- =?utf-8?B?RFRaa3hqa08reGV4NEpOdVpQM21YOFZpVXU3VEtiYlFjbTFML3ZUeCt4ekZI?=
- =?utf-8?B?N25INmVJalBsWno2VER1WUZHWURsNEhNclV6T1lsSHVmbnAvcmlydkVhcWt3?=
- =?utf-8?B?b29adGY5Zi8zenFMZUtTcHZ5SjNzQU9pVlB0K0lsb3BzT0I5NHNzc1hUTFhz?=
- =?utf-8?B?dkxWSUtnbnZhUW1jelBxTUZ3UXJwWTNvSkhocitWcURCVGNnQS9acUFSWnpU?=
- =?utf-8?B?alpaUE1ucGdMQjJNZnExWXVmY0FLMEF0ZEVEbWJ4VlMwaHhJcVJUL1lUTHZQ?=
- =?utf-8?B?SlM1WXlQMFFrcnluRnZIOTVoUzR1eklQSjlWUGh6QjBpb3JwMWlnbjMyNElN?=
- =?utf-8?B?RWVpSjAzSklFSWp0clYwOFA5ZGtHK1pvaGo2NnpHdWFyOU9ZK29xLzZRWWh5?=
- =?utf-8?B?eDdnb2tuN0t3djdnc2Z5dXdNRWhrNFZDeGpXL1MzWkRUVGRuVVJEQkNXc1BU?=
- =?utf-8?B?RFh1U1pRRzR4N0RTSmF3RzJTcVNWVmx0VFNrZXBoRDlIZGFJUT09?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR05MB8531.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(346002)(136003)(39860400002)(396003)(38100700002)(8676002)(5660300002)(66946007)(7416002)(66446008)(83380400001)(66476007)(64756008)(4326008)(66556008)(76116006)(122000001)(186003)(53546011)(38070700005)(6506007)(6916009)(54906003)(316002)(2616005)(478600001)(2906002)(33656002)(71200400001)(41300700001)(86362001)(6512007)(26005)(36756003)(8936002)(6486002)(45080400002)(556444004)(31884004)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?enU1K25KSGcwRWVQZmk1Wlk1UXdXQXJWejlBNFVzRXZ3aWJCZ2lFZUxJYm5p?=
- =?utf-8?B?WUEvc25mUmNjNGhvWVVvd3l6bW9EUlhBelhsTXRmUEVMTys4emtIZUVNdWl2?=
- =?utf-8?B?U211Y3VDRHdQVXBTUDQzNU1aQXlDUjFrMlhJQXV1YVRvVDFZcklqMXVTVUdT?=
- =?utf-8?B?cHZWbDV3czZiSzZZemsrWlRtM2N3MTd3VkNkZDhMdzBnaTVmaDJrTWIyamhy?=
- =?utf-8?B?b0VhZk0vZ3dvUGJBdTRwVzhVMTc5NDBaNjg2TkNvRXhNeDBzamQ5SnlFaUZi?=
- =?utf-8?B?S0wxNStDU0ZMRTlqU3RMM0xidDlxUU9CaGNibzQwNENsNURORjlEdFVaWEEx?=
- =?utf-8?B?UEQxVVIzT0RNWEh0RGpoM2Y5WUJHQ3AxZnJQZG5tbUN5cFltVmdPNVI0WVIv?=
- =?utf-8?B?RkdYMjdLSzV3QW9LbkZkZm90K0pBVTNncnIwbVltcFBFZWtaeWNNaDZyR0xJ?=
- =?utf-8?B?Z2Jyc2R4YkJ3L0tGSXdYVlNNUzFpMERuWlVrd0tlczNrMVdtOFFkV1Jja3Fr?=
- =?utf-8?B?Ly83TzA3TEUxcVRwdGRjSFFnSlRtSzl0eklhYTc4a0JjdnlwU05WWHdxL21H?=
- =?utf-8?B?VTJQeVF4M0Zob2Fxb3ZIY0grd2YyQW0wdkNrcEpZbVFZc1ZkWXBqQjZCQUc1?=
- =?utf-8?B?K0RTUk9vSTF3L2hWU3haODNHa1orSnluUGJjckF6MlF0a2VxUzYvamlIWExZ?=
- =?utf-8?B?WkRLY0tKSkUrNDNHSzdxdjZlNXVhTGhzZURzRmtyTitEVllRQjJkYjRQL1Rx?=
- =?utf-8?B?V1RET2plTUc3d3NkYXNDL3pCbEZlejdUak90bVlOUkNlRCtzTk85YUl4N1RJ?=
- =?utf-8?B?M0E0eEIwMmxMNktsWVVFTUZKNWFQQ3RId2h0UDZLdEhlcTJCRExvZVRvOVFW?=
- =?utf-8?B?WlJxVGsxeW5LemNHZkhxajM2N05WaGoyclBCQWRicGxxaHc2cmRqRy9qUjY0?=
- =?utf-8?B?UXdkZWVrT0ExL2x1WnNJVy8ybk0rdHEyQ0xLRk5UZ2RNVTFaaGtzb0YzSFQv?=
- =?utf-8?B?RXVDSlpjc3QvVHVtdTNXQmR6eUE5dnFmT09ROU5EVVptREs0T1hvSWNsUFlU?=
- =?utf-8?B?dVFtOERaSmxHV0YvWnhlREVjR0x5cHZwdmhVQmJhRVYyL1hPQ2VVWllsTm52?=
- =?utf-8?B?a0x6b3lWdDFxNmhGUG5MQkg4QnJWTlFCVWhZeS82bldtK0tNbDVOWU9sZTZV?=
- =?utf-8?B?dFdOell4RTNaN0dnVlZCbysxMHdtb3JiSEE0ZlRTajlLVW1zNUtVaGt6VjFG?=
- =?utf-8?B?Q01uOE8zYmNaQ0Y2MXhWRXBwWERGSzREcitYWmc5MEUrQzAwdW9ZUGdaUERN?=
- =?utf-8?B?dWxFdEV2MTJKM1U1clVLdzJQOXVjN1g3YkVPSVkzRHFJMVN6MUlISVJkbHFF?=
- =?utf-8?B?QWJiT3dpWTh2VTRuUG1JQzNFRXRMcmRPcDZqcUM3Q1lYZ1NybTdqVFdrK010?=
- =?utf-8?B?WjlucGlwV3BmOHdKNlNQQUE5TjJpc1BENncvMDdIa0F4UW5HVnI2MlgyUUdI?=
- =?utf-8?B?VXkrMVBUVHdlNGRBNk9FRXdXczU0VFJPTVhtL2NOcWZPOHlqejFZeXJoMHRZ?=
- =?utf-8?B?RjVVYUhSSmpZZ2hSWUpsL0NoOTNBUDNwTVNzOWhwOFpTTlNhUFlndWNwaFZr?=
- =?utf-8?B?U0JQZjcyZDVabFI3LzFiTkg1VnZjSENhQkZvSkcrRUdJTnRUcTMreDdyaW1n?=
- =?utf-8?B?d0ZGQlVFVVdRNlB1Q0cwSWl3a3REbjFQNjNwZVZiQzhLSldZUFh6ckpFc3hQ?=
- =?utf-8?B?bUVEclhsd1dCRVBmRjhkWENGbWxPRGV5NGFtWFZKVjRwWVdZUStkZjQzMHFP?=
- =?utf-8?B?ZVh6cWZNd1VaQWd1d1RDc2o0WnliS3JlZVIwbExNc1VhOExvU2paL29VNnND?=
- =?utf-8?B?aDFKOTAwZ2MzUEdqT1RFdnVXK3RLUXJqWE8xQWhyM0tPalZ4SEJ4RVNVSVN3?=
- =?utf-8?B?SEh4aUx5SEEzbzY2aVJBa1c3Ylhpdmc0Zko2VnRYcXB5SS8wZFR1cGtwUHRw?=
- =?utf-8?B?dE9xaEV5akwzUkN3bzUwZ05qTzB5YXV5djlKMkh1Z2FsZ0YwekRLczZvNXM5?=
- =?utf-8?B?WVJoTnRZZ2cxV09vZDlxWXpiZ0dvQXRtVHlDTHE5Z3ZaNjlZSFV0YnZaTHAv?=
- =?utf-8?Q?AstVfLRxmrtyuo9AibfoKAvMp?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FE1BC45A5A10054C81182E010B71FED1@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Fri, 8 Jul 2022 15:52:27 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AD587356;
+        Fri,  8 Jul 2022 12:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657309944; x=1688845944;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1UpcqXbFQGciPrSqt4XNLrGqlkCYm6ZvagAgH8F/YJw=;
+  b=XJc+e46NuNsFXsbqoq5RkRtAT7xnDR99VoAFrvQ8XRNNQiwzztcLFCCC
+   tM01lvXwQ7P/NeQ6hYZ/SYeXhJZAKHdnTard3oLF6sS77TypX9oG6M6jX
+   jXp1CYSlf+ycBlpiQlsIIDczqEqM+nSNIYrhcfgsq7h6mj3Zu5wBlpcDs
+   gvYjwktQCSn6X+HXQMdtP/z/EcNYD2gB3+2de4KOvvhuqpkR6d5JkJPc4
+   /KEZ+ZwPD9crF4fgffYOoP7K0gOxsbhIi4b6sLWOqfFUT4KwSH4tIu1R6
+   PfvFl5+e44liL7IT1Ov+c7j/IQDdZzUJ/PfouSfeh3p2gnj6g0veWPGpi
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="171654031"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 12:52:23 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 8 Jul 2022 12:52:23 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 8 Jul 2022 12:52:20 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <linus.walleij@linaro.org>, <kavyasree.kotagiri@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <colin.foster@in-advantage.com>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
+        <michael@walle.cc>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH v2 1/2] pinctrl: ocelot: Fix pincfg for lan966x
+Date:   Fri, 8 Jul 2022 21:55:09 +0200
+Message-ID: <20220708195510.2951661-2-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220708195510.2951661-1-horatiu.vultur@microchip.com>
+References: <20220708195510.2951661-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR05MB8531.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17e5a1b8-f748-48d5-b541-08da611af41d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2022 19:49:21.8665
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qdEzFx2jkpv93JH5J6zoLDHKM1S3AuP2txAsnuSyF8X9KNjqJ8EN7PrKiG7/9YeKLnJKp/qkaiP6MIU9HR3jQA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR05MB5731
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gSnVsIDgsIDIwMjIsIGF0IDExOjQzIEFNLCBNYXR0aGV3IFdpbGNveCA8d2lsbHlAaW5mcmFk
-ZWFkLm9yZz4gd3JvdGU6DQoNCj4g4pqgIEV4dGVybmFsIEVtYWlsDQo+IA0KPiBPbiBGcmksIEp1
-bCAwOCwgMjAyMiBhdCAwNjozNTo0OFBNICswMDAwLCBOYWRhdiBBbWl0IHdyb3RlOg0KPj4gT24g
-SnVsIDgsIDIwMjIsIGF0IDEwOjU1IEFNLCBNYXR0aGV3IFdpbGNveCA8d2lsbHlAaW5mcmFkZWFk
-Lm9yZz4gd3JvdGU6DQo+PiANCj4+PiDimqAgRXh0ZXJuYWwgRW1haWwNCj4+PiANCj4+PiBPbiBG
-cmksIEp1bCAwOCwgMjAyMiBhdCAwNDo0NTowMFBNICswMDAwLCBOYWRhdiBBbWl0IHdyb3RlOg0K
-Pj4+PiBPbiBKdWwgOCwgMjAyMiwgYXQgNTo1NiBBTSwgTWF0dGhldyBXaWxjb3ggPHdpbGx5QGlu
-ZnJhZGVhZC5vcmc+IHdyb3RlOg0KPj4+PiANCj4+Pj4+IEFuZCBsb29raW5nIGF0IHRoZSByZXN1
-bHRzIGFib3ZlLCBpdCdzIG5vdCBzbyBtdWNoIHRoZSBQSU8gdnMgTU1JTw0KPj4+Pj4gdGhhdCBt
-YWtlcyBhIGRpZmZlcmVuY2UsIGl0J3MgdGhlIHZpcnR1YWxpc2F0aW9uLiBBIG1taW8gYWNjZXNz
-IGdvZXMNCj4+Pj4+IGZyb20gMjY5bnMgdG8gODV1cy4gUmF0aGVyIHRoYW4gbWVzc2luZyBhcm91
-bmQgd2l0aCBwcmVmZXJyaW5nIE1NSU8NCj4+Pj4+IG92ZXIgUElPIGZvciBjb25maWcgc3BhY2Us
-IGhhdmluZyBhbiAiZW5saWdodGVubWVudCIgdG8gZG8gY29uZmlnDQo+Pj4+PiBzcGFjZSBhY2Nl
-c3NlcyB3b3VsZCBiZSBhIG1vcmUgcHJvZml0YWJsZSBwYXRoLg0KPj4+PiANCj4+Pj4gSSBhbSB1
-bmZhbWlsaWFyIHdpdGggdGhlIG1vdGl2YXRpb24gZm9yIHRoaXMgcGF0Y2gsIGJ1dCBJIGp1c3Qg
-d2FudGVkIHRvDQo+Pj4+IGJyaWVmbHkgcmVnYXJkIHRoZSBhZHZpY2UgYWJvdXQgZW5saWdodG1l
-bnRzLg0KPj4+PiANCj4+Pj4g4oCcZW5saWdodGVubWVudOKAnSwgQUZBSUssIGlzIE1pY3Jvc29m
-dOKAmXMgdGVybSBmb3IgInBhcmEtdmlydHVhbGl6YXRpb24iLCBzbw0KPj4+PiBsZXTigJlzIHJl
-Z2FyZCB0aGUgZ2VuZXJpYyB0ZXJtLiBJIHRoaW5rIHRoYXQgeW91IGNvbnNpZGVyIHRoZSBiYXJl
-LW1ldGFsDQo+Pj4+IHJlc3VsdHMgYXMgdGhlIHBvc3NpYmxlIHJlc3VsdHMgZnJvbSBhIHBhcmF2
-aXJ0dWFsIG1hY2hpbmUsIHdoaWNoIGlzIG1vc3RseQ0KPj4+PiB3cm9uZy4gUGFyYS12aXJ0dWFs
-aXphdGlvbiB1c3VhbGx5IHN0aWxsIHJlcXVpcmVzIGEgVk0tZXhpdCBhbmQgZm9yIHRoZSBtb3N0
-DQo+Pj4+IHBhcnQgdGhlIGh5cGVydmlzb3IvaG9zdCBydW5zIHNpbWlsYXIgY29kZSBmb3IgTU1J
-Ty9oeXBlcmNhbGwgKGNvbmNlcHR1YWxseTsNCj4+Pj4gdGhlIGNvZGUgb2YgcGFyYXZpcnR1YWwg
-YW5kIGZ1bGx5LXZpcnR1YWwgZGV2aWNlcyBpcyBvZnRlbiBkaWZmZXJlbnQsIGJ1dA0KPj4+PiBJ
-SVVDLCB0aGlzIGlzIG5vdCB3aGF0IEFqYXkgbWVhc3VyZWQpLg0KPj4+PiANCj4+Pj4gUGFyYS12
-aXJ0dWFsaXphdGlvbiBjb3VsZCBoYXZlICpwZXJoYXBzKiBoZWxwZWQgdG8gcmVkdWNlIHRoZSBu
-dW1iZXIgb2YNCj4+Pj4gUElPL01NSU8gYW5kIGltcHJvdmUgcGVyZm9ybWFuY2UgdGhpcyB3YXku
-IElmLCBmb3IgaW5zdGFuY2UsIGFsbCB0aGUNCj4+Pj4gUElPL01NSU8gYXJlIGRvbmUgZHVyaW5n
-IGluaXRpYWxpemF0aW9uLCBhIHBhcmF2aXJ0dWFsIGludGVyZmFjZSBjYW4gYmUgdXNlDQo+Pj4+
-IHRvIGJhdGNoIHRoZW0gdG9nZXRoZXIsIGFuZCB0aGF0IHdvdWxkIGhlbHAuIEJ1dCBpdCBpcyBt
-b3JlIGNvbXBsaWNhdGVkIHRvDQo+Pj4+IGdldCBhIHBlcmZvcm1hbmNlIGJlbmVmaXQgZnJvbSBw
-YXJhdmlydHVhbGl6YXRpb24gaWYgdGhlIFBJTy9NTUlPIGFjY2Vzc2VzDQo+Pj4+IGFyZSDigJxz
-cHJlYWTigJ0sIGZvciBpbnN0YW5jZSwgZG9uZSBhZnRlciBlYWNoIGludGVycnVwdC4NCj4+PiAN
-Cj4+PiBXaGF0IGtpbmQgb2YgbG91c3kgcHJvZ3JhbW1pbmcgaW50ZXJmYWNlIHJlcXVpcmVzIHlv
-dSB0byBkbyBhIGNvbmZpZw0KPj4+IHNwYWNlIGFjY2VzcyBhZnRlciBldmVyeSBpbnRlcnJ1cHQ/
-IFRoaXMgaXMgbG9vbmV5LXR1bmVzLg0KPj4gDQo+PiBXaWxkIGV4YW1wbGUsIGhlbmNlIHRoZSDi
-gJxmb3IgaW5zdGFuY2XigJ0uDQo+IA0KPiBTdHVwaWQgZXhhbXBsZSB0aGF0IGRvZXNuJ3QgaGVs
-cC4NCj4gDQo+Pj4gWW91J3ZlIHVzZWQgYSBsb3Qgb2Ygd29yZHMgdG8gbm90IGFuc3dlciB0aGUg
-cXVlc3Rpb24gdGhhdCB3YXMgc28NCj4+PiBpbXBvcnRhbnQgdGhhdCBJIGFza2VkIGl0IHR3aWNl
-LiBXaGF0J3MgdGhlIHVzZSBjYXNlLCB3aGF0J3MgdGhlDQo+Pj4gd29ya2xvYWQgdGhhdCB3b3Vs
-ZCBiZW5lZml0IGZyb20gdGhpcyBwYXRjaD8NCj4+IA0KPj4gV2VsbCwgeW91IHVzZWQgYSBsb3Qg
-b2Ygd29yZHMgdG8gc2F5IOKAnGl0IGNhdXNlcyBwcm9ibGVtc+KAnSB3aXRob3V0IHNheWluZw0K
-Pj4gd2hpY2guIEl0IGFwcGVhcmVkIHlvdSBoYXZlIG1pc2NvbmNlcHRpb25zIGFib3V0IHBhcmF2
-aXJ0dWFsaXphdGlvbiB0aGF0DQo+PiBJIHdhbnRlZCB0byBjb3JyZWN0Lg0KPiANCj4gV2VsbCBu
-b3csIHRoYXQncyBzb21lIGJ1bGxzaGl0LiBJIGRpZCBteSBmdWNraW5nIHJlc2VhcmNoLiBJIHdl
-bnQNCj4gYmFjayAxNCsgeWVhcnMgaW4gaGlzdG9yeSB0byBmaWd1cmUgb3V0IHdoYXQgd2FzIGdv
-aW5nIG9uIGJhY2sgdGhlbi4NCj4gSSBjaXRlZCBjb21taXQgSURzLiBZb3UncmUganVzdCB0b3Nz
-aW5nIG9mZiBzb21lIG9waW5pb25zLg0KPiANCj4gSSBoYXZlIG5vIG1pc2NvbmNlcHRpb25zIGFi
-b3V0IHdoYXRldmVyIHlvdSB3YW50IHRvIGNhbGwgdGhlIG1lY2hhbmlzbQ0KPiBmb3IgY29tbXVu
-aWNhdGluZyB3aXRoIHRoZSBoeXBlcnZpc29yIGF0IGEgaGlnaGVyIGxldmVsIHRoYW4gInByb2Qg
-dGhpcw0KPiBieXRlIi4gRm9yIGV4YW1wbGUsIG9uZSBvZiB0aGUgbW9yZSBpbnRlbnNpdmUgdGhp
-bmdzIHdlIHVzZSBjb25maWcNCj4gc3BhY2UgZm9yIGlzIHNpemluZyBCQVJzLiBJZiB3ZSBoYWQg
-YSBoeXBlcmNhbGwgdG8gc2l6IGEgQkFSLCB0aGF0DQo+IHdvdWxkIGVsaW1pbmF0ZToNCj4gDQo+
-IC0gUmVhZCBjdXJyZW50IHZhbHVlIGZyb20gQkFSDQo+IC0gV3JpdGUgYWxsLW9uZXMgdG8gQkFS
-DQo+IC0gUmVhZCBuZXcgdmFsdWUgZnJvbSBCQVINCj4gLSBXcml0ZSBvcmlnaW5hbCB2YWx1ZSBi
-YWNrIHRvIEJBUg0KPiANCj4gQmluZ28sIG9uZSBoeXBlcmNhbGwgaW5zdGVhZCBvZiA0IE1NSU8g
-b3IgOCBQSU8gYWNjZXNzZXMuDQo+IA0KPiBKdXN0IGJlY2F1c2UgSSBkb24ndCB1c2UgeW91ciB0
-ZXJtaW5vbG9neSwgeW91IHRoaW5rIEkgaGF2ZQ0KPiAibWlzY29uY2VwdGlvbnMiPyBGdWNrIHlv
-dSwgeW91IGNvbmRlc2NlbmRpbmcgcGllY2Ugb2Ygc2hpdC4NCg0KTWF0dGhldywNCg0KSSBkaWQg
-bm90IG1lYW4gdG8gc291bmQgY29uZGVzY2VuZGluZyBhbmQgSSBhcG9sb2dpemUgaWYgSSBkaWQu
-IFlvdSBoYXZlIG15DQoqZnVsbCogcmVzcGVjdCBmb3IgeW91ciBjb2RpbmcvZGVzaWduIHNraWxs
-cy4NCg0KT3V0IG9mIG15IHJlc3BlY3QgdG8geW91LCBJIGFtIGdpdmluZyB5b3UgYSBwYXNzIG9u
-IHlvdXIgY29uZHVjdCB0aGlzIHRpbWUNCmFuZCAqdGhpcyB0aW1lIG9ubHkqLiBEbyBub3QgdXNl
-IHN1Y2ggbGFuZ3VhZ2Ugd2l0aCBtZSBvciBteSBjb2xsZWFndWVzDQphZ2Fpbi4gVGhlIG9ubHkg
-cmVhc29uIEkgZ290IGludm9sdmVkIGluIHRoaXMgZGlzY3Vzc2lvbiBpcyB0aGF0IEkgZmVlbCB0
-aGF0DQpteSBjb2xsZWFndWVzIGhhdmUgY29uY2VybnMgYWJvdXQga2VybmVsIHRveGljIGVudmly
-b25tZW50Lg0KDQpCYWNrIHRvIHRoZSBpc3N1ZSBhdCBoYW5kOiBJIHRoaW5rIHRoYXQgYSBuZXcg
-cGFyYXZpcnR1YWwgaW50ZXJmYWNlIGlzIGENCnBvc3NpYmxlIHNvbHV0aW9uLCB3aXRoIHNvbWUg
-c2VyaW91cyBkcmF3YmFja3MuIFhlbiBkaWQgc29tZXRoaW5nIHNpbWlsYXIsDQpJSVJDLCB0byBh
-IGNlcnRhaW4gZXh0ZW50Lg0KDQpNb3JlIHJlYXNvbmFibGUsIEkgdGhpbmssIGJhc2VkIG9uIHdo
-YXQgeW91IHNhaWQgYmVmb3JlLCBpcyB0byBjaGVjayBpZiB3ZQ0KcnVuIG9uIGEgaHlwZXJ2aXNv
-ciwgYW5kIHVwZGF0ZSByYXdfcGNpX29wcyBhY2NvcmRpbmdseS4gVGhlcmUgaXMgYW4gaXNzdWUN
-Cm9mIHdoZXRoZXIgaHlwZXJ2aXNvciBkZXRlY3Rpb24gbWlnaHQgdGFrZSBwbGFjZSB0b28gbGF0
-ZSwgYnV0IEkgdGhpbmsgdGhpcw0KY2FuIGJlIHJlbGF0aXZlbHkgZWFzaWx5IHJlc29sdmVkLiBU
-aGUgcXVlc3Rpb24gaXMgd2hldGhlciBhc3NpZ25lZCBkZXZpY2VzDQptaWdodCBzdGlsbCBiZSBi
-cm9rZW4uIEJhc2VkIG9uIHRoZSBpbmZvcm1hdGlvbiB0aGF0IHlvdSBwcm92aWRlZCAtIEkgZG8g
-bm90DQprbm93Lg0KDQpJZiB5b3UgY2FuIGFuc3dlciB0aGlzIHF1ZXN0aW9uLCB0aGF0IHdvdWxk
-IGJlIGhlbHBmdWwuIExldOKAmXMgYWxzbyB3YWl0IGZvcg0KQWpheSB0byBnaXZlIHNvbWUgbnVt
-YmVycyBhYm91dCBib290IHRpbWUgd2l0aCB0aGlzIGNoYW5nZS4NCg0K
+The blamed commit introduce support for lan966x which use the same
+pinconf_ops as sparx5. The problem is that pinconf_ops is specific to
+sparx5. More precisely the offset of the bits in the pincfg register are
+different and also lan966x doesn't have support for
+PIN_CONFIG_INPUT_SCHMITT_ENABLE.
+
+Fix this by making pinconf_ops more generic such that it can be also
+used by lan966x. This is done by introducing 'ocelot_pincfg_data' which
+contains the offset and what is supported for each SOC.
+
+Fixes: 531d6ab36571 ("pinctrl: ocelot: Extend support for lan966x")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/pinctrl/pinctrl-ocelot.c | 194 ++++++++++++++++++++-----------
+ 1 file changed, 123 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+index 5f4a8c5c6650..10787056c5c7 100644
+--- a/drivers/pinctrl/pinctrl-ocelot.c
++++ b/drivers/pinctrl/pinctrl-ocelot.c
+@@ -29,19 +29,12 @@
+ #define ocelot_clrsetbits(addr, clear, set) \
+ 	writel((readl(addr) & ~(clear)) | (set), (addr))
+ 
+-/* PINCONFIG bits (sparx5 only) */
+ enum {
+ 	PINCONF_BIAS,
+ 	PINCONF_SCHMITT,
+ 	PINCONF_DRIVE_STRENGTH,
+ };
+ 
+-#define BIAS_PD_BIT BIT(4)
+-#define BIAS_PU_BIT BIT(3)
+-#define BIAS_BITS   (BIAS_PD_BIT|BIAS_PU_BIT)
+-#define SCHMITT_BIT BIT(2)
+-#define DRIVE_BITS  GENMASK(1, 0)
+-
+ /* GPIO standard registers */
+ #define OCELOT_GPIO_OUT_SET	0x0
+ #define OCELOT_GPIO_OUT_CLR	0x4
+@@ -321,6 +314,14 @@ struct ocelot_pin_caps {
+ 	unsigned char a_functions[OCELOT_FUNC_PER_PIN];	/* Additional functions */
+ };
+ 
++struct ocelot_pincfg_data {
++	bool has_schmitt;
++	u8 schmitt_bit;
++	u8 pd_bit;
++	u8 pu_bit;
++	u8 drive_bits;
++};
++
+ struct ocelot_pinctrl {
+ 	struct device *dev;
+ 	struct pinctrl_dev *pctl;
+@@ -330,6 +331,12 @@ struct ocelot_pinctrl {
+ 	struct pinctrl_desc *desc;
+ 	struct ocelot_pmx_func func[FUNC_MAX];
+ 	u8 stride;
++	struct ocelot_pincfg_data *pincfg_data;
++};
++
++struct ocelot_match_data {
++	struct pinctrl_desc desc;
++	struct ocelot_pincfg_data pincfg_data;
+ };
+ 
+ #define LUTON_P(p, f0, f1)						\
+@@ -1334,15 +1341,17 @@ static int ocelot_hw_get_value(struct ocelot_pinctrl *info,
+ 		ret = 0;
+ 		switch (reg) {
+ 		case PINCONF_BIAS:
+-			*val = regcfg & BIAS_BITS;
++			*val = regcfg &
++				(info->pincfg_data->pd_bit |
++				 info->pincfg_data->pu_bit);
+ 			break;
+ 
+ 		case PINCONF_SCHMITT:
+-			*val = regcfg & SCHMITT_BIT;
++			*val = regcfg & info->pincfg_data->schmitt_bit;
+ 			break;
+ 
+ 		case PINCONF_DRIVE_STRENGTH:
+-			*val = regcfg & DRIVE_BITS;
++			*val = regcfg & info->pincfg_data->drive_bits;
+ 			break;
+ 
+ 		default:
+@@ -1383,19 +1392,23 @@ static int ocelot_hw_set_value(struct ocelot_pinctrl *info,
+ 		ret = 0;
+ 		switch (reg) {
+ 		case PINCONF_BIAS:
+-			ret = ocelot_pincfg_clrsetbits(info, pin, BIAS_BITS,
++			ret = ocelot_pincfg_clrsetbits(info, pin,
++						       info->pincfg_data->pd_bit |
++						       info->pincfg_data->pu_bit,
+ 						       val);
+ 			break;
+ 
+ 		case PINCONF_SCHMITT:
+-			ret = ocelot_pincfg_clrsetbits(info, pin, SCHMITT_BIT,
++			ret = ocelot_pincfg_clrsetbits(info, pin,
++						       info->pincfg_data->schmitt_bit,
+ 						       val);
+ 			break;
+ 
+ 		case PINCONF_DRIVE_STRENGTH:
+ 			if (val <= 3)
+ 				ret = ocelot_pincfg_clrsetbits(info, pin,
+-							       DRIVE_BITS, val);
++							       info->pincfg_data->drive_bits,
++							       val);
+ 			else
+ 				ret = -EINVAL;
+ 			break;
+@@ -1425,17 +1438,20 @@ static int ocelot_pinconf_get(struct pinctrl_dev *pctldev,
+ 		if (param == PIN_CONFIG_BIAS_DISABLE)
+ 			val = (val == 0);
+ 		else if (param == PIN_CONFIG_BIAS_PULL_DOWN)
+-			val = (val & BIAS_PD_BIT ? true : false);
++			val = (val & info->pincfg_data->pd_bit ? true : false);
+ 		else    /* PIN_CONFIG_BIAS_PULL_UP */
+-			val = (val & BIAS_PU_BIT ? true : false);
++			val = (val & info->pincfg_data->pu_bit ? true : false);
+ 		break;
+ 
+ 	case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
++		if (!info->pincfg_data->has_schmitt)
++			return -EOPNOTSUPP;
++
+ 		err = ocelot_hw_get_value(info, pin, PINCONF_SCHMITT, &val);
+ 		if (err)
+ 			return err;
+ 
+-		val = (val & SCHMITT_BIT ? true : false);
++		val = (val & info->pincfg_data->schmitt_bit ? true : false);
+ 		break;
+ 
+ 	case PIN_CONFIG_DRIVE_STRENGTH:
+@@ -1491,8 +1507,8 @@ static int ocelot_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
+ 		case PIN_CONFIG_BIAS_PULL_UP:
+ 		case PIN_CONFIG_BIAS_PULL_DOWN:
+ 			arg = (param == PIN_CONFIG_BIAS_DISABLE) ? 0 :
+-			(param == PIN_CONFIG_BIAS_PULL_UP) ? BIAS_PU_BIT :
+-			BIAS_PD_BIT;
++			(param == PIN_CONFIG_BIAS_PULL_UP) ? info->pincfg_data->pu_bit :
++			info->pincfg_data->pd_bit;
+ 
+ 			err = ocelot_hw_set_value(info, pin, PINCONF_BIAS, arg);
+ 			if (err)
+@@ -1501,7 +1517,10 @@ static int ocelot_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
+ 			break;
+ 
+ 		case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
+-			arg = arg ? SCHMITT_BIT : 0;
++			if (!info->pincfg_data->has_schmitt)
++				return -EOPNOTSUPP;
++
++			arg = arg ? info->pincfg_data->schmitt_bit : 0;
+ 			err = ocelot_hw_set_value(info, pin, PINCONF_SCHMITT,
+ 						  arg);
+ 			if (err)
+@@ -1562,69 +1581,96 @@ static const struct pinctrl_ops ocelot_pctl_ops = {
+ 	.dt_free_map = pinconf_generic_dt_free_map,
+ };
+ 
+-static struct pinctrl_desc luton_desc = {
+-	.name = "luton-pinctrl",
+-	.pins = luton_pins,
+-	.npins = ARRAY_SIZE(luton_pins),
+-	.pctlops = &ocelot_pctl_ops,
+-	.pmxops = &ocelot_pmx_ops,
+-	.owner = THIS_MODULE,
++static struct ocelot_match_data luton_desc = {
++	.desc = {
++		.name = "luton-pinctrl",
++		.pins = luton_pins,
++		.npins = ARRAY_SIZE(luton_pins),
++		.pctlops = &ocelot_pctl_ops,
++		.pmxops = &ocelot_pmx_ops,
++		.owner = THIS_MODULE,
++	}
+ };
+ 
+-static struct pinctrl_desc serval_desc = {
+-	.name = "serval-pinctrl",
+-	.pins = serval_pins,
+-	.npins = ARRAY_SIZE(serval_pins),
+-	.pctlops = &ocelot_pctl_ops,
+-	.pmxops = &ocelot_pmx_ops,
+-	.owner = THIS_MODULE,
++static struct ocelot_match_data serval_desc = {
++	.desc = {
++		.name = "serval-pinctrl",
++		.pins = serval_pins,
++		.npins = ARRAY_SIZE(serval_pins),
++		.pctlops = &ocelot_pctl_ops,
++		.pmxops = &ocelot_pmx_ops,
++		.owner = THIS_MODULE,
++	}
+ };
+ 
+-static struct pinctrl_desc ocelot_desc = {
+-	.name = "ocelot-pinctrl",
+-	.pins = ocelot_pins,
+-	.npins = ARRAY_SIZE(ocelot_pins),
+-	.pctlops = &ocelot_pctl_ops,
+-	.pmxops = &ocelot_pmx_ops,
+-	.owner = THIS_MODULE,
++static struct ocelot_match_data ocelot_desc = {
++	.desc = {
++		.name = "ocelot-pinctrl",
++		.pins = ocelot_pins,
++		.npins = ARRAY_SIZE(ocelot_pins),
++		.pctlops = &ocelot_pctl_ops,
++		.pmxops = &ocelot_pmx_ops,
++		.owner = THIS_MODULE,
++	}
+ };
+ 
+-static struct pinctrl_desc jaguar2_desc = {
+-	.name = "jaguar2-pinctrl",
+-	.pins = jaguar2_pins,
+-	.npins = ARRAY_SIZE(jaguar2_pins),
+-	.pctlops = &ocelot_pctl_ops,
+-	.pmxops = &ocelot_pmx_ops,
+-	.owner = THIS_MODULE,
++static struct ocelot_match_data jaguar2_desc = {
++	.desc = {
++		.name = "jaguar2-pinctrl",
++		.pins = jaguar2_pins,
++		.npins = ARRAY_SIZE(jaguar2_pins),
++		.pctlops = &ocelot_pctl_ops,
++		.pmxops = &ocelot_pmx_ops,
++		.owner = THIS_MODULE,
++	}
+ };
+ 
+-static struct pinctrl_desc servalt_desc = {
+-	.name = "servalt-pinctrl",
+-	.pins = servalt_pins,
+-	.npins = ARRAY_SIZE(servalt_pins),
+-	.pctlops = &ocelot_pctl_ops,
+-	.pmxops = &ocelot_pmx_ops,
+-	.owner = THIS_MODULE,
++static struct ocelot_match_data servalt_desc = {
++	.desc = {
++		.name = "servalt-pinctrl",
++		.pins = servalt_pins,
++		.npins = ARRAY_SIZE(servalt_pins),
++		.pctlops = &ocelot_pctl_ops,
++		.pmxops = &ocelot_pmx_ops,
++		.owner = THIS_MODULE,
++	}
+ };
+ 
+-static struct pinctrl_desc sparx5_desc = {
+-	.name = "sparx5-pinctrl",
+-	.pins = sparx5_pins,
+-	.npins = ARRAY_SIZE(sparx5_pins),
+-	.pctlops = &ocelot_pctl_ops,
+-	.pmxops = &ocelot_pmx_ops,
+-	.confops = &ocelot_confops,
+-	.owner = THIS_MODULE,
++static struct ocelot_match_data sparx5_desc = {
++	.desc = {
++		.name = "sparx5-pinctrl",
++		.pins = sparx5_pins,
++		.npins = ARRAY_SIZE(sparx5_pins),
++		.pctlops = &ocelot_pctl_ops,
++		.pmxops = &ocelot_pmx_ops,
++		.confops = &ocelot_confops,
++		.owner = THIS_MODULE,
++	},
++	.pincfg_data = {
++		.has_schmitt = true,
++		.pd_bit = BIT(4),
++		.pu_bit = BIT(3),
++		.schmitt_bit = BIT(2),
++		.drive_bits = GENMASK(1, 0),
++	}
+ };
+ 
+-static struct pinctrl_desc lan966x_desc = {
+-	.name = "lan966x-pinctrl",
+-	.pins = lan966x_pins,
+-	.npins = ARRAY_SIZE(lan966x_pins),
+-	.pctlops = &ocelot_pctl_ops,
+-	.pmxops = &lan966x_pmx_ops,
+-	.confops = &ocelot_confops,
+-	.owner = THIS_MODULE,
++static struct ocelot_match_data lan966x_desc = {
++	.desc = {
++		.name = "lan966x-pinctrl",
++		.pins = lan966x_pins,
++		.npins = ARRAY_SIZE(lan966x_pins),
++		.pctlops = &ocelot_pctl_ops,
++		.pmxops = &lan966x_pmx_ops,
++		.confops = &ocelot_confops,
++		.owner = THIS_MODULE,
++	},
++	.pincfg_data = {
++		.has_schmitt = false,
++		.pd_bit = BIT(3),
++		.pu_bit = BIT(2),
++		.drive_bits = GENMASK(1, 0),
++	}
+ };
+ 
+ static int ocelot_create_group_func_map(struct device *dev,
+@@ -1914,6 +1960,7 @@ static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
+ static int ocelot_pinctrl_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
++	struct ocelot_match_data *data;
+ 	struct ocelot_pinctrl *info;
+ 	struct reset_control *reset;
+ 	struct regmap *pincfg;
+@@ -1929,7 +1976,12 @@ static int ocelot_pinctrl_probe(struct platform_device *pdev)
+ 	if (!info)
+ 		return -ENOMEM;
+ 
+-	info->desc = (struct pinctrl_desc *)device_get_match_data(dev);
++	data = (struct ocelot_match_data *)device_get_match_data(dev);
++	if (!data)
++		return -EINVAL;
++
++	info->desc = &data->desc;
++	info->pincfg_data = &data->pincfg_data;
+ 
+ 	reset = devm_reset_control_get_optional_shared(dev, "switch");
+ 	if (IS_ERR(reset))
+-- 
+2.33.0
+
