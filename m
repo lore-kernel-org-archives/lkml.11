@@ -2,261 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E023FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237807AbiGHIXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        id S237809AbiGHIYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237798AbiGHIXo (ORCPT
+        with ESMTP id S237539AbiGHIYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:23:44 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E471A76948
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:23:42 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 145so21749968pga.12
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:23:42 -0700 (PDT)
+        Fri, 8 Jul 2022 04:24:51 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2975814A1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:24:48 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id o4so29509195wrh.3
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:24:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Dk6MSmK/j/2WDmJxChg2RYSfGISqV2zU0kSVVWJjs+I=;
-        b=5apM4sq9VnuX/zLwjXMB3gG7Nl0vvvbBy8OuUw3xkRiNW+vqc/BBW4TCScfsi4530M
-         I0QL8U92qHJXbgm1cnI0F++kzIbhh9prCWsCYlLoxkKIb0Zc0Mg4ERo7QCZWQj++l1g8
-         y/dIEke9Tb155Z0S/Qn03ldboWFKYQL+Nl+LgbSnsoSs3H8tHbYtpLh3CcWW2xjDcN/q
-         ld3hgH1ZJmnIqZmZVYAVQ+P1SApLObvt+Ks5bZ+hpI/ST1LIlNR2kA3uIOXKCSRfXoSe
-         DA5ofD5QUrvbLnEUA8L2lGJgbAxfXBAZYDv05p2NcCfaZ8EFxwCVSMCze1J6lU1g9gOJ
-         2XGA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mIwFg075RvwVYz9+/Y+xL9IEwu5sJHlYJ/YyVZSg0lY=;
+        b=Hb9QsIsy3zrdkNF7D7KWN7V9xWmBnlnqukEu8VQO760EvPnCTgR7YaaANXCVvHFhG8
+         azGVU8v/yUeYegEIgmmaKflxUqaohJdfHBD0rtW/STrfWOLiHNQTL2u3xQe8ziPn37Tp
+         KperCCH8+Rsgixu8wrN/mbJVA3rhSsKGl2aOlADbg6XXnewNcscnnFvz+pqLe4iqnJHA
+         zq3s15m3tNnJHcbuScXgMIPMUNpfZjSdtaTKbGQrtAGToOwTcSyiz9akBnE8KKn7Cahy
+         sS9hB+7l1qMZEn7F61+CTCeYnNdL/RgeTOMXypf4x/Gnu8ySOpRtLqY0aWNZCHpwATqH
+         tn0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Dk6MSmK/j/2WDmJxChg2RYSfGISqV2zU0kSVVWJjs+I=;
-        b=o8ZHmk/xojSp0o3mPjb5br0vSuMHtYR7pipeqGu5bMTrVJpefhGVoJEXvTPQ89W4BV
-         x20m+vGRLFSeI0cHqy/p5GPxZB4KKyiTQeA1szMA90Xy5YyUKAXEJFEOCORH7638mt67
-         5zZ1TzLRevD6445PMCSBmJugQL6xBtvp7MIVWzADDR5B6iUi9exFPpd1x0rJ25Rw5AXk
-         yaBJIlAg6Ya3uV1WJaBHb9UHb/nqZygPiLkD3zUiRg3vZQv8n2MK42T2jyJtt1l9vdI3
-         T1trg8lTWdeAC+nA+h1HoSkMTAZkO/NNt2VjFLk7Pv0Dy82gMV5wnrPvARkZcETriNec
-         r+zA==
-X-Gm-Message-State: AJIora+80QtNnl0i+wzqSVTYzXhAZL9Plt/GUwMr1y3SaQTLt5xV55af
-        lp4wbfq83qE02wRl0NBoBjnT2g==
-X-Google-Smtp-Source: AGRyM1t2bSeyc+ZhkHZ+dbx7rBPltXk5Bo6WNvlPOj227m8dkbBZjTwJpct0sr4HcWPiEcTQqqV7uQ==
-X-Received: by 2002:a05:6a00:1312:b0:528:2ed8:7e35 with SMTP id j18-20020a056a00131200b005282ed87e35mr2567724pfu.13.1657268622398;
-        Fri, 08 Jul 2022 01:23:42 -0700 (PDT)
-Received: from C02FT5A6MD6R.bytedance.net ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id x65-20020a636344000000b00412b1043f33sm3329291pgb.39.2022.07.08.01.23.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mIwFg075RvwVYz9+/Y+xL9IEwu5sJHlYJ/YyVZSg0lY=;
+        b=B7qEhxfxuegTehv1J3XMoymS+F9tBSnHCU7xXyA3oENw2NKL1kyKbPGdJlGXyIsi0x
+         w+CMOzVfChg31eUhwTbbFsqsFmUM4ubSf4gNcJOMdw/sty457wiCOWpcqt2MVUJgDgt4
+         2DjUP8SWOYaQTvgmvelBfA3IvayJHiodyq+jDzD0P91yx4Ty1UhU9GMms2rtpfi5FMN5
+         d2oU/8iYTb2ci9GraHv+m6TqJyhncqdp7y+idHoIC8VvpJOUzRcmAH/mqnW/X859tWWA
+         jGFdpcFfoGN54dBygDOCSnVi5pgdrqao22r6bfR0be01GdhQQcymkD2P8I88yTrWQ41v
+         ThlA==
+X-Gm-Message-State: AJIora9V9Zi0Mn3Dg1ue5in9vqTQbLBJtv+8vRAhRCPjkXYoaFutqjVv
+        RWGcFnV851oZS1QPdpZkDsAkbg==
+X-Google-Smtp-Source: AGRyM1viKjtVrmUoxTanFr1pV6d7LMrE7leuT0XIliXYQcDoe0Ro78y5UhOmXgHGos2nagi880AGAA==
+X-Received: by 2002:a5d:588d:0:b0:21d:865c:54e9 with SMTP id n13-20020a5d588d000000b0021d865c54e9mr2109574wrf.3.1657268687247;
+        Fri, 08 Jul 2022 01:24:47 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id h15-20020a1ccc0f000000b0039749b01ea7sm1670902wmb.32.2022.07.08.01.24.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 01:23:41 -0700 (PDT)
-From:   Gang Li <ligang.bdlg@bytedance.com>
-To:     mhocko@suse.com, akpm@linux-foundation.org, surenb@google.com
-Cc:     hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        viro@zeniv.linux.org.uk, ebiederm@xmission.com,
-        keescook@chromium.org, rostedt@goodmis.org, mingo@redhat.com,
-        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
-        adobriyan@gmail.com, yang.yang29@zte.com.cn, brauner@kernel.org,
-        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
-        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
-        Liam.Howlett@Oracle.com, ohoono.kwon@samsung.com,
-        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
-        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
-        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
-        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
-        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
-        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
-        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-perf-users@vger.kernel.org,
-        Gang Li <ligang.bdlg@bytedance.com>
-Subject: [PATCH v2 5/5] mm, oom: enable per numa node oom for CONSTRAINT_{MEMORY_POLICY,CPUSET}
-Date:   Fri,  8 Jul 2022 16:21:29 +0800
-Message-Id: <20220708082129.80115-6-ligang.bdlg@bytedance.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
-References: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
+        Fri, 08 Jul 2022 01:24:46 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 09:24:22 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: Re: [PATCH bpf-next v6 4/4] bpf, arm64: bpf trampoline for arm64
+Message-ID: <YsfptiexC0wFABFL@myrica>
+References: <20220625161255.547944-1-xukuohai@huawei.com>
+ <20220625161255.547944-5-xukuohai@huawei.com>
+ <YscL4t1pYHYApIiK@larix>
+ <a24109d5-b79a-99de-0fd5-66b0ec34e5ed@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a24109d5-b79a-99de-0fd5-66b0ec34e5ed@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Page allocator will only alloc pages on node indicated by mempolicy or
-cpuset. But oom will still select bad process by total rss usage.
+On Fri, Jul 08, 2022 at 12:35:33PM +0800, Xu Kuohai wrote:
+> >> +
+> >> +	emit(A64_ADD_I(1, A64_R(0), A64_SP, args_off), ctx);
+> >> +	if (!p->jited)
+> >> +		emit_addr_mov_i64(A64_R(1), (const u64)p->insnsi, ctx);
+> >> +
+> >> +	emit_call((const u64)p->bpf_func, ctx);
+> >> +
+> >> +	/* store return value */
+> >> +	if (save_ret)
+> >> +		emit(A64_STR64I(r0, A64_SP, retval_off), ctx);
+> > 
+> > Here too I think it should be x0. I'm guessing r0 may work for jitted
+> > functions but not interpreted ones
+> > 
+> 
+> Yes, r0 is only correct for jitted code, will fix it to:
+> 
+> if (save_ret)
+>         emit(A64_STR64I(p->jited ? r0 : A64_R(0), A64_SP, retval_off),
+>              ctx);
 
-This patch let oom only calculate rss on the given node when
-oc->constraint equals to CONSTRAINT_{MEMORY_POLICY,CPUSET}.
+I don't think we need this test because x0 should be correct in all cases.
+x7 happens to equal x0 when jitted due to the way build_epilogue() builds
+the function at the moment, but we shouldn't rely on that.
 
-With those constraint, the process with the highest memory consumption on
-the specific node will be killed. oom_kill dmesg now have a new column
-`(%d)nrss`.
 
-It looks like this:
-```
-[ 1471.436027] Tasks state (memory values in pages):
-[ 1471.438518] [  pid  ]   uid  tgid total_vm      rss (01)nrss  pgtables_bytes swapents oom_score_adj name
-[ 1471.554703] [   1011]     0  1011   220005     8589     1872   823296        0             0 node
-[ 1471.707912] [  12399]     0 12399  1311306  1311056   262170 10534912        0             0 a.out
-[ 1471.712429] [  13135]     0 13135   787018   674666   674300  5439488        0             0 a.out
-[ 1471.721506] [  13295]     0 13295      597      188        0    24576        0             0 sh
-[ 1471.734600] oom-kill:constraint=CONSTRAINT_MEMORY_POLICY,nodemask=1,cpuset=/,mems_allowed=0-2,global_oom,task_memcg=/user.slice/user-0.slice/session-3.scope,task=a.out,pid=13135,uid=0
-[ 1471.742583] Out of memory: Killed process 13135 (a.out) total-vm:3148072kB, anon-rss:2697304kB, file-rss:1360kB, shmem-rss:0kB, UID:0 pgtables:5312kB oom_score_adj:0
-[ 1471.849615] oom_reaper: reaped process 13135 (a.out), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
-```
+> >> +	if (flags & BPF_TRAMP_F_CALL_ORIG) {
+> >> +		restore_args(ctx, args_off, nargs);
+> >> +		/* call original func */
+> >> +		emit(A64_LDR64I(A64_R(10), A64_SP, retaddr_off), ctx);
+> >> +		emit(A64_BLR(A64_R(10)), ctx);
+> > 
+> > I don't think we can do this when BTI is enabled because we're not jumping
+> > to a BTI instruction. We could introduce one in a patched BPF function
+> > (there currently is one if CONFIG_ARM64_PTR_AUTH_KERNEL), but probably not
+> > in a kernel function.
+> > 
+> > We could fo like FUNCTION_GRAPH_TRACER does and return to the patched
+> > function after modifying its LR. Not sure whether that works with pointer
+> > auth though.
+> > 
+> 
+> Yes, the blr instruction should be replaced with ret instruction, thanks!
+> 
+> The layout for bpf prog and regular kernel function is as follows, with
+> bti always coming first and paciasp immediately after patchsite, so the
+> ret instruction should work in all cases.
+> 
+> bpf prog or kernel function:
+>         bti c // if BTI
+>         mov x9, lr
+>         bl <trampoline>    ------> trampoline:
+>                                            ...
+>                                            mov lr, <return_entry>
+>                                            mov x10, <ORIG_CALL_entry>
+> ORIG_CALL_entry:           <-------        ret x10
+>                                    return_entry:
+>                                            ...
+>         paciasp // if PA
+>         ...
 
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
----
- fs/proc/base.c      |  6 ++++-
- include/linux/oom.h |  2 +-
- mm/oom_kill.c       | 55 ++++++++++++++++++++++++++++++++++++++-------
- 3 files changed, 53 insertions(+), 10 deletions(-)
+Actually I just noticed that CONFIG_ARM64_BTI_KERNEL depends on
+CONFIG_ARM64_PTR_AUTH_KERNEL, so we should be able to rely on there always
+being a PACIASP at ORIG_CALL_entry, and since it's a landing pad for BLR
+we don't need to make this a RET
 
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 617816168748..92075e9dca06 100644
---- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -552,8 +552,12 @@ static int proc_oom_score(struct seq_file *m, struct pid_namespace *ns,
- 	unsigned long totalpages = totalram_pages() + total_swap_pages;
- 	unsigned long points = 0;
- 	long badness;
-+	struct oom_control oc = {
-+		.totalpages =  totalpages,
-+		.gfp_mask = 0,
-+	};
- 
--	badness = oom_badness(task, totalpages);
-+	badness = oom_badness(task, &oc);
- 	/*
- 	 * Special case OOM_SCORE_ADJ_MIN for all others scale the
- 	 * badness value into [0, 2000] range which we have been
-diff --git a/include/linux/oom.h b/include/linux/oom.h
-index 7d0c9c48a0c5..19eaa447ac57 100644
---- a/include/linux/oom.h
-+++ b/include/linux/oom.h
-@@ -98,7 +98,7 @@ static inline vm_fault_t check_stable_address_space(struct mm_struct *mm)
- }
- 
- long oom_badness(struct task_struct *p,
--		unsigned long totalpages);
-+		struct oom_control *oc);
- 
- extern bool out_of_memory(struct oom_control *oc);
- 
-diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-index e25c37e2e90d..921539e29ae9 100644
---- a/mm/oom_kill.c
-+++ b/mm/oom_kill.c
-@@ -189,6 +189,18 @@ static bool should_dump_unreclaim_slab(void)
- 	return (global_node_page_state_pages(NR_SLAB_UNRECLAIMABLE_B) > nr_lru);
- }
- 
-+static inline int get_nid_from_oom_control(struct oom_control *oc)
-+{
-+	nodemask_t *nodemask;
-+	struct zoneref *zoneref;
-+
-+	nodemask = oc->constraint == CONSTRAINT_MEMORY_POLICY
-+			? oc->nodemask : &cpuset_current_mems_allowed;
-+
-+	zoneref = first_zones_zonelist(oc->zonelist, gfp_zone(oc->gfp_mask), nodemask);
-+	return zone_to_nid(zoneref->zone);
-+}
-+
- /**
-  * oom_badness - heuristic function to determine which candidate task to kill
-  * @p: task struct of which task we should calculate
-@@ -198,7 +210,7 @@ static bool should_dump_unreclaim_slab(void)
-  * predictable as possible.  The goal is to return the highest value for the
-  * task consuming the most memory to avoid subsequent oom failures.
-  */
--long oom_badness(struct task_struct *p, unsigned long totalpages)
-+long oom_badness(struct task_struct *p, struct oom_control *oc)
- {
- 	long points;
- 	long adj;
-@@ -227,12 +239,21 @@ long oom_badness(struct task_struct *p, unsigned long totalpages)
- 	 * The baseline for the badness score is the proportion of RAM that each
- 	 * task's rss, pagetable and swap space use.
- 	 */
--	points = get_mm_rss(p->mm) + get_mm_counter(p->mm, MM_SWAPENTS, NUMA_NO_NODE) +
--		mm_pgtables_bytes(p->mm) / PAGE_SIZE;
-+	if (unlikely(oc->constraint == CONSTRAINT_MEMORY_POLICY ||
-+		     oc->constraint == CONSTRAINT_CPUSET)) {
-+		int nid_to_find_victim = get_nid_from_oom_control(oc);
-+
-+		points = get_mm_counter(p->mm, -1, nid_to_find_victim) +
-+			get_mm_counter(p->mm, MM_SWAPENTS, NUMA_NO_NODE) +
-+			mm_pgtables_bytes(p->mm) / PAGE_SIZE;
-+	} else {
-+		points = get_mm_rss(p->mm) + get_mm_counter(p->mm, MM_SWAPENTS, NUMA_NO_NODE) +
-+			mm_pgtables_bytes(p->mm) / PAGE_SIZE;
-+	}
- 	task_unlock(p);
- 
- 	/* Normalize to oom_score_adj units */
--	adj *= totalpages / 1000;
-+	adj *= oc->totalpages / 1000;
- 	points += adj;
- 
- 	return points;
-@@ -338,7 +359,7 @@ static int oom_evaluate_task(struct task_struct *task, void *arg)
- 		goto select;
- 	}
- 
--	points = oom_badness(task, oc->totalpages);
-+	points = oom_badness(task, oc);
- 	if (points == LONG_MIN || points < oc->chosen_points)
- 		goto next;
- 
-@@ -382,6 +403,7 @@ static int dump_task(struct task_struct *p, void *arg)
- {
- 	struct oom_control *oc = arg;
- 	struct task_struct *task;
-+	unsigned long node_mm_rss;
- 
- 	if (oom_unkillable_task(p))
- 		return 0;
-@@ -399,9 +421,17 @@ static int dump_task(struct task_struct *p, void *arg)
- 		return 0;
- 	}
- 
--	pr_info("[%7d] %5d %5d %8lu %8lu %8ld %8lu         %5hd %s\n",
-+	if (unlikely(oc->constraint == CONSTRAINT_MEMORY_POLICY ||
-+		     oc->constraint == CONSTRAINT_CPUSET)) {
-+		int nid_to_find_victim = get_nid_from_oom_control(oc);
-+
-+		node_mm_rss = get_mm_counter(p->mm, -1, nid_to_find_victim);
-+	} else {
-+		node_mm_rss = 0;
-+	}
-+	pr_info("[%7d] %5d %5d %8lu %8lu %8lu %8ld %8lu         %5hd %s\n",
- 		task->pid, from_kuid(&init_user_ns, task_uid(task)),
--		task->tgid, task->mm->total_vm, get_mm_rss(task->mm),
-+		task->tgid, task->mm->total_vm, get_mm_rss(task->mm), node_mm_rss,
- 		mm_pgtables_bytes(task->mm),
- 		get_mm_counter(task->mm, MM_SWAPENTS, NUMA_NO_NODE),
- 		task->signal->oom_score_adj, task->comm);
-@@ -422,8 +452,17 @@ static int dump_task(struct task_struct *p, void *arg)
-  */
- static void dump_tasks(struct oom_control *oc)
- {
-+	int nid_to_find_victim;
-+
-+	if (unlikely(oc->constraint == CONSTRAINT_MEMORY_POLICY ||
-+		     oc->constraint == CONSTRAINT_CPUSET)) {
-+		nid_to_find_victim = get_nid_from_oom_control(oc);
-+	} else {
-+		nid_to_find_victim = -1;
-+	}
- 	pr_info("Tasks state (memory values in pages):\n");
--	pr_info("[  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name\n");
-+	pr_info("[  pid  ]   uid  tgid total_vm      rss (%02d)nrss  pgtables_bytes swapents"
-+		" oom_score_adj name\n", nid_to_find_victim);
- 
- 	if (is_memcg_oom(oc))
- 		mem_cgroup_scan_tasks(oc->memcg, dump_task, oc);
--- 
-2.20.1
+ 92e2294d870b ("arm64: bti: Support building kernel C code using BTI")
+
+Thanks,
+Jean
 
