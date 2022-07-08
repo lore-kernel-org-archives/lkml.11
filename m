@@ -2,110 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6415C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240502AbiGHVpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 17:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
+        id S240057AbiGHVrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 17:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240497AbiGHVpp (ORCPT
+        with ESMTP id S238649AbiGHVrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 17:45:45 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212992AD5
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 14:45:44 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id n12so193930pfq.0
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 14:45:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=YBc9G5UuEAIKirG2rLX1ZWqv97wMz4nAZu2cr2x+2/o=;
-        b=cpWCgFQspdByfnqpqzsWdF0u6wqEPyvUe3n16GMOC9W3Cl1L81V+sLyBTRApTp3xRj
-         OW9hRrQsDMWvg24Vo9hNoeQBBe4tN8qslvg/MfEe6QUvWRB6niRDeQee7TKVz2JPFvEf
-         338NB4Q2OabrKxJZa24oo7uHPOISFdle6tJtvJ244NyEWersk1NYP+zJ80A6/ZZGUa5h
-         BCc2b3lWHqtTX2HO7X51nQkLKJ82/0N9gieovze9awQysbBrsySasIHdG4E7xeOOqwl8
-         JUhFutCz8mgbeyudWnj94E5DLvgkCEqRMtqVjapZufWVhuQbZSRXVuFY3t/EtUTOIsdv
-         KXTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=YBc9G5UuEAIKirG2rLX1ZWqv97wMz4nAZu2cr2x+2/o=;
-        b=Yl+Z/2hIIddYewu8V8hdgJmxXwgreeG4fVzKEDzxLI3229zMh96RZE9I+19JNQqxwT
-         UAm5STXcJkPZoSVJ+E6JzCbnhT1xS/2x291gudA3I1uOIjfL7EG2RFjlyqEQgQ9ryjqE
-         FqQ6r4UKz/yLrscoOYA5qOTShJQQFUHabf6lqM8jm0gZ1cg3AhhgRc9UPU/2wLlZ2X/d
-         7YmlNzxwJPb+mVAFDwQ+0R2LMt+UfcUz2f2K5EPbT4QGtTETb7giGiMTZJxQwLSQCad8
-         ZMFpEW3o7kk7mLrIqitqPpic6R4+O4pxJEz34LPydt39HUQ9cpkEWoQJzFP6XCJgDMxB
-         eGHg==
-X-Gm-Message-State: AJIora/M7DTk7tbNFkZJXto3fpf94DVXccuYalvwYdQdJGlRnHhYWmdQ
-        Z5Aejxh3RL/BnkTkReq2o+fJl6DkrbWSGw==
-X-Google-Smtp-Source: AGRyM1txfb5vm0s4osoLdd3ahuRLDA8B45uPIvFfp/fMN/NWmx+atJIJLE1Yyoiu+xDcEVPwHpnB6A==
-X-Received: by 2002:a63:4042:0:b0:411:bbfe:e736 with SMTP id n63-20020a634042000000b00411bbfee736mr5024669pga.1.1657316743257;
-        Fri, 08 Jul 2022 14:45:43 -0700 (PDT)
-Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id u17-20020a170902e5d100b0016bea2a0a8dsm1715plf.91.2022.07.08.14.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 14:45:42 -0700 (PDT)
-References: <20220708211755.73637-1-schspa@gmail.com>
- <20220708172614.14191089@gandalf.local.home>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] sched/rt: fix bad task migration for rt tasks
-Date:   Sat, 09 Jul 2022 05:32:25 +0800
-In-reply-to: <20220708172614.14191089@gandalf.local.home>
-Message-ID: <m2v8s7mg78.fsf@gmail.com>
+        Fri, 8 Jul 2022 17:47:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EB532EE2;
+        Fri,  8 Jul 2022 14:47:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5057D61511;
+        Fri,  8 Jul 2022 21:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE275C341C0;
+        Fri,  8 Jul 2022 21:47:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657316825;
+        bh=oGe9mSKsZTpDJys53ZbJDTf1BlmyWm4UKF++hMlMXfQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pKBVxy8KwZDOmG0FJH6dUdb7/xBcN2F/bb+JqvAFAaIpmMQQXfHeicecRhliDy6za
+         wZd6pML+HL/pJ5FIfmqvP85ML41OeBsd9DW6y7VqXoXnJKx9UJEc0c/yNJiSPo0ykW
+         s+PDenFc7EIqUtuWQ8sWMXONmyDzhLnHwwy8pHo654tnLi3IiavoSSXY96NdmF4al9
+         TzHvY7cR9/fg8nMvssIMBhzcNluEAzbAhrCUPXgW1kfLmylu7Lbt4OmI64tXrbn/to
+         vtkQ70hoCb0ePpygYgPBUdURPoSNjrTwg96cKgHaVSghrXg+3AriYj6Yw1nSyx9sC2
+         4YwYp1EZ9mqIw==
+Received: by mail-vs1-f41.google.com with SMTP id 189so22457938vsh.2;
+        Fri, 08 Jul 2022 14:47:05 -0700 (PDT)
+X-Gm-Message-State: AJIora+0HgmyLUxRL1LnqxrmcstVDvr9VHg8GKS9eDcUyydXzrbuoGTJ
+        +VX+/Kg7LPz4Bx7eWTGV28UC2/xjs9ZLrQtbiQ==
+X-Google-Smtp-Source: AGRyM1uWQCkd/PLMcPq5fEvA3rLv74ggDKeFx5f6qza9FRq6C/PwPfeI1THWRIbZf7Gy773kQ1oCxZYz4JOzmv4VLmc=
+X-Received: by 2002:a67:d194:0:b0:357:8ea:5554 with SMTP id
+ w20-20020a67d194000000b0035708ea5554mr2552488vsi.0.1657316824671; Fri, 08 Jul
+ 2022 14:47:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220708170359.270226-1-ben.dooks@sifive.com>
+In-Reply-To: <20220708170359.270226-1-ben.dooks@sifive.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 8 Jul 2022 15:46:52 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJ7VUxcVdDhrVhix9ucR=rhb+418cwP-0_brL_a3Y2UcQ@mail.gmail.com>
+Message-ID: <CAL_JsqJ7VUxcVdDhrVhix9ucR=rhb+418cwP-0_brL_a3Y2UcQ@mail.gmail.com>
+Subject: Re: [PATCH] scripts/dtc: dma-ranges is a multiple of 3 cells
+To:     Ben Dooks <ben.dooks@sifive.com>
+Cc:     devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Steven Rostedt <rostedt@goodmis.org> writes:
-
-> On Sat,  9 Jul 2022 05:17:54 +0800
-> Schspa Shi <schspa@gmail.com> wrote:
+On Fri, Jul 8, 2022 at 11:04 AM Ben Dooks <ben.dooks@sifive.com> wrote:
 >
->> +++ b/kernel/sched/rt.c
->> @@ -1998,11 +1998,14 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
->>  			 * the mean time, task could have
->>  			 * migrated already or had its affinity changed.
->>  			 * Also make sure that it wasn't scheduled on its rq.
->> +			 * It is possible the task has running for a while,
+> The dma-ranges property is a set 3 cells of #address-size, so don't treat
+> it like the ranges property when generating warnings.
+
+Uhh, no it is not. It's the same as 'ranges'.
+
+Also, we don't take patches against the copy of dtc in the kernel.
+Submit them to upstream dtc.
+
+Rob
+
+
 >
-> I don't understand the "running for a while" part. That doesn't make sense.
+> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+> ---
+>  scripts/dtc/checks.c | 31 ++++++++++++++++++++++++++++++-
+>  1 file changed, 30 insertions(+), 1 deletion(-)
 >
-
-When I say "run for a while" I mean as long as the task has
-run capability, we should check the migrate disabled flag again.
-
-> The only way this can happen is that it was scheduled, set
-> "migrate_disabled" and then got preempted where it's no longer on the run
-> queue.
-
-Yes, it is the only case.
-
-> -- Steve
+> diff --git a/scripts/dtc/checks.c b/scripts/dtc/checks.c
+> index 781ba1129a8e..791b93e8e02a 100644
+> --- a/scripts/dtc/checks.c
+> +++ b/scripts/dtc/checks.c
+> @@ -823,7 +823,36 @@ static void check_ranges_format(struct check *c, struct dt_info *dti,
+>         }
+>  }
+>  WARNING(ranges_format, check_ranges_format, "ranges", &addr_size_cells);
+> -WARNING(dma_ranges_format, check_ranges_format, "dma-ranges", &addr_size_cells);
+> +
+> +static void check_dma_ranges_format(struct check *c, struct dt_info *dti,
+> +                               struct node *node)
+> +{
+> +       struct property *prop;
+> +       int c_size_cells, p_size_cells, entrylen;
+> +       const char *ranges = c->data;
+> +
+> +       prop = get_property(node, ranges);
+> +       if (!prop)
+> +               return;
+> +
+> +       if (!node->parent) {
+> +               FAIL_PROP(c, dti, node, prop, "Root node has a \"%s\" property",
+> +                         ranges);
+> +               return;
+> +       }
+> +
+> +       c_size_cells = node_size_cells(node);
+> +       p_size_cells = node_size_cells(node->parent);
+> +       entrylen = (p_size_cells + 2 * c_size_cells) * sizeof(cell_t);
+> +
+> +       if (!is_multiple_of(prop->val.len, entrylen)) {
+> +               FAIL_PROP(c, dti, node, prop, "\"%s\" property has invalid length (%d bytes) "
+> +                         "(parent #address-cells == %d, "
+> +                         "child #address-cells == %d)", ranges, prop->val.len,
+> +                         p_size_cells, c_size_cells);
+> +       }
+> +}
+> +WARNING(dma_ranges_format, check_dma_ranges_format, "dma-ranges", &addr_size_cells);
 >
+>  static const struct bus_type pci_bus = {
+>         .name = "PCI",
+> --
+> 2.35.1
 >
->> +			 * And we check task migration disable flag here.
->>  			 */
->>  			if (unlikely(task_rq(task) != rq ||
->>  				     !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_mask) ||
->>  				     task_running(rq, task) ||
->>  				     !rt_task(task) ||
->> +				     is_migration_disabled(task) ||
->>  				     !task_on_rq_queued(task))) {
->>  
->>  				double_unlock_balance(rq, lowest_rq);
-
--- 
-BRs
-Schspa Shi
