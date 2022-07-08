@@ -2,82 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41185C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 13:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B004BCCA485
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 13:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiGHN1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 09:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
+        id S238049AbiGHN3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 09:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231287AbiGHN1n (ORCPT
+        with ESMTP id S237813AbiGHN3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 09:27:43 -0400
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD082CC86;
-        Fri,  8 Jul 2022 06:27:41 -0700 (PDT)
-Received: from mxbox4.masterlogin.de (unknown [192.168.10.79])
-        by mxout4.routing.net (Postfix) with ESMTP id 1379A100463;
-        Fri,  8 Jul 2022 13:27:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1657286859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fR7O+l5or7VHcLvd1mcGAyTpT5RtG0rRA1NvN2Fb1Zo=;
-        b=qnxo+P6VXmEXFjzvIT0zNhzr/LOw53Z8vsAFhQcyxpkgXl6JvRueF63cVywimnh48DjzI3
-        CNHaMB2QfxXjDorcOroL7wVhwqssxPDys++4p268BZz5LbAee4Yo318h4lJiTOrXDezYpU
-        unFpu5JudGO8z4HgfpEhS8wGeHsn4bk=
-Received: from frank-G5.. (fttx-pool-157.180.225.69.bambit.de [157.180.225.69])
-        by mxbox4.masterlogin.de (Postfix) with ESMTPSA id 5199580798;
-        Fri,  8 Jul 2022 13:27:38 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>
-Subject: [PATCH] arm64: dts: rk356x: fix upper usb port on BPI-R2-Pro
-Date:   Fri,  8 Jul 2022 15:27:06 +0200
-Message-Id: <20220708132706.81450-1-linux@fw-web.de>
-X-Mailer: git-send-email 2.34.1
+        Fri, 8 Jul 2022 09:29:35 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7182CC8E;
+        Fri,  8 Jul 2022 06:29:34 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id v12so14250741edc.10;
+        Fri, 08 Jul 2022 06:29:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A5yNT274X8JVIXWHK9IfpidEsdTyKnF8Wkvv4Lr1xrM=;
+        b=T49Dpozw8GmXePIozCQt/BaE/hs09JQQS4VxY2XNYeGltK2ufde6tdkHJ+qV49MBb/
+         cgwtD6o1chIsu+K45lOGnt78rWTmMo8vN1vybAtnydtU+Pk1wXJGbUa4BvPHJvUl6F46
+         0IO+W3gYuGyE74EWOFwblBeMc6VAEVL4ujHWVs5RZIoKT1DyIQXJLnTME3n15/m/I9x1
+         juYtvJDLa9gOAoN8tv9ma5PzIfq8zYzwwPY4SLiPTiCzL4SZ3ZTkIJC6d8T5xif4FN/D
+         40VPwo8Jo2XzQoMVmeWzQDUNSieBneVh12KQgzHI+MWJUjixLMEPHUQ/5wUu8JJsKjaC
+         fv3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A5yNT274X8JVIXWHK9IfpidEsdTyKnF8Wkvv4Lr1xrM=;
+        b=gWXmQuF0onXbp4/7jHrv/6f0D4Xz4UT4Be5dwk3b6M9oC7Pe4uQ3QvZfb6BSDs9h4F
+         NkFbnoKKUAeC9L/rqKpzMuWwokKxpk4ekrhFcXH3IIuJVooBXp37tsyZczTTxFbInfv7
+         wooBsAMp5PBqVzA5v0gkQGrb7VoQf9mpd70w7j0egtQA4gER8Lk5dgDY8JUhpZY2ZoHK
+         s2dZivHef4VwfalEC4NsVY8vuGd/KWJpMt1pBHjT8cGojmSaTRKeAZPs4mJf1v7mccGY
+         1Pm8IomLl09+hz+xGzE2doEvS7BJcgsnV5az0864LorgV3AanJsDS8jyrC8LBFNyXJvV
+         9U/g==
+X-Gm-Message-State: AJIora+7s1mS89rBTPw+4nCFqeN438ho1cgcuspWvzLm+sbVGRfPEBli
+        L7xpw/ega9CZ6pPLWudVjbo=
+X-Google-Smtp-Source: AGRyM1vrAKpKJdOECJLFrVkdBIXOKfAQt31+tD63iuif8bqLLfCeZhXJEam7m9XwSLL0XuoHuXbtQQ==
+X-Received: by 2002:a05:6402:2687:b0:43a:6025:1658 with SMTP id w7-20020a056402268700b0043a60251658mr4658569edd.271.1657286972649;
+        Fri, 08 Jul 2022 06:29:32 -0700 (PDT)
+Received: from fedora.robimarko.hr (dh207-96-250.xnet.hr. [88.207.96.250])
+        by smtp.googlemail.com with ESMTPSA id q4-20020a1709064cc400b006fec4ee28d0sm20170398ejt.189.2022.07.08.06.29.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 06:29:32 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, amitk@kernel.org,
+        thara.gopinath@gmail.com, rafael@kernel.org,
+        daniel.lezcano@linaro.org, rui.zhang@intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v5 1/5] dt-bindings: thermal: tsens: Add ipq8074 compatible
+Date:   Fri,  8 Jul 2022 15:29:26 +0200
+Message-Id: <20220708132930.595897-1-robimarko@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: b312386b-2fd2-4af4-91ee-331822f9d4ad
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+Qualcomm IPQ8074 has tsens v2.3.0 block, though unlike existing v2 IP it
+only uses one IRQ, so tsens v2 compatible cannot be used as the fallback.
 
-- extcon is no more needed in 5.19 - so drop it
-  commit 51a9b2c03dd3 ("phy: rockchip-inno-usb2: Handle ID IRQ")
-- dr_mode was changed from host to otg in rk356x.dtsi
-  commit bc405bb3eeee ("arm64: dts: rockchip: enable otg/drd
-    operation of usb_host0_xhci in rk356x")
-  change it back on board level as id-pin on r2pro is not connected
+We also have to make sure that correct interrupts are set according to
+compatibles, so populate interrupt information per compatibles.
 
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-for hostmode to work this fix is needed:
-https://patchwork.kernel.org/project/linux-rockchip/patch/20220708061434.38115-1-samuel@sholland.org/
----
- arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v4:
+* Add the forgotten Reviewed-by tag from Krzysztof
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-index acc6b3a98415..02bafb938fb6 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-@@ -678,7 +678,7 @@ &usb_host0_ohci {
- };
+Changes in v3:
+* Remove implied min/maxItem properties as pointed by Rob
+
+Changes in v2:
+* No need for a list in compatible check
+* Specify minItems and maxItems for interrupt and interrupt-names
+---
+ .../bindings/thermal/qcom-tsens.yaml          | 76 ++++++++++++++++---
+ 1 file changed, 65 insertions(+), 11 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+index 038d81338fcf..fee2b6281417 100644
+--- a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
++++ b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+@@ -59,6 +59,10 @@ properties:
+               - qcom,sm8350-tsens
+           - const: qcom,tsens-v2
  
- &usb_host0_xhci {
--	extcon = <&usb2phy0>;
-+	dr_mode = "host";
- 	status = "okay";
- };
++      - description: v2 of TSENS with combined interrupt
++        enum:
++          - qcom,ipq8074-tsens
++
+   reg:
+     items:
+       - description: TM registers
+@@ -66,15 +70,11 @@ properties:
  
+   interrupts:
+     minItems: 1
+-    items:
+-      - description: Combined interrupt if upper or lower threshold crossed
+-      - description: Interrupt if critical threshold crossed
++    maxItems: 2
+ 
+   interrupt-names:
+     minItems: 1
+-    items:
+-      - const: uplow
+-      - const: critical
++    maxItems: 2
+ 
+   nvmem-cells:
+     minItems: 1
+@@ -128,22 +128,61 @@ allOf:
+     then:
+       properties:
+         interrupts:
+-          maxItems: 1
++          items:
++            - description: Combined interrupt if upper or lower threshold crossed
+         interrupt-names:
+-          maxItems: 1
++          items:
++            - const: uplow
+ 
+-    else:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,msm8953-tsens
++              - qcom,msm8996-tsens
++              - qcom,msm8998-tsens
++              - qcom,sc7180-tsens
++              - qcom,sc7280-tsens
++              - qcom,sc8180x-tsens
++              - qcom,sdm630-tsens
++              - qcom,sdm845-tsens
++              - qcom,sm8150-tsens
++              - qcom,sm8250-tsens
++              - qcom,sm8350-tsens
++              - qcom,tsens-v2
++    then:
++      properties:
++        interrupts:
++          items:
++            - description: Combined interrupt if upper or lower threshold crossed
++            - description: Interrupt if critical threshold crossed
++        interrupt-names:
++          items:
++            - const: uplow
++            - const: critical
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,ipq8074-tsens
++    then:
+       properties:
+         interrupts:
+-          minItems: 2
++          items:
++            - description: Combined interrupt if upper, lower or critical thresholds crossed
+         interrupt-names:
+-          minItems: 2
++          items:
++            - const: combined
+ 
+   - if:
+       properties:
+         compatible:
+           contains:
+             enum:
++              - qcom,ipq8074-tsens
+               - qcom,tsens-v0_1
+               - qcom,tsens-v1
+               - qcom,tsens-v2
+@@ -226,4 +265,19 @@ examples:
+            #qcom,sensors = <13>;
+            #thermal-sensor-cells = <1>;
+     };
++
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    // Example 4 (for any IPQ8074 based SoC-s):
++    tsens4: thermal-sensor@4a9000 {
++           compatible = "qcom,ipq8074-tsens";
++           reg = <0x4a9000 0x1000>,
++                 <0x4a8000 0x1000>;
++
++           interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
++           interrupt-names = "combined";
++
++           #qcom,sensors = <16>;
++           #thermal-sensor-cells = <1>;
++    };
+ ...
 -- 
-2.34.1
+2.36.1
 
