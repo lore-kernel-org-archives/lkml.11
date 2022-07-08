@@ -2,128 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 796FAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89287C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239597AbiGHUkP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 16:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S239369AbiGHUoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 16:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238652AbiGHUkN (ORCPT
+        with ESMTP id S238369AbiGHUoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 16:40:13 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A1B2182F;
-        Fri,  8 Jul 2022 13:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657312812; x=1688848812;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DIVHdvGmcoQvN9wD6lnJmfi5wn5rSahT3GEvClW89ZA=;
-  b=h57LgtzQYYDr4Ut2QBHOxBUbeJgkaPQ/jYVgKR8bF1mEhaZUeAa8ClkI
-   ZHXHCkBkWHTRONDpXbPcUwW8QkmAIjA1fXeZDecXS58Chd5MHEtwKMzvP
-   UrkjCG3v2hIhB851kn18O/QBiUqXdUtQehFHvIwZbIcrIOZd+3Z8wri3W
-   MbAJmjnt8Mn6itUyuyYgHh0Hfw5tBzIuAITOYnUX8f7G+a0rcvIkyC8MO
-   5/UAgZU7UZkb1PomAxMnN7mNYxFewGgKiIDEkiO6S2I8Jc2A1kQAEk8YJ
-   pbqW9Q5ODXBtFo7xQCIoVgs3XR3g4xOdjr3PgG6EpDTCVIDaX0Zh1obkH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="309946170"
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="309946170"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 13:40:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="594244629"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 08 Jul 2022 13:40:07 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9uli-000Nv4-Tb;
-        Fri, 08 Jul 2022 20:40:06 +0000
-Date:   Sat, 9 Jul 2022 04:39:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Schultz <netdev@kapio-technology.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <202207090438.PlGIeA4G-lkp@intel.com>
-References: <20220707152930.1789437-4-netdev@kapio-technology.com>
+        Fri, 8 Jul 2022 16:44:03 -0400
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [5.144.164.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445CB9CE3F;
+        Fri,  8 Jul 2022 13:44:01 -0700 (PDT)
+Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 373731F6C6;
+        Fri,  8 Jul 2022 22:43:57 +0200 (CEST)
+Message-ID: <bb78f8fb-d6ea-5c37-0531-8d7584bc897b@somainline.org>
+Date:   Fri, 8 Jul 2022 22:43:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707152930.1789437-4-netdev@kapio-technology.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/5] Add support for Xiaomi Poco F1 EBBG variant
+Content-Language: en-US
+To:     Joel Selvaraj <jo@jsfamily.in>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+References: <MN2PR02MB702415D7BF12B7B7A41B2D38D9829@MN2PR02MB7024.namprd02.prod.outlook.com>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <MN2PR02MB702415D7BF12B7B7A41B2D38D9829@MN2PR02MB7024.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on net/master]
-[also build test ERROR on shuah-kselftest/next linus/master v5.19-rc5]
-[cannot apply to net-next/master next-20220708]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 07266d066301b97ad56a693f81b29b7ced429b27
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220709/202207090438.PlGIeA4G-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 562c3467a6738aa89203f72fc1d1343e5baadf3c)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ebd598d7ea6c015001489c4293da887763491086
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-        git checkout ebd598d7ea6c015001489c4293da887763491086
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/dsa/sja1105/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/dsa/sja1105/sja1105_main.c:1952:58: error: too few arguments to function call, expected 6, have 5
-           return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-                  ~~~~~~~~~~~~~~~                                  ^
-   drivers/net/dsa/sja1105/sja1105_main.c:1803:12: note: 'sja1105_fdb_add' declared here
-   static int sja1105_fdb_add(struct dsa_switch *ds, int port,
-              ^
-   1 error generated.
 
 
-vim +1952 drivers/net/dsa/sja1105/sja1105_main.c
+On 8.07.2022 13:12, Joel Selvaraj wrote:
+> There are two variants of Xiaomi Poco F1.
+> - Tianma variant with NOVATEK NT36672A panel + touchscreen manufactured
+>   by Tianma
+> - EBBG variant with Focaltech FT8719 panel + touchscreen manufactured
+>   by EBBG
+> 
+> The current sdm845-xiaomi-beryllium.dts represents tianma panel variant.
+> 
+> To add support for the EBBG variant, let's split this into 3 files,
+> - sdm845-xiaomi-beryllium-common.dtsi which contains all the common nodes
+> - sdm845-xiaomi-beryllium-tianma.dts for the tianma variant
+> - sdm845-xiaomi-beryllium-ebbg.dts for the ebbg variant
+> 
+> Note:
+> -----
+> Both the panels are already upstreamed and the split is based on them.
+> There were patches earlier for both the touchscreens, but they are not
+> accepted upstream yet. Once they are accepted, we will add them to
+> respective variants.
+Hi,
 
-5126ec72a094bd3 Vladimir Oltean 2021-08-08  1947  
-a52b2da778fc93e Vladimir Oltean 2021-01-09  1948  static int sja1105_mdb_add(struct dsa_switch *ds, int port,
-c26933639b5402c Vladimir Oltean 2022-02-25  1949  			   const struct switchdev_obj_port_mdb *mdb,
-c26933639b5402c Vladimir Oltean 2022-02-25  1950  			   struct dsa_db db)
-291d1e72b756424 Vladimir Oltean 2019-05-02  1951  {
-c26933639b5402c Vladimir Oltean 2022-02-25 @1952  	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-291d1e72b756424 Vladimir Oltean 2019-05-02  1953  }
-291d1e72b756424 Vladimir Oltean 2019-05-02  1954  
+I believe this is not the correct approach. This may work short-term, but
+you will have to prepare 2 separate images for the device and mistaking them
+may cause irreversible hw damage at worst, or lots of user complaining at best.
+Instead, I think it's about time we should look into implementing dynamic panel
+detection.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Qualcomm devices do this by parsing the command line [1], as LK/XBL
+gives you a nice-ish string to work with that you can simply match
+against a label. Other vendors may use custom mechanisms, such as
+a resistor / GPIO to determine which panel (or generally hw config),
+but implementing this mechanism would make upstreaming of lots of other
+devices easier..
+
+This issue concerns many phones (and well, devices in general), as
+they are seldom made with only one configuration due to supply chain
+strategies.
+
+
+Konrad
+
+[1] https://github.com/LineageOS/android_kernel_xiaomi_sdm845/blob/lineage-19.1/drivers/gpu/drm/msm/dsi-staging/dsi_display.c
