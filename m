@@ -2,109 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 639B3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44659CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237415AbiGHHL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
+        id S237456AbiGHHMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbiGHHLy (ORCPT
+        with ESMTP id S236525AbiGHHMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:11:54 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9D7735A0;
-        Fri,  8 Jul 2022 00:11:53 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4LfPbP33V6z9tKy;
-        Fri,  8 Jul 2022 09:11:45 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id rA1tWbRo3HMk; Fri,  8 Jul 2022 09:11:45 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4LfPbK6rPnz9tHw;
-        Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id CEA818B7A9;
-        Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id afkSoB4pgl9z; Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.233.202])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 76E4B8B79F;
-        Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2687BSxD603399
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 8 Jul 2022 09:11:28 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2687BSh6603398;
-        Fri, 8 Jul 2022 09:11:28 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>, deller@gmx.de,
-        manoj@linux.ibm.com, mrochs@linux.ibm.com, ukrishn@linux.ibm.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, tzimmermann@suse.de
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v3 2/4] scsi: cxlflash: Include missing linux/irqdomain.h
-Date:   Fri,  8 Jul 2022 09:11:06 +0200
-Message-Id: <c6c0cc5e9179a642370a61439f95158271a78c03.1657264228.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <f75b383673663e27f6b57e50b4abfb9fe3780b00.1657264228.git.christophe.leroy@csgroup.eu>
-References: <f75b383673663e27f6b57e50b4abfb9fe3780b00.1657264228.git.christophe.leroy@csgroup.eu>
+        Fri, 8 Jul 2022 03:12:50 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9287696F;
+        Fri,  8 Jul 2022 00:12:48 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 910741887361;
+        Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 8876325032B7;
+        Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 70813A1E00B7; Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1657264266; l=1730; s=20211009; h=from:subject:message-id; bh=48X8ZLFinvI6xSHRLAcSqxxzVN1Ahbtv4N3knADh6qU=; b=YU4h1peK3Lo6jA0K/Z7WhkAnSK9Cu6oz10qTglFNiF9Q9RaG18x5Vk4CCG1tdqhESa+HLbWUbqCN dCVKoT/aDiYSnVJbr3snkdDjQhvZGW03ftlLugoYxjuh0RQJxCWq
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Date:   Fri, 08 Jul 2022 09:12:46 +0200
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next 1/1] net: dsa: mv88e6xxx: allow reading FID when
+ handling ATU violations
+In-Reply-To: <20220707102836.u7ig6rr2664mcrlf@skbuf>
+References: <20220706122502.1521819-1-netdev@kapio-technology.com>
+ <20220707102836.u7ig6rr2664mcrlf@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <f8a4f54a90efa545cac1ff2cdbde78c7@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-powerpc's asm/prom.h brings some headers that it doesn't need itself.
+On 2022-07-07 12:28, Vladimir Oltean wrote:
+> On Wed, Jul 06, 2022 at 02:25:02PM +0200, Hans Schultz wrote:
+>> For convenience the function mv88e6xxx_g1_atu_op() has been used to 
+>> read
+>> ATU violations, but the function has other purposes and does not 
+>> enable
+>> the possibility to read the FID when reading ATU violations.
+>> 
+>> The FID is needed to get hold of which VID was involved in the 
+>> violation,
+>> thus the need for future purposes to be able to read the FID.
+> 
+> Make no mistake, the existing code doesn't disallow reading back the 
+> FID
+> during an ATU Get/Clear Violation operation, and your patch isn't
+> "allowing" something that wasn't disallowed.
 
-Once those headers are removed from asm/prom.h, the following
-errors occur:
+It would only read 0 the way it worked. And I don't understand why
+mv88e6xxx_g1_atu_op() writes the FID?
 
-  CC [M]  drivers/scsi/cxlflash/ocxl_hw.o
-drivers/scsi/cxlflash/ocxl_hw.c: In function 'afu_map_irq':
-drivers/scsi/cxlflash/ocxl_hw.c:195:16: error: implicit declaration of function 'irq_create_mapping' [-Werror=implicit-function-declaration]
-  195 |         virq = irq_create_mapping(NULL, irq->hwirq);
-      |                ^~~~~~~~~~~~~~~~~~
-drivers/scsi/cxlflash/ocxl_hw.c:222:9: error: implicit declaration of function 'irq_dispose_mapping' [-Werror=implicit-function-declaration]
-  222 |         irq_dispose_mapping(virq);
-      |         ^~~~~~~~~~~~~~~~~~~
-drivers/scsi/cxlflash/ocxl_hw.c: In function 'afu_unmap_irq':
-drivers/scsi/cxlflash/ocxl_hw.c:264:13: error: implicit declaration of function 'irq_find_mapping'; did you mean 'is_cow_mapping'? [-Werror=implicit-function-declaration]
-  264 |         if (irq_find_mapping(NULL, irq->hwirq)) {
-      |             ^~~~~~~~~~~~~~~~
-      |             is_cow_mapping
-cc1: some warnings being treated as errors
+> 
+> The documentation for the ATU FID register says that its contents is
+> ignored before the operation starts, and it contains the returned ATU
+> entry's FID after the operation completes.
+> 
+> So the change simply says: don't bother to write the ATU FID register
+> with zero, it doesn't matter what this contains. This is probably true,
+> but the patch needs to do what's written on the box.
 
-Fix it by including linux/irqdomain.h
+Writing 0 to the ATU fID register resulted in a read giving zero of 
+course.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/scsi/cxlflash/ocxl_hw.c | 1 +
- 1 file changed, 1 insertion(+)
+> 
+> Please note that this only even matters at all for switches with
+> mv88e6xxx_num_databases(chip) > 256, where MV88E6352_G1_ATU_FID is a
+> dedicated register which this patch avoids writing. For other switches,
+> the FID is embedded within MV88E6XXX_G1_ATU_CTL or MV88E6XXX_G1_ATU_OP.
+> So _practically_, for those switches, you are still emitting the
+> GET_CLR_VIOLATION ATU op with a FID of 0 whether you like it or not, 
+> and
+> this patch introduces a (most likely irrelevant) discrepancy between 
+> the
+> access methods for various switches.
+> 
+> Please note that this observation is relevant for your future changes 
+> to
+> read back the FID too. As I said here:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220524152144.40527-4-schultz.hans+netdev@gmail.com/#24912482
+> you can't just assume that the FID lies within the MV88E6352_G1_ATU_FID
+> register, just look at the way it is packed within 
+> mv88e6xxx_g1_atu_op().
+> You'll need to unpack it in the same way.
 
-diff --git a/drivers/scsi/cxlflash/ocxl_hw.c b/drivers/scsi/cxlflash/ocxl_hw.c
-index 244fc27215dc..631eda2d467e 100644
---- a/drivers/scsi/cxlflash/ocxl_hw.c
-+++ b/drivers/scsi/cxlflash/ocxl_hw.c
-@@ -16,6 +16,7 @@
- #include <linux/poll.h>
- #include <linux/sched/signal.h>
- #include <linux/interrupt.h>
-+#include <linux/irqdomain.h>
- #include <asm/xive.h>
- #include <misc/ocxl.h>
- 
--- 
-2.36.1
-
+So I need a new function to read the FID that mimics 
+mv88e6xxx_g1_atu_op()
+as far as I understand?
