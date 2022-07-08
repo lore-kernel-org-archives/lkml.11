@@ -2,70 +2,731 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80E8C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A720C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240110AbiGHUcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 16:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
+        id S240119AbiGHUcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 16:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240098AbiGHUb4 (ORCPT
+        with ESMTP id S240113AbiGHUcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 16:31:56 -0400
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3587B9CE36;
-        Fri,  8 Jul 2022 13:31:55 -0700 (PDT)
-Received: by mail-ot1-f49.google.com with SMTP id e1-20020a05683013c100b0061c1a6b8d11so3989406otq.8;
-        Fri, 08 Jul 2022 13:31:55 -0700 (PDT)
+        Fri, 8 Jul 2022 16:32:02 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C139B182
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 13:31:56 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id v63so38559oie.9
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 13:31:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jXSAcCjSuTVSwifnWHkttE3RKSSgb83Wqfj3wPc0wrU=;
+        b=y1urKzl9hlGlL2hsuZP/BCoSOOQW59H5pYHy1mrZSi4L63rlkDc7VhUiD/E/dWE398
+         LECrM2wlgY7YcqCK+helnutrikd6/4VwQQPXhSmn1vvAq4oknXB1m8LIGfcMajZZTTj9
+         KeXvnNGDrP9/Zo2dtY6pEn8hyVG12osaoXVxlY70qH3MFqSrWM8iM2TdsupCbWuoR81e
+         qrC6499iXnk87ZODHo5cS1u5Dv+0QWOwJzvyLGCwrc6Tkj16oAbKo+Gp6AATZH0vev35
+         WWVWg4rDjrytrsYJzg2S80tR9JHeU5iz67jhLCFIwzaadpSF7V2eR1leBKt8nLOJBXnf
+         9LjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0B/exJxMFi1SZU84hxtogLTRJhADTBmMHexXyGp+XMs=;
-        b=nYjxQeCkp1iLeEfRLOfkcs1608gRIK6Iknb7klM+Lf7hJwbZrWzRMwazATeCHEGTms
-         xN0BPjZmS2ivCLEEqHxg/6GvtOP07q9YzeRmhPrTiv42p13wiIxmjTKPfQGKJs2RT7Ze
-         pZ1fhD03GqOnexPSwZGWrGDeVec93mPvHf4GFf0AA4M4sMH4khStDysfFHYXd4Ic2IRz
-         1jAaU4tRuBeknfuDy/SBVGsi53IqmObcVQk1/J8sx5s1DkMQ38rEnH/1yv7XJHTqdvkn
-         teyKCmE/RjXRB83QA0v65/Q+kSuzoEDiGTjbZXxcZvzz5qVoFzaX0otwJwnL1rNLeCiK
-         pg0g==
-X-Gm-Message-State: AJIora/ryh2jv4Oe6vKamwfkFyNX4oLiWvJPYizwJmUWlIrxa5jMSG62
-        jwz0AgOI1eBXJXX0LWz2NtZIaSPL1fiiHdJlOWs=
-X-Google-Smtp-Source: AGRyM1v+YuqGSJknmDmAp+4llKViIBSyqnre9fRgbdcmXtOBih2YQuYHWWFxIBeHb2db4XvOUlQOVmkxxfvUcCjCh7c=
-X-Received: by 2002:a9d:620a:0:b0:616:afea:1d62 with SMTP id
- g10-20020a9d620a000000b00616afea1d62mr2314892otj.124.1657312314496; Fri, 08
- Jul 2022 13:31:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jXSAcCjSuTVSwifnWHkttE3RKSSgb83Wqfj3wPc0wrU=;
+        b=On2q9EjWn3BY6K3n7OeNiwq5khpFaslTpgpnECmpbSkyYtHCJAXonMLgWBdmnnZa9x
+         1BlnUoTLe2kbVsHRxo8goSsRCuN3zAz7CMm3NTz/nBUIgDdEbr+qdsrb8HvkVpF1mfiC
+         rYpH+xObbz/Fpgx2MAaUjx3wo2UK6AFVxor1zJRK5Dd10e+0I7mVI99+CXZCIm3hMoWi
+         El+b2zdXlcWJUhppAMA2FISEeoLY1q1Gggek5yS21tE4gP3V+ja2qdpFIz2NZDzUbNLx
+         5C4FlR0jseKXna1Mo7pTV9WzfR997O/RXycZSlEf8H9htFWNBD0bCRANASOln6ptbxi8
+         Z+Fg==
+X-Gm-Message-State: AJIora/jSbaPfr1i5TNNzYpTwu4SG5ytvhvdD7SvcqLG3HC0vlstzQUl
+        wo0XPhEQzu3OYNX/MXtcVP1OJA==
+X-Google-Smtp-Source: AGRyM1u5AM+Y0DgDxIfbw4mbb1+UY2oUjfVjAJTQJRF03Sr1cDdc5nF7MkAb3W4C21DhBWnB7LOsQA==
+X-Received: by 2002:a05:6808:192a:b0:335:3fd7:665f with SMTP id bf42-20020a056808192a00b003353fd7665fmr951552oib.164.1657312315569;
+        Fri, 08 Jul 2022 13:31:55 -0700 (PDT)
+Received: from fedora.. ([143.107.182.242])
+        by smtp.gmail.com with ESMTPSA id ci10-20020a05683063ca00b0061c309b1dc2sm742225otb.39.2022.07.08.13.31.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 13:31:55 -0700 (PDT)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
+To:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        leandro.ribeiro@collabora.com, n@nfraprado.net,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        michal.winiarski@intel.com,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        David Gow <davidgow@google.com>,
+        Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com
+Cc:     kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
+Subject: [PATCH v5 4/9] drm: selftest: convert drm_format selftest to KUnit
+Date:   Fri,  8 Jul 2022 17:30:47 -0300
+Message-Id: <20220708203052.236290-5-maira.canal@usp.br>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220708203052.236290-1-maira.canal@usp.br>
+References: <20220708203052.236290-1-maira.canal@usp.br>
 MIME-Version: 1.0
-References: <20220705150511.473919-1-german.gomez@arm.com> <20220705150511.473919-2-german.gomez@arm.com>
-In-Reply-To: <20220705150511.473919-2-german.gomez@arm.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Fri, 8 Jul 2022 13:31:43 -0700
-Message-ID: <CAM9d7chzi9h+w5n_dXwAVwAgh-UyEQveVBh4ZenU60gUTDfrTg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] perf test: Add test for branch stack sampling
-To:     German Gomez <german.gomez@arm.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Considering the current adoption of the KUnit framework, convert the
+DRM format selftest to the KUnit API.
 
-On Tue, Jul 5, 2022 at 8:05 AM German Gomez <german.gomez@arm.com> wrote:
->
-> Add a self test for branch stack sampling, to check that we get the
-> expected branch types, and filters behave as expected.
->
-> Suggested-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> Signed-off-by: German Gomez <german.gomez@arm.com>
+Tested-by: David Gow <davidgow@google.com>
+Acked-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Maíra Canal <maira.canal@usp.br>
+---
+ drivers/gpu/drm/selftests/Makefile            |   3 +-
+ .../gpu/drm/selftests/drm_modeset_selftests.h |   3 -
+ drivers/gpu/drm/selftests/test-drm_format.c   | 280 -----------------
+ .../drm/selftests/test-drm_modeset_common.h   |   3 -
+ drivers/gpu/drm/tests/Makefile                |   2 +-
+ drivers/gpu/drm/tests/drm_format_test.c       | 287 ++++++++++++++++++
+ 6 files changed, 289 insertions(+), 289 deletions(-)
+ delete mode 100644 drivers/gpu/drm/selftests/test-drm_format.c
+ create mode 100644 drivers/gpu/drm/tests/drm_format_test.c
 
-Acked-by: Namhyung Kim <namhyung@kernel.org>
+diff --git a/drivers/gpu/drm/selftests/Makefile b/drivers/gpu/drm/selftests/Makefile
+index 8a794914e328..b7f252d886d0 100644
+--- a/drivers/gpu/drm/selftests/Makefile
++++ b/drivers/gpu/drm/selftests/Makefile
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ test-drm_modeset-y := test-drm_modeset_common.o test-drm_plane_helper.o \
+-                      test-drm_format.o test-drm_framebuffer.o \
+-		      test-drm_dp_mst_helper.o
++                      test-drm_framebuffer.o test-drm_dp_mst_helper.o
+ 
+ obj-$(CONFIG_DRM_DEBUG_SELFTEST) += test-drm_mm.o test-drm_modeset.o \
+ 				    test-drm_buddy.o
+diff --git a/drivers/gpu/drm/selftests/drm_modeset_selftests.h b/drivers/gpu/drm/selftests/drm_modeset_selftests.h
+index a3ca90307364..63061ef55eff 100644
+--- a/drivers/gpu/drm/selftests/drm_modeset_selftests.h
++++ b/drivers/gpu/drm/selftests/drm_modeset_selftests.h
+@@ -7,9 +7,6 @@
+  * Tests are executed in order by igt/drm_selftests_helper
+  */
+ selftest(check_plane_state, igt_check_plane_state)
+-selftest(check_drm_format_block_width, igt_check_drm_format_block_width)
+-selftest(check_drm_format_block_height, igt_check_drm_format_block_height)
+-selftest(check_drm_format_min_pitch, igt_check_drm_format_min_pitch)
+ selftest(check_drm_framebuffer_create, igt_check_drm_framebuffer_create)
+ selftest(dp_mst_calc_pbn_mode, igt_dp_mst_calc_pbn_mode)
+ selftest(dp_mst_sideband_msg_req_decode, igt_dp_mst_sideband_msg_req_decode)
+diff --git a/drivers/gpu/drm/selftests/test-drm_format.c b/drivers/gpu/drm/selftests/test-drm_format.c
+deleted file mode 100644
+index c5e212afa27a..000000000000
+--- a/drivers/gpu/drm/selftests/test-drm_format.c
++++ /dev/null
+@@ -1,280 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * Test cases for the drm_format functions
+- */
+-
+-#define pr_fmt(fmt) "drm_format: " fmt
+-
+-#include <linux/errno.h>
+-#include <linux/kernel.h>
+-
+-#include <drm/drm_fourcc.h>
+-
+-#include "test-drm_modeset_common.h"
+-
+-int igt_check_drm_format_block_width(void *ignored)
+-{
+-	const struct drm_format_info *info = NULL;
+-
+-	/* Test invalid arguments */
+-	FAIL_ON(drm_format_info_block_width(info, 0) != 0);
+-	FAIL_ON(drm_format_info_block_width(info, -1) != 0);
+-	FAIL_ON(drm_format_info_block_width(info, 1) != 0);
+-
+-	/* Test 1 plane format */
+-	info = drm_format_info(DRM_FORMAT_XRGB4444);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_width(info, 0) != 1);
+-	FAIL_ON(drm_format_info_block_width(info, 1) != 0);
+-	FAIL_ON(drm_format_info_block_width(info, -1) != 0);
+-
+-	/* Test 2 planes format */
+-	info = drm_format_info(DRM_FORMAT_NV12);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_width(info, 0) != 1);
+-	FAIL_ON(drm_format_info_block_width(info, 1) != 1);
+-	FAIL_ON(drm_format_info_block_width(info, 2) != 0);
+-	FAIL_ON(drm_format_info_block_width(info, -1) != 0);
+-
+-	/* Test 3 planes format */
+-	info = drm_format_info(DRM_FORMAT_YUV422);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_width(info, 0) != 1);
+-	FAIL_ON(drm_format_info_block_width(info, 1) != 1);
+-	FAIL_ON(drm_format_info_block_width(info, 2) != 1);
+-	FAIL_ON(drm_format_info_block_width(info, 3) != 0);
+-	FAIL_ON(drm_format_info_block_width(info, -1) != 0);
+-
+-	/* Test a tiled format */
+-	info = drm_format_info(DRM_FORMAT_X0L0);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_width(info, 0) != 2);
+-	FAIL_ON(drm_format_info_block_width(info, 1) != 0);
+-	FAIL_ON(drm_format_info_block_width(info, -1) != 0);
+-
+-	return 0;
+-}
+-
+-int igt_check_drm_format_block_height(void *ignored)
+-{
+-	const struct drm_format_info *info = NULL;
+-
+-	/* Test invalid arguments */
+-	FAIL_ON(drm_format_info_block_height(info, 0) != 0);
+-	FAIL_ON(drm_format_info_block_height(info, -1) != 0);
+-	FAIL_ON(drm_format_info_block_height(info, 1) != 0);
+-
+-	/* Test 1 plane format */
+-	info = drm_format_info(DRM_FORMAT_XRGB4444);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_height(info, 0) != 1);
+-	FAIL_ON(drm_format_info_block_height(info, 1) != 0);
+-	FAIL_ON(drm_format_info_block_height(info, -1) != 0);
+-
+-	/* Test 2 planes format */
+-	info = drm_format_info(DRM_FORMAT_NV12);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_height(info, 0) != 1);
+-	FAIL_ON(drm_format_info_block_height(info, 1) != 1);
+-	FAIL_ON(drm_format_info_block_height(info, 2) != 0);
+-	FAIL_ON(drm_format_info_block_height(info, -1) != 0);
+-
+-	/* Test 3 planes format */
+-	info = drm_format_info(DRM_FORMAT_YUV422);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_height(info, 0) != 1);
+-	FAIL_ON(drm_format_info_block_height(info, 1) != 1);
+-	FAIL_ON(drm_format_info_block_height(info, 2) != 1);
+-	FAIL_ON(drm_format_info_block_height(info, 3) != 0);
+-	FAIL_ON(drm_format_info_block_height(info, -1) != 0);
+-
+-	/* Test a tiled format */
+-	info = drm_format_info(DRM_FORMAT_X0L0);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_block_height(info, 0) != 2);
+-	FAIL_ON(drm_format_info_block_height(info, 1) != 0);
+-	FAIL_ON(drm_format_info_block_height(info, -1) != 0);
+-
+-	return 0;
+-}
+-
+-int igt_check_drm_format_min_pitch(void *ignored)
+-{
+-	const struct drm_format_info *info = NULL;
+-
+-	/* Test invalid arguments */
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-
+-	/* Test 1 plane 8 bits per pixel format */
+-	info = drm_format_info(DRM_FORMAT_RGB332);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1) != 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 2) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 640) != 640);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1024) != 1024);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1920) != 1920);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 4096) != 4096);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 671) != 671);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX) !=
+-			(uint64_t)UINT_MAX);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)) !=
+-			(uint64_t)(UINT_MAX - 1));
+-
+-	/* Test 1 plane 16 bits per pixel format */
+-	info = drm_format_info(DRM_FORMAT_XRGB4444);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 2) != 4);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 640) != 1280);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1024) != 2048);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1920) != 3840);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 4096) != 8192);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 671) != 1342);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX) !=
+-			(uint64_t)UINT_MAX * 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)) !=
+-			(uint64_t)(UINT_MAX - 1) * 2);
+-
+-	/* Test 1 plane 24 bits per pixel format */
+-	info = drm_format_info(DRM_FORMAT_RGB888);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1) != 3);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 2) != 6);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 640) != 1920);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1024) != 3072);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1920) != 5760);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 4096) != 12288);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 671) != 2013);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX) !=
+-			(uint64_t)UINT_MAX * 3);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX - 1) !=
+-			(uint64_t)(UINT_MAX - 1) * 3);
+-
+-	/* Test 1 plane 32 bits per pixel format */
+-	info = drm_format_info(DRM_FORMAT_ABGR8888);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1) != 4);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 2) != 8);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 640) != 2560);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1024) != 4096);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1920) != 7680);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 4096) != 16384);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 671) != 2684);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX) !=
+-			(uint64_t)UINT_MAX * 4);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX - 1) !=
+-			(uint64_t)(UINT_MAX - 1) * 4);
+-
+-	/* Test 2 planes format */
+-	info = drm_format_info(DRM_FORMAT_NV12);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 0) != 0);
+-
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1) != 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 1) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 2) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 1) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 640) != 640);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 320) != 640);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1024) != 1024);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 512) != 1024);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1920) != 1920);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 960) != 1920);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 4096) != 4096);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 2048) != 4096);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 671) != 671);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 336) != 672);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX) !=
+-			(uint64_t)UINT_MAX);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, UINT_MAX / 2 + 1) !=
+-			(uint64_t)UINT_MAX + 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)) !=
+-			(uint64_t)(UINT_MAX - 1));
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, (UINT_MAX - 1) /  2) !=
+-			(uint64_t)(UINT_MAX - 1));
+-
+-	/* Test 3 planes 8 bits per pixel format */
+-	info = drm_format_info(DRM_FORMAT_YUV422);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 3, 0) != 0);
+-
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1) != 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 1) != 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 1) != 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 2) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 2) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 2) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 640) != 640);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 320) != 320);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 320) != 320);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1024) != 1024);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 512) != 512);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 512) != 512);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1920) != 1920);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 960) != 960);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 960) != 960);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 4096) != 4096);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 2048) != 2048);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 2048) != 2048);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 671) != 671);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 336) != 336);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, 336) != 336);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX) !=
+-			(uint64_t)UINT_MAX);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, UINT_MAX / 2 + 1) !=
+-			(uint64_t)UINT_MAX / 2 + 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, UINT_MAX / 2 + 1) !=
+-			(uint64_t)UINT_MAX / 2 + 1);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, (UINT_MAX - 1) / 2) !=
+-			(uint64_t)(UINT_MAX - 1) / 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, (UINT_MAX - 1) / 2) !=
+-			(uint64_t)(UINT_MAX - 1) / 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 2, (UINT_MAX - 1) / 2) !=
+-			(uint64_t)(UINT_MAX - 1) / 2);
+-
+-	/* Test tiled format */
+-	info = drm_format_info(DRM_FORMAT_X0L2);
+-	FAIL_ON(!info);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, -1, 0) != 0);
+-	FAIL_ON(drm_format_info_min_pitch(info, 1, 0) != 0);
+-
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1) != 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 2) != 4);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 640) != 1280);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1024) != 2048);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 1920) != 3840);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 4096) != 8192);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, 671) != 1342);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX) !=
+-			(uint64_t)UINT_MAX * 2);
+-	FAIL_ON(drm_format_info_min_pitch(info, 0, UINT_MAX - 1) !=
+-			(uint64_t)(UINT_MAX - 1) * 2);
+-
+-	return 0;
+-}
+diff --git a/drivers/gpu/drm/selftests/test-drm_modeset_common.h b/drivers/gpu/drm/selftests/test-drm_modeset_common.h
+index 42a10d7da51c..5709d967a5c4 100644
+--- a/drivers/gpu/drm/selftests/test-drm_modeset_common.h
++++ b/drivers/gpu/drm/selftests/test-drm_modeset_common.h
+@@ -17,9 +17,6 @@
+ #define FAIL_ON(x) FAIL((x), "%s", "FAIL_ON(" __stringify(x) ")\n")
+ 
+ int igt_check_plane_state(void *ignored);
+-int igt_check_drm_format_block_width(void *ignored);
+-int igt_check_drm_format_block_height(void *ignored);
+-int igt_check_drm_format_min_pitch(void *ignored);
+ int igt_check_drm_framebuffer_create(void *ignored);
+ int igt_dp_mst_calc_pbn_mode(void *ignored);
+ int igt_dp_mst_sideband_msg_req_decode(void *ignored);
+diff --git a/drivers/gpu/drm/tests/Makefile b/drivers/gpu/drm/tests/Makefile
+index f2eced30a955..1aa1627cb5e6 100644
+--- a/drivers/gpu/drm/tests/Makefile
++++ b/drivers/gpu/drm/tests/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+ obj-$(CONFIG_DRM_KUNIT_TEST) += drm_format_helper_test.o drm_damage_helper_test.o \
+-	drm_cmdline_parser_test.o drm_rect_test.o
++	drm_cmdline_parser_test.o drm_rect_test.o drm_format_test.o
+diff --git a/drivers/gpu/drm/tests/drm_format_test.c b/drivers/gpu/drm/tests/drm_format_test.c
+new file mode 100644
+index 000000000000..056cb8599d6d
+--- /dev/null
++++ b/drivers/gpu/drm/tests/drm_format_test.c
+@@ -0,0 +1,287 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Test cases for the drm_format functions
++ *
++ * Copyright (c) 2022 Maíra Canal <mairacanal@riseup.net>
++ */
++
++#include <kunit/test.h>
++
++#include <drm/drm_fourcc.h>
++
++static void igt_check_drm_format_block_width(struct kunit *test)
++{
++	const struct drm_format_info *info = NULL;
++
++	/* Test invalid arguments */
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, -1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, 1));
++
++	/* Test 1 plane format */
++	info = drm_format_info(DRM_FORMAT_XRGB4444);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_width(info, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, 1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, -1));
++
++	/* Test 2 planes format */
++	info = drm_format_info(DRM_FORMAT_NV12);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_width(info, 0));
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_width(info, 1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, 2));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, -1));
++
++	/* Test 3 planes format */
++	info = drm_format_info(DRM_FORMAT_YUV422);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_width(info, 0));
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_width(info, 1));
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_width(info, 2));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, 3));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, -1));
++
++	/* Test a tiled format */
++	info = drm_format_info(DRM_FORMAT_X0L0);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_EQ(test, drm_format_info_block_width(info, 0), 2);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, 1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_width(info, -1));
++}
++
++static void igt_check_drm_format_block_height(struct kunit *test)
++{
++	const struct drm_format_info *info = NULL;
++
++	/* Test invalid arguments */
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, -1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, 1));
++
++	/* Test 1 plane format */
++	info = drm_format_info(DRM_FORMAT_XRGB4444);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_height(info, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, -1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, 1));
++
++	/* Test 2 planes format */
++	info = drm_format_info(DRM_FORMAT_NV12);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_height(info, 0));
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_height(info, 1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, 2));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, -1));
++
++	/* Test 3 planes format */
++	info = drm_format_info(DRM_FORMAT_YUV422);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_height(info, 0));
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_height(info, 1));
++	KUNIT_EXPECT_TRUE(test, drm_format_info_block_height(info, 2));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, 3));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, -1));
++
++	/* Test a tiled format */
++	info = drm_format_info(DRM_FORMAT_X0L0);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_EQ(test, drm_format_info_block_height(info, 0), 2);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, 1));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, -1));
++}
++
++static void igt_check_drm_format_min_pitch(struct kunit *test)
++{
++	const struct drm_format_info *info = NULL;
++
++	/* Test invalid arguments */
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++
++	/* Test 1 plane 8 bits per pixel format */
++	info = drm_format_info(DRM_FORMAT_RGB332);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1), 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 2), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 640), 640);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1024), 1024);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1920), 1920);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 4096), 4096);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 671), 671);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX),
++			(uint64_t)UINT_MAX);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)),
++			(uint64_t)(UINT_MAX - 1));
++
++	/* Test 1 plane 16 bits per pixel format */
++	info = drm_format_info(DRM_FORMAT_XRGB4444);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 2), 4);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 640), 1280);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1024), 2048);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1920), 3840);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 4096), 8192);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 671), 1342);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX),
++			(uint64_t)UINT_MAX * 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)),
++			(uint64_t)(UINT_MAX - 1) * 2);
++
++	/* Test 1 plane 24 bits per pixel format */
++	info = drm_format_info(DRM_FORMAT_RGB888);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1), 3);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 2), 6);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 640), 1920);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1024), 3072);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1920), 5760);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 4096), 12288);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 671), 2013);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX),
++			(uint64_t)UINT_MAX * 3);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)),
++			(uint64_t)(UINT_MAX - 1) * 3);
++
++	/* Test 1 plane 32 bits per pixel format */
++	info = drm_format_info(DRM_FORMAT_ABGR8888);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1), 4);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 2), 8);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 640), 2560);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1024), 4096);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1920), 7680);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 4096), 16384);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 671), 2684);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX),
++			(uint64_t)UINT_MAX * 4);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)),
++			(uint64_t)(UINT_MAX - 1) * 4);
++
++	/* Test 2 planes format */
++	info = drm_format_info(DRM_FORMAT_NV12);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 2, 0));
++
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1), 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 1), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 2), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 1), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 640), 640);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 320), 640);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1024), 1024);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 512), 1024);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1920), 1920);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 960), 1920);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 4096), 4096);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 2048), 4096);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 671), 671);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 336), 672);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX),
++			(uint64_t)UINT_MAX);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, UINT_MAX / 2 + 1),
++			(uint64_t)UINT_MAX + 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)),
++			(uint64_t)(UINT_MAX - 1));
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, (UINT_MAX - 1) /  2),
++			(uint64_t)(UINT_MAX - 1));
++
++	/* Test 3 planes 8 bits per pixel format */
++	info = drm_format_info(DRM_FORMAT_YUV422);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 2, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 3, 0));
++
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1), 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 1), 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, 1), 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 2), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 2), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, 2), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 640), 640);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 320), 320);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, 320), 320);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1024), 1024);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 512), 512);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, 512), 512);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1920), 1920);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 960), 960);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, 960), 960);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 4096), 4096);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 2048), 2048);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, 2048), 2048);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 671), 671);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, 336), 336);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, 336), 336);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX),
++			(uint64_t)UINT_MAX);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, UINT_MAX / 2 + 1),
++			(uint64_t)UINT_MAX / 2 + 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, UINT_MAX / 2 + 1),
++			(uint64_t)UINT_MAX / 2 + 1);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, (UINT_MAX - 1) / 2),
++			(uint64_t)(UINT_MAX - 1) / 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 1, (UINT_MAX - 1) / 2),
++			(uint64_t)(UINT_MAX - 1) / 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, (UINT_MAX - 1) / 2),
++			(uint64_t)(UINT_MAX - 1) / 2);
++
++	/* Test tiled format */
++	info = drm_format_info(DRM_FORMAT_X0L2);
++	KUNIT_EXPECT_TRUE(test, info);
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 0, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, -1, 0));
++	KUNIT_EXPECT_FALSE(test, drm_format_info_min_pitch(info, 1, 0));
++
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1), 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 2), 4);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 640), 1280);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1024), 2048);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 1920), 3840);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 4096), 8192);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, 671), 1342);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX),
++			(uint64_t)UINT_MAX * 2);
++	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, UINT_MAX - 1),
++			(uint64_t)(UINT_MAX - 1) * 2);
++}
++
++static struct kunit_case drm_format_tests[] = {
++	KUNIT_CASE(igt_check_drm_format_block_width),
++	KUNIT_CASE(igt_check_drm_format_block_height),
++	KUNIT_CASE(igt_check_drm_format_min_pitch),
++	{ }
++};
++
++static struct kunit_suite drm_format_test_suite = {
++	.name = "drm_format",
++	.test_cases = drm_format_tests,
++};
++
++kunit_test_suite(drm_format_test_suite);
++
++MODULE_LICENSE("GPL");
+-- 
+2.35.3
 
-Thanks,
-Namhyung
