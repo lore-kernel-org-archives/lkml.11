@@ -2,199 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE92BCCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE2BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238901AbiGHRhs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 13:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41586 "EHLO
+        id S238872AbiGHRmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 13:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238278AbiGHRhq (ORCPT
+        with ESMTP id S238052AbiGHRmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 13:37:46 -0400
-Received: from mx08-001d1705.pphosted.com (mx08-001d1705.pphosted.com [185.183.30.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB276606A4;
-        Fri,  8 Jul 2022 10:37:45 -0700 (PDT)
-Received: from pps.filterd (m0209318.ppops.net [127.0.0.1])
-        by mx08-001d1705.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 268HKswc007701;
-        Fri, 8 Jul 2022 17:37:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sony.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=S1;
- bh=Omd1YZKyw4MrR9AEn3nxHASxTSLD/XlIu7ev/kbn0YM=;
- b=jg+/qn8YyrEr5Dmp4Wl3rUkpU80gr16O3Ovh8XG7sm/1wCZdlgCp+jYnUdeBdbhFQeuP
- HcBueIh5tdm5oggbdgcEv8Pj0CGgfMRt/DaHzgM83ctvFQyeY6PqFCG5RCQxfpplknWJ
- fnrKTk7sl8oZuWRn6TXp8+R3kvU0sOXU+oSiJ/uurFyI2lZXIds9K94YcKnjPdLxwS0w
- mmGHEy7TjE8+vynoJOmeGxOWllcSkZvlmfSzeRmKbg4Rt8E48JK0IJuhjwF0L4g/aU7k
- IQ4CaqWCsLuRZj6eQwaJOVDmEfEURx6tYcRDdUjSN7m06H8aJAzeXjnXbQen4v2AAK9a yg== 
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2040.outbound.protection.outlook.com [104.47.66.40])
-        by mx08-001d1705.pphosted.com (PPS) with ESMTPS id 3h4ub53ky3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 08 Jul 2022 17:37:26 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gam9qm0RTAfQeQV0IVmSICVNv6oHZHo0kH0xx/nNuljPwEsjAG1+nNOWaNERBw950geqPekZGdhz0DdoHIB9IkzanvMWHpk/a/K3Im+QGOa/QkAEI1OH/A66fb3gesSW9PDgO6o92EbUJJMnKfZMcrFLnv3ERyxd732kvPUAle/yKpo0Q9d2xrLkHXdgSCDG3+aLtDCYiKCpyt36HygXRBTic9+K8I+D6/woReMhqLz6BkM+ASSmGxGV7+4DqEzK2TC/GxoAlOAzLFmSrrwhvPagNJAD8lXUkVcrDH3+aq6xKuwPx1KcksYo57J9wKVcFT+lG778M1hscO3s0iBxHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Omd1YZKyw4MrR9AEn3nxHASxTSLD/XlIu7ev/kbn0YM=;
- b=c7XKGtAj9STLEvKJiXYiOQUqYtBvGmEcUzJIGCgiQYzn4RpXJZwDihIxqZp+0dAPPPvd5GR8nxB8j67S/fVYDdWci4/YVyxqFFeVr9nWboT5m7+uW3/O9FpG6gq/qX55o793Cv2QC0fmdfiTIW1NhzifA7G0ej9Wpih3xbp2Bv4lywOf/ArGYSvT/dP1JjqUa0r6/s3cy973o+uRtandQd75TtPqqhPF6VY29IVsjYeDk8Q8qfb0Q3bdLGGew1e1FSdtlTY7vOAzkbjkrntuKxaKdAE/zjYioCi4MMieAOlotKWOQawRvW+675EnrFKPGkHBDSVgJNUrNkuPxEjH9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sony.com; dmarc=pass action=none header.from=sony.com;
- dkim=pass header.d=sony.com; arc=none
-Received: from BYAPR13MB2503.namprd13.prod.outlook.com (2603:10b6:a02:cd::33)
- by BN8PR13MB2596.namprd13.prod.outlook.com (2603:10b6:408:85::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.11; Fri, 8 Jul
- 2022 17:37:21 +0000
-Received: from BYAPR13MB2503.namprd13.prod.outlook.com
- ([fe80::9894:995e:5f3:f528]) by BYAPR13MB2503.namprd13.prod.outlook.com
- ([fe80::9894:995e:5f3:f528%7]) with mapi id 15.20.5417.020; Fri, 8 Jul 2022
- 17:37:21 +0000
-From:   "Bird, Tim" <Tim.Bird@sony.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-CC:     "kernel@collabora.com" <kernel@collabora.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: RE: [PATCH 0/4] Fix kselftest build with sub-directory
-Thread-Topic: [PATCH 0/4] Fix kselftest build with sub-directory
-Thread-Index: AQHYkue370iKOwWZokebIIjtk9FK2610tpEAgAAAXSA=
-Date:   Fri, 8 Jul 2022 17:37:21 +0000
-Message-ID: <BYAPR13MB2503278F8246E4F82E0F10ECFD829@BYAPR13MB2503.namprd13.prod.outlook.com>
-References: <cover.1657296695.git.guillaume.tucker@collabora.com>
- <b39b9e0b-45f3-1818-39fe-58921182d957@linuxfoundation.org>
-In-Reply-To: <b39b9e0b-45f3-1818-39fe-58921182d957@linuxfoundation.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ce5ae486-75c7-4648-df99-08da610882ee
-x-ms-traffictypediagnostic: BN8PR13MB2596:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SEeysWYSHYbSDZ8SqTZuPtn0owqY5DOzHDswIxvTB9A6OooDlPjjT8/Croykl/0g9SSlIHl3qkSooAHHo7+/B2z41PO4PhRWdtF3DNikHURD0bImPIpy+brMI8VPV1F0tWuUhvnOAG3vZl0zIf9/U5v+TOYyzU4aYcNl3+I1ikswkODfJIOqGcgCl29upAFdNRlVFoaI6HGeeyZxCdlW9pGWdaI6wry1YMeNYsmZuy4tBHjmFLDIStyzn2W+dgm0SV7eaV/6AId2mCm7bsYmcCsN0q7GoCoeXfzTN7lG5NfQPNtlBZCNaJX/wTErHRN+UhnIz/E8mP65nQQUe9HYcEWVsQcdR8X0hM0JHX9uPzKWs7GF2zDOh3fIXVGHALPz6ss9DGrVlU3BXGQxXfODjkaHvmw2q7PSVoWakPCA8a0i7Wsn85I4I9XLRqEUjqhQgaX42qLH4Ce0uw28P8pW/yMgHp49Ix/HGJX5R49stJ7qmOqYy9qrg6yUAFGOP7sJ0txYzXDCFIH/5i6SxhP04wZLd8Ir954KyVWUngJlLtW/3RCODIFDabFuUY0JmbZgg/Ww4szJX2rL/3/KoqDrQBlPByExySyjaGlF7UEFmFL3i/pW4w6lgMTii3BiLQCD1I+oBzNg2JpyE82+/qYjAQ+YMfmQ/SLl4ZgEY8gNjdn+jjHVP3K573jgEXLMgw6tqbIpnUoc0DnVQ4YGOuoXEDzB1LbP8V4P/pAMDy/90Gc6pccwKMixoGQqNPVVVjQRRXYhLhkbUMFN3MK3+mofozDM/BJyd9SJatCk5f734L5teh+9o5ouNiFXf0+R3e8vUkV1zS4Tr7XxDEPMQwcgg+b+2eRuWLKhUxVEv0Uls4/PuYJpXadPK+QFNkDe78f5f4u0hBayP/espLMGhENttlhPgzdfr/8IrXDiT/PxTOkRB2HQhQyQwKTpxplWggiG
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR13MB2503.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(346002)(136003)(376002)(39860400002)(186003)(7696005)(55016003)(8676002)(76116006)(66476007)(66556008)(4326008)(66946007)(64756008)(54906003)(110136005)(66446008)(83380400001)(9686003)(53546011)(6506007)(71200400001)(26005)(33656002)(86362001)(478600001)(38100700002)(41300700001)(38070700005)(122000001)(5660300002)(316002)(7416002)(82960400001)(52536014)(966005)(2906002)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cTEzQ3ZuUm9DbzBsMFVjVThnUlF1NjFJVjFzNWdlREtnWVhYbXZ1OU92YTZj?=
- =?utf-8?B?eXlvMHV6TVdIbU1JQVpvOGptTEpyTmw0TkVSTkhzbCtraEZYVVFVMVg0MWxH?=
- =?utf-8?B?aEVkMVlRVXQybk1ETVpkK25jMVhhTzBqT3JvLzhMd092bVJxRldRMTVhZlNi?=
- =?utf-8?B?Z0c0TTdFTVRmeDY1TmxQQXFtRFVMVjlLaGordTlWN0tkZW9lNEZ4Vk5vUTgv?=
- =?utf-8?B?TVdUUko5OVBiT1FEa0hzT0VCaEJFQlNwOEVQOGdSRFM4eVFhSjhnY2ZSVGcw?=
- =?utf-8?B?QmlxanhmbU9GQ00wcVM3VWJ4YVpnRkp5c2ZiZXZ6R0ZnTWhtaUlRaTBJSTM0?=
- =?utf-8?B?eE1KSC8yQm8wSTVLT01HZStOYlFTdXB5aSt6N1AxSHkrZUdmR0ZNZ3ZHWTJn?=
- =?utf-8?B?NHRtUzc5M0xNaENTZG9JSTBjRC92aDJ6SHlMT0crbC9neHhSQmRwbHh1QXVk?=
- =?utf-8?B?N2E4YUNkSVY4VHVPN3puSjZsR3NYSU9YdjVmeHFadUdudFpxN0g3ekRqZUp4?=
- =?utf-8?B?MkRacDFDVHJ3UStGMDd2eElYekJ5QStVdUxSUEFzUUI0eDdLcnE5R1ZSYXFz?=
- =?utf-8?B?Q1EvVzBKdXpOckYrRDg5ZEE1T2w3Mk9ENSszcEx2V280a05jZVJkcGxva01I?=
- =?utf-8?B?V1IzWXpiL2ZnUytmd3JqVkVURDJ3eFhmV2JBZmpSK2psc25PVXVJL0paYWRV?=
- =?utf-8?B?OU0zZ2RJbWdBbFljTitHcEwwNXZHTE1NQXhzOHh4RkFrVW45bFVsN3gxeTBX?=
- =?utf-8?B?MzJaMG1HZzZaUVZYMmlaQnY1QXpMUnVESG1PTWNteWZWaVF2NC9Pb1lZVkRi?=
- =?utf-8?B?TlFWTCtjMEhKdE11dDVGckJyS3RGRCtCMWRmem8wbXQ5Yk9pYXhla1krS3Yv?=
- =?utf-8?B?c25pdExUem9rYUQrV1JCUUtNakk0bXUvaEttamhDR1BtTk11N0h4R1h6UlFv?=
- =?utf-8?B?Wi9ia29GcHpWSWd2eVl4Yndna28zMmlibEgvdHNvMUJGRzUyVG94Z2JuQjdo?=
- =?utf-8?B?NGVTOVNaVC8vVWxuYlBCZzJBL2wzMXFWcTFsdHhiM1F2cXUrQ0NmZnVPdVpw?=
- =?utf-8?B?TlIzZ295ZTNNLzE3cjJmckgwOW51dzJWaUp4a2tqZE5JUzhYMmFqcWJocmxV?=
- =?utf-8?B?cVBObFVQYkZrUWQvWW1UOUZidERxNzIzU3BSbG5YTUE2by9VYUJrWk9FZUEx?=
- =?utf-8?B?SXpESnNXZ3N2U01UbFNZRTRhKzBEYXkwZGxzZm1PaXhXUWp5OU9VMUFCRkcw?=
- =?utf-8?B?cmorbTlmUDZUT3R3YXVvRlE5ZmNDVjhORDN6bll0Sk1DeGZMaEV1cG1FczUw?=
- =?utf-8?B?MmI2SlVxN1RZeFdnK3RDcDMyaU16d0xBSFlBank4NlIzbjFXUERjTStFcElR?=
- =?utf-8?B?SXFGTUNWbVRoVlBQUlhPRGhjUC9tajhxYlJoZnRnWmJDaWVUaElvc2ZOd04w?=
- =?utf-8?B?ZlVLVGlCR0dqMG9UVmF2NFNmb1BrSVNGSGR1bytVVUhhUCt2RkZKUjhrb0xv?=
- =?utf-8?B?UWNtUElHOXQ2NDRRSVB4cS9SU1p4QWErZVhLWVcrS2ZuZlBTWUpBMmZMOStq?=
- =?utf-8?B?NWlFTTN4enJnUlRsdm5yOFBlUDM3cHNLRW9QUE1scVN6cXUxYVo2Z2xlRXRJ?=
- =?utf-8?B?eDhBalkvNy9BbVgvcVhrR2QyZkN1Zk1KQm9HZWpWK29lbzhUV3ZLODdzTFNT?=
- =?utf-8?B?V0VSR2JxT3RlNmQ5YTlpamZwUk0vYkVjYllrU3lNTXRKZU9xYmltaWt4dHMz?=
- =?utf-8?B?UnhnYS9OenBrUnBIZmwyZmNsTFhoRmhlSS92NEVVRkV4TkFUN2xia05VWEI2?=
- =?utf-8?B?NVhUeVdQR0FVamlGY3NaN01RVGV4ZTFRT0gzSVVaM0JkYWtXR2NHdGtKMCtr?=
- =?utf-8?B?RDMwUUMrWUhMNGtxamxSYkRUN1FLb1Nsa2wrd0tyQ2JSZm9oVHA4cmRWM1lR?=
- =?utf-8?B?d2ZtdncrTEc3VGJpSHNnTjY0M3gvdXdaSzUzR25kdk1aS0dnQUFhTzJrZFdI?=
- =?utf-8?B?QjBpWC9xaXI0Vy9EekJvSXIyYUNkWEdjMjNiVmltVkFabktQdkt4UWJDRjRX?=
- =?utf-8?B?dStSMk9zUWgzNzhIbWVvRXFIQWVuUG9kTDFUQ1N3eTBXWVY5bzg4dm9lclRF?=
- =?utf-8?Q?8KOu5HZiwep6+FkFrIZGx8bjv?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 8 Jul 2022 13:42:15 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818185A45D;
+        Fri,  8 Jul 2022 10:42:14 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id r3so38959114ybr.6;
+        Fri, 08 Jul 2022 10:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=s7rfjFv2pxYiTyeXDG77gpPSG058438CTEH71lJGjxs=;
+        b=a+FsaUYfq0qtR9QY2OuR7v2E9iCsNpROO86nDvM+iv8/OyQ/3ekajl2TGQipjanxWt
+         ux6KoxQmY+BRsXLUwZbpeix6b9kxUO0lyE4zAjeWB5howOkzRXYxmvthu9qKWSaldXjB
+         pZgWRuogdlLAWdICjXtsZRN7BGkI/TppAc4rTkEP5Ez8piFWDT278DzW31VO63hAJwzR
+         oAHbmqQTQkIxdrV5ErR0i6BT1MCkRNGWGz9pfAQjV7j1C4I8o29T3meCECk9+jH6aeZP
+         AACL4Uc1Fp9Gc0FidFjeWqYXI5Ga0fZTg8T7Ej0/R5d9NeDoVQ3+jt0gARESimU3Bzxf
+         FfoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=s7rfjFv2pxYiTyeXDG77gpPSG058438CTEH71lJGjxs=;
+        b=Frj0mJ3LSyWbacb0Jb0452rtANGF02za13xaeXuoPBM/iWS3Yt9nee6CFwNaa6zi+9
+         hJpAoDIhS9HgUZOnOd4DdsM5sRGbMZNzqP434W+O8Fc59bQP7Ehf5pf+P+Hf+vQ3uEe9
+         KdIG7yV4p1s8KGMkov3yHfGk5ubCeioam6eBE46UIjMNkzUcMbhxaLQjhqKZKeLmqyjC
+         VPmE82OphQb7e2GyDVayTtrV+1en+adHRcpU3vty60+/GyHWirzr4D9JVor5RXqLStbs
+         Mtf2Mg9Df5VLdXfmlBLoNqUiCXVt8zQz9BR9PRVJvqV537Rigc0T7Y+Gq5UUI4WryD5Y
+         CMOQ==
+X-Gm-Message-State: AJIora++W/pRcQzMhKf7Ktc2Pa0NYuLH0xMk5VAvmAhE0eJU5vmHADgN
+        soPTfJLFbeQM4okE1FSIwalUshxwZfX6Oqazts4=
+X-Google-Smtp-Source: AGRyM1stxFyo4NbOuYehHaTTVp9jk9rE09F65RoYnEjrYnP+TO+8Pg0Bk/5BqqC+tFmaTrH8bYc0ZYh5cFZDknGE2ew=
+X-Received: by 2002:a05:6902:c4:b0:64b:4677:331b with SMTP id
+ i4-20020a05690200c400b0064b4677331bmr4733744ybs.93.1657302133662; Fri, 08 Jul
+ 2022 10:42:13 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: sony.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR13MB2503.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce5ae486-75c7-4648-df99-08da610882ee
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2022 17:37:21.0359
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 66c65d8a-9158-4521-a2d8-664963db48e4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: N+a1zCt7gZzS3dd0y4Cox15h4P+TlzlAn81/QzH/GVEDixiyi/aSYQa9ml100iIJevAqi8i5nIaX9U54/vujGQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR13MB2596
-X-Proofpoint-ORIG-GUID: fqP3KUWig07QUPv944ovUPq6CRy1Sb_a
-X-Proofpoint-GUID: fqP3KUWig07QUPv944ovUPq6CRy1Sb_a
-X-Sony-Outbound-GUID: fqP3KUWig07QUPv944ovUPq6CRy1Sb_a
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-08_14,2022-07-08_01,2022-06-22_01
+References: <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
+ <YmK7drS0XgnTQcaf@kroah.com> <20220707084840.jvsstvyx2ul5ltb6@pali>
+ <YsgsH94PV/wAX0Vu@kroah.com> <20220708132621.4v2es73h52aq3izn@pali>
+ <Ysg2RW0B/cLL3k+k@kroah.com> <20220708142001.7fciqnfckznlvsa4@pali>
+ <CAHp75Vci1zeDV1axd_v_PLLPGfF5AzAzmmcegjD1djqnR6XUcA@mail.gmail.com>
+ <20220708155413.rlc3iyf72tdwthfa@pali> <CAHp75Vf=JGbmydAaeA=81YDViVtj7cG91Sr4teJ8mhFNH8AhAw@mail.gmail.com>
+ <20220708162532.jefbmpokampkuahv@pali>
+In-Reply-To: <20220708162532.jefbmpokampkuahv@pali>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 8 Jul 2022 19:41:37 +0200
+Message-ID: <CAHp75VfD24SxejjQ6hq85BTaHpOGPj3-diEqxu5BGnABm0Yz1w@mail.gmail.com>
+Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2h1YWggS2hhbiA8c2to
-YW5AbGludXhmb3VuZGF0aW9uLm9yZz4NCj4gDQo+IE9uIDcvOC8yMiAxMDoyMyBBTSwgR3VpbGxh
-dW1lIFR1Y2tlciB3cm90ZToNCj4gPiBFYXJsaWVyIGF0dGVtcHRzIHRvIGdldCAibWFrZSBPPWJ1
-aWxkIGtzZWxmdGVzdC1hbGwiIHRvIHdvcmsgd2VyZQ0KPiA+IG5vdCBzdWNjZXNzZnVsIGFzIHRo
-ZXkgbWFkZSB1bmRlc2lyYWJsZSBjaGFuZ2VzIHRvIHNvbWUgZnVuY3Rpb25zDQo+ID4gaW4gdGhl
-IHRvcC1sZXZlbCBNYWtlZmlsZS4gIFRoaXMgc2VyaWVzIHRha2VzIGEgZGlmZmVyZW50DQo+ID4g
-YXBwcm9hY2ggYnkgcmVtb3ZpbmcgdGhlIHJvb3QgY2F1c2Ugb2YgdGhlIHByb2JsZW0gd2l0aGlu
-DQo+ID4ga3NlbGZ0ZXN0LCB3aGljaCBpcyB3aGVuIHRoZSBzdWItTWFrZWZpbGUgdHJpZXMgdG8g
-aW5zdGFsbCBrZXJuZWwNCj4gPiBoZWFkZXJzICJiYWNrd2FyZHMiIGJ5IGNhbGxpbmcgbWFrZSB3
-aXRoIHRoZSB0b3AtbGV2ZWwgTWFrZWZpbGUuDQo+ID4gVGhlIGFjdHVhbCBpc3N1ZSBjb21lcyBm
-cm9tIHRoZSBmYWN0IHRoYXQgJChzcmN0cmVlKSBpcyAiLi4iIHdoZW4NCj4gPiBidWlsZGluZyBp
-biBhIHN1Yi1kaXJlY3Rvcnkgd2l0aCAiTz1idWlsZCIgd2hpY2ggdGhlbiBvYnZpb3VzbHkNCj4g
-PiBtYWtlcyAiLUMgJCh0b3Bfc3JjZGlyKSIgcG9pbnQgb3V0c2lkZSBvZiB0aGUgcmVhbCBzb3Vy
-Y2UgdHJlZS4NCj4gPg0KPiA+IFdpdGggdGhpcyBzZXJpZXMsIHRoZSBnZW5lcmljIGtzZWxmdGVz
-dCB0YXJnZXRzIHdvcmsgYXMgZXhwZWN0ZWQNCj4gPiBmcm9tIHRoZSB0b3AgbGV2ZWwgd2l0aCBv
-ciB3aXRob3V0IGEgYnVpbGQgZGlyZWN0b3J5IGUuZy46DQo+ID4NCj4gPiAgICAkIG1ha2Uga3Nl
-bGZ0ZXN0LWFsbA0KPiA+DQo+ID4gICAgJCBtYWtlIE89YnVpbGQga3NlbGZ0ZXN0LWFsbA0KPiA+
-DQo+ID4gVGhlbiBpbiBvcmRlciB0byBidWlsZCB1c2luZyB0aGUgc3ViLU1ha2VmaWxlIGV4cGxp
-Y2l0bHksIHRoZQ0KPiA+IGhlYWRlcnMgaGF2ZSB0byBiZSBpbnN0YWxsZWQgZmlyc3QuICBUaGlz
-IGlzIGFyZ3VhYmx5IGEgdmFsaWQNCj4gPiByZXF1aXJlbWVudCB0byBoYXZlIHdoZW4gYnVpbGRp
-bmcgYSB0b29sIGZyb20gYSBzdWItTWFrZWZpbGUuDQo+ID4gRm9yIGV4YW1wbGUsICJtYWtlIC1D
-IHRvb2xzL3Rlc3RpbmcvbnZkaW1tLyIgZmFpbHMgaW4gYSBzaW1pbGFyDQo+ID4gd2F5IHVudGls
-IDxhc20vcndvbmNlLmg+IGhhcyBiZWVuIGdlbmVyYXRlZCBieSBhIGtlcm5lbCBidWlsZC4NCj4g
-Pg0KPiA+IEd1aWxsYXVtZSBUdWNrZXIgKDQpOg0KPiA+ICAgIHNlbGZ0ZXN0czogZHJvcCBraGRy
-IG1ha2UgdGFyZ2V0DQo+ID4gICAgc2VsZnRlc3RzOiBzdG9wIHVzaW5nIEtTRlRfS0hEUl9JTlNU
-QUxMDQo+ID4gICAgc2VsZnRlc3RzOiBkcm9wIEtTRlRfS0hEUl9JTlNUQUxMIG1ha2UgdGFyZ2V0
-DQo+ID4gICAgTWFrZWZpbGU6IGFkZCBoZWFkZXJzX2luc3RhbGwgdG8ga3NlbGZ0ZXN0IHRhcmdl
-dHMNCj4gPg0KPiANCj4gVGhpcyB0YWtlcyB1cyB0byBiYWNrIHRvIHRoZSBzdGF0ZSBiZWZvcmUg
-YjJkMzVmYTVmYzgwIGFkZGVkDQo+IGtoZHIgc3VwcG9ydC4gSSByZWx1Y3RhbnRseSBhZ3JlZWQg
-dG8gdGhlIGNoYW5nZSBhbmQgaXQgaGFzDQo+IHByb3ZlbiB0byBiZSBhIHByb2JsZW1hdGljIGNo
-YW5nZS4gSSB3b3VsZCByYXRoZXIgaGF2ZSBoYWQgdGhlDQo+IGRlcGVuZGVuY3kgc3RhdGVkIHRo
-YXQgaGVhZGVycyBzaG91bGQgYmUgaW5zdGFsbGVkIHByaW9yIHRvDQo+IGJ1aWxkaW5nIHRlc3Rz
-IC0gdGVzdCBidWlsZCBkZXBlbmRzIG9uIGtlcm5lbCBidWlsZCBhbnl3YXkgYW5kDQo+IGhhdmlu
-ZyBkZXBlbmRlbmN5IG9uIGhlYWRlcnMgaGF2aW5nIGJ1aWxkIGlzbid0IGEgaHVnZSBkZWFsLg0K
-PiANCj4gU28gSSBhbSBpbiBmYXZvciBvZiBnZXR0aW5nIHJpZCBvZiBraGRyIHN1cHBvcnQuIEhv
-d2V2ZXIsIHRoaXMNCj4ga2hkciBzdXBwb3J0IHdhcyBhIGNoYW5nZSBvcmlnaW5hdGVkIGZyb20g
-TGluYXJvIHRlc3QgcmluZy4gVW5kb2luZw0KPiB0aGlzIG1pZ2h0IGhhdmUgaW1wbGljYXRpb24g
-b24gdGhlaXIgd29ya2Zsb3cuDQo+IA0KPiBJIHdpbGwgcHVsbCB0aGVtIGludG8gdGhlIGRpc2N1
-c3Npb24gc28gdGhleSBhcmUgYXdhcmUgb2YgaXQgYW5kDQo+IGJlIHByZXBhcmVkIGZvciB0aGlz
-IGNoYW5nZS4NCg0KSSByYW4gaW50byB0aGlzIGJ1ZyBxdWl0ZSBhIHdoaWxlIGFnby4gIEkgcmVw
-b3J0ZWQgaXQgaGVyZToNCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC9FQ0FERkYzRkQ3NjdD
-MTQ5QUQ5NkE5MjRFN0VBNkVBRjk3N0JEMjE0QFVTQ1VMWE1TRzAxLmFtLnNvbnkuY29tLw0KaXQg
-d2FzIGZpeGVkIGhlcmU6DQpodHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAxOTEwMTUwMTQ1
-MDUuMTQyNTktMS1za2hhbkBsaW51eGZvdW5kYXRpb24ub3JnLw0KYnV0IGFwcGFyZW50bHkgcmV2
-ZXJ0aW5nIGl0IHdhcyBkaXNjdXNzZWQsIGJhc2VkIG9uIHRoaXM6DQpodHRwczovL2xvcmUua2Vy
-bmVsLm9yZy9hbGwvOGQzNGE5YjktZjhmMy0wZTM3LTAwYmYtYzM0MmNmM2Q0MDc0QGFybS5jb20v
-DQoNCkknbSBub3Qgc3VyZSB3aGF0IGhhcHBlbmVkIGFmdGVyIHRoYXQuDQoNCkkgd2FzIGFibGUg
-dG8gd29yayBhcm91bmQgaXQgYnkgYXZvaWRpbmcNCnB1dHRpbmcgdGhlIGJ1aWxkIGRpcmVjdG9y
-eSBpbnNpZGUgdGhlIHNvdXJjZSB0cmVlLg0KDQpJIHN0cm9uZ2x5IHN1cHBvcnQgZ2V0dGluZyBy
-aWQgb2YgdGhlIGtoZHIgc3R1ZmYsIGFzIGl0J3MgcXVpdGUgaGFyZA0KdG8gZm9sbG93LiAgSSB0
-aGluayBteSB3b3JrZmxvdyB3b3VsZCBub3QgYmUgYWZmZWN0ZWQgKGJ1dCBJIHNob3VsZA0KcnVu
-IG9mZiBhbmQgdGVzdCBpdC4pDQoNClRoYW5rcyBmb3Igd29ya2luZyBvbiB0aGlzIEd1aWxsYXVt
-ZSENCiAtLSBUaW0NCg0K
+On Fri, Jul 8, 2022 at 6:25 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+>
+> On Friday 08 July 2022 18:09:07 Andy Shevchenko wrote:
+> > On Fri, Jul 8, 2022 at 5:54 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> > > On Friday 08 July 2022 17:42:03 Andy Shevchenko wrote:
+> > > > On Fri, Jul 8, 2022 at 4:20 PM Pali Roh=C3=A1r <pali@kernel.org> wr=
+ote:
+> > > > > On Friday 08 July 2022 15:51:01 Greg Kroah-Hartman wrote:
+> > > > > > On Fri, Jul 08, 2022 at 03:26:21PM +0200, Pali Roh=C3=A1r wrote=
+:
+> > > > > > > On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
+> > > > > > > > On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Roh=C3=A1r w=
+rote:
+> > > > > > > > > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote=
+:
+> > > >
+> > > > ...
+> > > >
+> > > > > > > > I'm not saying remove them, I'm saying let us not add any m=
+ore
+> > > > > > > > dependancies on them in order to keep new applications from=
+ ever wanting
+> > > > > > > > to use them.
+> > > > > > >
+> > > > > > > Last time you wrote to remove them. Now saying not to remove =
+them. So I
+> > > > > > > do not understand you now.
+> > > >
+> > > > There was a _new_ addition of the ugly SPD_CUST, that's what I beli=
+eve
+> > > > Greg opposes to. And I support that.
+> > >
+> > > Which addition? I do not understand you. There was not any new driver
+> > > with introduction of SPD support.
+> >
+> > You stated that SPD_CUST is broken in some drivers, so you are trying
+> > to fix a broken ugly hack. Why? Instead of making it rot and be
+> > removed eventually, you pump life into frankenstein.
+>
+> Firstly I got rejection of my other patches because they does not handle
+> SDP_CUST correctly. So I decided to look at those issues and fix it via
+> helper function which can be easily reused in all drivers. So helper
+> function wrap all "ugly" hacks. Then I got reaction that SDP should be
+> removed. Then I got another reaction that that "I'm not saying to remove
+> them" and another another reaction why to be removed eventually.
+>
+> So how should I interpret this? I'm feeling that you are just trying to
+> annoy people with this "do this", "do opposite", "do again it", "do
+> again opposite"...
+
+Ask someone who makes a decision. I wrote just my p.o.v. on the
+"problem". I think there is no problem with SPD_CUST, it should be
+oblivionized.
+
+> > > > > > I'm sorry, I am totally lost.
+> > > > >
+> > > > > So look what you have wrote? Who is lost here is me.
+> > > > >
+> > > > > > How about starting over and resubmitting
+> > > > > > the changes you want and we can go from there.
+> > > > >
+> > > > > What to resubmit? I do not understand you. In case you lost email=
+s or
+> > > > > accidentally removed them, you can look at them in archive, not? =
+I hope
+> > > > > that you do not want me to copy+paste all existing patches with a=
+ll your
+> > > > > quotes on them which you wrote into new emails.
+> > > >
+> > > > That change that adds the new user of SPD_CUST?
+> > >
+> > > What you are talking about? Which user?
+> >
+> > This I missed, I was thinking that you are talking about a new user,
+> > now I read briefly and it seems that it's about an existing user.
+> > Anyway, that change I suppose.
+> >
+> > > > In any case the best summary about BOTHER I ever read is this [1] (=
+and
+> > > > an initial steps in picocom [2]).
+> > >
+> > > Is not that example in manpage enough?
+> >
+> > Dunno.
+> > Can you point it out to me? I can't find it quickly.
+>
+> Argh... Have you read emails to which you wrote reply? So copy+paste
+> relevant part from my previous email just for you:
+>
+>  "New version of tcsetattr and ioctl_tty manpages would have documented
+>   how to use BOTHER (it is currently in the manpages git)."
+
+I do not know the "manpages git" URL. Neither its hosting. kernel.org?
+And then? It took time for you to just write something instead of helping m=
+e.
+Whatever. I found the commits.
+
+> Plus in past I also pointed to the extended version of that example from
+> manpage which is currently in my repo on github:
+> https://github.com/pali/linux-baudrate.git
+>
+> > > > And I believe that instead of
+> > > > SPD_CUST we should get rid (or at least minimize) the problems with
+> > > > BOTHER in user space.
+> > >
+> > > I looked into archives and seems that glibc people are not interested=
+ in
+> > > this area. And I'm not going to spend time on another project which s=
+eems
+> > > to be useless.
+> >
+> > So why should the kernel suffer if it already provides something good
+> > for the user and user space ignores that?
+>
+> Because it is unusable? API which standard linux userspace applications
+> cannot use is useless. And for application develop it does not matter if
+> issue is in kernel part of API or userspace part of API. At the end
+> would be use used.
+
+Then help make it happen?
+
+> With whole this discussion I have feeling that there correct way is just
+> to use SDP flags in userspace as there is no interest in fixing BOTHER's
+> c_ospeed and c_ispeed in kernel drivers and it was rejected just because
+> of not handling SDP flags correctly.
+
+I'm puzzled who asked you about SPD_CUST implementation... It.is.an.ugly.ha=
+ck.
+
+--=20
+With Best Regards,
+Andy Shevchenko
