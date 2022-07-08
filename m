@@ -2,119 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C56D8CCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41530C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237629AbiGHIFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
+        id S237637AbiGHIFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237149AbiGHIFb (ORCPT
+        with ESMTP id S237549AbiGHIFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:05:31 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EA380488
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:05:31 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so1180048pjr.4
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:05:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KpsViEXZYHaSKdo2Y5tfQa2GHPWQpzwRjvyBNJo59WU=;
-        b=QD+aXyufjYV5Rhg7g9mfLcGxaoTj7cmPQTrt3D9uRtWwYIH8z6Valy/m/ZlLU7GeiT
-         1EnfnMAEEekJP2mj88bW+jDYHsM+CJ5HSgYc03i+rLDa/K26IcLX7dDBB8n8qZWjD6Pk
-         1/WG8KcKtyXf2eHl6M0nDWp3YEfU+dkn1DAACfrWjXSt6kPCHsuhmG4pk6jtiRZRJFLV
-         Or/krkaK+/Hc2bddE6KxyoiuQ5W5z3Sk/MRH1seFkab8gN0j6IHeiC4CKI2ZNb5JjwIN
-         GiMozYnu5loweh0SxxE/VnRPyHhT+dKJRkCKtm3rSmU962lysfmEkrp88Ejw531Rluop
-         WCKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KpsViEXZYHaSKdo2Y5tfQa2GHPWQpzwRjvyBNJo59WU=;
-        b=vCQ+UYIVZ/MWiE94FRr2wh03KFXPnNinDmbkrsbMenwgR+1sFP/2XZVvpuyCTLQY+7
-         AJVVJfxyVLDx5XNjcDQNz6xBAtyrHacyZwQXn52elH6nCD+ZmqJPNpOkvk95cjbKIEpY
-         eTegR8yGSJVCZR4BlWJXWvO8MTv6AgTn5kTFPZc/lZIJ8kBmZR4jQcqpgTvVnI9bJ1Uo
-         ktQl/KWTqjHWc8GZJoqzPsigZ5ZUtuHRYh4n0/xVLHyjTWXF4H6uTeSoUDEJVP9s+T3Z
-         jzS6d0n8u6MTKMk1eGfWXKZQwks26y4sY4bOkC0ww4IOcMbUsvKGoF3e2BgCtyg23HmT
-         WJIw==
-X-Gm-Message-State: AJIora/CTLX/O+SQfeTRaM32Y2C8Uzbp9oTyROFarRBQZPXDbTX7eAcc
-        5K0zrJfSFfabIa1Fap0vbMMwB8MAdjo=
-X-Google-Smtp-Source: AGRyM1uaRRfDeP9jrOYeJppPRbXd05sAchFcz1uJ3YbkZdmE4BJ78z/Mok35DRObt1hqvwYOPFO2Pw==
-X-Received: by 2002:a17:902:bd43:b0:16b:953d:9e0e with SMTP id b3-20020a170902bd4300b0016b953d9e0emr2269539plx.63.1657267530175;
-        Fri, 08 Jul 2022 01:05:30 -0700 (PDT)
-Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
-        by smtp.gmail.com with ESMTPSA id e11-20020a6558cb000000b00408b89e4282sm27207738pgu.47.2022.07.08.01.05.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 01:05:29 -0700 (PDT)
-From:   Nadav Amit <nadav.amit@gmail.com>
-X-Google-Original-From: Nadav Amit
-To:     linux-kernel@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, Linux MM <linux-mm@kvack.org>,
-        Nadav Amit <namit@vmware.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>
-Subject: [PATCH] x86/mm/tlb: ignore f->new_tlb_gen when zero
-Date:   Thu,  7 Jul 2022 17:30:53 -0700
-Message-Id: <20220708003053.158480-1-namit@vmware.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 8 Jul 2022 04:05:39 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC3DD80488
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:05:38 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD9CE1063;
+        Fri,  8 Jul 2022 01:05:38 -0700 (PDT)
+Received: from bogus (unknown [10.57.39.193])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 989E93F792;
+        Fri,  8 Jul 2022 01:05:35 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 09:04:24 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Darren Hart <darren@os.amperecomputing.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        conor.dooley@microchip.com,
+        valentina.fernandezalanis@microchip.com,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Qing Wang <wangqing@vivo.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Ionela Voinescu <ionela.voinescu@arm.com>,
+        Pierre Gondois <pierre.gondois@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v6 17/21] arch_topology: Limit span of
+ cpu_clustergroup_mask()
+Message-ID: <20220708080424.22x2bgcbggb6skua@bogus>
+References: <20220704101605.1318280-1-sudeep.holla@arm.com>
+ <20220704101605.1318280-18-sudeep.holla@arm.com>
+ <Ysd160PQdWoDIdRC@fedora>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ysd160PQdWoDIdRC@fedora>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
+Hi Darren,
 
-Commit aa44284960d5 ("x86/mm/tlb: Avoid reading mm_tlb_gen when
-possible") introduced an optimization of skipping the flush if the TLB
-generation that is flushed (as provided in flush_tlb_info) was already
-flushed.
+I will let Ionela or Dietmar cover some of the scheduler aspects as
+I don't have much knowledge in that area.
 
-However, arch_tlbbatch_flush() does not provide any generation in
-flush_tlb_info. As a result, try_to_unmap_one() would not perform any
-TLB flushes.
+On Thu, Jul 07, 2022 at 05:10:19PM -0700, Darren Hart wrote:
+> On Mon, Jul 04, 2022 at 11:16:01AM +0100, Sudeep Holla wrote:
+> > From: Ionela Voinescu <ionela.voinescu@arm.com>
+> 
+> Hi Sudeep and Ionela,
+> 
+> > 
+> > Currently the cluster identifier is not set on DT based platforms.
+> > The reset or default value is -1 for all the CPUs. Once we assign the
+> > cluster identifier values correctly, the cluster_sibling mask will be
+> > populated and returned by cpu_clustergroup_mask() to contribute in the
+> > creation of the CLS scheduling domain level, if SCHED_CLUSTER is
+> > enabled.
+> > 
+> > To avoid topologies that will result in questionable or incorrect
+> > scheduling domains, impose restrictions regarding the span of clusters,
+> 
+> Can you provide a specific example of a valid topology that results in
+> the wrong thing currently?
+>
 
-Fix it by checking whether f->new_tlb_gen is nonzero. Zero value is
-anyhow is an invalid generation value.
+As a simple example, Juno with 2 clusters and L2 for each cluster. IIUC
+MC is preferred instead of CLS and both MC and CLS domains are exact
+match.
 
-In addition, add the missing unlikely() and jump to get tracing right.
+> > 
+> > While previously the scheduling domain builder code would have removed MC
+> > as redundant and kept CLS if SCHED_CLUSTER was enabled and the
+> > cpu_coregroup_mask() and cpu_clustergroup_mask() spanned the same CPUs,
+> > now CLS will be removed and MC kept.
+> > 
+> 
+> This is not desireable for all systems, particular those which don't
+> have an L3 but do share other resources - such as the snoop filter in
+> the case of the Ampere Altra.
+> 
+> While not universally supported, we agreed in the discussion on the
+> above patch to allow systems to define clusters independently from the
+> L3 as an LLC since this is also independently defined in PPTT.
+>
+> Going back to my first comment - does this fix an existing system with a
+> valid topology? 
 
-Fixes: aa44284960d5 ("x86/mm/tlb: Avoid reading mm_tlb_gen when possible")
-Reported-by: Hugh Dickins <hughd@google.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Signed-off-by: Nadav Amit <namit@vmware.com>
----
- arch/x86/mm/tlb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Yes as mentioned above Juno.
 
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index d9314cc8b81f..d81b4084bb8a 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -771,14 +771,14 @@ static void flush_tlb_func(void *info)
- 		return;
- 	}
- 
--	if (f->new_tlb_gen <= local_tlb_gen) {
-+	if (unlikely(f->new_tlb_gen != 0 && f->new_tlb_gen <= local_tlb_gen)) {
- 		/*
- 		 * The TLB is already up to date in respect to f->new_tlb_gen.
- 		 * While the core might be still behind mm_tlb_gen, checking
- 		 * mm_tlb_gen unnecessarily would have negative caching effects
- 		 * so avoid it.
- 		 */
--		return;
-+		goto done;
- 	}
- 
- 	/*
+> It's not clear to me what that would look like. The Ampere Altra presents
+> a cluster level in PPTT because that is the desireable topology for the
+> system.
+
+Absolutely wrong reason. It should present because the hardware is so,
+not because some OSPM desires something in someway. Sorry that's not how
+DT/ACPI is designed for. If 2 different OSPM desires different things, then
+one ACPI will not be sufficient.
+
+> If it's not desirable for another system to have the cluster topology -
+> shouldn't it not present that layer to the kernel in the first place?
+
+Absolutely 100% yes, it must present it if the hardware is designed so.
+No if or but.
+
 -- 
-2.25.1
-
+Regards,
+Sudeep
