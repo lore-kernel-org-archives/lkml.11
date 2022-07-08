@@ -2,138 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A386C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8B1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237469AbiGHHNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
+        id S237483AbiGHHOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237206AbiGHHNl (ORCPT
+        with ESMTP id S237212AbiGHHOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:13:41 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C42A13F63;
-        Fri,  8 Jul 2022 00:13:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657264419; x=1688800419;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QnZ104EyG7R40U+ZFVN/xtqfTjTBSCm2mjg2XawQNXM=;
-  b=HWjAk9zQBdLcl1csApgbILbBOrMfGQlvsy6zSbeTyCOc+aZhY3J73GMm
-   C+o8FAoQ6QAtt5gepUR7kH9C9H3r4XKZfWe+zUbS6RvN4m7a30yJ+ldLg
-   PJoFHxYHX65Meorni5MGJ8nANvkoOS1YS+PQaMcO+7i7XmKTshtZCo2RF
-   JdtsFg5zydTKii26jkaZ7JlWcNQAL2UccxtsuMWJ+bZ3Zc4qMag74d2fO
-   06SMyk12AOsH0Ee+6KFHjK9hVoJMdFnbPI+034v7APfspVQxoK3cUK+Ds
-   wcD8Hk7XsMkOy3KQNjMoOHjQCCR0eY9vsuHrh5FYgWvCHaSanp2p9wipN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284236567"
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="284236567"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 00:13:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="683575110"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 Jul 2022 00:13:31 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9iB9-000N5S-1w;
-        Fri, 08 Jul 2022 07:13:31 +0000
-Date:   Fri, 8 Jul 2022 15:12:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Schultz <netdev@kapio-technology.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Hans Schultz <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <202207081529.riNiUWOf-lkp@intel.com>
-References: <20220707152930.1789437-4-netdev@kapio-technology.com>
+        Fri, 8 Jul 2022 03:14:09 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B277696F
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 00:14:08 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id d16so22956029wrv.10
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 00:14:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:message-id:in-reply-to:references
+         :mime-version;
+        bh=x34qz42FhihvfQoObpe4CSiQ433WQDwHGcj+lPAh2xE=;
+        b=Yo1X6Mk6V8WG/TSpNgICV30gnWIohihphaEfdxX/s4FFU8XuVJj45qtbGbNw9b4Jpj
+         a2C9PlPzDHk/VHFOl8rmQyVxw0H6RhLixiOHC/xrYoSFdoA/iU0/JSeLrA3RyDSNOiMv
+         gSqsQPK89yCnuEVzgXOBo8pfkEaNu4BUK54AKaUinSG3rZc1BHtB162EDVdp8WBhv8Ux
+         +KuGRHghZ9gNa9t+AkDlanErlj5wXoHWKADwtl76kQR1SMinaSKid7kS4QNmiNMJoYlw
+         HopWa/CL25UYoAKfatGwONxhdNxUiOqTq6eW7lXXv4E/frS//FoPZo6tyLz0x/9YufVT
+         YhMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:message-id:in-reply-to
+         :references:mime-version;
+        bh=x34qz42FhihvfQoObpe4CSiQ433WQDwHGcj+lPAh2xE=;
+        b=R9Mxt5tMopba3pWYjoc8isprhtYI68gynIFzXra1Li+MMdeD1zRqSsdDEhN++PKosZ
+         eckQD7BNyfrBbZRItznlRdXbngujmbAHiGz3A/bVlx8clFvLw4CrXfm6rpuh3fyPRYO9
+         3dxoV9cFr14xIoBelBk3IXoQQ0gvHoSHzu4XmC4cyFc6RpdaEnTBhqrQRqMbNxioHQPU
+         j5gPdYypiqivo5ylhjYZHNBgJso9w7wyOty314yGR+ZmIKKRupCX/JK7a1r8y+6VO5R6
+         yjvSX4Wzd4YQMytxthPuq3wyjn0ah1GzNXDNzxsTf96CzU/TaTB92N20NqtinkPQvTrM
+         NAXw==
+X-Gm-Message-State: AJIora8NdMdB3TtU3nLBrUcoKb827by368CGBg2W+ORN0GlPEiODr9PF
+        ny2NoWTr3yeQPvpnohxnamUxx1qxSGghMA==
+X-Google-Smtp-Source: AGRyM1sVHVhR2XTxqKOcFDGLYufO6TJ1vKE+U9Lt+CvqwBNmSICA1WmKF6cu+bIC8AQKle88Ph36NQ==
+X-Received: by 2002:a5d:4c85:0:b0:21d:6eed:bcf6 with SMTP id z5-20020a5d4c85000000b0021d6eedbcf6mr1807225wrs.352.1657264446784;
+        Fri, 08 Jul 2022 00:14:06 -0700 (PDT)
+Received: from fedora ([2a01:e0a:1d2:1f90:be95:f3a2:4d99:a3b3])
+        by smtp.gmail.com with ESMTPSA id p18-20020a1c7412000000b003973435c517sm1224988wmc.0.2022.07.08.00.14.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 00:14:06 -0700 (PDT)
+Date:   Fri, 08 Jul 2022 09:14:00 +0200
+From:   Matthieu CHARETTE <matthieu.charette@gmail.com>
+Subject: Re: [PATCH] drm: Fix EDID firmware load on resume
+To:     matthieu.charette@gmail.com
+Cc:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Message-Id: <CFXOER.OW6JFDCNUAT32@gmail.com>
+In-Reply-To: <WKTLER.NFH5CX2O259Q@gmail.com>
+References: <WKTLER.NFH5CX2O259Q@gmail.com>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707152930.1789437-4-netdev@kapio-technology.com>
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+Sorry, I forgot to add a tag.
+---
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2061
 
-Thank you for the patch! Yet something to improve:
+On Wed, Jul 6 2022 at 04:58:08 PM +0200, Matthieu CHARETTE 
+<matthieu.charette@gmail.com> wrote:
+> Loading an EDID using drm.edid_firmware parameter makes resume to fail
+> after firmware cache is being cleaned. This is because edid_load() 
+> use a
+> temporary device to request the firmware. This cause the EDID firmware
+> not to be cached from suspend. And, requesting the EDID firmware 
+> return
+> an error during resume.
+> So the request_firmware() call should use a permanent device for each
+> connector. Also, we should cache the EDID even if no monitor is
+> connected, in case it's plugged while suspended.
+> 
+> Signed-off-by: Matthieu CHARETTE <matthieu.charette@gmail.com>
+> ---
+> drivers/gpu/drm/drm_connector.c | 9 ++++
+> drivers/gpu/drm/drm_edid_load.c | 81 ++++++++++++++++++++++++++++-----
+> include/drm/drm_connector.h | 12 +++++
+> include/drm/drm_edid.h | 3 ++
+> 4 files changed, 94 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_connector.c 
+> b/drivers/gpu/drm/drm_connector.c
+> index 1c48d162c77e..e8819ebf1c4b 100644
+> --- a/drivers/gpu/drm/drm_connector.c
+> +++ b/drivers/gpu/drm/drm_connector.c
+> @@ -31,6 +31,7 @@
+> #include <drm/drm_privacy_screen_consumer.h>
+> #include <drm/drm_sysfs.h>
+> 
+> +#include <linux/platform_device.h>
+> #include <linux/uaccess.h>
+> 
+> #include "drm_crtc_internal.h"
+> @@ -289,6 +290,9 @@ int drm_connector_init(struct drm_device *dev,
+> 
+>  drm_connector_get_cmdline_mode(connector);
+> 
+> + connector->edid_load_pdev = NULL;
+> + drm_cache_edid_firmware(connector);
+> +
+>  /* We should add connectors at the end to avoid upsetting the 
+> connector
+>   * index too much.
+>   */
+> @@ -473,6 +477,11 @@ void drm_connector_cleanup(struct drm_connector 
+> *connector)
+>   connector->tile_group = NULL;
+>  }
+> 
+> + if (connector->edid_load_pdev) {
+> + platform_device_unregister(connector->edid_load_pdev);
+> + connector->edid_load_pdev = NULL;
+> + }
+> +
+>  list_for_each_entry_safe(mode, t, &connector->probed_modes, head)
+>   drm_mode_remove(connector, mode);
+> 
+> diff --git a/drivers/gpu/drm/drm_edid_load.c 
+> b/drivers/gpu/drm/drm_edid_load.c
+> index 37d8ba3ddb46..5a82be9917ec 100644
+> --- a/drivers/gpu/drm/drm_edid_load.c
+> +++ b/drivers/gpu/drm/drm_edid_load.c
+> @@ -167,6 +167,19 @@ static int edid_size(const u8 *edid, int 
+> data_size)
+>  return (edid[0x7e] + 1) * EDID_LENGTH;
+> }
+> 
+> +static struct platform_device *edid_pdev(const char *connector_name)
+> +{
+> + struct platform_device *pdev = 
+> platform_device_register_simple(connector_name, -1, NULL, 0);
+> +
+> + if (IS_ERR(pdev)) {
+> + DRM_ERROR("Failed to register EDID firmware platform device "
+> + "for connector \"%s\"\n", connector_name);
+> + return ERR_CAST(pdev);
+> + }
+> +
+> + return pdev;
+> +}
+> +
+> static void *edid_load(struct drm_connector *connector, const char 
+> *name,
+>    const char *connector_name)
+> {
+> @@ -182,18 +195,17 @@ static void *edid_load(struct drm_connector 
+> *connector, const char *name,
+>   fwdata = generic_edid[builtin];
+>   fwsize = sizeof(generic_edid[builtin]);
+>  } else {
+> - struct platform_device *pdev;
+> + struct platform_device *pdev = connector->edid_load_pdev;
+>   int err;
+> 
+> - pdev = platform_device_register_simple(connector_name, -1, NULL, 0);
+> - if (IS_ERR(pdev)) {
+> - DRM_ERROR("Failed to register EDID firmware platform device "
+> - "for connector \"%s\"\n", connector_name);
+> - return ERR_CAST(pdev);
+> + if (WARN_ON(!pdev)) {
+> + pdev = edid_pdev(connector_name);
+> + if (IS_ERR(pdev))
+> + return ERR_CAST(pdev);
+> + connector->edid_load_pdev = pdev;
+>   }
+> 
+>   err = request_firmware(&fw, name, &pdev->dev);
+> - platform_device_unregister(pdev);
+>   if (err) {
+>    DRM_ERROR("Requesting EDID firmware \"%s\" failed (err=%d)\n",
+>       name, err);
+> @@ -263,11 +275,9 @@ static void *edid_load(struct drm_connector 
+> *connector, const char *name,
+>  return edid;
+> }
+> 
+> -struct edid *drm_load_edid_firmware(struct drm_connector *connector)
+> +static char *edid_name(const char *connector_name)
+> {
+> - const char *connector_name = connector->name;
+>  char *edidname, *last, *colon, *fwstr, *edidstr, *fallback = NULL;
+> - struct edid *edid;
+> 
+>  if (edid_firmware[0] == '\0')
+>   return ERR_PTR(-ENOENT);
+> @@ -310,8 +320,57 @@ struct edid *drm_load_edid_firmware(struct 
+> drm_connector *connector)
+>  if (*last == '\n')
+>   *last = '\0';
+> 
+> - edid = edid_load(connector, edidname, connector_name);
+> + edidname = kstrdup(edidname, GFP_KERNEL);
+> + if (!edidname) {
+> + kfree(fwstr);
+> + return ERR_PTR(-ENOMEM);
+> + }
+> +
+>  kfree(fwstr);
+> + return edidname;
+> +}
+> +
+> +void drm_cache_edid_firmware(struct drm_connector *connector)
+> +{
+> + const char *connector_name = connector->name;
+> + const char *edidname = edid_name(connector_name);
+> + struct platform_device *pdev;
+> + int err;
+> +
+> + if (IS_ERR(edidname))
+> + return;
+> +
+> + if (match_string(generic_edid_name, GENERIC_EDIDS, edidname) >= 0) {
+> + kfree(edidname);
+> + return;
+> + }
+> +
+> + pdev = edid_pdev(connector_name);
+> + if (IS_ERR(pdev)) {
+> + kfree(edidname);
+> + return;
+> + }
+> + connector->edid_load_pdev = pdev;
+> +
+> + err = firmware_request_cache(&pdev->dev, edidname);
+> + if (err)
+> + DRM_ERROR("Requesting EDID firmware cache \"%s\" failed (err=%d)\n",
+> + edidname, err);
+> +
+> + kfree(edidname);
+> +}
+> +
+> +struct edid *drm_load_edid_firmware(struct drm_connector *connector)
+> +{
+> + const char *connector_name = connector->name;
+> + const char *edidname = edid_name(connector_name);
+> + struct edid *edid;
+> +
+> + if (IS_ERR(edidname))
+> + return ERR_CAST(edidname);
+> +
+> + edid = edid_load(connector, edidname, connector_name);
+> + kfree(edidname);
+> 
+>  return edid;
+> }
+> diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
+> index 3ac4bf87f257..47c84741517e 100644
+> --- a/include/drm/drm_connector.h
+> +++ b/include/drm/drm_connector.h
+> @@ -1573,6 +1573,18 @@ struct drm_connector {
+>   */
+>  struct i2c_adapter *ddc;
+> 
+> + /**
+> + * @edid_load_pdev: Platform device for loading EDID via firmware.
+> + *
+> + * The platform device is registered in drm_connector_init() in case 
+> a
+> + * custom EDID firmware is used with `edid_firmware` parameter. 
+> Otherwise,
+> + * it is set to NULL.
+> + *
+> + * Platform device is unregistered in drm_connector_cleanup() if it
+> + * is not NULL.
+> + */
+> + struct platform_device *edid_load_pdev;
+> +
+>  /**
+>   * @null_edid_counter: track sinks that give us all zeros for the 
+> EDID.
+>   * Needed to workaround some HW bugs where we get all 0s
+> diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+> index b2756753370b..b54cea3f1107 100644
+> --- a/include/drm/drm_edid.h
+> +++ b/include/drm/drm_edid.h
+> @@ -378,10 +378,13 @@ int drm_av_sync_delay(struct drm_connector 
+> *connector,
+>         const struct drm_display_mode *mode);
+> 
+> #ifdef CONFIG_DRM_LOAD_EDID_FIRMWARE
+> +void drm_cache_edid_firmware(struct drm_connector *connector);
+> struct edid *drm_load_edid_firmware(struct drm_connector *connector);
+> int __drm_set_edid_firmware_path(const char *path);
+> int __drm_get_edid_firmware_path(char *buf, size_t bufsize);
+> #else
+> +static inline void
+> +drm_cache_edid_firmware(struct drm_connector *connector);
+> static inline struct edid *
+> drm_load_edid_firmware(struct drm_connector *connector)
+> {
+> --
+> 2.36.1
+> 
+> 
+> 
 
-[auto build test ERROR on net/master]
-[also build test ERROR on shuah-kselftest/next linus/master v5.19-rc5]
-[cannot apply to net-next/master next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 07266d066301b97ad56a693f81b29b7ced429b27
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220708/202207081529.riNiUWOf-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/ebd598d7ea6c015001489c4293da887763491086
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-        git checkout ebd598d7ea6c015001489c4293da887763491086
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/net/dsa/sja1105/sja1105_main.c: In function 'sja1105_mdb_add':
->> drivers/net/dsa/sja1105/sja1105_main.c:1952:63: error: incompatible type for argument 5 of 'sja1105_fdb_add'
-    1952 |         return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-         |                                                               ^~
-         |                                                               |
-         |                                                               struct dsa_db
-   drivers/net/dsa/sja1105/sja1105_main.c:1805:33: note: expected 'bool' {aka '_Bool'} but argument is of type 'struct dsa_db'
-    1805 |                            bool is_locked,
-         |                            ~~~~~^~~~~~~~~
->> drivers/net/dsa/sja1105/sja1105_main.c:1952:16: error: too few arguments to function 'sja1105_fdb_add'
-    1952 |         return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-         |                ^~~~~~~~~~~~~~~
-   drivers/net/dsa/sja1105/sja1105_main.c:1803:12: note: declared here
-    1803 | static int sja1105_fdb_add(struct dsa_switch *ds, int port,
-         |            ^~~~~~~~~~~~~~~
-   drivers/net/dsa/sja1105/sja1105_main.c:1953:1: error: control reaches end of non-void function [-Werror=return-type]
-    1953 | }
-         | ^
-   cc1: some warnings being treated as errors
-
-
-vim +/sja1105_fdb_add +1952 drivers/net/dsa/sja1105/sja1105_main.c
-
-5126ec72a094bd3 Vladimir Oltean 2021-08-08  1947  
-a52b2da778fc93e Vladimir Oltean 2021-01-09  1948  static int sja1105_mdb_add(struct dsa_switch *ds, int port,
-c26933639b5402c Vladimir Oltean 2022-02-25  1949  			   const struct switchdev_obj_port_mdb *mdb,
-c26933639b5402c Vladimir Oltean 2022-02-25  1950  			   struct dsa_db db)
-291d1e72b756424 Vladimir Oltean 2019-05-02  1951  {
-c26933639b5402c Vladimir Oltean 2022-02-25 @1952  	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-291d1e72b756424 Vladimir Oltean 2019-05-02  1953  }
-291d1e72b756424 Vladimir Oltean 2019-05-02  1954  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
