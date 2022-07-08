@@ -2,202 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAF1CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22470C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238142AbiGHLsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 07:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
+        id S238061AbiGHLs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 07:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238126AbiGHLsX (ORCPT
+        with ESMTP id S237691AbiGHLsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 07:48:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18E23951E1
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 04:48:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657280901;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qz83jQ6ie8rpR79Lw5oBAFua2qVBO7q3ChvGPuAzjrw=;
-        b=T2bivFwuHapcklp2AKZVISQTV/DHQp3r3CCLenZK7lYDGAOQGD2g8f7cu3c0wb+Q8kKnef
-        x6b7hcJJ546X8GWVmdMdVz+o+LpOHMqJfoGHRWutttNejW8WWN6ZhjRnjW83I9hzasFGQi
-        MLGqHZPKfzW6tIgnPWdd8+3tbWj5j24=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-651-cXCv-5QyMjqti7Fz1bXKyQ-1; Fri, 08 Jul 2022 07:48:20 -0400
-X-MC-Unique: cXCv-5QyMjqti7Fz1bXKyQ-1
-Received: by mail-qk1-f200.google.com with SMTP id bm2-20020a05620a198200b006a5dac37fa2so20752809qkb.16
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 04:48:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Qz83jQ6ie8rpR79Lw5oBAFua2qVBO7q3ChvGPuAzjrw=;
-        b=4obKLvkzN8akLuYCo1qpI7VHWDsVVe8EQS6OJogTvZuc2XWj7FSIIH8IBS5BP/fsql
-         AB68r3Xtku73/OmrgvHO/Xn2Qt62O5kB7ZgyNoFTcVVeHFuA4TtDESsmTRJl3P5jf0lu
-         /83ZdZgHTyCZ+c3wkVcM3bWdaVSS70eHX5lBmJOmP/i1kamDxz6i0CTTQBFwtddVxwwI
-         XWynP0O9+bllr3M4Qt+e0lxIldyqGVMcQOEF9kAJ+SLxtJLPocPtaD1qi2Kybhjt5TSV
-         cr0OAhSCzYyWHyhUXcoepKmyEHktG5NpbBocQRX9CM3KLOi/LLDuifKLPPX/3MOjBqXS
-         NO2g==
-X-Gm-Message-State: AJIora8UawagrNWg09LrVist+9PcXTvMcrYll82THuy64iUzwrkQgyX3
-        j4xpBDAA4YtvX1aAZPp2ci8bl2eOfUyqXrVFyp5PzctgGyXAQOzrjVxnOk87S0DO4YuI0AATcLC
-        EPIdNSLFOThHz6lNCb/LI03ubGdB3WVo2h4qmWmz8
-X-Received: by 2002:ac8:5b51:0:b0:317:3513:cf60 with SMTP id n17-20020ac85b51000000b003173513cf60mr2447545qtw.495.1657280899662;
-        Fri, 08 Jul 2022 04:48:19 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1usVpZKD7lAzE4htKPsep3j+Ey0tw3eoaPrJNum/msse0zljtQvQdftD4RelMyTVPVazDTazPU1BOO+SKyLp1g=
-X-Received: by 2002:ac8:5b51:0:b0:317:3513:cf60 with SMTP id
- n17-20020ac85b51000000b003173513cf60mr2447536qtw.495.1657280899449; Fri, 08
- Jul 2022 04:48:19 -0700 (PDT)
+        Fri, 8 Jul 2022 07:48:54 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2079.outbound.protection.outlook.com [40.107.243.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101267B363;
+        Fri,  8 Jul 2022 04:48:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E3383My+TvkOiraz4MHRCFv5tZ3aIqFA9sd1LHErOr8vyp9i5eAQFYsWDXmMs+O4QUoLYpKKcWBDweGSAGuSM8EvJnFLZ6ti0ZLJSycqII40bGGuFypAM2Zu1uhIsKTdDqkWQIypOfoaiP3TSS6XYIAb3c/3HWR/9QnLYwhhXAfhd26aAUn+Y4jFIoRn336YMWypBW8V99ra1FCjNWy/6TBcQ/UsXcV9Vr7c1RKX/QvfjY8bl3rJu1UktMk0vBWt/Dtv1CVUZDahFyaQSL73x01MRGk+0ncI44Ljvo+WL+wrHlceweBPypfYlWz3q9yY8YiKlMsLi/44YWm4CtRWyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=E/yXuAzlazXwzKhXtJ8xFam9pVa1dMVK5usihwjdANo=;
+ b=nkF74tsDySHxRFYD1jhXXnsumkF4ykX8PBJ0msZqjplx2L+ZbKdsMv/3ed+PjF7z61HugQC2Z29zRF8iORTMlkRDvizqHhi/8WvfcSR7tJuLa8APC4Nv2Smbrpcrk8aAqsRN+E4vEZzp1w10GejkTkG82Hk0hu8/Y/OG2lzYjkm495aXAHse2ld8OGtu7CjWDhUp2qbckdws0KTcEQN25oI9PvslWvBQQLMyIIKx0H85LRrPx4JkJH2LeJcwl774EB1Qsso7sLhvNI7/9tBkD2amMO6IO/bXRNU77xk+rNbsB0AK6o8zvhBuxhD31BdGabpSP9ta4WPo6RQA2paBkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E/yXuAzlazXwzKhXtJ8xFam9pVa1dMVK5usihwjdANo=;
+ b=0oD9qSWS4RZg5NrF1FrH/Pda7/bAceM5PAqQvXacIKIcHQ1FQMhdV2k+7wa3W6QbG7hoMgPCMEfBvFNQVBL5g0W/gu3F3Km/ikEqTqUrqw+aYb+WQ3rqV2uYYoMwc3WszQR5paUNUNQSBvcTXSMpXoaS9Pbzdys+x08pxaMcB3A=
+Received: from CH0PR12MB5265.namprd12.prod.outlook.com (2603:10b6:610:d0::22)
+ by BY5PR12MB4936.namprd12.prod.outlook.com (2603:10b6:a03:1d4::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Fri, 8 Jul
+ 2022 11:48:50 +0000
+Received: from CH0PR12MB5265.namprd12.prod.outlook.com
+ ([fe80::4c8e:9d96:2b0e:fc0f]) by CH0PR12MB5265.namprd12.prod.outlook.com
+ ([fe80::4c8e:9d96:2b0e:fc0f%7]) with mapi id 15.20.5417.020; Fri, 8 Jul 2022
+ 11:48:50 +0000
+From:   "Yuan, Perry" <Perry.Yuan@amd.com>
+To:     "Fontenot, Nathan" <Nathan.Fontenot@amd.com>,
+        "rafael.j.wysocki@intel.com" <rafael.j.wysocki@intel.com>,
+        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>,
+        "Huang, Ray" <Ray.Huang@amd.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
+CC:     "Sharma, Deepak" <Deepak.Sharma@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
+        "Huang, Shimmer" <Shimmer.Huang@amd.com>,
+        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
+        "Meng, Li (Jassmine)" <Li.Meng@amd.com>
+Subject: RE: [PATCH 11/12] cpufreq: amd-pstate: add ACPI disabled check
+Thread-Topic: [PATCH 11/12] cpufreq: amd-pstate: add ACPI disabled check
+Thread-Index: AQHYkiM2n3a7Df2Hu0mfhH7z72bhwK1zUCSAgAEMfPA=
+Date:   Fri, 8 Jul 2022 11:48:50 +0000
+Message-ID: <CH0PR12MB5265B5E589A4D91F981A4E4A9C829@CH0PR12MB5265.namprd12.prod.outlook.com>
+References: <20220707170116.216912-1-Perry.Yuan@amd.com>
+ <e07cfbfd-da96-1251-4d17-2e4bef64e355@amd.com>
+In-Reply-To: <e07cfbfd-da96-1251-4d17-2e4bef64e355@amd.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2022-07-08T11:48:46Z;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=b4e845b2-a051-4055-bd3d-140fd8e6b18a;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=1
+msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_enabled: true
+msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_setdate: 2022-07-08T11:48:46Z
+msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_method: Standard
+msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_name: General
+msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_actionid: 3eb410aa-3fcd-42aa-b49f-09a069d880e8
+msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_contentbits: 0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bbda73c7-6640-42be-1326-08da60d7d329
+x-ms-traffictypediagnostic: BY5PR12MB4936:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ENEdWP9M+ySycqfZttzJ56YMgf8RaETzVfAbZMi7rCbFhhb3hnqG4Tf3Mrbv4RzyhuzhRHqz1yUfZm3UkGxtKzMixaGIUc7PSWD8A4Ym772oOT7xrsbVEX3SAvSuwLDgFX/+xDzmTPo+a0pMgtoToKoCHPnpRYIuStsJncZWQ7I1Wl+dpLv0WyI3ceDVnsZVGnL8fm/20QghX1bFUgfaMld7PvepWEMfg+JhBQvDtxEPNUC0PDytV/IsYQqgqmLkKLx5JIff2qB+uMwqxHR0qOFRDFT9o/L1tfYluVZPkPcRucDJNufzFCUv8z2HsDQXpCCYzUNj52UyjxC8cn1CArb+7ucBzOtIlvyyax43ejcm+5Rgi6nczYwsmz7OjpT1cEkHVqcarbXbzx8NB9CrVBvInvN+BXgdJuhzmEsAuQYpUsfHdzbnu19czl6ZmchW3fUMXwluOe+Zucrdf/l8UVk7ys3doGayc9g+C3xoOoIFAbkdDkWFxTMxuy6LeGJ3ksXwTWpUNTIAkJ+Z32ewCXYhSFlsSzJ35QuugRwY9ryXjKQlyHfN+oS0mNDDjS2tSBDwEq2YfkuTwfLtDhDfpv3iw9enMZK5YO9xB0ltwFNqgBT8MWPbo7J5yJGWWWOCoLSgqrWtTVgOnHYTYvFL+L6Dk/UkpZPiFjA7UAm0cSE3fstLmBOftE92Pfn6LwXADVSq3KQLY0bubUTyZTkSK2DXmBs1djktLSKU35ch8hFNioyWj5wB/mZcGJlNml7XPjX6FvVVX/e3lTiglg6gNyAvkpb36JWQKkzWwsW7OVzHk9dw8I6xkyYGEr3eVLqfnhpvTChHQRdtdRp7j+SaYQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR12MB5265.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(396003)(376002)(39860400002)(346002)(76116006)(64756008)(66446008)(8676002)(38100700002)(316002)(66556008)(66476007)(26005)(66946007)(4326008)(52536014)(8936002)(86362001)(5660300002)(38070700005)(110136005)(122000001)(9686003)(478600001)(6506007)(7696005)(53546011)(2906002)(71200400001)(921005)(83380400001)(33656002)(41300700001)(55016003)(54906003)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VTVvVnRqY0RLSDhGajRaV21WeUJCMnZYbkFWblFjL1lOSFlZdlJSTFpDVWdB?=
+ =?utf-8?B?TXZHazVyR0JwVUJsREV1VUljQWwvOVpGbmQxelQ1Vk9VSjJOcWk2eGtxZ3U2?=
+ =?utf-8?B?cUtGTS9hWFU4ODBnZjN1ZEYvMU5nZjVSdHBSN3pKMmRuUUVkL0dSWlVxRzlo?=
+ =?utf-8?B?ZVAzU2tlRGVXVHljRmhBTkFQaWMzTnJKeUdxL1FxTFBXTjVQYmovV2J6MTNk?=
+ =?utf-8?B?QjFGTVdHT3NwU3p5RXd6UmZwMGE0bFZyQm5XT2VLS2tjeU9ScmpMbERMaUlv?=
+ =?utf-8?B?c3VsVzNUYzdicEtUbG53cnhhVVhMNnJYTDc3U1NOQ1NHSDFoVi8xeXRVTTJp?=
+ =?utf-8?B?V1U5NHhFWGxab3hOWTZpalI3eWg0VStPaW1odnp6NkRldm5zRldPRzAzZCtV?=
+ =?utf-8?B?V3hHMVZHZERIK0V5UW00SzlmWEZvU0dSajJFeTN2RklzZzZuTkpBQktBYmQ5?=
+ =?utf-8?B?N28wMmZCZU5QZ1BCWlc0VVdSYWRETjE4TDVwRHpFT2ZjT2FiVDQ3WldLM203?=
+ =?utf-8?B?cVViQUN4aXN2aFF2OTF0QVdLclErQW1rZERFZ0VxOTlxMUV6NWtPdzFVck9V?=
+ =?utf-8?B?QTZvaTdIT0FiTnRTclJ0cnp0VjF2MHhYdVBTNzdvckg0Z0tzQ2Y4RGpBUVV1?=
+ =?utf-8?B?NG82OVV0TU1neW9VbVczN2RHRGdzMkNxMFRxeDBGKy9KU0d2SnBpWjZUd2NZ?=
+ =?utf-8?B?L2RRdHJVNkNWci9xRW42andrdCtoZlQ3NUUyMEtheGNpdGdLTUpyazdOb1BE?=
+ =?utf-8?B?eGNXaTNzNExPWitjOW9zL2JkdWk3QUlxTzZuUTdYenlWWXBaUWNyMXlQS0Qw?=
+ =?utf-8?B?bzRrbGxkNHhDRTR0ZG5TeUt0RlpTTVFjRmpzL3RQWG83UGFkc3kzV2IxOHo5?=
+ =?utf-8?B?ZFFQdi82c052eFE4dnlIVVZXSGZCSE9mb1FxVDcxeDBleFMwNjI0bmpERC9k?=
+ =?utf-8?B?bExiak1DQjBhK0VrYVNTcDVwcXRuT0N0Wm5kREtycURiRGpwV3c3cWNENmhY?=
+ =?utf-8?B?d0NhMk1NRStqbTdUOC9sdHc5ckJiSys1YWNMWFUxeExTN2YzTGQwMXFuZDhD?=
+ =?utf-8?B?SmhxcUVrcThTQjB0OGVjaitxb0FlMWUrZGY5c0ZwMHdOTEJUYzZ6Rm9QRTR2?=
+ =?utf-8?B?QjEvbTcydDlKd3BCSFl2TUNWb25rRFhzWkJXK0c3c1lnK1JhYlBSYTNyb1hQ?=
+ =?utf-8?B?UlZoQkxoam9YNFRZNmZSNXJkT2MvMnJFV1F3dEhrbSs2RnhNaWNOZ25uQzR1?=
+ =?utf-8?B?bDVOcVp2MlFYMXVLQnRPVjZXbWJFTVZKUHBIK0o0dE03UkZOS2doVHkyYStj?=
+ =?utf-8?B?UE1KanMwVFRrTW51VVRJcFp0Z3lPeG55YnRkNkxBQWloc1JHVksyYXljNUtq?=
+ =?utf-8?B?QkRNbGN3aVAzUzFTenEydXNja2d2TytKMWtZbTdiUTV4c2xyS0ZvZTBRdTRm?=
+ =?utf-8?B?cHNGTllkbCtQeWkyc1J4L3RkL3M4ZWdLcGM5Yllra3ZzbkFMQUJqOTVaK1Ew?=
+ =?utf-8?B?bjZmRjN5RU9uMUFCY2EyVEpLRllKQUlYRWpLbmUxUEo4Ky9sU0FLNWtjQTRs?=
+ =?utf-8?B?WC9adWM0cE9pVFNNWitucWdOamZuWktKUzRYVklLT2JpNkNKSUxPczk3Unlm?=
+ =?utf-8?B?MTUxdmkrNEREZzdmREhibWt0S1JjTUFjR3JVRDdwam9ZRmhZRTlwQWZranRj?=
+ =?utf-8?B?VzY4Y3RPNVVKbXJwSmd5cE1ieVcrMUNaa29udzlsakViZllOYlI4MUV4WjdQ?=
+ =?utf-8?B?TzhOTFdYaUFWZXpxSlQ2bzdERGJLY3NkSHhWUlZZamd4YytIOFUxTUhOUVdK?=
+ =?utf-8?B?Y0V3SlJKeUdDTXZpdjE2dHJXakZXZ01MWHowVkhxU0RMUW5DWnNla0xTSlgz?=
+ =?utf-8?B?QVZTSG5XYVgwSnlnUmlsZW5wcEZRSU5qY0JBZVpOemo4NE9iQm45WTBpUGZ6?=
+ =?utf-8?B?SDNsRWtubzhHVFBBUzlZYmhYTmZSMWxXYWQwa1BvekVGc1dPNktmeDBhaTEy?=
+ =?utf-8?B?Y2lXYXdyY01NemkzTURlMEJXU3Fja2xOYzZrOURzVXN3V3d0Q0s5V1FKOTJs?=
+ =?utf-8?B?ZVIxQnQ2ZTRTTnFUb0lmbU95YUV0SFFWNHhwQnpTYStLcTVRY2psU3lwMW0r?=
+ =?utf-8?Q?yY+cNcOx4RU2TDwvZULJf6qO3?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-4-eperezma@redhat.com>
- <CAGxU2F43+5zsQOR4ReTtQtEF47s6y-XKcevosMOzUdEqpLhAsg@mail.gmail.com>
-In-Reply-To: <CAGxU2F43+5zsQOR4ReTtQtEF47s6y-XKcevosMOzUdEqpLhAsg@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 8 Jul 2022 13:47:43 +0200
-Message-ID: <CAJaqyWdn=mShLEZzfJB_+PwM+pkLhLMJaMOjdFtuW8tYbbU3FQ@mail.gmail.com>
-Subject: Re: [PATCH v6 3/4] vhost-vdpa: uAPI to suspend the device
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Cindy Lu <lulu@redhat.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR12MB5265.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bbda73c7-6640-42be-1326-08da60d7d329
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2022 11:48:50.3109
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tZCLDeoobbldCy4BdKdqAQsBQ6QVVUUtO6Zs4J8in5InNwo/5HIsLm6K7L/+h2xx+oqmarD+Ta9H5Xp0I6saRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4936
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 3:45 PM Stefano Garzarella <sgarzare@redhat.com> wr=
-ote:
->
-> On Thu, Jun 23, 2022 at 06:07:37PM +0200, Eugenio P=C3=A9rez wrote:
-> >The ioctl adds support for suspending the device from userspace.
-> >
-> >This is a must before getting virtqueue indexes (base) for live migratio=
-n,
-> >since the device could modify them after userland gets them. There are
-> >individual ways to perform that action for some devices
-> >(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-> >way to perform it for any vhost device (and, in particular, vhost-vdpa).
-> >
-> >After a successful return of the ioctl call the device must not process
-> >more virtqueue descriptors. The device can answer to read or writes of
-> >config fields as if it were not suspended. In particular, writing to
-> >"queue_enable" with a value of 1 will not make the device start
-> >processing buffers of the virtqueue.
-> >
-> >Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> >---
-> > drivers/vhost/vdpa.c       | 19 +++++++++++++++++++
-> > include/uapi/linux/vhost.h | 14 ++++++++++++++
-> > 2 files changed, 33 insertions(+)
-> >
-> >diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> >index 3d636e192061..7fa671ac4bdf 100644
-> >--- a/drivers/vhost/vdpa.c
-> >+++ b/drivers/vhost/vdpa.c
-> >@@ -478,6 +478,22 @@ static long vhost_vdpa_get_vqs_count(struct vhost_v=
-dpa *v, u32 __user *argp)
-> >       return 0;
-> > }
-> >
-> >+/* After a successful return of ioctl the device must not process more
-> >+ * virtqueue descriptors. The device can answer to read or writes of co=
-nfig
-> >+ * fields as if it were not suspended. In particular, writing to "queue=
-_enable"
-> >+ * with a value of 1 will not make the device start processing buffers.
-> >+ */
-> >+static long vhost_vdpa_suspend(struct vhost_vdpa *v)
-> >+{
-> >+      struct vdpa_device *vdpa =3D v->vdpa;
-> >+      const struct vdpa_config_ops *ops =3D vdpa->config;
-> >+
-> >+      if (!ops->suspend)
-> >+              return -EOPNOTSUPP;
-> >+
-> >+      return ops->suspend(vdpa);
-> >+}
-> >+
-> > static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int c=
-md,
-> >                                  void __user *argp)
-> > {
-> >@@ -654,6 +670,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *f=
-ilep,
-> >       case VHOST_VDPA_GET_VQS_COUNT:
-> >               r =3D vhost_vdpa_get_vqs_count(v, argp);
-> >               break;
-> >+      case VHOST_VDPA_SUSPEND:
-> >+              r =3D vhost_vdpa_suspend(v);
-> >+              break;
-> >       default:
-> >               r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
-> >               if (r =3D=3D -ENOIOCTLCMD)
-> >diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> >index cab645d4a645..6d9f45163155 100644
-> >--- a/include/uapi/linux/vhost.h
-> >+++ b/include/uapi/linux/vhost.h
-> >@@ -171,4 +171,18 @@
-> > #define VHOST_VDPA_SET_GROUP_ASID     _IOW(VHOST_VIRTIO, 0x7C, \
-> >                                            struct vhost_vring_state)
-> >
-> >+/* Suspend or resume a device so it does not process virtqueue requests=
- anymore
-> >+ *
-> >+ * After the return of ioctl with suspend !=3D 0, the device must finis=
-h any
-> >+ * pending operations like in flight requests. It must also preserve al=
-l the
-> >+ * necessary state (the virtqueue vring base plus the possible device s=
-pecific
-> >+ * states) that is required for restoring in the future. The device mus=
-t not
-> >+ * change its configuration after that point.
-> >+ *
-> >+ * After the return of ioctl with suspend =3D=3D 0, the device can cont=
-inue
-> >+ * processing buffers as long as typical conditions are met (vq is enab=
-led,
-> >+ * DRIVER_OK status bit is enabled, etc).
-> >+ */
-> >+#define VHOST_VDPA_SUSPEND            _IOW(VHOST_VIRTIO, 0x7D, int)
->                                          ^
-> IIUC we are not using the argument anymore, so this should be changed in
-> _IO(VHOST_VIRTIO, 0x7D).
->
-> And we should update a bit the documentation.
->
-
-Totally right, replacing it for the next version.
-
-Thanks!
-
-> Thanks,
-> Stefano
->
-
+W0FNRCBPZmZpY2lhbCBVc2UgT25seSAtIEdlbmVyYWxdDQoNCkhpIE5hdGhhbi4NCg0KPiAtLS0t
+LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBGb250ZW5vdCwgTmF0aGFuIDxOYXRoYW4u
+Rm9udGVub3RAYW1kLmNvbT4NCj4gU2VudDogRnJpZGF5LCBKdWx5IDgsIDIwMjIgMzo0NiBBTQ0K
+PiBUbzogWXVhbiwgUGVycnkgPFBlcnJ5Lll1YW5AYW1kLmNvbT47IHJhZmFlbC5qLnd5c29ja2lA
+aW50ZWwuY29tOw0KPiB2aXJlc2gua3VtYXJAbGluYXJvLm9yZzsgSHVhbmcsIFJheSA8UmF5Lkh1
+YW5nQGFtZC5jb20+OyBSYWZhZWwgSi4NCj4gV3lzb2NraSA8cmFmYWVsQGtlcm5lbC5vcmc+OyBM
+ZW4gQnJvd24gPGxlbmJAa2VybmVsLm9yZz47IGxpbnV4LQ0KPiBhY3BpQHZnZXIua2VybmVsLm9y
+ZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGludXgtDQo+IHBtQHZnZXIua2VybmVs
+Lm9yZw0KPiBDYzogU2hhcm1hLCBEZWVwYWsgPERlZXBhay5TaGFybWFAYW1kLmNvbT47IExpbW9u
+Y2llbGxvLCBNYXJpbw0KPiA8TWFyaW8uTGltb25jaWVsbG9AYW1kLmNvbT47IEZvbnRlbm90LCBO
+YXRoYW4NCj4gPE5hdGhhbi5Gb250ZW5vdEBhbWQuY29tPjsgRGV1Y2hlciwgQWxleGFuZGVyDQo+
+IDxBbGV4YW5kZXIuRGV1Y2hlckBhbWQuY29tPjsgU3UsIEppbnpob3UgKEpvZSkgPEppbnpob3Uu
+U3VAYW1kLmNvbT47DQo+IEh1YW5nLCBTaGltbWVyIDxTaGltbWVyLkh1YW5nQGFtZC5jb20+OyBE
+dSwgWGlhb2ppYW4NCj4gPFhpYW9qaWFuLkR1QGFtZC5jb20+OyBNZW5nLCBMaSAoSmFzc21pbmUp
+IDxMaS5NZW5nQGFtZC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMTEvMTJdIGNwdWZyZXE6
+IGFtZC1wc3RhdGU6IGFkZCBBQ1BJIGRpc2FibGVkIGNoZWNrDQo+IA0KPiBPbiA3LzcvMjIgMTI6
+MDEsIFBlcnJ5IFl1YW4gd3JvdGU6DQo+ID4gQWRkIGFjcGkgZnVuY3Rpb24gY2hlY2sgaW4gY2Fz
+ZSBBQ1BJIGlzIG5vdCBlbmFibGVkLCB0aGF0IHdpbGwgY2F1c2UNCj4gPiBwc3RhdGUgZHJpdmVy
+IGZhaWxlZCB0byBjYWxsIGNwcGMgYWNwaSB0byBjaGFuZ2UgcGVyZiBvciB1cGRhdGUgZXBwDQo+
+ID4gdmFsdWUgZm9yIHNoYXJlZCBtZW1vcnkgc29sdXRpb24gcHJvY2Vzc29ycy4NCj4gPg0KPiA+
+IFdoZW4gQ1BQQyBpcyBpbnZhbGlkLCB3YXJuaW5nIGxvZyB3aWxsIGJlIG5lZWRlZCB0byBiZSBw
+cmludGVkIHRvIHRlbGwNCj4gPiB1c2VyIHdoYXQgaXMgd3JvbmcuDQo+ID4NCj4gPiBTaWduZWQt
+b2ZmLWJ5OiBQZXJyeSBZdWFuIDxQZXJyeS5ZdWFuQGFtZC5jb20+DQo+ID4gLS0tDQo+ID4gIGRy
+aXZlcnMvYWNwaS9jcHBjX2FjcGkuYyAgICAgfCAzICsrKw0KPiA+ICBkcml2ZXJzL2NwdWZyZXEv
+YW1kLXBzdGF0ZS5jIHwgMiArLQ0KPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygr
+KSwgMSBkZWxldGlvbigtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvYWNwaS9jcHBj
+X2FjcGkuYyBiL2RyaXZlcnMvYWNwaS9jcHBjX2FjcGkuYyBpbmRleA0KPiA+IDZmZjE5MDFkN2Q0
+My4uMTdkNjdlM2VkZWRmIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvYWNwaS9jcHBjX2FjcGku
+Yw0KPiA+ICsrKyBiL2RyaXZlcnMvYWNwaS9jcHBjX2FjcGkuYw0KPiA+IEBAIC00MjQsNiArNDI0
+LDkgQEAgYm9vbCBhY3BpX2NwY192YWxpZCh2b2lkKQ0KPiA+ICAJc3RydWN0IGNwY19kZXNjICpj
+cGNfcHRyOw0KPiA+ICAJaW50IGNwdTsNCj4gPg0KPiA+ICsJaWYgKGFjcGlfZGlzYWJsZWQpDQo+
+ID4gKwkJcmV0dXJuIGZhbHNlPiArDQo+IA0KPiBUaGlzIHNlZW1zIG9rLCB0aGUgb25seSBvdGhl
+ciBwbGFjZXMgSSBmaW5kIHRoYXQgY2FsbCBhY3BpX2NwY192YWxpZCgpIGFsc28NCj4gY2hlY2sg
+Zm9yIGFjcGlfZGlzYWJsZWQuDQo+IA0KPiBJZiB0aGUgYWNwaV9kaXNhYmxlZCBjaGVjayBpcyBh
+ZGRlZCB0byBhY3BpX2NwY192YWxpZCgpIHRoZSBvdGhlciBjYWxsaW5nIHNpdGVzDQo+IHNob3Vs
+ZCBiZSB1cGRhdGVkIHRvIHJlbW92ZSB0aGVpciBjaGVjayBmb3IgYWNwaV9kaXNhYmxlZC4NCj4g
+DQo+IC1OYXRoYW4NCg0KWW91IGFyZSBjb3JyZWN0LiBJdCBuZWVkcyB0byByZW1vdmUgdGhlIHNh
+bWUgY2hlY2sgY29kZSBmcm9tIG90aGVyIGRyaXZlciBmaWxlLg0KV2lsbCBhZGQgdGhpcyBmZWVk
+YmFjayBpbnRvIFYyIHBhdGNoLiANCg0KUGVycnkuIA0KDQo+IA0KPiA+ICAJZm9yX2VhY2hfcHJl
+c2VudF9jcHUoY3B1KSB7DQo+ID4gIAkJY3BjX3B0ciA9IHBlcl9jcHUoY3BjX2Rlc2NfcHRyLCBj
+cHUpOw0KPiA+ICAJCWlmICghY3BjX3B0cikNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9jcHVm
+cmVxL2FtZC1wc3RhdGUuYw0KPiA+IGIvZHJpdmVycy9jcHVmcmVxL2FtZC1wc3RhdGUuYyBpbmRl
+eCBiNTRiM2I1NTk5OTMuLjZkODFhOWE5NGRkZQ0KPiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJz
+L2NwdWZyZXEvYW1kLXBzdGF0ZS5jDQo+ID4gKysrIGIvZHJpdmVycy9jcHVmcmVxL2FtZC1wc3Rh
+dGUuYw0KPiA+IEBAIC02ODQsNyArNjg0LDcgQEAgc3RhdGljIGludCBfX2luaXQgYW1kX3BzdGF0
+ZV9pbml0KHZvaWQpDQo+ID4gIAkJcmV0dXJuIC1FTk9ERVY7DQo+ID4NCj4gPiAgCWlmICghYWNw
+aV9jcGNfdmFsaWQoKSkgew0KPiA+IC0JCXByX2RlYnVnKCJ0aGUgX0NQQyBvYmplY3QgaXMgbm90
+IHByZXNlbnQgaW4gU0JJT1NcbiIpOw0KPiA+ICsJCXByX3dhcm5fb25jZSgidGhlIF9DUEMgb2Jq
+ZWN0IGlzIG5vdCBwcmVzZW50IGluIFNCSU9TIG9yDQo+IEFDUEkNCj4gPiArZGlzYWJsZWRcbiIp
+Ow0KPiA+ICAJCXJldHVybiAtRU5PREVWOw0KPiA+ICAJfQ0KPiA+DQo=
