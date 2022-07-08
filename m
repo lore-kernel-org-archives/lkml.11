@@ -2,87 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17182C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237406AbiGHIjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40958 "EHLO
+        id S237748AbiGHIkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237504AbiGHIjr (ORCPT
+        with ESMTP id S237654AbiGHIkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:39:47 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9085C97C;
-        Fri,  8 Jul 2022 01:39:46 -0700 (PDT)
-X-UUID: f379dd88618a4b5cac194ec772b58f7f-20220708
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:81f1c655-eeec-4f66-ae93-c31726cb3bbd,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:f855e686-57f0-47ca-ba27-fe8c57fbf305,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: f379dd88618a4b5cac194ec772b58f7f-20220708
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 732654223; Fri, 08 Jul 2022 16:39:41 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 8 Jul 2022 16:39:39 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Jul 2022 16:39:38 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     David Miller <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "Biao Huang" <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <macpaul.lin@mediatek.com>
-Subject: [PATCH net v3 0/1] stmmac: dwmac-mediatek: fix clock issue
-Date:   Fri, 8 Jul 2022 16:39:36 +0800
-Message-ID: <20220708083937.27334-1-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 8 Jul 2022 04:40:00 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53B9814B9;
+        Fri,  8 Jul 2022 01:39:58 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LfRY86xT5z4xD2;
+        Fri,  8 Jul 2022 18:39:56 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657269597;
+        bh=W7oRczXqKJ3bTDS/OVxF3kAupvYBCW29Q9o/B8lDUrI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=iB7/lFPdPPjmwfdeJ0yf1WpilNVobJHZEIKqlIOMxSJeQlshnFzYZX3KbUdQRwVCp
+         6A7DR48qJPfUOaraI6QNv6Q2m/Rbhnrh2fjVoBc/41xe/AHl5XFc1KbW7m0qa0Nv4U
+         kUVO4oEx2gT8OTaBkFPolXKnodzeBlJJ+q7lhy2BHoZaXC3xezrOvF6HoDQkWHoMFg
+         jB+lkXaeoKg/KG8fz0sAlFNer8tcQZBj1DEuIR0X3wyhtvpcloJEw5nWDnXG4gXaTV
+         mlBwXD8ew7Iq28fFo9tb5BBT9ezqAy7c8Sz7dwokYI3WaBa7I2MkN5ZwdNdi2T/PGX
+         mkCfjxbb6LMrQ==
+Date:   Fri, 8 Jul 2022 18:39:55 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: linux-next: manual merge of the mm-stable tree with the jc_docs
+ tree
+Message-ID: <20220708183955.34212f5e@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: multipart/signed; boundary="Sig_/tb_uU/FVC3Xmh2SQZmg_1FX";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-changes in v3:
-1. delete mediatek_dwmac_exit() since there is no operation in it,
-as Matthias's comments.
+--Sig_/tb_uU/FVC3Xmh2SQZmg_1FX
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-changes in v2:
-1. clock configuration is still needed in probe,
-and invoke mediatek_dwmac_clks_config() instead.
-2. update commit message.
+Hi all,
 
-v1:
-remove duplicated clock configuration in init/exit.
+Today's linux-next merge of the mm-stable tree got conflicts in:
 
-Biao Huang (1):
-  stmmac: dwmac-mediatek: fix clock issue
+  Documentation/translations/zh_CN/mm/free_page_reporting.rst
+  Documentation/translations/zh_CN/mm/frontswap.rst
+  Documentation/translations/zh_CN/mm/page_frags.rst
+  Documentation/translations/zh_CN/mm/zsmalloc.rst
 
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 36 +++++--------------
- 1 file changed, 9 insertions(+), 27 deletions(-)
+between commits:
 
--- 
-2.25.1
+  5fe84fe446d8 ("docs: zh_CN: page_frags.rst: fix a broken reference")
+  36395fb365df ("docs: zh_CN/vm: fix a typo for page reporting ReST file")
+  97e937dec70d ("docs: zh_CN/vm/zsmalloc.rst: fix a typo")
 
+from the jc_docs tree and commit:
 
+  ee65728e103b ("docs: rename Documentation/vm to Documentation/mm")
+
+from the mm-stable tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc Documentation/translations/zh_CN/mm/free_page_reporting.rst
+index 14336a3aa5f4,83b14cce9adf..000000000000
+--- a/Documentation/translations/zh_CN/mm/free_page_reporting.rst
++++ b/Documentation/translations/zh_CN/mm/free_page_reporting.rst
+@@@ -1,6 -1,6 +1,6 @@@
+  .. include:: ../disclaimer-zh_CN.rst
+ =20
+- :Original: Documentation/vm/free_page_reporting.rst
+ -:Original: Documentation/mm/_free_page_reporting.rst
+++:Original: Documentation/mm/free_page_reporting.rst
+ =20
+  :=E7=BF=BB=E8=AF=91:
+ =20
+diff --cc Documentation/translations/zh_CN/mm/frontswap.rst
+index 98aa6f581ea7,5c18ea2be04f..000000000000
+--- a/Documentation/translations/zh_CN/mm/frontswap.rst
++++ b/Documentation/translations/zh_CN/mm/frontswap.rst
+@@@ -1,4 -1,4 +1,4 @@@
+- :Original: Documentation/vm/free_page_reporting.rst
+ -:Original: Documentation/mm/_free_page_reporting.rst
+++:Original: Documentation/mm/free_page_reporting.rst
+ =20
+  :=E7=BF=BB=E8=AF=91:
+ =20
+diff --cc Documentation/translations/zh_CN/mm/page_frags.rst
+index 38ecddb9e1c0,320952ca93af..000000000000
+--- a/Documentation/translations/zh_CN/mm/page_frags.rst
++++ b/Documentation/translations/zh_CN/mm/page_frags.rst
+@@@ -1,4 -1,4 +1,4 @@@
+- :Original: Documentation/vm/page_frags.rst
+ -:Original: Documentation/mm/page_frag.rst
+++:Original: Documentation/mm/page_frags.rst
+ =20
+  :=E7=BF=BB=E8=AF=91:
+ =20
+diff --cc Documentation/translations/zh_CN/mm/zsmalloc.rst
+index 45a9b7ab2a51,b5596ea08ae4..000000000000
+--- a/Documentation/translations/zh_CN/mm/zsmalloc.rst
++++ b/Documentation/translations/zh_CN/mm/zsmalloc.rst
+@@@ -1,4 -1,4 +1,4 @@@
+- :Original: Documentation/vm/zsmalloc.rst
+ -:Original: Documentation/mm/zs_malloc.rst
+++:Original: Documentation/mm/zsmalloc.rst
+ =20
+  :=E7=BF=BB=E8=AF=91:
+ =20
+
+--Sig_/tb_uU/FVC3Xmh2SQZmg_1FX
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLH7VsACgkQAVBC80lX
+0GxYYwf/UKOwgevNdRGPyiHiQSZBW0W0O+bSqJgyVtfys5SwH2HKjcgnklHdg1S4
+1p4GHSmx8PVkL+OjPFvZgK6TENItZkVf2y5EyeCPikuxLl9DOh9SncFMnQSlgbEE
+GSMN0igxGKaqZJK1GC69S+odtxyvdjUzZbnWWhPxxoibX4ugTPWXk4DEAsyyoWE/
+9VUIVuFKiBpks8FlqZ98giTHPZ9CIgw960s1qIDGG4fkqqfsYl0EqjV70NEBIcId
+5AweHEat/o/z2zHgXVOtIudtXKbSUJVGLMveRAXk8rJ8oDJ9mVkNdiAqVau670x9
+5yrNAMs2wR7tNh3f8kcmiCSyAZ0MkA==
+=NOUX
+-----END PGP SIGNATURE-----
+
+--Sig_/tb_uU/FVC3Xmh2SQZmg_1FX--
