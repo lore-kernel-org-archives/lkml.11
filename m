@@ -2,145 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF658C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 18:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE84AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 18:51:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239762AbiGHSuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 14:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42990 "EHLO
+        id S239765AbiGHSvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 14:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239725AbiGHSuo (ORCPT
+        with ESMTP id S238951AbiGHSvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 14:50:44 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C7D6410;
-        Fri,  8 Jul 2022 11:50:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657306243; x=1688842243;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=iLLN0bgHauzl53XPoFFOr0sBnjyYBeEUVLmD1uYq7eQ=;
-  b=uFWPbUdo6sME5pv705vhxTn16+r4mJ+OkAtvFWAGbhKhLx2xN+LiNoOZ
-   bRjG8FVQiAbvPto6JQkyNotL9U/E8Qah4G0teWmhwnX29QmO9VQa8OMUP
-   nID5/djijN5qIpZVbJkojccO4YCe7Hwn7+VacF3rQ0RrbTmTIKdhNn9Ok
-   M=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 08 Jul 2022 11:50:41 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 11:50:41 -0700
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 8 Jul 2022 11:50:21 -0700
-Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 8 Jul 2022 11:50:20 -0700
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <Thinh.Nguyen@synopsys.com>, <quic_jackp@quicinc.com>,
-        Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH 3/5] usb: dwc3: gadget: Adjust IRQ management during soft disconnect/connect
-Date:   Fri, 8 Jul 2022 11:50:05 -0700
-Message-ID: <20220708185007.21743-4-quic_wcheng@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220708185007.21743-1-quic_wcheng@quicinc.com>
-References: <20220708185007.21743-1-quic_wcheng@quicinc.com>
+        Fri, 8 Jul 2022 14:51:09 -0400
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6991F622;
+        Fri,  8 Jul 2022 11:51:08 -0700 (PDT)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-10c0119dd16so19327969fac.6;
+        Fri, 08 Jul 2022 11:51:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QKBnPVbAi9JjRpPAaVbdkPlqRXpWIKRAY3cWemlixrk=;
+        b=aUbSiNvwmx6Ez25WYSk9W2cYhQ62dAPr90XXSlQjB6KNl2nMFwiK3fDcunVw5Ig16c
+         RbhsKHSlGqhZ1dpBIBtb5QLffjSsyAUO1Weo7+IFhu0f7LrjkBl0hpAXF/lEB8n5fJqm
+         qdr1Jf6ndwb/9kQP1OgTA/VAFTVek/K+m/gC3XfxIzoKn/xnQKFiPWYmGcRr+Fs6DQv+
+         BhGfAkptcFbIsbRLvWnClT3l/FCgpBDjhvdFIH97f8GJgG7PhuN5xOvC+43su0uQnOwk
+         ZeHy8XIhPPKGkXpn4dS47xjO4MmNKrCkoJmLo6+LRAua0na6E/XFlswBHNP5QqL/xddj
+         14lw==
+X-Gm-Message-State: AJIora/EW8+hqKHSyK7iwNPmV1NvTyvVthjDlp13zrTO3ba642Zys8bX
+        IMsnsn7CXwAitnzPPZXKvibBPxmbpRPDbZEwaWw=
+X-Google-Smtp-Source: AGRyM1uAUEAp4sDW3fQy4rhjT7eelrc+zNoIqnLU0R/sBFHVpxV8n4q0fvXje92ZqE1Jie9jS9v4XI2+Zng/I9yGFPc=
+X-Received: by 2002:a05:6870:a182:b0:10b:efbe:e65d with SMTP id
+ a2-20020a056870a18200b0010befbee65dmr768547oaf.5.1657306267508; Fri, 08 Jul
+ 2022 11:51:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+References: <20220707215606.2409166-1-rsilvera@google.com>
+In-Reply-To: <20220707215606.2409166-1-rsilvera@google.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Fri, 8 Jul 2022 11:50:56 -0700
+Message-ID: <CAM9d7cgcvQTZWPFh+ebC-68CrjuQDw5C8biko+KtWPtN9gYT7Q@mail.gmail.com>
+Subject: Re: [PATCH v2] perf inject: Add a command line option to specify
+ build ids
+To:     Raul Silvera <rsilvera@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Local interrupts are currently being disabled as part of aquiring the
-spin lock before issuing the endxfer command.  Leave interrupts enabled, so
-that EP0 events can continue to be processed.  Also, ensure that there are
-no pending interrupts before attempting to handle any soft
-connect/disconnect.
+Hi Raul,
 
-Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
----
- drivers/usb/dwc3/gadget.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+On Thu, Jul 7, 2022 at 2:56 PM Raul Silvera <rsilvera@google.com> wrote:
+>
+> This commit adds the option --known-build-ids to perf inject.
+> It allows the user to explicitly specify the build id for a given
+> path, instead of retrieving it from the current system. This is
+> useful in cases where a perf.data file is processed on a different
+> system from where it was collected, or if some of the binaries are
+> no longer available.
+>
+> The build ids and paths are specified in pairs in the command line.
+> Using the file:// specifier, build ids can be loaded from a file
+> directly generated by perf buildid-list. This is convenient to copy
+> build ids from one perf.data file to another.
+>
+> ** Example: In this example we use perf record to create two
+> perf.data files, one with build ids and another without, and use
+> perf buildid-list and perf inject to copy the build ids from the
+> first file to the second.
+>
+>  $ perf record ls /tmp
+>  $ perf record --no-buildid -o perf.data.no-buildid ls /tmp
+>  $ perf buildid-list > /tmp/build-ids.txt
+>  $ perf inject -b --known-build-ids='file:///tmp/build-ids.txt' \
+>         -i perf.data.no-buildid -o perf.data.buildid
 
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 75cbc3f185d0..bd40608b19df 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -2046,7 +2046,7 @@ static int dwc3_gadget_ep_dequeue(struct usb_ep *ep,
- 
- 	trace_dwc3_ep_dequeue(req);
- 
--	spin_lock_irqsave(&dwc->lock, flags);
-+	spin_lock(&dwc->lock);
- 
- 	list_for_each_entry(r, &dep->cancelled_list, list) {
- 		if (r == req)
-@@ -2085,7 +2085,7 @@ static int dwc3_gadget_ep_dequeue(struct usb_ep *ep,
- 		request, ep->name);
- 	ret = -EINVAL;
- out:
--	spin_unlock_irqrestore(&dwc->lock, flags);
-+	spin_unlock(&dwc->lock);
- 
- 	return ret;
- }
-@@ -2501,9 +2501,7 @@ static int __dwc3_gadget_start(struct dwc3 *dwc);
- 
- static int dwc3_gadget_soft_disconnect(struct dwc3 *dwc)
- {
--	unsigned long flags;
--
--	spin_lock_irqsave(&dwc->lock, flags);
-+	spin_lock(&dwc->lock);
- 	dwc->connected = false;
- 
- 	/*
-@@ -2518,10 +2516,10 @@ static int dwc3_gadget_soft_disconnect(struct dwc3 *dwc)
- 
- 		reinit_completion(&dwc->ep0_in_setup);
- 
--		spin_unlock_irqrestore(&dwc->lock, flags);
-+		spin_unlock(&dwc->lock);
- 		ret = wait_for_completion_timeout(&dwc->ep0_in_setup,
- 				msecs_to_jiffies(DWC3_PULL_UP_TIMEOUT));
--		spin_lock_irqsave(&dwc->lock, flags);
-+		spin_lock(&dwc->lock);
- 		if (ret == 0)
- 			dev_warn(dwc->dev, "timed out waiting for SETUP phase\n");
- 	}
-@@ -2535,7 +2533,7 @@ static int dwc3_gadget_soft_disconnect(struct dwc3 *dwc)
- 	 */
- 	dwc3_stop_active_transfers(dwc);
- 	__dwc3_gadget_stop(dwc);
--	spin_unlock_irqrestore(&dwc->lock, flags);
-+	spin_unlock(&dwc->lock);
- 
- 	/*
- 	 * Note: if the GEVNTCOUNT indicates events in the event buffer, the
-@@ -2581,6 +2579,8 @@ static int dwc3_gadget_pullup(struct usb_gadget *g, int is_on)
- 		return 0;
- 	}
- 
-+	synchronize_irq(dwc->irq_gadget);
-+
- 	if (!is_on) {
- 		ret = dwc3_gadget_soft_disconnect(dwc);
- 	} else {
-@@ -3740,7 +3740,10 @@ void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
- 	 * This mode is NOT available on the DWC_usb31 IP.
- 	 */
- 
-+	spin_unlock(&dwc->lock);
- 	__dwc3_stop_active_transfer(dep, force, interrupt);
-+	spin_lock(&dwc->lock);
-+
- }
- 
- static void dwc3_clear_stall_all_ep(struct dwc3 *dwc)
+Please add documentation for new options.  Some nit pickings below.
+
+>
+> Signed-off-by: Raul Silvera <rsilvera@google.com>
+> ---
+>  V1 -> V2: Cleaned up patch description, deleted the strlist during
+>            cleanup, and updated validation of the build id strings
+>
+>  tools/perf/builtin-inject.c | 60 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 60 insertions(+)
+>
+> diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
+> index a75bf11585b5..4efb992ed1a0 100644
+> --- a/tools/perf/builtin-inject.c
+> +++ b/tools/perf/builtin-inject.c
+> @@ -21,6 +21,7 @@
+>  #include "util/data.h"
+>  #include "util/auxtrace.h"
+>  #include "util/jit.h"
+> +#include "util/string2.h"
+>  #include "util/symbol.h"
+>  #include "util/synthetic-events.h"
+>  #include "util/thread.h"
+> @@ -35,6 +36,7 @@
+>
+>  #include <linux/list.h>
+>  #include <linux/string.h>
+> +#include <ctype.h>
+>  #include <errno.h>
+>  #include <signal.h>
+>
+> @@ -59,6 +61,8 @@ struct perf_inject {
+>         struct itrace_synth_opts itrace_synth_opts;
+>         char                    event_copy[PERF_SAMPLE_MAX_SIZE];
+>         struct perf_file_section secs[HEADER_FEAT_BITS];
+> +       const char              *known_build_ids_source;
+
+Nit: It doesn't need to be here.  You can use a local variable in
+cmd_inject for parsing.
+
+
+> +       struct strlist          *known_build_ids;
+>  };
+>
+>  struct event_entry {
+> @@ -570,9 +574,45 @@ static int dso__read_build_id(struct dso *dso)
+>         return dso->has_build_id ? 0 : -1;
+>  }
+>
+> +static bool perf_inject__lookup_known_build_id(struct perf_inject *inject,
+> +                                              struct dso *dso)
+> +{
+> +       struct str_node *pos;
+> +       int bid_len;
+> +
+> +       strlist__for_each_entry(pos, inject->known_build_ids) {
+> +               const char *build_id, *dso_name;
+> +
+> +               build_id = skip_spaces(pos->s);
+> +               dso_name = strchr(build_id, ' ');
+> +               if (dso_name == NULL)
+> +                       continue;
+> +               bid_len = dso_name - pos->s;
+> +               dso_name = skip_spaces(dso_name);
+> +               if (strcmp(dso->long_name, dso_name))
+> +                       continue;
+> +               if (bid_len % 2 != 0 || bid_len >= SBUILD_ID_SIZE)
+> +                       return false;
+> +               for (int ix = 0; 2 * ix + 1 < bid_len; ++ix) {
+> +                       if (!isxdigit(build_id[2 * ix]) ||
+> +                           !isxdigit(build_id[2 * ix + 1]))
+> +                               return false;
+> +
+> +                       dso->bid.data[ix] = (hex(build_id[2 * ix]) << 4 |
+> +                                            hex(build_id[2 * ix + 1]));
+> +               }
+> +               dso->bid.size = bid_len / 2;
+> +               dso->has_build_id = 1;
+> +               return true;
+> +       }
+> +       return false;
+> +}
+> +
+>  static int dso__inject_build_id(struct dso *dso, struct perf_tool *tool,
+>                                 struct machine *machine, u8 cpumode, u32 flags)
+>  {
+> +       struct perf_inject *inject = container_of(tool, struct perf_inject,
+> +                                                 tool);
+>         int err;
+>
+>         if (is_anon_memory(dso->long_name) || flags & MAP_HUGETLB)
+> @@ -580,6 +620,10 @@ static int dso__inject_build_id(struct dso *dso, struct perf_tool *tool,
+>         if (is_no_dso_memory(dso->long_name))
+>                 return 0;
+>
+> +       if (inject->known_build_ids != NULL &&
+> +           perf_inject__lookup_known_build_id(inject, dso))
+> +               return 1;
+> +
+>         if (dso__read_build_id(dso) < 0) {
+>                 pr_debug("no build_id found for %s\n", dso->long_name);
+>                 return -1;
+> @@ -1082,6 +1126,9 @@ int cmd_inject(int argc, const char **argv)
+>                             "Inject build-ids into the output stream"),
+>                 OPT_BOOLEAN(0, "buildid-all", &inject.build_id_all,
+>                             "Inject build-ids of all DSOs into the output stream"),
+> +               OPT_STRING(0, "known-build-ids", &inject.known_build_ids_source,
+> +                          "buildid path [buildid path...]",
+> +                          "build-ids to use for specific files"),
+>                 OPT_STRING('i', "input", &inject.input_name, "file",
+>                            "input file name"),
+>                 OPT_STRING('o', "output", &inject.output.path, "file",
+> @@ -1215,6 +1262,18 @@ int cmd_inject(int argc, const char **argv)
+>                  */
+>                 inject.tool.ordered_events = true;
+>                 inject.tool.ordering_requires_timestamps = true;
+> +               if (inject.known_build_ids_source != NULL) {
+> +                       struct strlist *known_build_ids;
+
+Nit: I think you can use inject.known_build_ids directly.
+
+Thanks,
+Namhyung
+
+
+> +
+> +                       known_build_ids = strlist__new(
+> +                           inject.known_build_ids_source, NULL);
+> +
+> +                       if (known_build_ids == NULL) {
+> +                               pr_err("Couldn't parse known build ids.\n");
+> +                               goto out_delete;
+> +                       }
+> +                       inject.known_build_ids = known_build_ids;
+> +               }
+>         }
+>
+>         if (inject.sched_stat) {
+> @@ -1241,6 +1300,7 @@ int cmd_inject(int argc, const char **argv)
+>         ret = __cmd_inject(&inject);
+>
+>  out_delete:
+> +       strlist__delete(inject.known_build_ids);
+>         zstd_fini(&(inject.session->zstd_data));
+>         perf_session__delete(inject.session);
+>  out_close_output:
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
