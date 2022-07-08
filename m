@@ -2,93 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67514C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24723C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238579AbiGHP3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
+        id S238615AbiGHPac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238476AbiGHP3V (ORCPT
+        with ESMTP id S238363AbiGHPa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:29:21 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3DA201AC
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:29:20 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id i14so18645764yba.1
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 08:29:20 -0700 (PDT)
+        Fri, 8 Jul 2022 11:30:29 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EC518379
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:30:28 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id o15so13849289pjh.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 08:30:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YMEGxIrE4woAf5cnzkZ+3hQp7ZS3VGf+M1Bxpp05xRA=;
-        b=ecaQUHS0lHe+xS7QeRj1P7pinsI/NrxvyEsdPWpDaG8YB0F0Gz5iEiFh9Ln9piexBw
-         zQwkOUXEIc0AVVNGhpCiTO4NKOH6r0qPLtCr0wX5GBIgI6AjppwEqmpJ6EA45WJ7GniL
-         H0cMz3WrgzTFVKC1UyQdBTLpO3kJ17s0sw0uPGMmQSrdlmq80M+yFSD1NuE9jEaBnymI
-         Ff+/kJsyLWJ3zVjyZgsEau9JwoRRBMKgEwL7wpIWCP2wI9w0zmjWCToJ4h+VEKDTKIDl
-         quGIcI3DxzcnjRkhNk83S6Gb79aPn+5X6FJWpwiFoxfQM4WzORdTLgDcc02w7Ir8g2Ww
-         Te2Q==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=d9SZaW9TdUlnYANMiQGXK69jbz9VKFutNOocxVIUW6I=;
+        b=Am7vQcOVtmuDVVhXIgmLFXcZrfujW6B/qJNSCRBe1GVQI/DYZi9aq92jCUxmam9Azw
+         jpqSseVoL9FJUEW39g8q1aEDhedvPcAElNSnxUGXS6axHO8LZ4US+Mo0uqGYo6c6i20f
+         sOd3QnRoMgqnpzQioL/JC2DfK1QclL77mEElABe0NJIQVaur+nzQlz4V4Hb7+Z1qNJYE
+         blWSwUJETA8s6aB0IrCRaq629bjh9GovpVViIRDsoTAhGYeBiMuSxZhyyArguDJa+6yz
+         pMjy5nJO4X8+GwLPrAA/tAatq1S5YMAqDN1YxN26KeAOTjpaJ3J/2bGYC+yjW6nnpvUD
+         D7nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YMEGxIrE4woAf5cnzkZ+3hQp7ZS3VGf+M1Bxpp05xRA=;
-        b=pprOfhhHHMIeOz7PhKCyMUXKYEVoZU8UD2461D/vLWmsf6if5BjOt+iLRbb9CWQZcp
-         tefKit0FJ+PGGxeoLV1Ef6jQkL2mP1FomuSfDmkwJR5IPCO2wNdKn1URo7xKwJW12HTF
-         8WoOA0XzxUHM9K8Ms9P0hupITfl7L6qwHp8ZcJnnQ5BSxunNAJOSqYAYGHF+C0h9hKmw
-         f37AydzHSfggUAHGSkrWsmqNVa0YRz8cKf6iwvLi6pVHTn4wzIyHrNhF2yZsdUeURow3
-         A3QJYOM+a8DVuUJHTg/UCQcnouBtZyfSqpYGxoDr/yik5Db8hycOjMQBOMFkp02FZQD9
-         TceQ==
-X-Gm-Message-State: AJIora+qcmn7/RZLuEs/auG81tE4ioHS+6SC1zG1ZPaWsgsK1E8LpKqP
-        mFFdh25+cePnmzG5l0eDE94ruEVHv8+/IcyiIbk=
-X-Google-Smtp-Source: AGRyM1swmlKZ4XV6RN24eaRkZwJll3K67xeqgJ9qYHEzq8RVNfkeSaXb0i1fFJ5yeI+4TVhowP1eXn8EehYYfXKEa3Q=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr4250392ybg.460.1657294159638; Fri, 08
- Jul 2022 08:29:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=d9SZaW9TdUlnYANMiQGXK69jbz9VKFutNOocxVIUW6I=;
+        b=E8DQbkbb04VUQx3zHeMArobWhWNh+1WAwO7m2P5fbxwfc6be8EAWkeRmo0lxJnmqsi
+         ROYw4WWYj5yoeKxlkd2Koz3omjwC+hH06r4K2LsmQWHRIvB2fxOFXvPZmSXi2kZ2yLBF
+         VqaVfwVgZwhCeOW+KoL08mWBmcnItcYXSYydoABv1R8S4Sd6Ja5hlYZUsqg4sQJIuBXy
+         ahZXqrcAPhSUQ9hT3DOKTwLQ3oUVnB6sTVwwNlIimPZAHadwmmWu8O7Xt4c77dkGE/pc
+         fg7OjK6qdDMx9QvEsaGQ3mK/ALSDeiMX82awhmg5ukbGjYJlIqsgf2vYNSegxGtnlvqJ
+         zhaw==
+X-Gm-Message-State: AJIora9TbE+3jUbaWzW6puxqZYz3/5eadMDkYSXhHimp/GV6uCMHS8Ez
+        BUsUgBi2gP2ckLS4xuO/j+7LMQ==
+X-Google-Smtp-Source: AGRyM1v8/BKa+ZbmpdSYTx8XaUJmmyfhYp2ssnW5v8hXn0N968yU1tQvarMVdYM/n4m72pPnT0CDZg==
+X-Received: by 2002:a17:903:2302:b0:16b:d9a3:29ab with SMTP id d2-20020a170903230200b0016bd9a329abmr4207456plh.138.1657294228054;
+        Fri, 08 Jul 2022 08:30:28 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id r7-20020a170902ea4700b0016b8bec1ed9sm22992981plg.93.2022.07.08.08.30.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 08:30:26 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 15:30:23 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Yuan Yao <yuan.yao@linux.intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: Re: [PATCH v7 036/102] KVM: x86/mmu: Allow non-zero value for
+ non-present SPTE
+Message-ID: <YshNjy5RsxYuFxOo@google.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <f74b05eca8815744ce1ad672c66033101be7369c.1656366338.git.isaku.yamahata@intel.com>
+ <20220708051847.prn254ukwvgkdl3c@yy-desk-7060>
 MIME-Version: 1.0
-References: <20220707091301.1282291-1-cezary.rojewski@intel.com>
- <CAHp75VceKBoxXVPP4dRYb8LQqHMMDHFp6-E2iuZ-h2RTK8PWQQ@mail.gmail.com>
- <e0c7d254-ace3-625c-cc83-52ca0b45e9fc@intel.com> <CAHp75VckU2ZraLJ-frjWXjUu9pFW+-XmWgTbYqUXOUNAD-1HGA@mail.gmail.com>
- <6c8e4104-2239-a188-649d-585f059cabdd@intel.com> <YsgjdKEtE7pMDTnZ@smile.fi.intel.com>
- <a73b3ec0-5abb-ddfd-414b-b9807f05413e@linux.intel.com> <CAHp75Vd4D0KF7ik+aMOwv-+bofWja_tDe4YUmihQBF+RiHZTmA@mail.gmail.com>
-In-Reply-To: <CAHp75Vd4D0KF7ik+aMOwv-+bofWja_tDe4YUmihQBF+RiHZTmA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 17:28:43 +0200
-Message-ID: <CAHp75VcUmy3xa3kKQSsiG84f3VWd83xt9ZTGnAdA3Ub1PJ7raw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
-To:     =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        amadeuszx.slawinski@linux.intel.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220708051847.prn254ukwvgkdl3c@yy-desk-7060>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 5:25 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Fri, Jul 8, 2022 at 2:34 PM P=C3=A9ter Ujfalusi
-> <peter.ujfalusi@linux.intel.com> wrote:
+Please trim replies.
+
+On Fri, Jul 08, 2022, Yuan Yao wrote:
+> On Mon, Jun 27, 2022 at 02:53:28PM -0700, isaku.yamahata@intel.com wrote:
+> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> > index 51306b80f47c..f239b6cb5d53 100644
+> > --- a/arch/x86/kvm/mmu/mmu.c
+> > +++ b/arch/x86/kvm/mmu/mmu.c
+> > @@ -668,6 +668,44 @@ static void walk_shadow_page_lockless_end(struct kvm_vcpu *vcpu)
+> >  	}
+> >  }
+> >
+> > +static inline void kvm_init_shadow_page(void *page)
+> > +{
+> > +#ifdef CONFIG_X86_64
+> > +	int ign;
+> > +
+> > +	WARN_ON_ONCE(shadow_nonpresent_value != SHADOW_NONPRESENT_VALUE);
+> > +	asm volatile (
+> > +		"rep stosq\n\t"
+
+I have a slight preference for:
+
+	asm volatile ("rep stosq\n\t"
+		      <align here>
+	);
+
+so that searching for "asm" or "asm volatile" shows the "rep stosq" in the
+result without needed to capture the next line.
+
+> > +		: "=c"(ign), "=D"(page)
+> > +		: "a"(SHADOW_NONPRESENT_VALUE), "c"(4096/8), "D"(page)
+> > +		: "memory"
+> > +	);
+> > +#else
+> > +	BUG();
+> > +#endif
+
+Rather than put the #ifdef here, split mmu_topup_shadow_page_cache() on 64-bit
+versus 32-bit.  Then this BUG() goes away and we don't get slapped on the wrist
+by Linus :-)
+
+> > +}
+> > +
+> > +static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
+> > +{
+> > +	struct kvm_mmu_memory_cache *mc = &vcpu->arch.mmu_shadow_page_cache;
+> > +	int start, end, i, r;
+> > +	bool is_tdp_mmu = is_tdp_mmu_enabled(vcpu->kvm);
+> > +
+> > +	if (is_tdp_mmu && shadow_nonpresent_value)
+> > +		start = kvm_mmu_memory_cache_nr_free_objects(mc);
+> > +
+> > +	r = kvm_mmu_topup_memory_cache(mc, PT64_ROOT_MAX_LEVEL);
+> > +	if (r)
+> > +		return r;
+
+Bailing immediately is wrong.  If kvm_mmu_topup_memory_cache() fails after allocating
+at least one page, then KVM needs to initialize those pages, otherwise it will leave
+uninitialized pages in the cache.  If userspace frees up memory in response to the
+-ENOMEM and resumes the vCPU, KVM will consume uninitialized data.
+
+> > +
+> > +	if (is_tdp_mmu && shadow_nonpresent_value) {
+
+So I'm pretty sure I effectively suggested keeping shadow_nonpresent_value, but
+seeing it in code, I really don't like it.  It's an unnecessary check on every
+SPT allocation, and it's misleading because it suggests shadow_nonpresent_value
+might be zero when the TDP MMU is enabled.
+
+My vote is to drop shadow_nonpresent_value and then rename kvm_init_shadow_page()
+to make it clear that it's specific to the TDP MMU.
+
+So this?  Completely untested.
+
+#ifdef CONFIG_X86_64
+static void kvm_init_tdp_mmu_shadow_page(void *page)
+{
+	int ign;
+
+	asm volatile ("rep stosq\n\t"
+		      : "=c"(ign), "=D"(page)
+		      : "a"(SHADOW_NONPRESENT_VALUE), "c"(4096/8), "D"(page)
+		      : "memory"
+	);
+}
+
+static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
+{
+	struct kvm_mmu_memory_cache *mc = &vcpu->arch.mmu_shadow_page_cache;
+	bool is_tdp_mmu = is_tdp_mmu_enabled(vcpu->kvm);
+	int start, end, i, r;
+
+	if (is_tdp_mmu)
+		start = kvm_mmu_memory_cache_nr_free_objects(mc);
+
+	r = kvm_mmu_topup_memory_cache(mc, PT64_ROOT_MAX_LEVEL);
+
+	/*
+	 * Note, topup may have allocated objects even if it failed to allocate
+	 * the minimum number of objects required to make forward progress _at
+	 * this time_.  Initialize newly allocated objects even on failure, as
+	 * userspace can free memory and rerun the vCPU in response to -ENOMEM.
+	 */
+	if (is_tdp_mmu) {
+		end = kvm_mmu_memory_cache_nr_free_objects(mc);
+		for (i = start; i < end; i++)
+			kvm_init_tdp_mmu_shadow_page(mc->objects[i]);
+	}
+	return r;
+}
+#else
+static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
+{
+	return kvm_mmu_topup_memory_cache(vcpu->arch.mmu_shadow_page_cache,
+					  PT64_ROOT_MAX_LEVEL);
+}
+#endif /* CONFIG_X86_64 */
+
+> > +		end = kvm_mmu_memory_cache_nr_free_objects(mc);
+> > +		for (i = start; i < end; i++)
+> > +			kvm_init_shadow_page(mc->objects[i]);
+> > +	}
+> > +	return 0;
+> > +}
+> > +
 
 ...
 
-> (it may be casted to struct tokens { int n; u32 v[]; })
+> > @@ -5654,7 +5698,8 @@ int kvm_mmu_create(struct kvm_vcpu *vcpu)
+> >  	vcpu->arch.mmu_page_header_cache.kmem_cache = mmu_page_header_cache;
+> >  	vcpu->arch.mmu_page_header_cache.gfp_zero = __GFP_ZERO;
+> >
+> > -	vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
+> > +	if (!(is_tdp_mmu_enabled(vcpu->kvm) && shadow_nonpresent_value))
+> > +		vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
+> 
+> I'm not sure why skip this for TDX, arch.mmu_shadow_page_cache is
+> still used for allocating sp->spt which used to track the S-EPT in kvm
+> for tdx guest.  Anything I missed for this ?
 
-On second thought it is better not to do this (it will work on x86,
-but in general it may be surprising on BE-64).
+Shared EPTEs need to be initialized with SUPPRESS_VE=1, otherwise not-present
+EPT violations would be reflected into the guest by hardware as #VE exceptions.
+This is handled by initializing page allocations via kvm_init_shadow_page() during
+cache topup if shadow_nonpresent_value is non-zero.  In that case, telling the
+page allocation to zero-initialize the page would be wasted effort.
 
---=20
-With Best Regards,
-Andy Shevchenko
+The initialization is harmless for S-EPT entries because KVM's copy of the S-EPT
+isn't consumed by hardware, and because under the hood S-EPT entries should never
+#VE (I forget if this is enforced by hardware or if the TDX module sets SUPPRESS_VE).
