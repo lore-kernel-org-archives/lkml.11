@@ -2,107 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F75BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A82F0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237896AbiGHJWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 05:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        id S237709AbiGHJWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 05:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237312AbiGHJWT (ORCPT
+        with ESMTP id S237662AbiGHJWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 05:22:19 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17F912CC8E
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 02:22:18 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2469D106F;
-        Fri,  8 Jul 2022 02:22:18 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A44A93F66F;
-        Fri,  8 Jul 2022 02:22:11 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 10:21:00 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Conor.Dooley@microchip.com
-Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com, palmer@rivosinc.com,
-        aou@eecs.berkeley.edu, catalin.marinas@arm.com, will@kernel.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Daire.McNamara@microchip.com, niklas.cassel@wdc.com,
-        damien.lemoal@opensource.wdc.com, geert@linux-m68k.org,
-        zong.li@sifive.com, kernel@esmil.dk, hahnjo@hahnjo.de,
-        guoren@kernel.org, anup@brainfault.org, atishp@atishpatra.org,
-        changbin.du@intel.com, heiko@sntech.de, philipp.tomsich@vrull.eu,
-        robh@kernel.org, maz@kernel.org, viresh.kumar@linaro.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Brice.Goglin@inria.fr
-Subject: Re: [RFC 2/4] arch-topology: add a default implementation of
- store_cpu_topology()
-Message-ID: <20220708092100.c6mgmnt7e2k7u634@bogus>
-References: <20220707220436.4105443-1-mail@conchuod.ie>
- <20220707220436.4105443-3-mail@conchuod.ie>
- <20220708082443.azoqvuj7afrg7ox7@bogus>
- <473e6b17-465b-3d14-b04d-01b187390e66@microchip.com>
+        Fri, 8 Jul 2022 05:22:51 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C1830F58
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 02:22:49 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id f11so3329429plr.4
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 02:22:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fortu-net.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y0gFTgEw8o/sZzcpqT/zqeJVyFwXwGnVGICet2zwIx0=;
+        b=sBE6RD34qzqgs778DVxBQqGSxgy5SBH9j19gPIGTpGn01WSwkFlOGZ+0RiCGEdX9mW
+         BCWm4cukAIrNz3heoRcLqTnzf6Fb79D91vPm7Lul7XyT1jL0ol+sPsszXJGakic9tb/8
+         gfR1UWNSuMBmeFIxDl4gwFfphGhhWoH3sPlGZpW4bMJlQCmRA5UcpHxESPODbmJXEAr4
+         kdFbbvX83cDRmE7PQ+GWVqwtNaCR1AulbaGNQ/KsDJNhiwS4zGei/rWMUrMhN939PioD
+         uBXBidrjE5H0VGsKmPBH6sczfM+gMgRxw7aC42HHLotuLdaGJ16/YLJvLW1aDXSceD/L
+         GKFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y0gFTgEw8o/sZzcpqT/zqeJVyFwXwGnVGICet2zwIx0=;
+        b=c7EW0jit0X8bAeZeDbAprLH24P7AlqAxCrMbHRwi5JZj3rKvrG0nQS3IU3qowGqYJw
+         UarHbq3gwbk6iVOTsXX6qxDm4IE9KRZc0aPW2hRnAzPJ8UkURUboRkLocMmIYth+HFGe
+         SOmskXcWv9RfMCSLGob/qXl/99zDhE/TBrlwq81Ayaq1rSpEFAnYn3RrRvnb048px3t3
+         RFFeERnvUrjXDkNcwa71XDVPSoJiZ8XZ5GsseDcrZsr1ao/E7ZO6tFQKyH3mSSWzmjII
+         25IOfIFsVBm9+e6b3ylGhaUWcCX8zpiCpSuMBMrT8b+xpAf4R7v8m9ihSOoBxPrAnrAL
+         PTvA==
+X-Gm-Message-State: AJIora90plTvQQYiSXWw2JuRJGbDcKTqMijLJXC6K1kkMBANdSwuyu+K
+        2IEXvD1osMcN0EC8SpAtSMGQZxciiVxEcnoU0m3P
+X-Google-Smtp-Source: AGRyM1uSZoyIcGr4GVhCV/Gjjw1nutNmCi1SbSgTEu383XlWcc1SQglU0jXyjf7VafdFTCkZc0/UUxzUY0BmyFrRH8k=
+X-Received: by 2002:a17:90b:1b07:b0:1ec:c617:a314 with SMTP id
+ nu7-20020a17090b1b0700b001ecc617a314mr2890719pjb.214.1657272169161; Fri, 08
+ Jul 2022 02:22:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <473e6b17-465b-3d14-b04d-01b187390e66@microchip.com>
+References: <20220328111828.1554086-1-sashal@kernel.org> <20220328111828.1554086-42-sashal@kernel.org>
+ <872f2a21-7bf7-0cc3-298f-f817429f6997@fortu.net> <MN0PR12MB6101729CF68952653E8F55EFE2839@MN0PR12MB6101.namprd12.prod.outlook.com>
+In-Reply-To: <MN0PR12MB6101729CF68952653E8F55EFE2839@MN0PR12MB6101.namprd12.prod.outlook.com>
+From:   Tom Crossland <tomc@fortu.net>
+Date:   Fri, 8 Jul 2022 11:22:38 +0200
+Message-ID: <CACdrSeLjKDDpBG3=FZowro_vPGNmwbwvF6iVKw7QkVhgU6LgxQ@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.17 42/43] Revert "ACPI: Pass the same
+ capabilities to the _OSC regardless of the query flag"
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        "Huang, Ray" <Ray.Huang@amd.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 08:35:57AM +0000, Conor.Dooley@microchip.com wrote:
-> On 08/07/2022 09:24, Sudeep Holla wrote:
-> > On Thu, Jul 07, 2022 at 11:04:35PM +0100, Conor Dooley wrote:
-> >> From: Conor Dooley <conor.dooley@microchip.com>
-> >>
-> >> RISC-V & arm64 both use an almost identical method of filling in
-> >> default vales for arch topology. Create a weakly defined default
-> >> implementation with the intent of migrating both archs to use it.
-> >>
-> >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> >> ---
-> >>   drivers/base/arch_topology.c  | 19 +++++++++++++++++++
-> >>   include/linux/arch_topology.h |  1 +
-> >>   2 files changed, 20 insertions(+)
-> >>
-> >> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> >> index 441e14ac33a4..07e84c6ac5c2 100644
-> >> --- a/drivers/base/arch_topology.c
-> >> +++ b/drivers/base/arch_topology.c
-> >> @@ -765,6 +765,25 @@ void update_siblings_masks(unsigned int cpuid)
-> >>   	}
-> >>   }
-> >>   
-> >> +void __weak store_cpu_topology(unsigned int cpuid)
-> 
-> Does using __weak here make sense to you?
+I can confirm that the ACPI BIOS Errors no longer appear in the kernel
+log using mainline 5.19.0-rc5 with the patch applied.
+
+Many thanks
+
+On Thu, Jul 7, 2022 at 11:36 PM Limonciello, Mario
+<Mario.Limonciello@amd.com> wrote:
 >
-
-I don't want any weak definition and arch to override as we know only
-arm64 and RISC-V are the only users and they are aligned to have same
-implementation. So weak definition doesn't make sense to me.
-
-> > 
-> > I prefer to have this as default implementation. So just get the risc-v
-> > one pushed to upstream first(for v5.20) and get all the backports if required.
-> > Next cycle(i.e. v5.21), you can move both RISC-V and arm64.
-> > 
-> 
-> Yeah, that was my intention. I meant to label patch 1/4 as "PATCH"
-> and (2,3,4)/4 as RFC but forgot. I talked with Palmer about doing
-> the risc-v impl. and then migrate both on IRC & he seemed happy with
-> it.
+> [Public]
 >
-
-Ah OK, good.
-
-> If you're okay with patch 1/4, I'll resubmit it as a standalone v2.
 >
-
-That would be great, thanks. You can most the code to move to generic from
-both arm64 and risc-v once we have this in v5.20-rc1
-
--- 
-Regards,
-Sudeep
+>
+> > -----Original Message-----
+> > From: Tom Crossland <tomc@fortu.net>
+> > Sent: Thursday, July 7, 2022 16:31
+> > To: Sasha Levin <sashal@kernel.org>; linux-kernel@vger.kernel.org;
+> > stable@vger.kernel.org
+> > Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>; Limonciello, Mario
+> > <Mario.Limonciello@amd.com>; Huang, Ray <Ray.Huang@amd.com>; Mika
+> > Westerberg <mika.westerberg@linux.intel.com>; rafael@kernel.org; linux-
+> > acpi@vger.kernel.org
+> > Subject: Re: [PATCH AUTOSEL 5.17 42/43] Revert "ACPI: Pass the same
+> > capabilities to the _OSC regardless of the query flag"
+> >
+> > Hi, I'm observing the issue described here which I think is due to a
+> > recent regression:
+> >
+> > https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.c
+> > om%2Fintel%2Flinux-intel-
+> > lts%2Fissues%2F22&amp;data=05%7C01%7CMario.Limonciello%40amd.com%7
+> > C77419b612f9540e333ff08da606002ee%7C3dd8961fe4884e608e11a82d994e18
+> > 3d%7C0%7C0%7C637928263354159054%7CUnknown%7CTWFpbGZsb3d8eyJWI
+> > joiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C300
+> > 0%7C%7C%7C&amp;sdata=X%2FEAU9GbRD%2FfYxCMUmnWI1cJ8dk8sICk0iYu
+> > %2BKGqtl4%3D&amp;reserved=0
+> >
+> > sudo dmesg -t -l err
+> >
+> > ACPI BIOS Error (bug): Could not resolve symbol [\_PR.PR00._CPC],
+> > AE_NOT_FOUND (20211217/psargs-330)
+> > ACPI Error: Aborting method \_PR.PR01._CPC due to previous error
+> > (AE_NOT_FOUND) (20211217/psparse-529)
+> > ACPI BIOS Error (bug): Could not resolve symbol [\_PR.PR00._CPC],
+> > AE_NOT_FOUND (20211217/psargs-330)
+> > ACPI Error: Aborting method \_PR.PR02._CPC due to previous error
+> > (AE_NOT_FOUND) (20211217/psparse-529)
+> > ACPI BIOS Error (bug): Could not resolve symbol [\_PR.PR00._CPC],
+> > AE_NOT_FOUND (20211217/psargs-330)
+> > ACPI Error: Aborting method \_PR.PR03._CPC due to previous error
+> > (AE_NOT_FOUND) (20211217/psparse-529)
+> >
+> > System:
+> >    Kernel: 5.18.9-arch1-1 arch: x86_64 bits: 64 compiler: gcc v: 12.1.0
+> >      parameters: initrd=\intel-ucode.img initrd=\initramfs-linux.img
+> >      root=xxx intel_iommu=on iommu=pt
+> >   Machine:
+> >    Type: Desktop Mobo: Intel model: NUC7i5BNB v: J31144-304 serial: <filter>
+> >      UEFI: Intel v: BNKBL357.86A.0088.2022.0125.1102 date: 01/25/2022
+> >
+> > I hope this is the correct forum to report the issue. Apologies if not.
+> >
+>
+> This is the fix for it:
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=7feec7430edddb87c24b0a86b08a03d0b496a755
+>
+>
+> > On 28/03/2022 13.18, Sasha Levin wrote:
+> > > From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+> > >
+> > > [ Upstream commit 2ca8e6285250c07a2e5a22ecbfd59b5a4ef73484 ]
+> > >
+> > > Revert commit 159d8c274fd9 ("ACPI: Pass the same capabilities to the
+> > > _OSC regardless of the query flag") which caused legitimate usage
+> > > scenarios (when the platform firmware does not want the OS to control
+> > > certain platform features controlled by the system bus scope _OSC) to
+> > > break and was misguided by some misleading language in the _OSC
+> > > definition in the ACPI specification (in particular, Section 6.2.11.1.3
+> > > "Sequence of _OSC Calls" that contradicts other perts of the _OSC
+> > > definition).
+> > >
+> > > Link:
+> > https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.ker
+> > nel.org%2Flinux-
+> > acpi%2FCAJZ5v0iStA0JmO0H3z%2BVgQsVuQONVjKPpw0F5HKfiq%3DGb6B5yw%
+> > 40mail.gmail.com&amp;data=05%7C01%7CMario.Limonciello%40amd.com%7C
+> > 77419b612f9540e333ff08da606002ee%7C3dd8961fe4884e608e11a82d994e183
+> > d%7C0%7C0%7C637928263354159054%7CUnknown%7CTWFpbGZsb3d8eyJWIj
+> > oiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C300
+> > 0%7C%7C%7C&amp;sdata=Te3BK%2B0q2QmrqqoG5mbV%2FNguoMgiwzILNHl
+> > %2BhUMLFlY%3D&amp;reserved=0
+> > > Reported-by: Mario Limonciello <Mario.Limonciello@amd.com>
+> > > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+> > > Acked-by: Huang Rui <ray.huang@amd.com>
+> > > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > > Signed-off-by: Sasha Levin <sashal@kernel.org>
+> > > ---
+> > >   drivers/acpi/bus.c | 27 +++++++++++++++++++--------
+> > >   1 file changed, 19 insertions(+), 8 deletions(-)
+> > >
+> > > diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+> > > index 07f604832fd6..079b952ab59f 100644
+> > > --- a/drivers/acpi/bus.c
+> > > +++ b/drivers/acpi/bus.c
+> > > @@ -332,21 +332,32 @@ static void
+> > acpi_bus_osc_negotiate_platform_control(void)
+> > >     if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+> > >             return;
+> > >
+> > > -   kfree(context.ret.pointer);
+> > > +   capbuf_ret = context.ret.pointer;
+> > > +   if (context.ret.length <= OSC_SUPPORT_DWORD) {
+> > > +           kfree(context.ret.pointer);
+> > > +           return;
+> > > +   }
+> > >
+> > > -   /* Now run _OSC again with query flag clear */
+> > > +   /*
+> > > +    * Now run _OSC again with query flag clear and with the caps
+> > > +    * supported by both the OS and the platform.
+> > > +    */
+> > >     capbuf[OSC_QUERY_DWORD] = 0;
+> > > +   capbuf[OSC_SUPPORT_DWORD] =
+> > capbuf_ret[OSC_SUPPORT_DWORD];
+> > > +   kfree(context.ret.pointer);
+> > >
+> > >     if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+> > >             return;
+> > >
+> > >     capbuf_ret = context.ret.pointer;
+> > > -   osc_sb_apei_support_acked =
+> > > -           capbuf_ret[OSC_SUPPORT_DWORD] &
+> > OSC_SB_APEI_SUPPORT;
+> > > -   osc_pc_lpi_support_confirmed =
+> > > -           capbuf_ret[OSC_SUPPORT_DWORD] &
+> > OSC_SB_PCLPI_SUPPORT;
+> > > -   osc_sb_native_usb4_support_confirmed =
+> > > -           capbuf_ret[OSC_SUPPORT_DWORD] &
+> > OSC_SB_NATIVE_USB4_SUPPORT;
+> > > +   if (context.ret.length > OSC_SUPPORT_DWORD) {
+> > > +           osc_sb_apei_support_acked =
+> > > +                   capbuf_ret[OSC_SUPPORT_DWORD] &
+> > OSC_SB_APEI_SUPPORT;
+> > > +           osc_pc_lpi_support_confirmed =
+> > > +                   capbuf_ret[OSC_SUPPORT_DWORD] &
+> > OSC_SB_PCLPI_SUPPORT;
+> > > +           osc_sb_native_usb4_support_confirmed =
+> > > +                   capbuf_ret[OSC_SUPPORT_DWORD] &
+> > OSC_SB_NATIVE_USB4_SUPPORT;
+> > > +   }
+> > >
+> > >     kfree(context.ret.pointer);
+> > >   }
