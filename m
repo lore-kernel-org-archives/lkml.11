@@ -2,114 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42173C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9081FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238921AbiGHP6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
+        id S238231AbiGHP6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238878AbiGHP6P (ORCPT
+        with ESMTP id S238151AbiGHP6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:58:15 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442A573922;
-        Fri,  8 Jul 2022 08:58:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=6RqQ8+XNVDVObMJIyPeKINSrkjPLTw+0lvhGuSc1mv4=; b=U/181vdzVYQuUne6r4DSfvY+yg
-        Qp6rXidC6C9LEBdozRcX7xo/qlo8qm4YTHwa+5tM++bKx1vSdPeNWBhbhmZNnefGmT6KhhVc09xee
-        +A7G9itA8blRQMvCB4Vo5CgudikDfZrNXVUeFZ0sMtJsGxpxdyh3ZGnNYMXL/jSwMyLo3MsT6T9T2
-        wIAPsGLZup7bDPOqfjynoKwYV7hiO43NC8p8DQVShXMX6WIl97tAk9dPcWhcN4yvfSUO/XGf3XtVr
-        7Ierci+IrPeQU2BuSRPE5zp1AlgTMI7aqsG4Kj5RnglyRUdpbd2TOZUkI2feTeyeA0CZEUZTIXdtb
-        mwZm7L2Q==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o9qMq-004UMR-T3; Fri, 08 Jul 2022 15:58:08 +0000
-Date:   Fri, 8 Jul 2022 08:58:08 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>
-Subject: Re: [PATCH v6 bpf-next 0/5] bpf_prog_pack followup
-Message-ID: <YshUEEQ0lk1ON7H6@bombadil.infradead.org>
-References: <20220707223546.4124919-1-song@kernel.org>
- <YsdlXjpRrlE9Z+Jq@bombadil.infradead.org>
- <F000FF60-CF95-4E6B-85BD-45FC668AAE0A@fb.com>
- <YseAEsjE49AZDp8c@bombadil.infradead.org>
- <C96F5607-6FFE-4B45-9A9D-B89E3F67A79A@fb.com>
+        Fri, 8 Jul 2022 11:58:40 -0400
+Received: from outbound-smtp26.blacknight.com (outbound-smtp26.blacknight.com [81.17.249.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C815A2F7
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:58:38 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp26.blacknight.com (Postfix) with ESMTPS id 30C05CABF0
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 16:58:37 +0100 (IST)
+Received: (qmail 2989 invoked from network); 8 Jul 2022 15:58:37 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 8 Jul 2022 15:58:37 -0000
+Date:   Fri, 8 Jul 2022 16:58:35 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Subject: Re: [PATCH] mm/page_alloc: replace local_lock with normal spinlock
+ -fix -fix
+Message-ID: <20220708155835.GK27531@techsingularity.net>
+References: <20220708144406.GJ27531@techsingularity.net>
+ <a78f95e9-298a-bc97-9776-14e0f02f62b9@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <C96F5607-6FFE-4B45-9A9D-B89E3F67A79A@fb.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <a78f95e9-298a-bc97-9776-14e0f02f62b9@suse.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 01:36:25AM +0000, Song Liu wrote:
+On Fri, Jul 08, 2022 at 04:54:47PM +0200, Vlastimil Babka wrote:
+> On 7/8/22 16:44, Mel Gorman wrote:
+> > pcpu_spin_unlock and pcpu_spin_unlock_irqrestore both unlock
+> > pcp->lock and then enable preemption. This lacks symmetry against
+> > both the pcpu_spin helpers and differs from how local_unlock_* is
+> > implemented. While this is harmless, it's unnecessary and it's generally
+> > better to unwind locks and preemption state in the reverse order as
+> > they were acquired.
 > 
+> Hm I'm confused, it seems it's done in reverse order (which I agree with)
+> before this -fix-fix, but not after it?
 > 
-> > On Jul 7, 2022, at 5:53 PM, Luis Chamberlain <mcgrof@kernel.org> wrote:
-> > 
-> > On Thu, Jul 07, 2022 at 11:52:58PM +0000, Song Liu wrote:
-> >>> On Jul 7, 2022, at 3:59 PM, Luis Chamberlain <mcgrof@kernel.org> wrote:
-> >>> 
-> >>> On Thu, Jul 07, 2022 at 03:35:41PM -0700, Song Liu wrote:
-> >>>> This set is the second half of v4 [1].
-> >>>> 
-> >>>> Changes v5 => v6:
-> >>>> 1. Rebase and extend CC list.
-> >>> 
-> >>> Why post a new iteration so soon without completing the discussion we
-> >>> had? It seems like we were at least going somewhere. If it's just
-> >>> to include mm as I requested, sure, that's fine, but this does not
-> >>> provide context as to what we last were talking about.
-> >> 
-> >> Sorry for sending v6 too soon. The primary reason was to extend the CC
-> >> list and add it back to patchwork (v5 somehow got archived). 
-> >> 
-> >> Also, I think vmalloc_exec_ work would be a separate project, while this 
-> >> set is the followup work of bpf_prog_pack. Does this make sense? 
-> >> 
-> >> Btw, vmalloc_exec_ work could be a good topic for LPC. It will be much
-> >> more efficient to discuss this in person. 
-> > 
-> > What we need is input from mm / arch folks. What is not done here is
-> > what that stuff we're talking about is and so mm folks can't guess. My
-> > preference is to address that.
-> > 
-> > I don't think in person discussion is needed if the only folks
-> > discussing this topic so far is just you and me.
+> before, pcpu_spin_lock() (and variants) do pcpu_task_pin() and then
+> spin_lock() (or variant), and pcpu_spin_unlock() does spin_unlock() and then
+> pcpu_task_unpin(). That seems symmetrical, i.e. reverse order to me? And
+> seems to match what local_lock family does too.
 > 
-> How about we start a thread with mm / arch folks for the vmalloc_exec_*
-> topic? I will summarize previous discussions and include pointers to 
-> these discussions. If necessary, we can continue the discussion at LPC.
 
-This sounds like a nice thread to use as this is why we are talking
-about that topic.
+You're not confused, I am. The patch and the changelog are outright brain
+damage from excessive context switching and a sign that it's time for the
+weekend to start.
 
-> OTOH, I guess the outcome of that discussion should not change this set? 
+Sorry for this absolute misfortune.
 
-If the above is done right then actually I think it would show similar
-considerations for a respective free for module_alloc_huge().
-
-> If we have concern about module_alloc_huge(), maybe we can have bpf code 
-> call vmalloc directly (until we have vmalloc_exec_)? 
-
-You'd need to then still open code in a similar way the same things
-which we are trying to reach consensus on.
-
-> What do you think about this plan?
-
-I think we should strive to not be lazy and sloppy, and prevent growth
-of sloppy code. So long as we do that I think this is all reasoanble.
-
-  Luis
+-- 
+Mel Gorman
+SUSE Labs
