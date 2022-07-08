@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43496C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 04:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78015CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 04:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbiGHEcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 00:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
+        id S237289AbiGHEdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 00:33:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237177AbiGHEcD (ORCPT
+        with ESMTP id S237051AbiGHEcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 00:32:03 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71B84D4DC;
-        Thu,  7 Jul 2022 21:31:59 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2681sdm4030394;
-        Thu, 7 Jul 2022 21:31:48 -0700
+        Fri, 8 Jul 2022 00:32:16 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5836E61D68;
+        Thu,  7 Jul 2022 21:32:12 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26846Yhg007300;
+        Thu, 7 Jul 2022 21:31:54 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=oYmSqFk0DfpBEnnp4S7JRwqW4pYW0nT8BtyRInaYEl4=;
- b=k16yW+3n142aD5PHDSa2CPQp4lRYBSev2TrWhUrALRV/FimEPGcmW1GlnIgJU+tPWynM
- 1u+iJzbTx9KtmcMzUkYFF2713auh7fe0daA7/CPl7y00BEJWi8SpnaGvqCFf6IWgQ0Bt
- 4E4xoe6j155z+eNFcqJmZYMukQ6CSbSuJY6BU18ohZA14B3bxelpFyscG2I6vBEelDEy
- SbgRh2mlZ99PqCrnTrbzWDfpa3hfKTFyRsgFRmNXAX6c6rfqdi422el4zFr0EtQJpjW2
- voEzTW9BlJJGEC6taPr4yUlODkBYYOa21AWCWWv7blMJizGL5G7k64to1A8CRcX45UFM bQ== 
+ bh=TLWPACD6JnypQ9HKMX4FNwaUC/y0RfptYGBOQ58GtOM=;
+ b=LwWy3lY93Ga//08RoL02y0/zi5TeJK7VDSMXymO3C8eY/H1HuXI6cjDGzZMRCiJDdVnx
+ KZuOkw9HC4bex/dbnrBm1rl3OoFaLgHG3R1RvU6HlsugC6xTLQyhAQLEBhNoStC9O9Ou
+ 6Q+d7zT8cGQCJ5CfSGXOFRzNBKpFV2B7njpmoca7Wl+XK9szusCmah9L+hizMumo8Dza
+ OnRgOZd3/8rHxsAXg1IQLJu9UhYkYgAbAC5nvZB/XAYbWB+4ubhTd7Gn3Ob4ZJ+UjaCR
+ tOGDmimtLI65sGwcklpS4GzkrFTLLHE8m59KLmHDukxuxDbxFH8Klbjq0QAWj+gqvVxZ kQ== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h6bay8dtb-1
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h635w2c4c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 21:31:48 -0700
+        Thu, 07 Jul 2022 21:31:54 -0700
 Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 7 Jul
- 2022 21:31:46 -0700
+ 2022 21:31:52 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 7 Jul 2022 21:31:46 -0700
+ Transport; Thu, 7 Jul 2022 21:31:52 -0700
 Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
-        by maili.marvell.com (Postfix) with ESMTP id 303E03F7076;
-        Thu,  7 Jul 2022 21:31:43 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id F0E3C3F7076;
+        Thu,  7 Jul 2022 21:31:49 -0700 (PDT)
 From:   Ratheesh Kannoth <rkannoth@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [net-next PATCH v4 09/12] octeontx2-af: Wrapper functions for MAC addr add/del/update/reset
-Date:   Fri, 8 Jul 2022 10:00:57 +0530
-Message-ID: <20220708043100.2971020-10-rkannoth@marvell.com>
+Subject: [net-next PATCH v4 11/12] octeontx2-pf: Add support for exact match table.
+Date:   Fri, 8 Jul 2022 10:00:59 +0530
+Message-ID: <20220708043100.2971020-12-rkannoth@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220708043100.2971020-1-rkannoth@marvell.com>
 References: <20220708043100.2971020-1-rkannoth@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: tfqK1HZmYUqtR-AKFy1Qhb-5i_TtS0hr
-X-Proofpoint-ORIG-GUID: tfqK1HZmYUqtR-AKFy1Qhb-5i_TtS0hr
+X-Proofpoint-GUID: PxxmuYnrs3yiLQJAXlzNN9uKQcw38Uf-
+X-Proofpoint-ORIG-GUID: PxxmuYnrs3yiLQJAXlzNN9uKQcw38Uf-
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-08_02,2022-06-28_01,2022-06-22_01
@@ -63,466 +63,336 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These functions are wrappers for mac add/addr/del/update in
-exact match table. These will be invoked from mbox handler routines
-if exact matct table is supported and enabled.
+NPC exact match table can support more entries than RPM
+dmac filters. This requires field size of DMAC filter count
+and index to be increased.
 
 Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
 ---
- .../marvell/octeontx2/af/rvu_npc_hash.c       | 359 +++++++++++++++++-
- .../marvell/octeontx2/af/rvu_npc_hash.h       |  23 +-
- 2 files changed, 370 insertions(+), 12 deletions(-)
+ .../marvell/octeontx2/nic/otx2_common.h       | 10 ++---
+ .../marvell/octeontx2/nic/otx2_dmac_flt.c     | 44 ++++++++++++++-----
+ .../marvell/octeontx2/nic/otx2_flows.c        | 40 ++++++++++++-----
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  2 +-
+ 4 files changed, 67 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-index 491af47ac129..ed8b9afbf731 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-@@ -1168,14 +1168,17 @@ static u16 __rvu_npc_exact_cmd_rules_cnt_update(struct rvu *rvu, int drop_mcam_i
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index ce2766317c0b..e795f9ee76dd 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -314,8 +314,8 @@ struct otx2_flow_config {
+ #define OTX2_VF_VLAN_TX_INDEX	1
+ 	u16			max_flows;
+ 	u8			dmacflt_max_flows;
+-	u8			*bmap_to_dmacindex;
+-	unsigned long		dmacflt_bmap;
++	u32			*bmap_to_dmacindex;
++	unsigned long		*dmacflt_bmap;
+ 	struct list_head	flow_list;
+ };
  
- 	*enable_or_disable_cam = false;
+@@ -895,9 +895,9 @@ int otx2_setup_tc(struct net_device *netdev, enum tc_setup_type type,
+ int otx2_tc_alloc_ent_bitmap(struct otx2_nic *nic);
+ /* CGX/RPM DMAC filters support */
+ int otx2_dmacflt_get_max_cnt(struct otx2_nic *pf);
+-int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
+-int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
+-int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos);
++int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u32 bit_pos);
++int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac, u32 bit_pos);
++int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u32 bit_pos);
+ void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf);
+ void otx2_dmacflt_update_pfmac_flow(struct otx2_nic *pfvf);
  
-+	if (promisc)
-+		goto done;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
+index 142d87722bed..846a0294a215 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
+@@ -8,7 +8,7 @@
+ #include "otx2_common.h"
+ 
+ static int otx2_dmacflt_do_add(struct otx2_nic *pf, const u8 *mac,
+-			       u8 *dmac_index)
++			       u32 *dmac_index)
+ {
+ 	struct cgx_mac_addr_add_req *req;
+ 	struct cgx_mac_addr_add_rsp *rsp;
+@@ -35,9 +35,10 @@ static int otx2_dmacflt_do_add(struct otx2_nic *pf, const u8 *mac,
+ 	return err;
+ }
+ 
+-static int otx2_dmacflt_add_pfmac(struct otx2_nic *pf)
++static int otx2_dmacflt_add_pfmac(struct otx2_nic *pf, u32 *dmac_index)
+ {
+ 	struct cgx_mac_addr_set_or_get *req;
++	struct cgx_mac_addr_set_or_get *rsp;
+ 	int err;
+ 
+ 	mutex_lock(&pf->mbox.lock);
+@@ -48,16 +49,24 @@ static int otx2_dmacflt_add_pfmac(struct otx2_nic *pf)
+ 		return -ENOMEM;
+ 	}
+ 
++	req->index = *dmac_index;
 +
- 	/* If all rules are deleted and not already in promisc mode; disable cam */
--	if (!*cnt && !promisc) {
-+	if (!*cnt && val < 0) {
- 		*enable_or_disable_cam = true;
- 		goto done;
- 	}
+ 	ether_addr_copy(req->mac_addr, pf->netdev->dev_addr);
+ 	err = otx2_sync_mbox_msg(&pf->mbox);
  
- 	/* If rule got added and not already in promisc mode; enable cam */
--	if (!old_cnt && !promisc) {
-+	if (!old_cnt && val > 0) {
- 		*enable_or_disable_cam = true;
- 		goto done;
++	if (!err) {
++		rsp = (struct cgx_mac_addr_set_or_get *)
++			 otx2_mbox_get_rsp(&pf->mbox.mbox, 0, &req->hdr);
++		*dmac_index = rsp->index;
++	}
++
+ 	mutex_unlock(&pf->mbox.lock);
+ 	return err;
+ }
+ 
+-int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos)
++int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u32 bit_pos)
+ {
+-	u8 *dmacindex;
++	u32 *dmacindex;
+ 
+ 	/* Store dmacindex returned by CGX/RPM driver which will
+ 	 * be used for macaddr update/remove
+@@ -65,13 +74,13 @@ int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos)
+ 	dmacindex = &pf->flow_cfg->bmap_to_dmacindex[bit_pos];
+ 
+ 	if (ether_addr_equal(mac, pf->netdev->dev_addr))
+-		return otx2_dmacflt_add_pfmac(pf);
++		return otx2_dmacflt_add_pfmac(pf, dmacindex);
+ 	else
+ 		return otx2_dmacflt_do_add(pf, mac, dmacindex);
+ }
+ 
+ static int otx2_dmacflt_do_remove(struct otx2_nic *pfvf, const u8 *mac,
+-				  u8 dmac_index)
++				  u32 dmac_index)
+ {
+ 	struct cgx_mac_addr_del_req *req;
+ 	int err;
+@@ -91,7 +100,7 @@ static int otx2_dmacflt_do_remove(struct otx2_nic *pfvf, const u8 *mac,
+ 	return err;
+ }
+ 
+-static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
++static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf, u32 dmac_index)
+ {
+ 	struct cgx_mac_addr_reset_req *req;
+ 	int err;
+@@ -102,6 +111,7 @@ static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
+ 		mutex_unlock(&pf->mbox.lock);
+ 		return -ENOMEM;
  	}
-@@ -1193,7 +1196,7 @@ static u16 __rvu_npc_exact_cmd_rules_cnt_update(struct rvu *rvu, int drop_mcam_i
-  *	table.
-  *	Return: 0 upon success.
-  */
--int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
-+static int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
++	req->index = dmac_index;
+ 
+ 	err = otx2_sync_mbox_msg(&pf->mbox);
+ 
+@@ -110,12 +120,12 @@ static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
+ }
+ 
+ int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac,
+-			u8 bit_pos)
++			u32 bit_pos)
  {
- 	struct npc_exact_table_entry *entry = NULL;
- 	struct npc_exact_table *table;
-@@ -1265,9 +1268,9 @@ int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id)
-  *	MEM table.
-  *	Return: 0 upon success.
-  */
--static int __maybe_unused rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
--							u8 *mac, u16 chan, u8 ctype, u32 *seq_id,
--							bool cmd, u32 mcam_idx, u16 pcifunc)
-+static int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id, u8 *mac,
-+					 u16 chan, u8 ctype, u32 *seq_id, bool cmd,
-+					 u32 mcam_idx, u16 pcifunc)
+-	u8 dmacindex = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
++	u32 dmacindex = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
+ 
+ 	if (ether_addr_equal(mac, pf->netdev->dev_addr))
+-		return otx2_dmacflt_remove_pfmac(pf);
++		return otx2_dmacflt_remove_pfmac(pf, dmacindex);
+ 	else
+ 		return otx2_dmacflt_do_remove(pf, mac, dmacindex);
+ }
+@@ -151,9 +161,10 @@ int otx2_dmacflt_get_max_cnt(struct otx2_nic *pf)
+ 	return err;
+ }
+ 
+-int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos)
++int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u32 bit_pos)
  {
- 	int blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
- 	enum npc_exact_opc_type opc_type;
-@@ -1335,9 +1338,8 @@ static int __maybe_unused rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_
-  *	hash value may not match with old one.
-  *	Return: 0 upon success.
-  */
--static int __maybe_unused rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id,
--							   u8 lmac_id, u8 *old_mac,
--							   u8 *new_mac, u32 *seq_id)
-+static int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
-+					    u8 *old_mac, u8 *new_mac, u32 *seq_id)
- {
- 	int blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
- 	struct npc_exact_table_entry *entry;
-@@ -1367,7 +1369,7 @@ static int __maybe_unused rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 c
- 						       new_mac, table->mem_table.mask,
- 						       table->mem_table.depth);
- 		if (hash_index != entry->index) {
--			dev_err(rvu->dev,
-+			dev_dbg(rvu->dev,
- 				"%s: Update failed due to index mismatch(new=0x%x, old=%x)\n",
- 				__func__, hash_index, entry->index);
- 			mutex_unlock(&table->lock);
-@@ -1397,6 +1399,343 @@ static int __maybe_unused rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 c
+ 	struct cgx_mac_addr_update_req *req;
++	struct cgx_mac_addr_update_rsp *rsp;
+ 	int rc;
+ 
+ 	mutex_lock(&pf->mbox.lock);
+@@ -167,8 +178,19 @@ int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos)
+ 
+ 	ether_addr_copy(req->mac_addr, mac);
+ 	req->index = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
++
++	/* check the response and change index */
++
+ 	rc = otx2_sync_mbox_msg(&pf->mbox);
++	if (rc)
++		goto out;
+ 
++	rsp = (struct cgx_mac_addr_update_rsp *)
++		otx2_mbox_get_rsp(&pf->mbox.mbox, 0, &req->hdr);
++
++	pf->flow_cfg->bmap_to_dmacindex[bit_pos] = rsp->index;
++
++out:
+ 	mutex_unlock(&pf->mbox.lock);
+ 	return rc;
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index 2dd192b5e4e0..709fc0114fbd 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -18,7 +18,7 @@ struct otx2_flow {
+ 	struct ethtool_rx_flow_spec flow_spec;
+ 	struct list_head list;
+ 	u32 location;
+-	u16 entry;
++	u32 entry;
+ 	bool is_vf;
+ 	u8 rss_ctx_id;
+ #define DMAC_FILTER_RULE		BIT(0)
+@@ -232,6 +232,9 @@ static int otx2_mcam_entry_init(struct otx2_nic *pfvf)
  	return 0;
  }
  
-+/**
-+ *	rvu_npc_exact_promisc_disable - Disable promiscuous mode.
-+ *      @rvu: resource virtualization unit.
-+ *	@pcifunc: pcifunc
-+ *
-+ *	Drop rule is against each PF. We dont support DMAC filter for
-+ *	VF.
-+ *	Return: 0 upon success
-+ */
++/* TODO : revisit on size */
++#define OTX2_DMAC_FLTR_BITMAP_SZ (4 * 2048 + 32)
 +
-+int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc)
-+{
-+	struct npc_exact_table *table;
-+	int pf = rvu_get_pf(pcifunc);
-+	u8 cgx_id, lmac_id;
-+	u32 drop_mcam_idx;
-+	bool *promisc;
-+	u32 cnt;
-+
-+	table = rvu->hw->table;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	rvu_npc_exact_get_drop_rule_info(rvu, NIX_INTF_TYPE_CGX, cgx_id, lmac_id,
-+					 &drop_mcam_idx, NULL, NULL, NULL);
-+
-+	mutex_lock(&table->lock);
-+	promisc = &table->promisc_mode[drop_mcam_idx];
-+
-+	if (!*promisc) {
-+		mutex_unlock(&table->lock);
-+		dev_dbg(rvu->dev, "%s: Err Already promisc mode disabled (cgx=%d lmac=%d)\n",
-+			__func__, cgx_id, lmac_id);
-+		return LMAC_AF_ERR_INVALID_PARAM;
-+	}
-+	*promisc = false;
-+	cnt = __rvu_npc_exact_cmd_rules_cnt_update(rvu, drop_mcam_idx, 0, NULL);
-+	mutex_unlock(&table->lock);
-+
-+	/* If no dmac filter entries configured, disable drop rule */
-+	if (!cnt)
-+		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, false);
-+	else
-+		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, !*promisc);
-+
-+	dev_dbg(rvu->dev, "%s: disabled  promisc mode (cgx=%d lmac=%d, cnt=%d)\n",
-+		__func__, cgx_id, lmac_id, cnt);
-+	return 0;
-+}
-+
-+/**
-+ *	rvu_npc_exact_promisc_enable - Enable promiscuous mode.
-+ *      @rvu: resource virtualization unit.
-+ *	@pcifunc: pcifunc.
-+ *	Return: 0 upon success
-+ */
-+int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc)
-+{
-+	struct npc_exact_table *table;
-+	int pf = rvu_get_pf(pcifunc);
-+	u8 cgx_id, lmac_id;
-+	u32 drop_mcam_idx;
-+	bool *promisc;
-+	u32 cnt;
-+
-+	table = rvu->hw->table;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	rvu_npc_exact_get_drop_rule_info(rvu, NIX_INTF_TYPE_CGX, cgx_id, lmac_id,
-+					 &drop_mcam_idx, NULL, NULL, NULL);
-+
-+	mutex_lock(&table->lock);
-+	promisc = &table->promisc_mode[drop_mcam_idx];
-+
-+	if (*promisc) {
-+		mutex_unlock(&table->lock);
-+		dev_dbg(rvu->dev, "%s: Already in promisc mode (cgx=%d lmac=%d)\n",
-+			__func__, cgx_id, lmac_id);
-+		return LMAC_AF_ERR_INVALID_PARAM;
-+	}
-+	*promisc = true;
-+	cnt = __rvu_npc_exact_cmd_rules_cnt_update(rvu, drop_mcam_idx, 0, NULL);
-+	mutex_unlock(&table->lock);
-+
-+	/* If no dmac filter entries configured, disable drop rule */
-+	if (!cnt)
-+		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, false);
-+	else
-+		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, !*promisc);
-+
-+	dev_dbg(rvu->dev, "%s: Enabled promisc mode (cgx=%d lmac=%d cnt=%d)\n",
-+		__func__, cgx_id, lmac_id, cnt);
-+	return 0;
-+}
-+
-+/**
-+ *	rvu_npc_exact_mac_addr_reset - Delete PF mac address.
-+ *      @rvu: resource virtualization unit.
-+ *	@req: Reset request
-+ *	@rsp: Reset response.
-+ *	Return: 0 upon success
-+ */
-+int rvu_npc_exact_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_reset_req *req,
-+				 struct msg_rsp *rsp)
-+{
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	u32 seq_id = req->index;
-+	struct rvu_pfvf *pfvf;
-+	u8 cgx_id, lmac_id;
-+	int rc;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+
-+	pfvf = rvu_get_pfvf(rvu, req->hdr.pcifunc);
-+
-+	rc = rvu_npc_exact_del_table_entry_by_id(rvu, seq_id);
-+	if (rc) {
-+		/* TODO: how to handle this error case ? */
-+		dev_err(rvu->dev, "%s MAC (%pM) del PF=%d failed\n", __func__, pfvf->mac_addr, pf);
-+		return 0;
-+	}
-+
-+	dev_dbg(rvu->dev, "%s MAC (%pM) del PF=%d success (seq_id=%u)\n",
-+		__func__, pfvf->mac_addr, pf, seq_id);
-+	return 0;
-+}
-+
-+/**
-+ *	rvu_npc_exact_mac_addr_update - Update mac address field with new value.
-+ *      @rvu: resource virtualization unit.
-+ *	@req: Update request.
-+ *	@rsp: Update response.
-+ *	Return: 0 upon success
-+ */
-+int rvu_npc_exact_mac_addr_update(struct rvu *rvu,
-+				  struct cgx_mac_addr_update_req *req,
-+				  struct cgx_mac_addr_update_rsp *rsp)
-+{
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	struct npc_exact_table_entry *entry;
-+	struct npc_exact_table *table;
-+	struct rvu_pfvf *pfvf;
-+	u32 seq_id, mcam_idx;
-+	u8 old_mac[ETH_ALEN];
-+	u8 cgx_id, lmac_id;
-+	int rc;
-+
-+	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
-+		return LMAC_AF_ERR_PERM_DENIED;
-+
-+	dev_dbg(rvu->dev, "%s: Update request for seq_id=%d, mac=%pM\n",
-+		__func__, req->index, req->mac_addr);
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+
-+	pfvf = rvu_get_pfvf(rvu, req->hdr.pcifunc);
-+
-+	table = rvu->hw->table;
-+
-+	mutex_lock(&table->lock);
-+
-+	/* Lookup for entry which needs to be updated */
-+	entry = __rvu_npc_exact_find_entry_by_seq_id(rvu, req->index);
-+	if (!entry) {
-+		dev_err(rvu->dev, "%s: failed to find entry for id=0x%x\n", __func__, req->index);
-+		mutex_unlock(&table->lock);
-+		return LMAC_AF_ERR_EXACT_MATCH_TBL_LOOK_UP_FAILED;
-+	}
-+	ether_addr_copy(old_mac, entry->mac);
-+	seq_id = entry->seq_id;
-+	mcam_idx = entry->mcam_idx;
-+	mutex_unlock(&table->lock);
-+
-+	rc = rvu_npc_exact_update_table_entry(rvu, cgx_id, lmac_id,  old_mac,
-+					      req->mac_addr, &seq_id);
-+	if (!rc) {
-+		rsp->index = seq_id;
-+		dev_dbg(rvu->dev, "%s  mac:%pM (pfvf:%pM default:%pM) update to PF=%d success\n",
-+			__func__, req->mac_addr, pfvf->mac_addr, pfvf->default_mac, pf);
-+		ether_addr_copy(pfvf->mac_addr, req->mac_addr);
-+		return 0;
-+	}
-+
-+	/* Try deleting and adding it again */
-+	rc = rvu_npc_exact_del_table_entry_by_id(rvu, req->index);
-+	if (rc) {
-+		/* This could be a new entry */
-+		dev_dbg(rvu->dev, "%s MAC (%pM) del PF=%d failed\n", __func__,
-+			pfvf->mac_addr, pf);
-+	}
-+
-+	rc = rvu_npc_exact_add_table_entry(rvu, cgx_id, lmac_id, req->mac_addr,
-+					   pfvf->rx_chan_base, 0, &seq_id, true,
-+					   mcam_idx, req->hdr.pcifunc);
-+	if (rc) {
-+		dev_err(rvu->dev, "%s MAC (%pM) add PF=%d failed\n", __func__,
-+			req->mac_addr, pf);
-+		return LMAC_AF_ERR_EXACT_MATCH_TBL_ADD_FAILED;
-+	}
-+
-+	rsp->index = seq_id;
-+	dev_dbg(rvu->dev,
-+		"%s MAC (new:%pM, old=%pM default:%pM) del and add to PF=%d success (seq_id=%u)\n",
-+		__func__, req->mac_addr, pfvf->mac_addr, pfvf->default_mac, pf, seq_id);
-+
-+	ether_addr_copy(pfvf->mac_addr, req->mac_addr);
-+	return 0;
-+}
-+
-+/**
-+ *	rvu_npc_exact_mac_addr_add - Adds MAC address to exact match table.
-+ *      @rvu: resource virtualization unit.
-+ *	@req: Add request.
-+ *	@rsp: Add response.
-+ *	Return: 0 upon success
-+ */
-+int rvu_npc_exact_mac_addr_add(struct rvu *rvu,
-+			       struct cgx_mac_addr_add_req *req,
-+			       struct cgx_mac_addr_add_rsp *rsp)
-+{
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	struct rvu_pfvf *pfvf;
-+	u8 cgx_id, lmac_id;
-+	int rc = 0;
-+	u32 seq_id;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	pfvf = rvu_get_pfvf(rvu, req->hdr.pcifunc);
-+
-+	rc = rvu_npc_exact_add_table_entry(rvu, cgx_id, lmac_id, req->mac_addr,
-+					   pfvf->rx_chan_base, 0, &seq_id,
-+					   true, -1, req->hdr.pcifunc);
-+
-+	if (!rc) {
-+		rsp->index = seq_id;
-+		dev_dbg(rvu->dev, "%s MAC (%pM) add to PF=%d success (seq_id=%u)\n",
-+			__func__, req->mac_addr, pf, seq_id);
-+		return 0;
-+	}
-+
-+	dev_err(rvu->dev, "%s MAC (%pM) add to PF=%d failed\n", __func__,
-+		req->mac_addr, pf);
-+	return LMAC_AF_ERR_EXACT_MATCH_TBL_ADD_FAILED;
-+}
-+
-+/**
-+ *	rvu_npc_exact_mac_addr_del - Delete DMAC filter
-+ *      @rvu: resource virtualization unit.
-+ *	@req: Delete request.
-+ *	@rsp: Delete response.
-+ *	Return: 0 upon success
-+ */
-+int rvu_npc_exact_mac_addr_del(struct rvu *rvu,
-+			       struct cgx_mac_addr_del_req *req,
-+			       struct msg_rsp *rsp)
-+{
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	int rc;
-+
-+	rc = rvu_npc_exact_del_table_entry_by_id(rvu, req->index);
-+	if (!rc) {
-+		dev_dbg(rvu->dev, "%s del to PF=%d success (seq_id=%u)\n",
-+			__func__, pf, req->index);
-+		return 0;
-+	}
-+
-+	dev_err(rvu->dev, "%s del to PF=%d failed (seq_id=%u)\n",
-+		__func__,  pf, req->index);
-+	return LMAC_AF_ERR_EXACT_MATCH_TBL_DEL_FAILED;
-+}
-+
-+/**
-+ *	rvu_npc_exact_mac_addr_set - Add PF mac address to dmac filter.
-+ *      @rvu: resource virtualization unit.
-+ *	@req: Set request.
-+ *	@rsp: Set response.
-+ *	Return: 0 upon success
-+ */
-+int rvu_npc_exact_mac_addr_set(struct rvu *rvu, struct cgx_mac_addr_set_or_get *req,
-+			       struct cgx_mac_addr_set_or_get *rsp)
-+{
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	u32 seq_id = req->index;
-+	struct rvu_pfvf *pfvf;
-+	u8 cgx_id, lmac_id;
-+	u32 mcam_idx = -1;
-+	int rc, nixlf;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+
-+	pfvf = &rvu->pf[pf];
-+
-+	/* If table does not have an entry; both update entry and del table entry API
-+	 * below fails. Those are not failure conditions.
-+	 */
-+	rc = rvu_npc_exact_update_table_entry(rvu, cgx_id, lmac_id, pfvf->mac_addr,
-+					      req->mac_addr, &seq_id);
-+	if (!rc) {
-+		rsp->index = seq_id;
-+		ether_addr_copy(pfvf->mac_addr, req->mac_addr);
-+		ether_addr_copy(rsp->mac_addr, req->mac_addr);
-+		dev_dbg(rvu->dev, "%s MAC (%pM) update to PF=%d success\n",
-+			__func__, req->mac_addr, pf);
-+		return 0;
-+	}
-+
-+	/* Try deleting and adding it again */
-+	rc = rvu_npc_exact_del_table_entry_by_id(rvu, req->index);
-+	if (rc) {
-+		dev_dbg(rvu->dev, "%s MAC (%pM) del PF=%d failed\n",
-+			__func__, pfvf->mac_addr, pf);
-+	}
-+
-+	/* find mcam entry if exist */
-+	rc = nix_get_nixlf(rvu, req->hdr.pcifunc, &nixlf, NULL);
-+	if (!rc) {
-+		mcam_idx = npc_get_nixlf_mcam_index(&rvu->hw->mcam, req->hdr.pcifunc,
-+						    nixlf, NIXLF_UCAST_ENTRY);
-+	}
-+
-+	rc = rvu_npc_exact_add_table_entry(rvu, cgx_id, lmac_id, req->mac_addr,
-+					   pfvf->rx_chan_base, 0, &seq_id,
-+					   true, mcam_idx, req->hdr.pcifunc);
-+	if (rc) {
-+		dev_err(rvu->dev, "%s MAC (%pM) add PF=%d failed\n",
-+			__func__, req->mac_addr, pf);
-+		return LMAC_AF_ERR_EXACT_MATCH_TBL_ADD_FAILED;
-+	}
-+
-+	rsp->index = seq_id;
-+	ether_addr_copy(rsp->mac_addr, req->mac_addr);
-+	ether_addr_copy(pfvf->mac_addr, req->mac_addr);
-+	dev_dbg(rvu->dev,
-+		"%s MAC (%pM) del and add to PF=%d success (seq_id=%u)\n",
-+		__func__, req->mac_addr, pf, seq_id);
-+	return 0;
-+}
-+
- /**
-  *	rvu_npc_exact_can_disable_feature - Check if feature can be disabled.
-  *      @rvu: resource virtualization unit.
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
-index e6cc6d9aea7e..3efeb09c58de 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
-@@ -202,13 +202,32 @@ struct npc_exact_table {
- };
+ int otx2vf_mcam_flow_init(struct otx2_nic *pfvf)
+ {
+ 	struct otx2_flow_config *flow_cfg;
+@@ -242,6 +245,12 @@ int otx2vf_mcam_flow_init(struct otx2_nic *pfvf)
+ 	if (!pfvf->flow_cfg)
+ 		return -ENOMEM;
  
- bool rvu_npc_exact_has_match_table(struct rvu *rvu);
--int rvu_npc_exact_del_table_entry_by_id(struct rvu *rvu, u32 seq_id);
- u32 rvu_npc_exact_get_max_entries(struct rvu *rvu);
- int rvu_npc_exact_init(struct rvu *rvu);
-+int rvu_npc_exact_mac_addr_reset(struct rvu *rvu, struct cgx_mac_addr_reset_req *req,
-+				 struct msg_rsp *rsp);
++	pfvf->flow_cfg->dmacflt_bmap = devm_kcalloc(pfvf->dev,
++						    BITS_TO_LONGS(OTX2_DMAC_FLTR_BITMAP_SZ),
++						    sizeof(long), GFP_KERNEL);
++	if (!pfvf->flow_cfg->dmacflt_bmap)
++		return -ENOMEM;
 +
-+int rvu_npc_exact_mac_addr_update(struct rvu *rvu,
-+				  struct cgx_mac_addr_update_req *req,
-+				  struct cgx_mac_addr_update_rsp *rsp);
-+
-+int rvu_npc_exact_mac_addr_add(struct rvu *rvu,
-+			       struct cgx_mac_addr_add_req *req,
-+			       struct cgx_mac_addr_add_rsp *rsp);
-+
-+int rvu_npc_exact_mac_addr_del(struct rvu *rvu,
-+			       struct cgx_mac_addr_del_req *req,
-+			       struct msg_rsp *rsp);
-+
-+int rvu_npc_exact_mac_addr_set(struct rvu *rvu, struct cgx_mac_addr_set_or_get *req,
-+			       struct cgx_mac_addr_set_or_get *rsp);
-+
-+void rvu_npc_exact_reset(struct rvu *rvu, u16 pcifunc);
+ 	flow_cfg = pfvf->flow_cfg;
+ 	INIT_LIST_HEAD(&flow_cfg->flow_list);
+ 	flow_cfg->max_flows = 0;
+@@ -259,6 +268,12 @@ int otx2_mcam_flow_init(struct otx2_nic *pf)
+ 	if (!pf->flow_cfg)
+ 		return -ENOMEM;
  
- bool rvu_npc_exact_can_disable_feature(struct rvu *rvu);
- void rvu_npc_exact_disable_feature(struct rvu *rvu);
- void rvu_npc_exact_reset(struct rvu *rvu, u16 pcifunc);
- u16 rvu_npc_exact_drop_rule_to_pcifunc(struct rvu *rvu, u32 drop_rule_idx);
--
-+int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc);
-+int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc);
- #endif /* RVU_NPC_HASH_H */
++	pf->flow_cfg->dmacflt_bmap = devm_kcalloc(pf->dev,
++						  BITS_TO_LONGS(OTX2_DMAC_FLTR_BITMAP_SZ),
++						  sizeof(long), GFP_KERNEL);
++	if (!pf->flow_cfg->dmacflt_bmap)
++		return -ENOMEM;
++
+ 	INIT_LIST_HEAD(&pf->flow_cfg->flow_list);
+ 
+ 	/* Allocate bare minimum number of MCAM entries needed for
+@@ -284,7 +299,7 @@ int otx2_mcam_flow_init(struct otx2_nic *pf)
+ 		return 0;
+ 
+ 	pf->flow_cfg->bmap_to_dmacindex =
+-			devm_kzalloc(pf->dev, sizeof(u8) *
++			devm_kzalloc(pf->dev, sizeof(u32) *
+ 				     pf->flow_cfg->dmacflt_max_flows,
+ 				     GFP_KERNEL);
+ 
+@@ -355,7 +370,7 @@ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac)
+ {
+ 	struct otx2_nic *pf = netdev_priv(netdev);
+ 
+-	if (!bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
++	if (!bitmap_empty(pf->flow_cfg->dmacflt_bmap,
+ 			  pf->flow_cfg->dmacflt_max_flows))
+ 		netdev_warn(netdev,
+ 			    "Add %pM to CGX/RPM DMAC filters list as well\n",
+@@ -438,7 +453,7 @@ int otx2_get_maxflows(struct otx2_flow_config *flow_cfg)
+ 		return 0;
+ 
+ 	if (flow_cfg->nr_flows == flow_cfg->max_flows ||
+-	    !bitmap_empty(&flow_cfg->dmacflt_bmap,
++	    !bitmap_empty(flow_cfg->dmacflt_bmap,
+ 			  flow_cfg->dmacflt_max_flows))
+ 		return flow_cfg->max_flows + flow_cfg->dmacflt_max_flows;
+ 	else
+@@ -1010,7 +1025,7 @@ static int otx2_add_flow_with_pfmac(struct otx2_nic *pfvf,
+ 
+ 	otx2_add_flow_to_list(pfvf, pf_mac);
+ 	pfvf->flow_cfg->nr_flows++;
+-	set_bit(0, &pfvf->flow_cfg->dmacflt_bmap);
++	set_bit(0, pfvf->flow_cfg->dmacflt_bmap);
+ 
+ 	return 0;
+ }
+@@ -1064,7 +1079,7 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
+ 			return otx2_dmacflt_update(pfvf, eth_hdr->h_dest,
+ 						   flow->entry);
+ 
+-		if (bitmap_full(&flow_cfg->dmacflt_bmap,
++		if (bitmap_full(flow_cfg->dmacflt_bmap,
+ 				flow_cfg->dmacflt_max_flows)) {
+ 			netdev_warn(pfvf->netdev,
+ 				    "Can't insert the rule %d as max allowed dmac filters are %d\n",
+@@ -1078,17 +1093,17 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
+ 		}
+ 
+ 		/* Install PF mac address to DMAC filter list */
+-		if (!test_bit(0, &flow_cfg->dmacflt_bmap))
++		if (!test_bit(0, flow_cfg->dmacflt_bmap))
+ 			otx2_add_flow_with_pfmac(pfvf, flow);
+ 
+ 		flow->rule_type |= DMAC_FILTER_RULE;
+-		flow->entry = find_first_zero_bit(&flow_cfg->dmacflt_bmap,
++		flow->entry = find_first_zero_bit(flow_cfg->dmacflt_bmap,
+ 						  flow_cfg->dmacflt_max_flows);
+ 		fsp->location = flow_cfg->max_flows + flow->entry;
+ 		flow->flow_spec.location = fsp->location;
+ 		flow->location = fsp->location;
+ 
+-		set_bit(flow->entry, &flow_cfg->dmacflt_bmap);
++		set_bit(flow->entry, flow_cfg->dmacflt_bmap);
+ 		otx2_dmacflt_add(pfvf, eth_hdr->h_dest, flow->entry);
+ 
+ 	} else {
+@@ -1154,11 +1169,12 @@ static void otx2_update_rem_pfmac(struct otx2_nic *pfvf, int req)
+ 			if (req == DMAC_ADDR_DEL) {
+ 				otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
+ 						    0);
+-				clear_bit(0, &pfvf->flow_cfg->dmacflt_bmap);
++				clear_bit(0, pfvf->flow_cfg->dmacflt_bmap);
+ 				found = true;
+ 			} else {
+ 				ether_addr_copy(eth_hdr->h_dest,
+ 						pfvf->netdev->dev_addr);
++
+ 				otx2_dmacflt_update(pfvf, eth_hdr->h_dest, 0);
+ 			}
+ 			break;
+@@ -1194,12 +1210,12 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
+ 
+ 		err = otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
+ 					  flow->entry);
+-		clear_bit(flow->entry, &flow_cfg->dmacflt_bmap);
++		clear_bit(flow->entry, flow_cfg->dmacflt_bmap);
+ 		/* If all dmac filters are removed delete macfilter with
+ 		 * interface mac address and configure CGX/RPM block in
+ 		 * promiscuous mode
+ 		 */
+-		if (bitmap_weight(&flow_cfg->dmacflt_bmap,
++		if (bitmap_weight(flow_cfg->dmacflt_bmap,
+ 				  flow_cfg->dmacflt_max_flows) == 1)
+ 			otx2_update_rem_pfmac(pfvf, DMAC_ADDR_DEL);
+ 	} else {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 9106c359e64c..9376d0e62914 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1120,7 +1120,7 @@ static int otx2_cgx_config_loopback(struct otx2_nic *pf, bool enable)
+ 	struct msg_req *msg;
+ 	int err;
+ 
+-	if (enable && !bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
++	if (enable && !bitmap_empty(pf->flow_cfg->dmacflt_bmap,
+ 				    pf->flow_cfg->dmacflt_max_flows))
+ 		netdev_warn(pf->netdev,
+ 			    "CGX/RPM internal loopback might not work as DMAC filters are active\n");
 -- 
 2.25.1
 
