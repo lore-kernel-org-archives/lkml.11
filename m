@@ -2,94 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF310C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF15C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240445AbiGHVJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 17:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        id S238512AbiGHVJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 17:09:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240430AbiGHVJB (ORCPT
+        with ESMTP id S240053AbiGHVJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 17:09:01 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF3F17049
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 14:09:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657314541; x=1688850541;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SetEOGhaWLyaztNH5ao+P5ewqYeiLxGVWkqNFRtt51A=;
-  b=K+BQO7WtN4LcGSJAtPD2BBc1X6IlCWpoEXuN1iOcX1kUz2wO1aynW8IW
-   YIo1wAgO3ClDE6WYePRAvVZk/wenCRns/+dF0exEnFkQAz8vVUAKtzzFW
-   ZpXV1cfrvnBnxOP9hTOBw44lAiIV3Luhij4f/etr8sS8Oqol2NIcRrRaK
-   /bOf1WG14s9XWnOdDDE2l8ZPC+c1J0R2WDx/fXmpXXjU5LSZ3YLX7aSSA
-   wjIu8TjpTpBzypMg0+tlNhaHLDeWl0mrsop2Y5b1fV2mgAm/w4Wchxj8G
-   S3E307ylUK2OxiFOUmH4V+9yZ4LaJGnLnyoyn2woN/wxD2qmiueNSlAxH
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="283120427"
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="283120427"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 14:08:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="544339268"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 08 Jul 2022 14:08:53 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 97277AD; Sat,  9 Jul 2022 00:09:00 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     john.garry@huawei.com
-Subject: [PATCH v2 2/4] bus: hisi_lpc: Use devm_platform_ioremap_resource
-Date:   Sat,  9 Jul 2022 00:08:57 +0300
-Message-Id: <20220708210859.6774-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220708210859.6774-1-andriy.shevchenko@linux.intel.com>
-References: <20220708210859.6774-1-andriy.shevchenko@linux.intel.com>
+        Fri, 8 Jul 2022 17:09:25 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865087B348;
+        Fri,  8 Jul 2022 14:09:24 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id o12so99681pfp.5;
+        Fri, 08 Jul 2022 14:09:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9E/mZeimCA88giN6rs5vLbSeCJTF3k6+VjGGAIWcV/k=;
+        b=H7vyoKXshYAaDuCXHzumSvPd0vSlH3129MGT4JypuLk4D5nZpLuwDSs36U3poOsiD2
+         FU1NArC2BbIOa7agQMBZKUsReCbibYPtmKapbY+OoejaSXc9MXV6VnFijbRa8gOamfLn
+         gt7A4XeD/X1Ktt0QSUc17tlRDoAFXx4TqOH1AKrkN2cRva4LRzRvIaw76QrYClPcrztf
+         pz8whfX8uueDz7mez0k7DRv/YskMPQ4+eGsMx79REZhGKoUn60cvLaeyWYsnIxP0kaye
+         VKtZ0d8ebrpBN6zew6qv0W8TNvu7vpY4E1DO0z+WKVQWscYVUN+y1RCDiji9w0pZvC4v
+         n+0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9E/mZeimCA88giN6rs5vLbSeCJTF3k6+VjGGAIWcV/k=;
+        b=rl5eUSDhmQYSot4BGMYTsXpLVGwVHQF15Ob+PqUOD1nUESqPKpAgXOWhI5UQr9DCOh
+         EvAwlX1TWMJnmdDO1C0yCvk1qnnLRw8ETeHq0adkuFbxdU9iVkjC/L7eBTkHSvmy8n/B
+         wxZ+vPECU+QvZi/ZutPxXJVdJUDGBuQvkm4VStE0zvi+JbuqXwoXXU4nZbOXEbli8t5x
+         T5nI9jaQUqC6M8g9LXYoH+4eBWp+gMfBfQZZ+AqegkuB8HFJa+fWFzjRvR5x9HPeu8fb
+         49khswZ8iCuJlx0Ct6jjFzT+4bUp65QpsnwFWuBAO3XBGDKFrC8JEOEPzEizgLCFtF/0
+         CT6Q==
+X-Gm-Message-State: AJIora9twr7R+1sRxqw1FwrAQGBsi9O6pouPTWFJVlRdX1mHF7yKKVQm
+        BpIw7eedV5+cOgOh1VAhREI=
+X-Google-Smtp-Source: AGRyM1ugzG/hWta6GrNXvx8TwkDWRE+33xf7z7yDD3ABzTqFoJGGI3w37eb8VXs8f7UPN2v+VqSsyQ==
+X-Received: by 2002:a63:d711:0:b0:415:c581:2aff with SMTP id d17-20020a63d711000000b00415c5812affmr1902658pgg.278.1657314563948;
+        Fri, 08 Jul 2022 14:09:23 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q4-20020a17090311c400b0016bfaee8244sm7402307plh.14.2022.07.08.14.09.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 14:09:23 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     anand.gore@broadcom.com, dan.beygelman@broadcom.com,
+        kursad.oney@broadcom.com, joel.peshkin@broadcom.com,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH 2/8] ata: ahci_brcm: bcmbca: Replace ARCH_BCM_63XX with ARCH_BCMBCA
+Date:   Fri,  8 Jul 2022 14:09:21 -0700
+Message-Id: <20220708210921.2660714-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220707065800.261269-2-william.zhang@broadcom.com>
+References: <20220707065800.261269-1-william.zhang@broadcom.com> <20220707065800.261269-2-william.zhang@broadcom.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The struct resource is not used for anything else, so we can simplify
-the code a bit by using the helper function.
+On Wed,  6 Jul 2022 23:57:53 -0700, William Zhang <william.zhang@broadcom.com> wrote:
+> Prepare for the BCM63138 ARCH_BCM_63XX migration to ARCH_BCMBCA. Make
+> AHCI_BRCM depending on ARCH_BCMBCA.
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+> ---
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
-v2: added tags
- drivers/bus/hisi_lpc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 6d432a07cbba..03d4d96ff794 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -618,7 +618,6 @@ static int hisi_lpc_probe(struct platform_device *pdev)
- 	struct logic_pio_hwaddr *range;
- 	struct hisi_lpc_dev *lpcdev;
- 	resource_size_t io_end;
--	struct resource *res;
- 	int ret;
- 
- 	lpcdev = devm_kzalloc(dev, sizeof(*lpcdev), GFP_KERNEL);
-@@ -627,8 +626,7 @@ static int hisi_lpc_probe(struct platform_device *pdev)
- 
- 	spin_lock_init(&lpcdev->cycle_lock);
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	lpcdev->membase = devm_ioremap_resource(dev, res);
-+	lpcdev->membase = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(lpcdev->membase))
- 		return PTR_ERR(lpcdev->membase);
- 
--- 
-2.35.1
-
+Applied to https://github.com/Broadcom/stblinux/commits/drivers/next, thanks!
+--
+Florian
