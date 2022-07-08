@@ -2,100 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 898DCCCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93539C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238286AbiGHOj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        id S238292AbiGHOkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238064AbiGHOj4 (ORCPT
+        with ESMTP id S234285AbiGHOkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:39:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F80813F0D;
-        Fri,  8 Jul 2022 07:39:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 189966285E;
-        Fri,  8 Jul 2022 14:39:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACFD4C341C6;
-        Fri,  8 Jul 2022 14:39:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657291194;
-        bh=n9Wx6YYU0Hw39VR6mkEgQaCtA6WpxtO3+AJlLEHoUFA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ZSY/ZLBvJ/J3h/RRCHua4mwZbteQKzhRzR3P5WkJBs5pXv4cELtRWn62w3jwr+GWG
-         wAx/XR6l//C3n6/+A6+LBVv/D9xLWKh0i+caBBV4fcwtvfS5BHiH5vmsvb/2gkfmFx
-         JkS6E/KOOEfDVM3g6Vo1Zrh3hj6s39Xq3o3ymn4/DTe+EljcU/wngqdfSzPfTVjW+a
-         DRHETPi08dBezjX/0b1j+5tULfEDgPQJP4IFOKiwdNNA6ulRLvYH8OQn75iIbKgiP+
-         oRM66EcHFeHqdJqEaD15nssvuRip1jVFp11Lblg6mKoRbN6K9Y/BoQLWcBGwuh54rj
-         KrLu3esqMfCog==
-Message-ID: <adbf8277-e680-9357-950d-22cf54b1f6ff@kernel.org>
-Date:   Fri, 8 Jul 2022 16:39:47 +0200
+        Fri, 8 Jul 2022 10:40:12 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6E913F0D
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:40:11 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id c8-20020a056602334800b0067500ca88aaso11385890ioz.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 07:40:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=BGyGI0nhO1tZ1AiSieZOwo6ROGPm380AjmQ87Ia1ekY=;
+        b=BSjzMA7PP1UffyRFkr2qnVEn0t9ZuA+UuKjf2pHDSx096bHUsppQFariZBI5doaICL
+         0nsVsukP5mrGZ5ZheZZ4aKcRxASXWlnbKkbazjB4ZCcUaT8JytaIG6dgZn3EjkjuyQVY
+         nzUWouMqGMTTRTt8wAR4D6fpLSbGcPOVewz1zLvZA3LwW9V0Cg4cafIDCnPPoeeKnEP6
+         DpDP5mxs5O4RjC6B+h5sKfGJnn8O/ttRpv3O0lE5jOkRE49wOSje3Ht3zqj0ta5s5Cjq
+         GhjAUPRxCkPjeYG5IChKkn7DgoZXH7E1AYRdqPcKyXLLS3scEbmmpBkKohx0a4QagLMU
+         nbiw==
+X-Gm-Message-State: AJIora9WMvhZFItnEYiHy4ROJkryjFHIEAj79wJmWp/UZlLgO5Vhaqmt
+        ipeQu8vz2eMDuPrzBnbGSROthEtxBURcpHUPBw+OFJFBkqty
+X-Google-Smtp-Source: AGRyM1tm3H3yD6tBRgRxZsaFRN6bkJTuDaIc+hjHrKNa80PBrWifvwUGsdveaWT7rXDpL7dEKho2VTMAefF18WP4P4t9kM8/w7Lo
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V4 01/20] rv: Add Runtime Verification (RV) interface
-Content-Language: en-US
-To:     Tao Zhou <tao.zhou@linux.dev>, Steven Rostedt <rostedt@goodmis.org>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-References: <cover.1655368610.git.bristot@kernel.org>
- <60548902dbccaa7ba420e40e46835693e27f643f.1655368610.git.bristot@kernel.org>
- <YsXLDvjHqOxYtckg@geo.homenetwork>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <YsXLDvjHqOxYtckg@geo.homenetwork>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:1d15:b0:2dc:20a1:f3f with SMTP id
+ i21-20020a056e021d1500b002dc20a10f3fmr2340565ila.60.1657291210840; Fri, 08
+ Jul 2022 07:40:10 -0700 (PDT)
+Date:   Fri, 08 Jul 2022 07:40:10 -0700
+In-Reply-To: <20220708111638.2224-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e9631505e34c2d7f@google.com>
+Subject: Re: [syzbot] WARNING in notifier_chain_register
+From:   syzbot <syzbot+5214f8dac5863061e37c@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Tao!
+Hello,
 
-On 7/6/22 19:49, Tao Zhou wrote:
->> +static void *enabled_monitors_start(struct seq_file *m, loff_t *pos)
->> +{
->> +	struct rv_monitor_def *m_def;
->> +	loff_t l;
->> +
->> +	mutex_lock(&rv_interface_lock);
->> +	m_def = list_entry(&rv_monitors_list, struct rv_monitor_def, list);
-> I realized this m_def is not real but vain. Is it possible the loop is
-> skiped and just return m_def that is not valid.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-that is empty... not a problem.
+Reported-and-tested-by: syzbot+5214f8dac5863061e37c@syzkaller.appspotmail.com
 
-I am not seeing (the possible) problem here. Could you simulate/reproduce the problem?
+Tested on:
 
-Btw, this code is "inspired" (iow stolen) from trace_events.c.
+commit:         cb71b93c Add linux-next specific files for 20220628
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=14bedff4080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=5214f8dac5863061e37c
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=163fa292080000
 
-Am I missing something? steve?
-
->> +	for (l = 0; l <= *pos; ) {
->> +		m_def = enabled_monitors_next(m, m_def, &l);
->> +		if (!m_def)
->> +			break;
->> +	}
->> +
->> +	return m_def;
->> +}
-
--- Daniel
+Note: testing is done by a robot and is best-effort only.
