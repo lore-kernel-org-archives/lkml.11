@@ -2,98 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01595C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 637A3CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239913AbiGHTnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S239622AbiGHTpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239896AbiGHTnq (ORCPT
+        with ESMTP id S238577AbiGHTpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:43:46 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A79617E;
-        Fri,  8 Jul 2022 12:43:44 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id e12so37949289lfr.6;
-        Fri, 08 Jul 2022 12:43:44 -0700 (PDT)
+        Fri, 8 Jul 2022 15:45:08 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78D983F1B;
+        Fri,  8 Jul 2022 12:45:07 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so2934837pjl.5;
+        Fri, 08 Jul 2022 12:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BHFGKFejsr5X03hcfdP6B3GzZdhUa/GbrDRD409NVG0=;
-        b=RPymnQZpGvFyqmFQ+7I7f6bbjZTxw5dJDK183PAqgcVfOipGvS9nyMwovUZmo8TA13
-         uJWSV8itByJIvkZTOz+f5sPAhz+m01YiwUqmz574+8LlwujjK1FC8wQQCSSETgN6VbT4
-         DIwWPzul5uiujNBpcehgntKrwoYCwOmRTFzgEoooSV/35K84ZWM4nihpdQclcwTmDIHF
-         kLFFXyuxUFFIdUtEsePpgnPJ1R/qqt9ZkbZfuIL7iNsqDQQ8lxs0GT6VIAiXIPlhNROH
-         TR5RBs0lzIsQXqofk2agGMI8TUI5PlgdM0/2PaoEfhwT0a/5b2eLgAEDv8WQRDK4PQID
-         NgGA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=N8DWxr3cOGfGJ0M5r5IGNCu5UhFIYsIjqooNs/duLE4=;
+        b=Lo1aR/J4wYvMpA8tQzeQV1wC1mQDSWrvOC1QAgXLY/cJssAQeZhp3PUFHEtEnzvVu6
+         T+VP1D7VEtf28FSvXqq5hv+AKW7bZ9abG+g43bXEskYKDXvsHxQKuKoGk9ja/5mMyzBi
+         eLUlfsEVLCQ+EEMKMeXpTkdWeWN/SvOSw26rXN4ooPnVkLBoPC1hox0SPEwwN+bsxR9y
+         iCiZ9sZHYCJasGKKO0uGaVoBgcnXBdHNvXpoO1viz0UCWOeTXEeF3uM0dCqjBz0eYLoZ
+         3a9oWLorRP/WxUoZYlbHq7Wh8Vri6Jy+yACO74ke1sAdpIyjwO6WGZlyEa0TGyzcLtkv
+         kFOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BHFGKFejsr5X03hcfdP6B3GzZdhUa/GbrDRD409NVG0=;
-        b=YJygxxV0MK61dntAJFwwykyOyO0mAfwKBKbT70p6o1LksmdyZN/cFoRzgLc8x5Uj5K
-         h5sA7bg/UjhFgh4uuCJB/smpNFa9EoHrq4a2I9pojvgcOcfem4wEN5uKc4knrzLcTQV5
-         RjWJ1dbvhV5Ld+e7DnbeCatX1qbkkwUkLyE1sRZN6CzRlQ3jMdga8Jpd+wKu0391+1Ac
-         +BFF/dg9hOHwBlyafpdieUqpnIiyh4hVJEvzTFLy5LItzkn09eenmcnH5GsDnP+Qcd/d
-         K9hopbPJrtPTxRuRJKU5kVCkj4RwICXDOdvdohBW/snvj4cdm7/wZT4Krt2t4Z7ESCC2
-         KR+w==
-X-Gm-Message-State: AJIora8eE4EiM6jp1STOXTdJVAn9SLwK0qxk6FzRMf4LMK1Ytuo2c8Ww
-        kvul/bp9Szp9sHHiOQusi5U=
-X-Google-Smtp-Source: AGRyM1sjwX3r5gjS5tg353B+hub3z95RPDfQo0yr1WwutP31zSJbDOR2bF+pknGYdiCO+CP0hwQpyg==
-X-Received: by 2002:a05:6512:1195:b0:481:1675:f358 with SMTP id g21-20020a056512119500b004811675f358mr3615071lfr.235.1657309423217;
-        Fri, 08 Jul 2022 12:43:43 -0700 (PDT)
-Received: from [192.168.0.251] (dsl-hkibng42-5673c7-93.dhcp.inet.fi. [86.115.199.93])
-        by smtp.gmail.com with ESMTPSA id v20-20020a05651203b400b0047255d210e4sm7592506lfp.19.2022.07.08.12.43.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 12:43:42 -0700 (PDT)
-Message-ID: <9a925f87-a78b-0164-bdaf-99e14dc943cd@gmail.com>
-Date:   Fri, 8 Jul 2022 22:43:41 +0300
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=N8DWxr3cOGfGJ0M5r5IGNCu5UhFIYsIjqooNs/duLE4=;
+        b=c+kO+ieuSbxXjg10rzFPakfwG2PwUpUGTaF5h6cRjVDtYOcGc661tFKhPnhbdVcAH0
+         BUCYWjUw0yXuJvrjHipBNVHxE92emD4r6JfmJhv/jgM7/2TSMn5WLaXTF4vCztQt86pw
+         0ABw42OM/luMu+YOBEVhyESG06pAxGa9yipqaZK9R8J85efIwiLsb6tteO9ED10+fH5U
+         oRCoQai2e0PgWhAMtx+ff1vDxD/00/cAsWY9092pW0sjtkUhgcwqcaJSybBpAboAjweb
+         9v/ToGhNpDtoqpvK0Bs0EIvgVkdrhOk8CKbkUbFw8JAH4FNWSeHsAfJg11lwy9RA9FVj
+         D2iw==
+X-Gm-Message-State: AJIora/dNWNHT6QqOaiHeB1Y/PTvt1r6bXY/45aGEJaC6YyttlgjJJ74
+        HZmYmbpfROIFW43DE0g5JSE=
+X-Google-Smtp-Source: AGRyM1sKA/NE86R2wmVR+KhxAYqabDrR+Ti+/AoQzGgzdZR9rQiTHTywPJ5wdrOd0jjN/U/0NRATgg==
+X-Received: by 2002:a17:902:cecd:b0:16a:5cab:4721 with SMTP id d13-20020a170902cecd00b0016a5cab4721mr5301233plg.104.1657309507293;
+        Fri, 08 Jul 2022 12:45:07 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id o9-20020a63e349000000b0040cf934a1a0sm28160649pgj.28.2022.07.08.12.45.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 12:45:06 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?iso-8859-2?q?Rafa=B3_Mi=B3ecki?= <rafal@milecki.pl>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] arm64: dts: broadcom: bcm4908: Fix timer node for BCM4906 SoC
+Date:   Fri,  8 Jul 2022 12:45:05 -0700
+Message-Id: <20220708194505.1857628-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220708182507.23542-1-william.zhang@broadcom.com>
+References: <20220708182507.23542-1-william.zhang@broadcom.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2,1/5] pinctrl: qcom: spmi-gpio: Add pm8226 compatibility
-Content-Language: en-US
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Dominik Kobinski <dominikkobinski314@gmail.com>
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
-References: <20211125213451.62010-1-dominikkobinski314@gmail.com>
- <20211125215310.62371-1-dominikkobinski314@gmail.com>
- <CACRpkdau+wHpoWa1JrLt35dnCHJejs8HZkkzZCrrcnRCx3SinQ@mail.gmail.com>
-From:   =?UTF-8?Q?Matti_Lehtim=c3=a4ki?= <matti.lehtimaki@gmail.com>
-In-Reply-To: <CACRpkdau+wHpoWa1JrLt35dnCHJejs8HZkkzZCrrcnRCx3SinQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.11.2021 2.49, Linus Walleij wrote:
-> On Thu, Nov 25, 2021 at 10:53 PM Dominik Kobinski
-> <dominikkobinski314@gmail.com> wrote:
+On Fri,  8 Jul 2022 11:25:06 -0700, William Zhang <william.zhang@broadcom.com> wrote:
+> The cpu mask value in interrupt property inherits from bcm4908.dtsi
+> which sets to four cpus. Correct the value to two cpus for dual core
+> BCM4906 SoC.
 > 
->> Add support for pm8226 SPMI GPIOs. The PMIC features
->> 8 GPIOs, with no holes inbetween.
->>
->> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->> Suggested-by: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
->> Signed-off-by: Dominik Kobinski <dominikkobinski314@gmail.com>
+> Fixes: c8b404fb05dc ("arm64: dts: broadcom: bcm4908: add BCM4906
+> Netgear R8000P DTS files")
 > 
-> I applied this to the pinctrl tree.
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > 
-> Is there anything else I should be applying?
-> 
-> Yours,
-> Linus Walleij
+> ---
 
-I noticed that this patch was never applied into kernel while the other 
-patches such as the device tree documentation were applied. Maybe it was 
-missed accidentally? I checked also the pinctrl tree and didn't find the 
-commit there either in the branches for the upcoming releases.
-
--Matti
+Applied to https://github.com/Broadcom/stblinux/commits/devicetree-arm64/fixes, thanks!
+--
+Florian
