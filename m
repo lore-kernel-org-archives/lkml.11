@@ -2,124 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FF1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0955C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240408AbiGHVI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 17:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59626 "EHLO
+        id S240426AbiGHVJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 17:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240214AbiGHVI4 (ORCPT
+        with ESMTP id S240346AbiGHVI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Jul 2022 17:08:56 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2807B367
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3D27B34F
         for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 14:08:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1657314535; x=1688850535;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gFLK1shtx1D6SxBo2Bo4N8I275mKD06V5N6e5VArP+Q=;
-  b=HNBz9i/a9pHDUsyGr90Od5bV5bvksbxFCnhIcJZQ5Lc2kSsvMGzBEJUV
-   DVzWay9GSncxXunKnJMm+pLEbSkt7WP0q9UJQXgUnZgjqqgwqoS/S4aip
-   O+jz+s8bpJFrV9qaPtbRblL3YuZIjZnGDK+SgrUveuHvts3L8YtuywjI3
-   yWr7JcSbRQKTpDE6P5KJ1IbpHB4C0Mx8pclBbVuxy6vvrDBfmKoFXuNb7
-   FecGIWl8O7vdbLaFZVvwnqDnWME9eV2JLSx1jSGaTJVb2YxDgpcqE6h9e
-   /kMnj4IZtGi2Io+dr++TmZc/dwf1kjb3ncs7CQiD9Dts/noK7OZDYdyrT
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aYeqEtB0ol/kEHCAJj+GSoyDW6QM2eAkrk+BT95dSLk=;
+  b=NG5CEipFoPJlUQ0pZD6Rfugmz42KW3HumJHtqTL/UkdPyoQLeoTVDDON
+   Z41e2mh5+yplWWn6xNbr1jionzHeCmu3uGRusovQ5uZ5yIv4BK/Q2EqDs
+   0OcmeGjq8czwqUJc4vZejtC4zkq1akBFQJzXf6ELkznK4fEfMsnlbW8ZD
+   Q5fzWMc/W58i7bXMSL7ZiekaQEkGLXCf1Q21cQb71at54yNJ0BfKAxVo+
+   f4sPDHzLjpQ2meL+heXPMXAChrRO/nTtAIXQyxvFvb5gd9HMoaPLvkBTn
+   LHO9vh7a7JRLE+0Gbz7W+NfZ2EJHClQ6X3ENJXwIQ9Px8rAzizq3p8N11
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="370678950"
+X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="285494234"
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="370678950"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 14:08:54 -0700
+   d="scan'208";a="285494234"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 14:08:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="626831689"
+   d="scan'208";a="569078341"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 08 Jul 2022 14:08:53 -0700
+  by orsmga006.jf.intel.com with ESMTP; 08 Jul 2022 14:08:53 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 90784CE; Sat,  9 Jul 2022 00:09:00 +0300 (EEST)
+        id B12A35AD; Sat,  9 Jul 2022 00:09:00 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     john.garry@huawei.com
-Subject: [PATCH v2 1/4] bus: hisi_lpc: Don't dereference fwnode handle
-Date:   Sat,  9 Jul 2022 00:08:56 +0300
-Message-Id: <20220708210859.6774-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 4/4] bus: hisi_lpc: Don't guard ACPI IDs with ACPI_PTR()
+Date:   Sat,  9 Jul 2022 00:08:59 +0300
+Message-Id: <20220708210859.6774-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220708210859.6774-1-andriy.shevchenko@linux.intel.com>
+References: <20220708210859.6774-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use dev_fwnode() and acpi_fwnode_handle() instead of dereferencing
-an fwnode handle directly, which is a better coding practice.
-
-While at it, reuse fwnode instead of ACPI_COMPANION().
+The OF ID table is not guarded, and the ACPI table does not needs it either.
+The IDs do not depend on the configuration. Hence drop ACPI_PTR() from the
+code and move ID table closer to its user.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Acked-by: John Garry <john.garry@huawei.com>
 Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
-v2: added tags (John, Rafael), tweaked commit message (John)
- drivers/bus/hisi_lpc.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+v2: added tags (John, Rafael), improved commit message (John)
+ drivers/bus/hisi_lpc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 2e564803e786..6d432a07cbba 100644
+index a6513a571d7b..74f4448bff9d 100644
 --- a/drivers/bus/hisi_lpc.c
 +++ b/drivers/bus/hisi_lpc.c
-@@ -347,7 +347,7 @@ static int hisi_lpc_acpi_xlat_io_res(struct acpi_device *adev,
- 	unsigned long sys_port;
- 	resource_size_t len = resource_size(res);
+@@ -589,11 +589,6 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
  
--	sys_port = logic_pio_trans_hwaddr(&host->fwnode, res->start, len);
-+	sys_port = logic_pio_trans_hwaddr(acpi_fwnode_handle(host), res->start, len);
- 	if (sys_port == ~0UL)
- 		return -EFAULT;
- 
-@@ -615,7 +615,6 @@ static void hisi_lpc_acpi_remove(struct device *hostdev)
- static int hisi_lpc_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+-
+-static const struct acpi_device_id hisi_lpc_acpi_match[] = {
+-	{"HISI0191"},
+-	{}
+-};
+ #else
+ static int hisi_lpc_acpi_probe(struct device *dev)
  {
- 	struct device *dev = &pdev->dev;
--	struct acpi_device *acpi_device = ACPI_COMPANION(dev);
- 	struct logic_pio_hwaddr *range;
- 	struct hisi_lpc_dev *lpcdev;
- 	resource_size_t io_end;
-@@ -637,7 +636,7 @@ static int hisi_lpc_probe(struct platform_device *pdev)
- 	if (!range)
- 		return -ENOMEM;
+@@ -688,11 +683,16 @@ static const struct of_device_id hisi_lpc_of_match[] = {
+ 	{}
+ };
  
--	range->fwnode = dev->fwnode;
-+	range->fwnode = dev_fwnode(dev);
- 	range->flags = LOGIC_PIO_INDIRECT;
- 	range->size = PIO_INDIRECT_SIZE;
- 	range->hostdata = lpcdev;
-@@ -651,7 +650,7 @@ static int hisi_lpc_probe(struct platform_device *pdev)
- 	}
- 
- 	/* register the LPC host PIO resources */
--	if (acpi_device)
-+	if (is_acpi_device_node(range->fwnode))
- 		ret = hisi_lpc_acpi_probe(dev);
- 	else
- 		ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
-@@ -672,11 +671,10 @@ static int hisi_lpc_probe(struct platform_device *pdev)
- static int hisi_lpc_remove(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
--	struct acpi_device *acpi_device = ACPI_COMPANION(dev);
- 	struct hisi_lpc_dev *lpcdev = dev_get_drvdata(dev);
- 	struct logic_pio_hwaddr *range = lpcdev->io_host;
- 
--	if (acpi_device)
-+	if (is_acpi_device_node(range->fwnode))
- 		hisi_lpc_acpi_remove(dev);
- 	else
- 		of_platform_depopulate(dev);
++static const struct acpi_device_id hisi_lpc_acpi_match[] = {
++	{"HISI0191"},
++	{}
++};
++
+ static struct platform_driver hisi_lpc_driver = {
+ 	.driver = {
+ 		.name           = DRV_NAME,
+ 		.of_match_table = hisi_lpc_of_match,
+-		.acpi_match_table = ACPI_PTR(hisi_lpc_acpi_match),
++		.acpi_match_table = hisi_lpc_acpi_match,
+ 	},
+ 	.probe = hisi_lpc_probe,
+ 	.remove = hisi_lpc_remove,
 -- 
 2.35.1
 
