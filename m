@@ -2,97 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55612C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4CC6CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238748AbiGHPN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
+        id S238785AbiGHPOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:14:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235427AbiGHPN6 (ORCPT
+        with ESMTP id S238759AbiGHPON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:13:58 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EA223BD4
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657293236; x=1688829236;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BzeOzLqO978xxyCov4it/ZgIZwyg61Vim6TdwwrQ678=;
-  b=I4uDZOVxwURAHSNaQBec1/QYg1MXUuA+lEFp3jt1N2OXEQgtl+Er5dlc
-   T75FY+UHXQS5Q8QCDqdeTfTvc94We8ofh1G2ZKdJ4XHf7YGMvhMT28TJF
-   F6Or+6M4AbkgkZvsft63Jrm/glmH0pqQypdIQ3hks5YrrlL3nk0CqGwEX
-   Tsi125FqrIuKLYjXibvdIm52YhtzukGtOAfrRh/2Z6r5oOxcVG7SoCgoZ
-   HhelSsSPhfQe7dBxWR6BB03uSkoYbcT5FKRfLsdteitH1aYMEWhZtJQjM
-   M1So3f07NdYIEEX5M37B6KoUwxf1ZADcb2/kmtGoIVaMS5gcycvqwfkfj
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="167018455"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 08:13:55 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 8 Jul 2022 08:13:55 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 8 Jul 2022 08:13:53 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <arnd@arndb.de>, <olof@lixom.net>, <arm@kernel.org>,
-        <soc@kernel.org>
-CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] AT91 fixes for v5.19 #2
-Date:   Fri, 8 Jul 2022 18:16:21 +0300
-Message-ID: <20220708151621.860339-1-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Fri, 8 Jul 2022 11:14:13 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B9230F46;
+        Fri,  8 Jul 2022 08:14:12 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id p129so8549625yba.7;
+        Fri, 08 Jul 2022 08:14:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K0qR0/WRFp+dSGfUNqNNESrvV3EATxxD7VgxKv3r2KA=;
+        b=CqgxYBea7Xw8XvBT6EpataJvt/NaLXh1Uxm9wsKrINnwqJX3Gbz56Df6QnJgWZbcaU
+         dTzBYOavgJ8q6MdQf4bgCfsZhy24Y2CjLnWKjfhmXuSpl+gfbDPsrVLGTCijWOvI7VVW
+         OuRlwZmYd0mN37Dzrf3Kner0I7hXKzgLj4G9okLcUbchcICzwsWM3QtqTsE6v4vKw/ZE
+         liT8laDllBnSuA2LSkq0IxnT7ar0xNj4TBgCD/AScz536LD+AYFqmnqf80O9HrQV0F8o
+         VrURbpzS8hamWc6dvmqn/vydN0p+9cbeKAvvSu/x9u3YD1nyNc8NZKDzTjD/l2nJc27n
+         7CDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K0qR0/WRFp+dSGfUNqNNESrvV3EATxxD7VgxKv3r2KA=;
+        b=p0aCCWO2uASzVIzpRCrCcaw7JYlq8EymExqdMIpFwa780EQqez/AaTWqbviOJRqluR
+         jYdw4WXT/jMCeMv3uSr3UheuFxO2tT18BvILmMKwqOrRA31ulnTWutkicw4smgkj0e1T
+         AktS03DEf5zqU6IhQQ0CBdIOdJzjww4kWM4408cmVNypV6Fd/3iRQDvuPxVa24cpbt5f
+         XB6HBG//BeGJOw0nub0Ze/zZT5zZsPR769OU0Hr7yHRnkmueIlFY8/94YFa9BD8xsWsS
+         daa7aSp5XGQzEIXoCIgd8bGz/8fa6LRoBKg3ysgCg72N7ESqyIqV1NfXlV3bUWehwFb3
+         NC1A==
+X-Gm-Message-State: AJIora/UxcgdXlTsq84IwMuo62K/BIxiQXksas+7juv8TWkqeNbBGl7v
+        /t4dy+g3VBXjhgRoPG4eCTIbSLaFBO5gvqontKY=
+X-Google-Smtp-Source: AGRyM1saoM2+5oEj3fiXHKMiUuO+fy8OeA39Dff92b/anSd471hPJoxxEr02uRCnKwb+GctLJrfZr3s8YDh6Nob616I=
+X-Received: by 2002:a05:6902:154c:b0:66e:8254:146e with SMTP id
+ r12-20020a056902154c00b0066e8254146emr4447945ybu.570.1657293251579; Fri, 08
+ Jul 2022 08:14:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <585795d19c13a7136bc4b61307114591af2aea69.1657279521.git.viresh.kumar@linaro.org>
+ <CAMRc=MdHAZ=OE+jjxx5BV_4Z2L4g0WmEVaiyifN+nu2JnMx82g@mail.gmail.com>
+In-Reply-To: <CAMRc=MdHAZ=OE+jjxx5BV_4Z2L4g0WmEVaiyifN+nu2JnMx82g@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 8 Jul 2022 17:13:34 +0200
+Message-ID: <CAHp75VdWe_EaJB3Bqz13rb362uDBTJAGaVh7Sjeq874tm=wrgA@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: cdev: Don't access uninitialized descriptor
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Dipen Patel <dipenp@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Arnd, Olof, ARM SoC maintainers,
+On Fri, Jul 8, 2022 at 3:32 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> On Fri, Jul 8, 2022 at 1:25 PM Viresh Kumar <viresh.kumar@linaro.org> wrote:
 
-In case it is not too late, please pull these 2 fixes for 5.19.
-They are necessary for proper working of:
-- I2S1 interface on SAMA5D2
-- switch available on kswitch-d10 based boards.
+...
 
-Thank you,
-Claudiu Beznea
+> Kent beat you to it with commit c8e27a4a5136e7230f9e4ffcf132705bf56864cc.
 
-The following changes since commit 91d60e259c0f58c855f88f3fe5b7909aec563525:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c8e27a4a5136e7230f9e4ffcf132705bf56864cc
+Notice: this object is not reachable from any branch.
 
-  ARM: at91: pm: Mark at91_pm_secure_init as __init (2022-06-28 12:55:32 +0300)
+Rebased?
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/at91-fixes-5.19-2
-
-for you to fetch changes up to 2fdf15b50a46e366740df4cccbe2343269b4ff55:
-
-  ARM: dts: at91: sama5d2: Fix typo in i2s1 node (2022-07-08 17:44:33 +0300)
-
-----------------------------------------------------------------
-AT91 fixes for 5.19 #2
-
-It contains 2 DT fixes:
-- one for SAMA5D2 to fix the i2s1 assigned-clock-parents property
-- one for kswitch-d10 (LAN966 based) enforcing proper settings
-  on GPIO pins
-
-----------------------------------------------------------------
-Michael Walle (1):
-      ARM: dts: kswitch-d10: use open drain mode for coma-mode pins
-
-Ryan Wanner (1):
-      ARM: dts: at91: sama5d2: Fix typo in i2s1 node
-
- arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi | 8 ++++----
- arch/arm/boot/dts/sama5d2.dtsi                         | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+-- 
+With Best Regards,
+Andy Shevchenko
