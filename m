@@ -2,121 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54977CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 13:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72107C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 13:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238191AbiGHNbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 09:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        id S238197AbiGHNc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 09:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231918AbiGHNbt (ORCPT
+        with ESMTP id S238196AbiGHNcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 09:31:49 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E462F390
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 06:31:48 -0700 (PDT)
-Received: from [192.168.178.53] (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id E7B9966019BD;
-        Fri,  8 Jul 2022 14:31:46 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657287107;
-        bh=9aqKBEmL0mePVbm0H5VgD1JSnIfv5pf2hncBFPn3xBc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=R0CLTGeYI4w4Tf9rZXPEZvkC2OGM7L1krC9voBm79jzgDd3rImBOZZhjpBn8cMkM3
-         LZ78QLZTevWRBvNKLbMZIWmc3eIF9059xfwnR8IwKsPrWmhmZQY6uPsXEnDpG/kgFN
-         F3qo/6O0n4njt5VADrPuLpnJUP/UB+gfiCUi7OMY8y6Kquipv3jSP2iuNFB7SzkMqr
-         TnLZZFVo1fALcrAFRk/yhCjKOZYq58vwcb4nfhuclyMlEhTSzD9scWfcUxP+V4rvXw
-         PEBV+Ye/ZfIz7bvOoiE9zKEy0mZdUrI7l/HwSKNhwRAekDqa70cZR0kls26d37TQSn
-         M8d60n/WXHwSA==
-Message-ID: <9546dda7-48ec-58fe-d464-53338948b0d3@collabora.com>
-Date:   Fri, 8 Jul 2022 14:31:44 +0100
+        Fri, 8 Jul 2022 09:32:24 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555DD2CDD5
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 06:32:23 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id e7so1673521qts.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 06:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=Yu8bKYHlHx+dbL+sw5q4ZRjn4fcee2CGtMmXinJvd+o=;
+        b=lY7hu066xUzcIPr5UD259wVv9tm24Aiv8xv3EQDHIa7pTX8DiAkoXNDgAydq0rTAU9
+         Cz9TuaHrjf2ikc6wmyiA9loansNDWN21rEMN6Ui+IvKWmhdNuGb9HiuiqoL5flj5/hso
+         CwgngzRxtPC6wfCBamtm6LzR9nxj5sqqw/4RtcV7461qSGIMGBeqnPw/DF4F1Av9eIRf
+         cqQ9356+V7IVsFw8iB7db4Q3WiOGoottS7uPymvy6FluV1b16WCV/zaWqBsM89d9dAEi
+         kjm1A5sS0LJA5yAQKngHzyVh6k2Wr0pxiP3bLeQ7OowW5O1keZEn6H+COK6Wfp22Fapc
+         ogHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=Yu8bKYHlHx+dbL+sw5q4ZRjn4fcee2CGtMmXinJvd+o=;
+        b=fQCl81q+f2VieW8Tcttsz8Ra9Nbr8lrlCmhmDyY1CZHcMbj8uAy5MND8vcn4f15/vW
+         ncqcth7ZMJOE0s1BZtW1R9lfi3ilQwoASEsLt1D3YtwCtE129tKAo48hYGQaiAS0H+1n
+         wUA21ZuMTLfAPA7SNkI3hUoJoFQVJjd+IOPVzfXzms8q+dFJzDGEpc0SQNLGxzEHzlbQ
+         eJryMItXWNKalpoWP674V+a4ZS64tt+Wm3lCxKr47IEhROwRXMyYoY+wfTwYUhHXByG/
+         KTrDlaboMYxf4Z4hxm2fLE268LLzPrOEEK3jaJYOLEuFeV0H/tZeKArLJTBa8hignWKH
+         QunQ==
+X-Gm-Message-State: AJIora+ZpCR3MNUf0srkyycgoDuWvHpXG033TKHB+ekB0QhpIhUzkUt/
+        UegGpXMdtxzq5lcXPfGYQZ4YHw==
+X-Google-Smtp-Source: AGRyM1uyuIWyl91hCY2bh60iyU9jBQdwPs2f+kbRSM+PSbqNROmEadcwNKqkO4tizj21zxRlydHeVw==
+X-Received: by 2002:a05:6214:1c89:b0:46e:4048:ca2c with SMTP id ib9-20020a0562141c8900b0046e4048ca2cmr2703474qvb.60.1657287142094;
+        Fri, 08 Jul 2022 06:32:22 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
+        by smtp.gmail.com with ESMTPSA id h16-20020a05620a401000b006a6a7b4e7besm39100667qko.109.2022.07.08.06.32.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 06:32:21 -0700 (PDT)
+Message-ID: <2f35d8250ce133e21eb3987977a92af583e32d0d.camel@ndufresne.ca>
+Subject: Re: [EXT] Re: [PATCH] media: amphion: only insert the first
+ sequence startcode for vc1l format
+From:   Nicolas Dufresne <nicolas@ndufresne.ca>
+To:     Ming Qian <ming.qian@nxp.com>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "hverkuil-cisco@xs4all.nl" <hverkuil-cisco@xs4all.nl>
+Cc:     "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Fri, 08 Jul 2022 09:32:20 -0400
+In-Reply-To: <AM6PR04MB63416B4BA53E80123037AC8EE7809@AM6PR04MB6341.eurprd04.prod.outlook.com>
+References: <20220628052017.26979-1-ming.qian@nxp.com>
+         <6e54af5243d324c5df1c9ec18d4b091fbd52150f.camel@ndufresne.ca>
+         <AM6PR04MB6341F4EB028CAE9B61C85157E7819@AM6PR04MB6341.eurprd04.prod.outlook.com>
+         <AM6PR04MB634136824EC98EE804FAD0CEE7819@AM6PR04MB6341.eurprd04.prod.outlook.com>
+         <42ba6a9516f4359b757d2f94b16c1bb23cc41cb2.camel@ndufresne.ca>
+         <AM6PR04MB63416B4BA53E80123037AC8EE7809@AM6PR04MB6341.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v10 04/11] drm/i915/gem: selftest should not attempt mmap
- of private regions
-Content-Language: en-US
-To:     Matthew Auld <matthew.auld@intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>, kernel@collabora.com,
-        linux-kernel@vger.kernel.org
-References: <20220707200230.1657555-1-bob.beckett@collabora.com>
- <20220707200230.1657555-5-bob.beckett@collabora.com>
- <6e387f90-dce3-486d-83e9-26a975777265@intel.com>
- <08d33248-be80-15ab-d245-a6e23fe55423@collabora.com>
- <68231920-8eef-1e10-df40-ac8cd0dd0802@intel.com>
-From:   Robert Beckett <bob.beckett@collabora.com>
-In-Reply-To: <68231920-8eef-1e10-df40-ac8cd0dd0802@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Le mercredi 06 juillet 2022 =C3=A0 04:09 +0000, Ming Qian a =C3=A9crit=C2=
+=A0:
+> > Can't you save the slow copy by using data_offset then ? I think most o=
+f the
+> > confusion comes from this commit message, someone else then you should =
+be
+> > able to understand what it means.
+>=20
+> I'll modify the commit message that remove the unrelated vp8 description.
+> And unfortunately the amphion vpu only support the ring buffer mode, so
+> copying is inevitable.
 
+Great thanks, I had forgotten that Amphion was based on a ring buffer. Inde=
+ed,
+this is the way to go, same applied to CODA driver.
 
-On 08/07/2022 14:27, Matthew Auld wrote:
-> On 08/07/2022 14:22, Robert Beckett wrote:
->>
->>
->> On 08/07/2022 08:53, Matthew Auld wrote:
->>> On 07/07/2022 21:02, Robert Beckett wrote:
->>>> During testing make can_mmap consider whether the region is private.
->>>
->>> Do we still need this with: 938d2fd17d17 ("drm/i915/selftests: skip 
->>> the mman tests for stolen") ?
->>
->> huh, I guess not. That wasn't in my tree. I guess I should rebase.
->>
->> Looking at it, my patch would have been preferable initially I think. 
->> Each location of the additional checks in that patch first call 
->> cam_mmap(), which I think is the most appropriate place to make the 
->> decision.
-> 
-> It fails at the object_create() I think (on small-BAR I mean), which is 
-> before we can call can_mmap(), passing in the object.
+Nicolas
 
-ah, okay. That makes sense to keep as is then.
-I'll drop this patch.
-Thanks.
-
-> 
->>
->> I could do a replacement patch that reverts that one if preferred, or 
->> we can leave it as is and I will drop this patch.
->>
->>
->>>
->>>>
->>>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
->>>> Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
->>>> ---
->>>>   drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c | 3 +++
->>>>   1 file changed, 3 insertions(+)
->>>>
->>>> diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c 
->>>> b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
->>>> index 5bc93a1ce3e3..76181e28c75e 100644
->>>> --- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
->>>> +++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
->>>> @@ -869,6 +869,9 @@ static bool can_mmap(struct drm_i915_gem_object 
->>>> *obj, enum i915_mmap_type type)
->>>>       struct drm_i915_private *i915 = to_i915(obj->base.dev);
->>>>       bool no_map;
->>>> +    if (obj->mm.region && obj->mm.region->private)
->>>> +        return false;
->>>> +
->>>>       if (obj->ops->mmap_offset)
->>>>           return type == I915_MMAP_TYPE_FIXED;
->>>>       else if (type == I915_MMAP_TYPE_FIXED)
