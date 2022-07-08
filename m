@@ -2,111 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB27C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7119FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 21:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240083AbiGHVDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 17:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S240085AbiGHVG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 17:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239883AbiGHVDg (ORCPT
+        with ESMTP id S239867AbiGHVGz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 17:03:36 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A1D38B0
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 14:03:33 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id k30so20090008edk.8
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 14:03:33 -0700 (PDT)
+        Fri, 8 Jul 2022 17:06:55 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208DA2BB2F
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 14:06:55 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id p9so101779pjd.3
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 14:06:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9D1dMV/wl41srQTjtMRnPPYS9ui9XJnIPQ6Za9rlFlg=;
-        b=Mlj28zlSyiapgPsOC25mOdGjceagThnpsZDNvLIpB7QkJW/z+m4J3T6Vk8spQtLuNB
-         2eWAunXuB/JvF8RbkQfVwtJSh49Ok/ziOZisiRDpFnXJpR0JdPBUL7U0IW0PPf9T7vgv
-         NV5gxcEPQV45UetlaHVv3DZIizscOXMC80vExiOL93YMySdvKLSnu0hLum2XqRQl/xOw
-         Rz4bevfs/GtrIiMAGs14zhOXpTGOH9YD1qXnW8gqMEeP55u4atRTA2lxBgVPGwvAqSZo
-         2zbeWe5zWAAZgfSIcEMZPZp3Qho6vrLkSmuR/FRN2l/2QZVLb9UtfTL356262LScfrma
-         fA2A==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IZe5BMNx4cRlflSd59EdV/q4BTwE2ovrynFT6CtNL1s=;
+        b=GReZq6IymToQ/dN6s1ulHlQPvao/0nKSKS8kk8ZYMO12XvWkLDPzmues+WwFov59A9
+         0YD1gSY8uPmSflPoSBBzUa9FenubKzFSeZBhK70Tu/0t8IyJHy+XNjCkjgkjrJw26KZF
+         q6ZIQp3GqnZLaMFt9jkUMKbz/Pwf+2dUH6SZ7gicP2CVb1Hhs3VBgr0kpeEd6p27vHn0
+         DV1OwuMi+YKSGDaRPowUgJY4X38VZxOkTDDB/QNXZhFWOx9kblJ6Dil7EtS55DHi4uAS
+         yJ7ENLYy0JYMild3rwUtxdvMUwn00qSkxNeOLuk0dQuwfQY4IExkZVaYG5jCoV0drar1
+         2isw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9D1dMV/wl41srQTjtMRnPPYS9ui9XJnIPQ6Za9rlFlg=;
-        b=P4O8eT7+QwyfKQVBFDwL4F+GIkyP7+uOgVBMdrYuZqBTcONVNPHRtuGX35vvkPoIJY
-         23XQsLj+YKrUY9GX9HCy7HpEp+eRWIZ2AGbeqaZnUnFLpwxxpzJ9Ky7qibmfZxqpX86y
-         M6GN7FqLUpQdcfeFFrt0Hr0lAMpkpHkPqetnlR6z7LrKn53ls+irJmNaHvYDBSGlU7fR
-         j3VF/fIap3oip9xWeIANdTBBmH4gbwq7+ovQz4bZwQqY9kiLc03Me4c+D7Xjcq9X5zkV
-         icRVYBkI9UxYqQ3/U2GihHVMzTQvQBdUQoNNorxBVjlJrIIFutiBNViCDyNkLWfnwNnz
-         RrVw==
-X-Gm-Message-State: AJIora/g8QOIGD4Kqwd5spRdls+EV94OIGgGw1DuBP5Qaav4JYxIPlG2
-        DUkMXomtYVVzLt/Yw3hgs2vLKwJqqlD2RTEvTZtzpA==
-X-Google-Smtp-Source: AGRyM1tbbwYUYYk8XsfwFscqxkdupkHc0W0XT3xF1BJa3FD/cJrFY8UDnnp5VugaDFT3MkN/EHCuTvnbkg4NIYarsF4=
-X-Received: by 2002:a05:6402:5306:b0:437:8bbd:b313 with SMTP id
- eo6-20020a056402530600b004378bbdb313mr7426246edb.123.1657314212044; Fri, 08
- Jul 2022 14:03:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IZe5BMNx4cRlflSd59EdV/q4BTwE2ovrynFT6CtNL1s=;
+        b=yf7eeYIXV9pykI1NUo5u/W000uuD5pI4gTh9X545BOFbOHv16QiuHLne8zLaH+Zydn
+         cq/4erarVNJba4S3IajyoZ7TdSgjS2BlZPRMcXJzZhaztqNj9a5CP0uTXJVBfM06WbBa
+         bNelMRqvE0XlL5RZdk9JXSjdG4rRrUEiCzhKm+1pjNN6sDzrvnhlA09yy5BmImNbWpz/
+         wpuul7UxfL36kMEgbLq6jx+3grQGQ4np4MnP5xaYbEAB0YD20s3ccGqIumFzf24B2nZx
+         3zCYwx+1D0N1pypVwV8HyiTOaKWa6sT5Mp/H7stlMa7u+GImuHQ6G4QvixeJmVaNsXqm
+         pw5g==
+X-Gm-Message-State: AJIora/eUxj9oETloLzDOL5wbW7cw/VKTdbdxXJxbgE9AeZbuB769d62
+        MJdkfEmUog+K1f0jcasW7m8=
+X-Google-Smtp-Source: AGRyM1up9bBi68PXZcgPwVraAr6U0D0Epe/O07p32PfUlajGLsQfm+xDmERZouVZIzuBh72DeY9Akw==
+X-Received: by 2002:a17:903:2287:b0:16c:b0d:2e99 with SMTP id b7-20020a170903228700b0016c0b0d2e99mr5644300plh.120.1657314414481;
+        Fri, 08 Jul 2022 14:06:54 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id g81-20020a625254000000b0051be16492basm2996pfb.195.2022.07.08.14.06.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 14:06:53 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        kursad.oney@broadcom.com, anand.gore@broadcom.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 7/8] MAINTAINERS: Move BCM63138 to bcmbca arch entry
+Date:   Fri,  8 Jul 2022 14:06:52 -0700
+Message-Id: <20220708210652.2659104-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220707070037.261532-8-william.zhang@broadcom.com>
+References: <20220707070037.261532-1-william.zhang@broadcom.com> <20220707070037.261532-8-william.zhang@broadcom.com>
 MIME-Version: 1.0
-References: <20220706184133.210888-1-ezequiel@vanguardiasur.com.ar> <2ae24b07-92ae-8bdb-8b2d-f90a4a9557a9@redhat.com>
-In-Reply-To: <2ae24b07-92ae-8bdb-8b2d-f90a4a9557a9@redhat.com>
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Date:   Fri, 8 Jul 2022 18:03:21 -0300
-Message-ID: <CAAEAJfCwmdJEoayanWLodd9mj3hx0Y_4BME10SeTu4MF7pvWyw@mail.gmail.com>
-Subject: Re: [PATCH] drm/ssd130x: Fix pre-charge period setting
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Airlie <airlied@linux.ie>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 5:37 AM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
->
-> Hello Ezequiel,
->
-> Thanks a lot for your patch.
->
-> On 7/6/22 20:41, Ezequiel Garcia wrote:
-> > Fix small typo which causes the mask for the 'precharge1' setting
-> > to be used with the 'precharge2' value.
-> >
-> > Signed-off-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-> > ---
-> >  drivers/gpu/drm/solomon/ssd130x.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-> > index 08394444dd6e..f4886e66ff34 100644
-> > --- a/drivers/gpu/drm/solomon/ssd130x.c
-> > +++ b/drivers/gpu/drm/solomon/ssd130x.c
-> > @@ -350,7 +350,7 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
-> >
-> >       /* Set precharge period in number of ticks from the internal clock */
-> >       precharge = (SSD130X_SET_PRECHARGE_PERIOD1_SET(ssd130x->prechargep1) |
-> > -                  SSD130X_SET_PRECHARGE_PERIOD1_SET(ssd130x->prechargep2));
-> > +                  SSD130X_SET_PRECHARGE_PERIOD2_SET(ssd130x->prechargep2));
->
-> It's a typo indeed. Nice catch!
->
-> I wonder how did you notice this. Or was it just looking at the code ?
->
+On Thu,  7 Jul 2022 00:00:37 -0700, William Zhang <william.zhang@broadcom.com> wrote:
+> Move BCM63138 related files to BCMBCA ARCH maintainer list entry and delete
+> the BCM63XX ARM ARCHITECTURE entry
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> ---
 
-Indeed, I was just reviewing the code while getting a SH1106 display to work.
-
-> Acked-by: Javier Martinez Canillas <javierm@redhat.com>
->
-> I'll push it to drm-misc (drm-misc-fixes).
->
-
-Thanks!
-Ezequiel
-
-> --
-> Best regards,
->
-> Javier Martinez Canillas
-> Linux Engineering
-> Red Hat
->
+Applied to https://github.com/Broadcom/stblinux/commits/maintainers/next, thanks!
+--
+Florian
