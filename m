@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15EF7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C081C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239046AbiGHQCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        id S238313AbiGHQCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238955AbiGHQCS (ORCPT
+        with ESMTP id S238998AbiGHQCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:02:18 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E78774DE3;
-        Fri,  8 Jul 2022 09:02:17 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id bi22-20020a05600c3d9600b003a04de22ab6so1331926wmb.1;
-        Fri, 08 Jul 2022 09:02:17 -0700 (PDT)
+        Fri, 8 Jul 2022 12:02:23 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982F66D571;
+        Fri,  8 Jul 2022 09:02:22 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id n10so5849810wrc.4;
+        Fri, 08 Jul 2022 09:02:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=97AxfpAWfhGkMoo8Yg3C7zAZZuUe0uLsnJoPG2mxaas=;
-        b=Tgd4//j03OaTHomdF+WtWzypzyJB/34J5Xsqnb96pe2bH2TdwiPfNqkWT/iFDIfca/
-         fm58KtjobLqgUx0Xubk23MLW8iLqUNJ6tJiDfrQfCnWyC21nHX128F778sLkBThS9LtV
-         8+JyGzdq69VkT74h7fEYbCP76au9u/at3iZ/3hA9KLO0vZsSYbPmP07jHZbs8XpPtUZd
-         HRnmwDXA+MPtfliEtPiVjuPgxmqUL1w0ENFopP4LONj71l197cEf5LBgfsE/pixwe6hr
-         eu/U5g/5cgXprBezuPXxLBg1Rh0y771j7wU5HfocR2XZLy4BOWXhl1XZD2aaLwwX9E29
-         1ykg==
+        bh=G5dmS78zz1zwy89jfeWA97TI8jj2tS8e0cDJN/8sutk=;
+        b=oO7fgm9eyOrsYEnp7lII/3SEHnt7odEcVUlFpDHfaflg14fCrV81pk8Y9E0odXWY1t
+         c56FzzHYw+rOYdiZ2O2dGkPnvGzMaq4ZXzInxsYtSHMc55u/K7LtaW/frH7WmFvd3x1q
+         7aIXyPEkQMeuAvDHD4hQ1lF0Aa+LU+xWs3Av7W+JEIqY5tVeYziuqc2juIyODqQDn3KN
+         opMTI7WhTb/s3A7luoWOgJLqjN+Zm10p14Ifw2vaRR0Pb2fMcho6WMRO9ZsSILZZqJJV
+         G0m9y2MeUjR8HQ7lnOWz6oRwVxsY9dqlNTXrqOpwbHD+lFrFsnQeZpY/VZ7+iSYIgQKZ
+         fAsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=97AxfpAWfhGkMoo8Yg3C7zAZZuUe0uLsnJoPG2mxaas=;
-        b=D15B7LvAKNwn0ywYavP4ETT/aIDC8MVzB+lGPBMKTbC9TDBHj4Roj32jZKalGzvIsM
-         8FiR7aNFoOX5v5yD491aVBk7NyNHC4sF9UQoI7Y126UXptI0RfxwQziulGEIDHZBvjSH
-         pQ/CYTizDNRA3Hl0IpkC6JFQLWgrJqwilxaa8IfkmZQczJGGuT24eJd0YQCy6thdQLvq
-         +lp00ucjCGxaTLfqu/kwTiD3efD6TB2Vsv3hHFUuDAJISryezkCLa1qUGNfZfVASEL5O
-         7ZvxsM4wRFQl9V1CHm4u8W9KvU4+NohrxDp3vSGdAgN6CIvqyQ2/GRv1qUaL3C9peWnK
-         sU5w==
-X-Gm-Message-State: AJIora9sTCY21/9TilVLJBWPHdnlqEv+V/ByvtofUCJbO26Dcxcv1/jw
-        292ETqFSQl4ov/fKrhr4yds=
-X-Google-Smtp-Source: AGRyM1vlzAQGxkZNFHZozdQtoXTKp82jiQsoc64vAtb+Xac9hNMj0jxwZUwAIuY2oCKLhuDJSpTvIQ==
-X-Received: by 2002:a7b:c4d3:0:b0:3a1:8fbf:f03f with SMTP id g19-20020a7bc4d3000000b003a18fbff03fmr557728wmk.172.1657296136011;
-        Fri, 08 Jul 2022 09:02:16 -0700 (PDT)
+        bh=G5dmS78zz1zwy89jfeWA97TI8jj2tS8e0cDJN/8sutk=;
+        b=AA3mqECwIQesllV62T3O8QDHx5BaNd629TRkU0Qwc4X3NxUy7lUbKDAt+kHtizJipM
+         yLyqv2bE2hmDPQE2C707/uBn9xHnA4y/Uu7vZRULOCDbBkitjK5D7WpF5twjJ1BHTUnD
+         +QIGYJuoJXeEr49hLH1UR/32ENLBgWBr/rLqBaCNiVmsEO8tibzUt7Ev3RYdFBjnKE5G
+         fqoGIZWUZ+Ut2UUmNyK9qd7zuLf9Rk34KyGQW71mxMv52y0rc86TJPmj6RR1YNjUqbso
+         /jTqfbbCKdEypMwxKBVuIF2eUx8iO6zOa6hWIdMToYbsmZ6rKt+cNR0NEp7lBiSk8pj8
+         /sPw==
+X-Gm-Message-State: AJIora9ISY9wGRzrSIaFDIYMqEUA6mLn6ub6nEm7APW39N3jjE/iNLuo
+        6SiQqBrU5d3q3bccrw1RY9o=
+X-Google-Smtp-Source: AGRyM1sIVKhAH2NqKkrY/QEJBblVnvI2M+yCTtt2LnMsL42SB0xHvfPkgeu9SUMyCQUzmrBKWfCmzg==
+X-Received: by 2002:adf:e30b:0:b0:21d:8f3e:a370 with SMTP id b11-20020adfe30b000000b0021d8f3ea370mr3961120wrj.124.1657296141163;
+        Fri, 08 Jul 2022 09:02:21 -0700 (PDT)
 Received: from localhost (92.40.203.144.threembb.co.uk. [92.40.203.144])
-        by smtp.gmail.com with ESMTPSA id o19-20020a05600c339300b0039c4506bd25sm2898287wmp.14.2022.07.08.09.02.15
+        by smtp.gmail.com with ESMTPSA id v17-20020a5d5911000000b0021bbdc3375fsm17499281wrd.68.2022.07.08.09.02.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 09:02:15 -0700 (PDT)
+        Fri, 08 Jul 2022 09:02:20 -0700 (PDT)
 From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 To:     paul@crapouillou.net, lgirdwood@gmail.com, broonie@kernel.org,
         perex@perex.cz, tiwai@suse.com
 Cc:     linux-mips@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 06/11] ASoC: jz4740-i2s: Align macro values and sort includes
-Date:   Fri,  8 Jul 2022 17:02:39 +0100
-Message-Id: <20220708160244.21933-7-aidanmacdonald.0x0@gmail.com>
+Subject: [PATCH v4 09/11] ASoC: jz4740-i2s: Support continuous sample rate
+Date:   Fri,  8 Jul 2022 17:02:42 +0100
+Message-Id: <20220708160244.21933-10-aidanmacdonald.0x0@gmail.com>
 In-Reply-To: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
 References: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
@@ -64,113 +64,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some purely cosmetic changes: line up all the macro values to
-make things easier to read and sort the includes alphabetically.
+The I2S controller on JZ47xx SoCs doesn't impose restrictions on
+sample rate and the driver doesn't make any assumptions about it,
+so the DAI should advertise a continuous sample rate range.
 
 Acked-by: Paul Cercueil <paul@crapouillou.net>
 Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 ---
- sound/soc/jz4740/jz4740-i2s.c | 72 +++++++++++++++++------------------
- 1 file changed, 35 insertions(+), 37 deletions(-)
+ sound/soc/jz4740/jz4740-i2s.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s.c
-index d0791dfa9c7b..0dcc658b3784 100644
+index 9be2f3f1b376..70b9d28a40ce 100644
 --- a/sound/soc/jz4740/jz4740-i2s.c
 +++ b/sound/soc/jz4740/jz4740-i2s.c
-@@ -4,6 +4,9 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/dma-mapping.h>
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-@@ -13,11 +16,6 @@
- #include <linux/regmap.h>
- #include <linux/slab.h>
- 
--#include <linux/clk.h>
--#include <linux/delay.h>
--
--#include <linux/dma-mapping.h>
--
- #include <sound/core.h>
- #include <sound/pcm.h>
- #include <sound/pcm_params.h>
-@@ -35,39 +33,39 @@
- #define JZ_REG_AIC_CLK_DIV	0x30
- #define JZ_REG_AIC_FIFO		0x34
- 
--#define JZ_AIC_CONF_OVERFLOW_PLAY_LAST BIT(6)
--#define JZ_AIC_CONF_INTERNAL_CODEC BIT(5)
--#define JZ_AIC_CONF_I2S BIT(4)
--#define JZ_AIC_CONF_RESET BIT(3)
--#define JZ_AIC_CONF_BIT_CLK_MASTER BIT(2)
--#define JZ_AIC_CONF_SYNC_CLK_MASTER BIT(1)
--#define JZ_AIC_CONF_ENABLE BIT(0)
--
--#define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE GENMASK(21, 19)
--#define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE GENMASK(18, 16)
--#define JZ_AIC_CTRL_ENABLE_RX_DMA BIT(15)
--#define JZ_AIC_CTRL_ENABLE_TX_DMA BIT(14)
--#define JZ_AIC_CTRL_MONO_TO_STEREO BIT(11)
--#define JZ_AIC_CTRL_SWITCH_ENDIANNESS BIT(10)
--#define JZ_AIC_CTRL_SIGNED_TO_UNSIGNED BIT(9)
-+#define JZ_AIC_CONF_OVERFLOW_PLAY_LAST	BIT(6)
-+#define JZ_AIC_CONF_INTERNAL_CODEC	BIT(5)
-+#define JZ_AIC_CONF_I2S			BIT(4)
-+#define JZ_AIC_CONF_RESET		BIT(3)
-+#define JZ_AIC_CONF_BIT_CLK_MASTER	BIT(2)
-+#define JZ_AIC_CONF_SYNC_CLK_MASTER	BIT(1)
-+#define JZ_AIC_CONF_ENABLE		BIT(0)
-+
-+#define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE	GENMASK(21, 19)
-+#define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE	GENMASK(18, 16)
-+#define JZ_AIC_CTRL_ENABLE_RX_DMA	BIT(15)
-+#define JZ_AIC_CTRL_ENABLE_TX_DMA	BIT(14)
-+#define JZ_AIC_CTRL_MONO_TO_STEREO	BIT(11)
-+#define JZ_AIC_CTRL_SWITCH_ENDIANNESS	BIT(10)
-+#define JZ_AIC_CTRL_SIGNED_TO_UNSIGNED	BIT(9)
- #define JZ_AIC_CTRL_FLUSH		BIT(8)
--#define JZ_AIC_CTRL_ENABLE_ROR_INT BIT(6)
--#define JZ_AIC_CTRL_ENABLE_TUR_INT BIT(5)
--#define JZ_AIC_CTRL_ENABLE_RFS_INT BIT(4)
--#define JZ_AIC_CTRL_ENABLE_TFS_INT BIT(3)
--#define JZ_AIC_CTRL_ENABLE_LOOPBACK BIT(2)
--#define JZ_AIC_CTRL_ENABLE_PLAYBACK BIT(1)
--#define JZ_AIC_CTRL_ENABLE_CAPTURE BIT(0)
--
--#define JZ4760_AIC_CTRL_TFLUSH BIT(8)
--#define JZ4760_AIC_CTRL_RFLUSH BIT(7)
--
--#define JZ_AIC_I2S_FMT_DISABLE_BIT_CLK BIT(12)
--#define JZ_AIC_I2S_FMT_DISABLE_BIT_ICLK BIT(13)
--#define JZ_AIC_I2S_FMT_ENABLE_SYS_CLK BIT(4)
--#define JZ_AIC_I2S_FMT_MSB BIT(0)
--
--#define JZ_AIC_I2S_STATUS_BUSY BIT(2)
-+#define JZ_AIC_CTRL_ENABLE_ROR_INT	BIT(6)
-+#define JZ_AIC_CTRL_ENABLE_TUR_INT	BIT(5)
-+#define JZ_AIC_CTRL_ENABLE_RFS_INT	BIT(4)
-+#define JZ_AIC_CTRL_ENABLE_TFS_INT	BIT(3)
-+#define JZ_AIC_CTRL_ENABLE_LOOPBACK	BIT(2)
-+#define JZ_AIC_CTRL_ENABLE_PLAYBACK	BIT(1)
-+#define JZ_AIC_CTRL_ENABLE_CAPTURE	BIT(0)
-+
-+#define JZ4760_AIC_CTRL_TFLUSH		BIT(8)
-+#define JZ4760_AIC_CTRL_RFLUSH		BIT(7)
-+
-+#define JZ_AIC_I2S_FMT_DISABLE_BIT_CLK	BIT(12)
-+#define JZ_AIC_I2S_FMT_DISABLE_BIT_ICLK	BIT(13)
-+#define JZ_AIC_I2S_FMT_ENABLE_SYS_CLK	BIT(4)
-+#define JZ_AIC_I2S_FMT_MSB		BIT(0)
-+
-+#define JZ_AIC_I2S_STATUS_BUSY		BIT(2)
- 
- struct i2s_soc_info {
- 	struct snd_soc_dai_driver *dai;
+@@ -391,13 +391,13 @@ static struct snd_soc_dai_driver jz4740_i2s_dai = {
+ 	.playback = {
+ 		.channels_min = 1,
+ 		.channels_max = 2,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.capture = {
+ 		.channels_min = 2,
+ 		.channels_max = 2,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.symmetric_rate = 1,
+@@ -429,13 +429,13 @@ static struct snd_soc_dai_driver jz4770_i2s_dai = {
+ 	.playback = {
+ 		.channels_min = 1,
+ 		.channels_max = 2,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.capture = {
+ 		.channels_min = 2,
+ 		.channels_max = 2,
+-		.rates = SNDRV_PCM_RATE_8000_48000,
++		.rates = SNDRV_PCM_RATE_CONTINUOUS,
+ 		.formats = JZ4740_I2S_FMTS,
+ 	},
+ 	.ops = &jz4740_i2s_dai_ops,
 -- 
 2.35.1
 
