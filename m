@@ -2,168 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2825C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 13:26:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 931A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 13:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237866AbiGHN02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 09:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
+        id S237981AbiGHN1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 09:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231287AbiGHN00 (ORCPT
+        with ESMTP id S231287AbiGHN1U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 09:26:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5802BB16;
-        Fri,  8 Jul 2022 06:26:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A7746278F;
-        Fri,  8 Jul 2022 13:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95466C341C0;
-        Fri,  8 Jul 2022 13:26:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657286785;
-        bh=YeK2rKgYFw9Z5YIp50Bq4SLxx44Pw1F77wqhyYgPROk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dxi1rh6EyOB3L6/haaLSSSigqOR9JTRr6G70kpzktPFZiEaVhlJGkSQ5e7qA+O/8a
-         +sxayvKXskGqMp/h4GVJFpXrUwPwx3+AHqrdZjDLiOJyXhNoOMiyjlwrRns8CGbNFI
-         /kcs0rmAsjL6dV2N7+nsRpDPIru+SySEhnnQ7+TrA9CjwxIq/eu500MXmc/Km0o5tR
-         dfZqvFXG8Yo6DvR6588IrjAenFnztf6Yh2HArLlxExS71gqVX7iuBwWWcngxwZkxj6
-         jYPvIPLZqHiSYMvUd1LS7gyCyLAtv/suL1mFnRETaaj+zWWEL618664p/bCubkusLK
-         0W9yzEQMI9taA==
-Received: by pali.im (Postfix)
-        id 592A87D1; Fri,  8 Jul 2022 15:26:21 +0200 (CEST)
-Date:   Fri, 8 Jul 2022 15:26:21 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
-Message-ID: <20220708132621.4v2es73h52aq3izn@pali>
-References: <20220321163055.4058-1-pali@kernel.org>
- <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
- <YmK7drS0XgnTQcaf@kroah.com>
- <20220707084840.jvsstvyx2ul5ltb6@pali>
- <YsgsH94PV/wAX0Vu@kroah.com>
+        Fri, 8 Jul 2022 09:27:20 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A7A2CC80
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 06:27:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657286839; x=1688822839;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=l9IHZQoctXuefILwa08DrWHT1twoVyGQpEM+ac2JZDQ=;
+  b=LqCq9JLJHwHtnH4ueAFuRhwrAm/JqFDj96FpRNSUGPDzV4v8zY6aGhix
+   l9sqdwIrvQUp4loOUEhmDYFE9Qq+5VplqHoDYzPvm4jexvUkwCAy22jZQ
+   gTYBkAp5m7HcWMa4EuioeKpOglw3yQnkPR77YPjAmBt3CRrm5ZdolflJE
+   RF9EM9q160ynExnekfxdOSIr/7KLi8Bhdu0iNA65V/dOc5aUueY9xJmNo
+   g/xAgZsEcf6L3t32ZP6wi5Aezk2RAX3F77nvFo73qUFNpKBIqaxNSm5ZO
+   xsC5PUedwkfEHrC3WfshMFXh5Xr4+YGLxNbOTRpjxODpdo1jJW+PhmvmJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="267310013"
+X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
+   d="scan'208";a="267310013"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 06:27:19 -0700
+X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
+   d="scan'208";a="661771827"
+Received: from cmchugh-mobl.ger.corp.intel.com (HELO [10.213.229.21]) ([10.213.229.21])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 06:27:16 -0700
+Message-ID: <68231920-8eef-1e10-df40-ac8cd0dd0802@intel.com>
+Date:   Fri, 8 Jul 2022 14:27:14 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v10 04/11] drm/i915/gem: selftest should not attempt mmap
+ of private regions
+Content-Language: en-GB
+To:     Robert Beckett <bob.beckett@collabora.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
+        <thomas.hellstrom@linux.intel.com>, kernel@collabora.com,
+        linux-kernel@vger.kernel.org
+References: <20220707200230.1657555-1-bob.beckett@collabora.com>
+ <20220707200230.1657555-5-bob.beckett@collabora.com>
+ <6e387f90-dce3-486d-83e9-26a975777265@intel.com>
+ <08d33248-be80-15ab-d245-a6e23fe55423@collabora.com>
+From:   Matthew Auld <matthew.auld@intel.com>
+In-Reply-To: <08d33248-be80-15ab-d245-a6e23fe55423@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YsgsH94PV/wAX0Vu@kroah.com>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
-> On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Rohár wrote:
-> > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
-> > > On Tue, Mar 22, 2022 at 04:29:08PM +0200, Andy Shevchenko wrote:
-> > > > On Mon, Mar 21, 2022 at 11:07 PM Pali Rohár <pali@kernel.org> wrote:
-> > > > >
-> > > > > Support for UPF_SPD_* flags is currently broken in more drivers for two
-> > > > > reasons. First one is that uart_update_timeout() function does not
-> > > > 
-> > > > the uart_update_timeout()
-> > > > 
-> > > > > calculate timeout for UPF_SPD_CUST flag correctly. Second reason is that
-> > > > > userspace termios structre is modified by most drivers after each
-> > > > 
-> > > > structure
-> > > > 
-> > > > ...
-> > > > 
-> > > > > (error handling was ommited for simplification)
-> > > > 
-> > > > omitted
-> > > > 
-> > > > > After calling set_active_spd_cust_baud() function SPD custom divisor
-> > > > > should be active and therefore is_spd_cust_active() should return true.
-> > > > >
-> > > > > But it is not active (cfgetospeed does not return B38400) and this patch
-> > > > > series should fix it. I have tested it with 8250 driver.
-> > > > 
-> > > > drivers
-> > > > 
-> > > > > Originally Johan Hovold reported that there may be issue with these
-> > > > > ASYNC_SPD_FLAGS in email:
-> > > > > https://lore.kernel.org/linux-serial/20211007133146.28949-1-johan@kernel.org/
-> > > > >
-> > > > >
-> > > > > Johan, Greg, could you please test these patches if there is not any
-> > > > > regression?
-> > > > 
-> > > > I'm wondering why we are still supporting this ugly hack?
-> > > > Doesn't BOTHER work for you?
-> > > 
-> > > Yes, I too do not want to add more support for these old flags.  If they
-> > > have not been working, let's not add support for them as obviously no
-> > > one is using them.  Let's try to remove them if at all possible.
-> > 
-> > Well, it works partially. For more drivers SET method is working, but
-> > GET method returns incorrect value. If your userspace application is
-> > written in a way that does not retrieve from kernel current settings
-> > then it has big probability that application works.
+On 08/07/2022 14:22, Robert Beckett wrote:
 > 
-> I do not understand, sorry, what do you mean by this?
-
-I mean that SET methods are working, GET methods not. In this case SET
-done via ioctl(TIOCSSERIAL) and GET via ioctl(TIOCGSERIAL).
-
-> And as you are responding to a months-old thread, I am totally lost, and
-> don't even know what the patch here was...
 > 
-> > So, do you really want to remove support for these old flags completely?
-> > That would of course break above applications.
+> On 08/07/2022 08:53, Matthew Auld wrote:
+>> On 07/07/2022 21:02, Robert Beckett wrote:
+>>> During testing make can_mmap consider whether the region is private.
+>>
+>> Do we still need this with: 938d2fd17d17 ("drm/i915/selftests: skip 
+>> the mman tests for stolen") ?
 > 
-> I'm not saying remove them, I'm saying let us not add any more
-> dependancies on them in order to keep new applications from ever wanting
-> to use them.
-
-Last time you wrote to remove them. Now saying not to remove them. So I
-do not understand you now.
-
-> > Note that usage of BOTHER is problematic and in most cases highly
-> > impossible if you are using glibc libc.so. BOTHER is incompatible with
-> > glibc header files and so you can either include BOTHER/linux termios
-> > file (exclusive) OR glibc header files.
+> huh, I guess not. That wasn't in my tree. I guess I should rebase.
 > 
-> I thought that was all fixed up in newer versions of glibc.  Is that
-> really still the case in the latest release?
+> Looking at it, my patch would have been preferable initially I think. 
+> Each location of the additional checks in that patch first call 
+> cam_mmap(), which I think is the most appropriate place to make the 
+> decision.
 
-In which version you though that it was fixed? Last time when I checked
-it (half year ago) all these issues were there still present. Now I
-briefly grepped glib git source code and seems that nothing was changed,
-no support for BOTHER and neither ABI changes. I also looked into
-changelong of last 3 released glibc versions there is neither no
-information about it.
+It fails at the object_create() I think (on small-BAR I mean), which is 
+before we can call can_mmap(), passing in the object.
 
-> > New version of tcsetattr and ioctl_tty manpages would have documented
-> > how to use BOTHER (it is currently in the manpages git).
-> > 
-> > Currently the only known option how to use BOTHER is to completely
-> > reimplement all functions from "termios.h", provide custom "termios.h"
-> > header file (and not use glibc termios.h nor any file which it includes)
-> > and statically link this reimplementation into final application.
-> > 
-> > So in most cases BOTHER is not alternative to those old SPD flags even
-> > for modern applications.
 > 
-> Using the kernel's .h file should be easy enough here for them, right?
-
-No. Because structures and defines conflicts with glibc structures and
-defines. That is why (ABI incompatible) reimplementation is needed.
-
-> And again, I thought glibc was fixed, what about other libc versions?
-
-musl does not support BOTHER too. And I do not know other libc versions
-which are used in production.
-
-> thanks,
+> I could do a replacement patch that reverts that one if preferred, or we 
+> can leave it as is and I will drop this patch.
 > 
-> greg k-h
+> 
+>>
+>>>
+>>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+>>> Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+>>> ---
+>>>   drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c | 3 +++
+>>>   1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c 
+>>> b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+>>> index 5bc93a1ce3e3..76181e28c75e 100644
+>>> --- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+>>> +++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+>>> @@ -869,6 +869,9 @@ static bool can_mmap(struct drm_i915_gem_object 
+>>> *obj, enum i915_mmap_type type)
+>>>       struct drm_i915_private *i915 = to_i915(obj->base.dev);
+>>>       bool no_map;
+>>> +    if (obj->mm.region && obj->mm.region->private)
+>>> +        return false;
+>>> +
+>>>       if (obj->ops->mmap_offset)
+>>>           return type == I915_MMAP_TYPE_FIXED;
+>>>       else if (type == I915_MMAP_TYPE_FIXED)
