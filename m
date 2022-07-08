@@ -2,211 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85CCCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4010AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239098AbiGHQZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
+        id S239174AbiGHQZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239081AbiGHQY3 (ORCPT
+        with ESMTP id S239286AbiGHQYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:24:29 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0CB7B367;
-        Fri,  8 Jul 2022 09:24:02 -0700 (PDT)
-Received: from tincan.cable.virginm.net (cpc108961-cmbg20-2-0-cust263.5-4.cable.virginm.net [80.5.129.8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: gtucker)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id E1D8566019F8;
-        Fri,  8 Jul 2022 17:23:45 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657297426;
-        bh=qF5KsrDk1wnJCMbBrz32Fq0ehFqJG1C5/xkAwgDIVao=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gNVRYIrUMpLRxmarHugPMhb77UyKxKisiI6DuMBdEOUhG9GDxcsGW/eosdtTqp9r+
-         +97wYjO8StnxOppkGYWjP+KIla386wryEUvMt1vZFbxCc1t68N0iVTKrlmzKlGz6ji
-         Pi2s5JCjVmD5QfGLkqQ0RK6XFUhvyM7ksjClazg+5vKtB+wUtJ0Kzg0IN8tfZ0hJHc
-         FmDhAlQWxEVVu5ZL2W27gAhXuwntSj40UaEyc+3Tl24xbdImZLe8dcC7OINQu9YLhL
-         IkdU70o891yv+tanK6PlH5WN2Wvmp6aMeKCNUb+om0YvRZjj/cMLtQ12SC6sCY3IKw
-         3EMzv8goKhbyw==
-From:   Guillaume Tucker <guillaume.tucker@collabora.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>
-Cc:     kernel@collabora.com, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH 2/4] selftests: stop using KSFT_KHDR_INSTALL
-Date:   Fri,  8 Jul 2022 17:23:28 +0100
-Message-Id: <da799d61cc670da0473e14dceadec3e00cf324aa.1657296695.git.guillaume.tucker@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1657296695.git.guillaume.tucker@collabora.com>
-References: <cover.1657296695.git.guillaume.tucker@collabora.com>
+        Fri, 8 Jul 2022 12:24:33 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D947A7D1C0
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 09:24:05 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id h19-20020a9d6f93000000b0061c1ad77d5fso3461813otq.6
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 09:24:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eS1DoT862v/g6EpjvGHfLBntfCPBUFxV6o7NJazJK14=;
+        b=hSRsjqZkDb6SyYnQtxvHdml60HsCjB3dzHLzVc+Sn2nCDLpjUIt0dvvYQEP4Utv8dp
+         HJ4UVRDAwVrjvDJlMu1KWwignFae8tPFXKxvx7w67BsfotkF0yCeNJpCq93RE79nvUPR
+         a9/RELWNRH58jLvHLFSo559skengu9ebIkY9qFdA3GmDMtcX249eLdFy15rFNHv4HhIG
+         0OPUsVbAD5efrQapJLvTX2j7ZYGpV3Yo5UuU445XhnUTajLmuVDfgNnmSZgTWUCvD4cO
+         sshWnVjlDI2wpye7wqBbHjpGgI57nlHFi82d3ln8eARWnN2zIdGS4XSIQQa10QOFAmFK
+         hgLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eS1DoT862v/g6EpjvGHfLBntfCPBUFxV6o7NJazJK14=;
+        b=x2YQNZ7pcBGX0WmUDQKK51bI54fuNWIU1iNFs7hRz5khC9oeP2WfFL8QwytQITJLri
+         qn08MamIqYPMaPfnR2vjEXntPTLxj92kFWZqvPYqQy5SF5k1mi9gjvvb/1t3sxakdyLe
+         2Z+5PEOCGj5AIxsd/i7xHuhhY3mM2FF+IKFHhtu2fZ7dt2x0pUYdWjHhDuEHcgNC5jqH
+         2w/OBYPVIjj62c8CoyCg0zMqJDDWJMsfbhJ1ZzY/doxUW/MPpZ1JUzBJl2fX+SJKYoJe
+         NYJIF3bkS3Faykk5xTlZYOVXOsrlPX0JVYHa+nnR4B2xxsVix1vWh1OzT0eYdSQxchqB
+         zlXw==
+X-Gm-Message-State: AJIora/N048csH6WZhcZlBRaxy6jan+9ENM3VTgLU4C5CdALYbxUnde/
+        RwUN++TaG0T/oxOvyt3/oOloZA==
+X-Google-Smtp-Source: AGRyM1sHmxfIFe72kNMrpQnCwtapr6QU9N20Rtq+AQ0mLbpRLwO90rb6TwTmApYnhVPsNOLGXUit5Q==
+X-Received: by 2002:a05:6830:cf:b0:61c:265b:1d1e with SMTP id x15-20020a05683000cf00b0061c265b1d1emr1862647oto.290.1657297439983;
+        Fri, 08 Jul 2022 09:23:59 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id f8-20020a056871070800b00101bd4914f9sm6678663oap.43.2022.07.08.09.23.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 09:23:59 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/msm/gpu: Drop qos request if devm_devfreq_add_device() fails
+Date:   Fri,  8 Jul 2022 09:26:32 -0700
+Message-Id: <20220708162632.3529864-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stop using the KSFT_KHDR_INSTALL flag as installing the kernel headers
-from the kselftest Makefile is causing some issues.  Instead, rely on
-the headers to be installed directly by the top-level Makefile
-"headers_install" make target prior to building kselftest.
+In the event that devm_devfreq_add_device() fails the device's qos freq
+list is left referencing df->idle_freq and df->boost_freq. Attempting to
+initialize devfreq again after a probe deferral will then cause invalid
+memory accesses in dev_pm_qos_add_request().
 
-Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
+Fix this by dropping the requests in the error path.
+
+Fixes: 7c0ffcd40b16 ("drm/msm/gpu: Respect PM QoS constraints")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- tools/testing/selftests/arm64/mte/Makefile              | 1 -
- tools/testing/selftests/arm64/signal/Makefile           | 1 -
- tools/testing/selftests/arm64/signal/test_signals.h     | 4 +---
- tools/testing/selftests/drivers/s390x/uvdevice/Makefile | 1 -
- tools/testing/selftests/futex/functional/Makefile       | 1 -
- tools/testing/selftests/kvm/Makefile                    | 1 -
- tools/testing/selftests/landlock/Makefile               | 1 -
- tools/testing/selftests/net/Makefile                    | 1 -
- tools/testing/selftests/net/mptcp/Makefile              | 1 -
- tools/testing/selftests/tc-testing/Makefile             | 1 -
- tools/testing/selftests/vm/Makefile                     | 1 -
- 11 files changed, 1 insertion(+), 13 deletions(-)
+ drivers/gpu/drm/msm/msm_gpu_devfreq.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/arm64/mte/Makefile b/tools/testing/selftests/arm64/mte/Makefile
-index 409e3e53d00a..a5a0744423d8 100644
---- a/tools/testing/selftests/arm64/mte/Makefile
-+++ b/tools/testing/selftests/arm64/mte/Makefile
-@@ -22,7 +22,6 @@ ifeq ($(mte_cc_support),1)
- TEST_GEN_PROGS := $(PROGS)
+diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+index c2ea978c8921..21e271a318ee 100644
+--- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
++++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+@@ -198,6 +198,8 @@ void msm_devfreq_init(struct msm_gpu *gpu)
  
- # Get Kernel headers installed and use them.
--KSFT_KHDR_INSTALL := 1
- else
-     $(warning compiler "$(CC)" does not support the ARMv8.5 MTE extension.)
-     $(warning test program "mte" will not be created.)
-diff --git a/tools/testing/selftests/arm64/signal/Makefile b/tools/testing/selftests/arm64/signal/Makefile
-index ac4ad0005715..be7520a863b0 100644
---- a/tools/testing/selftests/arm64/signal/Makefile
-+++ b/tools/testing/selftests/arm64/signal/Makefile
-@@ -11,7 +11,6 @@ PROGS := $(patsubst %.c,%,$(SRCS))
- TEST_GEN_PROGS := $(notdir $(PROGS))
- 
- # Get Kernel headers installed and use them.
--KSFT_KHDR_INSTALL := 1
- 
- # Including KSFT lib.mk here will also mangle the TEST_GEN_PROGS list
- # to account for any OUTPUT target-dirs optionally provided by
-diff --git a/tools/testing/selftests/arm64/signal/test_signals.h b/tools/testing/selftests/arm64/signal/test_signals.h
-index c70fdec7d7c4..0c645834ddc3 100644
---- a/tools/testing/selftests/arm64/signal/test_signals.h
-+++ b/tools/testing/selftests/arm64/signal/test_signals.h
-@@ -9,9 +9,7 @@
- #include <ucontext.h>
- 
- /*
-- * Using ARCH specific and sanitized Kernel headers installed by KSFT
-- * framework since we asked for it by setting flag KSFT_KHDR_INSTALL
-- * in our Makefile.
-+ * Using ARCH specific and sanitized Kernel headers from the tree.
-  */
- #include <asm/ptrace.h>
- #include <asm/hwcap.h>
-diff --git a/tools/testing/selftests/drivers/s390x/uvdevice/Makefile b/tools/testing/selftests/drivers/s390x/uvdevice/Makefile
-index 5e701d2708d4..891215a7dc8a 100644
---- a/tools/testing/selftests/drivers/s390x/uvdevice/Makefile
-+++ b/tools/testing/selftests/drivers/s390x/uvdevice/Makefile
-@@ -11,7 +11,6 @@ else
- TEST_GEN_PROGS := test_uvdevice
- 
- top_srcdir ?= ../../../../../..
--KSFT_KHDR_INSTALL := 1
- khdr_dir = $(top_srcdir)/usr/include
- LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/$(ARCH)/include
- 
-diff --git a/tools/testing/selftests/futex/functional/Makefile b/tools/testing/selftests/futex/functional/Makefile
-index b8152c573e8a..732149011692 100644
---- a/tools/testing/selftests/futex/functional/Makefile
-+++ b/tools/testing/selftests/futex/functional/Makefile
-@@ -22,7 +22,6 @@ TEST_GEN_FILES := \
- TEST_PROGS := run.sh
- 
- top_srcdir = ../../../../..
--KSFT_KHDR_INSTALL := 1
- DEFAULT_INSTALL_HDR_PATH := 1
- include ../../lib.mk
- 
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index 81470a99ed1c..e15bb9693922 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -4,7 +4,6 @@ include ../../../build/Build.include
- all:
- 
- top_srcdir = ../../../..
--KSFT_KHDR_INSTALL := 1
- 
- # For cross-builds to work, UNAME_M has to map to ARCH and arch specific
- # directories and targets in this Makefile. "uname -m" doesn't map to
-diff --git a/tools/testing/selftests/landlock/Makefile b/tools/testing/selftests/landlock/Makefile
-index 0b0049e133bb..1313e44e8fb9 100644
---- a/tools/testing/selftests/landlock/Makefile
-+++ b/tools/testing/selftests/landlock/Makefile
-@@ -8,7 +8,6 @@ TEST_GEN_PROGS := $(src_test:.c=)
- 
- TEST_GEN_PROGS_EXTENDED := true
- 
--KSFT_KHDR_INSTALL := 1
- OVERRIDE_TARGETS := 1
- include ../lib.mk
- 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 464df13831f2..eaf3bb457576 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -63,7 +63,6 @@ TEST_GEN_FILES += bind_bhash_test
- 
- TEST_FILES := settings
- 
--KSFT_KHDR_INSTALL := 1
- include ../lib.mk
- 
- include bpf/Makefile
-diff --git a/tools/testing/selftests/net/mptcp/Makefile b/tools/testing/selftests/net/mptcp/Makefile
-index f905d5358e68..1af2f66fb59a 100644
---- a/tools/testing/selftests/net/mptcp/Makefile
-+++ b/tools/testing/selftests/net/mptcp/Makefile
-@@ -1,7 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- top_srcdir = ../../../../..
--KSFT_KHDR_INSTALL := 1
- 
- CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g -I$(top_srcdir)/usr/include $(KHDR_INCLUDES)
- 
-diff --git a/tools/testing/selftests/tc-testing/Makefile b/tools/testing/selftests/tc-testing/Makefile
-index 4d639279f41e..cb553eac9f41 100644
---- a/tools/testing/selftests/tc-testing/Makefile
-+++ b/tools/testing/selftests/tc-testing/Makefile
-@@ -5,7 +5,6 @@ top_srcdir = $(abspath ../../../..)
- APIDIR := $(top_scrdir)/include/uapi
- TEST_GEN_FILES = action.o
- 
--KSFT_KHDR_INSTALL := 1
- include ../lib.mk
- 
- PROBE := $(shell $(LLC) -march=bpf -mcpu=probe -filetype=null /dev/null 2>&1)
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index 44f25acfbeca..108587cb327a 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -94,7 +94,6 @@ TEST_PROGS := run_vmtests.sh
- TEST_FILES := test_vmalloc.sh
- TEST_FILES += test_hmm.sh
- 
--KSFT_KHDR_INSTALL := 1
- include ../lib.mk
- 
- $(OUTPUT)/madv_populate: vm_util.c
+ 	if (IS_ERR(df->devfreq)) {
+ 		DRM_DEV_ERROR(&gpu->pdev->dev, "Couldn't initialize GPU devfreq\n");
++		dev_pm_qos_remove_request(&df->idle_freq);
++		dev_pm_qos_remove_request(&df->boost_freq);
+ 		df->devfreq = NULL;
+ 		return;
+ 	}
 -- 
-2.30.2
+2.35.1
 
