@@ -2,75 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2FF1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EE5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238680AbiGHRUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 13:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
+        id S238555AbiGHRYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 13:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238453AbiGHRUq (ORCPT
+        with ESMTP id S238368AbiGHRYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 13:20:46 -0400
-Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103DE1759F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 10:20:45 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 9rejoEOTkxzw29rekoKOUt; Fri, 08 Jul 2022 19:20:43 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 08 Jul 2022 19:20:43 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH] RDMA/qib: Use the bitmap API to allocate bitmaps
-Date:   Fri,  8 Jul 2022 19:20:39 +0200
-Message-Id: <f7a8588447679e80a438b6188b0603c1a11ad877.1657300671.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Fri, 8 Jul 2022 13:24:40 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D992CE12
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 10:24:39 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id g126so9624067pfb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 10:24:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=taVVHXZCysabggYX/eGgapEaTg3NQMt2ZeKA+oMMy3I=;
+        b=fAsZ5jvViNUtezuqqF/z3RUkuZym6HT9+JtV717t7DrssVArf5OD/Aba6siyG1lU2c
+         z1OwtcMqrVSBNFfSJuXAyEwJm130MgYj1M0DY4MYc9502a3dPlkTzuo6nTSf2B6l6XBF
+         YZXIsOrknhQWIGuCJn16nbTPwkRjnHhxml+TE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=taVVHXZCysabggYX/eGgapEaTg3NQMt2ZeKA+oMMy3I=;
+        b=waBQMwfr5ihdHlD+Yybi4zo5Xo8IsKSO163vxFJvQqbTxgWBLfrT1QuMNekem9G5bF
+         eKTIGnWfHZSopqu4ZKkCdtoLwfrkXybdL8Oom9YXGGWo+pdPeaAD9ep2+ka214roTt9Y
+         j2lJiq9hi8KlHIU+zYf+jdpYbqboUzlfZ2foxXdfG7pTAPrB7cXxEhEFl6hpai/3Ydm5
+         lOuSHORvLeTqwTVApDks72FHkMdpGH6efXuQGy9FBL60hHTXfuJsPiAZzI2SBFBQGuWF
+         Yeq1EbgnnjYRU3LpnpJxL0to/NFd3vWDyQgVcVG3WJ8thSMgJhnflaBIe6wVF1v1TdDE
+         RrHw==
+X-Gm-Message-State: AJIora+5ByAzfmOSpz3jvr1L0MlrqwTqhnTTpPK7pH/+CycnFRcNZwF7
+        p20SK9/CHSoIHvRr8LBOLQNrNQ==
+X-Google-Smtp-Source: AGRyM1uoKaCiZv0+fpTWPpuM9ND4xOyr/blnINkpSw7fBsHkFaVi9rFyGkmQDAjwDg53Z8zzxFe+YQ==
+X-Received: by 2002:a63:5111:0:b0:411:83dc:d48b with SMTP id f17-20020a635111000000b0041183dcd48bmr4229310pgb.266.1657301078745;
+        Fri, 08 Jul 2022 10:24:38 -0700 (PDT)
+Received: from chromium.org (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id t24-20020aa79478000000b00528c149fe97sm5050650pfq.89.2022.07.08.10.24.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 10:24:38 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 17:24:36 +0000
+From:   Prashant Malani <pmalani@chromium.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev, bleung@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: Re: [PATCH v3 1/9] usb: typec: Add support for retimers
+Message-ID: <YshoVFnUafCXObxb@chromium.org>
+References: <20220707222045.1415417-1-pmalani@chromium.org>
+ <20220707222045.1415417-2-pmalani@chromium.org>
+ <YsglSJvB/bvwSGZ2@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsglSJvB/bvwSGZ2@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+Hi Greg,
 
-It is less verbose and it improves the semantic.
+On Jul 08 14:38, Greg Kroah-Hartman wrote:
+> On Thu, Jul 07, 2022 at 10:20:08PM +0000, Prashant Malani wrote:
+> > Introduce a retimer device class and associated functions that register
+> > and use retimer "switch" devices. These operate in a manner similar to
+> > the "mode-switch" and help configure retimers that exist between the
+> > Type-C connector and host controller(s).
+> > 
+> > Type C ports can be linked to retimers using firmware node device
+> > references (again, in a manner similar to "mode-switch").
+> > 
+> > Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> 
+> As you are adding things to sysfs, do you need to add any
+> Documentation/ABI/ entries as well?  I can't see any new sysfs files
+> being created here, but explicitly saying so in the changelog here would
+> be good.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/infiniband/hw/qib/qib_init.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+There are no new sysfs files being created (there is the new retimer
+class directory, but there are no class-specific files being created
+there).
 
-diff --git a/drivers/infiniband/hw/qib/qib_init.c b/drivers/infiniband/hw/qib/qib_init.c
-index d1a72e89e297..45211008449f 100644
---- a/drivers/infiniband/hw/qib/qib_init.c
-+++ b/drivers/infiniband/hw/qib/qib_init.c
-@@ -1106,8 +1106,7 @@ struct qib_devdata *qib_alloc_devdata(struct pci_dev *pdev, size_t extra)
- 	if (!qib_cpulist_count) {
- 		u32 count = num_online_cpus();
- 
--		qib_cpulist = kcalloc(BITS_TO_LONGS(count), sizeof(long),
--				      GFP_KERNEL);
-+		qib_cpulist = bitmap_zalloc(count, GFP_KERNEL);
- 		if (qib_cpulist)
- 			qib_cpulist_count = count;
- 	}
-@@ -1279,7 +1278,7 @@ static void __exit qib_ib_cleanup(void)
- #endif
- 
- 	qib_cpulist_count = 0;
--	kfree(qib_cpulist);
-+	bitmap_free(qib_cpulist);
- 
- 	WARN_ON(!xa_empty(&qib_dev_table));
- 	qib_dev_cleanup();
--- 
-2.34.1
+I will send out a v4 which calls this out in the changelog.
 
+Best regards,
+
+-Prashant
