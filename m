@@ -2,133 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5547C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFA0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238367AbiGHQEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
+        id S238386AbiGHQFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238028AbiGHQCU (ORCPT
+        with ESMTP id S238368AbiGHQFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:02:20 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FBD7695C;
-        Fri,  8 Jul 2022 09:02:19 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id z12so21541784wrq.7;
-        Fri, 08 Jul 2022 09:02:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rg4jRfiWMbzTLHtEYWUNXlGuNm181rxgiYhLfRcL2n4=;
-        b=nBnzGJVnF8VfPc14Lp2+tlCpzGcrxDvhdocQ6Thabc7Aaq2qMXuR1wGvg9HCEN7hk3
-         aFIb/h4i2HbqEET9ZJSXh4YCIbzazxCAPX30a7xk2RlCTZ3uXOz9CXRR4wWh+3OHaLop
-         D1fcwJAtwpz2mzUCF2zmiWMcOp4hLLMs4730MQVXkm36Whjj4s6eXaEMwPCG10GMCMw6
-         Og8HDeSXqC7tQZaXx1XCZt6hbbQyvMchIFJfOO9MlLg6HeHbEPO0c9CZLpoZpEzMXZpi
-         8AUJtV1zxeFiobNlM2bdiNjX9BRHrStJ6Zy6sVRrzgpKdWda5hmW7evnO6sOAQmzRV9u
-         jV3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rg4jRfiWMbzTLHtEYWUNXlGuNm181rxgiYhLfRcL2n4=;
-        b=nwzNND+V2y8zav36JAzB3y689KUf7SXid91BVpin8odZZJmDEqZj6M8dZ6f57szeq9
-         6Lv3mGt9yO4lahAihustDkH8J7txVZOdvasS0bF3RQy6ByDKWc3lQRHda4IM6xCf1OU6
-         uH5IsAcQW6hcH1OlR98526N8bxkBOqWh510yitAcU3LiSbgBgXW2wCjT/Jtmx0jjabJy
-         WeOMqe/KYs0l2pvgoMs615cs2NIoWqZn5IqMr28py9SzBQIu81SUc8Gj2CxTx6ljbEgP
-         oSkFi9MA23gpTcOLffX/ZYfLMy0re0R9Ch3H9vDBzG6elvrfo/NZh6lVZyK3SCGBW7JM
-         LgKA==
-X-Gm-Message-State: AJIora96jk+hXTYn7IkgO1pwXTrNQCLeHeP/x9KzTwqpsTGQKCY1vJB0
-        sNM1FCScS1gelBllzHLWRO8=
-X-Google-Smtp-Source: AGRyM1sCcUelm0/FngZamMpPaDw2OctQX3wTWsua5zS3txHup3WL01Xq8hlPY2i65HUJekLQfphAIw==
-X-Received: by 2002:a05:6000:1848:b0:21d:8e3f:f8c0 with SMTP id c8-20020a056000184800b0021d8e3ff8c0mr4036901wri.158.1657296137581;
-        Fri, 08 Jul 2022 09:02:17 -0700 (PDT)
-Received: from localhost (92.40.203.144.threembb.co.uk. [92.40.203.144])
-        by smtp.gmail.com with ESMTPSA id o17-20020a05600c511100b003a2de511598sm365729wms.12.2022.07.08.09.02.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 09:02:17 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     paul@crapouillou.net, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com
-Cc:     linux-mips@vger.kernel.org, alsa-devel@alsa-project.org,
+        Fri, 8 Jul 2022 12:05:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2833376E92;
+        Fri,  8 Jul 2022 09:05:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCE5E61E0C;
+        Fri,  8 Jul 2022 16:05:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4C1C341C0;
+        Fri,  8 Jul 2022 16:05:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657296332;
+        bh=JefiE6hn4GGAi5d/hMAhgEIxdj1+a6Tc7d5lQkIB1vk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cDM+Z62uOBHFET6KSRrG+a7pXjeS0FU+vp9Sd9y/be8mn5cZNNIDk6TsKQifMxRyM
+         gO99IUkzAJWGYKnCBeYzLP4pwRk+iO3p7aBDJhHV+wYsV0/+ZRU81g1wtvEMo1LYuO
+         ZWzrGzG/B8ze1OEhnuAJw8BroTajJHyXuCSJe/YUsmuQnNysXiV+/UEyHPrvL5RtJx
+         9MWj4YcI5zS2+8cE3fVJwv22n1ApOYkKFdtyKvlHrAzbxuxNT6Bso+PwsuDbxcDPF9
+         RCmw5fEjTnuQRUdWdaA7cwFpwbC+TNfL55ykF1+wiN+VVIvwOMWdUHDY1BVGOXXyDH
+         dVnnmyak4BujQ==
+Received: by pali.im (Postfix)
+        id C3DB57D1; Fri,  8 Jul 2022 18:05:28 +0200 (CEST)
+Date:   Fri, 8 Jul 2022 18:05:28 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 07/11] ASoC: jz4740-i2s: Make the PLL clock name SoC-specific
-Date:   Fri,  8 Jul 2022 17:02:40 +0100
-Message-Id: <20220708160244.21933-8-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
-References: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
+Subject: Re: [PATCH v2 1/2] [RFT] dt-bindings: leds: Add
+ cznic,turris1x-leds.yaml binding
+Message-ID: <20220708160528.ysy4lzxfpwobfiwr@pali>
+References: <20220705000448.14337-1-pali@kernel.org>
+ <20220705155929.25565-1-pali@kernel.org>
+ <20220706131507.353f0bed@thinkpad>
+ <20220706111912.hz2mx4dc35lgq6l5@pali>
+ <20220706172732.6228d180@thinkpad>
+ <25b43586-eeb3-4b7b-7362-2d599aa89cf0@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <25b43586-eeb3-4b7b-7362-2d599aa89cf0@linaro.org>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some Ingenic SoCs, such as the X1000, there is a programmable
-divider used to generate the I2S system clock from a PLL, rather
-than a fixed PLL/2 clock. It doesn't make much sense to call the
-clock "pll half" on those SoCs, so the clock name should really be
-a SoC-dependent value.
+On Wednesday 06 July 2022 17:36:43 Krzysztof Kozlowski wrote:
+> On 06/07/2022 17:27, Marek Behún wrote:
+> > On Wed, 6 Jul 2022 13:19:12 +0200
+> > Pali Rohár <pali@kernel.org> wrote:
+> > 
+> >> On Wednesday 06 July 2022 13:15:07 Marek Behún wrote:
+> >>> On Tue,  5 Jul 2022 17:59:28 +0200
+> >>> Pali Rohár <pali@kernel.org> wrote:
+> >>>   
+> >>>> +examples:
+> >>>> +  - |
+> >>>> +    #include <dt-bindings/leds/common.h>
+> >>>> +
+> >>>> +    cpld@3,0 {  
+> >>>
+> >>> The generic node name should be just "bus". That it is a CPLD
+> >>> implementation should come from compatible string.  
+> >>
+> >> Sorry, I do not understand why "bus". Why other memory chips are named
+> >> e.g. "nand" or "nor" and not "bus" too?
+> > 
+> > As far as I understand this is because that is the preferred name for
+> > busses and this is a bus, since there is also the simple-bus compatible.
+> > 
+> >> By this logic should not be _every_ node called just "bus"? Hm... and 
+> >> are names needed at all then?
+> > 
+> > :-)
+> > 
+> > The schema
+> >   https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/simple-bus.yaml
+> > allows for different names (soc|axi|ahb|*-bus) to avoid warnings on
+> > existing old dts files.
+> > 
+> > The preferred way is to not have the implementation in nodename,
+> > similar to how we use 'switch' instead of 'mv88e6xxx', or
+> > 'ethernet-phy' instead of 'mv88e151x', or 'led-controller', ...
+> 
+> Thanks Marek for detailed explanation.
+> The cases above rather trigger my comments and this one here, after
+> Pali's explanation, do not fit them. pld is a generic class of a device,
+> so it is okay here. cpld probably as well (although one could argue that
+> it is a subset of pld, so the generic name is pld, but then one would
+> say fpga also should be called pld). For me it does not have to be bus,
+> just don't want mv88e6xxx or any other vendor/model names. Therefore
+> cpld is fine.
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- sound/soc/jz4740/jz4740-i2s.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+Exactly. cpld, fpga, nor, nand, soc... all of them are not real buses.
 
-diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s.c
-index 0dcc658b3784..a41398c24d0e 100644
---- a/sound/soc/jz4740/jz4740-i2s.c
-+++ b/sound/soc/jz4740/jz4740-i2s.c
-@@ -75,6 +75,8 @@ struct i2s_soc_info {
- 	struct reg_field field_i2sdiv_capture;
- 	struct reg_field field_i2sdiv_playback;
- 
-+	const char *pll_clk_name;
-+
- 	bool shared_fifo_flush;
- };
- 
-@@ -281,7 +283,7 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
- 		clk_set_parent(i2s->clk_i2s, parent);
- 		break;
- 	case JZ4740_I2S_CLKSRC_PLL:
--		parent = clk_get(NULL, "pll half");
-+		parent = clk_get(NULL, i2s->soc_info->pll_clk_name);
- 		if (IS_ERR(parent))
- 			return PTR_ERR(parent);
- 		clk_set_parent(i2s->clk_i2s, parent);
-@@ -400,6 +402,7 @@ static const struct i2s_soc_info jz4740_i2s_soc_info = {
- 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 8, 11),
- 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
- 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
-+	.pll_clk_name		= "pll half",
- 	.shared_fifo_flush	= true,
- };
- 
-@@ -409,6 +412,7 @@ static const struct i2s_soc_info jz4760_i2s_soc_info = {
- 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
- 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
- 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
-+	.pll_clk_name		= "pll half",
- };
- 
- static struct snd_soc_dai_driver jz4770_i2s_dai = {
-@@ -435,6 +439,7 @@ static const struct i2s_soc_info jz4770_i2s_soc_info = {
- 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
- 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
- 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
-+	.pll_clk_name		= "pll half",
- };
- 
- static const struct i2s_soc_info jz4780_i2s_soc_info = {
-@@ -443,6 +448,7 @@ static const struct i2s_soc_info jz4780_i2s_soc_info = {
- 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
- 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
- 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
-+	.pll_clk_name		= "pll half",
- };
- 
- static const struct snd_soc_component_driver jz4740_i2s_component = {
--- 
-2.35.1
+simple-bus here is just name invented by device tree and without which
+existing kernel drivers refuse to work.
 
+> > 
+> > I wasn't there when people started requesting for this to be that way,
+> > but I guess it makes some sense to make it more readable and less
+> > redundant (the generic name in nodename and the implementation in
+> > compatible string...).
+> 
+> 
+> 
+> 
+> Best regards,
+> Krzysztof
