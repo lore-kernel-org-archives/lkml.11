@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20EA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E530AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238700AbiGHOoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33916 "EHLO
+        id S238707AbiGHOoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238540AbiGHOnY (ORCPT
+        with ESMTP id S238591AbiGHOnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:43:24 -0400
+        Fri, 8 Jul 2022 10:43:43 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D5E85C963
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:43:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C220EB5
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:43:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657291402;
+        s=mimecast20190719; t=1657291408;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=sza+ZMast1nw1R0oBR+QvE1D1ImWY5p9k89Ofd6/F1w=;
-        b=N6//ggN1zLcNGpIIT5mQfQ3DjeoOf28vhXH58JRQ+j1ZvjjnubEeLMvWH2XiXlTzP856xa
-        Y6DE/k+Hcut54KiFA/HN8xxc3ocenVhQDiwLJb8HBlGaGdTB11ssbi1Z9rTryuGCwaLWCD
-        W8pV6c6VYWYQZ8eRAHHDCvugbSjH124=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=xA9oXdWY3UUroyaJXp8Ubov1i6JiatCT9PbCc5NaQFo=;
+        b=QVgO/8VkH/5UUkqCbhNEjCx6vclp19DygcMbiGNjaQ+AHDHmQCkdgIYq3B1eWIYhhxgh6k
+        +MuW03tNWaCei5GFz52tr1niNisxBDA4c9w3Ablb0Kv7vwMAZWjcMU7hUO0batCArxbyHJ
+        IHExL2rN26Ye0nEJYpXMby+8TQl0vGE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-208-uXD9BcgVM2GBH28OxDiK4Q-1; Fri, 08 Jul 2022 10:43:11 -0400
-X-MC-Unique: uXD9BcgVM2GBH28OxDiK4Q-1
+ us-mta-586-0wPIhlPyPTmrz6VoQ8qR4Q-1; Fri, 08 Jul 2022 10:43:23 -0400
+X-MC-Unique: 0wPIhlPyPTmrz6VoQ8qR4Q-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1361D811766;
-        Fri,  8 Jul 2022 14:43:11 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 72AB33801163;
+        Fri,  8 Jul 2022 14:43:22 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.193.250])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 377EE492C3B;
-        Fri,  8 Jul 2022 14:43:09 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8A002492C3B;
+        Fri,  8 Jul 2022 14:43:20 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
@@ -46,9 +46,9 @@ Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 18/25] KVM: VMX: Add missing CPU based VM execution controls to vmcs_config
-Date:   Fri,  8 Jul 2022 16:42:16 +0200
-Message-Id: <20220708144223.610080-19-vkuznets@redhat.com>
+Subject: [PATCH v3 23/25] KVM: nVMX: Use sanitized allowed-1 bits for VMX control MSRs
+Date:   Fri,  8 Jul 2022 16:42:21 +0200
+Message-Id: <20220708144223.610080-24-vkuznets@redhat.com>
 In-Reply-To: <20220708144223.610080-1-vkuznets@redhat.com>
 References: <20220708144223.610080-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -59,56 +59,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As a preparation to reusing the result of setup_vmcs_config() in
-nested VMX MSR setup, add the CPU based VM execution controls which KVM
-doesn't use but supports for nVMX to KVM_OPT_VMX_CPU_BASED_VM_EXEC_CONTROL
-and filter them out in vmx_exec_control().
+Using raw host MSR values for setting up nested VMX control MSRs is
+incorrect as some features need to disabled, e.g. when KVM runs as
+a nested hypervisor on Hyper-V and uses Enlightened VMCS or when a
+workaround for IA32_PERF_GLOBAL_CTRL is applied. For non-nested VMX, this
+is done in setup_vmcs_config() and the result is stored in vmcs_config.
+Use it for setting up allowed-1 bits in nested VMX MSRs too.
 
-No functional change intended.
-
-Reviewed-by: Jim Mattson <jmattson@google.com>
+Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 6 ++++++
- arch/x86/kvm/vmx/vmx.h | 6 +++++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/nested.c | 30 ++++++++++++------------------
+ arch/x86/kvm/vmx/nested.h |  2 +-
+ arch/x86/kvm/vmx/vmx.c    |  5 ++---
+ 3 files changed, 15 insertions(+), 22 deletions(-)
 
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 09654d5c2144..3d386c663fac 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -6565,8 +6565,10 @@ static u64 nested_vmx_calc_vmcs_enum_msr(void)
+  * bit in the high half is on if the corresponding bit in the control field
+  * may be on. See also vmx_control_verify().
+  */
+-void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
++void nested_vmx_setup_ctls_msrs(struct vmcs_config *vmcs_conf, u32 ept_caps)
+ {
++	struct nested_vmx_msrs *msrs = &vmcs_conf->nested;
++
+ 	/*
+ 	 * Note that as a general rule, the high half of the MSRs (bits in
+ 	 * the control fields which may be 1) should be initialized by the
+@@ -6583,11 +6585,10 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 	 */
+ 
+ 	/* pin-based controls */
+-	rdmsr(MSR_IA32_VMX_PINBASED_CTLS,
+-		msrs->pinbased_ctls_low,
+-		msrs->pinbased_ctls_high);
+ 	msrs->pinbased_ctls_low =
+ 		PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR;
++
++	msrs->pinbased_ctls_high = vmcs_conf->pin_based_exec_ctrl;
+ 	msrs->pinbased_ctls_high &=
+ 		PIN_BASED_EXT_INTR_MASK |
+ 		PIN_BASED_NMI_EXITING |
+@@ -6598,12 +6599,10 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 		PIN_BASED_VMX_PREEMPTION_TIMER;
+ 
+ 	/* exit controls */
+-	rdmsr(MSR_IA32_VMX_EXIT_CTLS,
+-		msrs->exit_ctls_low,
+-		msrs->exit_ctls_high);
+ 	msrs->exit_ctls_low =
+ 		VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR;
+ 
++	msrs->exit_ctls_high = vmcs_conf->vmexit_ctrl;
+ 	msrs->exit_ctls_high &=
+ #ifdef CONFIG_X86_64
+ 		VM_EXIT_HOST_ADDR_SPACE_SIZE |
+@@ -6619,11 +6618,10 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 	msrs->exit_ctls_low &= ~VM_EXIT_SAVE_DEBUG_CONTROLS;
+ 
+ 	/* entry controls */
+-	rdmsr(MSR_IA32_VMX_ENTRY_CTLS,
+-		msrs->entry_ctls_low,
+-		msrs->entry_ctls_high);
+ 	msrs->entry_ctls_low =
+ 		VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR;
++
++	msrs->entry_ctls_high = vmcs_conf->vmentry_ctrl;
+ 	msrs->entry_ctls_high &=
+ #ifdef CONFIG_X86_64
+ 		VM_ENTRY_IA32E_MODE |
+@@ -6637,11 +6635,10 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 	msrs->entry_ctls_low &= ~VM_ENTRY_LOAD_DEBUG_CONTROLS;
+ 
+ 	/* cpu-based controls */
+-	rdmsr(MSR_IA32_VMX_PROCBASED_CTLS,
+-		msrs->procbased_ctls_low,
+-		msrs->procbased_ctls_high);
+ 	msrs->procbased_ctls_low =
+ 		CPU_BASED_ALWAYSON_WITHOUT_TRUE_MSR;
++
++	msrs->procbased_ctls_high = vmcs_conf->cpu_based_exec_ctrl;
+ 	msrs->procbased_ctls_high &=
+ 		CPU_BASED_INTR_WINDOW_EXITING |
+ 		CPU_BASED_NMI_WINDOW_EXITING | CPU_BASED_USE_TSC_OFFSETTING |
+@@ -6675,12 +6672,9 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 	 * depend on CPUID bits, they are added later by
+ 	 * vmx_vcpu_after_set_cpuid.
+ 	 */
+-	if (msrs->procbased_ctls_high & CPU_BASED_ACTIVATE_SECONDARY_CONTROLS)
+-		rdmsr(MSR_IA32_VMX_PROCBASED_CTLS2,
+-		      msrs->secondary_ctls_low,
+-		      msrs->secondary_ctls_high);
+-
+ 	msrs->secondary_ctls_low = 0;
++
++	msrs->secondary_ctls_high = vmcs_conf->cpu_based_2nd_exec_ctrl;
+ 	msrs->secondary_ctls_high &=
+ 		SECONDARY_EXEC_DESC |
+ 		SECONDARY_EXEC_ENABLE_RDTSCP |
+diff --git a/arch/x86/kvm/vmx/nested.h b/arch/x86/kvm/vmx/nested.h
+index c92cea0b8ccc..fae047c6204b 100644
+--- a/arch/x86/kvm/vmx/nested.h
++++ b/arch/x86/kvm/vmx/nested.h
+@@ -17,7 +17,7 @@ enum nvmx_vmentry_status {
+ };
+ 
+ void vmx_leave_nested(struct kvm_vcpu *vcpu);
+-void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps);
++void nested_vmx_setup_ctls_msrs(struct vmcs_config *vmcs_conf, u32 ept_caps);
+ void nested_vmx_hardware_unsetup(void);
+ __init int nested_vmx_hardware_setup(int (*exit_handlers[])(struct kvm_vcpu *));
+ void nested_vmx_set_vmcs_shadowing_bitmap(void);
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 2fb89bdcbbd8..9771c771c8f5 100644
+index e462e5b9c0a1..35285109856f 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4240,6 +4240,12 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
- {
- 	u32 exec_control = vmcs_config.cpu_based_exec_ctrl;
+@@ -7306,7 +7306,7 @@ static int __init vmx_check_processor_compat(void)
+ 	if (setup_vmcs_config(&vmcs_conf, &vmx_cap) < 0)
+ 		return -EIO;
+ 	if (nested)
+-		nested_vmx_setup_ctls_msrs(&vmcs_conf.nested, vmx_cap.ept);
++		nested_vmx_setup_ctls_msrs(&vmcs_conf, vmx_cap.ept);
+ 	if (memcmp(&vmcs_config, &vmcs_conf, sizeof(struct vmcs_config)) != 0) {
+ 		printk(KERN_ERR "kvm: CPU %d feature inconsistency!\n",
+ 				smp_processor_id());
+@@ -8281,8 +8281,7 @@ static __init int hardware_setup(void)
+ 	setup_default_sgx_lepubkeyhash();
  
-+	/* Not used by KVM but supported for nesting. */
-+	exec_control &= ~(CPU_BASED_RDTSC_EXITING |
-+			  CPU_BASED_USE_IO_BITMAPS |
-+			  CPU_BASED_MONITOR_TRAP_FLAG |
-+			  CPU_BASED_PAUSE_EXITING);
-+
- 	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
- 	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
- 			  CPU_BASED_NMI_WINDOW_EXITING);
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index e9c392398f1b..758f80c41beb 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -539,9 +539,13 @@ static inline u8 vmx_get_rvi(void)
- #endif
+ 	if (nested) {
+-		nested_vmx_setup_ctls_msrs(&vmcs_config.nested,
+-					   vmx_capability.ept);
++		nested_vmx_setup_ctls_msrs(&vmcs_config, vmx_capability.ept);
  
- #define KVM_OPT_VMX_CPU_BASED_VM_EXEC_CONTROL			\
--	(CPU_BASED_TPR_SHADOW |					\
-+	(CPU_BASED_RDTSC_EXITING |				\
-+	CPU_BASED_TPR_SHADOW |					\
-+	CPU_BASED_USE_IO_BITMAPS |				\
-+	CPU_BASED_MONITOR_TRAP_FLAG |				\
- 	CPU_BASED_USE_MSR_BITMAPS |				\
- 	CPU_BASED_NMI_WINDOW_EXITING |				\
-+	CPU_BASED_PAUSE_EXITING |				\
- 	CPU_BASED_ACTIVATE_SECONDARY_CONTROLS |			\
- 	CPU_BASED_ACTIVATE_TERTIARY_CONTROLS)
- 
+ 		r = nested_vmx_hardware_setup(kvm_vmx_exit_handlers);
+ 		if (r)
 -- 
 2.35.3
 
