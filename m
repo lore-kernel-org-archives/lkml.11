@@ -2,126 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E95C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D394BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237570AbiGHIDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
+        id S237592AbiGHIEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237491AbiGHIDY (ORCPT
+        with ESMTP id S237580AbiGHICa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:03:24 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97927E02F;
-        Fri,  8 Jul 2022 01:03:22 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id q5-20020a17090a304500b001efcc885cc4so1107095pjl.4;
-        Fri, 08 Jul 2022 01:03:22 -0700 (PDT)
+        Fri, 8 Jul 2022 04:02:30 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10247E035;
+        Fri,  8 Jul 2022 01:02:29 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id k15so19060500iok.5;
+        Fri, 08 Jul 2022 01:02:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5CxjGwuv1eeMSRhwp2Wg3MjAsxLxFjnx3j2wvAINBQA=;
-        b=G2m/oWv/l0TNwr39XyBlU+DwPU8Y+Bc+6CvSk0ocmJBd6hmceX8fWVhooLDiFxS6I/
-         13MXtVrbKkBQAOoQ9418TERvyMnepZwGWY9xjkmw/scHT3QEMjTufwb+cAEDjSMeNCqV
-         b+YbYQOKXlJDwXIetNsTt2vQujvdvKayJy8ZI4JwQfCNrazYI1lvWpYTzb/EehPxp6N1
-         W9yRH5CmMQ571W3eEt13jW//sZ7sWRBd/eifQJ0wjSghfVZP3UJgvUZZsCkLKmrFjVl1
-         2a7LMsQ40n5ZSwQ6NFWwJaFuZRni2D4PPwah5bSImKLqNnAPI0VkoN39zdGYzCuT/85b
-         12VQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hODnMtf+5EqhbkNx2oX7wxZqY8zZUB9OLPetFR2uH7A=;
+        b=I1oaVBalKTFKJVlbbTyhQWS1ol5E6FcVkwflucZasxRgPj/Kt3Y/wo+VsrsGKPfEK9
+         WbRFB7uTsXHD1sjwAiU4jzq7HjI3kqUC7ZIGCdt1Ya2aFhyZdhd9sJamF8KF8keifkrl
+         gjSzpl8EDPbvrNYPZM1PmW41ZfqJHD71UYrK0topX6tbCbA5um5EP9691DUMHpPE7M3O
+         s1SXAw+K7y3GUQxpfyElP0H7NiPCm3RMMX7KsqRYaSl7LXLYfpmznJ4DsY+xY8hmHuPm
+         QbciU7n6qBFcQnzz8dl6yyf1U2Gy+R2xx/5kJpMUPZza2PgUBSjN0FsMro5mt+B8eVzx
+         0bcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=5CxjGwuv1eeMSRhwp2Wg3MjAsxLxFjnx3j2wvAINBQA=;
-        b=zvyRUciiEcDxnBHaGFzCFxEmReFTNbSIfPvxdQXVVgRBXk348Bc+k+5vKthttsEwhg
-         rMjZpxuB1BU0wfrrf+PxnyV+WgoiJYf/kniOiWXXNQj6NWX+sLAgWosUzaMPYa4s//e2
-         CgXz764lUuIsSBMzbKU3QYtLnWcI3GBEYzL1fYevgAZkGkHYRZOCvEmCTyM0Jux3zBnW
-         bpgEyCwfGDtPf6LIyyFPHUdw3jnQTIOwEtx2P9N5I8vO5PLd9bhNjwLIzeNnAKklf+zi
-         wOMkVv4qYkM693bQTHOu/QDg3BKgjvX6o3v/4WgFN6q6xlqZhvRLdRpMlDK6NDbNv0aT
-         MbDw==
-X-Gm-Message-State: AJIora8kr0u4eQ3AhdibsqPNASF2ARt64l7RxFImD3Bk5k2SqnZi1j0q
-        Fauoq42M4Q3hfoqFMNGyv0A=
-X-Google-Smtp-Source: AGRyM1uswYE7xwOiZkzonBXbmZ/r79On/2X/fK8yaP1x4TIKYebD3unBfA+Et8mJmrPU2jEtsIbOGA==
-X-Received: by 2002:a17:90b:3b8a:b0:1ef:b87d:309d with SMTP id pc10-20020a17090b3b8a00b001efb87d309dmr2598738pjb.176.1657267402161;
-        Fri, 08 Jul 2022 01:03:22 -0700 (PDT)
-Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
-        by smtp.gmail.com with ESMTPSA id im22-20020a170902bb1600b0016be2bb8e68sm10496097plb.303.2022.07.08.01.03.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 01:03:21 -0700 (PDT)
-From:   Sieng-Piaw Liew <liew.s.piaw@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Sieng-Piaw Liew <liew.s.piaw@gmail.com>
-Subject: [PATCH] bcm63xx: fix Tx cleanup when NAPI poll budget is zero
-Date:   Fri,  8 Jul 2022 16:03:03 +0800
-Message-Id: <20220708080303.298-1-liew.s.piaw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220615060922.3402-1-liew.s.piaw@gmail.com>
-References: <20220615060922.3402-1-liew.s.piaw@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hODnMtf+5EqhbkNx2oX7wxZqY8zZUB9OLPetFR2uH7A=;
+        b=0F8L+ddVWNByMv/RBYgKhV0dc+zLTWUscdPuw7M9QW21L6YbaK4uNm2+xwvI/zaxWC
+         7pfevjAZbcE4Cm+xxolPk6YGqjyvDIHugaIxgPqFDT6JOsj5CpaCGEdm9FtoHeNshJJH
+         jHQEzTeccypJ7pKqgqxUO0N1TbpLipushvicyTG71sBEiZkxT6ODUDaZIpRAAiAua9oh
+         bUVViXRKw9z9H/ev9TA5PAJoKHPzFz5KX3gVa9RJdpxbMF+9Ne5gaiqWVY86/MIZPb66
+         Fo2lSQ4Ovf8GUgtRiJWS/Cp0TL1ipYAngGxy9gufpHlGTuCRdR0fAtlfAZJwg9MUHHBp
+         32zg==
+X-Gm-Message-State: AJIora+U023aLzNg8f7XhrSd4va93CBwOMCcxejiB5MLXhVgti5yfDtE
+        QIhEpBHPWL40s6EllFxQTXHO1lSKvdK86Q==
+X-Google-Smtp-Source: AGRyM1vbUvAEnsSVMwsqK+d3yPV/Acfg2dPnTr9AEZlB91dT5n/m3+vacP7LrXDKsxdL1C5fh2Ls6g==
+X-Received: by 2002:a05:6638:dcb:b0:33e:bd5c:2195 with SMTP id m11-20020a0566380dcb00b0033ebd5c2195mr1321012jaj.312.1657267349186;
+        Fri, 08 Jul 2022 01:02:29 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id w13-20020a927b0d000000b002dc33dbed87sm2642328ilc.39.2022.07.08.01.02.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 01:02:28 -0700 (PDT)
+Message-ID: <d2872f3e-1dc0-01ea-9385-29c089bc10b8@gmail.com>
+Date:   Fri, 8 Jul 2022 10:02:25 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] dt-bindings: phy: mediatek: tphy: add compatible for
+ mt8188
+Content-Language: en-US
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NAPI poll() function may be passed a budget value of zero, i.e. during
-netpoll, which isn't NAPI context.
-Therefore, napi_consume_skb() must be given budget value instead of
-!force to truly discern netpoll-like scenarios.
 
-Fixes: c63c615e22eb ("bcm63xx_enet: switch to napi_build_skb() to reuse skbuff_heads")
-Signed-off-by: Sieng-Piaw Liew <liew.s.piaw@gmail.com>
----
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-index 514d61dd91c7..193dc1db0f4e 100644
---- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -423,7 +423,7 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
- /*
-  * try to or force reclaim of transmitted buffers
-  */
--static int bcm_enet_tx_reclaim(struct net_device *dev, int force)
-+static int bcm_enet_tx_reclaim(struct net_device *dev, int force, int budget)
- {
- 	struct bcm_enet_priv *priv;
- 	unsigned int bytes;
-@@ -468,7 +468,7 @@ static int bcm_enet_tx_reclaim(struct net_device *dev, int force)
- 			dev->stats.tx_errors++;
- 
- 		bytes += skb->len;
--		napi_consume_skb(skb, !force);
-+		napi_consume_skb(skb, budget);
- 		released++;
- 	}
- 
-@@ -499,7 +499,7 @@ static int bcm_enet_poll(struct napi_struct *napi, int budget)
- 			 ENETDMAC_IR, priv->tx_chan);
- 
- 	/* reclaim sent skb */
--	bcm_enet_tx_reclaim(dev, 0);
-+	bcm_enet_tx_reclaim(dev, 0, budget);
- 
- 	spin_lock(&priv->rx_lock);
- 	rx_work_done = bcm_enet_receive_queue(dev, budget);
-@@ -1211,7 +1211,7 @@ static int bcm_enet_stop(struct net_device *dev)
- 	bcm_enet_disable_mac(priv);
- 
- 	/* force reclaim of all tx buffers */
--	bcm_enet_tx_reclaim(dev, 1);
-+	bcm_enet_tx_reclaim(dev, 1, 0);
- 
- 	/* free the rx buffer ring */
- 	bcm_enet_free_rx_buf_ring(kdev, priv);
-@@ -2362,7 +2362,7 @@ static int bcm_enetsw_stop(struct net_device *dev)
- 	bcm_enet_disable_dma(priv, priv->rx_chan);
- 
- 	/* force reclaim of all tx buffers */
--	bcm_enet_tx_reclaim(dev, 1);
-+	bcm_enet_tx_reclaim(dev, 1, 0);
- 
- 	/* free the rx buffer ring */
- 	bcm_enet_free_rx_buf_ring(kdev, priv);
--- 
-2.17.1
+On 08/07/2022 08:58, Chunfeng Yun wrote:
+> Add compatible for mt8188
+> 
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+> ---
+>   Documentation/devicetree/bindings/phy/mediatek,tphy.yaml | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> index 7b2e1bc119be..9fd27d64aca0 100644
+> --- a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> +++ b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> @@ -85,6 +85,7 @@ properties:
+>             - const: mediatek,generic-tphy-v2
+>         - items:
+>             - enum:
+> +              - mediatek,mt8188-tphy
+>                 - mediatek,mt8195-tphy
+>             - const: mediatek,generic-tphy-v3
+>         - const: mediatek,mt2701-u3phy
