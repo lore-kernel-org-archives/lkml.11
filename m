@@ -2,87 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516A3CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240155AbiGHUrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 16:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40306 "EHLO
+        id S239851AbiGHUtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 16:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240099AbiGHUrp (ORCPT
+        with ESMTP id S239536AbiGHUtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 16:47:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4F6A0279
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 13:47:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 345D5628D8
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 20:47:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D618EC341D3;
-        Fri,  8 Jul 2022 20:47:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657313262;
-        bh=g4PglUdEdW7HC6uJZfr4a+EghlnelE/EgV3+Knnak0w=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=TW9+u/RstdPpZzk2YckRW5YKMexi5N/oR8CIzeU0JFaHmH5YsRoG4V5Vok5kteGY8
-         Mtv3g+LsIbqx2c461NQUzjpUxTS72kD1h02Ujp1fWhjfFqOmKzW/0TdWDlhTHbdvaj
-         hwpQv+0vGK1Rpn7HQ7V+zCl0Yim7MU12mk9YUZz9QEGsbKlBfM0bMFEeSCtZvi8Oey
-         uRCF8A0e78kAsZby4QIzyVOpqkwLggtsL9XvZYA7rT4QB7zgoBSMGpZKTV7wo/sAz7
-         NBtvZyZNEHl//5tA925a/sFtG32QtMuwB0nNC1SNlYdu15j+C4FZtF74nW3qyHWmQZ
-         91pV70AufX19Q==
-From:   Mark Brown <broonie@kernel.org>
-To:     mranostay@ti.com, linux-kernel@vger.kernel.org
-Cc:     nm@ti.com
-In-Reply-To: <20220708013125.313892-1-mranostay@ti.com>
-References: <20220708013125.313892-1-mranostay@ti.com>
-Subject: Re: [PATCH] regmap: add WARN_ONCE when invalid mask is provided to regmap_field_init()
-Message-Id: <165731326159.2471691.15710953551238113950.b4-ty@kernel.org>
-Date:   Fri, 08 Jul 2022 21:47:41 +0100
+        Fri, 8 Jul 2022 16:49:01 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108A984EEC
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 13:48:57 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id s16-20020a0568301c7000b0061c283d6c37so2042374otg.12
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 13:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=oTRkIHkkNvP0E53VWhSF2X9Yi/sOj2WBCOpKZoAXIu4=;
+        b=MigDeIBYToCrLnSVXo5wEsyN9vgrb0Ai7tzQl4JjezdR+NsMxylX2bslPxBhO0L7Et
+         xCQgyTmwveugyEZZjMmKFU8pf/H24ibg8B+tLycbqfl9QO9ThpmxTN2evdRLrl56SbYk
+         olrNkSc8UA/V+PnmX2eZNcnBPx+qYIs+ldTW0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=oTRkIHkkNvP0E53VWhSF2X9Yi/sOj2WBCOpKZoAXIu4=;
+        b=DDaAqxNxuEpWb1vs+plHlMIf7wiZ+/P2vr5L4/O8s6xA0DKv0D9ylk0P3QAbn0A8WF
+         ND0zuZEa5JURZSMdYTpyhDLw2U4J5c95F9ioejVlki/h2SEuGTuhY6qYPXVDDiH7P162
+         X5+PEK0U2WVdNpzxOwjW6J2nKITKRlWwQr/l+pwVSANYIZnMHftRQ4vm26J5SbGNfNGU
+         vJrqGD0sGhUQjI0H52R2XSgPYc6O0ne1vZY6vk9YmDN1jzQWknQep43K5g3XnhMEN2+a
+         TdTGTSLEvXT7jzpc6af1Y77OMTq2cuRFMYFBRkDZwzoZX7JWBRCg0yfmj/Qcr3gSsbgq
+         olqw==
+X-Gm-Message-State: AJIora9lzgo2bsGdYm/zlN8zVG0ickwAaWs4rHKTw2EkUJ3Sbn3wEcr6
+        Zfs4bgC4XMXQeE4EZhN7DpFLD2SDhYm6EePh1NVPZA==
+X-Google-Smtp-Source: AGRyM1taOliA1drxAbyZku2NYLmp4/EsK31dn6TQJuxKde3Uv1L7lNEiCnBSek/bIMbxUbcnOmOzWSA8kvZdIxxCJv4=
+X-Received: by 2002:a05:6830:d81:b0:616:c424:6f22 with SMTP id
+ bv1-20020a0568300d8100b00616c4246f22mr2394204otb.77.1657313336409; Fri, 08
+ Jul 2022 13:48:56 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 8 Jul 2022 13:48:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <ac679a45-9574-7978-860f-1a1bcefb53ec@quicinc.com>
+References: <20220614161118.12458-1-quic_tdas@quicinc.com> <Yqi8rcs95CEEjGY4@google.com>
+ <CAE-0n50cqBWpDKsiyDNMZ8GnNtj7xJn930S1hucdAGn7tGXewA@mail.gmail.com> <ac679a45-9574-7978-860f-1a1bcefb53ec@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 8 Jul 2022 13:48:55 -0700
+Message-ID: <CAE-0n51vx8X3+WiOSMx9LnO17uu+5XapYjSG8ybKOS_F_CYAhQ@mail.gmail.com>
+Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Update lpassaudio clock
+ controller for resets
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Taniya Das <quic_tdas@quicinc.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 7 Jul 2022 18:31:25 -0700, Matt Ranostay wrote:
-> In regmap_field_init() when a invalid mask is provided it still
-> initializes with any warnings.
-> 
-> An example of this is when the LSB is greater than MSB a mask of zero
-> is produced.
-> 
-> WARN_ONCE() is not ideal for this but requires less changes to core regmap
-> code.
-> 
-> [...]
+Quoting Taniya Das (2022-07-07 00:06:59)
+>
+> Hi Stephen,
+>
+> On 6/15/2022 2:08 AM, Stephen Boyd wrote:
+> > Quoting Matthias Kaehlcke (2022-06-14 09:51:57)
+> >> On Tue, Jun 14, 2022 at 09:41:18PM +0530, Taniya Das wrote:
+> >>> The lpass audio supports TX/RX/WSA block resets. The LPASS PIL clock
+> >>> driver is not supported and mark it disabled. Also to keep consistency
+> >>> update lpasscore to lpass_core.
+> >>
+> >> There is a driver for "qcom,sc7280-lpasscc", what does it mean that is
+> >> isn't supported?
+> >>
+> >> IIUC one problem is that 'lpasscc@3000000' and 'lpass_aon / clock-controller@3380000'
+> >> have overlapping register ranges, so they can't be used together.
+> >>
+> >> You could just say 'Disable the LPASS PIL clock by default, boards
+> >> can enable it if needed'.
+> >
+> > For the pinctrl driver we added a "qcom,adsp-bypass-mode" property[1] to
+> > indicate that the ADSP was being bypassed or not. Can we do the same
+> > here and combine the device nodes that have overlapping reg properties?
+> >
+> > [1] https://lore.kernel.org/r/1654921357-16400-2-git-send-email-quic_srivasam@quicinc.com
+>
+> Could we take up as a cleanup and take it forward:
+> https://lore.kernel.org/lkml/20220614153306.29339-1-quic_tdas@quicinc.com/T/#t
+>
 
-Applied to
-
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
-
-Thanks!
-
-[1/1] regmap: add WARN_ONCE when invalid mask is provided to regmap_field_init()
-      commit: cf39ed2e8ecddbee38e02691d6293b812e98e397
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+I don't think so. The binding would need to change.
