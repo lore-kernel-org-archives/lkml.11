@@ -2,60 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D01C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 04:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 04:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237380AbiGHEo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 00:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
+        id S236881AbiGHEpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 00:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237221AbiGHEny (ORCPT
+        with ESMTP id S235631AbiGHEpQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 00:43:54 -0400
+        Fri, 8 Jul 2022 00:45:16 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C468B79683;
-        Thu,  7 Jul 2022 21:42:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDEF307;
+        Thu,  7 Jul 2022 21:45:15 -0700 (PDT)
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267GcTX1008611;
-        Thu, 7 Jul 2022 21:42:40 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=TLWPACD6JnypQ9HKMX4FNwaUC/y0RfptYGBOQ58GtOM=;
- b=hN5rJgMhYYbsascCCil7EZLt+30sps/RbfWnASYpehjenSF9PP/SMU+Oqs+uFvJP71r1
- Y8wzb+4RHK/Vhdd2d4SUNfat00sqUla38F9gj4eA3PVpcx/N8jExvwtY5gPTQegSKRsw
- OTEEsfI8C6/A/mejwzPx6DkdHj8xpuDbe86wvTXxyblcrqqZGIzXBcDH8ZN5xAcJhG1y
- dQO+fRM+lZLvouF+SfQpA+ZAupHceqKqQCylPAb+UMw6Ma1FuiHWP9EeJty38w4GBGLe
- imCbCIrOwHCbHTbNSvYKWNl7Vp3mB53SmPgtp7tbRlomrp5Qm+pBaMxA611pUwi8B19u pA== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h635w2cy7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 21:42:40 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 7 Jul
- 2022 21:42:38 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 7 Jul 2022 21:42:38 -0700
-Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
-        by maili.marvell.com (Postfix) with ESMTP id 9883F3F7074;
-        Thu,  7 Jul 2022 21:42:35 -0700 (PDT)
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2684ZlUu011020;
+        Thu, 7 Jul 2022 21:45:09 -0700
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2109.outbound.protection.outlook.com [104.47.58.109])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h635w2d4s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 21:45:09 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TD3UTwL1tPcYKANSTEIIU9W3Il5ZKKK6z0hOY0I38zwhJTuDySRMsHlK61FvI3IpNHDTxEWV8O6V/L4Ie5mJv/iKvBSrjzr2yV0qKW7J3opggqodQuOkT/BSbk9KCJF10A2x2yeXKjnj04+leYG3CFlu5+4o0hr5kdGL5R3ZORRgozRQrMObtL2bIPLrMR3gxNBnskJgB53Cslqp1p3cbYK3tqwy+k17tfOWC8KOucSD/zhq8QuRRTJycMgk3SmcvbNTMgsByJBunwIzZCfRUfvp8qMYeLvc0ZsWtPMETTGov92LjW07yKpZJ8PlCy3LdP8+MP2k3zQQDJjBtj007A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jHqnUIKKmXFAe907scuRXFx6lK3Dx7RyhtsTi4eIrgg=;
+ b=N7EYBTx0rjIKsJdq3O2xJZ/uVOp1iKt7ucnJMxq+Ii2Tp01p6/Lnt+eND7i3/cnE5/QHLe7tTP0Qm3q4V4ZVJRx6p0xLE3koTQC7jUdgFj3C9/5cR+/mXlNKqySeRGp33TW4PsjdwmObSh5h6OrgLo0cz3vkMep5MDQhD3oEBweTgf8WxCZQwJg55PdSPrSMfn1SPdHjtXA7sAivYgI59syd6MWg73XhA4X2OnazT9xFQswCyw/+o8JWZq3UUAS3IfQDLEMC+y0MSLqn71YUw4PGNs8N5qdznLhPtjr7RZ4x/mVYBZ6EYYAZwXg+oNZemKNAn37IXjIAhVLcbga3nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jHqnUIKKmXFAe907scuRXFx6lK3Dx7RyhtsTi4eIrgg=;
+ b=q7z6WL824pWHuxBGDU4iyhtOTXlon37tibaFRx17DGHmN0mZI4vjcwd0FIwkFQ+j//gMkWat3vWS68Qn8S/nvYdedMr6UYBSQxEQf3OM//sF9/k4xFGP4o1ozlorFiN71/daaPuugNj+kUILLu6t8SKmgwiyUk151VL1+EJEHOI=
+Received: from MWHPR1801MB1918.namprd18.prod.outlook.com
+ (2603:10b6:301:68::33) by BN6PR18MB1202.namprd18.prod.outlook.com
+ (2603:10b6:404:e6::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Fri, 8 Jul
+ 2022 04:45:05 +0000
+Received: from MWHPR1801MB1918.namprd18.prod.outlook.com
+ ([fe80::b489:f25f:d89c:ff0a]) by MWHPR1801MB1918.namprd18.prod.outlook.com
+ ([fe80::b489:f25f:d89c:ff0a%7]) with mapi id 15.20.5417.020; Fri, 8 Jul 2022
+ 04:45:05 +0000
 From:   Ratheesh Kannoth <rkannoth@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [net-next PATCH v5 11/12] octeontx2-pf: Add support for exact match table.
-Date:   Fri, 8 Jul 2022 10:11:50 +0530
-Message-ID: <20220708044151.2972645-12-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220708044151.2972645-1-rkannoth@marvell.com>
-References: <20220708044151.2972645-1-rkannoth@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: RE: [EXT] Re: [net-next PATCH V3 06/12] octeontx2-af: Drop rules for
+ NPC MCAM
+Thread-Topic: [EXT] Re: [net-next PATCH V3 06/12] octeontx2-af: Drop rules for
+ NPC MCAM
+Thread-Index: AQHYkdQksQfuD7Vtm0qA5q2Ok6/vvq1zpuQAgAA8qSA=
+Date:   Fri, 8 Jul 2022 04:45:05 +0000
+Message-ID: <MWHPR1801MB1918C2542BC344601E837721D3829@MWHPR1801MB1918.namprd18.prod.outlook.com>
+References: <20220707073353.2752279-1-rkannoth@marvell.com>
+        <20220707073353.2752279-7-rkannoth@marvell.com>
+ <20220707175428.127006ba@kernel.org>
+In-Reply-To: <20220707175428.127006ba@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b869444c-d7f2-4592-c282-08da609ca0a7
+x-ms-traffictypediagnostic: BN6PR18MB1202:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0YZTwn9hFx852Yg4o4DhdVt4yUKx8Z83Y5HBsjRwpsvrnGnpYiWf5HYAzNb0dXUnBdlGIfpPIExZZEtXCI+JHgyS7Zt1sRwaRl5LbfFPHOC9LSFnz5D91w4dNOE4v+kKPwR4hmM1fzyu3hDTCti2XJ9zQF7dwuV2OLxTThtc47qTvoDiO6DNhWu4JJxg2iYNQWVmNTB3yE2c7XYSj9RrVheTd2VZsAGHqsoL3p7YJHkz58TV050Obxr9gCwytq70wZwOypwUREBQ4p20ZmJb3o2gV/Wv7WhEp7loxzvC7s6gY7//ayo9GeEWuEZXA1GnkplNTPfM0SD1cwZgiWxAwcuhyU/OJ8wsCTwsFO5HW3wr+M+i3spsTISRk+cRRM+Awj7FRBoM3hoJ5+oHaRNU5tjKzC+FO6cvS+eo7rDxaKzKAXuQXGE6xMBVpBTLf71A/wKX0+8UZvu6qB2/mW4CaWyzHffIIJ+/+f1crSiogCr0uqtK13PVGHKEByLwzWXBGH0gIZMA1dVovw5Zb3hTTIZxiqEndmuWyQzOyHoKypuKIxamA83/jhxzpPsoPnkuemToLjTHfWeMdtnhxkUXUpyjrv77o6tk8t/moYJ+4xd/UTOir9Fnk+nkBkTv5o6XAiINoBAI0Mhj2O6J3h5sO5UwoglWep2TMWxawVAeyndNiuAj26QJuf2aq1s8y05lfO0/xvVu60T7pqkVV/itHoHjITbCQg0v3PL5/VKqSsiOxSN34UFddxbCZ+grM5vOdkx0M2dnFADfc+Cd0/cC1ZIUmwwMHSbopaYf9MIj+zPRZ/Me0LmFWuC5AB/TB7r5
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1801MB1918.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(346002)(39860400002)(366004)(396003)(38100700002)(122000001)(83380400001)(66446008)(55016003)(186003)(64756008)(66556008)(8676002)(76116006)(66476007)(54906003)(66946007)(4326008)(316002)(71200400001)(6916009)(33656002)(26005)(5660300002)(52536014)(86362001)(2906002)(53546011)(478600001)(41300700001)(6506007)(7696005)(9686003)(8936002)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?4VAtXsiZhTNOIsYvWd/TdfMoMclj81+/SaY4e56PCajMqHfkv3jjY1ZKrw7m?=
+ =?us-ascii?Q?pwAYHEoSSClSczTQYcdMQmisS2cftp4pHMDVlEas1Nxw/cSq8EzPpknr9XmG?=
+ =?us-ascii?Q?+914Q4d8YAhpxBN22nNE/4A8xWz+KrKxfZpKf2cAqF4CkTQgsNXpam2tng+u?=
+ =?us-ascii?Q?fjY+mVJCKnJRw10NTjIqWUrgAutHuA0Q9RAgRznrgiVhzmhPmk20gKq+lGNR?=
+ =?us-ascii?Q?3l/nyJd3V+EwJujl5wUdGIijEicFJXRbfiA4xEAWTw1mXkfd2MGueT+tKWcY?=
+ =?us-ascii?Q?OJHrPOuv1AKQWeHwG3s7FJwkH9F/e8pcoX31B0IQC4GXKRzisJeDjvfN/Epi?=
+ =?us-ascii?Q?xsQyYPbbHVGpaVPpffGxu/4KoWRCza7iG+etBUE3FWrdKK7BU6evhuziTXsK?=
+ =?us-ascii?Q?dyC1WAI8cLVTci1zHKLWVprJ12I+otupljRxbVU1JuPwycCUa2avzr8dhIGV?=
+ =?us-ascii?Q?XVSMX3xRUoVyxL8eXeMdbOhMb6buvT5rl4smxLRW6L//CQ7CPR3nRhyJIiOD?=
+ =?us-ascii?Q?34GY7Y8NXkQD+Smy/tMyocwFg+FxyVB5x4hTCGNyDdnbGxOWl298FJO5zrLz?=
+ =?us-ascii?Q?/S8vSkqYF8l3f/xaT20hFWv6Meafyi6BFOH15x53jRS2E1FicsaQ3ogU0pbL?=
+ =?us-ascii?Q?cszooOzClC8NBmnq/pBRy/fKZPws9MNNKJSXf0nJrGVcigs8+QxyoWh03lbg?=
+ =?us-ascii?Q?CHGSPFefx6gohO4UdqdVy2cOehsQbWlsFp+9XtiPgc3vpfT3466vUsjDc+Tr?=
+ =?us-ascii?Q?0ntNoC6uwT5GV4+EfArp4XepVbWfVs0kqkJKzJL/U6OIz3LKBpZIO0QuoeIp?=
+ =?us-ascii?Q?2VlYjEdfRyS21IG3sAMzFvffzgbUn5bnhu2+IoRx393PbAcKhJS9LKKU/DPT?=
+ =?us-ascii?Q?pDuYrbtTmwIKNDBz/HjIW5p1zp69/u61POPlXlVuBGuvTXrgqm6JCMTABIfY?=
+ =?us-ascii?Q?HTPfrUgQcB/nbOaF84DfoQ1PLb4N1LOxpVUXu3lnkQDh88zSGZUdWzqPOGNk?=
+ =?us-ascii?Q?TKcwWyM6ejsYpaCsAxbQybTYV9D+dieGqX/jIsgQxn7mgVtzXsUAIcIRDM94?=
+ =?us-ascii?Q?ShFW/q50NHycJz6KL+UyibXCmGoI+9sVZch+KzrQPCL7ykkKK6Vwd03HgdVd?=
+ =?us-ascii?Q?B+FK7C+mOrCkoj8fvxTXZvbAR2y6sQTA3sLQCh6DCu6SyYlUwWUQ9Bs7q4ZA?=
+ =?us-ascii?Q?B3y0M3kM9sq7geECsdrTUtS2KfGO4Su0PMdnRjpTAuXNeHR8ChQc0rkG2jAO?=
+ =?us-ascii?Q?xYoJuXsEnF451HuTFljZGwaSfRV3+VRp+DFYVMIfiE+pQF3qAURGD+0PSJN5?=
+ =?us-ascii?Q?5HdF9iCDA6p7Cj4UIxBDxqebMYJLMZOTZ+NiI/IceY7Mqi5cZqFQhxEpyEmY?=
+ =?us-ascii?Q?+jXjmv/QLHw7Latu7ta+B19SOeVtMMTR4pJorIbCR0Auhmk8ufji+ooXrgIt?=
+ =?us-ascii?Q?dtA2dCfLReufmdrBRsPm63CQoImeMxC/Oq4Yi5AUa4ayYjv4PqFdGIzWjuMi?=
+ =?us-ascii?Q?hJi5UTIVuV5l7bVLohKrwBnuZwyBRaNkZp40zgTy3JWIZnLQNiyhCfuR74Rv?=
+ =?us-ascii?Q?9gOBzgEyjEPJrNgtoKpJ6zyFIo87Bl4oOjT95mY+?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: IIfMW4MgTyvA3xPqw9lgZVMy0nalk0Xc
-X-Proofpoint-ORIG-GUID: IIfMW4MgTyvA3xPqw9lgZVMy0nalk0Xc
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1801MB1918.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b869444c-d7f2-4592-c282-08da609ca0a7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2022 04:45:05.2547
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: M+tsu4avaLSlyMV+KeJGnaLZt7qnA4po2ueZ8+SHmlWogD4/AjbrBy9b+c2JdFiT92TthnjdPrMKOhXzIQd2Bg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR18MB1202
+X-Proofpoint-GUID: _ESowbfAKOzLvlCQLw0AeqzRJFkFCJ11
+X-Proofpoint-ORIG-GUID: _ESowbfAKOzLvlCQLw0AeqzRJFkFCJ11
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-08_02,2022-06-28_01,2022-06-22_01
@@ -63,336 +128,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NPC exact match table can support more entries than RPM
-dmac filters. This requires field size of DMAC filter count
-and index to be increased.
+-----Original Message-----
+From: Jakub Kicinski <kuba@kernel.org>=20
+Sent: Friday, July 8, 2022 6:24 AM
+To: Ratheesh Kannoth <rkannoth@marvell.com>
+Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Sunil Kovvuri Gou=
+tham <sgoutham@marvell.com>; davem@davemloft.net; edumazet@google.com; pabe=
+ni@redhat.com
+Subject: [EXT] Re: [net-next PATCH V3 06/12] octeontx2-af: Drop rules for N=
+PC MCAM
 
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
----
- .../marvell/octeontx2/nic/otx2_common.h       | 10 ++---
- .../marvell/octeontx2/nic/otx2_dmac_flt.c     | 44 ++++++++++++++-----
- .../marvell/octeontx2/nic/otx2_flows.c        | 40 ++++++++++++-----
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  2 +-
- 4 files changed, 67 insertions(+), 29 deletions(-)
+External Email
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index ce2766317c0b..e795f9ee76dd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -314,8 +314,8 @@ struct otx2_flow_config {
- #define OTX2_VF_VLAN_TX_INDEX	1
- 	u16			max_flows;
- 	u8			dmacflt_max_flows;
--	u8			*bmap_to_dmacindex;
--	unsigned long		dmacflt_bmap;
-+	u32			*bmap_to_dmacindex;
-+	unsigned long		*dmacflt_bmap;
- 	struct list_head	flow_list;
- };
- 
-@@ -895,9 +895,9 @@ int otx2_setup_tc(struct net_device *netdev, enum tc_setup_type type,
- int otx2_tc_alloc_ent_bitmap(struct otx2_nic *nic);
- /* CGX/RPM DMAC filters support */
- int otx2_dmacflt_get_max_cnt(struct otx2_nic *pf);
--int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
--int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
--int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos);
-+int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u32 bit_pos);
-+int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac, u32 bit_pos);
-+int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u32 bit_pos);
- void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf);
- void otx2_dmacflt_update_pfmac_flow(struct otx2_nic *pfvf);
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
-index 142d87722bed..846a0294a215 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
-@@ -8,7 +8,7 @@
- #include "otx2_common.h"
- 
- static int otx2_dmacflt_do_add(struct otx2_nic *pf, const u8 *mac,
--			       u8 *dmac_index)
-+			       u32 *dmac_index)
- {
- 	struct cgx_mac_addr_add_req *req;
- 	struct cgx_mac_addr_add_rsp *rsp;
-@@ -35,9 +35,10 @@ static int otx2_dmacflt_do_add(struct otx2_nic *pf, const u8 *mac,
- 	return err;
- }
- 
--static int otx2_dmacflt_add_pfmac(struct otx2_nic *pf)
-+static int otx2_dmacflt_add_pfmac(struct otx2_nic *pf, u32 *dmac_index)
- {
- 	struct cgx_mac_addr_set_or_get *req;
-+	struct cgx_mac_addr_set_or_get *rsp;
- 	int err;
- 
- 	mutex_lock(&pf->mbox.lock);
-@@ -48,16 +49,24 @@ static int otx2_dmacflt_add_pfmac(struct otx2_nic *pf)
- 		return -ENOMEM;
- 	}
- 
-+	req->index = *dmac_index;
-+
- 	ether_addr_copy(req->mac_addr, pf->netdev->dev_addr);
- 	err = otx2_sync_mbox_msg(&pf->mbox);
- 
-+	if (!err) {
-+		rsp = (struct cgx_mac_addr_set_or_get *)
-+			 otx2_mbox_get_rsp(&pf->mbox.mbox, 0, &req->hdr);
-+		*dmac_index = rsp->index;
-+	}
-+
- 	mutex_unlock(&pf->mbox.lock);
- 	return err;
- }
- 
--int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos)
-+int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u32 bit_pos)
- {
--	u8 *dmacindex;
-+	u32 *dmacindex;
- 
- 	/* Store dmacindex returned by CGX/RPM driver which will
- 	 * be used for macaddr update/remove
-@@ -65,13 +74,13 @@ int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos)
- 	dmacindex = &pf->flow_cfg->bmap_to_dmacindex[bit_pos];
- 
- 	if (ether_addr_equal(mac, pf->netdev->dev_addr))
--		return otx2_dmacflt_add_pfmac(pf);
-+		return otx2_dmacflt_add_pfmac(pf, dmacindex);
- 	else
- 		return otx2_dmacflt_do_add(pf, mac, dmacindex);
- }
- 
- static int otx2_dmacflt_do_remove(struct otx2_nic *pfvf, const u8 *mac,
--				  u8 dmac_index)
-+				  u32 dmac_index)
- {
- 	struct cgx_mac_addr_del_req *req;
- 	int err;
-@@ -91,7 +100,7 @@ static int otx2_dmacflt_do_remove(struct otx2_nic *pfvf, const u8 *mac,
- 	return err;
- }
- 
--static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
-+static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf, u32 dmac_index)
- {
- 	struct cgx_mac_addr_reset_req *req;
- 	int err;
-@@ -102,6 +111,7 @@ static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
- 		mutex_unlock(&pf->mbox.lock);
- 		return -ENOMEM;
- 	}
-+	req->index = dmac_index;
- 
- 	err = otx2_sync_mbox_msg(&pf->mbox);
- 
-@@ -110,12 +120,12 @@ static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
- }
- 
- int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac,
--			u8 bit_pos)
-+			u32 bit_pos)
- {
--	u8 dmacindex = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
-+	u32 dmacindex = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
- 
- 	if (ether_addr_equal(mac, pf->netdev->dev_addr))
--		return otx2_dmacflt_remove_pfmac(pf);
-+		return otx2_dmacflt_remove_pfmac(pf, dmacindex);
- 	else
- 		return otx2_dmacflt_do_remove(pf, mac, dmacindex);
- }
-@@ -151,9 +161,10 @@ int otx2_dmacflt_get_max_cnt(struct otx2_nic *pf)
- 	return err;
- }
- 
--int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos)
-+int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u32 bit_pos)
- {
- 	struct cgx_mac_addr_update_req *req;
-+	struct cgx_mac_addr_update_rsp *rsp;
- 	int rc;
- 
- 	mutex_lock(&pf->mbox.lock);
-@@ -167,8 +178,19 @@ int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos)
- 
- 	ether_addr_copy(req->mac_addr, mac);
- 	req->index = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
-+
-+	/* check the response and change index */
-+
- 	rc = otx2_sync_mbox_msg(&pf->mbox);
-+	if (rc)
-+		goto out;
- 
-+	rsp = (struct cgx_mac_addr_update_rsp *)
-+		otx2_mbox_get_rsp(&pf->mbox.mbox, 0, &req->hdr);
-+
-+	pf->flow_cfg->bmap_to_dmacindex[bit_pos] = rsp->index;
-+
-+out:
- 	mutex_unlock(&pf->mbox.lock);
- 	return rc;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 2dd192b5e4e0..709fc0114fbd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -18,7 +18,7 @@ struct otx2_flow {
- 	struct ethtool_rx_flow_spec flow_spec;
- 	struct list_head list;
- 	u32 location;
--	u16 entry;
-+	u32 entry;
- 	bool is_vf;
- 	u8 rss_ctx_id;
- #define DMAC_FILTER_RULE		BIT(0)
-@@ -232,6 +232,9 @@ static int otx2_mcam_entry_init(struct otx2_nic *pfvf)
- 	return 0;
- }
- 
-+/* TODO : revisit on size */
-+#define OTX2_DMAC_FLTR_BITMAP_SZ (4 * 2048 + 32)
-+
- int otx2vf_mcam_flow_init(struct otx2_nic *pfvf)
- {
- 	struct otx2_flow_config *flow_cfg;
-@@ -242,6 +245,12 @@ int otx2vf_mcam_flow_init(struct otx2_nic *pfvf)
- 	if (!pfvf->flow_cfg)
- 		return -ENOMEM;
- 
-+	pfvf->flow_cfg->dmacflt_bmap = devm_kcalloc(pfvf->dev,
-+						    BITS_TO_LONGS(OTX2_DMAC_FLTR_BITMAP_SZ),
-+						    sizeof(long), GFP_KERNEL);
-+	if (!pfvf->flow_cfg->dmacflt_bmap)
-+		return -ENOMEM;
-+
- 	flow_cfg = pfvf->flow_cfg;
- 	INIT_LIST_HEAD(&flow_cfg->flow_list);
- 	flow_cfg->max_flows = 0;
-@@ -259,6 +268,12 @@ int otx2_mcam_flow_init(struct otx2_nic *pf)
- 	if (!pf->flow_cfg)
- 		return -ENOMEM;
- 
-+	pf->flow_cfg->dmacflt_bmap = devm_kcalloc(pf->dev,
-+						  BITS_TO_LONGS(OTX2_DMAC_FLTR_BITMAP_SZ),
-+						  sizeof(long), GFP_KERNEL);
-+	if (!pf->flow_cfg->dmacflt_bmap)
-+		return -ENOMEM;
-+
- 	INIT_LIST_HEAD(&pf->flow_cfg->flow_list);
- 
- 	/* Allocate bare minimum number of MCAM entries needed for
-@@ -284,7 +299,7 @@ int otx2_mcam_flow_init(struct otx2_nic *pf)
- 		return 0;
- 
- 	pf->flow_cfg->bmap_to_dmacindex =
--			devm_kzalloc(pf->dev, sizeof(u8) *
-+			devm_kzalloc(pf->dev, sizeof(u32) *
- 				     pf->flow_cfg->dmacflt_max_flows,
- 				     GFP_KERNEL);
- 
-@@ -355,7 +370,7 @@ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac)
- {
- 	struct otx2_nic *pf = netdev_priv(netdev);
- 
--	if (!bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
-+	if (!bitmap_empty(pf->flow_cfg->dmacflt_bmap,
- 			  pf->flow_cfg->dmacflt_max_flows))
- 		netdev_warn(netdev,
- 			    "Add %pM to CGX/RPM DMAC filters list as well\n",
-@@ -438,7 +453,7 @@ int otx2_get_maxflows(struct otx2_flow_config *flow_cfg)
- 		return 0;
- 
- 	if (flow_cfg->nr_flows == flow_cfg->max_flows ||
--	    !bitmap_empty(&flow_cfg->dmacflt_bmap,
-+	    !bitmap_empty(flow_cfg->dmacflt_bmap,
- 			  flow_cfg->dmacflt_max_flows))
- 		return flow_cfg->max_flows + flow_cfg->dmacflt_max_flows;
- 	else
-@@ -1010,7 +1025,7 @@ static int otx2_add_flow_with_pfmac(struct otx2_nic *pfvf,
- 
- 	otx2_add_flow_to_list(pfvf, pf_mac);
- 	pfvf->flow_cfg->nr_flows++;
--	set_bit(0, &pfvf->flow_cfg->dmacflt_bmap);
-+	set_bit(0, pfvf->flow_cfg->dmacflt_bmap);
- 
- 	return 0;
- }
-@@ -1064,7 +1079,7 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 			return otx2_dmacflt_update(pfvf, eth_hdr->h_dest,
- 						   flow->entry);
- 
--		if (bitmap_full(&flow_cfg->dmacflt_bmap,
-+		if (bitmap_full(flow_cfg->dmacflt_bmap,
- 				flow_cfg->dmacflt_max_flows)) {
- 			netdev_warn(pfvf->netdev,
- 				    "Can't insert the rule %d as max allowed dmac filters are %d\n",
-@@ -1078,17 +1093,17 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 		}
- 
- 		/* Install PF mac address to DMAC filter list */
--		if (!test_bit(0, &flow_cfg->dmacflt_bmap))
-+		if (!test_bit(0, flow_cfg->dmacflt_bmap))
- 			otx2_add_flow_with_pfmac(pfvf, flow);
- 
- 		flow->rule_type |= DMAC_FILTER_RULE;
--		flow->entry = find_first_zero_bit(&flow_cfg->dmacflt_bmap,
-+		flow->entry = find_first_zero_bit(flow_cfg->dmacflt_bmap,
- 						  flow_cfg->dmacflt_max_flows);
- 		fsp->location = flow_cfg->max_flows + flow->entry;
- 		flow->flow_spec.location = fsp->location;
- 		flow->location = fsp->location;
- 
--		set_bit(flow->entry, &flow_cfg->dmacflt_bmap);
-+		set_bit(flow->entry, flow_cfg->dmacflt_bmap);
- 		otx2_dmacflt_add(pfvf, eth_hdr->h_dest, flow->entry);
- 
- 	} else {
-@@ -1154,11 +1169,12 @@ static void otx2_update_rem_pfmac(struct otx2_nic *pfvf, int req)
- 			if (req == DMAC_ADDR_DEL) {
- 				otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
- 						    0);
--				clear_bit(0, &pfvf->flow_cfg->dmacflt_bmap);
-+				clear_bit(0, pfvf->flow_cfg->dmacflt_bmap);
- 				found = true;
- 			} else {
- 				ether_addr_copy(eth_hdr->h_dest,
- 						pfvf->netdev->dev_addr);
-+
- 				otx2_dmacflt_update(pfvf, eth_hdr->h_dest, 0);
- 			}
- 			break;
-@@ -1194,12 +1210,12 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
- 
- 		err = otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
- 					  flow->entry);
--		clear_bit(flow->entry, &flow_cfg->dmacflt_bmap);
-+		clear_bit(flow->entry, flow_cfg->dmacflt_bmap);
- 		/* If all dmac filters are removed delete macfilter with
- 		 * interface mac address and configure CGX/RPM block in
- 		 * promiscuous mode
- 		 */
--		if (bitmap_weight(&flow_cfg->dmacflt_bmap,
-+		if (bitmap_weight(flow_cfg->dmacflt_bmap,
- 				  flow_cfg->dmacflt_max_flows) == 1)
- 			otx2_update_rem_pfmac(pfvf, DMAC_ADDR_DEL);
- 	} else {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 9106c359e64c..9376d0e62914 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1120,7 +1120,7 @@ static int otx2_cgx_config_loopback(struct otx2_nic *pf, bool enable)
- 	struct msg_req *msg;
- 	int err;
- 
--	if (enable && !bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
-+	if (enable && !bitmap_empty(pf->flow_cfg->dmacflt_bmap,
- 				    pf->flow_cfg->dmacflt_max_flows))
- 		netdev_warn(pf->netdev,
- 			    "CGX/RPM internal loopback might not work as DMAC filters are active\n");
--- 
-2.25.1
+----------------------------------------------------------------------
+On Thu, 7 Jul 2022 13:03:47 +0530 Ratheesh Kannoth wrote:
+> NPC exact match table installs drop on hit rules in NPC mcam for each=20
+> channel. This rule has broadcast and multicast bits cleared. Exact=20
+> match bit cleared and channel bits set. If exact match table hit bit=20
+> is 0, corresponding NPC mcam drop rule will be hit for the packet and=20
+> will be dropped.
 
+>kdoc:
+
+>drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1462: warning: ba=
+d line:         u8 cgx_id, lmac_id;
+
+Done. Posted new patch set.
+
+>clang:
+
+.>/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1228:6: warning=
+: variable 'disable_cam' is used uninitialized whenever 'if' condition is f=
+alse [-Wsometimes-uninitialized]
+        if (entry->cmd)
+            ^~~~~~~~~~
+>../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1232:6: note: =
+uninitialized use occurs here
+        if (disable_cam) {
+            ^~~~~~~~~~~
+>./drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1228:2: note: r=
+emove the 'if' if its condition is always true
+  >      if (entry->cmd)
+        ^~~~~~~~~~~~~~~
+>../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1201:18: note:=
+ initialize the variable 'disable_cam' to silence this warning
+        bool disable_cam;
+                        ^
+                         =3D 0
+>../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1308:6: warnin=
+g: variable 'enable_cam' is used uninitialized whenever 'if' condition is f=
+alse [-Wsometimes-uninitialized]
+ >       if (cmd)
+            ^~~
+>../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1312:6: note: =
+uninitialized use occurs here
+>        if (enable_cam) {
+            ^~~~~~~~~~
+>../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1308:2: note: =
+remove the 'if' if its condition is always true
+ >       if (cmd)
+ >       ^~~~~~~~
+>../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1275:17: note:=
+ initialize the variable 'enable_cam' to silence this warning
+ >       bool enable_cam;
+                       ^
+ >                       =3D 0
+
+Done. Posted new patch.
