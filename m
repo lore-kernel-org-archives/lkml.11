@@ -2,173 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DED9CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:05:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A90FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238245AbiGHOFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        id S238229AbiGHOHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237856AbiGHOFr (ORCPT
+        with ESMTP id S236628AbiGHOHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:05:47 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68FC3057E;
-        Fri,  8 Jul 2022 07:05:45 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id o25so37916229ejm.3;
-        Fri, 08 Jul 2022 07:05:45 -0700 (PDT)
+        Fri, 8 Jul 2022 10:07:48 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF93313A8
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:07:47 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id h23so37850354ejj.12
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 07:07:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cZ1JcOk+cUjBFM0UwNYjGC+6gUqeLmPdNAn2VtbItVs=;
-        b=C9j9Jy5kzmcXgNLE/fU11cTma6Idiv4NJsWSRkixHHFIEWnpJIeb1yiiSVW77jpu9h
-         hHMji7RRFAPDYKup2J+ulh5R6T6PHcjrIuAj1grORvTjoQXfBxeRPQCJWIAMBKIO/znV
-         d3yaeQ6rSUPkLd+k3Cpf94gvuLG46Y3IRys3ux5jHFnx+W1Dr8cpivPi2t8G8VLVciOj
-         NIIpxKKDnFRxyK8K8zlkB5ePXZza/1qtywUpNEt2U0hGc8VJQi51rBMC0vOYx3JmPFGj
-         CxRKTgEzkxAXr4zTDP0c3jkwRSNm9R6s+pYAKbfr2Z83SMPs7YiilwBszAa6dswIbeLi
-         s0Sw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UmQMSw/Lo/aUgwdf6X3tLXsFA1/lan16IQ3/ce55QGc=;
+        b=e//7/zevFojSgOmv1iUZPcR9RxpOxiTq/3m9/uN6nMSXeI3cXH4ixaWg5fpOBb1Xyq
+         2/6CsOMlmIQ90xk3ZqpS9GmPsMEN77fRzrXujYwyvsFbFyV+Yr6pt7yDy8oh4YLBJHuI
+         J4kwdndVmwW26wL2r1fIHKQXzEUE7DZIyQAZGyj6Jt0fO9fs6YuDgnPOK9CNdckL5ovW
+         9ckRgnYGvYqeB3OyMnm6b6nYTos1wFBo2zRVCQH6TzwBZY1iiWIj/wS0HJu578+a/37m
+         CBMaGj+SfkKAEihV4KGfQTD6lzxvioUDTGkr2PHCMSz63svr+8UiaWd4Huyh6CIUuIWQ
+         Gt0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cZ1JcOk+cUjBFM0UwNYjGC+6gUqeLmPdNAn2VtbItVs=;
-        b=ns7vV7BKT+YoVh4vEAR19ZuAPcpLBCWhzKURCz8jFuyfpxTYzTeE+0YxK6XEtFj4sO
-         mdee3wQt+xFOaKxMJwB+NYYK26xcO3NYipcuiaXOBVB5jNMVF6c9Hw0XVFxgrc8lZqEA
-         hfGyeXj4pSk8j3tX8uI7JHrUlwiqWjGPFcDAvrvzBgUPRcfd/cI/K+C2bdQV76PVvhn0
-         DhvP+bS/UnT6ZirxRUVbkgbkIesenNMzaclK46J9IWxg/fDVWLwzjQU5BPB8WRFRmpoo
-         0RzAFL2ZfCkt45y4RKgD8SI8c6ukRxxRXBfNDUPRIKPnacVZHENf/4QPlQxK1YAITcgT
-         us3w==
-X-Gm-Message-State: AJIora+qYJmaRAxemoFhPVk2k8H258/4Q3BVZzsIuH3+3WNd1MLr7bSn
-        lokCL9gol5fd1VhYBL8QpTM=
-X-Google-Smtp-Source: AGRyM1vBuNxa9hPEoGCyoVYwPo5Hyon2tNuoSUO6lwL0Et0s7AQ72pbHGPRbmfCHOUK/Nfzeao4YuQ==
-X-Received: by 2002:a17:907:8a25:b0:726:c9f2:2f5e with SMTP id sc37-20020a1709078a2500b00726c9f22f5emr3792005ejc.286.1657289144375;
-        Fri, 08 Jul 2022 07:05:44 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c092:600::2:676a])
-        by smtp.gmail.com with ESMTPSA id l10-20020a1709060cca00b0072b16ea4795sm1845081ejh.48.2022.07.08.07.05.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 07:05:43 -0700 (PDT)
-Message-ID: <45cd36ee-ef99-fb67-df8d-218603facfd7@gmail.com>
-Date:   Fri, 8 Jul 2022 15:03:46 +0100
+        bh=UmQMSw/Lo/aUgwdf6X3tLXsFA1/lan16IQ3/ce55QGc=;
+        b=YYsjxGiXX5iPnui2qAzY6Sx19tDduizZwFLHCW0pFWGMlzjjiP9vGPt/U1EiqcxAI1
+         bJ/IKNWvxo8wpvbcLe7tLT0ad/Veu7lSEpBUQiSmwMJN2N882LIMayREpN7YSx0OLMBa
+         Z8Hn/BwDVSvi2oGPslQzO6QSK8iI9yqmiddpU9BLmD66WAIyjhAbPWSqnDhBb1F7A/Rq
+         sxi3RJP7nLY8r1jz61lHDCJz89DoWeZwIoAGMcKWcPnwF/JaQomwm1epU2WGhukj8uFm
+         IX2xwaLDdmxk3laEbyIxRkmWE3CXDQ6DgSX+lvvfHuQNI28LS0lQ5E/LGIHYFlbPVkT1
+         uW9g==
+X-Gm-Message-State: AJIora8NXW7RZFR3+NiPndmewAPbMs3mhOM7/3BPAoq/sSAu/gUjjbgG
+        fJ/AOl722b8T+79UNaAdh3FrwUQ6gZI=
+X-Google-Smtp-Source: AGRyM1t1DjCzfOwLiRgELsKcXKYuqKjMDw7UMRA/ZepHVRPjeRcW0Dz4HWw2KyJ1desnWjuhUEvOGw==
+X-Received: by 2002:a17:906:e16:b0:726:a026:27ff with SMTP id l22-20020a1709060e1600b00726a02627ffmr3646857eji.573.1657289266405;
+        Fri, 08 Jul 2022 07:07:46 -0700 (PDT)
+Received: from localhost.localdomain ([46.248.82.114])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170906308100b007030c97ae62sm9533959ejv.191.2022.07.08.07.07.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 07:07:45 -0700 (PDT)
+From:   Uros Bizjak <ubizjak@gmail.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     Uros Bizjak <ubizjak@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH] mm/page_alloc: use try_cmpxchg in set_pfnblock_flags_mask
+Date:   Fri,  8 Jul 2022 16:07:36 +0200
+Message-Id: <20220708140736.8737-1-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v4 11/27] tcp: support externally provided ubufs
-Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1657194434.git.asml.silence@gmail.com>
- <7ee05f644e3b3626b693973738364bcb23cf905d.1657194434.git.asml.silence@gmail.com>
- <62e1daba-fb20-bf20-5c4d-c31770e5420e@kernel.org>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <62e1daba-fb20-bf20-5c4d-c31770e5420e@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/8/22 05:06, David Ahern wrote:
-> On 7/7/22 5:49 AM, Pavel Begunkov wrote:
->> Teach ipv4/udp how to use external ubuf_info provided in msghdr and
-> 
-> ipv4/tcp?
+Use try_cmpxchg instead of cmpxchg in set_pfnblock_flags_mask.
+x86 CMPXCHG instruction returns success in ZF flag, so this
+change saves a compare after cmpxchg (and related move instruction
+in front of cmpxchg). The main loop improves from:
 
-Ehh, just tcp. Thanks, I updated the branches
+    1c5d:	48 89 c2             	mov    %rax,%rdx
+    1c60:	48 89 c1             	mov    %rax,%rcx
+    1c63:	48 21 fa             	and    %rdi,%rdx
+    1c66:	4c 09 c2             	or     %r8,%rdx
+    1c69:	f0 48 0f b1 16       	lock cmpxchg %rdx,(%rsi)
+    1c6e:	48 39 c1             	cmp    %rax,%rcx
+    1c71:	75 ea                	jne    1c5d <...>
 
+to:
 
->> also prepare it for managed frags by sprinkling
->> skb_zcopy_downgrade_managed() when it could mix managed and not managed
->> frags.
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
->>   net/ipv4/tcp.c | 32 ++++++++++++++++++++------------
->>   1 file changed, 20 insertions(+), 12 deletions(-)
->>
->> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
->> index 390eb3dc53bd..a81f694af5e9 100644
->> --- a/net/ipv4/tcp.c
->> +++ b/net/ipv4/tcp.c
->> @@ -1223,17 +1223,23 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->>   
->>   	flags = msg->msg_flags;
->>   
->> -	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
->> +	if ((flags & MSG_ZEROCOPY) && size) {
->>   		skb = tcp_write_queue_tail(sk);
->> -		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
->> -		if (!uarg) {
->> -			err = -ENOBUFS;
->> -			goto out_err;
->> -		}
->>   
->> -		zc = sk->sk_route_caps & NETIF_F_SG;
->> -		if (!zc)
->> -			uarg->zerocopy = 0;
->> +		if (msg->msg_ubuf) {
->> +			uarg = msg->msg_ubuf;
->> +			net_zcopy_get(uarg);
->> +			zc = sk->sk_route_caps & NETIF_F_SG;
->> +		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
->> +			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
->> +			if (!uarg) {
->> +				err = -ENOBUFS;
->> +				goto out_err;
->> +			}
->> +			zc = sk->sk_route_caps & NETIF_F_SG;
->> +			if (!zc)
->> +				uarg->zerocopy = 0;
->> +		}
->>   	}
->>   
->>   	if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) &&
->> @@ -1356,9 +1362,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->>   
->>   			copy = min_t(int, copy, pfrag->size - pfrag->offset);
->>   
->> -			if (tcp_downgrade_zcopy_pure(sk, skb))
->> -				goto wait_for_space;
->> -
->> +			if (unlikely(skb_zcopy_pure(skb) || skb_zcopy_managed(skb))) {
->> +				if (tcp_downgrade_zcopy_pure(sk, skb))
->> +					goto wait_for_space;
->> +				skb_zcopy_downgrade_managed(skb);
->> +			}
->>   			copy = tcp_wmem_schedule(sk, copy);
->>   			if (!copy)
->>   				goto wait_for_space;
-> 
-> You dropped the msg->msg_ubuf checks on jump labels. Removing the one
-> you had at 'out_nopush' I agree with based on my tests (i.e, it is not
-> needed).
+    1c60:	48 89 ca             	mov    %rcx,%rdx
+    1c63:	48 21 c2             	and    %rax,%rdx
+    1c66:	4c 09 c2             	or     %r8,%rdx
+    1c69:	f0 48 0f b1 16       	lock cmpxchg %rdx,(%rsi)
+    1c6e:	75 f0                	jne    1c60 <...>
 
-It was an optimisation, which I dropped for simplicity. Will be sending it
-and couple more afterwards.
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+---
+ mm/page_alloc.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-
-> The one at 'out_err' seems like it is needed - but it has been a few
-> weeks since I debugged that case. I believe the error path I was hitting
-> was sk_stream_wait_memory with MSG_DONTWAIT flag set meaning timeout is
-> 0 and it jumps there with EPIPE.
-
-Currently, it's consistent with MSG_ZEROCOPY ubuf_info, we grab a ubuf_info
-reference at the beginning (msg_zerocopy_realloc() for MSG_ZEROCOPY and
-net_zcopy_get() for msg_ubuf), and then release it at the end
-with net_zcopy_put() or net_zcopy_put_abort().
-
-All users, e.g. skb_zerocopy_iter_stream(), have to grab a new reference,
-skb_zcopy_set() -> net_zcopy_get().
-
-Not sure I see any issue, and if there is it sounds that it should also
-be affecting MSG_ZEROCOPY.
-
-
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e008a3df0485..d415d5b539b7 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -524,7 +524,7 @@ void set_pfnblock_flags_mask(struct page *page, unsigned long flags,
+ {
+ 	unsigned long *bitmap;
+ 	unsigned long bitidx, word_bitidx;
+-	unsigned long old_word, word;
++	unsigned long word;
+ 
+ 	BUILD_BUG_ON(NR_PAGEBLOCK_BITS != 4);
+ 	BUILD_BUG_ON(MIGRATE_TYPES > (1 << PB_migratetype_bits));
+@@ -540,12 +540,8 @@ void set_pfnblock_flags_mask(struct page *page, unsigned long flags,
+ 	flags <<= bitidx;
+ 
+ 	word = READ_ONCE(bitmap[word_bitidx]);
+-	for (;;) {
+-		old_word = cmpxchg(&bitmap[word_bitidx], word, (word & ~mask) | flags);
+-		if (word == old_word)
+-			break;
+-		word = old_word;
+-	}
++	do {
++	} while (!try_cmpxchg(&bitmap[word_bitidx], &word, (word & ~mask) | flags));
+ }
+ 
+ void set_pageblock_migratetype(struct page *page, int migratetype)
 -- 
-Pavel Begunkov
+2.35.3
+
