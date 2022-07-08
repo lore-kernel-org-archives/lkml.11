@@ -2,100 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D7A9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F34CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237780AbiGHIXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        id S237789AbiGHIXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237766AbiGHIW5 (ORCPT
+        with ESMTP id S237761AbiGHIXQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:22:57 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D1B81497;
-        Fri,  8 Jul 2022 01:22:55 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id d3so19046375ioi.9;
-        Fri, 08 Jul 2022 01:22:55 -0700 (PDT)
+        Fri, 8 Jul 2022 04:23:16 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AE0814B0
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:23:10 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id m2so15785968plx.3
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:23:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Akov7SZtUyEX9D0+3zzLnuIGNu/dLwAPRoI7n7xKXwA=;
-        b=TRV50Pwd5sFVo2E1gPlLsmgMiLSKMpheIV4nJ2xcXHBx97J8Am/NdIsQmb5jiSueRF
-         khKbAvo7q6avJHCZi7XdEzpRx9PIwpak6EdVOisplHkLfW6Vsbsr7bljDySt/V/2BEbJ
-         q1gMNptzMFfKjBChwI0lnmtdrb+RPDAPzhWyYuoqe10Lo71y9vleLsbPmakin0OmMVKL
-         uWXfsHI9iEjKUEe6mpVLpjQo1HRjDLZFP499HogUkQ598g5o9PWJ4CrLEXomSYOP9vGh
-         mMPyIME28eRynOIhLPAsTuFMOwg5M8CMFxst36RJIp/b74fT0wj00cAxc8zxkpGNp29I
-         YsKQ==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Yv41KjiZt+ml0QTtKBiEgL10atNQnela5H6jReLePT8=;
+        b=d2lfcx5HvslvT7tftwDggz5mpjJEOTFyP1qlI8O1gHKFDnDy4S+jjXx4J5QpSkuvNU
+         aQ3rRp0ZxyHvJNHkmffR2aX46udJQhDRPbmrGpk5adRJDHW50fdnLkP9mI0uISAZgXei
+         qd01Wqvnv3M/VaQLoEO+/5po6XE/XFHyvwBjAiu+NPd3o4L2u3RY+mxjTJQRHjJna2uG
+         TvomrcsIg0CU7rBnL/c9TyRKlktmVnAh8si9UR8HtVj2Hy+UlAStR/kOoiJaR0XJjzh1
+         EIfOyxHE4vSfPsYTROb2AjZCtH8IzJtRCkByJgf75M/9zGz2b23SR0a6f9B8I70Vdm2t
+         cmqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Akov7SZtUyEX9D0+3zzLnuIGNu/dLwAPRoI7n7xKXwA=;
-        b=tTPYXQkv0ROfMo+ok243qqWc8gBm5ES2KZlT2BKz2/aRgcD7SDYtgjn4vom7I96+zJ
-         5enrAM9XtQLXwZEmldPOhRiFWekmkbgk/aT0vbGKnHBwvzkFhwEvvj04D7b2gIQb7vsN
-         Wc3a9jUNof7cbmiw+0mdO/Hoym9yX8QmkhshbfElwHTD/Sp0WMCSTh4teA8xDgmufW+u
-         DBhhG2oCuc0lgR3Ea5vb5Z0nMlzB9daWDvaYkp/uSbkJgzH6iGW0LonvSorekWIMMBqK
-         Eksi4yX4RW+c+wAl2fVQpcMMawNhEw13p/J8aFJfoyfj5pEL5CVuJzGv5FcoJXcG32+T
-         4+ug==
-X-Gm-Message-State: AJIora8HfHYp/jRhBjNg42ktSF+v99mqCkHTrQhzK49CQH4BNOqXnqUs
-        CXKtyUDNCvOa9BSDV945oJoXXP8MyCRjnTFB
-X-Google-Smtp-Source: AGRyM1tfdSkTBt7EaCr+m3mYoeilSPCzVf9/PiNlHAX15oqMZh5CVi/9v4QlhKpiOcCqveypnOPygw==
-X-Received: by 2002:a02:a70f:0:b0:339:de0d:4ed6 with SMTP id k15-20020a02a70f000000b00339de0d4ed6mr1413393jam.292.1657268575018;
-        Fri, 08 Jul 2022 01:22:55 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id r3-20020a02aa03000000b0033cd78a3612sm10838734jam.18.2022.07.08.01.22.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 01:22:53 -0700 (PDT)
-Message-ID: <184ce9e3-6031-98ab-cae6-a4aa2015b5c4@gmail.com>
-Date:   Fri, 8 Jul 2022 10:22:51 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Yv41KjiZt+ml0QTtKBiEgL10atNQnela5H6jReLePT8=;
+        b=l+0Pl8CgNTnVe2QU5jwO+44a4Ey4gufdUM019bpem6al72z6Npeuf1lhkyOrRtDG8m
+         fryxWRGuKjIOc3rMoHIt1tehobljWi36Aohuf623F+cl3JoEOcggcBZxYcNlQTflkhVv
+         lcWJtFK/mSWCcWcYs1J+509M/WlQEcfEiQbPXxhOCORASBAHLv0sa/CKkLyhzjBaD8zs
+         RfjKG/5QGWM40iBY81iiUQxIN2RfnQiegAlTwu9bMzufSDATF6E7G4FtHxFOumsyB0DY
+         1iD78gTWeClw6Crz6dkudeKcEsekJK2W12B1zVfnSCe9PgHEVGJLxBLQNZGOe35xQayH
+         hC3g==
+X-Gm-Message-State: AJIora/W2Vx+1t190G4G6gcr+lA/1SbjfYEkYcFgZHOIx/dN5Ce+w0Hh
+        C6s9PffaFFdOrc8k9eerTBPXHQ==
+X-Google-Smtp-Source: AGRyM1t3xYv6yrh7qgCSAECIXVYwtZaYoNdgFwwWOiDTbf9ukW8Rrjpm5c3WW/Ydd8RnPZkVCXyWHA==
+X-Received: by 2002:a17:90a:c387:b0:1ef:8f7b:60d3 with SMTP id h7-20020a17090ac38700b001ef8f7b60d3mr10648017pjt.42.1657268590284;
+        Fri, 08 Jul 2022 01:23:10 -0700 (PDT)
+Received: from C02FT5A6MD6R.bytedance.net ([139.177.225.241])
+        by smtp.gmail.com with ESMTPSA id x65-20020a636344000000b00412b1043f33sm3329291pgb.39.2022.07.08.01.22.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 01:23:09 -0700 (PDT)
+From:   Gang Li <ligang.bdlg@bytedance.com>
+To:     mhocko@suse.com, akpm@linux-foundation.org, surenb@google.com,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        viro@zeniv.linux.org.uk, ebiederm@xmission.com,
+        keescook@chromium.org, peterz@infradead.org, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org, david@redhat.com,
+        imbrenda@linux.ibm.com, adobriyan@gmail.com,
+        yang.yang29@zte.com.cn, brauner@kernel.org,
+        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
+        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
+        Liam.Howlett@Oracle.com, ohoono.kwon@samsung.com,
+        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
+        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
+        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
+        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
+        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
+        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
+        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-perf-users@vger.kernel.org,
+        Gang Li <ligang.bdlg@bytedance.com>
+Subject: [PATCH v2 3/5] mm: add numa fields for tracepoint rss_stat
+Date:   Fri,  8 Jul 2022 16:21:27 +0800
+Message-Id: <20220708082129.80115-4-ligang.bdlg@bytedance.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
+References: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/2] arm64: dts: mt8173: Fix nor_flash node
-Content-Language: en-US
-To:     "xiangsheng.hou" <xiangsheng.hou@mediatek.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, bin.zhang@mediatek.com,
-        benliang.zhao@mediatek.com, linux-mediatek@lists.infradead.org
-References: <20220630090157.29486-1-xiangsheng.hou@mediatek.com>
- <20220630090157.29486-2-xiangsheng.hou@mediatek.com>
- <24bf3c0f-7070-0bcd-2fae-9fe086d146b2@gmail.com>
- <e4a50d4e165887ac4741c0b8d68470dc2f060655.camel@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <e4a50d4e165887ac4741c0b8d68470dc2f060655.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Since we add numa_count for mm->rss_stat, the tracepoint should
+also be modified. Now the output looks like this:
 
+```
+sleep-660   [002]   918.524333: rss_stat:             mm_id=1539334265 curr=0 type=MM_NO_TYPE type_size=0B node=2 node_size=32768B diff_size=-8192B
+sleep-660   [002]   918.524333: rss_stat:             mm_id=1539334265 curr=0 type=MM_FILEPAGES type_size=4096B node=-1 node_size=0B diff_size=-4096B
+sleep-660   [002]   918.524333: rss_stat:             mm_id=1539334265 curr=0 type=MM_NO_TYPE type_size=0B node=1 node_size=0B diff_size=-4096B
+```
 
-On 08/07/2022 03:40, xiangsheng.hou wrote:
-> Hi Matthias,
-> 
-> On Thu, 2022-07-07 at 16:43 +0200, Matthias Brugger wrote:
->>
->> On 30/06/2022 11:01, Xiangsheng Hou wrote:
->>> Add axi clock since the driver change to DMA mode which need
->>> to enable axi clock. And change spi clock to 26MHz as default.
->>>
->>> Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
->>
->> Applied, thanks!
->>
-> I will send a new patch v3 since there need a change in [PATCH v2 2/2]
-> by review.
-> 
+Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
+---
+ include/linux/mm.h          |  9 +++++----
+ include/trace/events/kmem.h | 27 ++++++++++++++++++++-------
+ mm/memory.c                 |  5 +++--
+ 3 files changed, 28 insertions(+), 13 deletions(-)
 
-Thanks from letting me know. From what I can see, 1/2 in v3 did not change, so 
-as I already applied it, you could have dropped it from the series.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 84ce6e1b1252..a7150ee7439c 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2041,27 +2041,28 @@ static inline unsigned long get_mm_counter(struct mm_struct *mm, int member, int
+ 	return (unsigned long)val;
+ }
+ 
+-void mm_trace_rss_stat(struct mm_struct *mm, int member, long count);
++void mm_trace_rss_stat(struct mm_struct *mm, int member, long member_count, int node,
++		       long numa_count, long diff_count);
+ 
+ static inline void add_mm_counter(struct mm_struct *mm, int member, long value, int node)
+ {
+ 	long count = atomic_long_add_return(value, &mm->rss_stat.count[member]);
+ 
+-	mm_trace_rss_stat(mm, member, count);
++	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, value);
+ }
+ 
+ static inline void inc_mm_counter(struct mm_struct *mm, int member, int node)
+ {
+ 	long count = atomic_long_inc_return(&mm->rss_stat.count[member]);
+ 
+-	mm_trace_rss_stat(mm, member, count);
++	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, 1);
+ }
+ 
+ static inline void dec_mm_counter(struct mm_struct *mm, int member, int node)
+ {
+ 	long count = atomic_long_dec_return(&mm->rss_stat.count[member]);
+ 
+-	mm_trace_rss_stat(mm, member, count);
++	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, -1);
+ }
+ 
+ /* Optimized variant when page is already known not to be PageAnon */
+diff --git a/include/trace/events/kmem.h b/include/trace/events/kmem.h
+index 4cb51ace600d..7c8ad4aeb7b1 100644
+--- a/include/trace/events/kmem.h
++++ b/include/trace/events/kmem.h
+@@ -363,7 +363,8 @@ static unsigned int __maybe_unused mm_ptr_to_hash(const void *ptr)
+ 	EM(MM_FILEPAGES)	\
+ 	EM(MM_ANONPAGES)	\
+ 	EM(MM_SWAPENTS)		\
+-	EMe(MM_SHMEMPAGES)
++	EM(MM_SHMEMPAGES)	\
++	EMe(MM_NO_TYPE)
+ 
+ #undef EM
+ #undef EMe
+@@ -383,29 +384,41 @@ TRACE_EVENT(rss_stat,
+ 
+ 	TP_PROTO(struct mm_struct *mm,
+ 		int member,
+-		long count),
++		long member_count,
++		int node,
++		long node_count,
++		long diff_count),
+ 
+-	TP_ARGS(mm, member, count),
++	TP_ARGS(mm, member, member_count, node, node_count, diff_count),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(unsigned int, mm_id)
+ 		__field(unsigned int, curr)
+ 		__field(int, member)
+-		__field(long, size)
++		__field(long, member_size)
++		__field(int, node)
++		__field(long, node_size)
++		__field(long, diff_size)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->mm_id = mm_ptr_to_hash(mm);
+ 		__entry->curr = !!(current->mm == mm);
+ 		__entry->member = member;
+-		__entry->size = (count << PAGE_SHIFT);
++		__entry->member_size = (member_count << PAGE_SHIFT);
++		__entry->node = node;
++		__entry->node_size = (node_count << PAGE_SHIFT);
++		__entry->diff_size = (diff_count << PAGE_SHIFT);
+ 	),
+ 
+-	TP_printk("mm_id=%u curr=%d type=%s size=%ldB",
++	TP_printk("mm_id=%u curr=%d type=%s type_size=%ldB node=%d node_size=%ldB diff_size=%ldB",
+ 		__entry->mm_id,
+ 		__entry->curr,
+ 		__print_symbolic(__entry->member, TRACE_MM_PAGES),
+-		__entry->size)
++		__entry->member_size,
++		__entry->node,
++		__entry->node_size,
++		__entry->diff_size)
+ 	);
+ #endif /* _TRACE_KMEM_H */
+ 
+diff --git a/mm/memory.c b/mm/memory.c
+index bb24da767f79..b085f368ae11 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -173,9 +173,10 @@ static int __init init_zero_pfn(void)
+ }
+ early_initcall(init_zero_pfn);
+ 
+-void mm_trace_rss_stat(struct mm_struct *mm, int member, long count)
++void mm_trace_rss_stat(struct mm_struct *mm, int member, long member_count, int node,
++		       long numa_count, long diff_count)
+ {
+-	trace_rss_stat(mm, member, count);
++	trace_rss_stat(mm, member, member_count, node, numa_count, diff_count);
+ }
+ 
+ #if defined(SPLIT_RSS_COUNTING)
+-- 
+2.20.1
 
-Please correct me if I'm wrong.
-
-Best regards,
-Matthias
