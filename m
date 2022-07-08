@@ -2,134 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEC0CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239714AbiGHTcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
+        id S239768AbiGHTc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238588AbiGHTch (ORCPT
+        with ESMTP id S238583AbiGHTc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:32:37 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2445313B9
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:32:36 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso2909446pjc.1
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 12:32:36 -0700 (PDT)
+        Fri, 8 Jul 2022 15:32:58 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01487313B9;
+        Fri,  8 Jul 2022 12:32:56 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id bu42so18051820lfb.0;
+        Fri, 08 Jul 2022 12:32:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=fq4tZGudx4zMCT0nka8BGDxrCmNytAuDG61jPMZlIpo=;
-        b=XEhQO2WWBWSdgCgIP3wK1Sx9RuMtx44CGhEkTwFflyhWmLl61zcFvSIQ/1c24IYJwX
-         HdkQtxI7E0aCTQ7J4RUShPdrCA1bRypxsH1s3S5pG1zFkYP1eeGc/g1CAk6ZZHxpUwST
-         E2xEIqeaa8hkrLJWvNfv2fQFqJURtGUMKE5JY73cF714gxQ4KXwioZdhpby/tPeupjDl
-         pCvAJ8aI26v6C+OzN+L3uUoJKEBsevbTLltZrpFy+v7n1sSBuGQ/L5r/qCdGBcGCj4LH
-         iotuHZdHxoHTULSWkKOcK0FaKF4UfayCba5qCqCbraJu3IPK5TAfVWSE9qEqkhw55MXv
-         kMpg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fE3puKa/6Hokm/etuKQc2OOXjCp/6oW39+ul+1LQBqQ=;
+        b=LaaKfBoOuaiqwms2ZKW+xXleA0IKWCHLtlQSRtgDfOAArnWufiUOEjWJYv+GyimtAx
+         yUKHzKif6MFcfIjhChE9LBOoteKGdALEacDjVlmzxjuZFwy3lH3PC1JKhVlpoCOR/AE9
+         MGQp0THGQy2wEUXIKHxeKDE2Y48898R+HvE/lAgqTHIjgppZ1CDQeq7o/tTxSYxdg8U/
+         Waf5gqnTr4ozJ0HM9hPkJaPYqL9O5b3wcb0SmxFjl6Z6g76IWGewDWKUs6QzlQxlLlKE
+         9DLZD/8hFZjr/QzD2IpKM5NqYJxO19Nlkai76bAgmGpnwbkxW51j9HpdMPNy8UyRRP2e
+         wx6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=fq4tZGudx4zMCT0nka8BGDxrCmNytAuDG61jPMZlIpo=;
-        b=vRZH35wWUE1vVOVGZ5tswTAh7+HMz3QGgrtK+qzRWHYvUJ8CopdK8hHt2GpqoYqvXm
-         DzpxKm2Rp5KLvSLyyP2lGYbXFF+1f9dcX3UPYIB1H6jkjONOQXHA7URwUSvZCD2Y2oP+
-         99O/UxxRzDfhBuJSr6mJ9NBuf8atu4jlRom9gZt0A0q1i1boiNcugW+DD1CrLB4j0Vin
-         zC7iCnM0qLz89c6+zt5zdfw4czHDmWO4orbunQS58o4r0sz0+JMsg+BAWNsX7ad87X6X
-         1pOOUWHNfo48TWIU5AzmXGXez3/RRxemyeyKBevsxgahbsOCAZrwFylrkBB/cOgi7TRR
-         rLIQ==
-X-Gm-Message-State: AJIora+6jl1795oy2RpDtH/cp+2+KBjLOTp//4Jh2VdBbVTEIMYMRONC
-        BTUqqbbDYIP7GAasjXhKUxktcNohTHe6gQ==
-X-Google-Smtp-Source: AGRyM1sVnCOtJwD0hsJql4kn2fWn9Z4dPVo+9hdjKrFb3QrR2i1OzlWmGVdlbxdI5sZmrZrnwwI5DQ==
-X-Received: by 2002:a17:90b:3e86:b0:1ec:f7e8:e4e4 with SMTP id rj6-20020a17090b3e8600b001ecf7e8e4e4mr1577962pjb.218.1657308755923;
-        Fri, 08 Jul 2022 12:32:35 -0700 (PDT)
-Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id c3-20020a170902d48300b0016be702a535sm10951953plg.187.2022.07.08.12.32.28
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fE3puKa/6Hokm/etuKQc2OOXjCp/6oW39+ul+1LQBqQ=;
+        b=AgCpvMDX1vz2Du7Zv8P1jKUBIXl3kqA+J+wLwT4MncTHlyq1y0VP/yIPJGBd8tUVe/
+         l9NgqORLfBf5s23JWmyW1l37bk3xEsciPSDwidSqnf/NV2mjn1psknXp8Y4iDBMDKZE3
+         RQRfjoJT72sydYKBpDMHwDEDuESuNQVNgz7Z256cFBoJMAPd01oTuMjGr2+exQGEoZgW
+         L+0e5lXWjFFWfQBJpoQIxYlyx0JRE0y4I3Mi2FXqvzuFc6uk70SuJ/h0BXjss8fJoQzI
+         ZLfkG58VXKsgCSsvO2iQz1oJxsQOMC5a3q/8tObHZdgsC3tUgdJdnG8L05FTeUMPvxlW
+         ZNdw==
+X-Gm-Message-State: AJIora/NwBQVMYru0OiPfy9PhANRXQB3zFCKQpSvuudUlFbugBtsyZ2L
+        gsW1NyLluuq0jojHoDxh/jo=
+X-Google-Smtp-Source: AGRyM1t/1vwERfeNaf48d5AaxQ7IN5DluX+1Y1MiFAvLw861pgrGbpSkmX1rwMywN+uCcbtUrJJSGw==
+X-Received: by 2002:a05:6512:39d4:b0:489:698a:a36e with SMTP id k20-20020a05651239d400b00489698aa36emr3229762lfu.10.1657308775209;
+        Fri, 08 Jul 2022 12:32:55 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id q16-20020a056512211000b0047da5e98e66sm676134lfr.1.2022.07.08.12.32.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 12:32:35 -0700 (PDT)
-References: <20220707165014.77127-1-schspa@gmail.com>
- <20220707135329.08cf74b0@gandalf.local.home> <m2h73snqja.fsf@gmail.com>
- <20220708140000.6aa75a50@gandalf.local.home> <m2ilo779f9.fsf@gmail.com>
- <20220708150614.2cda886d@gandalf.local.home>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] sched/rt: fix bad task migration for rt tasks
-Date:   Sat, 09 Jul 2022 03:14:44 +0800
-In-reply-to: <20220708150614.2cda886d@gandalf.local.home>
-Message-ID: <m28rp3pfhz.fsf@gmail.com>
+        Fri, 08 Jul 2022 12:32:54 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 22:32:52 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v5 6/8] clk: baikal-t1: Move reset-controls code
+ into a dedicated module
+Message-ID: <20220708193252.y3on6tqkqcvxa6tq@mobilestation>
+References: <20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624141853.7417-7-Sergey.Semin@baikalelectronics.ru>
+ <e0869ae1b10ec19eaf87dc5fa53498f82e7deaac.camel@pengutronix.de>
+ <20220705220757.dwzmrx34t2nsxfzl@mobilestation>
+ <f28de0c61c06396e36756f2d4f3379fab26abdbf.camel@pengutronix.de>
+ <20220706221018.3swtmotaqggww4xu@mobilestation>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706221018.3swtmotaqggww4xu@mobilestation>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Philipp
 
-Steven Rostedt <rostedt@goodmis.org> writes:
+On Thu, Jul 07, 2022 at 01:10:18AM +0300, Serge Semin wrote:
+> On Wed, Jul 06, 2022 at 11:16:34AM +0200, Philipp Zabel wrote:
+> > Hi Serge,
+> > 
+> > On Mi, 2022-07-06 at 01:07 +0300, Serge Semin wrote:
+> > [...]
+> > > > What is the reason for separating ccu-rst.c and clk-ccu-rst.c?
+> > > > 
+> > > > I expect implementing the reset ops and registering the reset
+> > > > controller in the same compilation unit would be easier.
+> > > 
+> > > From the very beginning of the Baikal-T1 driver live the Clock/Reset functionality
+> > > has been split up into two parts:
+> > > 1. ccu-{div,pll}.c - Clock/Reset operations implementation.
+> > > 2. clk-ccu-{div,pll}.c - Clock/Reset kernel interface implementation.
+> > > At least for the clk-part it has made the driver much easier to read.
+> > > Code in 1. provides the interface methods like
+> > > ccu_{div,pll}_hw_register() to register a clock provider corresponding
+> > > to the CCU divider/PLL of the particular type. Code in 2. uses these
+> > > methods to create the CCU Dividers/PLL clock descriptors and register
+> > > the of-based clocks in the system. The reset functionality was
+> > > redistributed in the same manner in the framework of the ccu-div.c and
+> > > clk-ccu-div.c modules.
+> > > 
+> > > A similar approach I was trying to utilize in the framework of the
+> > > separate CCU Resets implementation. Although it turned out to be not as
+> > > handy as it was for the clock-part due to the different clock and
+> > > reset subsystems API (clock subsystem provides a single clock
+> > > source based API, while the reset subsystem expects to have the whole
+> > > resets controller described). Anyway I've decided to preserve as much
+> > > similarities as possible for the sake of the code unification and
+> > > better readability/maintainability. Thus the reset lines control
+> > > methods have been placed in the ccu-rst.c object file, while the reset
+> > > control registration has been implemented in the clk-ccu-rst.c module.
+> > 
+> > Thank you for the detailed explanation. I think that splitting doesn't
+> > help readability much in this case, but I realize that may just be a
+> > matter of preference.
+> > 
+> > [...]
+> > > > I don't think this is necessary, see my comments below. Since the reset
+> > > > ids are contiguous, just setting nr_resets and using the default
+> > > > .of_xlate should be enough to make sure this is never called with an
+> > > > invalid id.
+> > > 
+> > > Using non-contiguous !Clock! IDs turned to be unexpectedly handy. Due to
+> > > that design I was able to add the internal clock providers hidden from
+> > > the DTS users but still visible in the clocks hierarchy. It has made the
+> > > clocks implementation as detailed as possible and protected from the
+> > > improper clocks usage. It also simplified a new clock providers adding
+> > > in future (though there won't be clock sources left undefined in the
+> > > SoC after this patchset is applied).
+> > > 
+> > > All of that made me thinking that the same approach can be useful in
+> > > the framework of the CCU reset controls implementation too at the very
+> > > least for the code unification. Although after the next patch in the
+> > > series is applied there won't be resets left undefined in the
+> > > Baikal-T1 SoC. So from another side you might be partly right on
+> > > suggesting to drop the independent reset IDs/descriptors design and
+> > > just assume the IDs contiguousness.
+> > > 
+> > > So could you please confirm that you still insists on dropping it?
+> > 
+> 
 
-> On Sat, 09 Jul 2022 02:19:42 +0800
-> Schspa Shi <schspa@gmail.com> wrote:
->
->> Yes, it's what I did in the V1 patch.
->> Link: https://lore.kernel.org/all/20220623182932.58589-1-schspa@gmail.com/
->> 
->> But I think it's not the best solution for this problem.
->> In these scenarios, we still have a chance to make the task run faster
->> by retrying to retry to push the currently running task on this CPU away.
->> 
->> There is more details on V2 patch's replay message.
->> Link: https://lore.kernel.org/all/CAMA88TrZ-o4W81Yfw9Wcs3ghoxwpeAKtFejtMTt78GNB0tKaSA@mail.gmail.com/#t
->
-> The thing is, this situation can only happen if we release the rq lock in
-> find_lock_lowest_rq(), and we should not be checking for it in the other
-> cases.
->
+> > Please drop it, then. I don't think there is value in carrying this
+> > complexity just because it makes the code more similar to the
+> > neighboring clk code.
+> > 
+> > I'd prefer to keep the reset ids contiguous, so future hardware should
+> > just get a different set of contiguous IDs, or new IDs appended
+> > contiguously as you do in patch 7.
+> 
+> Agreed then. I'll update the patches and resend the series shortly.
+> Thank you very much for review.
 
-If we haven't unlock the rq in find_lock_lowest_rq(), it will return
-NULL. It won't call this code added.
+The series has been updated the way you asked. Please review:
 
-	if (unlikely(is_migration_disabled(next_task))) {
-		put_task_struct(next_task);
-		goto retry;
-	}
+Link: https://lore.kernel.org/linux-clk/20220708192725.9501-1-Sergey.Semin@baikalelectronics.ru/
 
-	deactivate_task(rq, next_task, 0);
-	set_task_cpu(next_task, lowest_rq->cpu);
+-Sergey
 
-Beside, find_lock_lowest_rq() return NULL doesn't means rq is rleased,
-We need to add a _find_lock_lowest_rq to get the correct rq released
-flags?
-
-> Perhaps add the check in find_lock_lowest_rq() and also in the !lowest_rq
-> case do:
->
-> 		task = pick_next_pushable_task(rq);
-> 		if (task == next_task) {
-> +			/*
-> +			 * If next task has now disabled migrating, see if we
-> +			 * can push the current task.
-> +			 */
-> +			if (unlikely(is_migrate_disabled(task)))
-> +				goto retry;
-
-Ahh, It can be added, And do we need this to be a separate PATCH?
-
-> 			/*
-> 			 * The task hasn't migrated, and is still the next
-> 			 * eligible task, but we failed to find a run-queue
-> 			 * to push it to.  Do not retry in this case, since
-> 			 * other CPUs will pull from us when ready.
-> 			 */
-> 			goto out;
-> 		}
->
-> -- Steve
-
--- 
-BRs
-Schspa Shi
+> 
+> -Sergey
+> 
+> > 
+> > [...]
+> > > > 
+> > > > 
+> > > > 
+> > > > I would fold this into ccu_rst_hw_unregister().
+> > > 
+> > > I disagree in this part. Splitting up the interface methods in a set
+> > > of the small coherent methods like protagonists and respective
+> > > antagonists makes the code much easier to read and maintain. So I
+> > > will insist on having the ccu_rst_free_data() method even if it is
+> > > left with only a single kfree() function invocation.
+> > [...]
+> > > I have to disagree for the same reason as I would preserve the
+> > > ccu_rst_free_data() method here. Please see my comment above.
+> > 
+> > I'm fine with that.
+> > 
+> > > 
+> > regards
+> > Philipp
