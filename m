@@ -2,109 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6C8C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB26C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239946AbiGHTqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
+        id S239338AbiGHTsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239914AbiGHTqF (ORCPT
+        with ESMTP id S238387AbiGHTsd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:46:05 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F26087361
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:45:49 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id ECC1016C2;
-        Fri,  8 Jul 2022 22:47:34 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com ECC1016C2
+        Fri, 8 Jul 2022 15:48:33 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1329C1128;
+        Fri,  8 Jul 2022 12:48:30 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so2941975pjo.3;
+        Fri, 08 Jul 2022 12:48:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1657309655;
-        bh=y1DTHsN+7ZchbtK1/LYzLBSRwhnzdXBFd3LNm99BTAA=;
-        h=From:To:CC:Subject:Date:From;
-        b=FDB1zz9tnFxVZr4QNMUvuIITGGGYdNFkPcxqq7S5RSQCGactRA4Cwe5XJ3EYbpIF9
-         L0jg21N0I/NlkS2xQKJYuUy5am69/h7qXT+4+PX2D2rAe9oa0IvI+5zF6DHwx+ENyN
-         zmC2z3FD7UGoJe16WhC7ok5RXzik9McFmFLVW+uw=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 8 Jul 2022 22:45:48 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <soc@kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v4 1/2] bus: bt1-apb: Don't print error on -EPROBE_DEFER
-Date:   Fri, 8 Jul 2022 22:44:47 +0300
-Message-ID: <20220708194448.10700-1-Sergey.Semin@baikalelectronics.ru>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rBeV/OEgLqBxkQbXvrr4ONvUzsJQ4WYLxaMOQiThl/s=;
+        b=jDqt9G4/34S4KPrCz3lhJU4XGUo6/qs8bw63wesqlk5h2wEvQwvZdwTglnG6zSnTew
+         5bPqCrADnep4xYq/9lSC9SCuT9T7hxAVT0apy7LEpQelXl6CC5+Oac+IN1Xt/k3V6CHJ
+         hCR664kwCscXuzRYC2mZkIaD49bG5BOb9wJ0KKdMGpPHfSF5GBQWbkNEJelol04oCNS4
+         ZbRvOXtjumR5y62qHIM5KGycBjw2A7BNSizwDmu9ccdlLawGTSFYVydfeoBTPjDPD1rK
+         H6mouPl5aAxiWDgm+xlv9tHIY+jcG0bCBnXBetOAAksF1E2ChGnZOA0pMh3KidM6HZM1
+         NPOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rBeV/OEgLqBxkQbXvrr4ONvUzsJQ4WYLxaMOQiThl/s=;
+        b=zPIcdIYkBoowH2qgJw15HS5VpjNUGNaDKZQpJpmGrmtTvszinaP6dcs+heARYPNPhd
+         eVe8tp+fDt50/OmgOwS8Js7vUK1ugK/E5XNAF1qEjvhcDix2cm/wcBVowR4YGIG2t8pf
+         GGw18O/lTuErmnN54rCwqcOgITVm6vwWDnqQmfTGueYt9drb3VHSa/1oYN/9KTLIF96F
+         n4CXhIMY8snJWWxWrJogdbwQXEya9hE9TrpeQeEbNyGlQXHTcvDJWWW0y+3eVjVWnUF9
+         OnS5nQuow1AW8/Uq+379S0xszdS8uu2NUZwiwakZ+I7iTM8HBRAmJ1XVSFTLhrZ3i8ye
+         vkgw==
+X-Gm-Message-State: AJIora8f8JDCwFbiV3rFsW4kdjI7xCFibxMrgBuIUngv8MLOSfUrydW1
+        ye5jiOaVcri1189tL869re22TepxRM0tMP3SXRpXMy4IzYc=
+X-Google-Smtp-Source: AGRyM1vB/zeygFk5gaI/7h0y3iXb7EBHt12/zeW7dw9ssHDe4uPTSxddLEAjVzBkeY039sMTxaXRdPsAeMCc0rppxb8=
+X-Received: by 2002:a17:90b:4c8c:b0:1ef:9d26:3087 with SMTP id
+ my12-20020a17090b4c8c00b001ef9d263087mr1621043pjb.195.1657309709593; Fri, 08
+ Jul 2022 12:48:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+References: <20220708100952.1998673-1-ping.bai@nxp.com>
+In-Reply-To: <20220708100952.1998673-1-ping.bai@nxp.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Fri, 8 Jul 2022 16:48:18 -0300
+Message-ID: <CAOMZO5BVrcodf+1wvdifsUWy_j4Md4Lz1kBhrvCJa_4JPtqAzQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: Update freescale pin controllers maintainer
+To:     Jacky Bai <ping.bai@nxp.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Stefan Agner <stefan@agner.ch>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Baikal-T1 APB bus driver correctly handles the deferred probe
-situation, but still pollutes the system log with a misleading error
-message. Let's fix that by using the dev_err_probe() method to print the
-log message in case of the clocks/resets request errors.
+Hi Jacky,
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+On Fri, Jul 8, 2022 at 7:08 AM Jacky Bai <ping.bai@nxp.com> wrote:
+>
+> Add myself as co-maintainer of freescale pin controllers driver.
+>
+> Signed-off-by: Jacky Bai <ping.bai@nxp.com>
 
----
+Thanks for offering help here:
 
-Link: https://lore.kernel.org/lkml/20220610080103.10689-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v2:
-- Use the dev_err_probe() return value as the return status of the
-  corresponding method. (@Philipp)
-
-Link: https://lore.kernel.org/lkml/20220610104030.28399-1-Sergey.Semin@baikalelectronics.ru
-Changelog v3:
-- Just resend.
-- Rebase onto the kernel v5.19-rcX.
-
-Link: https://lore.kernel.org/lkml/20220624211233.7529-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v4:
-- Just resend.
----
- drivers/bus/bt1-apb.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/bus/bt1-apb.c b/drivers/bus/bt1-apb.c
-index b25ff941e7c7..63b1b4a76671 100644
---- a/drivers/bus/bt1-apb.c
-+++ b/drivers/bus/bt1-apb.c
-@@ -175,10 +175,9 @@ static int bt1_apb_request_rst(struct bt1_apb *apb)
- 	int ret;
- 
- 	apb->prst = devm_reset_control_get_optional_exclusive(apb->dev, "prst");
--	if (IS_ERR(apb->prst)) {
--		dev_warn(apb->dev, "Couldn't get reset control line\n");
--		return PTR_ERR(apb->prst);
--	}
-+	if (IS_ERR(apb->prst))
-+		return dev_err_probe(apb->dev, PTR_ERR(apb->prst),
-+				     "Couldn't get reset control line\n");
- 
- 	ret = reset_control_deassert(apb->prst);
- 	if (ret)
-@@ -199,10 +198,9 @@ static int bt1_apb_request_clk(struct bt1_apb *apb)
- 	int ret;
- 
- 	apb->pclk = devm_clk_get(apb->dev, "pclk");
--	if (IS_ERR(apb->pclk)) {
--		dev_err(apb->dev, "Couldn't get APB clock descriptor\n");
--		return PTR_ERR(apb->pclk);
--	}
-+	if (IS_ERR(apb->pclk))
-+		return dev_err_probe(apb->dev, PTR_ERR(apb->pclk),
-+				     "Couldn't get APB clock descriptor\n");
- 
- 	ret = clk_prepare_enable(apb->pclk);
- 	if (ret) {
--- 
-2.35.1
-
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
