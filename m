@@ -2,105 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB130C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 02:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 543D3CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 02:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236990AbiGHCCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 22:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
+        id S236533AbiGHCGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 22:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236922AbiGHCCc (ORCPT
+        with ESMTP id S229468AbiGHCGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 22:02:32 -0400
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5073F73908;
-        Thu,  7 Jul 2022 19:02:30 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id CZK00025;
-        Fri, 08 Jul 2022 10:02:25 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201612.home.langchao.com (10.100.2.12) with Microsoft SMTP Server id
- 15.1.2507.9; Fri, 8 Jul 2022 10:02:25 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <loic.poulain@linaro.org>, <ryazanov.s.a@gmail.com>,
-        <johannes@sipsolutions.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] net: wwan: call ida_free when device_register fails
-Date:   Thu, 7 Jul 2022 22:02:23 -0400
-Message-ID: <20220708020223.4234-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Thu, 7 Jul 2022 22:06:21 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DC2735B2;
+        Thu,  7 Jul 2022 19:06:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657245980; x=1688781980;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BlBX0I1TqW5elHAcr8NUa0MqJo+bb/fv2kN7HWnRDvg=;
+  b=FT/sQcQ6fSynWgHsFJu906xRynANUNpSBHQ5+EBRcPamm1NruZnPACCV
+   /nPQXE9mAoEwOfGAF8FOelh77Ke1hQbbPoGvxamF3t31O4RHEy9GV7IXN
+   9STTUcXIYeGeR4/AeM6aUixT/eVbL4wM4bZkwnyJzhMm2ea5zISvWPX2J
+   gZW5ZvkGvEn2Z1C1US6NMeEJ1uyEmwVTXzAQwZlqAK8bdU3gQ81z5DU9d
+   hgCZoDVDWJLG8FVP+zxJ7iYGdSSxXumCHsUxmp02/YJDR//La85fQagQx
+   gbIrG15LnfBhtjIACrgL7l1nk2bkI2+Z4S5tKgzX1v3FDakj8EAuFNw6l
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="309728915"
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="309728915"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 19:06:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="720725309"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 07 Jul 2022 19:06:18 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9dNp-000Mkt-VW;
+        Fri, 08 Jul 2022 02:06:17 +0000
+Date:   Fri, 8 Jul 2022 10:05:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [asahilinux:t8112/bringup 18/19] drivers/hid/hid-magicmouse.c:575:
+ warning: This comment starts with '/**', but isn't a kernel-doc comment.
+ Refer Documentation/doc-guide/kernel-doc.rst
+Message-ID: <202207081050.ZuYUDYpP-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   2022708100226f1151e7cf1643e555c40cf86075d3ed9
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-when device_register() fails, we should call ida_free().
+tree:   https://github.com/AsahiLinux/linux t8112/bringup
+head:   0e7640fed025ba0ce4b845a0bbf2a5fdceab631d
+commit: 086a493b890970d6e0afac83878a36fbb22ffd83 [18/19] hid: magicmouse: Add MTP multi-touch device support
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220708/202207081050.ZuYUDYpP-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/AsahiLinux/linux/commit/086a493b890970d6e0afac83878a36fbb22ffd83
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux t8112/bringup
+        git checkout 086a493b890970d6e0afac83878a36fbb22ffd83
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/hid/
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- drivers/net/wwan/wwan_core.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-index b8c7843730ed..0f653e320b2b 100644
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -228,8 +228,7 @@ static struct wwan_device *wwan_create_dev(struct device *parent)
- 	wwandev = kzalloc(sizeof(*wwandev), GFP_KERNEL);
- 	if (!wwandev) {
- 		wwandev = ERR_PTR(-ENOMEM);
--		ida_free(&wwan_dev_ids, id);
--		goto done_unlock;
-+		goto error_free_ida;
- 	}
- 
- 	wwandev->dev.parent = parent;
-@@ -242,7 +241,7 @@ static struct wwan_device *wwan_create_dev(struct device *parent)
- 	if (err) {
- 		put_device(&wwandev->dev);
- 		wwandev = ERR_PTR(err);
--		goto done_unlock;
-+		goto error_free_ida;
- 	}
- 
- #ifdef CONFIG_WWAN_DEBUGFS
-@@ -251,6 +250,8 @@ static struct wwan_device *wwan_create_dev(struct device *parent)
- 					   wwan_debugfs_dir);
- #endif
- 
-+error_free_ida:
-+	ida_free(&wwan_dev_ids, id);
- done_unlock:
- 	mutex_unlock(&wwan_register_lock);
- 
-@@ -448,8 +449,7 @@ struct wwan_port *wwan_create_port(struct device *parent,
- 	port = kzalloc(sizeof(*port), GFP_KERNEL);
- 	if (!port) {
- 		err = -ENOMEM;
--		ida_free(&minors, minor);
--		goto error_wwandev_remove;
-+		goto error_free_ida;
- 	}
- 
- 	port->type = type;
-@@ -484,6 +484,8 @@ struct wwan_port *wwan_create_port(struct device *parent,
- 
- error_put_device:
- 	put_device(&port->dev);
-+error_free_ida:
-+	ida_free(&minors, minor);
- error_wwandev_remove:
- 	wwan_remove_dev(wwandev);
- 
+All warnings (new ones prefixed by >>):
+
+   drivers/hid/hid-magicmouse.c:171: warning: Function parameter or member 'pos' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:171: warning: Function parameter or member 'hdev' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:171: warning: Function parameter or member 'work' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:171: warning: Function parameter or member 'battery_timer' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:171: warning: Function parameter or member 'input_ops' not described in 'magicmouse_sc'
+>> drivers/hid/hid-magicmouse.c:575: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * vendor trackpad report
+   drivers/hid/hid-magicmouse.c:589: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * standard HID mouse report
+
+
+vim +575 drivers/hid/hid-magicmouse.c
+
+   573	
+   574	/**
+ > 575	 * vendor trackpad report
+   576	 *
+   577	 * @num_fingers:	the number of fingers being reported in @fingers
+   578	 * @buttons:		same as HID buttons
+   579	 */
+   580	struct tp_header {
+   581		// HID vendor part, up to 1751 bytes
+   582		u8 unknown[22];
+   583		u8 num_fingers;
+   584		u8 buttons;
+   585		u8 unknown3[14];
+   586	};
+   587	
+
 -- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
