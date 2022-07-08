@@ -2,97 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A86DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 22:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDEECCA481
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 22:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240032AbiGHWOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 18:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
+        id S239358AbiGHWOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 18:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239988AbiGHWOH (ORCPT
+        with ESMTP id S240060AbiGHWOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 18:14:07 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4A22A971
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 15:14:05 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id j11-20020a05690212cb00b006454988d225so17124373ybu.10
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 15:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=E20Nt12LsnkGtFpMkOvIRDlb9+mX9JX506hrC6n8tfI=;
-        b=A6x6i+4QMeCkiuZ9qANdK/2cQfpMAeCB6bDJk4ZsZGw910nDKgog3Ylz7k8Xpd4oQK
-         j4i4VYbhIT0VHMsfdeYlUsvrrJCWvZvSQK7Pmfieuk++8yDviKUuV2bA2gRRaCDej0MW
-         rRbDC88IdQowNGoAIV1VTpNAUV49zsNJDOC7dj4QEYmHR4qLgkzMenAfXzJ0uT7MdA3z
-         HKVxx3XKkzSeNdTLINSHA9nUoLG14ewxtkSaKQyYspvYbOrwZ3+9js1xfLjavk2xa2kl
-         f/8CsqtyN7Cd1EhwJ60iNLBruJ1UHpRY4EbjzvF0eHk3frIGZanylB3kP5OO8o9C8DcQ
-         7Kzg==
+        Fri, 8 Jul 2022 18:14:20 -0400
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CA62A707;
+        Fri,  8 Jul 2022 15:14:20 -0700 (PDT)
+Received: by mail-io1-f50.google.com with SMTP id z81so284306iof.0;
+        Fri, 08 Jul 2022 15:14:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=E20Nt12LsnkGtFpMkOvIRDlb9+mX9JX506hrC6n8tfI=;
-        b=R5v0E6KPG/2/wE9PI3y+IZA3FB176fOi0zvzp9vVvdoYM3MuSEkJQW+//3Wle9zjkd
-         2noe2WdKJwi0heBazEUSZSws6XDWz+Z6ZKfM9FjXh2jjEXkhgPPyFdctD63EI/x8o/aR
-         qcSgAj2uYwb19AlppScym6urkZjJJ5+v1SA2jPBqTiGPXu6ARJEagBGJLmmcLu2nOrxs
-         XOGj5CM4Zll5/ev1MBKoMQnWCzl5ITrO5cf5EsMtBXuFmsyrrCJld7sLu/aqjzrYFG35
-         n3NUTcxPJrlQUL9NweZxziw8GpXHBb1NTUrAEb64pSwCJPhPhmJqON51+NxkQF2o3QtW
-         CFdQ==
-X-Gm-Message-State: AJIora/tOMj6ore3tRbPyA4CQLIfjtv1F79GcmfrRv3x0fdo7StCgzfg
-        IDMwyn7Ykz11srIJGfrDuS1kroTCteUTEr7p1g==
-X-Google-Smtp-Source: AGRyM1tbai2dfceIBCyizcjYkUf1XddOKPCwzP+Gz2PbecpsC1ry4B6MzxMbOc8QJ3HDBdHRwREkLhtVHneAH17JEA==
-X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:f21c:9185:9405:36f])
- (user=justinstitt job=sendgmr) by 2002:a81:a24b:0:b0:31c:95d5:1725 with SMTP
- id z11-20020a81a24b000000b0031c95d51725mr6572075ywg.403.1657318445014; Fri,
- 08 Jul 2022 15:14:05 -0700 (PDT)
-Date:   Fri,  8 Jul 2022 15:13:14 -0700
-Message-Id: <20220708221314.466294-1-justinstitt@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH] iscsi: iscsi_target: fix clang -Wformat warning
-From:   Justin Stitt <justinstitt@google.com>
-To:     "Martin K . Petersen" <martin.petersen@oracle.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Mingzhe Zou <mingzhe.zou@easystack.cn>,
-        Justin Stitt <justinstitt@google.com>,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qizlKD9bE5dN8tJcWqnW6FaDP0qSa79ZfPV40HiDdGQ=;
+        b=Yiu1EWliG8RLFfRL/e3eAzDNbrkLPyf+vzABOthH0KsHQ/X9K0O9HkrwSedV5c5C3H
+         bAm8pLNlNJx7+3vo6yHhEggx879Bk782o5qFCQ72Bljrud9REIxrTbEQZ5e2ov5JVQ9U
+         EwDtpSlRn5r3OKh1o9o0asnbd1QQ78+dsVCQbd1u5DrNo/ZI0zC+ywc6Cfq03fzCgmNA
+         GlG9oiBOTNfw6cd7tWmEWLY+fifqnTxzb7dgXFdNgifPMqVtDrlx1o8aTl4jAa8YWUjC
+         7HkOtmXZW83AmvwAfnTwxaxwY8zFAxO+9r0ORM2U60kOzrEdRcnCaEByg/L/zP4oCbth
+         BNLg==
+X-Gm-Message-State: AJIora/79bt9+kiZRi6/LrVQTowdNGHjwc5S+LE8qhf7g1aaaKkA/nEj
+        /ZpILCjeya8DnRQ7gAOMvQ==
+X-Google-Smtp-Source: AGRyM1t4peia84G04eriBOduqU7X4VUiKCFhcEgAmMHSCwj5GjAENVk5PMLOfC7mJNOQOcZb13sK1g==
+X-Received: by 2002:a05:6602:2e8e:b0:669:d5b1:3fc9 with SMTP id m14-20020a0566022e8e00b00669d5b13fc9mr3158325iow.210.1657318459564;
+        Fri, 08 Jul 2022 15:14:19 -0700 (PDT)
+Received: from robh.at.kernel.org ([98.38.210.73])
+        by smtp.gmail.com with ESMTPSA id w10-20020a92db4a000000b002dad39ff841sm10133296ilq.19.2022.07.08.15.14.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 15:14:19 -0700 (PDT)
+Received: (nullmailer pid 1573273 invoked by uid 1000);
+        Fri, 08 Jul 2022 22:14:17 -0000
+Date:   Fri, 8 Jul 2022 16:14:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Mia Lin <mimi05633@gmail.com>
+Cc:     avifishman70@gmail.com, devicetree@vger.kernel.org,
+        tmaimon77@gmail.com, alexandre.belloni@bootlin.com,
+        yuenn@google.com, KFTING@nuvoton.com, venture@google.com,
+        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, YSCHU@nuvoton.com,
+        tali.perry1@gmail.com, ctcchien@nuvoton.com,
+        benjaminfair@google.com, mylin1@nuvoton.com,
+        openbmc@lists.ozlabs.org, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        a.zummo@towertech.it, linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: rtc: nuvoton: add NCT3018Y Real Time
+ Clock
+Message-ID: <20220708221417.GA1573219-robh@kernel.org>
+References: <20220707073054.3954-1-mimi05633@gmail.com>
+ <20220707073054.3954-2-mimi05633@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707073054.3954-2-mimi05633@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building with Clang we encounter this warning:
-| drivers/target/iscsi/iscsi_target.c:4365:12: error: format specifies
-| type 'unsigned short' but the argument has type 'int' [-Werror,-Wformat]
-| " %s\n", atomic_read(&sess->nconn)
+On Thu, 07 Jul 2022 15:30:52 +0800, Mia Lin wrote:
+> Document devicetree bindings for the Nuvoton NCT3018Y Real Time Clock.
+> 
+> Signed-off-by: Mia Lin <mimi05633@gmail.com>
+> ---
+>  .../bindings/rtc/nuvoton,nct3018y.yaml        | 45 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 46 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/rtc/nuvoton,nct3018y.yaml
+> 
 
-The format specifier used is `%hu` which describes an unsigned short.
-However, atomic_read returns an int which means the format specifier
-should be `%d`.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Justin Stitt <justinstitt@google.com>
----
- drivers/target/iscsi/iscsi_target.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/target/iscsi/iscsi_target.c b/drivers/target/iscsi/iscsi_target.c
-index e368f038ff5c..bfb717065344 100644
---- a/drivers/target/iscsi/iscsi_target.c
-+++ b/drivers/target/iscsi/iscsi_target.c
-@@ -4361,7 +4361,7 @@ int iscsit_close_connection(
- 
- 	spin_lock_bh(&sess->conn_lock);
- 	atomic_dec(&sess->nconn);
--	pr_debug("Decremented iSCSI connection count to %hu from node:"
-+	pr_debug("Decremented iSCSI connection count to %d from node:"
- 		" %s\n", atomic_read(&sess->nconn),
- 		sess->sess_ops->InitiatorName);
- 	/*
--- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+Reviewed-by: Rob Herring <robh@kernel.org>
