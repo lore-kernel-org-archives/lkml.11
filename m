@@ -2,148 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF67CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40054C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237730AbiGHJqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 05:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
+        id S237746AbiGHJr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 05:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237111AbiGHJqr (ORCPT
+        with ESMTP id S237803AbiGHJry (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 05:46:47 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A0B7C18F;
-        Fri,  8 Jul 2022 02:46:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657273606; x=1688809606;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=58AK5+8PgyaQZBsNdP1u1fcyExfdKZdanD5BE5OQyfM=;
-  b=g2+mzRR4hdTsB+i99GojniC5w0awwihpMC1KG0IhU+/CspeTzpFuxQZT
-   9napFjrZFR2KyCHDDnEVnd1Mz0r+CKtZG3S/vmBK9eWgRpR+30Kbi0/Qr
-   G0HaZD1bz26IKlm4IZg8Ysik9zUxFHYbAf7X6MlrJ1dfPln5XVZxp73B+
-   XXigQZ2KxKp3kJnl7nlYUaksLBDDqQ+aLIIGJBTs3/AvYD1GcXcg0aZio
-   kyM6tAQ0N2URgn9qqTMBfHLLibiJPXzHsHKsEqosWHoWmP1fqEmQpnaLa
-   DcW/6kV9uFh1jWiKmQJzihUGN8HVmFKqCyXNdiETaps8fD0a7sgkCUUAC
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="282995818"
-X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="282995818"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 02:46:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="840253054"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 08 Jul 2022 02:46:41 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9kZM-000NIC-Hr;
-        Fri, 08 Jul 2022 09:46:40 +0000
-Date:   Fri, 8 Jul 2022 17:46:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Schultz <netdev@kapio-technology.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 5/6] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <202207081751.PPV8GRpf-lkp@intel.com>
-References: <20220707152930.1789437-6-netdev@kapio-technology.com>
+        Fri, 8 Jul 2022 05:47:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33CF17E03B;
+        Fri,  8 Jul 2022 02:47:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32615D6E;
+        Fri,  8 Jul 2022 02:47:52 -0700 (PDT)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 863B93F66F;
+        Fri,  8 Jul 2022 02:47:50 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 10:47:46 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>,
+        Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v11 3/6] arm64: dts: allwinner: Add Allwinner H616 .dtsi
+ file
+Message-ID: <20220708104746.6623e239@donnerap.cambridge.arm.com>
+In-Reply-To: <39537f95-2ed4-f526-5912-364c1c1ed512@sholland.org>
+References: <20220428230933.15262-1-andre.przywara@arm.com>
+        <22699277.6Emhk5qWAg@kista>
+        <20220704225534.3e1a901a@slackpad.lan>
+        <5278570.Sb9uPGUboI@kista>
+        <20220706141655.15d2dd0e@donnerap.cambridge.arm.com>
+        <39537f95-2ed4-f526-5912-364c1c1ed512@sholland.org>
+Organization: ARM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707152930.1789437-6-netdev@kapio-technology.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+On Thu, 7 Jul 2022 01:30:32 -0500
+Samuel Holland <samuel@sholland.org> wrote:
 
-Thank you for the patch! Perhaps something to improve:
+Hi Samuel,
 
-[auto build test WARNING on net/master]
-[also build test WARNING on shuah-kselftest/next linus/master v5.19-rc5]
-[cannot apply to net-next/master next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> Hi Andre, Jernej,
+> 
+> On 7/6/22 8:16 AM, Andre Przywara wrote:
+> > so after seemingly having finished writing this email, I realised that
+> > this won't really help, as I think this diverts the discussion. And the
+> > problem has been around for a while, and won't probably be solved easily
+> > or quickly. I think we agree to disagree here, or we should admit that
+> > there are different approaches ("bundled firmware" vs. "UEFI"), so in the
+> > interest of not blocking the H616 series:
+> > 
+> > Shall I just keep the firmware node? This would work both ways, whereas
+> > dropping the node would impede the "bundled firmware" approach?  
+> 
+> Let me try to sum up the relevant portion of my thoughts (and save the rest for
+> elsewhere):
+> 
+> The only reason to add the reserved-memory node is to support externally-loaded
+> DTBs. By adding the node, we are committing to support externally-loaded DTBs on
+> this SoC.
+> 
+> Upgrading the kernel is not allowed to break boot. If we support
+> externally-loaded DTBs, that rule extends to DTBs shipped with the kernel.
+> 
+> If we remove the reserved-memory node, the combination of old U-Boot + new
+> externally-loaded DTB will stop booting (the kernel version is irrelevant).
+> Therefore, if we add the node, we can never remove it, full stop.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 07266d066301b97ad56a693f81b29b7ced429b27
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220708/202207081751.PPV8GRpf-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 562c3467a6738aa89203f72fc1d1343e5baadf3c)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/74f76ae0b0d4b12864a0cf5ff3c0685bc420aea3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-        git checkout 74f76ae0b0d4b12864a0cf5ff3c0685bc420aea3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/dsa/mv88e6xxx/
+Well, this all depends on the initial commitment to support
+externally-loaded DTBs. I don't think we need to make this promise, I'd
+rather see this as a concession to people doing so *right now*, and for
+the sheer practicality of using this DT until we merge it into U-Boot.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> I will (begrudgingly) accept that, as long as the node matches what TF-A
+> actually generates today. That means, please:
+>  - Drop the label and update the node name
 
-All warnings (new ones prefixed by >>):
+I will drop the label. For the node name: the binding does not enforce it,
+but asks that "node names should reflect the purpose", so I went with
+"secmon", as used by other platforms. I will send a patch to TF-A to fix
+it there instead.
+If you disagree, feel free to fix this up before committing.
 
->> drivers/net/dsa/mv88e6xxx/chip.c:1696:6: warning: variable 'err' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (mv88e6xxx_port_is_locked(chip, port))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/dsa/mv88e6xxx/chip.c:1698:6: note: uninitialized use occurs here
-           if (err)
-               ^~~
-   drivers/net/dsa/mv88e6xxx/chip.c:1696:2: note: remove the 'if' if its condition is always true
-           if (mv88e6xxx_port_is_locked(chip, port))
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/dsa/mv88e6xxx/chip.c:1694:9: note: initialize the variable 'err' to silence this warning
-           int err;
-                  ^
-                   = 0
-   1 warning generated.
+>  - Reduce the size to 256 KiB, matching (BL31_LIMIT - BL31_BASE)
+
+Verified in TF-A and changed.
+I also added a short comment explaining the situation. Feel free to amend
+this if needed.
 
 
-vim +1696 drivers/net/dsa/mv88e6xxx/chip.c
+Many thanks for the discussion and for resolving this. I much appreciate
+your flexibility and pragmatism in this matter!
 
-  1690	
-  1691	static void mv88e6xxx_port_fast_age(struct dsa_switch *ds, int port)
-  1692	{
-  1693		struct mv88e6xxx_chip *chip = ds->priv;
-  1694		int err;
-  1695	
-> 1696		if (mv88e6xxx_port_is_locked(chip, port))
-  1697			err = mv88e6xxx_atu_locked_entry_flush(ds, port);
-  1698		if (err)
-  1699			dev_err(chip->ds->dev, "p%d: failed to clear locked entries: %d\n",
-  1700				port, err);
-  1701	
-  1702		mv88e6xxx_reg_lock(chip);
-  1703		err = mv88e6xxx_port_fast_age_fid(chip, port, 0);
-  1704		mv88e6xxx_reg_unlock(chip);
-  1705	
-  1706		if (err)
-  1707			dev_err(chip->ds->dev, "p%d: failed to flush ATU: %d\n",
-  1708				port, err);
-  1709	}
-  1710	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Cheers,
+Andre
