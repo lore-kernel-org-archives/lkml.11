@@ -2,203 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E5FCCA483
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238240AbiGHMfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 08:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56332 "EHLO
+        id S238264AbiGHMgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 08:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238250AbiGHMfT (ORCPT
+        with ESMTP id S238246AbiGHMgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 08:35:19 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AA87B362
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:35:16 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id r14so24584097wrg.1
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 05:35:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=egqAfIk8HNdnnnVuacIUZ+kM7234sBqyRaupSrWdbPc=;
-        b=obzdgixXttw3w4RBLfM4lF/m6ddMQiKfnFk/rQhmB9aWSRQg4kZ2hf4T6gLBoyNXsx
-         LxmuQRx8xJFfEiHqu6dXZc6FrbXqvhiw0R2i1Sv+8WiGtClevYonNPDbUivdwnX/rYv5
-         fWnQrkES4zbChbg+34deuBbI+gBCcIvKVWE3exhzkPfwMNvp3H7PMZGR+hFnkjoRk28k
-         qyzOeU/J042Ngj7CF1mYg0uZRK9ZiEDbtEODB1ykiybZqPL3TA9+hEQnGMy7DYBSJxJ8
-         3Bfsb4++T5P7UU2K+X/TLbwlf7foL1uwyUbAf3u06JXrCuywG0ly1ozvu3usyhcUZoFs
-         UznA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=egqAfIk8HNdnnnVuacIUZ+kM7234sBqyRaupSrWdbPc=;
-        b=I3ElQCwHFDCx3cRUZBYGh+ZEc3XVWg45Y8U49ZdBZuK0xg1lDj/C0mkPcCoN7qdai5
-         tP6e+F6lSLKueTiPwMtRr+cTZ1asdGiV3QSK5WLuV8XuIlJK7T2DxAhN3ow7BqhBjrgp
-         +g+u9qQlHaSsIK/xhQ4GwdlCtBuyk3IcnCI74OYwDyTnwugmfYXIfWYg4XbV2e2fKpEH
-         fZZJU0WZsFxZcecF7FB1SSx426++NKZJlBDeJoQKdQlU9VrDntRO137baNSa+l20iVOY
-         JN1ffEAPrAPsOofJSYCGRS5iFVfswwnYDyzgQMfDO7pHmYuWXKflikMneMyvfgiHEwwU
-         P2PA==
-X-Gm-Message-State: AJIora84aHo4FYjjHfwcc6ahkUsfTR38RWLk9aW1g2vTB7B00MbJnVB2
-        LoJUeCHGXiB6y0cm9HjvgeJjXg==
-X-Google-Smtp-Source: AGRyM1veyA3D/svZALdt0plBqMx98kvHBy2yZCB50hHNI8PHVRQKNVemDpc3LxX5tm/tS34UVsyMyA==
-X-Received: by 2002:adf:da45:0:b0:21d:8f3e:a3e0 with SMTP id r5-20020adfda45000000b0021d8f3ea3e0mr3164859wrl.310.1657283714480;
-        Fri, 08 Jul 2022 05:35:14 -0700 (PDT)
-Received: from vingu-book (91-160-61-128.subs.proxad.net. [91.160.61.128])
-        by smtp.gmail.com with ESMTPSA id i133-20020a1c3b8b000000b003a02c21b7easm2093177wma.11.2022.07.08.05.35.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 08 Jul 2022 05:35:13 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 14:35:11 +0200
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org, david.chen@nutanix.com,
-        zhangqiao22@huawei.com
-Subject: Re: [PATCH] sched/fair: fix case with reduced capacity CPU
-Message-ID: <20220708123511.GA22615@vingu-book>
-References: <20220702045254.22922-1-vincent.guittot@linaro.org>
- <88fab4b6-8e5c-3a4e-e32b-a0867d51398b@arm.com>
- <CAKfTPtA07H=nkXdyCto9=7Zzixwnu_N_4L-vfn+0ONCQ464biA@mail.gmail.com>
- <063c4695-a9d4-f77a-55a7-7c554b765c7e@arm.com>
+        Fri, 8 Jul 2022 08:36:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237417C1A6;
+        Fri,  8 Jul 2022 05:36:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2D856271D;
+        Fri,  8 Jul 2022 12:36:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3DE9C341CB;
+        Fri,  8 Jul 2022 12:36:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657283771;
+        bh=hq0+B/dAKE6KAtx/w8/pzHOgIoBA3D5lqFzL4AAZuD0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oszWAku0C+PsBkcHAWimhkDNHJmcX4DGcNbiIuPC97mm+hQp3UNk68L+XMeRTGwyi
+         iRpcSXZKS/mWe/Q7AIGIujWDCIHszuz369g9mKkKm5lpdFtXwj4zD8oDnBvv59RRxa
+         h9EZsRzRFunJJa1pT+K1aIImOmqlGe3VmpTmnbthscUIY52de6/UAmcJ7g0H5+0Qcu
+         cgOhf5uWTsaaTskZUL1wOECszcwH1v4us+aJju3wULm3dkUgC85zccKr3gpnrA/JzG
+         i5Cce56flAuxGHq3aWpM0iKuGqjWZRk+qkHMf765TQurQHKnlY8I5GZPy8BFAnQS+v
+         4xvVp0DSbOyMg==
+Date:   Fri, 8 Jul 2022 20:35:59 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Stefan Agner <stefan@agner.ch>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Abel Vesa <abelvesa@kernel.org>,
+        Viorel Suman <viorel.suman@nxp.com>,
+        Oliver Graute <oliver.graute@kococonnector.com>,
+        Peng Fan <peng.fan@nxp.com>, Liu Ying <victor.liu@nxp.com>,
+        Shijie Qin <shijie.qin@nxp.com>, Ming Qian <ming.qian@nxp.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v8 00/15] dt-bindings: arm: freescale: Switch fsl,scu
+ from txt to yaml
+Message-ID: <20220708083952.GV819983@dragon>
+References: <20220707125022.1156498-1-viorel.suman@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <063c4695-a9d4-f77a-55a7-7c554b765c7e@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220707125022.1156498-1-viorel.suman@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le vendredi 08 juil. 2022 à 12:10:40 (+0200), Dietmar Eggemann a écrit :
-> On 08/07/2022 09:17, Vincent Guittot wrote:
-> > On Thu, 7 Jul 2022 at 18:43, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
-> >>
-> >> On 02/07/2022 06:52, Vincent Guittot wrote:
+On Thu, Jul 07, 2022 at 03:50:07PM +0300, Viorel Suman (OSS) wrote:
+> From: Viorel Suman <viorel.suman@nxp.com>
 > 
-> [...]
+> Changes since v7: https://lore.kernel.org/lkml/20220704161541.943696-1-viorel.suman@oss.nxp.com/
+>   * added missing Reviewed-By: 
+>   * Defined "mboxes" and "mbox-names" sections in scu-key.yaml as schema.
 > 
-> >>> The rework of the load balance has filterd the case when the CPU is
+> Changes since v6: https://lore.kernel.org/lkml/20220629164414.301813-1-viorel.suman@oss.nxp.com/
+>   * The series updated so that each patch making the conversion removes
+>     the piece being converted, then finally the patch adding fsl,scu.yaml
+>     removes the last pieces, as suggested by Krzysztof Kozlowski.
+>   * Updated ocotp and system-controller node names in the existing DTS
+>     files
 > 
-> s/filterd/filtered
+> Changes since v5: https://lore.kernel.org/lkml/20220616164303.790379-1-viorel.suman@nxp.com/
+>   * Updated according to Krzysztof Kozlowski comments
 > 
-> >>> classified to be fully busy but its capacity is reduced.
-> >>>
-> >>> Check if CPU's capacity is reduced while gathering load balance statistics
-> >>> and classify it group_misfit_task instead of group_fully_busy so we can
+> Changes since v4: https://lore.kernel.org/lkml/20220615105834.743045-1-viorel.suman@nxp.com/
+>   * Missing SoB added
 > 
-> enum group_type {
+> Changes since v3: https://lore.kernel.org/lkml/20220609143423.2839186-1-abel.vesa@nxp.com/
+>   * Examples included
+>   * Included Abel's patches fixing thermal zone, keys and power controller names.
 > 
->    ...
->    /*
->     * SD_ASYM_CPUCAPACITY only: One task doesn't fit with CPU's capacity
->     * and must be migrated to a more powerful CPU.
->     */
->    group_misfit_task
->    ...
+> Abel Vesa (12):
+>   dt-bindings: clk: imx: Add fsl,scu-clk yaml file
+>   dt-bindings: pinctrl: imx: Add fsl,scu-iomux yaml file
+>   dt-bindings: input: Add fsl,scu-key yaml file
+>   dt-bindings: nvmem: Add fsl,scu-ocotp yaml file
+>   dt-bindings: power: Add fsl,scu-pd yaml file
+>   dt-bindings: rtc: Add fsl,scu-rtc yaml file
+>   dt-bindings: thermal: Add fsl,scu-thermal yaml file
+>   dt-bindings: watchdog: Add fsl,scu-wdt yaml file
+>   dt-bindings: firmware: Add fsl,scu yaml file
+>   arm64: dts: freescale: imx8: Fix power controller name
+>   arm64: dts: freescale: imx8qxp: Add fallback compatible for clock
+>     controller
+>   arm64: dts: freescale: imx8qxp: Fix the keys node name
 > 
-> This `SD_ASYM_CPUCAPACITY only:` should be removed now.
+> Viorel Suman (3):
+>   arm64: dts: freescale: imx8qxp: Remove unnecessary clock related
+>     entries
+>   arm64: dts: freescale: imx8qxp: Fix the ocotp node name
+>   arm64: dts: freescale: imx8: Fix the system-controller node name
 
-Yes
+I'm preparing material for the next merge window, so just picked the
+series up.  If there is more outstanding review comments coming up,
+let's address them with follow-up changes.
 
-> 
-> [...]
-> 
-> >>> @@ -8798,6 +8798,19 @@ sched_asym(struct lb_env *env, struct sd_lb_stats *sds,  struct sg_lb_stats *sgs
-> >>>       return sched_asym_prefer(env->dst_cpu, group->asym_prefer_cpu);
-> >>>  }
-> >>>
-> >>> +static inline bool
-> >>> +sched_reduced_capacity(struct rq *rq, struct sched_domain *sd)
-> 
-> minor: Why not `static inline int check_reduced_capacity()` ? All
-> similar functions like check_cpu_capacity(), check_cpu_capacity() follow
-> this approach.
-
-Mainly because it aims to return true or false.
-IIRC check_cpu_capacity has replaced fix_small_capacity which was not a bool but the
-number of task a group could handle but kept the int
-
-> 
-> [...]
-> 
-> >>> @@ -8851,11 +8865,17 @@ static inline void update_sg_lb_stats(struct lb_env *env,
-> >>>               if (local_group)
-> >>>                       continue;
-> >>>
-> >>> -             /* Check for a misfit task on the cpu */
-> >>> -             if (env->sd->flags & SD_ASYM_CPUCAPACITY &&
-> >>> -                 sgs->group_misfit_task_load < rq->misfit_task_load) {
-> >>> -                     sgs->group_misfit_task_load = rq->misfit_task_load;
-> >>> -                     *sg_status |= SG_OVERLOAD;
-> >>> +             if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
-> >>> +                     /* Check for a misfit task on the cpu */
-> >>> +                     if (sgs->group_misfit_task_load < rq->misfit_task_load) {
-> >>> +                             sgs->group_misfit_task_load = rq->misfit_task_load;
-> >>> +                             *sg_status |= SG_OVERLOAD;
-> >>> +                     }
-> >>> +             } else if ((env->idle != CPU_NOT_IDLE) &&
-> >>> +                        sched_reduced_capacity(rq, env->sd) &&
-> >>> +                        (sgs->group_misfit_task_load < load)) {
-> >>> +                     /* Check for a task running on a CPU with reduced capacity */
-> >>> +                     sgs->group_misfit_task_load = load;
-> >>>               }
-> 
-> Minor:
-> 
-> This now has if(A)
->               if(B)
-> 	     else if(C && B')
-> 
-> little bit harder to read.
-> 
-
-yeah I started with the below but then optimized it. I can come back to the
-version below if it's easier to read
-
-		if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
-			/* Check for a misfit task on the cpu */
-			if (sgs->group_misfit_task_load < rq->misfit_task_load) {
-				sgs->group_misfit_task_load = rq->misfit_task_load;
-				*sg_status |= SG_OVERLOAD;
-			}
-		} else if ((env->idle != CPU_NOT_IDLE) &&
-			   sched_reduced_capacity(rq, env->sd)) {
-			/* Check for a task running on a CPU with reduced capacity */
-			if (sgs->group_misfit_task_load < load))
-				sgs->group_misfit_task_load = load;
-		}
-
-
-> [...]
-> 
-> >> I'm wondering why you've chosen that hybrid approach `group_misfit_task
-> >> -> migrate_load` and not `group_misfit_task -> migrate_misfit`.
-> > 
-> > because, it means enabling the tracking of misfit task on rq at each
-> > task enqueue/dequeue/tick ...  Then mistfit for heterogeneous platform
-> > checks max_cpu_capacity what we don't care and will trigger unwanted
-> > misfit migration for smp
-> 
-> Agreed, rq->misfit_task_load can't be used here.
-> 
-> >> It looks like this `rq->cfs.h_nr_running = 1` case almost (since we
-> >> check `busiest->nr_running > 1`) always ends up in the load_balance()
-> >> `if (!ld_moved)` condition and need_active_balance() can return 1 in
-> >> case `if ((env->idle != CPU_NOT_IDLE) && ...` condition. This leads to
-> >> active load_balance and this
-> >>
-> >> IMHO, the same you can achieve when you would stay with
-> >> `group_misfit_task -> migrate_misfit`.
-> >>
-> >> I think cpu_load(rq) can be used instead of `rq->misfit_task_load` in
-> >> the migrate_misfit case of find_busiest_queue() too.
-> > 
-> > I don't think because you can have a higher cpu_load() but not being misfit
-> 
-> You're right, I forgot about this. Essentially we would need extra state
-> (e.g. in lb_env) to save which CPU in the busiest group has the misfit.
+Shawn
