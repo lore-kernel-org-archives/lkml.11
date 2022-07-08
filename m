@@ -2,91 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E26DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9943DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238467AbiGHOoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35250 "EHLO
+        id S238729AbiGHOo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238511AbiGHOnr (ORCPT
+        with ESMTP id S238564AbiGHOom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:43:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60195DEA0
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:43:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657291412;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ibctMipftFwUTHfwW48Q6VNt9RC/cwh/rLdUTMKBApk=;
-        b=T4z4Kh9IyrABrt0nkfQbCGZYfCMFviiphKrbF9oN9XM89R/pPD5NlcE6ZV0bcs3jOfI9XZ
-        jYkflw+IeLV9gSNf++OUCBXxi+Sr7IMU+7xRmI0/kpOXmnRNCjAKnuFsShS/pj2//m0hVl
-        R3RYQk309umTFghd07mG4uvAgqtujUs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-584-mWJS4CxAPz-VVm-Ycy8OXA-1; Fri, 08 Jul 2022 10:43:27 -0400
-X-MC-Unique: mWJS4CxAPz-VVm-Ycy8OXA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 08DA118A01BF;
-        Fri,  8 Jul 2022 14:43:27 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.193.250])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A1EB492C3B;
-        Fri,  8 Jul 2022 14:43:25 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 25/25] KVM: nVMX: Use cached host MSR_IA32_VMX_MISC value for setting up nested MSR
-Date:   Fri,  8 Jul 2022 16:42:23 +0200
-Message-Id: <20220708144223.610080-26-vkuznets@redhat.com>
-In-Reply-To: <20220708144223.610080-1-vkuznets@redhat.com>
-References: <20220708144223.610080-1-vkuznets@redhat.com>
+        Fri, 8 Jul 2022 10:44:42 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A035073924;
+        Fri,  8 Jul 2022 07:43:57 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so1310436wme.0;
+        Fri, 08 Jul 2022 07:43:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LTk8O11zcqX6zMh/4qd+EknA/JMTcDXb+8WtvC4PeXM=;
+        b=M/F+AA1qBkzX8XJ3tbqDvQP/qr+XmJ9HoG+ZgIBy1fX2Dj72peZ6T68tXKk/NKKjPD
+         IKprTDQFrnaTpagJ4T28NJO27goeWVK1JNfxpx5jXtMB6jDVb3TWZA4WCP4jr5FKozh0
+         ItlTUs2fdyf1SPxoFRAqRC71N9b4vJBfvQaj6anxnpXQcYIr0BYAbv+APjZ7uFxBNDvI
+         A6EhJsSMhf9eEzGatjZDTCOCWUNxslX/gCV8hmQL3R+BfvcHeof4X49QMZC+3BMkrBYD
+         nEmfg0Mo3utSSl4TruiqHUYmzZa5eEUfMztlQn3eJM5MXbaWTnHpe3kWjtfeLvnfaLoi
+         Q//A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LTk8O11zcqX6zMh/4qd+EknA/JMTcDXb+8WtvC4PeXM=;
+        b=D+e80C2o6EBfxVROtRGcaX4uK9Artrc2/f74+wEI0vco17C+kmBKVTvlf1Jyxy5yTG
+         XuNvs71mQUyy3Suxsyeleu/hYqNJ+k+AFTC68bhYR1xmL5FJ3wf7kWG9tto03DGwX3i9
+         ezBpNUJRGLrrtOfcHPQMzpdzByZUurVC5BZOa80HRrmr9bIG4qGqbRqpFMGHDL9jg+9T
+         06kmQjDaxE8NGplstsieYqa3pehQeScTvSkIpfaDQLWBJKNLW4o1GH/3jfurim5MaR9O
+         KUfxUuAF+2+gXC1b1Hh+3WAvivxGTEQQSMdMKYL0rdzUlT61z3w4AlUSzt3iCOtktZAp
+         XJ5g==
+X-Gm-Message-State: AJIora+BnQj1HzpGeYzlnp3iU1O9tH3JxCpJ9+WSghtLiIgEQ+87Zy/n
+        zQxgw/lNnk4aN2sBI43o91s=
+X-Google-Smtp-Source: AGRyM1vcXfc6q6N58ufbqwN0zs+6fYgo6VLtsDzOCVHyAMmVRQywBHO7DrkvNMWKK9bUFC3pGYt2ig==
+X-Received: by 2002:a1c:7310:0:b0:3a0:5580:fbf with SMTP id d16-20020a1c7310000000b003a055800fbfmr148126wmb.109.1657291429075;
+        Fri, 08 Jul 2022 07:43:49 -0700 (PDT)
+Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id f184-20020a1c38c1000000b0039c5642e430sm2420077wma.20.2022.07.08.07.43.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 07:43:48 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 16:43:46 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Kartik <kkartik@nvidia.com>
+Cc:     daniel.lezcano@linaro.org, tglx@linutronix.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, jonathanh@nvidia.com,
+        spujar@nvidia.com, mperttunen@nvidia.com, rgumasta@nvidia.com,
+        amhetre@nvidia.com, akhilrajeev@nvidia.com, pshete@nvidia.com,
+        vidyas@nvidia.com, sumitg@nvidia.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v3 3/6] clocksource/drivers/timer-tegra186: Add support
+ for Tegra234 SoC
+Message-ID: <YshConNfgdX3mhXY@orome>
+References: <1656922422-25823-1-git-send-email-kkartik@nvidia.com>
+ <1656922422-25823-4-git-send-email-kkartik@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ZFYjFOs7LxfZ/TlR"
+Content-Disposition: inline
+In-Reply-To: <1656922422-25823-4-git-send-email-kkartik@nvidia.com>
+User-Agent: Mutt/2.2.6 (2022-06-05)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vmcs_config has cased host MSR_IA32_VMX_MISC value, use it for setting
-up nested MSR_IA32_VMX_MISC in nested_vmx_setup_ctls_msrs() and avoid the
-redundant rdmsr().
 
-No (real) functional change intended.
+--ZFYjFOs7LxfZ/TlR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Jim Mattson <jmattson@google.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/vmx/nested.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+On Mon, Jul 04, 2022 at 01:43:39PM +0530, Kartik wrote:
+> The timer IP block present on Tegra234 SoC supports watchdog timer
+> functionality that can be used to recover from system hangs. The
+> watchdog timer uses a timer in the background for countdown.
+>=20
+> Signed-off-by: Kartik <kkartik@nvidia.com>
+> ---
+>  drivers/clocksource/timer-tegra186.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 3d386c663fac..8026dab71086 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -6754,10 +6754,7 @@ void nested_vmx_setup_ctls_msrs(struct vmcs_config *vmcs_conf, u32 ept_caps)
- 		msrs->secondary_ctls_high |= SECONDARY_EXEC_ENCLS_EXITING;
- 
- 	/* miscellaneous data */
--	rdmsr(MSR_IA32_VMX_MISC,
--		msrs->misc_low,
--		msrs->misc_high);
--	msrs->misc_low &= VMX_MISC_SAVE_EFER_LMA;
-+	msrs->misc_low = (u32)vmcs_conf->misc & VMX_MISC_SAVE_EFER_LMA;
- 	msrs->misc_low |=
- 		MSR_IA32_VMX_MISC_VMWRITE_SHADOW_RO_FIELDS |
- 		VMX_MISC_EMULATED_PREEMPTION_TIMER_RATE |
--- 
-2.35.3
+Acked-by: Thierry Reding <treding@nvidia.com>
 
+--ZFYjFOs7LxfZ/TlR
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmLIQqIACgkQ3SOs138+
+s6EMhg//UWlFxQFYz0Mui/Hn0fQ+52PUl07Xd8zBW9TGJwjBW9lurGUlWTm03upI
+4lB8rW2XYeLQWgtDAUwyj0w9pL5svT30XGNKy5+/L8bGICrsZCfh9tLMa60h2aSz
+SKjovemleKXtHttWuAtSVkGbNuBZJBZgHN+ULBJkRxQMt8E9swAysa7eP5mDw4i0
+OYt0N5bjhbRQFcFW/7u743ppnxd93U3DAs13rK5yczKex4mXtWOLNMYyQPPQspre
+ZWho47WGZjj2fQS2+phetav8kuKTVrcTp4THve6xDvgBn67HuqtwfSedLol1+411
+t0r4/Bcfh4v6uZKnD8wPz5GIzg6LMVGpH+RzSjJ1korSBCSCAzXKguQ1wxrz/uo8
+qQZRckoLZzvsxrCURfShWhOJGeEkHDtulGPrrBReWIu50+bwrQvYK4Z7Nx2Zg8zt
+w6nX/W8xon3rcvvreHg5rF+6pn4ORdT5ujeEfH1uEmWACxDcT2QKv1/UPQiJ4obS
+/RE7+LQ8ufHToTZEk/r24Sx4ySdQlnzN1zV3B+Tocu/VUmqLcaWVdF0ximBHuWGP
+21fJpBLnkfDzDYdApsf5K/SRSTvSK5bai+ScuvS3MYRq1HDnZyXmJ1fliSeASu9e
+Nh/3IYjQ/4ZOBCH2Ut72rkFw9+PhJArBTuoROFfHqNwNfZqCEME=
+=9e7F
+-----END PGP SIGNATURE-----
+
+--ZFYjFOs7LxfZ/TlR--
