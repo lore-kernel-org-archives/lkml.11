@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 179F6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92543C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239212AbiGHQXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
+        id S239221AbiGHQXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239035AbiGHQWV (ORCPT
+        with ESMTP id S239064AbiGHQWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:22:21 -0400
+        Fri, 8 Jul 2022 12:22:23 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B592CDE4;
-        Fri,  8 Jul 2022 09:22:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444F43123F;
+        Fri,  8 Jul 2022 09:22:22 -0700 (PDT)
 Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:3cab:61a1:2b1f:896b])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: benjamin.gaignard)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8EC7E6601A16;
-        Fri,  8 Jul 2022 17:22:18 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9438C6601A22;
+        Fri,  8 Jul 2022 17:22:20 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657297339;
-        bh=BCrFtwmwew8PNj9oIBOiMYIYjxUWWFLXB3JoJRd0CEA=;
+        s=mail; t=1657297341;
+        bh=Pc01xd3UxsBg7Fqnq6gTTbtdqkYbng68gmR8BJ3yino=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k9RSwD3tbyCcsUWy+ZeG92KsIek+A+ZF6WznilVtksSzJ99Wqe8sD5xYg9kq79YCV
-         Am+JgoK+YfAoZ8MhgwOAmwXukZZu0diskSOmVMqWnDfOu+DENH08mUHY6am/Hh6mBR
-         A+EQZcxRNlXBC4AjuDerqt6tBF+WOvAt/LnvAQVHA+Qvrt0RCgWAuSWJ0HREYSHW0Y
-         pf3lx14rlBxK/ayT9kAxb7eEAbSk6hzZs1ZsJZ7M35nSh1b/TiDlFh7HYiM3aCyqc1
-         I/F+gQ42InwGnIW52ktuFm8L4HxJXT38uDGaN3GO+GBd5iMJUN+9bFCnQ4wGXe/qYF
-         DZ0e6tzwVqnLg==
+        b=TdWnKCb3Pdl2GIFnklXUcQQyzJiHTjGdp/EePiI16uqGqiT63F4JmJdCcjtcXcvfr
+         frQEz4o+GD+jy8/D/BxfE+22mHMsQJhngshLFGNUlQL08GusQFc8FI3S1uQxmTyHid
+         KZ09zGDHeCpRqI1srfsbJTYk0ktZwTO8oFSoizOLNN9rSxEZUl1orttU2SMwQK2Qma
+         v71kg9WIZd7K9M1fKetB0LEcgVP0AaX7J9pY6BtzGFKxPGpqHdIWgLpWRr+t8J6ixs
+         JUBHkghZOjLgnu3i0jYyEhuU+Pxp8q+rZudYHwpXOqUvMh7LE/u+xUFF4QVnFdGWjp
+         xHs0P4Sa1Qy/g==
 From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To:     mchehab@kernel.org, hverkuil@xs4all.nl,
         ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
@@ -44,9 +44,9 @@ Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         kernel@collabora.com,
         Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v13 09/17] media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS as a dynamic array
-Date:   Fri,  8 Jul 2022 18:21:48 +0200
-Message-Id: <20220708162156.815772-10-benjamin.gaignard@collabora.com>
+Subject: [PATCH v13 12/17] media: uapi: Move the HEVC stateless control type out of staging
+Date:   Fri,  8 Jul 2022 18:21:51 +0200
+Message-Id: <20220708162156.815772-13-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220708162156.815772-1-benjamin.gaignard@collabora.com>
 References: <20220708162156.815772-1-benjamin.gaignard@collabora.com>
@@ -56,71 +56,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make explicit that V4L2_CID_STATELESS_HEVC_SLICE_PARAMS control is
-a dynamic array control type.
-Some drivers may be able to receive multiple slices in one control
-to improve decoding performance.
+Move the HEVC stateless controls types out of staging,
+and re-number them.
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Tested-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 ---
- Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst | 2 ++
- drivers/media/v4l2-core/v4l2-ctrls-defs.c                 | 1 +
- drivers/staging/media/sunxi/cedrus/cedrus.c               | 2 ++
- include/media/hevc-ctrls.h                                | 3 +++
- 4 files changed, 8 insertions(+)
+ .../userspace-api/media/videodev2.h.rst.exceptions         | 5 +++++
+ include/media/hevc-ctrls.h                                 | 7 -------
+ include/uapi/linux/videodev2.h                             | 6 ++++++
+ 3 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-index e88b5e6944a6..c2e0adece613 100644
---- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-@@ -2986,6 +2986,8 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
-     These bitstream parameters are defined according to :ref:`hevc`.
-     They are described in section 7.4.7 "General slice segment header
-     semantics" of the specification.
-+    This control is a dynamically sized 1-dimensional array,
-+    V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag must be set when using it.
+diff --git a/Documentation/userspace-api/media/videodev2.h.rst.exceptions b/Documentation/userspace-api/media/videodev2.h.rst.exceptions
+index 0b91200776f8..2feea4a5a008 100644
+--- a/Documentation/userspace-api/media/videodev2.h.rst.exceptions
++++ b/Documentation/userspace-api/media/videodev2.h.rst.exceptions
+@@ -153,6 +153,11 @@ replace symbol V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR :c:type:`v4l2_ctrl_type`
+ replace symbol V4L2_CTRL_TYPE_VP9_FRAME :c:type:`v4l2_ctrl_type`
+ replace symbol V4L2_CTRL_TYPE_HDR10_CLL_INFO :c:type:`v4l2_ctrl_type`
+ replace symbol V4L2_CTRL_TYPE_HDR10_MASTERING_DISPLAY :c:type:`v4l2_ctrl_type`
++replace symbol V4L2_CTRL_TYPE_HEVC_SPS :c:type:`v4l2_ctrl_type`
++replace symbol V4L2_CTRL_TYPE_HEVC_PPS :c:type:`v4l2_ctrl_type`
++replace symbol V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS :c:type:`v4l2_ctrl_type`
++replace symbol V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX :c:type:`v4l2_ctrl_type`
++replace symbol V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS :c:type:`v4l2_ctrl_type`
  
- .. c:type:: v4l2_ctrl_hevc_slice_params
- 
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-index 9f55503cd3d6..d594efbcbb93 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-@@ -1510,6 +1510,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
- 		break;
- 	case V4L2_CID_STATELESS_HEVC_SLICE_PARAMS:
- 		*type = V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS;
-+		*flags |= V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
- 		break;
- 	case V4L2_CID_STATELESS_HEVC_SCALING_MATRIX:
- 		*type = V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX;
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c b/drivers/staging/media/sunxi/cedrus/cedrus.c
-index 87be975a72b6..b12219123a6b 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
-@@ -178,6 +178,8 @@ static const struct cedrus_control cedrus_controls[] = {
- 	{
- 		.cfg = {
- 			.id	= V4L2_CID_STATELESS_HEVC_SLICE_PARAMS,
-+			/* The driver can only handle 1 entry per slice for now */
-+			.dims   = { 1 },
- 		},
- 		.codec		= CEDRUS_CODEC_H265,
- 	},
+ # V4L2 capability defines
+ replace define V4L2_CAP_VIDEO_CAPTURE device-capabilities
 diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index 57053cfa099b..341fc795d550 100644
+index 3a6601a46ced..42d16e8a1050 100644
 --- a/include/media/hevc-ctrls.h
 +++ b/include/media/hevc-ctrls.h
-@@ -314,6 +314,9 @@ struct v4l2_hevc_pred_weight_table {
- /**
-  * struct v4l2_ctrl_hevc_slice_params - HEVC slice parameters
-  *
-+ * This control is a dynamically sized 1-dimensional array,
-+ * V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag must be set when using it.
-+ *
-  * @bit_size: size (in bits) of the current slice data
-  * @data_bit_offset: offset (in bits) to the video data in the current slice data
-  * @nal_unit_type: specifies the coding type of the slice (B, P or I)
+@@ -22,13 +22,6 @@
+ #define V4L2_CID_STATELESS_HEVC_START_CODE	(V4L2_CID_CODEC_BASE + 1016)
+ #define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (V4L2_CID_CODEC_BASE + 1017)
+ 
+-/* enum v4l2_ctrl_type type values */
+-#define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
+-#define V4L2_CTRL_TYPE_HEVC_PPS 0x0121
+-#define V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS 0x0122
+-#define V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX 0x0123
+-#define V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS 0x0124
+-
+ enum v4l2_stateless_hevc_decode_mode {
+ 	V4L2_STATELESS_HEVC_DECODE_MODE_SLICE_BASED,
+ 	V4L2_STATELESS_HEVC_DECODE_MODE_FRAME_BASED,
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index 37f9f23a67fe..e0d19a6b5bc7 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -1836,6 +1836,12 @@ enum v4l2_ctrl_type {
+ 
+ 	V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR	= 0x0260,
+ 	V4L2_CTRL_TYPE_VP9_FRAME		= 0x0261,
++
++	V4L2_CTRL_TYPE_HEVC_SPS			= 0x0270,
++	V4L2_CTRL_TYPE_HEVC_PPS			= 0x0271,
++	V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS	= 0x0272,
++	V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX	= 0x0273,
++	V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS	= 0x0274,
+ };
+ 
+ /*  Used in the VIDIOC_QUERYCTRL ioctl for querying controls */
 -- 
 2.32.0
 
