@@ -2,178 +2,365 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D72CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238160AbiGHLup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 07:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
+        id S238189AbiGHLvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 07:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238173AbiGHLuk (ORCPT
+        with ESMTP id S238195AbiGHLuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 07:50:40 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33FB29A6A8;
-        Fri,  8 Jul 2022 04:50:28 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 268BM0tL029788;
-        Fri, 8 Jul 2022 11:50:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=9lirF09Kmt0HGQk1TfIGDd4fJQRMu7hqmmT+uH9e9ck=;
- b=lgR+wc0ahBhfEyMyrk6h1AMNSXqis1tdeTPEgqju57+bZIZ9Hd0Ai9Ywd9pDQbsLzEtc
- tb2HXyGeVKeE0ygxzM85Nm/PBM0HtsvXF0rlpC2tUlMfwLzZLXV71KLAYvyr9li0yXA4
- wyK61kWIlq/stLJl5YW357PcDTHHduFP4g9WXmx9XQNnXArw4MFRYOnr9y7ee5kW6VmX
- 8ek5wdlaBXWn+pzzWDu7Vp2xJzZ6DqO64gIPdnq+Mp+ET5lKb/ylfi+jN6JrC14LaruN
- QNOpEJukgXgTsVc7ikRkvG4UM7/ynfe2Ot164wqLLYWkREHWKCiHn8B9wpN4rLMmypnp SA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h6kn4rgs4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Jul 2022 11:50:08 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 268BNVM8031916;
-        Fri, 8 Jul 2022 11:50:07 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h6kn4rgr8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Jul 2022 11:50:07 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 268BMHt9008105;
-        Fri, 8 Jul 2022 11:50:05 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3h4usd3x7s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Jul 2022 11:50:05 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 268Bmg7s24248692
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 8 Jul 2022 11:48:42 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C65055204F;
-        Fri,  8 Jul 2022 11:50:02 +0000 (GMT)
-Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com (unknown [9.211.64.141])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B9CD452050;
-        Fri,  8 Jul 2022 11:49:59 +0000 (GMT)
-Message-ID: <01c9e6e230b54831091757fe7a09714ccf4bd898.camel@linux.ibm.com>
-Subject: Re: [RFC PATCH 0/7] ima: Support measurement of kexec initramfs
- components
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Jonathan McDowell <noodles@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Dmitrii Potoskuev <dpotoskuev@fb.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Date:   Fri, 08 Jul 2022 07:49:58 -0400
-In-Reply-To: <cover.1657272362.git.noodles@fb.com>
-References: <cover.1657272362.git.noodles@fb.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: kTyHucsnhDSKbscf09Oh3zDa-C4FtSr_
-X-Proofpoint-GUID: UwNG2QbbcUtmRMAfCoOHPXgyQiHrAfeH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-08_08,2022-07-08_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1011
- malwarescore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=999 adultscore=0
- priorityscore=1501 spamscore=0 impostorscore=0 mlxscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207080042
+        Fri, 8 Jul 2022 07:50:44 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57089B190;
+        Fri,  8 Jul 2022 04:50:36 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so1658108pjn.0;
+        Fri, 08 Jul 2022 04:50:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zS9rgD+cmarSCfRr4gxngahxu0qb9H5NHjB6vnf+WuA=;
+        b=qIQVGt5unbDu5DY/7mNpdhu0Ng3feuQMrFaJIdsT3w7mkY8ASFijjOIsur7r+DkmyW
+         iQ2hi0zPGRFSC25Q9DOnINLdXlyxqEmjrYBxxXOMlM4Z+vOcmHalY0T1cnhBXxdLr4pA
+         09vfqd52NX/fTL7ch33BL/wfmi/E3P1BCwxJvFOqQlyCOa0QXBC4ao1a1JK3wXirtwB4
+         ST39dRkQ/zZtVeTJ0MxRuddSfWNhnTiC5uv1DC75X7g6+QE2d0llba7pT78z23i3JkdQ
+         stK/sS3D1wKIwMyw5Obuabc6bLL6dWjtswU5w9sGmrWuYg8tfeeMmIND88O4x/iO3Y8B
+         mTaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=zS9rgD+cmarSCfRr4gxngahxu0qb9H5NHjB6vnf+WuA=;
+        b=PSW8MUSx3yrq9uKsHvhn3hELIIR9n3IYgv1L4HfWBUHF3APrNRcDJ444rgtaKa6c66
+         5oh6ciKISShovyqsnNiw6ZkEOu4vZcy7qXiRFepG2lhamhE3pOmUNq07akis6ExbM+Cn
+         ADdZGIJxD64FqfejlYC3S6UUpCPb/T7F9PBF4bVJhUsd2eNrBN82ECjSVtuO1+8o/hUl
+         j158mePvA9dTQjgUXyMvmns4fWcopNrPgeDlC0Tjec43mFaBO9+rro5Y1PTW8iXiGI7h
+         ds/3Jfv+t4a0ANm+VPQd6W3E6bez0FVfA9KRVUWn2RL5T+QAXRI0q+4Um/fmtSe2B3nd
+         kihw==
+X-Gm-Message-State: AJIora/7qxKMCLp9xp6TcnR6qd7pH7i/8ZCodD37dwCaEvSP8bK/GROk
+        cVQf54WAy/SOnkVqWB+Mo/FPNI8yFixPzw==
+X-Google-Smtp-Source: AGRyM1tvOdhALaLud6d/or9r+vSeh86qbRvn3WIVG88mCbXHDo5P5fclCKthqQKQ6+LWgjSes+mb9A==
+X-Received: by 2002:a17:903:120e:b0:16b:8167:e39e with SMTP id l14-20020a170903120e00b0016b8167e39emr3342331plh.165.1657281036325;
+        Fri, 08 Jul 2022 04:50:36 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id y1-20020a62ce01000000b00528d880a32fsm2380600pfg.78.2022.07.08.04.50.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 04:50:35 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 8 Jul 2022 04:50:34 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Sebastian Ene <sebastianene@google.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        maz@kernel.org, will@kernel.org, vdonnefort@google.com
+Subject: Re: [PATCH v11 2/2] misc: Add a mechanism to detect stalls on guest
+ vCPUs
+Message-ID: <20220708115034.GB2164221@roeck-us.net>
+References: <20220708112344.1965947-1-sebastianene@google.com>
+ <20220708112344.1965947-3-sebastianene@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220708112344.1965947-3-sebastianene@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-08 at 10:10 +0000, Jonathan McDowell wrote:
-> This patchset is not yet complete, but it's already moving around a
-> bunch of stuff so I am sending it out to get either some agreement that
-> it's a vaguely sane approach, or some pointers about how I should be
-> doing this instead.
+On Fri, Jul 08, 2022 at 11:23:45AM +0000, Sebastian Ene wrote:
+> This driver creates per-cpu hrtimers which are required to do the
+> periodic 'pet' operation. On a conventional watchdog-core driver, the
+> userspace is responsible for delivering the 'pet' events by writing to
+> the particular /dev/watchdogN node. In this case we require a strong
+> thread affinity to be able to account for lost time on a per vCPU.
 > 
-> It aims to add an option to IMA to measure the individual components
-> that make up an initramfs that is being used for kexec, rather than the
-> entire initramfs blob. For example in the situation where the initramfs
-> blob contains some uncompressed early firmware and then a compressed
-> filesystem there will be 2 measurements folded into the TPM, and logged
-> into the IMA log.
+> This part of the driver is the 'frontend' which is reponsible for
+> delivering the periodic 'pet' events, configuring the virtual peripheral
+> and listening for cpu hotplug events. The other part of the driver is
+> an emulated MMIO device which is part of the KVM virtual machine
+> monitor and this part accounts for lost time by looking at the
+> /proc/{}/task/{}/stat entries.
 > 
-> Why is this useful? Consider the situation where images have been split
-> out to a set of firmware, an initial userspace image that does the usual
-> piece of finding the right root device and switching into it, and an
-> image that contains the necessary kernel modules.
-> 
-> For a given machine the firmware + userspace images are unlikely to
-> change often, while the kernel modules change with each upgrade. If we
-> measure the concatenated image as a single blob then it is necessary to
-> calculate all the permutations of images that result, which means
-> building and hashing the combinations. By measuring each piece
-> individually a hash can be calculated for each component up front
-> allowing for easier analysis of whether the running state is an expected
-> one.
-> 
-> The KEXEC_FILE_LOAD syscall only allows a single initramfs image to be
-> passed in; one option would be to add a new syscall that supports
-> multiple initramfs fds and read each in kimage_file_prepare_segments().
-> 
-> Instead I've taken a more complicated approach that doesn't involve a
-> new syscall or altering the kexec userspace, building on top of the way
-> the boot process parses the initramfs and using that same technique
-> within the IMA measurement for the READING_KEXEC_INITRAMFS path.
-> 
-> To that end I've pulled the cpio handling code out of init/initramfs.c
-> and into lib/ and made it usable outside of __init when required. That's
-> involved having to pull some of the init_syscall file handling routines
-> into the cpio code (and cleaning them up when the cpio code is the only
-> user). I think there's the potential for a bit more code clean up here,
-> but I've tried to keep it limited to providing the functionality I need
-> and making checkpatch happy for the moment.
-> 
-> Patch 1 pulls the code out to lib/ and moves the global static variables
-> that hold the state into a single context structure.
-> 
-> Patch 2 does some minimal error path improvements so we're not just
-> passing a string around to indicate there's been an error.
-> 
-> Patch 3 is where I pull the file handling routines into the cpio code.
-> It didn't seem worth moving this to somewhere other code could continue
-> to use them when only the cpio code was doing so, but it did involve a
-> few extra exported functions from fs/
-> 
-> Patch 4 actually allows the use of the cpio code outside of __init when
-> CONFIG_CPIO is selected.
-> 
-> Patch 5 is a hack so I can use the generic decompress + gzip outside of
-> __init. If this overall approach is acceptable then I'll do some work to
-> make this generically available in the same manner as the cpio code
-> before actually submitting for inclusion.
-> 
-> Patch 6 is the actual piece I'm interested in; doing individual
-> measurements for each component within IMA.
+> Reviewed-by: Will Deacon <will@kernel.org>
+> Signed-off-by: Sebastian Ene <sebastianene@google.com>
 
-Hi Jonathan,
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-Before going down this path, just making sure you're aware:
-- of the IMA hooks for measuring and appraising firmware.
-
-- of Roberto Sassu's "initramfs: add support for xattrs in the initial
-ram disk" patch set that have been lingering for lack of review and
-upstreaming.[1]   There's been some recent interest in it.
-
-[1] Message-Id: <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
-
-thanks,
-
-Mimi
-
+> ---
+>  drivers/misc/Kconfig               |  14 ++
+>  drivers/misc/Makefile              |   1 +
+>  drivers/misc/vcpu_stall_detector.c | 223 +++++++++++++++++++++++++++++
+>  3 files changed, 238 insertions(+)
+>  create mode 100644 drivers/misc/vcpu_stall_detector.c
+> 
+> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> index 41d2bb0ae23a..d5b7610459f7 100644
+> --- a/drivers/misc/Kconfig
+> +++ b/drivers/misc/Kconfig
+> @@ -483,6 +483,20 @@ config OPEN_DICE
+>  
+>  	  If unsure, say N.
+>  
+> +config VCPU_STALL_DETECTOR
+> +	tristate "Guest vCPU stall detector"
+> +	select LOCKUP_DETECTOR
+> +	depends on OF && HAS_IOMEM
+> +	help
+> +	  When this driver is bound inside a KVM guest, it will
+> +	  periodically "pet" an MMIO stall detector device from each vCPU
+> +	  and allow the host to detect vCPU stalls.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called vcpu_stall_detector.
+> +
+> +	  If you do not intend to run this kernel as a guest, say N.
+> +
+>  source "drivers/misc/c2port/Kconfig"
+>  source "drivers/misc/eeprom/Kconfig"
+>  source "drivers/misc/cb710/Kconfig"
+> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+> index 70e800e9127f..2be8542616dd 100644
+> --- a/drivers/misc/Makefile
+> +++ b/drivers/misc/Makefile
+> @@ -60,3 +60,4 @@ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
+>  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+>  obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+>  obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+> +obj-$(CONFIG_VCPU_STALL_DETECTOR)	+= vcpu_stall_detector.o
+> \ No newline at end of file
+> diff --git a/drivers/misc/vcpu_stall_detector.c b/drivers/misc/vcpu_stall_detector.c
+> new file mode 100644
+> index 000000000000..53b5506080e1
+> --- /dev/null
+> +++ b/drivers/misc/vcpu_stall_detector.c
+> @@ -0,0 +1,223 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +//
+> +// VCPU stall detector.
+> +//  Copyright (C) Google, 2022
+> +
+> +#include <linux/cpu.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +
+> +#include <linux/device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/module.h>
+> +#include <linux/nmi.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/param.h>
+> +#include <linux/percpu.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +
+> +#define VCPU_STALL_REG_STATUS		(0x00)
+> +#define VCPU_STALL_REG_LOAD_CNT		(0x04)
+> +#define VCPU_STALL_REG_CURRENT_CNT	(0x08)
+> +#define VCPU_STALL_REG_CLOCK_FREQ_HZ	(0x0C)
+> +#define VCPU_STALL_REG_LEN		(0x10)
+> +
+> +#define VCPU_STALL_DEFAULT_CLOCK_HZ	(10)
+> +#define VCPU_STALL_MAX_CLOCK_HZ		(100)
+> +#define VCPU_STALL_DEFAULT_TIMEOUT_SEC	(8)
+> +#define VCPU_STALL_MAX_TIMEOUT_SEC	(600)
+> +
+> +struct vcpu_stall_detect_config {
+> +	u32 clock_freq_hz;
+> +	u32 stall_timeout_sec;
+> +
+> +	void __iomem *membase;
+> +	struct platform_device *dev;
+> +	enum cpuhp_state hp_online;
+> +};
+> +
+> +struct vcpu_stall_priv {
+> +	struct hrtimer vcpu_hrtimer;
+> +	bool is_initialized;
+> +};
+> +
+> +/* The vcpu stall configuration structure which applies to all the CPUs */
+> +static struct vcpu_stall_detect_config vcpu_stall_config;
+> +
+> +#define vcpu_stall_reg_write(vcpu, reg, value)				\
+> +	writel_relaxed((value),						\
+> +		       (void __iomem *)(vcpu_stall_config.membase +	\
+> +		       (vcpu) * VCPU_STALL_REG_LEN + (reg)))
+> +
+> +
+> +static struct vcpu_stall_priv __percpu *vcpu_stall_detectors;
+> +
+> +static enum hrtimer_restart
+> +vcpu_stall_detect_timer_fn(struct hrtimer *hrtimer)
+> +{
+> +	u32 ticks, ping_timeout_ms;
+> +
+> +	/* Reload the stall detector counter register every
+> +	 * `ping_timeout_ms` to prevent the virtual device
+> +	 * from decrementing it to 0. The virtual device decrements this
+> +	 * register at 'clock_freq_hz' frequency.
+> +	 */
+> +	ticks = vcpu_stall_config.clock_freq_hz *
+> +		vcpu_stall_config.stall_timeout_sec;
+> +	vcpu_stall_reg_write(smp_processor_id(),
+> +			     VCPU_STALL_REG_LOAD_CNT, ticks);
+> +
+> +	ping_timeout_ms = vcpu_stall_config.stall_timeout_sec *
+> +			  MSEC_PER_SEC / 2;
+> +	hrtimer_forward_now(hrtimer,
+> +			    ms_to_ktime(ping_timeout_ms));
+> +
+> +	return HRTIMER_RESTART;
+> +}
+> +
+> +static int start_stall_detector_cpu(unsigned int cpu)
+> +{
+> +	u32 ticks, ping_timeout_ms;
+> +	struct vcpu_stall_priv *vcpu_stall_detector =
+> +		this_cpu_ptr(vcpu_stall_detectors);
+> +	struct hrtimer *vcpu_hrtimer = &vcpu_stall_detector->vcpu_hrtimer;
+> +
+> +	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_CLOCK_FREQ_HZ,
+> +			     vcpu_stall_config.clock_freq_hz);
+> +
+> +	/* Compute the number of ticks required for the stall detector
+> +	 * counter register based on the internal clock frequency and the
+> +	 * timeout value given from the device tree.
+> +	 */
+> +	ticks = vcpu_stall_config.clock_freq_hz *
+> +		vcpu_stall_config.stall_timeout_sec;
+> +	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_LOAD_CNT, ticks);
+> +
+> +	/* Enable the internal clock and start the stall detector */
+> +	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_STATUS, 1);
+> +
+> +	/* Pet the stall detector at half of its expiration timeout
+> +	 * to prevent spurious resets.
+> +	 */
+> +	ping_timeout_ms = vcpu_stall_config.stall_timeout_sec *
+> +			  MSEC_PER_SEC / 2;
+> +
+> +	hrtimer_init(vcpu_hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+> +	vcpu_hrtimer->function = vcpu_stall_detect_timer_fn;
+> +	vcpu_stall_detector->is_initialized = true;
+> +
+> +	hrtimer_start(vcpu_hrtimer, ms_to_ktime(ping_timeout_ms),
+> +		      HRTIMER_MODE_REL_PINNED);
+> +
+> +	return 0;
+> +}
+> +
+> +static int stop_stall_detector_cpu(unsigned int cpu)
+> +{
+> +	struct vcpu_stall_priv *vcpu_stall_detector =
+> +		per_cpu_ptr(vcpu_stall_detectors, cpu);
+> +
+> +	if (!vcpu_stall_detector->is_initialized)
+> +		return 0;
+> +
+> +	/* Disable the stall detector for the current CPU */
+> +	hrtimer_cancel(&vcpu_stall_detector->vcpu_hrtimer);
+> +	vcpu_stall_reg_write(cpu, VCPU_STALL_REG_STATUS, 0);
+> +	vcpu_stall_detector->is_initialized = false;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vcpu_stall_detect_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	struct resource *r;
+> +	void __iomem *membase;
+> +	u32 clock_freq_hz = VCPU_STALL_DEFAULT_CLOCK_HZ;
+> +	u32 stall_timeout_sec = VCPU_STALL_DEFAULT_TIMEOUT_SEC;
+> +	struct device_node *np = pdev->dev.of_node;
+> +
+> +	vcpu_stall_detectors = devm_alloc_percpu(&pdev->dev,
+> +						 typeof(struct vcpu_stall_priv));
+> +	if (!vcpu_stall_detectors)
+> +		return -ENOMEM;
+> +
+> +	membase = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
+> +	if (IS_ERR(membase)) {
+> +		dev_err(&pdev->dev, "Failed to get memory resource\n");
+> +		return PTR_ERR(membase);
+> +	}
+> +
+> +	if (!of_property_read_u32(np, "clock-frequency", &clock_freq_hz)) {
+> +		if (!(clock_freq_hz > 0 &&
+> +		      clock_freq_hz < VCPU_STALL_MAX_CLOCK_HZ)) {
+> +			dev_warn(&pdev->dev, "clk out of range\n");
+> +			clock_freq_hz = VCPU_STALL_DEFAULT_CLOCK_HZ;
+> +		}
+> +	}
+> +
+> +	if (!of_property_read_u32(np, "timeout-sec", &stall_timeout_sec)) {
+> +		if (!(stall_timeout_sec > 0 &&
+> +		      stall_timeout_sec < VCPU_STALL_MAX_TIMEOUT_SEC)) {
+> +			dev_warn(&pdev->dev, "stall timeout out of range\n");
+> +			stall_timeout_sec = VCPU_STALL_DEFAULT_TIMEOUT_SEC;
+> +		}
+> +	}
+> +
+> +	vcpu_stall_config = (struct vcpu_stall_detect_config) {
+> +		.membase		= membase,
+> +		.clock_freq_hz		= clock_freq_hz,
+> +		.stall_timeout_sec	= stall_timeout_sec
+> +	};
+> +
+> +	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
+> +				"virt/vcpu_stall_detector:online",
+> +				start_stall_detector_cpu,
+> +				stop_stall_detector_cpu);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to install cpu hotplug");
+> +		goto err;
+> +	}
+> +
+> +	vcpu_stall_config.hp_online = ret;
+> +	return 0;
+> +err:
+> +	return ret;
+> +}
+> +
+> +static int vcpu_stall_detect_remove(struct platform_device *pdev)
+> +{
+> +	int cpu;
+> +
+> +	cpuhp_remove_state(vcpu_stall_config.hp_online);
+> +
+> +	for_each_possible_cpu(cpu)
+> +		stop_stall_detector_cpu(cpu);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id vcpu_stall_detect_of_match[] = {
+> +	{ .compatible = "qemu,vcpu-stall-detector", },
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, vcpu_stall_detect_of_match);
+> +
+> +static struct platform_driver vcpu_stall_detect_driver = {
+> +	.probe  = vcpu_stall_detect_probe,
+> +	.remove = vcpu_stall_detect_remove,
+> +	.driver = {
+> +		.name           = KBUILD_MODNAME,
+> +		.of_match_table = vcpu_stall_detect_of_match,
+> +	},
+> +};
+> +
+> +module_platform_driver(vcpu_stall_detect_driver);
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_AUTHOR("Sebastian Ene <sebastianene@google.com>");
+> +MODULE_DESCRIPTION("VCPU stall detector");
+> -- 
+> 2.37.0.rc0.161.g10f37bed90-goog
+> 
