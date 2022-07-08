@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB13C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 18:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A8AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 18:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239537AbiGHSW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 14:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41086 "EHLO
+        id S239564AbiGHSXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 14:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238719AbiGHSVu (ORCPT
+        with ESMTP id S239346AbiGHSVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 14:21:50 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A095683F2D
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 11:21:40 -0700 (PDT)
+        Fri, 8 Jul 2022 14:21:54 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714837E02A
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 11:21:46 -0700 (PDT)
 Received: from ramsan.of.borg ([84.195.186.194])
-        by michel.telenet-ops.be with bizsmtp
-        id siMf2700o4C55Sk06iMfjY; Fri, 08 Jul 2022 20:21:40 +0200
+        by albert.telenet-ops.be with bizsmtp
+        id siMk2700F4C55Sk06iMkay; Fri, 08 Jul 2022 20:21:46 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1o9sbg-002fKq-Tg; Fri, 08 Jul 2022 20:21:36 +0200
+        id 1o9sbg-002fKo-MX; Fri, 08 Jul 2022 20:21:36 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1o9sbg-00BtQ5-AW; Fri, 08 Jul 2022 20:21:36 +0200
+        id 1o9sbg-00BtPq-6k; Fri, 08 Jul 2022 20:21:36 +0200
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
@@ -36,9 +36,9 @@ To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
         linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5/5] drm/modes: parse_cmdline: Add support for named modes containing dashes
-Date:   Fri,  8 Jul 2022 20:21:29 +0200
-Message-Id: <4788a9c346d6b650964402e0e26c33e739f02c7c.1657301107.git.geert@linux-m68k.org>
+Subject: [PATCH 3/5] drm/modes: parse_cmdline: Make mode->*specified handling more uniform
+Date:   Fri,  8 Jul 2022 20:21:27 +0200
+Message-Id: <4bd5f539b686fbcd097fa07cff2eb6f60ca9bec1.1657301107.git.geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1657301107.git.geert@linux-m68k.org>
 References: <cover.1657301107.git.geert@linux-m68k.org>
@@ -48,32 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is fairly common for named video modes to contain dashes (e.g.
-"tt-mid" on Atari, "dblntsc-ff" on Amiga).  Currently such mode names
-are not recognized, as the dash is considered to be a separator between
-mode name and bpp.
+The various mode->*specified flags are not handled in an uniform way:
+some flags are set by the corresponding drm_mode_parse_cmdline_*()
+function, some flags by the caller of the function, and some flags by
+both.
 
-Fix this by skipping any dashes that are not followed immediately by a
-digit when looking for the separator.
+Make this uniform by making this the responsibility of the various
+parsing helpers, i.e.
+  - Move the setting of mode->specified from caller to callee,
+  - Drop the duplicate setting of mode->bpp_specified and
+    mode->refresh_specified from callers.
 
 Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- drivers/gpu/drm/drm_modes.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/drm_modes.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
 diff --git a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
-index 7a00eb6df502e991..52e852518c6ad8e9 100644
+index 434383469e9d984d..9ce275fbda566b7c 100644
 --- a/drivers/gpu/drm/drm_modes.c
 +++ b/drivers/gpu/drm/drm_modes.c
-@@ -1828,6 +1828,8 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
+@@ -1599,6 +1599,7 @@ static int drm_mode_parse_cmdline_res_mode(const char *str, unsigned int length,
+ 	mode->yres = yres;
+ 	mode->cvt = cvt;
+ 	mode->rb = rb;
++	mode->specified = true;
  
- 	/* Try to locate the bpp and refresh specifiers, if any */
- 	bpp_ptr = strchr(name, '-');
-+	while (bpp_ptr && !isdigit(bpp_ptr[1]))
-+		bpp_ptr = strchr(bpp_ptr + 1, '-');
- 	if (bpp_ptr)
- 		bpp_off = bpp_ptr - name;
+ 	return 0;
+ }
+@@ -1862,8 +1863,6 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
+ 						      mode);
+ 		if (ret)
+ 			return false;
+-
+-		mode->specified = true;
+ 	}
  
+ 	/* No mode? Check for freestanding extras and/or options */
+@@ -1885,8 +1884,6 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
+ 		ret = drm_mode_parse_cmdline_bpp(bpp_ptr, &bpp_end_ptr, mode);
+ 		if (ret)
+ 			return false;
+-
+-		mode->bpp_specified = true;
+ 	}
+ 
+ 	if (refresh_ptr) {
+@@ -1894,8 +1891,6 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
+ 						     &refresh_end_ptr, mode);
+ 		if (ret)
+ 			return false;
+-
+-		mode->refresh_specified = true;
+ 	}
+ 
+ 	/*
 -- 
 2.25.1
 
