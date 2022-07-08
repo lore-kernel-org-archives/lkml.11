@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239827AbiGHT2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
+        id S239862AbiGHT24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239789AbiGHT2Y (ORCPT
+        with ESMTP id S239797AbiGHT20 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:28:24 -0400
+        Fri, 8 Jul 2022 15:28:26 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 037C757257;
-        Fri,  8 Jul 2022 12:28:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 055A253D06;
+        Fri,  8 Jul 2022 12:28:24 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 6CF2D16C7;
-        Fri,  8 Jul 2022 22:30:06 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 6CF2D16C7
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 9AD0D16C9;
+        Fri,  8 Jul 2022 22:30:09 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 9AD0D16C9
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1657308606;
-        bh=zn6W9aYwFRm9r2y9H+QN9BCOOgvuf6XCDjzAh+V3fVs=;
+        d=baikalelectronics.ru; s=mail; t=1657308609;
+        bh=nafvSNriTGPoPSjqDXjoeTHpQe4uDag7M7Mrb86ib74=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=kH4OKXhQd/xq5tPhR4wk7Kx3DvhbU0qFG57zfyzhCq/88C7HcbGXRAUwkk/hcy2l9
-         pfzvIst1oTE1HZpR1lT5rj30WAEWlu8ZGZ4S8kkDm2Q4TsbacAVZaH9Pvh7TxpgtH6
-         WZ4xoV6KPWwN3xCUg7thVs3MMwXPnWL6IcQdG1D8=
+        b=nLl8o/LNQ3UXvNsa/NsWJlRD6+X+TPo7IrcDK19+N7xmaq8hS0/1yUnXI8vCZ4HR/
+         eDXWLaRZZAQhl41Ba+7p/dVdD+Qnh4n5HHO3l8xVEOQBcIWj9VmxE0DIVzVVsBmuHj
+         O4c/XHCxyWMiM6Ujtl7vgEp2g288J9drIYJN43GE=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 8 Jul 2022 22:28:19 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 8 Jul 2022 22:28:22 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Stephen Boyd <sboyd@kernel.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 4/7] clk: baikal-t1: Add SATA internal ref clock buffer
-Date:   Fri, 8 Jul 2022 22:27:22 +0300
-Message-ID: <20220708192725.9501-5-Sergey.Semin@baikalelectronics.ru>
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v6 6/7] clk: baikal-t1: Add DDR/PCIe directly controlled resets support
+Date:   Fri, 8 Jul 2022 22:27:24 +0300
+Message-ID: <20220708192725.9501-7-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220708192725.9501-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220708192725.9501-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -52,230 +54,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It turns out the internal SATA reference clock signal will stay
-unavailable for the SATA interface consumer until the buffer on it's way
-is ungated. So aside with having the actual clock divider enabled we need
-to ungate a buffer placed on the signal way to the SATA controller (most
-likely some rudiment from the initial SoC release). Seeing the switch flag
-is placed in the same register as the SATA-ref clock divider at a
-non-standard ffset, let's implement it as a separate clock controller with
-the set-rate propagation to the parental clock divider wrapper. As such
-we'll be able to disable/enable and still change the original clock source
-rate.
+Aside with a set of the trigger-like resets Baikal-T1 CCU provides two
+additional blocks with directly controlled reset signals. In particular it
+concerns DDR full and initial resets and various PCIe sub-domains resets.
+Let's add the direct reset assertion/de-assertion of the corresponding
+flags support into the Baikal-T1 CCU driver then. It will be required at
+least for the PCIe platform driver. Obviously the DDR controller isn't
+supposed to be fully reset in the kernel, so the corresponding controls
+are added just for the sake of the interface implementation completeness.
 
-Fixes: 353afa3a8d2e ("clk: Add Baikal-T1 CCU Dividers driver")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
 ---
 
-Changelog v4:
-- This is a new patch created on v4 lap of the series.
+Changelog v6:
+- Refactor the code to support the linear reset IDs only. (@Philipp)
 ---
- drivers/clk/baikal-t1/ccu-div.c     | 64 +++++++++++++++++++++++++++++
- drivers/clk/baikal-t1/ccu-div.h     |  4 ++
- drivers/clk/baikal-t1/clk-ccu-div.c | 18 +++++++-
- 3 files changed, 85 insertions(+), 1 deletion(-)
+ drivers/clk/baikal-t1/ccu-rst.c     | 67 +++++++++++++++++++++++++++++
+ drivers/clk/baikal-t1/ccu-rst.h     | 10 +++++
+ include/dt-bindings/reset/bt1-ccu.h |  9 ++++
+ 3 files changed, 86 insertions(+)
 
-diff --git a/drivers/clk/baikal-t1/ccu-div.c b/drivers/clk/baikal-t1/ccu-div.c
-index bbfa3526ee10..a6642f3d33d4 100644
---- a/drivers/clk/baikal-t1/ccu-div.c
-+++ b/drivers/clk/baikal-t1/ccu-div.c
-@@ -34,6 +34,7 @@
- #define CCU_DIV_CTL_CLKDIV_MASK(_width) \
- 	GENMASK((_width) + CCU_DIV_CTL_CLKDIV_FLD - 1, CCU_DIV_CTL_CLKDIV_FLD)
- #define CCU_DIV_CTL_LOCK_SHIFTED	BIT(27)
-+#define CCU_DIV_CTL_GATE_REF_BUF	BIT(28)
- #define CCU_DIV_CTL_LOCK_NORMAL		BIT(31)
+diff --git a/drivers/clk/baikal-t1/ccu-rst.c b/drivers/clk/baikal-t1/ccu-rst.c
+index 8fd40810d24e..c20aa3e07afb 100644
+--- a/drivers/clk/baikal-t1/ccu-rst.c
++++ b/drivers/clk/baikal-t1/ccu-rst.c
+@@ -35,18 +35,29 @@
+ #define CCU_AXI_HWA_BASE		0x054
+ #define CCU_AXI_SRAM_BASE		0x058
  
- #define CCU_DIV_RST_DELAY_US		1
-@@ -170,6 +171,40 @@ static int ccu_div_gate_is_enabled(struct clk_hw *hw)
- 	return !!(val & CCU_DIV_CTL_EN);
- }
++#define CCU_SYS_DDR_BASE		0x02c
+ #define CCU_SYS_SATA_REF_BASE		0x060
+ #define CCU_SYS_APB_BASE		0x064
++#define CCU_SYS_PCIE_BASE		0x144
  
-+static int ccu_div_buf_enable(struct clk_hw *hw)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&div->lock, flags);
-+	regmap_update_bits(div->sys_regs, div->reg_ctl,
-+			   CCU_DIV_CTL_GATE_REF_BUF, 0);
-+	spin_unlock_irqrestore(&div->lock, flags);
-+
-+	return 0;
-+}
-+
-+static void ccu_div_buf_disable(struct clk_hw *hw)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&div->lock, flags);
-+	regmap_update_bits(div->sys_regs, div->reg_ctl,
-+			   CCU_DIV_CTL_GATE_REF_BUF, CCU_DIV_CTL_GATE_REF_BUF);
-+	spin_unlock_irqrestore(&div->lock, flags);
-+}
-+
-+static int ccu_div_buf_is_enabled(struct clk_hw *hw)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	u32 val = 0;
-+
-+	regmap_read(div->sys_regs, div->reg_ctl, &val);
-+
-+	return !(val & CCU_DIV_CTL_GATE_REF_BUF);
-+}
-+
- static unsigned long ccu_div_var_recalc_rate(struct clk_hw *hw,
- 					     unsigned long parent_rate)
- {
-@@ -323,6 +358,7 @@ static const struct ccu_div_dbgfs_bit ccu_div_bits[] = {
- 	CCU_DIV_DBGFS_BIT_ATTR("div_en", CCU_DIV_CTL_EN),
- 	CCU_DIV_DBGFS_BIT_ATTR("div_rst", CCU_DIV_CTL_RST),
- 	CCU_DIV_DBGFS_BIT_ATTR("div_bypass", CCU_DIV_CTL_SET_CLKDIV),
-+	CCU_DIV_DBGFS_BIT_ATTR("div_buf", CCU_DIV_CTL_GATE_REF_BUF),
- 	CCU_DIV_DBGFS_BIT_ATTR("div_lock", CCU_DIV_CTL_LOCK_NORMAL)
- };
+ #define CCU_RST_DELAY_US		1
  
-@@ -441,6 +477,9 @@ static void ccu_div_var_debug_init(struct clk_hw *hw, struct dentry *dentry)
- 			continue;
- 		}
- 
-+		if (!strcmp("div_buf", name))
-+			continue;
-+
- 		bits[didx] = ccu_div_bits[bidx];
- 		bits[didx].div = div;
- 
-@@ -477,6 +516,21 @@ static void ccu_div_gate_debug_init(struct clk_hw *hw, struct dentry *dentry)
- 				   &ccu_div_dbgfs_fixed_clkdiv_fops);
- }
- 
-+static void ccu_div_buf_debug_init(struct clk_hw *hw, struct dentry *dentry)
-+{
-+	struct ccu_div *div = to_ccu_div(hw);
-+	struct ccu_div_dbgfs_bit *bit;
-+
-+	bit = kmalloc(sizeof(*bit), GFP_KERNEL);
-+	if (!bit)
-+		return;
-+
-+	*bit = ccu_div_bits[3];
-+	bit->div = div;
-+	debugfs_create_file_unsafe(bit->name, ccu_div_dbgfs_mode, dentry, bit,
-+				   &ccu_div_dbgfs_bit_fops);
-+}
-+
- static void ccu_div_fixed_debug_init(struct clk_hw *hw, struct dentry *dentry)
- {
- 	struct ccu_div *div = to_ccu_div(hw);
-@@ -489,6 +543,7 @@ static void ccu_div_fixed_debug_init(struct clk_hw *hw, struct dentry *dentry)
- 
- #define ccu_div_var_debug_init NULL
- #define ccu_div_gate_debug_init NULL
-+#define ccu_div_buf_debug_init NULL
- #define ccu_div_fixed_debug_init NULL
- 
- #endif /* !CONFIG_DEBUG_FS */
-@@ -520,6 +575,13 @@ static const struct clk_ops ccu_div_gate_ops = {
- 	.debug_init = ccu_div_gate_debug_init
- };
- 
-+static const struct clk_ops ccu_div_buf_ops = {
-+	.enable = ccu_div_buf_enable,
-+	.disable = ccu_div_buf_disable,
-+	.is_enabled = ccu_div_buf_is_enabled,
-+	.debug_init = ccu_div_buf_debug_init
-+};
-+
- static const struct clk_ops ccu_div_fixed_ops = {
- 	.recalc_rate = ccu_div_fixed_recalc_rate,
- 	.round_rate = ccu_div_fixed_round_rate,
-@@ -566,6 +628,8 @@ struct ccu_div *ccu_div_hw_register(const struct ccu_div_init_data *div_init)
- 	} else if (div_init->type == CCU_DIV_GATE) {
- 		hw_init.ops = &ccu_div_gate_ops;
- 		div->divider = div_init->divider;
-+	} else if (div_init->type == CCU_DIV_BUF) {
-+		hw_init.ops = &ccu_div_buf_ops;
- 	} else if (div_init->type == CCU_DIV_FIXED) {
- 		hw_init.ops = &ccu_div_fixed_ops;
- 		div->divider = div_init->divider;
-diff --git a/drivers/clk/baikal-t1/ccu-div.h b/drivers/clk/baikal-t1/ccu-div.h
-index b6a9c8e45318..4eb49ff4803c 100644
---- a/drivers/clk/baikal-t1/ccu-div.h
-+++ b/drivers/clk/baikal-t1/ccu-div.h
-@@ -15,8 +15,10 @@
- 
- /*
-  * CCU Divider private clock IDs
-+ * @CCU_SYS_SATA_CLK: CCU SATA internal clock
-  * @CCU_SYS_XGMAC_CLK: CCU XGMAC internal clock
-  */
-+#define CCU_SYS_SATA_CLK		-1
- #define CCU_SYS_XGMAC_CLK		-2
- 
- /*
-@@ -37,11 +39,13 @@
-  * enum ccu_div_type - CCU Divider types
-  * @CCU_DIV_VAR: Clocks gate with variable divider.
-  * @CCU_DIV_GATE: Clocks gate with fixed divider.
-+ * @CCU_DIV_BUF: Clock gate with no divider.
-  * @CCU_DIV_FIXED: Ungateable clock with fixed divider.
-  */
- enum ccu_div_type {
- 	CCU_DIV_VAR,
- 	CCU_DIV_GATE,
-+	CCU_DIV_BUF,
- 	CCU_DIV_FIXED
- };
- 
-diff --git a/drivers/clk/baikal-t1/clk-ccu-div.c b/drivers/clk/baikal-t1/clk-ccu-div.c
-index 3953ae5664be..90f4fda406ee 100644
---- a/drivers/clk/baikal-t1/clk-ccu-div.c
-+++ b/drivers/clk/baikal-t1/clk-ccu-div.c
-@@ -76,6 +76,16 @@
- 		.divider = _divider				\
- 	}
- 
-+#define CCU_DIV_BUF_INFO(_id, _name, _pname, _base, _flags)	\
-+	{							\
-+		.id = _id,					\
-+		.name = _name,					\
-+		.parent_name = _pname,				\
-+		.base = _base,					\
-+		.type = CCU_DIV_BUF,				\
-+		.flags = _flags					\
+ #define CCU_RST_TRIG(_base, _ofs)		\
+ 	{					\
++		.type = CCU_RST_TRIG,		\
++		.base = _base,			\
++		.mask = BIT(_ofs),		\
 +	}
 +
- #define CCU_DIV_FIXED_INFO(_id, _name, _pname, _divider)	\
- 	{							\
- 		.id = _id,					\
-@@ -188,11 +198,14 @@ static const struct ccu_div_rst_map axi_rst_map[] = {
-  * for the SoC devices registers IO-operations.
++#define CCU_RST_DIR(_base, _ofs)		\
++	{					\
++		.type = CCU_RST_DIR,		\
+ 		.base = _base,			\
+ 		.mask = BIT(_ofs),		\
+ 	}
+ 
+ struct ccu_rst_info {
++	enum ccu_rst_type type;
+ 	unsigned int base;
+ 	unsigned int mask;
+ };
+@@ -77,8 +88,18 @@ static const struct ccu_rst_info axi_rst_info[] = {
+  * well while the Linux kernel is working.
   */
- static const struct ccu_div_info sys_info[] = {
--	CCU_DIV_VAR_INFO(CCU_SYS_SATA_REF_CLK, "sys_sata_ref_clk",
-+	CCU_DIV_VAR_INFO(CCU_SYS_SATA_CLK, "sys_sata_clk",
- 			 "sata_clk", CCU_SYS_SATA_REF_BASE, 4,
- 			 CLK_SET_RATE_GATE,
- 			 CCU_DIV_SKIP_ONE | CCU_DIV_LOCK_SHIFTED |
- 			 CCU_DIV_RESET_DOMAIN),
-+	CCU_DIV_BUF_INFO(CCU_SYS_SATA_REF_CLK, "sys_sata_ref_clk",
-+			 "sys_sata_clk", CCU_SYS_SATA_REF_BASE,
-+			 CLK_SET_RATE_PARENT),
- 	CCU_DIV_VAR_INFO(CCU_SYS_APB_CLK, "sys_apb_clk",
- 			 "pcie_clk", CCU_SYS_APB_BASE, 5,
- 			 CLK_IS_CRITICAL, CCU_DIV_RESET_DOMAIN),
-@@ -398,6 +411,9 @@ static int ccu_div_clk_register(struct ccu_div_data *data)
- 			init.base = info->base;
- 			init.sys_regs = data->sys_regs;
- 			init.divider = info->divider;
-+		} else if (init.type == CCU_DIV_BUF) {
-+			init.base = info->base;
-+			init.sys_regs = data->sys_regs;
- 		} else {
- 			init.divider = info->divider;
- 		}
+ static const struct ccu_rst_info sys_rst_info[] = {
++
+ 	[CCU_SYS_SATA_REF_RST] = CCU_RST_TRIG(CCU_SYS_SATA_REF_BASE, 1),
+ 	[CCU_SYS_APB_RST] = CCU_RST_TRIG(CCU_SYS_APB_BASE, 1),
++	[CCU_SYS_DDR_FULL_RST] = CCU_RST_DIR(CCU_SYS_DDR_BASE, 1),
++	[CCU_SYS_DDR_INIT_RST] = CCU_RST_DIR(CCU_SYS_DDR_BASE, 2),
++	[CCU_SYS_PCIE_PCS_PHY_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 0),
++	[CCU_SYS_PCIE_PIPE0_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 4),
++	[CCU_SYS_PCIE_CORE_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 8),
++	[CCU_SYS_PCIE_PWR_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 9),
++	[CCU_SYS_PCIE_STICKY_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 10),
++	[CCU_SYS_PCIE_NSTICKY_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 11),
++	[CCU_SYS_PCIE_HOT_RST] = CCU_RST_DIR(CCU_SYS_PCIE_BASE, 12),
+ };
+ 
+ static int ccu_rst_reset(struct reset_controller_dev *rcdev, unsigned long idx)
+@@ -86,6 +107,9 @@ static int ccu_rst_reset(struct reset_controller_dev *rcdev, unsigned long idx)
+ 	struct ccu_rst *rst = to_ccu_rst(rcdev);
+ 	const struct ccu_rst_info *info = &rst->rsts_info[idx];
+ 
++	if (info->type != CCU_RST_TRIG)
++		return -EOPNOTSUPP;
++
+ 	regmap_update_bits(rst->sys_regs, info->base, info->mask, info->mask);
+ 
+ 	/* The next delay must be enough to cover all the resets. */
+@@ -94,8 +118,51 @@ static int ccu_rst_reset(struct reset_controller_dev *rcdev, unsigned long idx)
+ 	return 0;
+ }
+ 
++static int ccu_rst_set(struct reset_controller_dev *rcdev,
++		       unsigned long idx, bool high)
++{
++	struct ccu_rst *rst = to_ccu_rst(rcdev);
++	const struct ccu_rst_info *info = &rst->rsts_info[idx];
++
++	if (info->type != CCU_RST_DIR)
++		return high ? -EOPNOTSUPP : 0;
++
++	return regmap_update_bits(rst->sys_regs, info->base,
++				  info->mask, high ? info->mask : 0);
++}
++
++static int ccu_rst_assert(struct reset_controller_dev *rcdev,
++			  unsigned long idx)
++{
++	return ccu_rst_set(rcdev, idx, true);
++}
++
++static int ccu_rst_deassert(struct reset_controller_dev *rcdev,
++			    unsigned long idx)
++{
++	return ccu_rst_set(rcdev, idx, false);
++}
++
++static int ccu_rst_status(struct reset_controller_dev *rcdev,
++			  unsigned long idx)
++{
++	struct ccu_rst *rst = to_ccu_rst(rcdev);
++	const struct ccu_rst_info *info = &rst->rsts_info[idx];
++	u32 val;
++
++	if (info->type != CCU_RST_DIR)
++		return -EOPNOTSUPP;
++
++	regmap_read(rst->sys_regs, info->base, &val);
++
++	return !!(val & info->mask);
++}
++
+ static const struct reset_control_ops ccu_rst_ops = {
+ 	.reset = ccu_rst_reset,
++	.assert = ccu_rst_assert,
++	.deassert = ccu_rst_deassert,
++	.status = ccu_rst_status,
+ };
+ 
+ struct ccu_rst *ccu_rst_hw_register(const struct ccu_rst_init_data *rst_init)
+diff --git a/drivers/clk/baikal-t1/ccu-rst.h b/drivers/clk/baikal-t1/ccu-rst.h
+index 68214d777465..d6e8b2f671f4 100644
+--- a/drivers/clk/baikal-t1/ccu-rst.h
++++ b/drivers/clk/baikal-t1/ccu-rst.h
+@@ -13,6 +13,16 @@
+ 
+ struct ccu_rst_info;
+ 
++/*
++ * enum ccu_rst_type - CCU Reset types
++ * @CCU_RST_TRIG: Self-deasserted reset signal.
++ * @CCU_RST_DIR: Directly controlled reset signal.
++ */
++enum ccu_rst_type {
++	CCU_RST_TRIG,
++	CCU_RST_DIR,
++};
++
+ /*
+  * struct ccu_rst_init_data - CCU Resets initialization data
+  * @sys_regs: Baikal-T1 System Controller registers map.
+diff --git a/include/dt-bindings/reset/bt1-ccu.h b/include/dt-bindings/reset/bt1-ccu.h
+index 3578e83026bc..c691efaa678f 100644
+--- a/include/dt-bindings/reset/bt1-ccu.h
++++ b/include/dt-bindings/reset/bt1-ccu.h
+@@ -21,5 +21,14 @@
+ 
+ #define CCU_SYS_SATA_REF_RST		0
+ #define CCU_SYS_APB_RST			1
++#define CCU_SYS_DDR_FULL_RST		2
++#define CCU_SYS_DDR_INIT_RST		3
++#define CCU_SYS_PCIE_PCS_PHY_RST	4
++#define CCU_SYS_PCIE_PIPE0_RST		5
++#define CCU_SYS_PCIE_CORE_RST		6
++#define CCU_SYS_PCIE_PWR_RST		7
++#define CCU_SYS_PCIE_STICKY_RST		8
++#define CCU_SYS_PCIE_NSTICKY_RST	9
++#define CCU_SYS_PCIE_HOT_RST		10
+ 
+ #endif /* __DT_BINDINGS_RESET_BT1_CCU_H */
 -- 
 2.35.1
 
