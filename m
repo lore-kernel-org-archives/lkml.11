@@ -2,167 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 309FACCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F59C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238772AbiGHPRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
+        id S238789AbiGHPVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237557AbiGHPRy (ORCPT
+        with ESMTP id S232168AbiGHPVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:17:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4AF61D5F;
-        Fri,  8 Jul 2022 08:17:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE66860C28;
-        Fri,  8 Jul 2022 15:17:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D141C341C0;
-        Fri,  8 Jul 2022 15:17:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657293472;
-        bh=fMS2TMVcPi33mOSwxDvEXXKaUPeXrEIY1JwXpnbyJXw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ImDFrdj/O5jazkje+qbfCc95iH+0JWTL6o2u2SFapFTM6iRGXBlgNT9cxSisP/rif
-         zGEmKjM8YYtlpB2fnIzKt08NGhNJoL7fC1rrvBWL/CLtt42pDuXFYrkwpjWp0YDbeO
-         qReiy+DPQscnIfE/pk+nbAonBhPYIBATvaz+5KftCR/+j/owUlJbFO3e86MjHyviSV
-         umMYhXEiGWSkXgpCUJw7G5nusKsbKPqwZQiv5Ddi607pLxc9qx6kbGKaQUlqyVLhSj
-         mRAqg0ntRiSpR00ROL3QKRsYMZXTYlG1WEiX6T8xNNnZKWQH7+UveZvEvtrRk05vUk
-         2GGZchLWXzTeg==
-Date:   Fri, 8 Jul 2022 08:17:51 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Chinner <david@fromorbit.com>, linux-xfs@vger.kernel.org,
-        Shiyang Ruan <ruansy.fnst@fujitsu.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the mm tree
-Message-ID: <YshKnxb4VwXycPO8@magnolia>
-References: <20220708194437.7eafe774@canb.auug.org.au>
+        Fri, 8 Jul 2022 11:21:11 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB171ADA3;
+        Fri,  8 Jul 2022 08:21:06 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1657293648t1bpiyjn
+Received: from localhost.localdomain ( [182.148.15.249])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 08 Jul 2022 23:20:45 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000B00A0000000
+X-QQ-FEAT: +HVWQWZs/U14RI5AL/nek+wt3LHA5NtsHl0z4aqL3kVFCSyAaqy6yApCJxRva
+        I+J0tKxTeI9OsvVyhUgFC4Z402Vc0tDrlueo3Jy74Rb483/Ru3l+9/4CtghJMjD2+OQLswQ
+        qEMl75w3ByWf9Z51bO7ovU/51bsV9nRlOmm/dO9ABCtaklV4NjWX12qB8l3iD8B/PaFJngN
+        2GbIIpPHbMC9+5+NU09nfVjDHXmxJ2sTcsu1HxKBFtQsDiFprl4P2MxusouobMiZi1ykIDV
+        hvRKVnbMzVhgNVOzne059X/MveqLFOTadVXZO5EjogN8G9v9Z69Y1sNUCqBg65Z/qDkZznm
+        HfgxQ2wsm+uGTrmAPBXiOdE0BvIfW3P1PYSybg3oqfPEz1Kjis=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] net/ipa: fix repeated words in comments
+Date:   Fri,  8 Jul 2022 23:20:38 +0800
+Message-Id: <20220708152038.55840-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708194437.7eafe774@canb.auug.org.au>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 07:44:37PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the mm tree, today's linux-next build (x86_64 allmodconfig)
-> failed like this:
-> 
-> fs/xfs/xfs_notify_failure.c: In function 'xfs_dax_notify_ddev_failure':
-> fs/xfs/xfs_notify_failure.c:126:44: error: passing argument 1 of 'xfs_alloc_read_agf' from incompatible pointer type [-Werror=incompatible-pointer-types]
->   126 |                 error = xfs_alloc_read_agf(mp, tp, agno, 0, &agf_bp);
->       |                                            ^~
->       |                                            |
->       |                                            struct xfs_mount *
-> In file included from fs/xfs/xfs_notify_failure.c:12:
-> fs/xfs/libxfs/xfs_alloc.h:173:42: note: expected 'struct xfs_perag *' but argument is of type 'struct xfs_mount *'
->   173 | int xfs_alloc_read_agf(struct xfs_perag *pag, struct xfs_trans *tp, int flags,
->       |                        ~~~~~~~~~~~~~~~~~~^~~
-> fs/xfs/xfs_notify_failure.c:126:25: error: too many arguments to function 'xfs_alloc_read_agf'
->   126 |                 error = xfs_alloc_read_agf(mp, tp, agno, 0, &agf_bp);
->       |                         ^~~~~~~~~~~~~~~~~~
-> In file included from fs/xfs/xfs_notify_failure.c:12:
-> fs/xfs/libxfs/xfs_alloc.h:173:5: note: declared here
->   173 | int xfs_alloc_read_agf(struct xfs_perag *pag, struct xfs_trans *tp, int flags,
->       |     ^~~~~~~~~~~~~~~~~~
-> cc1: all warnings being treated as errors
-> 
-> Caused by commit
-> 
->   469a9c74c119 ("xfs: implement ->notify_failure() for XFS")
-> 
-> interacting with commit
-> 
->   c4829aba9c8d ("xfs: pass perag to xfs_alloc_read_agf()")
-> 
-> from the xfs tree.
-> 
-> I have applied the following merge fix patch.
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Fri, 8 Jul 2022 19:11:56 +1000
-> Subject: [PATCH] fix up for "xfs: pass perag to xfs_alloc_read_agf()"
-> 
-> interacting with "xfs: implement ->notify_failure() for XFS"
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  fs/xfs/xfs_notify_failure.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/xfs/xfs_notify_failure.c b/fs/xfs/xfs_notify_failure.c
-> index aa8dc27c599c..f3c62c19475e 100644
-> --- a/fs/xfs/xfs_notify_failure.c
-> +++ b/fs/xfs/xfs_notify_failure.c
-> @@ -18,6 +18,7 @@
->  #include "xfs_rmap_btree.h"
->  #include "xfs_rtalloc.h"
->  #include "xfs_trans.h"
-> +#include "xfs_ag.h"
->  
->  #include <linux/mm.h>
->  #include <linux/dax.h>
-> @@ -122,8 +123,10 @@ xfs_dax_notify_ddev_failure(
->  		struct failure_info	notify;
->  		struct xfs_agf		*agf;
->  		xfs_agblock_t		agend;
-> +		struct xfs_perag	*pag;
->  
-> -		error = xfs_alloc_read_agf(mp, tp, agno, 0, &agf_bp);
-> +		pag = xfs_perag_get(mp, agno);
-> +		error = xfs_alloc_read_agf(pag, tp, 0, &agf_bp);
->  		if (error)
->  			break;
+ Delete the redundant word 'the'.
 
-This isn't quite correct -- references to xfs_perag objects must be
-released once they are acquired.  The following patch against today's
-tree fixes this problem:
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ipa/gsi_private.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/xfs/xfs_notify_failure.c b/fs/xfs/xfs_notify_failure.c
-index f3c62c19475e..69d9c83ea4b2 100644
---- a/fs/xfs/xfs_notify_failure.c
-+++ b/fs/xfs/xfs_notify_failure.c
-@@ -127,10 +127,12 @@ xfs_dax_notify_ddev_failure(
- 
- 		pag = xfs_perag_get(mp, agno);
- 		error = xfs_alloc_read_agf(pag, tp, 0, &agf_bp);
--		if (error)
-+		if (error) {
-+			xfs_perag_put(pag);
- 			break;
-+		}
- 
--		cur = xfs_rmapbt_init_cursor(mp, tp, agf_bp, agf_bp->b_pag);
-+		cur = xfs_rmapbt_init_cursor(mp, tp, agf_bp, pag);
- 
- 		/*
- 		 * Set the rmap range from ri_low to ri_high, which represents
-@@ -151,6 +153,7 @@ xfs_dax_notify_ddev_failure(
- 				xfs_dax_failure_fn, &notify);
- 		xfs_btree_del_cursor(cur, error);
- 		xfs_trans_brelse(tp, agf_bp);
-+		xfs_perag_put(pag);
- 		if (error)
- 			break;
- 
-
---D
-
->  
-> -- 
-> 2.35.1
-> 
-> -- 
-> Cheers,
-> Stephen Rothwell
+diff --git a/drivers/net/ipa/gsi_private.h b/drivers/net/ipa/gsi_private.h
+index ea333a244cf5..d7065e23c92e 100644
+--- a/drivers/net/ipa/gsi_private.h
++++ b/drivers/net/ipa/gsi_private.h
+@@ -108,7 +108,7 @@ void *gsi_ring_virt(struct gsi_ring *ring, u32 index);
+  * gsi_channel_tx_queued() - Report the number of bytes queued to hardware
+  * @channel:	Channel whose bytes have been queued
+  *
+- * This arranges for the the number of transactions and bytes for
++ * This arranges for the number of transactions and bytes for
+  * transfer that have been queued to hardware to be reported.  It
+  * passes this information up the network stack so it can be used to
+  * throttle transmissions.
+-- 
+2.36.1
 
 
