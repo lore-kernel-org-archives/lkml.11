@@ -2,95 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B16C9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238996AbiGHQuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        id S239177AbiGHQuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238909AbiGHQuG (ORCPT
+        with ESMTP id S238991AbiGHQuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:50:06 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2292CCB7
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 09:50:05 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-31c89111f23so153509027b3.0
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 09:50:05 -0700 (PDT)
+        Fri, 8 Jul 2022 12:50:10 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3142C2C108;
+        Fri,  8 Jul 2022 09:50:09 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id b11so1290942eju.10;
+        Fri, 08 Jul 2022 09:50:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LaMBIefLyrWIZ2KZH3vrySSwBs8YIATiA1SUOo0jUEk=;
-        b=kQcH4jPoCGp9lpWPfnBqA8M4TYbwkC2rLOQjvC8rlBMkMveIVZyPRnm0+QVVJSk6Ye
-         WFduDaZinYYHf0w2QyMNJWQ1NIiJ6zhkfKadzwP/1xY4dnWlAV4OV/Odr0QzQM4Blk4r
-         vZnom6p24eTvTGXD/77BaiFfBUUG9WGTqRmZ4Jd4kWR6F3u1tVMbMRApX5IgVckjJgy2
-         KBp1YFYz0ETJ5iJrmXGBJmqM6JtHErBIOOd2nf4sy6wGlNhwNAgvf82a7uL+vvdYGfin
-         fBuSyQo/xwCw9M1L+sXRh+yd3IlRCGF4CZlGrcpsSsogFl2hTlILi8jpVGcAtNeWqUSl
-         xXdw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0VmPLkwd+jsfHM5+mRGOUxbGgxotW4G1hW6i/2hpi/U=;
+        b=j2lCJer7VQaif4Gj9+tDaqXNkwLb6+hi7pvOFMC5CUPaYGfI7QOihTIbv+xa4yYiet
+         Qx+WhsfxNnu4J9IpMo9qzMHwgRt8Z+C10ccQpyCP3dhAKw+LTofuaAP5iA2L3u8iToDe
+         ObOrYGT8wE0vN3Dz/QmQNh2zBPUqdfVmQizSjqP2ei6GDkHL92B0hNMmhJPyBWrp9pFH
+         IrBrQa8zJ1OYSnLeqTZNw6D8AFNoUCwp0z8vOWQOdw1eh9QTQdhYHGM09XMtiwDBMQaA
+         iWvqbkAupyFErhqV665byWsjB8TOIpOvhi5CQkZpBMDz5BEucLauXHoPWiRbLeJyBBxV
+         dMdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LaMBIefLyrWIZ2KZH3vrySSwBs8YIATiA1SUOo0jUEk=;
-        b=6pBSuvXsGfHafLBVJc2aZoRyzjtROKgahC4Yw2C36vrfg9cvAWalqqQYbOyEpKtyMa
-         8In5TfCtOECCXdyc8WIu84cpQbaa/TwgGH7Avtw37+8+dje7nq5AYjmvOkmBB0I1nZ+g
-         ByLaU1upS0JW8k9xkyDvzbvZlSwbQltnuDLDgyQAmeY19vqQnc/fccoi8MWaRnaa/yxF
-         RJKY41xZuI9/67tZlHw2ZONj8lW5YhjZl5x+EZtYlEbAjAUM03YQUElcw0cb6WCaF4ob
-         rN1qHYvXmQKY/sBrEfERokgJPMg72FmR1PEaKczsn3cW5m2ZgDxBkdSdhB3VfELn8gZ+
-         azww==
-X-Gm-Message-State: AJIora9fD8RKKkV2rlO80tFCxssmPXNw1l+v20kC8kye1MKsJFyaY5gB
-        swKkYKsKy/Wy3JfXoJ54mQMlevF3oAmByb70KzI=
-X-Google-Smtp-Source: AGRyM1tZlRngOGhokxDZmr1qD7HVrtiCVQ9gBovI9Z7DDmmuzaLt5cP5jAfxbLydF4YD2WWIPe7PJYFzWZHtVmC6G94=
-X-Received: by 2002:a81:108f:0:b0:31c:d7ae:9ff1 with SMTP id
- 137-20020a81108f000000b0031cd7ae9ff1mr4939212ywq.18.1657299005058; Fri, 08
- Jul 2022 09:50:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0VmPLkwd+jsfHM5+mRGOUxbGgxotW4G1hW6i/2hpi/U=;
+        b=1AMH5lWE+yAS01AlY+9sbJF63mdgZN7uByNtsRfcw7wKoAiIVsz5FYljE6Lq82libq
+         SnQIGM3nrZN1ZE8YijbMBFcVfFf4ARi52jLMIF9DJ/QD6IbZETUvH2YCv1fh8k4SuXvr
+         jy+1jDGxbYH2IMud1veLetIl3DXloaRRui2tsh9Pkk6pNH0HhPBuvnJgQ8oFrX3FZlm2
+         jbI1x+u2tL0dn01GW6b+Xjqf7VC1O/nvRhmaCyvOE3LelrQwd855DadTUqo0jwHpmLJL
+         IYnTmlagKgtzVuFpmUVxdSiCLR7llvucqpgYdVD2t2fIEcpfoFBKbwR25nJwBDhoAGy9
+         4s+g==
+X-Gm-Message-State: AJIora9JUN+/s367spXv9AYv0ug7gpKHCCSke1rUSLTJccRmarO2SgJH
+        0DrcwoHckKHowVlciUekMWQ=
+X-Google-Smtp-Source: AGRyM1u8pUAPgSJnIA4mi9w1D8Y2TiHSvOt67lcDD4EJjpozOfSw3fl72TuSp8do6cqLJme64f41uQ==
+X-Received: by 2002:a17:906:c048:b0:718:ca61:e7b9 with SMTP id bm8-20020a170906c04800b00718ca61e7b9mr4473154ejb.120.1657299007703;
+        Fri, 08 Jul 2022 09:50:07 -0700 (PDT)
+Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id g4-20020a17090669c400b006fe9f9d0938sm20819211ejs.175.2022.07.08.09.50.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 09:50:07 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 1/2] dt-bindings: arm: sunxi: Default to the full MBUS binding
+Date:   Fri, 08 Jul 2022 18:50:06 +0200
+Message-ID: <7534543.lvqk35OSZv@kista>
+In-Reply-To: <20220702042447.26734-1-samuel@sholland.org>
+References: <20220702042447.26734-1-samuel@sholland.org>
 MIME-Version: 1.0
-References: <20220707091301.1282291-1-cezary.rojewski@intel.com>
- <CAHp75VceKBoxXVPP4dRYb8LQqHMMDHFp6-E2iuZ-h2RTK8PWQQ@mail.gmail.com>
- <e0c7d254-ace3-625c-cc83-52ca0b45e9fc@intel.com> <CAHp75VckU2ZraLJ-frjWXjUu9pFW+-XmWgTbYqUXOUNAD-1HGA@mail.gmail.com>
- <6c8e4104-2239-a188-649d-585f059cabdd@intel.com> <YsgjdKEtE7pMDTnZ@smile.fi.intel.com>
- <a73b3ec0-5abb-ddfd-414b-b9807f05413e@linux.intel.com> <CAHp75Vd4D0KF7ik+aMOwv-+bofWja_tDe4YUmihQBF+RiHZTmA@mail.gmail.com>
- <e2fe6351-f9ee-48eb-ad7f-280249f7f3f7@intel.com>
-In-Reply-To: <e2fe6351-f9ee-48eb-ad7f-280249f7f3f7@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 18:49:27 +0200
-Message-ID: <CAHp75VfvN-iJTpgg6JeKhOqJLhtYSieo7d7SOCBoUu-81FtSqg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
-To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        amadeuszx.slawinski@linux.intel.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 6:32 PM Cezary Rojewski
-<cezary.rojewski@intel.com> wrote:
->
-> On 2022-07-08 5:25 PM, Andy Shevchenko wrote:
-> > On Fri, Jul 8, 2022 at 2:34 PM P=C3=A9ter Ujfalusi
-> > <peter.ujfalusi@linux.intel.com> wrote:
+Dne sobota, 02. julij 2022 ob 06:24:46 CEST je Samuel Holland napisal(a):
+> Some older SoCs use a deprecated MBUS binding with some clocks missing.
+> Currently, new SoCs must opt in to the complete binding. This should be
+> the default, so new SoCs do not accidentally use the deprecated version.
+> 
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 
-> A long shot, but what if we were to modify get_options() so it takes
-> additional element-size parameter instead?
+Applied both, thanks!
 
-But why? int / unsigned int, u32 / s32  are all compatible in the current c=
-ases.
+Best regards,
+Jernej
 
---=20
-With Best Regards,
-Andy Shevchenko
+
