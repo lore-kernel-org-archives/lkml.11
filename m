@@ -2,88 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4645FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67BF7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:06:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238223AbiGHRGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 13:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
+        id S238339AbiGHRGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 13:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232975AbiGHRGA (ORCPT
+        with ESMTP id S238286AbiGHRGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 13:06:00 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A4D5C9F8
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 10:05:59 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id z12so21757530wrq.7
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 10:05:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bt+4nv2sa8rIkkr4HRdL5sYHgKzM1uGantvwYECVYmU=;
-        b=FTJHfZBe1EnZtdYr0Cx5m+8NDBd/EQh77Kd/04oV1qWBTeNY9t1V3zeOL+nB1AluxK
-         eUV13zDJe2F9OT7aGpieJfbffoYRas4dzkfe+3SWQnwR1MTuM3lf3hd32hc1Oh36P/pS
-         IVLScqH9z+P568TmULtxJ8bC8QI4sEKU2yFcC810q8WDrERDHbZCYRVSnBrts1dlUBoe
-         9EU7nB8TG3LS6MCRmJx6LuX4BSAZAc3U3AMPl3eItGuoWEnTmyf4uLnbuYIKJgtpfQc4
-         Nw6hIkXbxtWGjey0HmaoJ++P+LkaMQJFsxFL9Ma2uxFASL7RH+ldpBfI+u676CU3lAlM
-         QgdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bt+4nv2sa8rIkkr4HRdL5sYHgKzM1uGantvwYECVYmU=;
-        b=swyRoJYtzoyNWkJOyXB89NGsGK6xWMDCEY82eK4XCPbUpaRTi5P1a4g+D9pMJX4vUq
-         FlKO9p7VYPDCKuRGVrQGuXm/Y6oBKe6Dos1Jg0cZUCtZji5iqqS/H0ND4fkYs7uMGNro
-         vU+KpcsKOz0czWLv/uP6m1nZ4DXHCSkgc33YW55f/xTdMFu45AC5kUxhKY121CwKkNl/
-         xB7O+3FKy3CcFKxynfLlOKhj9s5tQmejEPjQbNnIP6AK8rW8VnLvw5AtbOL3cmp9cjI/
-         mPuN+kR9nJcbxYyg4SeX5pN6Iaao+AHKi0gVJ6czK2pn9n4/tvF0Bor7Oa9q7YMOjm8H
-         hJnQ==
-X-Gm-Message-State: AJIora+I0SDEVPCtpSnlhZZxWQJ+nDi7B08hD2FmqT0KBNYz+xSDrYSc
-        ZOoOkAsajLYvfaT/ikJq/2aECCMQeJa+mWFn
-X-Google-Smtp-Source: AGRyM1tDvDSp/h7Ofxro79wnACQWKUMULF6t9Z4GTWxRVRjMVcAXz9P9hakHGsqz+8LIZ8CaUhMgeg==
-X-Received: by 2002:a5d:5983:0:b0:21b:b7cb:f84e with SMTP id n3-20020a5d5983000000b0021bb7cbf84emr4339164wri.654.1657299957747;
-        Fri, 08 Jul 2022 10:05:57 -0700 (PDT)
-Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id j2-20020a5d4522000000b0021d6ac977fasm13717078wra.69.2022.07.08.10.05.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 10:05:57 -0700 (PDT)
-From:   Ben Dooks <ben.dooks@sifive.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH] devres: show which resource was invalid
-Date:   Fri,  8 Jul 2022 18:05:54 +0100
-Message-Id: <20220708170554.270405-1-ben.dooks@sifive.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 8 Jul 2022 13:06:15 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1A66050E
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 10:06:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657299975; x=1688835975;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+ADmw6cOsgad1wiEE7DfCGuDQIqQwPGnx5VrvFmZZDU=;
+  b=AF9LI4FfmSYo/fV+eCyDc8zE1/CQGgRbSqeTOTQkO74c+23R/aP7GQGi
+   Osquo9jM1gk4XtnDkaiJdQ9YBBA9npRd8ImX1amizv5aKDlC+5bSDToz7
+   gmc6xkjyBtPT1wWu20c68zv5aoVVCrd7SR71Tvd77No6ngf39+Ztuwj9w
+   AAwqFxI0Gkcib3ezhxV22hNn8WtUtj0QLuYRih61IuoSjkKOsbf5HbP1z
+   WIYJmGwg9cEHjp7FgAdCub3DPBmHLhQguA/4YsFRq3doqaR7Uxfiq/ALT
+   XkOoQcesZ7aiLD3D5K7uaXDJZ14OLNFB+g+yiu3XcXGOiRjqOAnPLTT/A
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="283078441"
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="283078441"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 10:01:46 -0700
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="626764382"
+Received: from yyan2-mobl2.amr.corp.intel.com (HELO [10.212.242.16]) ([10.212.242.16])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 10:01:45 -0700
+Message-ID: <a486ad3f-8fb6-c37b-9e7e-c6ba1a841b57@intel.com>
+Date:   Fri, 8 Jul 2022 10:01:37 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] x86/mm/tlb: ignore f->new_tlb_gen when zero
+Content-Language: en-US
+To:     Nadav Amit <namit@vmware.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Hugh Dickins <hughd@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        X86 ML <x86@kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>
+References: <20220708003053.158480-1-namit@vmware.com>
+ <b573a9c6-2ee0-20dc-1f28-84d3a81d40a2@redhat.com>
+ <283d7660-000a-81af-1d6b-4fdedcb6dfd8@intel.com>
+ <A604C6DA-5E5D-43F1-B63F-EF9D145CACCE@vmware.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <A604C6DA-5E5D-43F1-B63F-EF9D145CACCE@vmware.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If we do find a resouce that's not valid, print it to aid
-identifying the issue.
+On 7/8/22 09:54, Nadav Amit wrote:
+> Since the bug was not during MADV_DONTNEED there is no reason for the
+> results to be any different.
+> 
+> Famous last words?
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
----
- lib/devres.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/lib/devres.c b/lib/devres.c
-index 14664bbb4875..df5ed06908f0 100644
---- a/lib/devres.c
-+++ b/lib/devres.c
-@@ -143,7 +143,7 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
- 	BUG_ON(!dev);
- 
- 	if (!res || resource_type(res) != IORESOURCE_MEM) {
--		dev_err(dev, "invalid resource\n");
-+		dev_err(dev, "invalid resource (%pR)\n", res);
- 		return IOMEM_ERR_PTR(-EINVAL);
- 	}
- 
--- 
-2.35.1
-
+Considering that your patch broke the kernel a way that surprised us
+all, I think caution is warranted.  Re-running a microbenchmark that
+takes five minutes and stresses things a bit is the least you can do, I
+think.
