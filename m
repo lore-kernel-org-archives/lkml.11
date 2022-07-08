@@ -2,75 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B93EEC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE18C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237813AbiGHMt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 08:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        id S237861AbiGHMuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 08:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237613AbiGHMt1 (ORCPT
+        with ESMTP id S237843AbiGHMuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 08:49:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA0018375;
-        Fri,  8 Jul 2022 05:49:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 658B862731;
-        Fri,  8 Jul 2022 12:49:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466F5C341C0;
-        Fri,  8 Jul 2022 12:49:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657284565;
-        bh=y3uOgzP8/1oD6loS+5aG+kabJ0xwbf5tnpouDRqeJ9I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RLUvr3duWQ4+6vdOFSNT8z543LC7P0xRKqI6yHYtY1i4p0Cm7fnHAnkZCXDtQzZCa
-         ZPtyVWI9UnS1wQvzy3/8YIrd6h1PZ2pWlzVLc8uZ0Y+hv+cX9PtImuAgsPThL4DdJ1
-         Ntltfdvff7g+ac/EA6DlVwQ+OOI3vu9U6oC3Gvk4=
-Date:   Fri, 8 Jul 2022 14:49:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Khalid Masum <khalid.masum.92@gmail.com>
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Felipe Balbi <balbi@kernel.org>
-Subject: Re: [PATCH] usb: dwc3: Describe function parameter 'mult'
-Message-ID: <Ysgn0hxHkt3pvzAB@kroah.com>
-References: <20220703192448.13763-1-khalid.masum.92@gmail.com>
+        Fri, 8 Jul 2022 08:50:02 -0400
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 08 Jul 2022 05:50:01 PDT
+Received: from mail.kmu-office.ch (mail.kmu-office.ch [IPv6:2a02:418:6a02::a2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3121CFD8
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:50:01 -0700 (PDT)
+Received: from webmail.kmu-office.ch (unknown [IPv6:2a02:418:6a02::a3])
+        by mail.kmu-office.ch (Postfix) with ESMTPSA id C983A5C2954;
+        Fri,  8 Jul 2022 14:31:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=agner.ch; s=dkim;
+        t=1657283485;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AqAvq/GhL5mtj7Qz9VEZ6cs8bwCibZT0jtcphktb7Bc=;
+        b=M+qqPYFOdsYSXQGWnaduOOtfheVya7W5w4Y3/dNbxtIfcYzVrIwGkuMidKPTuZxgPJin/M
+        cqmRiaxWCgRgrGzd+MpWgaioeHMlO4K7YTPMd4WoN52q2XnpmbClIGn70vg33yP8AWAqqW
+        a/SKhNt3MYUbkW7OyKmYpCO7cHT6a7Q=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220703192448.13763-1-khalid.masum.92@gmail.com>
+Date:   Fri, 08 Jul 2022 14:31:25 +0200
+From:   Stefan Agner <stefan@agner.ch>
+To:     Jacky Bai <ping.bai@nxp.com>
+Cc:     linus.walleij@linaro.org, aisheng.dong@nxp.com, festevam@gmail.com,
+        shawnguo@kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-imx@nxp.com
+Subject: Re: [PATCH] MAINTAINERS: Update freescale pin controllers maintainer
+In-Reply-To: <20220708100952.1998673-1-ping.bai@nxp.com>
+References: <20220708100952.1998673-1-ping.bai@nxp.com>
+Message-ID: <082e1f7cb783479edb34e2b3321eded7@agner.ch>
+X-Sender: stefan@agner.ch
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 01:24:48AM +0600, Khalid Masum wrote:
-> Currently the parameter is not described. Which triggers warning when using
-> make htmldocs. Fix it by describing the parameter.
+On 2022-07-08 12:09, Jacky Bai wrote:
+> Add myself as co-maintainer of freescale pin controllers driver.
+
+Acked-by: Stefan Agner <stefan@agner.ch>
+
+While at it, can you remove myself from the list of maintainers? I don't
+work with NXP hardware lately.
+
+--
+Stefan
+
 > 
-> Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+> Signed-off-by: Jacky Bai <ping.bai@nxp.com>
 > ---
->  drivers/usb/dwc3/gadget.c | 1 +
+>  MAINTAINERS | 1 +
 >  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-> index 8716bece1072..e8c86b08cd83 100644
-> --- a/drivers/usb/dwc3/gadget.c
-> +++ b/drivers/usb/dwc3/gadget.c
-> @@ -657,6 +657,7 @@ static int dwc3_gadget_set_ep_config(struct dwc3_ep *dep, unsigned int action)
->  /**
->   * dwc3_gadget_calc_tx_fifo_size - calculates the txfifo size value
->   * @dwc: pointer to the DWC3 context
-> + * @mult: multiplier, 'mult' value for SS Isoc EPs
->   *
->   * Calculates the size value based on the equation below:
->   *
-> -- 
-> 2.36.1
-> 
-
-Does not apply to my usb-next branch :(
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d6d879cb0afd..fbed6cc287b7 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15557,6 +15557,7 @@ M:	Dong Aisheng <aisheng.dong@nxp.com>
+>  M:	Fabio Estevam <festevam@gmail.com>
+>  M:	Shawn Guo <shawnguo@kernel.org>
+>  M:	Stefan Agner <stefan@agner.ch>
+> +M:	Jacky Bai <ping.bai@nxp.com>
+>  R:	Pengutronix Kernel Team <kernel@pengutronix.de>
+>  L:	linux-gpio@vger.kernel.org
+>  S:	Maintained
