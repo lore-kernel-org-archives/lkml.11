@@ -2,185 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEC0CCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBEDCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239768AbiGHTc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
+        id S239776AbiGHTg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238583AbiGHTc6 (ORCPT
+        with ESMTP id S238095AbiGHTg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:32:58 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01487313B9;
-        Fri,  8 Jul 2022 12:32:56 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id bu42so18051820lfb.0;
-        Fri, 08 Jul 2022 12:32:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fE3puKa/6Hokm/etuKQc2OOXjCp/6oW39+ul+1LQBqQ=;
-        b=LaaKfBoOuaiqwms2ZKW+xXleA0IKWCHLtlQSRtgDfOAArnWufiUOEjWJYv+GyimtAx
-         yUKHzKif6MFcfIjhChE9LBOoteKGdALEacDjVlmzxjuZFwy3lH3PC1JKhVlpoCOR/AE9
-         MGQp0THGQy2wEUXIKHxeKDE2Y48898R+HvE/lAgqTHIjgppZ1CDQeq7o/tTxSYxdg8U/
-         Waf5gqnTr4ozJ0HM9hPkJaPYqL9O5b3wcb0SmxFjl6Z6g76IWGewDWKUs6QzlQxlLlKE
-         9DLZD/8hFZjr/QzD2IpKM5NqYJxO19Nlkai76bAgmGpnwbkxW51j9HpdMPNy8UyRRP2e
-         wx6A==
+        Fri, 8 Jul 2022 15:36:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4A655C953
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:36:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657308984;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bp4/uJx0q3CBRP6uPPQZJlkmcVebKMMiiHAd6ojauiM=;
+        b=HEqaAVOHh96SKL2Jhtrg6+zgS0ndr8SN5OhR8V3x7bfdAJijO04XTD9hiZl2Iv+zw1E8g8
+        YQ7y0MTIBSHu/IbLvtx6R2Yruq2z3uC16gQ1TFyiLX8EbusMwT75gymCYSauZ+ceZL6UT1
+        xUzCODqnu/iJKmrplqEy7231TRE5QGg=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-60-S0b0PhZ4PHisdo4f-Ykv8w-1; Fri, 08 Jul 2022 15:36:23 -0400
+X-MC-Unique: S0b0PhZ4PHisdo4f-Ykv8w-1
+Received: by mail-ed1-f71.google.com with SMTP id z13-20020a056402274d00b004357fcdd51fso16665723edd.17
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 12:36:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fE3puKa/6Hokm/etuKQc2OOXjCp/6oW39+ul+1LQBqQ=;
-        b=AgCpvMDX1vz2Du7Zv8P1jKUBIXl3kqA+J+wLwT4MncTHlyq1y0VP/yIPJGBd8tUVe/
-         l9NgqORLfBf5s23JWmyW1l37bk3xEsciPSDwidSqnf/NV2mjn1psknXp8Y4iDBMDKZE3
-         RQRfjoJT72sydYKBpDMHwDEDuESuNQVNgz7Z256cFBoJMAPd01oTuMjGr2+exQGEoZgW
-         L+0e5lXWjFFWfQBJpoQIxYlyx0JRE0y4I3Mi2FXqvzuFc6uk70SuJ/h0BXjss8fJoQzI
-         ZLfkG58VXKsgCSsvO2iQz1oJxsQOMC5a3q/8tObHZdgsC3tUgdJdnG8L05FTeUMPvxlW
-         ZNdw==
-X-Gm-Message-State: AJIora/NwBQVMYru0OiPfy9PhANRXQB3zFCKQpSvuudUlFbugBtsyZ2L
-        gsW1NyLluuq0jojHoDxh/jo=
-X-Google-Smtp-Source: AGRyM1t/1vwERfeNaf48d5AaxQ7IN5DluX+1Y1MiFAvLw861pgrGbpSkmX1rwMywN+uCcbtUrJJSGw==
-X-Received: by 2002:a05:6512:39d4:b0:489:698a:a36e with SMTP id k20-20020a05651239d400b00489698aa36emr3229762lfu.10.1657308775209;
-        Fri, 08 Jul 2022 12:32:55 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id q16-20020a056512211000b0047da5e98e66sm676134lfr.1.2022.07.08.12.32.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 12:32:54 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 22:32:52 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v5 6/8] clk: baikal-t1: Move reset-controls code
- into a dedicated module
-Message-ID: <20220708193252.y3on6tqkqcvxa6tq@mobilestation>
-References: <20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru>
- <20220624141853.7417-7-Sergey.Semin@baikalelectronics.ru>
- <e0869ae1b10ec19eaf87dc5fa53498f82e7deaac.camel@pengutronix.de>
- <20220705220757.dwzmrx34t2nsxfzl@mobilestation>
- <f28de0c61c06396e36756f2d4f3379fab26abdbf.camel@pengutronix.de>
- <20220706221018.3swtmotaqggww4xu@mobilestation>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Bp4/uJx0q3CBRP6uPPQZJlkmcVebKMMiiHAd6ojauiM=;
+        b=IqAhoq/ZrKGVpeQp21yeYi9z2L70/xFK+zoKK9E/ORpb+OKy2Rh+jY5KceNC5A6acE
+         UzUSHSH+npuz/bm9rD7unCCcsJ5lmC2Vl+H2EAlqS5Jhbf5LMEok1CnjO175eAtY0eqw
+         IcKQGaFQqe/eWWSUjaxzIE6+JBJz+fp/WD5gGyozyzr7tVXMa3fdd1WyE2uZnfQKaV0C
+         9mrLO664G6xhHCwJdiQtHyNfhp+XX2hZ1WqIP4MR7LqDPh2du5OBLQ2sDLlkt7hyHUdM
+         H+JVO+DiuGks6N+EEB/x4Gw9lsI+wbi39C2n48gK++Ucv6X4NTSlJctgYazBxdkBarPT
+         RxLA==
+X-Gm-Message-State: AJIora/ogZUwzqHcTsmY6BRfsF4VBWCUz+KU583azgTcpHCls8xk20gF
+        ZElT93XOaedtSciWolojdER3kTGoizkl3vfxrCbtsWMmiiFLHRHES6xHt2wDJv0gG2FubAy66Ax
+        aI/gD18QHGneiL6zoTQGhUzu5
+X-Received: by 2002:a17:906:84fa:b0:72b:3257:527b with SMTP id zp26-20020a17090684fa00b0072b3257527bmr894469ejb.477.1657308982250;
+        Fri, 08 Jul 2022 12:36:22 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sHAlOPlSVNJxOUyi7dexo+dGkJEXRhxhmOBsygKoLu/bOnqki5Dcyoqj9A1H/3E27ZRhYkHA==
+X-Received: by 2002:a17:906:84fa:b0:72b:3257:527b with SMTP id zp26-20020a17090684fa00b0072b3257527bmr894456ejb.477.1657308982085;
+        Fri, 08 Jul 2022 12:36:22 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id p16-20020a05640210d000b0043a1bc2ebbcsm13332097edu.3.2022.07.08.12.36.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 12:36:21 -0700 (PDT)
+Message-ID: <da9636ac-9455-75a6-7284-8c601d23a37e@redhat.com>
+Date:   Fri, 8 Jul 2022 21:36:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706221018.3swtmotaqggww4xu@mobilestation>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 0/5] drm/modes: Command line mode selection fixes and
+ improvements
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1657301107.git.geert@linux-m68k.org>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <cover.1657301107.git.geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Philipp
+Hi Geert,
 
-On Thu, Jul 07, 2022 at 01:10:18AM +0300, Serge Semin wrote:
-> On Wed, Jul 06, 2022 at 11:16:34AM +0200, Philipp Zabel wrote:
-> > Hi Serge,
-> > 
-> > On Mi, 2022-07-06 at 01:07 +0300, Serge Semin wrote:
-> > [...]
-> > > > What is the reason for separating ccu-rst.c and clk-ccu-rst.c?
-> > > > 
-> > > > I expect implementing the reset ops and registering the reset
-> > > > controller in the same compilation unit would be easier.
-> > > 
-> > > From the very beginning of the Baikal-T1 driver live the Clock/Reset functionality
-> > > has been split up into two parts:
-> > > 1. ccu-{div,pll}.c - Clock/Reset operations implementation.
-> > > 2. clk-ccu-{div,pll}.c - Clock/Reset kernel interface implementation.
-> > > At least for the clk-part it has made the driver much easier to read.
-> > > Code in 1. provides the interface methods like
-> > > ccu_{div,pll}_hw_register() to register a clock provider corresponding
-> > > to the CCU divider/PLL of the particular type. Code in 2. uses these
-> > > methods to create the CCU Dividers/PLL clock descriptors and register
-> > > the of-based clocks in the system. The reset functionality was
-> > > redistributed in the same manner in the framework of the ccu-div.c and
-> > > clk-ccu-div.c modules.
-> > > 
-> > > A similar approach I was trying to utilize in the framework of the
-> > > separate CCU Resets implementation. Although it turned out to be not as
-> > > handy as it was for the clock-part due to the different clock and
-> > > reset subsystems API (clock subsystem provides a single clock
-> > > source based API, while the reset subsystem expects to have the whole
-> > > resets controller described). Anyway I've decided to preserve as much
-> > > similarities as possible for the sake of the code unification and
-> > > better readability/maintainability. Thus the reset lines control
-> > > methods have been placed in the ccu-rst.c object file, while the reset
-> > > control registration has been implemented in the clk-ccu-rst.c module.
-> > 
-> > Thank you for the detailed explanation. I think that splitting doesn't
-> > help readability much in this case, but I realize that may just be a
-> > matter of preference.
-> > 
-> > [...]
-> > > > I don't think this is necessary, see my comments below. Since the reset
-> > > > ids are contiguous, just setting nr_resets and using the default
-> > > > .of_xlate should be enough to make sure this is never called with an
-> > > > invalid id.
-> > > 
-> > > Using non-contiguous !Clock! IDs turned to be unexpectedly handy. Due to
-> > > that design I was able to add the internal clock providers hidden from
-> > > the DTS users but still visible in the clocks hierarchy. It has made the
-> > > clocks implementation as detailed as possible and protected from the
-> > > improper clocks usage. It also simplified a new clock providers adding
-> > > in future (though there won't be clock sources left undefined in the
-> > > SoC after this patchset is applied).
-> > > 
-> > > All of that made me thinking that the same approach can be useful in
-> > > the framework of the CCU reset controls implementation too at the very
-> > > least for the code unification. Although after the next patch in the
-> > > series is applied there won't be resets left undefined in the
-> > > Baikal-T1 SoC. So from another side you might be partly right on
-> > > suggesting to drop the independent reset IDs/descriptors design and
-> > > just assume the IDs contiguousness.
-> > > 
-> > > So could you please confirm that you still insists on dropping it?
-> > 
+On 7/8/22 20:21, Geert Uytterhoeven wrote:
+> 	Hi all,
 > 
-
-> > Please drop it, then. I don't think there is value in carrying this
-> > complexity just because it makes the code more similar to the
-> > neighboring clk code.
-> > 
-> > I'd prefer to keep the reset ids contiguous, so future hardware should
-> > just get a different set of contiguous IDs, or new IDs appended
-> > contiguously as you do in patch 7.
+> This patch series contains fixes and improvements for specifying video
+> modes on the kernel command line.
 > 
-> Agreed then. I'll update the patches and resend the series shortly.
-> Thank you very much for review.
+> This has been tested on ARAnyM using a work-in-progress Atari DRM driver
+> (more info and related patches can be found in [1]).
+> 
+> Thanks for your comments!
+> 
+> [1] "[PATCH v3 00/10] drm: Add support for low-color frame buffer formats"
+>     https://lore.kernel.org/r/cover.1657294931.git.geert@linux-m68k.org
+> 
+> Geert Uytterhoeven (5):
+>   drm/modes: parse_cmdline: Handle empty mode name part
+>   drm/modes: Extract drm_mode_parse_cmdline_named_mode()
+>   drm/modes: parse_cmdline: Make mode->*specified handling more uniform
+>   drm/modes: Add support for driver-specific named modes
+>   drm/modes: parse_cmdline: Add support for named modes containing
+>     dashes
 
-The series has been updated the way you asked. Please review:
+Thanks, I have some remarks on patches 1/5 and 2/5 the rest looks
+good to me. 
 
-Link: https://lore.kernel.org/linux-clk/20220708192725.9501-1-Sergey.Semin@baikalelectronics.ru/
+For 1/5 and 2/5 with my remarks addressed:
 
--Sergey
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+For 3/5, 4/5 and 5/5:
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+Regards,
+
+Hans
 
 > 
-> -Sergey
+>  drivers/gpu/drm/drm_modes.c | 57 ++++++++++++++++++++++++++-----------
+>  include/drm/drm_connector.h | 10 +++++++
+>  2 files changed, 50 insertions(+), 17 deletions(-)
 > 
-> > 
-> > [...]
-> > > > 
-> > > > 
-> > > > 
-> > > > I would fold this into ccu_rst_hw_unregister().
-> > > 
-> > > I disagree in this part. Splitting up the interface methods in a set
-> > > of the small coherent methods like protagonists and respective
-> > > antagonists makes the code much easier to read and maintain. So I
-> > > will insist on having the ccu_rst_free_data() method even if it is
-> > > left with only a single kfree() function invocation.
-> > [...]
-> > > I have to disagree for the same reason as I would preserve the
-> > > ccu_rst_free_data() method here. Please see my comment above.
-> > 
-> > I'm fine with that.
-> > 
-> > > 
-> > regards
-> > Philipp
+
