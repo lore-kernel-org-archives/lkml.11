@@ -2,92 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46C9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5547C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238742AbiGHQDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
+        id S238367AbiGHQEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238029AbiGHQDt (ORCPT
+        with ESMTP id S238028AbiGHQCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:03:49 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB25E097;
-        Fri,  8 Jul 2022 09:03:49 -0700 (PDT)
+        Fri, 8 Jul 2022 12:02:20 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FBD7695C;
+        Fri,  8 Jul 2022 09:02:19 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id z12so21541784wrq.7;
+        Fri, 08 Jul 2022 09:02:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657296229; x=1688832229;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Bbltvf1E1n7dEQo4s8VfRTS+CjAivEgSlrXihksGW7Q=;
-  b=VFb4B/Xp/2IkHXUSVv8aXEKnjZr9nLz5yW3bGYxrQd7YgR2Ryo/5HslP
-   UXN/L0Nnkt+/Mg7L6/ftli6IcOaKTj2BCr7Uz1UmmSV0SCWzPwqfnd/EN
-   WQvcdoSXb2sVePhB0kF0uVtH+jM62HHOBSO2CjA6mdL/3E/9NKZVywEGM
-   A=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 08 Jul 2022 09:03:49 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 09:03:48 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 8 Jul 2022 09:03:47 -0700
-Received: from [10.111.160.191] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 8 Jul 2022
- 09:03:45 -0700
-Message-ID: <57d342b6-6254-9bb0-da80-a2f6b4d5eefe@quicinc.com>
-Date:   Fri, 8 Jul 2022 09:03:43 -0700
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rg4jRfiWMbzTLHtEYWUNXlGuNm181rxgiYhLfRcL2n4=;
+        b=nBnzGJVnF8VfPc14Lp2+tlCpzGcrxDvhdocQ6Thabc7Aaq2qMXuR1wGvg9HCEN7hk3
+         aFIb/h4i2HbqEET9ZJSXh4YCIbzazxCAPX30a7xk2RlCTZ3uXOz9CXRR4wWh+3OHaLop
+         D1fcwJAtwpz2mzUCF2zmiWMcOp4hLLMs4730MQVXkm36Whjj4s6eXaEMwPCG10GMCMw6
+         Og8HDeSXqC7tQZaXx1XCZt6hbbQyvMchIFJfOO9MlLg6HeHbEPO0c9CZLpoZpEzMXZpi
+         8AUJtV1zxeFiobNlM2bdiNjX9BRHrStJ6Zy6sVRrzgpKdWda5hmW7evnO6sOAQmzRV9u
+         jV3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rg4jRfiWMbzTLHtEYWUNXlGuNm181rxgiYhLfRcL2n4=;
+        b=nwzNND+V2y8zav36JAzB3y689KUf7SXid91BVpin8odZZJmDEqZj6M8dZ6f57szeq9
+         6Lv3mGt9yO4lahAihustDkH8J7txVZOdvasS0bF3RQy6ByDKWc3lQRHda4IM6xCf1OU6
+         uH5IsAcQW6hcH1OlR98526N8bxkBOqWh510yitAcU3LiSbgBgXW2wCjT/Jtmx0jjabJy
+         WeOMqe/KYs0l2pvgoMs615cs2NIoWqZn5IqMr28py9SzBQIu81SUc8Gj2CxTx6ljbEgP
+         oSkFi9MA23gpTcOLffX/ZYfLMy0re0R9Ch3H9vDBzG6elvrfo/NZh6lVZyK3SCGBW7JM
+         LgKA==
+X-Gm-Message-State: AJIora96jk+hXTYn7IkgO1pwXTrNQCLeHeP/x9KzTwqpsTGQKCY1vJB0
+        sNM1FCScS1gelBllzHLWRO8=
+X-Google-Smtp-Source: AGRyM1sCcUelm0/FngZamMpPaDw2OctQX3wTWsua5zS3txHup3WL01Xq8hlPY2i65HUJekLQfphAIw==
+X-Received: by 2002:a05:6000:1848:b0:21d:8e3f:f8c0 with SMTP id c8-20020a056000184800b0021d8e3ff8c0mr4036901wri.158.1657296137581;
+        Fri, 08 Jul 2022 09:02:17 -0700 (PDT)
+Received: from localhost (92.40.203.144.threembb.co.uk. [92.40.203.144])
+        by smtp.gmail.com with ESMTPSA id o17-20020a05600c511100b003a2de511598sm365729wms.12.2022.07.08.09.02.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 09:02:17 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     paul@crapouillou.net, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com
+Cc:     linux-mips@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 07/11] ASoC: jz4740-i2s: Make the PLL clock name SoC-specific
+Date:   Fri,  8 Jul 2022 17:02:40 +0100
+Message-Id: <20220708160244.21933-8-aidanmacdonald.0x0@gmail.com>
+In-Reply-To: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
+References: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH RESEND] drm/msm/dsi: fix the inconsistent indenting
-Content-Language: en-US
-To:     sunliming <sunliming@kylinos.cn>, <christian.koenig@amd.com>,
-        <robdclark@gmail.com>, <dmitry.baryshkov@linaro.org>
-CC:     <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <kelulanainsley@gmail.com>,
-        "kernel test robot" <lkp@intel.com>
-References: <20220708005832.439722-1-sunliming@kylinos.cn>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20220708005832.439722-1-sunliming@kylinos.cn>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On some Ingenic SoCs, such as the X1000, there is a programmable
+divider used to generate the I2S system clock from a PLL, rather
+than a fixed PLL/2 clock. It doesn't make much sense to call the
+clock "pll half" on those SoCs, so the clock name should really be
+a SoC-dependent value.
 
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+---
+ sound/soc/jz4740/jz4740-i2s.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-On 7/7/2022 5:58 PM, sunliming wrote:
-> Fix the inconsistent indenting in function msm_dsi_dphy_timing_calc_v3().
-> 
-> Fix the following smatch warnings:
-> 
-> drivers/gpu/drm/msm/dsi/phy/dsi_phy.c:350 msm_dsi_dphy_timing_calc_v3() warn: inconsistent indenting
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: sunliming <sunliming@kylinos.cn>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-> ---
->   drivers/gpu/drm/msm/dsi/phy/dsi_phy.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
-> index a39de3bdc7fa..56dfa2d24be1 100644
-> --- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
-> +++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
-> @@ -347,7 +347,7 @@ int msm_dsi_dphy_timing_calc_v3(struct msm_dsi_dphy_timing *timing,
->   	} else {
->   		timing->shared_timings.clk_pre =
->   			linear_inter(tmax, tmin, pcnt2, 0, false);
-> -			timing->shared_timings.clk_pre_inc_by_2 = 0;
-> +		timing->shared_timings.clk_pre_inc_by_2 = 0;
->   	}
->   
->   	timing->ta_go = 3;
+diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s.c
+index 0dcc658b3784..a41398c24d0e 100644
+--- a/sound/soc/jz4740/jz4740-i2s.c
++++ b/sound/soc/jz4740/jz4740-i2s.c
+@@ -75,6 +75,8 @@ struct i2s_soc_info {
+ 	struct reg_field field_i2sdiv_capture;
+ 	struct reg_field field_i2sdiv_playback;
+ 
++	const char *pll_clk_name;
++
+ 	bool shared_fifo_flush;
+ };
+ 
+@@ -281,7 +283,7 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
+ 		clk_set_parent(i2s->clk_i2s, parent);
+ 		break;
+ 	case JZ4740_I2S_CLKSRC_PLL:
+-		parent = clk_get(NULL, "pll half");
++		parent = clk_get(NULL, i2s->soc_info->pll_clk_name);
+ 		if (IS_ERR(parent))
+ 			return PTR_ERR(parent);
+ 		clk_set_parent(i2s->clk_i2s, parent);
+@@ -400,6 +402,7 @@ static const struct i2s_soc_info jz4740_i2s_soc_info = {
+ 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 8, 11),
+ 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+ 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
++	.pll_clk_name		= "pll half",
+ 	.shared_fifo_flush	= true,
+ };
+ 
+@@ -409,6 +412,7 @@ static const struct i2s_soc_info jz4760_i2s_soc_info = {
+ 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+ 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+ 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
++	.pll_clk_name		= "pll half",
+ };
+ 
+ static struct snd_soc_dai_driver jz4770_i2s_dai = {
+@@ -435,6 +439,7 @@ static const struct i2s_soc_info jz4770_i2s_soc_info = {
+ 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+ 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
+ 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
++	.pll_clk_name		= "pll half",
+ };
+ 
+ static const struct i2s_soc_info jz4780_i2s_soc_info = {
+@@ -443,6 +448,7 @@ static const struct i2s_soc_info jz4780_i2s_soc_info = {
+ 	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+ 	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
+ 	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
++	.pll_clk_name		= "pll half",
+ };
+ 
+ static const struct snd_soc_component_driver jz4740_i2s_component = {
+-- 
+2.35.1
+
