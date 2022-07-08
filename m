@@ -2,135 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4850FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A073CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237946AbiGHO2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
+        id S238098AbiGHOaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234271AbiGHO2Q (ORCPT
+        with ESMTP id S237343AbiGHOaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:28:16 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F102F03C;
-        Fri,  8 Jul 2022 07:28:15 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id l23so6209439ejr.5;
-        Fri, 08 Jul 2022 07:28:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LngixNJX6TgG7N5xNVxJaVBarAufEAvWKBRlLibchAc=;
-        b=niRheLaAYh4fLQ14XeZHNggN6GPSkHm6CvSeP9RhIsdv029EVf65gUur6uifV96fyg
-         YxgCto7qBMQRXLbcXqImoowFxBL8QrNciG4fe41+S9MA9xPgsMXXCbCSHLQcLlOkxpRf
-         fYTaJh1UGdfLPu7zbiA4K//nOhdM5V00ikhVC54VPIdDv+/BZb0PrexSD9ws4PZWueL4
-         ErsxV29PxQ8saSjQ3r85PZ8L4pm9YZUDe21nA5Ji5JxvGvrzo1l8YN9YHAJAo0oCUASL
-         5ZkOWDt7oZQsd470Izn4hvEwMownqZZP+nPKv7HZhiijLBpu94pGIunOSPKsTbd4P1/C
-         hLzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LngixNJX6TgG7N5xNVxJaVBarAufEAvWKBRlLibchAc=;
-        b=vteaJ2eCU+dA6p/eeDdYk6rH3/LuTJXnzAXPJYdOn81HdUYVmuG8Us/v32J5jp/VdH
-         Kq69ua8D9AhzqHF9VYtq9rtm5oTD886CoqmdbTanMXgyLvN24aPxoc3E0RN6lPQcod2Q
-         IF+X9FuOI08lJvKrCKqtl/Sq+xGlGgfv8sxSgPSKj4rn0K+7tciGOQQmg8E0ZdWasspN
-         2fSl88qXR9n5zP8Rh1eIHfddOpFhBQ8RC80sDJ7LJMooQaSZqt6w1DFLBg/sPMGsXDJn
-         z1upU8tjXt4n6MDpqgV0Vob2eh9fZgtjLPRY4aQhdkV4yvPIrw1JKiz5W60AwG979Sae
-         9c2w==
-X-Gm-Message-State: AJIora84HtM2qe7spPJ0CA5M+lJ3iIljKDeNW8oPgD8n5w5rU1+OyApp
-        YstLMGnRFg6Tw+QkhYedod0=
-X-Google-Smtp-Source: AGRyM1sr5tm9eUjoEiYGRmWe/IQkAg2S4PQdNYXAarJ+OJ9zEa05D+JIy3e9sO4ddJTqEgt81sM29w==
-X-Received: by 2002:a17:907:1608:b0:726:a7b7:cd7a with SMTP id hb8-20020a170907160800b00726a7b7cd7amr3765412ejc.682.1657290494311;
-        Fri, 08 Jul 2022 07:28:14 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c092:600::2:676a])
-        by smtp.gmail.com with ESMTPSA id h18-20020aa7c952000000b0043a6fde6e7bsm10019592edt.19.2022.07.08.07.28.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 07:28:13 -0700 (PDT)
-Message-ID: <bd9960ab-c9d8-8e5d-c347-8049cdf5708a@gmail.com>
-Date:   Fri, 8 Jul 2022 15:26:13 +0100
+        Fri, 8 Jul 2022 10:30:07 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69614B7DC;
+        Fri,  8 Jul 2022 07:30:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657290604; x=1688826604;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vCfRMAR4q2AJjmu3oHG/GAe7cYHZVXN1npd6sTs+EHc=;
+  b=hwrpi3Ikltk+29ioTNbYeYl83vGEcTyZir+0SpGfBJu+aeqhW27Mc8HT
+   AN59uj7Jh7rZJX53N+pkL5T83qQdTarDCG+Hw4KSqkO6SSeXAjbhxIm4U
+   /95EJhkUn2rDS97rzC5n21A0hDFFB8cN78a2VKlW1EuTPZXFUPgwaCqc1
+   eQ5B68KShqS04PNeqat2UUueoFILCetLy7f+sYnlYoRKc3uHGSbPkGGJB
+   22uKahqqFAWb98Af8uZ8zOZRusxhVwTl/PQxDkkpCQ0OKK8D/OOaoaY7z
+   nClWyxEpO8hvywfvTXHS6ft3QugbCNOHOlraZyUpBUte6LlU6vtUaHWU5
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
+   d="scan'208";a="171609663"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 07:30:03 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 8 Jul 2022 07:30:03 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 8 Jul 2022 07:30:01 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Lee Jones" <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v4 0/4] Microchip soft ip corePWM driver
+Date:   Fri, 8 Jul 2022 15:29:34 +0100
+Message-ID: <20220708142937.1120121-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v4 00/27] io_uring zerocopy send
-Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1657194434.git.asml.silence@gmail.com>
- <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/8/22 05:10, David Ahern wrote:
-> On 7/7/22 5:49 AM, Pavel Begunkov wrote:
->> NOTE: Not be picked directly. After getting necessary acks, I'll be working
->>        out merging with Jakub and Jens.
->>
->> The patchset implements io_uring zerocopy send. It works with both registered
->> and normal buffers, mixing is allowed but not recommended. Apart from usual
->> request completions, just as with MSG_ZEROCOPY, io_uring separately notifies
->> the userspace when buffers are freed and can be reused (see API design below),
->> which is delivered into io_uring's Completion Queue. Those "buffer-free"
->> notifications are not necessarily per request, but the userspace has control
->> over it and should explicitly attaching a number of requests to a single
->> notification. The series also adds some internal optimisations when used with
->> registered buffers like removing page referencing.
->>
->>  From the kernel networking perspective there are two main changes. The first
->> one is passing ubuf_info into the network layer from io_uring (inside of an
->> in kernel struct msghdr). This allows extra optimisations, e.g. ubuf_info
->> caching on the io_uring side, but also helps to avoid cross-referencing
->> and synchronisation problems. The second part is an optional optimisation
->> removing page referencing for requests with registered buffers.
->>
->> Benchmarking with an optimised version of the selftest (see [1]), which sends
->> a bunch of requests, waits for completions and repeats. "+ flush" column posts
->> one additional "buffer-free" notification per request, and just "zc" doesn't
->> post buffer notifications at all.
->>
->> NIC (requests / second):
->> IO size | non-zc    | zc             | zc + flush
->> 4000    | 495134    | 606420 (+22%)  | 558971 (+12%)
->> 1500    | 551808    | 577116 (+4.5%) | 565803 (+2.5%)
->> 1000    | 584677    | 592088 (+1.2%) | 560885 (-4%)
->> 600     | 596292    | 598550 (+0.4%) | 555366 (-6.7%)
->>
->> dummy (requests / second):
->> IO size | non-zc    | zc             | zc + flush
->> 8000    | 1299916   | 2396600 (+84%) | 2224219 (+71%)
->> 4000    | 1869230   | 2344146 (+25%) | 2170069 (+16%)
->> 1200    | 2071617   | 2361960 (+14%) | 2203052 (+6%)
->> 600     | 2106794   | 2381527 (+13%) | 2195295 (+4%)
->>
->> Previously it also brought a massive performance speedup compared to the
->> msg_zerocopy tool (see [3]), which is probably not super interesting.
->>
-> 
-> can you add a comment that the above results are for UDP.
+Hey Uwe, all,
 
-Oh, right, forgot to add it
+Added some extra patches so I have a cover letter this time.
+You pointed out that I was overriding npwmcells in the driver and I 
+realised that the dt & binding were not correct so I have added two
+simple patches to deal with that. The dts patch I will take in my tree
+once the binding is applied.
+
+For the maintainers entry, I mentioned before that I have several
+changes in-flight for it. We are late(ish) in the cycle so I doubt
+you'll be applying this for v5.20, but in the off chance you do - I
+would be happy to send it (with your Ack) alongside an i2c addition
+that is "deferred".
+
+In your review of v3, you had a lot of comments about the period and
+duty cycle calculations, so I have had another run at them. I converted
+the period calculation to "search" from the bottom up for the suitable
+prescale value. The duty cycle calculation has been fixed - the problem
+was exactly what I suspected in my replies to your review. I had to block
+the use of a 0xFF period_steps register value (which I think should be
+covered by the updated comment and limitation #2).
+
+Beyond that, I have rebased on -next and converted to the devm_ stuff
+in probe that was recently added & dropped remove() - as requested.
+I added locking to protect the period racing, changed the #defines and
+switched to returning -EINVAL when the period is locked to a value
+greater than that requested.
+
+Thanks,
+Conor.
+
+Conor Dooley (4):
+  dt-bindings: pwm: fix microchip corePWM's pwm-cells
+  riscv: dts: fix the icicle's #pwm-cells
+  pwm: add microchip soft ip corePWM driver
+  MAINTAINERS: add pwm to PolarFire SoC entry
+
+ .../bindings/pwm/microchip,corepwm.yaml       |   4 +-
+ MAINTAINERS                                   |   1 +
+ .../dts/microchip/mpfs-icicle-kit-fabric.dtsi |   2 +-
+ .../dts/microchip/mpfs-tysom-m-fabric.dtsi    |  18 +
+ .../riscv/boot/dts/microchip/mpfs-tysom-m.dts | 185 +++++++++
+ drivers/pwm/Kconfig                           |  10 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-microchip-core.c              | 355 ++++++++++++++++++
+ 8 files changed, 574 insertions(+), 2 deletions(-)
+ create mode 100644 arch/riscv/boot/dts/microchip/mpfs-tysom-m-fabric.dtsi
+ create mode 100644 arch/riscv/boot/dts/microchip/mpfs-tysom-m.dts
+ create mode 100644 drivers/pwm/pwm-microchip-core.c
 
 
-> You dropped comments about TCP testing; any progress there? If not, can
-> you relay any issues you are hitting?
-
-Not really a problem, but for me it's bottle necked at NIC bandwidth
-(~3GB/s) for both zc and non-zc and doesn't even nearly saturate a CPU.
-Was actually benchmarked by my colleague quite a while ago, but can't
-find numbers. Probably need to at least add localhost numbers or grab
-a better server.
-
+base-commit: 088b9c375534d905a4d337c78db3b3bfbb52c4a0
 -- 
-Pavel Begunkov
+2.36.1
+
