@@ -2,198 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05788CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:28:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0E6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238471AbiGHP2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        id S238520AbiGHP3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238313AbiGHP2g (ORCPT
+        with ESMTP id S238310AbiGHP3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:28:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE6BB86B;
-        Fri,  8 Jul 2022 08:28:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 862B5611FD;
-        Fri,  8 Jul 2022 15:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDA87C341C0;
-        Fri,  8 Jul 2022 15:28:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657294113;
-        bh=5LLM7Cns9F5FvxVMK5IvuU4OHW00Kt7A5+RS/2YlNSA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qxYu2yBLmGmn5ptn0dHqkO9nJiSNK2GQ9BtHbLGDjk7nUYDPhr85sKxBVg/TG83md
-         OP+CsK+t4Jv9EJ0x8/ZuJB6djKsMi5bg8vJ52JySOH26zyyosqzEXqIj//6+6gl/Cp
-         t7aarVM0kcOullnmKsGw6WyATVGsSzavbuRe20EXaU8Pk94gz60wdoe4MtMllESdxQ
-         QH1mwr5jC1OaACAjlcC4yGQAKYfyBuveyk+bbDbBk+hhQlc6M1rbqAYIE/ntF2VfzS
-         yki9WBxft/JYP14FlBL7Ljfx3isN8lX+54aXDs9+S6AGghGKnpx6yY7ZiButI62hC4
-         qQg9rO+2P8Wig==
-Date:   Fri, 8 Jul 2022 08:28:33 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     "ruansy.fnst@fujitsu.com" <ruansy.fnst@fujitsu.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
-        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "david@fromorbit.com" <david@fromorbit.com>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>
-Subject: Re: [RFC PATCH v5] mm, pmem, xfs: Introduce MF_MEM_REMOVE for unbind
-Message-ID: <YshNIbT5YxcjGaCr@magnolia>
-References: <20220410171623.3788004-1-ruansy.fnst@fujitsu.com>
- <20220708054216.825004-1-ruansy.fnst@fujitsu.com>
+        Fri, 8 Jul 2022 11:29:05 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534C3E74
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:29:04 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id f39so36909113lfv.3
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 08:29:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EsqbPN5x+9PQgkB3EhpcwOrofU0GdaTgCdJPXG3XIDs=;
+        b=Cjnkmx6zMzqZ3p3G/vWvCi7H5Ak27tLHkdjhmkw9kNmIAPJUo8Zng3TS5lXIfi6DBw
+         X3tUPRJlg4MJWu+CehqG44HL/yX8UnZbaetVtGCue+/dkdQhexRD9soeCLZkESw3xgav
+         PADev3iQqDx6T63UIbOBv+bZJGarOCx/gjp/mT5vs2iAEenyNWCIpiGzUNYHEMlGwPxW
+         qZC7lCmjwJmRxifn9Rc6bcipQ7WFHZgUtl2Ho9HL5gHQrUb+LvEpMSwQ6e1O6/soqAhT
+         LZRfSUQ7NKWdx7lQcXIdC9xYJnjTWcyo16zxdsDVt5YINNiZ4TeBSrYhfklXh5wMLdbo
+         tZuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EsqbPN5x+9PQgkB3EhpcwOrofU0GdaTgCdJPXG3XIDs=;
+        b=Dl/6ipX39+yEqeyxsE9CK3luwDJ/WPdh/ZOy24VSFWChs4ALkq3ctot3d08eaR0Rgr
+         pbTnbj5cS3HfFWH85YbHMeClw9K7E0BQCUMUnf08b2hrZuV6BYfg1SmWK3/EqmPdMzyB
+         XLdclQOH3TN1S50Z5uqwSIlY5CJd5PqJynFYDaAMLN3uToCyLiaZ04O5J/69zOy+gDJb
+         fx1j/udj1+nnju3cGnHOKolBJOZ+9+SRfWDb/nmQwNHM1DbrQ5oLrggLV8FQHUzldXxD
+         6Mce/fx+Zz0Sg10xlWZJyP8U7lp6P9cvLqAuk6TWJBFAh/tufTwyEw3iaGu/KcNY71xB
+         b7Bg==
+X-Gm-Message-State: AJIora+7pDut290Zhx3UVnJuq0cVfBTia6rxqthwnj81xLdBnIWOfCZR
+        xGoFlpjDLHjcY+JgZ2cgnTe6S1RQYVpPATem6ahSwA==
+X-Google-Smtp-Source: AGRyM1sV1zq1ZnN2yjXTPuiG/7Xv8X9xkix73ZrgQZOxRd61c9fzZcS0BmfVarULhrHnBVAu75EPaoUECCydheenFzI=
+X-Received: by 2002:a05:6512:1112:b0:488:e0ac:fb41 with SMTP id
+ l18-20020a056512111200b00488e0acfb41mr3001464lfg.456.1657294142373; Fri, 08
+ Jul 2022 08:29:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708054216.825004-1-ruansy.fnst@fujitsu.com>
+References: <cover.1655761627.git.ashish.kalra@amd.com> <5d05799fc61994684aa2b2ddb8c5b326a3279e25.1655761627.git.ashish.kalra@amd.com>
+ <CAMkAt6rGzSewSyO1uZehWUD2J6aLtRwP5N-uj-HPG73Pp0=Sjw@mail.gmail.com>
+ <SN6PR12MB2767B9F438A0F6413780F73E8EB99@SN6PR12MB2767.namprd12.prod.outlook.com>
+ <SN6PR12MB27675E821D5D1C423F2AF5768EBB9@SN6PR12MB2767.namprd12.prod.outlook.com>
+In-Reply-To: <SN6PR12MB27675E821D5D1C423F2AF5768EBB9@SN6PR12MB2767.namprd12.prod.outlook.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Fri, 8 Jul 2022 09:28:50 -0600
+Message-ID: <CAMkAt6riwJuL445USAAc-dLZ+vUsmtr+spAM=RQhJ07-K=nyMg@mail.gmail.com>
+Subject: Re: [PATCH Part2 v6 42/49] KVM: SVM: Provide support for
+ SNP_GUEST_REQUEST NAE event
+To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>
+Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "Roth, Michael" <Michael.Roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Alper Gun <alpergun@google.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 05:42:22AM +0000, ruansy.fnst@fujitsu.com wrote:
-> This patch is inspired by Dan's "mm, dax, pmem: Introduce
-> dev_pagemap_failure()"[1].  With the help of dax_holder and
-> ->notify_failure() mechanism, the pmem driver is able to ask filesystem
-> (or mapped device) on it to unmap all files in use and notify processes
-> who are using those files.
-> 
-> Call trace:
-> trigger unbind
->  -> unbind_store()
->   -> ... (skip)
->    -> devres_release_all()   # was pmem driver ->remove() in v1
->     -> kill_dax()
->      -> dax_holder_notify_failure(dax_dev, 0, U64_MAX, MF_MEM_REMOVE)
->       -> xfs_dax_notify_failure()
-> 
-> Introduce MF_MEM_REMOVE to let filesystem know this is a remove event.
-> So do not shutdown filesystem directly if something not supported, or if
-> failure range includes metadata area.  Make sure all files and processes
-> are handled correctly.
-> 
-> ==
-> Changes since v4:
->   1. sync_filesystem() at the beginning when MF_MEM_REMOVE
->   2. Rebased on next-20220706
-> 
-> Changes since v3:
->   1. Flush dirty files and logs when pmem is about to be removed.
->   2. Rebased on next-20220701
-> 
-> Changes since v2:
->   1. Rebased on next-20220615
-> 
-> Changes since v1:
->   1. Drop the needless change of moving {kill,put}_dax()
->   2. Rebased on '[PATCHSETS] v14 fsdax-rmap + v11 fsdax-reflink'[2]
-> 
-> [1]: https://lore.kernel.org/linux-mm/161604050314.1463742.14151665140035795571.stgit@dwillia2-desk3.amr.corp.intel.com/
-> [2]: https://lore.kernel.org/linux-xfs/20220508143620.1775214-1-ruansy.fnst@fujitsu.com/
-> 
-> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
-> ---
->  drivers/dax/super.c         |  2 +-
->  fs/xfs/xfs_notify_failure.c | 16 ++++++++++++++++
->  include/linux/mm.h          |  1 +
->  3 files changed, 18 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/dax/super.c b/drivers/dax/super.c
-> index 9b5e2a5eb0ae..d4bc83159d46 100644
-> --- a/drivers/dax/super.c
-> +++ b/drivers/dax/super.c
-> @@ -323,7 +323,7 @@ void kill_dax(struct dax_device *dax_dev)
->  		return;
->  
->  	if (dax_dev->holder_data != NULL)
-> -		dax_holder_notify_failure(dax_dev, 0, U64_MAX, 0);
-> +		dax_holder_notify_failure(dax_dev, 0, U64_MAX, MF_MEM_REMOVE);
->  
->  	clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
->  	synchronize_srcu(&dax_srcu);
-> diff --git a/fs/xfs/xfs_notify_failure.c b/fs/xfs/xfs_notify_failure.c
-> index aa8dc27c599c..728b0c1d0ddf 100644
-> --- a/fs/xfs/xfs_notify_failure.c
-> +++ b/fs/xfs/xfs_notify_failure.c
-> @@ -18,6 +18,7 @@
->  #include "xfs_rmap_btree.h"
->  #include "xfs_rtalloc.h"
->  #include "xfs_trans.h"
-> +#include "xfs_log.h"
->  
->  #include <linux/mm.h>
->  #include <linux/dax.h>
-> @@ -75,6 +76,10 @@ xfs_dax_failure_fn(
->  
->  	if (XFS_RMAP_NON_INODE_OWNER(rec->rm_owner) ||
->  	    (rec->rm_flags & (XFS_RMAP_ATTR_FORK | XFS_RMAP_BMBT_BLOCK))) {
-> +		/* Do not shutdown so early when device is to be removed */
-> +		if (notify->mf_flags & MF_MEM_REMOVE) {
-> +			return 0;
-> +		}
+On Wed, Jun 29, 2022 at 1:15 PM Kalra, Ashish <Ashish.Kalra@amd.com> wrote:
+>
+> [Public]
+>
+>
+> >> +static void snp_handle_ext_guest_request(struct vcpu_svm *svm, gpa_t
+> >> +req_gpa, gpa_t resp_gpa) {
+> >> +       struct sev_data_snp_guest_request req =3D {0};
+> >> +       struct kvm_vcpu *vcpu =3D &svm->vcpu;
+> >> +       struct kvm *kvm =3D vcpu->kvm;
+> >> +       unsigned long data_npages;
+> >> +       struct kvm_sev_info *sev;
+> >> +       unsigned long rc, err;
+> >> +       u64 data_gpa;
+> >> +
+> >> +       if (!sev_snp_guest(vcpu->kvm)) {
+> >> +               rc =3D SEV_RET_INVALID_GUEST;
+> >> +               goto e_fail;
+> >> +       }
+> >> +
+> >> +       sev =3D &to_kvm_svm(kvm)->sev_info;
+> >> +
+> >> +       data_gpa =3D vcpu->arch.regs[VCPU_REGS_RAX];
+> >> +       data_npages =3D vcpu->arch.regs[VCPU_REGS_RBX];
+> >> +
+> >> +       if (!IS_ALIGNED(data_gpa, PAGE_SIZE)) {
+> >> +               rc =3D SEV_RET_INVALID_ADDRESS;
+> >> +               goto e_fail;
+> >> +       }
+> >> +
+> >> +       /* Verify that requested blob will fit in certificate buffer *=
+/
+> >> +       if ((data_npages << PAGE_SHIFT) > SEV_FW_BLOB_MAX_SIZE) {
+> >> +               rc =3D SEV_RET_INVALID_PARAM;
+> >> +               goto e_fail;
+> >> +       }
+> >> +
+> >> +       mutex_lock(&sev->guest_req_lock);
+> >> +
+> >> +       rc =3D snp_setup_guest_buf(svm, &req, req_gpa, resp_gpa);
+> >> +       if (rc)
+> >> +               goto unlock;
+> >> +
+> >> +       rc =3D snp_guest_ext_guest_request(&req, (unsigned long)sev->s=
+np_certs_data,
+> >> +                                        &data_npages, &err);
+> >> +       if (rc) {
+> >> +               /*
+> >> +                * If buffer length is small then return the expected
+> >> +                * length in rbx.
+> >> +                */
+> >> +               if (err =3D=3D SNP_GUEST_REQ_INVALID_LEN)
+> >> +                       vcpu->arch.regs[VCPU_REGS_RBX] =3D data_npages=
+;
+> >> +
+> >> +               /* pass the firmware error code */
+> >> +               rc =3D err;
+> >> +               goto cleanup;
+> >> +       }
+> >> +
+> >> +       /* Copy the certificate blob in the guest memory */
+> >> +       if (data_npages &&
+> >> +           kvm_write_guest(kvm, data_gpa, sev->snp_certs_data, data_n=
+pages << PAGE_SHIFT))
+> >> +               rc =3D SEV_RET_INVALID_ADDRESS;
+>
+> >>Since at this point the PSP FW has correctly executed the command and i=
+ncremented the VMPCK sequence number I think we need another error signal h=
+ere since this will tell the guest the PSP had an error so it will not know=
+ if the VMPCK sequence >number should be incremented.
+>
+> >Similarly as above, as this is an error path, so what's the guarantee th=
+at the next guest message request will succeed completely,  isn=E2=80=99t i=
+t better to let the
+> >FW reject any subsequent guest messages once it has detected that the se=
+quence numbers are out of sync ?
+>
+> Alternately, we probably can return SEV_RET_INVALID_PAGE_STATE/SEV_RET_IN=
+VALID_PAGE_OWNER here, but that still does not indicate to the guest
+> that the FW has successfully executed the command and the error occurred =
+during cleanup/result phase and it needs to increment the VMPCK sequence nu=
+mber. There is nothing as such defined in SNP FW API specs to indicate such=
+ kind of failures to guest. As I mentioned earlier, this is probably indica=
+tive of
+> a bigger system failure and it is better to let the FW reject subsequent =
+guest messages/requests once it has detected that the sequence numbers are =
+out of sync.
 
-Nit: no curly braces needed here.
+Hmm I think the guest must be careful here because the guest could not
+trust the hypervisor here to be truthful about the sequence numbers
+incrementing. That's unfortunate since this means if these operations
+do fail with a well behaved hypervisor the guest cannot use that VMPCK
+again. But there is no harm in the guest re-issuing the
+SNP_GUEST_REQUEST (or extended version) with the exact same request
+just in at a different address. The GHCB spec actually calls this out
+" It is recommended that the hypervisor validate the guest physical
+address of the response page before invoking the SNP_GUEST_REQUEST API
+so that the sequence numbers do not get out of sync for the guest,
+possibly resulting in all successive requests failing".
 
->  		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
->  		return -EFSCORRUPTED;
->  	}
-> @@ -168,6 +173,14 @@ xfs_dax_notify_failure(
->  	struct xfs_mount	*mp = dax_holder(dax_dev);
->  	u64			ddev_start;
->  	u64			ddev_end;
-> +	int			error;
-> +
-> +	if (mf_flags & MF_MEM_REMOVE) {
-> +		xfs_info(mp, "device is about to be removed!");
-> +		error = sync_filesystem(mp->m_super);
+Currently SVM_VMGEXIT_GUEST_REQUEST and SVM_VMGEXIT_EXT_GUEST_REQUEST
+have different hypervisor -> guest usage for SW_EXITINFO2. I think
+they both should be defined as what SVM_VMGEXIT_EXT_GUEST_REQUEST is
+now: the high 32bits are the hypervisor error code, the low 32bits are
+the FW error code. This would allow for both NAEs to have some signal
+to the guest say SEV_RET_INVALID_REQ_ADDRESS. The hypervisor can use
+this error code when doing the validation on the request and response
+regions, if some is wrong with them the guest can retry with the exact
+same request (so no IV reuse) in a corrected region.
 
-sync_filesystem requires callers to hold s_umount.  Does the dax media
-failure code take that lock for us, or is this missing a lock?
+But another reason I think SVM_VMGEXIT_GUEST_REQUEST SW_EXITINFO2
+hypervisor->guest state should include this change is because in this
+patch we are currently overloading the lower 32bits with hypervisor
+error codes. In snp_handle_guest_request() if sev_snp_guest(),
+snp_setup_guest_buf(), or snp_cleanup_guest_buf() fails we use the low
+32bits of SW_EXITINFO2 to return hypervisor errors to the guest.
 
-Also, I'm not sure it's a good idea to sync_filesystem() before checking
-if SB_BORN has been set.
-
-> +		if (error)
-> +			return error;
-> +	}
->  
->  	if (!(mp->m_sb.sb_flags & SB_BORN)) {
->  		xfs_warn(mp, "filesystem is not ready for notify_failure()!");
-> @@ -182,6 +195,9 @@ xfs_dax_notify_failure(
->  
->  	if (mp->m_logdev_targp && mp->m_logdev_targp->bt_daxdev == dax_dev &&
->  	    mp->m_logdev_targp != mp->m_ddev_targp) {
-> +		if (mf_flags & MF_MEM_REMOVE) {
-> +			return 0;
-> +		}
-
-Same nit about not needing curly braces.
-
->  		xfs_err(mp, "ondisk log corrupt, shutting down fs!");
->  		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
->  		return -EFSCORRUPTED;
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 794ad19b57f8..3eab2d7ba884 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -3240,6 +3240,7 @@ enum mf_flags {
->  	MF_UNPOISON = 1 << 4,
->  	MF_SW_SIMULATED = 1 << 5,
->  	MF_NO_RETRY = 1 << 6,
-> +	MF_MEM_REMOVE = 1 << 7,
-
-This is more of a pre-removal notification, right?  I think the flag
-value ought to be named that way too (MF_MEM_PRE_REMOVE).
-
---D
-
->  };
->  int mf_dax_kill_procs(struct address_space *mapping, pgoff_t index,
->  		      unsigned long count, int mf_flags);
-> -- 
-> 2.37.0
+>
+> Thanks,
+> Ashish
