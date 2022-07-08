@@ -2,130 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BDF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4465FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239860AbiGHTlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
+        id S239291AbiGHTmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238577AbiGHTlQ (ORCPT
+        with ESMTP id S239162AbiGHTmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:41:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0700514D14
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:41:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 960B0627B6
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 19:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1EA4C341C0;
-        Fri,  8 Jul 2022 19:41:12 +0000 (UTC)
-Date:   Fri, 8 Jul 2022 15:41:11 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] sched/rt: fix bad task migration for rt tasks
-Message-ID: <20220708154111.36e662b2@gandalf.local.home>
-In-Reply-To: <m28rp3pfhz.fsf@gmail.com>
-References: <20220707165014.77127-1-schspa@gmail.com>
-        <20220707135329.08cf74b0@gandalf.local.home>
-        <m2h73snqja.fsf@gmail.com>
-        <20220708140000.6aa75a50@gandalf.local.home>
-        <m2ilo779f9.fsf@gmail.com>
-        <20220708150614.2cda886d@gandalf.local.home>
-        <m28rp3pfhz.fsf@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 8 Jul 2022 15:42:45 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D175D84EF9
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:42:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657309364; x=1688845364;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=cvvPOf0ESif5qtfECCusv626UD+VI6e+YqhLOB1P/oY=;
+  b=hFPh6gyZQjewkfV/hszb7vVMr8O2dY3t2UDCKAhwzOE65kf69phv4Bsm
+   kSgvBK1G/vVTaSHZov6aX45Any2NH1yMOjbCxkfvH0is5iNUHc7n3v6gJ
+   1Bo0UrC2oW536CdCA6GlTyZZZx8k1fwbYTCW0/kPaInkswgNgwJeiSN9o
+   Q=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 08 Jul 2022 12:42:44 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 12:42:44 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 8 Jul 2022 12:42:43 -0700
+Received: from [10.111.160.191] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 8 Jul 2022
+ 12:42:41 -0700
+Message-ID: <ffad2e39-f775-00de-3119-f9b0ca3fe4f7@quicinc.com>
+Date:   Fri, 8 Jul 2022 12:42:39 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] drm/msm/dsi: Set panel orientation when directly
+ connected
+Content-Language: en-US
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+To:     Doug Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+CC:     Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>,
+        Sean Paul <sean@poorly.run>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>
+References: <20220706191442.1150634-1-swboyd@chromium.org>
+ <CAD=FV=UrYCwm2ByN_5EN3fq-ayMJNjmWfJ5sooRy51ZiCoMcjA@mail.gmail.com>
+ <60252405-81f2-2465-bc20-5f91a9072031@quicinc.com>
+In-Reply-To: <60252405-81f2-2465-bc20-5f91a9072031@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 09 Jul 2022 03:14:44 +0800
-Schspa Shi <schspa@gmail.com> wrote:
 
-> Steven Rostedt <rostedt@goodmis.org> writes:
+
+On 7/8/2022 9:00 AM, Abhinav Kumar wrote:
 > 
-> > On Sat, 09 Jul 2022 02:19:42 +0800
-> > Schspa Shi <schspa@gmail.com> wrote:
-> >  
-> >> Yes, it's what I did in the V1 patch.
-> >> Link: https://lore.kernel.org/all/20220623182932.58589-1-schspa@gmail.com/
-> >> 
-> >> But I think it's not the best solution for this problem.
-> >> In these scenarios, we still have a chance to make the task run faster
-> >> by retrying to retry to push the currently running task on this CPU away.
-> >> 
-> >> There is more details on V2 patch's replay message.
-> >> Link: https://lore.kernel.org/all/CAMA88TrZ-o4W81Yfw9Wcs3ghoxwpeAKtFejtMTt78GNB0tKaSA@mail.gmail.com/#t  
-> >
-> > The thing is, this situation can only happen if we release the rq lock in
-> > find_lock_lowest_rq(), and we should not be checking for it in the other
-> > cases.
-> >  
 > 
-> If we haven't unlock the rq in find_lock_lowest_rq(), it will return
-> NULL. It won't call this code added.
+> On 7/8/2022 8:25 AM, Doug Anderson wrote:
+>> Hi,
+>>
+>> On Wed, Jul 6, 2022 at 12:14 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>>>
+>>> Set the panel orientation in drm when the panel is directly connected,
+>>> i.e. we're not using an external bridge. The external bridge case is
+>>> already handled by the panel bridge code, so we only update the path we
+>>> take when the panel is directly connected/internal. This silences a
+>>> warning splat coming from __drm_mode_object_add() on Wormdingler boards.
+>>>
+>>> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+>>> Cc: Douglas Anderson <dianders@chromium.org>
+>>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+>>> ---
+>>>
+>>> This relies on commit 5e41b01a7808 ("drm/panel: Add an API to allow drm
+>>> to set orientation from panel") which is in drm-misc
+>>>
+>>>   drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>
+>> I don't personally have objections to this, but (to my understanding)
+>> "the future" is that everyone should use panel_bridge. If we made the
+>> move to panel_bridge today then we wouldn't need to do this. In
+>> general I think panel_bridge would end up letting us delete a bunch of
+>> code...
+>>
+>> See commit 4e5763f03e10 ("drm/bridge: ti-sn65dsi86: Wrap panel with
+>> panel-bridge") for when this was done by ti-sn65dsi86.
+>>
+>> Then again, I spent a small amount of time looking into this and it's
+>> definitely non-trivial. Still likely worthwhile, but not worth
+>> blocking a tiny fix like this. It also should be fairly obvious that
+>> we should delete this when we switch to panel_bridge.
 > 
-> 	if (unlikely(is_migration_disabled(next_task))) {
-> 		put_task_struct(next_task);
-> 		goto retry;
-> 	}
-
-Because it doesn't need to. If it did not unlock the run queue, there's no
-way that next_task could have run, because we hold the rq lock for
-next_task. Which means that its "migrate_disable" state would not have
-changed from the first time we checked.
-
+> Right, from what I saw on IRC, panel_bridge is the way forward and 
+> dmitry did push a change to do that
 > 
-> 	deactivate_task(rq, next_task, 0);
-> 	set_task_cpu(next_task, lowest_rq->cpu);
+> https://patchwork.freedesktop.org/patch/492585/
 > 
-> Beside, find_lock_lowest_rq() return NULL doesn't means rq is rleased,
-> We need to add a _find_lock_lowest_rq to get the correct rq released
-> flags?
-
-It it returns NULL it either means that the rq lock was released or that it
-did not find a rq to push to. Which means there's nothing more to do anyway.
-
+> But I think we can go ahead with this change because its simple enough.
 > 
-> > Perhaps add the check in find_lock_lowest_rq() and also in the !lowest_rq
-> > case do:
-> >
-> > 		task = pick_next_pushable_task(rq);
-> > 		if (task == next_task) {
-> > +			/*
-> > +			 * If next task has now disabled migrating, see if we
-> > +			 * can push the current task.
-> > +			 */
-> > +			if (unlikely(is_migrate_disabled(task)))
-> > +				goto retry;  
-> 
-> Ahh, It can be added, And do we need this to be a separate PATCH?
-
-Sure.
-
-The "fix" to the crash you see should be in the find_lock_lowest_rq() as I
-suggested. And then you can add this as an optimization.
-
--- Steve
-
-> 
-> > 			/*
-> > 			 * The task hasn't migrated, and is still the next
-> > 			 * eligible task, but we failed to find a run-queue
-> > 			 * to push it to.  Do not retry in this case, since
-> > 			 * other CPUs will pull from us when ready.
-> > 			 */
-> > 			goto out;
-> > 		}
-> >
-> > -- Steve  
+> Regarding the panel_bridge migration, I am going to start reviewing that 
+> as well.
 > 
 
+I did some more digging up on the panel_bridge migration.
+
+Dmitry has posted this towards december last year
+
+https://patches.linaro.org/project/dri-devel/patch/20211207222901.988484-3-dmitry.baryshkov@linaro.org/ 
+
+
+and I had given my R-b on this already in Jan.
+
+I am not sure why this change was dropped OR was not part of msm-next 
+already.
+
+Dmitry, any reason this change was left out so long and why the R-b was 
+not retained and this was reposted?
+
+ From what i can see the change looks identical.
+
+Thanks
+
+Abhinav
+>>
+>> Thus:
+>>
+>> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+>>
+>> I'll assume that we'll just snooze this commit until drm-misc-next
+>> merges into a tree that msm-next is based on, which will probably be
+>> the next -rc1. If desired and Acked I could land this in
+>> drm-misc-next, but it's probably not worth it?
