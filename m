@@ -2,207 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBF4CCA481
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27394C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238416AbiGHOCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
+        id S238300AbiGHOCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238276AbiGHOCB (ORCPT
+        with ESMTP id S238158AbiGHOCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:02:01 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B40E1A061
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:02:00 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id h19-20020a9d6f93000000b0061c1ad77d5fso3175943otq.6
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 07:02:00 -0700 (PDT)
+        Fri, 8 Jul 2022 10:02:45 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C16A17AB0;
+        Fri,  8 Jul 2022 07:02:44 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id fd6so26982306edb.5;
+        Fri, 08 Jul 2022 07:02:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AgCA7JC4n87M0J4Cctl8zaLThkaSJBjNpAQEBOK0n1E=;
-        b=YuCU3LC4EmqmDANYLVa2rGn4cR9g+9cw2DLgXF8oCoF6AZxLFRfSQJPVMFb5dcnxhI
-         a05pFGlm/tVZW44jkqy1SXPlR5wDktz+7LIkeToD/5YkiElWGugxmgLSpDUf+s2OskWJ
-         Cp37s+zDo3qupWC0gw3gLYxdm4Zdfrlycfxyk=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=F7oZGiTf22yduXzKnlRZ5i/UEiJcCIYtZr80JfrcWJA=;
+        b=jX99svRh8xS9/r4UdMiq3Y43MyPOaKw23r0VGQpXgkg3bioDTKO58NGaP49lqcXvpc
+         DFBO6tQcbxHsWjsGqky0/k1S76xj5BSrxed1s2pSnnXFyInXkzuJmcQXTb0PVCtEaTDb
+         jitJSvt3JPKrhn6U7i2dLTbuS/pK6AFioBujioBFbqGEykPog3kNwEZ1yBki79CqYn1l
+         4ZuRg+Uk4ejPWhlNRn0Pzuk7qu+w2qQBTJSQej5gWEFRr1awgBY7EVSA1r4bE02WyhJi
+         QLwZ8OTYPirLS2KvJK0+5Uhz0nv3rbxAOmIrJ1IKw3XRA0BWZpcN1A/Umt72OoYc1TpX
+         g11w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AgCA7JC4n87M0J4Cctl8zaLThkaSJBjNpAQEBOK0n1E=;
-        b=C1egtyJngzmV4lF+YA+7Gw8nLNLtQ/lGau1TuWrLlV2SaUXi3O3Tc0u/jWO3ix3/M2
-         C2PkU54tSlb2XR1WVLsrsMsCUuEZubPCHyCA9VlZCgxTSc/hSxTdbiSamigHHQYQn18c
-         Eo4SjCqwynhxWcVUei/jynmBnvCC62kiSEJrZKXexKOzCP6T0ucrZ57rOTL7P3d3/wCo
-         trWxQsfpwf1UsfJW99H4HgMVZAJiWZWznZiC3aVMx2N/RP1GRYRlA6VNysM5gcetMi7G
-         qwborN1mA0f5NYkvZH06HepPygXHbyt+G5PnKezCzYiWkaH0mQ1gYU8srjVHNY+TgA7y
-         21NQ==
-X-Gm-Message-State: AJIora8WBf+gbj7w1OTRONFhrzRHclBcvFUz9E0LkJKJT72VKZ2UVawy
-        bP3x50PomT16W1LpcRFH38bURQ==
-X-Google-Smtp-Source: AGRyM1sIQoZ2at//x/8ubeDtbsVzTdvW8iCJcL4x2IwszMFpKBYhfmP4STbUFtn8jkNHayqOr+h8zw==
-X-Received: by 2002:a05:6830:2331:b0:61c:2c18:555 with SMTP id q17-20020a056830233100b0061c2c180555mr1212008otg.367.1657288919372;
-        Fri, 08 Jul 2022 07:01:59 -0700 (PDT)
-Received: from [192.168.0.41] ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id x10-20020a9d704a000000b00616d98ad780sm12787337otj.52.2022.07.08.07.01.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 07:01:43 -0700 (PDT)
-Message-ID: <3dbd5b30-f869-b284-1383-309ca6994557@cloudflare.com>
-Date:   Fri, 8 Jul 2022 09:01:32 -0500
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=F7oZGiTf22yduXzKnlRZ5i/UEiJcCIYtZr80JfrcWJA=;
+        b=LqPUuue2Zr8OXumUdXmjU7NaXo7HF43/+qoZwLnpmGS90v5aVS3OqxkL9B4c/vapvm
+         Mdghh9/Wz0HZZ6gps1c2Hqe1tHxV4w5HeQBKEx7qs/tSazJ88LF3Q4PVrggbDD1iFCQN
+         Hor26ECiHEc8npHV1NLopoPIWTccpKfz1cC2/0vJDDYI4M8oJ6LPJFnNT/n1OS+q4knW
+         RCK3pefjUULa3Fz3GKCkcf5Dys2gTD2o1Vy1HDDOcISMV77sNyT8mAmTzuTJIWOBadOE
+         0g2eCQxo6sjfxrMo856ZYfiljhLflcVCqav21CFMyjyb2QatB02SQJ9dPwLjjIO5ZdFX
+         0xww==
+X-Gm-Message-State: AJIora+mlk1wbuhMWZ+C/36axxdXVGOCDMuyLTHRp9T8BhpXZ7XhHhV9
+        Fsts3FmhBBITTMRaWs11ByA=
+X-Google-Smtp-Source: AGRyM1uL3PNKL7wSHt7HyGuMnLf4+atBsviy3tmAb8n+32sYhrZgr9xVlpYX+JxNRGbN+AcQxRdQSA==
+X-Received: by 2002:a05:6402:22b5:b0:43a:8e9f:f495 with SMTP id cx21-20020a05640222b500b0043a8e9ff495mr4961017edb.324.1657288962504;
+        Fri, 08 Jul 2022 07:02:42 -0700 (PDT)
+Received: from jernej-laptop.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id o19-20020a170906769300b0072b13a10477sm2143227ejm.108.2022.07.08.07.02.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 07:02:42 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org, samuel@sholland.org,
+        nicolas.dufresne@collabora.com, andrzej.p@collabora.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: Re: [PATCH v12 11/17] media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
+Date:   Fri, 08 Jul 2022 16:02:40 +0200
+Message-ID: <2106581.irdbgypaU6@jernej-laptop>
+In-Reply-To: <20220708120554.495495-12-benjamin.gaignard@collabora.com>
+References: <20220708120554.495495-1-benjamin.gaignard@collabora.com> <20220708120554.495495-12-benjamin.gaignard@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 0/4] Introduce security_create_user_ns()
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_G=c3=b6ttsche?= <cgzones@googlemail.com>
-Cc:     KP Singh <kpsingh@kernel.org>, revest@chromium.org,
-        jackmanb@chromium.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, shuah@kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        SElinux list <selinux@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com
-References: <20220707223228.1940249-1-fred@cloudflare.com>
- <CAJ2a_DezgSpc28jvJuU_stT7V7et-gD7qjy409oy=ZFaUxJneg@mail.gmail.com>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <CAJ2a_DezgSpc28jvJuU_stT7V7et-gD7qjy409oy=ZFaUxJneg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/8/22 7:10 AM, Christian Göttsche wrote:
-> ,On Fri, 8 Jul 2022 at 00:32, Frederick Lawler <fred@cloudflare.com> wrote:
->>
->> While creating a LSM BPF MAC policy to block user namespace creation, we
->> used the LSM cred_prepare hook because that is the closest hook to prevent
->> a call to create_user_ns().
->>
->> The calls look something like this:
->>
->>      cred = prepare_creds()
->>          security_prepare_creds()
->>              call_int_hook(cred_prepare, ...
->>      if (cred)
->>          create_user_ns(cred)
->>
->> We noticed that error codes were not propagated from this hook and
->> introduced a patch [1] to propagate those errors.
->>
->> The discussion notes that security_prepare_creds()
->> is not appropriate for MAC policies, and instead the hook is
->> meant for LSM authors to prepare credentials for mutation. [2]
->>
->> Ultimately, we concluded that a better course of action is to introduce
->> a new security hook for LSM authors. [3]
->>
->> This patch set first introduces a new security_create_user_ns() function
->> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
-> 
-> Some thoughts:
-> 
-> I.
-> 
-> Why not make the hook more generic, e.g. support all other existing
-> and potential future namespaces?
+Hi Benjamin!
 
-The main issue with a generic hook is that different namespaces have 
-different calling contexts. We decided in a previous discussion to 
-opt-out of a generic hook for this reason. [1]
+Dne petek, 08. julij 2022 ob 14:05:48 CEST je Benjamin Gaignard napisal(a):
+> The number of 'entry point offset' can be very variable.
+> Instead of using a large static array define a v4l2 dynamic array
+> of U32 (V4L2_CTRL_TYPE_U32).
+> The number of entry point offsets is reported by the elems field
+> and in struct v4l2_ctrl_hevc_slice_params.num_entry_point_offsets
+> field.
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> Tested-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
+> version 12:
+> - Reword num_entry_point_offsets documentation
+> 
+>  .../userspace-api/media/v4l/ext-ctrls-codec.rst     | 13 +++++++++++++
+>  drivers/media/v4l2-core/v4l2-ctrls-defs.c           |  5 +++++
+>  include/media/hevc-ctrls.h                          |  5 ++++-
+>  3 files changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst index
+> c2e0adece613..0cd967126fdf 100644
+> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> @@ -3010,6 +3010,11 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>      * - __u32
+>        - ``data_bit_offset``
+>        - Offset (in bits) to the video data in the current slice data.
+> +    * - __u32
+> +      - ``num_entry_point_offsets``
+> +      - Specifies the number of entry point offset syntax elements in the
+> slice header. +        When the driver supports it, the
+> ``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS`` +        must be set.
+>      * - __u8
+>        - ``nal_unit_type``
+>        - Specifies the coding type of the slice (B, P or I).
+> @@ -3150,6 +3155,14 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+> 
+>      \normalsize
+> 
+> +``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
+> +    Specifies entry point offsets in bytes.
+> +    This control is a dynamically sized array. The number of entry point
+> +    offsets is reported by the ``elems`` field.
+> +    This bitstream parameter is defined according to :ref:`hevc`.
+> +    They are described in section 7.4.7.1 "General slice segment header
+> +    semantics" of the specification.
 
-> Also I think the naming scheme is <object>_<verb>.
+You forgot to update above description per Ezequiel comment.
 
-That's a good call out. I was originally hoping to keep the security_*() 
-match with the hook name matched with the caller function to keep things 
-all aligned. If no one objects to renaming the hook, I can rename the 
-hook for v3.
+Best regards,
+Jernej
 
+> +
+>  ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
+>      Specifies the HEVC scaling matrix parameters used for the scaling
+> process for transform coefficients.
+> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> b/drivers/media/v4l2-core/v4l2-ctrls-defs.c index
+> d594efbcbb93..e22921e7ea61 100644
+> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> @@ -1188,6 +1188,7 @@ const char *v4l2_ctrl_get_name(u32 id)
+>  	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:		return 
+"HEVC Decode
+> Parameters"; case V4L2_CID_STATELESS_HEVC_DECODE_MODE:		return 
+"HEVC Decode
+> Mode"; case V4L2_CID_STATELESS_HEVC_START_CODE:		return 
+"HEVC Start Code";
+> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:	return 
+"HEVC Entry
+> Point Offsets";
 > 
->      LSM_HOOK(int, 0, namespace_create, const struct cred *cred,
-> unsigned int flags)
+>  	/* Colorimetry controls */
+>  	/* Keep the order of the 'case's the same as in v4l2-controls.h! 
+*/
+> @@ -1518,6 +1519,10 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum
+> v4l2_ctrl_type *type, case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
+>  		*type = V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS;
+>  		break;
+> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:
+> +		*type = V4L2_CTRL_TYPE_U32;
+> +		*flags |= V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
+> +		break;
+>  	case V4L2_CID_STATELESS_VP9_COMPRESSED_HDR:
+>  		*type = V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR;
+>  		break;
+> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+> index a372c184689e..3a6601a46ced 100644
+> --- a/include/media/hevc-ctrls.h
+> +++ b/include/media/hevc-ctrls.h
+> @@ -20,6 +20,7 @@
+>  #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS	(V4L2_CID_CODEC_BASE 
++ 1012)
+>  #define V4L2_CID_STATELESS_HEVC_DECODE_MODE	(V4L2_CID_CODEC_BASE + 1015)
+>  #define V4L2_CID_STATELESS_HEVC_START_CODE	(V4L2_CID_CODEC_BASE + 1016)
+> +#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (V4L2_CID_CODEC_BASE +
+> 1017)
 > 
-> where flags is a bitmap of CLONE flags from include/uapi/linux/sched.h
-> (like CLONE_NEWUSER).
-> 
-> II.
-> 
-> While adding policing for namespaces maybe also add a new hook for setns(2)
-> 
->      LSM_HOOK(int, 0, namespace_join, const struct cred *subj,  const
-> struct cred *obj, unsigned int flags)
-> 
+>  /* enum v4l2_ctrl_type type values */
+>  #define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
+> @@ -316,6 +317,8 @@ struct v4l2_hevc_pred_weight_table {
+>   *
+>   * @bit_size: size (in bits) of the current slice data
+>   * @data_bit_offset: offset (in bits) to the video data in the current
+> slice data + * @num_entry_point_offsets: specifies the number of entry
+> point offset syntax + *			     elements in the slice 
+header.
+>   * @nal_unit_type: specifies the coding type of the slice (B, P or I)
+>   * @nuh_temporal_id_plus1: minus 1 specifies a temporal identifier for the
+> NAL unit * @slice_type: see V4L2_HEVC_SLICE_TYPE_{}
+> @@ -358,7 +361,7 @@ struct v4l2_hevc_pred_weight_table {
+>  struct v4l2_ctrl_hevc_slice_params {
+>  	__u32	bit_size;
+>  	__u32	data_bit_offset;
+> -
+> +	__u32	num_entry_point_offsets;
+>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
+>  	__u8	nal_unit_type;
+>  	__u8	nuh_temporal_id_plus1;
 
-IIUC, setns() will create a new namespace for the other namespaces 
-except for user namespace. If we add a security hook for the other 
-create_*_ns() functions, then we can catch setns() at that point.
 
-> III.
-> 
-> Maybe even attach a security context to namespaces so they can be
-> further governed?
-> SELinux example:
-> 
->      type domainA_userns_t;
->      type_transition domainA_t domainA_t : namespace domainA_userns_t "user";
->      allow domainA_t domainA_userns_t:namespace create;
-> 
->      # domainB calling setns(2) with domainA as target
->      allow domainB_t domainA_userns_t:namespace join;
-> 
 
-Links:
-1. 
-https://lore.kernel.org/all/CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com/
-
->>
->> Links:
->> 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
->> 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
->> 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
->>
->> Changes since v1:
->> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
->> - Add selinux: Implement create_user_ns hook patch
->> - Change function signature of security_create_user_ns() to only take
->>    struct cred
->> - Move security_create_user_ns() call after id mapping check in
->>    create_user_ns()
->> - Update documentation to reflect changes
->>
->> Frederick Lawler (4):
->>    security, lsm: Introduce security_create_user_ns()
->>    bpf-lsm: Make bpf_lsm_create_user_ns() sleepable
->>    selftests/bpf: Add tests verifying bpf lsm create_user_ns hook
->>    selinux: Implement create_user_ns hook
->>
->>   include/linux/lsm_hook_defs.h                 |  1 +
->>   include/linux/lsm_hooks.h                     |  4 +
->>   include/linux/security.h                      |  6 ++
->>   kernel/bpf/bpf_lsm.c                          |  1 +
->>   kernel/user_namespace.c                       |  5 ++
->>   security/security.c                           |  5 ++
->>   security/selinux/hooks.c                      |  9 ++
->>   security/selinux/include/classmap.h           |  2 +
->>   .../selftests/bpf/prog_tests/deny_namespace.c | 88 +++++++++++++++++++
->>   .../selftests/bpf/progs/test_deny_namespace.c | 39 ++++++++
->>   10 files changed, 160 insertions(+)
->>   create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
->>   create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
->>
->> --
->> 2.30.2
->>
 
