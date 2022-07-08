@@ -2,609 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD97CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18853C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240100AbiGHUb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 16:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
+        id S239778AbiGHUcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 16:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239606AbiGHUbs (ORCPT
+        with ESMTP id S240094AbiGHUb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 16:31:48 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D0C9B189
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 13:31:44 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-10c0430e27dso70733fac.4
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 13:31:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DTaWLiICbVytGNbdL4/jJ2tdjKgRvLW/Lx3Y/K1eO2Y=;
-        b=JoIyJdRLCpd6+ynNar8tPnGUd1Yf1GIANxQb5oLH/Y8RHTOIGOePZ9qv7mEamVfoew
-         YV8VAvMJAYfGG1yDeBzVRWQuHuJ9gMjHUFHC/bnVoH34RTvGkIFtzg6ttq9jb8Q6cSLf
-         ql9Qyntw/oSMxyffSZbtrTp+bAVh6RMGAp6sj1/hXNK/x8DxhuqS/9hu5SZfxzHs7xPj
-         JGlHN32oiU64AqrhaMn/uOrpO3rdAQFv9YGuxMlM1Sx2UWnTBG+f5fDyEIEiUBpA6MxQ
-         FuOxkm16theBMrOqnu7I6sZy2G74pZSPjMpWQpERLdkDbHAk6pGlUJf1p9wHHpxxvazf
-         MQsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DTaWLiICbVytGNbdL4/jJ2tdjKgRvLW/Lx3Y/K1eO2Y=;
-        b=PckiHN74ggVa5/DtzgxSjrQVOtiUB/CNOUmYPkKCrh9pNnLHDb4PZZOQRkw2jFeLGq
-         zmSnhl5qBjDJu+67Evhvz218vjEwLmDTPiIQKaAwJHBTVFKArkNK3/5ap8GyAhPFrCYT
-         Sru4TnDiSn16mlHKz8HaNOz7E0CXKe1/Pjz2iLhSkTRJEBXnwzd3G12I3CeTQRMC/hNl
-         mznSYGa3D5YEnxjW2EwDy58UAJ9it6c0UUraiCOaduGk1aFKk3nJ5Ndij2Rzes/adYGI
-         02Sk3HSPpm2cNgF/WRzuTKrUo91zra6MiYcNwrf1wG8LnpPu/3m5KLwBezVRY9sK1cfw
-         bTzg==
-X-Gm-Message-State: AJIora9PdEcNR72lBFtxaK9h1L9MCnn7sC9zHr7wjWiZgWHt6sV54xnQ
-        rbnD/9pd2D8LmTveWzRIW5gIuQ==
-X-Google-Smtp-Source: AGRyM1uGfXiUjMoBtP4xviVn+pviz0EpozLlh2oiIAUSFrPCHIlD5d60wUKEHjtEN/7l62JRIp6bsg==
-X-Received: by 2002:a05:6870:e997:b0:10c:66f1:8bbb with SMTP id r23-20020a056870e99700b0010c66f18bbbmr982399oao.243.1657312303687;
-        Fri, 08 Jul 2022 13:31:43 -0700 (PDT)
-Received: from fedora.. ([143.107.182.242])
-        by smtp.gmail.com with ESMTPSA id ci10-20020a05683063ca00b0061c309b1dc2sm742225otb.39.2022.07.08.13.31.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 13:31:43 -0700 (PDT)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
-To:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
-        leandro.ribeiro@collabora.com, n@nfraprado.net,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        michal.winiarski@intel.com,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        David Gow <davidgow@google.com>,
-        Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com
-Cc:     kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>,
-        Carlos Veras <carlos.craveiro@usp.br>,
-        Matheus Vieira <matheus.vieira.g@usp.br>
-Subject: [PATCH v5 3/9] drm: selftest: convert drm_rect selftest to KUnit
-Date:   Fri,  8 Jul 2022 17:30:46 -0300
-Message-Id: <20220708203052.236290-4-maira.canal@usp.br>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220708203052.236290-1-maira.canal@usp.br>
-References: <20220708203052.236290-1-maira.canal@usp.br>
+        Fri, 8 Jul 2022 16:31:56 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060.outbound.protection.outlook.com [40.107.220.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD969FE00;
+        Fri,  8 Jul 2022 13:31:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TCEcmAW2eBwnsIcN211V0sQRKkJUPlLO9fn5aV8UFS5ix/+WK4kXdk3NAPUpdreAaT15ivJLk6K/9pCGvMf1GYptai0WJlAdLUNDFaWfmM0gx3culTKK3O9rOwiJaCvrHvA59FB39kZA6sZvlvtu08ddzDORR+qUBagkC9eGgoNfDMNdqzMKuMY/HIGn23nhQnzRDfzLtilCBCp7PLKF/aIHKcdLGiIFGhZLZp0Ftz1NxgLf1cCEQE4QAQ8p2omIrEosIr9d3tUCVXnCj/UP9uCvmBeWCA96XyXtKx5FamFkyMlXiYJlyBTo+EJYAM6kQbA5eVjUtVTiKb1vbdXNiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AROgJCrFKTNh8ss+sbPa16c6l7f8KipxpiVwS66Cg2Y=;
+ b=JJecR0pW2EDiGWyZ3P5IQYU6bJXcZn+ZPe4wJ0HrWAoobg4hBPSRyKiM4fPRXRbIkJn9duP/13+BnJPhnAWpct4to/DSCY7pSE4e4TEiTC7vheOZgIvOLIA1mK04c38RGThEenr6PY3Z92/C4oqwUz1ytwPatL7RVL3cAU+Y9DtEk672G7Z21wk+OaLyiiHQhCvzH8nR5kcwfryOSQmV+faQfWqmW5PW91nEoBe9olkiJe2rkVvCtCBRA5V4WgXKCAdbZ5h90JC7ja0jZJ6h+K5h09oILQrn8JGD6ncBdRjihOVxCfEixgssIWYFWNQGOvNgivHa7kEM6V9tRAF8Yg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=linux.ibm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AROgJCrFKTNh8ss+sbPa16c6l7f8KipxpiVwS66Cg2Y=;
+ b=IuSQPvNvmhJgM1h70m2jYzxPyL0miuLUNsmAkiRq1EDLlj8A3cf4SbFwGrKTiNfjlMexXUAa3st1ggBSwgwzVP9DOc9sDCQLDctTLYFLNP1syhnLpy+dKLs9MDPpxklt/Aq8375GSzSp3ie5qK3/A/T0kYWCNQrbBNK92KnzPsPM35wuspoDqvRB56Wuen5c6dMWUjpDddoyv4/khMFJBWFAitToOlKzryUr+fkTgrQaIkRkl3sciBxvlhEfGZpvC3+jCAs5M9/ZQc6FxjeZ/pux0g4F6xR46JbC/kxnufK5/LsatqqZt3sk6aFuL8e55Gzp42Y2KdwGTy4B0XDJhg==
+Received: from BN9PR03CA0951.namprd03.prod.outlook.com (2603:10b6:408:108::26)
+ by CY4PR1201MB2551.namprd12.prod.outlook.com (2603:10b6:903:d9::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Fri, 8 Jul
+ 2022 20:31:51 +0000
+Received: from BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:108:cafe::1c) by BN9PR03CA0951.outlook.office365.com
+ (2603:10b6:408:108::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16 via Frontend
+ Transport; Fri, 8 Jul 2022 20:31:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT067.mail.protection.outlook.com (10.13.177.159) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Fri, 8 Jul 2022 20:31:51 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Fri, 8 Jul 2022 20:31:50 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Fri, 8 Jul 2022 13:31:49 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
+ Transport; Fri, 8 Jul 2022 13:31:48 -0700
+Date:   Fri, 8 Jul 2022 13:31:47 -0700
+From:   Nicolin Chen <nicolinc@nvidia.com>
+To:     Eric Farman <farman@linux.ibm.com>
+CC:     <kwankhede@nvidia.com>, <corbet@lwn.net>, <hca@linux.ibm.com>,
+        <gor@linux.ibm.com>, <agordeev@linux.ibm.com>,
+        <borntraeger@linux.ibm.com>, <svens@linux.ibm.com>,
+        <zhenyuw@linux.intel.com>, <zhi.a.wang@intel.com>,
+        <jani.nikula@linux.intel.com>, <joonas.lahtinen@linux.intel.com>,
+        <rodrigo.vivi@intel.com>, <tvrtko.ursulin@linux.intel.com>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <mjrosato@linux.ibm.com>,
+        <pasic@linux.ibm.com>, <vneethv@linux.ibm.com>,
+        <oberpar@linux.ibm.com>, <freude@linux.ibm.com>,
+        <akrowiak@linux.ibm.com>, <jjherne@linux.ibm.com>,
+        <alex.williamson@redhat.com>, <cohuck@redhat.com>,
+        <jgg@nvidia.com>, <kevin.tian@intel.com>, <hch@infradead.org>,
+        <jchrist@linux.ibm.com>, <kvm@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-s390@vger.kernel.org>,
+        <intel-gvt-dev@lists.freedesktop.org>,
+        <intel-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>
+Subject: Re: [RFT][PATCH v2 0/9] Update vfio_pin/unpin_pages API
+Message-ID: <YsiUM/xxymScErv4@Asurada-Nvidia>
+References: <20220706062759.24946-1-nicolinc@nvidia.com>
+ <73ba16703b8b6f6b4bf37a55ab011324b5affa38.camel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <73ba16703b8b6f6b4bf37a55ab011324b5affa38.camel@linux.ibm.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8b5bf56d-ad64-4dac-e8d9-08da6120e3a6
+X-MS-TrafficTypeDiagnostic: CY4PR1201MB2551:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: l99dB0Cc6MZXc+9IXm7iDcDwRQWn7fyWP1+8eEuOJILlkkL/Dstv1mluBZ5fEVMa4bYuKCF4ZrIyrN4QtRUZu0iNMv5aFlpu7ld/L4F/D17PIJxUC7okvFdp12DyZzWFyvzahyfHD4PS+XA+zU5HNtEyXPBReLnB7rsJVT09Jg5K4lso2SVC2ZEaDOT6BPXEbKqOd6nfrbEoItZKdsquYC7V8PRnlvpEBvsdpzYJOMblS6A0R8QmhehjJpxhwcoxIc8/sPbWe0Qz46ItFZR0OhCxu56Y8HQlnJAOM679y2pIgh3T0bL2JYEgYLkL7SsXKjQUdwmLnt++9G40VsILMkvWlzG9V2zKx9sCKXYLj2lGVWeAusB23jMwh6KMrvka9sXYPGH6uPWI0hmcm00VQ3/03h/JDboi04l9wOLLGT/uaJFwrWiVkElLHhczqwSzX4kJB0yTh1CyI3Q6SWV7mM1dTcpYu3h6z02Fko0bkZyvvKtVckE7R0hL8DTkFQNKdWR6EotPZxC5dURj5FBSq0U9tNIc2FoDkU8OeuiqBGfbMISuC1zOGS8bLi8ulRYNfHeOoPOodqwknlHyS1eurYv69vkTJwtmPYb0hFZfdb4kxHDjMW4a/wimLLT78PP7wZQzG9KMtpN3lqKBxCQfnn5gfnKLG+NXuH9+GZOiRzhRBJeN9EuqTAQXVNvKZrrpoMgJmcbr52pee5AW70FZPLeNY50Ya5aCYL/tpTmXAkUQg5WxakhXrZ4tCD7qqGsXh1SwFrBG3F7bZBkItGsHfE28g1W+eGOdJsNBhIG2ApGSBn+MYA4jQeOLiJMgQxzWFt+9tpM5ntE3iy2E95xxUeQNKWtiOFtq8yWzgl76D4b1qALvHaWtLK0L7xLaOHrKPSvuGsFRBuyYx8tzH4umqWLHVQHwf71denGKmtfCnSrAj4wXWHHrxwWdGZbwUiRL
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(136003)(376002)(396003)(46966006)(36840700001)(40470700004)(70586007)(478600001)(2906002)(8676002)(5660300002)(82740400003)(4326008)(15650500001)(70206006)(55016003)(86362001)(356005)(40480700001)(7406005)(81166007)(966005)(7416002)(54906003)(41300700001)(426003)(82310400005)(336012)(40460700003)(8936002)(33716001)(6916009)(316002)(186003)(83380400001)(9686003)(26005)(36860700001)(47076005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 20:31:51.0686
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b5bf56d-ad64-4dac-e8d9-08da6120e3a6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB2551
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Considering the current adoption of the KUnit framework, convert the
-DRM rect selftest to the KUnit API.
+On Fri, Jul 08, 2022 at 04:30:32PM -0400, Eric Farman wrote:
+> External email: Use caution opening links or attachments
+> 
+> 
+> On Tue, 2022-07-05 at 23:27 -0700, Nicolin Chen wrote:
+> > This is a preparatory series for IOMMUFD v2 patches. It prepares for
+> > replacing vfio_iommu_type1 implementations of vfio_pin/unpin_pages()
+> > with IOMMUFD version.
+> >
+> > There's a gap between these two versions: the vfio_iommu_type1
+> > version
+> > inputs a non-contiguous PFN list and outputs another PFN list for the
+> > pinned physical page list, while the IOMMUFD version only supports a
+> > contiguous address input by accepting the starting IO virtual address
+> > of a set of pages to pin and by outputting to a physical page list.
+> >
+> > The nature of existing callers mostly aligns with the IOMMUFD
+> > version,
+> > except s390's vfio_ccw_cp code where some additional change is needed
+> > along with this series. Overall, updating to "iova" and "phys_page"
+> > does improve the caller side to some extent.
+> >
+> > Also fix a misuse of physical address and virtual address in the
+> > s390's
+> > crypto code. And update the input naming at the adjacent
+> > vfio_dma_rw().
+> >
+> > This is on github:
+> > https://github.com/nicolinc/iommufd/commits/vfio_pin_pages
+> >
+> > Request for testing: I only did build for s390 and i915 code, so it'd
+> > be nice to have people who have environment to run sanity
+> > accordingly.
+> 
+> Tested-by: Eric Farman <farman@linux.ibm.com>   # s390
 
-Co-developed-by: Carlos Veras <carlos.craveiro@usp.br>
-Signed-off-by: Carlos Veras <carlos.craveiro@usp.br>
-Co-developed-by: Matheus Vieira <matheus.vieira.g@usp.br>
-Signed-off-by: Matheus Vieira <matheus.vieira.g@usp.br>
-Tested-by: David Gow <davidgow@google.com>
-Acked-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Signed-off-by: Maíra Canal <maira.canal@usp.br>
----
- drivers/gpu/drm/selftests/Makefile            |   2 +-
- .../gpu/drm/selftests/drm_modeset_selftests.h |   4 -
- .../drm/selftests/test-drm_modeset_common.h   |   4 -
- drivers/gpu/drm/selftests/test-drm_rect.c     | 223 ------------------
- drivers/gpu/drm/tests/Makefile                |   2 +-
- drivers/gpu/drm/tests/drm_rect_test.c         | 214 +++++++++++++++++
- 6 files changed, 216 insertions(+), 233 deletions(-)
- delete mode 100644 drivers/gpu/drm/selftests/test-drm_rect.c
- create mode 100644 drivers/gpu/drm/tests/drm_rect_test.c
-
-diff --git a/drivers/gpu/drm/selftests/Makefile b/drivers/gpu/drm/selftests/Makefile
-index 8633bb9ea717..8a794914e328 100644
---- a/drivers/gpu/drm/selftests/Makefile
-+++ b/drivers/gpu/drm/selftests/Makefile
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- test-drm_modeset-y := test-drm_modeset_common.o test-drm_plane_helper.o \
-                       test-drm_format.o test-drm_framebuffer.o \
--		      test-drm_dp_mst_helper.o test-drm_rect.o
-+		      test-drm_dp_mst_helper.o
- 
- obj-$(CONFIG_DRM_DEBUG_SELFTEST) += test-drm_mm.o test-drm_modeset.o \
- 				    test-drm_buddy.o
-diff --git a/drivers/gpu/drm/selftests/drm_modeset_selftests.h b/drivers/gpu/drm/selftests/drm_modeset_selftests.h
-index 4787b3b70709..a3ca90307364 100644
---- a/drivers/gpu/drm/selftests/drm_modeset_selftests.h
-+++ b/drivers/gpu/drm/selftests/drm_modeset_selftests.h
-@@ -6,10 +6,6 @@
-  *
-  * Tests are executed in order by igt/drm_selftests_helper
-  */
--selftest(drm_rect_clip_scaled_div_by_zero, igt_drm_rect_clip_scaled_div_by_zero)
--selftest(drm_rect_clip_scaled_not_clipped, igt_drm_rect_clip_scaled_not_clipped)
--selftest(drm_rect_clip_scaled_clipped, igt_drm_rect_clip_scaled_clipped)
--selftest(drm_rect_clip_scaled_signed_vs_unsigned, igt_drm_rect_clip_scaled_signed_vs_unsigned)
- selftest(check_plane_state, igt_check_plane_state)
- selftest(check_drm_format_block_width, igt_check_drm_format_block_width)
- selftest(check_drm_format_block_height, igt_check_drm_format_block_height)
-diff --git a/drivers/gpu/drm/selftests/test-drm_modeset_common.h b/drivers/gpu/drm/selftests/test-drm_modeset_common.h
-index c29354e59cec..42a10d7da51c 100644
---- a/drivers/gpu/drm/selftests/test-drm_modeset_common.h
-+++ b/drivers/gpu/drm/selftests/test-drm_modeset_common.h
-@@ -16,10 +16,6 @@
- 
- #define FAIL_ON(x) FAIL((x), "%s", "FAIL_ON(" __stringify(x) ")\n")
- 
--int igt_drm_rect_clip_scaled_div_by_zero(void *ignored);
--int igt_drm_rect_clip_scaled_not_clipped(void *ignored);
--int igt_drm_rect_clip_scaled_clipped(void *ignored);
--int igt_drm_rect_clip_scaled_signed_vs_unsigned(void *ignored);
- int igt_check_plane_state(void *ignored);
- int igt_check_drm_format_block_width(void *ignored);
- int igt_check_drm_format_block_height(void *ignored);
-diff --git a/drivers/gpu/drm/selftests/test-drm_rect.c b/drivers/gpu/drm/selftests/test-drm_rect.c
-deleted file mode 100644
-index 3a5ff38321f4..000000000000
---- a/drivers/gpu/drm/selftests/test-drm_rect.c
-+++ /dev/null
-@@ -1,223 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * Test cases for the drm_rect functions
-- */
--
--#define pr_fmt(fmt) "drm_rect: " fmt
--
--#include <linux/limits.h>
--
--#include <drm/drm_rect.h>
--
--#include "test-drm_modeset_common.h"
--
--int igt_drm_rect_clip_scaled_div_by_zero(void *ignored)
--{
--	struct drm_rect src, dst, clip;
--	bool visible;
--
--	/*
--	 * Make sure we don't divide by zero when dst
--	 * width/height is zero and dst and clip do not intersect.
--	 */
--	drm_rect_init(&src, 0, 0, 0, 0);
--	drm_rect_init(&dst, 0, 0, 0, 0);
--	drm_rect_init(&clip, 1, 1, 1, 1);
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--	FAIL(visible, "Destination not be visible\n");
--	FAIL(drm_rect_visible(&src), "Source should not be visible\n");
--
--	drm_rect_init(&src, 0, 0, 0, 0);
--	drm_rect_init(&dst, 3, 3, 0, 0);
--	drm_rect_init(&clip, 1, 1, 1, 1);
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--	FAIL(visible, "Destination not be visible\n");
--	FAIL(drm_rect_visible(&src), "Source should not be visible\n");
--
--	return 0;
--}
--
--int igt_drm_rect_clip_scaled_not_clipped(void *ignored)
--{
--	struct drm_rect src, dst, clip;
--	bool visible;
--
--	/* 1:1 scaling */
--	drm_rect_init(&src, 0, 0, 1 << 16, 1 << 16);
--	drm_rect_init(&dst, 0, 0, 1, 1);
--	drm_rect_init(&clip, 0, 0, 1, 1);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 0 || src.x2 != 1 << 16 ||
--	     src.y1 != 0 || src.y2 != 1 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 0 || dst.x2 != 1 ||
--	     dst.y1 != 0 || dst.y2 != 1,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	/* 2:1 scaling */
--	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
--	drm_rect_init(&dst, 0, 0, 1, 1);
--	drm_rect_init(&clip, 0, 0, 1, 1);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 0 || src.x2 != 2 << 16 ||
--	     src.y1 != 0 || src.y2 != 2 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 0 || dst.x2 != 1 ||
--	     dst.y1 != 0 || dst.y2 != 1,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	/* 1:2 scaling */
--	drm_rect_init(&src, 0, 0, 1 << 16, 1 << 16);
--	drm_rect_init(&dst, 0, 0, 2, 2);
--	drm_rect_init(&clip, 0, 0, 2, 2);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 0 || src.x2 != 1 << 16 ||
--	     src.y1 != 0 || src.y2 != 1 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 0 || dst.x2 != 2 ||
--	     dst.y1 != 0 || dst.y2 != 2,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	return 0;
--}
--
--int igt_drm_rect_clip_scaled_clipped(void *ignored)
--{
--	struct drm_rect src, dst, clip;
--	bool visible;
--
--	/* 1:1 scaling top/left clip */
--	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
--	drm_rect_init(&dst, 0, 0, 2, 2);
--	drm_rect_init(&clip, 0, 0, 1, 1);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 0 || src.x2 != 1 << 16 ||
--	     src.y1 != 0 || src.y2 != 1 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 0 || dst.x2 != 1 ||
--	     dst.y1 != 0 || dst.y2 != 1,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	/* 1:1 scaling bottom/right clip */
--	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
--	drm_rect_init(&dst, 0, 0, 2, 2);
--	drm_rect_init(&clip, 1, 1, 1, 1);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 1 << 16 || src.x2 != 2 << 16 ||
--	     src.y1 != 1 << 16 || src.y2 != 2 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 1 || dst.x2 != 2 ||
--	     dst.y1 != 1 || dst.y2 != 2,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	/* 2:1 scaling top/left clip */
--	drm_rect_init(&src, 0, 0, 4 << 16, 4 << 16);
--	drm_rect_init(&dst, 0, 0, 2, 2);
--	drm_rect_init(&clip, 0, 0, 1, 1);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 0 || src.x2 != 2 << 16 ||
--	     src.y1 != 0 || src.y2 != 2 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 0 || dst.x2 != 1 ||
--	     dst.y1 != 0 || dst.y2 != 1,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	/* 2:1 scaling bottom/right clip */
--	drm_rect_init(&src, 0, 0, 4 << 16, 4 << 16);
--	drm_rect_init(&dst, 0, 0, 2, 2);
--	drm_rect_init(&clip, 1, 1, 1, 1);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 2 << 16 || src.x2 != 4 << 16 ||
--	     src.y1 != 2 << 16 || src.y2 != 4 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 1 || dst.x2 != 2 ||
--	     dst.y1 != 1 || dst.y2 != 2,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	/* 1:2 scaling top/left clip */
--	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
--	drm_rect_init(&dst, 0, 0, 4, 4);
--	drm_rect_init(&clip, 0, 0, 2, 2);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 0 || src.x2 != 1 << 16 ||
--	     src.y1 != 0 || src.y2 != 1 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 0 || dst.x2 != 2 ||
--	     dst.y1 != 0 || dst.y2 != 2,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	/* 1:2 scaling bottom/right clip */
--	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
--	drm_rect_init(&dst, 0, 0, 4, 4);
--	drm_rect_init(&clip, 2, 2, 2, 2);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(src.x1 != 1 << 16 || src.x2 != 2 << 16 ||
--	     src.y1 != 1 << 16 || src.y2 != 2 << 16,
--	     "Source badly clipped\n");
--	FAIL(dst.x1 != 2 || dst.x2 != 4 ||
--	     dst.y1 != 2 || dst.y2 != 4,
--	     "Destination badly clipped\n");
--	FAIL(!visible, "Destination should be visible\n");
--	FAIL(!drm_rect_visible(&src), "Source should be visible\n");
--
--	return 0;
--}
--
--int igt_drm_rect_clip_scaled_signed_vs_unsigned(void *ignored)
--{
--	struct drm_rect src, dst, clip;
--	bool visible;
--
--	/*
--	 * 'clip.x2 - dst.x1 >= dst width' could result a negative
--	 * src rectangle width which is no longer expected by the
--	 * code as it's using unsigned types. This could lead to
--	 * the clipped source rectangle appering visible when it
--	 * should have been fully clipped. Make sure both rectangles
--	 * end up invisible.
--	 */
--	drm_rect_init(&src, 0, 0, INT_MAX, INT_MAX);
--	drm_rect_init(&dst, 0, 0, 2, 2);
--	drm_rect_init(&clip, 3, 3, 1, 1);
--
--	visible = drm_rect_clip_scaled(&src, &dst, &clip);
--
--	FAIL(visible, "Destination should not be visible\n");
--	FAIL(drm_rect_visible(&src), "Source should not be visible\n");
--
--	return 0;
--}
-diff --git a/drivers/gpu/drm/tests/Makefile b/drivers/gpu/drm/tests/Makefile
-index b3e73d674c67..f2eced30a955 100644
---- a/drivers/gpu/drm/tests/Makefile
-+++ b/drivers/gpu/drm/tests/Makefile
-@@ -1,4 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- obj-$(CONFIG_DRM_KUNIT_TEST) += drm_format_helper_test.o drm_damage_helper_test.o \
--	drm_cmdline_parser_test.o
-+	drm_cmdline_parser_test.o drm_rect_test.o
-diff --git a/drivers/gpu/drm/tests/drm_rect_test.c b/drivers/gpu/drm/tests/drm_rect_test.c
-new file mode 100644
-index 000000000000..c1dbefd49a4c
---- /dev/null
-+++ b/drivers/gpu/drm/tests/drm_rect_test.c
-@@ -0,0 +1,214 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Test cases for the drm_rect functions
-+ *
-+ * Copyright (c) 2022 Maíra Canal <mairacanal@riseup.net>
-+ */
-+
-+#include <kunit/test.h>
-+
-+#include <drm/drm_rect.h>
-+
-+static void igt_drm_rect_clip_scaled_div_by_zero(struct kunit *test)
-+{
-+	struct drm_rect src, dst, clip;
-+	bool visible;
-+
-+	/*
-+	 * Make sure we don't divide by zero when dst
-+	 * width/height is zero and dst and clip do not intersect.
-+	 */
-+	drm_rect_init(&src, 0, 0, 0, 0);
-+	drm_rect_init(&dst, 0, 0, 0, 0);
-+	drm_rect_init(&clip, 1, 1, 1, 1);
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, visible, "Destination not be visible\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, drm_rect_visible(&src), "Source should not be visible\n");
-+
-+	drm_rect_init(&src, 0, 0, 0, 0);
-+	drm_rect_init(&dst, 3, 3, 0, 0);
-+	drm_rect_init(&clip, 1, 1, 1, 1);
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, visible, "Destination not be visible\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, drm_rect_visible(&src), "Source should not be visible\n");
-+}
-+
-+static void igt_drm_rect_clip_scaled_not_clipped(struct kunit *test)
-+{
-+	struct drm_rect src, dst, clip;
-+	bool visible;
-+
-+	/* 1:1 scaling */
-+	drm_rect_init(&src, 0, 0, 1 << 16, 1 << 16);
-+	drm_rect_init(&dst, 0, 0, 1, 1);
-+	drm_rect_init(&clip, 0, 0, 1, 1);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 0 || src.x2 != 1 << 16 ||
-+			       src.y1 != 0 || src.y2 != 1 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 0 || dst.x2 != 1 ||
-+			       dst.y1 != 0 || dst.y2 != 1, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+
-+	/* 2:1 scaling */
-+	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
-+	drm_rect_init(&dst, 0, 0, 1, 1);
-+	drm_rect_init(&clip, 0, 0, 1, 1);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 0 || src.x2 != 2 << 16 ||
-+			       src.y1 != 0 || src.y2 != 2 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 0 || dst.x2 != 1 ||
-+			       dst.y1 != 0 || dst.y2 != 1, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+
-+	/* 1:2 scaling */
-+	drm_rect_init(&src, 0, 0, 1 << 16, 1 << 16);
-+	drm_rect_init(&dst, 0, 0, 2, 2);
-+	drm_rect_init(&clip, 0, 0, 2, 2);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 0 || src.x2 != 1 << 16 ||
-+			       src.y1 != 0 || src.y2 != 1 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 0 || dst.x2 != 2 ||
-+			       dst.y1 != 0 || dst.y2 != 2, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+}
-+
-+static void igt_drm_rect_clip_scaled_clipped(struct kunit *test)
-+{
-+	struct drm_rect src, dst, clip;
-+	bool visible;
-+
-+	/* 1:1 scaling top/left clip */
-+	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
-+	drm_rect_init(&dst, 0, 0, 2, 2);
-+	drm_rect_init(&clip, 0, 0, 1, 1);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 0 || src.x2 != 1 << 16 ||
-+			       src.y1 != 0 || src.y2 != 1 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 0 || dst.x2 != 1 ||
-+			       dst.y1 != 0 || dst.y2 != 1, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+
-+	/* 1:1 scaling bottom/right clip */
-+	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
-+	drm_rect_init(&dst, 0, 0, 2, 2);
-+	drm_rect_init(&clip, 1, 1, 1, 1);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 1 << 16 || src.x2 != 2 << 16 ||
-+			       src.y1 != 1 << 16 || src.y2 != 2 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 1 || dst.x2 != 2 || dst.y1 != 1 ||
-+			       dst.y2 != 2, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+
-+	/* 2:1 scaling top/left clip */
-+	drm_rect_init(&src, 0, 0, 4 << 16, 4 << 16);
-+	drm_rect_init(&dst, 0, 0, 2, 2);
-+	drm_rect_init(&clip, 0, 0, 1, 1);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 0 || src.x2 != 2 << 16 ||
-+			       src.y1 != 0 || src.y2 != 2 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 0 || dst.x2 != 1 || dst.y1 != 0 ||
-+			       dst.y2 != 1, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+
-+	/* 2:1 scaling bottom/right clip */
-+	drm_rect_init(&src, 0, 0, 4 << 16, 4 << 16);
-+	drm_rect_init(&dst, 0, 0, 2, 2);
-+	drm_rect_init(&clip, 1, 1, 1, 1);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 2 << 16 || src.x2 != 4 << 16 ||
-+			       src.y1 != 2 << 16 || src.y2 != 4 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 1 || dst.x2 != 2 || dst.y1 != 1 ||
-+			       dst.y2 != 2, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+
-+	/* 1:2 scaling top/left clip */
-+	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
-+	drm_rect_init(&dst, 0, 0, 4, 4);
-+	drm_rect_init(&clip, 0, 0, 2, 2);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 0 || src.x2 != 1 << 16 ||
-+			       src.y1 != 0 || src.y2 != 1 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 0 || dst.x2 != 2 || dst.y1 != 0 ||
-+			       dst.y2 != 2, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+
-+	/* 1:2 scaling bottom/right clip */
-+	drm_rect_init(&src, 0, 0, 2 << 16, 2 << 16);
-+	drm_rect_init(&dst, 0, 0, 4, 4);
-+	drm_rect_init(&clip, 2, 2, 2, 2);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, src.x1 != 1 << 16 || src.x2 != 2 << 16 ||
-+			       src.y1 != 1 << 16 || src.y2 != 2 << 16, "Source badly clipped\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, dst.x1 != 2 || dst.x2 != 4 || dst.y1 != 2 ||
-+			       dst.y2 != 4, "Destination badly clipped\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, visible, "Destination should be visible\n");
-+	KUNIT_EXPECT_TRUE_MSG(test, drm_rect_visible(&src), "Source should be visible\n");
-+}
-+
-+static void igt_drm_rect_clip_scaled_signed_vs_unsigned(struct kunit *test)
-+{
-+	struct drm_rect src, dst, clip;
-+	bool visible;
-+
-+	/*
-+	 * 'clip.x2 - dst.x1 >= dst width' could result a negative
-+	 * src rectangle width which is no longer expected by the
-+	 * code as it's using unsigned types. This could lead to
-+	 * the clipped source rectangle appering visible when it
-+	 * should have been fully clipped. Make sure both rectangles
-+	 * end up invisible.
-+	 */
-+	drm_rect_init(&src, 0, 0, INT_MAX, INT_MAX);
-+	drm_rect_init(&dst, 0, 0, 2, 2);
-+	drm_rect_init(&clip, 3, 3, 1, 1);
-+
-+	visible = drm_rect_clip_scaled(&src, &dst, &clip);
-+
-+	KUNIT_EXPECT_FALSE_MSG(test, visible, "Destination should not be visible\n");
-+	KUNIT_EXPECT_FALSE_MSG(test, drm_rect_visible(&src), "Source should not be visible\n");
-+}
-+
-+static struct kunit_case drm_rect_tests[] = {
-+	KUNIT_CASE(igt_drm_rect_clip_scaled_div_by_zero),
-+	KUNIT_CASE(igt_drm_rect_clip_scaled_not_clipped),
-+	KUNIT_CASE(igt_drm_rect_clip_scaled_clipped),
-+	KUNIT_CASE(igt_drm_rect_clip_scaled_signed_vs_unsigned),
-+	{ }
-+};
-+
-+static struct kunit_suite drm_rect_test_suite = {
-+	.name = "drm_rect",
-+	.test_cases = drm_rect_tests,
-+};
-+
-+kunit_test_suite(drm_rect_test_suite);
-+
-+MODULE_LICENSE("GPL");
--- 
-2.35.3
-
+Thank you for the review and test!
