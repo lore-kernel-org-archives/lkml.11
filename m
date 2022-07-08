@@ -2,73 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC83AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 05:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E33C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 05:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237112AbiGHFPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 01:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41460 "EHLO
+        id S237129AbiGHFQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 01:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiGHFPO (ORCPT
+        with ESMTP id S230147AbiGHFQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 01:15:14 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D2C076973;
-        Thu,  7 Jul 2022 22:15:12 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1o9gKC-00FpLV-D8; Fri, 08 Jul 2022 15:14:45 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 08 Jul 2022 13:14:44 +0800
-Date:   Fri, 8 Jul 2022 13:14:44 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Conor.Dooley@microchip.com
-Cc:     palmer@rivosinc.com, palmer@dabbelt.com, arnd@arndb.de,
-        Cyril.Jean@microchip.com, Daire.McNamara@microchip.com,
-        Lewis.Hanly@microchip.com, aou@eecs.berkeley.edu,
-        gregkh@linuxfoundation.org, kw@linux.com,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org,
-        lorenzo.pieralisi@arm.com, mturquette@baylibre.com,
-        paul.walmsley@sifive.com, robh@kernel.org, bhelgaas@google.com,
-        sboyd@kernel.org, wsa@kernel.org
-Subject: Re: [RESEND PATCH v4] MAINTAINERS: add polarfire rng, pci and clock
- drivers
-Message-ID: <Yse9RGTfRgqzzknt@gondor.apana.org.au>
-References: <20220622225822.2166305-1-mail@conchuod.ie>
- <a39bad24-d2bb-ef3e-d57a-2ac4fa1156ef@microchip.com>
+        Fri, 8 Jul 2022 01:16:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4687676973
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 22:16:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 018D7B824AB
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:16:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A1DC341C0;
+        Fri,  8 Jul 2022 05:16:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657257378;
+        bh=4wYE7v0lAhM5Calh+s5prT4A+3nwzjmMFNoQEcRsbG0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YsrHVfbHK5/zojMD3bFusOTRWdnu1UlFGWIdjtdtmzu10DnF/Pi5B4S2737FkTlTA
+         cxSFPavn11Rke/IEjLJsqiep/kO5RRvSDJSkT+OTPoTXyJMmmVC5Abd7IzJ9Fd03Gs
+         746teNFDCCR/0OEhhg6ZStW/RTFszZJs7VxW7aVPAyxAy55n+HlkgW0Cj2Mkfmvdqn
+         pFq+D+bNarwZ4Vd6XiN9XLnMoZoojo1EMU5IXrG79gBiwjcjyzSQFx1nH35Pnhl7JV
+         KWpAOsftWLG4+czWL3UeN5nIaoRWPG7qh3nxshRxGO3h62zl0sVQknoai9nzpusDOv
+         qo+SfnOnpFgng==
+Date:   Fri, 8 Jul 2022 10:46:15 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [BUG] USB broken on rk3568 based R2Pro
+Message-ID: <Yse9nz9jjRoiPq6K@matsya>
+References: <trinity-54ed588d-4b2c-4177-83b0-4eda8ff16a42-1657210235522@3c-app-gmx-bap68>
+ <trinity-ec3b4258-cb12-42c2-9058-362260a275d2-1657216287085@3c-app-gmx-bap68>
+ <CAMdYzYrs0oJXVcViOmJk4E7PSTeP5TYs0O_ePHmrcAiKtOAWXQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a39bad24-d2bb-ef3e-d57a-2ac4fa1156ef@microchip.com>
+In-Reply-To: <CAMdYzYrs0oJXVcViOmJk4E7PSTeP5TYs0O_ePHmrcAiKtOAWXQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 01:30:27PM +0000, Conor.Dooley@microchip.com wrote:
-> On 22/06/2022 23:58, Conor Dooley wrote:
-> > From: Conor Dooley <conor.dooley@microchip.com>
-> > 
-> > Hardware random, PCI and clock drivers for the PolarFire SoC have been
-> > upstreamed but are not covered by the MAINTAINERS entry, so add them.
-> > Daire is the author of the clock & PCI drivers, so add him as a
-> > maintainer in place of Lewis.
-> > 
-> > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > Acked-by: Stephen Boyd <sboyd@kernel.org>
-> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+On 07-07-22, 15:41, Peter Geis wrote:
+> On Thu, Jul 7, 2022 at 1:51 PM Frank Wunderlich <frank-w@public-files.de> wrote:
+> >
+> > Hi,
+> >
+> > traced it down with manual reverts to this one:
+> >
+> > commit 6a98df08ccd55e87947d253b19925691763e755c
+> >     phy: rockchip-inno-usb2: Fix muxed interrupt support
+> >
+> > luckily i can revert only this and now upper usb-port works again
+> >
+> > @samuel: have you an idea how to fix your problem without breaking my board? :)
+> >
+> > @greg/Vinod: maybe we can add a revert of this in mainline till issue is resolved?
+
+Lets give it a few days if we can find a fix, if not we can revert
+
+> >
+> > regards Frank
 > 
-> Arnd, Palmer:
-> Does the SoC tree make more sense for this patch?
-> I am missing an ack from Herbert (but I don't think that's blocking
-> for a MAINTAINERS update to my own entry?).
+> I don't know what you're running, but with the standard arm64
+> defconfig w/ all rockchip stuff built in, I have no issues here on
+> 5.19.
 
-I'm not sure why an ack is needed from me since the entry doesn't
-intersect with crypto at all.  But FWIW
+Please share the config and other details on what your running so that
+Peter can repro this...
 
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+> Note, the following changes are necessary to the 5.19 dts here:
+> Remove the extcon from usb_host0_xhci, as the production model doesn't
+> have automatic switching capabilities. The ID pin was removed in favor
+> of the usb debug function which also doesn't work.
+> Add dr_mode = "host" to the same node, for the same reason.
+> 
+> >
+> >
+> > > Von: "Frank Wunderlich" <frank-w@public-files.de>
+> > > i noticed that upper usb-Port (otg) is broken on my Bananapi R2Pro with 5.19-rc1, works with 5.18.0
+> > >
+> > > this port is a usb3 (xhci) port which includes an usb2-phy and should support otg, but i still want
+> > > to use it in host-only mode (USB-A socket).
+> > >
+> > > already tried setting dr_mode in dts back to "host" as this was changed in rk356x.dtsi by this commit:
+> > >
+> > > bc405bb3eeee 2022-04-25 arm64: dts: rockchip: enable otg/drd operation of usb_host0_xhci in rk356x
+> > >
+> > > i see no error in dmesg and usb-controllers seem to be initialized completely (visible in lsusb).
+> > >
+> > > r2pro has ID-Pin not connected, so i tried also peters Patch without success :(
+> >
 
-Cheers,
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+~Vinod
