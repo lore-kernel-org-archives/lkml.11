@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3576CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0E8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238544AbiGHOnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33392 "EHLO
+        id S238553AbiGHOn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238461AbiGHOnF (ORCPT
+        with ESMTP id S238434AbiGHOnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:43:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9139C5C952
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:43:00 -0700 (PDT)
+        Fri, 8 Jul 2022 10:43:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46B2E5721C
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:43:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657291379;
+        s=mimecast20190719; t=1657291385;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=T9ySlRX5Xpz4wzTsWodqgaUDYgCvJF8U7knTKwuoA8Y=;
-        b=UYbXB9mUttNHx1f5OnowEsubpbfcrqeFgOA1h24I8OkavB8bgvwc55Wm8+BKx8gtHCr+mC
-        Qlu7MmrvI/2dZKPHhk3tOQhjYuoQP61dvofSq9RxiRTDRHMse9ArCixkHTnkBCiP2ICDeA
-        3auqAgGxh8/Xu9P/Dwn6QS6gsd+6TYc=
+        bh=cW6qigX7uiq2lChxRhneqUp1AB1D14Bb3dPQwOMDnZE=;
+        b=HCMK7S8oUp4/3Py3GI+wNndMXTwtGRY57gDRkHNkxPeqtKcjy1lwCEPbtMUN+3C1s4L08k
+        Ij1FqPhInZXwamle62UWBBNKXtxYVDHbapNuUIRlfsQNpRRm1skDvp+sE65LotUQk+QDaH
+        mHiCUWtNitDKU8/Hb/8eT1aTfGyuxu4=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-205-3Uk8GVQNOayXI2BXnX070A-1; Fri, 08 Jul 2022 10:42:51 -0400
-X-MC-Unique: 3Uk8GVQNOayXI2BXnX070A-1
+ us-mta-18-SS81dt9HNvCqwbrxhGOnhQ-1; Fri, 08 Jul 2022 10:42:59 -0400
+X-MC-Unique: SS81dt9HNvCqwbrxhGOnhQ-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 626BE294EDFC;
-        Fri,  8 Jul 2022 14:42:50 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A351D29AA3B1;
+        Fri,  8 Jul 2022 14:42:58 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.193.250])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ABD9A492C3B;
-        Fri,  8 Jul 2022 14:42:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D897A492C3B;
+        Fri,  8 Jul 2022 14:42:55 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
@@ -46,9 +46,9 @@ Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 10/25] KVM: selftests: Enable TSC scaling in evmcs selftest
-Date:   Fri,  8 Jul 2022 16:42:08 +0200
-Message-Id: <20220708144223.610080-11-vkuznets@redhat.com>
+Subject: [PATCH v3 13/25] KVM: VMX: Check CPU_BASED_{INTR,NMI}_WINDOW_EXITING in setup_vmcs_config()
+Date:   Fri,  8 Jul 2022 16:42:11 +0200
+Message-Id: <20220708144223.610080-14-vkuznets@redhat.com>
 In-Reply-To: <20220708144223.610080-1-vkuznets@redhat.com>
 References: <20220708144223.610080-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -59,92 +59,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The updated Enlightened VMCS v1 definition enables TSC scaling, test
-that SECONDARY_EXEC_TSC_SCALING can now be enabled.
+CPU_BASED_{INTR,NMI}_WINDOW_EXITING controls are toggled dynamically by
+vmx_enable_{irq,nmi}_window, handle_interrupt_window(), handle_nmi_window()
+but setup_vmcs_config() doesn't check their existence. Add the check and
+filter the controls out in vmx_exec_control().
+
+Note: KVM explicitly supports CPUs without VIRTUAL_NMIS and all these CPUs
+are supposedly lacking NMI_WINDOW_EXITING too. Adjust cpu_has_virtual_nmis()
+accordingly.
+
+No functional change intended.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- .../testing/selftests/kvm/x86_64/evmcs_test.c | 31 +++++++++++++++++--
- 1 file changed, 29 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/capabilities.h | 3 ++-
+ arch/x86/kvm/vmx/vmx.c          | 8 +++++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-index 8dda527cc080..80135b98dc3b 100644
---- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-@@ -18,6 +18,9 @@
+diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
+index 069d8d298e1d..07e7492fe72a 100644
+--- a/arch/x86/kvm/vmx/capabilities.h
++++ b/arch/x86/kvm/vmx/capabilities.h
+@@ -82,7 +82,8 @@ static inline bool cpu_has_vmx_basic_inout(void)
  
- #include "vmx.h"
- 
-+/* Test flags */
-+#define HOST_HAS_TSC_SCALING BIT(0)
-+
- static int ud_count;
- 
- static void guest_ud_handler(struct ex_regs *regs)
-@@ -64,11 +67,14 @@ void l2_guest_code(void)
- 	vmcall();
- 	rdmsr_gs_base(); /* intercepted */
- 
-+	/* TSC scaling */
-+	vmcall();
-+
- 	/* Done, exit to L1 and never come back.  */
- 	vmcall();
+ static inline bool cpu_has_virtual_nmis(void)
+ {
+-	return vmcs_config.pin_based_exec_ctrl & PIN_BASED_VIRTUAL_NMIS;
++	return vmcs_config.pin_based_exec_ctrl & PIN_BASED_VIRTUAL_NMIS &&
++		vmcs_config.cpu_based_exec_ctrl & CPU_BASED_NMI_WINDOW_EXITING;
  }
  
--void guest_code(struct vmx_pages *vmx_pages)
-+void guest_code(struct vmx_pages *vmx_pages, u64 test_flags)
+ static inline bool cpu_has_vmx_preemption_timer(void)
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 1aaec4d19e1b..ce54f13d8da1 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -2487,10 +2487,12 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+ 	      CPU_BASED_MWAIT_EXITING |
+ 	      CPU_BASED_MONITOR_EXITING |
+ 	      CPU_BASED_INVLPG_EXITING |
+-	      CPU_BASED_RDPMC_EXITING;
++	      CPU_BASED_RDPMC_EXITING |
++	      CPU_BASED_INTR_WINDOW_EXITING;
+ 
+ 	opt = CPU_BASED_TPR_SHADOW |
+ 	      CPU_BASED_USE_MSR_BITMAPS |
++	      CPU_BASED_NMI_WINDOW_EXITING |
+ 	      CPU_BASED_ACTIVATE_SECONDARY_CONTROLS |
+ 	      CPU_BASED_ACTIVATE_TERTIARY_CONTROLS;
+ 	if (adjust_vmx_controls(min, opt, MSR_IA32_VMX_PROCBASED_CTLS,
+@@ -4299,6 +4301,10 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
  {
- #define L2_GUEST_STACK_SIZE 64
- 	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
-@@ -150,6 +156,18 @@ void guest_code(struct vmx_pages *vmx_pages)
- 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
- 	GUEST_SYNC(11);
+ 	u32 exec_control = vmcs_config.cpu_based_exec_ctrl;
  
-+	if (test_flags & HOST_HAS_TSC_SCALING) {
-+		GUEST_ASSERT((rdmsr(MSR_IA32_VMX_PROCBASED_CTLS2) >> 32) &
-+			     SECONDARY_EXEC_TSC_SCALING);
-+		/* Try enabling TSC scaling */
-+		vmwrite(SECONDARY_VM_EXEC_CONTROL, vmreadz(SECONDARY_VM_EXEC_CONTROL) |
-+			SECONDARY_EXEC_TSC_SCALING);
-+		vmwrite(TSC_MULTIPLIER, 1);
-+	}
-+	GUEST_ASSERT(!vmresume());
-+	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
-+	GUEST_SYNC(12);
++	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
++	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
++			  CPU_BASED_NMI_WINDOW_EXITING);
 +
- 	/* Try enlightened vmptrld with an incorrect GPA */
- 	evmcs_vmptrld(0xdeadbeef, vmx_pages->enlightened_vmcs);
- 	GUEST_ASSERT(vmlaunch());
-@@ -204,6 +222,7 @@ int main(int argc, char *argv[])
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	struct ucall uc;
-+	u64 test_flags = 0;
- 	int stage;
+ 	if (vmx->vcpu.arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)
+ 		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
- 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-@@ -212,11 +231,19 @@ int main(int argc, char *argv[])
- 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
- 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS));
- 
-+	if ((kvm_get_feature_msr(MSR_IA32_VMX_PROCBASED_CTLS2) >> 32) &
-+	    SECONDARY_EXEC_TSC_SCALING) {
-+		test_flags |= HOST_HAS_TSC_SCALING;
-+		pr_info("TSC scaling is supported, adding to test\n");
-+	} else {
-+		pr_info("TSC scaling is not supported\n");
-+	}
-+
- 	vcpu_set_hv_cpuid(vcpu);
- 	vcpu_enable_evmcs(vcpu);
- 
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vcpu, 1, vmx_pages_gva);
-+	vcpu_args_set(vcpu, 2, vmx_pages_gva, test_flags);
- 
- 	vm_init_descriptor_tables(vm);
- 	vcpu_init_descriptor_tables(vcpu);
 -- 
 2.35.3
 
