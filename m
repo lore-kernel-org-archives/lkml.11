@@ -2,86 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DABB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 02:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E551C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 02:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237006AbiGHCQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 22:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
+        id S236909AbiGHCSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 22:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236946AbiGHCQN (ORCPT
+        with ESMTP id S236564AbiGHCSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 22:16:13 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37ED73920;
-        Thu,  7 Jul 2022 19:16:12 -0700 (PDT)
-X-UUID: 9f581c1d58584bb59cfb2a4ec83401bc-20220708
+        Thu, 7 Jul 2022 22:18:32 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E445F66;
+        Thu,  7 Jul 2022 19:18:30 -0700 (PDT)
+X-UUID: 6e6480c1268c4f2781acb312581376ea-20220708
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:fabd76fc-30d5-4a60-9fdd-d2df5de58071,OB:10,L
-        OB:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:90
-X-CID-INFO: VERSION:1.1.8,REQID:fabd76fc-30d5-4a60-9fdd-d2df5de58071,OB:10,LOB
-        :0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:90
-X-CID-META: VersionHash:0f94e32,CLOUDID:e86cb963-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:0a08b12eb58e,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+X-CID-O-INFO: VERSION:1.1.8,REQID:4aa5fbc8-1b52-4903-ac3f-b68a2205868f,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:4aa5fbc8-1b52-4903-ac3f-b68a2205868f,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:d87cb963-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:911398058f1c,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
         RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 9f581c1d58584bb59cfb2a4ec83401bc-20220708
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <xiangsheng.hou@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1753973875; Fri, 08 Jul 2022 10:16:07 +0800
+X-UUID: 6e6480c1268c4f2781acb312581376ea-20220708
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <kewei.xu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 590764692; Fri, 08 Jul 2022 10:18:23 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 8 Jul 2022 10:16:05 +0800
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 8 Jul 2022 10:18:22 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Jul 2022 10:16:05 +0800
-From:   Xiangsheng Hou <xiangsheng.hou@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <matthias.bgg@gmail.com>
-CC:     <devicetree@vger.kernel.org>,
+ Transport; Fri, 8 Jul 2022 10:18:21 +0800
+From:   Kewei Xu <kewei.xu@mediatek.com>
+To:     <wsa@the-dreams.de>
+CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <bin.zhang@mediatek.com>,
-        <benliang.zhao@mediatek.com>, <linux-mediatek@lists.infradead.org>,
-        Xiangsheng Hou <xiangsheng.hou@mediatek.com>
-Subject: [PATCH V3 2/2] dt-bindings: mediatek: Add axi clock in mt8173 dts example
-Date:   Fri, 8 Jul 2022 10:15:48 +0800
-Message-ID: <20220708021548.21453-3-xiangsheng.hou@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220708021548.21453-1-xiangsheng.hou@mediatek.com>
-References: <20220708021548.21453-1-xiangsheng.hou@mediatek.com>
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
+        <qii.wang@mediatek.com>, <liguo.zhang@mediatek.com>,
+        <caiyu.chen@mediatek.com>, <housong.zhang@mediatek.com>,
+        <yuhan.wei@mediatek.com>, <kewei.xu@mediatek.com>,
+        <david-yh.chiu@mediatek.com>, <liju-clr.chen@mediatek.com>
+Subject: [PATCH 1/2] dt-bindings: i2c: update bindings for MT8188 SoC
+Date:   Fri, 8 Jul 2022 10:18:17 +0800
+Message-ID: <20220708021818.21400-2-kewei.xu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220708021818.21400-1-kewei.xu@mediatek.com>
+References: <20220708021818.21400-1-kewei.xu@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain
 X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For mt8173, it is needed to add the axi clock for dma mode.
+Add a DT binding documentation for the MT8188 soc.
 
-Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
+Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
 ---
- .../devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml         | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
-index 41e60fe4b09f..413b907eecf5 100644
---- a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
-+++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
-@@ -82,8 +82,8 @@ examples:
-         compatible = "mediatek,mt8173-nor";
-         reg = <0 0x1100d000 0 0xe0>;
-         interrupts = <1>;
--        clocks = <&pericfg CLK_PERI_SPI>, <&topckgen CLK_TOP_SPINFI_IFR_SEL>;
--        clock-names = "spi", "sf";
-+        clocks = <&pericfg CLK_PERI_SPI>, <&topckgen CLK_TOP_SPINFI_IFR_SEL>, <&pericfg CLK_PERI_NFI>;
-+        clock-names = "spi", "sf", "axi";
-         #address-cells = <1>;
-         #size-cells = <0>;
- 
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
+index 16a1a3118204..4e730fb7be56 100644
+--- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
++++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
+@@ -27,6 +27,7 @@ properties:
+       - const: mediatek,mt8173-i2c
+       - const: mediatek,mt8183-i2c
+       - const: mediatek,mt8186-i2c
++      - const: mediatek,mt8188-i2c
+       - const: mediatek,mt8192-i2c
+       - items:
+           - enum:
 -- 
-2.25.1
+2.18.0
 
