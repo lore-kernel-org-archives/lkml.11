@@ -2,146 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E53C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03832C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 18:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238829AbiGHR7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 13:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
+        id S238799AbiGHSAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 14:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238598AbiGHR7N (ORCPT
+        with ESMTP id S238493AbiGHSAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 13:59:13 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF181EC5E
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 10:59:12 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id s188so27649345oib.6
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 10:59:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to;
-        bh=YHV2Cc5LaBeGv/AExh1dctdQCQcN3cDdvTIsITOZX7o=;
-        b=SldvymO6Yx3hvrPoQMk0aRKOPOW/TDdG0xvoqwq2gjl3jQDewEQNxT7IZ2n4Y6Gu4l
-         1xcyHRkCgBMAuyc9PpJUug4dwDal14CECAA7tgXkyHs4GcEPkOxnJ2O2ak6sdWhta0wq
-         q6WxCmt02sZKcOWwAvCuLlMjiru2aylxIdRlo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to;
-        bh=YHV2Cc5LaBeGv/AExh1dctdQCQcN3cDdvTIsITOZX7o=;
-        b=pd0Ci5tD3WsO1p2PDttEs9/76zHuQP+d5evKaMEJInVHVl6lxg6fZnAjn+mY4DXt9E
-         ujbb39Wzng0eqaI0ukoQ9eKOfQZe46nQDPnY4qOjfz5qxUG3EBdf3MCy0yMD7YkgVhQe
-         AsFBa1iyAqWadk7iKKbk8RghRwqPFwlHVsyEFTSg1XUGzNmaUGV4OINtkgrZtR0GjZKc
-         HUUD+eFw7FZxMy3PFzUw+0MJGMDaPtJ7fbm7eHsYTXKERoIOO9S0vZo01gL/LlWf3Qmv
-         Wlf4Bj3DnPFXbsEXinvk4HPPQ/wBA2n8um9nyA2w32FaEIjypCxcBrv5Z5v2XaZMDNOx
-         39TQ==
-X-Gm-Message-State: AJIora/RYg3ANHcJWLB2ZgpuXRRb1y0s2JsWR0Pmt2H+egN3fumFLcjM
-        Xu3jqScTkT8WVuNbdojcwXCL4DJA8Nx2Ogmk5HW7yxnDFPQ=
-X-Google-Smtp-Source: AGRyM1uArgMx4SavTqMDhwhs03SUm2moqY8zMl1EvGjoPdvbyFKjlJ+ON6yeDAIwwIeg6LPbcSDqSg6//DxGeB4CkAs=
-X-Received: by 2002:a05:6808:e87:b0:32e:4789:d2c with SMTP id
- k7-20020a0568080e8700b0032e47890d2cmr578880oil.193.1657303151889; Fri, 08 Jul
- 2022 10:59:11 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 8 Jul 2022 10:59:11 -0700
+        Fri, 8 Jul 2022 14:00:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9711F2F6
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 11:00:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C32DB8291C
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 18:00:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9BE1C341C0;
+        Fri,  8 Jul 2022 18:00:01 +0000 (UTC)
+Date:   Fri, 8 Jul 2022 14:00:00 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] sched/rt: fix bad task migration for rt tasks
+Message-ID: <20220708140000.6aa75a50@gandalf.local.home>
+In-Reply-To: <m2h73snqja.fsf@gmail.com>
+References: <20220707165014.77127-1-schspa@gmail.com>
+        <20220707135329.08cf74b0@gandalf.local.home>
+        <m2h73snqja.fsf@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <1657197381-1271-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1657197381-1271-1-git-send-email-quic_srivasam@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Fri, 8 Jul 2022 10:59:11 -0700
-Message-ID: <CAE-0n53X8yyWr+Q+3RpciCeZcW+t+jgZs3eqNF9O8hJcw0cq0Q@mail.gmail.com>
-Subject: Re: [PATCH v2] arm64: dts: qcom: sc7280: Move wcd specific pin conf
- to common file
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, dianders@chromium.org,
-        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        robh+dt@kernel.org, srinivas.kandagatla@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Srinivasa Rao Mandadapu (2022-07-07 05:36:21)
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
-> index 32a1e78..859faaa 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
-> @@ -5,6 +5,70 @@
->   * Copyright (c) 2022, The Linux Foundation. All rights reserved.
->   */
->
-> +/* PINCTRL */
-> +
-> +&lpass_dmic01_clk {
-> +       drive-strength = <8>;
-> +       bias-disable;
-> +};
-> +
-> +&lpass_dmic01_clk_sleep {
-> +       drive-strength = <2>;
-> +};
-> +
-> +&lpass_dmic01_data {
-> +       bias-pull-down;
-> +};
-> +
-> +&lpass_dmic23_clk {
-> +       drive-strength = <8>;
-> +       bias-disable;
-> +};
-> +
-> +&lpass_dmic23_clk_sleep {
-> +       drive-strength = <2>;
-> +};
-> +
-> +&lpass_dmic23_data {
-> +       bias-pull-down;
-> +};
-> +
-> +&lpass_rx_swr_clk {
-> +       drive-strength = <2>;
-> +       slew-rate = <1>;
-> +       bias-disable;
-> +};
-> +
-> +&lpass_rx_swr_clk_sleep {
-> +       bias-pull-down;
-> +};
-> +
-> +&lpass_rx_swr_data {
-> +       drive-strength = <2>;
+On Fri, 08 Jul 2022 12:51:14 +0800
+Schspa Shi <schspa@gmail.com> wrote:
 
-I suspect this was discussed before, but why do we need to modify drive
-strengths on pins that aren't in output mode? I assume either rx_swr or
-tx_swr is unidirectional.
+> Steven Rostedt <rostedt@goodmis.org> writes:
+> 
+> > On Fri,  8 Jul 2022 00:50:14 +0800
+> > Schspa Shi <schspa@gmail.com> wrote:
+> >  
+> >> Please refer to the following scenarios.  
+> >
+> > I'm not sure this is what is happening. Do you have a trace to 
+> > back this up?
+> >  
+> 
+> I don't have a trace. This is inferred from the exception log.
+> 
+> >> 
+> >>            CPU0                                  CPU1
+> >> ------------------------------------------------------------------
+> >> push_rt_task
+> >>   check is_migration_disabled(next_task)
+> >>                                         task not running and
+> >>                                         migration_disabled == 0
+> >>   find_lock_lowest_rq(next_task, rq);
+> >>     _double_lock_balance(this_rq, busiest);
+> >>       raw_spin_rq_unlock(this_rq);
+> >>       double_rq_lock(this_rq, busiest);
+> >>         <<wait for busiest rq>>
+> >>                                             <wakeup>  
+> >
+> > Here's the problem I have. next_task is queued on CPU0, 
+> > (otherwise CPU0
+> > would not be pushing it). As CPU0 is currently running 
+> > push_rt_task, how
+> > did next_task start running to set its migrate_disable flag?  
+> 
+> THe next_task wasn't queued on CPU0, it's queued on CPU1 in this
+> scenarios.
 
-> +       slew-rate = <1>;
-> +       bias-bus-hold;
-> +};
-> +
-> +&lpass_rx_swr_data_sleep {
-> +       bias-pull-down;
-> +};
-> +
-> +&lpass_tx_swr_clk {
-> +       drive-strength = <2>;
-> +       slew-rate = <1>;
-> +       bias-disable;
-> +};
-> +
-> +&lpass_tx_swr_clk_sleep {
-> +       bias-pull-down;
-> +};
-> +
-> +&lpass_tx_swr_data {
-> +       drive-strength = <2>;
-> +       slew-rate = <1>;
-> +       bias-bus-hold;
-> +};
-> +
->  &mi2s1_data0 {
->         drive-strength = <6>;
->         bias-disable;
+Bah, I forgot that we still do pushing for other CPUs. I was thinking that
+we removed that in favor of pulling. It's been a while since I worked on
+this.
+
+> 
+> And it's because when task wakup, the rq argument is not the
+> current running CPU rq, it's next_task's rq
+> (i.e. CPU1's rq in this sample scenarios).
+> 
+> And you can check this with the Call trace from the crash log.
+> 
+>     [123671.996969] Call trace:
+>     [123671.996975]  set_task_cpu+0x8c/0x108
+>     [123671.996984]  push_rt_task.part.0+0x144/0x184
+>     [123671.996995]  push_rt_tasks+0x28/0x3c
+>     [123671.997002]  task_woken_rt+0x58/0x68
+>     [123671.997009]  ttwu_do_wakeup+0x5c/0xd0
+>     [123671.997019]  ttwu_do_activate+0xc0/0xd4
+>     [123671.997028]  try_to_wake_up+0x244/0x288
+>     [123671.997036]  wake_up_process+0x18/0x24
+>     [123671.997045]  __irq_wake_thread+0x64/0x80
+>     [123671.997056]  __handle_irq_event_percpu+0x110/0x124
+> 
+> Function ttwu_do_wakeup will lock the task's rq, not current 
+> running
+> cpu rq.
+> 
+> >
+> > Even if it was woken up on another CPU and ran there, by setting
+> > migrate_disable, it would not be put back to CPU0, because its
+> > migrate_disable flag is set (if it is, then there's the bug).
+> >  
+> 
+> It no needs to put it back to CPU0 for this issue, it's still on 
+> CPU1.
+> 
+
+Worse things can actually happen then migrating a migrate disabled task.
+What prevents next_task from being scheduled and in a running state, or
+even migrated?
+
+Hmm, that's covered in find_lock_lowest_rq().
+
+Looks like the the migrate disable check needs to go there.
+
+		/* if the prio of this runqueue changed, try again */
+		if (double_lock_balance(rq, lowest_rq)) {
+			/*
+			 * We had to unlock the run queue. In
+			 * the mean time, task could have
+			 * migrated already or had its affinity changed.
+			 * Also make sure that it wasn't scheduled on its rq.
+			 */
+			if (unlikely(task_rq(task) != rq ||
+				     !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_mask) ||
+				     task_running(rq, task) ||
+				     !rt_task(task) ||
++				     is_migrate_disabled(task) ||
+				     !task_on_rq_queued(task))) {
+
+				double_unlock_balance(rq, lowest_rq);
+				lowest_rq = NULL;
+				break;
+			}
+		}
+
+-- Steve
