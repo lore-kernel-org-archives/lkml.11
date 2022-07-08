@@ -2,140 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 085CEC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB559C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237745AbiGHJsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 05:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
+        id S237837AbiGHJtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 05:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237169AbiGHJsa (ORCPT
+        with ESMTP id S237827AbiGHJtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 05:48:30 -0400
+        Fri, 8 Jul 2022 05:49:01 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AFB3CC6
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 02:48:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 795927E022;
+        Fri,  8 Jul 2022 02:49:00 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3A1B1106F;
-        Fri,  8 Jul 2022 02:48:27 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6BD4E3F66F;
-        Fri,  8 Jul 2022 02:48:21 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 10:47:10 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Conor Dooley <Conor.Dooley@microchip.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daire.McNamara@microchip.com,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Zong Li <zong.li@sifive.com>,
-        Emil Renner Berthing <kernel@esmil.dk>, hahnjo@hahnjo.de,
-        Guo Ren <guoren@kernel.org>, Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>, changbin.du@intel.com,
-        Heiko Stuebner <heiko@sntech.de>, philipp.tomsich@vrull.eu,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Brice.Goglin@inria.fr
-Subject: Re: [RFC 2/4] arch-topology: add a default implementation of
- store_cpu_topology()
-Message-ID: <20220708094710.rxk6flrueegdsggr@bogus>
-References: <20220707220436.4105443-1-mail@conchuod.ie>
- <20220707220436.4105443-3-mail@conchuod.ie>
- <20220708082443.azoqvuj7afrg7ox7@bogus>
- <473e6b17-465b-3d14-b04d-01b187390e66@microchip.com>
- <20220708092100.c6mgmnt7e2k7u634@bogus>
- <CAMuHMdXUjmG9n3BuRAz_irkmHQbp=7SYxe5VEfOhMdT4D2JfwQ@mail.gmail.com>
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A1EB7106F;
+        Fri,  8 Jul 2022 02:49:00 -0700 (PDT)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 062BB3F66F;
+        Fri,  8 Jul 2022 02:48:58 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 10:48:56 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 7/7] arm64: dts: allwinner: h616: Add X96 Mate TV
+ box support
+Message-ID: <20220708104856.70a40730@donnerap.cambridge.arm.com>
+In-Reply-To: <22aa3412-2dc2-4d7e-1c61-c5d35b25fe6d@sholland.org>
+References: <20220701112453.2310722-1-andre.przywara@arm.com>
+ <20220701112453.2310722-8-andre.przywara@arm.com>
+ <22aa3412-2dc2-4d7e-1c61-c5d35b25fe6d@sholland.org>
+Organization: ARM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdXUjmG9n3BuRAz_irkmHQbp=7SYxe5VEfOhMdT4D2JfwQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 11:28:19AM +0200, Geert Uytterhoeven wrote:
-> Hi Sudeep,
+On Mon, 4 Jul 2022 20:29:45 -0500
+Samuel Holland <samuel@sholland.org> wrote:
+
+Hi,
+
+> On 7/1/22 6:24 AM, Andre Przywara wrote:
+> > The X96 Mate is an Allwinner H616 based TV box, featuring:
+> >   - Four ARM Cortex-A53 cores, Mali-G31 MP2 GPU
+> >   - 2GiB/4GiB RAM (fully usable!)
+> >   - 16/32/64GiB eMMC
+> >   - 100Mbps Ethernet (via embedded AC200 EPHY, not yet supported)
+> >   - Unsupported Allwinner WiFi chip
+> >   - 2 x USB 2.0 host ports
+> >   - HDMI port
+> >   - IR receiver
+> >   - 5V/2A DC power supply via barrel plug
+> > 
+> > Add a basic devicetree for it, with SD card and eMMC working, as
+> > well as serial and the essential peripherals, like the AXP PMIC.
+> > 
+> > This DT is somewhat minimal, and should work on many other similar TV
+> > boxes with the Allwinner H616 chip.
+> > 
+> > Signed-off-by: Andre Przywara <andre.przywara@arm.com>  
 > 
-> On Fri, Jul 8, 2022 at 11:22 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
-> > On Fri, Jul 08, 2022 at 08:35:57AM +0000, Conor.Dooley@microchip.com wrote:
-> > > On 08/07/2022 09:24, Sudeep Holla wrote:
-> > > > On Thu, Jul 07, 2022 at 11:04:35PM +0100, Conor Dooley wrote:
-> > > >> From: Conor Dooley <conor.dooley@microchip.com>
-> > > >>
-> > > >> RISC-V & arm64 both use an almost identical method of filling in
-> > > >> default vales for arch topology. Create a weakly defined default
-> > > >> implementation with the intent of migrating both archs to use it.
-> > > >>
-> > > >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> > > >> ---
-> > > >>   drivers/base/arch_topology.c  | 19 +++++++++++++++++++
-> > > >>   include/linux/arch_topology.h |  1 +
-> > > >>   2 files changed, 20 insertions(+)
-> > > >>
-> > > >> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> > > >> index 441e14ac33a4..07e84c6ac5c2 100644
-> > > >> --- a/drivers/base/arch_topology.c
-> > > >> +++ b/drivers/base/arch_topology.c
-> > > >> @@ -765,6 +765,25 @@ void update_siblings_masks(unsigned int cpuid)
-> > > >>    }
-> > > >>   }
-> > > >>
-> > > >> +void __weak store_cpu_topology(unsigned int cpuid)
-> > >
-> > > Does using __weak here make sense to you?
-> > >
-> >
-> > I don't want any weak definition and arch to override as we know only
-> > arm64 and RISC-V are the only users and they are aligned to have same
-> > implementation. So weak definition doesn't make sense to me.
-> >
-> > > >
-> > > > I prefer to have this as default implementation. So just get the risc-v
-> > > > one pushed to upstream first(for v5.20) and get all the backports if required.
-> > > > Next cycle(i.e. v5.21), you can move both RISC-V and arm64.
-> > > >
-> > >
-> > > Yeah, that was my intention. I meant to label patch 1/4 as "PATCH"
-> > > and (2,3,4)/4 as RFC but forgot. I talked with Palmer about doing
-> > > the risc-v impl. and then migrate both on IRC & he seemed happy with
-> > > it.
-> > >
-> >
-> > Ah OK, good.
-> >
-> > > If you're okay with patch 1/4, I'll resubmit it as a standalone v2.
-> > >
-> >
-> > That would be great, thanks. You can most the code to move to generic from
-> > both arm64 and risc-v once we have this in v5.20-rc1
+> Looks good to me, with one question below.
 > 
-> Why not ignore risc-v for now, and move the arm64 implementation to
-> the generic code for v5.20, so every arch will have it at once?
->
+> Reviewed-by: Samuel Holland <samuel@sholland.org>
 
-We could but,
-1. This arch_topology is new and has been going through lot of changes
-   recently and having code there might make it difficult to backport
-   changes that are required for RISC-V(my guess)
+Thanks!
 
-2. May be too late for v5.20, I would like to see if we can even drop tiny
-   arm64 bit in the code. It may be risky to try that this late and also
-   with other topology changes we already have queued.
+> > ---
+> >  arch/arm64/boot/dts/allwinner/Makefile        |   1 +
+> >  .../dts/allwinner/sun50i-h616-x96-mate.dts    | 177 ++++++++++++++++++
+> >  2 files changed, 178 insertions(+)
+> >  create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+> > 
+> > diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
+> > index df2214e6d946a..6a96494a2e0a3 100644
+> > --- a/arch/arm64/boot/dts/allwinner/Makefile
+> > +++ b/arch/arm64/boot/dts/allwinner/Makefile
+> > @@ -39,3 +39,4 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-pine-h64-model-b.dtb
+> >  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-tanix-tx6.dtb
+> >  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-tanix-tx6-mini.dtb
+> >  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-orangepi-zero2.dtb
+> > +dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-x96-mate.dtb
+> > diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+> > new file mode 100644
+> > index 0000000000000..30b76140b9c8a
+> > --- /dev/null
+> > +++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+> > @@ -0,0 +1,177 @@
+> > +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
+> > +/*
+> > + * Copyright (C) 2021 Arm Ltd.
+> > + */
+> > +
+> > +/dts-v1/;
+> > +
+> > +#include "sun50i-h616.dtsi"
+> > +
+> > +#include <dt-bindings/gpio/gpio.h>
+> > +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> > +
+> > +/ {
+> > +	model = "X96 Mate";
+> > +	compatible = "hechuang,x96-mate", "allwinner,sun50i-h616";
+> > +
+> > +	aliases {
+> > +		serial0 = &uart0;
+> > +	};
+> > +
+> > +	chosen {
+> > +		stdout-path = "serial0:115200n8";
+> > +	};
+> > +
+> > +	reg_vcc5v: vcc5v {
+> > +		/* board wide 5V supply directly from the DC input */
+> > +		compatible = "regulator-fixed";
+> > +		regulator-name = "vcc-5v";
+> > +		regulator-min-microvolt = <5000000>;
+> > +		regulator-max-microvolt = <5000000>;
+> > +		regulator-always-on;
+> > +	};
+> > +};
+> > +
+> > +&ir {
+> > +	status = "okay";
+> > +};
+> > +
+> > +&mmc0 {
+> > +	vmmc-supply = <&reg_dcdce>;
+> > +	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;	/* PF6 */
+> > +	bus-width = <4>;
+> > +	status = "okay";
+> > +};
+> > +
+> > +&mmc2 {
+> > +	vmmc-supply = <&reg_dcdce>;
+> > +	vqmmc-supply = <&reg_bldo1>;
+> > +	bus-width = <8>;
+> > +	non-removable;
+> > +	cap-mmc-hw-reset;
+> > +	mmc-ddr-1_8v;
+> > +	mmc-hs200-1_8v;
+> > +	status = "okay";
+> > +};
+> > +
+> > +&r_rsb {
+> > +	status = "okay";
+> > +
+> > +	axp305: pmic@745 {
+> > +		compatible = "x-powers,axp305", "x-powers,axp805",
+> > +			     "x-powers,axp806";
+> > +		interrupt-controller;
+> > +		#interrupt-cells = <1>;
+> > +		reg = <0x745>;
+> > +
+> > +		x-powers,self-working-mode;
+> > +		vina-supply = <&reg_vcc5v>;
+> > +		vinb-supply = <&reg_vcc5v>;
+> > +		vinc-supply = <&reg_vcc5v>;
+> > +		vind-supply = <&reg_vcc5v>;
+> > +		vine-supply = <&reg_vcc5v>;
+> > +		aldoin-supply = <&reg_vcc5v>;
+> > +		bldoin-supply = <&reg_vcc5v>;
+> > +		cldoin-supply = <&reg_vcc5v>;
+> > +
+> > +		regulators {
+> > +			reg_aldo1: aldo1 {
+> > +				regulator-always-on;
+> > +				regulator-min-microvolt = <3300000>;
+> > +				regulator-max-microvolt = <3300000>;
+> > +				regulator-name = "vcc-sys";
+> > +			};
+> > +
+> > +			/* Enabled by the Android BSP */
+> > +			reg_aldo2: aldo2 {
+> > +				regulator-min-microvolt = <3300000>;
+> > +				regulator-max-microvolt = <3300000>;
+> > +				regulator-name = "vcc3v3-ext";
+> > +				status = "disabled";  
+> 
+> If you disable these nodes, the regulator core will ignore them and not apply
+> the voltages. Is that what you want?
 
-Let me know if that makes sense.
+It's what works ;-)
+ALDO2 was enabled and set to 3.3V by Android, also set in their DTB.
+However I figured it's not needed for our operation, at least not with
+the peripherals we support (including USB): turning it on or off didn't
+change anything. I just kept this in as documentation and a guide for
+future enablement, as this may drive *something*.
 
--- 
-Regards,
-Sudeep
+Cheers,
+Andre
+
+> 
+> Regards,
+> Samuel
+> 
+> > +			};
+> > +
+> > +			/* Enabled by the Android BSP */
+> > +			reg_aldo3: aldo3 {
+> > +				regulator-min-microvolt = <3300000>;
+> > +				regulator-max-microvolt = <3300000>;
+> > +				regulator-name = "vcc3v3-ext2";
+> > +				status = "disabled";
+> > +			};
+> > +
+> > +			reg_bldo1: bldo1 {
+> > +				regulator-always-on;
+> > +				regulator-min-microvolt = <1800000>;
+> > +				regulator-max-microvolt = <1800000>;
+> > +				regulator-name = "vcc1v8";
+> > +			};
+> > +
+> > +			/* Enabled by the Android BSP */
+> > +			reg_bldo2: bldo2 {
+> > +				regulator-min-microvolt = <1800000>;
+> > +				regulator-max-microvolt = <1800000>;
+> > +				regulator-name = "vcc1v8-2";
+> > +				status = "disabled";
+> > +			};
+> > +
+> > +			bldo3 {
+> > +				/* unused */
+> > +			};
+> > +
+> > +			bldo4 {
+> > +				/* unused */
+> > +			};
+> > +
+> > +			cldo1 {
+> > +				regulator-min-microvolt = <2500000>;
+> > +				regulator-max-microvolt = <2500000>;
+> > +				regulator-name = "vcc2v5";
+> > +			};
+> > +
+> > +			cldo2 {
+> > +				/* unused */
+> > +			};
+> > +
+> > +			cldo3 {
+> > +				/* unused */
+> > +			};
+> > +
+> > +			reg_dcdca: dcdca {
+> > +				regulator-always-on;
+> > +				regulator-min-microvolt = <810000>;
+> > +				regulator-max-microvolt = <1080000>;
+> > +				regulator-name = "vdd-cpu";
+> > +			};
+> > +
+> > +			reg_dcdcc: dcdcc {
+> > +				regulator-always-on;
+> > +				regulator-min-microvolt = <810000>;
+> > +				regulator-max-microvolt = <1080000>;
+> > +				regulator-name = "vdd-gpu-sys";
+> > +			};
+> > +
+> > +			reg_dcdcd: dcdcd {
+> > +				regulator-always-on;
+> > +				regulator-min-microvolt = <1360000>;
+> > +				regulator-max-microvolt = <1360000>;
+> > +				regulator-name = "vdd-dram";
+> > +			};
+> > +
+> > +			reg_dcdce: dcdce {
+> > +				regulator-always-on;
+> > +				regulator-min-microvolt = <3300000>;
+> > +				regulator-max-microvolt = <3300000>;
+> > +				regulator-name = "vcc-eth-mmc";
+> > +			};
+> > +
+> > +			sw {
+> > +				/* unused */
+> > +			};
+> > +		};
+> > +	};
+> > +};
+> > +
+> > +&uart0 {
+> > +	pinctrl-names = "default";
+> > +	pinctrl-0 = <&uart0_ph_pins>;
+> > +	status = "okay";
+> > +};
+> >   
+> 
+
