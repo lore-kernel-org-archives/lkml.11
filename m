@@ -2,168 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC062C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF38C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237891AbiGHMdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 08:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54632 "EHLO
+        id S238030AbiGHMec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 08:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237735AbiGHMdj (ORCPT
+        with ESMTP id S237735AbiGHMea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 08:33:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D701B2DA84
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657283617;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xjr1wZ1WmGRVtITclqyW3FXiq+oTsrOWXuC7nwweUE4=;
-        b=LNjQxjR4ldBOZucCaf+qV7Vhqs1rFyMKjJ13WWp26RJsMguOHgLs1hAGU3O+mAB8qJb0pp
-        yQvYPRGDFL+fnR6BwBKvxqOhGsQ+R0M5Bzp8KoHqWiI4Gv39EdL7saL0RrO/5QOnBDZTJP
-        qXzKG9hJE1ATNKRUhN4tCG1cE/2IIAo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-620-Ui1gUz-nOSaDEuYv3OO54g-1; Fri, 08 Jul 2022 08:33:33 -0400
-X-MC-Unique: Ui1gUz-nOSaDEuYv3OO54g-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8C513294EDF0;
-        Fri,  8 Jul 2022 12:33:33 +0000 (UTC)
-Received: from rules.brq.redhat.com (unknown [10.43.17.131])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 752BE18EB5;
-        Fri,  8 Jul 2022 12:33:32 +0000 (UTC)
-From:   Vladis Dronov <vdronov@redhat.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Vladis Dronov <vdronov@redhat.com>, Simo Sorce <simo@redhat.com>
-Subject: [PATCH v4] crypto: fips - make proc files report fips module name and version
-Date:   Fri,  8 Jul 2022 14:33:13 +0200
-Message-Id: <20220708123313.119812-1-vdronov@redhat.com>
-In-Reply-To: <20220620131618.952133-1-vdronov@redhat.com>
-References: <20220620131618.952133-1-vdronov@redhat.com>
+        Fri, 8 Jul 2022 08:34:30 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6401B6EE9E;
+        Fri,  8 Jul 2022 05:34:28 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1662F1887129;
+        Fri,  8 Jul 2022 12:34:26 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 0BDBB25032B7;
+        Fri,  8 Jul 2022 12:34:26 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id EE690A1E00AD; Fri,  8 Jul 2022 12:34:25 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Date:   Fri, 08 Jul 2022 14:34:25 +0200
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <20220708115624.rrjzjtidlhcqczjv@skbuf>
+References: <20220707152930.1789437-1-netdev@kapio-technology.com>
+ <20220707152930.1789437-4-netdev@kapio-technology.com>
+ <20220708084904.33otb6x256huddps@skbuf>
+ <e6f418705e19df370c8d644993aa9a6f@kapio-technology.com>
+ <20220708091550.2qcu3tyqkhgiudjg@skbuf>
+ <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
+ <20220708115624.rrjzjtidlhcqczjv@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <723e2995314b41ff323272536ef27341@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-FIPS 140-3 introduced a requirement for the FIPS module to return
-information about itself, specifically a name and a version. These
-values must match the values reported on FIPS certificates.
+On 2022-07-08 13:56, Vladimir Oltean wrote:
+> On Fri, Jul 08, 2022 at 11:50:33AM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-07-08 11:15, Vladimir Oltean wrote:
+>> > When the possibility for it to be true will exist, _all_ switchdev
+>> > drivers will need to be updated to ignore that (mlxsw, cpss, ocelot,
+>> > rocker, prestera, etc etc), not just DSA. And you don't need to
+>> > propagate the is_locked flag to all individual DSA sub-drivers when none
+>> > care about is_locked in the ADD_TO_DEVICE direction, you can just ignore
+>> > within DSA until needed otherwise.
+>> >
+>> 
+>> Maybe I have it wrong, but I think that Ido requested me to send it to 
+>> all
+>> the drivers, and have them ignore entries with is_locked=true ...
+> 
+> I don't think Ido requested you to ignore is_locked from all DSA
+> drivers, but instead from all switchdev drivers maybe. Quite different.
 
-This patch adds two files to read a name and a version from:
+So without changing the signature on port_fdb_add(). If that is to avoid 
+changing that signature, which needs to be changed anyhow for any 
+switchcore driver to act on it, then my next patch set will change the 
+signarure also as it is needed for creating dynamic ATU entries from 
+userspace, which is needed to make the whole thing complete.
 
-/proc/sys/crypto/fips_name
-/proc/sys/crypto/fips_version
+As it is already done (with the is_locked to the drivers) and needed for 
+future application, I would like Ido to comment on it before I take 
+action.
 
-v2: removed redundant parentheses in config entries.
-v3: move FIPS_MODULE_* defines to fips.c where they are used.
-v4: return utsrelease.h inclusion
+> 
+> In any case I'm going to take a look at this patch set more closely and
+> run the selftest on my Marvell switch, but I can't do this today
+> unfortunately. I'll return with more comments.
 
-Signed-off-by: Simo Sorce <simo@redhat.com>
-Signed-off-by: Vladis Dronov <vdronov@redhat.com>
----
- crypto/Kconfig | 21 +++++++++++++++++++++
- crypto/fips.c  | 35 ++++++++++++++++++++++++++++++-----
- 2 files changed, 51 insertions(+), 5 deletions(-)
-
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 1d44893a997b..3891c331f2e7 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -33,6 +33,27 @@ config CRYPTO_FIPS
- 	  certification.  You should say no unless you know what
- 	  this is.
- 
-+config CRYPTO_FIPS_NAME
-+	string "FIPS Module Name"
-+	default "Linux Kernel Cryptographic API"
-+	depends on CRYPTO_FIPS
-+	help
-+	  This option sets the FIPS Module name reported by the Crypto API via
-+	  the /proc/sys/crypto/fips_name file.
-+
-+config CRYPTO_FIPS_CUSTOM_VERSION
-+	bool "Use Custom FIPS Module Version"
-+	depends on CRYPTO_FIPS
-+	default n
-+
-+config CRYPTO_FIPS_VERSION
-+	string "FIPS Module Version"
-+	default "(none)"
-+	depends on CRYPTO_FIPS_CUSTOM_VERSION
-+	help
-+	  This option provides the ability to override the FIPS Module Version.
-+	  By default the KERNELRELEASE value is used.
-+
- config CRYPTO_ALGAPI
- 	tristate
- 	select CRYPTO_ALGAPI2
-diff --git a/crypto/fips.c b/crypto/fips.c
-index 7b1d8caee669..b05d3c7b3ca5 100644
---- a/crypto/fips.c
-+++ b/crypto/fips.c
-@@ -12,6 +12,7 @@
- #include <linux/kernel.h>
- #include <linux/sysctl.h>
- #include <linux/notifier.h>
-+#include <generated/utsrelease.h>
- 
- int fips_enabled;
- EXPORT_SYMBOL_GPL(fips_enabled);
-@@ -30,13 +31,37 @@ static int fips_enable(char *str)
- 
- __setup("fips=", fips_enable);
- 
-+#define FIPS_MODULE_NAME CONFIG_CRYPTO_FIPS_NAME
-+#ifdef CONFIG_CRYPTO_FIPS_CUSTOM_VERSION
-+#define FIPS_MODULE_VERSION CONFIG_CRYPTO_FIPS_VERSION
-+#else
-+#define FIPS_MODULE_VERSION UTS_RELEASE
-+#endif
-+
-+static char fips_name[] = FIPS_MODULE_NAME;
-+static char fips_version[] = FIPS_MODULE_VERSION;
-+
- static struct ctl_table crypto_sysctl_table[] = {
- 	{
--		.procname       = "fips_enabled",
--		.data           = &fips_enabled,
--		.maxlen         = sizeof(int),
--		.mode           = 0444,
--		.proc_handler   = proc_dointvec
-+		.procname	= "fips_enabled",
-+		.data		= &fips_enabled,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0444,
-+		.proc_handler	= proc_dointvec
-+	},
-+	{
-+		.procname	= "fips_name",
-+		.data		= &fips_name,
-+		.maxlen		= 64,
-+		.mode		= 0444,
-+		.proc_handler	= proc_dostring
-+	},
-+	{
-+		.procname	= "fips_version",
-+		.data		= &fips_version,
-+		.maxlen		= 64,
-+		.mode		= 0444,
-+		.proc_handler	= proc_dostring
- 	},
- 	{}
- };
--- 
-2.36.1
-
+Yes :-)
