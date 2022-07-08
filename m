@@ -2,306 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 091B8C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 06:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0920DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 06:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237371AbiGHGw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 02:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40484 "EHLO
+        id S237425AbiGHGwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 02:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237176AbiGHGwY (ORCPT
+        with ESMTP id S237409AbiGHGwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 02:52:24 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F4B6EE8A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 23:52:23 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id c13so11867354pla.6
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 23:52:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=+DFSXCiwRMURoK5XTS8H5JHl90F6lsK83jFk40hr3cE=;
-        b=0mtdSGDV4x1HTS61u84SIy7J626352mZUVOKAx076n+bCwBpUqvhbGp6nUPhyi6zg6
-         E5Lj3sgRKEXA1rmUErXsyKl+vL63KIbVmpi2pMHijd0j5VTT643qYxZWESP2NXgAeITQ
-         xi72qWswWf5EdQIEXFvmeuF17RG7fEXci7fCNfL0soJjQuh4lMJKYrYUCtBxcyStOXfu
-         w1aXiaAUP1Fs6KPTb2XlaSIYiGSUTG0HW8txnZfUSdLDKlrlxMAWbiqBRc9de7ZrtA2b
-         Y4ErKdr5HAuwUXCg8eMpm5I5fwAcv6hu/n9KaQuh2JcpOCum/z3jY90yhZ3T9YzhPhxq
-         7PsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=+DFSXCiwRMURoK5XTS8H5JHl90F6lsK83jFk40hr3cE=;
-        b=Hox3D9YN3Icj4xZYxTy6A1hBqCk4ZLsEICBaJl+g0n2wm9tqeA8vyn60/MYm1NQDGA
-         pJIBmWsFfglDaV0GhsDA3BFSRR2gBlbStQyRkqKAwJrz7FUBkRpycWacUjUNHoPSUif8
-         AcOr//ZD7JuiJScwIkHdHWKEbmvh855lUfgPTEYpOBAFv93ABAm9+u8QM82/2ieuEzb1
-         VtdSE8Pkp4iEzXY0WtEWu8fhhY4wo1EfAD5rVZTUiZN42pZgmPf3TBJd2l27/8Nbg8VW
-         KEnpqnH9+qDCdMfecYotYNNZcPrlvK/hzevn9s5oRqjF6YTz+BJY7gbYDlrUCJFCUMtN
-         +2ng==
-X-Gm-Message-State: AJIora/MoDL6yb+VRtDeciu2TmiZKvk+PE2n73FqucomdqzwbDDLD3Up
-        1BtOKx4DG7awoaCRGLKhLj4Zog==
-X-Google-Smtp-Source: AGRyM1uCvCxgMy2pC8dM9+8Ibn+YUZ1fzwsXoow8VRFzAD+jFOkjfsRLl2NVqa1fN6z9EZTsh2YzAA==
-X-Received: by 2002:a17:902:ecd0:b0:16a:5222:3a97 with SMTP id a16-20020a170902ecd000b0016a52223a97mr2257762plh.139.1657263142401;
-        Thu, 07 Jul 2022 23:52:22 -0700 (PDT)
-Received: from localhost ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id a3-20020a170902ecc300b0016a4f3ca2b5sm19756840plh.277.2022.07.07.23.52.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 23:52:22 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 14:52:18 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>, longman@redhat.com,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Cgroups <cgroups@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH v6 00/11] Use obj_cgroup APIs to charge the LRU pages
-Message-ID: <YsfUIpM5NlWZhUDT@FVFYT0MHHV2J.usts.net>
-References: <20220621125658.64935-1-songmuchun@bytedance.com>
- <CAJD7tkbeTtkMcVri9vzKHATjxAVZfC_vPNfApJiyRxY53c8pZQ@mail.gmail.com>
- <YrlYG0ecJyzFTVVz@FVFYT0MHHV2J.usts.net>
- <CAJD7tkbk-E+Skkj3xxELuGFHet940DovKi0z8NxPqePzXa-Wug@mail.gmail.com>
+        Fri, 8 Jul 2022 02:52:33 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710FD6EE99
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 23:52:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657263152; x=1688799152;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UCgoIzNJOQavXa+zaiB+/6E4QSPY7V0WDfEQ5NKLVx4=;
+  b=AUqHR2nKCQGImqiHUy2RCh8nJWiiP6zNtX9OncxqYvXz0Coum6SAIhSN
+   mcIaMsb5+vbVKQEUtKA6HqCf/4hBzb9eQRuje/NqBleWdu/nWp5GaWWvh
+   n4Bb71GiNjFix90vjROPOKZ+GILrfqdrZ1WgA4G/HRmcvAXadznLgtFME
+   X5Ko11cJXjFrw3Qt7m+jNB24yLv5NKsdmUWjDtYtsPQZizzR9KcOPMYOS
+   LuBjQdX0FFAh5VyOJL/mXadLKmQpTDjpVlRza5+xOUOMII9mqFdvrrYUh
+   yqheMDOOjhSvLUmRRv9ItNr6QmURPAADdpeIl3recuq9CABu4mEFhoiCJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284949287"
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="284949287"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:52:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="736239585"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Jul 2022 23:52:30 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9hqo-000N41-1V;
+        Fri, 08 Jul 2022 06:52:30 +0000
+Date:   Fri, 8 Jul 2022 14:51:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:t8112/bringup 16/19]
+ drivers/hid/dockchannel-hid/dockchannel-hid.c:305:28: error: implicit
+ declaration of function 'FIELD_PREP'
+Message-ID: <202207081415.Rkx8mCkO-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJD7tkbk-E+Skkj3xxELuGFHet940DovKi0z8NxPqePzXa-Wug@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 03:14:26PM -0700, Yosry Ahmed wrote:
-> On Mon, Jun 27, 2022 at 12:11 AM Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > On Sun, Jun 26, 2022 at 03:32:02AM -0700, Yosry Ahmed wrote:
-> > > On Tue, Jun 21, 2022 at 5:57 AM Muchun Song <songmuchun@bytedance.com> wrote:
-> > > >
-> > > > This version is rebased on mm-unstable. Hopefully, Andrew can get this series
-> > > > into mm-unstable which will help to determine whether there is a problem or
-> > > > degradation. I am also doing some benchmark tests in parallel.
-> > > >
-> > > > Since the following patchsets applied. All the kernel memory are charged
-> > > > with the new APIs of obj_cgroup.
-> > > >
-> > > >         commit f2fe7b09a52b ("mm: memcg/slab: charge individual slab objects instead of pages")
-> > > >         commit b4e0b68fbd9d ("mm: memcontrol: use obj_cgroup APIs to charge kmem pages")
-> > > >
-> > > > But user memory allocations (LRU pages) pinning memcgs for a long time -
-> > > > it exists at a larger scale and is causing recurring problems in the real
-> > > > world: page cache doesn't get reclaimed for a long time, or is used by the
-> > > > second, third, fourth, ... instance of the same job that was restarted into
-> > > > a new cgroup every time. Unreclaimable dying cgroups pile up, waste memory,
-> > > > and make page reclaim very inefficient.
-> > > >
-> > > > We can convert LRU pages and most other raw memcg pins to the objcg direction
-> > > > to fix this problem, and then the LRU pages will not pin the memcgs.
-> > > >
-> > > > This patchset aims to make the LRU pages to drop the reference to memory
-> > > > cgroup by using the APIs of obj_cgroup. Finally, we can see that the number
-> > > > of the dying cgroups will not increase if we run the following test script.
-> > >
-> > > This is amazing work!
-> > >
-> > > Sorry if I came late, I didn't follow the threads of previous versions
-> > > so this might be redundant, I just have a couple of questions.
-> > >
-> > > a) If LRU pages keep getting parented until they reach root_mem_cgroup
-> > > (assuming they can), aren't these pages effectively unaccounted at
-> > > this point or leaked? Is there protection against this?
-> > >
-> >
-> > In this case, those pages are accounted in root memcg level. Unfortunately,
-> > there is no mechanism now to transfer a page's memcg from one to another.
-> >
-> 
-> Hey Muchun,
-> 
-> Quick question regarding the behavior of this change on cgroup v1 (I
-> know .. I know .. sorry):
-> 
-> When a memcg dies, its LRU pages are reparented, but what happens to
-> the charge? IIUC we don't do anything because the pages are already
-> hierarchically charged to the parent. Is this correct?
->
+tree:   https://github.com/AsahiLinux/linux t8112/bringup
+head:   0e7640fed025ba0ce4b845a0bbf2a5fdceab631d
+commit: f40be88d7f037e2b682492c4abf36b136d136d22 [16/19] hid: Add Apple DockChannel HID transport driver
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220708/202207081415.Rkx8mCkO-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/f40be88d7f037e2b682492c4abf36b136d136d22
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux t8112/bringup
+        git checkout f40be88d7f037e2b682492c4abf36b136d136d22
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/hid/dockchannel-hid/
 
-Correct.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> In cgroup v1, we have non-hierarchical stats as well, so I am trying
-> to understand if the reparented memory will appear in the
-> non-hierarchical stats of the parent (my understanding is that the
-> will not). I am also particularly interested in the charging behavior
-> of pages that get reparented to root_mem_cgroup.
->
+All error/warnings (new ones prefixed by >>):
 
-I didn't change any memory stats when reparenting.
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_cmd':
+>> drivers/hid/dockchannel-hid/dockchannel-hid.c:305:28: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
+     305 |         iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
+         |                            ^~~~~~~~~~
+   In file included from include/linux/device.h:15,
+                    from drivers/hid/dockchannel-hid/dockchannel-hid.c:10:
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_handle_ready':
+>> drivers/hid/dockchannel-hid/dockchannel-hid.c:571:37: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+     571 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
+         |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:571:17: note: in expansion of macro 'dev_err'
+     571 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
+         |                 ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:571:70: note: format string is defined here
+     571 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
+         |                                                                    ~~^
+         |                                                                      |
+         |                                                                      long int
+         |                                                                    %d
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_packet_work':
+>> drivers/hid/dockchannel-hid/dockchannel-hid.c:812:20: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
+     812 |         int type = FIELD_GET(FLAGS_GROUP, shdr->flags);
+         |                    ^~~~~~~~~
+         |                    FOLL_GET
+   In file included from include/linux/device.h:15,
+                    from drivers/hid/dockchannel-hid/dockchannel-hid.c:10:
+>> drivers/hid/dockchannel-hid/dockchannel-hid.c:816:37: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
+     816 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:816:17: note: in expansion of macro 'dev_err'
+     816 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                 ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:816:68: note: format string is defined here
+     816 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                                                  ~~^
+         |                                                                    |
+         |                                                                    long int
+         |                                                                  %d
+   In file included from include/linux/device.h:15,
+                    from drivers/hid/dockchannel-hid/dockchannel-hid.c:10:
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_handle_ack':
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:842:44: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
+     842 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:842:17: note: in expansion of macro 'dev_err'
+     842 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                 ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:842:75: note: format string is defined here
+     842 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                                                         ~~^
+         |                                                                           |
+         |                                                                           long int
+         |                                                                         %d
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dockchannel_hid_probe':
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:962:14: warning: variable 'defer' set but not used [-Wunused-but-set-variable]
+     962 |         bool defer = false;
+         |              ^~~~~
+   cc1: some warnings being treated as errors
 
-> The main reason I am asking is that (hierarchical_usage -
-> non-hierarchical_usage - children_hierarchical_usage) is *roughly*
-> something that we use, especially at the root level, to estimate
-> zombie memory usage. I am trying to see if this change will break such
-> calculations. Thanks!
-> 
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for APPLE_ADMAC
+   Depends on DMADEVICES && (ARCH_APPLE || COMPILE_TEST
+   Selected by
+   - SND_SOC_APPLE_MCA && SOUND && !UML && SND && SND_SOC && (ARCH_APPLE || COMPILE_TEST
 
-So I think your calculations will still be correct. If you have
-any unexpected result, please let me know. Thanks.
 
-> > > b) Since moving charged pages between memcgs is now becoming easier by
-> > > using the APIs of obj_cgroup, I wonder if this opens the door for
-> > > future work to transfer charges to memcgs that are actually using
-> > > reparented resources. For example, let's say cgroup A reads a few
-> > > pages into page cache, and then they are no longer used by cgroup A.
-> > > cgroup B, however, is using the same pages that are currently charged
-> > > to cgroup A, so it keeps taxing cgroup A for its use. When cgroup A
-> > > dies, and these pages are reparented to A's parent, can we possibly
-> > > mark these reparented pages (maybe in the page tables somewhere) so
-> > > that next time they get accessed we recharge them to B instead
-> > > (possibly asynchronously)?
-> > > I don't have much experience about page tables but I am pretty sure
-> > > they are loaded so maybe there is no room in PTEs for something like
-> > > this, but I have always wondered about what we can do for this case
-> > > where a cgroup is consistently using memory charged to another cgroup.
-> > > Maybe when this memory is reparented is a good point in time to decide
-> > > to recharge appropriately. It would also fix the reparenty leak to
-> > > root problem (if it even exists).
-> > >
-> >
-> > From my point of view, this is going to be an improvement to the memcg
-> > subsystem in the future.  IIUC, most reparented pages are page cache
-> > pages without be mapped to users. So page tables are not a suitable
-> > place to record this information. However, we already have this information
-> > in struct obj_cgroup and struct mem_cgroup. If a page's obj_cgroup is not
-> > equal to the page's obj_cgroup->memcg->objcg, it means this page have
-> > been reparented. I am thinking if a place where a page is mapped (probably
-> > page fault patch) or page (cache) is written (usually vfs write path)
-> > is suitable to transfer page's memcg from one to another. But need more
-> > thinking, e.g. How to decide if a reparented page needs to be transferred?
-> > If we need more information to make this decision, where to store those
-> > information? This is my primary thoughts on this question.
-> >
-> > Thanks.
-> >
-> > > Thanks again for this work and please excuse my ignorance if any part
-> > > of what I said doesn't make sense :)
-> > >
-> > > >
-> > > > ```bash
-> > > > #!/bin/bash
-> > > >
-> > > > dd if=/dev/zero of=temp bs=4096 count=1
-> > > > cat /proc/cgroups | grep memory
-> > > >
-> > > > for i in {0..2000}
-> > > > do
-> > > >         mkdir /sys/fs/cgroup/memory/test$i
-> > > >         echo $$ > /sys/fs/cgroup/memory/test$i/cgroup.procs
-> > > >         cat temp >> log
-> > > >         echo $$ > /sys/fs/cgroup/memory/cgroup.procs
-> > > >         rmdir /sys/fs/cgroup/memory/test$i
-> > > > done
-> > > >
-> > > > cat /proc/cgroups | grep memory
-> > > >
-> > > > rm -f temp log
-> > > > ```
-> > > >
-> > > > v5: https://lore.kernel.org/all/20220530074919.46352-1-songmuchun@bytedance.com/
-> > > > v4: https://lore.kernel.org/all/20220524060551.80037-1-songmuchun@bytedance.com/
-> > > > v3: https://lore.kernel.org/all/20220216115132.52602-1-songmuchun@bytedance.com/
-> > > > v2: https://lore.kernel.org/all/20210916134748.67712-1-songmuchun@bytedance.com/
-> > > > v1: https://lore.kernel.org/all/20210814052519.86679-1-songmuchun@bytedance.com/
-> > > > RFC v4: https://lore.kernel.org/all/20210527093336.14895-1-songmuchun@bytedance.com/
-> > > > RFC v3: https://lore.kernel.org/all/20210421070059.69361-1-songmuchun@bytedance.com/
-> > > > RFC v2: https://lore.kernel.org/all/20210409122959.82264-1-songmuchun@bytedance.com/
-> > > > RFC v1: https://lore.kernel.org/all/20210330101531.82752-1-songmuchun@bytedance.com/
-> > > >
-> > > > v6:
-> > > >  - Collect Acked-by and Reviewed-by from Roman and Michal Koutný. Thanks.
-> > > >  - Rebase to mm-unstable.
-> > > >
-> > > > v5:
-> > > >  - Lots of improvements from Johannes, Roman and Waiman.
-> > > >  - Fix lockdep warning reported by kernel test robot.
-> > > >  - Add two new patches to do code cleanup.
-> > > >  - Collect Acked-by and Reviewed-by from Johannes and Roman.
-> > > >  - I didn't replace local_irq_disable/enable() to local_lock/unlock_irq() since
-> > > >    local_lock/unlock_irq() takes an parameter, it needs more thinking to transform
-> > > >    it to local_lock.  It could be an improvement in the future.
-> > > >
-> > > > v4:
-> > > >  - Resend and rebased on v5.18.
-> > > >
-> > > > v3:
-> > > >  - Removed the Acked-by tags from Roman since this version is based on
-> > > >    the folio relevant.
-> > > >
-> > > > v2:
-> > > >  - Rename obj_cgroup_release_kmem() to obj_cgroup_release_bytes() and the
-> > > >    dependencies of CONFIG_MEMCG_KMEM (suggested by Roman, Thanks).
-> > > >  - Rebase to linux 5.15-rc1.
-> > > >  - Add a new pacth to cleanup mem_cgroup_kmem_disabled().
-> > > >
-> > > > v1:
-> > > >  - Drop RFC tag.
-> > > >  - Rebase to linux next-20210811.
-> > > >
-> > > > RFC v4:
-> > > >  - Collect Acked-by from Roman.
-> > > >  - Rebase to linux next-20210525.
-> > > >  - Rename obj_cgroup_release_uncharge() to obj_cgroup_release_kmem().
-> > > >  - Change the patch 1 title to "prepare objcg API for non-kmem usage".
-> > > >  - Convert reparent_ops_head to an array in patch 8.
-> > > >
-> > > > Thanks for Roman's review and suggestions.
-> > > >
-> > > > RFC v3:
-> > > >  - Drop the code cleanup and simplification patches. Gather those patches
-> > > >    into a separate series[1].
-> > > >  - Rework patch #1 suggested by Johannes.
-> > > >
-> > > > RFC v2:
-> > > >  - Collect Acked-by tags by Johannes. Thanks.
-> > > >  - Rework lruvec_holds_page_lru_lock() suggested by Johannes. Thanks.
-> > > >  - Fix move_pages_to_lru().
-> > > >
-> > > > Muchun Song (11):
-> > > >   mm: memcontrol: remove dead code and comments
-> > > >   mm: rename unlock_page_lruvec{_irq, _irqrestore} to
-> > > >     lruvec_unlock{_irq, _irqrestore}
-> > > >   mm: memcontrol: prepare objcg API for non-kmem usage
-> > > >   mm: memcontrol: make lruvec lock safe when LRU pages are reparented
-> > > >   mm: vmscan: rework move_pages_to_lru()
-> > > >   mm: thp: make split queue lock safe when LRU pages are reparented
-> > > >   mm: memcontrol: make all the callers of {folio,page}_memcg() safe
-> > > >   mm: memcontrol: introduce memcg_reparent_ops
-> > > >   mm: memcontrol: use obj_cgroup APIs to charge the LRU pages
-> > > >   mm: lru: add VM_WARN_ON_ONCE_FOLIO to lru maintenance function
-> > > >   mm: lru: use lruvec lock to serialize memcg changes
-> > > >
-> > > >  fs/buffer.c                      |   4 +-
-> > > >  fs/fs-writeback.c                |  23 +-
-> > > >  include/linux/memcontrol.h       | 218 +++++++++------
-> > > >  include/linux/mm_inline.h        |   6 +
-> > > >  include/trace/events/writeback.h |   5 +
-> > > >  mm/compaction.c                  |  39 ++-
-> > > >  mm/huge_memory.c                 | 153 ++++++++--
-> > > >  mm/memcontrol.c                  | 584 +++++++++++++++++++++++++++------------
-> > > >  mm/migrate.c                     |   4 +
-> > > >  mm/mlock.c                       |   2 +-
-> > > >  mm/page_io.c                     |   5 +-
-> > > >  mm/swap.c                        |  49 ++--
-> > > >  mm/vmscan.c                      |  66 ++---
-> > > >  13 files changed, 776 insertions(+), 382 deletions(-)
-> > > >
-> > > >
-> > > > base-commit: 882be1ed6b1b5073fc88552181b99bd2b9c0031f
-> > > > --
-> > > > 2.11.0
-> > > >
-> > > >
-> > >
-> 
+vim +/FIELD_PREP +305 drivers/hid/dockchannel-hid/dockchannel-hid.c
+
+   294	
+   295	static int dchid_cmd(struct dchid_iface *iface, u32 type, u32 req,
+   296			     void *data, size_t size, void *resp_buf, size_t resp_size)
+   297	{
+   298		int ret;
+   299		int report_id = *(u8*)data;
+   300	
+   301		mutex_lock(&iface->out_mutex);
+   302	
+   303		WARN_ON(iface->out_report != -1);
+   304		iface->out_report = report_id;
+ > 305		iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
+   306		iface->resp_buf = resp_buf;
+   307		iface->resp_size = resp_size;
+   308		reinit_completion(&iface->out_complete);
+   309	
+   310		ret = dchid_send(iface, iface->out_flags, data, size);
+   311		if (ret < 0)
+   312			goto done;
+   313	
+   314		if (!wait_for_completion_timeout(&iface->out_complete, msecs_to_jiffies(1000))) {
+   315			dev_err(iface->dchid->dev, "output report 0x%x to iface  %d (%s) timed out\n",
+   316				report_id, iface->index, iface->name);
+   317			ret = -ETIMEDOUT;
+   318			goto done;
+   319		}
+   320	
+   321		ret = iface->resp_size;
+   322		if (iface->retcode) {
+   323			dev_err(iface->dchid->dev,
+   324				"output report 0x%x to iface %d (%s) failed with err 0x%x\n",
+   325				report_id, iface->index, iface->name, iface->retcode);
+   326			ret = -EIO;
+   327		}
+   328	
+   329	done:
+   330		iface->tx_seq++;
+   331		iface->out_report = -1;
+   332		iface->out_flags = 0;
+   333		iface->resp_buf = NULL;
+   334		iface->resp_size = 0;
+   335		mutex_unlock(&iface->out_mutex);
+   336		return ret;
+   337	}
+   338	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
