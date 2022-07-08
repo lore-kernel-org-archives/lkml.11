@@ -2,127 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8EDC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57930C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238069AbiGHLrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 07:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        id S238116AbiGHLrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 07:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238062AbiGHLrf (ORCPT
+        with ESMTP id S238114AbiGHLrj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 07:47:35 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B568E951D3
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 04:47:33 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id f73so6561279yba.10
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 04:47:33 -0700 (PDT)
+        Fri, 8 Jul 2022 07:47:39 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811D5951E5
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 04:47:38 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id c13so26794789qtq.10
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 04:47:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8LXcNpiL0hugCcH3yPL4TbK7rxIaV5AKYrpbt4Nl4sQ=;
-        b=V7bktCTJf9G6gqkLOYPmGR9Uh2eHfOZUgCs4tdTkpPxghs3aZzaZxMM5EaO05LZVbh
-         jJ9/vn/oMbawWLJPrFb3h1v6mvjeR3EPg4pbWOxBS/oZu+V8DBiypl9w8fiVghF1g3EW
-         gTuGwQ3o3t0Bm/oHPxSSzK3yF9j0aZkhZgzhn26e+VzfIS3NFaDWhGJfvMldbBYgEaB5
-         H5xuFgRAyUp4aCFvmyndkXi9dWuu3Xpj6uqWT4Bwt6s+T/NctA4wDoN+kcMZw+Km54kx
-         pCpkHMe7iZkGA8z+UjYeSaKH12QoLc+gH8YPPN3x0sSZH6+baAz5GQVIriMYTDENsw2D
-         IsCA==
+        bh=UzvQM908Jy3z5GL48S8s+55sngOGG+1Pc7lf5lQnBIE=;
+        b=B+WLrHnUpf4IwJX0fM9iKELpWbwiEZR2q0T5c2SjIkdDYwj3/DfXAuz2d5VXl7DOJ+
+         NY1rQM7C7zHA6ARDY6KjkfeLOT3TypcJeCRHuWLA67ZHd5a0tiIhzx44Hv06GQrMRvRA
+         uv5dcJ2TvsdyocWpeIsb0jEPDx5ggXg+Bkg9o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8LXcNpiL0hugCcH3yPL4TbK7rxIaV5AKYrpbt4Nl4sQ=;
-        b=ILAvnLshL1oVyc3oWA7jDM9BETONhA6/rWQdYHZHE2UVjyb+tmqkT3+KldTsuoUnhf
-         hMPIUBpJANQOvZ0b755mTOGFEbyJ6fcXYhLYjKr3Fw42SOI1CLsuxaC/lphUwLuYZTBQ
-         ZP7nHMWgu0bOOIj8sIUezEKlbIZZlncmfTFoZ9tjCQHZ2uHf42loI7OZTHeYr3/2t/RV
-         1y/beZLwZI0+/xlRS90Ua8uEEWhq19+g8RCUcI3rlkFxIyCpmRsB3ZT9f59EnfhDgSQU
-         CG+oJnc5PCX4MFvLYIaObj27z85JtPiqEe/1Lb/+MlIqgxRBWR3cPGrvUbdn0Z8Hi/QE
-         fySQ==
-X-Gm-Message-State: AJIora+RyHp241zJ3lXg18LKMHH45QnNrgkEyD8Ui1utaD15cFkLMvis
-        5OvS+9235Ug+qQRg95moH9X6BkyVCC7L4HEQmu8=
-X-Google-Smtp-Source: AGRyM1tdP4x7JQy/x8EF4GTgKqBJp8bVVhJs9zL0bB2Xb32Aq50XDeqCZxjHY+getXx/QdxDCe7PG4rZ4CDZs0+VldA=
-X-Received: by 2002:a05:6902:154c:b0:66e:8254:146e with SMTP id
- r12-20020a056902154c00b0066e8254146emr3318465ybu.570.1657280852776; Fri, 08
- Jul 2022 04:47:32 -0700 (PDT)
+        bh=UzvQM908Jy3z5GL48S8s+55sngOGG+1Pc7lf5lQnBIE=;
+        b=BOG1zml1myzj6rezKx4DTagVZyQcs3j9QXrqVpbXERlKEtIj1OL32jJ4+GzbcYX+I0
+         5UJIM5hjK79aDSiB7l08TQOYg1faVrVUI+7ItkQOYVbnX4QN/CjN5J0uJF7tReUlVQeP
+         mG61uzWHY2PBVJrctNiIlWh9cKcund0U02SNt40F0enRWR6GPdwssRlL6uP1RxdSlncQ
+         256JLCyGQ7iUj7ivgV8gKJTL0PTKv/PwlW3nGEdR8siIkxAzlK9QjL5Scd9gs0sdr3YT
+         zyItD1BshjEeC1EpzR5GODiReoWBymTlALWoa28IQTazX/AfM/77kQY9y1DZNkN79wXs
+         kpxw==
+X-Gm-Message-State: AJIora8LQvr+V3Y4RehFh7zTfqtWhgFfTyIuINQFo/WL4PJIcktDivst
+        UA7FtQNFSfsntk7lANhMXZHw4va4BTSqTw==
+X-Google-Smtp-Source: AGRyM1tOENfroXdH+IreCC2ZpiPCfzqHv/8ew1t7YlJdoemzrr+x3+VVMD72iz9aVFlQneDKoe4TxA==
+X-Received: by 2002:a05:622a:7:b0:31b:74bd:1597 with SMTP id x7-20020a05622a000700b0031b74bd1597mr2364798qtw.677.1657280857401;
+        Fri, 08 Jul 2022 04:47:37 -0700 (PDT)
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
+        by smtp.gmail.com with ESMTPSA id l12-20020a37f90c000000b006b14fb1ba18sm21132623qkj.35.2022.07.08.04.47.36
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 04:47:36 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id y195so6147924yby.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 04:47:36 -0700 (PDT)
+X-Received: by 2002:a25:1583:0:b0:668:e74a:995f with SMTP id
+ 125-20020a251583000000b00668e74a995fmr3183243ybv.1.1657280855797; Fri, 08 Jul
+ 2022 04:47:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220707091301.1282291-1-cezary.rojewski@intel.com>
- <CAHp75VceKBoxXVPP4dRYb8LQqHMMDHFp6-E2iuZ-h2RTK8PWQQ@mail.gmail.com> <e0c7d254-ace3-625c-cc83-52ca0b45e9fc@intel.com>
-In-Reply-To: <e0c7d254-ace3-625c-cc83-52ca0b45e9fc@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 13:46:56 +0200
-Message-ID: <CAHp75VckU2ZraLJ-frjWXjUu9pFW+-XmWgTbYqUXOUNAD-1HGA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
-To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     Andy Shevchenko <andy@kernel.org>, Mark Brown <broonie@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        amadeuszx.slawinski@linux.intel.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
+References: <20220706182657.210650-1-ezequiel@vanguardiasur.com.ar> <CAAFQd5Ap=oY8nf8d=o3p1D8avkmxPXvJz5X5SAaAS3M-pTC7_Q@mail.gmail.com>
+In-Reply-To: <CAAFQd5Ap=oY8nf8d=o3p1D8avkmxPXvJz5X5SAaAS3M-pTC7_Q@mail.gmail.com>
+From:   Tomasz Figa <tfiga@chromium.org>
+Date:   Fri, 8 Jul 2022 20:47:25 +0900
+X-Gmail-Original-Message-ID: <CAAFQd5C--1RFVxBvLWXZqOp3sh+fxiOobDrht_7ejRHSBHfdHg@mail.gmail.com>
+Message-ID: <CAAFQd5C--1RFVxBvLWXZqOp3sh+fxiOobDrht_7ejRHSBHfdHg@mail.gmail.com>
+Subject: Re: [PATCH 0/8] videobuf2: Replace vb2_find_timestamp() with vb2_find_buffer()
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 1:33 PM Cezary Rojewski
-<cezary.rojewski@intel.com> wrote:
-> On 2022-07-08 12:22 PM, Andy Shevchenko wrote:
-> > On Thu, Jul 7, 2022 at 11:03 AM Cezary Rojewski
-> > <cezary.rojewski@intel.com> wrote:
-> >>
-> >> Add strsplit_u32() and its __user variant to allow for splitting
-> >> specified string into array of u32 tokens.
+On Fri, Jul 8, 2022 at 1:47 PM Tomasz Figa <tfiga@chromium.org> wrote:
+>
+> Hi Ezequiel,
+>
+> On Thu, Jul 7, 2022 at 3:27 AM Ezequiel Garcia
+> <ezequiel@vanguardiasur.com.ar> wrote:
 > >
-> > And I believe we have more of this done in old code.
-> > Since all callers use ',' as a delimiter, have you considered using
-> > get_options()?
->
->
-> Thanks for your input, Andy.
->
-> When I'd written the very first version of this function many months
-> ago, get_options() looked as it does not fulfill our needs. It seems to
-> be true even today: caller needs to know the number of elements in an
-> array upfront.
-
-Have you read a kernel doc for it? It does return the number of
-elements at the first pass.
-
-> Also, kstrtox() takes into account '0x' and modifies the
-> base accordingly if that's the case. simple_strtoull() looks as not
-> capable of doing the same thing.
-
-How come?! It does parse all known prefixes: 0x, 0, +, -.
-
-> The goal is to be able to parse input such as:
->
-> 0x1000003,0,0,0x1000004,0,0
->
-> into a sequence of 6 uints, filling the *tkns and *num_tkns for the caller.
-
-Yes. Have you checked the test cases for get_options()?
-
-> >> Originally this functionality was added for the SOF sound driver. As
-> >> more users are on the horizon, relocate it so it becomes a common good.
+> > All users of vb2_find_timestamp() combine it with vb2_get_buffer()
+> > to retrieve a videobuf2 buffer, given a u64 timestamp.
 > >
-> > Maybe it can be fixed just there.
+> > Therefore, this series removes vb2_find_timestamp() and instead
+> > introduces a vb2_find_buffer, which is more suitable, making
+> > videobuf2 API slightly cleaner.
+> >
+> > Ezequiel Garcia (8):
+> >   videobuf2: Introduce vb2_find_buffer()
+> >   mediatek: vcodec: Use vb2_find_buffer
+> >   tegra-vde: Use vb2_find_buffer
+> >   vicodec: Use vb2_find_buffer
+> >   hantro: Use vb2_find_buffer
+> >   rkvdec: Use vb2_find_buffer
+> >   cedrus: Use vb2_find_buffer
+> >   videobuf2: Remove vb2_find_timestamp()
+> >
+> >  .../media/common/videobuf2/videobuf2-v4l2.c   | 12 ++---
+> >  .../vcodec/vdec/vdec_h264_req_common.c        |  7 ++-
+> >  .../mediatek/vcodec/vdec/vdec_vp8_req_if.c    |  7 ++-
+> >  .../vcodec/vdec/vdec_vp9_req_lat_if.c         |  8 +--
+> >  .../media/platform/nvidia/tegra-vde/h264.c    |  9 ++--
+> >  .../media/test-drivers/vicodec/vicodec-core.c |  8 +--
+> >  drivers/staging/media/hantro/hantro_drv.c     |  6 +--
+> >  .../staging/media/hantro/hantro_g2_vp9_dec.c  | 10 ++--
+> >  drivers/staging/media/rkvdec/rkvdec-h264.c    | 41 ++++++---------
+> >  drivers/staging/media/rkvdec/rkvdec-vp9.c     | 10 ++--
+> >  drivers/staging/media/sunxi/cedrus/cedrus.h   | 13 +----
+> >  .../staging/media/sunxi/cedrus/cedrus_h264.c  | 16 +++---
+> >  .../staging/media/sunxi/cedrus/cedrus_h265.c  | 16 +++---
+> >  .../staging/media/sunxi/cedrus/cedrus_mpeg2.c | 36 ++++++-------
+> >  .../staging/media/sunxi/cedrus/cedrus_vp8.c   | 50 ++++++-------------
+> >  include/media/videobuf2-v4l2.h                | 12 ++---
+> >  16 files changed, 100 insertions(+), 161 deletions(-)
+> >
+> > --
+> > 2.34.3
+> >
 >
-> avs-driver, which is also part of the ASoC framework has very similar
-> debug-interface. I believe there's no need to duplicate the functions -
-> move them to common code instead.
+> Thanks for the series! I think it's a nice cleanup indeed, but please
+> see a few comments in my replies to individual patches.
 
-Taking the above into account, please try to use get_options() and
-then tell me what's not working with it. If so, we will add test cases
-to get_options() and fix it.
+As we clarified my concern in one of the patches and the other one was
+purely stylistic, feel free to just add my
 
--- 
-With Best Regards,
-Andy Shevchenko
+Acked-by: Tomasz Figa <tfiga@chromium.org>
+
+to the entire series. The stylistic one can be ignored if there is no
+other change needed.
+
+Best regards,
+Tomasz
