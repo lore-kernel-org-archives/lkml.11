@@ -2,72 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE3CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B46C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238055AbiGHOVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        id S238064AbiGHO1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238064AbiGHOVl (ORCPT
+        with ESMTP id S237631AbiGHO1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:21:41 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FE2326D4;
-        Fri,  8 Jul 2022 07:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1657290076;
-        bh=6lhQbMhE6Tq/JsXBUhi3e+zhcqO27HN8eOz+uNLxVak=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Qu8KxQ7va/kQoThEw5wcX6AZ+LOCulHcyvKRJiHoBxoLvr9kuCA6a4qs+Nc4Bpl5h
-         wecj1UMnBgTjPCCY1Sr4i6On96bzMKhWn0sH1dY+qeNcVRIYTWKXRQ6ZXc3/2p3jo3
-         g/3BXNJS4wCI8fA3ONdu8JdZr0SSbfIuKjroJzik=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [157.180.225.69] ([157.180.225.69]) by web-mail.gmx.net
- (3c-app-gmx-bs34.server.lan [172.19.170.86]) (via HTTP); Fri, 8 Jul 2022
- 16:21:16 +0200
+        Fri, 8 Jul 2022 10:27:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDB7729CA3
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657290468;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TgSz10/9BsFZpGAIEkp0ySVetokqd5lKigRRrfTtX48=;
+        b=bEkfzJ6dLkacz3ZMqFTJ0OaiMyuAyJqUObHI+prH1JzwieONH/HlboZSUpl/wgWXsihmZR
+        mcGzQmpJGXuHdLATzjQT/BZQlb6uWHNvxf6oMHgQBWgTTu1rKQEXAF1sEAHbUuZnLhTdM0
+        SMJs3w45nO7XuoghnQUsr9/nVDacTNg=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-70-2lXKOy0UMxm_3O095K8xMA-1; Fri, 08 Jul 2022 10:27:45 -0400
+X-MC-Unique: 2lXKOy0UMxm_3O095K8xMA-1
+Received: by mail-wm1-f69.google.com with SMTP id p21-20020a05600c1d9500b003a2d6c2b643so1092387wms.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 07:27:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=TgSz10/9BsFZpGAIEkp0ySVetokqd5lKigRRrfTtX48=;
+        b=6eWfKMurrNcZtKhGIGiVicHbh1xFjz6xpjUcGnWJ7g+OUPfgnz+9mVvzgK3AD4R/me
+         dkFKT4mNZRgdurYYp5DYB6jza0g4nTC4Nbuaw8qOn4mAfXT0UaXluPmgrEHSTR+WlN2/
+         Hr2+B+7LDhydWvnxoyDhTPNWnWhoIUeifX5b1bj78pLhTShLQ2X7oldhfXr6FAlDB/to
+         DEh255Q+UxmNaQOiRhdMlU5bq3koVzR9fRglLPg3bPBKhuu64MK5yOydPk0vJaOUyV9C
+         g2NdytLNw5dkS3TcBrADwuK3YUsb42fmT4JPRBBw+cNTohQzkmAl3o+XloO1xtjlVwWz
+         Werw==
+X-Gm-Message-State: AJIora95D3Jr8HYDpiyBOfDwBQ6j5YsXl8ufLZI3RMMVLxChSY6QdvWH
+        LDhJbqO0kbRXrrHCN07A9mnQbceN5Om0ibcaI9i1TLZYbVDX7Zgs+78KFoalKTl0T2vWKsYsdKP
+        cy3NeCRUzvmfIDv0Cc1QtiiT2
+X-Received: by 2002:adf:efc7:0:b0:21d:9412:7d54 with SMTP id i7-20020adfefc7000000b0021d94127d54mr556192wrp.230.1657290464829;
+        Fri, 08 Jul 2022 07:27:44 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sVca1hCqgfCicFr9JuOmeFXakjNABoNNlhHLLByVKShUtTdzfE9ZgweqHWfo2pmAH7s/5t7w==
+X-Received: by 2002:adf:efc7:0:b0:21d:9412:7d54 with SMTP id i7-20020adfefc7000000b0021d94127d54mr556175wrp.230.1657290464654;
+        Fri, 08 Jul 2022 07:27:44 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id ay26-20020a5d6f1a000000b0021baf5e590dsm41084417wrb.71.2022.07.08.07.27.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 07:27:43 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     linux-hyperv@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v2] KVM: x86: Fully initialize 'struct kvm_lapic_irq' in
+ kvm_pv_kick_cpu_op()
+In-Reply-To: <20220708125147.593975-1-vkuznets@redhat.com>
+References: <20220708125147.593975-1-vkuznets@redhat.com>
+Date:   Fri, 08 Jul 2022 16:27:42 +0200
+Message-ID: <87let3ptlt.fsf@redhat.com>
 MIME-Version: 1.0
-Message-ID: <trinity-23d198fe-40f0-40bb-8d95-2a64ae047a7d-1657290076363@3c-app-gmx-bs34>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Frank Wunderlich <linux@fw-web.de>
-Subject: Aw: [PATCH] arm64: dts: rk356x: fix upper usb port on BPI-R2-Pro
-Content-Type: text/plain; charset=UTF-8
-Date:   Fri, 8 Jul 2022 16:21:16 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20220708132706.81450-1-linux@fw-web.de>
-References: <20220708132706.81450-1-linux@fw-web.de>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:6POgQ4vFo6v2yxUWKuL4B/SKN+XUsFnyRZLUJ8RKpuNVB+CVRgUrtdqsuKTkX6DYgczdM
- S79MFaUYh2YAHCctg75rCXezG2XeG6pSK72EuX6BaIiUykX1x9lVwIAUUgFUkoOPjpD5EqR6fUDl
- go6/5GkbcWukqZ5Xv2tic2OdfZeeiwtMAiMkp1YxBJMudGPAC92m3KqlIw0RiMiA+LgQfn3zIbiF
- UKzcgEK4EnU/Ccjn3f7QK2hNolEB93PTxFV4c2q1U2Me8VQuhKQ3Y9SNhyUP9cVWGo63AzzZpmtZ
- yg=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2Ss00Y/hSzk=:W+x06xOV3HSvSsYyXdbK6F
- 5sjv8mfCSOOHEOg6rxQHgGX/yqo9n/Irjw6ctZ9iYnFsjlASDEQ0anJ6kl/q+N0hIuMunTRh4
- AUWZy2OJuiQoynH5m/huT/LHorj0WAUnYB04wT9JyxFyAjY8ONrOULoPO11I0uMmSkzS0WCm2
- mv9NIIftZbU19iLpdoPTzFuibq+2PBwrPrD6OEks2V2icsj27YYhxOnYW4hdcP7UjPkyrgtn1
- bOuEGeQl4ayrDs3jI+0n6rm3HUGxBONnL2v7MPHZXErdXWxYzFVC4pLk0V4U6elUDuce7V6VL
- 2Vhl6wfvsI6q+222HDdV/fzEiERFnatmjY2RBX5HcjBefCYsmGPpO3tzISbJuty3EdItLalW4
- mhpS81gsaLGM6RSEN9HZLmzglApx/rWoO+e3q3an9Zlpg+63LlsvcX8WioMNhlkSitiwnkJCR
- WALLV2rjor6Whr6lyQK/jFBsh90gGRCz9e0Ja0YCkx9GAH9iyOIQvcZq0yzNfD0JcTk6cbOWy
- /q1+Q7txmkFcADCG9oCjsaXZE2UpyeX9M+URxSQq3mWPqxndZPI1s3UUeWwDKOk5QDvynKSfn
- BPDv3+foeeT3YfgeZ99QJVwrCBJQOPfJUf73G92JmPkaul70935GSvSATHdC61pH6WNxXw+Yr
- BkjyB4sAF0eGx8JTpYHKSiwJWM43rKJ3MDP6mWBZ297YyCtOKajWUnCHRodmudp9CmYCGDdr5
- DyXQaqSs5rxgXBrC3fuYbN8/e2HobxejxhbmPbA72ZHGRnnA5bXkXak03NtvsGaWJ7lfpBeXz
- 8r4KUoU
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Vitaly Kuznetsov <vkuznets@redhat.com> writes:
 
-noticed that prefix should be "arm64: dts: rockchip:", should i send a v2 or can this changed while applying?
+> 'vector' and 'trig_mode' fields of 'struct kvm_lapic_irq' are left
+> uninitialized in kvm_pv_kick_cpu_op(). While these fields are normally
+> not needed for APIC_DM_REMRD, they're still referenced by
+> __apic_accept_irq() for trace_kvm_apic_accept_irq(). Fully initialize
+> the structure to avoid consuming random stack memory.
+>
+> Fixes: a183b638b61c ("KVM: x86: make apic_accept_irq tracepoint more generic")
+> Reported-by: syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-regards Frank
+The patch was sent to linux-hyperv@ by mistake, my apologies.
+
+-- 
+Vitaly
+
