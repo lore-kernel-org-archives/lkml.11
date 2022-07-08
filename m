@@ -2,149 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A30CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237296AbiGHHDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        id S237128AbiGHHDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236733AbiGHHDh (ORCPT
+        with ESMTP id S237291AbiGHHDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:03:37 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E296B241;
-        Fri,  8 Jul 2022 00:03:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657263815; x=1688799815;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sLTf7xui5DUh0UIt7UN4rONb0R9ycQ6xpaAgmLAuY30=;
-  b=DIn7+74MJtv0OoDLRw3CjxBEDjGFAZqqq3WNnnxPvglSJM73a7v1+qPg
-   wB5Qv+Wf+SWV5R7xJ4kQAOfFF507DXgSHVeP3oGs2/o516yx5uS1q0bGG
-   vxCKl2qG7fK9MjKeXvQXsD2Cu+FpG2Y+bJCqC1KSli6UDH2Ws8v6mg1Wg
-   6fFyDiY7B+K7ZjPIWM9ZDoZd4DlcbHgka8yWYLpvqZxZ6dkwUTSwgU41R
-   17H56m/mrrWb82mow/88bIxsXX2AeuQKUX2hLPsVdYfDdmyHGpSCtUiUj
-   GeUA2Zba1c5eyHvezw/pXlaz02QfKQBRGIp1MzLNKZixBjKV876pw1Ahd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="281759989"
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="281759989"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 00:03:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="920895624"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Jul 2022 00:03:31 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9i1S-000N4s-JB;
-        Fri, 08 Jul 2022 07:03:30 +0000
-Date:   Fri, 8 Jul 2022 15:02:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: Re: [V3] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-Message-ID: <202207081429.4VXpQCls-lkp@intel.com>
-References: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
+        Fri, 8 Jul 2022 03:03:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD47A6D568;
+        Fri,  8 Jul 2022 00:03:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44009621DC;
+        Fri,  8 Jul 2022 07:03:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AAECC341C0;
+        Fri,  8 Jul 2022 07:03:34 +0000 (UTC)
+Message-ID: <fffca68c-abe8-591b-43af-656599d0d2f0@xs4all.nl>
+Date:   Fri, 8 Jul 2022 09:03:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v11 15/17] media: uapi: HEVC: fix padding in v4l2 control
+ structures
+Content-Language: en-US
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        nicolas.dufresne@collabora.com, andrzej.p@collabora.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com
+References: <20220706093803.158810-1-benjamin.gaignard@collabora.com>
+ <20220706093803.158810-16-benjamin.gaignard@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220706093803.158810-16-benjamin.gaignard@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vijaya,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on linus/master v5.19-rc5 next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220708-031921
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: hexagon-randconfig-r023-20220707 (https://download.01.org/0day-ci/archive/20220708/202207081429.4VXpQCls-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 562c3467a6738aa89203f72fc1d1343e5baadf3c)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fbd8a1a4b7d91ea5caa048e4557ab18b0d08ea86
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220708-031921
-        git checkout fbd8a1a4b7d91ea5caa048e4557ab18b0d08ea86
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/tty/serial/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/tty/serial/qcom_geni_serial.c:1007:26: warning: format specifies type 'unsigned long' but the argument has type 'unsigned int' [-Wformat]
-                           desired_clk, ser_clk, *clk_div);
-                                                 ^~~~~~~~
-   include/linux/printk.h:610:38: note: expanded from macro 'pr_debug'
-           no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-                                       ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:131:17: note: expanded from macro 'no_printk'
-                   printk(fmt, ##__VA_ARGS__);             \
-                          ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:480:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:452:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   1 warning generated.
 
 
-vim +1007 drivers/tty/serial/qcom_geni_serial.c
+On 7/6/22 11:38, Benjamin Gaignard wrote:
+> Fix padding where needed to remove holes and stay aligned on cache boundaries
 
-   983	
-   984	static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
-   985				unsigned int sampling_rate, unsigned int *clk_div)
-   986	{
-   987		unsigned long ser_clk;
-   988		unsigned long desired_clk;
-   989	
-   990		desired_clk = baud * sampling_rate;
-   991		if (!desired_clk) {
-   992			pr_err("%s: Invalid frequency\n", __func__);
-   993			return 0;
-   994		}
-   995	
-   996		/*
-   997		 * try to find a clock rate within 2% tolerance, then within
-   998		 */
-   999		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
-  1000		if (!ser_clk)
-  1001			ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
-  1002	
-  1003		if (!ser_clk)
-  1004			pr_err("Couldn't find suitable clock rate for %lu\n", desired_clk);
-  1005		else
-  1006			pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
-> 1007				desired_clk, ser_clk, *clk_div);
-  1008	
-  1009		return ser_clk;
-  1010	}
-  1011	
+If a v12 is needed, then please drop the " and stay aligned on cache boundaries"
+part since that's a left-over from previous versions. I've manually removed it
+in my branch so no need to do anything unless a v12 is needed.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+
+	Hans
+
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> Tested-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
+>  .../media/v4l/ext-ctrls-codec.rst             |  6 ++---
+>  drivers/media/v4l2-core/v4l2-ctrls-core.c     | 15 -------------
+>  include/media/hevc-ctrls.h                    | 22 ++++++++++++-------
+>  3 files changed, 17 insertions(+), 26 deletions(-)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> index 59e751c38d06..d5ef91ae3539 100644
+> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> @@ -3513,9 +3513,6 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>      * - __u8
+>        - ``num_active_dpb_entries``
+>        - The number of entries in ``dpb``.
+> -    * - struct :c:type:`v4l2_hevc_dpb_entry`
+> -      - ``dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+> -      - The decoded picture buffer, for meta-data about reference frames.
+>      * - __u8
+>        - ``num_poc_st_curr_before``
+>        - The number of reference pictures in the short-term set that come before
+> @@ -3539,6 +3536,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>        - ``poc_lt_curr[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+>        - PocLtCurr as described in section 8.3.2 "Decoding process for reference
+>          picture set": provides the index of the long term references in DPB array.
+> +    * - struct :c:type:`v4l2_hevc_dpb_entry`
+> +      - ``dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+> +      - The decoded picture buffer, for meta-data about reference frames.
+>      * - __u64
+>        - ``flags``
+>        - See :ref:`Decode Parameters Flags <hevc_decode_params_flags>`
+> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
+> index c5c5407584ff..1f85828d6694 100644
+> --- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
+> +++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
+> @@ -536,7 +536,6 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+>  	struct v4l2_ctrl_h264_decode_params *p_h264_dec_params;
+>  	struct v4l2_ctrl_hevc_sps *p_hevc_sps;
+>  	struct v4l2_ctrl_hevc_pps *p_hevc_pps;
+> -	struct v4l2_ctrl_hevc_slice_params *p_hevc_slice_params;
+>  	struct v4l2_ctrl_hdr10_mastering_display *p_hdr10_mastering;
+>  	struct v4l2_ctrl_hevc_decode_params *p_hevc_decode_params;
+>  	struct v4l2_area *area;
+> @@ -814,8 +813,6 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+>  			p_hevc_pps->pps_beta_offset_div2 = 0;
+>  			p_hevc_pps->pps_tc_offset_div2 = 0;
+>  		}
+> -
+> -		zero_padding(*p_hevc_pps);
+>  		break;
+>  
+>  	case V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS:
+> @@ -824,21 +821,9 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+>  		if (p_hevc_decode_params->num_active_dpb_entries >
+>  		    V4L2_HEVC_DPB_ENTRIES_NUM_MAX)
+>  			return -EINVAL;
+> -
+> -		for (i = 0; i < p_hevc_decode_params->num_active_dpb_entries;
+> -		     i++) {
+> -			struct v4l2_hevc_dpb_entry *dpb_entry =
+> -				&p_hevc_decode_params->dpb[i];
+> -
+> -			zero_padding(*dpb_entry);
+> -		}
+>  		break;
+>  
+>  	case V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS:
+> -		p_hevc_slice_params = p;
+> -
+> -		zero_padding(p_hevc_slice_params->pred_weight_table);
+> -		zero_padding(*p_hevc_slice_params);
+>  		break;
+>  
+>  	case V4L2_CTRL_TYPE_HDR10_CLL_INFO:
+> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+> index 9239e8b649e0..7358cbfc3e4d 100644
+> --- a/include/media/hevc-ctrls.h
+> +++ b/include/media/hevc-ctrls.h
+> @@ -105,6 +105,7 @@ enum v4l2_stateless_hevc_start_code {
+>   * @chroma_format_idc: specifies the chroma sampling
+>   * @sps_max_sub_layers_minus1: this value plus 1 specifies the maximum number
+>   *                             of temporal sub-layers
+> + * @reserved: padding field. Should be zeroed by applications.
+>   * @flags: see V4L2_HEVC_SPS_FLAG_{}
+>   */
+>  struct v4l2_ctrl_hevc_sps {
+> @@ -133,6 +134,7 @@ struct v4l2_ctrl_hevc_sps {
+>  	__u8	chroma_format_idc;
+>  	__u8	sps_max_sub_layers_minus1;
+>  
+> +	__u8	reserved[6];
+>  	__u64	flags;
+>  };
+>  
+> @@ -192,6 +194,7 @@ struct v4l2_ctrl_hevc_sps {
+>   *			divided by 2
+>   * @log2_parallel_merge_level_minus2: this value plus 2 specifies the value of
+>   *                                    the variable Log2ParMrgLevel
+> + * @reserved: padding field. Should be zeroed by applications.
+>   * @flags: see V4L2_HEVC_PPS_FLAG_{}
+>   */
+>  struct v4l2_ctrl_hevc_pps {
+> @@ -210,8 +213,7 @@ struct v4l2_ctrl_hevc_pps {
+>  	__s8	pps_beta_offset_div2;
+>  	__s8	pps_tc_offset_div2;
+>  	__u8	log2_parallel_merge_level_minus2;
+> -
+> -	__u8	padding[4];
+> +	__u8	reserved;
+>  	__u64	flags;
+>  };
+>  
+> @@ -239,14 +241,15 @@ struct v4l2_ctrl_hevc_pps {
+>   * @timestamp: timestamp of the V4L2 capture buffer to use as reference.
+>   * @flags: long term flag for the reference frame
+>   * @field_pic: whether the reference is a field picture or a frame.
+> + * @reserved: padding field. Should be zeroed by applications.
+>   * @pic_order_cnt_val: the picture order count of the reference.
+>   */
+>  struct v4l2_hevc_dpb_entry {
+>  	__u64	timestamp;
+>  	__u8	flags;
+>  	__u8	field_pic;
+> +	__u16	reserved;
+>  	__s32	pic_order_cnt_val;
+> -	__u8	padding[2];
+>  };
+>  
+>  /**
+> @@ -285,8 +288,6 @@ struct v4l2_hevc_pred_weight_table {
+>  	__s8	delta_chroma_weight_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX][2];
+>  	__s8	chroma_offset_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX][2];
+>  
+> -	__u8	padding[6];
+> -
+>  	__u8	luma_log2_weight_denom;
+>  	__s8	delta_chroma_log2_weight_denom;
+>  };
+> @@ -339,6 +340,7 @@ struct v4l2_hevc_pred_weight_table {
+>   * @slice_tc_offset_div2: specify the deblocking parameter offsets for tC divided by 2
+>   * @pic_struct: indicates whether a picture should be displayed as a frame or as one or
+>   *		more fields
+> + * @reserved0: padding field. Should be zeroed by applications.
+>   * @slice_segment_addr: specifies the address of the first coding tree block in
+>   *			the slice segment
+>   * @ref_idx_l0: the list of L0 reference elements as indices in the DPB
+> @@ -349,6 +351,7 @@ struct v4l2_hevc_pred_weight_table {
+>   *				picture include in the SPS
+>   * @pred_weight_table: the prediction weight coefficients for inter-picture
+>   *		       prediction
+> + * @reserved1: padding field. Should be zeroed by applications.
+>   * @flags: see V4L2_HEVC_SLICE_PARAMS_FLAG_{}
+>   */
+>  struct v4l2_ctrl_hevc_slice_params {
+> @@ -379,17 +382,18 @@ struct v4l2_ctrl_hevc_slice_params {
+>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture timing SEI message */
+>  	__u8	pic_struct;
+>  
+> +	__u8	reserved0[3];
+>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: General slice segment header */
+>  	__u32	slice_segment_addr;
+>  	__u8	ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u8	ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u16	short_term_ref_pic_set_size;
+>  	__u16	long_term_ref_pic_set_size;
+> -	__u8	padding;
+>  
+>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction parameter */
+>  	struct v4l2_hevc_pred_weight_table pred_weight_table;
+>  
+> +	__u8	reserved1[2];
+>  	__u64	flags;
+>  };
+>  
+> @@ -406,7 +410,6 @@ struct v4l2_ctrl_hevc_slice_params {
+>   * @long_term_ref_pic_set_size: specifies the size of long-term reference
+>   *				pictures set include in the SPS of the first slice
+>   * @num_active_dpb_entries: the number of entries in dpb
+> - * @dpb: the decoded picture buffer, for meta-data about reference frames
+>   * @num_poc_st_curr_before: the number of reference pictures in the short-term
+>   *			    set that come before the current frame
+>   * @num_poc_st_curr_after: the number of reference pictures in the short-term
+> @@ -417,6 +420,8 @@ struct v4l2_ctrl_hevc_slice_params {
+>   * @poc_st_curr_after: provides the index of the short term after references
+>   *		       in DPB array
+>   * @poc_lt_curr: provides the index of the long term references in DPB array
+> + * @reserved: padding field. Should be zeroed by applications.
+> + * @dpb: the decoded picture buffer, for meta-data about reference frames
+>   * @flags: see V4L2_HEVC_DECODE_PARAM_FLAG_{}
+>   */
+>  struct v4l2_ctrl_hevc_decode_params {
+> @@ -424,13 +429,14 @@ struct v4l2_ctrl_hevc_decode_params {
+>  	__u16	short_term_ref_pic_set_size;
+>  	__u16	long_term_ref_pic_set_size;
+>  	__u8	num_active_dpb_entries;
+> -	struct	v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u8	num_poc_st_curr_before;
+>  	__u8	num_poc_st_curr_after;
+>  	__u8	num_poc_lt_curr;
+>  	__u8	poc_st_curr_before[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u8	poc_st_curr_after[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u8	poc_lt_curr[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+> +	__u8	reserved[4];
+> +	struct	v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u64	flags;
+>  };
+>  
