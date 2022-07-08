@@ -2,166 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F5DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E7AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239280AbiGHQYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
+        id S239293AbiGHQYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239052AbiGHQWX (ORCPT
+        with ESMTP id S239238AbiGHQYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:22:23 -0400
+        Fri, 8 Jul 2022 12:24:11 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EDE30F55;
-        Fri,  8 Jul 2022 09:22:21 -0700 (PDT)
-Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:3cab:61a1:2b1f:896b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D187478E;
+        Fri,  8 Jul 2022 09:23:49 -0700 (PDT)
+Received: from tincan.cable.virginm.net (cpc108961-cmbg20-2-0-cust263.5-4.cable.virginm.net [80.5.129.8])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id E2A176601A1E;
-        Fri,  8 Jul 2022 17:22:19 +0100 (BST)
+        (Authenticated sender: gtucker)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 574C766019F6;
+        Fri,  8 Jul 2022 17:23:47 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657297340;
-        bh=u9LN7gKuzA4NSh5FPj2yGalMI+B6ywuRk0ST6YTnNqw=;
+        s=mail; t=1657297427;
+        bh=RtHf1/AU2+6S1ap2rXy/J91zOx/U7sO3/mkFTHGpcc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IjdKWjDJe+Uwvw3Se9npvw8K7waE+alBKpsPSjhtfoVp0pQTbLlMx9ovpTB3xHkba
-         5+UmUJydhgGeBpLlOcCooFPG3XbgpIafBTyE4RvprvPrVlkfoU5Hfv/7Qg1KS/MNn1
-         wLBl7Q5vEJyWMRVqrzOg+uLNIS4/itb5B8HUm7B+nT/2pZ+w0Q09QZfxmrrSrnpMNq
-         NMjfjemBCa9Mj+7uNNCrYSrtCJeoC7m554Fc2vmS1HH2fehGZ9o8KRTbqWOoYPw9em
-         SGwok4BB1AbufM6le36+ss9YsK2YW3P1iWvRfPvV+ubePQSZ1xrpI8iwgZnE1RvXJ7
-         hntVhdZUy1/0A==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     mchehab@kernel.org, hverkuil@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        nicolas.dufresne@collabora.com, andrzej.p@collabora.com
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v13 11/17] media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
-Date:   Fri,  8 Jul 2022 18:21:50 +0200
-Message-Id: <20220708162156.815772-12-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220708162156.815772-1-benjamin.gaignard@collabora.com>
-References: <20220708162156.815772-1-benjamin.gaignard@collabora.com>
+        b=MDbEVsqBLi2BgozARkMGt2PGJia0ar+RHeN0n0Q9j4oKPiMz4KOzZg4s610rBNrdM
+         JSRKoe02MF83PFiBLJuGdr9fftG6rSilHaVy6rG2Ys3QwU3lCcHxkiLaRqLq0Y5nE5
+         zms//DuEiu+XYNSfjY1iU4D9yYFdI8TPvsdgTLYV22VOE2LnOtLkNLTxjqf4iaHfmO
+         rcuSroC//B/mOnRKxR0XGKacVjQCRJkG/vNsdV5A2SHSFscRvwtFoO6GPjqhQSCAcm
+         fQBcq153aE0v5L+i7k4orHgVmq/6TpTKuT4XLXKVnua/WLdHhLKeT1rkG5K7AqsZ4Y
+         C4yCoahLCd3CQ==
+From:   Guillaume Tucker <guillaume.tucker@collabora.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Cc:     kernel@collabora.com, linux-kbuild@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH 4/4] Makefile: add headers_install to kselftest targets
+Date:   Fri,  8 Jul 2022 17:23:30 +0100
+Message-Id: <4d34d06baf945dc31c78f873771cef3a75b60067.1657296695.git.guillaume.tucker@collabora.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <cover.1657296695.git.guillaume.tucker@collabora.com>
+References: <cover.1657296695.git.guillaume.tucker@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The number of 'entry point offset' can be very variable.
-Instead of using a large static array define a v4l2 dynamic array
-of U32 (V4L2_CTRL_TYPE_U32).
-The number of entry point offsets is reported by the elems field
-and in struct v4l2_ctrl_hevc_slice_params.num_entry_point_offsets
-field.
+Add headers_install as a dependency to kselftest targets so that they
+can be run directly from the top of the tree.  The kselftest Makefile
+used to try to call headers_install "backwards" but failed due to the
+relative path not being consistent.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Tested-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Now we can either run this directly:
+
+  $ make O=build kselftest-all
+
+or this:
+
+  $ make O=build headers_install
+  $ make O=build -C tools/testing/selftest all
+
+The same commands work as well when building directly in the source
+tree (no O=) or any arbitrary path (relative or absolute).
+
+Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
 ---
-version 13:
-- Reword num_entry_point_offsets field and control usage (yes, again)
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- .../userspace-api/media/v4l/ext-ctrls-codec.rst  | 16 ++++++++++++++++
- drivers/media/v4l2-core/v4l2-ctrls-defs.c        |  5 +++++
- include/media/hevc-ctrls.h                       |  5 ++++-
- 3 files changed, 25 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-index c2e0adece613..c05c5553f0e3 100644
---- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-@@ -3010,6 +3010,11 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
-     * - __u32
-       - ``data_bit_offset``
-       - Offset (in bits) to the video data in the current slice data.
-+    * - __u32
-+      - ``num_entry_point_offsets``
-+      - Specifies the number of entry point offset syntax elements in the slice header.
-+        When the driver supports it, the ``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS``
-+        must be set.
-     * - __u8
-       - ``nal_unit_type``
-       - Specifies the coding type of the slice (B, P or I).
-@@ -3150,6 +3155,17 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+diff --git a/Makefile b/Makefile
+index 1a6678d817bd..afc9d739ba44 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1347,10 +1347,10 @@ tools/%: FORCE
+ # Kernel selftest
  
-     \normalsize
+ PHONY += kselftest
+-kselftest:
++kselftest: headers_install
+ 	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests run_tests
  
-+``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
-+    Specifies entry point offsets in bytes.
-+    This control is a dynamically sized array. The number of entry point
-+    offsets is reported by the ``elems`` field.
-+    This bitstream parameter is defined according to :ref:`hevc`.
-+    They are described in section 7.4.7.1 "General slice segment header
-+    semantics" of the specification.
-+    When multiple slices are submitted in a request, the length of
-+    this array must be the sum of num_entry_point_offsets of all the
-+    slices in the request.
-+
- ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
-     Specifies the HEVC scaling matrix parameters used for the scaling process
-     for transform coefficients.
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-index d594efbcbb93..e22921e7ea61 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-@@ -1188,6 +1188,7 @@ const char *v4l2_ctrl_get_name(u32 id)
- 	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:		return "HEVC Decode Parameters";
- 	case V4L2_CID_STATELESS_HEVC_DECODE_MODE:		return "HEVC Decode Mode";
- 	case V4L2_CID_STATELESS_HEVC_START_CODE:		return "HEVC Start Code";
-+	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:	return "HEVC Entry Point Offsets";
+-kselftest-%: FORCE
++kselftest-%: headers_install FORCE
+ 	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests $*
  
- 	/* Colorimetry controls */
- 	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
-@@ -1518,6 +1519,10 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
- 	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
- 		*type = V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS;
- 		break;
-+	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:
-+		*type = V4L2_CTRL_TYPE_U32;
-+		*flags |= V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
-+		break;
- 	case V4L2_CID_STATELESS_VP9_COMPRESSED_HDR:
- 		*type = V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR;
- 		break;
-diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index a372c184689e..3a6601a46ced 100644
---- a/include/media/hevc-ctrls.h
-+++ b/include/media/hevc-ctrls.h
-@@ -20,6 +20,7 @@
- #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS	(V4L2_CID_CODEC_BASE + 1012)
- #define V4L2_CID_STATELESS_HEVC_DECODE_MODE	(V4L2_CID_CODEC_BASE + 1015)
- #define V4L2_CID_STATELESS_HEVC_START_CODE	(V4L2_CID_CODEC_BASE + 1016)
-+#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (V4L2_CID_CODEC_BASE + 1017)
- 
- /* enum v4l2_ctrl_type type values */
- #define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
-@@ -316,6 +317,8 @@ struct v4l2_hevc_pred_weight_table {
-  *
-  * @bit_size: size (in bits) of the current slice data
-  * @data_bit_offset: offset (in bits) to the video data in the current slice data
-+ * @num_entry_point_offsets: specifies the number of entry point offset syntax
-+ *			     elements in the slice header.
-  * @nal_unit_type: specifies the coding type of the slice (B, P or I)
-  * @nuh_temporal_id_plus1: minus 1 specifies a temporal identifier for the NAL unit
-  * @slice_type: see V4L2_HEVC_SLICE_TYPE_{}
-@@ -358,7 +361,7 @@ struct v4l2_hevc_pred_weight_table {
- struct v4l2_ctrl_hevc_slice_params {
- 	__u32	bit_size;
- 	__u32	data_bit_offset;
--
-+	__u32	num_entry_point_offsets;
- 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
- 	__u8	nal_unit_type;
- 	__u8	nuh_temporal_id_plus1;
+ PHONY += kselftest-merge
 -- 
-2.32.0
+2.30.2
 
