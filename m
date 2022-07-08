@@ -2,164 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E023FCCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2707C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:25:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237809AbiGHIYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
+        id S237810AbiGHIZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237539AbiGHIYv (ORCPT
+        with ESMTP id S237648AbiGHIZG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:24:51 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2975814A1
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:24:48 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id o4so29509195wrh.3
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:24:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mIwFg075RvwVYz9+/Y+xL9IEwu5sJHlYJ/YyVZSg0lY=;
-        b=Hb9QsIsy3zrdkNF7D7KWN7V9xWmBnlnqukEu8VQO760EvPnCTgR7YaaANXCVvHFhG8
-         azGVU8v/yUeYegEIgmmaKflxUqaohJdfHBD0rtW/STrfWOLiHNQTL2u3xQe8ziPn37Tp
-         KperCCH8+Rsgixu8wrN/mbJVA3rhSsKGl2aOlADbg6XXnewNcscnnFvz+pqLe4iqnJHA
-         zq3s15m3tNnJHcbuScXgMIPMUNpfZjSdtaTKbGQrtAGToOwTcSyiz9akBnE8KKn7Cahy
-         sS9hB+7l1qMZEn7F61+CTCeYnNdL/RgeTOMXypf4x/Gnu8ySOpRtLqY0aWNZCHpwATqH
-         tn0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mIwFg075RvwVYz9+/Y+xL9IEwu5sJHlYJ/YyVZSg0lY=;
-        b=B7qEhxfxuegTehv1J3XMoymS+F9tBSnHCU7xXyA3oENw2NKL1kyKbPGdJlGXyIsi0x
-         w+CMOzVfChg31eUhwTbbFsqsFmUM4ubSf4gNcJOMdw/sty457wiCOWpcqt2MVUJgDgt4
-         2DjUP8SWOYaQTvgmvelBfA3IvayJHiodyq+jDzD0P91yx4Ty1UhU9GMms2rtpfi5FMN5
-         d2oU/8iYTb2ci9GraHv+m6TqJyhncqdp7y+idHoIC8VvpJOUzRcmAH/mqnW/X859tWWA
-         jGFdpcFfoGN54dBygDOCSnVi5pgdrqao22r6bfR0be01GdhQQcymkD2P8I88yTrWQ41v
-         ThlA==
-X-Gm-Message-State: AJIora9V9Zi0Mn3Dg1ue5in9vqTQbLBJtv+8vRAhRCPjkXYoaFutqjVv
-        RWGcFnV851oZS1QPdpZkDsAkbg==
-X-Google-Smtp-Source: AGRyM1viKjtVrmUoxTanFr1pV6d7LMrE7leuT0XIliXYQcDoe0Ro78y5UhOmXgHGos2nagi880AGAA==
-X-Received: by 2002:a5d:588d:0:b0:21d:865c:54e9 with SMTP id n13-20020a5d588d000000b0021d865c54e9mr2109574wrf.3.1657268687247;
-        Fri, 08 Jul 2022 01:24:47 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id h15-20020a1ccc0f000000b0039749b01ea7sm1670902wmb.32.2022.07.08.01.24.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 01:24:46 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 09:24:22 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        James Morse <james.morse@arm.com>,
-        Hou Tao <houtao1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: Re: [PATCH bpf-next v6 4/4] bpf, arm64: bpf trampoline for arm64
-Message-ID: <YsfptiexC0wFABFL@myrica>
-References: <20220625161255.547944-1-xukuohai@huawei.com>
- <20220625161255.547944-5-xukuohai@huawei.com>
- <YscL4t1pYHYApIiK@larix>
- <a24109d5-b79a-99de-0fd5-66b0ec34e5ed@huawei.com>
+        Fri, 8 Jul 2022 04:25:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958788238F;
+        Fri,  8 Jul 2022 01:25:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF79DB824C3;
+        Fri,  8 Jul 2022 08:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 757ADC341C0;
+        Fri,  8 Jul 2022 08:24:56 +0000 (UTC)
+Message-ID: <22136ebe-b3b4-797f-beb0-3fb73d617dbe@xs4all.nl>
+Date:   Fri, 8 Jul 2022 10:24:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a24109d5-b79a-99de-0fd5-66b0ec34e5ed@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] media: amphion: only insert the first sequence
+ startcode for vc1l format
+Content-Language: en-US
+To:     Ming Qian <ming.qian@nxp.com>, mchehab@kernel.org
+Cc:     shawnguo@kernel.org, robh+dt@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220630013041.1251-1-ming.qian@nxp.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <20220630013041.1251-1-ming.qian@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 12:35:33PM +0800, Xu Kuohai wrote:
-> >> +
-> >> +	emit(A64_ADD_I(1, A64_R(0), A64_SP, args_off), ctx);
-> >> +	if (!p->jited)
-> >> +		emit_addr_mov_i64(A64_R(1), (const u64)p->insnsi, ctx);
-> >> +
-> >> +	emit_call((const u64)p->bpf_func, ctx);
-> >> +
-> >> +	/* store return value */
-> >> +	if (save_ret)
-> >> +		emit(A64_STR64I(r0, A64_SP, retval_off), ctx);
-> > 
-> > Here too I think it should be x0. I'm guessing r0 may work for jitted
-> > functions but not interpreted ones
-> > 
+Hi Ming Qian,
+
+Since the v1 has already been merged, this patch no longer applies.
+
+Can you make a v3 on top of https://git.linuxtv.org/media_stage.git/?
+
+The only change that a v3 has to do is the removal of V4L2_FMT_FLAG_DYN_RESOLUTION.
+
+Regards,
+
+	Hans
+
+On 6/30/22 03:30, Ming Qian wrote:
+> For some formats, the amphion vpu requires startcode
+> before sequence and frame, such as vc1, vp8.
 > 
-> Yes, r0 is only correct for jitted code, will fix it to:
+> But for V4L2_PIX_FMT_VC1_ANNEX_L, only the first sequence startcode
+> is needed, the extra startcode will cause decoding error.
+> So after seek, we don't need to insert the sequence startcode.
 > 
-> if (save_ret)
->         emit(A64_STR64I(p->jited ? r0 : A64_R(0), A64_SP, retval_off),
->              ctx);
-
-I don't think we need this test because x0 should be correct in all cases.
-x7 happens to equal x0 when jitted due to the way build_epilogue() builds
-the function at the moment, but we shouldn't rely on that.
-
-
-> >> +	if (flags & BPF_TRAMP_F_CALL_ORIG) {
-> >> +		restore_args(ctx, args_off, nargs);
-> >> +		/* call original func */
-> >> +		emit(A64_LDR64I(A64_R(10), A64_SP, retaddr_off), ctx);
-> >> +		emit(A64_BLR(A64_R(10)), ctx);
-> > 
-> > I don't think we can do this when BTI is enabled because we're not jumping
-> > to a BTI instruction. We could introduce one in a patched BPF function
-> > (there currently is one if CONFIG_ARM64_PTR_AUTH_KERNEL), but probably not
-> > in a kernel function.
-> > 
-> > We could fo like FUNCTION_GRAPH_TRACER does and return to the patched
-> > function after modifying its LR. Not sure whether that works with pointer
-> > auth though.
-> > 
+> In other words, for V4L2_PIX_FMT_VC1_ANNEX_L,
+> the vpu doesn't support dynamic resolution change.
 > 
-> Yes, the blr instruction should be replaced with ret instruction, thanks!
+> Fixes: 145e936380edb ("media: amphion: implement malone decoder rpc interface")
+> Signed-off-by: Ming Qian <ming.qian@nxp.com>
+> ---
+> v2
+> - remove V4L2_FMT_FLAG_DYN_RESOLUTION from the format V4L2_PIX_FMT_VC1_ANNEX_L
+>  drivers/media/platform/amphion/vdec.c       | 2 +-
+>  drivers/media/platform/amphion/vpu.h        | 1 +
+>  drivers/media/platform/amphion/vpu_malone.c | 2 ++
+>  drivers/media/platform/amphion/vpu_rpc.h    | 7 ++++++-
+>  4 files changed, 10 insertions(+), 2 deletions(-)
 > 
-> The layout for bpf prog and regular kernel function is as follows, with
-> bti always coming first and paciasp immediately after patchsite, so the
-> ret instruction should work in all cases.
-> 
-> bpf prog or kernel function:
->         bti c // if BTI
->         mov x9, lr
->         bl <trampoline>    ------> trampoline:
->                                            ...
->                                            mov lr, <return_entry>
->                                            mov x10, <ORIG_CALL_entry>
-> ORIG_CALL_entry:           <-------        ret x10
->                                    return_entry:
->                                            ...
->         paciasp // if PA
->         ...
-
-Actually I just noticed that CONFIG_ARM64_BTI_KERNEL depends on
-CONFIG_ARM64_PTR_AUTH_KERNEL, so we should be able to rely on there always
-being a PACIASP at ORIG_CALL_entry, and since it's a landing pad for BLR
-we don't need to make this a RET
-
- 92e2294d870b ("arm64: bti: Support building kernel C code using BTI")
-
-Thanks,
-Jean
-
+> diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
+> index 09d4f27970ec..6eab9e711cba 100644
+> --- a/drivers/media/platform/amphion/vdec.c
+> +++ b/drivers/media/platform/amphion/vdec.c
+> @@ -104,7 +104,6 @@ static const struct vpu_format vdec_formats[] = {
+>  		.pixfmt = V4L2_PIX_FMT_VC1_ANNEX_L,
+>  		.num_planes = 1,
+>  		.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
+> -		.flags = V4L2_FMT_FLAG_DYN_RESOLUTION
+>  	},
+>  	{
+>  		.pixfmt = V4L2_PIX_FMT_MPEG2,
+> @@ -731,6 +730,7 @@ static void vdec_stop_done(struct vpu_inst *inst)
+>  	vdec->eos_received = 0;
+>  	vdec->is_source_changed = false;
+>  	vdec->source_change = 0;
+> +	inst->total_input_count = 0;
+>  	vpu_inst_unlock(inst);
+>  }
+>  
+> diff --git a/drivers/media/platform/amphion/vpu.h b/drivers/media/platform/amphion/vpu.h
+> index e56b96a7e5d3..f914de6ed81e 100644
+> --- a/drivers/media/platform/amphion/vpu.h
+> +++ b/drivers/media/platform/amphion/vpu.h
+> @@ -258,6 +258,7 @@ struct vpu_inst {
+>  	struct vpu_format cap_format;
+>  	u32 min_buffer_cap;
+>  	u32 min_buffer_out;
+> +	u32 total_input_count;
+>  
+>  	struct v4l2_rect crop;
+>  	u32 colorspace;
+> diff --git a/drivers/media/platform/amphion/vpu_malone.c b/drivers/media/platform/amphion/vpu_malone.c
+> index c62b49e85060..f4a488bf9880 100644
+> --- a/drivers/media/platform/amphion/vpu_malone.c
+> +++ b/drivers/media/platform/amphion/vpu_malone.c
+> @@ -1314,6 +1314,8 @@ static int vpu_malone_insert_scode_vc1_l_seq(struct malone_scode_t *scode)
+>  	int size = 0;
+>  	u8 rcv_seqhdr[MALONE_VC1_RCV_SEQ_HEADER_LEN];
+>  
+> +	if (scode->inst->total_input_count)
+> +		return 0;
+>  	scode->need_data = 0;
+>  
+>  	ret = vpu_malone_insert_scode_seq(scode, MALONE_CODEC_ID_VC1_SIMPLE, sizeof(rcv_seqhdr));
+> diff --git a/drivers/media/platform/amphion/vpu_rpc.h b/drivers/media/platform/amphion/vpu_rpc.h
+> index 25119e5e807e..7eb6f01e6ab5 100644
+> --- a/drivers/media/platform/amphion/vpu_rpc.h
+> +++ b/drivers/media/platform/amphion/vpu_rpc.h
+> @@ -312,11 +312,16 @@ static inline int vpu_iface_input_frame(struct vpu_inst *inst,
+>  					struct vb2_buffer *vb)
+>  {
+>  	struct vpu_iface_ops *ops = vpu_core_get_iface(inst->core);
+> +	int ret;
+>  
+>  	if (!ops || !ops->input_frame)
+>  		return -EINVAL;
+>  
+> -	return ops->input_frame(inst->core->iface, inst, vb);
+> +	ret = ops->input_frame(inst->core->iface, inst, vb);
+> +	if (ret < 0)
+> +		return ret;
+> +	inst->total_input_count++;
+> +	return ret;
+>  }
+>  
+>  static inline int vpu_iface_config_memory_resource(struct vpu_inst *inst,
