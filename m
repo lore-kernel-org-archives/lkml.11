@@ -2,227 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5433C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FE5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238233AbiGHL5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 07:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52214 "EHLO
+        id S237998AbiGHL65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 07:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238232AbiGHL5Y (ORCPT
+        with ESMTP id S237509AbiGHL64 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 07:57:24 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBAD9A6BF;
-        Fri,  8 Jul 2022 04:57:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657281443; x=1688817443;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=H1+NVcVeMFv/dpBApw6TQFy2RKpgd+ViJsOVvdT/uts=;
-  b=XBb9gJKPcMYtMJByqZDMekDf08tK9Av7ehYS4WvMG9pbnr2vKCRHSikc
-   TTZqQLr1lO7jm5rT6pOqDoiUpfkK4jEJVAwNFtk6+5kqfnq1wmmBsVM4P
-   1EN0Z24Ni/Z+cXo6rrlIIY0UuXfwlGvt86wxGsm69/dbEU0YLTqDpRaWa
-   fbdRNGDhFc2AAKs3YJwTUIyKk80B1HhCDrr4dku+4iD6VzN/uCBNpWgKU
-   xbdkp27MaSG+wTD8HVWOQssCw/QW8TOB9MgrMA4fquSOCIwfkP0SmNGbn
-   NWgkj2epQoqr7Yxg9Fa4RaVmJenK+hEHcyiCtEvJcFcGtC7PVq+wDDVwd
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="171312688"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 04:57:23 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 8 Jul 2022 04:57:22 -0700
-Received: from kavya.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 8 Jul 2022 04:57:18 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>, <UNGLinuxDriver@microchip.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <Kavyasree.Kotagiri@microchip.com>
-Subject: [PATCH v8 3/3] mfd: atmel-flexcom: Add support for lan966x flexcom chip-select configuration
-Date:   Fri, 8 Jul 2022 09:56:19 -0200
-Message-ID: <20220708115619.254073-4-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220708115619.254073-1-kavyasree.kotagiri@microchip.com>
-References: <20220708115619.254073-1-kavyasree.kotagiri@microchip.com>
+        Fri, 8 Jul 2022 07:58:56 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DA49A69F;
+        Fri,  8 Jul 2022 04:58:55 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id bf9so12728079lfb.13;
+        Fri, 08 Jul 2022 04:58:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FpBSCA3uZ1qD6QzdKwkZAqZgGkjusbAbzf1QWhDabko=;
+        b=Fs/fvFTCVTRQSGhf7mxK921gbeoirfQfyYvyiO3m7JEqDIPkSCh71mIVtFx+ASt2Tq
+         f9aUfxWCy2FrppSsAIQuIOVVuY6pcXAYgbvX39SkquNGCktXyf6QNsxDLOmdk7u3tW9K
+         07rsgG1icB1AvnxPznHSB/M6xOoAEuLHpXQydH07v3VFwSWyKEjrZ7JtMkaWgZUZEkvy
+         I1iQEKSAUNkWfCukat4sOXw3mVd1qxBzHEvPJF5tS6/GvI23962OAg1l0+Os11oqBYNn
+         lLZ6EbS4BKuW0pzgITghmG+o8p2quB3hhsDjPQSF2wmsZnGBBAX0dhXYlUlmCbPN9k98
+         iHIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FpBSCA3uZ1qD6QzdKwkZAqZgGkjusbAbzf1QWhDabko=;
+        b=Kw4q9e3Yac2lVDv/yhdUaS9kco9lL6Mvsk05RDGEUUMsRrrIuQzwK3BZ+xNdHUi5NX
+         u0PL39kSdnonNUIOBcd2nQ0uVhjjM1p+4iy6h+wT4Y4aOlO2nIaO74VszjvbgZ1RfLJs
+         /PeU/+Xrgx/MV3AVJpkP8NmTuCYwGnc7rM6HFDU+KcCzVs7XamlqFXRQhXJ7vjg7M8vM
+         ElBWBdi03BcDA+tPDEalomy+n4v3emuWiwsTmjj23rtDqN+GLtA4VU2daGJYjp9wMIg2
+         /gYKi5ykEJr1HsZ1sBAxpSs4r6U8k8DjvOxhuwrvVe6cPtE/QQZKmKdn/3JcAcs0Y7BX
+         SQDQ==
+X-Gm-Message-State: AJIora+B1h68jOQyR0Gk9c3JaEa4h/HzHuvPZByfUnjVjsZbSvtHbc17
+        E5Gj7ex8uaUGaqW4g6658ZLy3QVYF354qA==
+X-Google-Smtp-Source: AGRyM1sXxLaUp60Rft57xTvCYRK0vwK57cvWbGq2ok6kJsKfghrHamIOijenFM2SM9hE9u3CRHa9jQ==
+X-Received: by 2002:a05:6512:3e09:b0:482:bbd4:9657 with SMTP id i9-20020a0565123e0900b00482bbd49657mr2154038lfv.86.1657281533996;
+        Fri, 08 Jul 2022 04:58:53 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id v3-20020a2e9903000000b0025d382331d8sm2027632lji.120.2022.07.08.04.58.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 04:58:53 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 14:58:51 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-mips@vger.kernel.org, gerg@kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] MIPS: Fixed __debug_virt_addr_valid()
+Message-ID: <20220708115851.ejsooiilxcopkoei@mobilestation>
+References: <20220707215237.1730283-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707215237.1730283-1-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-LAN966x SoC have 5 flexcoms. Each flexcom has 2 chip-selects
-which are optional I/O lines. For each chip select of each
-flexcom there is a configuration register FLEXCOM_SHARED[0-4]:SS_MASK[0-1].
-The width of configuration register is 21 because there are
-21 shared pins on each of which the chip select can be mapped.
-Each bit of the register represents a different FLEXCOM_SHARED pin.
+On Thu, Jul 07, 2022 at 02:52:36PM -0700, Florian Fainelli wrote:
+> It is permissible for kernel code to call virt_to_phys() against virtual
+> addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
+> types. Add a final condition that ensures that the virtual address is
+> below KSEG2.
+> 
+> Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  arch/mips/mm/physaddr.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
+> index a1ced5e44951..a82f8f57a652 100644
+> --- a/arch/mips/mm/physaddr.c
+> +++ b/arch/mips/mm/physaddr.c
+> @@ -5,6 +5,7 @@
+>  #include <linux/mmdebug.h>
+>  #include <linux/mm.h>
+>  
+> +#include <asm/addrspace.h>
+>  #include <asm/sections.h>
+>  #include <asm/io.h>
+>  #include <asm/page.h>
+> @@ -30,7 +31,7 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
+>  	if (x == MAX_DMA_ADDRESS)
+>  		return true;
+>  
 
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
----
-v7 -> v8:
- - Changed compatible string to microchip,lan9668-flexcom.
+> -	return false;
+> +	return KSEGX(x) < KSEG2;
 
-v6 -> v7:
- - No changes.
+With this do we really need the high_memory-based conditionals in this
+method?
 
-v5 -> v6:
- - No changes.
+If the line above is the only way to take the uncached segment into
+account then can we reduce the whole method to:
+static inline bool __debug_virt_addr_valid {
+	return x >= PAGE_OFFSET && KSEGX(x) < KSEG2;
+}
+?
 
-v4 -> v5:
- - No changes.
+Though this still may be invalid for EVA systems, like malta (see
+arch/mips/include/asm/mach-malta/spaces.h).
 
-v3 -> v4:
- - Add condition for a flexcom whether to configure chip-select lines
-   or not, based on "microchip,flx-shrd-pins" property existence because
-   chip-select lines are optional.
+Note AFAICS if EVA is enabled, highmem is implied to be disabled (see
+the CPU_MIPS32_3_5_EVA config utilization and HIGHMEM config
+dependencies). Thus all the memory is supposed to be linearly mapped
+in that case.
 
-v2 -> v3:
- - used goto label for clk_disable in error cases.
+-Sergey
 
-v1 -> v2:
- - use GENMASK for mask, macros for maximum allowed values.
- - use u32 values for flexcom chipselects instead of strings.
- - disable clock in case of errors.
-
- drivers/mfd/atmel-flexcom.c | 94 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 93 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/mfd/atmel-flexcom.c b/drivers/mfd/atmel-flexcom.c
-index 33caa4fba6af..92ea15d5fd72 100644
---- a/drivers/mfd/atmel-flexcom.c
-+++ b/drivers/mfd/atmel-flexcom.c
-@@ -28,15 +28,68 @@
- #define FLEX_MR_OPMODE(opmode)	(((opmode) << FLEX_MR_OPMODE_OFFSET) &	\
- 				 FLEX_MR_OPMODE_MASK)
- 
-+/* LAN966x flexcom shared register offsets */
-+#define FLEX_SHRD_SS_MASK_0	0x0
-+#define FLEX_SHRD_SS_MASK_1	0x4
-+#define FLEX_SHRD_PIN_MAX	20
-+#define FLEX_CS_MAX		1
-+#define FLEX_SHRD_MASK		GENMASK(20, 0)
-+
-+struct atmel_flex_caps {
-+	bool has_flx_cs;
-+};
-+
- struct atmel_flexcom {
- 	void __iomem *base;
-+	void __iomem *flexcom_shared_base;
- 	u32 opmode;
- 	struct clk *clk;
- };
- 
-+static int atmel_flexcom_lan966x_cs_config(struct platform_device *pdev)
-+{
-+	struct atmel_flexcom *ddata = dev_get_drvdata(&pdev->dev);
-+	struct device_node *np = pdev->dev.of_node;
-+	u32 flx_shrd_pins[2], flx_cs[2], val;
-+	int err, i, count;
-+
-+	count = of_property_count_u32_elems(np, "microchip,flx-shrd-pins");
-+	if (count <= 0 || count > 2) {
-+		dev_err(&pdev->dev, "Invalid %s property (%d)\n", "flx-shrd-pins",
-+				count);
-+		return -EINVAL;
-+	}
-+
-+	err = of_property_read_u32_array(np, "microchip,flx-shrd-pins", flx_shrd_pins, count);
-+	if (err)
-+		return err;
-+
-+	err = of_property_read_u32_array(np, "microchip,flx-cs", flx_cs, count);
-+	if (err)
-+		return err;
-+
-+	for (i = 0; i < count; i++) {
-+		if (flx_shrd_pins[i] > FLEX_SHRD_PIN_MAX)
-+			return -EINVAL;
-+
-+		if (flx_cs[i] > FLEX_CS_MAX)
-+			return -EINVAL;
-+
-+		val = ~(1 << flx_shrd_pins[i]) & FLEX_SHRD_MASK;
-+
-+		if (flx_cs[i] == 0)
-+			writel(val, ddata->flexcom_shared_base + FLEX_SHRD_SS_MASK_0);
-+		else
-+			writel(val, ddata->flexcom_shared_base + FLEX_SHRD_SS_MASK_1);
-+	}
-+
-+	return 0;
-+}
-+
- static int atmel_flexcom_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
-+	const struct atmel_flex_caps *caps;
- 	struct resource *res;
- 	struct atmel_flexcom *ddata;
- 	int err;
-@@ -76,13 +129,52 @@ static int atmel_flexcom_probe(struct platform_device *pdev)
- 	 */
- 	writel(FLEX_MR_OPMODE(ddata->opmode), ddata->base + FLEX_MR);
- 
-+	caps = of_device_get_match_data(&pdev->dev);
-+	if (!caps) {
-+		dev_err(&pdev->dev, "Could not retrieve flexcom caps\n");
-+		err = -EINVAL;
-+		goto clk_disable;
-+	}
-+
-+	if (caps->has_flx_cs && of_property_read_bool(np, "microchip,flx-shrd-pins")) {
-+		ddata->flexcom_shared_base = devm_platform_get_and_ioremap_resource(pdev, 1, NULL);
-+		if (IS_ERR(ddata->flexcom_shared_base)) {
-+			err = dev_err_probe(&pdev->dev,
-+					PTR_ERR(ddata->flexcom_shared_base),
-+					"failed to get flexcom shared base address\n");
-+			goto clk_disable;
-+		}
-+
-+		err = atmel_flexcom_lan966x_cs_config(pdev);
-+		if (err)
-+			goto clk_disable;
-+	}
-+
-+clk_disable:
- 	clk_disable_unprepare(ddata->clk);
-+	if (err)
-+		return err;
- 
- 	return devm_of_platform_populate(&pdev->dev);
- }
- 
-+static const struct atmel_flex_caps atmel_flexcom_caps = {};
-+
-+static const struct atmel_flex_caps lan966x_flexcom_caps = {
-+	.has_flx_cs = true,
-+};
-+
- static const struct of_device_id atmel_flexcom_of_match[] = {
--	{ .compatible = "atmel,sama5d2-flexcom" },
-+	{
-+		.compatible = "atmel,sama5d2-flexcom",
-+		.data = &atmel_flexcom_caps,
-+	},
-+
-+	{
-+		.compatible = "microchip,lan9668-flexcom",
-+		.data = &lan966x_flexcom_caps,
-+	},
-+
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, atmel_flexcom_of_match);
--- 
-2.25.1
-
+>  }
+>  
+>  phys_addr_t __virt_to_phys(volatile const void *x)
+> -- 
+> 2.25.1
+> 
