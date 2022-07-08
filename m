@@ -2,105 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF33C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D749C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237583AbiGHIpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
+        id S237381AbiGHIq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237281AbiGHIpk (ORCPT
+        with ESMTP id S236513AbiGHIq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:45:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC3F82382
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:45:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657269939; x=1688805939;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0nPjfTvziEOzQO6qKPLQ8317faZJQJoSrVI5pFj51gY=;
-  b=aJkE0zBNta9YjAbJfBI1ZmJ/HlkAnhtL1soKqO4mdFyXgtzB8VZjrQN1
-   4oH5dBpbEG8RciASNM7Mjd00qyAZHEon60Np/fVTl6v49l56ho4Nlx4GV
-   exINExq8hVIdoYnJWi8Lv/GtJuLMj/JMcC0r0hwIHN40uYftdGG35CgWu
-   cRZv55UOljjBU2m7AcleSnIq6VRihJn5AdaqpJOJPi1jBbh5s1OaPvSrj
-   9ZHnsz5adYnZlwih3h+wE40PLwale+KBkRV2G5UYTphDgbaWS4WhT2SNP
-   edHAMZwRTFSAWv5ZmG4tceaFenfL4uAZXffKJLhB6qZftGw2SmHcHfvSm
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="285360851"
-X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="285360851"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 01:45:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="920926044"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Jul 2022 01:45:37 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9jcG-000NDC-Qi;
-        Fri, 08 Jul 2022 08:45:36 +0000
-Date:   Fri, 8 Jul 2022 16:45:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stephan Gerhold <stephan@gerhold.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Lina Iyer <ilina@codeaurora.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: undefined reference to `cpu_sa110_suspend_size'
-Message-ID: <202207081607.gztBTG5X-lkp@intel.com>
+        Fri, 8 Jul 2022 04:46:56 -0400
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A01823B2;
+        Fri,  8 Jul 2022 01:46:53 -0700 (PDT)
+Received: from [192.168.1.103] (31.173.81.246) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Fri, 8 Jul 2022
+ 11:46:44 +0300
+Subject: Re: [PATCH v3 2/9] usb: typec: Add retimer handle to port
+To:     Prashant Malani <pmalani@chromium.org>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <chrome-platform@lists.linux.dev>
+CC:     <bleung@chromium.org>, <heikki.krogerus@linux.intel.com>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+References: <20220707222045.1415417-1-pmalani@chromium.org>
+ <20220707222045.1415417-3-pmalani@chromium.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <509bf6fe-4406-c577-aa70-6eb70801e375@omp.ru>
+Date:   Fri, 8 Jul 2022 11:46:44 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220707222045.1415417-3-pmalani@chromium.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [31.173.81.246]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/08/2022 08:32:48
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 171636 [Jul 08 2022]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 493 493 c80a237886b75a8eec705b487193915475443854
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.81.246 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.81.246 in (user)
+ dbl.spamhaus.org}
+X-KSE-AntiSpam-Info: 31.173.81.246:7.1.2;omp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.81.246
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/08/2022 08:34:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 7/8/2022 6:55:00 AM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephan,
+Hello!
 
-FYI, the error/warning still remains.
+On 7/8/22 1:20 AM, Prashant Malani wrote:
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   e8a4e1c1bb697b1d9fc48f0e56dc0f50bc024bee
-commit: a871be6b8eee13a35a3e8e56c62770ef17ee9220 cpuidle: Convert Qualcomm SPM driver to a generic CPUidle driver
-date:   2 years, 1 month ago
-config: arm-randconfig-r013-20220708 (https://download.01.org/0day-ci/archive/20220708/202207081607.gztBTG5X-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a871be6b8eee13a35a3e8e56c62770ef17ee9220
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout a871be6b8eee13a35a3e8e56c62770ef17ee9220
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+> Similar to mux and orientation switch, add a handle for registered
+> retimer to the port, so that it has handles to the various switches
+> connected to it.
+> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> ---
+> 
+> Changes since v2:
+> - No changes.
+> 
+> Changes since v1:
+> - Relinquish retimer reference during typec_release.
+> 
+>  drivers/usb/typec/class.c | 9 +++++++++
+>  drivers/usb/typec/class.h | 1 +
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+> index 9062836bb638..f08e32d552b4 100644
+> --- a/drivers/usb/typec/class.c
+> +++ b/drivers/usb/typec/class.c
+[...]
+> @@ -2249,6 +2251,13 @@ struct typec_port *typec_register_port(struct device *parent,
+>  		return ERR_PTR(ret);
+>  	}
+>  
+> +	port->retimer = typec_retimer_get(&port->dev);
+> +	if (IS_ERR(port->retimer)) {
+> +		ret = PTR_ERR(port->retimer);
+> +		put_device(&port->dev);
+> +		return ERR_PTR(ret);
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+   Why convert it to and fro, and not just return port->retimer?
 
-All errors (new ones prefixed by >>):
+[...]
 
-   arm-linux-gnueabi-ld: arch/arm/kernel/sleep.o: in function `__cpu_suspend':
->> (.text+0x60): undefined reference to `cpu_sa110_suspend_size'
-   arm-linux-gnueabi-ld: arch/arm/kernel/suspend.o: in function `__cpu_suspend_save':
->> suspend.c:(.text+0x1d8): undefined reference to `cpu_sa110_do_suspend'
->> arm-linux-gnueabi-ld: suspend.c:(.text+0x210): undefined reference to `cpu_sa110_do_resume'
-   arm-linux-gnueabi-ld: drivers/firmware/qcom_scm-smc.o: in function `__scm_smc_do_quirk':
->> qcom_scm-smc.c:(.text+0x58): undefined reference to `__arm_smccc_smc'
-   arm-linux-gnueabi-ld: drivers/firmware/qcom_scm-legacy.o: in function `scm_legacy_call':
->> qcom_scm-legacy.c:(.text+0x25c): undefined reference to `__arm_smccc_smc'
-   arm-linux-gnueabi-ld: drivers/firmware/qcom_scm-legacy.o: in function `scm_legacy_call_atomic':
-   qcom_scm-legacy.c:(.text+0x4d0): undefined reference to `__arm_smccc_smc'
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for ARM_CPU_SUSPEND
-   Depends on ARCH_SUSPEND_POSSIBLE
-   Selected by
-   - ARM_QCOM_SPM_CPUIDLE && CPU_IDLE && (ARM || ARM64) && (ARCH_QCOM || COMPILE_TEST && !ARM64
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+MBR, Sergey
