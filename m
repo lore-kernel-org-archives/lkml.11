@@ -2,172 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 245E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD8CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:46:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239936AbiGHTqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
+        id S239916AbiGHTqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239908AbiGHTqE (ORCPT
+        with ESMTP id S238387AbiGHTqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:46:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9749E904C9
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:46:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657309562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vLjxfS/IkYLw35yGStC8uj/FyqMkGDcG5weCQvZVRiw=;
-        b=UcCFRvYxdUpr0Ig8rGAe0wnHaolOcBy9nTlcUb+qSteeVDBbBdoyGt5rQYHWHxV0I2UbBO
-        j6cPGOAFXvb58HT7tLDx6Ttuzf9tdlJ5axddDktjUVv5R5WLTJz1HnbL//NvErmK7XgYkN
-        WLjKCv5qy1wzvfiPO0gkinQfG2ZrrB0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-191-XvrBXGQZPterpTmBQlqQNg-1; Fri, 08 Jul 2022 15:46:01 -0400
-X-MC-Unique: XvrBXGQZPterpTmBQlqQNg-1
-Received: by mail-ed1-f71.google.com with SMTP id m10-20020a056402510a00b0043a93d807ffso4805752edd.12
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 12:46:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vLjxfS/IkYLw35yGStC8uj/FyqMkGDcG5weCQvZVRiw=;
-        b=ayhU4XEGwBAXRDZbStuSo6keWvYV14+lIjveRE/0GlSJvaVC0WPhm0yaBfVJmfkPZu
-         jFqTfaT81LxpJRckWxQewS4h6tKEQ9H4iO5dK6SLhlZfZS17pRFBSzdcUFbZ8LOzlYVi
-         CnFk6GgDRhlfWbuvlbmRyWT9B+JqpzNRFrCXOhpWd4FzOy1Bk9Jr46yZQ6i/UwwlQOaO
-         Lfhyjf1aMtX6hAZhRt9qJ5fuGI7eJC56zP+YcgTDSjzQ8uUKfcLbSDE7B0PwDXvm6cWe
-         OVjoE9rPhv0zImsspO/mWLxswOwazdce50nA81sw3eLg7uzGX4KEYo2HC/RFEaIJ67z+
-         BWbQ==
-X-Gm-Message-State: AJIora+MO2dfVlNObpybfYm0qyURGjjvrQwgYKkKqScexFTCkgI6/Unx
-        u1Mi3kks9i2+OlSQD6CwxI7NgKxpwJIX5sRhxZHGwUEzdMKdAV+7y3dwwJfu98AKWEw/d7SjwnL
-        2mmpYdh1qr96i0OsJt6uI4SjY
-X-Received: by 2002:a17:906:84f0:b0:72b:136a:a406 with SMTP id zp16-20020a17090684f000b0072b136aa406mr5208087ejb.700.1657309559679;
-        Fri, 08 Jul 2022 12:45:59 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1soRNcaDcTHOuYD8Mr2wY+AfEJyajgo94gJG5OzKtzrgk5L+7s97fmEIdCygRjckvG23MWK6Q==
-X-Received: by 2002:a17:906:84f0:b0:72b:136a:a406 with SMTP id zp16-20020a17090684f000b0072b136aa406mr5208072ejb.700.1657309559515;
-        Fri, 08 Jul 2022 12:45:59 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id f13-20020a170906824d00b00726e108b566sm15039136ejx.173.2022.07.08.12.45.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 12:45:59 -0700 (PDT)
-Message-ID: <c95724ad-a3b0-2ac8-5413-b971626e7e63@redhat.com>
-Date:   Fri, 8 Jul 2022 21:45:58 +0200
+        Fri, 8 Jul 2022 15:46:03 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 575A588F11
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:45:50 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id D1E0316C3;
+        Fri,  8 Jul 2022 22:47:35 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com D1E0316C3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1657309655;
+        bh=Gjf4Wg6tDAxYDxNLlcgkoZo/rjD6uSfhRtCOK8F6Wrs=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=TC7g4eYlnlpgV6Eb8c3K3boHFrX87ta016m1fE60SgQ3Cv6RkiaD15Xw6JNsUlHBR
+         zRaeGzEG3PaVCfau56yxAMeHQZ+gdVSpxXRaTry55xe69L1/XaldXAavhb47OLSvre
+         5Uz7CtJ5NdkEf9QlWj4j7aeqFs9hDlgFvBhZ+qog=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 8 Jul 2022 22:45:48 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        <soc@kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH RESEND v4 2/2] bus: bt1-axi: Don't print error on -EPROBE_DEFER
+Date:   Fri, 8 Jul 2022 22:44:48 +0300
+Message-ID: <20220708194448.10700-2-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220708194448.10700-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220708194448.10700-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 2/5] drm/modes: Extract
- drm_mode_parse_cmdline_named_mode()
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1657301107.git.geert@linux-m68k.org>
- <402dea47269f2e3960946d186ba3cb118066e74a.1657301107.git.geert@linux-m68k.org>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <402dea47269f2e3960946d186ba3cb118066e74a.1657301107.git.geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The Baikal-T1 AXI bus driver correctly handles the deferred probe
+situation, but still pollutes the system log with a misleading error
+message. Let's fix that by using the dev_err_probe() method to print the
+log message in case of the clocks/resets request errors.
 
-On 7/8/22 20:21, Geert Uytterhoeven wrote:
-> Extract the code to check for a named mode parameter into its own
-> function, to streamline the main parsing flow.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
->  drivers/gpu/drm/drm_modes.c | 41 +++++++++++++++++++++++++++----------
->  1 file changed, 30 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
-> index 30a7be97707bfb16..434383469e9d984d 100644
-> --- a/drivers/gpu/drm/drm_modes.c
-> +++ b/drivers/gpu/drm/drm_modes.c
-> @@ -1749,6 +1749,30 @@ static const char * const drm_named_modes_whitelist[] = {
->  	"PAL",
->  };
->  
-> +static int drm_mode_parse_cmdline_named_mode(const char *name,
-> +					     unsigned int length,
-> +					     bool refresh,
-> +					     struct drm_cmdline_mode *mode)
-> +{
-> +	unsigned int i;
-> +	int ret;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(drm_named_modes_whitelist); i++) {
-> +		ret = str_has_prefix(name, drm_named_modes_whitelist[i]);
-> +		if (!ret)
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-As discussed in my review of 1/5 this needs to become:
+---
 
-		if (ret != length)
-> +			continue;
+Link: https://lore.kernel.org/lkml/20220610080103.10689-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v2:
+- Use the dev_err_probe() return value as the return status of the
+  corresponding method. (@Philipp)
 
-Which renders my other comment on this patch (length not being used) mute.
+Link: https://lore.kernel.org/lkml/20220610104030.28399-2-Sergey.Semin@baikalelectronics.ru/
+Changelog v3:
+- Just resend.
+- Rebase onto the kernel v5.19-rcX.
 
-Regards,
+Link: https://lore.kernel.org/lkml/20220624211233.7529-2-Sergey.Semin@baikalelectronics.ru/
+Changelog v4:
+- Just resend.
+---
+ drivers/bus/bt1-axi.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-Hans
-
-> +
-> +		if (refresh)
-> +			return -EINVAL; /* named + refresh is invalid */
-> +
-> +		strcpy(mode->name, drm_named_modes_whitelist[i]);
-> +		mode->specified = true;
-> +		return 0;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   * drm_mode_parse_command_line_for_connector - parse command line modeline for connector
->   * @mode_option: optional per connector mode option
-> @@ -1785,7 +1809,7 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
->  	const char *bpp_ptr = NULL, *refresh_ptr = NULL, *extra_ptr = NULL;
->  	const char *options_ptr = NULL;
->  	char *bpp_end_ptr = NULL, *refresh_end_ptr = NULL;
-> -	int i, len, ret;
-> +	int len, ret;
->  
->  	memset(mode, 0, sizeof(*mode));
->  	mode->panel_orientation = DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
-> @@ -1823,16 +1847,11 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
->  	}
->  
->  	/* First check for a named mode */
-> -	for (i = 0; mode_end && i < ARRAY_SIZE(drm_named_modes_whitelist); i++) {
-> -		ret = str_has_prefix(name, drm_named_modes_whitelist[i]);
-> -		if (ret) {
-> -			if (refresh_ptr)
-> -				return false; /* named + refresh is invalid */
-> -
-> -			strcpy(mode->name, drm_named_modes_whitelist[i]);
-> -			mode->specified = true;
-> -			break;
-> -		}
-> +	if (mode_end) {
-> +		ret = drm_mode_parse_cmdline_named_mode(name, mode_end,
-> +							refresh_ptr, mode);
-> +		if (ret)
-> +			return false;
->  	}
->  
->  	/* No named mode? Check for a normal mode argument, e.g. 1024x768 */
+diff --git a/drivers/bus/bt1-axi.c b/drivers/bus/bt1-axi.c
+index e7a6744acc7b..70e49a6e5374 100644
+--- a/drivers/bus/bt1-axi.c
++++ b/drivers/bus/bt1-axi.c
+@@ -135,10 +135,9 @@ static int bt1_axi_request_rst(struct bt1_axi *axi)
+ 	int ret;
+ 
+ 	axi->arst = devm_reset_control_get_optional_exclusive(axi->dev, "arst");
+-	if (IS_ERR(axi->arst)) {
+-		dev_warn(axi->dev, "Couldn't get reset control line\n");
+-		return PTR_ERR(axi->arst);
+-	}
++	if (IS_ERR(axi->arst))
++		return dev_err_probe(axi->dev, PTR_ERR(axi->arst),
++				     "Couldn't get reset control line\n");
+ 
+ 	ret = reset_control_deassert(axi->arst);
+ 	if (ret)
+@@ -159,10 +158,9 @@ static int bt1_axi_request_clk(struct bt1_axi *axi)
+ 	int ret;
+ 
+ 	axi->aclk = devm_clk_get(axi->dev, "aclk");
+-	if (IS_ERR(axi->aclk)) {
+-		dev_err(axi->dev, "Couldn't get AXI Interconnect clock\n");
+-		return PTR_ERR(axi->aclk);
+-	}
++	if (IS_ERR(axi->aclk))
++		return dev_err_probe(axi->dev, PTR_ERR(axi->aclk),
++				     "Couldn't get AXI Interconnect clock\n");
+ 
+ 	ret = clk_prepare_enable(axi->aclk);
+ 	if (ret) {
+-- 
+2.35.1
 
