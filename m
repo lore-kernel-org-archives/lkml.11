@@ -2,129 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 590F1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 18:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86064C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 18:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239123AbiGHSOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 14:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35386 "EHLO
+        id S239145AbiGHSVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 14:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239057AbiGHSOG (ORCPT
+        with ESMTP id S238386AbiGHSVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 14:14:06 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2091.outbound.protection.outlook.com [40.107.22.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DC233E09;
-        Fri,  8 Jul 2022 11:14:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c36j7nF5MfZ0EZIoCTgCIJISnGdQl9e/lDna6FPJwS/71+Cdkjwwt0wnpQmHaVGneXK8DREl6afOAgyMv/a0M3U11REp0f+RnmUoxn9DXQCzZmW8QkIy59G2PjJXRdr08MAMkxfCQK3j+o/e2bOtKci4RQjtEhPA6ZLW6ssHBc1Txd6TOCmmJztKeD14jbdKN40zv6OMaiR1IhsbRDjfzyDLLz5d01oFHdRP+BmsHZKSElecKbMol0ekeaPqgJ9paxVF0Ufx5x9WdHgmvOYctdbnZIT1hz31ruVHcPSitMF0YHVR3hqIzTtB9vpZGWRJkkJP/zWwlKDoHYInT07iTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dvuM3aNdc9VgHm1I1aWvm9euqEbRSIgw7Pvti2VEZdc=;
- b=D01WJFGq8Dyd4ybNnXk/pO/FBQviecgbQOPYcycai/qzzfsF3209mtGBxL/ZPC0vcdRTdDjD5g60jSmRfE/8hdypRkPydQyyPA/Wy+Aqcdm3Mk0sSrEmSxDH6Vuh8HNkVEpdHBoyEH/SdUZKMGzZNfEJMVBkMrHC9ZAbxsLis6AgSdULWRC4AUYAmuB1nzRpZ+4ZHNnm6QO0bs7D+YoPquG659aoMBw+MuNPGQDOJtt4kLuRfhKMXPzmxZKSNNLnatcm1tjoGRmTH74oXSKABEoDxz0vd+7j+LvahKqnegI8Vdo4mjN46Oj89tPvZrX67pVua2yYr6R3TbgCmCM5SQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 217.86.141.140) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu;
- dmarc=bestguesspass action=none header.from=esd.eu; dkim=none (message not
- signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dvuM3aNdc9VgHm1I1aWvm9euqEbRSIgw7Pvti2VEZdc=;
- b=NJIxuAfJtqu5GbhT2oQtV/jbKqjE/LI0RnY4Cf71CJ5t/99ZMvnNlG66M8ODUSiUxa0OyRdM5uvUcz9vRfbHlJLhnXA39NGmD7Dcvfz4uj96XQpEnqwLjXSI3ubBaCb1ZJQFmokH+Jgz13e2joAz8UBTP1EHhZmvUUHONdoqrWg=
-Received: from DU2PR04CA0025.eurprd04.prod.outlook.com (2603:10a6:10:3b::30)
- by VI1PR03MB4510.eurprd03.prod.outlook.com (2603:10a6:803:5c::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Fri, 8 Jul
- 2022 18:13:55 +0000
-Received: from DB8EUR06FT035.eop-eur06.prod.protection.outlook.com
- (2603:10a6:10:3b:cafe::3c) by DU2PR04CA0025.outlook.office365.com
- (2603:10a6:10:3b::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20 via Frontend
- Transport; Fri, 8 Jul 2022 18:13:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.86.141.140)
- smtp.mailfrom=esd.eu; dkim=none (message not signed)
- header.d=none;dmarc=bestguesspass action=none header.from=esd.eu;
-Received-SPF: Pass (protection.outlook.com: domain of esd.eu designates
- 217.86.141.140 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.86.141.140; helo=esd-s7.esd; pr=C
-Received: from esd-s7.esd (217.86.141.140) by
- DB8EUR06FT035.mail.protection.outlook.com (10.233.253.35) with Microsoft SMTP
- Server id 15.20.5417.15 via Frontend Transport; Fri, 8 Jul 2022 18:13:54
- +0000
-Received: from esd-s20.esd.local (debby [10.0.0.190])
-        by esd-s7.esd (Postfix) with ESMTPS id BF0317C16C8;
-        Fri,  8 Jul 2022 20:13:54 +0200 (CEST)
-Received: by esd-s20.esd.local (Postfix, from userid 2046)
-        id 727782E01E4; Fri,  8 Jul 2022 20:13:54 +0200 (CEST)
-From:   Frank Jungclaus <frank.jungclaus@esd.eu>
-To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Frank Jungclaus <frank.jungclaus@esd.eu>
-Subject: [PATCH 3/6] can: esd_usb: Improved behavior on esd CAN_ERROR_EXT event (2)
-Date:   Fri,  8 Jul 2022 20:12:34 +0200
-Message-Id: <20220708181235.4104943-4-frank.jungclaus@esd.eu>
+        Fri, 8 Jul 2022 14:21:12 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CA9D12C
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 11:21:10 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by laurent.telenet-ops.be with bizsmtp
+        id siM72700E4C55Sk01iM7mq; Fri, 08 Jul 2022 20:21:09 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o9sbD-002fGn-2I; Fri, 08 Jul 2022 20:21:07 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o9sbC-00BtJi-Fw; Fri, 08 Jul 2022 20:21:06 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: [PATCH v3 06/10] drm/fb-helper: Add support for DRM_FORMAT_C[124]
+Date:   Fri,  8 Jul 2022 20:20:51 +0200
+Message-Id: <db3e80b445df661ff0cd7e698507a8d24a4c867e.1657294931.git.geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220708181235.4104943-1-frank.jungclaus@esd.eu>
-References: <20220708181235.4104943-1-frank.jungclaus@esd.eu>
+In-Reply-To: <cover.1657294931.git.geert@linux-m68k.org>
+References: <cover.1657294931.git.geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 78e0b1ab-898f-4281-6704-08da610d9ead
-X-MS-TrafficTypeDiagnostic: VI1PR03MB4510:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VmKuCegfX41I/A8A04JaxO2xnhxP5JqUiqTjd1CHQ5+u+c1mqr5fqV2FGWNZJZojeYXwLDJ7bGhIM7GFRRBo7mS0iNIsyX3bqWwOz1DmyJ0C7vNfzQEreXXXPH2aIv8bdksIbJNY9vWcPqTyFuiTdBnrIvWjGdIGTvu0Joc70/6TzvJiHa9aiNHXBlIwOoYMg5qRPGM8dbsVznDGKDNT/iALkA3XQt/OCIWsUf9dqEv2WSJk9OEoejgypIlovySkR7T2RiUDL2NLI70E8Fg5fTohQIs0raKGIs7UzA2y/7vI7suk5SeIsR+egAjm0fed8Y9pu9UL73NxsDJvFWtyrM668J0ICnz4nIJdJGMVWUqogFN7hVPvocysiih3Ujq38tQXKlirctaSTPrxRfZO80v+0f4YEE2uNCOdvRc4Z/3n22ql5eYOEBETGNbOmwSMALL3DRFperpR5iwaQ7bN2XAUt4MBe7QXGboVl1bGhMb9kFpeMoDD6nKSyahfatzOXDhiP8NAyJazoKS86GAIydpF/uwkCwlVHb8nItWV9bUEL0GwIJLSzJFPF2BjnWrBg8Fd+Fwg+hg2VzPKF7Q9wh4UTjSexOmuVyQqkc2ffuUmADdE5OVfC+yeGzAPRxsGEFUuEil8vtADVlc68PhhTawJGXP/yH+XIVVIcik3EudqvTW0CCJObJo0p3KD8oV97IREeAQnNSGHKQDPahWIl1ZT6T4uFmKGPVkleLvahOvHjHhf4Qnnj86avWztZeB4ToPMC2lDyjIkFlnn+DoMRxL45Vx8+qdfaOpnmZVKxT0=
-X-Forefront-Antispam-Report: CIP:217.86.141.140;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:pd9568d8c.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(39830400003)(136003)(376002)(36840700001)(46966006)(42186006)(110136005)(316002)(36860700001)(82310400005)(54906003)(186003)(26005)(47076005)(36756003)(6266002)(83380400001)(336012)(70206006)(4326008)(2906002)(8676002)(5660300002)(478600001)(86362001)(1076003)(70586007)(81166007)(44832011)(41300700001)(6666004)(356005)(2616005)(8936002)(40480700001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 18:13:54.9886
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78e0b1ab-898f-4281-6704-08da610d9ead
-X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[217.86.141.140];Helo=[esd-s7.esd]
-X-MS-Exchange-CrossTenant-AuthSource: DB8EUR06FT035.eop-eur06.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR03MB4510
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Moved mislocated supply for cf->data[3] (location of CAN error)
-outside of the "switch (ecc & SJA1000_ECC_MASK){}"-statement
+Add support for color-indexed frame buffer formats with two, four, and
+sixteen colors to the DRM framebuffer helper functions:
+  1. Add support for 1, 2, and 4 bits per pixel to the damage helper,
+  2. For color-indexed modes, the length of the color bitfields must be
+     set to the color depth, else the logo code may pick a logo with too
+     many colors.  Drop the incorrect DAC width comment, which
+     originates from the i915 driver.
+  3. Accept C[124] modes when validating or filling in struct
+     fb_var_screeninfo, and use the correct number of bits per pixel.
+  4. Set the visual to FB_VISUAL_PSEUDOCOLOR for all color-indexed
+     modes.
 
-Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
- drivers/net/can/usb/esd_usb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+If "[PATCH] drm/fb-helper: Remove helpers to change frame buffer
+config"[1] is accepted, the changes to drm_fb_helper_check_var() can
+just be removed.
 
-diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-index e14f08d30b0b..0a402a23d7ac 100644
---- a/drivers/net/can/usb/esd_usb.c
-+++ b/drivers/net/can/usb/esd_usb.c
-@@ -294,7 +294,6 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
- 				cf->data[2] |= CAN_ERR_PROT_STUFF;
- 				break;
- 			default:
--				cf->data[3] = ecc & SJA1000_ECC_SEG;
- 				break;
- 			}
+v3:
+  - Fix FB_VISUAL_TRUECOLOR,
+  - Add Reviewed-by,
+
+v2:
+  - Use drm_format_info_bpp() helper instead of deprecated .depth field
+    or format-dependent calculations,
+  - Use new .is_color_indexed field instead of checking against a list
+    of formats.
+
+[1] Link: https://lore.kernel.org/r/20220629105658.1373770-1-geert@linux-m68k.org
+---
+ drivers/gpu/drm/drm_fb_helper.c | 101 ++++++++++++++++++++++++--------
+ 1 file changed, 75 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+index 1705e8d345aba50a..5098efb374fe64ed 100644
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -376,12 +376,31 @@ static void drm_fb_helper_damage_blit_real(struct drm_fb_helper *fb_helper,
+ 					   struct iosys_map *dst)
+ {
+ 	struct drm_framebuffer *fb = fb_helper->fb;
+-	unsigned int cpp = fb->format->cpp[0];
+-	size_t offset = clip->y1 * fb->pitches[0] + clip->x1 * cpp;
+-	void *src = fb_helper->fbdev->screen_buffer + offset;
+-	size_t len = (clip->x2 - clip->x1) * cpp;
++	size_t offset = clip->y1 * fb->pitches[0];
++	size_t len = clip->x2 - clip->x1;
+ 	unsigned int y;
++	void *src;
  
-@@ -302,6 +301,9 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
- 			if (!(ecc & SJA1000_ECC_DIR))
- 				cf->data[2] |= CAN_ERR_PROT_TX;
- 
-+			/* Store error in CAN protocol (location) in data[3] */
-+			cf->data[3] = ecc & SJA1000_ECC_SEG;
++	switch (drm_format_info_bpp(fb->format, 0)) {
++	case 1:
++		offset += clip->x1 / 8;
++		len = DIV_ROUND_UP(len + clip->x1 % 8, 8);
++		break;
++	case 2:
++		offset += clip->x1 / 4;
++		len = DIV_ROUND_UP(len + clip->x1 % 4, 4);
++		break;
++	case 4:
++		offset += clip->x1 / 2;
++		len = DIV_ROUND_UP(len + clip->x1 % 2, 2);
++		break;
++	default:
++		offset += clip->x1 * fb->format->cpp[0];
++		len *= fb->format->cpp[0];
++		break;
++	}
 +
- 			if (priv->can.state == CAN_STATE_ERROR_WARNING ||
- 			    priv->can.state == CAN_STATE_ERROR_PASSIVE) {
- 				cf->data[1] = (txerr > rxerr) ?
++	src = fb_helper->fbdev->screen_buffer + offset;
+ 	iosys_map_incr(dst, offset); /* go to first pixel within clip rect */
+ 
+ 	for (y = clip->y1; y < clip->y2; y++) {
+@@ -1273,19 +1292,23 @@ static bool drm_fb_pixel_format_equal(const struct fb_var_screeninfo *var_1,
+ }
+ 
+ static void drm_fb_helper_fill_pixel_fmt(struct fb_var_screeninfo *var,
+-					 u8 depth)
++					 const struct drm_format_info *format)
+ {
+-	switch (depth) {
+-	case 8:
++	u8 depth = format->depth;
++
++	if (format->is_color_indexed) {
+ 		var->red.offset = 0;
+ 		var->green.offset = 0;
+ 		var->blue.offset = 0;
+-		var->red.length = 8; /* 8bit DAC */
+-		var->green.length = 8;
+-		var->blue.length = 8;
++		var->red.length = depth;
++		var->green.length = depth;
++		var->blue.length = depth;
+ 		var->transp.offset = 0;
+ 		var->transp.length = 0;
+-		break;
++		return;
++	}
++
++	switch (depth) {
+ 	case 15:
+ 		var->red.offset = 10;
+ 		var->green.offset = 5;
+@@ -1340,7 +1363,9 @@ int drm_fb_helper_check_var(struct fb_var_screeninfo *var,
+ {
+ 	struct drm_fb_helper *fb_helper = info->par;
+ 	struct drm_framebuffer *fb = fb_helper->fb;
++	const struct drm_format_info *format = fb->format;
+ 	struct drm_device *dev = fb_helper->dev;
++	unsigned int bpp;
+ 
+ 	if (in_dbg_master())
+ 		return -EINVAL;
+@@ -1350,22 +1375,33 @@ int drm_fb_helper_check_var(struct fb_var_screeninfo *var,
+ 		var->pixclock = 0;
+ 	}
+ 
+-	if ((drm_format_info_block_width(fb->format, 0) > 1) ||
+-	    (drm_format_info_block_height(fb->format, 0) > 1))
+-		return -EINVAL;
++	switch (format->format) {
++	case DRM_FORMAT_C1:
++	case DRM_FORMAT_C2:
++	case DRM_FORMAT_C4:
++		/* supported format with sub-byte pixels */
++		break;
++
++	default:
++		if ((drm_format_info_block_width(format, 0) > 1) ||
++		    (drm_format_info_block_height(format, 0) > 1))
++			return -EINVAL;
++		break;
++	}
+ 
+ 	/*
+ 	 * Changes struct fb_var_screeninfo are currently not pushed back
+ 	 * to KMS, hence fail if different settings are requested.
+ 	 */
+-	if (var->bits_per_pixel > fb->format->cpp[0] * 8 ||
++	bpp = drm_format_info_bpp(format, 0);
++	if (var->bits_per_pixel > bpp ||
+ 	    var->xres > fb->width || var->yres > fb->height ||
+ 	    var->xres_virtual > fb->width || var->yres_virtual > fb->height) {
+ 		drm_dbg_kms(dev, "fb requested width/height/bpp can't fit in current fb "
+ 			  "request %dx%d-%d (virtual %dx%d) > %dx%d-%d\n",
+ 			  var->xres, var->yres, var->bits_per_pixel,
+ 			  var->xres_virtual, var->yres_virtual,
+-			  fb->width, fb->height, fb->format->cpp[0] * 8);
++			  fb->width, fb->height, bpp);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1380,13 +1416,13 @@ int drm_fb_helper_check_var(struct fb_var_screeninfo *var,
+ 	    !var->blue.length    && !var->transp.length   &&
+ 	    !var->red.msb_right  && !var->green.msb_right &&
+ 	    !var->blue.msb_right && !var->transp.msb_right) {
+-		drm_fb_helper_fill_pixel_fmt(var, fb->format->depth);
++		drm_fb_helper_fill_pixel_fmt(var, format);
+ 	}
+ 
+ 	/*
+ 	 * Likewise, bits_per_pixel should be rounded up to a supported value.
+ 	 */
+-	var->bits_per_pixel = fb->format->cpp[0] * 8;
++	var->bits_per_pixel = bpp;
+ 
+ 	/*
+ 	 * drm fbdev emulation doesn't support changing the pixel format at all,
+@@ -1722,11 +1758,11 @@ static int drm_fb_helper_single_fb_probe(struct drm_fb_helper *fb_helper,
+ }
+ 
+ static void drm_fb_helper_fill_fix(struct fb_info *info, uint32_t pitch,
+-				   uint32_t depth)
++				   bool is_color_indexed)
+ {
+ 	info->fix.type = FB_TYPE_PACKED_PIXELS;
+-	info->fix.visual = depth == 8 ? FB_VISUAL_PSEUDOCOLOR :
+-		FB_VISUAL_TRUECOLOR;
++	info->fix.visual = is_color_indexed ? FB_VISUAL_PSEUDOCOLOR
++					    : FB_VISUAL_TRUECOLOR;
+ 	info->fix.mmio_start = 0;
+ 	info->fix.mmio_len = 0;
+ 	info->fix.type_aux = 0;
+@@ -1743,19 +1779,31 @@ static void drm_fb_helper_fill_var(struct fb_info *info,
+ 				   uint32_t fb_width, uint32_t fb_height)
+ {
+ 	struct drm_framebuffer *fb = fb_helper->fb;
++	const struct drm_format_info *format = fb->format;
++
++	switch (format->format) {
++	case DRM_FORMAT_C1:
++	case DRM_FORMAT_C2:
++	case DRM_FORMAT_C4:
++		/* supported format with sub-byte pixels */
++		break;
++
++	default:
++		WARN_ON((drm_format_info_block_width(format, 0) > 1) ||
++			(drm_format_info_block_height(format, 0) > 1));
++		break;
++	}
+ 
+-	WARN_ON((drm_format_info_block_width(fb->format, 0) > 1) ||
+-		(drm_format_info_block_height(fb->format, 0) > 1));
+ 	info->pseudo_palette = fb_helper->pseudo_palette;
+ 	info->var.xres_virtual = fb->width;
+ 	info->var.yres_virtual = fb->height;
+-	info->var.bits_per_pixel = fb->format->cpp[0] * 8;
++	info->var.bits_per_pixel = drm_format_info_bpp(format, 0);
+ 	info->var.accel_flags = FB_ACCELF_TEXT;
+ 	info->var.xoffset = 0;
+ 	info->var.yoffset = 0;
+ 	info->var.activate = FB_ACTIVATE_NOW;
+ 
+-	drm_fb_helper_fill_pixel_fmt(&info->var, fb->format->depth);
++	drm_fb_helper_fill_pixel_fmt(&info->var, format);
+ 
+ 	info->var.xres = fb_width;
+ 	info->var.yres = fb_height;
+@@ -1780,7 +1828,8 @@ void drm_fb_helper_fill_info(struct fb_info *info,
+ {
+ 	struct drm_framebuffer *fb = fb_helper->fb;
+ 
+-	drm_fb_helper_fill_fix(info, fb->pitches[0], fb->format->depth);
++	drm_fb_helper_fill_fix(info, fb->pitches[0],
++			       fb->format->is_color_indexed);
+ 	drm_fb_helper_fill_var(info, fb_helper,
+ 			       sizes->fb_width, sizes->fb_height);
+ 
 -- 
 2.25.1
 
