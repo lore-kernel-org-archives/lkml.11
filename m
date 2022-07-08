@@ -2,208 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C5FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D05D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239261AbiGHQ2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35884 "EHLO
+        id S239386AbiGHQ2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239210AbiGHQ1k (ORCPT
+        with ESMTP id S239346AbiGHQ1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:27:40 -0400
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8A684EE6;
-        Fri,  8 Jul 2022 09:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=Content-Transfer-Encoding:Message-Id:Date:
-        Subject:Cc:To:From:Content-Type:Reply-To:Content-ID:Content-Description:
-        In-Reply-To:References; bh=dqnvtOM9WRzBsACI8H2L3qMUFDa4G14/jQNmiIiim1o=; b=0q
-        VJ7nyLpqBFZuGWKuZU5pwnNicPDxJKiXcxXJXvR5Ine7DIjHx2uvYOD4gdFAj/ppkPlnpT94lK96/
-        Hr7kyUV0teLKteVzyHEuUGgcRkW7m4ZxJNSTofHAzR63W/LhNaNMtnxu20/AnNBHFv89bxD44jEAQ
-        6dEt7fW7H/iECjix3qjMaNuX4Zuy1p8zBKYVkoS71hjNkWPZxJSZqyPiG4dhKuurkkGiPmydFgHWH
-        LBSOfcbMbPwfF8qnbvg3i6oF/hi1/GmvpEGaBxZVhMe/YmzP6YKZAxmvEddm/LmK3lyh9I5i6i47d
-        1+DpClV3+lqWwsY89AamjLP6eu03nWPw==;
-Received: from [81.174.171.191] (helo=donbot.metanate.com)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <john@metanate.com>)
-        id 1o9qow-0002UW-2C;
-        Fri, 08 Jul 2022 17:27:11 +0100
-From:   John Keeping <john@metanate.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-rt-users@vger.kernel.org, John Keeping <john@metanate.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>
-Subject: [PATCH v3] sched/core: Always flush pending blk_plug
-Date:   Fri,  8 Jul 2022 17:27:02 +0100
-Message-Id: <20220708162702.1758865-1-john@metanate.com>
-X-Mailer: git-send-email 2.37.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated: YES
+        Fri, 8 Jul 2022 12:27:45 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1E68736E
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 09:27:21 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id o20-20020a17090a9f9400b001ef92404bd0so1426140pjp.6
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 09:27:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=Q/iRyvoXPEz0OuK0jrrOflnyHMomDksx7PC4C85yLGg=;
+        b=mfBiGkWGOPGNvfiac/hpFafX2LM9jWCc0WY9c6vJOJfpstMLiLkb32FtdShieTEyVQ
+         68qP7JoiNdSOxOWe3Dwk8PARy+E82wHl1aCGKQm7TgZsrZKFOtz2r3SaCWAnqFVP6Rzy
+         m228zMJFM4aa7ovr4UFKqW93g2alQFj/WhRyf/M/lKSfiaUAEhvePi2kdGNjhZENDS55
+         d/SeC62Qs+uGbkFceHmBBGb0F2XRgmMgHYeu7oRdc8JT+Ciw71jNfFAkhbVOXxwCGEvd
+         NqHlPCCdXzayANXA3TEDRSUB2Nk/Hg14+if46xh3RViixlh9AvPK+WXDQ1aH8HnmaoIc
+         yZKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=Q/iRyvoXPEz0OuK0jrrOflnyHMomDksx7PC4C85yLGg=;
+        b=JfOmnmf5CIj0E+S4Ak+n1fh7rXWwAB1QzwYSphtLJpbgnDUACnIUAztAvb3fMiDEHn
+         kaCVP3tUXZIqlHtvnWjqRbZaX29TQx1yhScN4pWHJPO3ljjc54qzYTmlCFcddS/z47OI
+         +vT7IFCGYoZK4uZkkOFBhVGMfk8ULQ/b75pRu0lY2weRTWFzGHFd4yUXvB5z+xqK4mnl
+         lcLQACpkPRkdkkHliXizPuz+mh4vUv+ia4r7a6Deb8U7UNj28iqv65peYqVrUqSOVGdt
+         05L14Oc57V2lj89d7FTRUlEragpycyt7YzQCPNgTbZH7WmPjINACmVy8yoY26ufu7B+M
+         XR4A==
+X-Gm-Message-State: AJIora9Rd0DHJbDJ+B0RK/Holnx8Xfwk+EQ20V3364kG/rVvBEenyhxv
+        BagiJg0mZN5EBtO/X3VbKyfbS+wezcou4w==
+X-Google-Smtp-Source: AGRyM1sLJlwxfjqcNm/Fsdm7a+OffuFDWD2oUjsDH2QuDyuxoNm/fNvoT9Z8F/FLo+/1aeoJHpSeHvP6HN+vag==
+X-Received: from dlatypov-spec.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:3f35])
+ (user=dlatypov job=sendgmr) by 2002:a17:902:ea47:b0:16b:997b:5fd6 with SMTP
+ id r7-20020a170902ea4700b0016b997b5fd6mr4426982plg.16.1657297639986; Fri, 08
+ Jul 2022 09:27:19 -0700 (PDT)
+Date:   Fri,  8 Jul 2022 16:27:11 +0000
+Message-Id: <20220708162711.1309633-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v3] kunit: tool: Enable virtio/PCI by default on UML
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        "=?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?=" <jose.exposito89@gmail.com>,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With CONFIG_PREEMPT_RT, it is possible to hit a deadlock between two
-normal priority tasks (SCHED_OTHER, nice level zero):
+From: David Gow <davidgow@google.com>
 
-	INFO: task kworker/u8:0:8 blocked for more than 491 seconds.
-	      Not tainted 5.15.49-rt46 #1
-	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-	task:kworker/u8:0    state:D stack:    0 pid:    8 ppid:     2 flags:0x00000000
-	Workqueue: writeback wb_workfn (flush-7:0)
-	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
-	[<c08a3d84>] (schedule) from [<c08a65a0>] (rt_mutex_slowlock_block.constprop.0+0xb8/0x174)
-	[<c08a65a0>] (rt_mutex_slowlock_block.constprop.0) from [<c08a6708>]
-	+(rt_mutex_slowlock.constprop.0+0xac/0x174)
-	[<c08a6708>] (rt_mutex_slowlock.constprop.0) from [<c0374d60>] (fat_write_inode+0x34/0x54)
-	[<c0374d60>] (fat_write_inode) from [<c0297304>] (__writeback_single_inode+0x354/0x3ec)
-	[<c0297304>] (__writeback_single_inode) from [<c0297998>] (writeback_sb_inodes+0x250/0x45c)
-	[<c0297998>] (writeback_sb_inodes) from [<c0297c20>] (__writeback_inodes_wb+0x7c/0xb8)
-	[<c0297c20>] (__writeback_inodes_wb) from [<c0297f24>] (wb_writeback+0x2c8/0x2e4)
-	[<c0297f24>] (wb_writeback) from [<c0298c40>] (wb_workfn+0x1a4/0x3e4)
-	[<c0298c40>] (wb_workfn) from [<c0138ab8>] (process_one_work+0x1fc/0x32c)
-	[<c0138ab8>] (process_one_work) from [<c0139120>] (worker_thread+0x22c/0x2d8)
-	[<c0139120>] (worker_thread) from [<c013e6e0>] (kthread+0x16c/0x178)
-	[<c013e6e0>] (kthread) from [<c01000fc>] (ret_from_fork+0x14/0x38)
-	Exception stack(0xc10e3fb0 to 0xc10e3ff8)
-	3fa0:                                     00000000 00000000 00000000 00000000
-	3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-	3fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+There are several tests which depend on PCI, and hence need a bunch of
+extra options to run under UML. This makes it awkward to give
+configuration instructions (whether in documentation, or as part of a
+.kunitconfig file), as two separate, incompatible sets of config options
+are required for UML and "most other architectures".
 
-	INFO: task tar:2083 blocked for more than 491 seconds.
-	      Not tainted 5.15.49-rt46 #1
-	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-	task:tar             state:D stack:    0 pid: 2083 ppid:  2082 flags:0x00000000
-	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
-	[<c08a3d84>] (schedule) from [<c08a41b0>] (io_schedule+0x14/0x24)
-	[<c08a41b0>] (io_schedule) from [<c08a455c>] (bit_wait_io+0xc/0x30)
-	[<c08a455c>] (bit_wait_io) from [<c08a441c>] (__wait_on_bit_lock+0x54/0xa8)
-	[<c08a441c>] (__wait_on_bit_lock) from [<c08a44f4>] (out_of_line_wait_on_bit_lock+0x84/0xb0)
-	[<c08a44f4>] (out_of_line_wait_on_bit_lock) from [<c0371fb0>] (fat_mirror_bhs+0xa0/0x144)
-	[<c0371fb0>] (fat_mirror_bhs) from [<c0372a68>] (fat_alloc_clusters+0x138/0x2a4)
-	[<c0372a68>] (fat_alloc_clusters) from [<c0370b14>] (fat_alloc_new_dir+0x34/0x250)
-	[<c0370b14>] (fat_alloc_new_dir) from [<c03787c0>] (vfat_mkdir+0x58/0x148)
-	[<c03787c0>] (vfat_mkdir) from [<c0277b60>] (vfs_mkdir+0x68/0x98)
-	[<c0277b60>] (vfs_mkdir) from [<c027b484>] (do_mkdirat+0xb0/0xec)
-	[<c027b484>] (do_mkdirat) from [<c0100060>] (ret_fast_syscall+0x0/0x1c)
-	Exception stack(0xc2e1bfa8 to 0xc2e1bff0)
-	bfa0:                   01ee42f0 01ee4208 01ee42f0 000041ed 00000000 00004000
-	bfc0: 01ee42f0 01ee4208 00000000 00000027 01ee4302 00000004 000dcb00 01ee4190
-	bfe0: 000dc368 bed11924 0006d4b0 b6ebddfc
+For non-UML architectures, it's possible to add default kconfig options
+via the qemu_config python files, but there's no equivalent for UML. Add
+a new tools/testing/kunit/configs/arch_uml.config file containing extra
+kconfig options to use on UML.
 
-Here the kworker is waiting on msdos_sb_info::s_lock which is held by
-tar which is in turn waiting for a buffer which is locked waiting to be
-flushed, but this operation is plugged in the kworker.
-
-The lock is a normal struct mutex, so tsk_is_pi_blocked() will always
-return false on !RT and thus the behaviour changes for RT.
-
-It seems that the intent here is to skip blk_flush_plug() in the case
-where a non-preemptible lock (such as a spinlock) has been converted to
-a rtmutex on RT, which is the case covered by the SM_RTLOCK_WAIT
-schedule flag.  But sched_submit_work() is only called from schedule()
-which is never called in this scenario, so the check can simply be
-deleted.
-
-Looking at the history of the -rt patchset, in fact this change was
-present from v5.9.1-rt20 until being dropped in v5.13-rt1 as it was part
-of a larger patch [1] most of which was replaced by commit b4bfa3fcfe3b
-("sched/core: Rework the __schedule() preempt argument").
-
-As described in [1]:
-
-   The schedule process must distinguish between blocking on a regular
-   sleeping lock (rwsem and mutex) and a RT-only sleeping lock (spinlock
-   and rwlock):
-   - rwsem and mutex must flush block requests (blk_schedule_flush_plug())
-     even if blocked on a lock. This can not deadlock because this also
-     happens for non-RT.
-     There should be a warning if the scheduling point is within a RCU read
-     section.
-
-   - spinlock and rwlock must not flush block requests. This will deadlock
-     if the callback attempts to acquire a lock which is already acquired.
-     Similarly to being preempted, there should be no warning if the
-     scheduling point is within a RCU read section.
-
-and with the tsk_is_pi_blocked() in the scheduler path, we hit the first
-issue.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/tree/patches/0022-locking-rtmutex-Use-custom-scheduling-function-for-s.patch?h=linux-5.10.y-rt-patches
-
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: John Keeping <john@metanate.com>
+Tested-by: Jos=C3=A9 Exp=C3=B3sito <jose.exposito89@gmail.com>
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
+Signed-off-by: David Gow <davidgow@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
 ---
-v3:
-- Add SCHED_WARN_ON(current->__state & TASK_RTLOCK_WAIT) as suggested by
-  Peter
-v2:
-- Add Steven's R-b and update the commit message with his suggested
-  quote from [1]
 
- include/linux/sched/rt.h | 8 --------
- kernel/sched/core.c      | 8 ++++++--
- 2 files changed, 6 insertions(+), 10 deletions(-)
+NOTE: This depends on v4 of the repeatable --kunitconfig patch here:
+https://patchwork.kernel.org/project/linux-kselftest/patch/20220708013632.1=
+210466-1-dlatypov@google.com/
+Please apply it first first.
 
-diff --git a/include/linux/sched/rt.h b/include/linux/sched/rt.h
-index e5af028c08b49..994c25640e156 100644
---- a/include/linux/sched/rt.h
-+++ b/include/linux/sched/rt.h
-@@ -39,20 +39,12 @@ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *p)
- }
- extern void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task);
- extern void rt_mutex_adjust_pi(struct task_struct *p);
--static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
--{
--	return tsk->pi_blocked_on != NULL;
--}
- #else
- static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
- {
- 	return NULL;
- }
- # define rt_mutex_adjust_pi(p)		do { } while (0)
--static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
--{
--	return false;
--}
- #endif
- 
- extern void normalize_rt_tasks(void);
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1d4660a1915b3..71d6385ece83f 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6578,8 +6578,12 @@ static inline void sched_submit_work(struct task_struct *tsk)
- 			io_wq_worker_sleeping(tsk);
- 	}
- 
--	if (tsk_is_pi_blocked(tsk))
--		return;
-+	/*
-+	 * spinlock and rwlock must not flush block requests.  This will
-+	 * deadlock if the callback attempts to acquire a lock which is
-+	 * already acquired.
-+	 */
-+	SCHED_WARN_ON(current->__state & TASK_RTLOCK_WAIT);
- 
- 	/*
- 	 * If we are going to sleep and we have plugged IO queued,
--- 
-2.37.0
+Changes since v2: (dlatypov@google.com)
+- Rebase on top of the -kselftest kunit branch + v4 of the --kunitconfig
+  patch. It rebased cleanly, but it evidently would not apply cleanly
+  due to all the conflicts v4 --kunitconfig had with --qemu_args
+
+Changes since v1:
+https://lore.kernel.org/linux-kselftest/20220624084400.1454579-1-davidgow@g=
+oogle.com/
+- (Hopefully) fix a pytype warning re: architecture being None in the
+  tests. (Thanks, Daniel)
+- Rebase on top of the new combined v3 of the kconfig/kunitconfig
+  patchset.
+- Add Jos=C3=A9's Tested-by and Daniel's Reviewed-by.
+
+Changes since RFC:
+https://lore.kernel.org/linux-kselftest/20220622035326.759935-1-davidgow@go=
+ogle.com/
+- Rebase on top of the previous kconfig patches.
+- Fix a missing make_arch_qemuconfig->make_arch_config rename (Thanks
+  Brendan)
+- Fix the tests to use the base LinuxSourceTreeOperations class, which
+  has no default kconfig options (and so won't conflict with those set
+  in the tests). Only test_build_reconfig_existing_config actually
+  failed, but I updated a few more in case the defaults changed.
+
+---
+ tools/testing/kunit/configs/arch_uml.config |  5 +++++
+ tools/testing/kunit/kunit_kernel.py         | 14 ++++++++++----
+ tools/testing/kunit/kunit_tool_test.py      | 12 ++++++++++++
+ 3 files changed, 27 insertions(+), 4 deletions(-)
+ create mode 100644 tools/testing/kunit/configs/arch_uml.config
+
+diff --git a/tools/testing/kunit/configs/arch_uml.config b/tools/testing/ku=
+nit/configs/arch_uml.config
+new file mode 100644
+index 000000000000..e824ce43b05a
+--- /dev/null
++++ b/tools/testing/kunit/configs/arch_uml.config
+@@ -0,0 +1,5 @@
++# Config options which are added to UML builds by default
++
++# Enable virtio/pci, as a lot of tests require it.
++CONFIG_VIRTIO_UML=3Dy
++CONFIG_UML_PCI_OVER_VIRTIO=3Dy
+diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kuni=
+t_kernel.py
+index 56492090e28e..f5c26ea89714 100644
+--- a/tools/testing/kunit/kunit_kernel.py
++++ b/tools/testing/kunit/kunit_kernel.py
+@@ -26,6 +26,7 @@ KUNITCONFIG_PATH =3D '.kunitconfig'
+ OLD_KUNITCONFIG_PATH =3D 'last_used_kunitconfig'
+ DEFAULT_KUNITCONFIG_PATH =3D 'tools/testing/kunit/configs/default.config'
+ BROKEN_ALLCONFIG_PATH =3D 'tools/testing/kunit/configs/broken_on_uml.confi=
+g'
++UML_KCONFIG_PATH =3D 'tools/testing/kunit/configs/arch_uml.config'
+ OUTFILE_PATH =3D 'test.log'
+ ABS_TOOL_PATH =3D os.path.abspath(os.path.dirname(__file__))
+ QEMU_CONFIGS_DIR =3D os.path.join(ABS_TOOL_PATH, 'qemu_configs')
+@@ -53,7 +54,7 @@ class LinuxSourceTreeOperations:
+ 		except subprocess.CalledProcessError as e:
+ 			raise ConfigError(e.output.decode())
+=20
+-	def make_arch_qemuconfig(self, base_kunitconfig: kunit_config.Kconfig) ->=
+ kunit_config.Kconfig:
++	def make_arch_config(self, base_kunitconfig: kunit_config.Kconfig) -> kun=
+it_config.Kconfig:
+ 		return base_kunitconfig
+=20
+ 	def make_allyesconfig(self, build_dir: str, make_options) -> None:
+@@ -109,7 +110,7 @@ class LinuxSourceTreeOperationsQemu(LinuxSourceTreeOper=
+ations):
+ 		self._kernel_command_line =3D qemu_arch_params.kernel_command_line + ' k=
+unit_shutdown=3Dreboot'
+ 		self._extra_qemu_params =3D qemu_arch_params.extra_qemu_params
+=20
+-	def make_arch_qemuconfig(self, base_kunitconfig: kunit_config.Kconfig) ->=
+ kunit_config.Kconfig:
++	def make_arch_config(self, base_kunitconfig: kunit_config.Kconfig) -> kun=
+it_config.Kconfig:
+ 		kconfig =3D kunit_config.parse_from_string(self._kconfig)
+ 		kconfig.merge_in_entries(base_kunitconfig)
+ 		return kconfig
+@@ -138,6 +139,11 @@ class LinuxSourceTreeOperationsUml(LinuxSourceTreeOper=
+ations):
+ 	def __init__(self, cross_compile=3DNone):
+ 		super().__init__(linux_arch=3D'um', cross_compile=3Dcross_compile)
+=20
++	def make_arch_config(self, base_kunitconfig: kunit_config.Kconfig) -> kun=
+it_config.Kconfig:
++		kconfig =3D kunit_config.parse_file(UML_KCONFIG_PATH)
++		kconfig.merge_in_entries(base_kunitconfig)
++		return kconfig
++
+ 	def make_allyesconfig(self, build_dir: str, make_options) -> None:
+ 		stdout.print_with_timestamp(
+ 			'Enabling all CONFIGs for UML...')
+@@ -298,7 +304,7 @@ class LinuxSourceTree:
+ 		if build_dir and not os.path.exists(build_dir):
+ 			os.mkdir(build_dir)
+ 		try:
+-			self._kconfig =3D self._ops.make_arch_qemuconfig(self._kconfig)
++			self._kconfig =3D self._ops.make_arch_config(self._kconfig)
+ 			self._kconfig.write_to_file(kconfig_path)
+ 			self._ops.make_olddefconfig(build_dir, make_options)
+ 		except ConfigError as e:
+@@ -329,7 +335,7 @@ class LinuxSourceTree:
+ 			return self.build_config(build_dir, make_options)
+=20
+ 		existing_kconfig =3D kunit_config.parse_file(kconfig_path)
+-		self._kconfig =3D self._ops.make_arch_qemuconfig(self._kconfig)
++		self._kconfig =3D self._ops.make_arch_config(self._kconfig)
+=20
+ 		if self._kconfig.is_subset_of(existing_kconfig) and not self._kunitconfi=
+g_changed(build_dir):
+ 			return True
+diff --git a/tools/testing/kunit/kunit_tool_test.py b/tools/testing/kunit/k=
+unit_tool_test.py
+index ad63d0d34f3f..446ac432d9a4 100755
+--- a/tools/testing/kunit/kunit_tool_test.py
++++ b/tools/testing/kunit/kunit_tool_test.py
+@@ -430,6 +430,10 @@ class LinuxSourceTreeTest(unittest.TestCase):
+ 				f.write('CONFIG_KUNIT=3Dy')
+=20
+ 			tree =3D kunit_kernel.LinuxSourceTree(build_dir)
++			# Stub out the source tree operations, so we don't have
++			# the defaults for any given architecture get in the
++			# way.
++			tree._ops =3D kunit_kernel.LinuxSourceTreeOperations('none', None)
+ 			mock_build_config =3D mock.patch.object(tree, 'build_config').start()
+=20
+ 			# Should generate the .config
+@@ -447,6 +451,10 @@ class LinuxSourceTreeTest(unittest.TestCase):
+ 				f.write('CONFIG_KUNIT=3Dy\nCONFIG_KUNIT_TEST=3Dy')
+=20
+ 			tree =3D kunit_kernel.LinuxSourceTree(build_dir)
++			# Stub out the source tree operations, so we don't have
++			# the defaults for any given architecture get in the
++			# way.
++			tree._ops =3D kunit_kernel.LinuxSourceTreeOperations('none', None)
+ 			mock_build_config =3D mock.patch.object(tree, 'build_config').start()
+=20
+ 			self.assertTrue(tree.build_reconfig(build_dir, make_options=3D[]))
+@@ -463,6 +471,10 @@ class LinuxSourceTreeTest(unittest.TestCase):
+ 				f.write('CONFIG_KUNIT=3Dy\nCONFIG_KUNIT_TEST=3Dy')
+=20
+ 			tree =3D kunit_kernel.LinuxSourceTree(build_dir)
++			# Stub out the source tree operations, so we don't have
++			# the defaults for any given architecture get in the
++			# way.
++			tree._ops =3D kunit_kernel.LinuxSourceTreeOperations('none', None)
+ 			mock_build_config =3D mock.patch.object(tree, 'build_config').start()
+=20
+ 			# ... so we should trigger a call to build_config()
+
+base-commit: cbb6bc7059151df198b45e883ed731d8f528b65b
+--=20
+2.37.0.rc0.161.g10f37bed90-goog
 
