@@ -2,166 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27410C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1051CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238903AbiGHP6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41892 "EHLO
+        id S238911AbiGHP7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238893AbiGHP6q (ORCPT
+        with ESMTP id S238414AbiGHP73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:58:46 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A8545066;
-        Fri,  8 Jul 2022 08:58:42 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 268FwSAP089860;
-        Fri, 8 Jul 2022 10:58:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657295908;
-        bh=bbfEE7t6ty3Uw+yroVSM9f1oWuAgijX5go8kEgIrGCU=;
-        h=From:To:CC:Subject:Date;
-        b=ljN4MlvFABM8dxEXlAS+n+d1imGUtx+0c9r+x8cxyzeS3N1FBt8jA6vYsaaiTZ8/z
-         k7H6FrG6tbG78t9kAR8qKPwbhFxUFUWOCj1VJWGKZ3lxZszUEqpC2nxk+YwZ2QdCFI
-         Vo0jPH1jVsOAtQs4r60O+PLVdI/38ubf+L1zQ9J4=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 268FwS52016574
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 8 Jul 2022 10:58:28 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 8
- Jul 2022 10:58:28 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 8 Jul 2022 10:58:28 -0500
-Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 268FwP5j105927;
-        Fri, 8 Jul 2022 10:58:26 -0500
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-Subject: [RESEND][PATCH v5] dt-bindings: gpio: Convert TI TPIC2810 GPIO Controller bindings to YAML
-Date:   Fri, 8 Jul 2022 21:28:19 +0530
-Message-ID: <20220708155819.3096903-1-vigneshr@ti.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 8 Jul 2022 11:59:29 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EE46D55C;
+        Fri,  8 Jul 2022 08:59:29 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id n74so8864284yba.3;
+        Fri, 08 Jul 2022 08:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JIFsfOSVQfXvBX0XrqyFJCcU4eKxtUIBtIyIMnlR/d0=;
+        b=Xl8u1ENIUNBQhTTOE5t4JNqEmRipm9EBBREnAES0k9aa1UbMLxMBTGsusTv203kd9s
+         0fZc8DLeOOiBt7Kb5aoI0qsl/VkODJAA9j6bRtMpEooSocNgj5JIhlvNKO24FkkWZtQl
+         vUwWG/w+DvDQ0+PE3qWWeclifxolJwG4zkyOZpvlzdYetzKeQttoF5LCsgKSBgCX7DXv
+         lWxyG/CWauM7LGsRfW9YTWu/I6sjJOUKSzH4BraS8GwoYzFvdf0eWLE1SI+YJVMvsDiS
+         PqtVEzEGfu/Ld0XfvNR+fLXzRmLEREfG7NLoNiu9FGpYqHrqOCwZ4d4G4pfYMGXfpE7C
+         W9IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JIFsfOSVQfXvBX0XrqyFJCcU4eKxtUIBtIyIMnlR/d0=;
+        b=OFqeTAOxCcIlp9DJOXrBIAod3vpLpIfshQ4Wvv8YuYwS1bJqRh1aMir+xNNgfuOUMt
+         r/lzC8qfV64YqWOeeRno19ONImXOjRkeds8++7eow21KhcYGG4MUuhcq4kfU0msGFHqS
+         LbdYSiPA11fhNH4FtfEWnLX1F3ndB7PP1daBTVeZxJEuPDC2LqV4eQ8jLvC2f9Oz9IfQ
+         J4PFc8mgGpUvFjADyrFWUYkPHLCG5m7my/DHVO7UYy1mQJAaEhmGtI4XZEvljbXfvUe/
+         p5cv34plDz0uB2Y/jy3qY7BRsgdvbHfeuGzcD65db1P5UE/Z+sXcIuwBB+noExrY8+Y0
+         6NBA==
+X-Gm-Message-State: AJIora/2kYBwo0yx8AbEvWANV2RyBdoxl65QU9H7BD5fgducLgCKZZCl
+        L+21l5hiiksezMgOMYV9FOLEQ+RXSDW0ryKgFlM=
+X-Google-Smtp-Source: AGRyM1squvqQ9ABX/jhZ3VK0FtqZmCMqquBhgcf3oL7ktfaTXhDh+hRyB1BDUIo5cwHztujLr1s7GVpkXTpoSTEUduk=
+X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
+ b198-20020a25cbcf000000b0066e8893a02cmr4399948ybg.460.1657295968321; Fri, 08
+ Jul 2022 08:59:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20220701154604.2211008-1-imran.f.khan@oracle.com>
+In-Reply-To: <20220701154604.2211008-1-imran.f.khan@oracle.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 8 Jul 2022 17:58:51 +0200
+Message-ID: <CAHp75VdY=UoBnL=vGkq2xPX6OBD2aDgB+t85z=zKpS1ovin4=w@mail.gmail.com>
+Subject: Re: [RESEND PATCH] kernfs: Avoid re-adding kernfs_node into kernfs_notify_list.
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     Tejun Heo <tj@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Rob Herring <robh@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guillaume Tucker <guillaume.tucker@collabora.com>,
+        Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aparna M <a-m1@ti.com>
+On Fri, Jul 1, 2022 at 5:49 PM Imran Khan <imran.f.khan@oracle.com> wrote:
 
-Convert gpio-tpic2810 bindings to yaml format and remove outdated
-bindings in .txt format.
+...
 
-Signed-off-by: Aparna M <a-m1@ti.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
-v5 -> Resend v5: Collect R-bys
-v4 -> v5: Fix indentation issues
-v3 -> v4: Add gpio-line-names property
-v2 -> v3: Remove redundant descriptions and make minor change in example
-v1 -> v2: Fix identation issues and update commit message
+> +       if (kn->attr.notify_next.next != NULL) {
 
- .../bindings/gpio/gpio-tpic2810.txt           | 16 ------
- .../bindings/gpio/gpio-tpic2810.yaml          | 51 +++++++++++++++++++
- 2 files changed, 51 insertions(+), 16 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt
- create mode 100644 Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml
+Isn't there a helper to get next pointer from an llist pointer?
 
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt b/Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt
-deleted file mode 100644
-index 1afc2de7a537..000000000000
---- a/Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt
-+++ /dev/null
-@@ -1,16 +0,0 @@
--TPIC2810 GPIO controller bindings
--
--Required properties:
-- - compatible		: Should be "ti,tpic2810".
-- - reg			: The I2C address of the device
-- - gpio-controller	: Marks the device node as a GPIO controller.
-- - #gpio-cells		: Should be two. For consumer use see gpio.txt.
--
--Example:
--
--	gpio@60 {
--		compatible = "ti,tpic2810";
--		reg = <0x60>;
--		gpio-controller;
--		#gpio-cells = <2>;
--	};
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml b/Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml
-new file mode 100644
-index 000000000000..cb8a5c376e1e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gpio/gpio-tpic2810.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TPIC2810 GPIO controller bindings
-+
-+maintainers:
-+  - Aswath Govindraju <a-govindraju@ti.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,tpic2810
-+
-+  reg:
-+    maxItems: 1
-+
-+  gpio-controller: true
-+
-+  "#gpio-cells":
-+    const: 2
-+
-+  gpio-line-names:
-+    minItems: 1
-+    maxItems: 32
-+
-+required:
-+  - compatible
-+  - reg
-+  - gpio-controller
-+  - "#gpio-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        gpio@60 {
-+            compatible = "ti,tpic2810";
-+            reg = <0x60>;
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+            gpio-line-names = "LED A", "LED B", "LED C";
-+        };
-+    };
+> +               kernfs_get(kn);
+> +               llist_add(&kn->attr.notify_next, &kernfs_notify_list);
+> +               schedule_work(&kernfs_notify_work);
+> +       }
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
