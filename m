@@ -2,128 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB09C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15BE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237346AbiGHH6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
+        id S237375AbiGHIAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237275AbiGHH6h (ORCPT
+        with ESMTP id S230384AbiGHIAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:58:37 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7FC12AE8
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 00:58:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657267116; x=1688803116;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=rqKkPt3MPpjqyc4mN+BxX7fkKVYruefqKX/Mr0FjC8I=;
-  b=gJZzruConck0jV7YPFTL0TE3j5DE/ZfIJOytrnFrqoEapIfjpfqPagpM
-   DBht2fqezBZqLpdFiLBwidDUB3dhVS5UcDjrqcCHAxJCqr3y1lCfhOikz
-   leFd1K46+p1VjikcM4eTiXbWCxERmGNFKLiFepNX3h+eMibTiDFvzA/8J
-   8RLqva46FvL8sycud24GhuKiG4x+aMQdNoyOkf+xcBFqfaF2/3/w37p7O
-   F+3hFQBrmheCrFUEErdTJLc2CfVA8zir5ze4ij3tl4GSakq3KOOqELufl
-   +tY/J9unNqs+C+wt7qAMhChCEWvHRJIexH8Q9mvgCygCXYYQOk5t2gazY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="370537183"
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="370537183"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 00:58:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="626626632"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 08 Jul 2022 00:58:35 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9isk-000N9Q-FO;
-        Fri, 08 Jul 2022 07:58:34 +0000
-Date:   Fri, 08 Jul 2022 15:57:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/sgx] BUILD SUCCESS
- 6507cce561b43b071999502103804e3dc1478e60
-Message-ID: <62c7e387.cS6w8gT1tWMFnIy+%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 8 Jul 2022 04:00:21 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C4A65D7E;
+        Fri,  8 Jul 2022 01:00:20 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1o9iuM-00FrrZ-3T; Fri, 08 Jul 2022 18:00:15 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 08 Jul 2022 16:00:14 +0800
+Date:   Fri, 8 Jul 2022 16:00:14 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yekai13@huawei.com, liulongfang@huawei.com, davem@davemloft.net,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+Subject: Re: [PATCH v2] crypto: hisilicon/sec - don't sleep when in softirq
+Message-ID: <YsfkDp4myfbKj0Kf@gondor.apana.org.au>
+References: <20220630122622.55492-1-shaozhengchao@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20220630122622.55492-1-shaozhengchao@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/sgx
-branch HEAD: 6507cce561b43b071999502103804e3dc1478e60  selftests/sgx: Page removal stress test
+On Thu, Jun 30, 2022 at 08:26:22PM +0800, Zhengchao Shao wrote:
+> When kunpeng920 encryption driver is used to deencrypt and decrypt
+> packets during the softirq, it is not allowed to use mutex lock. The
+> kernel will report the following error:
+> 
+> BUG: scheduling while atomic: swapper/57/0/0x00000300
+> Call trace:
+> dump_backtrace+0x0/0x1e4
+> show_stack+0x20/0x2c
+> dump_stack+0xd8/0x140
+> __schedule_bug+0x68/0x80
+> __schedule+0x728/0x840
+> schedule+0x50/0xe0
+> schedule_preempt_disabled+0x18/0x24
+> __mutex_lock.constprop.0+0x594/0x5dc
+> __mutex_lock_slowpath+0x1c/0x30
+> mutex_lock+0x50/0x60
+> sec_request_init+0x8c/0x1a0 [hisi_sec2]
+> sec_process+0x28/0x1ac [hisi_sec2]
+> sec_skcipher_crypto+0xf4/0x1d4 [hisi_sec2]
+> sec_skcipher_encrypt+0x1c/0x30 [hisi_sec2]
+> crypto_skcipher_encrypt+0x2c/0x40
+> crypto_authenc_encrypt+0xc8/0xfc [authenc]
+> crypto_aead_encrypt+0x2c/0x40
+> echainiv_encrypt+0x144/0x1a0 [echainiv]
+> crypto_aead_encrypt+0x2c/0x40
+> esp_output_tail+0x348/0x5c0 [esp4]
+> esp_output+0x120/0x19c [esp4]
+> xfrm_output_one+0x25c/0x4d4
+> xfrm_output_resume+0x6c/0x1fc
+> xfrm_output+0xac/0x3c0
+> xfrm4_output+0x64/0x130
+> ip_build_and_send_pkt+0x158/0x20c
+> tcp_v4_send_synack+0xdc/0x1f0
+> tcp_conn_request+0x7d0/0x994
+> tcp_v4_conn_request+0x58/0x6c
+> tcp_v6_conn_request+0xf0/0x100
+> tcp_rcv_state_process+0x1cc/0xd60
+> tcp_v4_do_rcv+0x10c/0x250
+> tcp_v4_rcv+0xfc4/0x10a4
+> ip_protocol_deliver_rcu+0xf4/0x200
+> ip_local_deliver_finish+0x58/0x70
+> ip_local_deliver+0x68/0x120
+> ip_sublist_rcv_finish+0x70/0x94
+> ip_list_rcv_finish.constprop.0+0x17c/0x1d0
+> ip_sublist_rcv+0x40/0xb0
+> ip_list_rcv+0x140/0x1dc
+> __netif_receive_skb_list_core+0x154/0x28c
+> __netif_receive_skb_list+0x120/0x1a0
+> netif_receive_skb_list_internal+0xe4/0x1f0
+> napi_complete_done+0x70/0x1f0
+> gro_cell_poll+0x9c/0xb0
+> napi_poll+0xcc/0x264
+> net_rx_action+0xd4/0x21c
+> __do_softirq+0x130/0x358
+> irq_exit+0x11c/0x13c
+> __handle_domain_irq+0x88/0xf0
+> gic_handle_irq+0x78/0x2c0
+> el1_irq+0xb8/0x140
+> arch_cpu_idle+0x18/0x40
+> default_idle_call+0x5c/0x1c0
+> cpuidle_idle_call+0x174/0x1b0
+> do_idle+0xc8/0x160
+> cpu_startup_entry+0x30/0x11c
+> secondary_start_kernel+0x158/0x1e4
+> softirq: huh, entered softirq 3 NET_RX 0000000093774ee4 with
+> preempt_count 00000100, exited with fffffe00?
+> 
+> V1: use spin_lock will cause soft lockup
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  drivers/crypto/hisilicon/sec2/sec.h        |  2 +-
+>  drivers/crypto/hisilicon/sec2/sec_crypto.c | 20 ++++++++++----------
+>  2 files changed, 11 insertions(+), 11 deletions(-)
 
-elapsed time: 815m
-
-configs tested: 52
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-ia64                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-sh                               allmodconfig
-i386                                defconfig
-i386                             allyesconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-arc                  randconfig-r043-20220707
-riscv                randconfig-r042-20220707
-s390                 randconfig-r044-20220707
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                           rhel-8.3-syz
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-
-clang tested configs:
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220707
-hexagon              randconfig-r041-20220707
-
+Patch applied.  Thanks.
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
