@@ -2,59 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8625C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 05:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC83AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 05:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237057AbiGHFOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 01:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40918 "EHLO
+        id S237112AbiGHFPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 01:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiGHFOX (ORCPT
+        with ESMTP id S230147AbiGHFPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 01:14:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE17676973
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 22:14:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 694DCB824E4
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3644C341CA;
-        Fri,  8 Jul 2022 05:14:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657257260;
-        bh=W7KkzfO+bktfe4mQFitUfFgnlWNpKQuE4WA0mV6VAQU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z19CH3RM1F1xFmBu7O7sWi9TJBOqstLuD68mnp1xnabbPH/lFtAsrH0qBsPxOAUKE
-         8K6sQfB+wCNtBZwmEDZUdvaGKP2oCL7YcTnZBZU99q3uhkuSB15NEbNqmP8eE9Qwks
-         JlrXKTvKFofUrcO5rbwJiwlrK6trMHecKq8piJzFa+qn18XqiwV8N0DXSGyKeYsrJH
-         HtJ+tzeCs/+EjO2kGhJEoSF4iFTmzWQ73hdN7Q9jJEmAWSvT7eo6mdbJsh+v1FVlsG
-         0JSBxjcZGMcjykvRykBDGpyA7FCIGNiwahA0EYOq6fGAmwbIpiVrqYiqiCXj94S9OU
-         mz0C4zu4PLA7Q==
-Date:   Fri, 8 Jul 2022 10:44:16 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, msp@baylibre.com,
-        chunkuang.hu@kernel.org
-Subject: Re: [PATCH -next] phy: phy-mtk-dp: change mtk_dp_phy_driver to static
-Message-ID: <Yse9KMuN96CRrpj6@matsya>
-References: <20220707135309.801181-1-yangyingliang@huawei.com>
+        Fri, 8 Jul 2022 01:15:14 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D2C076973;
+        Thu,  7 Jul 2022 22:15:12 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1o9gKC-00FpLV-D8; Fri, 08 Jul 2022 15:14:45 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 08 Jul 2022 13:14:44 +0800
+Date:   Fri, 8 Jul 2022 13:14:44 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Conor.Dooley@microchip.com
+Cc:     palmer@rivosinc.com, palmer@dabbelt.com, arnd@arndb.de,
+        Cyril.Jean@microchip.com, Daire.McNamara@microchip.com,
+        Lewis.Hanly@microchip.com, aou@eecs.berkeley.edu,
+        gregkh@linuxfoundation.org, kw@linux.com,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org,
+        lorenzo.pieralisi@arm.com, mturquette@baylibre.com,
+        paul.walmsley@sifive.com, robh@kernel.org, bhelgaas@google.com,
+        sboyd@kernel.org, wsa@kernel.org
+Subject: Re: [RESEND PATCH v4] MAINTAINERS: add polarfire rng, pci and clock
+ drivers
+Message-ID: <Yse9RGTfRgqzzknt@gondor.apana.org.au>
+References: <20220622225822.2166305-1-mail@conchuod.ie>
+ <a39bad24-d2bb-ef3e-d57a-2ac4fa1156ef@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220707135309.801181-1-yangyingliang@huawei.com>
+In-Reply-To: <a39bad24-d2bb-ef3e-d57a-2ac4fa1156ef@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07-07-22, 21:53, Yang Yingliang wrote:
-> mtk_dp_phy_driver is only used in phy-mtk-dp.c now, change it to static.
+On Thu, Jul 07, 2022 at 01:30:27PM +0000, Conor.Dooley@microchip.com wrote:
+> On 22/06/2022 23:58, Conor Dooley wrote:
+> > From: Conor Dooley <conor.dooley@microchip.com>
+> > 
+> > Hardware random, PCI and clock drivers for the PolarFire SoC have been
+> > upstreamed but are not covered by the MAINTAINERS entry, so add them.
+> > Daire is the author of the clock & PCI drivers, so add him as a
+> > maintainer in place of Lewis.
+> > 
+> > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> > Acked-by: Stephen Boyd <sboyd@kernel.org>
+> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> 
+> Arnd, Palmer:
+> Does the SoC tree make more sense for this patch?
+> I am missing an ack from Herbert (but I don't think that's blocking
+> for a MAINTAINERS update to my own entry?).
 
-Applied, thanks
+I'm not sure why an ack is needed from me since the entry doesn't
+intersect with crypto at all.  But FWIW
 
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+Cheers,
 -- 
-~Vinod
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
