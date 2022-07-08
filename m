@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3B5CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2E1CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239448AbiGHQ5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
+        id S238709AbiGHRB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 13:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238592AbiGHQ5A (ORCPT
+        with ESMTP id S238121AbiGHRB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:57:00 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04C1113
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 09:56:59 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so1414701wmb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 09:56:59 -0700 (PDT)
+        Fri, 8 Jul 2022 13:01:57 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13D41F2C1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 10:01:56 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id v10-20020a05600c15ca00b003a2db8aa2c4so1081881wmf.2
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 10:01:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XChKEQdQBp8Xhc/f+8kVN+QJ7PmKFATNiMiZLMFoUcs=;
-        b=ZkzoE2sTA9GdkN8O7o/bdeBZsb79lfSNGIlZFvI0bk0ofJqPtfAbvwrp35uUKir2bF
-         wt9sL5TFz2w7v72gxBy/8pzAwMDex61FAYvOiIy3brtG0jYgpwVp4Et7ChLzDCcsw7r+
-         9IBI5QPnaRlqtbO3vG/8K2Of98Pch6BqFh5BiFBoCfCbPLbaKU5gXmHi51oH98KjeQkg
-         t7cqDm01bKSWChh+IOGyfBT/FtJ96+KSo0VQLmBs3qJMlqEbw8DtJzNbTphaa2dgSzWx
-         o0ZnX4J/Pzzhrt3W7bMRkwjPt48qP5hRt26GtwKW2y0VsaLlvqfNUjuCZwgWGLADmbP4
-         3+Eg==
+        bh=nNGh1W8H58m6hFFntBGmQsDqckIMVcWoGWG9fndPhMM=;
+        b=k9sejQ7A6A9E+qrCG5qv+EmdgbxLhOer9B71faYs4psVSsAx38ujk2CS/BjFyeie8J
+         6KxjTJGLDwAxsId8EWU0gTQV72j2VrUNZWyzv/EcnMUQ7Dtq/z+TVxX+p1hSID+1qwKR
+         iBRSGPu3tyWEH8a8vDbPYVV6nTS3+EgJIlkrV24zQCc9HTc3J8hGfD3CiHLsjl32iIJw
+         TWyeIQW+5S4gBOap8WChbFj7WGwz5OeXgvoEhQqFrH3KofVhAF6pieHn+3z73Oke0HIx
+         DVi9Sgta8slOptnG524nZiY+QluAr7TdoCE7vnrbnYbgbWw01JlfVPn9fjQ5hq5RGdO+
+         xbmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XChKEQdQBp8Xhc/f+8kVN+QJ7PmKFATNiMiZLMFoUcs=;
-        b=ld0GYUaXkGmMOrT0iqGauzHG9d1EnMzkCMW1NlCoOz8jp8lX3uEu0+2w22qYPXMSHg
-         a0LJffuI6xIYDqrhQbm9hNLk6jW6fF5FKQp8QM0aTORrli5CH9G/gtjXNBhr5QSOtzJm
-         fuWoWHrCSkanDDYOyoZZGwHdg05PN6KOVoQ7eNGbj2bvTBBnrpfdxizKncRTiCMez20X
-         ZnQj0nmwA09xPM3AnM5zgnKJH+E0fBnu3tiy9XLRukcV0ezRk5wiK1T/IJzROYG1h+cG
-         yoh3ZKeTV7F0Refs2jVuZqT97RMugsHb+xm/QZsTwDo6QdHk9aGuc8unCCMs+iHA6Gss
-         13kg==
-X-Gm-Message-State: AJIora9teGCGHsMK77L0/ukeV34i2AoX0MWJ80TiHbdf7deROzc9jFfX
-        Smd1jCCuPTx9ZXJgEUclWtEJFA==
-X-Google-Smtp-Source: AGRyM1slaXQGTOtfuLkcJfFRFrDt3NyT1QIdBcvTX4D1y3C1eLRfV8BfXoa3KyupTGrEf8qaz5NUVA==
-X-Received: by 2002:a05:600c:1f19:b0:3a1:8d3b:91ad with SMTP id bd25-20020a05600c1f1900b003a18d3b91admr798880wmb.111.1657299418412;
-        Fri, 08 Jul 2022 09:56:58 -0700 (PDT)
+        bh=nNGh1W8H58m6hFFntBGmQsDqckIMVcWoGWG9fndPhMM=;
+        b=Io56HngQ5AvAFluGH5/MSvbrgAnXFTFwjpuG/JJVh91einBH89fQVuOB8+z/67VNwD
+         flGJguldBF3AxwhtlPzD/12iD0oW3tchTf+RfF1LGcy3HccCQJAJ/J0ZWx9UcAhyHGya
+         AMlWVlhUtjMhoWyrdL2SkicnaOr1jv7/Q69PgXglKfR6vz4TlbW2i7JSkcTLW7N3izPz
+         F73C/YGU7emDjFmU/jbGHrWeARWF3eoKpNwHMivwr6WMLz6Qym3iZaLenGPwuqb7vN+h
+         5gOZKXrwA7qB+xDamdy/9zncsWVQimu0q2vlYu9PFiQX4SjcwStihWhmhpnz7ltn1IuZ
+         nxJw==
+X-Gm-Message-State: AJIora9Tz2zrn5WywPVbvdMfQavLbvSZ/cHvXmQTT5BxpOQ2awJjTSm2
+        Az1DckIwCxLa5vaA0W7WYvg41Tn+MqrGpEtA
+X-Google-Smtp-Source: AGRyM1vAsw25xWmDPWaTpZqim2pT5kgw/MFKz+pCKh7uV8A1c/wMqM5nhOB/HHOpxMId0FtDZwls9w==
+X-Received: by 2002:a05:600c:3b14:b0:3a2:de1d:fe0c with SMTP id m20-20020a05600c3b1400b003a2de1dfe0cmr799786wms.49.1657299715270;
+        Fri, 08 Jul 2022 10:01:55 -0700 (PDT)
 Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id o19-20020a05600c339300b0039c4506bd25sm3039758wmp.14.2022.07.08.09.56.57
+        by smtp.gmail.com with ESMTPSA id t5-20020adfe105000000b002103bd9c5acsm41336252wrz.105.2022.07.08.10.01.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 09:56:58 -0700 (PDT)
+        Fri, 08 Jul 2022 10:01:54 -0700 (PDT)
 From:   Ben Dooks <ben.dooks@sifive.com>
-To:     p.zabel@pengutronix.de
-Cc:     linux-kernel@vger.kernel.org,
+To:     dmaengine@vger.kernel.org, Eugeniy.Paltsev@synopsys.com
+Cc:     linux-kernel@vger.kernel.org, vkoul@kernel.org,
         Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH] reset: allow building of reset simple driver if expert config selected
-Date:   Fri,  8 Jul 2022 17:56:56 +0100
-Message-Id: <20220708165656.269507-1-ben.dooks@sifive.com>
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>
+Subject: dw-axi-dmac updates (debug, minor bugfixes)
+Date:   Fri,  8 Jul 2022 18:01:50 +0100
+Message-Id: <20220708170153.269991-1-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,27 +63,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_EXPERT is selected, allow selection of CONFIG_RESET_SIMPLE
-if needed by the user.
+During some recent testing, it was useful to have a dump of the
+registers during an channel dump and a couple of minor bugs were
+found with issues where a slow response or race condition occured.
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
----
- drivers/reset/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index 93c8d07ee328..f40d9bbb686a 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -200,7 +200,7 @@ config RESET_SCMI
- 	  firmware controlling all the reset signals.
- 
- config RESET_SIMPLE
--	bool "Simple Reset Controller Driver" if COMPILE_TEST
-+	bool "Simple Reset Controller Driver" if COMPILE_TEST || EXPERT
- 	default ARCH_ASPEED || ARCH_BCM4908 || ARCH_BITMAIN || ARCH_REALTEK || ARCH_STM32 || (ARCH_INTEL_SOCFPGA && ARM64) || ARCH_SUNXI || ARC
- 	help
- 	  This enables a simple reset controller driver for reset lines that
--- 
-2.35.1
 
