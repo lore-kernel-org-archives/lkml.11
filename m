@@ -2,134 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70FBACCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C9EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:27:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237678AbiGHI02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
+        id S237564AbiGHI1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237564AbiGHI00 (ORCPT
+        with ESMTP id S236513AbiGHI1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:26:26 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF12814AA
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:26:25 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id ay25so2328750wmb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:26:25 -0700 (PDT)
+        Fri, 8 Jul 2022 04:27:16 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC22814B2;
+        Fri,  8 Jul 2022 01:27:15 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id z3so7211631ilz.5;
+        Fri, 08 Jul 2022 01:27:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/OVTFWFueCRPCSOvGcnm5qhmYMmcAYT2qYgKyKk2GrU=;
-        b=QayVImNEczOhK0XOfo/Un1TkE91WIaEh4vd5WGqaoap8Zp3zXyX1dE2P6RqQrpT1XS
-         oy1BzMte5WWi0qpuvNFLbedtjg2n7Za2D4EYGowA6pIDEJpZATtjx7KTCqtGGcRO+0Hm
-         w4Ot42GczZ1AqfqjZNrfsIYwRBv4+h7ReSSB9exmjeAS3NcLvVOm3Cp0vlKsBAUZLeK4
-         3U0QqPn/SGSigUG8o6BjBZ/4XRXPETHIM0smmMd84MTwqwWFc+HDBmhlrFEZT6wwwNtr
-         wRf5occqwIOBxSXFsjoS+goTKLITad0wByayOqYY9Tj1R8PO6+gn4sR8T1ZFngyCv/Yb
-         FUxA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Bgxu/xLyyKqfoS5wPukZ0Iv8tWIgajlD3uz/Xf77/w4=;
+        b=o/XgkzJQCfZK0pGFN2Km8fOBNvJRpwLH60EDC76vYr7wNIhoj1JTnffNMGCZUC2oMc
+         owNNwAknfKOVCNL8wRVnZWXs78qP0xOg7u7BW/+YXxE0B6gsaJENw15zhwqFKBKPG5vE
+         KdIVSbdFhhcaQclB8PdJuwp6VkqQ0K3rEsdaOKhVjZEAufdG5acAHQthmTpQ4pSvfUMR
+         e+z2n2c0o3YycYgexQHqoLasJBOJZhyiiS3i8aBI804bLF9k7CBtvvdfz3Cc7KN3YpSa
+         tVLfGAee31+S95ltfxtgaItoSMQVpsQ55/7CobQF0PILrlHcvXZ2VSVGCgaAdP16Gqd0
+         nHDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/OVTFWFueCRPCSOvGcnm5qhmYMmcAYT2qYgKyKk2GrU=;
-        b=MwpM5MDpXF9l4YpwgEupHnLSb3AejAOe4pl7SIE1A7wBmf3C1H+fjVE01OOle4DkV1
-         SJeibrjBemj+5mCPxC7+03bbSqw09PTw+BD0OK0sgwc1Uxm66Oz5vfQ3aJc4O1kaJD99
-         iE16SLtg6xOHxTzDIPzSYo/u2nize3lv/bOqOTWgHGpU9oEw7v3qyi0TAeOA5AQcKGS6
-         1jYjKWhrhFgE/AgjIED9aGhsypNXcaQVg/SjobXwVko85eYFYfU0vEN6qCIfaVHHJOC0
-         2Ehhakp2MxA4UKzrTFUnhuwfQbRqwyvyESZGfEJQ8WwZvGwa5B+zAcEFL3Qf/eoEbwKa
-         UqRQ==
-X-Gm-Message-State: AJIora9A8IJrRzReCZY3fbo6ovb2LtUQ+3DMKUnboaXhC3jKkw5tLRMm
-        Dx4vZzP4dVWn12pdmOBqvX7C+Q==
-X-Google-Smtp-Source: AGRyM1v4J522/CsbJ15YeUOvSaWI8hyF/D8ynhoDdCisWlk5JSxaXP8LbE/H1oMLQMyP+D4lTEzv7Q==
-X-Received: by 2002:a05:600c:3491:b0:3a0:4d4a:2e2d with SMTP id a17-20020a05600c349100b003a04d4a2e2dmr9448093wmq.4.1657268783790;
-        Fri, 08 Jul 2022 01:26:23 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id l1-20020a7bc441000000b003a2cf1535aasm1403895wmi.17.2022.07.08.01.26.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 01:26:23 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 09:25:58 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        James Morse <james.morse@arm.com>,
-        Hou Tao <houtao1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: Re: [PATCH bpf-next v6 3/4] bpf, arm64: Impelment
- bpf_arch_text_poke() for arm64
-Message-ID: <YsfqFp+IkhvXPoDl@myrica>
-References: <20220625161255.547944-1-xukuohai@huawei.com>
- <20220625161255.547944-4-xukuohai@huawei.com>
- <YscMo+jlif44bxBP@larix>
- <b2d21d18-2fc1-be68-f8ac-d185fcfadbbd@huawei.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Bgxu/xLyyKqfoS5wPukZ0Iv8tWIgajlD3uz/Xf77/w4=;
+        b=yi30RT866SH8xD5XfWMg72li2YkhfBiSE4xFwFoZxqtXmLq0dcRNeji8qvyN0atx87
+         1JLyPzalpQu3NtD7Xd0Y1BGL1yRgyYV32jSYnLexkDOHceKLAZiPLn/vlrP5FQUUAn/d
+         www0iJnZTGMqBr9inT5DAuP5zPsupeHzap0PjdzqJ7Xp+5sV4n+wf+hsEqxbfoIV5mes
+         jqfH4QCGnkFYXiMA1NHxQGtLfTkdbssgt63iJm75n0AqbICe7uOikL5r+bViIuw14MVZ
+         9UCShLrmlZl0YV6hOziLu61efae5W9HvBY8jip6ePzACl5YRYsCtL0b1zA99hjCxOCoR
+         8PJg==
+X-Gm-Message-State: AJIora+Eoyn6/OO7GO4sM7c0cAcAMX40xfd82M2US3wFiUmgODKnlKOA
+        rM1EACBalVrF8/RIj/CGxCc=
+X-Google-Smtp-Source: AGRyM1vnsWrtnJRk0jGv6Ng9Tvb3M1qrO1dRsqt8Fp6uiudca8vyk74yUZblERyEFd0mFY7nwZs3kg==
+X-Received: by 2002:a05:6e02:1284:b0:2dc:d3b:ccf6 with SMTP id y4-20020a056e02128400b002dc0d3bccf6mr1391671ilq.91.1657268834670;
+        Fri, 08 Jul 2022 01:27:14 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id s13-20020a02cf2d000000b0032e7d0a79basm17938432jar.158.2022.07.08.01.27.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 01:27:13 -0700 (PDT)
+Message-ID: <b741704d-e8b0-25b9-6111-cb4fedfd18c7@gmail.com>
+Date:   Fri, 8 Jul 2022 10:27:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b2d21d18-2fc1-be68-f8ac-d185fcfadbbd@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 0/2] MediaTek Helio X10 MT6795 - power domains
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org,
+        chun-jie.chen@mediatek.com, weiyi.lu@mediatek.com,
+        mbrugger@suse.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, kernel@collabora.com,
+        nfraprado@collabora.com
+References: <20220503141441.125852-1-angelogioacchino.delregno@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220503141441.125852-1-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 10:41:46AM +0800, Xu Kuohai wrote:
-> >> +/* generated prologue:
-> >> + *      bti c // if CONFIG_ARM64_BTI_KERNEL
-> >> + *      mov x9, lr
-> >> + *      nop  // POKE_OFFSET
-> >> + *      paciasp // if CONFIG_ARM64_PTR_AUTH_KERNEL
-> > 
-> > Any reason for the change regarding BTI and pointer auth?  We used to put
-> > 'bti c' at the function entry if (BTI && !PA), or 'paciasp' if (BTI && PA),
-> > because 'paciasp' is an implicit BTI.
-> > 
-> 
-> Assuming paciasp is the first instruction if (BTI && PA), when a
-> trampoline with BPF_TRAMP_F_CALL_ORIG flag attached, we'll encounter the
-> following scenario.
-> 
-> bpf_prog:
->         paciasp // LR1
->         mov x9, lr
->         bl <trampoline> ----> trampoline:
->                                       ....
->                                       mov x10, <entry_for_CALL_ORIG>
->                                       blr x10
->                                         |
-> CALL_ORIG_entry:                        |
->         bti c        <------------------|
->         stp x29, lr, [sp, #- 16]!
->         ...
->         autiasp // LR2
->         ret
-> 
-> Because LR1 and LR2 are not equal, the autiasp will fail!
-> 
-> To make this scenario work properly, the first instruction should be
-> 'bti c'.
 
-Right my mistake, this layout is also what GCC generates for normal kernel
-functions when (BTI && PA), so it makes sense to use the same
 
-Thanks,
-Jean
+On 03/05/2022 16:14, AngeloGioacchino Del Regno wrote:
+> In an effort to give some love to the apparently forgotten MT6795 SoC,
+> I am upstreaming more components that are necessary to support platforms
+> powered by this one apart from a simple boot to serial console.
+> 
+> This series introduces support for the MTCMOS power domains found on
+> the Helio X10.
+> 
+> Tested on a Sony Xperia M5 (codename "Holly") smartphone.
+> 
+
+Whole series applied, thanks!
+
+> Changes in v2:
+>   - Changed license header for mt6795-power.h binding as per
+>     Krzysztof's review.
+> 
+> AngeloGioacchino Del Regno (2):
+>    dt-bindings: power: Add MediaTek Helio X10 MT6795 power domains
+>    soc: mediatek: pm-domains: Add support for Helio X10 MT6795
+> 
+>   .../power/mediatek,power-controller.yaml      |   2 +
+>   drivers/soc/mediatek/mt6795-pm-domains.h      | 112 ++++++++++++++++++
+>   drivers/soc/mediatek/mtk-pm-domains.c         |   5 +
+>   include/dt-bindings/power/mt6795-power.h      |  16 +++
+>   4 files changed, 135 insertions(+)
+>   create mode 100644 drivers/soc/mediatek/mt6795-pm-domains.h
+>   create mode 100644 include/dt-bindings/power/mt6795-power.h
+> 
