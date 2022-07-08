@@ -2,94 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4844EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 229DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237302AbiGHI0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
+        id S237555AbiGHI0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237138AbiGHI0C (ORCPT
+        with ESMTP id S237510AbiGHI0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:26:02 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 675C97969A
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:26:00 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E21E1063;
-        Fri,  8 Jul 2022 01:26:00 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A11A53F792;
-        Fri,  8 Jul 2022 01:25:54 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 09:24:43 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zong Li <zong.li@sifive.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>, Guo Ren <guoren@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Brice Goglin <Brice.Goglin@inria.fr>
-Subject: Re: [RFC 2/4] arch-topology: add a default implementation of
- store_cpu_topology()
-Message-ID: <20220708082443.azoqvuj7afrg7ox7@bogus>
-References: <20220707220436.4105443-1-mail@conchuod.ie>
- <20220707220436.4105443-3-mail@conchuod.ie>
+        Fri, 8 Jul 2022 04:26:09 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8438149F
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:26:08 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id bn33so3701214ljb.13
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:26:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QcuR31vW41GUzhVABKFvJEfXITQ2atVEdkZJRGOLjc0=;
+        b=imhC2SZYsAxajeYaHaEGj5cgIcJ2UtGvjGz1O1fniWFyM6vSGMflOvSmmY8f/DCkE7
+         ETn74yO6Lln5p7gj0Ox1gmPB7gsNRt2WJ5c32/2LfokIadIZxVsZAr+kLkP68SAFrJ3Q
+         SFbDZYLTKgmaWW614S4DMOWgfQcRXfWkc2H+Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QcuR31vW41GUzhVABKFvJEfXITQ2atVEdkZJRGOLjc0=;
+        b=orLHi23UcoB0u5PhQ7X3LpiiEJs6rezdISirBh1bUkgnfAxdXZWt2p0lBnBkgFgpd7
+         /mIQxprt8xcK7m+5TVz8uI2rXfxfrSmLU0T+XVJTat8Bjg7UjV9CJRve7010xorfSkWZ
+         mtVUd98GubuXRX3VcCaQIXgCtx4am0bbyAe2ge8YTTB7EdWiOoCWt8yAs2EheYxH+GEr
+         3QFVPf3nvOEmzTwzrrhRUKp4FJfQhcDYKNJeAci00E3sDBlD0B7v+7PxA/LQHMRUkJ30
+         NkpEd81WkKu+LCfXRtujPeFh8CEoAZveIsNGBCDM0XSz4RvAshW07a3uvULbMvFiGTaF
+         QIyA==
+X-Gm-Message-State: AJIora9yXFbAg29a7FNTVxRJ1UGtuFNKzZN1LwMpyGfqncylgImyRhnV
+        qT/Kc5+w84AGLVJGXfeo1UwMvA==
+X-Google-Smtp-Source: AGRyM1tFSbzy0c34K2tQw0le8avqgts4y+aW0HZExcIoKSt3CboVkAvDX2MhDeSXCkyKjSBgPE2OGQ==
+X-Received: by 2002:a05:651c:b0f:b0:25d:38e0:a5a5 with SMTP id b15-20020a05651c0b0f00b0025d38e0a5a5mr1290650ljr.278.1657268767090;
+        Fri, 08 Jul 2022 01:26:07 -0700 (PDT)
+Received: from [172.16.11.74] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id r14-20020ac252ae000000b0047fa2cc38ccsm7274697lfm.198.2022.07.08.01.26.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 01:26:06 -0700 (PDT)
+Message-ID: <d86ad462-fb4c-4768-b060-201511f9ff64@rasmusvillemoes.dk>
+Date:   Fri, 8 Jul 2022 10:26:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707220436.4105443-3-mail@conchuod.ie>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/5] lib: add find_nth(,and,andnot)_bit()
+Content-Language: en-US
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, David Gow <davidgow@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        Kees Cook <keescook@chromium.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+References: <20220706182300.70862-1-yury.norov@gmail.com>
+ <20220706182300.70862-2-yury.norov@gmail.com>
+ <423c4368-0a1c-792c-2637-768532fc7782@rasmusvillemoes.dk>
+ <YsdKMQzUFVwIaqtJ@yury-laptop>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <YsdKMQzUFVwIaqtJ@yury-laptop>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 11:04:35PM +0100, Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
-> 
-> RISC-V & arm64 both use an almost identical method of filling in
-> default vales for arch topology. Create a weakly defined default
-> implementation with the intent of migrating both archs to use it.
-> 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
->  drivers/base/arch_topology.c  | 19 +++++++++++++++++++
->  include/linux/arch_topology.h |  1 +
->  2 files changed, 20 insertions(+)
-> 
-> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> index 441e14ac33a4..07e84c6ac5c2 100644
-> --- a/drivers/base/arch_topology.c
-> +++ b/drivers/base/arch_topology.c
-> @@ -765,6 +765,25 @@ void update_siblings_masks(unsigned int cpuid)
->  	}
->  }
->  
-> +void __weak store_cpu_topology(unsigned int cpuid)
+On 07/07/2022 23.03, Yury Norov wrote:
 
-I prefer to have this as default implementation. So just get the risc-v
-one pushed to upstream first(for v5.20) and get all the backports if required.
-Next cycle(i.e. v5.21), you can move both RISC-V and arm64.
+>> And I don't
+>> like that the index is apparently 1-based (and that surprising API isn't
+>> spelled out anywhere).
+> 
+> Yeah... My motivation to start counting from 1 is to keep consistency
+> with ffs: __ffs(word) <=> fns(word, 1). 
 
--- 
-Regards,
-Sudeep
+I understand that you're translating that second f in ffs (find First
+set) to a 1. But I disagree that that's necessarily a logical thing to
+do. Everybody understands that (given a C or python or... context) when
+some prose talks about "the first element in an array", it's the one at
+[0]. So I find it much more natural that the set bits in a word are
+enumerated 0, 1, ..., popcount(w)-1.
+
+Rasmus
