@@ -2,80 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66936C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 985B1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238570AbiGHOqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        id S238746AbiGHOrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238644AbiGHOpr (ORCPT
+        with ESMTP id S238601AbiGHOqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:45:47 -0400
-Received: from outbound-smtp59.blacknight.com (outbound-smtp59.blacknight.com [46.22.136.243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2865A47A
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:44:35 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
-        by outbound-smtp59.blacknight.com (Postfix) with ESMTPS id BE235FA77D
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 15:44:08 +0100 (IST)
-Received: (qmail 14303 invoked from network); 8 Jul 2022 14:44:08 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 8 Jul 2022 14:44:08 -0000
-Date:   Fri, 8 Jul 2022 15:44:06 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: [PATCH] mm/page_alloc: replace local_lock with normal spinlock -fix
- -fix
-Message-ID: <20220708144406.GJ27531@techsingularity.net>
+        Fri, 8 Jul 2022 10:46:49 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 791E27694B
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:45:19 -0700 (PDT)
+Received: (qmail 7716 invoked by uid 1000); 8 Jul 2022 10:45:06 -0400
+Date:   Fri, 8 Jul 2022 10:45:06 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Marco Elver <elver@google.com>
+Cc:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <paul.heidekrueger@in.tum.de>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
+        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
+        Martin Fink <martin.fink@in.tum.de>
+Subject: Re: [PATCH v2] tools/memory-model: Clarify LKMM's limitations in
+ litmus-tests.txt
+Message-ID: <YshC8sJ4dZq3m2wy@rowland.harvard.edu>
+References: <Yqdb3CZ8bKtbWZ+z@rowland.harvard.edu>
+ <20220614154812.1870099-1-paul.heidekrueger@in.tum.de>
+ <CANpmjNOkXz=+221i70CWJexQWwfA_By3+7Cnimwgjmwn7RQdBg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANpmjNOkXz=+221i70CWJexQWwfA_By3+7Cnimwgjmwn7RQdBg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pcpu_spin_unlock and pcpu_spin_unlock_irqrestore both unlock
-pcp->lock and then enable preemption. This lacks symmetry against
-both the pcpu_spin helpers and differs from how local_unlock_* is
-implemented. While this is harmless, it's unnecessary and it's generally
-better to unwind locks and preemption state in the reverse order as
-they were acquired.
+On Fri, Jul 08, 2022 at 01:44:06PM +0200, Marco Elver wrote:
+> On Tue, 14 Jun 2022 at 17:49, Paul Heidekrüger
+> <paul.heidekrueger@in.tum.de> wrote:
+> >
+> > As discussed, clarify LKMM not recognizing certain kinds of orderings.
+> > In particular, highlight the fact that LKMM might deliberately make
+> > weaker guarantees than compilers and architectures.
+> >
+> > Link: https://lore.kernel.org/all/YpoW1deb%2FQeeszO1@ethstick13.dse.in.tum.de/T/#u
+> > Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
+> > Co-developed-by: Alan Stern <stern@rowland.harvard.edu>
+> 
+> Reviewed-by: Marco Elver <elver@google.com>
+> 
+> However with the Co-developed-by, this is missing Alan's SOB.
 
-This is a fix on top of the mm-unstable patch
-mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch
+For the record:
 
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
----
- mm/page_alloc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 934d1b5a5449..d0141e51e613 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -192,14 +192,14 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
- 
- #define pcpu_spin_unlock(member, ptr)					\
- ({									\
--	spin_unlock(&ptr->member);					\
- 	pcpu_task_unpin();						\
-+	spin_unlock(&ptr->member);					\
- })
- 
- #define pcpu_spin_unlock_irqrestore(member, ptr, flags)			\
- ({									\
--	spin_unlock_irqrestore(&ptr->member, flags);			\
- 	pcpu_task_unpin();						\
-+	spin_unlock_irqrestore(&ptr->member, flags);			\
- })
- 
- /* struct per_cpu_pages specific helpers. */
+(Note that according to Documentation/process/submitting-patches.rst, 
+the submitting author's SOB is supposed to come last.)
+
+Alan
