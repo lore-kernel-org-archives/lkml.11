@@ -2,81 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36CC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27410C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238892AbiGHP6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41796 "EHLO
+        id S238903AbiGHP6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238880AbiGHP6n (ORCPT
+        with ESMTP id S238893AbiGHP6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:58:43 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C6D6B253
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:58:41 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 145so22678184pga.12
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 08:58:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=B8w4bwYuqV6DXk3ShmGJ/aTll0ynf+VvQDcahL2hqj4=;
-        b=bfCBNAPgf5AtCFBnWe/2nrt7kg29z/w5Q01kuQ6lA+gveTZTp/emDFQxX4//qULTB1
-         /cK4O+t1Z+i0p4mGAfgY8TN8v0tQ0RSvxquGKJmX4QGik5uArQ6ecp3U65ZSDt8cnezy
-         vGAyYDn3mUw1c2vTleiOPAnO9QfnpJOoCWVDhAsvcFJI8Rk2RlC4oZQdtEHG3DzFVxZP
-         R7aHe9QHxnyRN9lRq7Va+0rjvw5ejyajU+vbEeLjLx7KjBkbz3wGUd+8NPfsVNnERiK3
-         WjZgiDfSHkSo40HlMmmR7c5mwZVjIi/thPN0pGgF4588q13cCYCzUgZ6bUJtMN5IYvkD
-         57Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B8w4bwYuqV6DXk3ShmGJ/aTll0ynf+VvQDcahL2hqj4=;
-        b=aFrwhgufk0fUDHf2s+ARIN+rxNeYLBGdOIaTrymIAJCrfmuQRArf5Iql9aIOKNJIXG
-         hH9cNs2TRL5/uVvniDFdrSQPszcMIdMut8bJmVx4/eIjB81PNP1smwClddPDMycJV2jn
-         rJ+5hX7U0dZp/W8bmQAPf237vHg/Cz/pgbBiBNw7nEDMFQin3zaMiy32pEO5P5KTvhlV
-         L7ooHbnR5/AECQjPwlWUbJyeOdpxwTEOLm+Dj7XZfhHTSNH52FAEGvslGra3eLuN0vku
-         F5spbk8+xU/dhfXthOxfuZYGMZeX8JyRxUULkeiY0LCBopCEjWO10/e+RVoJ6XB/JLPo
-         bD9g==
-X-Gm-Message-State: AJIora9qOjRNWf9V7ZpqdmzW+FEzRLZdTvjDgdlHWdqCCB4lDA4Un9wt
-        EhF6UQ/6Gw/Xnih8ZAD/2L3ZXA==
-X-Google-Smtp-Source: AGRyM1vTv4xL2/UTTju5PFq9Kvb5or53YEm+WZJ52+HPaHJtWg1ukrZVjJdpIkPwNcaRQPI2DCWFkQ==
-X-Received: by 2002:a05:6a00:188e:b0:52a:b545:559f with SMTP id x14-20020a056a00188e00b0052ab545559fmr1935105pfh.18.1657295920505;
-        Fri, 08 Jul 2022 08:58:40 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id w23-20020a1709026f1700b00161ccdc172dsm30065208plk.300.2022.07.08.08.58.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 08:58:40 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 15:58:36 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KVM: x86: Fully initialize 'struct kvm_lapic_irq' in
- kvm_pv_kick_cpu_op()
-Message-ID: <YshULK9IG9mw7ms3@google.com>
-References: <20220708125147.593975-1-vkuznets@redhat.com>
+        Fri, 8 Jul 2022 11:58:46 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A8545066;
+        Fri,  8 Jul 2022 08:58:42 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 268FwSAP089860;
+        Fri, 8 Jul 2022 10:58:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657295908;
+        bh=bbfEE7t6ty3Uw+yroVSM9f1oWuAgijX5go8kEgIrGCU=;
+        h=From:To:CC:Subject:Date;
+        b=ljN4MlvFABM8dxEXlAS+n+d1imGUtx+0c9r+x8cxyzeS3N1FBt8jA6vYsaaiTZ8/z
+         k7H6FrG6tbG78t9kAR8qKPwbhFxUFUWOCj1VJWGKZ3lxZszUEqpC2nxk+YwZ2QdCFI
+         Vo0jPH1jVsOAtQs4r60O+PLVdI/38ubf+L1zQ9J4=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 268FwS52016574
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 8 Jul 2022 10:58:28 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 8
+ Jul 2022 10:58:28 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 8 Jul 2022 10:58:28 -0500
+Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 268FwP5j105927;
+        Fri, 8 Jul 2022 10:58:26 -0500
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
+Subject: [RESEND][PATCH v5] dt-bindings: gpio: Convert TI TPIC2810 GPIO Controller bindings to YAML
+Date:   Fri, 8 Jul 2022 21:28:19 +0530
+Message-ID: <20220708155819.3096903-1-vigneshr@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708125147.593975-1-vkuznets@redhat.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022, Vitaly Kuznetsov wrote:
-> 'vector' and 'trig_mode' fields of 'struct kvm_lapic_irq' are left
-> uninitialized in kvm_pv_kick_cpu_op(). While these fields are normally
-> not needed for APIC_DM_REMRD, they're still referenced by
-> __apic_accept_irq() for trace_kvm_apic_accept_irq(). Fully initialize
-> the structure to avoid consuming random stack memory.
-> 
-> Fixes: a183b638b61c ("KVM: x86: make apic_accept_irq tracepoint more generic")
-> Reported-by: syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
+From: Aparna M <a-m1@ti.com>
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+Convert gpio-tpic2810 bindings to yaml format and remove outdated
+bindings in .txt format.
+
+Signed-off-by: Aparna M <a-m1@ti.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+---
+v5 -> Resend v5: Collect R-bys
+v4 -> v5: Fix indentation issues
+v3 -> v4: Add gpio-line-names property
+v2 -> v3: Remove redundant descriptions and make minor change in example
+v1 -> v2: Fix identation issues and update commit message
+
+ .../bindings/gpio/gpio-tpic2810.txt           | 16 ------
+ .../bindings/gpio/gpio-tpic2810.yaml          | 51 +++++++++++++++++++
+ 2 files changed, 51 insertions(+), 16 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt
+ create mode 100644 Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml
+
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt b/Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt
+deleted file mode 100644
+index 1afc2de7a537..000000000000
+--- a/Documentation/devicetree/bindings/gpio/gpio-tpic2810.txt
++++ /dev/null
+@@ -1,16 +0,0 @@
+-TPIC2810 GPIO controller bindings
+-
+-Required properties:
+- - compatible		: Should be "ti,tpic2810".
+- - reg			: The I2C address of the device
+- - gpio-controller	: Marks the device node as a GPIO controller.
+- - #gpio-cells		: Should be two. For consumer use see gpio.txt.
+-
+-Example:
+-
+-	gpio@60 {
+-		compatible = "ti,tpic2810";
+-		reg = <0x60>;
+-		gpio-controller;
+-		#gpio-cells = <2>;
+-	};
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml b/Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml
+new file mode 100644
+index 000000000000..cb8a5c376e1e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/gpio/gpio-tpic2810.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/gpio/gpio-tpic2810.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TPIC2810 GPIO controller bindings
++
++maintainers:
++  - Aswath Govindraju <a-govindraju@ti.com>
++
++properties:
++  compatible:
++    enum:
++      - ti,tpic2810
++
++  reg:
++    maxItems: 1
++
++  gpio-controller: true
++
++  "#gpio-cells":
++    const: 2
++
++  gpio-line-names:
++    minItems: 1
++    maxItems: 32
++
++required:
++  - compatible
++  - reg
++  - gpio-controller
++  - "#gpio-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        gpio@60 {
++            compatible = "ti,tpic2810";
++            reg = <0x60>;
++            gpio-controller;
++            #gpio-cells = <2>;
++            gpio-line-names = "LED A", "LED B", "LED C";
++        };
++    };
+-- 
+2.25.1
+
