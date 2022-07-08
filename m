@@ -2,124 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92543C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA997C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239221AbiGHQXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
+        id S239143AbiGHQXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239064AbiGHQWX (ORCPT
+        with ESMTP id S239098AbiGHQWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:22:23 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444F43123F;
-        Fri,  8 Jul 2022 09:22:22 -0700 (PDT)
-Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:3cab:61a1:2b1f:896b])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9438C6601A22;
-        Fri,  8 Jul 2022 17:22:20 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657297341;
-        bh=Pc01xd3UxsBg7Fqnq6gTTbtdqkYbng68gmR8BJ3yino=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TdWnKCb3Pdl2GIFnklXUcQQyzJiHTjGdp/EePiI16uqGqiT63F4JmJdCcjtcXcvfr
-         frQEz4o+GD+jy8/D/BxfE+22mHMsQJhngshLFGNUlQL08GusQFc8FI3S1uQxmTyHid
-         KZ09zGDHeCpRqI1srfsbJTYk0ktZwTO8oFSoizOLNN9rSxEZUl1orttU2SMwQK2Qma
-         v71kg9WIZd7K9M1fKetB0LEcgVP0AaX7J9pY6BtzGFKxPGpqHdIWgLpWRr+t8J6ixs
-         JUBHkghZOjLgnu3i0jYyEhuU+Pxp8q+rZudYHwpXOqUvMh7LE/u+xUFF4QVnFdGWjp
-         xHs0P4Sa1Qy/g==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     mchehab@kernel.org, hverkuil@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        nicolas.dufresne@collabora.com, andrzej.p@collabora.com
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v13 12/17] media: uapi: Move the HEVC stateless control type out of staging
-Date:   Fri,  8 Jul 2022 18:21:51 +0200
-Message-Id: <20220708162156.815772-13-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220708162156.815772-1-benjamin.gaignard@collabora.com>
-References: <20220708162156.815772-1-benjamin.gaignard@collabora.com>
+        Fri, 8 Jul 2022 12:22:32 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAA07B367;
+        Fri,  8 Jul 2022 09:22:26 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id s27so22726144pga.13;
+        Fri, 08 Jul 2022 09:22:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pWV5ymtSkb4oQwKzdRG4xc80jYwd1cDXp5Bm9N4oxeU=;
+        b=lgsprlJLenV36x7BzHlsJ6RuYTzhtVWR6c2rZUmjfou1L4nqziCaB9xSIYqWa6nFRX
+         0O0d/qM/melc8VHoPLmdli5ac2hMIEKbgfAke97M81ew74zkZi7XzKP77ad7gSJKSAPx
+         vcV5YqK1X3GV0NW7sqtn3r0e3RX39ahoP+R3WZBs7KEzaq+3MBKOVvOp1C3LKhNoUs9m
+         IzejzQhToJ1z5hJtINpcXYyeiXQWxyBlIWw0jq16atTeqasIjB6dNIoJu3Q3kFbB/xmB
+         ddagwenJ3y33ANkELLRLEj673/+95ivPrvKFwCLmOXPgwQGxuCQZS1/oB0yLCB4NO8C3
+         VYFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pWV5ymtSkb4oQwKzdRG4xc80jYwd1cDXp5Bm9N4oxeU=;
+        b=USBufBRUVxeQA6Bom+0kGIoYRbEPKzRzVA5bytek0iE5kbFcrwskqC1hgD2rcc0odw
+         fU9HYi3wZqRrb2NaZKQe8gvLC8ExVlXusDCjbLTCEjfoGwQBKn+FfT0guCVEgVIwlcCD
+         MBEH+f4JXVgkDRh8u48SuCHE88hMcgTUUHwxMS8/vEWvZA6FMpOzoMICBbDvZuVeqM+s
+         G7DR3EXygXl0nl3wBPiN6xw7A1o1InKlbixbJAS7O9HnJDXHCI2BweB1k+dxHOKLEDlJ
+         FNfRlcQYD9MGE7wb9dMaZjRmmnirtK2rp5K76g3pMjobG/S9YIwrKnto24PoRFimtDHH
+         lcpw==
+X-Gm-Message-State: AJIora+NfIzAGAHB74BwUYfcaNqRKXzvKOIA0WMRAgxNM9A6Hq59MMgf
+        +/6+vhXmNeENvZMUFIzV2884m2GPFoc/CjT/
+X-Google-Smtp-Source: AGRyM1t6XE//mHAuCzTd470VbqGR6fCg+eepzK+JXYrCcmdPEQFGutVuoBUlxtgPhqd4zagmT8qTdg==
+X-Received: by 2002:a05:6a00:2404:b0:52a:7fc7:cf57 with SMTP id z4-20020a056a00240400b0052a7fc7cf57mr1210092pfh.11.1657297346212;
+        Fri, 08 Jul 2022 09:22:26 -0700 (PDT)
+Received: from ?IPV6:2404:f801:10:102:8000::f381? ([2404:f801:8050:3:bf::f381])
+        by smtp.gmail.com with ESMTPSA id cd21-20020a056a00421500b0051b32c2a5a7sm28761213pfb.138.2022.07.08.09.21.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 09:22:14 -0700 (PDT)
+Message-ID: <fdcf093c-4a42-ddb7-abc6-c595cb92763e@gmail.com>
+Date:   Sat, 9 Jul 2022 00:21:44 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH V3] swiotlb: Split up single swiotlb lock
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     corbet@lwn.net, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        paulmck@kernel.org, bp@suse.de, akpm@linux-foundation.org,
+        keescook@chromium.org, pmladek@suse.com, rdunlap@infradead.org,
+        damien.lemoal@opensource.wdc.com, michael.h.kelley@microsoft.com,
+        kys@microsoft.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vkuznets@redhat.com,
+        wei.liu@kernel.org, parri.andrea@gmail.com,
+        thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
+        kirill.shutemov@intel.com, andi.kleen@intel.com,
+        Andi Kleen <ak@linux.intel.com>
+References: <20220707082436.447984-1-ltykernel@gmail.com>
+ <YscStPk/IXW9PPmh@infradead.org>
+From:   Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <YscStPk/IXW9PPmh@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the HEVC stateless controls types out of staging,
-and re-number them.
+On 7/8/2022 1:07 AM, Christoph Hellwig wrote:
+> Thanks, this looks much better.  I think there is a small problem
+> with how default_nareas is set - we need to use 0 as the default
+> so that an explicit command line value of 1 works.  Als have you
+> checked the interaction with swiotlb_adjust_size in detail?
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Tested-by: Jernej Skrabec <jernej.skrabec@gmail.com>
----
- .../userspace-api/media/videodev2.h.rst.exceptions         | 5 +++++
- include/media/hevc-ctrls.h                                 | 7 -------
- include/uapi/linux/videodev2.h                             | 6 ++++++
- 3 files changed, 11 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/userspace-api/media/videodev2.h.rst.exceptions b/Documentation/userspace-api/media/videodev2.h.rst.exceptions
-index 0b91200776f8..2feea4a5a008 100644
---- a/Documentation/userspace-api/media/videodev2.h.rst.exceptions
-+++ b/Documentation/userspace-api/media/videodev2.h.rst.exceptions
-@@ -153,6 +153,11 @@ replace symbol V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR :c:type:`v4l2_ctrl_type`
- replace symbol V4L2_CTRL_TYPE_VP9_FRAME :c:type:`v4l2_ctrl_type`
- replace symbol V4L2_CTRL_TYPE_HDR10_CLL_INFO :c:type:`v4l2_ctrl_type`
- replace symbol V4L2_CTRL_TYPE_HDR10_MASTERING_DISPLAY :c:type:`v4l2_ctrl_type`
-+replace symbol V4L2_CTRL_TYPE_HEVC_SPS :c:type:`v4l2_ctrl_type`
-+replace symbol V4L2_CTRL_TYPE_HEVC_PPS :c:type:`v4l2_ctrl_type`
-+replace symbol V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS :c:type:`v4l2_ctrl_type`
-+replace symbol V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX :c:type:`v4l2_ctrl_type`
-+replace symbol V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS :c:type:`v4l2_ctrl_type`
- 
- # V4L2 capability defines
- replace define V4L2_CAP_VIDEO_CAPTURE device-capabilities
-diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index 3a6601a46ced..42d16e8a1050 100644
---- a/include/media/hevc-ctrls.h
-+++ b/include/media/hevc-ctrls.h
-@@ -22,13 +22,6 @@
- #define V4L2_CID_STATELESS_HEVC_START_CODE	(V4L2_CID_CODEC_BASE + 1016)
- #define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (V4L2_CID_CODEC_BASE + 1017)
- 
--/* enum v4l2_ctrl_type type values */
--#define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
--#define V4L2_CTRL_TYPE_HEVC_PPS 0x0121
--#define V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS 0x0122
--#define V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX 0x0123
--#define V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS 0x0124
--
- enum v4l2_stateless_hevc_decode_mode {
- 	V4L2_STATELESS_HEVC_DECODE_MODE_SLICE_BASED,
- 	V4L2_STATELESS_HEVC_DECODE_MODE_FRAME_BASED,
-diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 37f9f23a67fe..e0d19a6b5bc7 100644
---- a/include/uapi/linux/videodev2.h
-+++ b/include/uapi/linux/videodev2.h
-@@ -1836,6 +1836,12 @@ enum v4l2_ctrl_type {
- 
- 	V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR	= 0x0260,
- 	V4L2_CTRL_TYPE_VP9_FRAME		= 0x0261,
-+
-+	V4L2_CTRL_TYPE_HEVC_SPS			= 0x0270,
-+	V4L2_CTRL_TYPE_HEVC_PPS			= 0x0271,
-+	V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS	= 0x0272,
-+	V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX	= 0x0273,
-+	V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS	= 0x0274,
- };
- 
- /*  Used in the VIDIOC_QUERYCTRL ioctl for querying controls */
--- 
-2.32.0
-
+Yes, the patch was tested in the Hyper-V SEV VM which always calls
+swiotlb_adjust_size() to adjust bounce buffer size according to memory
+size. It will round up bounce buffer size to the next power of 2 if the 
+memory size is not power of 2.
