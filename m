@@ -2,411 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 867B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD90CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238791AbiGHPQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
+        id S238801AbiGHPQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238787AbiGHPQZ (ORCPT
+        with ESMTP id S238786AbiGHPQ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:16:25 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301F661D63
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:16:21 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id os14so7996745ejb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 08:16:21 -0700 (PDT)
+        Fri, 8 Jul 2022 11:16:27 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F68D61D5D;
+        Fri,  8 Jul 2022 08:16:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657293386; x=1688829386;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=yDXyZLAulAeOLO2xTFLJ+aZaG907LlglodqklX4aqm0=;
+  b=rYDCAJOI2ikujklhGxYWl+AubK+16ZxhyqL9v55ijFDlqyH6SdRysVaW
+   caWGZ2k92T0ZxQemPqos0ysye2eCbOaNh7XAKXO+2zExNyv2J5WMbRHb1
+   vBFLATxvyqZbYSenq4dR0cFTKrWwchWlUV3GCvMAYRHI1kZoffb56UoIs
+   fNpbf5XfgO178EBRHzRXwlq75KSmimm74SrxW7Uby5h/vfmEKpNBrsHqk
+   b1wbmheWYw4iurtQkdpvMCeBIJaJ+imc2OjyXkD6vfPyAkooeZTpJ7HIf
+   qauX31hDBoBWLlhhW7h4tP8W+rk0iCgWukeSS+gh7ZAxnhaHIk6fZ2j3T
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="181349444"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 08:16:26 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 8 Jul 2022 08:16:26 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Fri, 8 Jul 2022 08:16:26 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=li+3niGRvP0uWJQzgOqoLdYxM+6bTvVxDEZvpni4YZ7ihPyGOFRUqtKWfRoES2wCt+WVIjhK8K9oq9z7Tux5DTCw88jSJxq+0MyZte3dzGJY0aGOtTo3xUzCHgKg53Kj9JkuzBbfYBLCZVe9l2tw37q4ZZTOT6xRwUV0SdQgA6p2Md1KheyxM9P4CDxr1E0Jegqxf1DSIPMkovaQo4g39kERWjIk4GkiGVkfUSUXwZtvlzG5lgO594eMNtBn8UeUKFn2js6GdEA1GTIFJoMY+YCwVmgu7fBxxD2hNhgrO87ufn99NzWUgIv4DrAguGu5TVQ0Ke3dfPC4VDtcyvxnfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yDXyZLAulAeOLO2xTFLJ+aZaG907LlglodqklX4aqm0=;
+ b=DmTjCOULn2WGH7PifLrr2HqYRh1O4nbv1KLu4C/UENHtZyoUi5jggYnEPVxzApX38w9qPCrpRnf9EsL2RuTXVN9U+7yOiNXCNXReqrMYiQBOMuQFVuGj1z+cWgJPZAC97qPnIi0Wk9ul7onVs2DvnACSbDEjzafbJf4SVQ8+Z2Ev23Qg/fHUc87Sgbt/QLCARSNJRpht08LJyNkKi1ZhwinqG28ZdD8M4vu8CH9me64Rea35pfnWJpINSUGVJ5xP86WZCZcIUzVQ/ZsWg5utxIz1ThJgOhAC4lXyT+Cw0p8Z+lj95GEF5S5mhzN/PNSKOWb038oR2V9nQZnbi4thjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cZrc2hIeDO8o5PZWP5SXE73mrzS0YOyLFsn5DmTzbZU=;
-        b=GRFrSqv2rMTfnwXIeZ5hZPuJAHH8jmdjv5SwX/arVIQaOvPS65462idVpv+XKhyNzo
-         fP8nPTvj30PfI7KycUVWUb27RqpwzEnihPkBPmjUVyb1wAitaEnpMQFoFza2hIqxJ4zO
-         tumoX29bbI8gVO4BcjjlUxShG512GA7XaFA7A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cZrc2hIeDO8o5PZWP5SXE73mrzS0YOyLFsn5DmTzbZU=;
-        b=kQ+cDR4iUMEKlQO4CtPVaX+sqATtzZZVbV49XNHMPjVFcdbi+qCy/w588YPEJG9nVK
-         i/xpRe2TwhIr409PEg/dW0UvB69lD9UUKCpX0T3J6zmAYgZZDzGxIBPNvYOENQFc8n8s
-         8VLIRhwXdBlFnbWRU8+iKn2LlSTo8z3dQUtbDAiquloPALNDqXNxneb9z5bJCMGL7wD7
-         ZBeQgW2FnmVh9YNUt0EQWALKRO1Dj6/9J1odKpyfkRHTqQXjvXbz6dE+OEUNKALZcPRq
-         185JlsotRnW1N+nW5+BnZEylyUANDRJx4gb4ya39gbBC1YY9f5qHlFIoGVD5zZ+E9sd1
-         tPNg==
-X-Gm-Message-State: AJIora+80JS2lsH6WwjUp9X1rh3Riod83c8+mo5P0LGC6P4opfrUyrkw
-        ZcMkhF3ZpAm/vy/vX2uITHNvUHBYJSR2JO7GExgtCw==
-X-Google-Smtp-Source: AGRyM1v4Oh5eb0d6LZma5Pcb1nClj5nir6hOOmIYYnHGXTHdCc430WfXK2TT7XgoIcXZeHsG9iJmRAOaYAbZkbMhtic=
-X-Received: by 2002:a17:907:9693:b0:726:372c:2c02 with SMTP id
- hd19-20020a170907969300b00726372c2c02mr4099897ejc.483.1657293379557; Fri, 08
- Jul 2022 08:16:19 -0700 (PDT)
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yDXyZLAulAeOLO2xTFLJ+aZaG907LlglodqklX4aqm0=;
+ b=p19wLSo7jqvVwpK4GhO0oJ/vkcITrlP6bLJ5OikX9aGeVyZ4nkxiphkYgNb4zcZguKd+CFCQVlYzgt1X4C+XMb96fvjc0kboBqLmMjZOlWdG1l1fdRkbj61RBl7lWaE6omy9/ic8Oum8hHR1H5q4VgOwUG4tJgTvbJHk2ySCpBk=
+Received: from BN6PR11MB1953.namprd11.prod.outlook.com (2603:10b6:404:105::14)
+ by DM4PR11MB5357.namprd11.prod.outlook.com (2603:10b6:5:394::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Fri, 8 Jul
+ 2022 15:16:25 +0000
+Received: from BN6PR11MB1953.namprd11.prod.outlook.com
+ ([fe80::5c8c:c31f:454d:824c]) by BN6PR11MB1953.namprd11.prod.outlook.com
+ ([fe80::5c8c:c31f:454d:824c%8]) with mapi id 15.20.5417.016; Fri, 8 Jul 2022
+ 15:16:24 +0000
+From:   <Claudiu.Beznea@microchip.com>
+To:     <Ryan.Wanner@microchip.com>, <Nicolas.Ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] ARM: dts: at91: sama5d2: Fix typo in i2s1 node
+Thread-Topic: [PATCH v3] ARM: dts: at91: sama5d2: Fix typo in i2s1 node
+Thread-Index: AQHYkt2wetVyiLm2tEKO8zMKBhm7hQ==
+Date:   Fri, 8 Jul 2022 15:16:24 +0000
+Message-ID: <26218d0c-4e90-2f14-5b65-9632bb21971f@microchip.com>
+References: <20220707215812.193008-1-Ryan.Wanner@microchip.com>
+In-Reply-To: <20220707215812.193008-1-Ryan.Wanner@microchip.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3c9b1d8a-33cb-4126-7dcd-08da60f4d2b1
+x-ms-traffictypediagnostic: DM4PR11MB5357:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mDCNVHo7XrraK1+VAP78XBiN2LyDCkFt7qrO4xSYnMKoSXled842fAcv3oA9gOxKR9viteLBjTwfoGeDCFmXxngryGozbrYQ/XlRhLrlI8h35e687o/X2RgD8TxnpkrqzCVwyFWxapFdu5RvlQ3sRVioPU8o3v66QDkRkfCJuGYIf6tHyEJbE9uelCj6dt+BkQygLorvVICSlSxGJXK9qa4lUN3vWSjZ+tSs6PKvNEhW6DP6uskAhcYwRuH98hq5zxY5ASgHOt8tcwTm6wx5hFcgoPIYYJGZ7AqJ3qM7bi+H/MWd/nq6F9SDww9k8SlKK2PZz1NITUpMA5LguSDwqIK4e1ge5ectPfmeuUCo5Ty13XheyTbePkYBnFEWXnj0FgmR2yQQNte+kxzTx3tnSPtSj2HQK04mbpPdUUFkDXOh4e2LD9+aKWwmGjZm1clfH4oQ34dPfTxLYisd7vZBAkc+zcNzEhXlbX9u2d3p8a58wA3PRaekMC4ThY1OeKAaliRleXxWa4HxoXvtkmjR+HwwQ2EUXlQHkN/oTAaUFIiGjMOkIMMDQHd5uCjzVyXMIMOnwWyx6al0a3uGnr8HnSFQDTi+j5yXMvw95KQQaQKbAaHFKPNj8e3ir83FVMEahgGyxHUEouEQJ5OkGfp1eyQNt3373tgIfJq46GjUHodmHVHYCPgOd+GrHgefqjKt/aZkwdQPy+4GYC7dkyQkvf9sLsYv6LYM2EmAHBlJXdNuhbQlgaM9AUKP9PO0BOww/7QsoHfI0IDGDKyNYhpc3C8Suu3WHVu9OPVNR7rtGq1666V8K+jJSjY65meay4CGB9KcpiTr01xl/0RHg6G7ybMoTgr05dkaj0H+FUmXnNE4n/NytaMMcoiKltO7iK9I
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR11MB1953.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(346002)(136003)(396003)(366004)(376002)(6506007)(122000001)(36756003)(316002)(31696002)(31686004)(38070700005)(54906003)(2906002)(53546011)(86362001)(110136005)(38100700002)(2616005)(71200400001)(91956017)(6486002)(66556008)(83380400001)(66446008)(41300700001)(66946007)(64756008)(6512007)(26005)(8936002)(186003)(478600001)(5660300002)(4326008)(8676002)(76116006)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OUUvTjRZNDNpYmFVd3FXS1NkRlF3MlJmTkJsS1F4SU1PVnUvK00zQUdDMVEy?=
+ =?utf-8?B?TWJKeGgzMVZZMnczb1VXYlA0UEkwZCttR3RHcS90bGRLTEJnZ0VkTDBmcjdl?=
+ =?utf-8?B?WkR2L2hFa1VBWDV6Ynd1ZG5QM2VCeUx2NFdlR1Q5SkxnU2ZKL0FvMVRKS0dk?=
+ =?utf-8?B?Ynkvem9tQW5zajJSR1JOalZFVWtXV2xHWTB5ZTNzaHRPdTVhMnkwcWJBRTFz?=
+ =?utf-8?B?aUJRNE5OOUpBaXVnS0lqM21UTG9wVzNZRGx6ZUJqSjl1UlE2MnlEOWJTOEJL?=
+ =?utf-8?B?UUJjaHVGcHhyV3BmbUVVam85Nk4vSXczeEpIWFFzRURrSWRSd3NtYXkyN01R?=
+ =?utf-8?B?bHBnS3pRTUJEMHpDbnpRMmFxWElHN1hlUkw0ZTh1UEFCQUhFeC93Qk5VQVFC?=
+ =?utf-8?B?SEExWWhzclVEOEN5bHVkYjc4bWFZQnVKeUNzNHhCZVF4cTcycnh4NEZIcFd1?=
+ =?utf-8?B?cjVvd2l4RkpOYnREY3NzNWZ4TWgwSjBkWU9TazgzM3Jhb0dzc2cvSUVQNHMw?=
+ =?utf-8?B?QzlsUjhEVjNsK3llRjd6TVZmNWxxcHArWlZVQldxaGJWcmxVZi82Qm9rVFA1?=
+ =?utf-8?B?aVB2R3E1ZmN4dmFJQUJvNXd6b1ZCbHpIOTVLelUySTBsdjlFLzdQbkNaOEs2?=
+ =?utf-8?B?VVdqdk5YMmI5L3BkY09WaThkdW1TNXZKZVJEVllQNHRsbUM5K0pLT3FoUVYw?=
+ =?utf-8?B?ZHVOeDQvSFRrK2R3ZEtyMGhMSEVUQ2d2c2tWUWNtT3hMMXN3cGptM3lDQnhn?=
+ =?utf-8?B?bmxJdjNOQ2cvL3l0VjNoQldBa3YyeDFrTlVYc0VGbWFJelVuUDEwWmtkcHYv?=
+ =?utf-8?B?ei9ycEprdmR6cWlzN1c3eTBYU1l1dGkxRHcvbEcwOEN5WmFuYUlaQzhaTmxi?=
+ =?utf-8?B?OVAzRDQ3clJDR2VkRFNZNjFONTAyMzN5c1BWcEhVZGVqeXQ4cHF4ZFhlOFF1?=
+ =?utf-8?B?OFA2d0lvbE9oQU5tYzVxNklISGJUQkxCL2o3UnBxMmtSMmNpdDFUOXBUcWxO?=
+ =?utf-8?B?WkVaUUU5ZFVXUm9GZVhGZGEzWVVxa2ZjUTE3Vk4zb3hreWdiYXBoL3A1MzZF?=
+ =?utf-8?B?UkFIL0w0ZU9jQ283d0ZweVl1N1hIU2pIWFI1anRBbUQ3Qy96L3E1Mkt3RDFK?=
+ =?utf-8?B?WnRCbmpMRnBZUUI0NlBobXN1eFBnS2REd1pHN1I5RGRldlduLzlDOTZlVmNU?=
+ =?utf-8?B?L21PbnVENElRZ3k1SlpZL3k4cm5xQVd5RlM2c3EwZEVQSGV0RkZ1ZlBtWmJx?=
+ =?utf-8?B?ZG5tWU14bTZPOUp0OFd1VTk5RWpQdXVtdVI0ZXdicHVvSFJzVnp2WE5WSXVE?=
+ =?utf-8?B?QXUxZXd5eFpCUkppWnY1VjZ0UmtXbjIvY0Q1NzlPb0lOUzlxdGEvNmdydXRY?=
+ =?utf-8?B?N0MyMTVMWTBvWVNZNEo0QjN6UjVEd1JpRHlJNDFCeTlMK0szUU1kNFJxTG9w?=
+ =?utf-8?B?Z2tvRVBqOTFONzRBSndCTUdwdVRqRnhBRjVtRkp0SzkzdU9OZkkweDlCQVpB?=
+ =?utf-8?B?S25RNGJLYnVKdUVtaGZMUVVBc2tBVGMyZURzWUpFajhORXl5Wi9WZVh3ODlx?=
+ =?utf-8?B?NitPT2k1RTVCcmk3U244NDgxQnlLK2lTYTVvbWx4NXJaekpoaXNKdDlBVVY3?=
+ =?utf-8?B?RkNYcVhUcnRMOHlwRGRJdWhFMDVMS3h4MUErT0N2MW9xR0hRSWZpUE1Dd0gz?=
+ =?utf-8?B?M0EvSUl2ZWIzNHFEVTVQTWczbUkrSnRZSG9MbW9USnE1Tk1HZitYN0hnK3Jq?=
+ =?utf-8?B?RnlKWk9lYU1jckIrbEZmclhaMFk1OHNJRDdHbngyUTVLaFZmQ2lsbHhVL2Rv?=
+ =?utf-8?B?cm1CVUlYNXlQbThWcy9TTEllSDZkVlVKK3BUT2Y2enlrT1NnV3ZaaVVLc2VT?=
+ =?utf-8?B?cmZRdk9IenZHRGdXSnM5MUxWZWxZQWdBVFV3cm8xWjNvbnpudzk3Z1dmZldy?=
+ =?utf-8?B?MEEvUkdsVUllOWxwbEcvZXA1TURoOUcwMkZDUWlnS3pFenVXQ29yTHpRU1JB?=
+ =?utf-8?B?d05ONHIvZks1bnk2RmR4MHNTdEs4dDgraGNBR1dVQXRwTCtoUVRVM0NuSDdz?=
+ =?utf-8?B?UG82Q3Z5UGkyUUYvQkRjc2lGaGRzWkRYUkJFT0FLcjZ5V0Z5VnM1Q285L3dn?=
+ =?utf-8?B?bkJkTFM4cm1OWktuRzVTeC9yeWsySVhySGpsWHZDaTJucVorZWhwOTlIVmVH?=
+ =?utf-8?B?UUE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BDE7A88E3F3464429C1B926D20CE0462@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220701162726.31346-4-jim2101024@gmail.com> <20220706231323.GA237418@bhelgaas>
-In-Reply-To: <20220706231323.GA237418@bhelgaas>
-From:   Jim Quinlan <james.quinlan@broadcom.com>
-Date:   Fri, 8 Jul 2022 11:16:08 -0400
-Message-ID: <CA+-6iNxg1sMrejizShy7iDhdhun7b_4Yo1OA43=FufkZ_W6iyA@mail.gmail.com>
-Subject: Re: [PATCH v1 3/4] PCI: brcmstb: Add control of subdevice voltage regulators
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Jim Quinlan <jim2101024@gmail.com>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
-        <linux-pci@vger.kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000330fc805e34caf28"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB1953.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c9b1d8a-33cb-4126-7dcd-08da60f4d2b1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2022 15:16:24.9324
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UzN5Hj+OCftsRddU3GoT464imdATuMwF4CoURH2og5r0mX/xW0L1k+ZGN+pmuV4D8LXxH5H+de5oOcUu/7ydA+wHUtSAYlmffo9t6H0uTHE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5357
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000330fc805e34caf28
-Content-Type: text/plain; charset="UTF-8"
-
-On Wed, Jul 6, 2022 at 7:13 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Fri, Jul 01, 2022 at 12:27:24PM -0400, Jim Quinlan wrote:
-> > This Broadcom STB PCIe RC driver has one port and connects directly to one
-> > device, be it a switch or an endpoint.  We want to be able to leverage the
-> > recently added mechanism that allocates and turns on/off subdevice
-> > regulators.
-> >
-> > All that needs to be done is to put the regulator DT nodes in the bridge
-> > below host and to set the pci_ops methods add_bus and remove_bus.
-> >
-> > Note that the pci_subdev_regulators_add_bus() method is wrapped for two
-> > reasons:
-> >
-> >    1. To achieve link up after the voltage regulators are turned on.
-> >
-> >    2. If, in the case of an unsuccessful link up, to redirect any PCIe
-> >       accesses to subdevices, e.g. the scan for DEV/ID.  This redirection
-> >       is needed because the Broadcom PCIe HW will issue a CPU abort if such
-> >       an access is made when the link is down.
-> >
-> > [bhelgaas: fold in
-> > https://lore.kernel.org/r/20220112013100.48029-1-jim2101024@gmail.com]
-> > Link: https://lore.kernel.org/r/20220106160332.2143-7-jim2101024@gmail.com
-> > Signed-off-by: Jim Quinlan <jim2101024@gmail.com>
-> > ---
-> >  drivers/pci/controller/pcie-brcmstb.c | 86 ++++++++++++++++++++++++---
-> >  1 file changed, 77 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-> > index 661d3834c6da..a86bf502a265 100644
-> > --- a/drivers/pci/controller/pcie-brcmstb.c
-> > +++ b/drivers/pci/controller/pcie-brcmstb.c
-> > @@ -196,6 +196,8 @@ static inline void brcm_pcie_bridge_sw_init_set_generic(struct brcm_pcie *pcie,
-> >  static inline void brcm_pcie_perst_set_4908(struct brcm_pcie *pcie, u32 val);
-> >  static inline void brcm_pcie_perst_set_7278(struct brcm_pcie *pcie, u32 val);
-> >  static inline void brcm_pcie_perst_set_generic(struct brcm_pcie *pcie, u32 val);
-> > +static int brcm_pcie_linkup(struct brcm_pcie *pcie);
-> > +static int brcm_pcie_add_bus(struct pci_bus *bus);
->
-> I think the brcm_pcie_add_bus() declaration is unnecessary.
-Will remove.
-
->
-> The brcm_pcie_linkup() one is probably unnecessary, too, but would
-> require a lot of reordering that I don't think we should do in this
-> series.
-
-I have a future commit that will remove all forward declarations.  I just
-wanted to keep this the un-revert patchset simple.
-
->
-> >  enum {
-> >       RGR1_SW_INIT_1,
-> > @@ -329,6 +331,8 @@ struct brcm_pcie {
-> >       u32                     hw_rev;
-> >       void                    (*perst_set)(struct brcm_pcie *pcie, u32 val);
-> >       void                    (*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
-> > +     bool                    refusal_mode;
-> > +     struct subdev_regulators *sr;
-> >  };
-> >
-> >  static inline bool is_bmips(const struct brcm_pcie *pcie)
-> > @@ -497,6 +501,33 @@ static int pci_subdev_regulators_add_bus(struct pci_bus *bus)
-> >       return 0;
-> >  }
-> >
-> > +static int brcm_pcie_add_bus(struct pci_bus *bus)
-> > +{
-> > +     struct brcm_pcie *pcie = (struct brcm_pcie *) bus->sysdata;
-> > +     int ret;
-> > +
-> > +     if (!bus->parent || !pci_is_root_bus(bus->parent))
-> > +             return 0;
-> > +
-> > +     ret = pci_subdev_regulators_add_bus(bus);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     /* Grab the regulators for suspend/resume */
-> > +     pcie->sr = bus->dev.driver_data;
-> > +
-> > +     /*
-> > +      * If we have failed linkup there is no point to return an error as
-> > +      * currently it will cause a WARNING() from pci_alloc_child_bus().
-> > +      * We return 0 and turn on the "refusal_mode" so that any further
-> > +      * accesses to the pci_dev just get 0xffffffff
-> > +      */
-> > +     if (brcm_pcie_linkup(pcie) != 0)
-> > +             pcie->refusal_mode = true;
->
-> Is there a bisection hole between the previous patch and this one?
-> The previous patch sets .add_bus() to pci_subdev_regulators_add_bus(),
-> so we'll turn on the regulators, but we don't know whether the link
-> came up.  If it didn't come up, it looks like we might get a CPU abort
-> when enumerating?
-
-I don't think so.  At this commit, attempting the link-up is still
-done before the call
-to pci_host_probe().  Since there is no power there will be no link,
-the probe will
-fail and pci_host_probe() will never be invoked.
-
->
-> I think we should split out the refusal_mode patch:
->
->   - Add refusal mode
->   - Add subdev regulator mechanism
->   - This patch (which would then be clearly about managing regulators
->     in suspend/resume, IIUC)
-
-Will do.
-
->
-> > +     return 0;
-> > +}
-> > +
-> >  static void pci_subdev_regulators_remove_bus(struct pci_bus *bus)
-> >  {
-> >       struct device *dev = &bus->dev;
-> > @@ -826,6 +857,18 @@ static void __iomem *brcm_pcie_map_conf(struct pci_bus *bus, unsigned int devfn,
-> >       /* Accesses to the RC go right to the RC registers if slot==0 */
-> >       if (pci_is_root_bus(bus))
-> >               return PCI_SLOT(devfn) ? NULL : base + where;
-> > +     if (pcie->refusal_mode) {
-> > +             /*
-> > +              * At this point we do not have link.  There will be a CPU
-> > +              * abort -- a quirk with this controller --if Linux tries
-> > +              * to read any config-space registers besides those
-> > +              * targeting the host bridge.  To prevent this we hijack
-> > +              * the address to point to a safe access that will return
-> > +              * 0xffffffff.
-> > +              */
-> > +             writel(0xffffffff, base + PCIE_MISC_RC_BAR2_CONFIG_HI);
-> > +             return base + PCIE_MISC_RC_BAR2_CONFIG_HI + (where & 0x3);
-> > +     }
-> >
-> >       /* For devices, write to the config space index register */
-> >       idx = PCIE_ECAM_OFFSET(bus->number, devfn, 0);
-> > @@ -854,7 +897,7 @@ static struct pci_ops brcm_pcie_ops = {
-> >       .map_bus = brcm_pcie_map_conf,
-> >       .read = pci_generic_config_read,
-> >       .write = pci_generic_config_write,
-> > -     .add_bus = pci_subdev_regulators_add_bus,
-> > +     .add_bus = brcm_pcie_add_bus,
-> >       .remove_bus = pci_subdev_regulators_remove_bus,
-> >  };
-> >
-> > @@ -1327,6 +1370,14 @@ static int brcm_pcie_suspend(struct device *dev)
-> >               return ret;
-> >       }
-> >
-> > +     if (pcie->sr) {
-> > +             ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
-> > +             if (ret) {
-> > +                     dev_err(dev, "Could not turn off regulators\n");
-> > +                     reset_control_reset(pcie->rescal);
-> > +                     return ret;
-> > +             }
-> > +     }
-> >       clk_disable_unprepare(pcie->clk);
-> >
-> >       return 0;
-> > @@ -1344,9 +1395,17 @@ static int brcm_pcie_resume(struct device *dev)
-> >       if (ret)
-> >               return ret;
-> >
-> > +     if (pcie->sr) {
-> > +             ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
-> > +             if (ret) {
-> > +                     dev_err(dev, "Could not turn on regulators\n");
-> > +                     goto err_disable_clk;
-> > +             }
-> > +     }
-> > +
-> >       ret = reset_control_reset(pcie->rescal);
-> >       if (ret)
-> > -             goto err_disable_clk;
-> > +             goto err_regulator;
-> >
-> >       ret = brcm_phy_start(pcie);
-> >       if (ret)
-> > @@ -1378,6 +1437,9 @@ static int brcm_pcie_resume(struct device *dev)
-> >
-> >  err_reset:
-> >       reset_control_rearm(pcie->rescal);
-> > +err_regulator:
-> > +     if (pcie->sr)
-> > +             regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
-> >  err_disable_clk:
-> >       clk_disable_unprepare(pcie->clk);
-> >       return ret;
-> > @@ -1488,10 +1550,6 @@ static int brcm_pcie_probe(struct platform_device *pdev)
-> >       if (ret)
-> >               goto fail;
-> >
-> > -     ret = brcm_pcie_linkup(pcie);
-> > -     if (ret)
-> > -             goto fail;
-> > -
-> >       pcie->hw_rev = readl(pcie->base + PCIE_MISC_REVISION);
-> >       if (pcie->type == BCM4908 && pcie->hw_rev >= BRCM_PCIE_HW_REV_3_20) {
-> >               dev_err(pcie->dev, "hardware revision with unsupported PERST# setup\n");
-> > @@ -1513,7 +1571,17 @@ static int brcm_pcie_probe(struct platform_device *pdev)
-> >
-> >       platform_set_drvdata(pdev, pcie);
-> >
-> > -     return pci_host_probe(bridge);
-> > +     ret = pci_host_probe(bridge);
-> > +     if (!ret && !brcm_pcie_link_up(pcie))
-> > +             ret = -ENODEV;
-> > +
-> > +     if (ret) {
-> > +             brcm_pcie_remove(pdev);
-> > +             return ret;
-> > +     }
-> > +
-> > +     return 0;
-> > +
-> >  fail:
-> >       __brcm_pcie_remove(pcie);
-> >       return ret;
-> > @@ -1522,8 +1590,8 @@ static int brcm_pcie_probe(struct platform_device *pdev)
-> >  MODULE_DEVICE_TABLE(of, brcm_pcie_match);
-> >
-> >  static const struct dev_pm_ops brcm_pcie_pm_ops = {
-> > -     .suspend = brcm_pcie_suspend,
-> > -     .resume = brcm_pcie_resume,
-> > +     .suspend_noirq = brcm_pcie_suspend,
-> > +     .resume_noirq = brcm_pcie_resume,
->
-> Can you name these brcm_pcie_suspend_noirq() and
-> brcm_pcie_resume_noirq() to match the hook names?
-Yes.
-
-Jim Quintlan
-Broadcom STB
-
->
-> >  };
-> >
-> >  static struct platform_driver brcm_pcie_driver = {
-> > --
-> > 2.17.1
-> >
-> >
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---000000000000330fc805e34caf28
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-LeylbuEJGL9I80yqq8e6Z+Q6ulLxa6SopzpoysJe/vEVHgp9jPNppZzwKngVd2iDBRqpKlCngIAM
-DXgVGyEojXnuEbRs3NlB7wq1kJGlYysrnDug55ncJM8CAwEAAaOCAdswggHXMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJQYDVR0R
-BB4wHIEaamFtZXMucXVpbmxhbkBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYBBQUHAwQwHwYD
-VR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFCeTeUYv84Mo3T1V+OyDdxib
-DDLvMA0GCSqGSIb3DQEBCwUAA4IBAQCCqR1PBVtHPvQHuG8bjMFQ94ZB7jmFEGhgfAsFJMaSMLov
-qyt8DKr8suCYF4dKGzqalbxo5QU9mmZXdLifqceHdt/Satxb+iGJjBhZg4E0cDds24ofYq+Lbww2
-YlIKC2HHxIN+JX2mFpavSXkshR5GT29B9EIJ8hgSjbs61XXeAcrmVIDfYbXQEmGbsnwqxdq+DJpQ
-S2kM2wvSlgSWDb6pL7myuKR5lCkQhj7piGSgrVLJRDRrMPw1L4MvnV9DjUFMlGCB40Hm6xqn/jm0
-8FCLlWhxve5mj+hgUOPETiKbjhCxJhhAPDdCvDRkZtJlQ8oxUVvXHugG8jm1YqB5AWx7MYICbTCC
-AmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UE
-AxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMI+Aj9XRk/wFexb9/
-MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCAHcX8jENCL0ZkQyxx8LpddpdtSpcFj
-NHlM9ybZvfFkkDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA3
-MDgxNTE2MTlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjALBglg
-hkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzALBglghkgBZQME
-AgEwDQYJKoZIhvcNAQEBBQAEggEAee2xcdqVHCYIVlgGgs2MR14h08NUFDyzzATAwmBS8WwMdBTY
-ftw9r9DpzFseZNT0bsaLvjaAdg9u1LXygHMVBWeRfqAnOptWI7fUh11Zvl1CCW0sh00mYsuMVUxD
-URD2CvwZ5kIHU01T3uSZa/cA2icaI9pDDTKSD5DEfhdcAMD2TDJlpqnyuCkABjmo4dvugB+PO8BG
-qYelcxlW7dOiOSEDbbJm3EmwqWFxwiGUgPWlK8MEzZCSHpfOvbQnS6ZrB8MxfuvswXI1I9MCiIB/
-9d1c6kjaeEKR7WpURrat20aYowFvngE2Vh/aepPDHi0mruP0v0076FlObN+wWfNIfw==
---000000000000330fc805e34caf28--
+T24gMDguMDcuMjAyMiAwMDo1OCwgUnlhbi5XYW5uZXJAbWljcm9jaGlwLmNvbSB3cm90ZToNCj4g
+RnJvbTogUnlhbiBXYW5uZXIgPFJ5YW4uV2FubmVyQG1pY3JvY2hpcC5jb20+DQo+IA0KPiBUeXBv
+IGluIGkyczEgY2F1c2luZyBlcnJvcnMgaW4gZHQgYmluZGluZyB2YWxpZGF0aW9uLg0KPiBDaGFu
+Z2VkIGFzc2lnbmVkLXBhcmVucyB0byBhc3NpZ25lZC1jbG9jay1wYXJlbnRzIGFuZA0KPiB0byBt
+YXRjaCBpMnMwIG5vZGUgZm9ybWF0dGluZy4NCj4gDQo+IEZpeGVzOiAxY2E4MTg4M2M1NTcgKCJB
+Uk06IGR0czogYXQ5MTogc2FtYTVkMjogYWRkIG5vZGVzIGZvciBJMlMgY29udHJvbGxlcnMiKQ0K
+PiANCj4gU2lnbmVkLW9mZi1ieTogUnlhbiBXYW5uZXIgPFJ5YW4uV2FubmVyQG1pY3JvY2hpcC5j
+b20+DQoNCkFwcGxpZWQgdG8gYXQ5MS1maXhlcywgdGhhbmtzIQ0KDQo+IC0tLQ0KPiBjaGFuZ2Vz
+IGluIHYyOg0KPiAtY29ycmVjdGVkIHN1YmplY3QgYW5kIHRhZ3MNCj4gY2hhbmdlcyBpbiB2MToN
+Cj4gLWNvcnJlY3RlZCBmb3JtYXR0aW5nIGlzc3Vlcw0KPiANCj4gIGFyY2gvYXJtL2Jvb3QvZHRz
+L3NhbWE1ZDIuZHRzaSB8IDIgKy0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwg
+MSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jvb3QvZHRzL3NhbWE1
+ZDIuZHRzaSBiL2FyY2gvYXJtL2Jvb3QvZHRzL3NhbWE1ZDIuZHRzaQ0KPiBpbmRleCA4OWM3MWQ0
+MTlmODIuLjY1OWExN2ZjNzU1YyAxMDA2NDQNCj4gLS0tIGEvYXJjaC9hcm0vYm9vdC9kdHMvc2Ft
+YTVkMi5kdHNpDQo+ICsrKyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3NhbWE1ZDIuZHRzaQ0KPiBAQCAt
+MTEyNCw3ICsxMTI0LDcgQEAgQVQ5MV9YRE1BQ19EVF9QRVJJRCgzMykpPiwNCj4gIAkJCQljbG9j
+a3MgPSA8JnBtYyBQTUNfVFlQRV9QRVJJUEhFUkFMIDU1PiwgPCZwbWMgUE1DX1RZUEVfR0NLIDU1
+PjsNCj4gIAkJCQljbG9jay1uYW1lcyA9ICJwY2xrIiwgImdjbGsiOw0KPiAgCQkJCWFzc2lnbmVk
+LWNsb2NrcyA9IDwmcG1jIFBNQ19UWVBFX0NPUkUgUE1DX0kyUzFfTVVYPjsNCj4gLQkJCQlhc3Np
+Z25lZC1wYXJyZW50cyA9IDwmcG1jIFBNQ19UWVBFX0dDSyA1NT47DQo+ICsJCQkJYXNzaWduZWQt
+Y2xvY2stcGFyZW50cyA9IDwmcG1jIFBNQ19UWVBFX0dDSyA1NT47DQo+ICAJCQkJc3RhdHVzID0g
+ImRpc2FibGVkIjsNCj4gIAkJCX07DQo+ICANCg0K
