@@ -2,122 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 232F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237491AbiGHHTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60046 "EHLO
+        id S237501AbiGHHTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237286AbiGHHTU (ORCPT
+        with ESMTP id S237276AbiGHHTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:19:20 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1C3796BE;
-        Fri,  8 Jul 2022 00:19:14 -0700 (PDT)
-X-UUID: bf0b9e4ca3af4539821d9dfcb2efcbd9-20220708
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:0cb08816-709d-4a8d-8b0d-36ae2ecef3e3,OB:0,LO
-        B:10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:100
-X-CID-INFO: VERSION:1.1.8,REQID:0cb08816-709d-4a8d-8b0d-36ae2ecef3e3,OB:0,LOB:
-        10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:100
-X-CID-META: VersionHash:0f94e32,CLOUDID:e2b5f3d6-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:7ed0fa5035a7,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: bf0b9e4ca3af4539821d9dfcb2efcbd9-20220708
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1085040604; Fri, 08 Jul 2022 15:19:08 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 8 Jul 2022 15:19:07 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Jul 2022 15:19:06 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Felipe Balbi <balbi@kernel.org>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [PATCH 1/5] usb: mtu3: fix coverity of string buffer
-Date:   Fri, 8 Jul 2022 15:18:59 +0800
-Message-ID: <20220708071903.25752-1-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 8 Jul 2022 03:19:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B3E7B352;
+        Fri,  8 Jul 2022 00:19:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29AB8B824EC;
+        Fri,  8 Jul 2022 07:19:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 595AAC341CB;
+        Fri,  8 Jul 2022 07:19:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657264755;
+        bh=IwOXh+OMWyRPtIQMt78YAlA6CfL3v4Df8DVeuy+JGiQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=emu/UZkqmtofzZX8+aGsZNPCfQdxt6Z3Kg0NWOQI+BbY9hdofm/QzobkwFcdnpwDh
+         wQDbtP+ks5fc99VBN2ytY0qbGN5Ada1beMSLEHZmQvQHsG1cNJ3oD70nNufUF4fnZU
+         5thBOK5q8WNAqEWXdkctXmOimwTKPqLqQ4CXFZS0=
+Date:   Fri, 8 Jul 2022 09:19:13 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jozef Martiniak <jomajm@gmail.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Jens Axboe <axboe@kernel.dk>, Hangyu Hua <hbh25y@gmail.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] gadgetfs: ep_io - wait until IRQ finishes
+Message-ID: <YsfacfpE+h/GLTC4@kroah.com>
+References: <20220708070645.6130-1-jomajm@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220708070645.6130-1-jomajm@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use snprintf instead of sprintf which could cause buffer overflow.
+On Fri, Jul 08, 2022 at 09:06:44AM +0200, Jozef Martiniak wrote:
+> after usb_ep_queue() if wait_for_completion_interruptible() is
+> interrupted we need to wait until IRQ gets finished.
+> 
+> Otherwise complete() from epio_complete() can corrupt stack.
+> 
+> Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
- drivers/usb/mtu3/mtu3.h         | 4 +++-
- drivers/usb/mtu3/mtu3_debugfs.c | 2 +-
- drivers/usb/mtu3/mtu3_gadget.c  | 4 ++--
- 3 files changed, 6 insertions(+), 4 deletions(-)
+What commit id does this fix?
 
-diff --git a/drivers/usb/mtu3/mtu3.h b/drivers/usb/mtu3/mtu3.h
-index 8408e1b1a24a..9893dd1bafbb 100644
---- a/drivers/usb/mtu3/mtu3.h
-+++ b/drivers/usb/mtu3/mtu3.h
-@@ -92,6 +92,8 @@ struct mtu3_request;
- 
- #define BULK_CLKS_CNT	4
- 
-+#define MTU3_EP_NAME_LEN	12
-+
- /* device operated link and speed got from DEVICE_CONF register */
- enum mtu3_speed {
- 	MTU3_SPEED_INACTIVE = 0,
-@@ -272,7 +274,7 @@ struct ssusb_mtk {
-  */
- struct mtu3_ep {
- 	struct usb_ep ep;
--	char name[12];
-+	char name[MTU3_EP_NAME_LEN];
- 	struct mtu3 *mtu;
- 	u8 epnum;
- 	u8 type;
-diff --git a/drivers/usb/mtu3/mtu3_debugfs.c b/drivers/usb/mtu3/mtu3_debugfs.c
-index d27de647c86a..a6f72494b819 100644
---- a/drivers/usb/mtu3/mtu3_debugfs.c
-+++ b/drivers/usb/mtu3/mtu3_debugfs.c
-@@ -132,7 +132,7 @@ static void mtu3_debugfs_regset(struct mtu3 *mtu, void __iomem *base,
- 	if (!mregs)
- 		return;
- 
--	sprintf(mregs->name, "%s", name);
-+	snprintf(mregs->name, MTU3_DEBUGFS_NAME_LEN, "%s", name);
- 	regset = &mregs->regset;
- 	regset->regs = regs;
- 	regset->nregs = nregs;
-diff --git a/drivers/usb/mtu3/mtu3_gadget.c b/drivers/usb/mtu3/mtu3_gadget.c
-index 30999b4debb8..a751e0533c2d 100644
---- a/drivers/usb/mtu3/mtu3_gadget.c
-+++ b/drivers/usb/mtu3/mtu3_gadget.c
-@@ -635,8 +635,8 @@ static void init_hw_ep(struct mtu3 *mtu, struct mtu3_ep *mep,
- 
- 	INIT_LIST_HEAD(&mep->req_list);
- 
--	sprintf(mep->name, "ep%d%s", epnum,
--		!epnum ? "" : (is_in ? "in" : "out"));
-+	snprintf(mep->name, MTU3_EP_NAME_LEN, "ep%d%s", epnum,
-+		 !epnum ? "" : (is_in ? "in" : "out"));
- 
- 	mep->ep.name = mep->name;
- 	INIT_LIST_HEAD(&mep->ep.ep_list);
--- 
-2.18.0
+thanks,
 
+greg k-h
