@@ -2,93 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 127BCCCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAF1CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 11:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238131AbiGHLsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 07:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
+        id S238142AbiGHLsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 07:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238142AbiGHLsD (ORCPT
+        with ESMTP id S238126AbiGHLsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 07:48:03 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255B2951FB;
-        Fri,  8 Jul 2022 04:47:56 -0700 (PDT)
-X-UUID: 2233ba687af341afbe4d9e047d7fcea7-20220708
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:a5261d80-d456-4e88-b1c0-5f2f0922a620,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:95
-X-CID-INFO: VERSION:1.1.8,REQID:a5261d80-d456-4e88-b1c0-5f2f0922a620,OB:0,LOB:
-        0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:95
-X-CID-META: VersionHash:0f94e32,CLOUDID:247dea86-57f0-47ca-ba27-fe8c57fbf305,C
-        OID:acd96b5d39a4,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 2233ba687af341afbe4d9e047d7fcea7-20220708
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 527347079; Fri, 08 Jul 2022 19:47:50 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 8 Jul 2022 19:47:49 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Jul 2022 19:47:48 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <ulf.hansson@linaro.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-mmc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [PATCH v2] dt-bindings: mmc: Add compatible for MediaTek MT8188
-Date:   Fri, 8 Jul 2022 19:47:47 +0800
-Message-ID: <20220708114747.13878-1-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Fri, 8 Jul 2022 07:48:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18E23951E1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 04:48:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657280901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qz83jQ6ie8rpR79Lw5oBAFua2qVBO7q3ChvGPuAzjrw=;
+        b=T2bivFwuHapcklp2AKZVISQTV/DHQp3r3CCLenZK7lYDGAOQGD2g8f7cu3c0wb+Q8kKnef
+        x6b7hcJJ546X8GWVmdMdVz+o+LpOHMqJfoGHRWutttNejW8WWN6ZhjRnjW83I9hzasFGQi
+        MLGqHZPKfzW6tIgnPWdd8+3tbWj5j24=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-651-cXCv-5QyMjqti7Fz1bXKyQ-1; Fri, 08 Jul 2022 07:48:20 -0400
+X-MC-Unique: cXCv-5QyMjqti7Fz1bXKyQ-1
+Received: by mail-qk1-f200.google.com with SMTP id bm2-20020a05620a198200b006a5dac37fa2so20752809qkb.16
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 04:48:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Qz83jQ6ie8rpR79Lw5oBAFua2qVBO7q3ChvGPuAzjrw=;
+        b=4obKLvkzN8akLuYCo1qpI7VHWDsVVe8EQS6OJogTvZuc2XWj7FSIIH8IBS5BP/fsql
+         AB68r3Xtku73/OmrgvHO/Xn2Qt62O5kB7ZgyNoFTcVVeHFuA4TtDESsmTRJl3P5jf0lu
+         /83ZdZgHTyCZ+c3wkVcM3bWdaVSS70eHX5lBmJOmP/i1kamDxz6i0CTTQBFwtddVxwwI
+         XWynP0O9+bllr3M4Qt+e0lxIldyqGVMcQOEF9kAJ+SLxtJLPocPtaD1qi2Kybhjt5TSV
+         cr0OAhSCzYyWHyhUXcoepKmyEHktG5NpbBocQRX9CM3KLOi/LLDuifKLPPX/3MOjBqXS
+         NO2g==
+X-Gm-Message-State: AJIora8UawagrNWg09LrVist+9PcXTvMcrYll82THuy64iUzwrkQgyX3
+        j4xpBDAA4YtvX1aAZPp2ci8bl2eOfUyqXrVFyp5PzctgGyXAQOzrjVxnOk87S0DO4YuI0AATcLC
+        EPIdNSLFOThHz6lNCb/LI03ubGdB3WVo2h4qmWmz8
+X-Received: by 2002:ac8:5b51:0:b0:317:3513:cf60 with SMTP id n17-20020ac85b51000000b003173513cf60mr2447545qtw.495.1657280899662;
+        Fri, 08 Jul 2022 04:48:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1usVpZKD7lAzE4htKPsep3j+Ey0tw3eoaPrJNum/msse0zljtQvQdftD4RelMyTVPVazDTazPU1BOO+SKyLp1g=
+X-Received: by 2002:ac8:5b51:0:b0:317:3513:cf60 with SMTP id
+ n17-20020ac85b51000000b003173513cf60mr2447536qtw.495.1657280899449; Fri, 08
+ Jul 2022 04:48:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-4-eperezma@redhat.com>
+ <CAGxU2F43+5zsQOR4ReTtQtEF47s6y-XKcevosMOzUdEqpLhAsg@mail.gmail.com>
+In-Reply-To: <CAGxU2F43+5zsQOR4ReTtQtEF47s6y-XKcevosMOzUdEqpLhAsg@mail.gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 8 Jul 2022 13:47:43 +0200
+Message-ID: <CAJaqyWdn=mShLEZzfJB_+PwM+pkLhLMJaMOjdFtuW8tYbbU3FQ@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] vhost-vdpa: uAPI to suspend the device
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Cindy Lu <lulu@redhat.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds dt-binding documentation of mmc for MediaTek MT8188 SoC
-platform.
+On Tue, Jun 28, 2022 at 3:45 PM Stefano Garzarella <sgarzare@redhat.com> wr=
+ote:
+>
+> On Thu, Jun 23, 2022 at 06:07:37PM +0200, Eugenio P=C3=A9rez wrote:
+> >The ioctl adds support for suspending the device from userspace.
+> >
+> >This is a must before getting virtqueue indexes (base) for live migratio=
+n,
+> >since the device could modify them after userland gets them. There are
+> >individual ways to perform that action for some devices
+> >(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
+> >way to perform it for any vhost device (and, in particular, vhost-vdpa).
+> >
+> >After a successful return of the ioctl call the device must not process
+> >more virtqueue descriptors. The device can answer to read or writes of
+> >config fields as if it were not suspended. In particular, writing to
+> >"queue_enable" with a value of 1 will not make the device start
+> >processing buffers of the virtqueue.
+> >
+> >Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> >---
+> > drivers/vhost/vdpa.c       | 19 +++++++++++++++++++
+> > include/uapi/linux/vhost.h | 14 ++++++++++++++
+> > 2 files changed, 33 insertions(+)
+> >
+> >diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> >index 3d636e192061..7fa671ac4bdf 100644
+> >--- a/drivers/vhost/vdpa.c
+> >+++ b/drivers/vhost/vdpa.c
+> >@@ -478,6 +478,22 @@ static long vhost_vdpa_get_vqs_count(struct vhost_v=
+dpa *v, u32 __user *argp)
+> >       return 0;
+> > }
+> >
+> >+/* After a successful return of ioctl the device must not process more
+> >+ * virtqueue descriptors. The device can answer to read or writes of co=
+nfig
+> >+ * fields as if it were not suspended. In particular, writing to "queue=
+_enable"
+> >+ * with a value of 1 will not make the device start processing buffers.
+> >+ */
+> >+static long vhost_vdpa_suspend(struct vhost_vdpa *v)
+> >+{
+> >+      struct vdpa_device *vdpa =3D v->vdpa;
+> >+      const struct vdpa_config_ops *ops =3D vdpa->config;
+> >+
+> >+      if (!ops->suspend)
+> >+              return -EOPNOTSUPP;
+> >+
+> >+      return ops->suspend(vdpa);
+> >+}
+> >+
+> > static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int c=
+md,
+> >                                  void __user *argp)
+> > {
+> >@@ -654,6 +670,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *f=
+ilep,
+> >       case VHOST_VDPA_GET_VQS_COUNT:
+> >               r =3D vhost_vdpa_get_vqs_count(v, argp);
+> >               break;
+> >+      case VHOST_VDPA_SUSPEND:
+> >+              r =3D vhost_vdpa_suspend(v);
+> >+              break;
+> >       default:
+> >               r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
+> >               if (r =3D=3D -ENOIOCTLCMD)
+> >diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> >index cab645d4a645..6d9f45163155 100644
+> >--- a/include/uapi/linux/vhost.h
+> >+++ b/include/uapi/linux/vhost.h
+> >@@ -171,4 +171,18 @@
+> > #define VHOST_VDPA_SET_GROUP_ASID     _IOW(VHOST_VIRTIO, 0x7C, \
+> >                                            struct vhost_vring_state)
+> >
+> >+/* Suspend or resume a device so it does not process virtqueue requests=
+ anymore
+> >+ *
+> >+ * After the return of ioctl with suspend !=3D 0, the device must finis=
+h any
+> >+ * pending operations like in flight requests. It must also preserve al=
+l the
+> >+ * necessary state (the virtqueue vring base plus the possible device s=
+pecific
+> >+ * states) that is required for restoring in the future. The device mus=
+t not
+> >+ * change its configuration after that point.
+> >+ *
+> >+ * After the return of ioctl with suspend =3D=3D 0, the device can cont=
+inue
+> >+ * processing buffers as long as typical conditions are met (vq is enab=
+led,
+> >+ * DRIVER_OK status bit is enabled, etc).
+> >+ */
+> >+#define VHOST_VDPA_SUSPEND            _IOW(VHOST_VIRTIO, 0x7D, int)
+>                                          ^
+> IIUC we are not using the argument anymore, so this should be changed in
+> _IO(VHOST_VIRTIO, 0x7D).
+>
+> And we should update a bit the documentation.
+>
 
-Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
----
- Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+Totally right, replacing it for the next version.
 
-diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-index 2a2e9fa8c188..be366cefffc2 100644
---- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-+++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-@@ -30,13 +30,11 @@ properties:
-           - const: mediatek,mt7623-mmc
-           - const: mediatek,mt2701-mmc
-       - items:
--          - const: mediatek,mt8186-mmc
--          - const: mediatek,mt8183-mmc
--      - items:
--          - const: mediatek,mt8192-mmc
--          - const: mediatek,mt8183-mmc
--      - items:
--          - const: mediatek,mt8195-mmc
-+          - enum:
-+              - mediatek,mt8186-mmc
-+              - mediatek,mt8188-mmc
-+              - mediatek,mt8192-mmc
-+              - mediatek,mt8195-mmc
-           - const: mediatek,mt8183-mmc
- 
-   reg:
--- 
-2.18.0
+Thanks!
+
+> Thanks,
+> Stefano
+>
 
