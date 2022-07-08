@@ -2,127 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBEDCCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 19:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239776AbiGHTg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 15:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
+        id S239779AbiGHThT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238095AbiGHTg0 (ORCPT
+        with ESMTP id S238095AbiGHThS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 15:36:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4A655C953
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 12:36:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657308984;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Bp4/uJx0q3CBRP6uPPQZJlkmcVebKMMiiHAd6ojauiM=;
-        b=HEqaAVOHh96SKL2Jhtrg6+zgS0ndr8SN5OhR8V3x7bfdAJijO04XTD9hiZl2Iv+zw1E8g8
-        YQ7y0MTIBSHu/IbLvtx6R2Yruq2z3uC16gQ1TFyiLX8EbusMwT75gymCYSauZ+ceZL6UT1
-        xUzCODqnu/iJKmrplqEy7231TRE5QGg=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-60-S0b0PhZ4PHisdo4f-Ykv8w-1; Fri, 08 Jul 2022 15:36:23 -0400
-X-MC-Unique: S0b0PhZ4PHisdo4f-Ykv8w-1
-Received: by mail-ed1-f71.google.com with SMTP id z13-20020a056402274d00b004357fcdd51fso16665723edd.17
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 12:36:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Bp4/uJx0q3CBRP6uPPQZJlkmcVebKMMiiHAd6ojauiM=;
-        b=IqAhoq/ZrKGVpeQp21yeYi9z2L70/xFK+zoKK9E/ORpb+OKy2Rh+jY5KceNC5A6acE
-         UzUSHSH+npuz/bm9rD7unCCcsJ5lmC2Vl+H2EAlqS5Jhbf5LMEok1CnjO175eAtY0eqw
-         IcKQGaFQqe/eWWSUjaxzIE6+JBJz+fp/WD5gGyozyzr7tVXMa3fdd1WyE2uZnfQKaV0C
-         9mrLO664G6xhHCwJdiQtHyNfhp+XX2hZ1WqIP4MR7LqDPh2du5OBLQ2sDLlkt7hyHUdM
-         H+JVO+DiuGks6N+EEB/x4Gw9lsI+wbi39C2n48gK++Ucv6X4NTSlJctgYazBxdkBarPT
-         RxLA==
-X-Gm-Message-State: AJIora/ogZUwzqHcTsmY6BRfsF4VBWCUz+KU583azgTcpHCls8xk20gF
-        ZElT93XOaedtSciWolojdER3kTGoizkl3vfxrCbtsWMmiiFLHRHES6xHt2wDJv0gG2FubAy66Ax
-        aI/gD18QHGneiL6zoTQGhUzu5
-X-Received: by 2002:a17:906:84fa:b0:72b:3257:527b with SMTP id zp26-20020a17090684fa00b0072b3257527bmr894469ejb.477.1657308982250;
-        Fri, 08 Jul 2022 12:36:22 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sHAlOPlSVNJxOUyi7dexo+dGkJEXRhxhmOBsygKoLu/bOnqki5Dcyoqj9A1H/3E27ZRhYkHA==
-X-Received: by 2002:a17:906:84fa:b0:72b:3257:527b with SMTP id zp26-20020a17090684fa00b0072b3257527bmr894456ejb.477.1657308982085;
-        Fri, 08 Jul 2022 12:36:22 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id p16-20020a05640210d000b0043a1bc2ebbcsm13332097edu.3.2022.07.08.12.36.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 12:36:21 -0700 (PDT)
-Message-ID: <da9636ac-9455-75a6-7284-8c601d23a37e@redhat.com>
-Date:   Fri, 8 Jul 2022 21:36:20 +0200
+        Fri, 8 Jul 2022 15:37:18 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A2B65D52;
+        Fri,  8 Jul 2022 12:37:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657309035; x=1688845035;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lm5ZpyWdcwQjlYsBBiZlq62XmFMEHwCGoAEYptsewiQ=;
+  b=m5B5jaC5ZoYPE5N8WV9zQd+D+LTBzG972dQRrasM6C2+iEj9K19GnVF2
+   ai5miAA4/M6JhpsPGbYwofHn4jlvy7fjb7FdtF4/bt4SAIrImD6vC5S/K
+   CSeBfFnRCQEGnJIdWDzKmCjde/cHTlu0yMmTpDOBDINgsuQePo5E8A5aY
+   3OPCJDygrjTLa93auOxXWZhqY2BZbLfSgjTYdtgdLtbmuP4/Q78GBpCoO
+   bJ1amGkdrlcBvNkOrdoLs44exaChoo+iL9Wn0K6djn1hKyMqXuQc5baNZ
+   jpxiZA5qs2IHVpKdKZ7NR+7DiUlQcFEsv0zYVeSaFue9u4xvslRXj98qF
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="171652679"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 12:37:14 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 8 Jul 2022 12:37:14 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 8 Jul 2022 12:37:13 -0700
+Date:   Fri, 8 Jul 2022 21:41:12 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linus.walleij@linaro.org>, <kavyasree.kotagiri@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
+        <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH 2/2] pinctrl: ocelot: Fix pincfg
+Message-ID: <20220708194112.wkbn5uw5ous6hzwz@soft-dev3-1.localhost>
+References: <20220707185342.2697569-1-horatiu.vultur@microchip.com>
+ <20220707185342.2697569-3-horatiu.vultur@microchip.com>
+ <Ysd64LTu7CtBjV4R@COLIN-DESKTOP1.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 0/5] drm/modes: Command line mode selection fixes and
- improvements
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1657301107.git.geert@linux-m68k.org>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <cover.1657301107.git.geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <Ysd64LTu7CtBjV4R@COLIN-DESKTOP1.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
-
-On 7/8/22 20:21, Geert Uytterhoeven wrote:
-> 	Hi all,
+The 07/07/2022 17:31, Colin Foster wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> This patch series contains fixes and improvements for specifying video
-> modes on the kernel command line.
-> 
-> This has been tested on ARAnyM using a work-in-progress Atari DRM driver
-> (more info and related patches can be found in [1]).
-> 
-> Thanks for your comments!
-> 
-> [1] "[PATCH v3 00/10] drm: Add support for low-color frame buffer formats"
->     https://lore.kernel.org/r/cover.1657294931.git.geert@linux-m68k.org
-> 
-> Geert Uytterhoeven (5):
->   drm/modes: parse_cmdline: Handle empty mode name part
->   drm/modes: Extract drm_mode_parse_cmdline_named_mode()
->   drm/modes: parse_cmdline: Make mode->*specified handling more uniform
->   drm/modes: Add support for driver-specific named modes
->   drm/modes: parse_cmdline: Add support for named modes containing
->     dashes
+> Hi Horatiu,
 
-Thanks, I have some remarks on patches 1/5 and 2/5 the rest looks
-good to me. 
-
-For 1/5 and 2/5 with my remarks addressed:
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-For 3/5, 4/5 and 5/5:
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-Regards,
-
-Hans
+Hi Colin,
 
 > 
->  drivers/gpu/drm/drm_modes.c | 57 ++++++++++++++++++++++++++-----------
->  include/drm/drm_connector.h | 10 +++++++
->  2 files changed, 50 insertions(+), 17 deletions(-)
+> On Thu, Jul 07, 2022 at 08:53:42PM +0200, Horatiu Vultur wrote:
+> > The blamed commit changed to use regmaps instead of __iomem. But it
+> > didn't update the register offsets to be at word offset, so it uses byte
+> > offset.
+> >
+> > Fixes: 076d9e71bcf8 ("pinctrl: ocelot: convert pinctrl to regmap")
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > 
+> Sorry about this one. It sounded familiar though:
+> https://patchwork.ozlabs.org/project/linux-gpio/patch/20220125161245.418882-1-horatiu.vultur@microchip.com/
+> 
+> The only takeaway from that was the use of regmap_get_reg_stride, which
+> was done in
+> commit baf927a833ca ("microchip-sgpio: Fix support for regmap")
 
+That is correct. I will update this to use regmap_get_reg_stride.
+
+> 
+> And I see it is only for pincfg - which I don't have any hardware to
+> test that. Apologies again!
+
+No worries.
+
+> 
+> > ---
+> >  drivers/pinctrl/pinctrl-ocelot.c | 28 +++++++++++++++-------------
+> >  1 file changed, 15 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+> > index 6212abe2b66f..e84f2f82901f 100644
+> > --- a/drivers/pinctrl/pinctrl-ocelot.c
+> > +++ b/drivers/pinctrl/pinctrl-ocelot.c
+> > @@ -303,6 +303,13 @@ static const char *const ocelot_function_names[] = {
+> >       [FUNC_RCVRD_CLK]        = "rcvrd_clk",
+> >  };
+> >
+> > +const struct regmap_config regmap_pincfg = {
+> > +             .reg_bits = 32,
+> > +             .val_bits = 32,
+> > +             .reg_stride = 4,
+> > +             .name = "pincfg",
+> > +};
+> > +
+> >  struct ocelot_pmx_func {
+> >       const char **groups;
+> >       unsigned int ngroups;
+> > @@ -1334,7 +1341,8 @@ static int ocelot_hw_get_value(struct ocelot_pinctrl *info,
+> >       if (info->pincfg) {
+> >               u32 regcfg;
+> >
+> > -             ret = regmap_read(info->pincfg, pin, &regcfg);
+> > +             ret = regmap_read(info->pincfg, pin * regmap_pincfg.reg_stride,
+> > +                               &regcfg);
+> >               if (ret)
+> >                       return ret;
+> >
+> > @@ -1368,14 +1376,16 @@ static int ocelot_pincfg_clrsetbits(struct ocelot_pinctrl *info, u32 regaddr,
+> >       u32 val;
+> >       int ret;
+> >
+> > -     ret = regmap_read(info->pincfg, regaddr, &val);
+> > +     ret = regmap_read(info->pincfg, regaddr * regmap_pincfg.reg_stride,
+> > +                       &val);
+> >       if (ret)
+> >               return ret;
+> >
+> >       val &= ~clrbits;
+> >       val |= setbits;
+> >
+> > -     ret = regmap_write(info->pincfg, regaddr, val);
+> > +     ret = regmap_write(info->pincfg, regaddr * regmap_pincfg.reg_stride,
+> > +                        val);
+> >
+> >       return ret;
+> >  }
+> > @@ -1940,21 +1950,13 @@ static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
+> >  {
+> >       void __iomem *base;
+> >
+> > -     const struct regmap_config regmap_config = {
+> > -             .reg_bits = 32,
+> > -             .val_bits = 32,
+> > -             .reg_stride = 4,
+> > -             .max_register = 32,
+> > -             .name = "pincfg",
+> > -     };
+> > -
+> > -     base = devm_platform_ioremap_resource(pdev, 1);
+> > +             base = devm_platform_ioremap_resource(pdev, 1);
+> >       if (IS_ERR(base)) {
+> >               dev_dbg(&pdev->dev, "Failed to ioremap config registers (no extended pinconf)\n");
+> >               return NULL;
+> >       }
+> >
+> > -     return devm_regmap_init_mmio(&pdev->dev, base, &regmap_config);
+> > +     return devm_regmap_init_mmio(&pdev->dev, base, &regmap_pincfg);
+> >  }
+> >
+> >  static int ocelot_pinctrl_probe(struct platform_device *pdev)
+> > --
+> > 2.33.0
+> >
+
+-- 
+/Horatiu
