@@ -2,161 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70084C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 085CEC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237822AbiGHJsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 05:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        id S237745AbiGHJsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 05:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237745AbiGHJsM (ORCPT
+        with ESMTP id S237169AbiGHJsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 05:48:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915257E014;
-        Fri,  8 Jul 2022 02:48:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF65D621B3;
-        Fri,  8 Jul 2022 09:48:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42467C341C0;
-        Fri,  8 Jul 2022 09:48:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657273690;
-        bh=jh5gWjN504oG2VIQVhjUJ6awryeK4kG9bLyyFcKUZb8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=J0mN0kb8BszGexKgP2TR/Konu1FNhSKLfU1dFk8MjbV9m7dxbBYbF7wwZZqxMrDOr
-         F2lUZZbiAoibyzsScrc+PqTDnUNQtvqgiIQRLx+9QXwEy71uIlZvZibgVknoklSdR3
-         N5ej6+Cm1mxWT82xms9zIjE+kIojLNBIi/syuWuMiojBoq8gL4lbqP2fdR4MIRR5aC
-         C3otI4srlob2HKRGqzFgtB+NkDdngWbUpx5Yan/H9nA5wO5bog/qQzNIgkjEnalQT/
-         OhQHVVnJ4iu0TKhX6ULYi7/yPg+BKcMgFSIBiwxtrlrtdvCYjxTJwBxwY398mZfvn4
-         ctAgmZK0ZrrCw==
-Received: by mail-vs1-f49.google.com with SMTP id f68so5959428vsc.11;
-        Fri, 08 Jul 2022 02:48:10 -0700 (PDT)
-X-Gm-Message-State: AJIora96dsnmFzU0r+taN40ryFlyuRZC2ysrZymnKnUpyGH7oUVmtaS/
-        WJe3wZB9wBVMyUjEuyR8DZkolymU3c2KFdgwpDA=
-X-Google-Smtp-Source: AGRyM1trh8V62HAkUcCKd0tDx5d1m4TVW3lDdgWUkgyB2uid/kYHUhgnGZyGqTvYMyG8IlCpF+vPKmaWyo2itMFkJxg=
-X-Received: by 2002:a05:6102:3543:b0:357:3ae7:bbd0 with SMTP id
- e3-20020a056102354300b003573ae7bbd0mr431000vss.84.1657273689209; Fri, 08 Jul
- 2022 02:48:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220704112526.2492342-1-chenhuacai@loongson.cn>
- <20220704112526.2492342-4-chenhuacai@loongson.cn> <20220705092937.GA552@willie-the-truck>
- <CAAhV-H5r8HDaxt8fkO97in5-eH8X9gokVNervmUWn6km4S0e-w@mail.gmail.com> <20220706161736.GC3204@willie-the-truck>
-In-Reply-To: <20220706161736.GC3204@willie-the-truck>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Fri, 8 Jul 2022 17:47:56 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H7uY_KiLJRRjj4+8mewcWbuhvC=zDp5VAs03=BLdSMKLw@mail.gmail.com>
-Message-ID: <CAAhV-H7uY_KiLJRRjj4+8mewcWbuhvC=zDp5VAs03=BLdSMKLw@mail.gmail.com>
-Subject: Re: [PATCH V4 3/4] mm/sparse-vmemmap: Generalise vmemmap_populate_hugepages()
-To:     Will Deacon <will@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Sudarshan Rajagopalan <sudaraja@codeaurora.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
+        Fri, 8 Jul 2022 05:48:30 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AFB3CC6
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 02:48:27 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3A1B1106F;
+        Fri,  8 Jul 2022 02:48:27 -0700 (PDT)
+Received: from bogus (unknown [10.57.39.193])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6BD4E3F66F;
+        Fri,  8 Jul 2022 02:48:21 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 10:47:10 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Conor Dooley <Conor.Dooley@microchip.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        loongarch@lists.linux.dev, linux-arch <linux-arch@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Feiyang Chen <chenfeiyang@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+        Will Deacon <will@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daire.McNamara@microchip.com,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Zong Li <zong.li@sifive.com>,
+        Emil Renner Berthing <kernel@esmil.dk>, hahnjo@hahnjo.de,
+        Guo Ren <guoren@kernel.org>, Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>, changbin.du@intel.com,
+        Heiko Stuebner <heiko@sntech.de>, philipp.tomsich@vrull.eu,
+        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Brice.Goglin@inria.fr
+Subject: Re: [RFC 2/4] arch-topology: add a default implementation of
+ store_cpu_topology()
+Message-ID: <20220708094710.rxk6flrueegdsggr@bogus>
+References: <20220707220436.4105443-1-mail@conchuod.ie>
+ <20220707220436.4105443-3-mail@conchuod.ie>
+ <20220708082443.azoqvuj7afrg7ox7@bogus>
+ <473e6b17-465b-3d14-b04d-01b187390e66@microchip.com>
+ <20220708092100.c6mgmnt7e2k7u634@bogus>
+ <CAMuHMdXUjmG9n3BuRAz_irkmHQbp=7SYxe5VEfOhMdT4D2JfwQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXUjmG9n3BuRAz_irkmHQbp=7SYxe5VEfOhMdT4D2JfwQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Dan Williams
-+Sudarshan Rajagopalan
-
-On Thu, Jul 7, 2022 at 12:17 AM Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Jul 05, 2022 at 09:07:59PM +0800, Huacai Chen wrote:
-> > On Tue, Jul 5, 2022 at 5:29 PM Will Deacon <will@kernel.org> wrote:
-> > > On Mon, Jul 04, 2022 at 07:25:25PM +0800, Huacai Chen wrote:
-> > > > diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
-> > > > index 33e2a1ceee72..6f2e40bb695d 100644
-> > > > --- a/mm/sparse-vmemmap.c
-> > > > +++ b/mm/sparse-vmemmap.c
-> > > > @@ -686,6 +686,60 @@ int __meminit vmemmap_populate_basepages(unsigned long start, unsigned long end,
-> > > >       return vmemmap_populate_range(start, end, node, altmap, NULL);
-> > > >  }
-> > > >
-> > > > +void __weak __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
-> > > > +                                   unsigned long addr, unsigned long next)
-> > > > +{
-> > > > +}
-> > > > +
-> > > > +int __weak __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
-> > > > +                                    unsigned long next)
-> > > > +{
-> > > > +     return 0;
-> > > > +}
-> > > > +
-> > > > +int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
-> > > > +                                      int node, struct vmem_altmap *altmap)
-> > > > +{
-> > > > +     unsigned long addr;
-> > > > +     unsigned long next;
-> > > > +     pgd_t *pgd;
-> > > > +     p4d_t *p4d;
-> > > > +     pud_t *pud;
-> > > > +     pmd_t *pmd;
-> > > > +
-> > > > +     for (addr = start; addr < end; addr = next) {
-> > > > +             next = pmd_addr_end(addr, end);
-> > > > +
-> > > > +             pgd = vmemmap_pgd_populate(addr, node);
-> > > > +             if (!pgd)
-> > > > +                     return -ENOMEM;
-> > > > +
-> > > > +             p4d = vmemmap_p4d_populate(pgd, addr, node);
-> > > > +             if (!p4d)
-> > > > +                     return -ENOMEM;
-> > > > +
-> > > > +             pud = vmemmap_pud_populate(p4d, addr, node);
-> > > > +             if (!pud)
-> > > > +                     return -ENOMEM;
-> > > > +
-> > > > +             pmd = pmd_offset(pud, addr);
-> > > > +             if (pmd_none(READ_ONCE(*pmd))) {
-> > > > +                     void *p;
-> > > > +
-> > > > +                     p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
-> > > > +                     if (p) {
-> > > > +                             vmemmap_set_pmd(pmd, p, node, addr, next);
-> > > > +                             continue;
-> > > > +                     } else if (altmap)
-> > > > +                             return -ENOMEM; /* no fallback */
+On Fri, Jul 08, 2022 at 11:28:19AM +0200, Geert Uytterhoeven wrote:
+> Hi Sudeep,
+> 
+> On Fri, Jul 8, 2022 at 11:22 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> > On Fri, Jul 08, 2022 at 08:35:57AM +0000, Conor.Dooley@microchip.com wrote:
+> > > On 08/07/2022 09:24, Sudeep Holla wrote:
+> > > > On Thu, Jul 07, 2022 at 11:04:35PM +0100, Conor Dooley wrote:
+> > > >> From: Conor Dooley <conor.dooley@microchip.com>
+> > > >>
+> > > >> RISC-V & arm64 both use an almost identical method of filling in
+> > > >> default vales for arch topology. Create a weakly defined default
+> > > >> implementation with the intent of migrating both archs to use it.
+> > > >>
+> > > >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> > > >> ---
+> > > >>   drivers/base/arch_topology.c  | 19 +++++++++++++++++++
+> > > >>   include/linux/arch_topology.h |  1 +
+> > > >>   2 files changed, 20 insertions(+)
+> > > >>
+> > > >> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> > > >> index 441e14ac33a4..07e84c6ac5c2 100644
+> > > >> --- a/drivers/base/arch_topology.c
+> > > >> +++ b/drivers/base/arch_topology.c
+> > > >> @@ -765,6 +765,25 @@ void update_siblings_masks(unsigned int cpuid)
+> > > >>    }
+> > > >>   }
+> > > >>
+> > > >> +void __weak store_cpu_topology(unsigned int cpuid)
 > > >
-> > > Why do you return -ENOMEM if 'altmap' here? That seems to be different to
-> > > what we currently have on arm64 and it's not clear to me why we're happy
-> > > with an altmap for the pmd case, but not for the pte case.
-> > The generic version is the same as X86. It seems that ARM64 always
-> > fallback whether there is an altmap, but X86 only fallback in the no
-> > altmap case. I don't know the reason of X86, can Dan Williams give
-> > some explaination?
+> > > Does using __weak here make sense to you?
+> > >
+> >
+> > I don't want any weak definition and arch to override as we know only
+> > arm64 and RISC-V are the only users and they are aligned to have same
+> > implementation. So weak definition doesn't make sense to me.
+> >
+> > > >
+> > > > I prefer to have this as default implementation. So just get the risc-v
+> > > > one pushed to upstream first(for v5.20) and get all the backports if required.
+> > > > Next cycle(i.e. v5.21), you can move both RISC-V and arm64.
+> > > >
+> > >
+> > > Yeah, that was my intention. I meant to label patch 1/4 as "PATCH"
+> > > and (2,3,4)/4 as RFC but forgot. I talked with Palmer about doing
+> > > the risc-v impl. and then migrate both on IRC & he seemed happy with
+> > > it.
+> > >
+> >
+> > Ah OK, good.
+> >
+> > > If you're okay with patch 1/4, I'll resubmit it as a standalone v2.
+> > >
+> >
+> > That would be great, thanks. You can most the code to move to generic from
+> > both arm64 and risc-v once we have this in v5.20-rc1
+> 
+> Why not ignore risc-v for now, and move the arm64 implementation to
+> the generic code for v5.20, so every arch will have it at once?
 >
-> Right, I think we need to understand the new behaviour here before we adopt
-> it on arm64.
-Hi, Dan,
-Could you please tell us the reason? Thanks.
 
-And Sudarshan,
-You are the author of adding a fallback mechanism to ARM64,  do you
-know why ARM64 is different from X86 (only fallback in no altmap
-case)?
+We could but,
+1. This arch_topology is new and has been going through lot of changes
+   recently and having code there might make it difficult to backport
+   changes that are required for RISC-V(my guess)
 
-Huacai
+2. May be too late for v5.20, I would like to see if we can even drop tiny
+   arm64 bit in the code. It may be risky to try that this late and also
+   with other topology changes we already have queued.
 
->
-> Will
+Let me know if that makes sense.
+
+-- 
+Regards,
+Sudeep
