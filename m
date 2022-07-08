@@ -2,101 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 366C4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66897C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238700AbiGHQSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        id S238779AbiGHQVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236500AbiGHQSY (ORCPT
+        with ESMTP id S233022AbiGHQVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:18:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22D76796BA;
-        Fri,  8 Jul 2022 09:18:23 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1FDB7106F;
-        Fri,  8 Jul 2022 09:18:23 -0700 (PDT)
-Received: from [10.57.86.102] (unknown [10.57.86.102])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C2FDB3F66F;
-        Fri,  8 Jul 2022 09:18:20 -0700 (PDT)
-Message-ID: <5611d1c5-44db-4144-3c46-256323d39fe3@arm.com>
-Date:   Fri, 8 Jul 2022 17:17:22 +0100
+        Fri, 8 Jul 2022 12:21:46 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9E364D7;
+        Fri,  8 Jul 2022 09:21:45 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id l124so13526004pfl.8;
+        Fri, 08 Jul 2022 09:21:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=M2aoSokBLCYPbBjm+wHXpd3xRs663JjZw7y2yCoEjIk=;
+        b=SS68MlvF9YrmGrBs6VwKYWvOfU9VokMkrO1J3XoqHC8DT0pTyNg+uT3ktP0WMSJsXs
+         rdYRmD8Y/u5IvMz0sV8N1+7R43TItC2LZdQlIAWM5iEItArFDQLQpM3gacfug88a5hZt
+         2FMD3abr8a709V1kAfKZEO+i5rd/Q67hjc7rjg1ZXcMWJIAyy8xosLm5Qsg/UFqfsYFu
+         Nh8YzfA14OKNmDiCce5ZaAx/6R5ihrZ5EkcqnoQ2M3zeneMVTjmDKJ3F4WOt0nU1bA9n
+         nkZMzmb1wI/OM3smP323Zd67g5VfGps9Na8z0AcLw+6mAE6YgEohcoSqIiUwWeq8rPpr
+         ZQKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=M2aoSokBLCYPbBjm+wHXpd3xRs663JjZw7y2yCoEjIk=;
+        b=4AHTzP8heDWIKPE+A4yl09bLPbJ6XyUdz4S3YUEcg6aNc6aXS4rLI0gQA5nK9nD/wS
+         sEzh1c13mzTm3syKTV9E04iIx2YvAuednC5DbqZogTHL8gPiRLWrkLO7C8+EBroo4Mz9
+         YM3WHM5zH626o+V9I0D+SD0K+l4qS6HA2kv/M98jsY6qtOGxvRzvuoWgvRHDx5v9NWYL
+         lSqilUI1E+BabmYFporSnc6mQAqotv9OWz5oRmhPhyDrCrcM23akybo92uA5MuuVO7uG
+         eRIERiDdbwM7DumFEFSl1rOtJxQyONK4bftXW2HRptpVXy4COAfJXVa7Kub3S/750Api
+         qT5w==
+X-Gm-Message-State: AJIora/psTOzwaQL8dz+Q5E8MZS64rLs2lggPZmWqClnQDy0BidmY6sM
+        32NI2xJRkrX9F73LVoVejFM=
+X-Google-Smtp-Source: AGRyM1s7gQ+8EBt8JaBQHvrtqSUB1FKBiK23I/bsfMU3WnKkyeBpPtkJpgg1ViUKGv956HekWpSuZQ==
+X-Received: by 2002:a05:6a02:113:b0:412:a7c0:da8e with SMTP id bg19-20020a056a02011300b00412a7c0da8emr4121437pgb.113.1657297304947;
+        Fri, 08 Jul 2022 09:21:44 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id i9-20020a170902cf0900b0016beea47800sm8923460plg.41.2022.07.08.09.21.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 09:21:44 -0700 (PDT)
+Message-ID: <1d7a028e-55fb-d93c-97b7-750743db4dba@gmail.com>
+Date:   Fri, 8 Jul 2022 09:21:37 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] rtc: hym8563: try multiple times to init device
-Content-Language: en-GB
-To:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20220608161150.58919-1-linux@fw-web.de>
- <20220608161150.58919-2-linux@fw-web.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220608161150.58919-2-linux@fw-web.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] MIPS: Make phys_to_virt utilize __va()
+Content-Language: en-US
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     linux-mips@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220707203743.1226302-1-f.fainelli@gmail.com>
+ <20220708123454.mj7f3gdzk3ct6seb@mobilestation>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220708123454.mj7f3gdzk3ct6seb@mobilestation>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-08 17:11, Frank Wunderlich wrote:
-> From: Peter Geis <pgwipeout@gmail.com>
+On 7/8/22 05:34, Serge Semin wrote:
+> On Thu, Jul 07, 2022 at 01:37:42PM -0700, Florian Fainelli wrote:
+>> The implementation is exactly the same, so avoid open-coding it in two
+>> different locations.
+>>
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > 
-> RTC sometimes does not respond the first time in init.
-> Try multiple times to get a response.
-
-FWIW, given that HYM8563 is fairly common on RK3288 boards - I can't say 
-I've ever noticed an issue with mine, for instance - it seems dubious 
-that this would be a general issue of the chip itself. Are you sure it's 
-not a SoC or board-level issue with the I2C bus being in a funny initial 
-state, timings being marginal, or suchlike?
-
-Robin.
-
-> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> ---
->   drivers/rtc/rtc-hym8563.c | 11 +++++++++--
->   1 file changed, 9 insertions(+), 2 deletions(-)
+> Seems reasonable. Thanks.
 > 
-> diff --git a/drivers/rtc/rtc-hym8563.c b/drivers/rtc/rtc-hym8563.c
-> index 90e602e99d03..9adcedaa4613 100644
-> --- a/drivers/rtc/rtc-hym8563.c
-> +++ b/drivers/rtc/rtc-hym8563.c
-> @@ -13,6 +13,7 @@
->   #include <linux/clk-provider.h>
->   #include <linux/i2c.h>
->   #include <linux/bcd.h>
-> +#include <linux/delay.h>
->   #include <linux/rtc.h>
->   
->   #define HYM8563_CTL1		0x00
-> @@ -438,10 +439,16 @@ static irqreturn_t hym8563_irq(int irq, void *dev_id)
->   
->   static int hym8563_init_device(struct i2c_client *client)
->   {
-> -	int ret;
-> +	int ret, i;
->   
->   	/* Clear stop flag if present */
-> -	ret = i2c_smbus_write_byte_data(client, HYM8563_CTL1, 0);
-> +	for (i = 0; i < 3; i++) {
-> +		ret = i2c_smbus_write_byte_data(client, HYM8563_CTL1, 0);
-> +		if (ret == 0)
-> +			break;
-> +		msleep(20);
-> +	}
-> +
->   	if (ret < 0)
->   		return ret;
->   
+> Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+> 
+> *Note it now looks exactly as the generic phys_to_virt().
+
+True, though switching to asm-generic/io.h is a slightly bigger 
+undertaking. I will cook something towards that goal however.
+-- 
+Florian
