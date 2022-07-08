@@ -2,117 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CE5CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1505FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 15:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238618AbiGHPmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
+        id S238714AbiGHPnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238573AbiGHPml (ORCPT
+        with ESMTP id S238707AbiGHPnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:42:41 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06AD6EEB4;
-        Fri,  8 Jul 2022 08:42:40 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31caffa4a45so130071637b3.3;
-        Fri, 08 Jul 2022 08:42:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KyDl05vUDZC3KtpDAZZDk8Jclgf+fyUT4de3z8iw/dQ=;
-        b=cqi3b3DaVyECgMdCiGJS2SrxHGMxunaaoMD/Spwx7tjpJ/GZV2HC3FWINA6pE347/Z
-         oOy8O3mZv6thDHgupGhIXC6GHfRZmHUdKzCgigLkfcH5c28C/eO2VZxmdrNivV05t41r
-         X8N3xNIHpyQGU5ggJAjnkvIVmZWf438knZk+F0jyeXwaMkmvc9vchouIcF05AZz/LqW1
-         FSozO87b7MYP3awk+wRCDa7YceqeDkIJouOQ7eBGfHr43KIHwFhGiS5+SANXned+EpCV
-         7uDvppmwX96H14kmcGpiIxuiv4707kAwWRGJbsbH0fMwMkKTqzm/2hS1iX1U7mQ6JxpT
-         V12A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KyDl05vUDZC3KtpDAZZDk8Jclgf+fyUT4de3z8iw/dQ=;
-        b=ddiLApQdRP7b7Tbkmw4/uOLEyiXJyq87HBko5AQkiPQLaZnq16uXQanuRKcbFnT6n6
-         5iYz1EPCSR7qg0/VBR8lcRqMEoxjWYOgnT5bPSZjI1ITlLFYcY7MXVDgm50lOWzTkB4g
-         fxLBtXGhYqBuMlX6YsH3LeJ1zZ9SUWd5PJa9TEqGbyki7tQ6I0i4gROHY/xRL9s6LOCi
-         EbZNakyKlpjhcFABWuxMHtpmssrfXuEQen5ndDZv/tyzzBv7Q8xkTkEPswr4K7CxdMSk
-         QnsqE3grsAr04luvzDR+Dtow5kbC6Z0Q4S3hCLoXpL/O/kPlUYW5hbTHGjiGzyFSPoc8
-         7kRA==
-X-Gm-Message-State: AJIora9wJDCByCpMc1NqtFQDcFurZumHhCEnKQ+AGrrf48xaDWoSEAev
-        b3n9bmKrSSRZoBcDgUZMC+J4UAKqjCuhIk3PMIQ=
-X-Google-Smtp-Source: AGRyM1vmPDB28H0EnqVeiLVM6R4qsCAkf+yIt8PfwqQqxFb22AHdnNxw7QdMdTx52+0aMVNTu4WBRhb4a5zJ5nQM/iE=
-X-Received: by 2002:a81:4bd7:0:b0:31c:91da:5a20 with SMTP id
- y206-20020a814bd7000000b0031c91da5a20mr4972445ywa.131.1657294959944; Fri, 08
- Jul 2022 08:42:39 -0700 (PDT)
+        Fri, 8 Jul 2022 11:43:01 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B506973939
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 08:42:59 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LfcxF5Z83z9tLy;
+        Fri,  8 Jul 2022 17:42:57 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id MrLG8Zz7NbHn; Fri,  8 Jul 2022 17:42:57 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LfcxF4gdYz9tLp;
+        Fri,  8 Jul 2022 17:42:57 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8E83F8B76E;
+        Fri,  8 Jul 2022 17:42:57 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id GlkeXLTRQmNg; Fri,  8 Jul 2022 17:42:57 +0200 (CEST)
+Received: from [192.168.233.202] (unknown [192.168.233.202])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id DD89C8B763;
+        Fri,  8 Jul 2022 17:42:56 +0200 (CEST)
+Message-ID: <e5bee04b-f246-ab24-f019-b26011f32c32@csgroup.eu>
+Date:   Fri, 8 Jul 2022 17:42:56 +0200
 MIME-Version: 1.0
-References: <20220321163055.4058-1-pali@kernel.org> <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
- <YmK7drS0XgnTQcaf@kroah.com> <20220707084840.jvsstvyx2ul5ltb6@pali>
- <YsgsH94PV/wAX0Vu@kroah.com> <20220708132621.4v2es73h52aq3izn@pali>
- <Ysg2RW0B/cLL3k+k@kroah.com> <20220708142001.7fciqnfckznlvsa4@pali>
-In-Reply-To: <20220708142001.7fciqnfckznlvsa4@pali>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 17:42:03 +0200
-Message-ID: <CAHp75Vci1zeDV1axd_v_PLLPGfF5AzAzmmcegjD1djqnR6XUcA@mail.gmail.com>
-Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH v3 00/12] objtool: Enable and implement --mcount
+ option on powerpc
+Content-Language: fr-FR
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Sathvika Vasireddy <sv@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     jpoimboe@redhat.com, peterz@infradead.org,
+        linux-kernel@vger.kernel.org, aik@ozlabs.ru, mpe@ellerman.id.au,
+        mingo@redhat.com, rostedt@goodmis.org,
+        naveen.n.rao@linux.vnet.ibm.com, mbenes@suse.cz,
+        benh@kernel.crashing.org, paulus@samba.org
+References: <20220624183238.388144-1-sv@linux.ibm.com>
+ <ae669ab4-681b-1a0d-3bbc-4fdf13b501a0@csgroup.eu>
+In-Reply-To: <ae669ab4-681b-1a0d-3bbc-4fdf13b501a0@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 4:20 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
-> On Friday 08 July 2022 15:51:01 Greg Kroah-Hartman wrote:
-> > On Fri, Jul 08, 2022 at 03:26:21PM +0200, Pali Roh=C3=A1r wrote:
-> > > On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
-> > > > On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Roh=C3=A1r wrote:
-> > > > > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
 
-...
 
-> > > > I'm not saying remove them, I'm saying let us not add any more
-> > > > dependancies on them in order to keep new applications from ever wa=
-nting
-> > > > to use them.
-> > >
-> > > Last time you wrote to remove them. Now saying not to remove them. So=
- I
-> > > do not understand you now.
+Le 08/07/2022 à 17:06, Christophe Leroy a écrit :
+> 
+> 
+> Le 24/06/2022 à 20:32, Sathvika Vasireddy a écrit :
+>> These patches are rebased on top of objtool/core
+>> branch of the tip tree, and are tested on
+>> ppc64le with ppc64le_defconfig.
+> 
+> Seems like objtool/core has been merged in 5.19. I was able to apply 
+> your series on top of powerpc/merge branch. Only a small conflict with 
+> patch "objtool: Add --mnop as an option to --mcount" because of commit 
+> b42d23065024 ("kbuild: factor out the common objtool arguments")
 
-There was a _new_ addition of the ugly SPD_CUST, that's what I believe
-Greg opposes to. And I support that.
 
-> > I'm sorry, I am totally lost.
->
-> So look what you have wrote? Who is lost here is me.
->
-> > How about starting over and resubmitting
-> > the changes you want and we can go from there.
->
-> What to resubmit? I do not understand you. In case you lost emails or
-> accidentally removed them, you can look at them in archive, not? I hope
-> that you do not want me to copy+paste all existing patches with all your
-> quotes on them which you wrote into new emails.
+In order to build, you will also need the following new file:
 
-That change that adds the new user of SPD_CUST?
-
-In any case the best summary about BOTHER I ever read is this [1] (and
-an initial steps in picocom [2]). And I believe that instead of
-SPD_CUST we should get rid (or at least minimize) the problems with
-BOTHER in user space.
-
-[1]: https://github.com/npat-efault/picocom/blob/master/termios2.txt
-[2]: https://github.com/jmesmon/picocom/issues/2
+diff --git a/arch/powerpc/include/asm/asm.h b/arch/powerpc/include/asm/asm.h
+new file mode 100644
+index 000000000000..86f46b604e9a
+--- /dev/null
++++ b/arch/powerpc/include/asm/asm.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_POWERPC_ASM_H
++#define _ASM_POWERPC_ASM_H
++
++#define _ASM_PTR	" .long "
++
++#endif /* _ASM_POWERPC_ASM_H */
 
 
 
---=20
-With Best Regards,
-Andy Shevchenko
+> 
+>>
+>> Christophe Leroy (3):
+>>    objtool: Fix SEGFAULT
+>>    objtool: Use target file endianness instead of a compiled constant
+>>    objtool: Use target file class size instead of a compiled constant
+>>
+>> Sathvika Vasireddy(9):
+>>    objtool: Add --mnop as an option to --mcount
+>>    powerpc: Skip objtool from running on VDSO files
+>>    objtool: Read special sections with alts only when specific options 
+>> are selected
+>>    objtool: Use macros to define arch specific reloc types
+>>    objtool: Add arch specific function arch_ftrace_match()
+>>    objtool/powerpc: Enable objtool to be built on ppc
+>>    objtool/powerpc: Add --mcount specific implementation
+>>    powerpc: Remove unreachable() from WARN_ON()
+>>    objtool/powerpc: Fix unannotated intra-function call warnings
+>>
+>>   Makefile                                      |  4 +-
+>>   arch/powerpc/Kconfig                          |  2 +
+>>   arch/powerpc/include/asm/bug.h                |  1 -
+>>   arch/powerpc/kernel/entry_64.S                |  2 +
+>>   arch/powerpc/kernel/exceptions-64s.S          |  7 +-
+>>   arch/powerpc/kernel/head_64.S                 |  7 +-
+>>   arch/powerpc/kernel/misc_64.S                 |  4 +-
+>>   arch/powerpc/kernel/vdso/Makefile             |  2 +
+>>   arch/powerpc/kernel/vector.S                  |  4 +-
+>>   arch/powerpc/kvm/book3s_hv_interrupts.S       |  4 +-
+>>   arch/powerpc/kvm/book3s_hv_rmhandlers.S       | 25 +++--
+>>   arch/x86/Kconfig                              |  1 +
+>>   scripts/Makefile.build                        |  1 +
+>>   tools/objtool/arch/powerpc/Build              |  2 +
+>>   tools/objtool/arch/powerpc/decode.c           | 96 +++++++++++++++++++
+>>   .../arch/powerpc/include/arch/cfi_regs.h      | 11 +++
+>>   tools/objtool/arch/powerpc/include/arch/elf.h | 10 ++
+>>   .../arch/powerpc/include/arch/special.h       | 21 ++++
+>>   tools/objtool/arch/powerpc/special.c          | 19 ++++
+>>   tools/objtool/arch/x86/decode.c               |  8 ++
+>>   tools/objtool/arch/x86/include/arch/elf.h     |  2 +
+>>   .../arch/x86/include/arch/endianness.h        |  9 --
+>>   tools/objtool/builtin-check.c                 | 14 +++
+>>   tools/objtool/check.c                         | 51 +++++-----
+>>   tools/objtool/elf.c                           |  8 +-
+>>   tools/objtool/include/objtool/arch.h          |  2 +
+>>   tools/objtool/include/objtool/builtin.h       |  1 +
+>>   tools/objtool/include/objtool/elf.h           |  8 ++
+>>   tools/objtool/include/objtool/endianness.h    | 32 +++----
+>>   tools/objtool/orc_dump.c                      | 11 ++-
+>>   tools/objtool/orc_gen.c                       |  4 +-
+>>   tools/objtool/special.c                       |  3 +-
+>>   32 files changed, 305 insertions(+), 71 deletions(-)
+>>   create mode 100644 tools/objtool/arch/powerpc/Build
+>>   create mode 100644 tools/objtool/arch/powerpc/decode.c
+>>   create mode 100644 tools/objtool/arch/powerpc/include/arch/cfi_regs.h
+>>   create mode 100644 tools/objtool/arch/powerpc/include/arch/elf.h
+>>   create mode 100644 tools/objtool/arch/powerpc/include/arch/special.h
+>>   create mode 100644 tools/objtool/arch/powerpc/special.c
+>>   delete mode 100644 tools/objtool/arch/x86/include/arch/endianness.h
+>>
