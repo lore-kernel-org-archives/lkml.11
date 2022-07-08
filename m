@@ -2,148 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 265D4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98766CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 16:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238007AbiGHQJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
+        id S238279AbiGHQKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbiGHQJp (ORCPT
+        with ESMTP id S238026AbiGHQKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:09:45 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80377E098;
-        Fri,  8 Jul 2022 09:09:44 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id 6so9664584ybc.8;
-        Fri, 08 Jul 2022 09:09:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NiBAmwWr10y6CHObyc48uD9nFW5jkoG89MkhIpP9Xnw=;
-        b=ZjOMS1DWv4rXK5iN9pFJzlcAtFscvuO/14syZxKG75wxk22F4zoMwS44UT3WQDH+GD
-         GPI/TepMyco+s3itI7Z57Lj4RUyCEPG37Yys7Y3RhO3yNOZ0Jt7lnrhOdCuganu9gsNA
-         dmir/5YvN67iRgNx/7eqMELIRPKutBWpJ3GYV60POn1TiCxcYOa/fRdnh4J69i9q/0Nm
-         fbdb6sJw3sdnav+S3myzHyj6A1nCJFvX8CqrFHTFw8lebEePFhjhysK4A/I1Iuu/jB4c
-         89XMhblSXEYpXcyyjhNeJ/ocGschD7dhkYPQqbHmIX/L7pnYglbvrrWJJybyfGsZbskI
-         CwLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NiBAmwWr10y6CHObyc48uD9nFW5jkoG89MkhIpP9Xnw=;
-        b=JHUg3q24TlKHE/USZNAD4WB9nHleZt2SiHToUAcEr3uMUV/bJAEZSI6JPCNCCjDQjn
-         hOREFGTW9XcTSeD+OXCjgU1WLed8qGfhdD2Q9iyEx5IHMj8xQ0FHWmCwroYDuGH0y5tI
-         HKE2wJpXtJjZZAlhJHmzGwzJ9XfFmS579QG5GcmiIlE2ZXF2OTGWoHPTuwKrxsksz9Ux
-         mTSAhJmtek8BKB+p4WphzB2iAVie2ejg5GCLRchT5oxLA9Fg6DNeSGy7cFqDZkRVuFvE
-         ysPTryUyAA4zRVbjs2fmHR+8p+501YCARjAxrCNUuSbYiMf+dTgJPSB9kRKKu4jba4oa
-         u+0g==
-X-Gm-Message-State: AJIora8xi1ZWSvoIlZQO/Y0KCyQ3UuFZcBVG4JtXqzrLwqDXJiVsU9vE
-        E4uYrMRhcoyWQ1YmtluRL5jQpmL7tmeskZukETE=
-X-Google-Smtp-Source: AGRyM1snNGAnWmURbdR/Bz0c+IXCwfys5LS4JOVYPJLs24z7iSKouS0PVwgEICtxnhUcTC1s5Fj4Uon/NX9iD0aM0Rw=
-X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
- w9-20020a05690210c900b00668e27c08f7mr4439046ybu.128.1657296583588; Fri, 08
- Jul 2022 09:09:43 -0700 (PDT)
+        Fri, 8 Jul 2022 12:10:17 -0400
+Received: from srv6.fidu.org (srv6.fidu.org [159.69.62.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9204574368;
+        Fri,  8 Jul 2022 09:10:15 -0700 (PDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by srv6.fidu.org (Postfix) with ESMTP id AADA8C800AF;
+        Fri,  8 Jul 2022 18:10:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        tuxedocomputers.com; h=content-transfer-encoding:mime-version
+        :references:in-reply-to:x-mailer:message-id:date:date:subject
+        :subject:from:from; s=default; t=1657296613; x=1659111014; bh=nv
+        1yeQkccAF+ZdQu96d/KEVsM4YZKFWBOeyC2mkggzE=; b=VTE7fGn4HgNFcE8vW1
+        H6ht6z0tK2ZIhRaVvy5H+twPziq8YRCS+oqCKG8G9juSuDql6NeVQAD1145GYThV
+        DIqLAGpe54dSVCPjMdd+wIoEHXTvQBxE5x2eWzSs+vhCeK55JtkG58PcstNplzo3
+        BrCCmYZcqzxFDTWM/f9Dxk4DM=
+X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
+Received: from srv6.fidu.org ([127.0.0.1])
+        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
+        with LMTP id jMK6RkaHBlY0; Fri,  8 Jul 2022 18:10:13 +0200 (CEST)
+Received: from wsembach-tuxedo.fritz.box (host-212-18-30-247.customer.m-online.net [212.18.30.247])
+        (Authenticated sender: wse@tuxedocomputers.com)
+        by srv6.fidu.org (Postfix) with ESMTPA id 3231AC800AD;
+        Fri,  8 Jul 2022 18:10:13 +0200 (CEST)
+From:   Werner Sembach <wse@tuxedocomputers.com>
+To:     dmitry.torokhov@gmail.com, hdegoede@redhat.com, tiwai@suse.de,
+        samuel@cavoj.net, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] Input: i8042 - add additional TUXEDO devices to i8042 quirk tables
+Date:   Fri,  8 Jul 2022 18:10:04 +0200
+Message-Id: <20220708161005.1251929-2-wse@tuxedocomputers.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220708161005.1251929-1-wse@tuxedocomputers.com>
+References: <20220708161005.1251929-1-wse@tuxedocomputers.com>
 MIME-Version: 1.0
-References: <20220321163055.4058-1-pali@kernel.org> <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
- <YmK7drS0XgnTQcaf@kroah.com> <20220707084840.jvsstvyx2ul5ltb6@pali>
- <YsgsH94PV/wAX0Vu@kroah.com> <20220708132621.4v2es73h52aq3izn@pali>
- <Ysg2RW0B/cLL3k+k@kroah.com> <20220708142001.7fciqnfckznlvsa4@pali>
- <CAHp75Vci1zeDV1axd_v_PLLPGfF5AzAzmmcegjD1djqnR6XUcA@mail.gmail.com> <20220708155413.rlc3iyf72tdwthfa@pali>
-In-Reply-To: <20220708155413.rlc3iyf72tdwthfa@pali>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 18:09:07 +0200
-Message-ID: <CAHp75Vf=JGbmydAaeA=81YDViVtj7cG91Sr4teJ8mhFNH8AhAw@mail.gmail.com>
-Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 5:54 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
-> On Friday 08 July 2022 17:42:03 Andy Shevchenko wrote:
-> > On Fri, Jul 8, 2022 at 4:20 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
-> > > On Friday 08 July 2022 15:51:01 Greg Kroah-Hartman wrote:
-> > > > On Fri, Jul 08, 2022 at 03:26:21PM +0200, Pali Roh=C3=A1r wrote:
-> > > > > On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
-> > > > > > On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Roh=C3=A1r wrote=
-:
-> > > > > > > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
-> >
-> > ...
-> >
-> > > > > > I'm not saying remove them, I'm saying let us not add any more
-> > > > > > dependancies on them in order to keep new applications from eve=
-r wanting
-> > > > > > to use them.
-> > > > >
-> > > > > Last time you wrote to remove them. Now saying not to remove them=
-. So I
-> > > > > do not understand you now.
-> >
-> > There was a _new_ addition of the ugly SPD_CUST, that's what I believe
-> > Greg opposes to. And I support that.
->
-> Which addition? I do not understand you. There was not any new driver
-> with introduction of SPD support.
+A lot of modern Clevo barebones have touchpad and/or keyboard issues after
+suspend fixable with nomux + reset + noloop + nopnp. Luckily, none of them
+have an external PS/2 port so this can safely be set for all of them.
 
-You stated that SPD_CUST is broken in some drivers, so you are trying
-to fix a broken ugly hack. Why? Instead of making it rot and be
-removed eventually, you pump life into frankenstein.
+I'm not entirely sure if every device listed really needs all four quirks,
+but after testing and production use. No negative effects could be
+observed when setting all four.
 
-> > > > I'm sorry, I am totally lost.
-> > >
-> > > So look what you have wrote? Who is lost here is me.
-> > >
-> > > > How about starting over and resubmitting
-> > > > the changes you want and we can go from there.
-> > >
-> > > What to resubmit? I do not understand you. In case you lost emails or
-> > > accidentally removed them, you can look at them in archive, not? I ho=
-pe
-> > > that you do not want me to copy+paste all existing patches with all y=
-our
-> > > quotes on them which you wrote into new emails.
-> >
-> > That change that adds the new user of SPD_CUST?
->
-> What you are talking about? Which user?
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/input/serio/i8042-x86ia64io.h | 76 ++++++++++++++++++++++++---
+ 1 file changed, 68 insertions(+), 8 deletions(-)
 
-This I missed, I was thinking that you are talking about a new user,
-now I read briefly and it seems that it's about an existing user.
-Anyway, that change I suppose.
+diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
+index 50b090e77fca..5204a7dd61d4 100644
+--- a/drivers/input/serio/i8042-x86ia64io.h
++++ b/drivers/input/serio/i8042-x86ia64io.h
+@@ -900,14 +900,6 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
+ 		},
+ 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
+ 	},
+-	{
+-		/* Clevo P650RS, 650RP6, Sager NP8152-S, and others */
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "P65xRP"),
+-		},
+-		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
+-	},
+ 	{
+ 		/* OQO Model 01 */
+ 		.matches = {
+@@ -1162,6 +1154,74 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
+ 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
+ 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
+ 	},
++	{
++		/*
++		 * This is only a partial board_name and might be followed by
++		 * another letter or number. DMI_MATCH however does do partial
++		 * matching.
++		 */
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_NAME, "P65xH"),
++		},
++		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
++					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
++	},
++	{
++		/* Clevo P650RS, 650RP6, Sager NP8152-S, and others */
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_NAME, "P65xRP"),
++		},
++		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
++					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
++	},
++	{
++		/*
++		 * This is only a partial board_name and might be followed by
++		 * another letter or number. DMI_MATCH however does do partial
++		 * matching.
++		 */
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_NAME, "P65_P67H"),
++		},
++		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
++					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
++	},
++	{
++		/*
++		 * This is only a partial board_name and might be followed by
++		 * another letter or number. DMI_MATCH however does do partial
++		 * matching.
++		 */
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_NAME, "P65_67RP"),
++		},
++		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
++					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
++	},
++	{
++		/*
++		 * This is only a partial board_name and might be followed by
++		 * another letter or number. DMI_MATCH however does do partial
++		 * matching.
++		 */
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_NAME, "P65_67RS"),
++		},
++		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
++					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
++	},
++	{
++		/*
++		 * This is only a partial board_name and might be followed by
++		 * another letter or number. DMI_MATCH however does do partial
++		 * matching.
++		 */
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_NAME, "P67xRP"),
++		},
++		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
++					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
++	},
+ 	{
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_NAME, "PB50_70DFx,DDx"),
+-- 
+2.34.1
 
-> > In any case the best summary about BOTHER I ever read is this [1] (and
-> > an initial steps in picocom [2]).
->
-> Is not that example in manpage enough?
-
-Dunno.
-Can you point it out to me? I can't find it quickly.
-
-> > And I believe that instead of
-> > SPD_CUST we should get rid (or at least minimize) the problems with
-> > BOTHER in user space.
->
-> I looked into archives and seems that glibc people are not interested in
-> this area. And I'm not going to spend time on another project which seems
-> to be useless.
-
-So why should the kernel suffer if it already provides something good
-for the user and user space ignores that?
-
-> > [1]: https://github.com/npat-efault/picocom/blob/master/termios2.txt
-> > [2]: https://github.com/jmesmon/picocom/issues/2
-
---=20
-With Best Regards,
-Andy Shevchenko
