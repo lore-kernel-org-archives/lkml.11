@@ -2,257 +2,357 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59315C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 01:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E93DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 01:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236007AbiGHBfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Jul 2022 21:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49648 "EHLO
+        id S236188AbiGHBgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Jul 2022 21:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236533AbiGHBfU (ORCPT
+        with ESMTP id S230229AbiGHBgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Jul 2022 21:35:20 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E7E72EEE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 18:35:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657244118; x=1688780118;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tm/IK85Oh0pUEKR3BZoHT9X0SlIpsexuYWj1KxUMO7I=;
-  b=kBkFM7SjV3t9vY2a2GbreaMh7KAM/17k1FCe2pMzUvvAHM/rMPX0QyBS
-   e58S1SmNYaQikE6xDx7CfMfgIcHKbb4ruW7C9aAohrZUmFh7s9KMRCfoV
-   lw9xiHNihU0pymth2pF/BprHOljZycDSEpAjKcVju/nHmFVdvxOE1+G6h
-   ojBxkbMOYuFMaHDLICfWBzII/XzEfsTBvIF7bpbojUOQEkllLrmti4My2
-   K3Avx1BJLBk0CVeEbmn8d9K/FeHC1p9AlIJBw5lqzPeITMg09Sxmj8+/V
-   1cl1FQtZIMuGAHQ/7FdZwPshoE+k+qXLxETgLtZoh9liv8TgWZRfVlRkt
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="281711990"
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="281711990"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 18:35:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="661601894"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 07 Jul 2022 18:35:16 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9ctn-000Mis-SK;
-        Fri, 08 Jul 2022 01:35:15 +0000
-Date:   Fri, 8 Jul 2022 09:34:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/cifs-for-viro 5/8]
- fs/cifs/smb2ops.c:4994:7: warning: variable 'length' is used uninitialized
- whenever 'if' condition is false
-Message-ID: <202207080923.s0L0sZLm-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 7 Jul 2022 21:36:38 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1812672EF9
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 18:36:36 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id n10-20020a170902d2ca00b0016c1aa1f844so277084plc.21
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 18:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ODgBEmEsl6rJt2EylFcnojNKRR8OgMdKvcL6VaOiX+w=;
+        b=kGzY4rmoueVx8pzGnUgsiXuHksm/6KkwxWV5DiERjqjh2dFXzFTo4K4jyDmrholloJ
+         m88uOd2FZADYSZkTuohMXEJMpsqy5zzrnBm3UaNSenDmIUkEbVFmU6Jz1kJuvZDY4FoR
+         w5IGi+7S2LX6+X+omaOu9nF+0EGNI1jW+61HqV33z4/UT2t6gEH0uzVFOgUmsJR2R3vU
+         L5tsUQYO3B6FU+eqyc7RI6qGwEAvT6Nkebfa/UwJqcpSA3Mu5iEaapURnTrptcQrcM4A
+         ltwR69dsbS2zO6AkXUuXRfEG/IfNKNQubDapGh6o12ByrEakXfR/T+TSWa4u/+ex3txz
+         5ewQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ODgBEmEsl6rJt2EylFcnojNKRR8OgMdKvcL6VaOiX+w=;
+        b=ZeTnGj0yY9dnuZ9EKb6Q7XCrBVgZOdF+z/rnTN/Q/D89Jj43xrJcR7ZzGazw+3pKfM
+         73Dtt8hEquYtFqYAKJ+PnOrkZIpON7At0rKK/s8PFyyvs69kZLL0UBWRtDty+A7D4HXB
+         0KNjxVfwpzFWSg5zFR68edvm3cpZn3B7/FW4imt0O7NrtxnmdYnEjHxtAVge0H5goUMB
+         mFA9mSQLBTI381z6QW6kuCYT13N9hsOlP6ijk7DqENTESGKydGMFnePVHFs51vGcEVsm
+         iNGtGSyvJkUIBJtwSgIGjO8s3equ/gbKsh9k+ggDcJz7eVNRHk+pDNM10nLFGm4TUsHY
+         HVrA==
+X-Gm-Message-State: AJIora/3BosL9cOHclNtBpNL4jB8cEgJHR5PCx/ut1W5tWurvrUGxWPE
+        dxWDBv2pBrT+yptnOQkDh1O+x6PuXMXacw==
+X-Google-Smtp-Source: AGRyM1v2XdtgG64jw4csnYN8EGLp7K3RGY75Unj6RkvSQ3kjwGXowENaMzWzV2203FmSBiVCja3yg3DcJRiYcA==
+X-Received: from dlatypov-spec.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:3f35])
+ (user=dlatypov job=sendgmr) by 2002:a17:90a:f8d1:b0:1ef:8795:c7e with SMTP id
+ l17-20020a17090af8d100b001ef87950c7emr1006572pjd.74.1657244195596; Thu, 07
+ Jul 2022 18:36:35 -0700 (PDT)
+Date:   Fri,  8 Jul 2022 01:36:32 +0000
+Message-Id: <20220708013632.1210466-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v4] kunit: tool: make --kunitconfig repeatable, blindly concat
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/cifs-for-viro
-head:   569e0acf4192ada33675e44b24701e679d87ebc9
-commit: f398cb911105297654980b5973ff230323061fce [5/8] cifs: Change the I/O paths to use an iterator rather than a page list
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220708/202207080923.s0L0sZLm-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 562c3467a6738aa89203f72fc1d1343e5baadf3c)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/f398cb911105297654980b5973ff230323061fce
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/cifs-for-viro
-        git checkout f398cb911105297654980b5973ff230323061fce
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/cifs/
+It's come up a few times that it would be useful to have --kunitconfig
+be repeatable [1][2].
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This could be done before with a bit of shell-fu, e.g.
+  $ find fs/ -name '.kunitconfig' -exec cat {} + | \
+    ./tools/testing/kunit/kunit.py run --kunitconfig=/dev/stdin
+or equivalently:
+  $ cat fs/ext4/.kunitconfig fs/fat/.kunitconfig | \
+    ./tools/testing/kunit/kunit.py run --kunitconfig=/dev/stdin
 
-All warnings (new ones prefixed by >>):
+But this can be fairly clunky to use in practice.
 
->> fs/cifs/smb2ops.c:4994:7: warning: variable 'length' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-                   if (rdata->result != 0) {
-                       ^~~~~~~~~~~~~~~~~~
-   fs/cifs/smb2ops.c:5026:9: note: uninitialized use occurs here
-           return length;
-                  ^~~~~~
-   fs/cifs/smb2ops.c:4994:3: note: remove the 'if' if its condition is always true
-                   if (rdata->result != 0) {
-                   ^~~~~~~~~~~~~~~~~~~~~~~~
-   fs/cifs/smb2ops.c:4893:12: note: initialize the variable 'length' to silence this warning
-           int length;
-                     ^
-                      = 0
-   1 warning generated.
+And having explicit support in kunit.py opens the door to having more
+config fragments of interest, e.g. options for PCI on UML [1], UML
+coverage [2], variants of tests [3].
+There's another argument to be made that users can just use multiple
+--kconfig_add's, but this gets very clunky very fast (e.g. [2]).
 
+Note: there's a big caveat here that some kconfig options might be
+incompatible. We try to give a clearish error message in the simple case
+where the same option appears multiple times with conflicting values,
+but more subtle ones (e.g. mutually exclusive options) will be
+potentially very confusing for the user. I don't know we can do better.
 
-vim +4994 fs/cifs/smb2ops.c
+Note 2: if you want to combine a --kunitconfig with the default, you
+either have to do to specify the current build_dir
+> --kunitconfig=.kunit --kunitconfig=additional.config
+or
+> --kunitconfig=tools/testing/kunit/configs/default.config --kunitconifg=additional.config
+each of which have their downsides (former depends on --build_dir,
+doesn't work if you don't have a .kunitconfig yet), etc.
 
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4880  
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4881  static int
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4882  handle_read_data(struct TCP_Server_Info *server, struct mid_q_entry *mid,
-f398cb91110529 David Howells      2022-01-24  4883  		 char *buf, unsigned int buf_len, struct xarray *pages,
-f398cb91110529 David Howells      2022-01-24  4884  		 unsigned int pages_len, bool is_offloaded)
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4885  {
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4886  	unsigned int data_offset;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4887  	unsigned int data_len;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4888  	unsigned int cur_off;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4889  	unsigned int cur_page_idx;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4890  	unsigned int pad_len;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4891  	struct cifs_readdata *rdata = mid->callback_data;
-0d35e382e4e96a Ronnie Sahlberg    2021-11-05  4892  	struct smb2_hdr *shdr = (struct smb2_hdr *)buf;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4893  	int length;
-74dcf418fe3446 Long Li            2017-11-22  4894  	bool use_rdma_mr = false;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4895  
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4896  	if (shdr->Command != SMB2_READ) {
-3175eb9b577e82 Ronnie Sahlberg    2019-09-04  4897  		cifs_server_dbg(VFS, "only big read responses are supported\n");
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4898  		return -ENOTSUPP;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4899  	}
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4900  
-511c54a2f69195 Pavel Shilovsky    2017-07-08  4901  	if (server->ops->is_session_expired &&
-511c54a2f69195 Pavel Shilovsky    2017-07-08  4902  	    server->ops->is_session_expired(buf)) {
-de9ac0a6e9efdf Rohith Surabattula 2020-10-28  4903  		if (!is_offloaded)
-183eea2ee5ba96 Shyam Prasad N     2021-07-19  4904  			cifs_reconnect(server, true);
-511c54a2f69195 Pavel Shilovsky    2017-07-08  4905  		return -1;
-511c54a2f69195 Pavel Shilovsky    2017-07-08  4906  	}
-511c54a2f69195 Pavel Shilovsky    2017-07-08  4907  
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4908  	if (server->ops->is_status_pending &&
-66265f134acfb2 Pavel Shilovsky    2019-01-23  4909  			server->ops->is_status_pending(buf, server))
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4910  		return -1;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4911  
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4912  	/* set up first two iov to get credits */
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4913  	rdata->iov[0].iov_base = buf;
-bb1bccb60c2ebd Pavel Shilovsky    2019-01-17  4914  	rdata->iov[0].iov_len = 0;
-bb1bccb60c2ebd Pavel Shilovsky    2019-01-17  4915  	rdata->iov[1].iov_base = buf;
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4916  	rdata->iov[1].iov_len =
-bb1bccb60c2ebd Pavel Shilovsky    2019-01-17  4917  		min_t(unsigned int, buf_len, server->vals->read_rsp_size);
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4918  	cifs_dbg(FYI, "0: iov_base=%p iov_len=%zu\n",
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4919  		 rdata->iov[0].iov_base, rdata->iov[0].iov_len);
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4920  	cifs_dbg(FYI, "1: iov_base=%p iov_len=%zu\n",
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4921  		 rdata->iov[1].iov_base, rdata->iov[1].iov_len);
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4922  
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4923  	rdata->result = server->ops->map_error(buf, true);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4924  	if (rdata->result != 0) {
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4925  		cifs_dbg(FYI, "%s: server returned error %d\n",
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4926  			 __func__, rdata->result);
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4927  		/* normal error on read response */
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4928  		if (is_offloaded)
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4929  			mid->mid_state = MID_RESPONSE_RECEIVED;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4930  		else
-ec678eae746dd2 Pavel Shilovsky    2019-01-18  4931  			dequeue_mid(mid, false);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4932  		return 0;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4933  	}
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4934  
-1fc6ad2f10ad6f Ronnie Sahlberg    2018-06-01  4935  	data_offset = server->ops->read_data_offset(buf);
-74dcf418fe3446 Long Li            2017-11-22  4936  #ifdef CONFIG_CIFS_SMB_DIRECT
-74dcf418fe3446 Long Li            2017-11-22  4937  	use_rdma_mr = rdata->mr;
-74dcf418fe3446 Long Li            2017-11-22  4938  #endif
-74dcf418fe3446 Long Li            2017-11-22  4939  	data_len = server->ops->read_data_length(buf, use_rdma_mr);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4940  
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4941  	if (data_offset < server->vals->read_rsp_size) {
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4942  		/*
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4943  		 * win2k8 sometimes sends an offset of 0 when the read
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4944  		 * is beyond the EOF. Treat it as if the data starts just after
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4945  		 * the header.
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4946  		 */
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4947  		cifs_dbg(FYI, "%s: data offset (%u) inside read response header\n",
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4948  			 __func__, data_offset);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4949  		data_offset = server->vals->read_rsp_size;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4950  	} else if (data_offset > MAX_CIFS_SMALL_BUFFER_SIZE) {
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4951  		/* data_offset is beyond the end of smallbuf */
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4952  		cifs_dbg(FYI, "%s: data offset (%u) beyond end of smallbuf\n",
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4953  			 __func__, data_offset);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4954  		rdata->result = -EIO;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4955  		if (is_offloaded)
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4956  			mid->mid_state = MID_RESPONSE_MALFORMED;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4957  		else
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4958  			dequeue_mid(mid, rdata->result);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4959  		return 0;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4960  	}
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4961  
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4962  	pad_len = data_offset - server->vals->read_rsp_size;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4963  
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4964  	if (buf_len <= data_offset) {
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  4965  		/* read response payload is in pages */
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4966  		cur_page_idx = pad_len / PAGE_SIZE;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4967  		cur_off = pad_len % PAGE_SIZE;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4968  
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4969  		if (cur_page_idx != 0) {
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4970  			/* data offset is beyond the 1st page of response */
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4971  			cifs_dbg(FYI, "%s: data offset (%u) beyond 1st page of response\n",
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4972  				 __func__, data_offset);
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4973  			rdata->result = -EIO;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4974  			if (is_offloaded)
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4975  				mid->mid_state = MID_RESPONSE_MALFORMED;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4976  			else
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4977  				dequeue_mid(mid, rdata->result);
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4978  			return 0;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4979  		}
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4980  
-f398cb91110529 David Howells      2022-01-24  4981  		if (data_len > pages_len - pad_len) {
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4982  			/* data_len is corrupt -- discard frame */
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4983  			rdata->result = -EIO;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4984  			if (is_offloaded)
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4985  				mid->mid_state = MID_RESPONSE_MALFORMED;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4986  			else
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4987  				dequeue_mid(mid, rdata->result);
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4988  			return 0;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4989  		}
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4990  
-f398cb91110529 David Howells      2022-01-24  4991  		/* Copy the data to the output I/O iterator. */
-f398cb91110529 David Howells      2022-01-24  4992  		rdata->result = cifs_copy_pages_to_iter(pages, pages_len,
-f398cb91110529 David Howells      2022-01-24  4993  							cur_off, &rdata->iter);
-c42a6abe301283 Pavel Shilovsky    2016-11-17 @4994  		if (rdata->result != 0) {
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4995  			if (is_offloaded)
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4996  				mid->mid_state = MID_RESPONSE_MALFORMED;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  4997  			else
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4998  				dequeue_mid(mid, rdata->result);
-c42a6abe301283 Pavel Shilovsky    2016-11-17  4999  			return 0;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  5000  		}
-f398cb91110529 David Howells      2022-01-24  5001  		rdata->got_bytes = pages_len;
-c42a6abe301283 Pavel Shilovsky    2016-11-17  5002  
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5003  	} else if (buf_len >= data_offset + data_len) {
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5004  		/* read response payload is in buf */
-f398cb91110529 David Howells      2022-01-24  5005  		WARN_ONCE(pages && !xa_empty(pages),
-f398cb91110529 David Howells      2022-01-24  5006  			  "read data can be either in buf or in pages");
-f398cb91110529 David Howells      2022-01-24  5007  		length = copy_to_iter(buf + data_offset, data_len, &rdata->iter);
-f398cb91110529 David Howells      2022-01-24  5008  		if (length < 0)
-f398cb91110529 David Howells      2022-01-24  5009  			return length;
-f398cb91110529 David Howells      2022-01-24  5010  		rdata->got_bytes = data_len;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5011  	} else {
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5012  		/* read response payload cannot be in both buf and pages */
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5013  		WARN_ONCE(1, "buf can not contain only a part of read data");
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5014  		rdata->result = -EIO;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  5015  		if (is_offloaded)
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  5016  			mid->mid_state = MID_RESPONSE_MALFORMED;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  5017  		else
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5018  			dequeue_mid(mid, rdata->result);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5019  		return 0;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5020  	}
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5021  
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  5022  	if (is_offloaded)
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  5023  		mid->mid_state = MID_RESPONSE_RECEIVED;
-ac873aa3dc2170 Rohith Surabattula 2020-10-29  5024  	else
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5025  		dequeue_mid(mid, false);
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5026  	return length;
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5027  }
-4326ed2f6a16ae Pavel Shilovsky    2016-11-17  5028  
+Example with conflicting values:
+> $ ./tools/testing/kunit/kunit.py config --kunitconfig=lib/kunit --kunitconfig=/dev/stdin <<EOF
+> CONFIG_KUNIT_TEST=n
+> CONFIG_KUNIT=m
+> EOF
+> ...
+> kunit_kernel.ConfigError: Multiple values specified for 2 options in kunitconfig:
+> CONFIG_KUNIT=y
+>   vs from /dev/stdin
+> CONFIG_KUNIT=m
+>
+> CONFIG_KUNIT_TEST=y
+>   vs from /dev/stdin
+> # CONFIG_KUNIT_TEST is not set
 
-:::::: The code at line 4994 was first introduced by commit
-:::::: c42a6abe3012832a68a371dabe17c2ced97e62ad CIFS: Add capability to decrypt big read responses
+[1] https://lists.freedesktop.org/archives/dri-devel/2022-June/357616.html
+[2] https://lore.kernel.org/linux-kselftest/CAFd5g45f3X3xF2vz2BkTHRqOC4uW6GZxtUUMaP5mwwbK8uNVtA@mail.gmail.com/
+[3] https://lore.kernel.org/linux-kselftest/CANpmjNOdSy6DuO6CYZ4UxhGxqhjzx4tn0sJMbRqo2xRFv9kX6Q@mail.gmail.com/
 
-:::::: TO: Pavel Shilovsky <pshilov@microsoft.com>
-:::::: CC: Steve French <smfrench@gmail.com>
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+---
+v1 -> v3: merge with kunitconfig refactor patch, rename
+differing_options() to conflicting_options()
 
+v3 -> v4: add Brendan's RB tag, rebase onto the -kselftest kunit branch.
+The 1/3 and 3/3 of the initial series applied cleanly, but this one
+didn't, so I'm sending just this one out by itself now.
+Specifically, there were significant merge conflicts with the
+--qemu_args patch.
+---
+ tools/testing/kunit/kunit.py           |  7 ++--
+ tools/testing/kunit/kunit_config.py    | 11 ++++-
+ tools/testing/kunit/kunit_kernel.py    | 38 +++++++++++------
+ tools/testing/kunit/kunit_tool_test.py | 56 ++++++++++++++++++++++----
+ 4 files changed, 89 insertions(+), 23 deletions(-)
+
+diff --git a/tools/testing/kunit/kunit.py b/tools/testing/kunit/kunit.py
+index b686126afb40..e132b0654029 100755
+--- a/tools/testing/kunit/kunit.py
++++ b/tools/testing/kunit/kunit.py
+@@ -293,8 +293,9 @@ def add_common_opts(parser) -> None:
+ 	parser.add_argument('--kunitconfig',
+ 			     help='Path to Kconfig fragment that enables KUnit tests.'
+ 			     ' If given a directory, (e.g. lib/kunit), "/.kunitconfig" '
+-			     'will get  automatically appended.',
+-			     metavar='PATH')
++			     'will get  automatically appended. If repeated, the files '
++			     'blindly concatenated, which might not work in all cases.',
++			     action='append', metavar='PATHS')
+ 	parser.add_argument('--kconfig_add',
+ 			     help='Additional Kconfig options to append to the '
+ 			     '.kunitconfig, e.g. CONFIG_KASAN=y. Can be repeated.',
+@@ -381,7 +382,7 @@ def tree_from_args(cli_args: argparse.Namespace) -> kunit_kernel.LinuxSourceTree
+ 			qemu_args.extend(shlex.split(arg))
+ 
+ 	return kunit_kernel.LinuxSourceTree(cli_args.build_dir,
+-			kunitconfig_path=cli_args.kunitconfig,
++			kunitconfig_paths=cli_args.kunitconfig,
+ 			kconfig_add=cli_args.kconfig_add,
+ 			arch=cli_args.arch,
+ 			cross_compile=cli_args.cross_compile,
+diff --git a/tools/testing/kunit/kunit_config.py b/tools/testing/kunit/kunit_config.py
+index 898b2a35eb29..48b5f34b2e5d 100644
+--- a/tools/testing/kunit/kunit_config.py
++++ b/tools/testing/kunit/kunit_config.py
+@@ -8,7 +8,7 @@
+ 
+ from dataclasses import dataclass
+ import re
+-from typing import Dict, Iterable, Set
++from typing import Dict, Iterable, List, Set, Tuple
+ 
+ CONFIG_IS_NOT_SET_PATTERN = r'^# CONFIG_(\w+) is not set$'
+ CONFIG_PATTERN = r'^CONFIG_(\w+)=(\S+|".*")$'
+@@ -60,6 +60,15 @@ class Kconfig:
+ 				return False
+ 		return True
+ 
++	def conflicting_options(self, other: 'Kconfig') -> List[Tuple[KconfigEntry, KconfigEntry]]:
++		diff = []  # type: List[Tuple[KconfigEntry, KconfigEntry]]
++		for name, value in self._entries.items():
++			b = other._entries.get(name)
++			if b and value != b:
++				pair = (KconfigEntry(name, value), KconfigEntry(name, b))
++				diff.append(pair)
++		return diff
++
+ 	def merge_in_entries(self, other: 'Kconfig') -> None:
+ 		for name, value in other._entries.items():
+ 			self._entries[name] = value
+diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
+index 94ec9f65ef19..56492090e28e 100644
+--- a/tools/testing/kunit/kunit_kernel.py
++++ b/tools/testing/kunit/kunit_kernel.py
+@@ -177,6 +177,30 @@ def get_kunitconfig_path(build_dir: str) -> str:
+ def get_old_kunitconfig_path(build_dir: str) -> str:
+ 	return os.path.join(build_dir, OLD_KUNITCONFIG_PATH)
+ 
++def get_parsed_kunitconfig(build_dir: str,
++			   kunitconfig_paths: Optional[List[str]]=None) -> kunit_config.Kconfig:
++	if not kunitconfig_paths:
++		path = get_kunitconfig_path(build_dir)
++		if not os.path.exists(path):
++			shutil.copyfile(DEFAULT_KUNITCONFIG_PATH, path)
++		return kunit_config.parse_file(path)
++
++	merged = kunit_config.Kconfig()
++
++	for path in kunitconfig_paths:
++		if os.path.isdir(path):
++			path = os.path.join(path, KUNITCONFIG_PATH)
++		if not os.path.exists(path):
++			raise ConfigError(f'Specified kunitconfig ({path}) does not exist')
++
++		partial = kunit_config.parse_file(path)
++		diff = merged.conflicting_options(partial)
++		if diff:
++			diff_str = '\n\n'.join(f'{a}\n  vs from {path}\n{b}' for a, b in diff)
++			raise ConfigError(f'Multiple values specified for {len(diff)} options in kunitconfig:\n{diff_str}')
++		merged.merge_in_entries(partial)
++	return merged
++
+ def get_outfile_path(build_dir: str) -> str:
+ 	return os.path.join(build_dir, OUTFILE_PATH)
+ 
+@@ -221,7 +245,7 @@ class LinuxSourceTree:
+ 	def __init__(
+ 	      self,
+ 	      build_dir: str,
+-	      kunitconfig_path='',
++	      kunitconfig_paths: Optional[List[str]]=None,
+ 	      kconfig_add: Optional[List[str]]=None,
+ 	      arch=None,
+ 	      cross_compile=None,
+@@ -238,17 +262,7 @@ class LinuxSourceTree:
+ 				qemu_config_path = _default_qemu_config_path(self._arch)
+ 				_, self._ops = _get_qemu_ops(qemu_config_path, extra_qemu_args, cross_compile)
+ 
+-		if kunitconfig_path:
+-			if os.path.isdir(kunitconfig_path):
+-				kunitconfig_path = os.path.join(kunitconfig_path, KUNITCONFIG_PATH)
+-			if not os.path.exists(kunitconfig_path):
+-				raise ConfigError(f'Specified kunitconfig ({kunitconfig_path}) does not exist')
+-		else:
+-			kunitconfig_path = get_kunitconfig_path(build_dir)
+-			if not os.path.exists(kunitconfig_path):
+-				shutil.copyfile(DEFAULT_KUNITCONFIG_PATH, kunitconfig_path)
+-
+-		self._kconfig = kunit_config.parse_file(kunitconfig_path)
++		self._kconfig = get_parsed_kunitconfig(build_dir, kunitconfig_paths)
+ 		if kconfig_add:
+ 			kconfig = kunit_config.parse_from_string('\n'.join(kconfig_add))
+ 			self._kconfig.merge_in_entries(kconfig)
+diff --git a/tools/testing/kunit/kunit_tool_test.py b/tools/testing/kunit/kunit_tool_test.py
+index e56544d58147..ad63d0d34f3f 100755
+--- a/tools/testing/kunit/kunit_tool_test.py
++++ b/tools/testing/kunit/kunit_tool_test.py
+@@ -356,17 +356,46 @@ class LinuxSourceTreeTest(unittest.TestCase):
+ 
+ 	def test_invalid_kunitconfig(self):
+ 		with self.assertRaisesRegex(kunit_kernel.ConfigError, 'nonexistent.* does not exist'):
+-			kunit_kernel.LinuxSourceTree('', kunitconfig_path='/nonexistent_file')
++			kunit_kernel.LinuxSourceTree('', kunitconfig_paths=['/nonexistent_file'])
+ 
+ 	def test_valid_kunitconfig(self):
+ 		with tempfile.NamedTemporaryFile('wt') as kunitconfig:
+-			kunit_kernel.LinuxSourceTree('', kunitconfig_path=kunitconfig.name)
++			kunit_kernel.LinuxSourceTree('', kunitconfig_paths=[kunitconfig.name])
+ 
+ 	def test_dir_kunitconfig(self):
+ 		with tempfile.TemporaryDirectory('') as dir:
+ 			with open(os.path.join(dir, '.kunitconfig'), 'w'):
+ 				pass
+-			kunit_kernel.LinuxSourceTree('', kunitconfig_path=dir)
++			kunit_kernel.LinuxSourceTree('', kunitconfig_paths=[dir])
++
++	def test_multiple_kunitconfig(self):
++		want_kconfig = kunit_config.Kconfig()
++		want_kconfig.add_entry('KUNIT', 'y')
++		want_kconfig.add_entry('KUNIT_TEST', 'm')
++
++		with tempfile.TemporaryDirectory('') as dir:
++			other = os.path.join(dir, 'otherkunitconfig')
++			with open(os.path.join(dir, '.kunitconfig'), 'w') as f:
++				f.write('CONFIG_KUNIT=y')
++			with open(other, 'w') as f:
++				f.write('CONFIG_KUNIT_TEST=m')
++				pass
++
++			tree = kunit_kernel.LinuxSourceTree('', kunitconfig_paths=[dir, other])
++			self.assertTrue(want_kconfig.is_subset_of(tree._kconfig), msg=tree._kconfig)
++
++
++	def test_multiple_kunitconfig_invalid(self):
++		with tempfile.TemporaryDirectory('') as dir:
++			other = os.path.join(dir, 'otherkunitconfig')
++			with open(os.path.join(dir, '.kunitconfig'), 'w') as f:
++				f.write('CONFIG_KUNIT=y')
++			with open(other, 'w') as f:
++				f.write('CONFIG_KUNIT=m')
++
++			with self.assertRaisesRegex(kunit_kernel.ConfigError, '(?s)Multiple values.*CONFIG_KUNIT'):
++				kunit_kernel.LinuxSourceTree('', kunitconfig_paths=[dir, other])
++
+ 
+ 	def test_kconfig_add(self):
+ 		want_kconfig = kunit_config.Kconfig()
+@@ -636,7 +665,7 @@ class KUnitMainTest(unittest.TestCase):
+ 		kunit.main(['run', '--kunitconfig=mykunitconfig'])
+ 		# Just verify that we parsed and initialized it correctly here.
+ 		self.mock_linux_init.assert_called_once_with('.kunit',
+-						kunitconfig_path='mykunitconfig',
++						kunitconfig_paths=['mykunitconfig'],
+ 						kconfig_add=None,
+ 						arch='um',
+ 						cross_compile=None,
+@@ -647,18 +676,31 @@ class KUnitMainTest(unittest.TestCase):
+ 		kunit.main(['config', '--kunitconfig=mykunitconfig'])
+ 		# Just verify that we parsed and initialized it correctly here.
+ 		self.mock_linux_init.assert_called_once_with('.kunit',
+-						kunitconfig_path='mykunitconfig',
++						kunitconfig_paths=['mykunitconfig'],
+ 						kconfig_add=None,
+ 						arch='um',
+ 						cross_compile=None,
+ 						qemu_config_path=None,
+ 						extra_qemu_args=[])
+ 
++	@mock.patch.object(kunit_kernel, 'LinuxSourceTree')
++	def test_run_multiple_kunitconfig(self, mock_linux_init):
++		mock_linux_init.return_value = self.linux_source_mock
++		kunit.main(['run', '--kunitconfig=mykunitconfig', '--kunitconfig=other'])
++		# Just verify that we parsed and initialized it correctly here.
++		mock_linux_init.assert_called_once_with('.kunit',
++							kunitconfig_paths=['mykunitconfig', 'other'],
++							kconfig_add=None,
++							arch='um',
++							cross_compile=None,
++							qemu_config_path=None,
++							extra_qemu_args=[])
++
+ 	def test_run_kconfig_add(self):
+ 		kunit.main(['run', '--kconfig_add=CONFIG_KASAN=y', '--kconfig_add=CONFIG_KCSAN=y'])
+ 		# Just verify that we parsed and initialized it correctly here.
+ 		self.mock_linux_init.assert_called_once_with('.kunit',
+-						kunitconfig_path=None,
++						kunitconfig_paths=None,
+ 						kconfig_add=['CONFIG_KASAN=y', 'CONFIG_KCSAN=y'],
+ 						arch='um',
+ 						cross_compile=None,
+@@ -669,7 +711,7 @@ class KUnitMainTest(unittest.TestCase):
+ 		kunit.main(['run', '--arch=x86_64', '--qemu_args', '-m 2048'])
+ 		# Just verify that we parsed and initialized it correctly here.
+ 		self.mock_linux_init.assert_called_once_with('.kunit',
+-						kunitconfig_path=None,
++						kunitconfig_paths=None,
+ 						kconfig_add=None,
+ 						arch='x86_64',
+ 						cross_compile=None,
+
+base-commit: 1d202d1496a0be94100d8cbc2b658dcd980a3edf
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.0.rc0.161.g10f37bed90-goog
+
