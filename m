@@ -2,122 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC26C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25CA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238305AbiGHOyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
+        id S238458AbiGHOzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237623AbiGHOyv (ORCPT
+        with ESMTP id S237623AbiGHOzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:54:51 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A9D18E13
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:54:49 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 3400C21FE0;
-        Fri,  8 Jul 2022 14:54:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1657292088; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l7Aw7CUlH7hnP8Qg6TBNYPcNryVs2jtH5tretlprBAE=;
-        b=ecouykwpcGwwihI2S1zbFptGgJiA2LHezwWP2/VlZH3l/NXsKxjCfE5nXyaW4xJVTiRlmG
-        mb0go9GQLRRhHFp0C7RwF9/GK03quAByTPran4XRBLF15sItKFpC7hC82VZUCb7vsAKOuh
-        LAxTT6QCbC3C3ktulb0h6fm8gWDONWs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1657292088;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l7Aw7CUlH7hnP8Qg6TBNYPcNryVs2jtH5tretlprBAE=;
-        b=108E4Ct+4NeOjPX3bV02xPwutJ+TucYy9lQchqrTiBLy9q2HKhTvn9TqcWEITsO3QLq7xb
-        Ns+Pb93b6kJakcAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0B45A13A80;
-        Fri,  8 Jul 2022 14:54:48 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id /9DUAThFyGJyZAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 08 Jul 2022 14:54:48 +0000
-Message-ID: <a78f95e9-298a-bc97-9776-14e0f02f62b9@suse.cz>
-Date:   Fri, 8 Jul 2022 16:54:47 +0200
+        Fri, 8 Jul 2022 10:55:11 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D272DA84;
+        Fri,  8 Jul 2022 07:55:01 -0700 (PDT)
+X-QQ-mid: bizesmtp78t1657292055t0bkdp6x
+Received: from localhost.localdomain ( [182.148.15.249])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 08 Jul 2022 22:53:23 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000B00A0000000
+X-QQ-FEAT: pi5xsqT0CkQabcklx8t3nrcNlPS4BmpcwzP5drei+BR5GC85R8nLknIOV0rmS
+        6Iqhhz4Yf6c/pXmTPZRuKPUyzohl6VmfYEnMV4W/BvvWK6zk8kG8avGdj/2WA5dNTeIKOar
+        oDpqQS8ws612+ycucAWgJ6USI5F6Si+txUinPXJ2lCLEDA6/rNLxa8rrWTOnp04aHdDDHUl
+        x98wvwzcDrFJ+YKdtfMPADgY/vwGAkXhinrJjMhBIMyRh8L2dHSpqCSiFWtE29Nrgkmfkbo
+        t8GTybgZeJtKNJuVjkayPACjBvh6jzd+1pmba01DsOusgjIA/Pr0PKoe8Ju85Rauh2AdQrr
+        vAQLgikwLF/a1H2nDKufDjvyLFJe059tpY64L6W
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     romieu@fr.zoreil.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] ethernet/via: fix repeated words in comments
+Date:   Fri,  8 Jul 2022 22:53:04 +0800
+Message-Id: <20220708145304.31102-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] mm/page_alloc: replace local_lock with normal spinlock
- -fix -fix
-Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220708144406.GJ27531@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220708144406.GJ27531@techsingularity.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/8/22 16:44, Mel Gorman wrote:
-> pcpu_spin_unlock and pcpu_spin_unlock_irqrestore both unlock
-> pcp->lock and then enable preemption. This lacks symmetry against
-> both the pcpu_spin helpers and differs from how local_unlock_* is
-> implemented. While this is harmless, it's unnecessary and it's generally
-> better to unwind locks and preemption state in the reverse order as
-> they were acquired.
+ Delete the redundant word 'driver'.
 
-Hm I'm confused, it seems it's done in reverse order (which I agree with)
-before this -fix-fix, but not after it?
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/via/via-velocity.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-before, pcpu_spin_lock() (and variants) do pcpu_task_pin() and then
-spin_lock() (or variant), and pcpu_spin_unlock() does spin_unlock() and then
-pcpu_task_unpin(). That seems symmetrical, i.e. reverse order to me? And
-seems to match what local_lock family does too.
-
-> This is a fix on top of the mm-unstable patch
-> mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch
-> 
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-> ---
->  mm/page_alloc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 934d1b5a5449..d0141e51e613 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -192,14 +192,14 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
->  
->  #define pcpu_spin_unlock(member, ptr)					\
->  ({									\
-> -	spin_unlock(&ptr->member);					\
->  	pcpu_task_unpin();						\
-> +	spin_unlock(&ptr->member);					\
->  })
->  
->  #define pcpu_spin_unlock_irqrestore(member, ptr, flags)			\
->  ({									\
-> -	spin_unlock_irqrestore(&ptr->member, flags);			\
->  	pcpu_task_unpin();						\
-> +	spin_unlock_irqrestore(&ptr->member, flags);			\
->  })
->  
->  /* struct per_cpu_pages specific helpers. */
+diff --git a/drivers/net/ethernet/via/via-velocity.h b/drivers/net/ethernet/via/via-velocity.h
+index c02a9654dce6..ffdac6fac054 100644
+--- a/drivers/net/ethernet/via/via-velocity.h
++++ b/drivers/net/ethernet/via/via-velocity.h
+@@ -938,7 +938,7 @@ enum  velocity_owner {
+ #define IMR_MASK_VALUE      0x0013FB0FUL	/* initial value of IMR
+ 						   ignore MIBFI,RACEI to
+ 						   reduce intr. frequency
+-						   NOTE.... do not enable NoBuf int mask at driver driver
++						   NOTE.... do not enable NoBuf int mask at driver
+ 						      when (1) NoBuf -> RxThreshold = SF
+ 							   (2) OK    -> RxThreshold = original value
+ 						 */
+-- 
+2.36.1
 
