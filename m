@@ -2,131 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF72C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45118C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237402AbiGHJfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 05:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54940 "EHLO
+        id S237442AbiGHJhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 05:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237254AbiGHJe6 (ORCPT
+        with ESMTP id S234105AbiGHJhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 05:34:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 072FD2A717
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 02:34:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657272895;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=sMFHzJKRiYj62gdYRhno9WSMM22FrLKbwCUpBPEktWM=;
-        b=JPUVn0pCI9pffK3jHOsWkSh/CvnQm3eYpisgmRMlZQS6Po+TdBmDaJT7xhK37Op5KtKLhu
-        AWs/DPwk8IDmfSqhslob3bnLc5CVLHhGldocjyM2Mr8+G7tZueUUhnvAw7nhztuOsJsciD
-        Z56aba3IrzyMZ5VpZbicfbKly6IOahM=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-445-xbaF3wnUPSyvHNhf9CW2dQ-1; Fri, 08 Jul 2022 05:34:54 -0400
-X-MC-Unique: xbaF3wnUPSyvHNhf9CW2dQ-1
-Received: by mail-ej1-f71.google.com with SMTP id l2-20020a170906078200b006fed42bfeacso5524372ejc.16
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 02:34:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sMFHzJKRiYj62gdYRhno9WSMM22FrLKbwCUpBPEktWM=;
-        b=UjS3EI/sRxYsu6bXgSM6kgfV3FzYKJOdab0p5cGJRY03CS3Lk5aKOwEix/pYS2QXY4
-         VpSpPfMjIZ/Rw9orU+vCLVq26J5IfbsbbCt7gekcBfn5BqvM+xH0aaMAmggzTmo6ZxW2
-         Q7X+GiGzIkdZrbhBZuXkxec+Zixn2WWDBEyuHCPTZ5Vtu/UKYx3DPIA6BbRgnl+9hmmI
-         kBHUc1m57dwMjdgfqthXIGJJvZi5HPrFAq9C9jOczJ6eiDa+vdNPPfH1EZR7yTynsyrS
-         IerKN/aAR4gFu9Q1K/m76sHqkfVWZw55gAN+dNO9OzJblCOnuEkBkrcudmIWHaKftcQk
-         UXNQ==
-X-Gm-Message-State: AJIora8D+j7+uvXC8dDIHzr9ML/ByGFtF93WATxgVY9tMzKWbdzl6W7l
-        SYOVXUqQWI99aFVOrJZlUiVHgbeQ6i6/BkcARcHCXjAkA0St/eeYoRRUtCRqbZm4DjABou9hCrp
-        n5KMwNWSYP+cjIkKrq65heV2p
-X-Received: by 2002:a17:907:2895:b0:72a:f3bd:6e5f with SMTP id em21-20020a170907289500b0072af3bd6e5fmr2545867ejc.767.1657272893404;
-        Fri, 08 Jul 2022 02:34:53 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vqzsj8D95ygzAuhY0cpDJI7xEx8WuoI4Z9hfBmeRv2uPXFteeEPUMGrkSiqA1aqHu8V5VEjQ==
-X-Received: by 2002:a17:907:2895:b0:72a:f3bd:6e5f with SMTP id em21-20020a170907289500b0072af3bd6e5fmr2545851ejc.767.1657272893155;
-        Fri, 08 Jul 2022 02:34:53 -0700 (PDT)
-Received: from localhost.localdomain (nat-pool-brq-t.redhat.com. [213.175.37.10])
-        by smtp.gmail.com with ESMTPSA id j24-20020aa7de98000000b00435726bd375sm29359084edv.57.2022.07.08.02.34.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 02:34:52 -0700 (PDT)
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Lokesh Gidra <lokeshgidra@google.com>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Robert O'Callahan <roc@ocallahan.org>
-Subject: [RFC PATCH RESEND] userfaultfd: open userfaultfds with O_RDONLY
-Date:   Fri,  8 Jul 2022 11:34:51 +0200
-Message-Id: <20220708093451.472870-1-omosnace@redhat.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 8 Jul 2022 05:37:38 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C2E5C9FB;
+        Fri,  8 Jul 2022 02:37:37 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7C22C21D17;
+        Fri,  8 Jul 2022 09:37:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657273056; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pF5t9woP5GK7nrYHCChHnPpig1ebKAkf9WM7m6BgpzY=;
+        b=ShLUEdpxYc7XD3h7H3p2c0Ce+oEtfkQmGRD//brWuBbI5EHHFnb9Azy6FYZEEJjo6Fiybh
+        YxEOE6VrCabpXmn/LDZkYUDcfTwLA+eFskdIIUXll3DbYZKMPq0mHpxf2NWQ3+GV++z9ow
+        33bR6j+Um9l5Xkum6DMu4IYiFMF2J2Y=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B78522C141;
+        Fri,  8 Jul 2022 09:37:34 +0000 (UTC)
+Date:   Fri, 8 Jul 2022 11:37:31 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Gang Li <ligang.bdlg@bytedance.com>
+Cc:     akpm@linux-foundation.org, surenb@google.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        viro@zeniv.linux.org.uk, ebiederm@xmission.com,
+        keescook@chromium.org, rostedt@goodmis.org, mingo@redhat.com,
+        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
+        adobriyan@gmail.com, yang.yang29@zte.com.cn, brauner@kernel.org,
+        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
+        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
+        Liam.Howlett@oracle.com, ohoono.kwon@samsung.com,
+        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
+        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
+        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
+        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
+        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
+        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
+        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-perf-users@vger.kernel.org
+Subject: Re: Re: [PATCH v2 0/5] mm, oom: Introduce per numa node oom for
+ CONSTRAINT_{MEMORY_POLICY,CPUSET}
+Message-ID: <Ysf629IWfT5b58oD@dhcp22.suse.cz>
+References: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
+ <YsfwyTHE/5py1kHC@dhcp22.suse.cz>
+ <be9303de-3800-c26f-4530-9a29fe044956@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be9303de-3800-c26f-4530-9a29fe044956@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since userfaultfd doesn't implement a write operation, it is more
-appropriate to open it read-only.
+On Fri 08-07-22 17:25:31, Gang Li wrote:
+> Oh apologize. I just realized what you mean.
+> 
+> I should try a "cpuset cgroup oom killer" selecting victim from a
+> specific cpuset cgroup.
 
-When userfaultfds are opened read-write like it is now, and such fd is
-passed from one process to another, SELinux will check both read and
-write permissions for the target process, even though it can't actually
-do any write operation on the fd later.
+yes, that was the idea. Many workloads which really do care about
+particioning the NUMA system tend to use cpusets. In those cases you
+have reasonably defined boundaries and the current OOM killer
+imeplementation is not really aware of that. The oom selection process
+could be enhanced/fixed to select victims from those cpusets similar to
+how memcg oom killer victim selection is done.
 
-Inspired by the following bug report, which has hit the SELinux scenario
-described above:
-https://bugzilla.redhat.com/show_bug.cgi?id=1974559
+There is no additional accounting required for this approach because the
+workload is partitioned on the cgroup level already. Maybe this is not
+really the best fit for all workloads but it should be reasonably simple
+to implement without intrusive or runtime visible changes.
 
-Reported-by: Robert O'Callahan <roc@ocallahan.org>
-Fixes: 86039bd3b4e6 ("userfaultfd: add new syscall to provide memory externalization")
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
----
+I am not saying per-numa accounting is wrong or a bad idea. I would just
+like to see a stronger justification for that and also some arguments
+why a simpler approach via cpusets is not viable.
 
-Resending as the last submission was ignored for over a year...
+Does this make sense to you?
 
-https://lore.kernel.org/lkml/20210624152515.1844133-1-omosnace@redhat.com/T/
-
-I marked this as RFC, because I'm not sure if this has any unwanted side
-effects. I only ran this patch through selinux-testsuite, which has a
-simple userfaultfd subtest, and a reproducer from the Bugzilla report.
-
-Please tell me whether this makes sense and/or if it passes any
-userfaultfd tests you guys might have.
-
- fs/userfaultfd.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/fs/userfaultfd.c b/fs/userfaultfd.c
-index e943370107d0..8ccf00be63e1 100644
---- a/fs/userfaultfd.c
-+++ b/fs/userfaultfd.c
-@@ -989,7 +989,7 @@ static int resolve_userfault_fork(struct userfaultfd_ctx *new,
- 	int fd;
- 
- 	fd = anon_inode_getfd_secure("[userfaultfd]", &userfaultfd_fops, new,
--			O_RDWR | (new->flags & UFFD_SHARED_FCNTL_FLAGS), inode);
-+			O_RDONLY | (new->flags & UFFD_SHARED_FCNTL_FLAGS), inode);
- 	if (fd < 0)
- 		return fd;
- 
-@@ -2090,7 +2090,7 @@ SYSCALL_DEFINE1(userfaultfd, int, flags)
- 	mmgrab(ctx->mm);
- 
- 	fd = anon_inode_getfd_secure("[userfaultfd]", &userfaultfd_fops, ctx,
--			O_RDWR | (flags & UFFD_SHARED_FCNTL_FLAGS), NULL);
-+			O_RDONLY | (flags & UFFD_SHARED_FCNTL_FLAGS), NULL);
- 	if (fd < 0) {
- 		mmdrop(ctx->mm);
- 		kmem_cache_free(userfaultfd_ctx_cachep, ctx);
 -- 
-2.36.1
-
+Michal Hocko
+SUSE Labs
