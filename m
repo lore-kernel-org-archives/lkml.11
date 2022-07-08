@@ -2,124 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:21:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A3AFCCA481
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237300AbiGHIVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
+        id S237512AbiGHIWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237526AbiGHIVg (ORCPT
+        with ESMTP id S237205AbiGHIWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:21:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9412581481;
-        Fri,  8 Jul 2022 01:21:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E6346265A;
-        Fri,  8 Jul 2022 08:21:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C207DC341C0;
-        Fri,  8 Jul 2022 08:21:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657268494;
-        bh=0P+Bw50YUG6gsh5d/rl9KKhBtbeIacVhb0MvSLpQpMI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TGPw2cfD4MS3EL7p7NX5Rn9mAT0NayS3u1VZafvtf1gyzVJaGFqy0MDQDfPXaMFnx
-         CVUSatxfYnzPugmMEqXWaSePAa5vzsgcwb14V/2xBEOCMeQIwYmPTC1BmMAcXjQnST
-         wAIMwOmZ20w0t5cDhiAtdB8O83+FW+gWpYsJEz0/6Busq247W4SkI+BAuIbSowGSe0
-         8w25cxsT4Ssf2dLDNOWAvz1v5L0DFTLn2sHygDBzZIWmddSI6ihl115YmWHJueB9G+
-         Wge4Lv7nd26WSK228x+ste+Pwd5LaZyLRMTgJVzvhzKQeHkbKxFdyvdqXNOhQPftjS
-         0qPGwK5/36UBw==
-Date:   Fri, 8 Jul 2022 16:21:26 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     djakov@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        abel.vesa@nxp.com, abailon@baylibre.com, l.stach@pengutronix.de,
-        laurent.pinchart@ideasonboard.com, marex@denx.de,
-        paul.elder@ideasonboard.com, Markus.Niebel@ew.tq-group.com,
-        aford173@gmail.com, kernel@pengutronix.de,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com, abelvesa@kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V4] arm64: dts: imx8mp: add NoC node
-Message-ID: <20220708082126.GU819983@dragon>
-References: <20220706234757.3162307-1-peng.fan@oss.nxp.com>
+        Fri, 8 Jul 2022 04:22:13 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF13A81481
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 01:22:11 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id b2so15759255plx.7
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 01:22:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TYvSfrHPstnzZJynd8muvpANEKz59daC1D9QhUGyBsM=;
+        b=8S3yywRTtMIjxIbmB2flA4mlE78K7EBRrgf2m5In+lt0C+3X/5Vf/tTjj1izXHBalu
+         AV0aGsKbi/7a+twTRdFq3yHJKSxcSScq9KBDF747wJ3mngNrnukrV5zIqZuVCjPC6R+L
+         G+cXhQGev+W1XhTy+AG5a8ITD0yxuiWjYhpKqrYL3YMtW/19UueJ9ElQrZljBJbgU7TP
+         BHxnHRGSJE1eNT3N49c/c8W93Unt6EWBX4Z00NySj+KqRC7STeodgQIsmeCdswiuMDKj
+         6g/crwKcDMZBCB4I5tAjUyv0EUG7gEh+dOACEqIOqMdkORqq/ko7odDQiWx+9VBB6ZjM
+         dplg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TYvSfrHPstnzZJynd8muvpANEKz59daC1D9QhUGyBsM=;
+        b=eWKlM5+fvwgSLgdV3sPZRHzoEQXKcuYIAApP2o74JxwRHmA+idDTSe5nVZUWMfeGTR
+         CzmXOc0tPvtncs9qY7Kx0KY3FLq/OB7l4lZncIh/OKF/010/fguF3ZAu2zWCs9Pc1lHa
+         gda5THEF8y5CjT5B68dK76vm03aNBo13woiWoxLzXy181OtM6JY671hU6U6UFEARf06h
+         JMYHySpvJ7OOM9bmiIjUMklmq7rej0u5tLtetqgfNZzv0v1Ew8ilnqvNMnsooCVP3K/T
+         WYhRPG+9HOC/Fk1Tw9bqvtnPL6a4Xywe9hnusDRlPNhsVQnr2s7Pt6uZUhyfN4GChII8
+         7wkg==
+X-Gm-Message-State: AJIora89eiDaiozchX3RsfWF1Dr7zv5Y3ygeI6TodlKISGMKzvfozPjw
+        ikPhiDHDL67CGVjr8zLG0nrCow==
+X-Google-Smtp-Source: AGRyM1tcEE95Ekpp4tq/jJm3aTC46fHNhCwmQGo2VLd2iQl+tjB6CnBUyJJtwF4xhqrjmqieK2tKVg==
+X-Received: by 2002:a17:902:a502:b0:16b:fbd9:7fc5 with SMTP id s2-20020a170902a50200b0016bfbd97fc5mr2516757plq.112.1657268531484;
+        Fri, 08 Jul 2022 01:22:11 -0700 (PDT)
+Received: from C02FT5A6MD6R.bytedance.net ([139.177.225.241])
+        by smtp.gmail.com with ESMTPSA id x65-20020a636344000000b00412b1043f33sm3329291pgb.39.2022.07.08.01.21.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 01:22:10 -0700 (PDT)
+From:   Gang Li <ligang.bdlg@bytedance.com>
+To:     mhocko@suse.com, akpm@linux-foundation.org, surenb@google.com
+Cc:     hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        viro@zeniv.linux.org.uk, ebiederm@xmission.com,
+        keescook@chromium.org, rostedt@goodmis.org, mingo@redhat.com,
+        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
+        adobriyan@gmail.com, yang.yang29@zte.com.cn, brauner@kernel.org,
+        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
+        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
+        Liam.Howlett@Oracle.com, ohoono.kwon@samsung.com,
+        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
+        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
+        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
+        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
+        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
+        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
+        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-perf-users@vger.kernel.org,
+        Gang Li <ligang.bdlg@bytedance.com>
+Subject: [PATCH v2 0/5] mm, oom: Introduce per numa node oom for CONSTRAINT_{MEMORY_POLICY,CPUSET}
+Date:   Fri,  8 Jul 2022 16:21:24 +0800
+Message-Id: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706234757.3162307-1-peng.fan@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 07:47:57AM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Add i.MX8MP NoC node to make the interconnect i.MX8MP driver could work.
-> Currently dynamic frequency scaling of the i.MX8MP NoC has not been
-> supported, only NoC initial settings are configured by interconnect
-> driver.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
-> 
-> V4:
->  Georgi has merged the V3 driver and bindings patches. So only resend
->  this patch. Per Georgi's comments:
->   - Drop syscon from compatbile
->   - Drop the header inclusion
-> 
->  Seems I not see this patch in patchwork or mailist, maybe sent failed.
->  So gave a resend of V4.
-> 
->  V3:
->   https://lore.kernel.org/linux-arm-kernel/20220703091132.1412063-1-peng.fan@oss.nxp.com/
-> 
->  I not list the full change log, since this is only a minor patch
-> 
->  arch/arm64/boot/dts/freescale/imx8mp.dtsi | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-> index eb2d516278eb..42ed8ee08548 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-> @@ -1019,6 +1019,27 @@ eqos: ethernet@30bf0000 {
->  			};
->  		};
->  
-> +		noc: interconnect@32700000 {
-> +			compatible = "fsl,imx8mp-noc", "fsl,imx8m-noc";
-> +			reg = <0x32700000 0x100000>;
-> +			clocks = <&clk IMX8MP_CLK_NOC>;
-> +			#interconnect-cells = <1>;
-> +
+TLDR
+----
+If a mempolicy or cpuset is in effect, out_of_memory() will select victim
+on specific node to kill. So that kernel can avoid accidental killing on
+NUMA system.
 
-This newline is not really necessary.  Dropped it and applied patch.
+Problem
+-------
+Before this patch series, oom will only kill the process with the highest 
+memory usage by selecting process with the highest oom_badness on the
+entire system.
 
-Shawn
+This works fine on UMA system, but may have some accidental killing on NUMA
+system.
 
-> +			operating-points-v2 = <&noc_opp_table>;
-> +
-> +			noc_opp_table: opp-table {
-> +				compatible = "operating-points-v2";
-> +
-> +				opp-200M {
-> +					opp-hz = /bits/ 64 <200000000>;
-> +				};
-> +
-> +				opp-1000M {
-> +					opp-hz = /bits/ 64 <1000000000>;
-> +				};
-> +			};
-> +		};
-> +
->  		aips4: bus@32c00000 {
->  			compatible = "fsl,aips-bus", "simple-bus";
->  			reg = <0x32c00000 0x400000>;
-> -- 
-> 2.25.1
-> 
+As shown below, if process c.out is bind to Node1 and keep allocating pages
+from Node1, a.out will be killed first. But killing a.out did't free any
+mem on Node1, so c.out will be killed then.
+
+A lot of AMD machines have 8 numa nodes. In these systems, there is a
+greater chance of triggering this problem.
+
+OOM before patches:
+```
+Per-node process memory usage (in MBs)
+PID             Node 0        Node 1    Total
+----------- ---------- ------------- --------
+3095 a.out     3073.34          0.11  3073.45(Killed first. Max mem usage)
+3199 b.out      501.35       1500.00  2001.35
+3805 c.out        1.52 (grow)2248.00  2249.52(Killed then. Node1 is full)
+----------- ---------- ------------- --------
+Total          3576.21       3748.11  7324.31
+```
+
+Solution
+--------
+We store per node rss in mm_rss_stat for each process.
+
+If a page allocation with mempolicy or cpuset in effect triger oom. We will
+calculate oom_badness with rss counter for the corresponding node. Then
+select the process with the highest oom_badness on the corresponding node
+to kill.
+
+OOM after patches:
+```
+Per-node process memory usage (in MBs)
+PID             Node 0        Node 1     Total
+----------- ---------- ------------- ----------
+3095 a.out     3073.34          0.11    3073.45
+3199 b.out      501.35       1500.00    2001.35
+3805 c.out        1.52 (grow)2248.00    2249.52(killed)
+----------- ---------- ------------- ----------
+Total          3576.21       3748.11    7324.31
+```
+
+Overhead
+--------
+CPU:
+
+According to the result of Unixbench. There is less than one percent
+performance loss in most cases.
+
+On 40c512g machine.
+
+40 parallel copies of tests:
++----------+----------+-----+----------+---------+---------+---------+
+| numastat | FileCopy | ... |   Pipe   |  Fork   | syscall |  total  |
++----------+----------+-----+----------+---------+---------+---------+
+| off      | 2920.24  | ... | 35926.58 | 6980.14 | 2617.18 | 8484.52 |
+| on       | 2919.15  | ... | 36066.07 | 6835.01 | 2724.82 | 8461.24 |
+| overhead | 0.04%    | ... | -0.39%   | 2.12%   | -3.95%  | 0.28%   |
++----------+----------+-----+----------+---------+---------+---------+
+
+1 parallel copy of tests:
++----------+----------+-----+---------+--------+---------+---------+
+| numastat | FileCopy | ... |  Pipe   |  Fork  | syscall |  total  |
++----------+----------+-----+---------+--------+---------+---------+
+| off      | 1515.37  | ... | 1473.97 | 546.88 | 1152.37 | 1671.2  |
+| on       | 1508.09  | ... | 1473.75 | 532.61 | 1148.83 | 1662.72 |
+| overhead | 0.48%    | ... | 0.01%   | 2.68%  | 0.31%   | 0.51%   |
++----------+----------+-----+---------+--------+---------+---------+
+
+MEM:
+
+per task_struct:
+sizeof(int) * num_possible_nodes() + sizeof(int*)
+typically 4 * 2 + 8 bytes
+
+per mm_struct:
+sizeof(atomic_long_t) * num_possible_nodes() + sizeof(atomic_long_t*)
+typically 8 * 2 + 8 bytes
+
+zap_pte_range:
+sizeof(int) * num_possible_nodes() + sizeof(int*)
+typically 4 * 2 + 8 bytes 
+
+Changelog
+----------
+v2:
+  - enable per numa node oom for `CONSTRAINT_CPUSET`.
+  - add benchmark result in cover letter.
+
+Gang Li (5):
+  mm: add a new parameter `node` to `get/add/inc/dec_mm_counter`
+  mm: add numa_count field for rss_stat
+  mm: add numa fields for tracepoint rss_stat
+  mm: enable per numa node rss_stat count
+  mm, oom: enable per numa node oom for
+    CONSTRAINT_{MEMORY_POLICY,CPUSET}
+
+ arch/s390/mm/pgtable.c        |   4 +-
+ fs/exec.c                     |   2 +-
+ fs/proc/base.c                |   6 +-
+ fs/proc/task_mmu.c            |  14 ++--
+ include/linux/mm.h            |  59 ++++++++++++-----
+ include/linux/mm_types_task.h |  16 +++++
+ include/linux/oom.h           |   2 +-
+ include/trace/events/kmem.h   |  27 ++++++--
+ kernel/events/uprobes.c       |   6 +-
+ kernel/fork.c                 |  70 +++++++++++++++++++-
+ mm/huge_memory.c              |  13 ++--
+ mm/khugepaged.c               |   4 +-
+ mm/ksm.c                      |   2 +-
+ mm/madvise.c                  |   2 +-
+ mm/memory.c                   | 119 ++++++++++++++++++++++++----------
+ mm/migrate.c                  |   4 ++
+ mm/migrate_device.c           |   2 +-
+ mm/oom_kill.c                 |  69 +++++++++++++++-----
+ mm/rmap.c                     |  19 +++---
+ mm/swapfile.c                 |   6 +-
+ mm/userfaultfd.c              |   2 +-
+ 21 files changed, 335 insertions(+), 113 deletions(-)
+
+-- 
+2.20.1
+
