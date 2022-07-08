@@ -2,113 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44659CCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:12:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 604ECC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237456AbiGHHMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
+        id S237454AbiGHHNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbiGHHMu (ORCPT
+        with ESMTP id S237450AbiGHHNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:12:50 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9287696F;
-        Fri,  8 Jul 2022 00:12:48 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 910741887361;
-        Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 8876325032B7;
-        Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 70813A1E00B7; Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        Fri, 8 Jul 2022 03:13:12 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFB9796AF;
+        Fri,  8 Jul 2022 00:13:10 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A005621ED5;
+        Fri,  8 Jul 2022 07:13:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1657264388; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=53CEXyeuRhvrLzAgd2XWwxskqq0rZQskDVZ5oBYdUxw=;
+        b=tknenM3NcdSgTGy93KDhDPMo1KEuJ0fj1X9YVl/SInidx5FkTa74E4QfRzAs9TIyryFsRx
+        DIl94p7mhKbHD118bW8zM093M0xelRzLh1vwwKoU+ppy0kyjSbFOL0I97Az64SJj1X7V7h
+        Y3J3UAlUovGfFAs1uY38gxsZT4EfBdE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1657264388;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=53CEXyeuRhvrLzAgd2XWwxskqq0rZQskDVZ5oBYdUxw=;
+        b=aewu6It07jAUR9yXN1SCJeRTNqj6gQK4W7YSXPHegYFC+yuv60WmeTGHMULx5HcrBqF+Bj
+        aJ51EWAxFuWJ6dBA==
+Received: from localhost.localdomain (unknown [10.100.201.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 552BD2C141;
+        Fri,  8 Jul 2022 07:13:08 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     mturquette@baylibre.com
+Cc:     linux-kernel@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        Martin Liska <mliska@suse.cz>, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH v2 1/2] clk: pistachio: Fix initconst confusion
+Date:   Fri,  8 Jul 2022 09:13:05 +0200
+Message-Id: <20220708071306.4354-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Date:   Fri, 08 Jul 2022 09:12:46 +0200
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next 1/1] net: dsa: mv88e6xxx: allow reading FID when
- handling ATU violations
-In-Reply-To: <20220707102836.u7ig6rr2664mcrlf@skbuf>
-References: <20220706122502.1521819-1-netdev@kapio-technology.com>
- <20220707102836.u7ig6rr2664mcrlf@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <f8a4f54a90efa545cac1ff2cdbde78c7@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-07 12:28, Vladimir Oltean wrote:
-> On Wed, Jul 06, 2022 at 02:25:02PM +0200, Hans Schultz wrote:
->> For convenience the function mv88e6xxx_g1_atu_op() has been used to 
->> read
->> ATU violations, but the function has other purposes and does not 
->> enable
->> the possibility to read the FID when reading ATU violations.
->> 
->> The FID is needed to get hold of which VID was involved in the 
->> violation,
->> thus the need for future purposes to be able to read the FID.
-> 
-> Make no mistake, the existing code doesn't disallow reading back the 
-> FID
-> during an ATU Get/Clear Violation operation, and your patch isn't
-> "allowing" something that wasn't disallowed.
+From: Andi Kleen <ak@linux.intel.com>
 
-It would only read 0 the way it worked. And I don't understand why
-mv88e6xxx_g1_atu_op() writes the FID?
+A variable pointing to const isn't const itself. It has to contain
+"const" keyword after "*" too. So to keep it in __initconst (and not
+mark properly as __initdata), add the "const" keyword exactly there.
 
-> 
-> The documentation for the ATU FID register says that its contents is
-> ignored before the operation starts, and it contains the returned ATU
-> entry's FID after the operation completes.
-> 
-> So the change simply says: don't bother to write the ATU FID register
-> with zero, it doesn't matter what this contains. This is probably true,
-> but the patch needs to do what's written on the box.
+Note we need to update struct pistachio_mux too. On the other hand, the
+clk core already counts with "const char *const" already.
 
-Writing 0 to the ATU fID register resulted in a read giving zero of 
-course.
+[js] more explanatory commit message.
 
-> 
-> Please note that this only even matters at all for switches with
-> mv88e6xxx_num_databases(chip) > 256, where MV88E6352_G1_ATU_FID is a
-> dedicated register which this patch avoids writing. For other switches,
-> the FID is embedded within MV88E6XXX_G1_ATU_CTL or MV88E6XXX_G1_ATU_OP.
-> So _practically_, for those switches, you are still emitting the
-> GET_CLR_VIOLATION ATU op with a FID of 0 whether you like it or not, 
-> and
-> this patch introduces a (most likely irrelevant) discrepancy between 
-> the
-> access methods for various switches.
-> 
-> Please note that this observation is relevant for your future changes 
-> to
-> read back the FID too. As I said here:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220524152144.40527-4-schultz.hans+netdev@gmail.com/#24912482
-> you can't just assume that the FID lies within the MV88E6352_G1_ATU_FID
-> register, just look at the way it is packed within 
-> mv88e6xxx_g1_atu_op().
-> You'll need to unpack it in the same way.
+Cc: Michael Turquette <mturquette@baylibre.com>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: linux-clk@vger.kernel.org
+Cc: Martin Liska <mliska@suse.cz>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
 
-So I need a new function to read the FID that mimics 
-mv88e6xxx_g1_atu_op()
-as far as I understand?
+Notes:
+    [v2] as suggested by Stephen, instead of switching to __initdata, make
+         it real const
+
+ drivers/clk/pistachio/clk.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/clk/pistachio/clk.h b/drivers/clk/pistachio/clk.h
+index f9c31e3a0e47..2f4ffbd98282 100644
+--- a/drivers/clk/pistachio/clk.h
++++ b/drivers/clk/pistachio/clk.h
+@@ -31,10 +31,10 @@ struct pistachio_mux {
+ 	unsigned int shift;
+ 	unsigned int num_parents;
+ 	const char *name;
+-	const char **parents;
++	const char *const *parents;
+ };
+ 
+-#define PNAME(x) static const char *x[] __initconst
++#define PNAME(x) static const char *const x[] __initconst
+ 
+ #define MUX(_id, _name, _pnames, _reg, _shift)			\
+ 	{							\
+-- 
+2.36.1
+
