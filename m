@@ -2,164 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C54C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC062C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237978AbiGHMax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 08:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52830 "EHLO
+        id S237891AbiGHMdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 08:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237891AbiGHMaw (ORCPT
+        with ESMTP id S237735AbiGHMdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 08:30:52 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED4E326C8
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:30:51 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="264049734"
-X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="264049734"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 05:30:50 -0700
-X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="661758508"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 05:30:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1o9n88-00183d-0o;
-        Fri, 08 Jul 2022 15:30:44 +0300
-Date:   Fri, 8 Jul 2022 15:30:44 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     Andy Shevchenko <andy@kernel.org>, Mark Brown <broonie@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        amadeuszx.slawinski@linux.intel.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?iso-8859-1?Q?P=E9ter?= Ujfalusi 
-        <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
-Message-ID: <YsgjdKEtE7pMDTnZ@smile.fi.intel.com>
-References: <20220707091301.1282291-1-cezary.rojewski@intel.com>
- <CAHp75VceKBoxXVPP4dRYb8LQqHMMDHFp6-E2iuZ-h2RTK8PWQQ@mail.gmail.com>
- <e0c7d254-ace3-625c-cc83-52ca0b45e9fc@intel.com>
- <CAHp75VckU2ZraLJ-frjWXjUu9pFW+-XmWgTbYqUXOUNAD-1HGA@mail.gmail.com>
- <6c8e4104-2239-a188-649d-585f059cabdd@intel.com>
+        Fri, 8 Jul 2022 08:33:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D701B2DA84
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:33:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657283617;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xjr1wZ1WmGRVtITclqyW3FXiq+oTsrOWXuC7nwweUE4=;
+        b=LNjQxjR4ldBOZucCaf+qV7Vhqs1rFyMKjJ13WWp26RJsMguOHgLs1hAGU3O+mAB8qJb0pp
+        yQvYPRGDFL+fnR6BwBKvxqOhGsQ+R0M5Bzp8KoHqWiI4Gv39EdL7saL0RrO/5QOnBDZTJP
+        qXzKG9hJE1ATNKRUhN4tCG1cE/2IIAo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-620-Ui1gUz-nOSaDEuYv3OO54g-1; Fri, 08 Jul 2022 08:33:33 -0400
+X-MC-Unique: Ui1gUz-nOSaDEuYv3OO54g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8C513294EDF0;
+        Fri,  8 Jul 2022 12:33:33 +0000 (UTC)
+Received: from rules.brq.redhat.com (unknown [10.43.17.131])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 752BE18EB5;
+        Fri,  8 Jul 2022 12:33:32 +0000 (UTC)
+From:   Vladis Dronov <vdronov@redhat.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Vladis Dronov <vdronov@redhat.com>, Simo Sorce <simo@redhat.com>
+Subject: [PATCH v4] crypto: fips - make proc files report fips module name and version
+Date:   Fri,  8 Jul 2022 14:33:13 +0200
+Message-Id: <20220708123313.119812-1-vdronov@redhat.com>
+In-Reply-To: <20220620131618.952133-1-vdronov@redhat.com>
+References: <20220620131618.952133-1-vdronov@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6c8e4104-2239-a188-649d-585f059cabdd@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 02:13:14PM +0200, Cezary Rojewski wrote:
-> On 2022-07-08 1:46 PM, Andy Shevchenko wrote:
-> > On Fri, Jul 8, 2022 at 1:33 PM Cezary Rojewski
-> > <cezary.rojewski@intel.com> wrote:
+FIPS 140-3 introduced a requirement for the FIPS module to return
+information about itself, specifically a name and a version. These
+values must match the values reported on FIPS certificates.
 
-...
+This patch adds two files to read a name and a version from:
 
-> > > When I'd written the very first version of this function many months
-> > > ago, get_options() looked as it does not fulfill our needs. It seems to
-> > > be true even today: caller needs to know the number of elements in an
-> > > array upfront.
-> > 
-> > Have you read a kernel doc for it? It does return the number of
-> > elements at the first pass.
-> 
-> Yes, I've checked several parts of it. Perhaps I did miss something but
-> simple_strtoull() doc reads: use kstrtox() instead.
+/proc/sys/crypto/fips_name
+/proc/sys/crypto/fips_version
 
-Doc was fixed to make clearer that in some cases it's okay to use
-simple_strtox(). And this was exactly due to obfuscation code with this
-recommendation. Yes, in general one supposed to use kstrtox(), but it's
-not 100% obligatory.
+v2: removed redundant parentheses in config entries.
+v3: move FIPS_MODULE_* defines to fips.c where they are used.
+v4: return utsrelease.h inclusion
 
-> Thus the strsplit_u32()
-> makes use of kstrtox().
+Signed-off-by: Simo Sorce <simo@redhat.com>
+Signed-off-by: Vladis Dronov <vdronov@redhat.com>
+---
+ crypto/Kconfig | 21 +++++++++++++++++++++
+ crypto/fips.c  | 35 ++++++++++++++++++++++++++++++-----
+ 2 files changed, 51 insertions(+), 5 deletions(-)
 
-Yeah...
-
-> > > Also, kstrtox() takes into account '0x' and modifies the
-> > > base accordingly if that's the case. simple_strtoull() looks as not
-> > > capable of doing the same thing.
-> > 
-> > How come?! It does parse all known prefixes: 0x, 0, +, -.
-> 
-> Hmm.. doc says that it stops at the first non-digit character. Will
-> re-check.
-
-Yes, but under non-digit implies the standard prefixes of digits.
-simple_strtox() and kstrotox() use the very same function for prefixes.
-
-> > > The goal is to be able to parse input such as:
-> > > 
-> > > 0x1000003,0,0,0x1000004,0,0
-> > > 
-> > > into a sequence of 6 uints, filling the *tkns and *num_tkns for the caller.
-> > 
-> > Yes. Have you checked the test cases for get_options()?
-
-(1)
-
-...
-
-> > > avs-driver, which is also part of the ASoC framework has very similar
-> > > debug-interface. I believe there's no need to duplicate the functions -
-> > > move them to common code instead.
-> > 
-> > Taking the above into account, please try to use get_options() and
-> > then tell me what's not working with it. If so, we will add test cases
-> > to get_options() and fix it.
-> 
-> There is a difference:
-> 
-> 	// get_options
-> 	int ints[5];
-> 
-> 	s = get_options(str, ARRAY_SIZE(ints), ints);
-> 
-> 	// strsplit_u32()
-> 	u32 *tkns, num_tkns;
-> 
-> 	ret = strsplit_u32(str, delim, &tkns, &num_tkns);
-> 
-> Nothing has been told upfront for in the second case.
-
-It seems you are missing the (1). The code has checks for the case where you
-can do get number upfront, it would just require two passes, but it's nothing
-in comparison of heave realloc().
-
-  unsigned int *tokens;
-  char *p;
-  int num;
-
-  p = get_options(str, 0, &num);
-  if (num == 0)
-	// No numbers in the string!
-
-  tokens = kcalloc(num + 1, sizeof(*tokens), GFP_KERNEL);
-  if (!tokens)
-	return -ENOMEM;
-
-  p = get_oprions(str, num, &tokens);
-  if (*p)
-	// String was parsed only partially!
-	// assuming it's not a fatal error
-
-  return tokens;
-
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 1d44893a997b..3891c331f2e7 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -33,6 +33,27 @@ config CRYPTO_FIPS
+ 	  certification.  You should say no unless you know what
+ 	  this is.
+ 
++config CRYPTO_FIPS_NAME
++	string "FIPS Module Name"
++	default "Linux Kernel Cryptographic API"
++	depends on CRYPTO_FIPS
++	help
++	  This option sets the FIPS Module name reported by the Crypto API via
++	  the /proc/sys/crypto/fips_name file.
++
++config CRYPTO_FIPS_CUSTOM_VERSION
++	bool "Use Custom FIPS Module Version"
++	depends on CRYPTO_FIPS
++	default n
++
++config CRYPTO_FIPS_VERSION
++	string "FIPS Module Version"
++	default "(none)"
++	depends on CRYPTO_FIPS_CUSTOM_VERSION
++	help
++	  This option provides the ability to override the FIPS Module Version.
++	  By default the KERNELRELEASE value is used.
++
+ config CRYPTO_ALGAPI
+ 	tristate
+ 	select CRYPTO_ALGAPI2
+diff --git a/crypto/fips.c b/crypto/fips.c
+index 7b1d8caee669..b05d3c7b3ca5 100644
+--- a/crypto/fips.c
++++ b/crypto/fips.c
+@@ -12,6 +12,7 @@
+ #include <linux/kernel.h>
+ #include <linux/sysctl.h>
+ #include <linux/notifier.h>
++#include <generated/utsrelease.h>
+ 
+ int fips_enabled;
+ EXPORT_SYMBOL_GPL(fips_enabled);
+@@ -30,13 +31,37 @@ static int fips_enable(char *str)
+ 
+ __setup("fips=", fips_enable);
+ 
++#define FIPS_MODULE_NAME CONFIG_CRYPTO_FIPS_NAME
++#ifdef CONFIG_CRYPTO_FIPS_CUSTOM_VERSION
++#define FIPS_MODULE_VERSION CONFIG_CRYPTO_FIPS_VERSION
++#else
++#define FIPS_MODULE_VERSION UTS_RELEASE
++#endif
++
++static char fips_name[] = FIPS_MODULE_NAME;
++static char fips_version[] = FIPS_MODULE_VERSION;
++
+ static struct ctl_table crypto_sysctl_table[] = {
+ 	{
+-		.procname       = "fips_enabled",
+-		.data           = &fips_enabled,
+-		.maxlen         = sizeof(int),
+-		.mode           = 0444,
+-		.proc_handler   = proc_dointvec
++		.procname	= "fips_enabled",
++		.data		= &fips_enabled,
++		.maxlen		= sizeof(int),
++		.mode		= 0444,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "fips_name",
++		.data		= &fips_name,
++		.maxlen		= 64,
++		.mode		= 0444,
++		.proc_handler	= proc_dostring
++	},
++	{
++		.procname	= "fips_version",
++		.data		= &fips_version,
++		.maxlen		= 64,
++		.mode		= 0444,
++		.proc_handler	= proc_dostring
+ 	},
+ 	{}
+ };
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.36.1
 
