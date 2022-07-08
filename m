@@ -2,126 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE4DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD583C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 20:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239875AbiGHUtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 16:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
+        id S239074AbiGHUuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 16:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239536AbiGHUtI (ORCPT
+        with ESMTP id S239153AbiGHUuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 16:49:08 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F567B359
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 13:49:04 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id f14so16709423qkm.0
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 13:49:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=FBvdmM502BDBY4F9Apm5h9KKjB4dWv/nkjvzfkcviig=;
-        b=flRZHbrF5tCOzGBVGjKqEY5zxAulqJgX1lQNpbJKJ7rlC32NLjZTWh5os+OqExD77o
-         tePhkMCbmpSm5y8PH1o+CVi/H0QOOnIIib85UDmRJmRI8mfGXI2AD4462/fuBN8Oplqr
-         YIeivkOo05wy8W9lWlYR2RsvsSCIalOh+61NZzcJmv07XqO28tccrxPMbiFD1Z5I+MYT
-         tfoy5obtspICwdmrY+OMIJdZjWBk0ZskPMw/BpJ/B4gk4Wsj5WunaOhYKPjl5o7cvOYp
-         IwuEFnaplbpLT6ytkbMQKUo4dofLwz48AAlqkJK8JYfOhEujKTAMYS5V6Tpmh9jQu0qv
-         QUJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=FBvdmM502BDBY4F9Apm5h9KKjB4dWv/nkjvzfkcviig=;
-        b=bSg9eaizyFK9yaFCQUgkm6e0opdFgfyKbOBjQSFaEjDw+SI0q2Y9kzojf8W8RjEYuS
-         hNGInMCjFC55gNo4kx4eUfEjDy6OAp1FUDORh51fvlE+QiIgkVezknnI4HAfHf8VdJb6
-         J5wJOZjA5MTyOCR8gaqSOjYDCI4ilE9dnUTb3FH4BkKVDfdVog3lsdUBZeoFxmkyhIJd
-         FPl5sqU5fvwzEt2qgXdS0LpgmNWL1a/+MhOZ0Fv9QpmIloFyj6Afu+EMaC17Z41OUYeP
-         SUUhftJElcLMgh9a9SMhKw4uI/eEECpjqV6PWbfkvIXvoycpmj739oVCwLMk/c4mIOCz
-         BOCg==
-X-Gm-Message-State: AJIora+GIrOTckfFoZL4h/LzHmThcR3B+rfutGJzErymZeIk2J2fCq1S
-        3sQlsyKj4pSy7ijGIdemKhUKxT0IJXRGxSww
-X-Google-Smtp-Source: AGRyM1ui+B2KFJvUrUAEz+K+CoBg1vZ/A2zaAyO3i/ZkIT50BY2lbH+dpweHklJVWdeb9Xa41CJJCw==
-X-Received: by 2002:a05:620a:47ac:b0:6b5:4c72:3739 with SMTP id dt44-20020a05620a47ac00b006b54c723739mr3691646qkb.695.1657313343302;
-        Fri, 08 Jul 2022 13:49:03 -0700 (PDT)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id y11-20020a05620a44cb00b006a37eb728cfsm31585444qkp.1.2022.07.08.13.49.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 13:49:03 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 13:48:46 -0700 (PDT)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Nadav Amit <namit@vmware.com>
-cc:     Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "x86@kernel.org" <x86@kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] x86/mm/tlb: ignore f->new_tlb_gen when zero
-In-Reply-To: <49C173B5-CF12-44AA-BE00-689E99E65C23@vmware.com>
-Message-ID: <23b7e5f8-8b38-51aa-fecd-3ed92118af72@google.com>
-References: <20220708003053.158480-1-namit@vmware.com> <4eccbb3a-2b5a-039-e934-da451e469929@google.com> <49C173B5-CF12-44AA-BE00-689E99E65C23@vmware.com>
+        Fri, 8 Jul 2022 16:50:10 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758297B359
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 13:50:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657313409; x=1688849409;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=f4+Pv6ztoVQxNmpihMiCo2tCWAEketMWZRexCM0xWHU=;
+  b=ItVIkoN6kZ3S1XaS/P2cJXwMr6Hjfg8tEjLQFvNPTwsiJdF3Ms68HGN3
+   in1EV7fVmkKILd8755+cvM/T8uBbUiBVgiyla09JBdonu0WclKWZrqe2K
+   rUxtoQoJwbODGTRctFwBao2KeAGWJ9QsgacEr9cGz0pJybgWhN2vd8ISq
+   2C4Qq4qa8BkedjbhD8Co1oz5zc8P3WcWiQmY+azIWVD9O54qIEboQbUf/
+   CVaGS3qkdZWdxIDsPwhsgsmrzZrQjmHBylQS2hvpKYoomxkv814alPuko
+   5myer5UnyZ2+2vc6NwzgEYJoYY7B2YQHIzjXrAHEb+rAaXj5WzDwT+Oqr
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="370675774"
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="370675774"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 13:50:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="921120227"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 08 Jul 2022 13:50:07 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9uvP-000NvK-5D;
+        Fri, 08 Jul 2022 20:50:07 +0000
+Date:   Sat, 9 Jul 2022 04:49:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, x86@kernel.org
+Subject: [tip:locking/core 2/4] arch/mips/kernel/jump_label.c:93:6: warning:
+ no previous prototype for function 'jump_label_apply_nops'
+Message-ID: <202207090424.PgjCetK5-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="0-2142999139-1657313342=:1568"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Ard,
 
---0-2142999139-1657313342=:1568
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+FYI, the error/warning still remains.
 
-On Fri, 8 Jul 2022, Nadav Amit wrote:
-> On Jul 8, 2022, at 12:21 PM, Hugh Dickins <hughd@google.com> wrote:
->=20
-> > =E2=9A=A0 External Email
-> >=20
-> > On Thu, 7 Jul 2022, Nadav Amit wrote:
-> >=20
-> >> From: Nadav Amit <namit@vmware.com>
-> >>=20
-> >> Commit aa44284960d5 ("x86/mm/tlb: Avoid reading mm_tlb_gen when
-> >> possible") introduced an optimization of skipping the flush if the TLB
-> >> generation that is flushed (as provided in flush_tlb_info) was already
-> >> flushed.
-> >>=20
-> >> However, arch_tlbbatch_flush() does not provide any generation in
-> >> flush_tlb_info. As a result, try_to_unmap_one() would not perform any
-> >> TLB flushes.
-> >>=20
-> >> Fix it by checking whether f->new_tlb_gen is nonzero. Zero value is
-> >> anyhow is an invalid generation value.
-> >>=20
-> >> In addition, add the missing unlikely() and jump to get tracing right.
-> >>=20
-> >> Fixes: aa44284960d5 ("x86/mm/tlb: Avoid reading mm_tlb_gen when possib=
-le")
-> >> Reported-by: Hugh Dickins <hughd@google.com>
-> >> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> >> Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-> >> Cc: Andy Lutomirski <luto@kernel.org>
-> >> Signed-off-by: Nadav Amit <namit@vmware.com>
-> >=20
-> > Thanks a lot for your rapid response and thinking it through
-> > (before I got around to any "nopcid" or "nopti" experiments).
-> >=20
-> > I've been testing this one for a few hours now, and no problems seen.
-> > I expect you'll be sending another version, maybe next week, meeting
-> > Dave's concerns; but wanted to reassure that you have correctly
-> > identified the issue and fixed it with this - thanks.
->=20
-> Thanks, Hugh. Sorry again for my mistake.
->=20
-> Can I please have your =E2=80=9CTested-by=E2=80=9D?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking/core
+head:   eae6d58d67d9739be5f7ae2dbead1d0ef6528243
+commit: fdfd42892f311e2b3695852036e5be23661dc590 [2/4] jump_label: mips: move module NOP patching into arch code
+config: mips-randconfig-r035-20220708 (https://download.01.org/0day-ci/archive/20220709/202207090424.PgjCetK5-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 562c3467a6738aa89203f72fc1d1343e5baadf3c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=fdfd42892f311e2b3695852036e5be23661dc590
+        git remote add tip https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
+        git fetch --no-tags tip locking/core
+        git checkout fdfd42892f311e2b3695852036e5be23661dc590
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kernel/ fs/ksmbd/
 
-Sure, let me scrabble around in my box of tags, yes, here's one:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Tested-by: Hugh Dickins <hughd@google.com>
---0-2142999139-1657313342=:1568--
+All warnings (new ones prefixed by >>):
+
+>> arch/mips/kernel/jump_label.c:93:6: warning: no previous prototype for function 'jump_label_apply_nops' [-Wmissing-prototypes]
+   void jump_label_apply_nops(struct module *mod)
+        ^
+   arch/mips/kernel/jump_label.c:93:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void jump_label_apply_nops(struct module *mod)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/jump_label_apply_nops +93 arch/mips/kernel/jump_label.c
+
+    91	
+    92	#ifdef CONFIG_MODULES
+  > 93	void jump_label_apply_nops(struct module *mod)
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
