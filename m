@@ -2,97 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 436C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A386C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237489AbiGHHNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
+        id S237469AbiGHHNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237458AbiGHHNO (ORCPT
+        with ESMTP id S237206AbiGHHNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:13:14 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F7E76E8A;
-        Fri,  8 Jul 2022 00:13:11 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 116FB1FE78;
-        Fri,  8 Jul 2022 07:13:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1657264389; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uMhC18ky2++3tPvUW/SF4keQKVbRQIhWZHoumy+pnZ4=;
-        b=EnE3HRHmf01bQyQvM+RsqW4+SpnIZVxprw3naq4D1xDWg6GkfEIbcSDoenUSXfDKKCau32
-        59R6hLHSzw+uRzOaTWkiZ+ddugvcPKTeKlXWVByv3K5oyGoQhVk2CL+h2TUGW91Dcxsegm
-        Wxb3yXvQc8Z9eyKuovhVkBEjjXQh9b0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1657264389;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uMhC18ky2++3tPvUW/SF4keQKVbRQIhWZHoumy+pnZ4=;
-        b=od6cZmruIjKNxTEWN3+lnw0ZtqoPMjNcgM8do+GOsVrPfhv4GyoGlzmeiFpFfs+NNEF9I0
-        ACLGjkqtqOHajSAw==
-Received: from localhost.localdomain (unknown [10.100.201.122])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id AB2652C142;
-        Fri,  8 Jul 2022 07:13:08 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     mturquette@baylibre.com
-Cc:     linux-kernel@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        Martin Liska <mliska@suse.cz>, Stephen Boyd <sboyd@kernel.org>,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH v2 2/2] clk: renesas: rcar-gen4: Fix initconst confusion for cpg_pll_config
-Date:   Fri,  8 Jul 2022 09:13:06 +0200
-Message-Id: <20220708071306.4354-2-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220708071306.4354-1-jslaby@suse.cz>
-References: <20220708071306.4354-1-jslaby@suse.cz>
+        Fri, 8 Jul 2022 03:13:41 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C42A13F63;
+        Fri,  8 Jul 2022 00:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657264419; x=1688800419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QnZ104EyG7R40U+ZFVN/xtqfTjTBSCm2mjg2XawQNXM=;
+  b=HWjAk9zQBdLcl1csApgbILbBOrMfGQlvsy6zSbeTyCOc+aZhY3J73GMm
+   C+o8FAoQ6QAtt5gepUR7kH9C9H3r4XKZfWe+zUbS6RvN4m7a30yJ+ldLg
+   PJoFHxYHX65Meorni5MGJ8nANvkoOS1YS+PQaMcO+7i7XmKTshtZCo2RF
+   JdtsFg5zydTKii26jkaZ7JlWcNQAL2UccxtsuMWJ+bZ3Zc4qMag74d2fO
+   06SMyk12AOsH0Ee+6KFHjK9hVoJMdFnbPI+034v7APfspVQxoK3cUK+Ds
+   wcD8Hk7XsMkOy3KQNjMoOHjQCCR0eY9vsuHrh5FYgWvCHaSanp2p9wipN
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284236567"
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="284236567"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 00:13:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="683575110"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Jul 2022 00:13:31 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9iB9-000N5S-1w;
+        Fri, 08 Jul 2022 07:13:31 +0000
+Date:   Fri, 8 Jul 2022 15:12:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hans Schultz <netdev@kapio-technology.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Hans Schultz <netdev@kapio-technology.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+Message-ID: <202207081529.riNiUWOf-lkp@intel.com>
+References: <20220707152930.1789437-4-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707152930.1789437-4-netdev@kapio-technology.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andi Kleen <ak@linux.intel.com>
+Hi Hans,
 
-A variable pointing to const isn't const itself. It'd have to contain
-"const" keyword after "*" too. Therefore, cpg_pll_config cannot be put
-to "rodata".  Hence use __initdata instead of __initconst to fix this.
+Thank you for the patch! Yet something to improve:
 
-[js] more explanatory commit message.
+[auto build test ERROR on net/master]
+[also build test ERROR on shuah-kselftest/next linus/master v5.19-rc5]
+[cannot apply to net-next/master next-20220707]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Michael Turquette <mturquette@baylibre.com>
-Cc: linux-renesas-soc@vger.kernel.org
-Cc: linux-clk@vger.kernel.org
-Cc: Martin Liska <mliska@suse.cz>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/clk/renesas/rcar-gen4-cpg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 07266d066301b97ad56a693f81b29b7ced429b27
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220708/202207081529.riNiUWOf-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/ebd598d7ea6c015001489c4293da887763491086
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
+        git checkout ebd598d7ea6c015001489c4293da887763491086
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-diff --git a/drivers/clk/renesas/rcar-gen4-cpg.c b/drivers/clk/renesas/rcar-gen4-cpg.c
-index c7ed43d6aa67..e27832e5114f 100644
---- a/drivers/clk/renesas/rcar-gen4-cpg.c
-+++ b/drivers/clk/renesas/rcar-gen4-cpg.c
-@@ -23,7 +23,7 @@
- #include "rcar-gen4-cpg.h"
- #include "rcar-cpg-lib.h"
- 
--static const struct rcar_gen4_cpg_pll_config *cpg_pll_config __initconst;
-+static const struct rcar_gen4_cpg_pll_config *cpg_pll_config __initdata;
- static unsigned int cpg_clk_extalr __initdata;
- static u32 cpg_mode __initdata;
- 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/dsa/sja1105/sja1105_main.c: In function 'sja1105_mdb_add':
+>> drivers/net/dsa/sja1105/sja1105_main.c:1952:63: error: incompatible type for argument 5 of 'sja1105_fdb_add'
+    1952 |         return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
+         |                                                               ^~
+         |                                                               |
+         |                                                               struct dsa_db
+   drivers/net/dsa/sja1105/sja1105_main.c:1805:33: note: expected 'bool' {aka '_Bool'} but argument is of type 'struct dsa_db'
+    1805 |                            bool is_locked,
+         |                            ~~~~~^~~~~~~~~
+>> drivers/net/dsa/sja1105/sja1105_main.c:1952:16: error: too few arguments to function 'sja1105_fdb_add'
+    1952 |         return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
+         |                ^~~~~~~~~~~~~~~
+   drivers/net/dsa/sja1105/sja1105_main.c:1803:12: note: declared here
+    1803 | static int sja1105_fdb_add(struct dsa_switch *ds, int port,
+         |            ^~~~~~~~~~~~~~~
+   drivers/net/dsa/sja1105/sja1105_main.c:1953:1: error: control reaches end of non-void function [-Werror=return-type]
+    1953 | }
+         | ^
+   cc1: some warnings being treated as errors
+
+
+vim +/sja1105_fdb_add +1952 drivers/net/dsa/sja1105/sja1105_main.c
+
+5126ec72a094bd3 Vladimir Oltean 2021-08-08  1947  
+a52b2da778fc93e Vladimir Oltean 2021-01-09  1948  static int sja1105_mdb_add(struct dsa_switch *ds, int port,
+c26933639b5402c Vladimir Oltean 2022-02-25  1949  			   const struct switchdev_obj_port_mdb *mdb,
+c26933639b5402c Vladimir Oltean 2022-02-25  1950  			   struct dsa_db db)
+291d1e72b756424 Vladimir Oltean 2019-05-02  1951  {
+c26933639b5402c Vladimir Oltean 2022-02-25 @1952  	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
+291d1e72b756424 Vladimir Oltean 2019-05-02  1953  }
+291d1e72b756424 Vladimir Oltean 2019-05-02  1954  
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
