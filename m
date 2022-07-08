@@ -2,104 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655C4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 12:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238468AbiGHMMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 08:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
+        id S238473AbiGHMNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 08:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238236AbiGHMMb (ORCPT
+        with ESMTP id S238166AbiGHMNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 08:12:31 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E9C9CE16;
-        Fri,  8 Jul 2022 05:12:28 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LfXC54ys4z67bmq;
-        Fri,  8 Jul 2022 20:09:37 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 14:12:26 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Fri, 8 Jul 2022 14:12:26 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     "dhowells@redhat.com" <dhowells@redhat.com>
-CC:     "ast@kernel.org" <ast@kernel.org>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "kafai@fb.com" <kafai@fb.com>, "yhs@fb.com" <yhs@fb.com>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>
-Subject: RE: [PATCH v6 4/5] bpf: Add bpf_verify_pkcs7_signature() helper
-Thread-Topic: [PATCH v6 4/5] bpf: Add bpf_verify_pkcs7_signature() helper
-Thread-Index: AQHYiuqGDtlDO2qp4UmZ/vpVUoStkK1xbJmAgACCGICAANf/YIABpDPw
-Date:   Fri, 8 Jul 2022 12:12:25 +0000
-Message-ID: <2be48d62b0c141799f0c54cbe63f6dc3@huawei.com>
-References: <20220628122750.1895107-1-roberto.sassu@huawei.com>
- <20220628122750.1895107-5-roberto.sassu@huawei.com>
- <903b1b6c-b0fd-d624-a24b-5983d8d661b7@iogearbox.net>
- <CACYkzJ4iR=FurW2UZdgycTdu54kNoFrw4uvmDrpTd3xuvpvVTw@mail.gmail.com>
- <52aa81c8037640a7935cdfd6f363a07d@huawei.com>
-In-Reply-To: <52aa81c8037640a7935cdfd6f363a07d@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.221.98.153]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 8 Jul 2022 08:13:23 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA81B9CE36
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 05:13:21 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VIjYhF9_1657282395;
+Received: from 30.225.28.127(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VIjYhF9_1657282395)
+          by smtp.aliyun-inc.com;
+          Fri, 08 Jul 2022 20:13:17 +0800
+Message-ID: <4cc8284a-6162-8f9d-50b3-e594d46751f8@linux.alibaba.com>
+Date:   Fri, 8 Jul 2022 20:13:15 +0800
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3] arm64: mm: fix linear mapping mem access performance
+ degradation
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     baolin.wang@linux.alibaba.com, will@kernel.org,
+        akpm@linux-foundation.org, david@redhat.com, jianyong.wu@arm.com,
+        james.morse@arm.com, quic_qiancai@quicinc.com,
+        christophe.leroy@csgroup.eu, jonathan@marek.ca,
+        mark.rutland@arm.com, thunder.leizhen@huawei.com,
+        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, rppt@kernel.org,
+        geert+renesas@glider.be, ardb@kernel.org, linux-mm@kvack.org,
+        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
+References: <1656586222-98555-1-git-send-email-guanghuifeng@linux.alibaba.com>
+ <Yr8tzOJi5CGBl767@arm.com>
+From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
+In-Reply-To: <Yr8tzOJi5CGBl767@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBGcm9tOiBSb2JlcnRvIFNhc3N1IFttYWlsdG86cm9iZXJ0by5zYXNzdUBodWF3ZWkuY29tXQ0K
-PiBTZW50OiBUaHVyc2RheSwgSnVseSA3LCAyMDIyIDE6MDEgUE0NCj4gPiBGcm9tOiBLUCBTaW5n
-aCBbbWFpbHRvOmtwc2luZ2hAa2VybmVsLm9yZ10NCj4gPiBTZW50OiBUaHVyc2RheSwgSnVseSA3
-LCAyMDIyIDE6NDkgQU0NCj4gPiBPbiBXZWQsIEp1bCA2LCAyMDIyIGF0IDY6MDQgUE0gRGFuaWVs
-IEJvcmttYW5uIDxkYW5pZWxAaW9nZWFyYm94Lm5ldD4NCj4gPiB3cm90ZToNCg0KWy4uLl0NCg0K
-PiA+ID4gbml0OiB3aGVuIGJvdGggdHJ1c3RlZF9rZXlyaW5nX3NlcmlhbCBhbmQgdHJ1c3RlZF9r
-ZXlyaW5nX2lkIGFyZSBwYXNzZWQgdG8NCj4gdGhlDQo+ID4gPiBoZWxwZXIsIHRoZW4gdGhpcyBz
-aG91bGQgYmUgcmVqZWN0ZWQgYXMgaW52YWxpZCBhcmd1bWVudD8gKEtpbmQgb2YgZmVlbHMgYSBi
-aXQNCj4gPiA+IGxpa2Ugd2UncmUgY3JhbW1pbmcgdHdvIHRoaW5ncyBpbiBvbmUgaGVscGVyLi4g
-S1AsIHRob3VnaHRzPyA6KSkNCj4gPg0KPiA+IEVJTlZBTCB3aGVuIGJvdGggYXJlIHBhc3NlZCBz
-ZWVtcyByZWFzb25hYmxlLiBUaGUgc2lnbmF0dXJlIChwdW4/KSBvZiB0aGUNCj4gPiBkb2VzIHNl
-ZW0gdG8gZ2V0IGJsb2F0ZWQsIGJ1dCBJIGFtIG5vdCBzdXJlIGlmIGl0J3Mgd29ydGggYWRkaW5n
-IHR3bw0KPiA+IGhlbHBlcnMgaGVyZS4NCj4gDQo+IE9rIGZvciBFSU5WQUwuIFNob3VsZCBJIGNo
-YW5nZSB0aGUgdHJ1c3RlZF9rZXlyaW5nX2lkIHR5cGUgdG8gc2lnbmVkLA0KPiBhbmQgdXNlIC0x
-IHdoZW4gaXQgc2hvdWxkIG5vdCBiZSBzcGVjaWZpZWQ/DQoNCkkgc3RpbGwgaGF2ZSB0aGUgaW1w
-cmVzc2lvbiB0aGF0IGEgaGVscGVyIGZvciBsb29rdXBfdXNlcl9rZXkoKSBpcyB0aGUNCnByZWZl
-cnJlZCBzb2x1dGlvbiwgZGVzcGl0ZSB0aGUgYWNjZXNzIGNvbnRyb2wgY29uY2Vybi4NCg0KRGF2
-aWQsIG1heSBhc2sgaWYgdGhpcyBpcyB0aGUgY29ycmVjdCB3YXkgdG8gdXNlIHRoZSBrZXkgc3Vi
-c3lzdGVtDQpBUEkgd2hlbiBwZXJtaXNzaW9uIGNoZWNrIGlzIGRlZmVycmVkPyBrZXlfcGVybWlz
-c2lvbigpIGlzIGN1cnJlbnRseQ0Kbm90IGRlZmluZWQgb3V0c2lkZSB0aGUga2V5IHN1YnN5c3Rl
-bS4NCg0KVGhlIGZpcnN0IHRocmVlIGZ1bmN0aW9ucyB3aWxsIGJlIGV4cG9zZWQgYnkgdGhlIGtl
-cm5lbCB0byBlQlBGIHByb2dyYW1zDQphbmQgY2FuIGJlIGNhbGxlZCBhdCBhbnkgdGltZS4gYnBm
-XzxrZXlfaGVscGVyPiBpcyBhIGdlbmVyaWMgaGVscGVyDQpkZWFsaW5nIHdpdGggYSBrZXkuDQoN
-CkJQRl9DQUxMXzIoYnBmX2xvb2t1cF91c2VyX2tleSwgdTMyLCBzZXJpYWwsIHVuc2lnbmVkIGxv
-bmcsIGZsYWdzKQ0Kew0KLi4uDQogICAgICAgIGtleV9yZWYgPSBsb29rdXBfdXNlcl9rZXkoc2Vy
-aWFsLCBmbGFncywgS0VZX0RFRkVSX1BFUk1fQ0hFQ0spOw0KLi4uDQogICAgICAgIHJldHVybiAo
-dW5zaWduZWQgbG9uZylrZXlfcmVmX3RvX3B0cihrZXlfcmVmKTsNCn0NCg0KQlBGX0NBTExfWChi
-cGZfPGtleV9oZWxwZXI+LCBzdHJ1Y3Qga2V5LCAqa2V5LCAuLi4pDQp7DQogICAgICAgIHJldCA9
-IGtleV9yZWFkX3N0YXRlKGtleSk7DQouLi4NCiAgICAgICAgcmV0ID0ga2V5X3ZhbGlkYXRlKGtl
-eSk7DQouLi4NCiAgICAgICAgcmV0ID0ga2V5X3Blcm1pc3Npb24oa2V5X3JlZiwgPGtleSBoZWxw
-ZXItc3BlY2lmaWMgcGVybWlzc2lvbj4pOw0KLi4uDQp9DQoNCkJQRl9DQUxMXzEoYnBmX2tleV9w
-dXQsIHN0cnVjdCBrZXkgKiwga2V5KQ0Kew0KICAgICAgICBrZXlfcHV0KGtleSk7DQogICAgICAg
-IHJldHVybiAwOw0KfQ0KDQpBbiBlQlBGIHByb2dyYW0gd291bGQgZG8gZm9yIGV4YW1wbGU6DQoN
-ClNFQygibHNtLnMvYnBmIikNCmludCBCUEZfUFJPRyhicGYsIGludCBjbWQsIHVuaW9uIGJwZl9h
-dHRyICphdHRyLCB1bnNpZ25lZCBpbnQgc2l6ZSkNCnsNCiAgICAgICAgc3RydWN0IGtleSAqa2V5
-Ow0KLi4uDQogICAgICAgIGtleSA9IGJwZl9sb29rdXBfdXNlcl9rZXkoc2VyaWFsLCBmbGFncyk7
-DQouLi4NCiAgICAgICAgcmV0ID0gYnBmX2tleV9oZWxwZXIoa2V5LCAuLi4pOw0KLi4uDQogICAg
-ICAgIGtleV9wdXQoa2V5KTsNCn0NCg0KVGhhbmtzDQoNClJvYmVydG8NCg==
+Thanks.
+
+在 2022/7/2 1:24, Catalin Marinas 写道:
+> On Thu, Jun 30, 2022 at 06:50:22PM +0800, Guanghui Feng wrote:
+>> +static void init_pmd_remap(pud_t *pudp, unsigned long addr, unsigned long end,
+>> +			   phys_addr_t phys, pgprot_t prot,
+>> +			   phys_addr_t (*pgtable_alloc)(int), int flags)
+>> +{
+>> +	unsigned long next;
+>> +	pmd_t *pmdp;
+>> +	phys_addr_t map_offset;
+>> +	pmdval_t pmdval;
+>> +
+>> +	pmdp = pmd_offset(pudp, addr);
+>> +	do {
+>> +		next = pmd_addr_end(addr, end);
+>> +
+>> +		if (!pmd_none(*pmdp) && pmd_sect(*pmdp)) {
+>> +			phys_addr_t pte_phys = pgtable_alloc(PAGE_SHIFT);
+>> +			pmd_clear(pmdp);
+>> +			pmdval = PMD_TYPE_TABLE | PMD_TABLE_UXN;
+>> +			if (flags & NO_EXEC_MAPPINGS)
+>> +				pmdval |= PMD_TABLE_PXN;
+>> +			__pmd_populate(pmdp, pte_phys, pmdval);
+>> +			flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
+> 
+> This doesn't follow the architecture requirements for "break before
+> make" when changing live page tables. While it may work, it risks
+> triggering a TLB conflict abort. The correct sequence normally is:
+> 
+> 	pmd_clear();
+> 	flush_tlb_kernel_range();
+> 	__pmd_populate();
+> 
+> However, do we have any guarantees that the kernel doesn't access the
+> pmd range being unmapped temporarily? The page table itself might live
+> in one of these sections, so set_pmd() etc. can get a translation fault.
+> 
+Thanks.
+
+The cpu can generate a TLB conflict abort if it detects that the address 
+being looked up in the TLB hits multiple entries.
+
+(1).I think when gathering small page to block/section mapping, there 
+maybe tlb conflict if no complying with BBM.
+
+Namely:
+a.Map a 4KB page (address X)
+   Touch that page, in order to get the translation cached in the TLB
+
+b.Modify the translation tables
+   replacing the mapping for address X with a 2MB mapping - DO NOT 
+INVALIDATE the TLB
+
+c.Touch "X + 4KB"
+   This will/should miss in the TLB, causing a new walk returning the 
+2MB mapping
+
+d.Touch X
+   Assuming they've not been evicted, you'll hit both on the 4KB and 2MB 
+mapping - as both cover address X.
+
+There is tlb conflict.
+(link: 
+https://community.arm.com/support-forums/f/dev-platforms-forum/13583/tlb-conflict-abort)
+
+
+
+(2).But when spliting large block/section mapping to small granularity, 
+there maybe no tlb conflict.
+
+Namely:
+a.rebuild the pte level mapping without any change to orgin pagetable
+   (the relation between virtual address and physicall address keep same)
+
+b.modify 1G mappting to use the new pte level mapping in the [[[mem]]] 
+without tlb flush
+
+c.When the cpu access the 1G mem(anywhere),
+   If 1G tlb entry already cached in tlb, all the 1G mem will access 
+success(without any tlb loaded, no confilict)
+
+   If 1G tlb entry has been evicted, then the tlb will access pagetable 
+in mem(despite the cpu "catch" the old(1G) or new(4k) mapped pagetale in 
+the mem, all the 1G mem can access sucess)(load new tlb entry, no conflict)
+
+d.Afterward, we flush the tlb and force cpu use the new pagetable.(no 
+conflict)
+
+It seems that there are no two tlb entries for a same virtual address in 
+the tlb cache When spliting large block/section mapping.
+
+
+
+(3).At the same time, I think we can use another way.
+As the system linear maping is builded with init_pg_dir, we can also 
+resue the init_pg_dir to split the block/setion mapping sometime.
+As init_pg_dir contain all kernel text/data access and we can comply 
+with the BBM requirement.
+
+a.rebuild new pte level mapping without any change to the old 
+mapping(the cpu can't walk access the new page mapping, it's isolated)
+
+b.change to use init_pg_dir
+
+c.clear the old 1G block mapping and flush tlb
+
+d.modify the linear mapping to use new pte level page mapping with 
+init_pg_dir(TLB BBM)
+
+e.switch to swapper_pg_dir
+
+
+Could you give me some advice?
+
+Thanks.
