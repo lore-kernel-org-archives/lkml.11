@@ -2,91 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 313A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD90CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238359AbiGHOAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
+        id S238407AbiGHOBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231905AbiGHOAs (ORCPT
+        with ESMTP id S238276AbiGHOBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:00:48 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6775517586
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:00:47 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7CCE0106F;
-        Fri,  8 Jul 2022 07:00:47 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AC1E33F66F;
-        Fri,  8 Jul 2022 07:00:42 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 14:59:32 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Conor.Dooley@microchip.com
-Cc:     gregkh@linuxfoundation.org, geert@linux-m68k.org,
-        paul.walmsley@sifive.com, palmer@dabbelt.com, palmer@rivosinc.com,
-        aou@eecs.berkeley.edu, catalin.marinas@arm.com, will@kernel.org,
-        rafael@kernel.org, Daire.McNamara@microchip.com,
-        niklas.cassel@wdc.com, damien.lemoal@opensource.wdc.com,
-        zong.li@sifive.com, kernel@esmil.dk, hahnjo@hahnjo.de,
-        guoren@kernel.org, anup@brainfault.org, atishp@atishpatra.org,
-        changbin.du@intel.com, heiko@sntech.de, philipp.tomsich@vrull.eu,
-        robh@kernel.org, maz@kernel.org, viresh.kumar@linaro.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Brice.Goglin@inria.fr
-Subject: Re: [RFC 2/4] arch-topology: add a default implementation of
- store_cpu_topology()
-Message-ID: <20220708135932.7srpzia53jbpmitg@bogus>
-References: <20220707220436.4105443-1-mail@conchuod.ie>
- <20220707220436.4105443-3-mail@conchuod.ie>
- <20220708082443.azoqvuj7afrg7ox7@bogus>
- <473e6b17-465b-3d14-b04d-01b187390e66@microchip.com>
- <20220708092100.c6mgmnt7e2k7u634@bogus>
- <CAMuHMdXUjmG9n3BuRAz_irkmHQbp=7SYxe5VEfOhMdT4D2JfwQ@mail.gmail.com>
- <20220708094710.rxk6flrueegdsggr@bogus>
- <YsgA/eycDF9TgCIT@kroah.com>
- <20220708113915.ui77mgqckjzalwlh@bogus>
- <9f8d4e4d-f24b-faf3-687f-90370939c72f@microchip.com>
+        Fri, 8 Jul 2022 10:01:50 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E8317AB0
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:01:49 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id i128-20020a1c3b86000000b003a2ce31b4f8so1222509wma.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 07:01:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sQeYOB1ojPLloG2yUNPgzIcTyy1DnXOTtgypeXwq+gY=;
+        b=IZzeUSCueAHAz6a15+CqVSw+a5LNSOnfHLCejApOWnmeWNfoomRfySA9+XUsYrjVn4
+         A85BgVGBsqfODidj7unlzA55BA5sl0QRsOwqQlpQ4Qfd9cIK98RrcP2mm/gYuxkk2ivs
+         +bc/4s1T8KYhc5hOM18d00Xns+1SAc6gnN0SWYON1ekZ77xIjsJwt5hlhWVWTFkZYPQJ
+         vW0/fwNElPPn2gmQbjRw9V76qlMxtx02Q3YNI9CHM1ng/a890yxUfA8HMyg9YswATI6v
+         kIaitNr12Y8n1Q0L8LLyB0dD3fub35zp2CFFTYBUeQy/T3itUSzzu47+JHkQ2gIDaVOH
+         m3MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sQeYOB1ojPLloG2yUNPgzIcTyy1DnXOTtgypeXwq+gY=;
+        b=AJgHGHrnXisAQucHFG717xcjqg6o9cSJFVMJ9QbvSc8jExgZhrAND2EmxkbtJO+QSd
+         ZatnGlv8QQwhhB0BIGqg31MnSYkuNKOielphhaGKQMcbtigPlqqXiRSTY4+V4rID89MJ
+         u1A8Ht2dTBdrOwopVQOgpSa96ptk7qbzKNWfmefbTsTz5rH3h22YEkhQOG43ltFVr/2B
+         3Jqvt6hcLh4WJ0jO8IF9ALMN+Kq0JamxNxCcINRbHuYABmeCu81KJ+icKmxjqKtcMHpw
+         GMMHcmZlJcxd9xIzykpq7g+c+X9gRDqv86x2wVeKv2GzLwmV+2XexOa4W96ck1bLFOYG
+         freg==
+X-Gm-Message-State: AJIora845+XKRj+aGZ5no9+QOZXmlMQOeQfM1tSnk6kZbV3ndT9X0gvy
+        OubjvYgdo38RjpeDa2BQ+z6a7w==
+X-Google-Smtp-Source: AGRyM1tVT2Lp3bxp/fPMlGxWzal1VMrwHpSWDBq35jltBIxUVl0tmy7YX6v0aUz2rlHqFFI+3mUhfQ==
+X-Received: by 2002:a05:600c:58d:b0:3a0:4547:43a6 with SMTP id o13-20020a05600c058d00b003a0454743a6mr4039844wmd.146.1657288908247;
+        Fri, 08 Jul 2022 07:01:48 -0700 (PDT)
+Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
+        by smtp.gmail.com with ESMTPSA id n20-20020a05600c4f9400b0039c5ab7167dsm2146210wmq.48.2022.07.08.07.01.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 07:01:47 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 14:01:46 +0000
+From:   Sebastian Ene <sebastianene@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        maz@kernel.org, will@kernel.org, vdonnefort@google.com,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v11 2/2] misc: Add a mechanism to detect stalls on guest
+ vCPUs
+Message-ID: <Ysg4ynnMN+izdXkN@google.com>
+References: <20220708112344.1965947-1-sebastianene@google.com>
+ <20220708112344.1965947-3-sebastianene@google.com>
+ <Ysg1axKEaLgG+uQa@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9f8d4e4d-f24b-faf3-687f-90370939c72f@microchip.com>
+In-Reply-To: <Ysg1axKEaLgG+uQa@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 11:57:05AM +0000, Conor.Dooley@microchip.com wrote:
-> 
-> I did a little bit of poking in the git history.
-> The last code touching the arm implementation was:
-> 3102bc0e6ac7 ("arm64: topology: Stop using MPIDR for topology information")
-> on Fri Oct 2 12:01:41 2020 +0100
-> 
-> The introduction of arch-topology stuff to RISC-V was:
-> 03f11f03dbfe ("RISC-V: Parse cpu topology during boot.")
-> on Thu Jun 27 12:53:00 2019 -0700
-> 
-> Backporting as far as v5.10 should be no real effort and I don't think
-> to v5.4 that should be meaninfully harder. If 3102bc0e6ac7 hasn't been
-> backported already, maybe it should be since it appears to have been
-> fixing a problem too.
->
+On Fri, Jul 08, 2022 at 03:47:23PM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Jul 08, 2022 at 11:23:45AM +0000, Sebastian Ene wrote:
+> > This driver creates per-cpu hrtimers which are required to do the
+> > periodic 'pet' operation. On a conventional watchdog-core driver, the
+> > userspace is responsible for delivering the 'pet' events by writing to
+> > the particular /dev/watchdogN node. In this case we require a strong
+> > thread affinity to be able to account for lost time on a per vCPU.
+> > 
+> > This part of the driver is the 'frontend' which is reponsible for
+> > delivering the periodic 'pet' events, configuring the virtual peripheral
+> > and listening for cpu hotplug events. The other part of the driver is
+> > an emulated MMIO device which is part of the KVM virtual machine
+> > monitor and this part accounts for lost time by looking at the
+> > /proc/{}/task/{}/stat entries.
+> > 
+> > Reviewed-by: Will Deacon <will@kernel.org>
+> > Signed-off-by: Sebastian Ene <sebastianene@google.com>
+> > ---
+> >  drivers/misc/Kconfig               |  14 ++
+> >  drivers/misc/Makefile              |   1 +
+> >  drivers/misc/vcpu_stall_detector.c | 223 +++++++++++++++++++++++++++++
+> >  3 files changed, 238 insertions(+)
+> >  create mode 100644 drivers/misc/vcpu_stall_detector.c
+> > 
+> > diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> > index 41d2bb0ae23a..d5b7610459f7 100644
+> > --- a/drivers/misc/Kconfig
+> > +++ b/drivers/misc/Kconfig
+> > @@ -483,6 +483,20 @@ config OPEN_DICE
+> >  
+> >  	  If unsure, say N.
+> >  
+> > +config VCPU_STALL_DETECTOR
+> > +	tristate "Guest vCPU stall detector"
+> > +	select LOCKUP_DETECTOR
 
-Thanks for doing the research and sorry for the noise earlier.
+Hi Greh,
 
-> Based on that, I think doing this the straightforward way in the first
-> place is a better idea.
 > 
-> I'll respin the series as:
-> patch 1: Move arm64 to the generic implementation
+> This should be a "depends on", not a select, right?  This got enabled on
+> my build when I didn't want it to, and trying to track down why it was
+> enabled would be a pain for people.
 
-I don't think the mpidr check we have there is of much use IMO. You can
-drop that and see if arm64 maintainers and/or others agree. As you have
-already figured, since 3102bc0e6ac7 we are not using MPIDR and the one
-check we have is optional IMO. So you can either drop it or keep it as
-in your RFC and then post updates.
+Thanks for noticing it ! I think we can completely remove this
+because it was needed in (v9) for the `watchdog_cpumask` and currently
+we are not using it anymore.
 
--- 
-Regards,
-Sudeep
+> 
+> thanks,
+> 
+> greg k-h
+
+Thanks,
+Seb
