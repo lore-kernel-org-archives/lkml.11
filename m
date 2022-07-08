@@ -2,104 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62107CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 22:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9799C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 22:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239422AbiGHW16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 18:27:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50588 "EHLO
+        id S239489AbiGHW2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 18:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238673AbiGHW1s (ORCPT
+        with ESMTP id S239372AbiGHW2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 18:27:48 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8139313B448;
-        Fri,  8 Jul 2022 15:27:47 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id dn9so34605605ejc.7;
-        Fri, 08 Jul 2022 15:27:47 -0700 (PDT)
+        Fri, 8 Jul 2022 18:28:12 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E99113B458;
+        Fri,  8 Jul 2022 15:28:10 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id v16so83507wrd.13;
+        Fri, 08 Jul 2022 15:28:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/jWEX2CAxd2pxItuLqmMwJVi6a+9EYVwihXMCh0ihgo=;
-        b=U3iDzdgXfVzjGXD+G2rfy3gKypcJs18kw1GTLONv2MDm8G0RrUrg1dKCVtAvXfLfVV
-         Us5QzXMAaG9z7C+VdtuVO3iRmoHRBJolqSPUnp6hFNUB2OmZNCzIRHeIRuSTqjUPRww8
-         C71PuBR7F5Dxs2ZcRSItBp8kUwsR27OtkDga6FBNk6QNaBndWI38RqgpZwQWhCGUGYtl
-         h8+XT4mVWSbRWXKxLCSBn0pbldS2+CL/iCa/os/PzuCvqcxdo67E7lM+Kxpu6D+TZFBg
-         dEOrp6LtxKWaNlORMasmO3uE8ZSAuR230NBs0jKtacRPi+LkgqSG7I9TVIbR66UJJeea
-         UDgA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EIKl0L/6XyzwPBWrn8iMPtQb4hMXI8B9L0xH/4E3HCY=;
+        b=MgDq5RMsQmJt9tw/jQx7WxD1GQkperIilUkq33xlccftDqAO0jIIoVfCwEGcNyijdE
+         BsAMfGSutmB9peyEQZf+hcJzgO5sYT3Khxte88s1AStzx5SX0+znI7sH7hScQRu9SH1y
+         kNOAHEMN6LvqjYrUofYrgZCwhZtbJ27oD20w+O3FXL6jvATCOwJWdTUp+h3YExNK/k+X
+         QzsCqjHPLj8T/qQVJY2HN0Bc3a3dP5e5ey4NJy1U3zNbvzgTn88S/0nD8GXs9fcSAppk
+         s+/tpJEfRGtEpkg3LuFr+UeYqL8IFKYqogUaaIM49gVl8rACQj8BV19rHLVRFVqAdN/e
+         5+ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/jWEX2CAxd2pxItuLqmMwJVi6a+9EYVwihXMCh0ihgo=;
-        b=SAySfGEtayiyC9IxUeMGm0VrFqVT7UQswuLEfjkjKZ43RtYd3mUNOwHE6QrHU26F++
-         ysfYELH80A58ZaT1/evq9uP4wSH4zEtgYooi/g3cSYzF7x1yzRcjkn1XYgCfQvmPoK1q
-         DB4y7DLw32vD1+91B2WSAKwjTzYX+VEdTBZqOcNQ33GivxSojLq2cXjNA8CEdXHDaeri
-         RKlKny/99WKXkCE0YPDkzBZJyho5KBn72LjyXzuhwgDd6ZXJN7M3oDHb7HOKxi40K5EW
-         ASev3s4QT6K9zoJa1OtHPGgDx2FgSgA1Zo/iqMPw+qTVw82rjTm2uyJMZTOczu739fCQ
-         MspQ==
-X-Gm-Message-State: AJIora9/wtbapM8d8zZBJ5hVoNRCset0MAjrehxMKqJ7BLQBNkci4rtN
-        Gsd8cxyjlvid1neuVvPgSeU8OD4fPGepzYcFgEY=
-X-Google-Smtp-Source: AGRyM1uM7iTMCcrXnyKJjpWe5665SWlObmqF2sh59dLgUlFOwpTMXAodJBPRhB1IYcZNf8UkdjqfEpoqCYFWFzfv+h4=
-X-Received: by 2002:a17:907:6e05:b0:72a:a141:962 with SMTP id
- sd5-20020a1709076e0500b0072aa1410962mr5832229ejc.545.1657319266147; Fri, 08
- Jul 2022 15:27:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EIKl0L/6XyzwPBWrn8iMPtQb4hMXI8B9L0xH/4E3HCY=;
+        b=eoc6cQOtLuR4bkQpDSQqAz9baH+qoGePJzbukhd11VFA8I1+atwBZyCCUhKmDaTe9O
+         fM9hGcpZoXlbpT3n+SxgRxLoTO06l08CcE94nyKn5JTsGkX1XxJVqjsJCKTED4s/PKkP
+         4mLDBVRKF/CgwWF55rTNLPGgRNmi0tZb6BSDg3LrMUiCs/wzH1FciH7krhpXkeuvoISx
+         RHQr7amF49A+UjZLRweU0Wwwn5YNfDuQDwrSkc0eSuhZZ73RzpLQFX6dxDX1iFiI+XLv
+         wYm9aHBEWCabb8rpWEkxvLPBbd04M451gGG2mF3zzv7lndNkT+L2SAPJWdGwpamvdG5k
+         NwOw==
+X-Gm-Message-State: AJIora9P7qvBmYV/RArRnXQSNteZc/sHhavy/iVXUWOtWzjcUa6xc0gH
+        +B2uQsdfOByPS8w9p/gnyNqBChuofKc=
+X-Google-Smtp-Source: AGRyM1sy7iGlWXrLjM6rZEjw7qCKnbPfNyNZ37jI2gkj9+26YLYamSTZGZEsORMFjUilPbc+4UGxQw==
+X-Received: by 2002:a05:6000:114e:b0:21d:6cd1:695d with SMTP id d14-20020a056000114e00b0021d6cd1695dmr5386806wrx.474.1657319288365;
+        Fri, 08 Jul 2022 15:28:08 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id e36-20020a05600c4ba400b0039c54bb28f2sm3031596wmp.36.2022.07.08.15.28.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 15:28:07 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH] PCI: qcom: Enable clocks only after PARF_PHY setup for rev 2.1.0
+Date:   Sat,  9 Jul 2022 00:27:43 +0200
+Message-Id: <20220708222743.27019-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <1657113391-5624-1-git-send-email-alan.maguire@oracle.com> <1657113391-5624-3-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1657113391-5624-3-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 Jul 2022 15:27:35 -0700
-Message-ID: <CAEf4BzYMggGGti_w+_V=2ZULHztnUBEJyGvFeG=q5=7UMtJeQg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/2] selftests/bpf: add a ksym iter subtest
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Vernet <void@manifault.com>, swboyd@chromium.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Dmitrii Dolgov <9erthalion6@gmail.com>,
-        Kenny Yu <kennyyu@fb.com>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 6:17 AM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> add subtest verifying BPF ksym iter behaviour.  The BPF ksym
-> iter program shows an example of dumping a format different to
-> /proc/kallsyms.  It adds KIND and MAX_SIZE fields which represent the
-> kind of symbol (core kernel, module, ftrace, bpf, or kprobe) and
-> the maximum size the symbol can be.  The latter is calculated from
-> the difference between current symbol value and the next symbol
-> value.
->
-> The key benefit for this iterator will likely be supporting in-kernel
-> data-gathering rather than dumping symbol details to userspace and
-> parsing the results.
->
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> Acked-by: Yonghong Song <yhs@fb.com>
-> ---
+We currently enable clocks BEFORE we write to PARF_PHY_CTRL reg to
+enable clocks and resets. This case the driver to never set to a ready
+state with the error 'Phy link never came up'.
 
-Please see progs/bpf_iter.h and add ksym iterator types there. Thanks!
+This in fact is caused by the phy clock getting enabled before setting
+the required bits in the PARF regs.
 
+A workaround for this was set but with this new discovery we can drop
+the workaround and use a proper solution to the problem by just enabling
+the clock only AFTER the PARF_PHY_CTRL bit is set.
 
->  tools/testing/selftests/bpf/prog_tests/bpf_iter.c | 16 +++++
->  tools/testing/selftests/bpf/progs/bpf_iter_ksym.c | 74 +++++++++++++++++++++++
->  2 files changed, 90 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_ksym.c
->
+This correctly setup the pcie line and makes it usable even when a
+bootloader leave the pcie line to a underfined state.
 
-[...]
+Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
+Cc: stable@vger.kernel.org # v5.4+
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ drivers/pci/controller/dwc/pcie-qcom.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 2ea13750b492..da13a66ced14 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -337,8 +337,6 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
+ 	reset_control_assert(res->ext_reset);
+ 	reset_control_assert(res->phy_reset);
+ 
+-	writel(1, pcie->parf + PCIE20_PARF_PHY_CTRL);
+-
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(res->supplies), res->supplies);
+ 	if (ret < 0) {
+ 		dev_err(dev, "cannot enable regulators\n");
+@@ -381,15 +379,15 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
+ 		goto err_deassert_axi;
+ 	}
+ 
+-	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
+-	if (ret)
+-		goto err_clks;
+-
+ 	/* enable PCIe clocks and resets */
+ 	val = readl(pcie->parf + PCIE20_PARF_PHY_CTRL);
+ 	val &= ~BIT(0);
+ 	writel(val, pcie->parf + PCIE20_PARF_PHY_CTRL);
+ 
++	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
++	if (ret)
++		goto err_clks;
++
+ 	if (of_device_is_compatible(node, "qcom,pcie-ipq8064") ||
+ 	    of_device_is_compatible(node, "qcom,pcie-ipq8064-v2")) {
+ 		writel(PCS_DEEMPH_TX_DEEMPH_GEN1(24) |
+-- 
+2.36.1
+
