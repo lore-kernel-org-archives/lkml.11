@@ -2,102 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476F9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 09:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237720AbiGHJZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 05:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
+        id S237706AbiGHJ0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 05:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237536AbiGHJZr (ORCPT
+        with ESMTP id S237374AbiGHJ0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 05:25:47 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCEB6271
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 02:25:45 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id d5so15846752plo.12
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 02:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=l76lwu0gnwm/BRNuFyHSAOJEi0ORTe8+eknNAmXKjds=;
-        b=rfzaFQGT5WylU8oFzZ3Bm68tK5cbUJbFE9StIG5s9hhsbRmfmyXpTX1vYAFS6j1sbO
-         54fzhiZV7ncHK4Nr8HGnmkIfr2ytnO8L9enycMsyVsVIL1tiXZVpZqSpKlDbdzlr1hkY
-         5SH3l1JlLCIaVKwtkJN3exq1MhVYULNmdtYE+3L2FEtWtbYyCTh7i5U27YS5hNLZS0Xi
-         TkCdvF8KuNND6fSaeYKOvdHkBq2ajs61bZsAjRcCL57hyN0L81gtcBE6SGAlrMn1jLvp
-         TQMFQ82Z2m2T8NG7gNKsoCwNbcmQba3/hsB+SpuTecMd4FglfijuRPwEi0zcwSVVDuyS
-         /4FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=l76lwu0gnwm/BRNuFyHSAOJEi0ORTe8+eknNAmXKjds=;
-        b=L6j+8t036dDCFLm2F7dniV1BiF+Js+Um6oAQPZryqmXmsy42HAfQeFsKx9PHetKXMh
-         rN9xFPhBf3ORpF3zeSAuIWCtJYV/i5wBkXoeyA9oey9A9rO9DZpT2z0bq1qPWfzijZuY
-         KXCyTJpoUmo2/wp77LnyuZ3JKiGwSeJGm4hN1kT7loke0LzJj2wR2bALkh4xkLf3Foz7
-         hKp059Oay+unvemK1naz3x87Dd4HJvyTANCsWrcr/cettbrCGGZm14U2qxZeDp7N1cMl
-         Us7oBCl7ji88PsuosTPSDo439dVDGGVEfjN7z/biRJQNspzi725u7VdMD8ZM7vFPsJoZ
-         fGmA==
-X-Gm-Message-State: AJIora8w+xjHHuoi/PIWciX6SDBnHW8XYqSpVRvhIWdvQaCnVRSNJKjQ
-        yS5vYQH/zf6sncqccG9fRjPRJg==
-X-Google-Smtp-Source: AGRyM1uqbelvg6m24YuvTJPV4Xejv5UL/IUxXrRtbsELGOPhY6RycQiwGj2gryVPaBaHnMht6h77RQ==
-X-Received: by 2002:a17:902:e80c:b0:16c:28a6:8aa0 with SMTP id u12-20020a170902e80c00b0016c28a68aa0mr422950plg.119.1657272345465;
-        Fri, 08 Jul 2022 02:25:45 -0700 (PDT)
-Received: from [10.255.210.8] ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id z11-20020a1709027e8b00b0016b865ea2ddsm23212195pla.85.2022.07.08.02.25.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 02:25:44 -0700 (PDT)
-Message-ID: <be9303de-3800-c26f-4530-9a29fe044956@bytedance.com>
-Date:   Fri, 8 Jul 2022 17:25:31 +0800
+        Fri, 8 Jul 2022 05:26:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC04FD134;
+        Fri,  8 Jul 2022 02:26:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93E7DB82547;
+        Fri,  8 Jul 2022 09:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B004C341C0;
+        Fri,  8 Jul 2022 09:26:35 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pkqND3Bm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1657272393;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9HeHlnsW1JkxCnRYtTnfqUp3XvLQS0O+ZMfaM6JuHTA=;
+        b=pkqND3BmqSbPOit4Mj5DT7X7YDRtI4zI7ej6QO6XmUtlnWTRQiztuwTVTxkSF4floPVPF3
+        wONKVWOSD1FRpYgm/JX3WWShHVacfbrE/ETIJDTaYNshOkRnXfUF96isK0PDZGi0pY6E2f
+        VAZd8GYkwetZVfgCFTQ883t1gkuyj4A=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 38c5eef7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 8 Jul 2022 09:26:33 +0000 (UTC)
+Received: by mail-io1-xd33.google.com with SMTP id n7so8623580ioo.7;
+        Fri, 08 Jul 2022 02:26:33 -0700 (PDT)
+X-Gm-Message-State: AJIora+BySM/lK8OjemrfbfLRVAe/P3JwA7bF6jt6m566hljETBJb10q
+        IJ1RanavNkBFlXEegIctnK75eJQrECYP/0EkNyI=
+X-Google-Smtp-Source: AGRyM1sLt4kVkbV8Gy6AgNOWbg/i+iKMh6Rjk1K7PZRGWXSuBZYL3v1vJfikjc33S9848G5nx2yxV9as9TJsIF5FCNU=
+X-Received: by 2002:a02:9709:0:b0:339:ef87:c30b with SMTP id
+ x9-20020a029709000000b00339ef87c30bmr1513477jai.214.1657272091980; Fri, 08
+ Jul 2022 02:21:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: Re: [PATCH v2 0/5] mm, oom: Introduce per numa node oom for
- CONSTRAINT_{MEMORY_POLICY,CPUSET}
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     akpm@linux-foundation.org, surenb@google.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        viro@zeniv.linux.org.uk, ebiederm@xmission.com,
-        keescook@chromium.org, rostedt@goodmis.org, mingo@redhat.com,
-        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
-        adobriyan@gmail.com, yang.yang29@zte.com.cn, brauner@kernel.org,
-        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
-        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
-        Liam.Howlett@oracle.com, ohoono.kwon@samsung.com,
-        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
-        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
-        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
-        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
-        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
-        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
-        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-perf-users@vger.kernel.org
-References: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
- <YsfwyTHE/5py1kHC@dhcp22.suse.cz>
-From:   Gang Li <ligang.bdlg@bytedance.com>
-In-Reply-To: <YsfwyTHE/5py1kHC@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6e02:16cc:0:0:0:0 with HTTP; Fri, 8 Jul 2022 02:21:31
+ -0700 (PDT)
+In-Reply-To: <YsfnDyOaKXA3iIj4@zn.tnic>
+References: <20220708171030.135b12cd@canb.auug.org.au> <YsfnDyOaKXA3iIj4@zn.tnic>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 8 Jul 2022 11:21:31 +0200
+X-Gmail-Original-Message-ID: <CAHmME9o052ooE6pC-Sa4EzohW7yRdepNy0zZAFFX6qr9Q+MoHA@mail.gmail.com>
+Message-ID: <CAHmME9o052ooE6pC-Sa4EzohW7yRdepNy0zZAFFX6qr9Q+MoHA@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the random tree with the tip tree
+To:     Borislav Petkov <bp@suse.de>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jonathan McDowell <noodles@fb.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oh apologize. I just realized what you mean.
+On 7/8/22, Borislav Petkov <bp@suse.de> wrote:
+> On Fri, Jul 08, 2022 at 05:10:30PM +1000, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> Today's linux-next merge of the random tree got conflicts in:
+>>
+>>   arch/x86/include/uapi/asm/bootparam.h
+>>   arch/x86/kernel/kexec-bzimage64.c
+>>   arch/x86/kernel/setup.c
+>>
+>> between commit:
+>>
+>>   b69a2afd5afc ("x86/kexec: Carry forward IMA measurement log on kexec")
+>>
+>> from the tip tree and commit:
+>>
+>>   c337d5c7ec9b ("x86/setup: Use rng seeds from setup_data")
+>
+> Why is a x86 patch in the random tree?
+>
+> And it doesn't even have a single x86 person ack?
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?id=c337d5c7ec9bc1d11006fd628e99c65f08455803
+>
+> This is not now the process works.
 
-I should try a "cpuset cgroup oom killer" selecting victim from a
-specific cpuset cgroup.
+Sorry; I pushed it there temporarily to kick some CI to test it and
+forgot to remove it.
 
-On 2022/7/8 16:54, Michal Hocko wrote:
-> On Fri 08-07-22 16:21:24, Gang Li wrote:
-> 
-> We have discussed this in your previous posting and an alternative
-> proposal was to use cpusets to partition NUMA aware workloads and
-> enhance the oom killer to be cpuset aware instead which should be a much
-> easier solution.
+Jason
