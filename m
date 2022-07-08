@@ -2,99 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D394BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D47C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 08:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237592AbiGHIEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 04:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
+        id S237624AbiGHIEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237580AbiGHICa (ORCPT
+        with ESMTP id S237530AbiGHIEq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 04:02:30 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10247E035;
-        Fri,  8 Jul 2022 01:02:29 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id k15so19060500iok.5;
-        Fri, 08 Jul 2022 01:02:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=hODnMtf+5EqhbkNx2oX7wxZqY8zZUB9OLPetFR2uH7A=;
-        b=I1oaVBalKTFKJVlbbTyhQWS1ol5E6FcVkwflucZasxRgPj/Kt3Y/wo+VsrsGKPfEK9
-         WbRFB7uTsXHD1sjwAiU4jzq7HjI3kqUC7ZIGCdt1Ya2aFhyZdhd9sJamF8KF8keifkrl
-         gjSzpl8EDPbvrNYPZM1PmW41ZfqJHD71UYrK0topX6tbCbA5um5EP9691DUMHpPE7M3O
-         s1SXAw+K7y3GUQxpfyElP0H7NiPCm3RMMX7KsqRYaSl7LXLYfpmznJ4DsY+xY8hmHuPm
-         QbciU7n6qBFcQnzz8dl6yyf1U2Gy+R2xx/5kJpMUPZza2PgUBSjN0FsMro5mt+B8eVzx
-         0bcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hODnMtf+5EqhbkNx2oX7wxZqY8zZUB9OLPetFR2uH7A=;
-        b=0F8L+ddVWNByMv/RBYgKhV0dc+zLTWUscdPuw7M9QW21L6YbaK4uNm2+xwvI/zaxWC
-         7pfevjAZbcE4Cm+xxolPk6YGqjyvDIHugaIxgPqFDT6JOsj5CpaCGEdm9FtoHeNshJJH
-         jHQEzTeccypJ7pKqgqxUO0N1TbpLipushvicyTG71sBEiZkxT6ODUDaZIpRAAiAua9oh
-         bUVViXRKw9z9H/ev9TA5PAJoKHPzFz5KX3gVa9RJdpxbMF+9Ne5gaiqWVY86/MIZPb66
-         Fo2lSQ4Ovf8GUgtRiJWS/Cp0TL1ipYAngGxy9gufpHlGTuCRdR0fAtlfAZJwg9MUHHBp
-         32zg==
-X-Gm-Message-State: AJIora+U023aLzNg8f7XhrSd4va93CBwOMCcxejiB5MLXhVgti5yfDtE
-        QIhEpBHPWL40s6EllFxQTXHO1lSKvdK86Q==
-X-Google-Smtp-Source: AGRyM1vbUvAEnsSVMwsqK+d3yPV/Acfg2dPnTr9AEZlB91dT5n/m3+vacP7LrXDKsxdL1C5fh2Ls6g==
-X-Received: by 2002:a05:6638:dcb:b0:33e:bd5c:2195 with SMTP id m11-20020a0566380dcb00b0033ebd5c2195mr1321012jaj.312.1657267349186;
-        Fri, 08 Jul 2022 01:02:29 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id w13-20020a927b0d000000b002dc33dbed87sm2642328ilc.39.2022.07.08.01.02.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 01:02:28 -0700 (PDT)
-Message-ID: <d2872f3e-1dc0-01ea-9385-29c089bc10b8@gmail.com>
-Date:   Fri, 8 Jul 2022 10:02:25 +0200
+        Fri, 8 Jul 2022 04:04:46 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F988048A;
+        Fri,  8 Jul 2022 01:04:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Rmp5G6vHPz8jBiOD5JA28ORVQFrjzvX/1JW4d9qp04s=; b=LAlSn1iqreBWIix6My/aDS6Q/L
+        HR4U2riupSczgF0sIB8Q8jo7HKYnDmfAo0lHO+kiuXXNdjsVmaKykHg/akDHYJaXQ1oUPjXbV//3T
+        phwsavr1Ko39mwTfHhQ8a1ZBLs++x77pebkPj/qPsVSWz8wYEWV3+1nKbsJSnOfgLJOG9Fwqivf1e
+        ALxw5RK7DfKDEKZj/vdx7SWT5pgyzF4qXxjtjTw12dK6OyPMRClSifdf5i5L1b9SSH36zvGT7I0sJ
+        56Urr9rBTo+UpLk8LmgltvF2qQt1SjdYcIvc2206PjLP47kpdTavNbal65G8081FrtnFAe5OTUmWx
+        lWhIcBrw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o9iyi-002MH3-AR; Fri, 08 Jul 2022 08:04:44 +0000
+Date:   Fri, 8 Jul 2022 01:04:44 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Sergei Shtepa <sergei.shtepa@veeam.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 15/20] block, blksnap: snapshot image block device
+Message-ID: <YsflHHP9e0Sc79Wq@infradead.org>
+References: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
+ <1655135593-1900-16-git-send-email-sergei.shtepa@veeam.com>
+ <YsWKhjDV18DeyEZ8@infradead.org>
+ <49039d2b-e4bc-62a1-7b4a-a78001a2f430@veeam.com>
+ <YscW1Byo0PQq5C84@infradead.org>
+ <f68a45b1-c986-bc77-d956-e6bafe821d52@veeam.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dt-bindings: phy: mediatek: tphy: add compatible for
- mt8188
-Content-Language: en-US
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f68a45b1-c986-bc77-d956-e6bafe821d52@veeam.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jul 08, 2022 at 09:58:25AM +0200, Sergei Shtepa wrote:
+> There was a goal to use the kernel innovations whenever possible.
+> Of course, it makes sense to return to bio based if it allows to
+> achieve better performance. This is not a matter of principle.
 
-
-On 08/07/2022 08:58, Chunfeng Yun wrote:
-> Add compatible for mt8188
-> 
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
-> ---
->   Documentation/devicetree/bindings/phy/mediatek,tphy.yaml | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> index 7b2e1bc119be..9fd27d64aca0 100644
-> --- a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> +++ b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
-> @@ -85,6 +85,7 @@ properties:
->             - const: mediatek,generic-tphy-v2
->         - items:
->             - enum:
-> +              - mediatek,mt8188-tphy
->                 - mediatek,mt8195-tphy
->             - const: mediatek,generic-tphy-v3
->         - const: mediatek,mt2701-u3phy
+In general blk-mq is designed for hardware drivers, while the
+bio based interface is for stacking drivers.  There are some
+exceptions: dm-mpath is a stacking blk-mq driver, but one that
+just passes I/O through, and there is a bunch of hardware drivers
+implemented as bio based ones, although I suspect most of them
+would end up being improved by switching to blk-mq (or in most
+case by just deleting them).
