@@ -2,68 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25CA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7482FCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 14:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238458AbiGHOzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
+        id S238642AbiGHO4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237623AbiGHOzL (ORCPT
+        with ESMTP id S238240AbiGHO4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:55:11 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D272DA84;
-        Fri,  8 Jul 2022 07:55:01 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1657292055t0bkdp6x
-Received: from localhost.localdomain ( [182.148.15.249])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 08 Jul 2022 22:53:23 +0800 (CST)
-X-QQ-SSF: 01000000002000B0C000B00A0000000
-X-QQ-FEAT: pi5xsqT0CkQabcklx8t3nrcNlPS4BmpcwzP5drei+BR5GC85R8nLknIOV0rmS
-        6Iqhhz4Yf6c/pXmTPZRuKPUyzohl6VmfYEnMV4W/BvvWK6zk8kG8avGdj/2WA5dNTeIKOar
-        oDpqQS8ws612+ycucAWgJ6USI5F6Si+txUinPXJ2lCLEDA6/rNLxa8rrWTOnp04aHdDDHUl
-        x98wvwzcDrFJ+YKdtfMPADgY/vwGAkXhinrJjMhBIMyRh8L2dHSpqCSiFWtE29Nrgkmfkbo
-        t8GTybgZeJtKNJuVjkayPACjBvh6jzd+1pmba01DsOusgjIA/Pr0PKoe8Ju85Rauh2AdQrr
-        vAQLgikwLF/a1H2nDKufDjvyLFJe059tpY64L6W
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     romieu@fr.zoreil.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] ethernet/via: fix repeated words in comments
-Date:   Fri,  8 Jul 2022 22:53:04 +0800
-Message-Id: <20220708145304.31102-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 8 Jul 2022 10:56:48 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4023B2E6A6
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 07:56:47 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 72so1063894pge.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 07:56:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VFqWa+9OMJ/ctVP9eoUWDFUInS8ymDBK2hy47L/2IuQ=;
+        b=iMIiLON4Z5IX0NnFwWkdKowpk3sr8kD1VtorbwAbYQeeDKq+TOzBeq93+icZ62/LXZ
+         qHZbkWtYc4hHXEGIp2GBcwL50eo5wR/fRDqmwEBLTVnB4eFZQfc6gKIk2nE5++8TLFcb
+         PN+Z6CbdEBmVHoH5Tq+6lUAlHq/qJAsnkGJ+U4VsqGR8+205WAC33wlbwvM+gGXH4DWr
+         2FmQC772MrNXPNm2LQnydSbbIop0KmDX7tXxCyFN6lHaEE7f6LBnX371/vr5112EsB6Q
+         6io2guQUhpczyqGx8da/jRU56Tzsb2lLZIUasAYKzdjmS/X7TvUgz8/9TAL2X9ZHMYfM
+         f5fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VFqWa+9OMJ/ctVP9eoUWDFUInS8ymDBK2hy47L/2IuQ=;
+        b=IHGwG+ePPezPQfIXcCEg85+3elE+KLs8NFytPhNjEtUMy+86CGBIYBDTwz3/54yt93
+         jmBRlG843JlLKJLieB5B88N7xbrBzF2J3Mu/8HujAi9dNwY8eVrsusg6bTV+XT6BWxHr
+         pBYgIngVGKEHy0aL9oqny7I+lKfnvsdJvCRRa5PqYpNQmYueOr8m/KC5Yu5ox772TT5z
+         vBeH+OdWlsDZ6VI8aUsSTa//JEPHaqyb5quTNJSk39xNLmnKvib3L0ETF1+GthGa8qPr
+         J2aM73GKhAcfoc2QwMdEMH13PPlpn5tDCVmK9QB84o8/Pd1EvGueyXHjLHix28AgIwRp
+         ZKQQ==
+X-Gm-Message-State: AJIora9j4hZtv/ZPYZuDaPvVGZXDf5+bQ9FndsrTi2Dn/vKwQFLHRs23
+        ohjZlGjB2wAT4l4Ki88B0JJHLA8AFcXr3w==
+X-Google-Smtp-Source: AGRyM1v7ND1NFuqn/iDRDVEcbXP5ywnr4+cGUHggCkZRRnk9IwcGHd7V8HBCywT9TGhf7XwyYOMwxA==
+X-Received: by 2002:a05:6a00:1312:b0:528:2948:e974 with SMTP id j18-20020a056a00131200b005282948e974mr4393046pfu.79.1657292206632;
+        Fri, 08 Jul 2022 07:56:46 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id z15-20020a17090a1fcf00b001eaae89de5fsm1731708pjz.1.2022.07.08.07.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 07:56:46 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 14:56:42 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     Like Xu <likexu@tencent.com>, Paolo Bonzini <pbonzini@redhat.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Luwei Kang <luwei.kang@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        kvm@vger.kernel.org, lkp@lists.01.org, lkp@intel.com
+Subject: Re: [KVM]  cf8e55fe50: kvm-unit-tests.msr.fail
+Message-ID: <YshFqkODttAUVeMU@google.com>
+References: <YsfUdeft2F4f5OuL@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsfUdeft2F4f5OuL@xsang-OptiPlex-9020>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'driver'.
+On Fri, Jul 08, 2022, kernel test robot wrote:
+> 
+> 
+> Greeting,
+> 
+> FYI, we noticed the following commit (built with gcc-11):
+> 
+> commit: cf8e55fe50df0c0292b389a165daa81193cd39d1 ("KVM: x86/pmu: Expose CPUIDs feature bits PDCM, DS, DTES64")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> in testcase: kvm-unit-tests
+> version: kvm-unit-tests-x86_64-8719e83-1_20220518
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/via/via-velocity.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/via/via-velocity.h b/drivers/net/ethernet/via/via-velocity.h
-index c02a9654dce6..ffdac6fac054 100644
---- a/drivers/net/ethernet/via/via-velocity.h
-+++ b/drivers/net/ethernet/via/via-velocity.h
-@@ -938,7 +938,7 @@ enum  velocity_owner {
- #define IMR_MASK_VALUE      0x0013FB0FUL	/* initial value of IMR
- 						   ignore MIBFI,RACEI to
- 						   reduce intr. frequency
--						   NOTE.... do not enable NoBuf int mask at driver driver
-+						   NOTE.... do not enable NoBuf int mask at driver
- 						      when (1) NoBuf -> RxThreshold = SF
- 							   (2) OK    -> RxThreshold = original value
- 						 */
--- 
-2.36.1
-
+kvm-unit-tests needs to be updated, commit bab19ca ("x86: do not overwrite bits
+7, 11 and 12 of MSR_IA32_MISC_ENABLE") fixes a test bug where it attempts to toggle
+read-only bits.
