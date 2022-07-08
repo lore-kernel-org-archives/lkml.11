@@ -2,72 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 084A1CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 22:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A320FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 22:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239854AbiGHWKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 18:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
+        id S239951AbiGHWNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 18:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbiGHWKe (ORCPT
+        with ESMTP id S239536AbiGHWNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 18:10:34 -0400
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900899FE06;
-        Fri,  8 Jul 2022 15:10:32 -0700 (PDT)
-Received: by mail-io1-f53.google.com with SMTP id u6so54327iop.5;
-        Fri, 08 Jul 2022 15:10:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oN8Bupin0hE35LPgYOevBJqhqJt/5KoteoM0acQHYOI=;
-        b=ouxvrYtNy128Cq/HU+Yk6pxMDlRkBIcfzN+meSU03e98GKJREdLA+Cb+fO4pmaBTsA
-         GjuOhxpBp9zlJSdpdmE66rJszpMa6rXo51b6WlMjO+hMcdvVFSeRaTmSSkXc3SEY7dOS
-         THMKCamGjGLMs7x+Oi8l29n/H9W2BuWYFtOxuILLR8jGPL4wscPBSJndAvKUAs5f6mGA
-         sh/F979dqCipM5dCqDhDnb/vdRaO5wiromGyXEiqJczmhidYvnbi8atgyeZhF4jwV3WD
-         Jokpno7JsC4K1ueWTUG360xm8JvwEb7FVvd669B39EHQHpxKCAfMF13rD+dIZ02CQdBP
-         GrSg==
-X-Gm-Message-State: AJIora/d9GLObBqpIIJ6G9OHvESnrQYxT8Rm1cdKoGDAHXWt6bkf9zCb
-        HGuIuMeNl7jzU2rZqHnzAQ==
-X-Google-Smtp-Source: AGRyM1vgvzoqD/VrjwnV1hgMdhHsLV/WW3CpbxY6wr8BZDe4k4zakYv2tFXWrRfkjJtuZF95e+K6UA==
-X-Received: by 2002:a05:6638:3d83:b0:33c:805a:77eb with SMTP id ci3-20020a0566383d8300b0033c805a77ebmr3525050jab.237.1657318231891;
-        Fri, 08 Jul 2022 15:10:31 -0700 (PDT)
-Received: from robh.at.kernel.org ([98.38.210.73])
-        by smtp.gmail.com with ESMTPSA id n28-20020a056602341c00b0067b7841c09asm14656ioz.15.2022.07.08.15.10.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 15:10:31 -0700 (PDT)
-Received: (nullmailer pid 1567732 invoked by uid 1000);
-        Fri, 08 Jul 2022 22:10:30 -0000
-Date:   Fri, 8 Jul 2022 16:10:30 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH] dt-bindings: usb: mtk-xhci: add compatible for mt8188
-Message-ID: <20220708221030.GA1567681-robh@kernel.org>
-References: <20220707015041.12264-1-chunfeng.yun@mediatek.com>
+        Fri, 8 Jul 2022 18:13:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E23A469;
+        Fri,  8 Jul 2022 15:13:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C621CB8299F;
+        Fri,  8 Jul 2022 22:13:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DAA0C341C0;
+        Fri,  8 Jul 2022 22:13:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657318410;
+        bh=qr9hXyMtBnv4Vq7MoL7+czDkG7MtG1o0tmvCrXRDC6g=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=DqL5PeTbNUlDvoTSwNfxSjrege045KYRB2xgaMAbQ7vDkGwkLhNsVabxY54rmiy5u
+         6tR7sbpvQwdtfPWzy8N9FPz6+e3+KMTVc6iwhG8RPEq8TIFV7GG5KEvC6dJqsy9kyE
+         TsqVCdtD3DQss1WTIwIsrKbDpPdmeQZKPlt60/DfjIXSYiiCehqjxUaPSvfFaWtZYm
+         3qTVgIpLduSNcYNu+fYFcUtKcBACdHB5kw18ike4msyfVMMcCseJn3o5YQKq6bNURO
+         WysBBevhWAjcNNNrgHCh7FqllYjrcmynLhWvCdeNrIpIdP+FOKcywSJCFf0BqmiH6y
+         Hn/Lky+5iQVDQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 01A965C0835; Fri,  8 Jul 2022 15:13:29 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 15:13:29 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     "frederic@kernel.org" <frederic@kernel.org>,
+        "quic_neeraju@quicinc.com" <quic_neeraju@quicinc.com>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] rcu: Make tiny RCU support leak callbacks for
+ debug-object errors
+Message-ID: <20220708221329.GZ1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220701024404.2228367-1-qiang1.zhang@intel.com>
+ <20220705174109.GD1790663@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880370195C11E8E943069CBDA809@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20220706035040.GG1790663@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880E86FD8C97088EC65B0A1DA809@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <PH0PR11MB5880176B380D4177EC6E8C61DA809@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220707015041.12264-1-chunfeng.yun@mediatek.com>
+In-Reply-To: <PH0PR11MB5880176B380D4177EC6E8C61DA809@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 07 Jul 2022 09:50:41 +0800, Chunfeng Yun wrote:
-> Add compatible for mt8188
+On Wed, Jul 06, 2022 at 04:24:03AM +0000, Zhang, Qiang1 wrote:
 > 
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-> ---
->  Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> On Wed, Jul 06, 2022 at 02:00:51AM +0000, Zhang, Qiang1 wrote:
+> > On Fri, Jul 01, 2022 at 10:44:04AM +0800, Zqiang wrote:
+> > > Currently, only tree RCU support leak callbacks setting when do
+> > > duplicate call_rcu(). this commit add leak callbacks setting when
+> > > fo duplicate call_rcu() for tiny RCU.
+> > > 
+> > > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> > 
+> > >This does look plausible, thank you!
+> > >
+> > >What testing have you done?
+> > >
+> > >One important test for Tiny RCU is that the size of the kernel not
+> > >grow without a very good reason.  In this case, the added code should
+> > >be dead code in a production build (CONFIG_DEBUG_OBJECTS_RCU_HEAD=n),
+> > >but it is good to check.
+> > >
+> > >It is of course also good to check that the messages print as expected,
+> > >which is what rcutorture.object_debug is there to help with.
+> > 
+> > In the condition that the CONFIG_DEBUG_OBJECTS_RCU_HEAD=n, the function directly returns zero.
+> > 
+> > #else   /* !CONFIG_DEBUG_OBJECTS_RCU_HEAD */
+> > static inline int debug_rcu_head_queue(struct rcu_head *head)
+> > {
+> >         return 0;
+> > }
+> >
+> >Yes, like I said, the added code -should- be dead code.  But there is
+> >often a gap between "should" and "is", for example, compilers don't
+> >always do what we would like them to.  So please use the "size vmlinux"
+> >command with and without your patch for a kernel built (both times)
+> >with CONFIG_TINY_RCU=y and CONFIG_DEBUG_OBJECTS_RCU_HEAD==n.
+> >
+> >The rest of the test results look good, thank you!
 > 
+> Hi Paul
+> 
+> 1. CONFIG_TINY_RCU=y and CONFIG_DEBUG_OBJECTS_RCU_HEAD=y
+> 
+> Original:
+> text                      data                   bss                   dec                     hex       filename
+> 26291319        20160143        15212544        61664006        3aceb06    vmlinux
+> 
+> Applay patch:
+> text                       data                  bss                     dec                 hex    filename
+> 26291319        20160431        15212544        61664294        3acec26 vmlinux
+> 
+> 2. CONFIG_TINY_RCU=y and CONFIG_DEBUG_OBJECTS_RCU_HEAD=n
+> 
+> Original:
+> text                    data                   bss                          dec     hex filename
+> 26290663        20159823        15212544        61663030        3ace736 vmlinux
+> 
+> Applay patch:
+> text                     data                     bss                    dec     hex filename
+> 26290663        20159823        15212544        61663030        3ace736 vmlinux
 
-Acked-by: Rob Herring <robh@kernel.org>
+Much better, thank you!
+
+Please see below for the commit updated with this information and
+wordsmithed a bit.  As always, please let me know if I messed something
+up.
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+commit 88cea4e18ed430aa1187063450236fc00408eaac
+Author: Zqiang <qiang1.zhang@intel.com>
+Date:   Fri Jul 1 10:44:04 2022 +0800
+
+    rcu: Make tiny RCU support leak callbacks for debug-object errors
+    
+    Currently, only Tree RCU leaks callbacks setting when it detects a
+    duplicate call_rcu().  This commit causes Tiny RCU to also leak
+    callbacks in this situation.
+    
+    Because this is Tiny RCU, kernel size is important:
+    
+    1. CONFIG_TINY_RCU=y and CONFIG_DEBUG_OBJECTS_RCU_HEAD=n
+       (Production kernel)
+    
+        Original:
+        text      data      bss       dec       hex     filename
+        26290663  20159823  15212544  61663030  3ace736 vmlinux
+    
+        With this commit:
+        text      data      bss       dec       hex     filename
+        26290663  20159823  15212544  61663030  3ace736 vmlinux
+    
+    2. CONFIG_TINY_RCU=y and CONFIG_DEBUG_OBJECTS_RCU_HEAD=y
+       (Debugging kernel)
+    
+        Original:
+        text      data      bss       dec       hex     filename
+        26291319  20160143  15212544  61664006  3aceb06 vmlinux
+    
+        With this commit:
+        text      data      bss       dec       hex     filename
+        26291319  20160431  15212544  61664294  3acec26 vmlinux
+    
+    These results show that the kernel size is unchanged for production
+    kernels, as desired.
+    
+    Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+
+diff --git a/kernel/rcu/tiny.c b/kernel/rcu/tiny.c
+index f0561ee16b9c2..943d431b908f6 100644
+--- a/kernel/rcu/tiny.c
++++ b/kernel/rcu/tiny.c
+@@ -158,6 +158,10 @@ void synchronize_rcu(void)
+ }
+ EXPORT_SYMBOL_GPL(synchronize_rcu);
+ 
++static void tiny_rcu_leak_callback(struct rcu_head *rhp)
++{
++}
++
+ /*
+  * Post an RCU callback to be invoked after the end of an RCU grace
+  * period.  But since we have but one CPU, that would be after any
+@@ -165,9 +169,20 @@ EXPORT_SYMBOL_GPL(synchronize_rcu);
+  */
+ void call_rcu(struct rcu_head *head, rcu_callback_t func)
+ {
++	static atomic_t doublefrees;
+ 	unsigned long flags;
+ 
+-	debug_rcu_head_queue(head);
++	if (debug_rcu_head_queue(head)) {
++		if (atomic_inc_return(&doublefrees) < 4) {
++			pr_err("%s(): Double-freed CB %p->%pS()!!!  ", __func__, head, head->func);
++			mem_dump_obj(head);
++		}
++
++		if (!__is_kvfree_rcu_offset((unsigned long)head->func))
++			WRITE_ONCE(head->func, tiny_rcu_leak_callback);
++		return;
++	}
++
+ 	head->func = func;
+ 	head->next = NULL;
+ 
