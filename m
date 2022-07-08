@@ -2,107 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1893EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 10:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AADDDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 10:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237381AbiGHKBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 06:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
+        id S237526AbiGHKCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 06:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237298AbiGHKBj (ORCPT
+        with ESMTP id S237298AbiGHKCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 06:01:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0A683F1A;
-        Fri,  8 Jul 2022 03:01:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C387462315;
-        Fri,  8 Jul 2022 10:01:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCDCFC341C0;
-        Fri,  8 Jul 2022 10:01:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657274497;
-        bh=u/AQjMr5Y/sNit28VcEutT4SJmwx63rssPloTC1VMoU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d0tsQlbIUX8/3kqzit/yz68WvkkUKFPstytVPvt9WU6AbWoJZwHr32t+LSIKw0Rvd
-         +SVubFy0CwYjtwk3eIuKGbnHpVkCcli5z0gZE/m1a9C0EjWNM/Z2IZloq9sJ8fjvqG
-         k5c7QaOMHqvZQ4ShxhNYvZCzp5D1rRK5/FSTOfds=
-Date:   Fri, 8 Jul 2022 12:01:34 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "yekai(A)" <yekai13@huawei.com>
-Cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, wangzhou1@hisilicon.com
-Subject: Re: [PATCH v5 1/3] uacce: supports device isolation feature
-Message-ID: <YsgAflazb061YgC+@kroah.com>
-References: <20220708070820.43958-1-yekai13@huawei.com>
- <20220708070820.43958-2-yekai13@huawei.com>
- <YsfctnUkPCo+qGJW@kroah.com>
- <288f82bf-ca0b-b049-4dcf-fd7b6a29607b@huawei.com>
+        Fri, 8 Jul 2022 06:02:14 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B3B83F18;
+        Fri,  8 Jul 2022 03:02:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657274533; x=1688810533;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jXwem7MyMyTEeSilwpw/3LwkDeEvgtyjSeZFs1hTWFc=;
+  b=Nf1LLnlPqmLB5mHa45DAYS9bo3jJ0p0xBm1Iw0nJ1Z1mc8bc+BUXyZgB
+   Jz3KVHbmCN+Ef16SDvjlyLpZkdYxtK2uC/PsCX5Fn9YKVvZnnHDLg1lqV
+   MAwsoJ22B2YvczhZc68D5deFuysSnz+wrQlMFB8VSk/iFd70bPs3dUhs6
+   MxTPOcxLoqS2Cl6q2WvLa13Rmz4CNNL0KJL3Uu5asa6Rg/f4l3F78hvUy
+   TuzMmKJ8P5gZZfvuHt2vpC8J+3YYRr+YVyb7QM1I9vXmpnDczDsISQXyv
+   k0bxnSyKUGkg8ZL+zevVCrae78VbRgL8oxF5C8YBLcUtM0payXWi9rstN
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="281796165"
+X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
+   d="scan'208";a="281796165"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 03:02:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
+   d="scan'208";a="920944487"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 08 Jul 2022 03:02:11 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 12FCACE; Fri,  8 Jul 2022 13:02:18 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH v2 1/1] i2c: scmi: Replace open coded device_get_match_data()
+Date:   Fri,  8 Jul 2022 13:02:16 +0300
+Message-Id: <20220708100216.84300-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <288f82bf-ca0b-b049-4dcf-fd7b6a29607b@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 05:33:42PM +0800, yekai(A) wrote:
-> 
-> 
-> On 2022/7/8 15:28, Greg KH wrote:
-> > On Fri, Jul 08, 2022 at 03:08:18PM +0800, Kai Ye wrote:
-> > > UACCE adds the hardware error isolation API. Users can configure
-> > > the isolation frequency by this sysfs node. UACCE reports the device
-> > > isolate state to the user space. If the AER error frequency exceeds
-> > > the value of setting for a certain period of time, the device will be
-> > > isolated.
-> > > 
-> > > Signed-off-by: Kai Ye <yekai13@huawei.com>
-> > > ---
-> > >  drivers/misc/uacce/uacce.c | 55 ++++++++++++++++++++++++++++++++++++++
-> > >  include/linux/uacce.h      | 11 ++++++++
-> > >  2 files changed, 66 insertions(+)
-> > > 
-> > > diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-> > > index 281c54003edc..d07b5f1f0596 100644
-> > > --- a/drivers/misc/uacce/uacce.c
-> > > +++ b/drivers/misc/uacce/uacce.c
-> > > @@ -7,6 +7,8 @@
-> > >  #include <linux/slab.h>
-> > >  #include <linux/uacce.h>
-> > > 
-> > > +#define MAX_ERR_ISOLATE_COUNT		65535
-> > > +
-> > >  static struct class *uacce_class;
-> > >  static dev_t uacce_devt;
-> > >  static DEFINE_MUTEX(uacce_mutex);
-> > > @@ -339,12 +341,63 @@ static ssize_t region_dus_size_show(struct device *dev,
-> > >  		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
-> > >  }
-> > > 
-> > > +static ssize_t isolate_show(struct device *dev,
-> > > +			    struct device_attribute *attr, char *buf)
-> > > +{
-> > > +	struct uacce_device *uacce = to_uacce_device(dev);
-> > > +
-> > > +	if (!uacce->ops->get_isolate_state)
-> > > +		return -ENODEV;
-> > 
-> > If there is no callback, why is this sysfs even created at all?  Please
-> > do not create it if it can not be accessed.
-> > 
-> > Use the is_visable() callback for the group to do this.
-> > 
-> 
-> If is_visable() is used as the judgment, all uacce device nodes cannot be
-> registered if there is no callback by test.
+Replace open coded device_get_match_data() in acpi_smbus_cmi_add().
 
-I am sorry, I do not understand.  That callback is to be used for this
-type of thing, and works for lots of driver subsystems.  Why exactly
-will it not work here as well?
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: used device_get_match_data() instead
+ drivers/i2c/busses/i2c-scmi.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-thanks,
+diff --git a/drivers/i2c/busses/i2c-scmi.c b/drivers/i2c/busses/i2c-scmi.c
+index 6746aa46d96c..ab318ff78a82 100644
+--- a/drivers/i2c/busses/i2c-scmi.c
++++ b/drivers/i2c/busses/i2c-scmi.c
+@@ -369,6 +369,7 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
+ 		return -ENOMEM;
+ 
+ 	smbus_cmi->handle = device->handle;
++	smbus_cmi->methods = device_get_match_data(&device->dev);
+ 	strcpy(acpi_device_name(device), ACPI_SMBUS_HC_DEVICE_NAME);
+ 	strcpy(acpi_device_class(device), ACPI_SMBUS_HC_CLASS);
+ 	device->driver_data = smbus_cmi;
+@@ -376,11 +377,6 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
+ 	smbus_cmi->cap_read = 0;
+ 	smbus_cmi->cap_write = 0;
+ 
+-	for (id = acpi_smbus_cmi_ids; id->id[0]; id++)
+-		if (!strcmp(id->id, acpi_device_hid(device)))
+-			smbus_cmi->methods =
+-				(struct smbus_methods_t *) id->driver_data;
+-
+ 	acpi_walk_namespace(ACPI_TYPE_METHOD, smbus_cmi->handle, 1,
+ 			    acpi_smbus_cmi_query_methods, NULL, smbus_cmi, NULL);
+ 
+-- 
+2.35.1
 
-greg k-h
