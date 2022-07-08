@@ -2,171 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F228FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8B8CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237243AbiGHHKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S237299AbiGHHLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236803AbiGHHKn (ORCPT
+        with ESMTP id S236525AbiGHHLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:10:43 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DFE7694E;
-        Fri,  8 Jul 2022 00:10:41 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LfPZ564nVz4xRC;
-        Fri,  8 Jul 2022 17:10:37 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657264240;
-        bh=g2bE+8fl/oBbo7lnGZqOvhPk3U8/hBGpGnWzWC/HYSY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=cvdvol/JK1lXHXiWkyY3umERUj6tSYIV0GepFBnv/X3K+XSPQNEsEKHEp0La6O6rf
-         oVYJB6S9dFT8DN0/Np4OqM+z4Xpw+YCboY908C0CyjBceHVzoYSMVKIvxWfJ8WxER9
-         JfkVaybPAAGCcshgpGZJSdaS7euDEzp46igAt3Kxfkr30fyd+ELYJlUXxnBfMVN2Mo
-         /8hkDebDg5t7DKQwa7X4BD0Chdr6SDCxXeuf5NmbxpIE9CfhWQ/zYSWhP1RxO9KZPa
-         XH9pqPtCHubC5cdihDsNmwUCHm0cbXiDe0wi5pmReJkylVQhCMpFseVMS4zL/SaI8p
-         SJRVCgyd3FDwg==
-Date:   Fri, 8 Jul 2022 17:10:30 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Theodore Ts'o <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Borislav Petkov <bp@suse.de>, Jonathan McDowell <noodles@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the random tree with the tip tree
-Message-ID: <20220708171030.135b12cd@canb.auug.org.au>
+        Fri, 8 Jul 2022 03:11:45 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB47735A0;
+        Fri,  8 Jul 2022 00:11:43 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LfPbL07kvz9tJ1;
+        Fri,  8 Jul 2022 09:11:42 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id WHe5ROC2Guch; Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LfPbK6Jjwz9tDK;
+        Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id C65598B7A7;
+        Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id s-F0zO7ju3R4; Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.233.202])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 726B48B76C;
+        Fri,  8 Jul 2022 09:11:41 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2687BSws603403
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 8 Jul 2022 09:11:28 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2687BSLj603402;
+        Fri, 8 Jul 2022 09:11:28 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, deller@gmx.de,
+        manoj@linux.ibm.com, mrochs@linux.ibm.com, ukrishn@linux.ibm.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, tzimmermann@suse.de
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v3 3/4] powerpc: Remove asm/prom.h from asm/mpc52xx.h and asm/pci.h
+Date:   Fri,  8 Jul 2022 09:11:07 +0200
+Message-Id: <cf5243343e2364c2b40f22ee5ad9a6e2453d1121.1657264228.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <f75b383673663e27f6b57e50b4abfb9fe3780b00.1657264228.git.christophe.leroy@csgroup.eu>
+References: <f75b383673663e27f6b57e50b4abfb9fe3780b00.1657264228.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Avnb=Jv4FeixyahQTk7zHJk";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1657264266; l=1729; s=20211009; h=from:subject:message-id; bh=i0Z1UEPZjbP1/SK0DF+c1njT/ERZZTtQbMiEmmoLlwE=; b=i+CN5DB1x2n6dy3E7dKZtXZyHiRDIr7r9sR2CpWiqnSsEXuGrRJwVNe7CUMHL81xae2eB9GDF1dn 3+OObRN6C1H2SSBJz7Okwz9HfEQXyZzEBpNrbq9i6E73lAs/wuhJ
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Avnb=Jv4FeixyahQTk7zHJk
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+asm/pci.h and asm/mpc52xx.h don't need asm/prom.h
 
-Hi all,
+Declare struct device_node locally to avoid including of.h
 
-Today's linux-next merge of the random tree got conflicts in:
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+v3: Add prom.h to prom.c
+---
+ arch/powerpc/include/asm/mpc52xx.h | 3 ++-
+ arch/powerpc/include/asm/pci.h     | 1 -
+ arch/powerpc/kernel/prom.c         | 1 +
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
-  arch/x86/include/uapi/asm/bootparam.h
-  arch/x86/kernel/kexec-bzimage64.c
-  arch/x86/kernel/setup.c
+diff --git a/arch/powerpc/include/asm/mpc52xx.h b/arch/powerpc/include/asm/mpc52xx.h
+index ddd80aae1e32..5ea16a71c2f0 100644
+--- a/arch/powerpc/include/asm/mpc52xx.h
++++ b/arch/powerpc/include/asm/mpc52xx.h
+@@ -15,7 +15,6 @@
+ 
+ #ifndef __ASSEMBLY__
+ #include <asm/types.h>
+-#include <asm/prom.h>
+ #include <asm/mpc5xxx.h>
+ #endif /* __ASSEMBLY__ */
+ 
+@@ -268,6 +267,8 @@ struct mpc52xx_intr {
+ 
+ #ifndef __ASSEMBLY__
+ 
++struct device_node;
++
+ /* mpc52xx_common.c */
+ extern void mpc5200_setup_xlb_arbiter(void);
+ extern void mpc52xx_declare_of_platform_devices(void);
+diff --git a/arch/powerpc/include/asm/pci.h b/arch/powerpc/include/asm/pci.h
+index 915d6ee4b40a..0f182074cdb7 100644
+--- a/arch/powerpc/include/asm/pci.h
++++ b/arch/powerpc/include/asm/pci.h
+@@ -14,7 +14,6 @@
+ 
+ #include <asm/machdep.h>
+ #include <asm/io.h>
+-#include <asm/prom.h>
+ #include <asm/pci-bridge.h>
+ 
+ /* Return values for pci_controller_ops.probe_mode function */
+diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
+index 1066b072db35..0a68c99da573 100644
+--- a/arch/powerpc/kernel/prom.c
++++ b/arch/powerpc/kernel/prom.c
+@@ -54,6 +54,7 @@
+ #include <asm/dt_cpu_ftrs.h>
+ #include <asm/drmem.h>
+ #include <asm/ultravisor.h>
++#include <asm/prom.h>
+ 
+ #include <mm/mmu_decl.h>
+ 
+-- 
+2.36.1
 
-between commit:
-
-  b69a2afd5afc ("x86/kexec: Carry forward IMA measurement log on kexec")
-
-from the tip tree and commit:
-
-  c337d5c7ec9b ("x86/setup: Use rng seeds from setup_data")
-
-from the random tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc arch/x86/include/uapi/asm/bootparam.h
-index ca0796ac4403,a60676b8d1d4..000000000000
---- a/arch/x86/include/uapi/asm/bootparam.h
-+++ b/arch/x86/include/uapi/asm/bootparam.h
-@@@ -11,7 -11,7 +11,8 @@@
-  #define SETUP_APPLE_PROPERTIES		5
-  #define SETUP_JAILHOUSE			6
-  #define SETUP_CC_BLOB			7
- -#define SETUP_RNG_SEED			8
- +#define SETUP_IMA			8
-++#define SETUP_RNG_SEED			9
- =20
-  #define SETUP_INDIRECT			(1<<31)
- =20
-diff --cc arch/x86/kernel/kexec-bzimage64.c
-index c63974e94272,13b2c55ebbf0..000000000000
---- a/arch/x86/kernel/kexec-bzimage64.c
-+++ b/arch/x86/kernel/kexec-bzimage64.c
-@@@ -217,7 -212,8 +239,8 @@@ static in
-  setup_boot_parameters(struct kimage *image, struct boot_params *params,
-  		      unsigned long params_load_addr,
-  		      unsigned int efi_map_offset, unsigned int efi_map_sz,
-- 		      unsigned int setup_data_offset)
- -		      unsigned int efi_setup_data_offset,
-++		      unsigned int setup_data_offset,
-+ 		      unsigned int rng_seed_setup_data_offset)
-  {
-  	unsigned int nr_e820_entries;
-  	unsigned long long mem_k, start, end;
-@@@ -435,12 -427,10 +461,14 @@@ static void *bzImage64_load(struct kima
-  	params_cmdline_sz =3D ALIGN(params_cmdline_sz, 16);
-  	kbuf.bufsz =3D params_cmdline_sz + ALIGN(efi_map_sz, 16) +
-  				sizeof(struct setup_data) +
-- 				sizeof(struct efi_setup_data);
-+ 				sizeof(struct efi_setup_data) +
-+ 				sizeof(struct setup_data) +
-+ 				RNG_SEED_LENGTH;
- =20
- +	if (IS_ENABLED(CONFIG_IMA_KEXEC))
- +		kbuf.bufsz +=3D sizeof(struct setup_data) +
- +			      sizeof(struct ima_setup_data);
- +
-  	params =3D kzalloc(kbuf.bufsz, GFP_KERNEL);
-  	if (!params)
-  		return ERR_PTR(-ENOMEM);
-diff --cc arch/x86/kernel/setup.c
-index 53f863f28b4c,409de5308a8c..000000000000
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@@ -415,9 -356,15 +416,18 @@@ static void __init parse_setup_data(voi
-  		case SETUP_EFI:
-  			parse_efi_setup(pa_data, data_len);
-  			break;
- +		case SETUP_IMA:
- +			add_early_ima_buffer(pa_data);
- +			break;
-+ 		case SETUP_RNG_SEED:
-+ 			data =3D early_memremap(pa_data, data_len);
-+ 			add_bootloader_randomness(data->data, data->len);
-+ 			/* Zero seed for forward secrecy. */
-+ 			memzero_explicit(data->data, data->len);
-+ 			/* Zero length in case we find ourselves back here by accident. */
-+ 			memzero_explicit(&data->len, sizeof(data->len));
-+ 			early_memunmap(data, data_len);
-+ 			break;
-  		default:
-  			break;
-  		}
-
---Sig_/Avnb=Jv4FeixyahQTk7zHJk
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLH2GYACgkQAVBC80lX
-0Gyptgf/UryjIQXJ/UAbkaQGeEkhF+b7gmeNmjrSWtf4rdHP2EKo7J7IfN4XXT2u
-4hWw4CVjHTTfB9w/T9N0Bgw04UJv6wVUyE6ySWkDL+EKI+wQPKaw1qsSMovHdIbx
-pWc4jk8M2B9OBS9SRYJzJ5Qhe++rGRUdbSzc6IslLtgS/iwLJ6vjyIjhALOCl0+i
-BXA95abPBAdxRiGgS96ZZbGSPEQZXdSjcCMDnKqiJBwFT7Z4qDHuhDhcxCCbISCc
-xPjre+L/14TnwyUP4MkrDoLEblFok3rR776IzkhC0fuMHZv5Bzwi+oZGluBgDzw/
-oPbaBMNLHGx7wKvBH+m+bzcjvDSKzw==
-=kNmJ
------END PGP SIGNATURE-----
-
---Sig_/Avnb=Jv4FeixyahQTk7zHJk--
