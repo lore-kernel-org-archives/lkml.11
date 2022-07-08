@@ -2,160 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 04:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFBDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 04:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237318AbiGHEsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 00:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
+        id S237358AbiGHEtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 00:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237246AbiGHEsa (ORCPT
+        with ESMTP id S237340AbiGHEtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 00:48:30 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35EDB7C5;
-        Thu,  7 Jul 2022 21:48:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657255708; x=1688791708;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JMwN4AOFcj3XnN0nw4WIO8eRYRgOHL+c7NhVdR93iTc=;
-  b=KxwSwRdmmObG689t8WjU2EtDLUK0hTqpj1Gh3CmZ9OdU9fV1XBb4ixEE
-   p/iWA7COYTqKo3qeho+z9t8uSVYjgViahRzAB8bp4/0yAgrBvqCLqtRlv
-   hk5Kw+dAv2ryNhZ4eujmzQaTNWgmm/0pvBwys43QV39Lo4pSB+U/+s9B1
-   4QpPS8Ylg5AI23DlmA6zWnO4Wh4qrSCqpL8jnYxX/SOjySfKF4ziy0KyK
-   7AUslSDkWwbSmt7BzzYaZDKFg7LS2bFciwp1LUagNhRstUUiMMziHMEuJ
-   twmqLLf9JCoSNOc0vN+wg7GL0RGFx2N2TzgbAbQTM3HJ/lBO5lSdfMRQH
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="267220402"
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="267220402"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 21:48:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="920860672"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 07 Jul 2022 21:48:25 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9fui-000Mvu-B1;
-        Fri, 08 Jul 2022 04:48:24 +0000
-Date:   Fri, 8 Jul 2022 12:48:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, quic_msavaliy@quicinc.com,
-        dianders@chromium.org, mka@chromium.org, swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: Re: [V3] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-Message-ID: <202207081234.3SPgl4KO-lkp@intel.com>
-References: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
+        Fri, 8 Jul 2022 00:49:09 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9147393B
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 21:49:06 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id l15-20020a17090a660f00b001ef7b1d2289so514889pjj.9
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 21:49:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=VZyJYOYOmyBhccquB8jdOUnepxpHA2EaXyI1P4UgbZk=;
+        b=OHzkH6CUxvF29C6YQodBsFfPokm7+7etvB60EYT5rIwMD9OH9U0AtmpXKx8ZweKRed
+         oVZZWfzMiTxQCiJZmTzZFy/2zT1zAwz/QiMCizqTeCDDUMzkWm28PYce3SbM5zzYBW77
+         yV0Uad6HwQFnl1WR7X0N9vmmphNFvmNcYpOaRGosGMuX2CSg5QrwApAEgKVwDHQTpcxy
+         Sky7eDBPBbF7SJ/f16wadWBTNZoJ/jocoStlAp9thvE9KSXkl3BZyWZ1QT9Zu68DamHv
+         OkCWlI0K2FLP1JijkIPh/bzpwjR0tPLlC54olqaueZJM3XL7OldUYMDKpjvcPNHZcS7f
+         1tug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=VZyJYOYOmyBhccquB8jdOUnepxpHA2EaXyI1P4UgbZk=;
+        b=c8c7FFpYKYa0oad6I2mmyNWBJGbfWQS9GGxYBXg/irm5TYGPP0B/4W6p/LXJ/49GPw
+         rVfjWMlxkrHTMy1r01pFgwKXaYYA6WzRhE1LXM19xd4SCcbWj/sGQMEu1tNi3rPI9LTN
+         mCfsUNhqtmrEPNd3h5UIsjew0w+W0BXpw3bZ9ofqW/5VDI7f8YG+ePqxMk7BjauMW4XJ
+         ypSvSJnoFmICoAewFHWYwcscZbuwtIJPJVs9/RlgcOv2ycK/kyXO3guAvmZuBZ0ELM1a
+         rGT6yJVjLA7kDe7bVwY/cDn/IuYqNaWKwdi7bziqODPecuDxueMFwupIlLSGj9mRkGNa
+         qONQ==
+X-Gm-Message-State: AJIora8ryhbvBBB7h9AC0cKivHwfpywkm7p1NjL7l0fK1h+jk3ofamxO
+        hqgZ4W1LLQT6xr6pNYsjI9oJ95QZ5zZXmg==
+X-Google-Smtp-Source: AGRyM1v/UKrknfucMWmYcBRyH1xUQKjKyi5ZMpliyIdbk8sMgra7H2LLCj2bXBXPVZ4KhAqUnXO25gVfJYLhfQ==
+X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
+ (user=davidgow job=sendgmr) by 2002:a05:6a00:1895:b0:527:f270:64de with SMTP
+ id x21-20020a056a00189500b00527f27064demr1678536pfh.61.1657255746437; Thu, 07
+ Jul 2022 21:49:06 -0700 (PDT)
+Date:   Fri,  8 Jul 2022 12:48:44 +0800
+Message-Id: <20220708044847.531566-1-davidgow@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v6 1/4] panic: Taint kernel if tests are run
+From:   David Gow <davidgow@google.com>
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Cc:     David Gow <davidgow@google.com>,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Joe Fradley <joefradley@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kbuild@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vijaya,
+Most in-kernel tests (such as KUnit tests) are not supposed to run on
+production systems: they may do deliberately illegal things to trigger
+errors, and have security implications (for example, KUnit assertions
+will often deliberately leak kernel addresses).
 
-Thank you for the patch! Perhaps something to improve:
+Add a new taint type, TAINT_TEST to signal that a test has been run.
+This will be printed as 'N' (originally for kuNit, as every other
+sensible letter was taken.)
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on linus/master v5.19-rc5 next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+This should discourage people from running these tests on production
+systems, and to make it easier to tell if tests have been run
+accidentally (by loading the wrong configuration, etc.)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220708-031921
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: nios2-randconfig-r024-20220707 (https://download.01.org/0day-ci/archive/20220708/202207081234.3SPgl4KO-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fbd8a1a4b7d91ea5caa048e4557ab18b0d08ea86
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220708-031921
-        git checkout fbd8a1a4b7d91ea5caa048e4557ab18b0d08ea86
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/tty/serial/
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: David Gow <davidgow@google.com>
+---
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This is v6 of the "make tests taint the kernel" patchset. The only
+changes since v5 (which is the version in linux-next at time of writing)
+are some rather critical fixes to patch 2/4, where the cruicial check
+was inverted. (Oops!)
 
-All warnings (new ones prefixed by >>):
+The 'N' character for the taint is even less useful now that it's no
+longer short for kuNit, but all the letters in TEST are taken. :-(
 
-   In file included from include/linux/kernel.h:29,
-                    from include/linux/clk.h:13,
-                    from drivers/tty/serial/qcom_geni_serial.c:4:
-   drivers/tty/serial/qcom_geni_serial.c: In function 'get_clk_div_rate':
->> drivers/tty/serial/qcom_geni_serial.c:1006:26: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'unsigned int' [-Wformat=]
-    1006 |                 pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
-         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:370:21: note: in definition of macro 'pr_fmt'
-     370 | #define pr_fmt(fmt) fmt
-         |                     ^~~
-   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
-     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
-     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:604:9: note: in expansion of macro 'dynamic_pr_debug'
-     604 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   drivers/tty/serial/qcom_geni_serial.c:1006:17: note: in expansion of macro 'pr_debug'
-    1006 |                 pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
-         |                 ^~~~~~~~
-   drivers/tty/serial/qcom_geni_serial.c:1006:67: note: format string is defined here
-    1006 |                 pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
-         |                                                                 ~~^
-         |                                                                   |
-         |                                                                   long unsigned int
-         |                                                                 %u
+No changes since v5:
+https://lore.kernel.org/linux-kselftest/20220702040959.3232874-1-davidgow@google.com/
 
+No changes since v4:
+https://lore.kernel.org/linux-kselftest/20220701084744.3002019-1-davidgow@google.com/
 
-vim +1006 drivers/tty/serial/qcom_geni_serial.c
+Changes since v3:
+https://lore.kernel.org/lkml/20220513083212.3537869-1-davidgow@google.com/
+- Remove the mention of KUnit from the documentation.
+- Add Luis and Brendan's Acked/Reviewed-by tags.
 
-   983	
-   984	static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
-   985				unsigned int sampling_rate, unsigned int *clk_div)
-   986	{
-   987		unsigned long ser_clk;
-   988		unsigned long desired_clk;
-   989	
-   990		desired_clk = baud * sampling_rate;
-   991		if (!desired_clk) {
-   992			pr_err("%s: Invalid frequency\n", __func__);
-   993			return 0;
-   994		}
-   995	
-   996		/*
-   997		 * try to find a clock rate within 2% tolerance, then within
-   998		 */
-   999		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
-  1000		if (!ser_clk)
-  1001			ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
-  1002	
-  1003		if (!ser_clk)
-  1004			pr_err("Couldn't find suitable clock rate for %lu\n", desired_clk);
-  1005		else
-> 1006			pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
-  1007				desired_clk, ser_clk, *clk_div);
-  1008	
-  1009		return ser_clk;
-  1010	}
-  1011	
+Changes since v2:
+https://lore.kernel.org/linux-kselftest/20220430030019.803481-1-davidgow@google.com/
+- Rename TAINT_KUNIT -> TAINT_TEST.
+- Split into separate patches for adding the taint, and triggering it.
+- Taint on a kselftest_module being loaded (patch 3/3)
 
+Changes since v1:
+https://lore.kernel.org/linux-kselftest/20220429043913.626647-1-davidgow@google.com/
+- Make the taint per-module, to handle the case when tests are in
+  (longer lasting) modules. (Thanks Greg KH).
+
+Note that this still has checkpatch.pl warnings around bracket
+placement, which are intentional as part of matching the surrounding
+code.
+
+---
+ Documentation/admin-guide/tainted-kernels.rst | 1 +
+ include/linux/panic.h                         | 3 ++-
+ kernel/panic.c                                | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/admin-guide/tainted-kernels.rst b/Documentation/admin-guide/tainted-kernels.rst
+index ceeed7b0798d..7d80e8c307d1 100644
+--- a/Documentation/admin-guide/tainted-kernels.rst
++++ b/Documentation/admin-guide/tainted-kernels.rst
+@@ -100,6 +100,7 @@ Bit  Log  Number  Reason that got the kernel tainted
+  15  _/K   32768  kernel has been live patched
+  16  _/X   65536  auxiliary taint, defined for and used by distros
+  17  _/T  131072  kernel was built with the struct randomization plugin
++ 18  _/N  262144  an in-kernel test has been run
+ ===  ===  ======  ========================================================
+ 
+ Note: The character ``_`` is representing a blank in this table to make reading
+diff --git a/include/linux/panic.h b/include/linux/panic.h
+index e71161da69c4..c7759b3f2045 100644
+--- a/include/linux/panic.h
++++ b/include/linux/panic.h
+@@ -68,7 +68,8 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
+ #define TAINT_LIVEPATCH			15
+ #define TAINT_AUX			16
+ #define TAINT_RANDSTRUCT		17
+-#define TAINT_FLAGS_COUNT		18
++#define TAINT_TEST			18
++#define TAINT_FLAGS_COUNT		19
+ #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
+ 
+ struct taint_flag {
+diff --git a/kernel/panic.c b/kernel/panic.c
+index a3c758dba15a..6b3369e21026 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -428,6 +428,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+ 	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
+ 	[ TAINT_AUX ]			= { 'X', ' ', true },
+ 	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
++	[ TAINT_TEST ]			= { 'N', ' ', true },
+ };
+ 
+ /**
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.0.rc0.161.g10f37bed90-goog
+
