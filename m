@@ -2,102 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F00C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 06:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA45C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 06:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237433AbiGHGwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 02:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
+        id S237268AbiGHGyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 02:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237414AbiGHGwe (ORCPT
+        with ESMTP id S236525AbiGHGyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 02:52:34 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF006EE9C;
-        Thu,  7 Jul 2022 23:52:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657263153; x=1688799153;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QIOfrS9Mg8mDpfgg0AWFxkQHpTHuQeEmTtCHCmLAbsc=;
-  b=EtjtPgeGc73fbn3ugI0CXgz6Sx7nreQ31HvzReNgj/roLiNUAKHuoiK0
-   vuR/4T0KZJo6ORII2iSqPgp3ANiAajdCU7vvjmXgBtoMELpCxzO8ydNhG
-   XEq8BQ9UuFa9DNe0nrNy6NjVcZ3OVjtN2HArYQ8G7Zi+RnLB2WCH0UyP2
-   MH5ZbbDd9nm+L+o+oFu6cxVWD/MVmzeillq4JMkcyuVjeZAQ7i06rxgGi
-   JnNg9/IyN5P5B+US3CfgDuB7I3K3/KAkP0Dp4qxhR/Z46sklylwfQoRPI
-   IMp9LX4NwGKJ/xEX0H1KC89t6Hg9Lzp2G5R0z52gSKXxHuSfikpuvO+YI
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284949289"
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="284949289"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:52:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="736239583"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Jul 2022 23:52:30 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9hqn-000N3q-OY;
-        Fri, 08 Jul 2022 06:52:29 +0000
-Date:   Fri, 8 Jul 2022 14:52:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Manish Mandlik <mmandlik@google.com>, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     kbuild-all@lists.01.org, linux-bluetooth@vger.kernel.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Manish Mandlik <mmandlik@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] Bluetooth: Add sysfs entry to enable/disable
- devcoredump
-Message-ID: <202207081448.MghkbBvn-lkp@intel.com>
-References: <20220707151420.v3.2.I39885624992dacff236aed268bdaa69107cd1310@changeid>
+        Fri, 8 Jul 2022 02:54:03 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F953336F
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Jul 2022 23:54:02 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id t5-20020a17090a6a0500b001ef965b262eso976482pjj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Jul 2022 23:54:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0p61jryZuWaf1iGD9+TAoIkONnO1xU2zlDvB4A/KVzs=;
+        b=GLmvoPsbiHtgH2eGzPxYNLXxZX0qe5xIG4Sy0HP38kF1R2Szz+cWEZYv1i8PCqPCPr
+         cJEl8ppu7J542D283nq0toeQeCT358Xa/Qy8y7+5LUfHx7YstzBHbj+a83Cm+z1bYLzH
+         nSzxH0/MPOEfJJDox+A9pskztk8Esdqs0exLhxgyBlis9od3dI3s8270aXKlqwu/hWdH
+         Bs+pR0T5/zPwkMmlt4VzVJDmrQn0zSvCthA82trIHb0xza6OFn/fCCPdYhx5DfClZhxX
+         +yLWROGc5B64Ctxzevsdf3mruBDw4kut0yo4zz72+UApJY63FTgVnBpOhyiUOdfRlGw+
+         cMIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0p61jryZuWaf1iGD9+TAoIkONnO1xU2zlDvB4A/KVzs=;
+        b=M7Tbj5vjehCV3q9ZavdZWxW1YFdtQceDqEp4TBPLuLo1WVouH7ajnL4PwP9pJtOsZH
+         kvBxGNh0Peo6JkhiHLr3aV3HAyDd3DOjPeNV+VEHCk05ZTiCf+SvOMMHE5sqvvK0GsxN
+         vUEy9K3M5sRK6zNfdT8B2BJrQc8Hfw42GycY1FvTy6lqnSYF03bb+ECB33FYhjX96sGN
+         knazq/5JT7PS9/uSk943PjOwpV/tdoIQmlloOF4hKto4+tgPCiPi9Tgcvn1OZlYXqtDC
+         JbLOhT7ChzS2AGyQltJ8V5n4rEdUAuvzGhMHEmqhU4CztfEuG3Ply07l0beZcYska54t
+         x/Bg==
+X-Gm-Message-State: AJIora+K54wyDDvDLSHQonMbyoT97AWmZMm6wmp2a9UZL/0eT1Z2BffI
+        5xfbUjJDMGZhTYCHBhtzKuE=
+X-Google-Smtp-Source: AGRyM1vrwPHyFjhMroybc7pp8FAWHGkAkseJUTPhLVf+GmUICbMKlCZgjY9v+SEeF2Bwe/0f8u0MLw==
+X-Received: by 2002:a17:90b:4b11:b0:1ef:d1e4:b302 with SMTP id lx17-20020a17090b4b1100b001efd1e4b302mr8473989pjb.73.1657263242274;
+        Thu, 07 Jul 2022 23:54:02 -0700 (PDT)
+Received: from localhost.localdomain ([129.227.148.126])
+        by smtp.gmail.com with ESMTPSA id c17-20020a170903235100b0016bdf53b303sm10913397plh.205.2022.07.07.23.53.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 23:54:01 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     srinivas.kandagatla@linaro.org
+Cc:     linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] nvmem: fix possible integer overflow in nintendo_otp_reg_read()
+Date:   Fri,  8 Jul 2022 14:53:46 +0800
+Message-Id: <20220708065346.30727-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707151420.v3.2.I39885624992dacff236aed268bdaa69107cd1310@changeid>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Manish,
+bytes of type size_t is passed to words of type int in
+nintendo_otp_reg_read. This can lead to integer overflow.
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+ drivers/nvmem/nintendo-otp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[auto build test WARNING on bluetooth/master]
-[also build test WARNING on bluetooth-next/master linus/master v5.19-rc5 next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Manish-Mandlik/Bluetooth-Add-support-for-devcoredump/20220708-061724
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git master
-config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220708/202207081448.MghkbBvn-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/0d785cbd11ed3a6de29aeb05926177440ab26d54
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Manish-Mandlik/Bluetooth-Add-support-for-devcoredump/20220708-061724
-        git checkout 0d785cbd11ed3a6de29aeb05926177440ab26d54
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash net/bluetooth/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> net/bluetooth/hci_sysfs.c:118:1: sparse: sparse: symbol 'dev_attr_enable_coredump' was not declared. Should it be static?
-
+diff --git a/drivers/nvmem/nintendo-otp.c b/drivers/nvmem/nintendo-otp.c
+index 33961b17f9f1..eb614c31a6b4 100644
+--- a/drivers/nvmem/nintendo-otp.c
++++ b/drivers/nvmem/nintendo-otp.c
+@@ -50,7 +50,7 @@ static int nintendo_otp_reg_read(void *context,
+ {
+ 	struct nintendo_otp_priv *priv = context;
+ 	u32 *val = _val;
+-	int words = bytes / WORD_SIZE;
++	size_t words = bytes / WORD_SIZE;
+ 	u32 bank, addr;
+ 
+ 	while (words--) {
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
