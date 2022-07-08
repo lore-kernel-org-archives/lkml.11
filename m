@@ -2,131 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54548C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 17:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238764AbiGHRb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 13:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S238801AbiGHRcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 13:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238646AbiGHRb4 (ORCPT
+        with ESMTP id S238646AbiGHRcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 13:31:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E3613D1F;
-        Fri,  8 Jul 2022 10:31:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D260062418;
-        Fri,  8 Jul 2022 17:31:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20241C341C0;
-        Fri,  8 Jul 2022 17:31:49 +0000 (UTC)
-Date:   Fri, 8 Jul 2022 13:31:47 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Gang Li <ligang.bdlg@bytedance.com>
-Cc:     mhocko@suse.com, akpm@linux-foundation.org, surenb@google.com,
-        Ingo Molnar <mingo@redhat.com>, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        viro@zeniv.linux.org.uk, ebiederm@xmission.com,
-        keescook@chromium.org, peterz@infradead.org, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, david@redhat.com,
-        imbrenda@linux.ibm.com, adobriyan@gmail.com,
-        yang.yang29@zte.com.cn, brauner@kernel.org,
-        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
-        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
-        Liam.Howlett@Oracle.com, ohoono.kwon@samsung.com,
-        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
-        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
-        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
-        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
-        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
-        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
-        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] mm: add numa fields for tracepoint rss_stat
-Message-ID: <20220708133147.20f3d887@gandalf.local.home>
-In-Reply-To: <20220708082129.80115-4-ligang.bdlg@bytedance.com>
-References: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
-        <20220708082129.80115-4-ligang.bdlg@bytedance.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 8 Jul 2022 13:32:11 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3D413F2F
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 10:32:10 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LfgMD4FLWz9tM4;
+        Fri,  8 Jul 2022 19:32:08 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id mTxYpB3tEw-I; Fri,  8 Jul 2022 19:32:08 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LfgMD3SXFz9tJt;
+        Fri,  8 Jul 2022 19:32:08 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 61E338B7A0;
+        Fri,  8 Jul 2022 19:32:08 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id q-MmzzXzFF40; Fri,  8 Jul 2022 19:32:08 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.233.202])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E51418B79F;
+        Fri,  8 Jul 2022 19:32:07 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 268HVwj21000727
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 8 Jul 2022 19:31:58 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 268HVwmO1000726;
+        Fri, 8 Jul 2022 19:31:58 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, sv@linux.ibm.com,
+        agust@denx.de, jpoimboe@kernel.org, peterz@infradead.org,
+        jbaron@akamai.com, rostedt@goodmis.org, ardb@kernel.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        x86@kernel.org, chenzhongjin@huawei.com
+Subject: [PATCH v2 1/7] powerpc: Add missing asm/asm.h for objtool
+Date:   Fri,  8 Jul 2022 19:31:20 +0200
+Message-Id: <2bf5e4aa135ae481a34a5cf00448f99a611f4962.1657301423.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1657301423.git.christophe.leroy@csgroup.eu>
+References: <cover.1657301423.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1657301483; l=713; s=20211009; h=from:subject:message-id; bh=zjt5iYxYBPwCOdwC6pJhH6ZqDxcgdW226G/nXx5AgTI=; b=tH+L26Dew9OLiCzOUtFXe1j34NF84smcglOuLpSx9UBq3P9Z+YjiRnCXoVYT5Ydb067qQYgSavAg SV2PRpowBKqas5QVoxE/Se0TiB0WMmuItpxA8qTJZipq4Zt4oPjx
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri,  8 Jul 2022 16:21:27 +0800
-Gang Li <ligang.bdlg@bytedance.com> wrote:
+Since commit e2ef115813c3 ("objtool: Fix STACK_FRAME_NON_STANDARD
+reloc type"), powerpc needs asm/asm.h to enable objtool.
 
-> --- a/include/trace/events/kmem.h
-> +++ b/include/trace/events/kmem.h
-> @@ -363,7 +363,8 @@ static unsigned int __maybe_unused mm_ptr_to_hash(const void *ptr)
->  	EM(MM_FILEPAGES)	\
->  	EM(MM_ANONPAGES)	\
->  	EM(MM_SWAPENTS)		\
-> -	EMe(MM_SHMEMPAGES)
-> +	EM(MM_SHMEMPAGES)	\
-> +	EMe(MM_NO_TYPE)
->  
->  #undef EM
->  #undef EMe
-> @@ -383,29 +384,41 @@ TRACE_EVENT(rss_stat,
->  
->  	TP_PROTO(struct mm_struct *mm,
->  		int member,
-> -		long count),
-> +		long member_count,
-> +		int node,
-> +		long node_count,
-> +		long diff_count),
->  
-> -	TP_ARGS(mm, member, count),
-> +	TP_ARGS(mm, member, member_count, node, node_count, diff_count),
->  
->  	TP_STRUCT__entry(
->  		__field(unsigned int, mm_id)
->  		__field(unsigned int, curr)
->  		__field(int, member)
-> -		__field(long, size)
-> +		__field(long, member_size)
-> +		__field(int, node)
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/include/asm/asm.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 arch/powerpc/include/asm/asm.h
 
-Please swap the node and member_size fields. I just noticed that size
-should have been before member in the original as well. Because it will
-leave a 4 byte "hole" in the event due to alignment on 64 bit machines.
+diff --git a/arch/powerpc/include/asm/asm.h b/arch/powerpc/include/asm/asm.h
+new file mode 100644
+index 000000000000..86f46b604e9a
+--- /dev/null
++++ b/arch/powerpc/include/asm/asm.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_POWERPC_ASM_H
++#define _ASM_POWERPC_ASM_H
++
++#define _ASM_PTR	" .long "
++
++#endif /* _ASM_POWERPC_ASM_H */
+-- 
+2.36.1
 
--- Steve
-
-> +		__field(long, node_size)
-> +		__field(long, diff_size)
->  	),
->  
->  	TP_fast_assign(
->  		__entry->mm_id = mm_ptr_to_hash(mm);
->  		__entry->curr = !!(current->mm == mm);
->  		__entry->member = member;
-> -		__entry->size = (count << PAGE_SHIFT);
-> +		__entry->member_size = (member_count << PAGE_SHIFT);
-> +		__entry->node = node;
-> +		__entry->node_size = (node_count << PAGE_SHIFT);
-> +		__entry->diff_size = (diff_count << PAGE_SHIFT);
->  	),
->  
-> -	TP_printk("mm_id=%u curr=%d type=%s size=%ldB",
-> +	TP_printk("mm_id=%u curr=%d type=%s type_size=%ldB node=%d node_size=%ldB diff_size=%ldB",
->  		__entry->mm_id,
->  		__entry->curr,
->  		__print_symbolic(__entry->member, TRACE_MM_PAGES),
-> -		__entry->size)
-> +		__entry->member_size,
-> +		__entry->node,
-> +		__entry->node_size,
-> +		__entry->diff_size)
->  	);
->  #endif /* _TRACE_KMEM_H */
->  
