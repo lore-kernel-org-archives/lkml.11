@@ -2,198 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F31AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4532ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Jul 2022 07:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237500AbiGHHie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 03:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47998 "EHLO
+        id S237656AbiGHHix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 03:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbiGHHid (ORCPT
+        with ESMTP id S237480AbiGHHiv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 03:38:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D94265A8;
-        Fri,  8 Jul 2022 00:38:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADBAE6252F;
-        Fri,  8 Jul 2022 07:38:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DB77C341C0;
-        Fri,  8 Jul 2022 07:38:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657265911;
-        bh=yz8NGHlv7MuTvipWDXMUMS8sxTYLjZQLRhkhm556pc4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bKpE/tfgasu7+hV7WJfpxdY/jFoKsi9x9tqfo5oATLkdaADLWBUQePXPRbxZd49G9
-         9rJ3qItJqm/9WAy2QrM0nUZOeEh4IxDxnUUBa2Du71ehSYnQ4GzEPh8LyRfDMYuOst
-         wWSEzDy1hkfhAvEiRDIgwQuwqRy1pjilxehZgeNM=
-Date:   Fri, 8 Jul 2022 09:35:14 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kai Ye <yekai13@huawei.com>
-Cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, wangzhou1@hisilicon.com
-Subject: Re: [PATCH v5 3/3] crypto: hisilicon/qm - defining the device
- isolation strategy
-Message-ID: <YsfeMgbP+bxstf+7@kroah.com>
-References: <20220708070820.43958-1-yekai13@huawei.com>
- <20220708070820.43958-4-yekai13@huawei.com>
+        Fri, 8 Jul 2022 03:38:51 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAD56B25E;
+        Fri,  8 Jul 2022 00:38:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1657265917;
+        bh=D7qLA/iJlSBt219O7ShLPD2VmW/Mh0zlsFCsD09xipk=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=CNCBPo5cFJy9jTNXF0KEQHs1ciAH0UaM4mMuy5Sr9/a9yB1b01LJRJKnUqnxhAgME
+         qiH3wBZR5JueKcqlyb/qE5Kudl6MyQ4imPppThKoXp1EyZ53Ey6BsEEAacofFwhq70
+         lpKvaN1dbHJtbdTyGgbREzMBWp0CpQWcohWEMhUc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ls3530 ([92.116.171.120]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MTRMi-1o1yF641y0-00ToJk; Fri, 08
+ Jul 2022 09:38:37 +0200
+Date:   Fri, 8 Jul 2022 09:38:00 +0200
+From:   Helge Deller <deller@gmx.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Cc:     Hsin-Yi Wang <hsinyi@chromium.org>, Guiling Deng <greens9@163.com>
+Subject: [GIT PULL] fbdev updates & fixes for v5.19-rc6
+Message-ID: <Ysfe2JUDCg/S1ArT@ls3530>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220708070820.43958-4-yekai13@huawei.com>
+X-Provags-ID: V03:K1:nJ3VXKnb6rO003B31GtKc9A3gfM+urPI3N8+onViOP6BaLUD24d
+ 2ixfeMSDhOccbMHOD5J1cPmkRe0gOdse1ZwSTa3M1+7sJrfIMvSYCj+gGgQWaDjJEnc5pH2
+ wsl1TVjIHvPzPcbPzROATlYC0jngHn4XL76TOlU0eqsw3aO8KLprl4ok8qmWFlN031usWa4
+ UWfc2Zg3jlh8ahRpwGR4A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bctC6tNHHYw=:DMLVXF6SgA58MF5C6Rp9eL
+ O3hvCLUDxLfhGI8uzTGN0irrzFmFpU44k/Ei9yZnkql6mqmhO6yDH9xuYkx2RwTM9/SOAPyM/
+ SQD/kR/9A0/PbanpF435xVXCI2UPUPaElxQ+rnZqKz2P5ncJg5qIICRNb6ntx12JKEmsO2QF1
+ NMZLn/AOUkc3WTVE53XLIIYZ3dXtH82iFVnncG3COC6CT87Y5um1wTeKbIFKRROYNjvfKwcio
+ mb/76c156+VLcdkY7A8PXwwkbYw/ti+u8Nw6K5ekKkcLfjNHQEKM4OBwbfiTKRdERi1KjnJxM
+ qPme1thlSWDAgb9X83p4sjxrZlaDpcgpUmwbsbCanLRuD+ZWqokDlPhfUaCeLWXHQYB3Dp2kh
+ 5fGbYXy9nsgWBcpIh2JcGSS7KJ5vygN/p3arF4I4i3+qa/wBKd02FiXf/4Eg8NzsWAOVii78p
+ vxr9tjlF3eCa3/u5XQ/g0QZWFm9gZK/PavwvLdLAlzHFua++a6fq9uKt96mehnZRRMidnPmo8
+ D5RihhD5JCcMqH8C581EcRw5T9OU+wzVMFUScgFJyKuC859cG5ba/dv098kTuxIBuGAPzntZy
+ fq2KaU/DKrRNA1FccNKPiGY7CLNnSrT54UTqMz250X07p4jfcHXIpxfeXkbYnZKqIlyK9+/Fx
+ 4LHPm4NRujw0ppVY7jS/MQ4fAJP/0cjcvWs/dLdsAtldrj8un+nmXhNeiHuQKC2ua3g3Srv/q
+ d1NZ0sDNwOO6zSbhdeLBJkBYlpsSEcDI70THMDW+kr0RreQ3KqVTM8QgtxYJyHgAz488IDrl8
+ vLImIdcwCfBZcSZ5QonXRxzi3RjFHFljRM1KVsWfXQY7MvvHrvN61XePuYGnWDkqABsTVkLat
+ m7lz9R4qKOM2dkRAoedVrtqfBKKGY0bTDPYpDRHMKdu80Z5m3ey8k7qynw3b2ZiGGKBt+++bs
+ N6XkCyswklQImhmNj2E8LqcruhajlQnSKsbA2T5fpOpCwMa9NIjQ9ZcorCc3iDvZxBkizCVTb
+ kofwxdK8ikOGvCH9i1RdB/4+A1yMGhFLej3KqocCtsnwmQIiZxMmpUf/4mrKXdbaGIsPav+ky
+ QCOwHoXEb77ub4c8+4bbZbRF0MQQusi0Y9R7+zekbFnkWVRLdzvX3mifg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 03:08:20PM +0800, Kai Ye wrote:
-> Define the device isolation strategy by the device driver. The
-> user configures a frequency value by uacce interface. If the
-> slot reset frequency exceeds the value of setting for a certain
-> period of time, the device will not be available in user space.
-> The time window is one hour. The VF device use the PF device
-> isolation strategy. All the hardware errors are processed by PF
-> driver. This solution can be used for other drivers.
-> 
-> Signed-off-by: Kai Ye <yekai13@huawei.com>
-> ---
->  drivers/crypto/hisilicon/qm.c | 163 +++++++++++++++++++++++++++++++---
->  include/linux/hisi_acc_qm.h   |   9 ++
->  2 files changed, 160 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-> index ad83c194d664..8eb3b790a655 100644
-> --- a/drivers/crypto/hisilicon/qm.c
-> +++ b/drivers/crypto/hisilicon/qm.c
-> @@ -417,6 +417,16 @@ struct hisi_qm_resource {
->  	struct list_head list;
->  };
->  
-> +/**
-> + * struct qm_hw_err - Structure describing the device errors
-> + * @list: hardware error list
-> + * @timestamp: timestamp when the error occurred
-> + */
-> +struct qm_hw_err {
-> +	struct list_head list;
-> +	unsigned long long timestamp;
-> +};
-> +
->  struct hisi_qm_hw_ops {
->  	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
->  	void (*qm_db)(struct hisi_qm *qm, u16 qn,
-> @@ -3410,6 +3420,111 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
->  	return 0;
->  }
->  
-> +/**
-> + * qm_hw_err_isolate() - Try to isolate the uacce device with its VFs
-> + * according to user's configuration of isolation strategy. Warning: this
-> + * API should be called while there the users on this device are suspended
-> + * by slot resetting preparation of PCI AER.
-> + * @qm: the uacce device
-> + */
-> +static int qm_hw_err_isolate(struct hisi_qm *qm)
-> +{
-> +	struct qm_hw_err *err, *tmp, *hw_err;
-> +	struct qm_err_isolate *isolate;
-> +	u32 count = 0;
-> +
-> +	isolate = &qm->isolate_data;
-> +
-> +#define SECONDS_PER_HOUR	3600
-> +
-> +	/* All the hw errs are processed by PF driver */
-> +	if (qm->uacce->is_vf || isolate->is_isolate ||
-> +	    !isolate->hw_err_isolate_hz)
-> +		return 0;
-> +
-> +	hw_err = kzalloc(sizeof(*hw_err), GFP_ATOMIC);
+The following changes since commit 88084a3df1672e131ddc1b4e39eeacfd39864acf:
 
-Why atomic?  What lock is held here?
+  Linux 5.19-rc5 (2022-07-03 15:39:28 -0700)
 
-> +	if (!hw_err)
-> +		return -ENOMEM;
-> +
-> +	mutex_lock(&isolate->isolate_lock);
-> +	hw_err->timestamp = jiffies;
-> +	list_for_each_entry_safe(err, tmp, &isolate->uacce_hw_errs, list) {
-> +		if ((hw_err->timestamp - err->timestamp) / HZ >
-> +		    SECONDS_PER_HOUR) {
+are available in the Git repository at:
 
-No possiblity of wrapping the timestamp?
+  http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git tags/for-5.19/fbdev-3
 
-> +			list_del(&err->list);
-> +			kfree(err);
-> +		} else {
-> +			count++;
-> +		}
-> +	}
-> +	list_add(&hw_err->list, &isolate->uacce_hw_errs);
-> +	mutex_unlock(&isolate->isolate_lock);
-> +
-> +	if (count >= isolate->hw_err_isolate_hz)
-> +		isolate->is_isolate = true;
-> +
-> +	return 0;
-> +}
-> +
-> +static void qm_hw_err_destroy(struct hisi_qm *qm)
-> +{
-> +	struct qm_hw_err *err, *tmp;
-> +
-> +	mutex_lock(&qm->isolate_data.isolate_lock);
-> +	list_for_each_entry_safe(err, tmp, &qm->isolate_data.uacce_hw_errs, list) {
-> +		list_del(&err->list);
-> +		kfree(err);
-> +	}
-> +	mutex_unlock(&qm->isolate_data.isolate_lock);
-> +}
-> +
-> +static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
-> +{
-> +	struct hisi_qm *qm = uacce->priv;
-> +	struct hisi_qm *pf_qm;
-> +
-> +	if (uacce->is_vf)
-> +		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-> +	else
-> +		pf_qm = qm;
-> +
-> +	return pf_qm->isolate_data.is_isolate ?
-> +			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
-> +}
-> +
-> +static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
-> +					  u32 freq)
-> +{
-> +	struct hisi_qm *qm = uacce->priv;
-> +
-> +	/* Must be set by PF */
-> +	if (uacce->is_vf)
-> +		return -EINVAL;
+for you to fetch changes up to 53a6e66b1b4fea4b52f8bc62e5f9530af9061027:
 
-But the value passed to you is not invalid, something else went wrong.
-Are you sure this is the correct error?
+  fbcon: Use fbcon_info_from_console() in fbcon_modechange_possible() (2022-07-07 10:52:35 +0200)
 
-> +
-> +	if (qm->isolate_data.is_isolate)
-> +		return -EINVAL;
+----------------------------------------------------------------
+fbdev fixes and updates for kernel v5.19-rc6:
 
-Same here, why is this correct?
+fbcon now prevents switching to screen resolutions which are smaller
+than the font size, and prevents enabling a font which is bigger than
+the current screen resolution. This fixes vmalloc-out-of-bounds accesses
+found by KASAN.
 
-> +
-> +	qm->isolate_data.hw_err_isolate_hz = freq;
+Guiling Deng fixed a bug where the centered fbdev logo wasn't displayed
+correctly if the screen size matched the logo size.
 
-No validation of the value passed to you?  It can be anything?
+Hsin-Yi Wang provided a patch to include errno.h to fix build when
+CONFIG_OF isn't enabled.
 
-> +
-> +	/* After the policy is updated, need to reset the hardware err list */
-> +	qm_hw_err_destroy(qm);
+----------------------------------------------------------------
+Guiling Deng (1):
+      fbdev: fbmem: Fix logo center image dx issue
 
-No error checking?
+Helge Deller (4):
+      fbcon: Disallow setting font bigger than screen size
+      fbcon: Prevent that screen size is smaller than font size
+      fbmem: Check virtual screen sizes in fb_set_var()
+      fbcon: Use fbcon_info_from_console() in fbcon_modechange_possible()
 
-thanks,
+Hsin-Yi Wang (1):
+      video: of_display_timing.h: include errno.h
 
-greg k-h
+ drivers/video/fbdev/core/fbcon.c  | 33 +++++++++++++++++++++++++++++++++
+ drivers/video/fbdev/core/fbmem.c  | 16 ++++++++++++++--
+ include/linux/fbcon.h             |  4 ++++
+ include/video/of_display_timing.h |  2 ++
+ 4 files changed, 53 insertions(+), 2 deletions(-)
