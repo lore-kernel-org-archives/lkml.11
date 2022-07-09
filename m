@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE66C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 17:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 17:11:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229804AbiGIRK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 13:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        id S229812AbiGIRLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 13:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiGIRK3 (ORCPT
+        with ESMTP id S229517AbiGIRK3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Jul 2022 13:10:29 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D138120BA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CF312749
         for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 10:10:28 -0700 (PDT)
 Received: from dslb-188-096-144-007.188.096.pools.vodafone-ip.de ([188.96.144.7] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oADyH-0005n0-BG; Sat, 09 Jul 2022 19:10:21 +0200
+        id 1oADyJ-0005n0-SW; Sat, 09 Jul 2022 19:10:23 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 11/14] staging: r8188eu: offset is always 0 in iol_read_efuse
-Date:   Sat,  9 Jul 2022 19:09:57 +0200
-Message-Id: <20220709171000.180481-12-martin@kaiser.cx>
+Subject: [PATCH 14/14] staging: r8188eu: the bcnhead parameter is always 0
+Date:   Sat,  9 Jul 2022 19:10:00 +0200
+Message-Id: <20220709171000.180481-15-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220709171000.180481-1-martin@kaiser.cx>
 References: <20220709171000.180481-1-martin@kaiser.cx>
@@ -40,45 +40,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The offset parameter of iol_read_efuse is always 0. Remove the
-parameter and use 0 in the function body.
+The only caller of efuse_read_phymap_from_txpktbuf sets bcnhead to 0.
+Remove this function parameter and simplify the function body.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-index 674ba420a272..f552b9adece3 100644
+index ddda3f994fa7..fe477438899e 100644
 --- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
 +++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-@@ -299,7 +299,7 @@ static int efuse_read_phymap_from_txpktbuf(
- 	return 0;
- }
- 
--static s32 iol_read_efuse(struct adapter *padapter, u16 offset, u16 size_byte, u8 *logical_map)
-+static s32 iol_read_efuse(struct adapter *padapter, u16 size_byte, u8 *logical_map)
+@@ -193,13 +193,11 @@ efuse_phymap_to_logical(u8 *phymap, u16 _size_byte, u8  *pbuf)
+ /* FIXME: add error handling in callers */
+ static int efuse_read_phymap_from_txpktbuf(
+ 	struct adapter  *adapter,
+-	int bcnhead,	/* beacon head, where FW store len(2-byte) and efuse physical map. */
+ 	u8 *content,	/* buffer to store efuse physical map */
+ 	u16 *size	/* for efuse content: the max byte to read. will update to byte read */
+ 	)
  {
- 	s32 status = _FAIL;
- 	u8 physical_map[512];
-@@ -311,7 +311,7 @@ static s32 iol_read_efuse(struct adapter *padapter, u16 offset, u16 size_byte, u
+ 	unsigned long timeout;
+-	u16 dbg_addr = 0;
+ 	__le32 lo32 = 0, hi32 = 0;
+ 	u16 len = 0, count = 0;
+ 	int i = 0, res;
+@@ -208,20 +206,10 @@ static int efuse_read_phymap_from_txpktbuf(
+ 	u8 *pos = content;
+ 	u32 reg32;
+ 
+-	if (bcnhead < 0) { /* if not valid */
+-		res = rtw_read8(adapter, REG_TDECTRL + 1, &reg);
+-		if (res)
+-			return res;
+-
+-		bcnhead = reg;
+-	}
+-
+ 	rtw_write8(adapter, REG_PKT_BUFF_ACCESS_CTRL, TXPKT_BUF_SELECT);
+ 
+-	dbg_addr = bcnhead * 128 / 8; /* 8-bytes addressing */
+-
+ 	while (1) {
+-		rtw_write16(adapter, REG_PKTBUF_DBG_ADDR, dbg_addr + i);
++		rtw_write16(adapter, REG_PKTBUF_DBG_ADDR, i);
+ 
+ 		rtw_write8(adapter, REG_TXPKTBUF_DBG, 0);
+ 		timeout = jiffies + msecs_to_jiffies(1000);
+@@ -300,7 +288,7 @@ static s32 iol_read_efuse(struct adapter *padapter, u16 size_byte, u8 *logical_m
+ 	rtw_write8(padapter, REG_PKT_BUFF_ACCESS_CTRL, TXPKT_BUF_SELECT);
  	status = iol_execute(padapter, CMD_READ_EFUSE_MAP);
  	if (status == _SUCCESS)
- 		efuse_read_phymap_from_txpktbuf(padapter, 0, physical_map, &size);
--	efuse_phymap_to_logical(physical_map, offset, size_byte, logical_map);
-+	efuse_phymap_to_logical(physical_map, 0, size_byte, logical_map);
+-		efuse_read_phymap_from_txpktbuf(padapter, 0, physical_map, &size);
++		efuse_read_phymap_from_txpktbuf(padapter, physical_map, &size);
+ 	efuse_phymap_to_logical(physical_map, size_byte, logical_map);
  	return status;
  }
- 
-@@ -538,7 +538,7 @@ void rtl8188e_ReadEFuse(struct adapter *Adapter, u16 _size_byte, u8 *pbuf)
- 		rtl8188eu_InitPowerOn(Adapter);
- 
- 		iol_mode_enable(Adapter, 1);
--		ret = iol_read_efuse(Adapter, 0, _size_byte, pbuf);
-+		ret = iol_read_efuse(Adapter, _size_byte, pbuf);
- 		iol_mode_enable(Adapter, 0);
- 
- 		if (_SUCCESS == ret)
 -- 
 2.30.2
 
