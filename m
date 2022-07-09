@@ -2,284 +2,486 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C38AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 09:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 09:24:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbiGIJQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 05:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59132 "EHLO
+        id S229491AbiGIJYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 05:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiGIJQS (ORCPT
+        with ESMTP id S229379AbiGIJYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 05:16:18 -0400
-Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120049.outbound.protection.outlook.com [40.107.12.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2DE5E31F
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 02:16:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N5vkiqMH7FVqmKrKK/8CFe8zSOXwrcbJf7QQptK9Y3fY7/GorzJRsGxUHudM00fDQ/SWr8rO0ervSau6XqI0hk7Tjh01GhNw06M5aOOaUDQ9nudB7fnlZUaCxvYw9X8DX+ngR3lnucgt80mb0aXgIVsTa+IBpUOZaJ6VGF47kr+coQXthWZ3C5EGdnYSSRQSlS3ZPn+AOgqbyA8P+92q2FN1LTzKZZg3cQO0OGaYfndoXUN1lQDvIivtB6SaLlziEMjX8h6icGCH8NdXJEWruPD5knXF5ZmHGCo/2QVvaYmit4HKbcwHI4izxSGCgmZhAoEs5pKVR3js3iHPelWB4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rQYYv9J/ce0IM+DaCFnjKUcU29gjdr4BDoPpsXBAuZ0=;
- b=k9b3lNjgHF/zbERCXU/ouWD7rDwakiK6GhjAs7sOeo/hlB23j9KSOcu9SLD2pEDx1oldayQYN0RPpUDFQ58nuuRENiGLvCcpBsriIVTrKL8mGISarRCe7CvUQ/1ACSDpKUSk987JxDMH22WscysNxEONhkyCJmhGB87LGhYuS94/zDnij/P2QIVaR5WWUsYUPYh+gEQtcyPtS5GqZnljSc0bn96DH82jIVY4yWhMmZxtAWBOMKo0jUwFPItB2zepMJPlyxv/r82ifm6aF41niNXiTqbyvjA1Y5SOliN3qXoZoZvEecKiDXAcGPpN3F5xcM2+mDMNcqzvIfHXtmmcvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rQYYv9J/ce0IM+DaCFnjKUcU29gjdr4BDoPpsXBAuZ0=;
- b=voWB8/qxqaviFixf0r3WxcTiaJmCFFjAX9Ssnx8kolN2t73UvQRw48OD3XYml9oxjNrZrMoQkJVLaUBbU6YEW0ygpjgSMiLljZlNBlcY5o9G6rr3+Suablfd5DfC+3Hw/svBFqxKeBMK7O4BC5+uvubyTThb++4qHiKrQzZELtL1v0pzoKJEbUfiPZCGfJSSDraxMXkZquY/NWG0w2jEPL2kCQw2IFrAOFEwxpZ4Z4Nrtj+/1MQKzlaiEB3YFv3AiPdbtnpOrowuX6/7pkFcGmpTVJLZsa5YfPiVo2vupE7GLdmedVvx//zyxyp15pT/b1GO+JKShSyp/VR1R9K4pA==
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by MRZP264MB1973.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Sat, 9 Jul
- 2022 09:16:14 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::e063:6eff:d302:8624]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::e063:6eff:d302:8624%6]) with mapi id 15.20.5417.023; Sat, 9 Jul 2022
- 09:16:14 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     =?utf-8?B?UGFsaSBSb2jDoXI=?= <pali@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-CC:     Michael Ellerman <michael@ellerman.id.au>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-Thread-Topic: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-Thread-Index: AQHYb1JWsYyBCWIvdkmnZDAus5gR661rEeSAgAMvrICAAASSgIAAGGYAgAASqgCABox+AIABDLsA
-Date:   Sat, 9 Jul 2022 09:16:13 +0000
-Message-ID: <358f5a57-5eee-56af-fe73-f5d11cfad98e@csgroup.eu>
-References: <20220524093939.30927-1-pali@kernel.org>
- <20220702094405.tp7eo4df7fjvn2ng@pali>
- <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au>
- <20220704103951.nm4m4kpgnus3ucqo@pali>
- <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com>
- <20220704131358.fy3z7tjcmk2m6pfh@pali> <20220708171422.mpbhb4ejarwnce6m@pali>
-In-Reply-To: <20220708171422.mpbhb4ejarwnce6m@pali>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 15ba1883-6033-448c-1463-08da618bac00
-x-ms-traffictypediagnostic: MRZP264MB1973:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TWYPkQItbd4RnH6Gf46qz1LokKXSzSuogGW7/19jPTEj3tbik3LfEWjXmkIrRyTCZdgOJx/o++RsxVKQzGdUlnbV3VRw665wtO3qNY5dBQvWokrwJ15T07rqGu5dUpk55FxYR8ngKhBCbl2VEIaoHIeYl8fnkGilzfiUQtarRHetKv99bchUY+DyTZj1ZyO+CSirAuxEVhqEYoP3/BIDJ74PtmNPVNgqzq2XOYt9l+eS98wJV0HVr0a3kVKP7DC6bGTEgqBlAR032b8TKAyBxt9rBa00QWTp+6u14oe6kO0BMhwy0ZY1+IXayQDNTA5tZwZYaF7AM+CxG+RoKSfvMo07+jsEoCmxVfiMmatGSVCYBUYcxe1jHn3GuwYBFSWIDYHsoEh7Wk1DJAe3EQESK+guCb4N1GMjdZfo7hB38yZVtWbQcmQ1EJTX97riU0/G5c+IKjPqQIaVWQu8q8YcdF8qqX/7IpyWVcy/j3PmXQ14ry7e/q5TZeAx+6t7fCH38cb+WNcSVC59JY9nzRnhx5qUETRoaD/U5kHgc2hTN0ZappfW+S/rU8p7N2kLyb0VbT/OyZDx15E9augMbKWy8gPlRm5lT4UyfPkuNUXhGR64y4004vdkJIyynkrEfm6dA36wbCvku49nCw9U+KVVHKYbBMsJ+gB6w4VC93qANQh9ya4SLqGXLwuxm7RMb89IPHA1lJlYFGrCv//wVemsNWmD881mAkpFGFTEse5eF9CazMtuTBrXWjzIMcqbqSo2C+/PUqWVkxzqOG6uQ0DQpA3jwhRUwPjX27AB3aHgKFSK9aHC+yaNeYSmxXv9DKCEM7ONhKa8RK7tAPIueIPfSjnZuVovE/vOTR5ktCFZ8ide4vZxwXkflE803arjmthY
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39850400004)(346002)(366004)(376002)(396003)(44832011)(66476007)(66556008)(66446008)(316002)(66946007)(91956017)(110136005)(64756008)(36756003)(83380400001)(6486002)(4326008)(31686004)(8676002)(71200400001)(54906003)(5660300002)(8936002)(76116006)(478600001)(2906002)(41300700001)(6512007)(26005)(2616005)(66574015)(53546011)(6506007)(186003)(38070700005)(31696002)(122000001)(38100700002)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ME1UNEFhV0hMNStMTjN6V1d3eXJqVTZTODFaUnhqekhzMHJha3k2VlIza24y?=
- =?utf-8?B?d1RYQzFBNEtLOXJ3N2QxcWJhTFNYL3V3TXd0dHBtNUNVdVNiOHoyNy9wdFUr?=
- =?utf-8?B?b3Z2VVFnZW54bGFZTjVtVVhiT1hkNzBEWDlrQ2czNVBBN3A4UnJyVVdoNHAv?=
- =?utf-8?B?dHBxM1paOE52SndZTzloWXQ2VTBiQlJCMWNrV3k2WmxpTTdVRkF2NVZEbGE5?=
- =?utf-8?B?aURvRTJIZDIvaythT1MwLy8wNGFCWElQR3NNaHlySXEzVXdKTTJDblMrMmdH?=
- =?utf-8?B?TmxyNjYrTGFVZFB3MGNVUWxqUnlVVU14M3JWTXEyWG9DWHZBeTliMGtjNnRa?=
- =?utf-8?B?eWUrQ0RsOVo3aGZzSXlDL3ZRQ0hTbXV2c3hld1M1MEhuem5jQlQ3b3RKZlRm?=
- =?utf-8?B?RkdPVWhabzBzKzRqTkdPNy9hNWkwWjJrNlQvUEFFbGVvQmlKYVJybzF0MlZo?=
- =?utf-8?B?TysxVkhWZHprOU9oTVpmWCtQSlB5Qllmd0ZqWUg4SE9nSmwycUUvU1RQR1o3?=
- =?utf-8?B?SE1UOENBUmQ4aDJNbVJHZ3VkMmF4aTJ3Z3BPR3JtNXFKZWpZdFZwanhGOWlM?=
- =?utf-8?B?WkZ5NEpIck9iY1lDdXJSM0lsMThGTjBsQzA5a0J1R1J5WUh4bUFoRGN5azlD?=
- =?utf-8?B?bjZoK01NcmtwSW9YUTFCUFg3cGUxU1FSaFM1WDRQMGZFb29IM0ZuN1AxS09O?=
- =?utf-8?B?eE9jQUF6WlV2ajNDbHAyemdKUU8veS81M0NCT2h2YzRPVHpaN1NHalduVngx?=
- =?utf-8?B?SVlHV0I2SkxZKzFFVjVTeGUzOUhBT0k1ZDRKNUg3Z1VJRWFTclZiR2tEdC9L?=
- =?utf-8?B?UFNCUEhXcGQxZTQ2SXlWUWtlUVVYSGlNUGRjamkxSTlnNE5TcVE3dGRlSHAv?=
- =?utf-8?B?NGhHbTVrS0w5UnFuZWVlemNINGZTZHdhNXFjcVNYOHVpT3hTdkNocHN6aFl0?=
- =?utf-8?B?Y0FkQTh4aC9UdHg1UU1abGM0akJpK05VSUZrOThsN2MwamwvR0pWdDAvbGZs?=
- =?utf-8?B?UjhUZWRyNXYvZUFvZ1ViTTFrejUwYXhPTzZ0OUNkZzB1Mzk1S3hFMmh5OU1Z?=
- =?utf-8?B?M3dtMzVzVldmSDNUbkNBb2FhRzlaaThEVG4zVkRGVjlMeG1IT0ZFK29FSEN2?=
- =?utf-8?B?bkorcTFHei92VVZmdXQ3aTRIZ1h2Yk1rS3UwaHZjWTVYelpuWDhlK2J4ajBI?=
- =?utf-8?B?WEFzY0x0d1dLRnk3dS9pQlZPdUlUbkltVExVRHVnVXVIWWRqQytpZngwY0ty?=
- =?utf-8?B?MklFWGk0R09ISFgvUnV6MjA1V0s4dHpvckhleEZwUWtlUlRpa3pQR2tJYXJ5?=
- =?utf-8?B?SmlVNlpCUHAwUWhDZStOV01MV2VrRW5VU29SeVZIV3U0NlpBY0dGbHZndkwy?=
- =?utf-8?B?aGRkYzB2bHBBMmFBeTFlNlRhalRtZ2hUQ1RQRnFoR1pDNTRrekZBSTF3RW14?=
- =?utf-8?B?UlowVS9uR0xBeGtkR0ovOXE4dFFIbE5zcXBEMFlya0lGRDQrWTd2Z2ZXQWN5?=
- =?utf-8?B?ZzJ5V2RxR0NHTHBhbEozVGZESGRIUkdybTIzcFhGMXVaZ294d1Qra1JJR0wz?=
- =?utf-8?B?UzZFTUNJaFVVaGNpMSt3MTYzR2c0TnYvUHNrZHFZSmtyOXlLZG1vcDJNZlhh?=
- =?utf-8?B?MjNsYUhkYVJ4RVBVR2xOdnFxUFNaVkU0bys5RmRobXMzdDJBVnVPSC9CUFlq?=
- =?utf-8?B?RHBGQWdiVFZLSjJZVHBKM2FmQktyVEthRVptYXhZMVJXK2JPMy9PMC9aVExQ?=
- =?utf-8?B?RlBCV3BGbWhBVlJJVXd5cmhoVmVMdXFqTktJNnlpRGhJMlZBLzFUV0JCaE1v?=
- =?utf-8?B?QysvYm52QzB3azB4bkdwdjZBM1VlRFhuWTE5dFhneVNLUFcvWDBVRG92TG8y?=
- =?utf-8?B?M3RmVjRRSTJMREMyUXBkSXVjMldLb0R6eDZHa0tTc1Q4blI5bitlYTlaL082?=
- =?utf-8?B?R055OVJoTklaT3ZyOXJmT3pEcTdLSmJxY1FRazhwbUZnY3plOGxkR2VLUWRB?=
- =?utf-8?B?S2RKME5MOSs2ZW45YnIvdlJsbStNWDZzSlBhdjdwVWpuTEVZdTRsVGJleU8z?=
- =?utf-8?B?aGlCVys5V0RzRmo0ZzVyL2RJK1RiUnovQWt3WkFqRERyM0ZtZUx4dm5GMHlY?=
- =?utf-8?B?bkhXRC9NNDRxUHVNMzhoRmpiQTNKTU5lZ2hFVTNYQnZuOGFGdW9HWjVBNmtm?=
- =?utf-8?Q?nDs5eCgunzFFcaE4u47pFMA=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1A1CF5F26AC1A9459C7B8C5FAA8DCA05@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Sat, 9 Jul 2022 05:24:31 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE5567CA5
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 02:24:29 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id l42so487173wms.5
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Jul 2022 02:24:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=126CWGN5qiy3Zj/NevNLvXFANwNzM4+jpf1dHEnzN4A=;
+        b=hBT22x6jPJ0XS5lnS0XSQHSfcM1oeEq8FX/01tuWtCZWzr4+Ews52yuLIKF5AwH925
+         6NmhQGjXBcTNVbD20KJ2pLEKnNz8sNco9Sm+npt8tM5Rm1h2E6y5+LNgetYc1YRLZj6K
+         k04sNO7EkeKHPQFQzWlGGxznXeMLU3mH3egs54XcKh+SCZz9e+mriR7mlHlFCUgcSJ75
+         JzLgkMtQAbvlIiZlJUTLRYgp4mQX4xOV0LXMkn7bF/9EY/C2In61BgXoQVp/jvKkJEiF
+         8gRiu0pJjzZ2+njwc0tLo3zl/kDWjlraG9Cn9/nquJbhYDZZBE3zDmHFi81bM4KSG4s9
+         vJ1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=126CWGN5qiy3Zj/NevNLvXFANwNzM4+jpf1dHEnzN4A=;
+        b=3KUeZ3ht7a5YAcBgmYDgCosXGncrBGhUGl1FfwP6D9p8pUBhaVmzEW+7mvvLU0iksi
+         qC+zsb5Bpxq7i3xFvt1kroHW7zFKVnC67f5hK0mzihGP38Q+rWDgNI8yRVxBiV4eEizF
+         Ly/uYE9XXfQP3Y8o2sTLgrUjeDklRMcd++hWgwcIzd++RrTBe8SO2tFLRlKAiXXHuez8
+         at4ocFVdb1DmMS0k7yxlgfTo4Gt4HKebddlLpSzdmjtwaIH49J0vFogdxhvNQB8U20m7
+         Ge3WeADIo4XV+A7DrShz9xi6Bbcxt59aU4ysxULlOcDzdm5VXLrGz8ajoLAW1fM2h04a
+         IoLQ==
+X-Gm-Message-State: AJIora9T3RztbfuS1Y77M8gi1xtL93cfMXeWnReKMAT+aCn5uTgG7AxK
+        pox4/5xjojIJflfQW0r4qIk36vj4KANq3RPNFJD2Ag==
+X-Google-Smtp-Source: AGRyM1ug7A88FKaND5fMhkgUxdh8u0RqCfTxfeN34ODHRXUGgzVyR9LL3r3bRDVAGpyu6BiRCsiHygrJt95nUw8wZIE=
+X-Received: by 2002:a1c:7918:0:b0:3a2:e17c:cbfe with SMTP id
+ l24-20020a1c7918000000b003a2e17ccbfemr1708135wme.80.1657358667432; Sat, 09
+ Jul 2022 02:24:27 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15ba1883-6033-448c-1463-08da618bac00
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2022 09:16:13.9756
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Pt8Y5KJ8U8YVB0c/mfqQJwKIvYXcxU+mXhhch5ILHiApi1FDKE3WDLoqJ7rNQzp7oKFGQbJnHnFlzhL4vUPZWgzAt/IzYci6h1y40/Z5B9k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MRZP264MB1973
+References: <20220621125658.64935-1-songmuchun@bytedance.com>
+ <CAJD7tkbeTtkMcVri9vzKHATjxAVZfC_vPNfApJiyRxY53c8pZQ@mail.gmail.com>
+ <YrlYG0ecJyzFTVVz@FVFYT0MHHV2J.usts.net> <CAJD7tkbk-E+Skkj3xxELuGFHet940DovKi0z8NxPqePzXa-Wug@mail.gmail.com>
+ <YsfUIpM5NlWZhUDT@FVFYT0MHHV2J.usts.net> <CAJD7tkazvC+kZgGaV3idapQp-zPFaWBxoHwnrqTFoodHZGQcPA@mail.gmail.com>
+ <YskXXlUAB1YZikkG@FVFYT0MHHV2J.usts.net>
+In-Reply-To: <YskXXlUAB1YZikkG@FVFYT0MHHV2J.usts.net>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Sat, 9 Jul 2022 02:23:51 -0700
+Message-ID: <CAJD7tkZF_EW9GC22G-6=j8wVYYS2hTRGRPjwUJfTRr9Ah14Oqg@mail.gmail.com>
+Subject: Re: [PATCH v6 00/11] Use obj_cgroup APIs to charge the LRU pages
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>, longman@redhat.com,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Cgroups <cgroups@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCkxlIDA4LzA3LzIwMjIgw6AgMTk6MTQsIFBhbGkgUm9ow6FyIGEgw6ljcml0wqA6DQo+IE9u
-IE1vbmRheSAwNCBKdWx5IDIwMjIgMTU6MTM6NTggUGFsaSBSb2jDoXIgd3JvdGU6DQo+PiBPbiBN
-b25kYXkgMDQgSnVseSAyMDIyIDE0OjA3OjEwIEFybmQgQmVyZ21hbm4gd3JvdGU6DQo+Pj4gT24g
-TW9uLCBKdWwgNCwgMjAyMiBhdCAxMjozOSBQTSBQYWxpIFJvaMOhciA8cGFsaUBrZXJuZWwub3Jn
-PiB3cm90ZToNCj4+Pj4gT24gTW9uZGF5IDA0IEp1bHkgMjAyMiAyMDoyMzoyOSBNaWNoYWVsIEVs
-bGVybWFuIHdyb3RlOg0KPj4+Pj4gT24gMiBKdWx5IDIwMjIgNzo0NDowNSBwbSBBRVNULCAiUGFs
-aSBSb2jDoXIiIDxwYWxpQGtlcm5lbC5vcmc+IHdyb3RlOg0KPj4+Pj4+IE9uIFR1ZXNkYXkgMjQg
-TWF5IDIwMjIgMTE6Mzk6MzkgUGFsaSBSb2jDoXIgd3JvdGU6DQo+Pj4+Pj4+IGdjYyBlNTAwIGNv
-bXBpbGVyIGRvZXMgbm90IHN1cHBvcnQgLW1jcHU9cG93ZXJwYyBvcHRpb24uIFdoZW4gaXQgaXMN
-Cj4+Pj4+Pj4gc3BlY2lmaWVkIHRoZW4gZ2NjIHRocm93cyBjb21waWxlIGVycm9yOg0KPj4+Pj4+
-Pg0KPj4+Pj4+PiAgICBnY2M6IGVycm9yOiB1bnJlY29nbml6ZWQgYXJndW1lbnQgaW4gb3B0aW9u
-IOKAmC1tY3B1PXBvd2VycGPigJkNCj4+Pj4+Pj4gICAgZ2NjOiBub3RlOiB2YWxpZCBhcmd1bWVu
-dHMgdG8g4oCYLW1jcHU94oCZIGFyZTogODU0MCA4NTQ4IG5hdGl2ZQ0KPj4+Pj4+Pg0KPj4+Pj4+
-PiBTbyBkbyBub3Qgc2V0IC1tY3B1PXBvd2VycGMgb3B0aW9uIHdoZW4gQ09ORklHX0U1MDAgaXMg
-c2V0LiBDb3JyZWN0IG9wdGlvbg0KPj4+Pj4+PiAtbWNwdT04NTQwIGZvciBDT05GSUdfRTUwMCBp
-cyBzZXQgZmV3IGxpbmVzIGJlbG93IGluIHRoYXQgTWFrZWZpbGUuDQo+Pj4+Pj4+DQo+Pj4+Pj4+
-IFNpZ25lZC1vZmYtYnk6IFBhbGkgUm9ow6FyIDxwYWxpQGtlcm5lbC5vcmc+DQo+Pj4+Pj4+IENj
-OiBzdGFibGVAdmdlci5rZXJuZWwub3JnDQo+Pj4+Pj4NCj4+Pj4+PiBNaWNoYWVsLCBkbyB5b3Ug
-aGF2ZSBhbnkgb2JqZWN0aW9ucyBhYm91dCB0aGlzIHBhdGNoPw0KPj4+Pj4NCj4+Pj4+IEkgZG9u
-J3QgcGFydGljdWxhcmx5IGxpa2UgaXQgOikNCj4+Pj4+DQo+Pj4+PiAgRnJvbSB0aGUgZGlzY3Vz
-c2lvbiB3aXRoIFNlZ2hlciwgaXQgc291bmRzIGxpa2UgdGhpcyBpcyBhIHByb2JsZW0gd2l0aCBh
-IHNwZWNpZmljIGJ1aWxkIG9mIGdjYyB0aGF0IHlvdSdyZSB1c2luZywgbm90IGEgZ2VuZXJhbCBw
-cm9ibGVtIHdpdGggZ2NjIGJ1aWx0IHdpdGggZTUwMCBzdXBwb3J0Lg0KPj4+Pg0KPj4+PiBXZWxs
-LCB0aGUgImZ1bGwiIGJ1aWxkIG9mIGdjYyBmb3IgZTUwMCBjb3JlcyB3aXRoIFNQRSBkb2VzIG5v
-dCBzdXBwb3J0DQo+Pj4+IC1tY3B1PXBvd2VycGMgb3B0aW9uLiBTbyBJIHRoaW5rIHRoaXMgaXMg
-YSBnZW5lcmFsIHByb2JsZW0uIEkgZG8gbm90DQo+Pj4+IHRoaW5rIHRoYXQgdGhpcyBpcyAic3Bl
-Y2lmaWMgYnVpbGQiIGFzIHRoaXMgaXMgdGhlIGNvcnJlY3QgYnVpbGQgb2YgZ2NjDQo+Pj4+IGZv
-ciB0aGVzZSBwcm9jZXNzb3JzIHdpdGggZTUwMCBjb3Jlcy4NCj4+Pj4NCj4+Pj4gInN0cmlwcGVk
-Ii4gYnVpbGQgb2YgZ2NjIHdpdGhvdXQgU1BFIHN1cHBvcnQgZm9yIGU1MDAgY29yZXMgZG9lcyBu
-b3QNCj4+Pj4gaGF2ZSB0aGlzIHByb2JsZW0uLi4NCj4+Pg0KPj4+IEkgY2FuIHNlZSBhIGNvdXBs
-ZSBvZiBwcm9ibGVtcyB3aXRoIHRoZSBDUFUgc2VsZWN0aW9uLCBidXQgSSBkb24ndCB0aGluaw0K
-Pj4+IHRoaXMgaXMgYSBtYWpvciBvbmUsIGFzIG5vYm9keSBzaG91bGQgYmUgdXNpbmcgdGhvc2Ug
-U1BFIGNvbXBpbGVycyBmb3INCj4+PiBidWlsZGluZyB0aGUga2VybmVsLiBKdXN0IHVzZSBhIG1v
-ZGVybiBwb3dlcnBjLWdjYyBidWlsZC4NCj4+DQo+PiBUaGUgcG9pbnQgaXMgdG8gdXNlIHNhbWUg
-Y29tcGlsZXIgZm9yIGJ1aWxkaW5nIGtlcm5lbCBhcyBmb3IgdGhlIGFsbA0KPj4gb3RoZXIgcGFy
-dHMgb2YgdGhlIHN5c3RlbS4NCj4+DQo+PiBJIGp1c3QgZG8gbm90IHNlZSByZWFzb24gd2h5IGZv
-ciBrZXJuZWwgaXQgaXMgbmVlZGVkIHRvIGJ1aWxkIGNvbXBsZXRlbHkNCj4+IGRpZmZlcmVudCB0
-b29sY2hhaW4gYW5kIGNvbXBpbGVyLg0KPj4NCj4+Pj4+IEtleWluZyBpdCBvZmYgQ09ORklHX0U1
-MDAgbWVhbnMgaXQgd2lsbCBmaXggeW91ciBwcm9ibGVtLCBidXQgbm90IGFueW9uZSBlbHNlIHdo
-byBoYXMgYSBkaWZmZXJlbnQgbm9uLWU1MDAgY29tcGlsZXIgdGhhdCBhbHNvIGRvZXNuJ3Qgc3Vw
-cG9ydCAtbWNwdT1wb3dlcnBjIChmb3Igd2hhdGV2ZXIgcmVhc29uKS4NCj4+Pj4+DQo+Pj4+PiBT
-byBJIHdvbmRlciBpZiBhIGJldHRlciBmaXggaXMgdG8gdXNlIGNjLW9wdGlvbiB3aGVuIHNldHRp
-bmcgLW1jcHU9cG93ZXJwYy4NCj4+Pj4+DQo+Pj4+DQo+Pj4+IENvbW1lbnQgZm9yIHRoYXQgY29k
-ZSB3aGljaCBhZGRzIC1tcGN1PXBvd2VycGMgc2F5czoNCj4+Pj4NCj4+Pj4gICAgdGhleSBhcmUg
-bmVlZGVkIHRvIHNldCBhIHNhbmUgMzItYml0IGNwdSB0YXJnZXQgZm9yIHRoZSA2NC1iaXQgY3Jv
-c3MNCj4+Pj4gICAgY29tcGlsZXIgd2hpY2ggbWF5IGRlZmF1bHQgdG8gdGhlIHdyb25nIElTQS4N
-Cj4+Pj4NCj4+Pj4gU28gSSdtIG5vdCBzdXJlIGhvdyB0byBoYW5kbGUgdGhpcyBpbiBvdGhlciB3
-YXkuIEdDQyB1c2VzIC1tcGN1PTg1NDANCj4+Pj4gb3B0aW9uIGZvciBzcGVjaWZ5aW5nIHRvIGNv
-bXBpbGUgY29kZSBmb3IgZTUwMCBjb3JlcyBhbmQgc2VlbXMgdGhhdA0KPj4+PiAtbWNwdT04NTQw
-IGlzIHN1cHBvcnRlZCBieSBhbGwgZTUwMCBjb21waWxlcnMuLi4NCj4+Pj4NCj4+Pj4gRmV3IGxp
-bmVzIGJlbG93IGlzIGNvZGUNCj4+Pj4NCj4+Pj4gICAgQ0ZMQUdTLSQoQ09ORklHX0U1MDApICs9
-ICQoY2FsbCBjYy1vcHRpb24sLW1jcHU9ODU0MCAtbXNvZnQtZmxvYXQsLW1jcHU9cG93ZXJwYykN
-Cj4+Pj4NCj4+Pj4gd2hpY2ggZm9yIGU1MDAga2VybmVsIGJ1aWxkcyB1c2VyIGVpdGhlciAtbWNw
-dT04NTQwIG9yIC1tY3B1PXBvd2VycGMNCj4+Pj4gKHByb2JhYmx5IGFzIGEgZmFsbGJhY2sgaWYg
-LW1jcHU9ODU0MCBpcyBub3Qgc3VwcG9ydGVkKS4NCj4+Pg0KPj4+IFRoZSAtbWNwdT1wb3dlcnBj
-IGZhbGxiYWNrIGNhbiBwcm9iYWJseSBiZSBza2lwcGVkIGhlcmUsIHRoYXQgbXVzdCBoYXZlIGJl
-ZW4NCj4+PiBmb3IgY29tcGlsZXJzIHByZWRhdGluZyB0aGUgYWRkaXRpb24gb2YgLW1jcHU9ODU0
-MCwgYW5kIGV2ZW4gdGhlIG9sZGVzdCBvbmVzDQo+Pj4gc3VwcG9ydCB0aGF0IG5vdy4NCj4+DQo+
-PiBPaywgbWFrZXMgc2Vuc2UuDQo+Pg0KPj4+PiBTbyBmb3IgbWUgaXQgbG9va3MgbGlrZSB0aGF0
-IHByb2JsZW1hdGljIGNvZGUNCj4+Pj4NCj4+Pj4gICAgS0JVSUxEX0NGTEFHUyAgICAgICAgICs9
-IC1tY3B1PXBvd2VycGMNCj4+Pj4gICAgS0JVSUxEX0FGTEFHUyAgICAgICAgICs9IC1tY3B1PXBv
-d2VycGMNCj4+Pj4NCj4+Pj4gbmVlZHMgdG8gYmUgc29tZWhvdyBza2lwcGVkIHdoZW4gY29tcGls
-aW5nIGZvciBDT05GSUdfRTUwMC4NCj4+Pj4+IE15IGNoYW5nZSB3aGljaCBza2lwcyB0aGF0IGNv
-ZGUgYmFzZSBvbiBpZm5kZWYgQ09ORklHX0U1MDAgc2hvdWxkIGJlDQo+Pj4+IGZpbmUgYXMgd2hl
-biBDT05GSUdfRTUwMCBpcyBkaXNhYmxlZCBpdCBkb2VzIG5vdGhpbmcgYW5kIHdoZW4gaXQgaXMN
-Cj4+Pj4gZW5hYmxlZCB0aGVuIGNvZGUNCj4+Pj4NCj4+Pj4gICAgQ0ZMQUdTLSQoQ09ORklHX0U1
-MDApICs9ICQoY2FsbCBjYy1vcHRpb24sLW1jcHU9ODU0MCAtbXNvZnQtZmxvYXQsLW1jcHU9cG93
-ZXJwYykNCj4+Pj4NCj4+Pj4gaXMgY2FsbGVkIHdoaWNoIHNldHMgLW1jcHUgb3B0aW9uIHN1aXRh
-YmxlIGZvciBlNTAwLg0KPj4+DQo+Pj4gSSB0aGluayB0aGlzIHBhcnQgaXMgaW5kZWVkIGZpc2h5
-LCBidXQgYWRkaW5nIGFub3RoZXIgc3BlY2lhbCBjYXNlIGZvciBFNTAwDQo+Pj4gc2VlbXMgdG8g
-dGFrZSBpdCBpbiB0aGUgd3JvbmcgZGlyZWN0aW9uLg0KPj4+DQo+Pj4gTmljayBhZGRlZCB0aGlz
-IGluIDRiZjRmNDJhMmZlYiAoInBvd2VycGMva2J1aWxkOiBTZXQgZGVmYXVsdCBnZW5lcmljDQo+
-Pj4gbWFjaGluZSB0eXBlDQo+Pj4gZm9yIDMyLWJpdCBjb21waWxlIikgYXMgYSBjb21waWxlLXRp
-bWUgZml4IHRvIHByZXZlbnQgdGhlIGRlZmF1bHQgdGFyZ2V0IGZyb20NCj4+PiBnZXR0aW5nIHVz
-ZWQgd2hlbiB0aGUgY29tcGlsZXIgc3VwcG9ydHMgYm90aCA2NC1iaXQgYW5kIDMyLWJpdC4gVGhp
-cyBpcyB0aGUNCj4+PiByaWdodCBpZGVhLCBidXQgaXQncyBpbmNvbnNpc3RlbnQgdG8gcGFzcyBk
-aWZmZXJlbnQgZmxhZ3MgZGVwZW5kaW5nIG9uIHRoZSB0eXBlDQo+Pj4gb2YgdG9vbGNoYWluLCBh
-bmQgaXQgbG9zZXMgdGhlIG1vcmUgc3BlY2lmaWMgb3B0aW9ucy4NCj4+Pg0KPj4+IEFub3RoZXIg
-cHJvYmxlbSBJIHNlZSBpcyB0aGF0IGEga2VybmVsIHRoYXQgaXMgYnVpbHQgZm9yIGJvdGggRTUw
-MCBhbmQgRTUwME1DDQo+Pj4gdXNlcyAtbWNwdT1lNTAwbWMgYW5kIG1heSBub3QgYWN0dWFsbHkg
-d29yayBvbiB0aGUgb2xkZXIgb25lcyBlaXRoZXINCj4+PiAoZXZlbiB3aXRoIHlvdXIgcGF0Y2gp
-Lg0KPj4NCj4+IFRoYXQgaXMgcHJvYmFibHkgdHJ1dGgsIC1tY3B1PTg1NDAgc2hvdWxkIGhhdmUg
-YmVlbiBjaG9zZW4uIChBbnl3YXkgaXQNCj4+IHNob3VsZCBoYXZlIGJlZW4gY2FsbGVkIC1tY3B1
-PWU1MDAsIG5vIGlkZWEgd2h5IGdjYyBzdGlsbCBuYW1lIGl0IDg1NDAuKQ0KPj4NCj4+PiBJIHRo
-aW5rIHdoYXQgeW91IGFjdHVhbGx5IHdhbnQgaXMgdG8gc2V0IG9uZSBvcHRpb24gZm9yIGVhY2gg
-b2YgdGhlDQo+Pj4gcG9zc2libGUgQ1BVIHR5cGVzOg0KPj4+DQo+Pj4gQ0ZMQUdTX0NQVS0kKENP
-TkZJR19QUENfQk9PSzNTXzMyKSA6PSAtbWNwdT1wb3dlcnBjDQo+Pj4gQ0ZMQUdTX0NQVS0kKENP
-TkZJR19QUENfODV4eCkgOj0gLW1jcHU9ODU0MA0KPj4+IENGTEFHU19DUFUtJChDT05GSUdfUFBD
-OHh4KSA6PSAtbWNwdT04NjANCj4+PiBDRkxBR1NfQ1BVLSQoQ09ORklHX1BQQzQ0eCkgOj0gLW1j
-cHU9NDQwDQo+Pj4gQ0ZMQUdTX0NQVS0kKENPTkZJR19QUEM0MHgpIDo9IC1tY3B1PTQwNQ0KPj4+
-IGlmZGVmIENPTkZJR19DUFVfTElUVExFX0VORElBTg0KPj4+IENGTEFHU19DUFUtJChDT05GSUdf
-Qk9PSzNTXzY0KSA6PSAtbWNwdT1wb3dlcjgNCj4+PiBlbHNlDQo+Pj4gQ0ZMQUdTX0NQVS0kKENP
-TkZJR19CT09LM1NfNjQpIDo9IC1tY3B1PXBvd2VyNQ0KPj4+IGVuZGlmDQo+Pj4gQ0ZMQUdTX0NQ
-VS0kKENPTkZJR19CT09LM0VfNjQpIDo9IC1tY3B1PXBvd2VycGM2NA0KPj4NCj4+IFllcywgdGhp
-cyBpcyBzb21ldGhpbmcgSSB3b3VsZCBleHBlY3QgdGhhdCBpbiBNYWtlZmlsZSBzaG91bGQgYmUu
-DQo+IA0KPiBTbyB3aGF0IGFib3V0IHRoaXMgY2hhbmdlPw0KPiANCj4gZGlmZiAtLWdpdCBhL2Fy
-Y2gvcG93ZXJwYy9NYWtlZmlsZSBiL2FyY2gvcG93ZXJwYy9NYWtlZmlsZQ0KPiBpbmRleCBhMGNk
-NzA3MTIwNjEuLjc0YTYwOGI1Nzk2YSAxMDA2NDQNCj4gLS0tIGEvYXJjaC9wb3dlcnBjL01ha2Vm
-aWxlDQo+ICsrKyBiL2FyY2gvcG93ZXJwYy9NYWtlZmlsZQ0KPiBAQCAtMTUsMjIgKzE1LDcgQEAg
-SEFTX0JJQVJDSAk6PSAkKGNhbGwgY2Mtb3B0aW9uLXluLCAtbTMyKQ0KPiAgICMgU2V0IGRlZmF1
-bHQgMzIgYml0cyBjcm9zcyBjb21waWxlcnMgZm9yIHZkc28gYW5kIGJvb3Qgd3JhcHBlcg0KPiAg
-IENST1NTMzJfQ09NUElMRSA/PQ0KPiAgIA0KPiAtaWZlcSAoJChIQVNfQklBUkNIKSx5KQ0KPiAt
-aWZlcSAoJChDUk9TUzMyX0NPTVBJTEUpLCkNCj4gLWlmZGVmIENPTkZJR19QUEMzMg0KPiAtIyBU
-aGVzZSBvcHRpb25zIHdpbGwgYmUgb3ZlcnJpZGRlbiBieSBhbnkgLW1jcHUgb3B0aW9uIHRoYXQg
-dGhlIENQVQ0KPiAtIyBvciBwbGF0Zm9ybSBjb2RlIHNldHMgbGF0ZXIgb24gdGhlIGNvbW1hbmQg
-bGluZSwgYnV0IHRoZXkgYXJlIG5lZWRlZA0KPiAtIyB0byBzZXQgYSBzYW5lIDMyLWJpdCBjcHUg
-dGFyZ2V0IGZvciB0aGUgNjQtYml0IGNyb3NzIGNvbXBpbGVyIHdoaWNoDQo+IC0jIG1heSBkZWZh
-dWx0IHRvIHRoZSB3cm9uZyBJU0EuDQo+IC1LQlVJTERfQ0ZMQUdTCQkrPSAtbWNwdT1wb3dlcnBj
-DQo+IC1LQlVJTERfQUZMQUdTCQkrPSAtbWNwdT1wb3dlcnBjDQo+IC1lbmRpZg0KPiAtZW5kaWYN
-Cj4gLWVuZGlmDQo+IC0NCj4gLWlmZGVmIENPTkZJR19QUENfQk9PSzNTXzMyDQo+IC1LQlVJTERf
-Q0ZMQUdTCQkrPSAtbWNwdT1wb3dlcnBjDQo+IC1lbmRpZg0KPiArQ0ZMQUdTLSQoQ09ORklHX1BQ
-Q19CT09LM1NfMzIpICs9IC1tY3B1PXBvd2VycGMNCg0KVGhpcyBjb21lcyB0b28gZWFybHksIGl0
-IGlzIG92ZXJyaWRlbiBieSBsYXRlciBDRkxBR1MtJChDT05GSUdfUFBDMzIpIDo9IA0Kc29tZXRo
-aW5nDQoNCj4gICANCj4gICAjIElmIHdlJ3JlIG9uIGEgcHBjL3BwYzY0L3BwYzY0bGUgbWFjaGlu
-ZSB1c2UgdGhhdCBkZWZjb25maWcsIG90aGVyd2lzZSBqdXN0IHVzZQ0KPiAgICMgcHBjNjRfZGVm
-Y29uZmlnIGJlY2F1c2Ugd2UgaGF2ZSBub3RoaW5nIGJldHRlciB0byBnbyBvbi4NCj4gQEAgLTE2
-MywxNyArMTQ4LDE0IEBAIENGTEFHUy0kKENPTkZJR19QUEMzMikJKz0gJChjYWxsIGNjLW9wdGlv
-biwgJChNVUxUSVBMRVdPUkQpKQ0KPiAgIA0KPiAgIENGTEFHUy0kKENPTkZJR19QUEMzMikJKz0g
-JChjYWxsIGNjLW9wdGlvbiwtbW5vLXJlYWRvbmx5LWluLXNkYXRhKQ0KPiAgIA0KPiAtaWZkZWYg
-Q09ORklHX1BQQ19CT09LM1NfNjQNCj4gICBpZmRlZiBDT05GSUdfQ1BVX0xJVFRMRV9FTkRJQU4N
-Cj4gLUNGTEFHUy0kKENPTkZJR19HRU5FUklDX0NQVSkgKz0gLW1jcHU9cG93ZXI4DQo+IC1DRkxB
-R1MtJChDT05GSUdfR0VORVJJQ19DUFUpICs9ICQoY2FsbCBjYy1vcHRpb24sLW10dW5lPXBvd2Vy
-OSwtbXR1bmU9cG93ZXI4KQ0KPiArQ0ZMQUdTLSQoQ09ORklHX1BQQ19CT09LM1NfNjQpICs9IC1t
-Y3B1PXBvd2VyOA0KPiArQ0ZMQUdTLSQoQ09ORklHX1BQQ19CT09LM1NfNjQpICs9ICQoY2FsbCBj
-Yy1vcHRpb24sLW10dW5lPXBvd2VyOSwtbXR1bmU9cG93ZXI4KQ0KPiAgIGVsc2UNCj4gLUNGTEFH
-Uy0kKENPTkZJR19HRU5FUklDX0NQVSkgKz0gJChjYWxsIGNjLW9wdGlvbiwtbXR1bmU9cG93ZXI3
-LCQoY2FsbCBjYy1vcHRpb24sLW10dW5lPXBvd2VyNSkpDQo+IC1DRkxBR1MtJChDT05GSUdfR0VO
-RVJJQ19DUFUpICs9ICQoY2FsbCBjYy1vcHRpb24sLW1jcHU9cG93ZXI1LC1tY3B1PXBvd2VyNCkN
-Cj4gLWVuZGlmDQo+IC1lbHNlIGlmZGVmIENPTkZJR19QUENfQk9PSzNFXzY0DQo+IC1DRkxBR1Mt
-JChDT05GSUdfR0VORVJJQ19DUFUpICs9IC1tY3B1PXBvd2VycGM2NA0KPiArQ0ZMQUdTLSQoQ09O
-RklHX1BQQ19CT09LM1NfNjQpICs9ICQoY2FsbCBjYy1vcHRpb24sLW10dW5lPXBvd2VyNywkKGNh
-bGwgY2Mtb3B0aW9uLC1tdHVuZT1wb3dlcjUpKQ0KPiArQ0ZMQUdTLSQoQ09ORklHX1BQQ19CT09L
-M1NfNjQpICs9ICQoY2FsbCBjYy1vcHRpb24sLW1jcHU9cG93ZXI1LC1tY3B1PXBvd2VyNCkNCg0K
-U28gYmVmb3JlIHRoYXQgY2hhbmdlIEkgZ290IC1tY3B1PXBvd2VyOQ0KDQpOb3cgSSBnZXQgLW10
-dW5lPXBvd2VyNyAtbWNwdT1wb3dlcjUgLW1jcHU9cG93ZXI5DQoNCg0KDQo+ICAgZW5kaWYNCj4g
-K0NGTEFHUy0kKENPTkZJR19QUENfQk9PSzNFXzY0KSArPSAtbWNwdT1wb3dlcnBjNjQNCj4gICAN
-Cj4gICBpZmRlZiBDT05GSUdfRlVOQ1RJT05fVFJBQ0VSDQo+ICAgQ0NfRkxBR1NfRlRSQUNFIDo9
-IC1wZw0KPiBAQCAtMTkzLDEzICsxNzUsOCBAQCBlbmRpZg0KPiAgIENGTEFHUy0kKENPTkZJR19F
-NTUwMF9DUFUpICs9ICQoRTU1MDBfQ1BVKQ0KPiAgIENGTEFHUy0kKENPTkZJR19FNjUwMF9DUFUp
-ICs9ICQoY2FsbCBjYy1vcHRpb24sLW1jcHU9ZTY1MDAsJChFNTUwMF9DUFUpKQ0KPiAgIA0KPiAt
-aWZkZWYgQ09ORklHX1BQQzMyDQo+IC1pZmRlZiBDT05GSUdfUFBDX0U1MDBNQw0KPiAtQ0ZMQUdT
-LXkgKz0gJChjYWxsIGNjLW9wdGlvbiwtbWNwdT1lNTAwbWMsLW1jcHU9cG93ZXJwYykNCj4gLWVs
-c2UNCj4gK0NGTEFHUy0kKENPTkZJR19QUENfRTUwME1DKSArPSAkKGNhbGwgY2Mtb3B0aW9uLC1t
-Y3B1PWU1MDBtYywtbWNwdT1wb3dlcnBjKQ0KDQpCZWZvcmUgSSBnb3QgLW1jcHU9ZTY1MDANCg0K
-Tm93IEkgZ2V0ICAtbWNwdT1wb3dlcnBjNjQgLW1jcHU9ZTY1MDAgLW1jcHU9ZTUwMG1jIC1tY3B1
-PTg1NDANCg0KPiAgIENGTEFHUy0kKENPTkZJR19FNTAwKSArPSAkKGNhbGwgY2Mtb3B0aW9uLC1t
-Y3B1PTg1NDAgLW1zb2Z0LWZsb2F0LC1tY3B1PXBvd2VycGMpDQo+IC1lbmRpZg0KPiAtZW5kaWYN
-Cj4gICANCj4gICBhc2luc3RyIDo9ICQoY2FsbCBhcy1pbnN0cixsaXMgOSQoY29tbWEpZm9vQGhp
-Z2gsLURIQVZFX0FTX0FUSElHSD0xKQ0KPiAgIA0KPiANCj4gDQo+PiBCdXQgd2hhdCB0byBkbyB3
-aXRoIGZhbGxiYWNrIHZhbHVlPw0KPj4NCj4+PiBGb3IgdGhlIG5vbi1nZW5lcmljIENQVSB0eXBl
-cywgdGhlcmUgaXMgYWxzbyBDT05GSUdfVEFSR0VUX0NQVSwNCj4+PiBhbmQgdGhlIGxpc3QgYWJv
-dmUgY291bGQganVzdCBnZXQgZm9sZGVkIGludG8gdGhhdCBpbnN0ZWFkLg0KPj4+DQo+Pj4gICAg
-ICAgICBBcm5kDQoNCg0KQ2hyaXN0b3BoZQ==
+On Fri, Jul 8, 2022 at 10:51 PM Muchun Song <songmuchun@bytedance.com> wrot=
+e:
+>
+> On Fri, Jul 08, 2022 at 02:26:08AM -0700, Yosry Ahmed wrote:
+> > On Thu, Jul 7, 2022 at 11:52 PM Muchun Song <songmuchun@bytedance.com> =
+wrote:
+> > >
+> > > On Thu, Jul 07, 2022 at 03:14:26PM -0700, Yosry Ahmed wrote:
+> > > > On Mon, Jun 27, 2022 at 12:11 AM Muchun Song <songmuchun@bytedance.=
+com> wrote:
+> > > > >
+> > > > > On Sun, Jun 26, 2022 at 03:32:02AM -0700, Yosry Ahmed wrote:
+> > > > > > On Tue, Jun 21, 2022 at 5:57 AM Muchun Song <songmuchun@bytedan=
+ce.com> wrote:
+> > > > > > >
+> > > > > > > This version is rebased on mm-unstable. Hopefully, Andrew can=
+ get this series
+> > > > > > > into mm-unstable which will help to determine whether there i=
+s a problem or
+> > > > > > > degradation. I am also doing some benchmark tests in parallel=
+.
+> > > > > > >
+> > > > > > > Since the following patchsets applied. All the kernel memory =
+are charged
+> > > > > > > with the new APIs of obj_cgroup.
+> > > > > > >
+> > > > > > >         commit f2fe7b09a52b ("mm: memcg/slab: charge individu=
+al slab objects instead of pages")
+> > > > > > >         commit b4e0b68fbd9d ("mm: memcontrol: use obj_cgroup =
+APIs to charge kmem pages")
+> > > > > > >
+> > > > > > > But user memory allocations (LRU pages) pinning memcgs for a =
+long time -
+> > > > > > > it exists at a larger scale and is causing recurring problems=
+ in the real
+> > > > > > > world: page cache doesn't get reclaimed for a long time, or i=
+s used by the
+> > > > > > > second, third, fourth, ... instance of the same job that was =
+restarted into
+> > > > > > > a new cgroup every time. Unreclaimable dying cgroups pile up,=
+ waste memory,
+> > > > > > > and make page reclaim very inefficient.
+> > > > > > >
+> > > > > > > We can convert LRU pages and most other raw memcg pins to the=
+ objcg direction
+> > > > > > > to fix this problem, and then the LRU pages will not pin the =
+memcgs.
+> > > > > > >
+> > > > > > > This patchset aims to make the LRU pages to drop the referenc=
+e to memory
+> > > > > > > cgroup by using the APIs of obj_cgroup. Finally, we can see t=
+hat the number
+> > > > > > > of the dying cgroups will not increase if we run the followin=
+g test script.
+> > > > > >
+> > > > > > This is amazing work!
+> > > > > >
+> > > > > > Sorry if I came late, I didn't follow the threads of previous v=
+ersions
+> > > > > > so this might be redundant, I just have a couple of questions.
+> > > > > >
+> > > > > > a) If LRU pages keep getting parented until they reach root_mem=
+_cgroup
+> > > > > > (assuming they can), aren't these pages effectively unaccounted=
+ at
+> > > > > > this point or leaked? Is there protection against this?
+> > > > > >
+> > > > >
+> > > > > In this case, those pages are accounted in root memcg level. Unfo=
+rtunately,
+> > > > > there is no mechanism now to transfer a page's memcg from one to =
+another.
+> > > > >
+> > > >
+> > > > Hey Muchun,
+> > > >
+> > > > Quick question regarding the behavior of this change on cgroup v1 (=
+I
+> > > > know .. I know .. sorry):
+> > > >
+> > > > When a memcg dies, its LRU pages are reparented, but what happens t=
+o
+> > > > the charge? IIUC we don't do anything because the pages are already
+> > > > hierarchically charged to the parent. Is this correct?
+> > > >
+> > >
+> > > Correct.
+> > >
+> > > > In cgroup v1, we have non-hierarchical stats as well, so I am tryin=
+g
+> > > > to understand if the reparented memory will appear in the
+> > > > non-hierarchical stats of the parent (my understanding is that the
+> > > > will not). I am also particularly interested in the charging behavi=
+or
+> > > > of pages that get reparented to root_mem_cgroup.
+> > > >
+> > >
+> > > I didn't change any memory stats when reparenting.
+> > >
+> > > > The main reason I am asking is that (hierarchical_usage -
+> > > > non-hierarchical_usage - children_hierarchical_usage) is *roughly*
+> > > > something that we use, especially at the root level, to estimate
+> > > > zombie memory usage. I am trying to see if this change will break s=
+uch
+> > > > calculations. Thanks!
+> > > >
+> > >
+> > > So I think your calculations will still be correct. If you have
+> > > any unexpected result, please let me know. Thanks.
+> >
+> > I have been looking at the code and the patchset and I think there
+> > might be a problem with the stats, at least for cgroup v1. Lets say we
+> > have a parent memcg P, which has a child memcg C. When processes in
+> > memcg C allocate memory the stats (e.g. NR_ANON_MAPPED) are updated
+> > for C (non-hierarchical per-cpu counters, memcg->vmstats_percpu), and
+> > for P (aggregated stats, memcg->vmstats).
+> >
+> > When memcg C is offlined, its pages are reparented to memcg P, so far
+> > P->vmstats (hierarchical) still have those pages, and
+> > P->vmstats_percpu (non-hierarchical) don't. So far so good.
+> >
+> > Now those reparented pages get uncharged, but their memcg is P now, so
+> > they get subtracted from P's *non-hierarchical* stats (and eventually
+> > hierarchical stats as well). So now P->vmstats (hierarchical)
+> > decreases, which is correct, but P->vmstats_percpu (non-hierarchical)
+> > also decreases, which is wrong, as those stats were never added to
+> > P->vmstats_percpu to begin with.
+> >
+> > From a cgroup v2 perspective *maybe* everything continues to work, but
+> > this breaks cgroup v1 non-hierarchical stats. In fact, if the
+> > reparented memory exceeds the original non-hierarchical memory in P,
+> > we can underflow those stats  because we are subtracting stats that
+> > were never added in the first place.
+> >
+> > Please let me know if I am misunderstanding something and there is
+> > actually no problem with the non-hierarchical stats (you can stop
+> > reading here if this is all in my head and there's actually no
+> > problem).
+> >
+>
+> Thanks for patient explanation. Now I got your point.
+>
+> > Off the top of my mind we can handle stats modifications of reparented
+> > memory separately. We should not updated local per-cpu counters, maybe
+> > we should rather update memcg->vmstat.state_pending directly so that
+> > the changes appear as if they come from a child memcg. Two problems
+> > come with such an approach:
+> >
+>
+> Instead of avoiding updating local per-cpu counters for reparented pages,
+> after reparenting, how about propagating the child memcg's local per-cpu
+> counters to its parent after LRU pages reparenting? And we do not need to
+> propagate all vmstats, just some vmstats exposed to cgroup v1 users (like
+> memcg1_stats, memcg1_events and lru list pages). I think a reparented pag=
+e
+> is just a little bit of difference compared to other non-reparented pages=
+,
+> propagating local per-cpu counters may be acceptable. What do you think?
+>
+
+I think this introduces another problem. Now the non-hierarchical
+stats of a parent memcg (P in the above example) would include
+reparented memory. This hides zombie memory usage. As I elaborated
+earlier, parent_hierarchical_usage - parent_non_hierarchical_usage -
+SUM(children_hierarchical_usage) should give an estimate of the zombie
+memory under parent. If we propagate reparented memory stats (aka
+zombies) to the parent's non-hierarchical stats, then we have no way
+of finding out how much zombie memory lives in a memcg. This problem
+becomes more significant when we are reparenting to root, where zombie
+memory is part of unaccounted system overhead.
+
+Actually there is a different problem even in cgroup v2. At root level
+there will be no way of finding out whether unaccounted system
+overhead (root_usage - SUM(top_level_memcgs_usage)) comes from zombie
+memcgs or not, because zombie memcgs will no longer exist and
+reparented/zombie memory can be indistinguishable from memory that has
+always lived in root. This makes debugging high system overhead even
+harder, but that's a problem with the reparenting approach in general,
+unrelated to the non-hierarchical stats problem.
+
+> > 1) memcg->vmstat.state_pending is shared between cpus, and so far is
+> > only modified by mem_cgroup_css_rstat_flush() in locked context. A
+> > solution would be to add reparented state to
+> > memcg->vmstat.state_percpu instead and treat it like
+> > memcg->vmstat.state_pending in mem_cgroup_css_rstat_flush(). Keep in
+> > mind that this adds a tiny bit of memory overhead (roughly 8
+> > bytes*num_cpus for each memcg).
+> >
+> > 2) Identifying that we are updating stats of reparented memory. This
+> > should be easy if we have a pointer to the page to compare page->objcg
+> > with page->objcg->memcg->objcg, but AFAICT the memcg stats are updated
+> > in __mod_memcg_state() and __mod_memcg_lruvec_state(), and we have no
+> > idea in each of these what page(s) is the stats update associated
+> > with. They are called from many different places, it would be
+> > troublesome to pass such information down from all call sites. I have
+> > nothing off the top of my head to fix this problem except passing the
+> > necessary info through all code paths to __mod_memcg_state() and
+> > __mod_memcg_lruvec_state(), which is far from ideal.
+> >
+> > Again, I am sorry if these discussions are late, I didn't have time to
+> > look at previous versions of this patchset.
+> >
+>
+> Not late, thanks for your feedback.
+>
+> > >
+> > > > > > b) Since moving charged pages between memcgs is now becoming ea=
+sier by
+> > > > > > using the APIs of obj_cgroup, I wonder if this opens the door f=
+or
+> > > > > > future work to transfer charges to memcgs that are actually usi=
+ng
+> > > > > > reparented resources. For example, let's say cgroup A reads a f=
+ew
+> > > > > > pages into page cache, and then they are no longer used by cgro=
+up A.
+> > > > > > cgroup B, however, is using the same pages that are currently c=
+harged
+> > > > > > to cgroup A, so it keeps taxing cgroup A for its use. When cgro=
+up A
+> > > > > > dies, and these pages are reparented to A's parent, can we poss=
+ibly
+> > > > > > mark these reparented pages (maybe in the page tables somewhere=
+) so
+> > > > > > that next time they get accessed we recharge them to B instead
+> > > > > > (possibly asynchronously)?
+> > > > > > I don't have much experience about page tables but I am pretty =
+sure
+> > > > > > they are loaded so maybe there is no room in PTEs for something=
+ like
+> > > > > > this, but I have always wondered about what we can do for this =
+case
+> > > > > > where a cgroup is consistently using memory charged to another =
+cgroup.
+> > > > > > Maybe when this memory is reparented is a good point in time to=
+ decide
+> > > > > > to recharge appropriately. It would also fix the reparenty leak=
+ to
+> > > > > > root problem (if it even exists).
+> > > > > >
+> > > > >
+> > > > > From my point of view, this is going to be an improvement to the =
+memcg
+> > > > > subsystem in the future.  IIUC, most reparented pages are page ca=
+che
+> > > > > pages without be mapped to users. So page tables are not a suitab=
+le
+> > > > > place to record this information. However, we already have this i=
+nformation
+> > > > > in struct obj_cgroup and struct mem_cgroup. If a page's obj_cgrou=
+p is not
+> > > > > equal to the page's obj_cgroup->memcg->objcg, it means this page =
+have
+> > > > > been reparented. I am thinking if a place where a page is mapped =
+(probably
+> > > > > page fault patch) or page (cache) is written (usually vfs write p=
+ath)
+> > > > > is suitable to transfer page's memcg from one to another. But nee=
+d more
+> > > > > thinking, e.g. How to decide if a reparented page needs to be tra=
+nsferred?
+> > > > > If we need more information to make this decision, where to store=
+ those
+> > > > > information? This is my primary thoughts on this question.
+> > > > >
+> > > > > Thanks.
+> > > > >
+> > > > > > Thanks again for this work and please excuse my ignorance if an=
+y part
+> > > > > > of what I said doesn't make sense :)
+> > > > > >
+> > > > > > >
+> > > > > > > ```bash
+> > > > > > > #!/bin/bash
+> > > > > > >
+> > > > > > > dd if=3D/dev/zero of=3Dtemp bs=3D4096 count=3D1
+> > > > > > > cat /proc/cgroups | grep memory
+> > > > > > >
+> > > > > > > for i in {0..2000}
+> > > > > > > do
+> > > > > > >         mkdir /sys/fs/cgroup/memory/test$i
+> > > > > > >         echo $$ > /sys/fs/cgroup/memory/test$i/cgroup.procs
+> > > > > > >         cat temp >> log
+> > > > > > >         echo $$ > /sys/fs/cgroup/memory/cgroup.procs
+> > > > > > >         rmdir /sys/fs/cgroup/memory/test$i
+> > > > > > > done
+> > > > > > >
+> > > > > > > cat /proc/cgroups | grep memory
+> > > > > > >
+> > > > > > > rm -f temp log
+> > > > > > > ```
+> > > > > > >
+> > > > > > > v5: https://lore.kernel.org/all/20220530074919.46352-1-songmu=
+chun@bytedance.com/
+> > > > > > > v4: https://lore.kernel.org/all/20220524060551.80037-1-songmu=
+chun@bytedance.com/
+> > > > > > > v3: https://lore.kernel.org/all/20220216115132.52602-1-songmu=
+chun@bytedance.com/
+> > > > > > > v2: https://lore.kernel.org/all/20210916134748.67712-1-songmu=
+chun@bytedance.com/
+> > > > > > > v1: https://lore.kernel.org/all/20210814052519.86679-1-songmu=
+chun@bytedance.com/
+> > > > > > > RFC v4: https://lore.kernel.org/all/20210527093336.14895-1-so=
+ngmuchun@bytedance.com/
+> > > > > > > RFC v3: https://lore.kernel.org/all/20210421070059.69361-1-so=
+ngmuchun@bytedance.com/
+> > > > > > > RFC v2: https://lore.kernel.org/all/20210409122959.82264-1-so=
+ngmuchun@bytedance.com/
+> > > > > > > RFC v1: https://lore.kernel.org/all/20210330101531.82752-1-so=
+ngmuchun@bytedance.com/
+> > > > > > >
+> > > > > > > v6:
+> > > > > > >  - Collect Acked-by and Reviewed-by from Roman and Michal Kou=
+tn=C3=BD. Thanks.
+> > > > > > >  - Rebase to mm-unstable.
+> > > > > > >
+> > > > > > > v5:
+> > > > > > >  - Lots of improvements from Johannes, Roman and Waiman.
+> > > > > > >  - Fix lockdep warning reported by kernel test robot.
+> > > > > > >  - Add two new patches to do code cleanup.
+> > > > > > >  - Collect Acked-by and Reviewed-by from Johannes and Roman.
+> > > > > > >  - I didn't replace local_irq_disable/enable() to local_lock/=
+unlock_irq() since
+> > > > > > >    local_lock/unlock_irq() takes an parameter, it needs more =
+thinking to transform
+> > > > > > >    it to local_lock.  It could be an improvement in the futur=
+e.
+> > > > > > >
+> > > > > > > v4:
+> > > > > > >  - Resend and rebased on v5.18.
+> > > > > > >
+> > > > > > > v3:
+> > > > > > >  - Removed the Acked-by tags from Roman since this version is=
+ based on
+> > > > > > >    the folio relevant.
+> > > > > > >
+> > > > > > > v2:
+> > > > > > >  - Rename obj_cgroup_release_kmem() to obj_cgroup_release_byt=
+es() and the
+> > > > > > >    dependencies of CONFIG_MEMCG_KMEM (suggested by Roman, Tha=
+nks).
+> > > > > > >  - Rebase to linux 5.15-rc1.
+> > > > > > >  - Add a new pacth to cleanup mem_cgroup_kmem_disabled().
+> > > > > > >
+> > > > > > > v1:
+> > > > > > >  - Drop RFC tag.
+> > > > > > >  - Rebase to linux next-20210811.
+> > > > > > >
+> > > > > > > RFC v4:
+> > > > > > >  - Collect Acked-by from Roman.
+> > > > > > >  - Rebase to linux next-20210525.
+> > > > > > >  - Rename obj_cgroup_release_uncharge() to obj_cgroup_release=
+_kmem().
+> > > > > > >  - Change the patch 1 title to "prepare objcg API for non-kme=
+m usage".
+> > > > > > >  - Convert reparent_ops_head to an array in patch 8.
+> > > > > > >
+> > > > > > > Thanks for Roman's review and suggestions.
+> > > > > > >
+> > > > > > > RFC v3:
+> > > > > > >  - Drop the code cleanup and simplification patches. Gather t=
+hose patches
+> > > > > > >    into a separate series[1].
+> > > > > > >  - Rework patch #1 suggested by Johannes.
+> > > > > > >
+> > > > > > > RFC v2:
+> > > > > > >  - Collect Acked-by tags by Johannes. Thanks.
+> > > > > > >  - Rework lruvec_holds_page_lru_lock() suggested by Johannes.=
+ Thanks.
+> > > > > > >  - Fix move_pages_to_lru().
+> > > > > > >
+> > > > > > > Muchun Song (11):
+> > > > > > >   mm: memcontrol: remove dead code and comments
+> > > > > > >   mm: rename unlock_page_lruvec{_irq, _irqrestore} to
+> > > > > > >     lruvec_unlock{_irq, _irqrestore}
+> > > > > > >   mm: memcontrol: prepare objcg API for non-kmem usage
+> > > > > > >   mm: memcontrol: make lruvec lock safe when LRU pages are re=
+parented
+> > > > > > >   mm: vmscan: rework move_pages_to_lru()
+> > > > > > >   mm: thp: make split queue lock safe when LRU pages are repa=
+rented
+> > > > > > >   mm: memcontrol: make all the callers of {folio,page}_memcg(=
+) safe
+> > > > > > >   mm: memcontrol: introduce memcg_reparent_ops
+> > > > > > >   mm: memcontrol: use obj_cgroup APIs to charge the LRU pages
+> > > > > > >   mm: lru: add VM_WARN_ON_ONCE_FOLIO to lru maintenance funct=
+ion
+> > > > > > >   mm: lru: use lruvec lock to serialize memcg changes
+> > > > > > >
+> > > > > > >  fs/buffer.c                      |   4 +-
+> > > > > > >  fs/fs-writeback.c                |  23 +-
+> > > > > > >  include/linux/memcontrol.h       | 218 +++++++++------
+> > > > > > >  include/linux/mm_inline.h        |   6 +
+> > > > > > >  include/trace/events/writeback.h |   5 +
+> > > > > > >  mm/compaction.c                  |  39 ++-
+> > > > > > >  mm/huge_memory.c                 | 153 ++++++++--
+> > > > > > >  mm/memcontrol.c                  | 584 +++++++++++++++++++++=
+++++++------------
+> > > > > > >  mm/migrate.c                     |   4 +
+> > > > > > >  mm/mlock.c                       |   2 +-
+> > > > > > >  mm/page_io.c                     |   5 +-
+> > > > > > >  mm/swap.c                        |  49 ++--
+> > > > > > >  mm/vmscan.c                      |  66 ++---
+> > > > > > >  13 files changed, 776 insertions(+), 382 deletions(-)
+> > > > > > >
+> > > > > > >
+> > > > > > > base-commit: 882be1ed6b1b5073fc88552181b99bd2b9c0031f
+> > > > > > > --
+> > > > > > > 2.11.0
+> > > > > > >
+> > > > > > >
+> > > > > >
+> > > >
+> >
