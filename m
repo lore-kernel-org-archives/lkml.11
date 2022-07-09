@@ -2,102 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1869EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 16:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EABFC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 16:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbiGIQq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 12:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
+        id S229626AbiGIQtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 12:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiGIQqz (ORCPT
+        with ESMTP id S229447AbiGIQtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 12:46:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B24120A4;
-        Sat,  9 Jul 2022 09:46:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E0CB60F40;
-        Sat,  9 Jul 2022 16:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63481C3411C;
-        Sat,  9 Jul 2022 16:46:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657385214;
-        bh=nhQge+HRyXaWCUN57TcS9nHh2S2Nlsi4P8r8FUfHZHE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U3gePJoxxzBd3VmKhoooo4vix4ueROdXcwSJeiOMejhROwk1Dp+LBKuYpNhR0uAMR
-         D3g7Gdvb4ifwK2cnb24+KMWWKGXoLBqXPmHDWmG2jQNuVV7utHp/+k6fk/uSBleidv
-         oSTkB+6cf5/h1Y8RKLh6XcTOczUFlMnTn2W6qKAHqfJz4eyJNMSWungD2Wa0kcWbJm
-         zX0ui4hWIL7sL8SQmIP74noOe23quRTiuMWDKno7y66XV43VKvBMTUywrXailxyT22
-         70eGVTdLGfiFbQmXBLTnG9aAZhh77fXkaUf8XyDtzSQCRR5c4OZAclkwQMBIha90t2
-         3ncYRd+fq4Eng==
-Date:   Sat, 9 Jul 2022 17:46:45 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Martiros Shakhzadyan <vrzh@vrzh.net>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>
-Subject: Re: [RESEND PATCH 0/3] staging: media: atomisp: Convert to
- kmap_local_page()
-Message-ID: <20220709174645.080fc795@sal.lan>
-In-Reply-To: <becfe58a-b4c3-4ae1-4ab2-456057ac7d22@redhat.com>
-References: <20220707200718.26398-1-fmdefrancesco@gmail.com>
-        <becfe58a-b4c3-4ae1-4ab2-456057ac7d22@redhat.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Sat, 9 Jul 2022 12:49:46 -0400
+X-Greylist: delayed 2278 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 09 Jul 2022 09:49:44 PDT
+Received: from wp175.webpack.hosteurope.de (wp175.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:84b6::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B394027162;
+        Sat,  9 Jul 2022 09:49:44 -0700 (PDT)
+Received: from p54bc6cd6.dip0.t-ipconnect.de ([84.188.108.214] helo=[192.168.1.113]); authenticated
+        by wp175.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oAD3W-0007uY-BP; Sat, 09 Jul 2022 18:11:42 +0200
+Message-ID: <ea64c33f-9fc5-7c24-a101-da5d605863e1@birger-koblitz.de>
+Date:   Sat, 9 Jul 2022 18:11:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second
+ VPE
+Content-Language: en-US
+To:     Sander Vanheule <sander@svanheule.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        Hauke Mehrtens <hauke@hauke-m.de>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220702190705.5319-1-olek2@wp.pl>
+ <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
+ <87fsjen2kl.wl-maz@kernel.org> <20220706081901.GA10797@alpha.franken.de>
+ <CAFBinCAsj=RNvitj2tXJU6pTLSbanRXdKM9H4vyF=N9N=PP06g@mail.gmail.com>
+ <20220707100630.GC9894@alpha.franken.de>
+ <CAFBinCBn3+MbKFE84Y0KjW4qG_88+HuBTzRhPQSDqzqGhyhhZw@mail.gmail.com>
+ <20220707143930.GA14693@alpha.franken.de>
+ <468a2c8578d099eef0e0106fe273f73f5d70ef94.camel@svanheule.net>
+From:   Birger Koblitz <git@birger-koblitz.de>
+In-Reply-To: <468a2c8578d099eef0e0106fe273f73f5d70ef94.camel@svanheule.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;git@birger-koblitz.de;1657385384;a94bfab7;
+X-HE-SMSGID: 1oAD3W-0007uY-BP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, 8 Jul 2022 17:55:26 +0200
-Hans de Goede <hdegoede@redhat.com> escreveu:
+Hi,
 
-> Hi,
-> 
-> On 7/7/22 22:07, Fabio M. De Francesco wrote:
-> > After waiting months, I'm resending three conversions to
-> > kmap_local_page(). I'd like to ask if there is anything which prevents
-> > these patches from being accepted.
-> > 
-> > Please note that these patches were submitted on April 2022.
-> > 
-> > For you convenience here are the links to the patches, the "Reviewed-by:" 
-> > and "Tested-by:" tags:
-> > 
-> > [PATCH] staging: media: atomisp: Use kmap_local_page() in hmm_store()
-> > https://lore.kernel.org/lkml/20220413225531.9425-1-fmdefrancesco@gmail.com/
-> > https://lore.kernel.org/lkml/Yli+R7iLZKqO8kVP@iweiny-desk3/
-> > https://lore.kernel.org/lkml/2d096f20-dbaa-1d49-96e9-a7ae6c19f7fe@redhat.com/
-> > 
-> > [PATCH] staging: media: atomisp: Use kmap_local_page() in hmm_set()
-> > https://lore.kernel.org/lkml/20220413212210.18494-1-fmdefrancesco@gmail.com/
-> > https://lore.kernel.org/lkml/YldNhErgt53RqYp7@iweiny-desk3/
-> > https://lore.kernel.org/lkml/0b04ad1a-e442-1728-ef2c-bab386a4c64c@redhat.com/
-> > 
-> > [PATCH] staging: media: atomisp: Convert kmap() to kmap_local_page()
-> > https://lore.kernel.org/lkml/20220408223129.3844-1-fmdefrancesco@gmail.com/
-> > https://lore.kernel.org/lkml/b0aed731-b56f-4378-b50e-fc0cbccbdb84@redhat.com/
-> > 
-> > Fabio M. De Francesco (3):
-> >   staging: media: atomisp: Convert kmap() to kmap_local_page()
-> >   staging: media: atomisp: Use kmap_local_page() in hmm_set()
-> >   staging: media: atomisp: Use kmap_local_page() in hmm_store()  
-> 
-> Thanks, the entire series looks good to me:
-> 
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+On 7/7/22 17:12, Sander Vanheule wrote:
+> On Thu, 2022-07-07 at 16:39 +0200, Thomas Bogendoerfer wrote:
+>> On Thu, Jul 07, 2022 at 02:57:15PM +0200, Martin Blumenstingl wrote:
 
-Yesterday, I applied all pending patches at media-stage, including those. 
-Please check if  everything is ok, as I had to solve some trivial 
-conflicts.
+>> IMHO there is the problem, irq-mips-cpu.c can only do CPU irq operations
+>> on the same CPU. I've checked MIPS MT specs and it's possible do
+>> modify CP0 registers between VPEs. Using that needs changes in
+>> irq-mips-cpu.c. But mabye that's not woth the effort as probably
+>> all SMP cabable platforms have some multi processort capable
+>> interrupt controller implemented.
+Not sure I can be of much help. That the patch works on the RTL SoCs is 
+mostly empirical and was found in the vendor code.
 
-Regards,
-Mauro
+My understanding from the MIPS documentation is that it is not specified 
+what happens when a multi VPE capable IRQ controller triggers CPU 
+interrupts: if multiple VPEs are possible targets, then it is not 
+defined whether one of them gets them (and which one), multiple, or all. 
+So trying to control what happens between VPEs is probably SoC-dependent 
+functionality.
+
+Cheers,
+   Birger
