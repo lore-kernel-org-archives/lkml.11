@@ -2,94 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B1DC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 08:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EFDCCA47C
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 09:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiGII51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 04:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
+        id S229570AbiGIJHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 05:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiGII5Z (ORCPT
+        with ESMTP id S229471AbiGIJHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 04:57:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0E357204
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 01:57:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEB7BB800C1
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 08:57:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91E53C3411C;
-        Sat,  9 Jul 2022 08:57:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657357042;
-        bh=WrK+932CnJxu9v8WAmxUaGWCfO5YJRZCEWjawDqYnT0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mKeXIv7o37yXwjHMETf9VMo+OdKNjBMlaziF3eTXegwp8iyRlMY82aBekCt1x3krB
-         HCfnlt0NT2HuYIxSoyDVSBzkkZKi3n3SfjC1UBMV7pcCk0MtuQmchxb1G+4dGmIXYq
-         upBHs5aar6mp6uwfhbzyuD+AEkYXK6ZO7rDdt+1balPmGlKjiXpSZuto4Cd+JnYh7J
-         mV02M14kUsg4GmoOec2tI96vosRTsGgIE3zEZsmLKpdVmIC/dGVyp+kmneMJytUReq
-         yxWVEPE+JIXV71VjsKnWdpWpOrUdym8RW3V39Skaql3rNPwj9qOtRXPCSnclRfFP/i
-         7aoVLck14g6qA==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: save movk instructions in mov_q when the lower 16|32 bits are all zero
-Date:   Sat,  9 Jul 2022 16:48:30 +0800
-Message-Id: <20220709084830.3124-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sat, 9 Jul 2022 05:07:11 -0400
+Received: from mailrelay3-1.pub.mailoutpod1-cph3.one.com (mailrelay3-1.pub.mailoutpod1-cph3.one.com [46.30.210.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C57AC72
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 02:07:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=rsa1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=bQao0uhcvp+1LML5tn0jIDi+JBcfo6KzruckDKC3200=;
+        b=Zx7kpXndr5SVSWcRnKMCgbXGc41CeI+YBqFqw9lfB9KyhGx7kx6LILIip5cIKSq66lnHckwdThCH6
+         EvkXHVzjn4AWSTT8FaGwVS/OK3j1w9BazJy/bg9s5aosL293b1f4BzssBH0bvj4D3hLzQiPXt2YYhf
+         U3nRlwzNTuOvRMCG47AqXDryAjBS2v0B1rlKkgplcw9xa0cPxistjxJrO0ATmUPVOOck0PfEyAm/de
+         Gy8X5kUDOipjR5Sf2i/DoCaoBPOFed4YxKx0+ikFATPhp0Kcv20pK581tYO2ztkqTLTCMJbfDwGzti
+         v4E0foZa6DWsS7Wefq2UC7JaRzVLMGg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=ed1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=bQao0uhcvp+1LML5tn0jIDi+JBcfo6KzruckDKC3200=;
+        b=iLvft4rlxwG6L3oaWSPOLOufdauTPHbYccYyEMqEW2sMLdLHTEJovzFCWbf0h//uiGB67ygy/dCmC
+         5NjgJFQCg==
+X-HalOne-Cookie: d1d041af6dd76b0adfe09725c6a117cc2310e10a
+X-HalOne-ID: 811e08aa-ff66-11ec-be7e-d0431ea8bb03
+Received: from mailproxy3.cst.dirpod3-cph3.one.com (2-105-2-98-cable.dk.customer.tdc.net [2.105.2.98])
+        by mailrelay3.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
+        id 811e08aa-ff66-11ec-be7e-d0431ea8bb03;
+        Sat, 09 Jul 2022 09:07:06 +0000 (UTC)
+Date:   Sat, 9 Jul 2022 11:07:04 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     MollySophia <mollysophia379@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 2/2] dt-bindings: display: panel: Add Novatek NT35596S
+ panel bindings
+Message-ID: <YslFOHQMSSVG7czY@ravnborg.org>
+References: <20220708021824.9167-1-mollysophia379@gmail.com>
+ <20220708021824.9167-2-mollysophia379@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220708021824.9167-2-mollysophia379@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently mov_q is used to move a constant into a 64-bit register,
-when the lower 16 or 32bits of the constant are all zero, the mov_q
-emits one or two useless movk instructions. If the mov_q macro is used
-in hot code path, we want to save the movk instructions as much as
-possible. For example, when CONFIG_ARM64_MTE is 'Y' and
-CONFIG_KASAN_HW_TAGS is 'N', the following code in __cpu_setup()
-routine is the pontential optimization target:
+Hi Molly,
 
-        /* set the TCR_EL1 bits */
-        mov_q   x10, TCR_MTE_FLAGS
+On Fri, Jul 08, 2022 at 10:18:24AM +0800, MollySophia wrote:
+> Add documentation for "novatek,nt35596s" panel.
 
-Before the patch:
-	mov	x10, #0x10000000000000
-	movk	x10, #0x40, lsl #32
-	movk	x10, #0x0, lsl #16
-	movk	x10, #0x0
+As a general note, we cannot apply a driver without the binding.
+So this patch should be the first in the series.
 
-After the patch:
-	mov	x10, #0x10000000000000
-	movk	x10, #0x40, lsl #32
+Not a big deal, but it makes it easier on the committer later.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- arch/arm64/include/asm/assembler.h | 4 ++++
- 1 file changed, 4 insertions(+)
+A few comments below.
 
-diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-index 8c5a61aeaf8e..09f408424cae 100644
---- a/arch/arm64/include/asm/assembler.h
-+++ b/arch/arm64/include/asm/assembler.h
-@@ -568,9 +568,13 @@ alternative_endif
- 	movz	\reg, :abs_g3:\val
- 	movk	\reg, :abs_g2_nc:\val
- 	.endif
-+	.if ((((\val) >> 16) & 0xffff) != 0)
- 	movk	\reg, :abs_g1_nc:\val
- 	.endif
-+	.endif
-+	.if (((\val) & 0xffff) != 0)
- 	movk	\reg, :abs_g0_nc:\val
-+	.endif
- 	.endm
- 
- /*
--- 
-2.34.1
+	Sam
 
+> 
+> Signed-off-by: MollySophia <mollysophia379@gmail.com>
+> ---
+>  .../display/panel/novatek,nt35596s.yaml       | 88 +++++++++++++++++++
+>  1 file changed, 88 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/panel/novatek,nt35596s.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/display/panel/novatek,nt35596s.yaml b/Documentation/devicetree/bindings/display/panel/novatek,nt35596s.yaml
+> new file mode 100644
+> index 000000000000..937b194a6f18
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/display/panel/novatek,nt35596s.yaml
+> @@ -0,0 +1,88 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/display/panel/novatek,nt35596s.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Novatek NT35596S based DSI display Panels
+> +
+> +maintainers:
+> +  - Molly Sophia <mollysophia379@gmail.com>
+> +
+> +description: |
+> +  The nt35596s IC from Novatek is a generic DSI Panel IC used to drive dsi
+> +  panels.
+> +  Right now, support is added only for a JDI FHD+ LCD display panel with a
+> +  resolution of 1080x2160. It is a video mode DSI panel.
+> +
+> +allOf:
+> +  - $ref: panel-common.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - jdi,fhd-nt35596s
+> +      - const: novatek,nt35596s
+> +    description: This indicates the panel manufacturer of the panel that is
+> +      in turn using the NT35596S panel driver. This compatible string
+> +      determines how the NT35596S panel driver is configured for the indicated
+> +      panel. The novatek,nt35596s compatible shall always be provided as a fallback.
+> +
+> +  reset-gpios:
+> +    maxItems: 1
+> +    description: phandle of gpio for reset line - This should be 8mA, gpio
+> +      can be configured using mux, pinctrl, pinctrl-names (active high)
+reset-gpios is part of panel-common and there is no need to describe it
+here. The description, which looks like a copy from another binding,
+does not really tell anything that is specific for this HW.
+So replace it with a
+    reset-gpios: true
+later in the binding would be better.
+
+> +
+> +  vddi0-supply:
+> +    description: phandle of the regulator that provides the supply voltage
+> +      Power IC supply
+Please drop the "phandle of the" part. This is implicit and does not
+provide any extra info on the actual HW.
+This comments applies for all *-supply.
+
+> +
+> +  vddpos-supply:
+> +    description: phandle of the positive boost supply regulator
+> +
+> +  vddneg-supply:
+> +    description: phandle of the negative boost supply regulator
+> +
+> +  reg: true
+> +  port: true
+> +  backlight: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vddi0-supply
+> +  - vddpos-supply
+> +  - vddneg-supply
+> +  - reset-gpios
+> +  - port
+> +
+> +unevaluatedProperties: false
+
+Use:
+additionalProperties: false
+
+This will catch if the DT file contains any properties that is not
+mentioned here.
+The use of unevaluatedProperties in the file you copied from looks
+wrong.
+
+> +
+> +examples:
+> +  - |+
+No need for the + sign here.
+
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    dsi0 {
+dsi {
+
+
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        panel@0 {
+> +            compatible = "jdi,fhd-nt35596s", "novatek,nt35596s";
+> +            reg = <0>;
+> +            vddi0-supply = <&vreg_l14a_1p88>;
+> +            vddpos-supply = <&lab>;
+> +            vddneg-supply = <&ibb>;
+> +
+> +            backlight = <&pmi8998_wled>;
+> +            reset-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
+> +
+> +            port {
+> +                jdi_nt35596s_in_0: endpoint {
+> +                    remote-endpoint = <&dsi0_out>;
+> +                };
+> +            };
+> +        };
+> +    };
+> +
+> +...
+> -- 
+> 2.37.0
