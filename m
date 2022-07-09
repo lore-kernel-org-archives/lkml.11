@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD18C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC007C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbiGIEWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 00:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
+        id S229738AbiGIEWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 00:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiGIEVW (ORCPT
+        with ESMTP id S229629AbiGIEVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 00:21:22 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334074B0E2;
-        Fri,  8 Jul 2022 21:21:21 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id p16so397751plo.0;
-        Fri, 08 Jul 2022 21:21:21 -0700 (PDT)
+        Sat, 9 Jul 2022 00:21:23 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784EF4E861;
+        Fri,  8 Jul 2022 21:21:22 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso3697633pjc.1;
+        Fri, 08 Jul 2022 21:21:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zWrpjAec6xqPgolIekjuMJs7WhTq4gJR+BYNxVJxFmQ=;
-        b=Wnp2xdnGn5KBGRzZleKNjfV9hrAVQhe8/tnLookizUDENK3CVs8jj6Hw6RlbC7VKP+
-         ZmgLZLucVtidp0cjAxivvCWvxIJc1CBifHam7baktIKnX1qNXmEXd4FdxePVpiBNYyhc
-         FXreZaRgR/0dUHkATci5Q2VL5Ku3jB5eMheI2ybKWJkfZarX0+wtWBQW0/g874MA1thQ
-         OOFmIcUiXzFLp79vG1eHBr1eubhDk/ElfwufGLFq9Wa7QtP6KDZF6gFKCmE4xiJUszxM
-         upUUwWfzQP/2+bi7yrjLczN0rmXIbIX2+bXeCwSQYQa/f18SJUbdUUNhvy0H6Uo8n3IE
-         4xIg==
+        bh=7862CG8gdBkkTAJc3wwQbEUsLZoydkrGNeAOeSolID4=;
+        b=WYW4ChbpsRxZ1gJaxSIztXNft5qthK/2PeMQCA9WXhq4+rRV2J4W1LcAEdYKzA3XLa
+         SIkvqry5SrQFEZCGaE7PZvtf4cnGRMqfjmeMxEVS2Lhr5Y+qKvdZISBgh81rs7UgJya9
+         SjP39SvaBQ741WGaKGKqTVbMmFpmJVuQqVatEEWFHPkQmB/itDoH9tAFVimcIludyvXA
+         hxSqt5YCWJs3KtSjkHa/ZAu1V/ehd+qMWd+ucNdYwse0cuqGAsFhWvVra+tXOWrCEbt1
+         Tb97dcfZLxhaHMVgteSLnL+tmKsiOoQzS10NO2vCtZP9Yej1H0BRE0FDJzSDhTRsCWf6
+         mT6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zWrpjAec6xqPgolIekjuMJs7WhTq4gJR+BYNxVJxFmQ=;
-        b=lyNd8taCEoOYp3RfHGy2K8PcG9ZI9tmBS54KEWlxao8fqqvPfLejwkrGjA5+ken8cd
-         piYrOLQfzvnNNBK6GK6mucgsdkiavDiBhg5wRE3W2ngsq8nQIgZQMnGL/7cI0AnRkQ5C
-         YYQhOLx0GsKwawlWBA7oYoKR1ilWWAYu9HjsTZBSuaO877Fc7xpidYXWLE0frQ4FpEJE
-         gaGl6LEa1MVwTm9+yonuvFAbqXdBrbiiDre8BOnPmxtKH3ZDawOY6nRmLsq2wAnUntoS
-         Yw2YA5g0FeSLkYdwdb/fV2T+fonsz/63LbRmcMAqKXrkqRlcgELZGIcX+Bv6NF9HQq+Q
-         L9ug==
-X-Gm-Message-State: AJIora/ElbLjkhAFc2NGO1qKFA+F+kjiF/meA+7xwd/K6BulEFEZLclC
-        ljW8tZZDsW1Y/ZXtPAWvO3o=
-X-Google-Smtp-Source: AGRyM1v8voTKNedhWqldcO9l9/LMMOcD8g8wMf4+SDsvod/9edy9wfPOtcDdhqpXny+DWJU9Ax/8Gw==
-X-Received: by 2002:a17:902:8b8a:b0:16b:b560:da62 with SMTP id ay10-20020a1709028b8a00b0016bb560da62mr7193984plb.20.1657340480918;
-        Fri, 08 Jul 2022 21:21:20 -0700 (PDT)
+        bh=7862CG8gdBkkTAJc3wwQbEUsLZoydkrGNeAOeSolID4=;
+        b=dl3sGte9tSZrD4jGHFbE2roRrAwOgwo4RIIF9WXFpQ6TQfS12aY5oJrqrQa0Mia5MO
+         ovT9/+13d9NMFhuNOUS32mrSB9EeM2hhRMqZSSiI1fDTS1D6r/Vwdl1pBierMNGt5Vyd
+         2o/wLKc6228psiQUDywMWAbz2zFlfnBtibiqrH1Tf8qU0n6XiUuOJ4CgFGD3nkKP8y3f
+         uMIyb0vYR4lrlxeyavUgXWnfU2PhZclQjIYiEbYQtdMU0qNfTrv/mifljpCuyUhoCPCq
+         kEK+UzncRvFSKfA4VVxxlHVT601zMvwtpm7BTFu6zk2R/+CZVw+JGXDjZ5cs7u2N3UK8
+         VvHQ==
+X-Gm-Message-State: AJIora/ZeeEPyfuRRbpDEvPrfYuDs15Y7bv9WDYVIhK2Atqv7qFQPCNq
+        8ckPQXZ/xvisCaC8HdmPL98=
+X-Google-Smtp-Source: AGRyM1teRY0eMw7nwfVY9ar4a4cuXuk75JgTUr6H7bdIBeFb3SwU/a+Dpz1Q3Dg8E5U2dOvdY2szTg==
+X-Received: by 2002:a17:903:41d2:b0:16a:2cca:4869 with SMTP id u18-20020a17090341d200b0016a2cca4869mr7057894ple.13.1657340481995;
+        Fri, 08 Jul 2022 21:21:21 -0700 (PDT)
 Received: from debian.me (subs02-180-214-232-88.three.co.id. [180.214.232.88])
-        by smtp.gmail.com with ESMTPSA id p64-20020a62d043000000b0052a297324cbsm418687pfg.41.2022.07.08.21.21.18
+        by smtp.gmail.com with ESMTPSA id n17-20020a170902d2d100b0016c23c2c98dsm318286plc.246.2022.07.08.21.21.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 21:21:19 -0700 (PDT)
+        Fri, 08 Jul 2022 21:21:21 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-        id C23851039D5; Sat,  9 Jul 2022 11:21:11 +0700 (WIB)
+        id E05EB1039C8; Sat,  9 Jul 2022 11:21:11 +0700 (WIB)
 From:   Bagas Sanjaya <bagasdotme@gmail.com>
 To:     linux-doc@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -62,9 +62,9 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         Kai Huang <kai.huang@intel.com>, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 08/12] Documentation: kvm: tdx-tdp-mmu: Properly format nested list for EPT state machine
-Date:   Sat,  9 Jul 2022 11:20:34 +0700
-Message-Id: <20220709042037.21903-9-bagasdotme@gmail.com>
+Subject: [PATCH 11/12] Documentation: x86: Use literal code block for TDX dmesg output
+Date:   Sat,  9 Jul 2022 11:20:37 +0700
+Message-Id: <20220709042037.21903-12-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220709042037.21903-1-bagasdotme@gmail.com>
 References: <20220709042037.21903-1-bagasdotme@gmail.com>
@@ -74,175 +74,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The state machine list for EPT entry state machine basically use nested
-bullet lists to describe all possible results. However, the list is
-badly formatted, hence triggers many indentation warnings.
+The dmesg output blocks are using line blocks, which is incorrect, since
+this will render the blocks as normal paragraph with preserved line
+breaks instead of code blocks.
 
-Fix the nested list formatting.
+Use literal code blocks instead for the output.
 
-Fixes: 7af4efe3263854 ("KVM: x86: design documentation on TDX support of x86 KVM TDP MMU")
+Fixes: f05f595045dfc7 ("Documentation/x86: Add documentation for TDX host support")
 Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- Documentation/virt/kvm/tdx-tdp-mmu.rst | 134 ++++++++++++++-----------
- 1 file changed, 76 insertions(+), 58 deletions(-)
+ Documentation/x86/tdx.rst | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/virt/kvm/tdx-tdp-mmu.rst b/Documentation/virt/kvm/tdx-tdp-mmu.rst
-index f43ebb08f5cdad..c403e14fb223aa 100644
---- a/Documentation/virt/kvm/tdx-tdp-mmu.rst
-+++ b/Documentation/virt/kvm/tdx-tdp-mmu.rst
-@@ -306,76 +306,94 @@ for EPT violation path by penalizing MapGPA hypercall.
+diff --git a/Documentation/x86/tdx.rst b/Documentation/x86/tdx.rst
+index 4430912a2e4f05..f5bd22b89159ec 100644
+--- a/Documentation/x86/tdx.rst
++++ b/Documentation/x86/tdx.rst
+@@ -41,11 +41,11 @@ TDX boot-time detection
+ -----------------------
  
- The state machine of EPT entry
- ------------------------------
--(private EPT entry, shared EPT entry) =
--        (non-present, non-present):             private mapping is allowed
--        (present, non-present):                 private mapping is mapped
--        (non-present | SPTE_SHARED_MASK, non-present | SPTE_SHARED_MASK):
--                                                shared mapping is allowed
--        (non-present | SPTE_SHARED_MASK, present | SPTE_SHARED_MASK):
--                                                shared mapping is mapped
--        (present | SPTE_SHARED_MASK, any)       invalid combination
-+* (private EPT entry, shared EPT entry)
+ Kernel detects TDX and the TDX private KeyIDs during kernel boot.  User
+-can see below dmesg if TDX is enabled by BIOS:
++can see below dmesg if TDX is enabled by BIOS::
  
--* map_gpa(private GPA): Mark the region that private GPA is allowed(NEW)
--        private EPT entry: clear SPTE_SHARED_MASK
--          present: nop
--          non-present: nop
--          non-present | SPTE_SHARED_MASK -> non-present (clear SPTE_SHARED_MASK)
-+  * (non-present, non-present):
-+       private mapping is allowed
-+  * (present, non-present):
-+       private mapping is mapped
-+  * (non-present | SPTE_SHARED_MASK, non-present | SPTE_SHARED_MASK):
-+       shared mapping is allowed
-+  * (non-present | SPTE_SHARED_MASK, present | SPTE_SHARED_MASK):
-+       shared mapping is mapped
-+  * (present | SPTE_SHARED_MASK, any):
-+       invalid combination
+-|  [..] tdx: SEAMRR enabled.
+-|  [..] tdx: TDX private KeyID range: [16, 64).
+-|  [..] tdx: TDX enabled by BIOS.
++   [..] tdx: SEAMRR enabled.
++   [..] tdx: TDX private KeyID range: [16, 64).
++   [..] tdx: TDX enabled by BIOS.
  
--        shared EPT entry: zap the entry, clear SPTE_SHARED_MASK
--          present: invalid
--          non-present -> non-present: nop
--          present | SPTE_SHARED_MASK -> non-present
--          non-present | SPTE_SHARED_MASK -> non-present
-+* map_gpa (private GPA): Mark the region that private GPA is allowed(NEW)
+ TDX module detection and initialization
+ ---------------------------------------
+@@ -79,20 +79,20 @@ caller.
+ User can consult dmesg to see the presence of the TDX module, and whether
+ it has been initialized.
  
--* map_gpa(shared GPA): Mark the region that shared GPA is allowed(NEW)
--        private EPT entry: zap and set SPTE_SHARED_MASK
--          present     -> non-present | SPTE_SHARED_MASK
--          non-present -> non-present | SPTE_SHARED_MASK
--          non-present | SPTE_SHARED_MASK: nop
-+  * private EPT entry: clear SPTE_SHARED_MASK
+-If the TDX module is not loaded, dmesg shows below:
++If the TDX module is not loaded, dmesg shows below::
  
--        shared EPT entry: set SPTE_SHARED_MASK
--          present: invalid
--          non-present -> non-present | SPTE_SHARED_MASK
--          present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK: nop
--          non-present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK: nop
-+    * present: nop
-+    * non-present: nop
-+    * non-present | SPTE_SHARED_MASK -> non-present (clear SPTE_SHARED_MASK)
+-|  [..] tdx: TDX module is not loaded.
++   [..] tdx: TDX module is not loaded.
  
--* map(private GPA)
--        private EPT entry
--          present: nop
--          non-present -> present
--          non-present | SPTE_SHARED_MASK: nop. looping on EPT violation(NEW)
-+  * shared EPT entry: zap the entry, clear SPTE_SHARED_MASK
+ If the TDX module is initialized successfully, dmesg shows something
+-like below:
++like below::
  
--        shared EPT entry: nop
-+    * present: invalid
-+    * non-present -> non-present: nop
-+    * present | SPTE_SHARED_MASK -> non-present
-+    * non-present | SPTE_SHARED_MASK -> non-present
+-|  [..] tdx: TDX module: vendor_id 0x8086, major_version 1, minor_version 0, build_date 20211209, build_num 160
+-|  [..] tdx: 65667 pages allocated for PAMT.
+-|  [..] tdx: TDX module initialized.
++   [..] tdx: TDX module: vendor_id 0x8086, major_version 1, minor_version 0, build_date 20211209, build_num 160
++   [..] tdx: 65667 pages allocated for PAMT.
++   [..] tdx: TDX module initialized.
  
--* map(shared GPA)
--        private EPT entry: nop
-+* map_gpa (shared GPA): Mark the region that shared GPA is allowed(NEW)
+-If the TDX module failed to initialize, dmesg shows below:
++If the TDX module failed to initialize, dmesg shows below::
  
--        shared EPT entry
--          present: invalid
--          present | SPTE_SHARED_MASK: nop
--          non-present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK
--          non-present: nop. looping on EPT violation(NEW)
-+  * private EPT entry: zap and set SPTE_SHARED_MASK
+-|  [..] tdx: Failed to initialize TDX module.  Shut it down.
++   [..] tdx: Failed to initialize TDX module.  Shut it down.
  
--* zap(private GPA)
--        private EPT entry: zap the entry with keeping SPTE_SHARED_MASK
--          present -> non-present
--          present | SPTE_SHARED_MASK: invalid
--          non-present: nop as is_shadow_present_pte() is checked
--          non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
--                                          checked
-+    * present     -> non-present | SPTE_SHARED_MASK
-+    * non-present -> non-present | SPTE_SHARED_MASK
-+    * non-present | SPTE_SHARED_MASK: nop
+ TDX Interaction to Other Kernel Components
+ ------------------------------------------
+@@ -143,10 +143,10 @@ There are basically two memory hot-add cases that need to be prevented:
+ ACPI memory hot-add and driver managed memory hot-add.  The kernel
+ rejectes the driver managed memory hot-add too when TDX is enabled by
+ BIOS.  For instance, dmesg shows below error when using kmem driver to
+-add a legacy PMEM as system RAM:
++add a legacy PMEM as system RAM::
  
--        shared EPT entry: nop
-+  * shared EPT entry: set SPTE_SHARED_MASK
+-|  [..] tdx: Unable to add memory [0x580000000, 0x600000000) on TDX enabled platform.
+-|  [..] kmem dax0.0: mapping0: 0x580000000-0x5ffffffff memory add failed
++   [..] tdx: Unable to add memory [0x580000000, 0x600000000) on TDX enabled platform.
++   [..] kmem dax0.0: mapping0: 0x580000000-0x5ffffffff memory add failed
  
--* zap(shared GPA)
--        private EPT entry: nop
-+    * present: invalid
-+    * non-present -> non-present | SPTE_SHARED_MASK
-+    * present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK: nop
-+    * non-present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK: nop
- 
--        shared EPT entry: zap
--          any -> non-present
--          present: invalid
--          present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK
--          non-present: nop as is_shadow_present_pte() is checked
--          non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
--                                          checked
-+* map (private GPA)
-+
-+  * private EPT entry
-+
-+    * present: nop
-+    * non-present -> present
-+    * non-present | SPTE_SHARED_MASK: nop. looping on EPT violation(NEW)
-+
-+  * shared EPT entry: nop
-+
-+* map (shared GPA)
-+
-+  * private EPT entry: nop
-+
-+  * shared EPT entry:
-+
-+    * present: invalid
-+    * present | SPTE_SHARED_MASK: nop
-+    * non-present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK
-+    * non-present: nop. looping on EPT violation(NEW)
-+
-+* zap (private GPA)
-+
-+  * private EPT entry: zap the entry with keeping SPTE_SHARED_MASK
-+
-+    * present -> non-present
-+    * present | SPTE_SHARED_MASK: invalid
-+    * non-present: nop as is_shadow_present_pte() is checked
-+    * non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
-+      checked
-+
-+  * shared EPT entry: nop
-+
-+* zap (shared GPA)
-+
-+  * private EPT entry: nop
-+
-+  * shared EPT entry: zap
-+
-+    * any -> non-present
-+    * present: invalid
-+    * present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK
-+    * non-present: nop as is_shadow_present_pte() is checked
-+    * non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
-+      checked
- 
- 
- The original TDP MMU and race condition
+ However, adding new memory to ZONE_DEVICE should not be prevented as
+ those pages are not managed by the page allocator.  Therefore,
 -- 
 An old man doll... just what I always wanted! - Clara
 
