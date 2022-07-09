@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2999CC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD18C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbiGIEVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 00:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
+        id S229657AbiGIEWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 00:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiGIEVW (ORCPT
+        with ESMTP id S229616AbiGIEVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Jul 2022 00:21:22 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6650D4E62C;
-        Fri,  8 Jul 2022 21:21:20 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so3693742pjo.3;
-        Fri, 08 Jul 2022 21:21:20 -0700 (PDT)
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334074B0E2;
+        Fri,  8 Jul 2022 21:21:21 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id p16so397751plo.0;
+        Fri, 08 Jul 2022 21:21:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HfxesvineA4lvvWA39Rhk5vO9ldVF5vKgZoZqN8KzAg=;
-        b=jkbZ4X55kBzGE43KDHuVaa+mNhz/mniIFifPbU2PnSiHJCLz4j+hGqF/KP9wlPkWzf
-         QTtRuKYyw2gAEfq5Qr0gn9mEkfiSXNf7T+3OuOfeJwlZEPDyuSg7Iox3HN4Hs3t7Yg5p
-         aobyjtXKKfedI0CTrZaHGF8lGQx3OA0YUE6jh8o6avgEzIVMlyFhivD1wbHBdX/XjUAO
-         7kGwlUepcsIT2sR0CscKM/z0hjQfhPZEIVvLQwsyJj+SiLTXesRkCvuqGsEuLGsElCoo
-         7rpTWhkhwYBHnkt/CFnz0GDtOYg2D+tXzYL9scs5R9nXAuXp7elOv7BcULLSBNo8QsUQ
-         XTsg==
+        bh=zWrpjAec6xqPgolIekjuMJs7WhTq4gJR+BYNxVJxFmQ=;
+        b=Wnp2xdnGn5KBGRzZleKNjfV9hrAVQhe8/tnLookizUDENK3CVs8jj6Hw6RlbC7VKP+
+         ZmgLZLucVtidp0cjAxivvCWvxIJc1CBifHam7baktIKnX1qNXmEXd4FdxePVpiBNYyhc
+         FXreZaRgR/0dUHkATci5Q2VL5Ku3jB5eMheI2ybKWJkfZarX0+wtWBQW0/g874MA1thQ
+         OOFmIcUiXzFLp79vG1eHBr1eubhDk/ElfwufGLFq9Wa7QtP6KDZF6gFKCmE4xiJUszxM
+         upUUwWfzQP/2+bi7yrjLczN0rmXIbIX2+bXeCwSQYQa/f18SJUbdUUNhvy0H6Uo8n3IE
+         4xIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HfxesvineA4lvvWA39Rhk5vO9ldVF5vKgZoZqN8KzAg=;
-        b=4oCQ0oRyyNtx7AL63Qm8ZzxUAnZNQOFTDVZlHZMCltHaaDCYbEXt8RonOppo+bHa2T
-         WiZwlSJ7kLc3mS+dMqL+SuVMvS/QTmkasRKqWK5B23ita5V7Xj1Izbpu64egvoRzHyQZ
-         zGVwIRUJmauefmnuUUJoe5HwCvXQTR+lnUukR669Q96tX4XISuQzxnrx4VoDGp5iStzt
-         bgWhn+mP7HoT0S5S2dLI03gHyawzrMFMn58yF/yBzehyFbz8cWhys8Fj9bJF0KcCWYYX
-         stkjw3EcLFXZdbTBMp6vJeb2/LYTdeeMW7411jz5yp5Ii4nneIxmdhJr5ymG/eqQCQLX
-         6vJg==
-X-Gm-Message-State: AJIora8pvctylhYI4RBbwPe1xk4Ns8iES5Hdv6JJ2A1/HjC490bsLjrF
-        cRCbyC6tgk29udrkTv3UJjs=
-X-Google-Smtp-Source: AGRyM1tKZFbicaQ6X8X63qh/3nFn1Iti2dztUHzcNQoixiHnU66TeRKYrUAa+mAqIFWQJ8cJqw7JWw==
-X-Received: by 2002:a17:902:d488:b0:16a:158e:dd19 with SMTP id c8-20020a170902d48800b0016a158edd19mr6977288plg.105.1657340479890;
-        Fri, 08 Jul 2022 21:21:19 -0700 (PDT)
+        bh=zWrpjAec6xqPgolIekjuMJs7WhTq4gJR+BYNxVJxFmQ=;
+        b=lyNd8taCEoOYp3RfHGy2K8PcG9ZI9tmBS54KEWlxao8fqqvPfLejwkrGjA5+ken8cd
+         piYrOLQfzvnNNBK6GK6mucgsdkiavDiBhg5wRE3W2ngsq8nQIgZQMnGL/7cI0AnRkQ5C
+         YYQhOLx0GsKwawlWBA7oYoKR1ilWWAYu9HjsTZBSuaO877Fc7xpidYXWLE0frQ4FpEJE
+         gaGl6LEa1MVwTm9+yonuvFAbqXdBrbiiDre8BOnPmxtKH3ZDawOY6nRmLsq2wAnUntoS
+         Yw2YA5g0FeSLkYdwdb/fV2T+fonsz/63LbRmcMAqKXrkqRlcgELZGIcX+Bv6NF9HQq+Q
+         L9ug==
+X-Gm-Message-State: AJIora/ElbLjkhAFc2NGO1qKFA+F+kjiF/meA+7xwd/K6BulEFEZLclC
+        ljW8tZZDsW1Y/ZXtPAWvO3o=
+X-Google-Smtp-Source: AGRyM1v8voTKNedhWqldcO9l9/LMMOcD8g8wMf4+SDsvod/9edy9wfPOtcDdhqpXny+DWJU9Ax/8Gw==
+X-Received: by 2002:a17:902:8b8a:b0:16b:b560:da62 with SMTP id ay10-20020a1709028b8a00b0016bb560da62mr7193984plb.20.1657340480918;
+        Fri, 08 Jul 2022 21:21:20 -0700 (PDT)
 Received: from debian.me (subs02-180-214-232-88.three.co.id. [180.214.232.88])
-        by smtp.gmail.com with ESMTPSA id e3-20020a170902784300b001641b2d61d4sm350580pln.30.2022.07.08.21.21.18
+        by smtp.gmail.com with ESMTPSA id p64-20020a62d043000000b0052a297324cbsm418687pfg.41.2022.07.08.21.21.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 08 Jul 2022 21:21:19 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-        id 8067A103962; Sat,  9 Jul 2022 11:21:10 +0700 (WIB)
+        id C23851039D5; Sat,  9 Jul 2022 11:21:11 +0700 (WIB)
 From:   Bagas Sanjaya <bagasdotme@gmail.com>
 To:     linux-doc@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -62,9 +62,9 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         Kai Huang <kai.huang@intel.com>, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 06/12] Documentation: kvm: tdx-tdp-mmu: Add blank line padding for lists
-Date:   Sat,  9 Jul 2022 11:20:32 +0700
-Message-Id: <20220709042037.21903-7-bagasdotme@gmail.com>
+Subject: [PATCH 08/12] Documentation: kvm: tdx-tdp-mmu: Properly format nested list for EPT state machine
+Date:   Sat,  9 Jul 2022 11:20:34 +0700
+Message-Id: <20220709042037.21903-9-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220709042037.21903-1-bagasdotme@gmail.com>
 References: <20220709042037.21903-1-bagasdotme@gmail.com>
@@ -74,97 +74,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are many "unexpected indentations"-"block quote"-"bullet list"
-warnings that are caused by missing blank line padding on
-bullet lists at tdx-tdp-mmu.rst.
+The state machine list for EPT entry state machine basically use nested
+bullet lists to describe all possible results. However, the list is
+badly formatted, hence triggers many indentation warnings.
 
-Add the padding to fix the warnings.
+Fix the nested list formatting.
 
 Fixes: 7af4efe3263854 ("KVM: x86: design documentation on TDX support of x86 KVM TDP MMU")
 Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- Documentation/virt/kvm/tdx-tdp-mmu.rst | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ Documentation/virt/kvm/tdx-tdp-mmu.rst | 134 ++++++++++++++-----------
+ 1 file changed, 76 insertions(+), 58 deletions(-)
 
 diff --git a/Documentation/virt/kvm/tdx-tdp-mmu.rst b/Documentation/virt/kvm/tdx-tdp-mmu.rst
-index 6d63bb75f785ab..c9d5fc43a6ca7a 100644
+index f43ebb08f5cdad..c403e14fb223aa 100644
 --- a/Documentation/virt/kvm/tdx-tdp-mmu.rst
 +++ b/Documentation/virt/kvm/tdx-tdp-mmu.rst
-@@ -63,32 +63,39 @@ Instead, TDX SEAMCALL API is used.  Several SEAMCALLs correspond to operation on
- the EPT entry.
+@@ -306,76 +306,94 @@ for EPT violation path by penalizing MapGPA hypercall.
  
- * TDH.MEM.SEPT.ADD():
-+
-   Add a secure EPT page from the secure EPT tree.  This corresponds to updating
-   the non-leaf EPT entry with present bit set
+ The state machine of EPT entry
+ ------------------------------
+-(private EPT entry, shared EPT entry) =
+-        (non-present, non-present):             private mapping is allowed
+-        (present, non-present):                 private mapping is mapped
+-        (non-present | SPTE_SHARED_MASK, non-present | SPTE_SHARED_MASK):
+-                                                shared mapping is allowed
+-        (non-present | SPTE_SHARED_MASK, present | SPTE_SHARED_MASK):
+-                                                shared mapping is mapped
+-        (present | SPTE_SHARED_MASK, any)       invalid combination
++* (private EPT entry, shared EPT entry)
  
- * TDH.MEM.SEPT.REMOVE():
-+
-   Remove the secure page from the secure EPT tree.  There is no corresponding
-   to the EPT operation.
+-* map_gpa(private GPA): Mark the region that private GPA is allowed(NEW)
+-        private EPT entry: clear SPTE_SHARED_MASK
+-          present: nop
+-          non-present: nop
+-          non-present | SPTE_SHARED_MASK -> non-present (clear SPTE_SHARED_MASK)
++  * (non-present, non-present):
++       private mapping is allowed
++  * (present, non-present):
++       private mapping is mapped
++  * (non-present | SPTE_SHARED_MASK, non-present | SPTE_SHARED_MASK):
++       shared mapping is allowed
++  * (non-present | SPTE_SHARED_MASK, present | SPTE_SHARED_MASK):
++       shared mapping is mapped
++  * (present | SPTE_SHARED_MASK, any):
++       invalid combination
  
- * TDH.MEM.SEPT.RD():
-+
-   Read the secure EPT entry.  This corresponds to reading the EPT entry as
-   memory.  Please note that this is much slower than direct memory reading.
+-        shared EPT entry: zap the entry, clear SPTE_SHARED_MASK
+-          present: invalid
+-          non-present -> non-present: nop
+-          present | SPTE_SHARED_MASK -> non-present
+-          non-present | SPTE_SHARED_MASK -> non-present
++* map_gpa (private GPA): Mark the region that private GPA is allowed(NEW)
  
- * TDH.MEM.PAGE.ADD() and TDH.MEM.PAGE.AUG():
-+
-   Add a private page to the secure EPT tree.  This corresponds to updating the
-   leaf EPT entry with present bit set.
+-* map_gpa(shared GPA): Mark the region that shared GPA is allowed(NEW)
+-        private EPT entry: zap and set SPTE_SHARED_MASK
+-          present     -> non-present | SPTE_SHARED_MASK
+-          non-present -> non-present | SPTE_SHARED_MASK
+-          non-present | SPTE_SHARED_MASK: nop
++  * private EPT entry: clear SPTE_SHARED_MASK
  
- * THD.MEM.PAGE.REMOVE():
-+
-   Remove a private page from the secure EPT tree.  There is no corresponding
-   to the EPT operation.
+-        shared EPT entry: set SPTE_SHARED_MASK
+-          present: invalid
+-          non-present -> non-present | SPTE_SHARED_MASK
+-          present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK: nop
+-          non-present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK: nop
++    * present: nop
++    * non-present: nop
++    * non-present | SPTE_SHARED_MASK -> non-present (clear SPTE_SHARED_MASK)
  
- * TDH.MEM.RANGE.BLOCK():
-+
-   This (mostly) corresponds to clearing the present bit of the leaf EPT entry.
-   Note that the private page is still linked in the secure EPT.  To remove it
-   from the secure EPT, TDH.MEM.SEPT.REMOVE() and TDH.MEM.PAGE.REMOVE() needs to
-   be called.
+-* map(private GPA)
+-        private EPT entry
+-          present: nop
+-          non-present -> present
+-          non-present | SPTE_SHARED_MASK: nop. looping on EPT violation(NEW)
++  * shared EPT entry: zap the entry, clear SPTE_SHARED_MASK
  
- * TDH.MEM.TRACK():
-+
-   Increment the TLB epoch counter. This (mostly) corresponds to EPT TLB flush.
-   Note that the private page is still linked in the secure EPT.  To remove it
-   from the secure EPT, tdh_mem_page_remove() needs to be called.
-@@ -110,25 +117,34 @@ Dropping private page and TLB shootdown
- The procedure of dropping the private page looks as follows.
+-        shared EPT entry: nop
++    * present: invalid
++    * non-present -> non-present: nop
++    * present | SPTE_SHARED_MASK -> non-present
++    * non-present | SPTE_SHARED_MASK -> non-present
  
- 1. TDH.MEM.RANGE.BLOCK(4K level)
+-* map(shared GPA)
+-        private EPT entry: nop
++* map_gpa (shared GPA): Mark the region that shared GPA is allowed(NEW)
+ 
+-        shared EPT entry
+-          present: invalid
+-          present | SPTE_SHARED_MASK: nop
+-          non-present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK
+-          non-present: nop. looping on EPT violation(NEW)
++  * private EPT entry: zap and set SPTE_SHARED_MASK
+ 
+-* zap(private GPA)
+-        private EPT entry: zap the entry with keeping SPTE_SHARED_MASK
+-          present -> non-present
+-          present | SPTE_SHARED_MASK: invalid
+-          non-present: nop as is_shadow_present_pte() is checked
+-          non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
+-                                          checked
++    * present     -> non-present | SPTE_SHARED_MASK
++    * non-present -> non-present | SPTE_SHARED_MASK
++    * non-present | SPTE_SHARED_MASK: nop
+ 
+-        shared EPT entry: nop
++  * shared EPT entry: set SPTE_SHARED_MASK
+ 
+-* zap(shared GPA)
+-        private EPT entry: nop
++    * present: invalid
++    * non-present -> non-present | SPTE_SHARED_MASK
++    * present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK: nop
++    * non-present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK: nop
+ 
+-        shared EPT entry: zap
+-          any -> non-present
+-          present: invalid
+-          present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK
+-          non-present: nop as is_shadow_present_pte() is checked
+-          non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
+-                                          checked
++* map (private GPA)
 +
-    This mostly corresponds to clear the present bit in the EPT entry.  This
-    prevents (or blocks) TLB entry from creating in the future.  Note that the
-    private page is still linked in the secure EPT tree and the existing cache
-    entry in the TLB isn't flushed.
++  * private EPT entry
 +
- 2. TDH.MEM.TRACK(range) and TLB shootdown
++    * present: nop
++    * non-present -> present
++    * non-present | SPTE_SHARED_MASK: nop. looping on EPT violation(NEW)
 +
-    This mostly corresponds to the EPT TLB shootdown.  Because all vcpus share
-    the same Secure EPT, all vcpus need to flush TLB.
++  * shared EPT entry: nop
 +
-    * TDH.MEM.TRACK(range) by one vcpu.  It increments the global internal TLB
-      epoch counter.
-    * send IPI to remote vcpus
-    * Other vcpu exits to VMM from guest TD and then re-enter. TDH.VP.ENTER().
-    * TDH.VP.ENTER() checks the TLB epoch counter and If its TLB is old, flush
-      TLB.
++* map (shared GPA)
 +
-    Note that only single vcpu issues tdh_mem_track().
++  * private EPT entry: nop
 +
-    Note that the private page is still linked in the secure EPT tree, unlike the
-    conventional EPT.
++  * shared EPT entry:
 +
- 3. TDH.MEM.PAGE.PROMOTE, TDH.MEM.PAGEDEMOTE(), TDH.MEM.PAGE.RELOCATE(), or
-    TDH.MEM.PAGE.REMOVE()
++    * present: invalid
++    * present | SPTE_SHARED_MASK: nop
++    * non-present | SPTE_SHARED_MASK -> present | SPTE_SHARED_MASK
++    * non-present: nop. looping on EPT violation(NEW)
 +
-    There is no corresponding operation to the conventional EPT.
++* zap (private GPA)
 +
-    * When changing page size (e.g. 4K <-> 2M) TDH.MEM.PAGE.PROMOTE() or
-      TDH.MEM.PAGE.DEMOTE() is used.  During those operation, the guest page is
-      kept referenced in the Secure EPT.
++  * private EPT entry: zap the entry with keeping SPTE_SHARED_MASK
++
++    * present -> non-present
++    * present | SPTE_SHARED_MASK: invalid
++    * non-present: nop as is_shadow_present_pte() is checked
++    * non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
++      checked
++
++  * shared EPT entry: nop
++
++* zap (shared GPA)
++
++  * private EPT entry: nop
++
++  * shared EPT entry: zap
++
++    * any -> non-present
++    * present: invalid
++    * present | SPTE_SHARED_MASK -> non-present | SPTE_SHARED_MASK
++    * non-present: nop as is_shadow_present_pte() is checked
++    * non-present | SPTE_SHARED_MASK: nop as is_shadow_present_pte() is
++      checked
+ 
+ 
+ The original TDP MMU and race condition
 -- 
 An old man doll... just what I always wanted! - Clara
 
