@@ -2,81 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3920EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 01:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7974BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 01:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiGIBtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 21:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
+        id S229528AbiGIBv5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 21:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiGIBtm (ORCPT
+        with ESMTP id S229459AbiGIBvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 21:49:42 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0E1709BB
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 18:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=aHkveyM+Om9u2IdcFldBf9uD1c2apNFY/SnalVz/8kw=; b=UbHcmh9mUxnQGeVW674eJWgYeo
-        P29zhK3BeUIsE3QES2Up8mHl0nWDHapO+/eOdR8iLIJqHKwh5WbDVf2bucZxjIXcIIFK/EONqVu/N
-        ybjniFNFbj13lntQzf3R1YM218NE1r858HHZCI5EeF6xmjXYzejWD2tk2CTwqYMrrEji82xCHlEAj
-        baQH8uMrP8uDUzp2tyE645adqxVwRwbH5F6pBs9cwNg8fVXajHHnOlHixRBmGhwFs9w54rv4wc9NH
-        NhYL30uHz+bWDraLNLU5qNMBP4YY+/qN7xTsv2QKxpADicJQ4ibKZly9uMuQKLpfN+a5tcrzO0fh+
-        ZddVrIcw==;
-Received: from [2601:1c0:6280:3f0::a6b3] (helo=casper.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o9zbD-0041Xe-Cq; Sat, 09 Jul 2022 01:49:35 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>, Wei Fu <wefu@redhat.com>,
-        Liu Shaohua <liush@allwinnertech.com>,
-        Guo Ren <guoren@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH] riscv: fix RISCV_ISA_SVPBMT kconfig dependency warning
-Date:   Fri,  8 Jul 2022 18:49:29 -0700
-Message-Id: <20220709014929.14221-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.36.1
+        Fri, 8 Jul 2022 21:51:55 -0400
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D3E71709
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 18:51:54 -0700 (PDT)
+Received: from [IPV6:2601:646:8600:40c0:425:cd56:6750:e1bf] ([IPv6:2601:646:8600:40c0:425:cd56:6750:e1bf])
+        (authenticated bits=0)
+        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 2691pLJW2002161
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Fri, 8 Jul 2022 18:51:22 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 2691pLJW2002161
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+        s=2022070501; t=1657331482;
+        bh=dPzbUbU2KTNW1KlzlD3Fu+Pwv5VzHijL+VHbQPZN/88=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=12p46JWhFkklwYxQSRDhwe+rcEsnfPufbXLyzzSgLmeFoZoAXt3bm35A2816AKZEs
+         EMf8k8qPAojkMPOBAVXHti92SxoGZULCMbeRNO44Qp10skQNUkPhPcY29nVuAmK4eG
+         mtSNC3Lz6ZXOByLZ3dZA/gVkT9AoAddhwRar5W+2xZJ1tlEjgF2TQVEA0r52F2oK5X
+         lSJ65K3bvYBm7pA+p4mpXDDfTe1iVHpCar5MY7uDn5f7Ez/qVQXOG4WIxQmgHiPWWE
+         ThCO0Moc8Ln2KHX56YepHAepxj6uHcUApc0Qgx+Dx4MTNZq6z2qsOYSTh9UoRS7aLd
+         9SkKKEPIf5C0w==
+Message-ID: <ddba81dd-cc92-699c-5274-785396a17fb5@zytor.com>
+Date:   Fri, 8 Jul 2022 18:51:16 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH tip v8] x86/setup: Use rng seeds from setup_data
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Andy Lutomirski <luto@kernel.org>
+References: <20220707000852.523788-1-Jason@zx2c4.com>
+ <20220708113907.891319-1-Jason@zx2c4.com>
+From:   "H. Peter Anvin" <hpa@zytor.com>
+In-Reply-To: <20220708113907.891319-1-Jason@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RISCV_ISA_SVPBMT selects RISCV_ALTERNATIVE which depends on !XIP_KERNEL.
-Therefore RISCV_ISA_SVPBMT should also depend on !XIP_KERNEL so
-quieten this kconfig warning:
+On 7/8/22 04:39, Jason A. Donenfeld wrote:
+> 
+> diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
+> index ca0796ac4403..2cbfe630230d 100644
+> --- a/arch/x86/include/uapi/asm/bootparam.h
+> +++ b/arch/x86/include/uapi/asm/bootparam.h
+> @@ -12,6 +12,7 @@
+>   #define SETUP_JAILHOUSE			6
+>   #define SETUP_CC_BLOB			7
+>   #define SETUP_IMA			8
+> +#define SETUP_RNG_SEED			9
+>   
+>   #define SETUP_INDIRECT			(1<<31)
+>   
 
-WARNING: unmet direct dependencies detected for RISCV_ALTERNATIVE
-  Depends on [n]: !XIP_KERNEL [=y]
-  Selected by [y]:
-  - RISCV_ISA_SVPBMT [=y] && 64BIT [=y] && MMU [=y]
+Just one miss here: you need to bump SETUP_TYPE_MAX. It is a bit more 
+confusing than it needs to be that SETUP_INDIRECT sits in between, and 
+honestly I think SETUP_TYPE_MAX shouldn't include the SETUP_INDIRECT 
+bit; however, this is uapi and so we can't change that per se.
 
-Fixes: ff689fd21cb1 ("riscv: add RISC-V Svpbmt extension support")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Wei Fu <wefu@redhat.com>
-Cc: Liu Shaohua <liush@allwinnertech.com>
-Cc: Guo Ren <guoren@kernel.org>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Albert Ou <aou@eecs.berkeley.edu>
-Cc: linux-riscv@lists.infradead.org
----
- arch/riscv/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+Perhaps we should do:
 
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -362,6 +362,7 @@ config RISCV_ISA_C
- config RISCV_ISA_SVPBMT
- 	bool "SVPBMT extension support"
- 	depends on 64BIT && MMU
-+	depends on !XIP_KERNEL
- 	select RISCV_ALTERNATIVE
- 	default y
- 	help
+#define SETUP_ENUM_MAX	SETUP_RNG_SEED
+#define SETUP_INDIRECT	(1<<31)
+#define SETUP_TYPE_MAX	(SETUP_ENUM_MAX | SETUP_INDIRECT)
+
+	-hpa
