@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49446CCA485
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4775C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiGIEVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 00:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
+        id S229667AbiGIEVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 00:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGIEVR (ORCPT
+        with ESMTP id S229509AbiGIEVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 00:21:17 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E204B0E2;
-        Fri,  8 Jul 2022 21:21:16 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so396151pjf.2;
-        Fri, 08 Jul 2022 21:21:16 -0700 (PDT)
+        Sat, 9 Jul 2022 00:21:19 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07549459B7;
+        Fri,  8 Jul 2022 21:21:18 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id r1so359172plo.10;
+        Fri, 08 Jul 2022 21:21:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tqnD4C4oV1Jfc5xrbTyXeGKGD2rQbMRtWvUugf25kP4=;
-        b=LA1u9zvwL55/Z5e5xyS4ooVm/vxaZju66QhKk7a+rVrCRdEm+MVwOo4mHoollEhRg6
-         0ynn5jdfFthSZ6r9s39UJjtZFnhIWgJRHNWZzH9+Rct1aAB5MQVjpAmmqE4q8efSOX6p
-         2pBvdmhVz7sWtcXVMpdmwNSOzuX2ghHM2HCxBaJeOd7LPKhWkn4tygs+u8RRLMDnT7kU
-         D70wWRHW9A2VB8h3J6lQN0Apvdf2Z/1L5qogxH68MYkPK7l4pcv5xnl7xODWenLO3sE4
-         55P//rMC+5VMDKQDeMJ7G4763pu0UaPJ67zyGb7TSVVY15rECG+JVecZLiiehGrysbao
-         tSyg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RWwGLeTWyw9jKzSZsmjhlLKaDKWP550W214VN7zaysw=;
+        b=WYCo2fGaWwnu45w6tRjJ6orAAOOBTC+PlmRl3imZXqQa9mCSiZlY/e0oxaD7uksVck
+         8y2SqgzBb/5pi76/0TfZtYlKGPm/JSL1MzS6BpvChVObmw/DR4kvMZ6PTMPZxn7LffdR
+         oSO573w838kuNVOE+1SXIV87pxZarwuwbnbremt32hO/EcCcSyk9+Nmfg8EO9N/MH1FR
+         uRqBNlnwRyBZJE2xEVqJ+SoeZWVMyAZoEtH/Kc/GcZVL/96HYP/BV/LwHP2kX49UEfQB
+         YWhknYAb1Nc2AeahsEPPpyIUKRtPbO/5LYcpzzlSWwwvnaJWnQGvFzm03JBIvVTk4/N0
+         GtoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tqnD4C4oV1Jfc5xrbTyXeGKGD2rQbMRtWvUugf25kP4=;
-        b=pZHQ/05Ftq0fH6RrE5T20+XdkpOI0uAxiw4l0dn3HyjMQlF7HmxOFtFwFEJJ2yAX9m
-         PScQlaqPQpk0h+NWvp4RGG9665XX3TthoVGZqjagt3kNmdM7ZNSrGDNOyiAwxsFzilb8
-         PoQOfgNzMAwD9/NVznRgwunns3ErbH86AFTi196Bnf79P8tsVBjaOQ3F19WLQ1JGcf0v
-         nAV6YWVQsFgbFjIQ02RKZDf+yCpcLGZXDjQ6InC2NJ1e0MdeH/8bkw5jULhjJGiRvJXv
-         PDdqYbnkpNc/hQpmtonkTAwVcH3uqAKrPZcs/+So1vsDYse2Si90Hy7jLacbaCG+F9+1
-         NfKw==
-X-Gm-Message-State: AJIora+8epbyR+qqEss3znyfNFrdO7fz1eY4WkLtrPA73DN6JN/Hfvc6
-        IppJ7y+6BqMzjO23+/angn8=
-X-Google-Smtp-Source: AGRyM1ti0bCsTorLAhWrXlmpFGlIs0Tk6L7syNx3SMzkw98mywxfB3uBBZrKsw/KLgdul/eZWMQeSw==
-X-Received: by 2002:a17:902:d4c6:b0:16c:3273:c7b3 with SMTP id o6-20020a170902d4c600b0016c3273c7b3mr1025055plg.108.1657340476187;
-        Fri, 08 Jul 2022 21:21:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RWwGLeTWyw9jKzSZsmjhlLKaDKWP550W214VN7zaysw=;
+        b=JINplhMW0f7dn7Q8MGxE0RZs/BIynmTZdJT/DK99RmhGgu1074WCBuze3YwDp/N0uc
+         uEE5IE8RgUYEuP/5BSrphoX2qGGCahyUykGNeRj/kqEol1vHkuPEzE5NJn5Ho/mQoD1s
+         uEzWJARjbAuwJtbxWEQvXh+OlJmVJB3KJGf2QKIW/CyQSEdb/YVD+QnuJMhAXrqWJr16
+         Rj+ctAQFu/rEPdI6YI7mtFeOPyjdx7NlyxJsmriUggoAXZXnc63drKmho6b2fq5HPBXZ
+         A+V1aBNV+PORW+UZHJUmPn4/RMGlz53Se2qYkLLmeavgGwnZlvVauFRfY7hcyAgzEg87
+         d8Fw==
+X-Gm-Message-State: AJIora9rKH8zX+BeoRpCpZUKtBN/LB4mgH488hBXOmkL6NfuKPkMM6nK
+        Yrs2/SQHeObfJmBVoK3hT3o=
+X-Google-Smtp-Source: AGRyM1vdNLFydRZUS8daU18hpg7XwZBDgQfVQARuB1Ic9Vad468l62USBxyyQxpG31K74dVZh8naiA==
+X-Received: by 2002:a17:903:31c9:b0:16c:3024:69c4 with SMTP id v9-20020a17090331c900b0016c302469c4mr2273129ple.81.1657340477548;
+        Fri, 08 Jul 2022 21:21:17 -0700 (PDT)
 Received: from debian.me (subs02-180-214-232-88.three.co.id. [180.214.232.88])
-        by smtp.gmail.com with ESMTPSA id 15-20020a63134f000000b00412b1043f33sm253283pgt.39.2022.07.08.21.21.14
+        by smtp.gmail.com with ESMTPSA id j14-20020a170903024e00b0016bf10203d9sm335655plh.144.2022.07.08.21.21.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 08 Jul 2022 21:21:15 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-        id 272401039B9; Sat,  9 Jul 2022 11:21:10 +0700 (WIB)
+        id 7B2ED1039B6; Sat,  9 Jul 2022 11:21:10 +0700 (WIB)
 From:   Bagas Sanjaya <bagasdotme@gmail.com>
 To:     linux-doc@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -62,82 +62,46 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         Kai Huang <kai.huang@intel.com>, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 02/12] Documentation: kvm: tdx: Use appropriate subbullet marker
-Date:   Sat,  9 Jul 2022 11:20:28 +0700
-Message-Id: <20220709042037.21903-3-bagasdotme@gmail.com>
+Subject: [PATCH 00/12] Documentation: tdx: documentation fixes
+Date:   Sat,  9 Jul 2022 11:20:26 +0700
+Message-Id: <20220709042037.21903-1-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220709042037.21903-1-bagasdotme@gmail.com>
-References: <20220709042037.21903-1-bagasdotme@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sphinx only supports dash (-) and asterisk (*) as bullet marker. Use
-them instead of dot (.) and equal (=).
+Here is the documentation fixes for KVM TDX feature tree ([1]). There
+are 58 new warnings reported when making htmldocs, which are fixed.
 
-Fixes: 9e54fa1ac03df3 ("Documentation/virtual/kvm: Document on Trust Domain Extensions(TDX)")
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/virt/kvm/intel-tdx.rst | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+[1]: https://github.com/intel/tdx/tree/kvm-upstream
 
-diff --git a/Documentation/virt/kvm/intel-tdx.rst b/Documentation/virt/kvm/intel-tdx.rst
-index 46ad32f3248e40..7a7c17da3a045f 100644
---- a/Documentation/virt/kvm/intel-tdx.rst
-+++ b/Documentation/virt/kvm/intel-tdx.rst
-@@ -216,15 +216,16 @@ The main issue for it is that the logic of kvm_x86_ops callbacks for
- TDX is different from VMX. On the other hand, the variable,
- kvm_x86_ops, is global single variable. Not per-VM, not per-vcpu.
- 
--Several points to be considered.
--  . No or minimal overhead when TDX is disabled(CONFIG_INTEL_TDX_HOST=n).
--  . Avoid overhead of indirect call via function pointers.
--  . Contain the changes under arch/x86/kvm/vmx directory and share logic
-+Several points to be considered:
-+
-+  * No or minimal overhead when TDX is disabled(CONFIG_INTEL_TDX_HOST=n).
-+  * Avoid overhead of indirect call via function pointers.
-+  * Contain the changes under arch/x86/kvm/vmx directory and share logic
-     with VMX for maintenance.
-     Even though the ways to operation on VM (VMX instruction vs TDX
-     SEAM call) is different, the basic idea remains same. So, many
-     logic can be shared.
--  . Future maintenance
-+  * Future maintenance
-     The huge change of kvm_x86_ops in (near) future isn't expected.
-     a centralized file is acceptable.
- 
-@@ -295,21 +296,23 @@ One bit of GPA (51 or 47 bit) is repurposed so that it means shared
- with host(if set to 1) or private to TD(if cleared to 0).
- 
- - The current implementation
--  . Reuse the existing MMU code with minimal update.  Because the
-+
-+  * Reuse the existing MMU code with minimal update.  Because the
-     execution flow is mostly same. But additional operation, TDX call
-     for S-EPT, is needed. So add hooks for it to kvm_x86_ops.
--  . For performance, minimize TDX SEAM call to operate on S-EPT. When
-+  * For performance, minimize TDX SEAM call to operate on S-EPT. When
-     getting corresponding S-EPT pages/entry from faulting GPA, don't
-     use TDX SEAM call to read S-EPT entry. Instead create shadow copy
-     in host memory.
-     Repurpose the existing kvm_mmu_page as shadow copy of S-EPT and
-     associate S-EPT to it.
--  . Treats share bit as attributes. mask/unmask the bit where
-+  * Treats share bit as attributes. mask/unmask the bit where
-     necessary to keep the existing traversing code works.
-     Introduce kvm.arch.gfn_shared_mask and use "if (gfn_share_mask)"
-     for special case.
--    = 0 : for non-TDX case
--    = 51 or 47 bit set for TDX case.
-+
-+    * 0 : for non-TDX case
-+    * 51 or 47 bit set for TDX case.
- 
-   Pros:
- 
+Bagas Sanjaya (12):
+  Documentation: kvm: Pad bullet lists with blank line
+  Documentation: kvm: tdx: Use appropriate subbullet marker
+  Documentation: kvm: tdx: Add footnote markers
+  Documentation: kvm: tdx: Use bullet list for public kvm trees
+  Documentation: kvm: tdx: title typofix
+  Documentation: kvm: tdx-tdp-mmu: Add blank line padding for lists
+  Documentation: kvm: tdx-tdp-mmu: Use literal code block for EPT
+    violation diagrams
+  Documentation: kvm: tdx-tdp-mmu: Properly format nested list for EPT
+    state machine
+  Documentation: kvm: tdx-tdp-mmu: Add blank line padding to lists in
+    concurrent sections
+  Documentation: x86: Enclose TDX initialization code inside code block
+  Documentation: x86: Use literal code block for TDX dmesg output
+  Documentation: kvm: Add TDX documentation to KVM table of contents
+
+ Documentation/virt/kvm/index.rst       |   4 +
+ Documentation/virt/kvm/intel-tdx.rst   | 114 ++++++++++----
+ Documentation/virt/kvm/tdx-tdp-mmu.rst | 198 ++++++++++++++++---------
+ Documentation/x86/tdx.rst              |  32 ++--
+ 4 files changed, 229 insertions(+), 119 deletions(-)
+
+
+base-commit: 7af4efe32638544aecb58ed7365d0ef2ea6f85ea
 -- 
 An old man doll... just what I always wanted! - Clara
 
