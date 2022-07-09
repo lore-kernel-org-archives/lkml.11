@@ -2,68 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77AB6C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 16:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C451AC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 16:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229571AbiGIQTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 12:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
+        id S229491AbiGIQUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 12:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiGIQTt (ORCPT
+        with ESMTP id S229606AbiGIQUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 12:19:49 -0400
+        Sat, 9 Jul 2022 12:20:01 -0400
 Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E847459B6;
-        Sat,  9 Jul 2022 09:19:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73118474E0;
+        Sat,  9 Jul 2022 09:19:59 -0700 (PDT)
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 5708C32009C0;
-        Sat,  9 Jul 2022 12:19:45 -0400 (EDT)
+        by mailout.west.internal (Postfix) with ESMTP id 1D89F32009C4;
+        Sat,  9 Jul 2022 12:19:58 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 09 Jul 2022 12:19:46 -0400
+  by compute3.internal (MEProxy); Sat, 09 Jul 2022 12:19:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1657383584; x=
-        1657469984; bh=wZ/WZnzrMZ2yHYrnPl7KcvmHD956qS1jBpdJ++/2Nn8=; b=I
-        QsRsh3xYwgNpe17m90OgxP1gEiocN87NHaq32yTAGnXvphrl9l8QJdNL7uDK2jIQ
-        k3xtAxEzkwzDOQ7hRxN9sq5oEJQIdSb2Oah+a1hlXKzeZ299OIs4M/MG0Mso4GnP
-        d4dfA0aV6328nSR0x312Ld3Qz213LWxp2RwDCrXQQdqWSbmfHADGxH6j3mlrAMfx
-        43ISFgXPEC94olxO0tow8xFst+n1zzvo7t8hj21pGsYhdf6tSPdH9tqF4D1BBPYs
-        QiosD5zPBFyIEouf97Tqc1PqrIBU4YUPWwm4CqBLE2XM4CQwDNPr41TC1Cy+W5vp
-        eEQL82YIEaCsBCx1/I/bg==
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1657383597; x=
+        1657469997; bh=ckAQH/TS15UUvt0fzPakXv/P6BCKlKnB5ngi4InfzRM=; b=H
+        sf/6+mFlfo3Nv3bFTg/p4fIjH+zMWw7QNyvZgiJkxPE6ZQ05m3I02pnjSopQIJre
+        Cu3Vwb6hNdoLouPEClGyaKhbml1nitFqM7G7Pdy0x7XMiae8cVGtjmJfauVezmNS
+        iM/S/CCpUvPmHqSXKCSARgSwjugtQw/vn8d1+sX/tGzbhcI+cxfioYrMUV4cb9WC
+        rlF0wcU2QvZiFj9iVAk1UUA40XG6/wtxxb1cAFmj/f8jOyE6DqkBoYjVMhycTJtp
+        cZGh/knaQ/PWYPsl/flDYdjbHiQVstb6QJh1nnScTal4Rqi8E8Wi4y/j1ORjxblJ
+        2dvAHRj9c8fG4okUGnU5g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1657383584; x=
-        1657469984; bh=wZ/WZnzrMZ2yHYrnPl7KcvmHD956qS1jBpdJ++/2Nn8=; b=S
-        iDAkZ0Hp13LQakY84JUljzgDziVE2NPdRscprSF9Lt0CYdlAFBPezEwYLhnK/rbA
-        Szqs2zeioqAhqo5Gjln+Q2ZC8e8Xvox5Td2AXGwNg/XntsldhvqX883I20Co/Yp1
-        uBoV7R+12nyMs1hzqSGIKioyc/8M2jNrP9ZXTSP1v3LmuSvCu4FkVk2WrpPIixKe
-        X2KlpEx7jnt6XIpqYt+JRih6iys92BU/8k1DEZpr3n1xQSFiLsZIUZ7v+qeia/hv
-        3mFZdnMvYSaO6x07SpVIvZWRvPamorbqCoLU9MJqEsb4yUK47cexvS5q2INTirKF
-        Ysz1NoPk5N82nwilr+Nhw==
-X-ME-Sender: <xms:n6rJYvR2_cjwTC7FNfjHimIUxIs542_Fr-eBxatuVGVrW31nf-lUnw>
-    <xme:n6rJYgz6sNVlNtkZzGJbcYFoLZjCaj0xa6bD1JCaPOjydSYf2JS1p743VoDjMzE3Y
-    knivXKEyabwuqs3Ug>
-X-ME-Received: <xmr:n6rJYk2Xcd8-bCll2CAwvOtd8mWOo8Uqc2ekHz-eeLBV6TyiQ66kidys8VXjMaObSqRpMlnmEkQfGoe0QWANu0eRlqNPVJ9OdXJ24GVsU8EiIkoQwMJdn8k5AQ>
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1657383597; x=
+        1657469997; bh=ckAQH/TS15UUvt0fzPakXv/P6BCKlKnB5ngi4InfzRM=; b=Y
+        ZNvoxRtlKUEpV+I+M34vK9lC8JZk7SNPuHgNnx8+LE+IXAUICZFTEy5zOoBK7Sbr
+        ZvFWu4T3przVgh92klNeIjC8JsguUiAWXfsyQQBxndk3+PEm+jKfplV0Hh1LnJE7
+        4qBrOWjNG9IA5rYX7T5tPsCvwUvIpK3vPzo02LjF4NJo17iUwEjf5b3vR/qJezOF
+        aIPzWZ46iLOpnPPI6SFh3rWNyVrn1iLLleBgq2LgP1hB2pjnbs61Vm3GuDiGqQtC
+        UXotPh/pP8WKRBv+POwZzkjuFUEMUs+JWWHyprre0fw3d3r5TkfAUBpI0BgPyYWI
+        iHVcvvJdpl27598VyLZaQ==
+X-ME-Sender: <xms:rarJYoNqDxQ0WyToQLQo08NnKclQLnyP0VI5FLKZf4nV4skyl_ktGg>
+    <xme:rarJYu8n_HaLIPbBNYOr1wDGjbSMLD-E1iww1s7_Ji_X_tMFGKp8_y9-vZqMPpNU3
+    b3jRiWdghSz5MrhLA>
+X-ME-Received: <xmr:rarJYvQS8j78cZo7ZEG6MaHC4W2h482P_4YEtD_eBla9_Cm-l2djBJTAMtLMQTOXFQAT9baXuvgV4ktPZeo48FSapoKysff_CFE0f28kEi5J3384m9K3W_Ou3w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeiledguddtudcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
     enucfjughrpefuvfevfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepufgr
     mhhuvghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqne
     cuggftrfgrthhtvghrnhepffdtveekvdegkeeuueetgfetffeileevudekuefhheelvdfh
-    iedtheduhfduhefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
+    iedtheduhfduhefhnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilh
     hfrhhomhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:n6rJYvAFLLd8EJsRbihFF5ZMPkkbSUA_l-Vxrr0ZollZAfECbaYPCA>
-    <xmx:n6rJYojrl2C2EHMgakqvaUV7C5mxkgaDLoY45fkGB3_e09kZ3esUQQ>
-    <xmx:n6rJYjoVkjCO66cQo3UBEzcSGJKoDMIDolVv0BLdpGkUnofp1d4jdw>
-    <xmx:oKrJYrOCDqiY2yQYIj65Bc9HrIhxfMaYva7zASB2z1DFxx9mygbHvA>
+X-ME-Proxy: <xmx:rarJYgu27J_fDR8PtK5XHPl3PnniJZktT_bVPmHgNrLw2eCFiTmnWQ>
+    <xmx:rarJYgcpv1skc1Wr-UiwxcZbxmKUr31RxDbFvAScf2UQA0_NdMvuoA>
+    <xmx:rarJYk1emzR2ebmt8DQcbD-thL0W5PYFbQxGIxCDrqkp6qtIwzg-KQ>
+    <xmx:rarJYnyg2y1r0_4WFLsr82V9xaD4qwL4OcVXzuGcmLKlj2KUf-HEvQ>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 9 Jul 2022 12:19:43 -0400 (EDT)
-Subject: Re: [PATCH v13 1/7] dt-bindings: arm: sunxi: Add H616 EMAC compatible
+ 9 Jul 2022 12:19:57 -0400 (EDT)
+Subject: Re: [PATCH v13 3/7] arm64: dts: allwinner: Add Allwinner H616 .dtsi
+ file
 To:     Andre Przywara <andre.przywara@arm.com>,
         Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>
@@ -71,17 +72,16 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
 References: <20220708105235.3983266-1-andre.przywara@arm.com>
- <20220708105235.3983266-2-andre.przywara@arm.com>
+ <20220708105235.3983266-4-andre.przywara@arm.com>
 From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <272cbbb8-bc3e-1c5e-6c8a-fc82007d17cd@sholland.org>
-Date:   Sat, 9 Jul 2022 11:19:42 -0500
+Message-ID: <b82dbd31-3b73-41e3-7017-dedd65273857@sholland.org>
+Date:   Sat, 9 Jul 2022 11:19:56 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20220708105235.3983266-2-andre.przywara@arm.com>
+In-Reply-To: <20220708105235.3983266-4-andre.przywara@arm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -89,39 +89,23 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andre,
-
 On 7/8/22 5:52 AM, Andre Przywara wrote:
-> The Allwinner H616 contains an "EMAC" Ethernet MAC compatible to the A64
-> version.
-
-H616 contains two EMACs, and only EMAC0 is compatible to the A64 version. EMAC1
-requires an updated driver that knows about the different syscon register
-location. So the new compatible string should be limited to EMAC0, i.e.
-allwinner,sun50i-h616-emac0.
-
-Regards,
-Samuel
-
-> Add it to the list of compatible strings.
+> This (relatively) new SoC is similar to the H6, but drops the (broken)
+> PCIe support and the USB 3.0 controller. It also gets the management
+> controller removed, which in turn removes *some*, but not all of the
+> devices formerly dedicated to the ARISC (CPUS).
+> And while there is still the extra sunxi interrupt controller, the
+> package lacks the corresponding NMI pin, so no interrupts for the PMIC.
+> 
+> The reserved memory node is actually handled by Trusted Firmware now,
+> but U-Boot fails to propagate this to a separately loaded DTB, so we
+> keep it in here for now, until U-Boot learns to do this properly.
 > 
 > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml       | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-> index 6a4831fd3616c..87f1306831cc9 100644
-> --- a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-> +++ b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-> @@ -22,6 +22,7 @@ properties:
->            - enum:
->                - allwinner,sun20i-d1-emac
->                - allwinner,sun50i-h6-emac
-> +              - allwinner,sun50i-h616-emac
->            - const: allwinner,sun50i-a64-emac
->  
->    reg:
-> 
 
+Thanks Andre for persisting with this series!
+
+Other than the EMAC0 compatible string, which will need to change along with the
+binding:
+
+Reviewed-by: Samuel Holland <samuel@sholland.org>
