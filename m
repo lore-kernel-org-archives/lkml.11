@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19FCC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 00:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1823C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 00:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiGIAHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 20:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
+        id S229813AbiGIAHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 20:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiGIAHJ (ORCPT
+        with ESMTP id S229814AbiGIAHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 20:07:09 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE1766AFA;
+        Fri, 8 Jul 2022 20:07:10 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC09C691CA;
         Fri,  8 Jul 2022 17:06:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1657325201; x=1688861201;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2PHVLxm0nwiHtIkBNkq8RAlB72SqG9LFMuILiBDy8xs=;
-  b=WWl8VHMkUidl+JIgh/NTlDF3KoD8PpjOvMDBVNoCvqoc0rJcy0p3cYuz
-   BnfHTVrqVXelcEDK26LKYHl1k3+GCoSYWtnfI3ynKIEDlEIaA0kc0cnDB
-   p8+lj8Y+eIxnBdfa5WVL1jtOZ+g6MJnYrTcb4wqt+kOZi1hhcF7Q3yGgf
-   2DqpqjaOKOjWt2wGQCq6EYJ8/O9ilao4My42d3oA5VPJGo4gSbBofD2yc
-   aTOBfmiQ4Dw8Lo+h7W87OUGuYkxJlglSDSUg4+ibRts2vq7x5D1c70eer
-   yeJJ8yzkn4ICmMBL91XpbddX2ac5KQGZY8d6bnAA8NIhMCEB8b6MVuBsF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="264802886"
+  bh=DnxCMeas++YLy+iZ8/T9EXjN08NjQVaxnLSelIgxV1Q=;
+  b=Um67GYsucFDXy10/c+q9x+HjFi4uW39Mza7SK+SKY4Rc55TkZYQbfX6G
+   wAnLtUdGftD0Jyj/iRnlY2H42huGxyshsWBHXWZOEdswsQt55LvhMW6XG
+   wjTeGh6rvPR4vyXcOuFACp6YI9E4oewhnzIKkMd24l5vDobs1ber1v0qN
+   QlU8GQJeMJFyVB8s7heqy/P9IGHPVVa4iSkcEt33q46EK18BZgFHkkDz9
+   Fe6yoTwHIE73qDMjswrYM51TmMsglajdrBGbBpGccc6QcfOtmUPfJbw2Q
+   87Jn6FkhLo4bRH7coTYYjgbZrbPNCSDQFGsjk4F0SAqK2BUWjqZ7wrUUl
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="309977707"
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="264802886"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 17:06:41 -0700
+   d="scan'208";a="309977707"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 17:06:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="683821846"
+   d="scan'208";a="770940121"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 Jul 2022 17:06:39 -0700
+  by orsmga005.jf.intel.com with ESMTP; 08 Jul 2022 17:06:39 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8DA39481; Sat,  9 Jul 2022 03:06:46 +0300 (EEST)
+        id A58F85AD; Sat,  9 Jul 2022 03:06:46 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Hans de Goede <hdegoede@redhat.com>,
         platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Mark Gross <markgross@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 2/7] platform/x86: serial-multi-instantiate: Improve autodetection
-Date:   Sat,  9 Jul 2022 03:06:31 +0300
-Message-Id: <20220709000636.35550-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 5/7] platform/x86: serial-multi-instantiate: Use while (i--) pattern to clean up
+Date:   Sat,  9 Jul 2022 03:06:34 +0300
+Message-Id: <20220709000636.35550-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220709000636.35550-1-andriy.shevchenko@linux.intel.com>
 References: <20220709000636.35550-1-andriy.shevchenko@linux.intel.com>
@@ -57,53 +57,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of calling specific resource counter, let just probe each
-of the type and see what it says. Also add a debug message when
-none is found.
+Use more natural while (i--) patter to clean up allocated resources.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/platform/x86/serial-multi-instantiate.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/platform/x86/serial-multi-instantiate.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/platform/x86/serial-multi-instantiate.c b/drivers/platform/x86/serial-multi-instantiate.c
-index 97db23243018..e599058196bb 100644
+index 520236b11b2c..38bc644a50c3 100644
 --- a/drivers/platform/x86/serial-multi-instantiate.c
 +++ b/drivers/platform/x86/serial-multi-instantiate.c
-@@ -232,6 +232,7 @@ static int smi_probe(struct platform_device *pdev)
- 	const struct smi_node *node;
- 	struct acpi_device *adev;
- 	struct smi *smi;
-+	int ret;
+@@ -70,11 +70,11 @@ static int smi_get_irq(struct platform_device *pdev, struct acpi_device *adev,
  
- 	adev = ACPI_COMPANION(dev);
- 	if (!adev)
-@@ -255,15 +256,20 @@ static int smi_probe(struct platform_device *pdev)
- 	case SMI_SPI:
- 		return smi_spi_probe(pdev, adev, smi, node->instances);
- 	case SMI_AUTO_DETECT:
--		if (i2c_acpi_client_count(adev) > 0)
--			return smi_i2c_probe(pdev, adev, smi, node->instances);
--		else
--			return smi_spi_probe(pdev, adev, smi, node->instances);
-+		ret = smi_i2c_probe(pdev, adev, smi, node->instances);
-+		if (ret && ret != -ENOENT)
-+			return ret;
-+		ret = smi_spi_probe(pdev, adev, smi, node->instances);
-+		if (ret && ret != -ENOENT)
-+			return ret;
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Error No resources found\n");
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
+ static void smi_devs_unregister(struct smi *smi)
+ {
+-	while (smi->i2c_num > 0)
+-		i2c_unregister_device(smi->i2c_devs[--smi->i2c_num]);
++	while (smi->i2c_num--)
++		i2c_unregister_device(smi->i2c_devs[smi->i2c_num]);
  
--	return 0; /* never reached */
-+	return 0;
+-	while (smi->spi_num > 0)
+-		spi_unregister_device(smi->spi_devs[--smi->spi_num]);
++	while (smi->spi_num--)
++		spi_unregister_device(smi->spi_devs[smi->spi_num]);
  }
  
- static int smi_remove(struct platform_device *pdev)
+ /**
 -- 
 2.35.1
 
