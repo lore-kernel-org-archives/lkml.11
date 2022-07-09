@@ -2,120 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A927C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 09:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77668C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 09:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbiGIJqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 05:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
+        id S229485AbiGIJrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 05:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiGIJpr (ORCPT
+        with ESMTP id S229448AbiGIJrS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 05:45:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 978CB6E885
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 02:45:33 -0700 (PDT)
+        Sat, 9 Jul 2022 05:47:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06441655AC
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 02:47:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657359932;
+        s=mimecast20190719; t=1657360037;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=iWvnBMFObBlyOO6QJSeCElG9d75fpXtdy6dwQMRWtN0=;
-        b=a2kjd0JTWyqi/pv55ettf9OJ5Y7bk7abqQtPYMt1NIG2bvhtUS6+esZQdmZLnrc9yyObFn
-        UwBxVYhRgO13Ol5KjV8ccT6EOLCJ89bOgxHpMQrsUV0nxEpdV7i8ifHgPG8/B6FEZPn1zt
-        KoQknbZBpu+HbuTwzhz65LhwmcawxoM=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=oVjul2vVFMPSpvmkVCAUVdXizXpt78M3xwKxWk3zHY0=;
+        b=V9tHx/L3ecaAbsW7nYGPbvKyxCYu37BxUNYyK7njXO7tJzrWVV1omMbLrVN1jch/2g94dG
+        DSeNj85/wP4f7bmo/Urkz1NTfTTGwXGcZ9BtJjUC1PYfLS/nv/5WSrGMZl1sJHStCK00nn
+        6GAyQwZW1JXmc0ZaI20F92MzQkALDVw=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-534-GBVTXI-zPLSeLOnUDG7C7A-1; Sat, 09 Jul 2022 05:45:30 -0400
-X-MC-Unique: GBVTXI-zPLSeLOnUDG7C7A-1
-Received: by mail-ed1-f71.google.com with SMTP id h16-20020a05640250d000b00435bab1a7b4so825431edb.10
-        for <linux-kernel@vger.kernel.org>; Sat, 09 Jul 2022 02:45:30 -0700 (PDT)
+ us-mta-281-W1T-PDzEPD2QTFnxBn6k6Q-1; Sat, 09 Jul 2022 05:47:15 -0400
+X-MC-Unique: W1T-PDzEPD2QTFnxBn6k6Q-1
+Received: by mail-ed1-f72.google.com with SMTP id h16-20020a05640250d000b00435bab1a7b4so827204edb.10
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Jul 2022 02:47:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=iWvnBMFObBlyOO6QJSeCElG9d75fpXtdy6dwQMRWtN0=;
-        b=K+DBF9vvYRML6PB/9BePFyWZVEmVekB6E6DCSRRyzr0eC57uylTFHxoldjX14FFAFL
-         DNJRxcCPPQ5KYUz9mFRP77BUtDRCcu2+oRda9gjHO0LOWFNoIroqfzDJX6TKscXWQSSJ
-         Ns6mDRx3BCjNwh9KwAL/UoIi6KZPT+p/891fhF0qQR8p9UjomKI8V0hFXvCJc6LsafkU
-         BZzRMH01v7hEgDqy7Y21RWDqJ8F22UHm3sczdXrq9mj2/LNLJkBD60k/78qzruscRFeA
-         s7LlF0nLcbOYuBGX7wLsTxsQGO08EwZFcgZsy6OT1PUEBLpsP1xM4bJOvqpVKjBjJxW2
-         lrEA==
-X-Gm-Message-State: AJIora+ZcwegeJPwfUX0mdMSMp616wGLpgwZtDz/CHaC8ybhHAiF/2Rt
-        Lz94DOKrVaQIvn+F+soztQMIJ6s77uar0f12nxmmK35NIPUqhhfm2UuDpsYINY7jcERVQVajo4T
-        kLpXijOgEZHphyERGgtWAVMQ6
-X-Received: by 2002:a05:6402:5c9:b0:420:aac6:257b with SMTP id n9-20020a05640205c900b00420aac6257bmr10338733edx.128.1657359929498;
-        Sat, 09 Jul 2022 02:45:29 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sktFAj695Q1qN3O0qx1hrC8DPFEhPTFugT3sudOcjMzshgtIOXHdA/+MZHh2dgOnE5u3d0qw==
-X-Received: by 2002:a05:6402:5c9:b0:420:aac6:257b with SMTP id n9-20020a05640205c900b00420aac6257bmr10338720edx.128.1657359929354;
-        Sat, 09 Jul 2022 02:45:29 -0700 (PDT)
+        bh=oVjul2vVFMPSpvmkVCAUVdXizXpt78M3xwKxWk3zHY0=;
+        b=ENGWXuz/yvJqSZq30GUUSDkTbCv8RF30LdErX1t+pGklmtrPTkcJSy0ERS/XOkeuzn
+         qBXFuMVIGkusprkLcXBPFW2oiiZogGC5H4MMMsbCdIQt2kBPkpNySDy+Nsev9M5cp4HC
+         hjV4WzrSPO9NNjvKeNVHNhxHCb7vx8nshOb2ibX0HCHMhQOmhwcSxnsE9DN/rPE0atWl
+         y/A4a87mWm1ORAl8eVUvsc+w8v6Qt1DY3Eo2+bVLaOjYCdES27kDK1nMWt0EB6d9JsLN
+         /e3h570rREuwcsLCjk7C/bkLzzZQvQgAS2lx3N8w7ZAaaMt1vj//lIV5GrVCvropagsz
+         BxJQ==
+X-Gm-Message-State: AJIora+VcxesPSqnLA5aFNmvMc0DfXwTlNi74Nh7yLwvscjkhCKJstGK
+        Co2oKtuIN/N7Cz4ke5Z3XJualyAIUzmmZiqOsV5prab/csXwbF0fW1BQnmhULu38ohGCB5Se6u7
+        XrckkFQHjJOEioR+8kI2ipRO5
+X-Received: by 2002:a05:6402:26c8:b0:43a:c404:a553 with SMTP id x8-20020a05640226c800b0043ac404a553mr972156edd.53.1657360033898;
+        Sat, 09 Jul 2022 02:47:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tXnhUx6P1aaMUqcqU4AG0UIrUqo7LsszkPewfUUVM8I3enoWg8y6z1maxgws7Of6Id+JDpwQ==
+X-Received: by 2002:a05:6402:26c8:b0:43a:c404:a553 with SMTP id x8-20020a05640226c800b0043ac404a553mr972140edd.53.1657360033730;
+        Sat, 09 Jul 2022 02:47:13 -0700 (PDT)
 Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id kx13-20020a170907774d00b0072aebed5937sm415607ejc.221.2022.07.09.02.45.28
+        by smtp.gmail.com with ESMTPSA id l1-20020aa7c301000000b0043ab5939ecbsm684940edq.59.2022.07.09.02.47.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 Jul 2022 02:45:28 -0700 (PDT)
-Message-ID: <929f8a53-0529-a4fe-699a-18e8f106368e@redhat.com>
-Date:   Sat, 9 Jul 2022 11:45:27 +0200
+        Sat, 09 Jul 2022 02:47:13 -0700 (PDT)
+Message-ID: <9826f272-ed7d-1daa-c852-6f353258bb2b@redhat.com>
+Date:   Sat, 9 Jul 2022 11:47:12 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH v1 1/7] platform/x86: serial-multi-instantiate: return
- -ENOENT when no resources found
+Subject: Re: [PATCH v1 2/7] platform/x86: serial-multi-instantiate: Improve
+ autodetection
 Content-Language: en-US
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Mark Gross <markgross@kernel.org>
 References: <20220709000636.35550-1-andriy.shevchenko@linux.intel.com>
+ <20220709000636.35550-2-andriy.shevchenko@linux.intel.com>
 From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220709000636.35550-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220709000636.35550-2-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+Hi,
 
 On 7/9/22 02:06, Andy Shevchenko wrote:
-> Distinguish the case when device is present, but there are no resources.
+> Instead of calling specific resource counter, let just probe each
+> of the type and see what it says. Also add a debug message when
+> none is found.
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-IMHO it would have been better to squash this together with patch 2/7,
-but think patch 2/7 should be dropped, so this one should be dropped
-to IMHO.
+Only probing for I2C resources if some are present is deliberate:
+
+commit 68f201f9061c000d7a4a9f359f021b1cd535d62b
+Author: Stefan Binding <sbinding@opensource.cirrus.com>
+Date:   Fri Jan 21 17:24:29 2022 +0000
+
+    platform/x86: serial-multi-instantiate: Add SPI support
+    
+    Add support for spi bus in serial-multi-instantiate driver
+    
+    Some peripherals can have either a I2C or a SPI connection
+    to the host (but not both) but use the same HID for both
+    types. So it is not possible to use the HID to determine
+    whether it is I2C or SPI. The driver must check the node
+    to see if it contains I2cSerialBus or SpiSerialBus entries.
+    
+    For backwards-compatibility with the existing nodes I2C is
+    checked first and if such entries are found ONLY I2C devices
+    are created. Since some existing nodes that were already
+    handled by this driver could also contain unrelated
+    SpiSerialBus nodes that were previously ignored, and this
+    preserves that behavior. If there is ever a need to handle
+    a node where both I2C and SPI devices must be instantiated
+    this can be added in future.
+    
+    Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+    Link: https://lore.kernel.org/r/20220121172431.6876-8-sbinding@opensource.cirrus.com
+    Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+    Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+
+So nack for this change.
 
 Regards,
 
 Hans
 
 
+
 > ---
->  drivers/platform/x86/serial-multi-instantiate.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/platform/x86/serial-multi-instantiate.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
 > 
 > diff --git a/drivers/platform/x86/serial-multi-instantiate.c b/drivers/platform/x86/serial-multi-instantiate.c
-> index 1e8063b7c169..97db23243018 100644
+> index 97db23243018..e599058196bb 100644
 > --- a/drivers/platform/x86/serial-multi-instantiate.c
 > +++ b/drivers/platform/x86/serial-multi-instantiate.c
-> @@ -100,7 +100,7 @@ static int smi_spi_probe(struct platform_device *pdev, struct acpi_device *adev,
->  	if (ret < 0)
->  		return ret;
->  	else if (!ret)
-> -		return -ENODEV;
-> +		return -ENOENT;
+> @@ -232,6 +232,7 @@ static int smi_probe(struct platform_device *pdev)
+>  	const struct smi_node *node;
+>  	struct acpi_device *adev;
+>  	struct smi *smi;
+> +	int ret;
 >  
->  	count = ret;
+>  	adev = ACPI_COMPANION(dev);
+>  	if (!adev)
+> @@ -255,15 +256,20 @@ static int smi_probe(struct platform_device *pdev)
+>  	case SMI_SPI:
+>  		return smi_spi_probe(pdev, adev, smi, node->instances);
+>  	case SMI_AUTO_DETECT:
+> -		if (i2c_acpi_client_count(adev) > 0)
+> -			return smi_i2c_probe(pdev, adev, smi, node->instances);
+> -		else
+> -			return smi_spi_probe(pdev, adev, smi, node->instances);
+> +		ret = smi_i2c_probe(pdev, adev, smi, node->instances);
+> +		if (ret && ret != -ENOENT)
+> +			return ret;
+> +		ret = smi_spi_probe(pdev, adev, smi, node->instances);
+> +		if (ret && ret != -ENOENT)
+> +			return ret;
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "Error No resources found\n");
+> +		break;
+>  	default:
+>  		return -EINVAL;
+>  	}
 >  
-> @@ -184,7 +184,7 @@ static int smi_i2c_probe(struct platform_device *pdev, struct acpi_device *adev,
->  	if (ret < 0)
->  		return ret;
->  	else if (!ret)
-> -		return -ENODEV;
-> +		return -ENOENT;
+> -	return 0; /* never reached */
+> +	return 0;
+>  }
 >  
->  	count = ret;
->  
+>  static int smi_remove(struct platform_device *pdev)
 
