@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD420C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49446CCA485
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiGIEVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 00:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
+        id S229628AbiGIEVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 00:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiGIEVS (ORCPT
+        with ESMTP id S229436AbiGIEVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 00:21:18 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E8B4E62C;
-        Fri,  8 Jul 2022 21:21:17 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id p16so397659plo.0;
-        Fri, 08 Jul 2022 21:21:17 -0700 (PDT)
+        Sat, 9 Jul 2022 00:21:17 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E204B0E2;
+        Fri,  8 Jul 2022 21:21:16 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so396151pjf.2;
+        Fri, 08 Jul 2022 21:21:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ycgZMvq2EVogDaqogTrk1vbctpDqtsq51oWL+KX1fwE=;
-        b=IUDAVGaP5i3wsy3MP7idxdjv/VjJdS+DB+cAE3/YgLZLVDuWvQB9rVuxzkECFqDnUs
-         RKd8CYxxe2w3QYWEaaoyivVcPG29K32MEkFPDK9ivuexTkUrQqm6IY9gq4wcCW199PIS
-         WQ2GI28IgKCEhda632Rr1HUJJOioldYc17bWyhoKqfMfajnHBczDGV/vk8wZjRkMoHA9
-         HboWCIZ1UYh/OhQqsjXMnt4rJ0MbWEzzPeF30lwAvWAU9549IigCdM10XeYWlaqKCL6G
-         8Y4iDGHxfkyayiuDvhbZaUt8O9vPgy4f/UDazRQCO3clor3TQ2PTTwsP+aPbJNjmTI1M
-         4yPQ==
+        bh=tqnD4C4oV1Jfc5xrbTyXeGKGD2rQbMRtWvUugf25kP4=;
+        b=LA1u9zvwL55/Z5e5xyS4ooVm/vxaZju66QhKk7a+rVrCRdEm+MVwOo4mHoollEhRg6
+         0ynn5jdfFthSZ6r9s39UJjtZFnhIWgJRHNWZzH9+Rct1aAB5MQVjpAmmqE4q8efSOX6p
+         2pBvdmhVz7sWtcXVMpdmwNSOzuX2ghHM2HCxBaJeOd7LPKhWkn4tygs+u8RRLMDnT7kU
+         D70wWRHW9A2VB8h3J6lQN0Apvdf2Z/1L5qogxH68MYkPK7l4pcv5xnl7xODWenLO3sE4
+         55P//rMC+5VMDKQDeMJ7G4763pu0UaPJ67zyGb7TSVVY15rECG+JVecZLiiehGrysbao
+         tSyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ycgZMvq2EVogDaqogTrk1vbctpDqtsq51oWL+KX1fwE=;
-        b=yPcoPsDqxo9AKwk8fJR0CcCoGZtcmYMF+G5iWa23CzqLCEQOkhjH6xENrPK/xNAHMi
-         XW6Qgp9BlnuDtEMVS/vdxGLlHyipI+Y5ktJHgnnq+vlvbsSH2Uc0nu0Q1g+WFWS22KI/
-         Dt+5KDvAAciUTtqJfKk8grP1PZZfa+mX5dmHK5n9SDosWe/2p0HG+YgPKOL+qEPqbtzF
-         lC7wfy+Jw9m3I1EQ3snC+UKdoxOtLNfTGaLkCNw72qE7eRyUtr/+EFmY3LlGY32wY29B
-         VbBxgmHibQ2CxYccbAy3ymKHB/cfYVEeoAjZHC1DIoZcqQGdOnP+osdC2uUk7j+Gj2oc
-         vfRg==
-X-Gm-Message-State: AJIora8lbgfuMSySafkOsZmth8T8CZDAkYyjOxRVnRFGIh0sRJOwU/tq
-        D0Ufas0hAxmZMBiq8tA/Coo=
-X-Google-Smtp-Source: AGRyM1u3R/Bf4/mPqH1iFvrcy+Oj5Qvhdsg7oo64sXJHUcB+TfJl++7Ezz2mL+4sZEqgogHTXga2Ag==
-X-Received: by 2002:a17:902:eccf:b0:16b:f555:d42e with SMTP id a15-20020a170902eccf00b0016bf555d42emr6858192plh.75.1657340476542;
+        bh=tqnD4C4oV1Jfc5xrbTyXeGKGD2rQbMRtWvUugf25kP4=;
+        b=pZHQ/05Ftq0fH6RrE5T20+XdkpOI0uAxiw4l0dn3HyjMQlF7HmxOFtFwFEJJ2yAX9m
+         PScQlaqPQpk0h+NWvp4RGG9665XX3TthoVGZqjagt3kNmdM7ZNSrGDNOyiAwxsFzilb8
+         PoQOfgNzMAwD9/NVznRgwunns3ErbH86AFTi196Bnf79P8tsVBjaOQ3F19WLQ1JGcf0v
+         nAV6YWVQsFgbFjIQ02RKZDf+yCpcLGZXDjQ6InC2NJ1e0MdeH/8bkw5jULhjJGiRvJXv
+         PDdqYbnkpNc/hQpmtonkTAwVcH3uqAKrPZcs/+So1vsDYse2Si90Hy7jLacbaCG+F9+1
+         NfKw==
+X-Gm-Message-State: AJIora+8epbyR+qqEss3znyfNFrdO7fz1eY4WkLtrPA73DN6JN/Hfvc6
+        IppJ7y+6BqMzjO23+/angn8=
+X-Google-Smtp-Source: AGRyM1ti0bCsTorLAhWrXlmpFGlIs0Tk6L7syNx3SMzkw98mywxfB3uBBZrKsw/KLgdul/eZWMQeSw==
+X-Received: by 2002:a17:902:d4c6:b0:16c:3273:c7b3 with SMTP id o6-20020a170902d4c600b0016c3273c7b3mr1025055plg.108.1657340476187;
         Fri, 08 Jul 2022 21:21:16 -0700 (PDT)
 Received: from debian.me (subs02-180-214-232-88.three.co.id. [180.214.232.88])
-        by smtp.gmail.com with ESMTPSA id q17-20020a170902f35100b0016bf803341asm332158ple.146.2022.07.08.21.21.14
+        by smtp.gmail.com with ESMTPSA id 15-20020a63134f000000b00412b1043f33sm253283pgt.39.2022.07.08.21.21.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 08 Jul 2022 21:21:15 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-        id E3A411039B1; Sat,  9 Jul 2022 11:21:10 +0700 (WIB)
+        id 272401039B9; Sat,  9 Jul 2022 11:21:10 +0700 (WIB)
 From:   Bagas Sanjaya <bagasdotme@gmail.com>
 To:     linux-doc@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -62,9 +62,9 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         Kai Huang <kai.huang@intel.com>, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 05/12] Documentation: kvm: tdx: title typofix
-Date:   Sat,  9 Jul 2022 11:20:31 +0700
-Message-Id: <20220709042037.21903-6-bagasdotme@gmail.com>
+Subject: [PATCH 02/12] Documentation: kvm: tdx: Use appropriate subbullet marker
+Date:   Sat,  9 Jul 2022 11:20:28 +0700
+Message-Id: <20220709042037.21903-3-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220709042037.21903-1-bagasdotme@gmail.com>
 References: <20220709042037.21903-1-bagasdotme@gmail.com>
@@ -74,28 +74,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The page title contains misspelled "Dodmain" instead of "Domain" and
-missing space before abbreviation parentheses. Fix both mistakes.
+Sphinx only supports dash (-) and asterisk (*) as bullet marker. Use
+them instead of dot (.) and equal (=).
 
 Fixes: 9e54fa1ac03df3 ("Documentation/virtual/kvm: Document on Trust Domain Extensions(TDX)")
 Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- Documentation/virt/kvm/intel-tdx.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/virt/kvm/intel-tdx.rst | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/Documentation/virt/kvm/intel-tdx.rst b/Documentation/virt/kvm/intel-tdx.rst
-index 1e3ad0ca2925bf..5288631c80122d 100644
+index 46ad32f3248e40..7a7c17da3a045f 100644
 --- a/Documentation/virt/kvm/intel-tdx.rst
 +++ b/Documentation/virt/kvm/intel-tdx.rst
-@@ -1,7 +1,7 @@
- .. SPDX-License-Identifier: GPL-2.0
+@@ -216,15 +216,16 @@ The main issue for it is that the logic of kvm_x86_ops callbacks for
+ TDX is different from VMX. On the other hand, the variable,
+ kvm_x86_ops, is global single variable. Not per-VM, not per-vcpu.
  
- ===================================
--Intel Trust Dodmain Extensions(TDX)
-+Intel Trust Domain Extensions (TDX)
- ===================================
+-Several points to be considered.
+-  . No or minimal overhead when TDX is disabled(CONFIG_INTEL_TDX_HOST=n).
+-  . Avoid overhead of indirect call via function pointers.
+-  . Contain the changes under arch/x86/kvm/vmx directory and share logic
++Several points to be considered:
++
++  * No or minimal overhead when TDX is disabled(CONFIG_INTEL_TDX_HOST=n).
++  * Avoid overhead of indirect call via function pointers.
++  * Contain the changes under arch/x86/kvm/vmx directory and share logic
+     with VMX for maintenance.
+     Even though the ways to operation on VM (VMX instruction vs TDX
+     SEAM call) is different, the basic idea remains same. So, many
+     logic can be shared.
+-  . Future maintenance
++  * Future maintenance
+     The huge change of kvm_x86_ops in (near) future isn't expected.
+     a centralized file is acceptable.
  
- Overview
+@@ -295,21 +296,23 @@ One bit of GPA (51 or 47 bit) is repurposed so that it means shared
+ with host(if set to 1) or private to TD(if cleared to 0).
+ 
+ - The current implementation
+-  . Reuse the existing MMU code with minimal update.  Because the
++
++  * Reuse the existing MMU code with minimal update.  Because the
+     execution flow is mostly same. But additional operation, TDX call
+     for S-EPT, is needed. So add hooks for it to kvm_x86_ops.
+-  . For performance, minimize TDX SEAM call to operate on S-EPT. When
++  * For performance, minimize TDX SEAM call to operate on S-EPT. When
+     getting corresponding S-EPT pages/entry from faulting GPA, don't
+     use TDX SEAM call to read S-EPT entry. Instead create shadow copy
+     in host memory.
+     Repurpose the existing kvm_mmu_page as shadow copy of S-EPT and
+     associate S-EPT to it.
+-  . Treats share bit as attributes. mask/unmask the bit where
++  * Treats share bit as attributes. mask/unmask the bit where
+     necessary to keep the existing traversing code works.
+     Introduce kvm.arch.gfn_shared_mask and use "if (gfn_share_mask)"
+     for special case.
+-    = 0 : for non-TDX case
+-    = 51 or 47 bit set for TDX case.
++
++    * 0 : for non-TDX case
++    * 51 or 47 bit set for TDX case.
+ 
+   Pros:
+ 
 -- 
 An old man doll... just what I always wanted! - Clara
 
