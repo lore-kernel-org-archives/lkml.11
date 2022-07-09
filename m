@@ -2,686 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DEC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 01:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C40A1CCA47B
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 01:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbiGIByA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Jul 2022 21:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
+        id S229535AbiGIBz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Jul 2022 21:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiGIBxI (ORCPT
+        with ESMTP id S229379AbiGIBzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Jul 2022 21:53:08 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC16B7AC29;
-        Fri,  8 Jul 2022 18:53:06 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LftRT6kykzlW1m;
-        Sat,  9 Jul 2022 09:51:33 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 9 Jul 2022 09:53:04 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 9 Jul 2022 09:53:03 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <pc@us.ibm.com>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
-CC:     <yangjihong1@huawei.com>
-Subject: [RFC v3 14/17] perf kwork: Implement bpf trace
-Date:   Sat, 9 Jul 2022 09:50:30 +0800
-Message-ID: <20220709015033.38326-15-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
-In-Reply-To: <20220709015033.38326-1-yangjihong1@huawei.com>
-References: <20220709015033.38326-1-yangjihong1@huawei.com>
+        Fri, 8 Jul 2022 21:55:47 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D8D65F4;
+        Fri,  8 Jul 2022 18:55:46 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id bh13so372676pgb.4;
+        Fri, 08 Jul 2022 18:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ljb+p5S2T+3uZn69+85MUtWtB8Rjy0F+vPmvHJQxGgU=;
+        b=dn16MJ44eifmsFxbi5wZMZ/TpYfEyt6Jjm1OSOZNQu3iGBwFZSA2r1SjuMPEvOAkIu
+         tJijO8m/P5qXyNPPY+fDYq8Z/lIJOBU2A36hzmxo+lzgR4KEGcOpvRFSee+Mgwi073CN
+         Ff4JlPoYvgXFTBTSOJikdS+ti/ZR6PwXgns3F91IU0/5ep4BkXqxUefMcrE7MUUhLLuy
+         36abM8WSHiTW8G5iyzoPY4I1JNgJf4GfPPv12CK2TLcjOWtf9FTeY7ElFroBK4MkbPu2
+         lCh2PvhgEZrpnNaYkxnqtdaQiN/4fTAnMQrChGDREnm+30METqAw8FOBhAfmndmouzsc
+         J4dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ljb+p5S2T+3uZn69+85MUtWtB8Rjy0F+vPmvHJQxGgU=;
+        b=AVmROw+DWpfqpHZYj+5mxKrRNwEv8qFAJY4ZPMsB1VLsGvAANAv+bypORITXhj8Ro7
+         cpvlcG1907a56C8m3nG/o2CN97Ps1ZOax4gy/84Kjgo3b8GOig3K0vIgmljqhlLhd1i0
+         wmbJqdnU9lJ7jum150rEnZZfNLb3Tiqmr/bWmv25JFkt7D514iRNfto6FQQU7xPOq+vU
+         z+Yejy/Soe8g2c4+Jz19eWtfiaIs7sEuJz1PM1JIKp93mYsgUOTd+v/2/IOVkTbIIhBZ
+         pBxPN/pu/XBQsvZYteTx7TyenzTVgxy2iv35YASITdxLe3i1hokNE3V2wMa5y8hzR/Ek
+         UV3Q==
+X-Gm-Message-State: AJIora8J13ywvB54EDtU+QdrCpiySXDty96453+oZofTnGkezU0eqYtD
+        Uxx6K4C7Hp5t0fDlDsaYen404SsxTVA=
+X-Google-Smtp-Source: AGRyM1tPrLA6pi2G0vra5t28Ap2wxm2DIenhdzuAiXdpQT16pc9cMR9SjWWOM4IGnn09Rq6LuXwFoA==
+X-Received: by 2002:a63:2cc6:0:b0:411:4fd6:49cb with SMTP id s189-20020a632cc6000000b004114fd649cbmr5667155pgs.365.1657331746403;
+        Fri, 08 Jul 2022 18:55:46 -0700 (PDT)
+Received: from sol (110-174-58-111.static.tpgi.com.au. [110.174.58.111])
+        by smtp.gmail.com with ESMTPSA id q5-20020a170902a3c500b00163f8eb7eb3sm176618plb.196.2022.07.08.18.55.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 18:55:45 -0700 (PDT)
+Date:   Sat, 9 Jul 2022 09:55:41 +0800
+From:   Kent Gibson <warthog618@gmail.com>
+To:     Dipen Patel <dipenp@nvidia.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] gpiolib: cdev: fix null pointer dereference in
+ linereq_free()
+Message-ID: <20220709015541.GA5332@sol>
+References: <20220706084507.2259415-1-warthog618@gmail.com>
+ <20220706085025.GA2259579@sol>
+ <20220707090006.GB57165@sol>
+ <CAMRc=Mcqvp4oN_tHXS1cb0AnEOU=Znd4bmSwO4ZZ1GszRfXhSA@mail.gmail.com>
+ <20220707102918.GA60169@sol>
+ <424af43a-bcaf-4f59-086d-b1afea425054@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <424af43a-bcaf-4f59-086d-b1afea425054@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-perf_record generates perf.data, which generates extra interrupts
-for hard disk, amount of data to be collected increases with time.
-Use ebpf trace can process the data in kernel, which solves the
-preceding two problems.
+On Fri, Jul 08, 2022 at 11:24:43AM -0700, Dipen Patel wrote:
+> On 7/7/22 3:29 AM, Kent Gibson wrote:
+> > On Thu, Jul 07, 2022 at 12:19:15PM +0200, Bartosz Golaszewski wrote:
+> >> On Thu, Jul 7, 2022 at 11:00 AM Kent Gibson <warthog618@gmail.com> wrote:
+> >>> On Wed, Jul 06, 2022 at 04:50:25PM +0800, Kent Gibson wrote:
+> >>>> On Wed, Jul 06, 2022 at 04:45:07PM +0800, Kent Gibson wrote:
+> >>>>> This patch fixes a kernel NULL pointer dereference that is reported by
+> >>>>> gpio kselftests.
+> >>>>>
+> >>>> Should be:
+> >>>>
+> >>>> Fix a kernel NULL pointer dereference reported by gpio kselftests.
+> >>>>
+> >>>> Sorry - I rushed this one a bit.
+> >>>>
+> >>> And I might not've been totally clear, but this bug is present in
+> >>> v5.19-rc1 onwards (when HTE was added), up to and including rc5.
+> >>>
+> >>> Would be good to get it fixed before v5.19 goes out the door.
+> >>>
+> >>> Cheers,
+> >>> Kent.
+> >> Yep, figured that out. Applied and fixed the commit message, thanks!
+> >>
+> > Good to hear.  I never got around to reviewing that final HTE patch
+> > and, while it did end up pretty close to what I expected, there are a
+> > few things that I would've done slightly differently that I'd like to
+> > tidy up.
+> I can create another thread to address this. Let me know.
 
-Add -b/--use-bpf option for latency and report to support
-tracing kwork events using ebpf:
-1. Create bpf prog and attach to tracepoints,
-2. Start tracing after command is entered,
-3. After user hit "ctrl+c", stop tracing and report,
-4. Support CPU and name filtering.
+I've already got the changes locally, so don't worry. There is nothing
+critical or earth shattering in there, mainly how the hte_en flag is
+passed around.  You followed the pattern provided by polarity_change,
+which is only used on one occasion, when I would've followed the pattern
+from line->eflags, which is used more widely.
 
-This commit implements the framework code and
-does not add specific event support.
+Though I might take the changes a little further than I have to also
+change the polarity_change flag to follow the eflags pattern to prevent
+anyone following from falling into the same trap - still stewing on that.
 
-Test cases:
+The basic idea is that, particularly during reconfig, the struct line
+contains the current applied state, while the desc->flags contain the
+requested state.  The polarity_change flag was a bit of a lazy shortcut
+to save from adding an active_low (or equivalent) flag to struct line.
 
-  # perf kwork rep -h
+> > And also have the HTE specific code compiled out unless CONFIG_HTE is
+> > selected, as that is very likely to be the case for most builds.
+> > But that can wait for v5.20.
+> 
+> I am assuming #ifdef CONFIG_HTE blocks around HTE blocks. I think Linus W. also
+> 
+> indicated that.
+> 
 
-   Usage: perf kwork report [<options>]
+Correct.
 
-      -b, --use-bpf         Use BPF to measure kwork runtime
-      -C, --cpu <cpu>       list of cpus to profile
-      -i, --input <file>    input file name
-      -n, --name <name>     event name to profile
-      -s, --sort <key[,key2...]>
-                            sort by key(s): runtime, max, count
-      -S, --with-summary    Show summary with statistics
-          --time <str>      Time span for analysis (start,stop)
-
-  # perf kwork lat -h
-
-   Usage: perf kwork latency [<options>]
-
-      -b, --use-bpf         Use BPF to measure kwork latency
-      -C, --cpu <cpu>       list of cpus to profile
-      -i, --input <file>    input file name
-      -n, --name <name>     event name to profile
-      -s, --sort <key[,key2...]>
-                            sort by key(s): avg, max, count
-          --time <str>      Time span for analysis (start,stop)
-
-  # perf kwork lat -b
-  Unsupported bpf trace class irq
-
-  # perf kwork rep -b
-  Unsupported bpf trace class irq
-
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
----
- tools/perf/Documentation/perf-kwork.txt    |  10 +
- tools/perf/Makefile.perf                   |   1 +
- tools/perf/builtin-kwork.c                 |  66 ++++-
- tools/perf/util/Build                      |   1 +
- tools/perf/util/bpf_kwork.c                | 278 +++++++++++++++++++++
- tools/perf/util/bpf_skel/kwork_trace.bpf.c |  74 ++++++
- tools/perf/util/kwork.h                    |  35 +++
- 7 files changed, 464 insertions(+), 1 deletion(-)
- create mode 100644 tools/perf/util/bpf_kwork.c
- create mode 100644 tools/perf/util/bpf_skel/kwork_trace.bpf.c
-
-diff --git a/tools/perf/Documentation/perf-kwork.txt b/tools/perf/Documentation/perf-kwork.txt
-index 51c1625bacae..3c36324712b6 100644
---- a/tools/perf/Documentation/perf-kwork.txt
-+++ b/tools/perf/Documentation/perf-kwork.txt
-@@ -26,7 +26,9 @@ There are several variants of 'perf kwork':
-     Example usage:
-         perf kwork record -- sleep 1
-         perf kwork report
-+        perf kwork report -b
-         perf kwork latency
-+        perf kwork latency -b
-         perf kwork timehist
- 
-    By default it shows the individual work events such as irq, workqeueu,
-@@ -73,6 +75,10 @@ OPTIONS
- OPTIONS for 'perf kwork report'
- ----------------------------
- 
-+-b::
-+--use-bpf::
-+	Use BPF to measure kwork runtime
-+
- -C::
- --cpu::
- 	Only show events for the given CPU(s) (comma separated list).
-@@ -103,6 +109,10 @@ OPTIONS for 'perf kwork report'
- OPTIONS for 'perf kwork latency'
- ----------------------------
- 
-+-b::
-+--use-bpf::
-+	Use BPF to measure kwork latency
-+
- -C::
- --cpu::
- 	Only show events for the given CPU(s) (comma separated list).
-diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
-index 8f738e11356d..44246d003846 100644
---- a/tools/perf/Makefile.perf
-+++ b/tools/perf/Makefile.perf
-@@ -1039,6 +1039,7 @@ SKELETONS := $(SKEL_OUT)/bpf_prog_profiler.skel.h
- SKELETONS += $(SKEL_OUT)/bperf_leader.skel.h $(SKEL_OUT)/bperf_follower.skel.h
- SKELETONS += $(SKEL_OUT)/bperf_cgroup.skel.h $(SKEL_OUT)/func_latency.skel.h
- SKELETONS += $(SKEL_OUT)/off_cpu.skel.h
-+SKELETONS += $(SKEL_OUT)/kwork_trace.skel.h
- 
- $(SKEL_TMP_OUT) $(LIBBPF_OUTPUT):
- 	$(Q)$(MKDIR) -p $@
-diff --git a/tools/perf/builtin-kwork.c b/tools/perf/builtin-kwork.c
-index 31dcfcfcc5a1..7dcd17ba892a 100644
---- a/tools/perf/builtin-kwork.c
-+++ b/tools/perf/builtin-kwork.c
-@@ -1427,13 +1427,69 @@ static void process_skipped_events(struct perf_kwork *kwork,
- 	}
- }
- 
-+struct kwork_work *perf_kwork_add_work(struct perf_kwork *kwork,
-+				       struct kwork_class *class,
-+				       struct kwork_work *key)
-+{
-+	struct kwork_work *work = NULL;
-+
-+	work = work_new(key);
-+	if (work == NULL)
-+		return NULL;
-+
-+	work_insert(&class->work_root, work, &kwork->cmp_id);
-+	return work;
-+}
-+
-+static void sig_handler(int sig)
-+{
-+	/*
-+	 * Simply capture termination signal so that
-+	 * the program can continue after pause returns
-+	 */
-+	pr_debug("Captuer signal %d\n", sig);
-+}
-+
-+static int perf_kwork__report_bpf(struct perf_kwork *kwork)
-+{
-+	int ret;
-+
-+	signal(SIGINT, sig_handler);
-+	signal(SIGTERM, sig_handler);
-+
-+	ret = perf_kwork__trace_prepare_bpf(kwork);
-+	if (ret)
-+		return -1;
-+
-+	printf("Starting trace, Hit <Ctrl+C> to stop and report\n");
-+
-+	perf_kwork__trace_start();
-+
-+	/*
-+	 * a simple pause, wait here for stop signal
-+	 */
-+	pause();
-+
-+	perf_kwork__trace_finish();
-+
-+	perf_kwork__report_read_bpf(kwork);
-+
-+	perf_kwork__report_cleanup_bpf();
-+
-+	return 0;
-+}
-+
- static int perf_kwork__report(struct perf_kwork *kwork)
- {
- 	int ret;
- 	struct rb_node *next;
- 	struct kwork_work *work;
- 
--	ret = perf_kwork__read_events(kwork);
-+	if (kwork->use_bpf)
-+		ret = perf_kwork__report_bpf(kwork);
-+	else
-+		ret = perf_kwork__read_events(kwork);
-+
- 	if (ret != 0)
- 		return -1;
- 
-@@ -1667,6 +1723,10 @@ int cmd_kwork(int argc, const char **argv)
- 		   "input file name"),
- 	OPT_BOOLEAN('S', "with-summary", &kwork.summary,
- 		    "Show summary with statistics"),
-+#ifdef HAVE_BPF_SKEL
-+	OPT_BOOLEAN('b', "use-bpf", &kwork.use_bpf,
-+		    "Use BPF to measure kwork runtime"),
-+#endif
- 	OPT_PARENT(kwork_options)
- 	};
- 	const struct option latency_options[] = {
-@@ -1680,6 +1740,10 @@ int cmd_kwork(int argc, const char **argv)
- 		   "Time span for analysis (start,stop)"),
- 	OPT_STRING('i', "input", &input_name, "file",
- 		   "input file name"),
-+#ifdef HAVE_BPF_SKEL
-+	OPT_BOOLEAN('b', "use-bpf", &kwork.use_bpf,
-+		    "Use BPF to measure kwork latency"),
-+#endif
- 	OPT_PARENT(kwork_options)
- 	};
- 	const struct option timehist_options[] = {
-diff --git a/tools/perf/util/Build b/tools/perf/util/Build
-index a51267d88ca9..66ad30cf65ec 100644
---- a/tools/perf/util/Build
-+++ b/tools/perf/util/Build
-@@ -148,6 +148,7 @@ perf-$(CONFIG_PERF_BPF_SKEL) += bpf_counter.o
- perf-$(CONFIG_PERF_BPF_SKEL) += bpf_counter_cgroup.o
- perf-$(CONFIG_PERF_BPF_SKEL) += bpf_ftrace.o
- perf-$(CONFIG_PERF_BPF_SKEL) += bpf_off_cpu.o
-+perf-$(CONFIG_PERF_BPF_SKEL) += bpf_kwork.o
- perf-$(CONFIG_BPF_PROLOGUE) += bpf-prologue.o
- perf-$(CONFIG_LIBELF) += symbol-elf.o
- perf-$(CONFIG_LIBELF) += probe-file.o
-diff --git a/tools/perf/util/bpf_kwork.c b/tools/perf/util/bpf_kwork.c
-new file mode 100644
-index 000000000000..433bfadd3af1
---- /dev/null
-+++ b/tools/perf/util/bpf_kwork.c
-@@ -0,0 +1,278 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * bpf_kwork.c
-+ *
-+ * Copyright (c) 2022  Huawei Inc,  Yang Jihong <yangjihong1@huawei.com>
-+ */
-+
-+#include <time.h>
-+#include <fcntl.h>
-+#include <stdio.h>
-+#include <unistd.h>
-+
-+#include <linux/time64.h>
-+
-+#include "util/debug.h"
-+#include "util/kwork.h"
-+
-+#include <bpf/bpf.h>
-+
-+#include "util/bpf_skel/kwork_trace.skel.h"
-+
-+/*
-+ * This should be in sync with "util/kwork_trace.bpf.c"
-+ */
-+#define MAX_KWORKNAME 128
-+
-+struct work_key {
-+	u32 type;
-+	u32 cpu;
-+	u64 id;
-+};
-+
-+struct report_data {
-+	u64 nr;
-+	u64 total_time;
-+	u64 max_time;
-+	u64 max_time_start;
-+	u64 max_time_end;
-+};
-+
-+struct kwork_class_bpf {
-+	struct kwork_class *class;
-+
-+	void (*load_prepare)(struct perf_kwork *kwork);
-+	int  (*get_work_name)(struct work_key *key, char **ret_name);
-+};
-+
-+static struct kwork_trace_bpf *skel;
-+
-+static struct timespec ts_start;
-+static struct timespec ts_end;
-+
-+void perf_kwork__trace_start(void)
-+{
-+	clock_gettime(CLOCK_MONOTONIC, &ts_start);
-+	skel->bss->enabled = 1;
-+}
-+
-+void perf_kwork__trace_finish(void)
-+{
-+	clock_gettime(CLOCK_MONOTONIC, &ts_end);
-+	skel->bss->enabled = 0;
-+}
-+
-+static struct kwork_class_bpf *
-+kwork_class_bpf_supported_list[KWORK_CLASS_MAX] = {
-+	[KWORK_CLASS_IRQ]       = NULL,
-+	[KWORK_CLASS_SOFTIRQ]   = NULL,
-+	[KWORK_CLASS_WORKQUEUE] = NULL,
-+};
-+
-+static bool valid_kwork_class_type(enum kwork_class_type type)
-+{
-+	return type >= 0 && type < KWORK_CLASS_MAX ? true : false;
-+}
-+
-+static int setup_filters(struct perf_kwork *kwork)
-+{
-+	u8 val = 1;
-+	int i, nr_cpus, key, fd;
-+	struct perf_cpu_map *map;
-+
-+	if (kwork->cpu_list != NULL) {
-+		fd = bpf_map__fd(skel->maps.perf_kwork_cpu_filter);
-+		if (fd < 0) {
-+			pr_debug("Invalid cpu filter fd\n");
-+			return -1;
-+		}
-+
-+		map = perf_cpu_map__new(kwork->cpu_list);
-+		if (map == NULL) {
-+			pr_debug("Invalid cpu_list\n");
-+			return -1;
-+		}
-+
-+		nr_cpus = libbpf_num_possible_cpus();
-+		for (i = 0; i < perf_cpu_map__nr(map); i++) {
-+			struct perf_cpu cpu = perf_cpu_map__cpu(map, i);
-+
-+			if (cpu.cpu >= nr_cpus) {
-+				perf_cpu_map__put(map);
-+				pr_err("Requested cpu %d too large\n", cpu.cpu);
-+				return -1;
-+			}
-+			bpf_map_update_elem(fd, &cpu.cpu, &val, BPF_ANY);
-+		}
-+		perf_cpu_map__put(map);
-+
-+		skel->bss->has_cpu_filter = 1;
-+	}
-+
-+	if (kwork->profile_name != NULL) {
-+		if (strlen(kwork->profile_name) >= MAX_KWORKNAME) {
-+			pr_err("Requested name filter %s too large, limit to %d\n",
-+			       kwork->profile_name, MAX_KWORKNAME - 1);
-+			return -1;
-+		}
-+
-+		fd = bpf_map__fd(skel->maps.perf_kwork_name_filter);
-+		if (fd < 0) {
-+			pr_debug("Invalid name filter fd\n");
-+			return -1;
-+		}
-+
-+		key = 0;
-+		bpf_map_update_elem(fd, &key, kwork->profile_name, BPF_ANY);
-+
-+		skel->bss->has_name_filter = 1;
-+	}
-+
-+	return 0;
-+}
-+
-+int perf_kwork__trace_prepare_bpf(struct perf_kwork *kwork)
-+{
-+	struct bpf_program *prog;
-+	struct kwork_class *class;
-+	struct kwork_class_bpf *class_bpf;
-+	enum kwork_class_type type;
-+
-+	skel = kwork_trace_bpf__open();
-+	if (!skel) {
-+		pr_debug("Failed to open kwork trace skeleton\n");
-+		return -1;
-+	}
-+
-+	/*
-+	 * set all progs to non-autoload,
-+	 * then set corresponding progs according to config
-+	 */
-+	bpf_object__for_each_program(prog, skel->obj)
-+		bpf_program__set_autoload(prog, false);
-+
-+	list_for_each_entry(class, &kwork->class_list, list) {
-+		type = class->type;
-+		if (!valid_kwork_class_type(type) ||
-+		    (kwork_class_bpf_supported_list[type] == NULL)) {
-+			pr_err("Unsupported bpf trace class %s\n", class->name);
-+			goto out;
-+		}
-+
-+		class_bpf = kwork_class_bpf_supported_list[type];
-+		class_bpf->class = class;
-+
-+		if (class_bpf->load_prepare != NULL)
-+			class_bpf->load_prepare(kwork);
-+	}
-+
-+	if (kwork_trace_bpf__load(skel)) {
-+		pr_debug("Failed to load kwork trace skeleton\n");
-+		goto out;
-+	}
-+
-+	if (setup_filters(kwork))
-+		goto out;
-+
-+	if (kwork_trace_bpf__attach(skel)) {
-+		pr_debug("Failed to attach kwork trace skeleton\n");
-+		goto out;
-+	}
-+
-+	return 0;
-+
-+out:
-+	kwork_trace_bpf__destroy(skel);
-+	return -1;
-+}
-+
-+static int add_work(struct perf_kwork *kwork,
-+		    struct work_key *key,
-+		    struct report_data *data)
-+{
-+	struct kwork_work *work;
-+	struct kwork_class_bpf *bpf_trace;
-+	struct kwork_work tmp = {
-+		.id = key->id,
-+		.name = NULL,
-+		.cpu = key->cpu,
-+	};
-+	enum kwork_class_type type = key->type;
-+
-+	if (!valid_kwork_class_type(type)) {
-+		pr_debug("Invalid class type %d to add work\n", type);
-+		return -1;
-+	}
-+
-+	bpf_trace = kwork_class_bpf_supported_list[type];
-+	tmp.class = bpf_trace->class;
-+
-+	if ((bpf_trace->get_work_name != NULL) &&
-+	    (bpf_trace->get_work_name(key, &tmp.name)))
-+		return -1;
-+
-+	work = perf_kwork_add_work(kwork, tmp.class, &tmp);
-+	if (work == NULL)
-+		return -1;
-+
-+	if (kwork->report == KWORK_REPORT_RUNTIME) {
-+		work->nr_atoms = data->nr;
-+		work->total_runtime = data->total_time;
-+		work->max_runtime = data->max_time;
-+		work->max_runtime_start = data->max_time_start;
-+		work->max_runtime_end = data->max_time_end;
-+	} else if (kwork->report == KWORK_REPORT_LATENCY) {
-+		work->nr_atoms = data->nr;
-+		work->total_latency = data->total_time;
-+		work->max_latency = data->max_time;
-+		work->max_latency_start = data->max_time_start;
-+		work->max_latency_end = data->max_time_end;
-+	} else {
-+		pr_debug("Invalid bpf report type %d\n", kwork->report);
-+		return -1;
-+	}
-+
-+	kwork->timestart = (u64)ts_start.tv_sec * NSEC_PER_SEC + ts_start.tv_nsec;
-+	kwork->timeend = (u64)ts_end.tv_sec * NSEC_PER_SEC + ts_end.tv_nsec;
-+
-+	return 0;
-+}
-+
-+int perf_kwork__report_read_bpf(struct perf_kwork *kwork)
-+{
-+	struct report_data data;
-+	struct work_key key = {
-+		.type = 0,
-+		.cpu  = 0,
-+		.id   = 0,
-+	};
-+	struct work_key prev = {
-+		.type = 0,
-+		.cpu  = 0,
-+		.id   = 0,
-+	};
-+	int fd = bpf_map__fd(skel->maps.perf_kwork_report);
-+
-+	if (fd < 0) {
-+		pr_debug("Invalid report fd\n");
-+		return -1;
-+	}
-+
-+	while (!bpf_map_get_next_key(fd, &prev, &key)) {
-+		if ((bpf_map_lookup_elem(fd, &key, &data)) != 0) {
-+			pr_debug("Failed to lookup report elem\n");
-+			return -1;
-+		}
-+
-+		if ((data.nr != 0) && (add_work(kwork, &key, &data) != 0))
-+			return -1;
-+
-+		prev = key;
-+	}
-+	return 0;
-+}
-+
-+void perf_kwork__report_cleanup_bpf(void)
-+{
-+	kwork_trace_bpf__destroy(skel);
-+}
-diff --git a/tools/perf/util/bpf_skel/kwork_trace.bpf.c b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-new file mode 100644
-index 000000000000..36112be831e3
---- /dev/null
-+++ b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-@@ -0,0 +1,74 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+// Copyright (c) 2022, Huawei
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+#define KWORK_COUNT 100
-+#define MAX_KWORKNAME 128
-+
-+/*
-+ * This should be in sync with "util/kwork.h"
-+ */
-+enum kwork_class_type {
-+	KWORK_CLASS_IRQ,
-+	KWORK_CLASS_SOFTIRQ,
-+	KWORK_CLASS_WORKQUEUE,
-+	KWORK_CLASS_MAX,
-+};
-+
-+struct work_key {
-+	__u32 type;
-+	__u32 cpu;
-+	__u64 id;
-+};
-+
-+struct report_data {
-+	__u64 nr;
-+	__u64 total_time;
-+	__u64 max_time;
-+	__u64 max_time_start;
-+	__u64 max_time_end;
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(key_size, sizeof(struct work_key));
-+	__uint(value_size, MAX_KWORKNAME);
-+	__uint(max_entries, KWORK_COUNT);
-+} perf_kwork_names SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(key_size, sizeof(struct work_key));
-+	__uint(value_size, sizeof(__u64));
-+	__uint(max_entries, KWORK_COUNT);
-+} perf_kwork_time SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(key_size, sizeof(struct work_key));
-+	__uint(value_size, sizeof(struct report_data));
-+	__uint(max_entries, KWORK_COUNT);
-+} perf_kwork_report SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u8));
-+	__uint(max_entries, 1);
-+} perf_kwork_cpu_filter SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, MAX_KWORKNAME);
-+	__uint(max_entries, 1);
-+} perf_kwork_name_filter SEC(".maps");
-+
-+int enabled = 0;
-+int has_cpu_filter = 0;
-+int has_name_filter = 0;
-+
-+char LICENSE[] SEC("license") = "Dual BSD/GPL";
-diff --git a/tools/perf/util/kwork.h b/tools/perf/util/kwork.h
-index 6a06194304b8..320c0a6d2e08 100644
---- a/tools/perf/util/kwork.h
-+++ b/tools/perf/util/kwork.h
-@@ -203,6 +203,7 @@ struct perf_kwork {
- 	const char *sort_order;
- 	bool show_callchain;
- 	unsigned int max_stack;
-+	bool use_bpf;
- 
- 	/*
- 	 * statistics
-@@ -219,4 +220,38 @@ struct perf_kwork {
- 	u64 nr_skipped_events[KWORK_TRACE_MAX + 1];
- };
- 
-+struct kwork_work *perf_kwork_add_work(struct perf_kwork *kwork,
-+				       struct kwork_class *class,
-+				       struct kwork_work *key);
-+
-+#ifdef HAVE_BPF_SKEL
-+
-+int perf_kwork__trace_prepare_bpf(struct perf_kwork *kwork);
-+int perf_kwork__report_read_bpf(struct perf_kwork *kwork);
-+void perf_kwork__report_cleanup_bpf(void);
-+
-+void perf_kwork__trace_start(void);
-+void perf_kwork__trace_finish(void);
-+
-+#else  /* !HAVE_BPF_SKEL */
-+
-+static inline int
-+perf_kwork__trace_prepare_bpf(struct perf_kwork *kwork __maybe_unused)
-+{
-+	return -1;
-+}
-+
-+static inline int
-+perf_kwork__report_read_bpf(struct perf_kwork *kwork __maybe_unused)
-+{
-+	return -1;
-+}
-+
-+static inline void perf_kwork__report_cleanup_bpf(void) {}
-+
-+static inline void perf_kwork__trace_start(void) {}
-+static inline void perf_kwork__trace_finish(void) {}
-+
-+#endif  /* HAVE_BPF_SKEL */
-+
- #endif  /* PERF_UTIL_KWORK_H */
--- 
-2.30.GIT
-
+Cheers,
+Kent.
