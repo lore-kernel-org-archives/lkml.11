@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D04DCCA480
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EDBC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbiGIEVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 00:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        id S229693AbiGIEVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 00:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiGIEVU (ORCPT
+        with ESMTP id S229606AbiGIEVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 00:21:20 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3B54B0E2;
+        Sat, 9 Jul 2022 00:21:22 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA214E62D;
         Fri,  8 Jul 2022 21:21:20 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id s21so633511pjq.4;
+Received: by mail-pg1-x52f.google.com with SMTP id e132so520690pgc.5;
         Fri, 08 Jul 2022 21:21:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uc2nzWj3GO3b5HUllJokkKuyzfzRetWmte+HK193uOQ=;
-        b=i06nVhPonWm+JM9xl/dd/0p/O5J7aTiWCZAbG9qdk8Li8lvxFrCx92Anh26b5LPe80
-         jkcNLI9u/rAQ4gBNl+TaTNBkggsC0z6ud/chHCv3q8QkUL/qOnUA5RstffkdMKuA5qnd
-         78Xs7mzIQZnXa89Xh7C8m5mmOHpbkbLi2lPD31on7XgR2Bd2EZky6cW1K6tg4Yu5FEr1
-         hgiOwfCZ64IfEaDHmbIcGvly9Ka6SYdzRJb+d2hXJ8cTL1qLlcrlouZ9x98JpUoqBBmS
-         2YMbA8POsl/sAoLssd2snQhovnMpIC4l2k41Of+qmumGpcCxJHB1J1xn476mqdWg+499
-         HGNg==
+        bh=zmsBiF1bgWBH6D/tGpWmc727qWXK6kbebDM6d8nqWio=;
+        b=XisW8uiAvzkDnOmdeVLfqYui4om1zOH9XYk55C8AaArgrrxwTvEK10ZyQ3+n72yG1v
+         r7OqxnW5tlqC7d3mVu4RnljDsdNQZJYDP57CFCjhoHPXhdZn9lkikBGJ7XUaY0F503nZ
+         F2qauaBXmMcmmWI9sbO9Udx1ceeNW8SO4MVUsJLJ8k4JjR10+uIhKLwwIgtCkVUhsUB8
+         5hn2eobGjEnFQyfQ8FkXgCtnLo0AMMfIlbKs4R7uzwgMU5gI7X3uBYCY/OC1CCYBQtpN
+         qLBqQBJUnaj15a4+pOOTUAyMefpKOHPWtoaps2v2fTcDu6YrSePewYzpaMwOZdkzdG81
+         2ntw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uc2nzWj3GO3b5HUllJokkKuyzfzRetWmte+HK193uOQ=;
-        b=kGc99Vkir/oDBeKBnZT86M8lD4jKPGzZZQeitQIq0YCijnUgTWsIX9qwWWFSBtvVE/
-         jWd74GSzX7w7cJX2ewPAKCgWAt2yGa/iLGMrLOLLvbJM1uHanZn1x7OTuos7jzUuWwQK
-         VKAsxSd1cKjTmafgm8diNNU8uttRebxZiAk9ZCr9fpCFb4REsegiLqnirvO8UJlVOekx
-         A85YS2h2Dw24KlIN9JGIvQcM4S2i+eBFJYuDgjvnf26hv2bi9lh4Rj4gLhc/72po1ult
-         PV+I0IkBqocP/QxhKjru+3kmiTN/XGwkFW3zV2+e1M95AzgqfsHbqpeouHiunK9JGpre
-         BJYw==
-X-Gm-Message-State: AJIora+Pv0AkLA+oWMtEWjwDZkLEGjmJwmjcjKehCg9qwbxrw3iar4LI
-        kBGhlf4PUbrP4TYMq5ubCdA=
-X-Google-Smtp-Source: AGRyM1vQ5WjnidPWh3oz/3gYL8JM5bSyUewuloXko384/8Ex/0+LkeDTe7iXU+VyBzr5v8+QUYhvCQ==
-X-Received: by 2002:a17:902:e946:b0:16b:d4e1:a405 with SMTP id b6-20020a170902e94600b0016bd4e1a405mr7015887pll.16.1657340479553;
-        Fri, 08 Jul 2022 21:21:19 -0700 (PDT)
+        bh=zmsBiF1bgWBH6D/tGpWmc727qWXK6kbebDM6d8nqWio=;
+        b=7ULy77E3VnxqG6mMCOQGBoWdd8N/lyotL+1OIV+zpIbSkBWeveitqKWM/mQgKazeOp
+         eqBnj+5M44IaoU5V7xnCuvMBYtxzfg+207KcFPqNwv4ximF8aiO6b+mnxllyttfrMOzv
+         A0WKndcc3qtGs31KcNKAasL9lG6t57TrFT6sHvZPksrRTqe3sXnA3hw1SkeATn9zNK8n
+         SbwVtosEKjA2Yj/BacKTtvD6VXQxbx++u5pt4l+9R/oqQZdelUL+oCYm73BGt/6Qoa3P
+         wnNPXpuISSGNcyglkh6CTCBIEylb6FyDxAlbHzBimv9e3pVNV82o3MFIJhE1WIS1vb/I
+         6UHg==
+X-Gm-Message-State: AJIora/hkT7MT7n/Wq0uHiQ+LjOafccFhRS6JrLPrwwe/cgujiuqgXI3
+        UQNqwJVvgPwLWHfIgjQ7sJs=
+X-Google-Smtp-Source: AGRyM1tkyFBwvw19aBJHDt9BeSGGHtV1veLf3x9y8MLe8GzuBWMBDDIr+0nazZ/DXDqPn/pKo9A1pw==
+X-Received: by 2002:a63:d94a:0:b0:412:6986:326e with SMTP id e10-20020a63d94a000000b004126986326emr6357310pgj.56.1657340480383;
+        Fri, 08 Jul 2022 21:21:20 -0700 (PDT)
 Received: from debian.me (subs02-180-214-232-88.three.co.id. [180.214.232.88])
-        by smtp.gmail.com with ESMTPSA id n5-20020a622705000000b005254c71df0esm408394pfn.86.2022.07.08.21.21.18
+        by smtp.gmail.com with ESMTPSA id x16-20020aa79a50000000b00528baea5dacsm392817pfj.201.2022.07.08.21.21.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 08 Jul 2022 21:21:19 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-        id 59A35103943; Sat,  9 Jul 2022 11:21:10 +0700 (WIB)
+        id A18741039BB; Sat,  9 Jul 2022 11:21:11 +0700 (WIB)
 From:   Bagas Sanjaya <bagasdotme@gmail.com>
 To:     linux-doc@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -61,10 +61,11 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         Isaku Yamahata <isaku.yamahata@intel.com>,
         Kai Huang <kai.huang@intel.com>, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 03/12] Documentation: kvm: tdx: Add footnote markers
-Date:   Sat,  9 Jul 2022 11:20:29 +0700
-Message-Id: <20220709042037.21903-4-bagasdotme@gmail.com>
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 10/12] Documentation: x86: Enclose TDX initialization code inside code block
+Date:   Sat,  9 Jul 2022 11:20:36 +0700
+Message-Id: <20220709042037.21903-11-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220709042037.21903-1-bagasdotme@gmail.com>
 References: <20220709042037.21903-1-bagasdotme@gmail.com>
@@ -74,49 +75,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sphinx reported unreferenced footnotes warnings:
+kernel test robot reported htmldocs warning on Documentation/x86/tdx.rst:
 
-Documentation/virt/kvm/intel-tdx.rst:353: WARNING: Footnote [1] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:355: WARNING: Footnote [2] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:357: WARNING: Footnote [3] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:359: WARNING: Footnote [4] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:361: WARNING: Footnote [5] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:363: WARNING: Footnote [6] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:365: WARNING: Footnote [7] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:367: WARNING: Footnote [8] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:370: WARNING: Footnote [9] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:372: WARNING: Footnote [10] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:375: WARNING: Footnote [11] is not referenced.
-Documentation/virt/kvm/intel-tdx.rst:380: WARNING: Footnote [12] is not referenced.
+Documentation/x86/tdx.rst:69: WARNING: Unexpected indentation.
+Documentation/x86/tdx.rst:70: WARNING: Block quote ends without a blank line; unexpected unindent.
 
-Add missing reference markers to fix the warnings. While at it, reword
-"Overview" section paragraph.
+These warnings above are due to missing code block marker before TDX
+initialization code, which confuses Sphinx as normal block quote instead.
 
-Fixes: 9e54fa1ac03df3 ("Documentation/virtual/kvm: Document on Trust Domain Extensions(TDX)")
+Add literal code block marker to fix the warnings.
+
+Link: https://lore.kernel.org/linux-doc/202207042107.YqVvxdJz-lkp@intel.com/
+Fixes: f05f595045dfc7 ("Documentation/x86: Add documentation for TDX host support")
+Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- Documentation/virt/kvm/intel-tdx.rst | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ Documentation/x86/tdx.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/virt/kvm/intel-tdx.rst b/Documentation/virt/kvm/intel-tdx.rst
-index 7a7c17da3a045f..7371e152021621 100644
---- a/Documentation/virt/kvm/intel-tdx.rst
-+++ b/Documentation/virt/kvm/intel-tdx.rst
-@@ -8,9 +8,11 @@ Overview
- ========
- TDX stands for Trust Domain Extensions which isolates VMs from
- the virtual-machine manager (VMM)/hypervisor and any other software on
--the platform. [1]
--For details, the specifications, [2], [3], [4], [5], [6], [7], are
--available.
-+the platform. For details, see the specifications [1]_, whitepaper [2]_,
-+architectural extensions specification [3]_, module documentation [4]_,
-+loader interface specification [5]_, guest-hypervisor communication
-+interface [6]_, virtual firmware design guide [7]_, and other resources
-+([8]_, [9]_, [10]_, [11]_, and [12]_).
+diff --git a/Documentation/x86/tdx.rst b/Documentation/x86/tdx.rst
+index 6c6b09ca6ba407..4430912a2e4f05 100644
+--- a/Documentation/x86/tdx.rst
++++ b/Documentation/x86/tdx.rst
+@@ -62,7 +62,7 @@ use it as 'metadata' for the TDX memory.  It also takes additional CPU
+ time to initialize those metadata along with the TDX module itself.  Both
+ are not trivial.  Current kernel doesn't choose to always initialize the
+ TDX module during kernel boot, but provides a function tdx_init() to
+-allow the caller to initialize TDX when it truly wants to use TDX:
++allow the caller to initialize TDX when it truly wants to use TDX::
  
- 
- API description
+         ret = tdx_init();
+         if (ret)
 -- 
 An old man doll... just what I always wanted! - Clara
 
