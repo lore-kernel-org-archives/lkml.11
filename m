@@ -2,198 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CC9CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1CFCCA480
 	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 21:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229522AbiGIVQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 17:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
+        id S229591AbiGIVJS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 17:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiGIVQs (ORCPT
+        with ESMTP id S229459AbiGIVJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 17:16:48 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B4DE031
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 14:16:47 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id t5-20020a17090a6a0500b001ef965b262eso1671663pjj.5
-        for <linux-kernel@vger.kernel.org>; Sat, 09 Jul 2022 14:16:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZWuX6ov4197gAn7zaYMbI8DUTRJY83Rd6vcUzJETd9g=;
-        b=o6vJUaK5s3FRRIr1orvVL8DhPS6tgH7MkcPUxL62UVIkJj/miqCG73eUkcn/J//J/h
-         BLcv0ikNeOtsh4fq0zRSajFCXzJzwlEmIaEkgHOtaaKSr+luwEsEit3MD591YFAmlKfr
-         FOzGjIgXDeuHsHaTxL8+aR/ZlIu88MtaeE/k+5w2cyU1WRQHJkVy1yZB7AV60BgAysxh
-         JS8t2InMRmP6rvGbrRHcsP7Ib3LUqAyyYdfyZg8QwUR3kX7Ou4i9s+UVfFb4dug9orh7
-         MuQBIo5RCa3A75OxusFOcB5++d8w4OVt+6Etsds6+MmGgKV/OQE2GvmBdrPEy1/+UzaV
-         xvQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZWuX6ov4197gAn7zaYMbI8DUTRJY83Rd6vcUzJETd9g=;
-        b=bzPTpzrHo7d4Ci6eFZp7kreCgz6GteYR9elTkfjITGtcb0jvzQEpbAbKoAevEv3QTs
-         FFSv6v55ERb0IVR+H+CtHn500YjZ5SaAZWF2mN94nMSOfEIKxuwDSEs/PAMCPNivE9Xu
-         CenLA99iI8BdGE3SXUplpRTPoGOCIMozEFqPpAPyi0E16rMnbmmwEpdRNF7KB3xLst0N
-         fAg1V3VvPDz4Rk07F8QqWPF8nUUPzq7d8gMh89YDuud+Eb4Lx9EMGz9eTEXXuG9Q6F2+
-         1NK+5aCMr2IXWTXDV1ldyUWFuH2vQ7pSEgOFO91KZBBtVpODYJzQotTm5IxaqhGYxihl
-         bHIA==
-X-Gm-Message-State: AJIora8GJNhwPJW/XoYz9cgF6zY9eDBJrQ4YfBrHOr5HeN8dMtk6go+d
-        HwLjLq1XyGkJYmSmlRZUNIL5eJXqr0c=
-X-Google-Smtp-Source: AGRyM1uvjZnIh0oHuLg51QGQVl97sMhJ6t+Q15UlazhWY7up63kdsrc+Or8FTQhBwmQT1qjcWn6smQ==
-X-Received: by 2002:a17:903:22c7:b0:16b:fa15:63d4 with SMTP id y7-20020a17090322c700b0016bfa1563d4mr10623100plg.2.1657401407139;
-        Sat, 09 Jul 2022 14:16:47 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id z16-20020aa79490000000b0051c6613b5basm1901097pfk.134.2022.07.09.14.16.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jul 2022 14:16:46 -0700 (PDT)
-From:   Stafford Horne <shorne@gmail.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Openrisc <openrisc@lists.librecores.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Subject: [PATCH 2/2] openrisc: Add virt defconfig
-Date:   Sun, 10 Jul 2022 06:15:49 +0900
-Message-Id: <20220709211549.1163327-3-shorne@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220709211549.1163327-1-shorne@gmail.com>
-References: <20220709211549.1163327-1-shorne@gmail.com>
+        Sat, 9 Jul 2022 17:09:17 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A0EDF5A
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 14:09:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657400956; x=1688936956;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=P5aaRMHftrhgmUgH3UrDhIhn/LzktmF2u8hD8wGtEOE=;
+  b=al6Xi+tUZ+7fVASKXQ39HErnqQNl89Pj1jlOOq4EU1JArGNKI2EOkWYb
+   xflylb7OhEjVUMxEcRfbXhUhJ0kRv1FalifUlI+IL3iMHV4H6cHZg8Jy7
+   ih4e3NMC3O6iGDjfKmmTShY1fUU1BlZsw33qT5F0hA5D9ac7PEXxwxHrc
+   fHWBCrhhL4tR2soSQiqKVb6eU4fcCFGizcAEO9W6w0IAN9Qg/OtvQWwfy
+   g7MkppZ4CPnyuoe1DxvWG5KmtcRWzeiI0QpMb2RKUyboPnxIbGmcCr/KO
+   LGWEE4Jm/tgYbwiUy6jDsJ/h4O10S5JvsXxC4omGSP4Den5ETo7JLOGZH
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10403"; a="282012155"
+X-IronPort-AV: E=Sophos;i="5.92,259,1650956400"; 
+   d="scan'208";a="282012155"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2022 14:09:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,259,1650956400"; 
+   d="scan'208";a="921350761"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 09 Jul 2022 14:09:14 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAHhR-000P6S-Ud;
+        Sat, 09 Jul 2022 21:09:13 +0000
+Date:   Sun, 10 Jul 2022 05:08:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [avpatel:riscv_kvm_aia_v1 26/32] include/linux/stddef.h:8:14:
+ warning: initialization of 'unsigned int' from 'void *' makes integer from
+ pointer without a cast
+Message-ID: <202207100500.NFnMKxSH-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have been developing a new qemu virt platform to help with more
-efficient toolchain and kernel testing [1].
+tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
+head:   25efea788788c9750502faf4bee88cdd48418ba2
+commit: 7e96535967c074ab03f14be95023f252274c5ee2 [26/32] RISC-V: KVM: Add G-stage ioremap() and iounmap() functions
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20220710/202207100500.NFnMKxSH-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/avpatel/linux/commit/7e96535967c074ab03f14be95023f252274c5ee2
+        git remote add avpatel https://github.com/avpatel/linux.git
+        git fetch --no-tags avpatel riscv_kvm_aia_v1
+        git checkout 7e96535967c074ab03f14be95023f252274c5ee2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kvm/
 
-This patch adds the defconfig which is needed to support booting
-linux on the platform.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-[1] https://lore.kernel.org/qemu-devel/YpwNtowUTxRbh2Uq@antec/T/#m6db180b0d682785fb320e4a05345c12a063e0c47
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: Stafford Horne <shorne@gmail.com>
----
- arch/openrisc/configs/virt_defconfig | 108 +++++++++++++++++++++++++++
- 1 file changed, 108 insertions(+)
- create mode 100644 arch/openrisc/configs/virt_defconfig
+   In file included from include/uapi/linux/posix_types.h:5,
+                    from include/uapi/linux/types.h:14,
+                    from include/linux/types.h:6,
+                    from include/linux/kasan-checks.h:5,
+                    from include/asm-generic/rwonce.h:26,
+                    from arch/arm64/include/asm/rwonce.h:71,
+                    from include/linux/compiler.h:248,
+                    from include/asm-generic/bug.h:5,
+                    from arch/arm64/include/asm/bug.h:26,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:6,
+                    from include/linux/mman.h:5,
+                    from arch/arm64/kvm/mmu.c:7:
+   arch/arm64/kvm/mmu.c: In function 'kvm_phys_addr_ioremap':
+>> include/linux/stddef.h:8:14: warning: initialization of 'unsigned int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
+       8 | #define NULL ((void *)0)
+         |              ^
+   arch/arm64/kvm/mmu.c:789:62: note: in expansion of macro 'NULL'
+     789 |         struct kvm_mmu_memory_cache cache = { 0, __GFP_ZERO, NULL, };
+         |                                                              ^~~~
+   include/linux/stddef.h:8:14: note: (near initialization for 'cache.gfp_atomic')
+       8 | #define NULL ((void *)0)
+         |              ^
+   arch/arm64/kvm/mmu.c:789:62: note: in expansion of macro 'NULL'
+     789 |         struct kvm_mmu_memory_cache cache = { 0, __GFP_ZERO, NULL, };
+         |                                                              ^~~~
 
-diff --git a/arch/openrisc/configs/virt_defconfig b/arch/openrisc/configs/virt_defconfig
-new file mode 100644
-index 000000000000..c1b69166c500
---- /dev/null
-+++ b/arch/openrisc/configs/virt_defconfig
-@@ -0,0 +1,108 @@
-+CONFIG_SYSVIPC=y
-+CONFIG_POSIX_MQUEUE=y
-+CONFIG_NO_HZ_IDLE=y
-+CONFIG_LOG_BUF_SHIFT=14
-+CONFIG_CGROUPS=y
-+CONFIG_BLK_DEV_INITRD=y
-+CONFIG_OPENRISC_HAVE_INST_CMOV=y
-+CONFIG_OPENRISC_HAVE_INST_ROR=y
-+CONFIG_OPENRISC_HAVE_INST_RORI=y
-+CONFIG_OPENRISC_HAVE_INST_SEXT=y
-+CONFIG_NR_CPUS=8
-+CONFIG_SMP=y
-+CONFIG_HZ_100=y
-+# CONFIG_OPENRISC_NO_SPR_SR_DSX is not set
-+# CONFIG_COMPAT_BRK is not set
-+CONFIG_NET=y
-+CONFIG_PACKET=y
-+CONFIG_UNIX=y
-+CONFIG_INET=y
-+# CONFIG_INET_DIAG is not set
-+CONFIG_TCP_CONG_ADVANCED=y
-+# CONFIG_TCP_CONG_BIC is not set
-+# CONFIG_TCP_CONG_CUBIC is not set
-+# CONFIG_TCP_CONG_WESTWOOD is not set
-+# CONFIG_TCP_CONG_HTCP is not set
-+# CONFIG_IPV6 is not set
-+# CONFIG_WIRELESS is not set
-+CONFIG_PCI=y
-+CONFIG_PCIEPORTBUS=y
-+CONFIG_PCI_HOST_GENERIC=y
-+CONFIG_DEVTMPFS=y
-+CONFIG_DEVTMPFS_MOUNT=y
-+# CONFIG_PREVENT_FIRMWARE_BUILD is not set
-+CONFIG_BLK_DEV_LOOP=y
-+CONFIG_BLK_DEV_NBD=y
-+CONFIG_VIRTIO_BLK=y
-+CONFIG_NETDEVICES=y
-+CONFIG_VIRTIO_NET=y
-+CONFIG_ETHOC=y
-+CONFIG_MICREL_PHY=y
-+# CONFIG_WLAN is not set
-+CONFIG_INPUT_MOUSEDEV=y
-+# CONFIG_LEGACY_PTYS is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_SERIAL_OF_PLATFORM=y
-+CONFIG_VIRTIO_CONSOLE=y
-+# CONFIG_HW_RANDOM is not set
-+CONFIG_POWER_RESET=y
-+CONFIG_POWER_RESET_SYSCON=y
-+CONFIG_POWER_RESET_SYSCON_POWEROFF=y
-+CONFIG_SYSCON_REBOOT_MODE=y
-+# CONFIG_HWMON is not set
-+CONFIG_DRM=y
-+# CONFIG_DRM_FBDEV_EMULATION is not set
-+CONFIG_DRM_VIRTIO_GPU=y
-+CONFIG_FB=y
-+CONFIG_FIRMWARE_EDID=y
-+CONFIG_FRAMEBUFFER_CONSOLE=y
-+CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
-+CONFIG_LOGO=y
-+CONFIG_SOUND=y
-+CONFIG_SND=y
-+CONFIG_SND_INTEL8X0=y
-+CONFIG_SND_INTEL8X0M=y
-+CONFIG_SND_SOC=y
-+CONFIG_SND_VIRTIO=y
-+# CONFIG_HID_A4TECH is not set
-+# CONFIG_HID_BELKIN is not set
-+# CONFIG_HID_CHERRY is not set
-+# CONFIG_HID_CHICONY is not set
-+# CONFIG_HID_CYPRESS is not set
-+# CONFIG_HID_EZKEY is not set
-+# CONFIG_HID_ITE is not set
-+# CONFIG_HID_KENSINGTON is not set
-+# CONFIG_HID_REDRAGON is not set
-+# CONFIG_HID_MICROSOFT is not set
-+# CONFIG_HID_MONTEREY is not set
-+CONFIG_USB=y
-+CONFIG_USB_XHCI_HCD=y
-+CONFIG_USB_XHCI_PLATFORM=y
-+CONFIG_USB_EHCI_HCD=y
-+CONFIG_USB_EHCI_HCD_PLATFORM=y
-+CONFIG_USB_OHCI_HCD=y
-+CONFIG_USB_OHCI_HCD_PLATFORM=y
-+CONFIG_USB_SERIAL=y
-+CONFIG_USB_GADGET=y
-+CONFIG_TYPEC=y
-+CONFIG_RTC_CLASS=y
-+CONFIG_RTC_DRV_GOLDFISH=y
-+CONFIG_VIRT_DRIVERS=y
-+CONFIG_VIRTIO_PCI=y
-+# CONFIG_VIRTIO_PCI_LEGACY is not set
-+CONFIG_VIRTIO_INPUT=y
-+CONFIG_VIRTIO_MMIO=y
-+CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
-+CONFIG_EXT3_FS=y
-+CONFIG_EXT3_FS_POSIX_ACL=y
-+# CONFIG_DNOTIFY is not set
-+CONFIG_MSDOS_FS=y
-+CONFIG_VFAT_FS=y
-+CONFIG_EXFAT_FS=y
-+CONFIG_TMPFS=y
-+CONFIG_NFS_FS=y
-+CONFIG_UNICODE=y
-+CONFIG_PRINTK_TIME=y
-+CONFIG_DYNAMIC_DEBUG=y
-+CONFIG_FTRACE=y
+
+vim +8 include/linux/stddef.h
+
+^1da177e4c3f41 Linus Torvalds   2005-04-16  6  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  7  #undef NULL
+^1da177e4c3f41 Linus Torvalds   2005-04-16 @8  #define NULL ((void *)0)
+6e218287432472 Richard Knutsson 2006-09-30  9  
+
+:::::: The code at line 8 was first introduced by commit
+:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
+
+:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
+:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
