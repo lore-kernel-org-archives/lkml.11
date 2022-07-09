@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC77AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE99FC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbiGIKIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 06:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
+        id S229600AbiGIKIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 06:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiGIKHl (ORCPT
+        with ESMTP id S229694AbiGIKHm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 06:07:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B9E4AD79;
+        Sat, 9 Jul 2022 06:07:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CBE4B480;
         Sat,  9 Jul 2022 03:07:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DF4A60E06;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A854860E44;
         Sat,  9 Jul 2022 10:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6940AC341D2;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E929C341D4;
         Sat,  9 Jul 2022 10:07:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657361258;
-        bh=F2vJvKobmY+7Q0VL60xDXrSdjNT+GlqsUZZb03nj5as=;
+        bh=YDClF61V0ZMqEvrlsP1XceePMhCuNkAOjThdoE9BN1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BsPE6afodD4q4R2N31XGiYi2EjkRjBpzxK6JYXVMASvvTKIj2xyuJQYxwYupXAuFP
-         a4btHij472zaF12ArmMICkBS7dN6ajkhzdfgh5MS7lVf4HQcILi8MpXCDOpbAcwJd1
-         b4GCcTyPgPaFMkhR/12ph+PJfNXfzkXVQpYZQ+SnW80eQBtD1SKd92mHtfLsr6yv0L
-         oWgs/5eyiYEnac7Kp/E8bTk6CiWe2KOajzin2BpJUB0TVK25SW23ameC+eENwFmuiR
-         JP2EnQwDRwaZsbdkjAcelTmlyoB5igyS1rYUpbqOCBhLzQTP6qc55UoVtazlg+9jEl
-         DywmsQhxEikrw==
+        b=rmSIDCK8s73jCb7FH5sEul6ituFzVmpkN+sQZgGfkVBdtAXqGISB/ci8jbPpMAkG0
+         gdttUGEDmQHxFGJP9qfUXD+ljAAYxBEpQDdvSppAGj5j3Inp9OyWDEYaZWmAzbQVzH
+         iFMt5ohodSdReSjpIR6b7TTgYX2PjYkTwbOrDWIgH3zJtRbA/xh5wbg+Y39i0KmiD8
+         1Ts3mZ6A+LPaIDzUnitHxgQM9VQcO5YFCyaSVber+ql1rj87aECPp6bo5S+B3S7nUX
+         A+gV2cgJE2RBP2XZhLP4ph51yYYALrf3NcMt8mXR6k6Xrm72BvC4WsBgnPcqIAem7/
+         S+zGqt6ljeMJA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oA7N9-004EHC-MR;
+        id 1oA7N9-004EHM-Nj;
         Sat, 09 Jul 2022 11:07:35 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: [PATCH v3 16/21] docs: PCI: pci-vntb-function.rst: Properly include ascii artwork
-Date:   Sat,  9 Jul 2022 11:07:29 +0100
-Message-Id: <9a7a1fc4d53fa7dc2e442c647550c27ff44a8e37.1657360984.git.mchehab@kernel.org>
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 18/21] docs: virt: kvm: fix a title markup at api.rst
+Date:   Sat,  9 Jul 2022 11:07:31 +0100
+Message-Id: <aca9f984765785bf40226f97cf62acd874989b5c.1657360984.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657360984.git.mchehab@kernel.org>
 References: <cover.1657360984.git.mchehab@kernel.org>
@@ -58,10 +55,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adjust identation and add a "::" in order to properly mark the
-ascii artwork as a code block, fixing this warning:
+As warned by Sphinx:
 
-	Documentation/PCI/endpoint/pci-vntb-function.rst:82: WARNING: Unexpected indentation.
+	Documentation/virt/kvm/api.rst:8210: WARNING: Title underline too short.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -69,22 +65,32 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v3 00/21] at: https://lore.kernel.org/all/cover.1657360984.git.mchehab@kernel.org/
 
- Documentation/PCI/endpoint/pci-vntb-function.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/virt/kvm/api.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/PCI/endpoint/pci-vntb-function.rst b/Documentation/PCI/endpoint/pci-vntb-function.rst
-index cad8013e8839..7b2ac70e2c57 100644
---- a/Documentation/PCI/endpoint/pci-vntb-function.rst
-+++ b/Documentation/PCI/endpoint/pci-vntb-function.rst
-@@ -58,7 +58,7 @@ It is same as PCI NTB Function driver
- Scratchpad Registers:
- ---------------------
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index 1a0f68d23999..3466f7124833 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -8207,15 +8207,15 @@ dump related UV data. Also the vcpu ioctl `KVM_S390_PV_CPU_COMMAND` is
+ available and supports the `KVM_PV_DUMP_CPU` subcommand.
  
--  It is appended after Config region.
-+It is appended after Config region::
+ 8.38 KVM_CAP_VM_DISABLE_NX_HUGE_PAGES
+----------------------------
++-------------------------------------
  
-   +--------------------------------------------------+ Base
-   |                                                  |
+ :Capability KVM_CAP_VM_DISABLE_NX_HUGE_PAGES
+ :Architectures: x86
+ :Type: vm
+ :Parameters: arg[0] must be 0.
+ :Returns 0 on success, -EPERM if the userspace process does not
+-	 have CAP_SYS_BOOT, -EINVAL if args[0] is not 0 or any vCPUs have been
+-	 created.
++have CAP_SYS_BOOT, -EINVAL if args[0] is not 0 or any vCPUs have been
++created.
+ 
+ This capability disables the NX huge pages mitigation for iTLB MULTIHIT.
+ 
 -- 
 2.36.1
 
