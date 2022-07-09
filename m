@@ -2,94 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6CFC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 535C8C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbiGIKJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 06:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
+        id S229515AbiGIKPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 06:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbiGIKHn (ORCPT
+        with ESMTP id S229469AbiGIKO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 06:07:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F494C60F;
-        Sat,  9 Jul 2022 03:07:41 -0700 (PDT)
+        Sat, 9 Jul 2022 06:14:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40BA3CBF4;
+        Sat,  9 Jul 2022 03:14:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE0B360E75;
-        Sat,  9 Jul 2022 10:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E25C341E6;
-        Sat,  9 Jul 2022 10:07:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC7AEB819C8;
+        Sat,  9 Jul 2022 10:14:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3137C3411C;
+        Sat,  9 Jul 2022 10:14:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657361258;
-        bh=dlmv/1uA+9jV5m0Yh6vFjW59sSYEsGHcbCnXJtFK6OI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EDbmzQrK/8oCiAEnfmWeOMIgHVkZMnyTxAmhKJMa4t7nVTyVybKnSkQpoR6TIUwfH
-         X4F/tO0GdftX0anPQxSEHyn3Svl7FSxebQpiwk8E4/m4/2kVPtY/QTuPDsM+ZNL436
-         bLbagUGf18U94eiyKx5g5/LnChqA9ySB0gS5n/MaEvT26LpA0sJ+ep9oXy6/eB00Gq
-         pYGjBDJqK49S2I8GCbRAgo5tAY4W+XIhi/0fbvn1B4IS9oxVXlZXNS5LRveQvmkDca
-         qdYxxu3LP2AK873DgNR9rbzC7sdmY3lJz958rIB5xdauejgp5k+n6CwBXNBJ+ml940
-         rB+n16OAjHN/w==
-Received: from mchehab by mail.kernel.org with local (Exim 4.95)
-        (envelope-from <mchehab@kernel.org>)
-        id 1oA7N9-004EGT-D2;
-        Sat, 09 Jul 2022 11:07:35 +0100
+        s=k20201202; t=1657361696;
+        bh=MaZXRxOK6UJq6NwF+fwB1/nqC7zlw5QYTccaa+9Ayaw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WsaGeSqiIL5eSPoZZjxC5QZezQPx9Sb47SKeE4YEgd3DsuDB9BJbBu9peP8MZkvrm
+         881Q2qPsk6lrzMghJszE9g24ys0Vn4hoESk/MqSwTba2foYSh4YxLO1VQTLiNGCfrx
+         DQEuc2snQ2fhq5zNkB+WOMZIsJPFB6fULphu6rAscDeKlBjOeAR0fh+po2G9+YKUHm
+         6kNEeqXzfst0hLnvY1VcIGyibDrqZKULauinZbOkpgOGxw8jAhbixZ1KZf9doop/yr
+         ddFSijafi/bbZTH+e4aodsY4GonqVfYayVhMWUybcJBAYMsADymAIfqVxkRecAUmwb
+         lvtey2U7SIpMA==
+Date:   Sat, 9 Jul 2022 11:14:50 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Max Staudt <max@enpas.org>, Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v3 01/21] docs: networking: update netdevices.rst reference
-Date:   Sat,  9 Jul 2022 11:07:14 +0100
-Message-Id: <a91cc9d0fe894e5740b4b8768b9d9f393a46e79d.1657360984.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1657360984.git.mchehab@kernel.org>
-References: <cover.1657360984.git.mchehab@kernel.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        "Hans Verkuil" <hverkuil@xs4all.nl>
+Subject: Re: [GIT PULL] Linux Media vimc update for 5.20-rc1
+Message-ID: <20220709111450.12e1dd61@sal.lan>
+In-Reply-To: <7e719640-80e6-b3ab-751a-156b8e74d87b@linuxfoundation.org>
+References: <7e719640-80e6-b3ab-751a-156b8e74d87b@linuxfoundation.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset 482a4360c56a ("docs: networking: convert netdevices.txt to ReST")
-renamed: Documentation/networking/netdevices.txt
-to: Documentation/networking/netdevices.rst.
+Hi Shuah,
 
-Update its cross-reference accordingly.
+Em Thu, 7 Jul 2022 10:28:37 -0600
+Shuah Khan <skhan@linuxfoundation.org> escreveu:
 
-Fixes: 482a4360c56a ("docs: networking: convert netdevices.txt to ReST")
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
+> Hi Mauro,
+> 
+> Please pull the following vimc update for Linux 5.20-rc1.
+> 
+> This vimc update Linux Media 5.20-rc1 consists of enhancement and
+> cleanup patches:
+> 
+> - add lens to vimc driver and links it with sensors using ancillary
+>    links.
+> - add documentation for lens
+> - changes to make the code readable and maintainable.
+> 
+> diff is attached.
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH v3 00/21] at: https://lore.kernel.org/all/cover.1657360984.git.mchehab@kernel.org/
+Please also send the patches individually to the media ML, as reviews
+happen using them.
 
- drivers/net/can/can327.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hans,
 
-diff --git a/drivers/net/can/can327.c b/drivers/net/can/can327.c
-index 5da7778d92dc..925e880bf570 100644
---- a/drivers/net/can/can327.c
-+++ b/drivers/net/can/can327.c
-@@ -827,7 +827,7 @@ static netdev_tx_t can327_netdev_start_xmit(struct sk_buff *skb,
- 	netif_stop_queue(dev);
- 
- 	/* BHs are already disabled, so no spin_lock_bh().
--	 * See Documentation/networking/netdevices.txt
-+	 * See Documentation/networking/netdevices.rst
- 	 */
- 	spin_lock(&elm->lock);
- 	can327_send_frame(elm, frame);
--- 
-2.36.1
+Please let me know if you prefer to apply those on your tree, or if
+I should apply on mine a couple of days after Shuah post the patches
+at the ML.
 
+Regards,
+Mauro
+
+> 
+> thanks,
+> -- Shuah
+> 
+> ----------------------------------------------------------------
+> The following changes since commit 03c765b0e3b4cb5063276b086c76f7a612856a9a:
+> 
+>    Linux 5.19-rc4 (2022-06-26 14:22:10 -0700)
+> 
+> are available in the Git repository at:
+> 
+>    git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux tags/linux-vimc-5.20-rc1
+> 
+> for you to fetch changes up to 55c592e9cff59e0d1c4069b7fe649b02ddf6c36b:
+> 
+>    media: vimc: documentation for lens (2022-06-29 12:58:21 -0600)
+> 
+> ----------------------------------------------------------------
+> linux-media-vimc-5.20-rc1
+> 
+> This vimc update Linux Media 5.20-rc1 consists of enhancement and
+> cleanup patches:
+> 
+> - add lens to vimc driver and links it with sensors using ancillary
+>    links.
+> - add documentation for lens
+> - changes to make the code readable and maintainable.
+> 
+> ----------------------------------------------------------------
+> Daniel Oakley (3):
+>        media: vimc: expand the names of vimc entity types
+>        media: vimc: enumerate data link entities for clarity
+>        media: vimc: use data link entities enum to index the ent_config array
+> 
+> Yunke Cao (2):
+>        media: vimc: add ancillary lens
+>        media: vimc: documentation for lens
+> 
+>   Documentation/admin-guide/media/vimc.dot       |   4 +
+>   Documentation/admin-guide/media/vimc.rst       |  19 ++
+>   drivers/media/test-drivers/vimc/Makefile       |   2 +-
+>   drivers/media/test-drivers/vimc/vimc-capture.c | 270 ++++++++---------
+>   drivers/media/test-drivers/vimc/vimc-common.h  |   9 +-
+>   drivers/media/test-drivers/vimc/vimc-core.c    | 142 ++++++---
+>   drivers/media/test-drivers/vimc/vimc-debayer.c | 393 +++++++++++++------------
+>   drivers/media/test-drivers/vimc/vimc-lens.c    | 102 +++++++
+>   drivers/media/test-drivers/vimc/vimc-scaler.c  | 216 +++++++-------
+>   drivers/media/test-drivers/vimc/vimc-sensor.c  | 307 +++++++++----------
+>   10 files changed, 830 insertions(+), 634 deletions(-)
+>   create mode 100644 drivers/media/test-drivers/vimc/vimc-lens.c
+> ----------------------------------------------------------------
