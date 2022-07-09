@@ -2,126 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AFBC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 06:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C08C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 06:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbiGIGkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 02:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
+        id S229593AbiGIGwt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 02:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiGIGka (ORCPT
+        with ESMTP id S229463AbiGIGws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 02:40:30 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1A4419A6
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 23:40:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657348829; x=1688884829;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=G+BoR8wm+nr7ZKLBztHNG61qEu73r2abCgp17a+KsP8=;
-  b=nAOdXqNVIa9fAAvoGOMLqxWBxaG8kbqZjLF4Avb8V4mfyQFX25oMadEb
-   zn6RJxdD+dZoIkOCrDTV45WzBOnTvUpLYmqonsp4m3E1jZjzFTMiR0DlC
-   vQKz9I8R9qbrFj7OcqnQ+JR2OuRq6uGeQDnFcBeTX3zmWWV6r3eTwdEYh
-   5m8yyp4LgcvVXZLWxPwkTduKeCJum041/ENYxryQZbwWwPmQzRL8waAgx
-   lUH65DHjC+c0IdYVzeJlvpLJJD7I56kZiq3HsiOZQtyDvEKZyoKV2sudT
-   EVfplA0MVmRVyZJPsU1amKoTxyagqHXqJ/q9cobalhvJHWDRCWN6gO+hW
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="310004272"
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="310004272"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 23:40:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="626937272"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 08 Jul 2022 23:40:26 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oA48g-000OOk-9k;
-        Sat, 09 Jul 2022 06:40:26 +0000
-Date:   Sat, 9 Jul 2022 14:40:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [ammarfaizi2-block:stable/linux-stable-rc/queue/5.15 156/161]
- drivers/irqchip/irq-gic-v3.c:666:9: error: expected ';' before 'err'
-Message-ID: <202207091422.mERbR7Ce-lkp@intel.com>
+        Sat, 9 Jul 2022 02:52:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D686558B
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 23:52:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6F90B82A61
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 06:52:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55140C341D4
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 06:52:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657349565;
+        bh=OItCzHGXam6f2RpFSde10A15StjZbNKKbQYgGQWL2X8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YXYFt0E8Ij3TgCUsoJLhq07xJOnDEU7zvUw1pDlWBWVtYAeRlTzPo0WnyE6pAWxtS
+         Wz0OzuoKZtFXMr8oGb0REQjuF1MDG5iVNs69CRGEV7Bow5UEKaQPXR9DV1NU/kDYv4
+         58yKRd25CSBnsOav4LnMTyDIMCAzREvO3I8lLvTK/U8qQcDPlut4I2biLvyU30UmA4
+         7eI70hMQNcSP2tS/A/Ga2ou3NVv0CtwI1bYQDXOUazMReVaJxPuYigQtH6QnIAJLo1
+         5q2PsqSEmMIznJRpTuh0e4tdAK+hDQNZLYIQzDuhWNJJfRwDVAURMOPZFz72X0VgwC
+         lCRR31TOKW0jQ==
+Received: by mail-ot1-f48.google.com with SMTP id r17-20020a056830449100b0061c1b3840a0so658696otv.3
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Jul 2022 23:52:45 -0700 (PDT)
+X-Gm-Message-State: AJIora/RSZTeed+PjPx9oJj7j025llLk5V/OH0VhD2VoerPBpXqI1Ev1
+        8T/Gx065LqAbC5gDVOYCR8ItyOyxgj44fA7zbZ0=
+X-Google-Smtp-Source: AGRyM1v/vL19VArStGC5zZnGKw+rHp1LFl+18klaQ+vaUgTkXmX9bHLGmj/xFc/D4rPKBlkGaqozxcRH0jc+EUKYeYo=
+X-Received: by 2002:a05:6830:4420:b0:616:e569:8ae9 with SMTP id
+ q32-20020a056830442000b00616e5698ae9mr2892555otv.265.1657349564339; Fri, 08
+ Jul 2022 23:52:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <cover.1657301423.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <cover.1657301423.git.christophe.leroy@csgroup.eu>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Sat, 9 Jul 2022 08:52:33 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXFqs=YAbTDJOgzpse9ZkggSxPNNJJphEA=J94FQzF55qg@mail.gmail.com>
+Message-ID: <CAMj1kXFqs=YAbTDJOgzpse9ZkggSxPNNJJphEA=J94FQzF55qg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/7] Implement inline static calls on PPC32 - v2
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, sv@linux.ibm.com,
+        agust@denx.de, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jason Baron <jbaron@akamai.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>, X86 ML <x86@kernel.org>,
+        Chen Zhongjin <chenzhongjin@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block stable/linux-stable-rc/queue/5.15
-head:   ab88938c957f2e2edc60e19ab6df7830fc1c6914
-commit: 66b9343ecbdd4d09a72bc854094a03ca858c2077 [156/161] irqchip/gic-v3: Ensure pseudo-NMIs have an ISB between ack and handling
-config: arm-defconfig (https://download.01.org/0day-ci/archive/20220709/202207091422.mERbR7Ce-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/66b9343ecbdd4d09a72bc854094a03ca858c2077
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block stable/linux-stable-rc/queue/5.15
-        git checkout 66b9343ecbdd4d09a72bc854094a03ca858c2077
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
+Hello Christophe,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Fri, 8 Jul 2022 at 19:32, Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
+>
+> This series applies on top of the series v3 "objtool: Enable and
+> implement --mcount option on powerpc" [1] rebased on powerpc-next branch
+>
+> A few modifications are done to core parts to enable powerpc
+> implementation:
+> - R_X86_64_PC32 is abstracted to R_REL32 so that it can then be
+> redefined as R_PPC_REL32.
+> - A call to static_call_init() is added to start_kernel() to avoid
+> every architecture to have to call it
+> - Trampoline address is provided to arch_static_call_transform() even
+> when setting a site to fallback on a call to the trampoline when the
+> target is too far.
+>
+> [1] https://lore.kernel.org/lkml/70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu/T/#rb3a073c54aba563a135fba891e0c34c46e47beef
+>
+> Christophe Leroy (7):
+>   powerpc: Add missing asm/asm.h for objtool
+>   objtool/powerpc: Activate objtool on PPC32
+>   objtool: Add architecture specific R_REL32 macro
+>   objtool/powerpc: Add necessary support for inline static calls
+>   init: Call static_call_init() from start_kernel()
+>   static_call_inline: Provide trampoline address when updating sites
+>   powerpc/static_call: Implement inline static calls
+>
 
-All errors (new ones prefixed by >>):
-
-   drivers/irqchip/irq-gic-v3.c: In function 'gic_handle_nmi':
->> drivers/irqchip/irq-gic-v3.c:666:9: error: expected ';' before 'err'
-     666 |         err = handle_domain_nmi(gic_data.domain, irqnr, regs);
-         |         ^~~
-
-
-vim +666 drivers/irqchip/irq-gic-v3.c
-
-f32c926651dcd1 Julien Thierry 2019-01-31  646  
-f32c926651dcd1 Julien Thierry 2019-01-31  647  static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
-f32c926651dcd1 Julien Thierry 2019-01-31  648  {
-17ce302f3117e9 Julien Thierry 2019-06-11  649  	bool irqs_enabled = interrupts_enabled(regs);
-f32c926651dcd1 Julien Thierry 2019-01-31  650  	int err;
-f32c926651dcd1 Julien Thierry 2019-01-31  651  
-17ce302f3117e9 Julien Thierry 2019-06-11  652  	if (irqs_enabled)
-17ce302f3117e9 Julien Thierry 2019-06-11  653  		nmi_enter();
-17ce302f3117e9 Julien Thierry 2019-06-11  654  
-f32c926651dcd1 Julien Thierry 2019-01-31  655  	if (static_branch_likely(&supports_deactivate_key))
-f32c926651dcd1 Julien Thierry 2019-01-31  656  		gic_write_eoir(irqnr);
-66b9343ecbdd4d Mark Rutland   2022-05-13  657  	else
-66b9343ecbdd4d Mark Rutland   2022-05-13  658  		isb()
-66b9343ecbdd4d Mark Rutland   2022-05-13  659  
-f32c926651dcd1 Julien Thierry 2019-01-31  660  	/*
-f32c926651dcd1 Julien Thierry 2019-01-31  661  	 * Leave the PSR.I bit set to prevent other NMIs to be
-f32c926651dcd1 Julien Thierry 2019-01-31  662  	 * received while handling this one.
-f32c926651dcd1 Julien Thierry 2019-01-31  663  	 * PSR.I will be restored when we ERET to the
-f32c926651dcd1 Julien Thierry 2019-01-31  664  	 * interrupted context.
-f32c926651dcd1 Julien Thierry 2019-01-31  665  	 */
-f32c926651dcd1 Julien Thierry 2019-01-31 @666  	err = handle_domain_nmi(gic_data.domain, irqnr, regs);
-f32c926651dcd1 Julien Thierry 2019-01-31  667  	if (err)
-f32c926651dcd1 Julien Thierry 2019-01-31  668  		gic_deactivate_unhandled(irqnr);
-17ce302f3117e9 Julien Thierry 2019-06-11  669  
-17ce302f3117e9 Julien Thierry 2019-06-11  670  	if (irqs_enabled)
-17ce302f3117e9 Julien Thierry 2019-06-11  671  		nmi_exit();
-f32c926651dcd1 Julien Thierry 2019-01-31  672  }
-f32c926651dcd1 Julien Thierry 2019-01-31  673  
-
-:::::: The code at line 666 was first introduced by commit
-:::::: f32c926651dcd1683f4d896ee52609000a62a3dc irqchip/gic-v3: Handle pseudo-NMIs
-
-:::::: TO: Julien Thierry <julien.thierry@arm.com>
-:::::: CC: Catalin Marinas <catalin.marinas@arm.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Could you quantify the performance gains of moving from out-of-line,
+patched tail-call branch instructions to full-fledged inline static
+calls? On x86, the retpoline problem makes this glaringly obvious, but
+on other architectures, the complexity of supporting this model may
+outweigh the performance advantages.
