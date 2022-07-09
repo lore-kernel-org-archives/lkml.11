@@ -2,68 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD420C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbiGIEHz convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 00:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
+        id S229592AbiGIEVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 00:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGIEHx (ORCPT
+        with ESMTP id S229471AbiGIEVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 00:07:53 -0400
-Received: from relay3.hostedemail.com (smtprelay0014.hostedemail.com [216.40.44.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0B17AB1A
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 21:07:52 -0700 (PDT)
-Received: from omf12.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay08.hostedemail.com (Postfix) with ESMTP id 4FF7520BAB;
-        Sat,  9 Jul 2022 04:07:51 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf12.hostedemail.com (Postfix) with ESMTPA id 103611A;
-        Sat,  9 Jul 2022 04:07:44 +0000 (UTC)
-Message-ID: <2c1717b23896bc95a9ba9de79c9dbf112aa35460.camel@perches.com>
-Subject: Re: [PATCH 1/2] staging: vt6655: Use loop in
- vt6655_mac_write_bssid_addr
-From:   Joe Perches <joe@perches.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Philipp Hortmann <philipp.g.hortmann@gmail.com>
-Cc:     Forest Bond <forest@alittletooquiet.net>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Date:   Fri, 08 Jul 2022 21:07:43 -0700
-In-Reply-To: <YsgjOPUDDtD48tMO@kroah.com>
-References: <cover.1657134099.git.philipp.g.hortmann@gmail.com>
-         <b3b93ae7ce41562565e9007eb4580b9c47a2881f.1657134099.git.philipp.g.hortmann@gmail.com>
-         <YsgjOPUDDtD48tMO@kroah.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Sat, 9 Jul 2022 00:21:18 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E8B4E62C;
+        Fri,  8 Jul 2022 21:21:17 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id p16so397659plo.0;
+        Fri, 08 Jul 2022 21:21:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ycgZMvq2EVogDaqogTrk1vbctpDqtsq51oWL+KX1fwE=;
+        b=IUDAVGaP5i3wsy3MP7idxdjv/VjJdS+DB+cAE3/YgLZLVDuWvQB9rVuxzkECFqDnUs
+         RKd8CYxxe2w3QYWEaaoyivVcPG29K32MEkFPDK9ivuexTkUrQqm6IY9gq4wcCW199PIS
+         WQ2GI28IgKCEhda632Rr1HUJJOioldYc17bWyhoKqfMfajnHBczDGV/vk8wZjRkMoHA9
+         HboWCIZ1UYh/OhQqsjXMnt4rJ0MbWEzzPeF30lwAvWAU9549IigCdM10XeYWlaqKCL6G
+         8Y4iDGHxfkyayiuDvhbZaUt8O9vPgy4f/UDazRQCO3clor3TQ2PTTwsP+aPbJNjmTI1M
+         4yPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ycgZMvq2EVogDaqogTrk1vbctpDqtsq51oWL+KX1fwE=;
+        b=yPcoPsDqxo9AKwk8fJR0CcCoGZtcmYMF+G5iWa23CzqLCEQOkhjH6xENrPK/xNAHMi
+         XW6Qgp9BlnuDtEMVS/vdxGLlHyipI+Y5ktJHgnnq+vlvbsSH2Uc0nu0Q1g+WFWS22KI/
+         Dt+5KDvAAciUTtqJfKk8grP1PZZfa+mX5dmHK5n9SDosWe/2p0HG+YgPKOL+qEPqbtzF
+         lC7wfy+Jw9m3I1EQ3snC+UKdoxOtLNfTGaLkCNw72qE7eRyUtr/+EFmY3LlGY32wY29B
+         VbBxgmHibQ2CxYccbAy3ymKHB/cfYVEeoAjZHC1DIoZcqQGdOnP+osdC2uUk7j+Gj2oc
+         vfRg==
+X-Gm-Message-State: AJIora8lbgfuMSySafkOsZmth8T8CZDAkYyjOxRVnRFGIh0sRJOwU/tq
+        D0Ufas0hAxmZMBiq8tA/Coo=
+X-Google-Smtp-Source: AGRyM1u3R/Bf4/mPqH1iFvrcy+Oj5Qvhdsg7oo64sXJHUcB+TfJl++7Ezz2mL+4sZEqgogHTXga2Ag==
+X-Received: by 2002:a17:902:eccf:b0:16b:f555:d42e with SMTP id a15-20020a170902eccf00b0016bf555d42emr6858192plh.75.1657340476542;
+        Fri, 08 Jul 2022 21:21:16 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-88.three.co.id. [180.214.232.88])
+        by smtp.gmail.com with ESMTPSA id q17-20020a170902f35100b0016bf803341asm332158ple.146.2022.07.08.21.21.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 21:21:15 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id E3A411039B1; Sat,  9 Jul 2022 11:21:10 +0700 (WIB)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 05/12] Documentation: kvm: tdx: title typofix
+Date:   Sat,  9 Jul 2022 11:20:31 +0700
+Message-Id: <20220709042037.21903-6-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220709042037.21903-1-bagasdotme@gmail.com>
+References: <20220709042037.21903-1-bagasdotme@gmail.com>
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 103611A
-X-Stat-Signature: wenfhm9tjf4dikq1umz4o1so58g5p685
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/lD4hqYXWTqy60ADw9GyoRDemBIZFqbuQ=
-X-HE-Tag: 1657339664-43791
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-08 at 14:29 +0200, Greg Kroah-Hartman wrote:
-> On Wed, Jul 06, 2022 at 09:19:01PM +0200, Philipp Hortmann wrote:
-> > Use loop in vt6655_mac_write_bssid_addr to avoid multiple
-> > similar statements.
-[]
-> > diff --git a/drivers/staging/vt6655/device_main.c b/drivers/staging/vt6655/device_main.c
-[]
-> > @@ -192,12 +192,8 @@ device_set_options(struct vnt_private *priv)
-> >  static void vt6655_mac_write_bssid_addr(void __iomem *iobase, const u8 *mac_addr)
-[]
-> > +	for (int i = 0; i < 6; i++)
-> 
-> Taking advantage of the new compiler level I see, nice :)
+The page title contains misspelled "Dodmain" instead of "Domain" and
+missing space before abbreviation parentheses. Fix both mistakes.
 
-Not sure this is altogether a great idea as it may
-make backporting a bit difficult, but it's already
-in the kernel in a few places.
+Fixes: 9e54fa1ac03df3 ("Documentation/virtual/kvm: Document on Trust Domain Extensions(TDX)")
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ Documentation/virt/kvm/intel-tdx.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/Documentation/virt/kvm/intel-tdx.rst b/Documentation/virt/kvm/intel-tdx.rst
+index 1e3ad0ca2925bf..5288631c80122d 100644
+--- a/Documentation/virt/kvm/intel-tdx.rst
++++ b/Documentation/virt/kvm/intel-tdx.rst
+@@ -1,7 +1,7 @@
+ .. SPDX-License-Identifier: GPL-2.0
+ 
+ ===================================
+-Intel Trust Dodmain Extensions(TDX)
++Intel Trust Domain Extensions (TDX)
+ ===================================
+ 
+ Overview
+-- 
+An old man doll... just what I always wanted! - Clara
 
