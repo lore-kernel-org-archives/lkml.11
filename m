@@ -2,91 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D52C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiGIKIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 06:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        id S229941AbiGIKIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 06:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiGIKHo (ORCPT
+        with ESMTP id S229741AbiGIKHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Jul 2022 06:07:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACD64E612;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD5A4E601;
         Sat,  9 Jul 2022 03:07:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED434B81B85;
-        Sat,  9 Jul 2022 10:07:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8201FC36AE2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04D87B81BA5;
+        Sat,  9 Jul 2022 10:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E85C341E4;
         Sat,  9 Jul 2022 10:07:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657361258;
-        bh=dHEaxf7bO6LYIJv1hiJfhIsQ7ihTLYPsh05dneOYEto=;
+        bh=qiRPr94AFRMOGdMAE4cJrf7t0rv+9IXQLXV79wY5o4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjntMzcGOpovzGor55NmNs2C8dY3M3yPLtwoUkXYnfH/ltt3FZAquKIQbnPTakAiT
-         I//nlslheX6VGgmLuaH2RBSJCqe/jyMdY+ORElg1ATOLrhGhsKZxkWyXfWYEYkl5JR
-         XrbYMCwPjQsbPHLUIj+Pge+HEhVQixSwedshT6V8io/IXYeMyayj2n+1QoIoVNVsrq
-         rvcpFvQL39dQyvmAUAXWg532xxz7dvDjVuFBCLTFmQC6tVADPGShObHJPLgdPPxMUC
-         kFl5EKhR+iTSGOHZ7eMjm19UHAltcjXjeY2TwDdXNv8pWnD5SFy1rTp1s9I5YWDegx
-         FU9lq3aX/WVUg==
+        b=FUrhBDV8qQ3BBmHXqnc/8ipJ4ijIhzVDDemntLvaD+ld6JNia3myDoK968lVQT/JF
+         777qXSX6Qv2PjJJhVV2o2E9tWWIDi4BQAwPhdGPILIE4Oo/k8JjN+1eOsn1Emy3uMB
+         qw1e3XET2y58XYWDuz0Iu6BJ6jb321aA0GC0GT6kUD1YPdxlT3SqRFgCCVB3ikR601
+         u0F2G8WS8ueJDx+sysVVEBz1iif53JLznhQngkj4Mu87YRPKBWEWKljrUNBTZJ/j4V
+         Q1fgEz5I3zCS6KOuXs1pk+Vw1MyPtzhQBr7aVzuDwylIhadsV0Ug2Pa252oHxnwANG
+         9DMDhL+eyM8uQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oA7N9-004EGW-Do;
+        id 1oA7N9-004EGx-JK;
         Sat, 09 Jul 2022 11:07:35 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Alex Shi <alexs@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Wu XiangCheng <bobwxc@email.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 02/21] docs: update vmalloced-kernel-stacks.rst reference
-Date:   Sat,  9 Jul 2022 11:07:15 +0100
-Message-Id: <71f4ccf95aa2de93be469b1e64606f9fc16dcaa2.1657360984.git.mchehab@kernel.org>
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Marco Elver <elver@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        dri-devel@lists.freedesktop.org, kasan-dev@googlegroups.com,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org
+Subject: [PATCH v3 11/21] kfence: fix a kernel-doc parameter
+Date:   Sat,  9 Jul 2022 11:07:24 +0100
+Message-Id: <4e4f3c9fa6b379a82b9647d2f4152cfb520730ff.1657360984.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657360984.git.mchehab@kernel.org>
 References: <cover.1657360984.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset ee65728e103b ("docs: rename Documentation/vm to Documentation/mm")
-renamed: Documentation/vm/vmalloced-kernel-stacks.rst
-to: Documentation/mm/vmalloced-kernel-stacks.rst.
+The kernel-doc markup is missing the slab pointer description:
 
-Update its cross-reference accordingly.
+	include/linux/kfence.h:221: warning: Function parameter or member 'slab' not described in '__kfence_obj_info'
 
-Fixes: ee65728e103b ("docs: rename Documentation/vm to Documentation/mm")
+Document it.
+
+Reviewed-by: Marco Elver <elver@google.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v3 00/21] at: https://lore.kernel.org/all/cover.1657360984.git.mchehab@kernel.org/
 
- Documentation/translations/zh_CN/mm/vmalloced-kernel-stacks.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/kfence.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/translations/zh_CN/mm/vmalloced-kernel-stacks.rst b/Documentation/translations/zh_CN/mm/vmalloced-kernel-stacks.rst
-index ad23f274f6d7..d02a23f7f07e 100644
---- a/Documentation/translations/zh_CN/mm/vmalloced-kernel-stacks.rst
-+++ b/Documentation/translations/zh_CN/mm/vmalloced-kernel-stacks.rst
-@@ -1,7 +1,7 @@
- .. SPDX-License-Identifier: GPL-2.0
- .. include:: ../disclaimer-zh_CN.rst
- 
--:Original: Documentation/vm/vmalloced-kernel-stacks.rst
-+:Original: Documentation/mm/vmalloced-kernel-stacks.rst
- 
- :翻译:
- 
+diff --git a/include/linux/kfence.h b/include/linux/kfence.h
+index 726857a4b680..9c242f4e9fab 100644
+--- a/include/linux/kfence.h
++++ b/include/linux/kfence.h
+@@ -210,6 +210,7 @@ struct kmem_obj_info;
+  * __kfence_obj_info() - fill kmem_obj_info struct
+  * @kpp: kmem_obj_info to be filled
+  * @object: the object
++ * @slab: pointer to slab
+  *
+  * Return:
+  * * false - not a KFENCE object
 -- 
 2.36.1
 
