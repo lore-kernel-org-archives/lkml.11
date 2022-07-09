@@ -2,104 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83305C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 20:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CDDC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 20:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229557AbiGIUAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 16:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
+        id S229561AbiGIUiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 16:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGIUAV (ORCPT
+        with ESMTP id S229448AbiGIUiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 16:00:21 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CD33E01D;
-        Sat,  9 Jul 2022 13:00:20 -0700 (PDT)
-Received: from sequoia.devices.tihix.com (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
-        by linux.microsoft.com (Postfix) with ESMTPSA id AC919204C8E0;
-        Sat,  9 Jul 2022 13:00:18 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AC919204C8E0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1657396819;
-        bh=0/4/je5F3ph2qO9T5M9uqjsKhrJMFF9mOYX6DBCeVVI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WwAVohwjMEHgPxZC8fl/YVpl7hgLuB3Ct1y5ziEld3gJ5uEsMj6vCC0cCBu3Dp7ih
-         VSHgbFIzLHlkoc8NIssRqOYG4OviGqXv49J/OBO9QtU7me0jYqpcT1KMMLGvqDmqe6
-         8jdmkB7MWMeAbmYcLMWWtX0+QxOXQPWlaPeUUKpg=
-From:   Tyler Hicks <tyhicks@linux.microsoft.com>
-To:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net/9p: Initialize the iounit field during fid creation
-Date:   Sat,  9 Jul 2022 15:00:05 -0500
-Message-Id: <20220709200005.681861-1-tyhicks@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 9 Jul 2022 16:38:16 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCC4E0A2;
+        Sat,  9 Jul 2022 13:38:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657399095; x=1688935095;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UsCG2LP+eMsf8h/hHDidHHdX1fTkku1D4E2O+r5yQcI=;
+  b=dz6Vi8IDVGbIB6uWAnW4SDM41rN0BiDYsIFp8lO/i0oncLNroEo68775
+   SP5q3IF/kxwmJqOG3FncotyWL54151nri4bTaB+KoDAfYpPcsm59nKuqU
+   ub6+BbhfMijwNhvrepWS/umGdXRMIBWo/EdcswdOLhi0is1Agc+UqxFIF
+   stQI/h84rfdQ2lmwbNhlQKeNuiyiFoGMdr/9Q2dIFoG0VKlVCAaWmus9z
+   efoXStWszqFDhTkJzGHoNL0Wff7MNc1eebdjXF4K+Bw6eBR8xjHcgTIs7
+   Oz5PEU7hBJfHrpJDd9EDTanDy3yPrDt28sjgjjuL9G5pUIb3vuypuZL5J
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10403"; a="285202639"
+X-IronPort-AV: E=Sophos;i="5.92,259,1650956400"; 
+   d="scan'208";a="285202639"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2022 13:38:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,259,1650956400"; 
+   d="scan'208";a="621617706"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 09 Jul 2022 13:38:13 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAHDQ-000P4i-J3;
+        Sat, 09 Jul 2022 20:38:12 +0000
+Date:   Sun, 10 Jul 2022 04:37:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        linux-doc@vger.kernel.org
+Subject: [intel-tdx:kvm-upstream-workaround 295/418] htmldocs:
+ Documentation/virt/kvm/api.rst:1364: WARNING: Inline emphasis start-string
+ without end-string.
+Message-ID: <202207100439.e7j8H8ek-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ensure that the fid's iounit field is set to zero when a new fid is
-created. Certain 9P operations, such as OPEN and CREATE, allow the
-server to reply with an iounit size which the client code assigns to the
-fid struct shortly after the fid is created in p9_fid_create(). Other
-operations that follow a call to p9_fid_create(), such as an XATTRWALK,
-don't include an iounit value in the reply message from the server. In
-the latter case, the iounit field remained uninitialized. Depending on
-allocation patterns, the iounit value could have been something
-reasonable that was carried over from previously freed fids or, in the
-worst case, could have been arbitrary values from non-fid related usages
-of the memory location.
+tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
+head:   c2b43d6ee32b2f2de54395e7b2d7ba9bfa727608
+commit: 4a84476dadcc3d7640c22b327464bdc9488787fd [295/418] KVM: Extend the memslot to support fd-based private memory
+reproduce: make htmldocs
 
-The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
-after the uninitialized iounit field resulted in the typical sequence of
-two getxattr(2) syscalls, one to get the size of an xattr and another
-after allocating a sufficiently sized buffer to fit the xattr value, to
-hit an unexpected ERANGE error in the second call to getxattr(2). An
-uninitialized iounit field would sometimes force rsize to be smaller
-than the xattr value size in p9_client_read_once() and the 9P server in
-WSL refused to chunk up the READ on the attr_fid and, instead, returned
-ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
-the READ and this problem goes undetected there. However, there are
-likely other non-xattr implications of this bug that could cause
-inefficient communication between the client and server.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
----
+All warnings (new ones prefixed by >>):
 
-Note that I haven't had a chance to identify when this bug was
-introduced so I don't yet have a proper Fixes tag. The history looked a
-little tricky to me but I'll have another look in the coming days. We
-started hitting this bug after trying to move from linux-5.10.y to
-linux-5.15.y but I didn't see any obvious changes between those two
-series. I'm not confident of this theory but perhaps the fid refcounting
-changes impacted the fid allocation patterns enough to uncover the
-latent bug?
+>> Documentation/virt/kvm/api.rst:1364: WARNING: Inline emphasis start-string without end-string.
 
- net/9p/client.c | 1 +
- 1 file changed, 1 insertion(+)
+vim +1364 Documentation/virt/kvm/api.rst
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 8bba0d9cf975..1dfceb9154f7 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -899,6 +899,7 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
- 	fid->clnt = clnt;
- 	fid->rdir = NULL;
- 	fid->fid = 0;
-+	fid->iounit = 0;
- 	refcount_set(&fid->count, 1);
- 
- 	idr_preload(GFP_KERNEL);
+4a84476dadcc3d Documentation/virt/kvm/api.rst    Chao Peng      2021-11-15  1363  
+0f2d8f4dd0663d Documentation/kvm/api.txt         Avi Kivity     2010-03-25 @1364    /* for kvm_memory_region::flags */
+4d8b81abc47b83 Documentation/virtual/kvm/api.txt Xiao Guangrong 2012-08-21  1365    #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
+4d8b81abc47b83 Documentation/virtual/kvm/api.txt Xiao Guangrong 2012-08-21  1366    #define KVM_MEM_READONLY	(1UL << 1)
+4a84476dadcc3d Documentation/virt/kvm/api.rst    Chao Peng      2021-11-15  1367    #define KVM_MEM_PRIVATE		(1UL << 2)
+0f2d8f4dd0663d Documentation/kvm/api.txt         Avi Kivity     2010-03-25  1368  
+
+:::::: The code at line 1364 was first introduced by commit
+:::::: 0f2d8f4dd0663defff8c1738d33478c1fb65a4f5 KVM: Document KVM_SET_USER_MEMORY_REGION
+
+:::::: TO: Avi Kivity <avi@redhat.com>
+:::::: CC: Avi Kivity <avi@redhat.com>
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
