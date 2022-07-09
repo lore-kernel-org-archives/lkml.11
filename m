@@ -2,295 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE772C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 22:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D290C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 22:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229571AbiGIWdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 18:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
+        id S229523AbiGIWlg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 18:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiGIWdK (ORCPT
+        with ESMTP id S229454AbiGIWlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 18:33:10 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154842AE0A
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 15:32:59 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id q9so2592086wrd.8
-        for <linux-kernel@vger.kernel.org>; Sat, 09 Jul 2022 15:32:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linexp-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SD0RKMK5Q3Q8sjw2sPd6eKcyMSLlIgckhKohOzGFpgA=;
-        b=ZIEO3IlRH+KuDYcW/Ly7aWJaqzvxd7fr87WmVORkAzuJrzb8VlXQFc9y8lxe0Owago
-         l6h9PXfHbnkJeQ5GJY/VOYE0Z+Zaf/55a/0LpHoiNruO8Ozj9pcvAeE7FhEVLMUxdnY4
-         PST+FyaLCcSdf4wt2lCAQPbdSW1Af+j2HKhx6unTWSj8KD5jzSmryYTI+3iNG4L5yHmo
-         E2zwey00IJt1LMCOwMMUJUxNTuBKamMZo1Dj73scyIVGt7S2f7VYoC8vYnLpfCf3mkNo
-         HmC6fgGex/sK9LbfplxQAOxwSCKDrb4CqkzD3I9Fo6QnZvQFLwp76WSC8suZFFTB98AC
-         QVUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SD0RKMK5Q3Q8sjw2sPd6eKcyMSLlIgckhKohOzGFpgA=;
-        b=E3eW2YCDWSbVQf3FdUYqb9oBxnYWyc2IIE2Ey5SkdmFOSGncsGjy0ls6A/YX5qsc7h
-         rvA3/29m/1O66VJSAo8KKhWv3XGdaXMgo7ShTqZ0MD7ag51lf8yeUnkayg96emi3Tjag
-         V2MPd+hgnd9ZMKGrG8CSwBEBn33mf0truqhfZAZtcW+tuxS1bYL48WnTtSViW1dZjRxl
-         pjRnkmvjaihax9taNHWBvFwlQ3QbC1uuzCKgsm/4pQd+PW4Kug4MBzrPfq45s0L3wZCS
-         cCViiykzJQn3C2iXNHSf9N9cYn/ftbHo/ip0lSiWfNDhdNTkUB7Ysnzk3a/h4rh1GiRL
-         YZXg==
-X-Gm-Message-State: AJIora85j0dFOallWMXg8hJsd3+JIlsy1Kyq30sA4TvWNe0PYJiPaSKP
-        xKctAmoTPQZ4hFgZDcvS5NEHQg==
-X-Google-Smtp-Source: AGRyM1vJiqJOq6HGvrFV4Tks9HUdABrK9yN85JtvQWBxd2IQheikTmMizAs21z53u8Eac7clIJj/Sw==
-X-Received: by 2002:a05:6000:1549:b0:21b:c7fb:9dd0 with SMTP id 9-20020a056000154900b0021bc7fb9dd0mr9117346wry.446.1657405979536;
-        Sat, 09 Jul 2022 15:32:59 -0700 (PDT)
-Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id w15-20020a1cf60f000000b003a2c7bf0497sm2525342wmc.16.2022.07.09.15.32.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jul 2022 15:32:59 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linexp.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        abailon@baylibre.com, lukasz.luba@arm.com,
-        Amit Kucheria <amitk@kernel.org>
-Subject: [PATCH v4 12/12] thermal/of: Initialize trip points separately
-Date:   Sun, 10 Jul 2022 00:32:29 +0200
-Message-Id: <20220709223229.1619339-13-daniel.lezcano@linexp.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220709223229.1619339-1-daniel.lezcano@linexp.org>
-References: <20220709223229.1619339-1-daniel.lezcano@linexp.org>
+        Sat, 9 Jul 2022 18:41:35 -0400
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DEC11C10
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 15:41:34 -0700 (PDT)
+Received: from [IPV6:2601:646:8600:40c0:425:cd56:6750:e1bf] ([IPv6:2601:646:8600:40c0:425:cd56:6750:e1bf])
+        (authenticated bits=0)
+        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 269MfOe32280396
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Sat, 9 Jul 2022 15:41:24 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 269MfOe32280396
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+        s=2022070501; t=1657406485;
+        bh=Cy1CTu6T1Wo/2voSB7RyY/22HAamlHwFuPGZxrlfY6w=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ej8T3xB4lpT0ypyEGH1BUzWbaFC8rvjj3PHNZOEYSxuEmqnhjiWyMpSM0/sODDwgX
+         G42B3a6cE+zl+GQXNTqZxfR3hmLFBiq0SJBCw2juT0JDnUL99U6sQJXVot67ZLMSQM
+         dWrLC8iriDIxbtx6RAWe3KpuUZpTLrCi0F8CLkKBQxbGNaAQv52zSwH26M5wzMwIUo
+         a71XcN9twuiZoRdasvtgKHA8C2OWQ/6fDjN24yl3pdHvqJpiD5B97cHeFAS3y/YhqZ
+         +1N1VzDyPG03K8IjvC2Vy15AMILUQp6f/NbY9Z2XoPbNue6ObxwANcu/JJzzIZmJpr
+         uHLAqtWXXZOlg==
+Message-ID: <8e5eb2db-ce31-3dc8-8f75-3959036686f8@zytor.com>
+Date:   Sat, 9 Jul 2022 15:41:19 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH tip v8] x86/setup: Use rng seeds from setup_data
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, X86 ML <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Lutomirski <luto@kernel.org>
+References: <20220707000852.523788-1-Jason@zx2c4.com>
+ <20220708113907.891319-1-Jason@zx2c4.com>
+ <ddba81dd-cc92-699c-5274-785396a17fb5@zytor.com> <YslPKbrmwF0uSm7p@zn.tnic>
+ <191d8f96-7573-bd0e-9ca4-3fc22c5c9a49@zytor.com> <Ysn5uvBKBpcZ4j6m@zn.tnic>
+From:   "H. Peter Anvin" <hpa@zytor.com>
+In-Reply-To: <Ysn5uvBKBpcZ4j6m@zn.tnic>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Self contain the trip initialization from the device tree in a single
-function for the sake of making the code flow more clear.
+On 7/9/22 14:57, Borislav Petkov wrote:
+> On Sat, Jul 09, 2022 at 02:45:24PM -0700, H. Peter Anvin wrote:
+>> On 7/9/22 02:49, Borislav Petkov wrote:
+>>> On Fri, Jul 08, 2022 at 06:51:16PM -0700, H. Peter Anvin wrote:
+>>>> #define SETUP_ENUM_MAX	SETUP_RNG_SEED
+>>>> #define SETUP_INDIRECT	(1<<31)
+>>>> #define SETUP_TYPE_MAX	(SETUP_ENUM_MAX | SETUP_INDIRECT)
+>>>
+>>> Wait, if we get to add a new number, SETUP_ENUM_MAX and thus
+>>> SETUP_TYPE_MAX will change. And they're uapi too...
+>>
+>> Talking API here rather than ABI, i.e. the semantics of those symbols.
+> 
+> Sure but do we worry about some userspace including those headers and
+> relying on the SETUP_ENUM_MAX number?
+> 
+> Or is userspace required to be recompiled against newer uapi headers?
+> 
 
-Cc: Alexandre Bailon <abailon@baylibre.com>
-Cc: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
----
- drivers/thermal/thermal_of.c | 101 ++++++++++++++++++++++-------------
- 1 file changed, 65 insertions(+), 36 deletions(-)
+In ABI/API terms, that symbol has the semantic of connecting the API 
+version to the underlying ABI version; a piece of code that sees an 
+enumeration type > SETUP_ENUM_MAX must by definition treat it as an 
+opaque blob. In the future, should it become warranted, we may add flags 
+that indicate how unaware code should handle them, but I don't think we 
+can engineer that right now.
 
-diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
-index 601552c55d0b..40fd7260b2ad 100644
---- a/drivers/thermal/thermal_of.c
-+++ b/drivers/thermal/thermal_of.c
-@@ -118,7 +118,7 @@ static int of_thermal_set_trips(struct thermal_zone_device *tz,
-  */
- int of_thermal_get_ntrips(struct thermal_zone_device *tz)
- {
--	return tz->ntrips;
-+	return tz->num_trips;
- }
- EXPORT_SYMBOL_GPL(of_thermal_get_ntrips);
- 
-@@ -134,7 +134,7 @@ EXPORT_SYMBOL_GPL(of_thermal_get_ntrips);
-  */
- bool of_thermal_is_trip_valid(struct thermal_zone_device *tz, int trip)
- {
--	if (trip >= tz->ntrips || trip < 0)
-+	if (trip >= tz->num_trips || trip < 0)
- 		return false;
- 
- 	return true;
-@@ -269,7 +269,7 @@ static int of_thermal_unbind(struct thermal_zone_device *thermal,
- static int of_thermal_get_trip_type(struct thermal_zone_device *tz, int trip,
- 				    enum thermal_trip_type *type)
- {
--	if (trip >= tz->ntrips || trip < 0)
-+	if (trip >= tz->num_trips || trip < 0)
- 		return -EDOM;
- 
- 	*type = tz->trips[trip].type;
-@@ -280,7 +280,7 @@ static int of_thermal_get_trip_type(struct thermal_zone_device *tz, int trip,
- static int of_thermal_get_trip_temp(struct thermal_zone_device *tz, int trip,
- 				    int *temp)
- {
--	if (trip >= tz->ntrips || trip < 0)
-+	if (trip >= tz->num_trips || trip < 0)
- 		return -EDOM;
- 
- 	*temp = tz->trips[trip].temperature;
-@@ -293,7 +293,7 @@ static int of_thermal_set_trip_temp(struct thermal_zone_device *tz, int trip,
- {
- 	struct __thermal_zone *data = tz->devdata;
- 
--	if (trip >= tz->ntrips || trip < 0)
-+	if (trip >= tz->num_trips || trip < 0)
- 		return -EDOM;
- 
- 	if (data->ops && data->ops->set_trip_temp) {
-@@ -313,7 +313,7 @@ static int of_thermal_set_trip_temp(struct thermal_zone_device *tz, int trip,
- static int of_thermal_get_trip_hyst(struct thermal_zone_device *tz, int trip,
- 				    int *hyst)
- {
--	if (trip >= tz->ntrips || trip < 0)
-+	if (trip >= tz->num_trips || trip < 0)
- 		return -EDOM;
- 
- 	*hyst = tz->trips[trip].hysteresis;
-@@ -324,7 +324,7 @@ static int of_thermal_get_trip_hyst(struct thermal_zone_device *tz, int trip,
- static int of_thermal_set_trip_hyst(struct thermal_zone_device *tz, int trip,
- 				    int hyst)
- {
--	if (trip >= tz->ntrips || trip < 0)
-+	if (trip >= tz->num_trips || trip < 0)
- 		return -EDOM;
- 
- 	/* thermal framework should take care of data->mask & (1 << trip) */
-@@ -338,7 +338,7 @@ static int of_thermal_get_crit_temp(struct thermal_zone_device *tz,
- {
- 	int i;
- 
--	for (i = 0; i < tz->ntrips; i++)
-+	for (i = 0; i < tz->num_trips; i++)
- 		if (tz->trips[i].type == THERMAL_TRIP_CRITICAL) {
- 			*temp = tz->trips[i].temperature;
- 			return 0;
-@@ -693,7 +693,8 @@ static int of_find_trip_id(struct device_node *np, struct device_node *trip)
-  *
-  * Return: 0 on success, proper error code otherwise
-  */
--static int thermal_of_populate_bind_params(struct device_node *np,
-+static int thermal_of_populate_bind_params(struct device_node *tz_np,
-+					   struct device_node *np,
- 					   struct __thermal_bind_params *__tbp)
- {
- 	struct of_phandle_args cooling_spec;
-@@ -715,7 +716,7 @@ static int thermal_of_populate_bind_params(struct device_node *np,
- 		return -ENODEV;
- 	}
- 
--	trip_id = of_find_trip_id(np, trip);
-+	trip_id = of_find_trip_id(tz_np, trip);
- 	if (trip_id < 0) {
- 		ret = trip_id;
- 		goto end;
-@@ -849,6 +850,53 @@ static int thermal_of_populate_trip(struct device_node *np,
- 	return 0;
- }
- 
-+static struct thermal_trip *thermal_of_trips_init(struct device_node *np, int *ntrips)
-+{
-+	struct thermal_trip *tt;
-+	struct device_node *trips, *trip;
-+	int ret, count;
-+
-+	trips = of_get_child_by_name(np, "trips");
-+	if (!trips) {
-+		pr_err("Failed to find 'trips' node\n");
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	count = of_get_child_count(trips);
-+	if (!count) {
-+		pr_err("No trip point defined\n");
-+		ret = -EINVAL;
-+		goto out_of_node_put;
-+	}
-+
-+	tt = kzalloc(sizeof(*tt) * count, GFP_KERNEL);
-+	if (!tt) {
-+		ret = -ENOMEM;
-+		goto out_of_node_put;
-+	}
-+
-+	*ntrips = count;
-+
-+	count = 0;
-+	for_each_child_of_node(trips, trip) {
-+		ret = thermal_of_populate_trip(trip, &tt[count++]);
-+		if (ret)
-+			goto out_kfree;
-+	}
-+
-+	of_node_put(trips);
-+	
-+	return tt;
-+	
-+out_kfree:
-+	kfree(tt);
-+	*ntrips = 0;
-+out_of_node_put:
-+	of_node_put(trips);
-+
-+	return ERR_PTR(ret);
-+}
-+
- /**
-  * thermal_of_build_thermal_zone - parse and fill one thermal zone data
-  * @np: DT node containing a thermal zone node
-@@ -867,7 +915,6 @@ static struct __thermal_zone
- __init *thermal_of_build_thermal_zone(struct device_node *np)
- {
- 	struct device_node *child = NULL, *gchild;
--	struct device_node *trips;
- 	struct __thermal_zone *tz;
- 	int ret, i;
- 	u32 prop, coef[2];
-@@ -909,28 +956,10 @@ __init *thermal_of_build_thermal_zone(struct device_node *np)
- 		tz->offset = 0;
- 	}
- 
--	/* trips */
--	trips = of_get_child_by_name(np, "trips");
--
--	/* No trips provided */
--	if (!trips)
-+	tz->trips = thermal_of_trips_init(np, &tz->ntrips);
-+	if (IS_ERR(tz->trips)) {
-+		ret = PTR_ERR(tz->trips);
- 		goto finish;
--
--	tz->ntrips = of_get_child_count(trips);
--	if (tz->ntrips == 0) /* must have at least one child */
--		goto finish;
--
--	tz->trips = kcalloc(tz->ntrips, sizeof(*tz->trips), GFP_KERNEL);
--	if (!tz->trips) {
--		ret = -ENOMEM;
--		goto free_tz;
--	}
--
--	i = 0;
--	for_each_child_of_node(trips, gchild) {
--		ret = thermal_of_populate_trip(gchild, &tz->trips[i++]);
--		if (ret)
--			goto free_trips;
- 	}
- 
- 	/* cooling-maps */
-@@ -952,13 +981,14 @@ __init *thermal_of_build_thermal_zone(struct device_node *np)
- 
- 	i = 0;
- 	for_each_child_of_node(child, gchild) {
--		ret = thermal_of_populate_bind_params(gchild, &tz->tbps[i++]);
--		if (ret)
-+		ret = thermal_of_populate_bind_params(np, gchild, &tz->tbps[i++]);
-+		if (ret) {
-+			of_node_put(gchild);
- 			goto free_tbps;
-+		}
- 	}
- 
- finish:
--	of_node_put(trips);
- 	of_node_put(child);
- 
- 	return tz;
-@@ -977,7 +1007,6 @@ __init *thermal_of_build_thermal_zone(struct device_node *np)
- 	kfree(tz->tbps);
- free_trips:
- 	kfree(tz->trips);
--	of_node_put(trips);
- 	of_node_put(gchild);
- free_tz:
- 	kfree(tz);
--- 
-2.25.1
-
+	-hpa
