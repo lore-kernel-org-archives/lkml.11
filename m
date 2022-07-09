@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D137CCA480
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 17:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB50C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 17:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbiGIRKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 13:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47164 "EHLO
+        id S229739AbiGIRKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 13:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiGIRKV (ORCPT
+        with ESMTP id S229643AbiGIRKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 13:10:21 -0400
+        Sat, 9 Jul 2022 13:10:25 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B8C120A6
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 10:10:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3392512623
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 10:10:22 -0700 (PDT)
 Received: from dslb-188-096-144-007.188.096.pools.vodafone-ip.de ([188.96.144.7] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oADy7-0005n0-U8; Sat, 09 Jul 2022 19:10:12 +0200
+        id 1oADyE-0005n0-Vh; Sat, 09 Jul 2022 19:10:19 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,43 +28,51 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 00/14] clean up efuse reading
-Date:   Sat,  9 Jul 2022 19:09:46 +0200
-Message-Id: <20220709171000.180481-1-martin@kaiser.cx>
+Subject: [PATCH 08/14] staging: r8188eu: merge ReadEFuseByIC into rtl8188e_ReadEFuse
+Date:   Sat,  9 Jul 2022 19:09:54 +0200
+Message-Id: <20220709171000.180481-9-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220709171000.180481-1-martin@kaiser.cx>
+References: <20220709171000.180481-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify the code that reads config data from the efuses.
+The rtl8188e_ReadEFuse function is just a wrapper to call ReadEFuseByIC.
+Copy ReadEFuseByIC into rtl8188e_ReadEFuse and remove ReadEFuseByIC.
 
-Martin Kaiser (14):
-  staging: r8188eu: remove unused eeprom defines
-  staging: r8188eu: remove EepromOrEfuse from struct eeprom_priv
-  staging: r8188eu: remove eeprom function prototypes
-  staging: r8188eu: merge EFUSE_ShadowMapUpdate with its caller
-  staging: r8188eu: use a local buffer for efuse data
-  staging: r8188eu: always initialise efuse buffer with 0xff
-  staging: r8188eu: use memcpy for fallback mac address
-  staging: r8188eu: merge ReadEFuseByIC into rtl8188e_ReadEFuse
-  staging: r8188eu: txpktbuf_bndy is always 0
-  staging: r8188eu: offset is always 0 in rtl8188e_ReadEFuse
-  staging: r8188eu: offset is always 0 in iol_read_efuse
-  staging: r8188eu: _offset is always 0 in efuse_phymap_to_logical
-  staging: r8188eu: efuse_utilized is never read
-  staging: r8188eu: the bcnhead parameter is always 0
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
- drivers/staging/r8188eu/core/rtw_efuse.c      | 30 ------------
- .../staging/r8188eu/hal/rtl8188e_hal_init.c   | 47 ++++---------------
- drivers/staging/r8188eu/hal/usb_halinit.c     | 33 +++++++------
- drivers/staging/r8188eu/include/hal_intf.h    |  4 +-
- .../staging/r8188eu/include/rtl8188e_spec.h   |  6 ---
- drivers/staging/r8188eu/include/rtw_eeprom.h  | 10 ----
- drivers/staging/r8188eu/include/rtw_efuse.h   |  2 -
- 7 files changed, 29 insertions(+), 103 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+index 5b65313e0b9d..0cb653002660 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+@@ -531,7 +531,7 @@ static void Hal_EfuseReadEFuse88E(struct adapter *Adapter,
+ 	kfree(eFuseWord);
+ }
+ 
+-static void ReadEFuseByIC(struct adapter *Adapter, u16 _offset, u16 _size_byte, u8 *pbuf)
++void rtl8188e_ReadEFuse(struct adapter *Adapter, u16 _offset, u16 _size_byte, u8 *pbuf)
+ {
+ 	int ret = _FAIL;
+ 	if (rtw_IOL_applied(Adapter)) {
+@@ -548,11 +548,6 @@ static void ReadEFuseByIC(struct adapter *Adapter, u16 _offset, u16 _size_byte,
+ 	Hal_EfuseReadEFuse88E(Adapter, _offset, _size_byte, pbuf);
+ }
+ 
+-void rtl8188e_ReadEFuse(struct adapter *Adapter, u16 _offset, u16 _size_byte, u8 *pbuf)
+-{
+-	ReadEFuseByIC(Adapter, _offset, _size_byte, pbuf);
+-}
+-
+ void rtl8188e_read_chip_version(struct adapter *padapter)
+ {
+ 	u32				value32;
 -- 
 2.30.2
 
