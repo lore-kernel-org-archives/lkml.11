@@ -2,95 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F138FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 04:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbiGIExu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 00:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
+        id S229489AbiGIE6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 00:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiGIExs (ORCPT
+        with ESMTP id S229379AbiGIE60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 00:53:48 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0046140D5;
-        Fri,  8 Jul 2022 21:53:47 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id bh13so559611pgb.4;
-        Fri, 08 Jul 2022 21:53:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+zzXGVbFC1NRlQzxK4sf3CCcjjPYGBluawnVA4ofjIU=;
-        b=f6puec+ID1sEU6WH0NJGgfBjywoXSoTjlZngp0ITvnEdeyyxaAHramKL+GnQSYJVsy
-         hbWWbs9hOWWCYqLzNTzgx3PosYeWZE7lWzrwggKITvqeVPIp25CdrCssSaldtYI53+BL
-         6As5MdnutdfaiUKzU7q41h1OFcqAds5iUbfI9kMwrJei8ujVeQyeVQtlxIx8OCGuhRn2
-         k1e6p02WlEvl27Z1/yTtOJGdImzDyrh9MjEOAFgbB2NgCqFq9sUzVRiE2vLW45FhAhcT
-         NHG8Ienq/46DyNCDgw4Ra5KE7FALuQSafsbwl/919mtGSAIdyTsqUs8zDEBXN+Gj0MfV
-         XXsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+zzXGVbFC1NRlQzxK4sf3CCcjjPYGBluawnVA4ofjIU=;
-        b=D7cxggQ6VF3qh/Byx5U+76vuK8WxV/RgOPYiJhsWNWkJyuNw3tX7RaoO9zpFnSh4rL
-         d9titn/BaUcM3tyDrtaKnyahyemD454TdPXirCC2B4kcWiIFBQUvMp37X37OlokMlEQy
-         3wprIEnaPN9l9APYupaDxgLK93Yrr+guPrG18kqNBdPEwVR6Qv1UPB4NLCYisL0Pg+Tp
-         MhuzUAdraIxcEUpxeua83yUoj2FeIOjZBEX0qEk1+4sTgKw84dMnZN3LHoaY2Ox6i3wf
-         2j5D6DRUM3XiYHQmo8v8OgFnZTz/VQm8FIRHSKK6rfzpY6vEuDPOzaS8s7L2jUSb5qTY
-         0PFA==
-X-Gm-Message-State: AJIora8uONd928o2BdAcrYK4hPw8MDQDqJm2q2tBT9UkR20wasYaNbmX
-        f9I8EvfGloQL5ZqqlBEWy6zxafyxXuY=
-X-Google-Smtp-Source: AGRyM1svvZnewMosK+TxZ7hMFRIqBj1pfpUK4mnYNH+vG8qwrxseKMaDLdMjIyhD9932ZGI/IIn7AA==
-X-Received: by 2002:a63:4524:0:b0:412:a2ee:eaf4 with SMTP id s36-20020a634524000000b00412a2eeeaf4mr6090708pga.41.1657342427067;
-        Fri, 08 Jul 2022 21:53:47 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:5011:9ea9:1cc2:a4c0])
-        by smtp.gmail.com with ESMTPSA id 195-20020a6214cc000000b005286a4ca9c8sm439559pfu.211.2022.07.08.21.53.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 21:53:46 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 21:53:43 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     cy_huang <u0084500@gmail.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee.jones@linaro.org, broonie@kernel.org, lgirdwood@gmail.com,
-        cy_huang@richtek.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] input: misc: rt5120: Add power key support
-Message-ID: <YskJ1wAp0rV9qFRM@google.com>
-References: <1655892104-10874-1-git-send-email-u0084500@gmail.com>
- <1655892104-10874-5-git-send-email-u0084500@gmail.com>
+        Sat, 9 Jul 2022 00:58:26 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FA0140D5
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Jul 2022 21:58:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657342705; x=1688878705;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lPTPaQZLNZPArjlIMR5jDK+FGVRiuQGygDNlrhF2rfo=;
+  b=PZJAqogFNtKZozGZheP+qzFjvZYFOUXlS+ibEGd68DhtOpa1N7PoVymU
+   Xk2kw6b2xa3gqx9MUNwJSnzjSU+TPcJ1mSQzT5MgzFDsPjbG1Vp2HuA1+
+   Gk6OAMfvd5f3VafNTZ4vqgPXF436aQs3OPfy3koV04RTvznazGuEVK/Oc
+   ULim0U+7wPOg60TVdt2fAERFlS4CZFsLlV4Xpnzxheox8/ZDMPcpILJOf
+   Sl1K4RS+xmI7XLPKEMVMu0qpms+vaARpQkkZKm1FKS7g7y5uSZZVQBg8z
+   REejFYeBk+Yv645krmZnDkKgnvT8BuTsxMmpEL6KZBSrsCVaPRFWRxU4X
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="284430236"
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="284430236"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 21:58:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
+   d="scan'208";a="921215076"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 08 Jul 2022 21:58:24 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oA2Xv-000OKp-Q1;
+        Sat, 09 Jul 2022 04:58:23 +0000
+Date:   Sat, 9 Jul 2022 12:57:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Pankaj Raghav <p.raghav@samsung.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Hannes Reinecke <hare@suse.de>
+Subject: [mcgrof-next:20220707-dm-zoned-npo2 2/13] block/blk-core.c:564:38:
+ error: passing argument 1 of 'bdev_is_zone_start' from incompatible pointer
+ type
+Message-ID: <202207091216.V26XwOPw-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1655892104-10874-5-git-send-email-u0084500@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi ChiYuan,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git 20220707-dm-zoned-npo2
+head:   3d1b6e41f76394610669e380da4f65bc5e7cf8ac
+commit: 74b3d453820c74ad03aefe4d9ec44c27f6bffe00 [2/13] block: allow blk-zoned devices to have non-power-of-2 zone size
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220709/202207091216.V26XwOPw-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git/commit/?id=74b3d453820c74ad03aefe4d9ec44c27f6bffe00
+        git remote add mcgrof-next https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git
+        git fetch --no-tags mcgrof-next 20220707-dm-zoned-npo2
+        git checkout 74b3d453820c74ad03aefe4d9ec44c27f6bffe00
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-On Wed, Jun 22, 2022 at 06:01:44PM +0800, cy_huang wrote:
-> +
-> +	is_pressed = !(stat & RT5120_PWRKEYSTAT_MASK);
-> +
-> +	if ((is_pressed && irq == priv->press_irq) ||
-> +	    (!is_pressed  && irq == priv->release_irq)) {
-> +		input_report_key(priv->input, KEY_POWER, is_pressed);
-> +		input_sync(priv->input);
-> +	}
-> +
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-What is the reason for checking both the status and interrupt? Can we
-simply say:
+All errors (new ones prefixed by >>):
+
+   block/blk-core.c: In function 'bio_sector_zone_start':
+>> block/blk-core.c:564:38: error: passing argument 1 of 'bdev_is_zone_start' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     564 |         return bdev_is_zone_start(bio->bi_bdev, bio->bi_iter.bi_sector);
+         |                                   ~~~^~~~~~~~~
+         |                                      |
+         |                                      struct block_device *
+   In file included from block/blk-core.c:18:
+   include/linux/blkdev.h:772:55: note: expected 'struct gendisk *' but argument is of type 'struct block_device *'
+     772 | static inline bool bdev_is_zone_start(struct gendisk *disk, sector_t sec)
+         |                                       ~~~~~~~~~~~~~~~~^~~~
+   cc1: some warnings being treated as errors
 
 
-	input_report_key(priv->input, KEY_POWER,
-			 !(stat & RT5120_PWRKEYSTAT_MASK));
-	input_sync(priv->input);
+vim +/bdev_is_zone_start +564 block/blk-core.c
 
-?
-
-Thanks.
+   561	
+   562	static inline bool bio_sector_zone_start(struct bio *bio)
+   563	{
+ > 564		return bdev_is_zone_start(bio->bi_bdev, bio->bi_iter.bi_sector);
+   565	}
+   566	
 
 -- 
-Dmitry
+0-DAY CI Kernel Test Service
+https://01.org/lkp
