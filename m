@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5278C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBBBCCA482
 	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 17:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiGIRK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 13:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiGIRKU (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S229530AbiGIRKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
         Sat, 9 Jul 2022 13:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229379AbiGIRKS (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 9 Jul 2022 13:10:18 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E0D11C06
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 10:10:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56B811C06
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 10:10:17 -0700 (PDT)
 Received: from dslb-188-096-144-007.188.096.pools.vodafone-ip.de ([188.96.144.7] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oADyA-0005n0-Vs; Sat, 09 Jul 2022 19:10:15 +0200
+        id 1oADy9-0005n0-6Z; Sat, 09 Jul 2022 19:10:13 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 03/14] staging: r8188eu: remove eeprom function prototypes
-Date:   Sat,  9 Jul 2022 19:09:49 +0200
-Message-Id: <20220709171000.180481-4-martin@kaiser.cx>
+Subject: [PATCH 01/14] staging: r8188eu: remove unused eeprom defines
+Date:   Sat,  9 Jul 2022 19:09:47 +0200
+Message-Id: <20220709171000.180481-2-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220709171000.180481-1-martin@kaiser.cx>
 References: <20220709171000.180481-1-martin@kaiser.cx>
@@ -40,29 +40,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove prototypes for non-existing eeprom functions. It seems that r8188eu
-has efuses but no eeprom.
+Remove some eeprom-related defines which are not used by the r8188eu
+driver. This driver uses BOOT_FROM_EEPROM and EEPROM_EN instead of the
+defines that this patch removes.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/include/rtw_eeprom.h | 6 ------
+ drivers/staging/r8188eu/include/rtl8188e_spec.h | 6 ------
  1 file changed, 6 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/include/rtw_eeprom.h b/drivers/staging/r8188eu/include/rtw_eeprom.h
-index 40c61f7a03be..0a8792428927 100644
---- a/drivers/staging/r8188eu/include/rtw_eeprom.h
-+++ b/drivers/staging/r8188eu/include/rtw_eeprom.h
-@@ -15,10 +15,4 @@ struct eeprom_priv {
- 	u8		efuse_eeprom_data[HWSET_MAX_SIZE_512] __aligned(4);
- };
+diff --git a/drivers/staging/r8188eu/include/rtl8188e_spec.h b/drivers/staging/r8188eu/include/rtl8188e_spec.h
+index ce5dd2e5b72a..9e7b1f89037c 100644
+--- a/drivers/staging/r8188eu/include/rtl8188e_spec.h
++++ b/drivers/staging/r8188eu/include/rtl8188e_spec.h
+@@ -426,12 +426,6 @@
+ #define	MAX_MSS_DENSITY_2T		0x13
+ #define	MAX_MSS_DENSITY_1T		0x0A
  
--void eeprom_write16(struct adapter *padapter, u16 reg, u16 data);
--u16 eeprom_read16(struct adapter *padapter, u16 reg);
--void read_eeprom_content(struct adapter *padapter);
--void eeprom_read_sz(struct adapter *adapt, u16 reg, u8 *data, u32 sz);
--void read_eeprom_content_by_attrib(struct adapter *padapter);
+-/*  EEPROM enable when set 1 */
+-#define	CmdEEPROM_En			BIT(5)
+-/*  System EEPROM select, 0: boot from E-FUSE, 1: The EEPROM used is 9346 */
+-#define	CmdEERPOMSEL			BIT(4)
+-#define	Cmd9346CR_9356SEL		BIT(4)
 -
- #endif  /* __RTL871X_EEPROM_H__ */
+ /*        8192C GPIO MUX Configuration Register (offset 0x40, 4 byte) */
+ #define	GPIOSEL_GPIO			0
+ #define	GPIOSEL_ENBT			BIT(5)
 -- 
 2.30.2
 
