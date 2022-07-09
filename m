@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 973FECCA47F
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81971C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229515AbiGIKHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 06:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60926 "EHLO
+        id S229718AbiGIKHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 06:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiGIKHk (ORCPT
+        with ESMTP id S229462AbiGIKHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Jul 2022 06:07:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9464AD79;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA7F4B0DB;
         Sat,  9 Jul 2022 03:07:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 155C960E09;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C5A460DF2;
         Sat,  9 Jul 2022 10:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A013C341CB;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CC75C341CA;
         Sat,  9 Jul 2022 10:07:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657361258;
-        bh=KZMhqKdJLjrHHTJU133KkxjPp76fXsmKlOwAYjquG7U=;
+        bh=pVUIpt19JgKR7qlg44MmrmMhL51sRSTeq5HuSNhQMwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=okoGiyBJ3MHqOlHYCE9BY6Dk3VBbeDVgI8KZn2YHIagcREimM3E2hNXqxrc88o4BD
-         pJLBUouTplLaosSaMjBXK3RqhBUr3t2tEEW2xQ2wGFs5KKP9zN8HGRRAeRoWoR7xCI
-         rb3oDkLDqhb9F65kD5byEQlmBiui0uqsdY85s1bX1ttuYYM6AQjjG3bUimp4esLzKp
-         XuOnoekv+NWCSDaIBtpjjMlazL1XKfTPWeG9a8+brfuGyUe6gP9YKkxh48INBBasZi
-         WAwuUU0YOhtnPlmY38waQJKquciZ+t5zECm97zD60cLn01QN687uH/PWw0IWTZMh4F
-         +Qs08yLdID6HQ==
+        b=mRRo5XT6i5RKuLq6TMxHEZyAch/WAMBhRjuyiLzIHD9hnWxQqqKA1GYlB65kHqB58
+         j4+O0TnR5AkPujWslDMQ0l0scqzj9qXic8K1TPz7kipbmFOHhbNECL6UMyWj8IX5e6
+         X2Wrkf3gyIwSeRqPYdUt6brU2Aeuc5Af1iBqaLAtuVY3qPykkFsCTNdl0cS3FxrjvC
+         F5WgL+W66yW85yKsa4u0HwwO0OAJ4XlH6LhzVKitcEs13+BZ9zDId1S4GainHEjpB5
+         PmGI1rnfKwA3ZwVkj7g4dzW+X5LP/05l+br7y3CO3JuOlgAvpsH5e531G7ubtvaaQh
+         zPv9dXqlmSzBQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oA7N9-004EGl-Gw;
+        id 1oA7N9-004EGr-I4;
         Sat, 09 Jul 2022 11:07:35 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 07/21] fscache: fix kernel-doc documentation
-Date:   Sat,  9 Jul 2022 11:07:20 +0100
-Message-Id: <880d7d25753fb326ee17ac08005952112fcf9bdb.1657360984.git.mchehab@kernel.org>
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH v3 09/21] drm/scheduler: fix a kernel-doc warning
+Date:   Sat,  9 Jul 2022 11:07:22 +0100
+Message-Id: <879d916ad72029ea9611f78de1181df01dee5ca3.1657360984.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657360984.git.mchehab@kernel.org>
 References: <cover.1657360984.git.mchehab@kernel.org>
@@ -55,47 +58,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The prototype of two functions use "cookie" for the object
-parameter.
+The dev field was not documented:
 
-Update kernel-doc tags accordingly, fixing those warnings:
+	include/drm/gpu_scheduler.h:463: warning: Function parameter or member 'dev' not described in 'drm_gpu_scheduler'
 
-	include/linux/fscache.h:270: warning: Function parameter or member 'cookie' not described in 'fscache_use_cookie'
-	include/linux/fscache.h:270: warning: Excess function parameter 'object' description in 'fscache_use_cookie'
-	include/linux/fscache.h:287: warning: Function parameter or member 'cookie' not described in 'fscache_unuse_cookie'
-	include/linux/fscache.h:287: warning: Excess function parameter 'object' description in 'fscache_unuse_cookie'
+Document it.
 
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v3 00/21] at: https://lore.kernel.org/all/cover.1657360984.git.mchehab@kernel.org/
 
- include/linux/fscache.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/drm/gpu_scheduler.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/fscache.h b/include/linux/fscache.h
-index 2f82ea31d4c1..e13184c4b198 100644
---- a/include/linux/fscache.h
-+++ b/include/linux/fscache.h
-@@ -257,7 +257,7 @@ struct fscache_cookie *fscache_acquire_cookie(struct fscache_volume *volume,
- 
- /**
-  * fscache_use_cookie - Request usage of cookie attached to an object
-- * @object: Object description
-+ * @cookie: Object description
-  * @will_modify: If cache is expected to be modified locally
+diff --git a/include/drm/gpu_scheduler.h b/include/drm/gpu_scheduler.h
+index addb135eeea6..c7c487e0c40e 100644
+--- a/include/drm/gpu_scheduler.h
++++ b/include/drm/gpu_scheduler.h
+@@ -435,6 +435,7 @@ struct drm_sched_backend_ops {
+  * @_score: score used when the driver doesn't provide one
+  * @ready: marks if the underlying HW is ready to work
+  * @free_guilty: A hit to time out handler to free the guilty job.
++ * @dev: pointer to struct device.
   *
-  * Request usage of the cookie attached to an object.  The caller should tell
-@@ -273,7 +273,7 @@ static inline void fscache_use_cookie(struct fscache_cookie *cookie,
- 
- /**
-  * fscache_unuse_cookie - Cease usage of cookie attached to an object
-- * @object: Object description
-+ * @cookie: Object description
-  * @aux_data: Updated auxiliary data (or NULL)
-  * @object_size: Revised size of the object (or NULL)
-  *
+  * One scheduler is implemented for each hardware ring.
+  */
 -- 
 2.36.1
 
