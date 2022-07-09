@@ -2,99 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:08:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B314C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiGIKI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 06:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
+        id S229898AbiGIKIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 06:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiGIKHn (ORCPT
+        with ESMTP id S229704AbiGIKHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Jul 2022 06:07:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1BF4B4B5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432764B0FA;
         Sat,  9 Jul 2022 03:07:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AB0960E96;
-        Sat,  9 Jul 2022 10:07:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81939C385A9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D648F60E7F;
+        Sat,  9 Jul 2022 10:07:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8387DC341E1;
         Sat,  9 Jul 2022 10:07:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657361258;
-        bh=55E4N17aXi/OdUFEEFl7AvCQy6V+4IMeLShqiXZ/LR4=;
+        bh=AoO2bODaPYczS1FHedFs6C5nKY1V+/HnQtEe231t02s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BcAgM5p4BaJffDY0NmEhUVZuGOVesGqvBixS3FGpvkwhfuSBs7j+atRVgyDjYraS9
-         hdIEgjpGoG0U2gRCAB6oqPF4xGFjMkUs/uQP9shQEMiO0+9KAYfvWVVlSUnQl4k5dQ
-         02fDNEyQrugFuWNdOKzVLjN3LFJZmKgLZ6IhwNImKE3YUKBgo6ceIpHE/3YlE15qed
-         cWRsvTBMREXkeZSQFDgeL5uI8809hyKHGc51i8VGqN5AGljK7z5MS3eJ4BILzZJoyM
-         dg04Zv/+awz3Oul31vRn2IZE+13Mm7qpUaw2JgFxMGv5TT+MDNgzsTeQB4jMFpLsDt
-         HCJlo421+s7dg==
+        b=u6K74ZKH7OyD+GFYnhuJeXS5rSYOniRVlu5JCSssHL/Y8g/pJNxXwIsirK1VL35r/
+         XNh1WSDjXR16avRlQDusm0iGOOTHOPxrqlvCbFl4wMsSeSWIc6l43WrfqE8hlTqNva
+         UKkTYpWdIPNhiGabhEoKFI8S6ImrDCK5uzyPeZr/PypnDOUeEUA/zvYA6TWaWGwP+R
+         h3lQl5gdW8bV7U8vmHV5GX9zEvQ5h6RWgSHB4OO/oQ6RosnZtdKrzEi+A0knwyTEV5
+         jSsIAy/haUrVfQzACn3h2B7zWwRZmNKKOvLBL0eJoU0dyYE2fXfc8DHTnSRzpna0/8
+         XVG8keLa5Xj9g==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oA7N9-004EHV-PT;
+        id 1oA7N9-004EGc-F5;
         Sat, 09 Jul 2022 11:07:35 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        Alex Shi <alexs@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Wu XiangCheng <bobwxc@email.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 21/21] Documentation: coresight: fix binding wildcards
-Date:   Sat,  9 Jul 2022 11:07:34 +0100
-Message-Id: <e8289cf7306a24c20d2f43251f6f7d0d74d7667b.1657360984.git.mchehab@kernel.org>
+Subject: [PATCH v3 04/21] docs: zh_CN: page_migration: fix reference to mm index.rst
+Date:   Sat,  9 Jul 2022 11:07:17 +0100
+Message-Id: <b263eef6480040befa582e8e00162e6fb4407853.1657360984.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657360984.git.mchehab@kernel.org>
 References: <cover.1657360984.git.mchehab@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The changeset c06475910b52 ("Documentation: coresight: Escape coresight bindings file wildcard")
-fixed a Sphinx warning but introduced a new warning while building
-the docs:
-	Documentation/trace/coresight/coresight.rst: Documentation/devicetree/bindings/arm/arm,coresight-
+This got renamed, so we need to also rename at page_migration.rst.
 
-As it basically broke the cross-reference breakage detector that
-runs during the Kernel build. Address it the proper way by marking
-the references to such documents as a code block. This should make
-Sphinx automarkup.py extension happy while allowing the script
-to check if the doc reference is pointing to the right place.
-
-Fixes: c06475910b52 ("Documentation: coresight: Escape coresight bindings file wildcard")
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Fixes: ee65728e103b ("docs: rename Documentation/vm to Documentation/mm")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v3 00/21] at: https://lore.kernel.org/all/cover.1657360984.git.mchehab@kernel.org/
 
- Documentation/trace/coresight/coresight.rst | 2 +-
+ Documentation/translations/zh_CN/mm/page_migration.rst | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/trace/coresight/coresight.rst b/Documentation/trace/coresight/coresight.rst
-index 4a71ea6cb390..826e59a698da 100644
---- a/Documentation/trace/coresight/coresight.rst
-+++ b/Documentation/trace/coresight/coresight.rst
-@@ -130,7 +130,7 @@ Misc:
- Device Tree Bindings
- --------------------
+diff --git a/Documentation/translations/zh_CN/mm/page_migration.rst b/Documentation/translations/zh_CN/mm/page_migration.rst
+index 566880a41ea0..ea9647d060fb 100644
+--- a/Documentation/translations/zh_CN/mm/page_migration.rst
++++ b/Documentation/translations/zh_CN/mm/page_migration.rst
+@@ -1,6 +1,6 @@
+ .. include:: ../disclaimer-zh_CN.rst
  
--See Documentation/devicetree/bindings/arm/arm,coresight-\*.yaml for details.
-+See ``Documentation/devicetree/bindings/arm/arm,coresight-*.yaml`` for details.
+-:Original: Documentation/vm/index.rst
++:Original: Documentation/mm/index.rst
  
- As of this writing drivers for ITM, STMs and CTIs are not provided but are
- expected to be added as the solution matures.
+ :翻译:
+ 
 -- 
 2.36.1
 
