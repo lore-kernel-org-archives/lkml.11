@@ -2,125 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 973FECCA47F
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiGIKHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 06:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
+        id S229515AbiGIKHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 06:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiGIKHB (ORCPT
+        with ESMTP id S229460AbiGIKHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 06:07:01 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309474AD4F;
-        Sat,  9 Jul 2022 03:07:00 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id a5so1229594wrx.12;
-        Sat, 09 Jul 2022 03:07:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=S5D5zyYSVc5bYEUxb7MqmQQ/xud6/l4/rKt8C+dOKPo=;
-        b=J6xj2JgUG2AXybfK0eo0+w3XOakF/s1IPQBftgOLpHE3Yp/WUvnbPBTVmmde2XZ9c9
-         htaxDp+2uKsttpa47BO8sHTnr4cgxk1tS4RO7iIcr4IMzDRDr95p892ZK29FDWxhUN0V
-         y4GAT6ZdADQqzzpG85wLdNbOai9fJJOdJ3lWtj4amvleseSmDOKKiwVxIXFRF8I9B1kz
-         EIyyldMAoa2K0RQKuJd/ifqmKBUKVsJhc74Xhu32V++xtyTZ62gXqWkp7lpkg2Lix8YC
-         puL69MDFPNFAMrxy6MDKrLbp3Zl6da2C1mz9wntQ/aI94bxqSYMgiHvGjVI13Uw1nn3J
-         q18A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=S5D5zyYSVc5bYEUxb7MqmQQ/xud6/l4/rKt8C+dOKPo=;
-        b=lRX7wksgQEnKdVlMzcJyeYDyFpmNVnwmVgT4aeNNIb15lTGINovnEFMKizxveNZM3O
-         HrbBckgoI9zswq3l7w0+j4t2k/BON2S72qdD0ZHdhS5do2+x0iUlAbqiViwqiwebH13D
-         +06cKdi7YPDJk5es0L+NS8P7CBjtCxmn3HW1/ci+ZZ1rDdKuqySoUqXt7jmSQq2LLiHj
-         g0o2Yg4LL+o6o0Gr3KJPhRwJkdUtDz9srWKZaElhNNp8pYSp/mbYRd8AMvYbPp0XIa6U
-         KyzL5KAvIaAZ9pwWnYogzMxxxoBWXRgj1gx09wwzJPcbIl4AQ+1FjBS92ZXW8UIa6cZB
-         nQHg==
-X-Gm-Message-State: AJIora+BLDW8fdp1VhxhVW4FTUNM2pWsCcXIaxaNCl9Tx+FrhGnH1La4
-        khxgIqOwQJFctBrwqV1MWMJbEAUl5FbPdHkV
-X-Google-Smtp-Source: AGRyM1tewS4z2taUnVOHwc/upLIlIYpD86273il6dbaFWgZu7U7GIfgnZCxK7zM/oA89WedBCs1puQ==
-X-Received: by 2002:adf:d08c:0:b0:21d:768b:c56a with SMTP id y12-20020adfd08c000000b0021d768bc56amr7517095wrh.318.1657361218685;
-        Sat, 09 Jul 2022 03:06:58 -0700 (PDT)
-Received: from mandalorian.koija ([2a02:587:4ba0:ca00:ca84:2153:48dd:9a6])
-        by smtp.gmail.com with ESMTPSA id n68-20020a1c2747000000b0039c96b97359sm1053376wmn.37.2022.07.09.03.06.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jul 2022 03:06:58 -0700 (PDT)
-Date:   Sat, 9 Jul 2022 13:06:56 +0300
-From:   Christos Kollintzas <c.kollintzas.92@gmail.com>
-To:     gregkh@linuxfoundation.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        Sat, 9 Jul 2022 06:07:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9464AD79;
+        Sat,  9 Jul 2022 03:07:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 155C960E09;
+        Sat,  9 Jul 2022 10:07:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A013C341CB;
+        Sat,  9 Jul 2022 10:07:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657361258;
+        bh=KZMhqKdJLjrHHTJU133KkxjPp76fXsmKlOwAYjquG7U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=okoGiyBJ3MHqOlHYCE9BY6Dk3VBbeDVgI8KZn2YHIagcREimM3E2hNXqxrc88o4BD
+         pJLBUouTplLaosSaMjBXK3RqhBUr3t2tEEW2xQ2wGFs5KKP9zN8HGRRAeRoWoR7xCI
+         rb3oDkLDqhb9F65kD5byEQlmBiui0uqsdY85s1bX1ttuYYM6AQjjG3bUimp4esLzKp
+         XuOnoekv+NWCSDaIBtpjjMlazL1XKfTPWeG9a8+brfuGyUe6gP9YKkxh48INBBasZi
+         WAwuUU0YOhtnPlmY38waQJKquciZ+t5zECm97zD60cLn01QN687uH/PWw0IWTZMh4F
+         +Qs08yLdID6HQ==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1oA7N9-004EGl-Gw;
+        Sat, 09 Jul 2022 11:07:35 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
+        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: fbtft: replace udelay with usleep_range
-Message-ID: <YslTQLhM7GSaGXki@mandalorian.koija>
+Subject: [PATCH v3 07/21] fscache: fix kernel-doc documentation
+Date:   Sat,  9 Jul 2022 11:07:20 +0100
+Message-Id: <880d7d25753fb326ee17ac08005952112fcf9bdb.1657360984.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1657360984.git.mchehab@kernel.org>
+References: <cover.1657360984.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adhere to Linux kernel coding style.
+The prototype of two functions use "cookie" for the object
+parameter.
 
-Reported by checkpatch:
+Update kernel-doc tags accordingly, fixing those warnings:
 
-CHECK: usleep_range is preferred over udelay
+	include/linux/fscache.h:270: warning: Function parameter or member 'cookie' not described in 'fscache_use_cookie'
+	include/linux/fscache.h:270: warning: Excess function parameter 'object' description in 'fscache_use_cookie'
+	include/linux/fscache.h:287: warning: Function parameter or member 'cookie' not described in 'fscache_unuse_cookie'
+	include/linux/fscache.h:287: warning: Excess function parameter 'object' description in 'fscache_unuse_cookie'
 
-Signed-off-by: Christos Kollintzas <c.kollintzas.92@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
- drivers/staging/fbtft/fb_upd161704.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/fbtft/fb_upd161704.c b/drivers/staging/fbtft/fb_upd161704.c
-index c680160d6380..eeafbab4ace1 100644
---- a/drivers/staging/fbtft/fb_upd161704.c
-+++ b/drivers/staging/fbtft/fb_upd161704.c
-@@ -32,27 +32,27 @@ static int init_display(struct fbtft_par *par)
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH v3 00/21] at: https://lore.kernel.org/all/cover.1657360984.git.mchehab@kernel.org/
+
+ include/linux/fscache.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/fscache.h b/include/linux/fscache.h
+index 2f82ea31d4c1..e13184c4b198 100644
+--- a/include/linux/fscache.h
++++ b/include/linux/fscache.h
+@@ -257,7 +257,7 @@ struct fscache_cookie *fscache_acquire_cookie(struct fscache_volume *volume,
  
- 	/* oscillator start */
- 	write_reg(par, 0x003A, 0x0001);	/*Oscillator 0: stop, 1: operation */
--	udelay(100);
-+	usleep_range(100, 110);
+ /**
+  * fscache_use_cookie - Request usage of cookie attached to an object
+- * @object: Object description
++ * @cookie: Object description
+  * @will_modify: If cache is expected to be modified locally
+  *
+  * Request usage of the cookie attached to an object.  The caller should tell
+@@ -273,7 +273,7 @@ static inline void fscache_use_cookie(struct fscache_cookie *cookie,
  
- 	/* y-setting */
- 	write_reg(par, 0x0024, 0x007B);	/* amplitude setting */
--	udelay(10);
-+	usleep_range(10, 15);
- 	write_reg(par, 0x0025, 0x003B);	/* amplitude setting */
- 	write_reg(par, 0x0026, 0x0034);	/* amplitude setting */
--	udelay(10);
-+	usleep_range(10, 15);
- 	write_reg(par, 0x0027, 0x0004);	/* amplitude setting */
- 	write_reg(par, 0x0052, 0x0025);	/* circuit setting 1 */
--	udelay(10);
-+	usleep_range(10, 15);
- 	write_reg(par, 0x0053, 0x0033);	/* circuit setting 2 */
- 	write_reg(par, 0x0061, 0x001C);	/* adjustment V10 positive polarity */
--	udelay(10);
-+	usleep_range(10, 15);
- 	write_reg(par, 0x0062, 0x002C);	/* adjustment V9 negative polarity */
- 	write_reg(par, 0x0063, 0x0022);	/* adjustment V34 positive polarity */
--	udelay(10);
-+	usleep_range(10, 15);
- 	write_reg(par, 0x0064, 0x0027);	/* adjustment V31 negative polarity */
--	udelay(10);
-+	usleep_range(10, 15);
- 	write_reg(par, 0x0065, 0x0014);	/* adjustment V61 negative polarity */
--	udelay(10);
-+	usleep_range(10, 15);
- 	write_reg(par, 0x0066, 0x0010);	/* adjustment V61 negative polarity */
- 
- 	/* Basical clock for 1 line (BASECOUNT[7:0]) number specified */
-@@ -60,7 +60,7 @@ static int init_display(struct fbtft_par *par)
- 
- 	/* Power supply setting */
- 	write_reg(par, 0x0019, 0x0000);	/* DC/DC output setting */
--	udelay(200);
-+	usleep_range(200, 210);
- 	write_reg(par, 0x001A, 0x1000);	/* DC/DC frequency setting */
- 	write_reg(par, 0x001B, 0x0023);	/* DC/DC rising setting */
- 	write_reg(par, 0x001C, 0x0C01);	/* Regulator voltage setting */
+ /**
+  * fscache_unuse_cookie - Cease usage of cookie attached to an object
+- * @object: Object description
++ * @cookie: Object description
+  * @aux_data: Updated auxiliary data (or NULL)
+  * @object_size: Revised size of the object (or NULL)
+  *
 -- 
-2.20.1
+2.36.1
 
