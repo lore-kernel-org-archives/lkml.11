@@ -2,76 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51CD1C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Jul 2022 10:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiGIKnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 06:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
+        id S229528AbiGIKpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 06:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiGIKnk (ORCPT
+        with ESMTP id S229462AbiGIKpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 06:43:40 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81769BC98;
-        Sat,  9 Jul 2022 03:43:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1657363417; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HZm4gVWjiDEO5u30RuW6VoyxTvmlC8q+Qpm+4tGQ74c=;
-        b=RGYSTeN8yc1avmOrmXEF+5G8x0qBiLTYlaLGRTfv0Ur08nsmZIN1nQxFVg8sxhc5jgT/23
-        IAres0EXXDFv6C4qMzlSVyxiRiO0wanAYIP+cvBF3mdZimJ043vuUB+zjwrV/GN7GtooZl
-        8qxjC9mvgSbDa8qr4SiG6c1CC4I7nEE=
-Date:   Sat, 09 Jul 2022 11:43:27 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 0/6] drm/ingenic: JZ4760(B) support and random changes
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Christophe Branchereau <cbranchereau@gmail.com>,
-        list@opendingux.net, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Message-Id: <FS1RER.IMGKHPGOL0LF1@crapouillou.net>
-In-Reply-To: <Ysk88cZO1iQhX/I2@ravnborg.org>
-References: <20220708205406.96473-1-paul@crapouillou.net>
-        <Ysk88cZO1iQhX/I2@ravnborg.org>
+        Sat, 9 Jul 2022 06:45:33 -0400
+X-Greylist: delayed 904 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 09 Jul 2022 03:45:28 PDT
+Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72D8412744;
+        Sat,  9 Jul 2022 03:45:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=qgm8L
+        5GfoMjn1SLXXzkxNTtfLePSZbzN6buCz/YPB/g=; b=dYbHC6dT/YtbHBzBgHSos
+        R1DYlkCB1ubszKhBzQh3wQYH9PxrI3QRHHMRDUX9pXhrzFLa+PGYe6LDoHJTELxf
+        0UU7qmu4Rrx5RXBKWH0HXbyFxpSX2Zye9muUSYBxbhjD6UW+/3RkJbr/bGVBCTZ3
+        A0y8SdLLQJXVTqfasJvQSo=
+Received: from ProDesk.. (unknown [58.22.7.114])
+        by smtp5 (Coremail) with SMTP id HdxpCgCH__aqWMli71YENQ--.601S2;
+        Sat, 09 Jul 2022 18:30:07 +0800 (CST)
+From:   Andy Yan <andyshrk@163.com>
+To:     heiko@sntech.de, robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     Andy Yan <andyshrk@163.com>
+Subject: [PATCH v2 2/3] dt-bindings: arm: rockchip: Add EAIDK-610
+Date:   Sat,  9 Jul 2022 18:30:01 +0800
+Message-Id: <20220709103001.2753992-1-andyshrk@163.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220709102902.2753851-1-andyshrk@163.com>
+References: <20220709102902.2753851-1-andyshrk@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HdxpCgCH__aqWMli71YENQ--.601S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Jr1DCFyfAF4fCw1rJFWrXwb_yoWDtrXE9w
+        1xAwn8CFWFyFyYq3Z0v3WxGry5Aw1IkFnrA3WjvF1DA3s0y3y5GFZ5t34IyF1fCr17urn3
+        Crs2krWUJFnxGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRAdb1tUUUUU==
+X-Originating-IP: [58.22.7.114]
+X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/xtbB0g85XmEjce7TZwAAsT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sam,
+EAIDK-610 is a rk3399 based board from OPEN AI LAB
+and popularly used by university students.
 
-Le sam., juil. 9 2022 at 10:31:45 +0200, Sam Ravnborg=20
-<sam@ravnborg.org> a =C3=A9crit :
-> Hi Paul,
->=20
-> On Fri, Jul 08, 2022 at 09:54:00PM +0100, Paul Cercueil wrote:
->>  Hi,
->>=20
->>  A small set of changes to the ingenic-drm driver.
->>=20
->>  The most notable thing is that ingenic-ipu is now its own platform
->>  driver.
-> It would be nice to know what is achieved by this change, I could
-> see the code being a tad simpler, but the cost was more EXPORTs.
+Specification:
+- Rockchip RK3399
+- LPDDR3 4GB
+- TF sd scard slot
+- eMMC
+- AP6255 for WiFi + BT
+- Gigabit ethernet
+- HDMI out
+- 40 pin header
+- USB 2.0 x 2
+- USB 3.0 x 1
+- USB 3.0 Type-C x 1
+- 12V DC Power supply
 
-Well=E2=80=A6 we now have two separate drivers instead of one driver that=20
-deals with two different devices. I thought the benefit here was=20
-obvious.
+Signed-off-by: Andy Yan <andyshrk@163.com>
+---
 
-> With the added explanation, which you can add when applying, all=20
-> patches are:
-> Acked-by: Sam Ravnborg <sam@ravnborg.org>
+(no changes since v1)
 
-I'll apply the other ones and keep this patch for a V2. You made me=20
-realize that I could use namespaced exports instead of global ones.
+ Documentation/devicetree/bindings/arm/rockchip.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Thanks,
--Paul
-
+diff --git a/Documentation/devicetree/bindings/arm/rockchip.yaml b/Documentation/devicetree/bindings/arm/rockchip.yaml
+index cf9eb1e8326a..f1dd87b1544e 100644
+--- a/Documentation/devicetree/bindings/arm/rockchip.yaml
++++ b/Documentation/devicetree/bindings/arm/rockchip.yaml
+@@ -470,6 +470,11 @@ properties:
+           - const: netxeon,r89
+           - const: rockchip,rk3288
+ 
++      - description: OPEN AI LAB EAIDK-610
++        items:
++          - const: openailab,eaidk-610
++          - const: rockchip,rk3399
++
+       - description: Orange Pi RK3399 board
+         items:
+           - const: rockchip,rk3399-orangepi
+-- 
+2.34.1
 
