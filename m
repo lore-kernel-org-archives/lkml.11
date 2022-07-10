@@ -2,79 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9999FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 02:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE37C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 02:11:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbiGJCIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 22:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
+        id S229639AbiGJCLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 22:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiGJCIW (ORCPT
+        with ESMTP id S229614AbiGJCK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 22:08:22 -0400
-X-Greylist: delayed 1861 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 09 Jul 2022 19:08:19 PDT
-Received: from m1564.mail.126.com (m1564.mail.126.com [220.181.15.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5792240B8;
-        Sat,  9 Jul 2022 19:08:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=WFSNP
-        JpuFwKyWrFFhWsrKhOuZQcpVRI7jra+CFun2n4=; b=W81/vhCqkxlEdzAL4oRkE
-        J5wXAQhSvDx06iN5XnU51iBp9sRYPzuM5Ow4FpEe/5TnwsCwRUmHAN2rlRgnLcMJ
-        IBIpDwoOGfZ4qrkB0TPj1hSKb/U9hYvBpgb/22k/vKqQ5B0Cf+k0ROpqyxLfSctl
-        2TBu+w4KQjAJ/Rw28Qst6Q=
-Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr64
- (Coremail) ; Sun, 10 Jul 2022 09:37:10 +0800 (CST)
-X-Originating-IP: [124.16.139.61]
-Date:   Sun, 10 Jul 2022 09:37:10 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] input/serio: Fix refcount leak bug in i8042-sparcio
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <YskI088DEjt39Dqm@google.com>
-References: <20220619073036.4067872-1-windhl@126.com>
- <YskI088DEjt39Dqm@google.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Sat, 9 Jul 2022 22:10:57 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F0E1183E;
+        Sat,  9 Jul 2022 19:10:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657419057; x=1688955057;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=bQEfM4n6TCFubmeCwxCiY1DpSUPRcPxPp5pq9eesneY=;
+  b=wjwdiDmmpgRnkLL2XVqu8fOX+MKOJQreRq4zxLGyR7WbtszTRx0vjuIE
+   P/uclD7xcaXzhJHNeNq+D8mgO6Se1gN9Gg2Xf5r9CMbL8xzFZh9IlF0mX
+   IoNfmfAQqKuMlbvPQbGAAMuYq/AxuadHF2JWkGVcA2vtfFK6ybCXrKb3z
+   c=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 09 Jul 2022 19:10:56 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2022 19:10:56 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sat, 9 Jul 2022 19:10:55 -0700
+Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sat, 9 Jul 2022 19:10:51 -0700
+From:   Mao Jinlong <quic_jinlmao@quicinc.com>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Konrad Dybcio <konradybcio@gmail.com>,
+        Mike Leach <mike.leach@linaro.org>
+CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <coresight@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH v12 1/9] coresight: core: Use IDR for non-cpu bound sources' paths.
+Date:   Sun, 10 Jul 2022 10:10:24 +0800
+Message-ID: <20220710021032.27455-2-quic_jinlmao@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220710021032.27455-1-quic_jinlmao@quicinc.com>
+References: <20220710021032.27455-1-quic_jinlmao@quicinc.com>
 MIME-Version: 1.0
-Message-ID: <5b7bcbf5.3f6.181e5c0dcff.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: QMqowAD3BnNHLcpiobZIAA--.51094W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7QU5F1pEAXnn2QABsf
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKCgpBdCAyMDIyLTA3LTA5IDEyOjQ5OjIzLCAiRG1pdHJ5IFRvcm9raG92IiA8ZG1pdHJ5LnRv
-cm9raG92QGdtYWlsLmNvbT4gd3JvdGU6Cj5IaSBMaWFuZywKPgo+T24gU3VuLCBKdW4gMTksIDIw
-MjIgYXQgMDM6MzA6MzZQTSArMDgwMCwgTGlhbmcgSGUgd3JvdGU6Cj4+IEluIGk4MDQyX3BsYXRm
-b3JtX2luaXQoKSBhbmQgaTgwNDJfcGxhdGZvcm1fZXhpdCgpLCB3ZSBuZWVkIGNhbGwKPj4gb2Zf
-bm9kZV9wdXQoKSB0byBrZWVwIHJlZmNvdW50IGJhbGFuY2UuCj4+IAo+PiBTaWduZWQtb2ZmLWJ5
-OiBMaWFuZyBIZSA8d2luZGhsQDEyNi5jb20+Cj4+IC0tLQo+PiAgZHJpdmVycy9pbnB1dC9zZXJp
-by9pODA0Mi1zcGFyY2lvLmggfCA0ICsrKysKPj4gIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlv
-bnMoKykKPj4gCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lucHV0L3NlcmlvL2k4MDQyLXNwYXJj
-aW8uaCBiL2RyaXZlcnMvaW5wdXQvc2VyaW8vaTgwNDItc3BhcmNpby5oCj4+IGluZGV4IGZjZTc2
-ODEyODQzYi4uYTJhOWRiOTIyMGQ3IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lucHV0L3Nlcmlv
-L2k4MDQyLXNwYXJjaW8uaAo+PiArKysgYi9kcml2ZXJzL2lucHV0L3NlcmlvL2k4MDQyLXNwYXJj
-aW8uaAo+PiBAQCAtMTA4LDYgKzEwOCw4IEBAIHN0YXRpYyBpbnQgX19pbml0IGk4MDQyX3BsYXRm
-b3JtX2luaXQodm9pZCkKPj4gIAlzdHJ1Y3QgZGV2aWNlX25vZGUgKnJvb3QgPSBvZl9maW5kX25v
-ZGVfYnlfcGF0aCgiLyIpOwo+PiAgCWNvbnN0IGNoYXIgKm5hbWUgPSBvZl9nZXRfcHJvcGVydHko
-cm9vdCwgIm5hbWUiLCBOVUxMKTsKPj4gIAo+PiArCW9mX25vZGVfcHV0KHJvb3QpOwo+PiArCj4+
-ICAJaWYgKG5hbWUgJiYgIXN0cmNtcChuYW1lLCAiU1VOVyxKYXZhU3RhdGlvbi0xIikpIHsKPj4g
-IAkJLyogSGFyZGNvZGVkIHZhbHVlcyBmb3IgTXJDb2ZmZWUuICAqLwo+PiAgCQlpODA0Ml9rYmRf
-aXJxID0gaTgwNDJfYXV4X2lycSA9IDEzIHwgMHgyMDsKPj4gQEAgLTEzOSw2ICsxNDEsOCBAQCBz
-dGF0aWMgaW5saW5lIHZvaWQgaTgwNDJfcGxhdGZvcm1fZXhpdCh2b2lkKQo+PiAgCXN0cnVjdCBk
-ZXZpY2Vfbm9kZSAqcm9vdCA9IG9mX2ZpbmRfbm9kZV9ieV9wYXRoKCIvIik7Cj4+ICAJY29uc3Qg
-Y2hhciAqbmFtZSA9IG9mX2dldF9wcm9wZXJ0eShyb290LCAibmFtZSIsIE5VTEwpOwo+PiAgCj4+
-ICsJb2Zfbm9kZV9wdXQocm9vdCk7Cj4+ICsKPj4gIAlpZiAoIW5hbWUgfHwgc3RyY21wKG5hbWUs
-ICJTVU5XLEphdmFTdGF0aW9uLTEiKSkKPj4gIAkJcGxhdGZvcm1fZHJpdmVyX3VucmVnaXN0ZXIo
-JnNwYXJjX2k4MDQyX2RyaXZlcik7Cj4+ICB9Cj4KPlRoZXJlIGFscmVhZHkgd2FzIGFuIGF0dGVt
-cHQgdG8gZml4IHRoaXMgaXNzdWUgaW4gYSBzbGlnaHRseSBiZXR0ZXIgd2F5LAo+dW5mb3J0dW5h
-dGVseSB0aGUgb3JpZ2luYWwgYXV0aG9yIGRpZCBub3QgZmluaXNoIHRoZSB3b3JrOgo+Cj5odHRw
-czovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAxODEyMTIxNjM1NDguMjM3MjMtMS10aW55LndpbmR6
-ekBnbWFpbC5jb20vCj4KPlRoYW5rcy4KPgo+LS0gCj5EbWl0cnkKCkhpLCBEbWlydHJ5LAoKVGhh
-bmtzIGZvciByZXZpZXdpbmcgbXkgcGF0Y2ggY29kZS4KClRoZSBMaSdzIHBhdGNoIGFkZHMgYSBo
-ZWxwZXIgYW5kIGlzIGJldHRlciB0aGFuIG1pbmUuCgpUaGFua3MgYWdhaW4sCgpMaWFuZyAK
+Except stm, there could be other sources which are not associated
+with cpus. Use IDR to store and search these sources' paths.
+
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+---
+ drivers/hwtracing/coresight/coresight-core.c | 37 ++++++++++++++------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
+index d2b301b8a734..4d5867f87791 100644
+--- a/drivers/hwtracing/coresight/coresight-core.c
++++ b/drivers/hwtracing/coresight/coresight-core.c
+@@ -8,6 +8,7 @@
+ #include <linux/types.h>
+ #include <linux/device.h>
+ #include <linux/io.h>
++#include <linux/idr.h>
+ #include <linux/err.h>
+ #include <linux/export.h>
+ #include <linux/slab.h>
+@@ -27,6 +28,13 @@
+ static DEFINE_MUTEX(coresight_mutex);
+ static DEFINE_PER_CPU(struct coresight_device *, csdev_sink);
+ 
++/*
++ * Use IDR to map the hash of the source's device name
++ * to the pointer of path for the source. The idr is for
++ * the sources which aren't associated with CPU.
++ */
++static DEFINE_IDR(path_idr);
++
+ /**
+  * struct coresight_node - elements of a path, from source to sink
+  * @csdev:	Address of an element.
+@@ -43,14 +51,6 @@ struct coresight_node {
+  */
+ static DEFINE_PER_CPU(struct list_head *, tracer_path);
+ 
+-/*
+- * As of this writing only a single STM can be found in CS topologies.  Since
+- * there is no way to know if we'll ever see more and what kind of
+- * configuration they will enact, for the time being only define a single path
+- * for STM.
+- */
+-static struct list_head *stm_path;
+-
+ /*
+  * When losing synchronisation a new barrier packet needs to be inserted at the
+  * beginning of the data collected in a buffer.  That way the decoder knows that
+@@ -1048,6 +1048,7 @@ int coresight_enable(struct coresight_device *csdev)
+ 	struct coresight_device *sink;
+ 	struct list_head *path;
+ 	enum coresight_dev_subtype_source subtype;
++	u32 hash;
+ 
+ 	subtype = csdev->subtype.source_subtype;
+ 
+@@ -1102,7 +1103,14 @@ int coresight_enable(struct coresight_device *csdev)
+ 		per_cpu(tracer_path, cpu) = path;
+ 		break;
+ 	case CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE:
+-		stm_path = path;
++		/*
++		 * Use the hash of source's device name as ID
++		 * and map the ID to the pointer of the path.
++		 */
++		hash = hashlen_hash(hashlen_string(NULL, dev_name(&csdev->dev)));
++		ret = idr_alloc_u32(&path_idr, path, &hash, hash, GFP_KERNEL);
++		if (ret)
++			goto err_source;
+ 		break;
+ 	default:
+ 		/* We can't be here */
+@@ -1126,6 +1134,7 @@ void coresight_disable(struct coresight_device *csdev)
+ {
+ 	int cpu, ret;
+ 	struct list_head *path = NULL;
++	u32 hash;
+ 
+ 	mutex_lock(&coresight_mutex);
+ 
+@@ -1143,14 +1152,20 @@ void coresight_disable(struct coresight_device *csdev)
+ 		per_cpu(tracer_path, cpu) = NULL;
+ 		break;
+ 	case CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE:
+-		path = stm_path;
+-		stm_path = NULL;
++		hash = hashlen_hash(hashlen_string(NULL, dev_name(&csdev->dev)));
++		/* Find the path by the hash. */
++		path = idr_find(&path_idr, hash);
++		if (path == NULL) {
++			pr_err("Path is not found for %s\n", dev_name(&csdev->dev));
++			goto out;
++		}
+ 		break;
+ 	default:
+ 		/* We can't be here */
+ 		break;
+ 	}
+ 
++	idr_remove(&path_idr, hash);
+ 	coresight_disable_path(path);
+ 	coresight_release_path(path);
+ 
+-- 
+2.17.1
+
