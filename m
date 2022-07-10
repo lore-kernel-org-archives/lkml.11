@@ -2,77 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D67C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 08:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 236F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 08:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229528AbiGJIUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 04:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        id S229540AbiGJI1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 04:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiGJITm (ORCPT
+        with ESMTP id S229469AbiGJI1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 04:19:42 -0400
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4A2BC0E;
-        Sun, 10 Jul 2022 01:19:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1657441146; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=G//ruNJWtc5KB4iy5vkg+oDxYaTZAblTm7aNahnX1lAklnS8eGAkKjdLZpOcPt3N8csTyyHBIGjL5OSxpoArIpLJuzvm8p2Gy9vKFPKmBzu2m5+wfkvXTMFXb0ua+DLOubhyfFL6HzF9+rZedqDPZP5TjEi3vAXfc66HFnhkCLw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1657441146; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=NFS2/32BxwaD6fahAeZc1AfhBJU6/YF1+CjbT7OS85w=; 
-        b=TQfGNYjIhWbat5WkxjQhtlgP4nkoe+soWGB9Tqh6zRPSp9UHKEpScFi66wvqXY55zM37TPJAaLb7UfjyJSWAOGtIcKY1d9Flpa2d+lzxDEpplxXr3zz4uEKEPzGYH8TlvvC8M8gEdotiaM2RVhHQQq2Mt8wX2rrKUIwWp3czFWc=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657441146;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Transfer-Encoding:Reply-To;
-        bh=NFS2/32BxwaD6fahAeZc1AfhBJU6/YF1+CjbT7OS85w=;
-        b=KvRP9GWRsA+WTCougZocM3zTL73ekzM8w95wlu3fxEmAwg4qIRZq4zFRvkHiT1B6
-        wFhaoG/Gr6UUMTxVtU0roRy5Tiu5zaxgpe7gDLfXNepk/+ylWBDPP2x89RjoRI7H7T1
-        iIhPWCegA5wX36tB2Hsxmzq8Myv0Tkx1hyOV10Ns=
-Received: from edelgard.icenowy.me (59.41.163.237 [59.41.163.237]) by mx.zohomail.com
-        with SMTPS id 1657441143425993.9029258752463; Sun, 10 Jul 2022 01:19:03 -0700 (PDT)
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Icenowy Zheng <uwu@icenowy.me>
-Subject: [PATCH v2 0/3] Allwinner R329 {R-,}PIO pinctrl support
-Date:   Sun, 10 Jul 2022 16:18:50 +0800
-Message-Id: <20220710081853.1699028-1-uwu@icenowy.me>
-X-Mailer: git-send-email 2.36.0
+        Sun, 10 Jul 2022 04:27:05 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B5ACE12;
+        Sun, 10 Jul 2022 01:27:04 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id b8so1066350pjo.5;
+        Sun, 10 Jul 2022 01:27:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+JGyIrDFKDR5tt3yuLkl9IPyrn5UU1z3xDSAUDC2xz8=;
+        b=Tq4n/l75AECE7/QAv0VPvl+liF461bSZkRnNXOUynaeNL4s7NKl6h6QBRjiQVIAM1P
+         YqxIwEzXOv8fcKQ2LfV6lyCUGv27comS2RO3UujNeqEAmlCs7Wu6DnYEyYSaJOGny2LI
+         7VczYfbrAue3gcw/om1tiDFaoDtgMGeBpM0QEHXnnqHhv5GdLkHWf6ym/KV3mBc4EE+P
+         tNg90xgtkD3cm1unJy0YmT7cSqZXW/5gq1xmd2VjYjWK6+9ipzw6tA+bWXBIyk+2tiBV
+         ZYLaekeEEIpYKgHPO34nvwiqPVEXQHw7morkKGVF9DqBH71rT2pMitMXWEN2iLpEbLUM
+         8kKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+JGyIrDFKDR5tt3yuLkl9IPyrn5UU1z3xDSAUDC2xz8=;
+        b=rjNoCwqxt79Tv4eruZpNe0CW8X5RcQTrfMCldaAA8uyHkxOByJ8p4TtO/NmMm0vFJu
+         YHbEbTJCH2Aqk8fGqcZIJpLFHLuBxOisYvjO0nYu0wRDSe59WdL9k0uDfWY+AJnsooxk
+         lYag5Eg1FA6ouVAbN8Usv2eLn+EUdZpH+wRy2bp238F6aWPFcAJiZhkQfZPFAS23eI+w
+         Gh9ozw8oLiuZQdy0If0qbXIXGJkuZhueqPfZtUH4vC5rtwUwUHB1/Hb28YiBw39nbMoQ
+         dpAC7F02VQ3sEGU4kasr2wgst+0dZZPDPbqUifgvdRR6wm9WGstZSvNPYzTvxGA16cuF
+         /Fmg==
+X-Gm-Message-State: AJIora+DU0XcAtPo4oY/xUw5xlOU0Uncw7FL49aA7SFSnyy7HM7PMEXA
+        o2ieKvE5nxQ3O+Xpk3CNQSCL6a9Xmenj+A==
+X-Google-Smtp-Source: AGRyM1sXYmEdJoJWN5wHdoEyfeBmS2VDuEfDPLxkNS4oSJG/OLbYBSWstHCLd8vOkiPN6ziIdWfp4Q==
+X-Received: by 2002:a17:90a:1c02:b0:1e0:df7:31f2 with SMTP id s2-20020a17090a1c0200b001e00df731f2mr10321229pjs.222.1657441623831;
+        Sun, 10 Jul 2022 01:27:03 -0700 (PDT)
+Received: from cloud-MacBookPro ([2601:646:8201:c2e0:b884:a80c:dca9:4492])
+        by smtp.gmail.com with ESMTPSA id rj14-20020a17090b3e8e00b001eab99a42efsm2404469pjb.31.2022.07.10.01.27.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Jul 2022 01:27:03 -0700 (PDT)
+Date:   Sun, 10 Jul 2022 01:27:02 -0700
+From:   binyi <dantengknight@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: qlge: Fix indentation issue under long for loop
+Message-ID: <20220710082702.GA2109@cloud-MacBookPro>
+References: <20220710021629.GA11852@cloud-MacBookPro>
+ <1827050fdadb6173118fb396ad1fead23cda809f.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1827050fdadb6173118fb396ad1fead23cda809f.camel@perches.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset contains support for two pin controllers on Allwinner R329
-one, a CPUX one and a CPUS one (the standby processor on R329 is, in
-fact, a Xtensa DSP), in addition to their bindings.
+On Sat, Jul 09, 2022 at 07:23:20PM -0700, Joe Perches wrote:
+> On Sat, 2022-07-09 at 19:16 -0700, Binyi Han wrote:
+> > Fix indentation issue to adhere to Linux kernel coding style.
+> > Issue found by checkpatch.
+> > 
+> > Signed-off-by: Binyi Han <dantengknight@gmail.com>
+> > ---
+> >  drivers/staging/qlge/qlge_main.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> []
+> > @@ -3009,8 +3009,8 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+> >  
+> >  		for (page_entries = 0; page_entries <
+> >  			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
+> 
+> Probably better to change the for loop to 3 lines as well.
+> 
+> 		for (page_entries = 0;
+> 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
+> 		     page_entries++)
+> 
+> > @@ -3024,8 +3024,8 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+> >  
+> >  		for (page_entries = 0; page_entries <
+> >  			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
+> > -				base_indirect_ptr[page_entries] =
+> > -					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+> > +			base_indirect_ptr[page_entries] =
+> > +				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+> 
+> etc...
+> 
 
-Icenowy Zheng (3):
-  dt-bindings: pinctrl: document Allwinner R329 PIO and R-PIO
-  pinctrl: sunxi: add support for R329 CPUX pin controller
-  pinctrl: sunxi: add support for R329 R-PIO pin controller
-
- .../pinctrl/allwinner,sun4i-a10-pinctrl.yaml  |   4 +
- drivers/pinctrl/sunxi/Kconfig                 |  10 +
- drivers/pinctrl/sunxi/Makefile                |   2 +
- drivers/pinctrl/sunxi/pinctrl-sun50i-r329-r.c | 293 +++++++++++++
- drivers/pinctrl/sunxi/pinctrl-sun50i-r329.c   | 412 ++++++++++++++++++
- 5 files changed, 721 insertions(+)
- create mode 100644 drivers/pinctrl/sunxi/pinctrl-sun50i-r329-r.c
- create mode 100644 drivers/pinctrl/sunxi/pinctrl-sun50i-r329.c
-
--- 
-2.36.0
-
+Thanks for the suggestion. Will send a patch v2 in another thread.
