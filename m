@@ -2,144 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8539C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 16:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8485ECCA47F
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 17:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbiGJQ7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 12:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54878 "EHLO
+        id S229534AbiGJRAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 13:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiGJQ7X (ORCPT
+        with ESMTP id S229450AbiGJRAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 12:59:23 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B149DAE53
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 09:59:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657472362; x=1689008362;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8SO8lk2RCb4UnItvUYFu2aqqahdE5WPxwTSY9aJEncg=;
-  b=VY9PTfZtQ3Mn+r5NTk5D/DtQnHfIFLWbS19uPYC90R/g3faRM8KNw6MI
-   HUZ3m7ZJzZBGSXOTthYuUm1c5uu9gv9Wz5KBpygw/WM+xIp2cUkOvb36P
-   jWZdRBDNkxDlQUmBiqf7zJkMYLxuOTIoqMWNRj2lGwbxczML279Y5+IRX
-   Zmzx8vWz3/rCVvlGgpNPQpulDeWOh3OyP2kW2I9JigrmTIyR6aNbAjk1A
-   znK5qiQTMCU9A4yUfFYqaAgYg4i9zz7Ye+ljkHeqSGO/Bzs6i3XZdLcTO
-   nAIEPXVOt30XazhY4SAQAJLiaajdlTvfA+07PO3tgJrFRP2LzouXZ2FZJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="264936335"
-X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
-   d="scan'208";a="264936335"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 09:59:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
-   d="scan'208";a="627237961"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 10 Jul 2022 09:59:20 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oAaH9-000Q1c-DA;
-        Sun, 10 Jul 2022 16:59:19 +0000
-Date:   Mon, 11 Jul 2022 00:58:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yu-Jen Chang <arthurchang09@gmail.com>, andy@kernel.org,
-        akinobu.mita@gmail.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        jserv@ccns.ncku.edu.tw, linux-kernel@vger.kernel.org,
-        Yu-Jen Chang <arthurchang09@gmail.com>
-Subject: Re: [PATCH 2/2] lib/string.c: Optimize memchr()
-Message-ID: <202207110028.KNZ3Yupd-lkp@intel.com>
-References: <20220710142822.52539-3-arthurchang09@gmail.com>
+        Sun, 10 Jul 2022 13:00:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC8BAE53;
+        Sun, 10 Jul 2022 10:00:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0603960B2A;
+        Sun, 10 Jul 2022 17:00:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF62EC3411E;
+        Sun, 10 Jul 2022 16:59:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657472400;
+        bh=WVQuFo8zHmVlpglag2kHdgvVIfeY7YJ/1E69jk34LHU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=f4bfUNINCx2KcEv9CW5jU59H+sRpmJ9q1Ea/UQIjslQpNbWUqJRss/KQzsyp1p+n4
+         a7HvUp4NRlqM/7Ux8XvMScu9TbNAc7AtJ3l3eYbWGFX3gEFaM1QiTkA5kB0VED5XUC
+         cenB/cxGt66Qbl5vXb11jt+nyVscc94t54gT4G4A=
+Date:   Sun, 10 Jul 2022 18:59:57 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jithu Joseph <jithu.joseph@intel.com>
+Cc:     hdegoede@redhat.com, markgross@kernel.org, ashok.raj@intel.com,
+        tony.luck@intel.com, ravi.v.shankar@intel.com,
+        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        patches@lists.linux.dev
+Subject: Re: [PATCH v2] platform/x86/intel/ifs: Allow non-default names for
+ IFS image
+Message-ID: <YssFjbveghDLNn4N@kroah.com>
+References: <20220710160011.995800-1-jithu.joseph@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220710142822.52539-3-arthurchang09@gmail.com>
+In-Reply-To: <20220710160011.995800-1-jithu.joseph@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yu-Jen,
+On Sun, Jul 10, 2022 at 09:00:11AM -0700, Jithu Joseph wrote:
+> Existing implementation limits IFS images to be loaded only from
+> a default file-name /lib/firmware/intel/ifs/ff-mm-ss.scan.
 
-Thank you for the patch! Yet something to improve:
+That was by design, why is this suddenly not acceptable?
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.19-rc5 next-20220708]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> But there are situations where there may be multiple scan files
+> that can be run on a particular system stored in /lib/firmware/intel/ifs
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yu-Jen-Chang/Optimize-memchr/20220710-223118
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git b1c428b6c3684ee8ddf4137d68b3e8d51d2a700f
-config: hexagon-randconfig-r041-20220710 (https://download.01.org/0day-ci/archive/20220711/202207110028.KNZ3Yupd-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6ce63e267aab79ca87bf63453d34dd3909ab978d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/307ee542c2bd8378b2225910f3f9b982df7a7669
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yu-Jen-Chang/Optimize-memchr/20220710-223118
-        git checkout 307ee542c2bd8378b2225910f3f9b982df7a7669
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+Again, this was by design.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> E.g.
+> 1. Because test contents are larger than the memory reserved for IFS by BIOS
 
-All errors (new ones prefixed by >>):
+What does the BIOS have to do with this?
 
->> lib/string.c:902:7: error: conflicting types for 'memchr'
-   void *memchr(const void *p, int c, unsigned long length)
-         ^
-   include/linux/string.h:162:15: note: previous declaration is here
-   extern void * memchr(const void *,int,__kernel_size_t);
-                 ^
-   1 error generated.
+> 2. To provide increased test coverage
 
+Test coverage of what?
 
-vim +/memchr +902 lib/string.c
+> 3. Custom test files to debug certain specific issues in the field
 
-   891	
-   892	#ifndef __HAVE_ARCH_MEMCHR
-   893	/**
-   894	 * memchr - Find a character in an area of memory.
-   895	 * @p: The memory area
-   896	 * @c: The byte to search for
-   897	 * @length: The size of the area.
-   898	 *
-   899	 * returns the address of the first occurrence of @c, or %NULL
-   900	 * if @c is not found
-   901	 */
- > 902	void *memchr(const void *p, int c, unsigned long length)
-   903	{
-   904		u64 mask, val;
-   905		const void *end = p + length;
-   906	
-   907		c &= 0xff;
-   908		if (p <= end - 8) {
-   909			mask = c;
-   910			MEMCHR_MASK_GEN(mask);
-   911	
-   912			for (; p <= end - 8; p += 8) {
-   913				val = *(u64 *)p ^ mask;
-   914				if ((val + 0xfefefefefefefeffu) &
-   915				    (~val & 0x8080808080808080u))
-   916					break;
-   917			}
-   918		}
-   919	
-   920		for (; p < end; p++)
-   921			if (*(unsigned char *)p == c)
-   922				return (void *)p;
-   923	
-   924		return NULL;
-   925	}
-   926	EXPORT_SYMBOL(memchr);
-   927	#endif
-   928	
+Why can't you rename the existing file?
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> Renaming each of these to ff-mm-ss.scan and then loading might be
+> possible in some environments. But on systems where /lib is read-only
+> this is not a practical solution.
+
+What system puts /lib/ as read-only that you want to have loading
+hardware firmware?  That kind of defeats the security implications of
+having a read-only /lib/, right?
+
+> Modify the semantics of the driver file
+> /sys/devices/virtual/misc/intel_ifs_0/reload such that,
+> it interprets the input as the filename to be loaded.
+
+So you are now going to allow any file to be read from the system, in an
+unknown filesystem namespace, by this driver?  How wise is that?  How
+much has this been fuzzed and tested to ensure that it can not now be
+instantly abused by anyone with access to this sysfs file?
+
+Be aware that most systems have now locked down the ability for
+userspace to pick filenames for stuff like this for good reason.  This
+feels like a step backwards from those protections.  Are you _SURE_ you
+want to do this?
+
+> diff --git a/drivers/platform/x86/intel/ifs/ifs.h b/drivers/platform/x86/intel/ifs/ifs.h
+> index 73c8e91cf144..577cee7db86a 100644
+> --- a/drivers/platform/x86/intel/ifs/ifs.h
+> +++ b/drivers/platform/x86/intel/ifs/ifs.h
+> @@ -34,12 +34,13 @@
+>   * socket in a two step process using writes to MSRs to first load the
+>   * SHA hashes for the test. Then the tests themselves. Status MSRs provide
+>   * feedback on the success/failure of these steps. When a new test file
+> - * is installed it can be loaded by writing to the driver reload file::
+> + * is installed it can be loaded by writing the filename to the driver reload file::
+>   *
+> - *   # echo 1 > /sys/devices/virtual/misc/intel_ifs_0/reload
+> + *   # echo mytest > /sys/devices/virtual/misc/intel_ifs_0/reload
+>   *
+> - * Similar to microcode, the current version of the scan tests is stored
+> - * in a fixed location: /lib/firmware/intel/ifs.0/family-model-stepping.scan
+> + * The file will be loaded from /lib/firmware/intel/ifs/mytest
+> + * The default file /lib/firmware/intel/ifs/family-model-stepping.scan
+> + * will be loaded during module insertion.
+
+So you have a default directory, what happened to your read-only /lib/ ?
+
+This also does not properly document what the kernel code does.
+
+{sigh}
+
+Please do not rush this, it's not acceptable as-is at all.
+
+> --- a/Documentation/ABI/testing/sysfs-platform-intel-ifs
+> +++ b/Documentation/ABI/testing/sysfs-platform-intel-ifs
+> @@ -35,5 +35,4 @@ What:		/sys/devices/virtual/misc/intel_ifs_<N>/reload
+>  Date:		April 21 2022
+>  KernelVersion:	5.19
+>  Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
+> -Description:	Write "1" (or "y" or "Y") to reload the IFS image from
+> -		/lib/firmware/intel/ifs/ff-mm-ss.scan.
+> +Description:	Write <file_name> to reload the IFS image from /lib/firmware/intel/<file_name>.
+
+"reload" should not be for specifying the filename, please use a sane
+interface instead of this overloading logic.
+
+greg k-h
