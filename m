@@ -2,82 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F02BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 16:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 761F6C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 16:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiGJQGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 12:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
+        id S229599AbiGJQHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 12:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiGJQGN (ORCPT
+        with ESMTP id S229497AbiGJQHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 12:06:13 -0400
-X-Greylist: delayed 954 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 10 Jul 2022 09:06:07 PDT
-Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 066E012ACD;
-        Sun, 10 Jul 2022 09:06:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Vn4na
-        ovKTOZQthrjfaP/ehRTLiCmrzMOGVk+9JX62aE=; b=F1KUBvAfY9Xhge8HUoIqp
-        s2QIWtrjjeAKg2hkUhMwfBxsnSqZ0aIwppfw1HjZww0WrR9C5Quvz7/4gLXPb+sB
-        SdNdDxgEV2KkhlFPGxz2Wrd7/ox15HG8Eh2A8615v7nyiYdXuLp3A11srtXuauoM
-        IuKWgXc4jKalDUZjR1qcVE=
-Received: from localhost.localdomain (unknown [123.58.221.99])
-        by smtp5 (Coremail) with SMTP id HdxpCgCHlzED9cpiFZjPNQ--.1936S2;
-        Sun, 10 Jul 2022 23:49:25 +0800 (CST)
-From:   williamsukatube@163.com
-To:     arinc.unal@arinc9.com, sergio.paracuellos@gmail.com,
-        linus.walleij@linaro.org, linux-mips@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     William Dean <williamsukatube@gmail.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: [PATCH] pinctrl: ralink: Check for null return of devm_kcalloc
-Date:   Sun, 10 Jul 2022 23:49:22 +0800
-Message-Id: <20220710154922.2610876-1-williamsukatube@163.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 10 Jul 2022 12:07:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7A5812AA7
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 09:07:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657469254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7cDiMFRwcLb3xRy42jRsEfwAfDPcPQNVS/oizbo1jZ0=;
+        b=UkAG1COOnEdbrxzvztnDo3rrvoR8m9ZhMp108YpEjHitlD+GLWP3fBkXBtVlf5+Nyj+L7p
+        EqYTo0DkW0V5XArsiIyvm3x45FTgvQ7FX6XZxRyCrskW7bBYvptszmBhSd6yMA9lkKSiy5
+        Jc7U7ZqeNGfniQtKeUDN6KHv0lHIxTM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-135-WYrWyNiINXiQSzsq-MwwhQ-1; Sun, 10 Jul 2022 12:07:27 -0400
+X-MC-Unique: WYrWyNiINXiQSzsq-MwwhQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 35322101AA47;
+        Sun, 10 Jul 2022 16:07:27 +0000 (UTC)
+Received: from starship (unknown [10.40.192.46])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E7474492CA2;
+        Sun, 10 Jul 2022 16:07:24 +0000 (UTC)
+Message-ID: <670ce789f6139143f781bdd5ebfead79d5a4fadb.camel@redhat.com>
+Subject: Re: [PATCH 5/7] KVM: SVM: Add VNMI support in inject_nmi
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     "Shukla, Santosh" <santosh.shukla@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Sun, 10 Jul 2022 19:07:23 +0300
+In-Reply-To: <0981fd1c-b4b4-84ad-27e9-babcfa2524db@amd.com>
+References: <20220602142620.3196-1-santosh.shukla@amd.com>
+         <20220602142620.3196-6-santosh.shukla@amd.com>
+         <dfc2ce68a10181b1ac6c07ca3927d474e13ca973.camel@redhat.com>
+         <0981fd1c-b4b4-84ad-27e9-babcfa2524db@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgCHlzED9cpiFZjPNQ--.1936S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZrW7Zw48Xw1fKw4fKryDKFg_yoW8JF4xpF
-        43ur15Ary5JrsrZFWjywnrZry3Wa18KrW3Ga4j9rZFvF45Aas7Cay5Krs2qrWDCrWkuw13
-        tr4aq342gFykAFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07b4_-dUUUUU=
-X-Originating-IP: [123.58.221.99]
-X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbBiAY6g1aECCBQGAAAsF
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+On Fri, 2022-06-17 at 20:35 +0530, Shukla, Santosh wrote:
+> 
+> On 6/7/2022 6:44 PM, Maxim Levitsky wrote:
+> > On Thu, 2022-06-02 at 19:56 +0530, Santosh Shukla wrote:
+> > > Inject the NMI by setting V_NMI in the VMCB interrupt control. processor
+> > > will clear V_NMI to acknowledge processing has started and will keep the
+> > > V_NMI_MASK set until the processor is done with processing the NMI event.
+> > > 
+> > > Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
+> > > ---
+> > >  arch/x86/kvm/svm/svm.c | 7 ++++++-
+> > >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> > > index a405e414cae4..200f979169e0 100644
+> > > --- a/arch/x86/kvm/svm/svm.c
+> > > +++ b/arch/x86/kvm/svm/svm.c
+> > > @@ -3385,11 +3385,16 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
+> > >  {
+> > >         struct vcpu_svm *svm = to_svm(vcpu);
+> > >  
+> > > +       ++vcpu->stat.nmi_injections;
+> > > +       if (is_vnmi_enabled(svm->vmcb)) {
+> > > +               svm->vmcb->control.int_ctl |= V_NMI_PENDING;
+> > > +               return;
+> > > +       }
+> > Here I would advice to have a warning to check if vNMI is already pending.
+> > 
+> Yes, in v2.
+> 
+> > Also we need to check what happens if we make vNMI pending and get #SMI,
+> > while in #NMI handler, or if #NMI is blocked due to interrupt window.
+> > 
+> 
+> V_NMI_MASK should be saved as 1 in the save area and
+> hypervisor will resume the NMI handler after handling the SMI.
 
-Because of the possible failure of the allocation, data->domains might
-be NULL pointer and will cause the dereference of the NULL pointer
-later.
-Therefore, it might be better to check it and directly return -ENOMEM
-without releasing data manually if fails, because the comment of the
-devm_kmalloc() says "Memory allocated with this function is
-automatically freed on driver detach.".
 
-Fixes: a86854d0c599b ("treewide: devm_kzalloc() -> devm_kcalloc()")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
----
- drivers/pinctrl/ralink/pinctrl-ralink.c | 2 ++
- 1 file changed, 2 insertions(+)
+Answering my own question, because I did some homework in this area while
+working on that SMI int shadow bug:
 
-diff --git a/drivers/pinctrl/ralink/pinctrl-ralink.c b/drivers/pinctrl/ralink/pinctrl-ralink.c
-index 63429a287434..770862f45b3f 100644
---- a/drivers/pinctrl/ralink/pinctrl-ralink.c
-+++ b/drivers/pinctrl/ralink/pinctrl-ralink.c
-@@ -266,6 +266,8 @@ static int ralink_pinctrl_pins(struct ralink_priv *p)
- 						p->func[i]->pin_count,
- 						sizeof(int),
- 						GFP_KERNEL);
-+		if (!p->func[i]->pins)
-+			return -ENOMEM;
- 		for (j = 0; j < p->func[i]->pin_count; j++)
- 			p->func[i]->pins[j] = p->func[i]->pin_first + j;
- 
--- 
-2.25.1
+Actually what will happen (now I checked) is that we have a special KVM host state flag
+(called X86EMUL_SMM_MASK, and HF_SMM_INSIDE_NMI_MASK), and what we do is that if we
+receive SMI while in NMI handler, we don't mask the NMI again, on RSM we don't unmask NMI.
+
+Also, as I found out the hard way recently, the NMI is not blocked by the interrupt shadow.
+
+I don't think that anything is saved to the SMRAM in this case.
+
+Best regards,
+	Maxim Levitsky
+
+> 
+> Thanks,
+> Santosh
+>  
+> > Best regards,
+> > 	Maxim Levitsky
+> > 
+> > 
+> > > +
+> > >         svm->vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
+> > >         vcpu->arch.hflags |= HF_NMI_MASK;
+> > >         if (!sev_es_guest(vcpu->kvm))
+> > >                 svm_set_intercept(svm, INTERCEPT_IRET);
+> > > -       ++vcpu->stat.nmi_injections;
+> > >  }
+> > >  
+> > >  static void svm_inject_irq(struct kvm_vcpu *vcpu)
+
 
