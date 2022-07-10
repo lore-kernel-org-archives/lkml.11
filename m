@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 077CFC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 17:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11BB9C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 17:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbiGJRWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 13:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
+        id S229725AbiGJRXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 13:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiGJRWl (ORCPT
+        with ESMTP id S229690AbiGJRW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 13:22:41 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60113.outbound.protection.outlook.com [40.107.6.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8310AFD0B;
-        Sun, 10 Jul 2022 10:22:40 -0700 (PDT)
+        Sun, 10 Jul 2022 13:22:58 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60092.outbound.protection.outlook.com [40.107.6.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79E513F65;
+        Sun, 10 Jul 2022 10:22:45 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nFpMdaMWco2OHqT8VN8856lAE/usDX3d5s+OgQXlAS6O2XHR714afGaymvt4gTv4LasRLW3aaFsoNRzQZwm5CdaqbQNNFLZG5EfytusNZLXaY4XOWs+SvZsmE1hKtiUqrV8VJuillcns7JRnw7+1tzssAnJVOcQJB3kVNBMxW0sajHp0E9WKlTW7bTxYED9NqgwRTQ1w5d3B5LxTqH9jySiqARRUKTTXuAABAKvYtjKQXfm4Eu31N29mhPGLVyxBctrklsFKGeD+z4cbx+AQQ6pns/RTr1ZEGDsnehyw1ThYafsNTjXnc+vn/75CMCZU26hbRw+AWkSI2s+A7rJiXA==
+ b=RzkVCNQIsRNAGbp9i9/hQBswRIKiuRHqkN26yKQV6puMnuRRCZ6HCpcnCF6XOufhCuA5jyZnnlSuq5X1XkMxWvpx+OeDZcWLAv2ChO3aq2SNPhuYlFkksW354GV8n6EFjXDgM8uGe+ZSg1JedugZ39HlrnD9iHmgYF6Hq/iydRT8H0vPh3/RZ+y6G+Ozhb0JiGfEyJLbBlXif32YtZ94hK7iXYYvP53WK4iptOljfYwca44PDadbQWDpQKRxgYLY6zbJJl70shG58Z/pHVKf8kDU8Mn5q8awBsCuBcridpYhDc8rG9tTJjwPT/YVUX6MT0BZpBLxYjEkneUcJ5XWMQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bFKnpnSOnlmOLKTwz7mLl8uNTKUF3f/Tk+CEAwA/go8=;
- b=m5JKiH9eCXx414Jmx98OeFch/XY5ks9XA17o7M1+hXXQxpcg4Ggk5Mg+pJOeWw2RTz31nPSDZkeYrJzk96TieMpQxm4UyF7cJQj2zE8lhqgVdTh7D3LyvG4p9lyfWRpkkCLoyEiNuYej9mnPmTyVX9vza9aIUpXcYK2+4UwZH5PREOBHX8vM/+6qOBfWh/xuXulFTXwGeUweRr1vvPDaP/bii3+ZO1OwJ2vrZV0sQ5heiNBWtWeJnq8W5dnrf2GO6fx3rAZwXyMya1EjdzEycZpkTlBGe4hS+4E/UnX7bx0BT2naiHxYW/dQ7gc4OhQ1tJkrhHuFyKVyGTcS7g7+Nw==
+ bh=LGr7SDGKr/P0WlJSCEj8tQmOuc3rKS2v+pl6WNttY1I=;
+ b=BZ08gkkutU07ZCgy2l4qW8Lg5/54smMTXhC2Z/vUQN6nTrl5gTNaLG5gdiMLhCtEo+COfTJhrYh11xwEX3L89omu9IOJ/WFAzfEAdugG35IS5TGEh/rRxdnLzePDKB7RXm8U4h/yry9PvbG0XJUB6lTeX+OV8kLb7ZtjMzJpVtO3ojh0vLHlh+Hyf4ER2VolrF/studuanqLqz1EFMe+CCFLcQrP0wjyopkEaqpL+QL6/QB5gO7ujv4mAhJPpmsrUnInxvSrzZsRelnh0tpt9Qh5e3ykAjS2/vXbBN7yb6ffVThEJvIaiVEpNkIosrVUTrdLRDvxm3lBjXhtg7ga7A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bFKnpnSOnlmOLKTwz7mLl8uNTKUF3f/Tk+CEAwA/go8=;
- b=wZS5nZuNG4eyyy8QlTIewFzKurPhSyqDBpfmktLKuBlrliLwSqGN6QB5LJkPTCk07A65AOmhhswOemDTbqG7SdLM97TFaVUNfS8kcoSaec5o1pEkC31Wqilg9dIaSRdvi6LXuSaGcub1UhM6grwwFZXVgnbYeGmrxs3RnDnJiuo=
+ bh=LGr7SDGKr/P0WlJSCEj8tQmOuc3rKS2v+pl6WNttY1I=;
+ b=xXwBaP4OUiEVSWKsugXfkPnFbMk3or3K+s7iY/Fvpp4yS50R38rT4wjcEjt7kFVhxf3b3mp6ny0SZWw1J0nJH+iTPsvKbZmLkQ/Upg6crf4TUyXvYhRHv8Y383xheF/LJa+OKKuNpN2A7jNRDRVJH0H26YsAZmQrcfZwbdorMmY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=plvision.eu;
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
  by AS8P190MB1109.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:2e7::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.21; Sun, 10 Jul
- 2022 17:22:37 +0000
+ 2022 17:22:43 +0000
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::d521:ba19:29db:e42d]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::d521:ba19:29db:e42d%3]) with mapi id 15.20.5417.025; Sun, 10 Jul 2022
- 17:22:37 +0000
+ 17:22:43 +0000
 From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
 To:     netdev@vger.kernel.org
 Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
@@ -49,13 +49,14 @@ Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
         Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
         Yevhen Orlov <yevhen.orlov@plvision.eu>,
         Taras Chornyi <tchornyi@marvell.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/9] net: marvell: prestera: Add strict cleanup of fib arbiter
-Date:   Sun, 10 Jul 2022 20:22:01 +0300
-Message-Id: <20220710172208.29851-4-yevhen.orlov@plvision.eu>
+Subject: [PATCH net-next 6/9] net: marvell: prestera: Add heplers to interact with fib_notifier_info
+Date:   Sun, 10 Jul 2022 20:22:04 +0300
+Message-Id: <20220710172208.29851-7-yevhen.orlov@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220710172208.29851-1-yevhen.orlov@plvision.eu>
 References: <20220710172208.29851-1-yevhen.orlov@plvision.eu>
@@ -65,131 +66,490 @@ X-ClientProxiedBy: GV3P280CA0058.SWEP280.PROD.OUTLOOK.COM
  (2603:10a6:102:283::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 504fc39c-d446-4af5-96ec-08da6298c8d9
+X-MS-Office365-Filtering-Correlation-Id: 9cddda54-16fc-4886-cb8f-08da6298cc9a
 X-MS-TrafficTypeDiagnostic: AS8P190MB1109:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CuP7Nd+k79gccCPXJjTC3/l0baUSuZFOajAtfVFkRSr7iQnvETK/pa7PbpbmDeaXyNcVO4HbPfkzGt1vvTbW45F6wkvbQiYcS6YnV6BTfRQnCRPnLIQrRFhn5KDe7lG8Io1t7rqRj+xsFbtP/rQw8SY0tGmiimjXolsBcLLhF6CcVxr+jCqYqvIQyAhEfrovNv+JnzkpmIYgr6hgZyUMwY/xWgxpifxgtZieLkcAYcfu663yAz2xmIij7wH8x3Gxh7CGGnwvWrfJk+S+S5pqNDcvMA/UWQS2F2pIU9gaVVbxaIb1dzwXFM///9c1D5pewPsyCjF3lrgZATYI309WdUt3YB0/bCxeQ+6STDaIqXOnfcNai7ZmcAPSyPMKmWq8ZmqR+nL901s/bFycUiwzStmfwD0DM2ho84b4aln7cyGmFy36tBQPccXspDZoIYDsUZPC3QjwHUSW8ExCkGYnm1Ni25kcYBHPsqrcRrfFiT1nPgq2E+gNX4gCBKyyWyitPWwKoNPOYqtRsz/atAOUy7OWB+6AWbBJ9lwE7XELwHreZAjXNSXF5+RO5yMybMNDgBbTJTh8N9U7e31j4wq0SKB84lPY+efRKwe2Pkf+/LDGkhBoS+3i66lAHWSOXxrJ+43w9cwaCXHLaHIn0eONeZXbSpJmJcPkn3bOaNHkOewUT6uBxwFhP17TvrejxNlFNehdxbXbKjNR4b/1xsxTOQnU22NP5TPyxt7xL3hHQUVw/Sy65SJV6vsyutl6BGGOXCrn/8pkS8rqJY2WtF95GIVCpCB4+wEhZZYWm8ffNpWJPNjqwiQ4hEBPKiXKOC+L
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(346002)(39830400003)(376002)(366004)(26005)(41300700001)(1076003)(6666004)(6486002)(83380400001)(6512007)(316002)(66574015)(2616005)(36756003)(52116002)(6506007)(186003)(38350700002)(2906002)(38100700002)(6916009)(54906003)(86362001)(5660300002)(478600001)(8936002)(66946007)(66556008)(4326008)(44832011)(8676002)(66476007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: ZJB3HP07LzWJnlVPsvx6QbZ30j7CUQCAT24yDsXgvxeEPX1TjLeBGzpg9QRC0sqLaid7ItrMn213fqFexTLD5GQPyuyvfy0V8BBKlOsuWUjjwHM617w35MSgdsVgKo9kQ+3EKdBickKOuWeBatC5KfffWTroWFVlZ1f4OxHQ7Fl32/YxM+lRFuobwRx4ARUX2Bhvqw+s0kAFQZtuzzvm8UJyazB3qZcHtXdS59GRLtEqTJuEbcRBUd/MiLAVPMczQs9jrq4pKbxHB/vju2WiEfnxC8xtYmXrMq0wAa4sqmBXO0wJXFJTXbiTsq+mV2aUW4dC72fI53lRtiaIiXGfKeBvKN9pSCzyeOHnEx7YZ0TaDQaj1OCGG54yeKU7KyniJju+hwdVh56aHzs3KtPrESFVUz4EgZG4uuuBO3144jDdhxklqxbD42IGhEKa6bddWuVVK5JIWRaRvaZKLAP8KXeKkna5bZfwkQnwVL10aeUZ9K01ILjsWue3qTaiiX5YGRp9B8zmD7WsgoaeRSfymyB5W5jPP0TXW57uPZWTVfT5+k6nsCR55uUsHRyJLypSFI2s5vLr1NjxPANqq+v7ZkQam8jrJoVlE32nLjztypDCOHBLrHdxInOx0gL0pNNgnSl62foSxqpe7QpgiTuxoqLpp9gYWD4zSFle3X1PiRtm4XIx/bUGsYxW0vi3LnLv0IEsyx2Vob82rjCpwu4CaHXbSKjvJQGdBNm8sVlueJRkgmKf92yCoBXmrKBar9vAxxSO9gWE54QnNFVuA4yGzz9mKoRkVob6NVQRwrWksIecqdGqWgHIFKeGmIZIzwW0
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(346002)(39830400003)(376002)(366004)(26005)(41300700001)(1076003)(6666004)(6486002)(83380400001)(6512007)(316002)(66574015)(2616005)(36756003)(52116002)(6506007)(186003)(38350700002)(2906002)(38100700002)(6916009)(54906003)(30864003)(86362001)(5660300002)(478600001)(8936002)(66946007)(66556008)(4326008)(44832011)(8676002)(66476007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0Dbin91z7m6BV/v42HZElwe1oicgfSAAukcNbUy3GLEW1P/MqCzReozZguFR?=
- =?us-ascii?Q?JC1BGRxV4OrY091c4u9LN0L7T7l/Pcfdf0H+mbyonZrAiVaZHPAckA2XXb8+?=
- =?us-ascii?Q?gJ8hh2kY1LmXVL9cg7wSemqWloTGFdsw3RemvDpdxKcN0lOXJJwRJgcXi8JW?=
- =?us-ascii?Q?TB5bkbuJa+8bGsdazqMed04wyBvnQ1JyYE5xRkEoK8QZDMgkYoKeTcGCS11m?=
- =?us-ascii?Q?J+G/kEoT7AX7ZF+TN9+6g+PCEA6i6S2QJsNnLZwymNdHu0DqOFwXP7+gn4us?=
- =?us-ascii?Q?jbHchiQ9WLC14MLmCwy0NsiKJ94y8UbM4F1O6FsyH3IFMhsBk/OZLJs3Y0wp?=
- =?us-ascii?Q?DoMsBI5e9TPWMef3yB/Tbpg8G+NQt8nxx4qERwFDk4rTZOQVA67bQSWMroOt?=
- =?us-ascii?Q?VyKKD6jkncNdEYkPGQ6m2GrGcryZ2svBuv+o9uzNIUfRlzjjo2oZJu3Nm1zK?=
- =?us-ascii?Q?MyK3Wutg6ap5F39rbfxsc84ySSzW84s4RWtJ1dZ2LaLEYi8yK1gW7Z18SlKZ?=
- =?us-ascii?Q?zlxDaubYQEZUf8Vhy4tt2JTkteczLE6QCcoIdZoJnamoN/sSN/9h67tvtV5R?=
- =?us-ascii?Q?ENkJLIkxsIzoSLVj/+6K5N/s6ex32ds2gu5O9q7HA6ZWEsyhhukjLndwOnYJ?=
- =?us-ascii?Q?7nd1Crm57vfM3GPnLU7lfLPDn9KrpSl31hjwss0Rp60BSUZ4nGeYhC0NURaG?=
- =?us-ascii?Q?6QfRvsTM1G6voUJwqc4MCTEXdlNXkfwx29HtD2PyqTKQ0dFW9SxXZ4Et/7fB?=
- =?us-ascii?Q?9JhwEnOYTqhoyQitIC5x4OSdO+guhllwydR8Pk9o97WNdbQtP5uy0DcvabwE?=
- =?us-ascii?Q?g7ur1bubDVLY1d+W93HoBHa0VY745J/LKq8ok+TlNBnD4qliLWzbgzFxdSJy?=
- =?us-ascii?Q?fmL9V3losfMPeUdR4NKzMpPZXv5Pc8DT1GMfB7CGT6aT/CKByiZLkYy7n+Yh?=
- =?us-ascii?Q?aRpgUI5azK7xLdqYOi5BDEuWbxNPSNVYo4oDEiJKTAs4DqUE7KBe+ea9GK7y?=
- =?us-ascii?Q?LySOeoT25w/qhTYn8d2e0q+b0cq0OfOwiJ8xRuPdvwLXl8o2kGJXgvGbzgyk?=
- =?us-ascii?Q?28I5Jz0rNirBlQhlbxFVf5JsT2P4+X/2M+EZmh7NX2XEoWExU45/KFQNKJCu?=
- =?us-ascii?Q?2Y8NtNPQQm4fZpO3vbEdZp44/0UeNedf2UnTHz4EQTv0pEBz3TCjwEvg3ucQ?=
- =?us-ascii?Q?7ODzlf5frmKhp7xJxE6+XXSjv5uab8PWk6RA3ZvtEl6P1hIYrzXmRr+wZWI1?=
- =?us-ascii?Q?UnRid4wcX4IjtaeVTPVM6zXwlh0h+JdqnmKzpX4hiH/cMFwdzlNHXiTyyaml?=
- =?us-ascii?Q?Z6cVxe2YLgQq2s+ASysKSds+ggKk6Eg1a02IE5ZX8cjQiXsxJropWlDCcXuR?=
- =?us-ascii?Q?1yzWJ9ZlUIAR7rc53DJ1/Yf9a2sJzurbbfq8MbGRe7/5h5jH2RaUypQ6Nd0g?=
- =?us-ascii?Q?RXi6tgXXGd61NkBuRKvmM2v8xDp4GKQIW5M6AK/vCBMHPV7V9KfONhanGzxb?=
- =?us-ascii?Q?YGR9a85e17Pg56pSYGQrHp8U1IhMnkrDqqRaby5/vhA8eSnSiY1+pG7yS3Ay?=
- =?us-ascii?Q?Pnu20jSTyJt6R0FjpyUCJxQEh2LylFJxMM/+5/hlQIell1doivslz+eTNoR0?=
- =?us-ascii?Q?dA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YPsTFQo7t04sprGBghDqUsYvED2kAG8Ir9pilFc1Ou+IXWTvBh0fzfx8TndA?=
+ =?us-ascii?Q?zAfx0NDUIzPBtHpjJgaX4Sj9l+UeG4ETkBB1kPC5jqT6/659F3A5A7/FkfQS?=
+ =?us-ascii?Q?84dQx7mHJqE5us3JJL4xMeJ+UglL5nBUl/qc9FjnV1UhpZ2qhZJU0WSDIU0R?=
+ =?us-ascii?Q?83lAtGlAswcYNshxoK6vi/MlMC6022jzvaB3D+Fx68FG1q9WqH2EUzNWIb/j?=
+ =?us-ascii?Q?zbV3lBtzyIUo3xDdgRSvMQgYt6tG+Nvq+GPlA2Vx26GN/RfHyI/ao2RoS/Nb?=
+ =?us-ascii?Q?LUiP8sPTrrGlRCBJ0DD8MhUbR9N4Q52Cjz39yM5hgWXD9ivyR0urQDAw+la1?=
+ =?us-ascii?Q?D6TTmZOBDa/q5q5TfHvO/sNdcjFYynD2wpPRCL8t5rrE7Dx+EKY3vykUNmJC?=
+ =?us-ascii?Q?7kUFJArZxQgNja2yfbaK7V8/q5UpTjuCuwL94EX1kjI1FJGoOtXqu08fhXxj?=
+ =?us-ascii?Q?uhcXAWLZFVd9V0IXcG4oLhWJbiDqZdZmZiux5i0t4SmxWNoQ2MD2xsg+CIH/?=
+ =?us-ascii?Q?DbGxWBpdOBGmZwvr8aI2X5x804mpIJoE2hHpPJ5iV1Bwfclik72FcC1pOE0P?=
+ =?us-ascii?Q?uE8HF3mu8FhGSV/Z40jx+B7m2UdCTiGZZuAfU8iiNBclnKuU7a7HAwjDRDHt?=
+ =?us-ascii?Q?lg9TrZGY0NiUA4nNUAwvpbe7vO09aLsAmrN1MRk+Ggk+mIyBmZYFSRvVOlwL?=
+ =?us-ascii?Q?xLujVbsjRkY771cg2qUJB5g8OC3c3eZxGeM1YHXiGHfjoBPQ3CmmrHA0ed2m?=
+ =?us-ascii?Q?9xsSF2xQj/wkaImnTMGfMnElefBAwLZQ1ZJTGtZ6jfrYFXh5tuU9rQlDCJne?=
+ =?us-ascii?Q?ZR75A6lhhLbhjmG81phrEAV6muQdPC7rwdA7m5y5XBkyI55n4uhJw/NsnMuR?=
+ =?us-ascii?Q?o4Nz/FQ3j/EiLtVc0GOVQ+0L7HeHI2Dhl/Q+WdhEmAVABs6c7VXdzbw6ETGO?=
+ =?us-ascii?Q?4Jot2O+jHvNb5/IPDVHzKS/rNUsKgSrPqxIJO7gLJKY1WAMEM3KpAsoOrzGH?=
+ =?us-ascii?Q?oVCKr3TE+KCZfJnUYI/Lzre5sdApOQYsKItf0WlFhajxv7u5w0iMDhM7glhs?=
+ =?us-ascii?Q?Bwa5hcbjKhsqIK5aIIQuMJ5GRV8MABDm/fUmv6u6PqR62DvRgq+wlodA0Yge?=
+ =?us-ascii?Q?dC2kLWe+Am6xpHWce3f2Xjj/8GJz9UwsprmkKS1qoZbEnCkRoUvzOMnvWVCX?=
+ =?us-ascii?Q?vPjipArTqWAN6f3G8O7eQMnEB56V5lzpHkYnwbIVZANHkAlC2W7lYyk3hFD5?=
+ =?us-ascii?Q?utLF0ijMxD9xaR2PaBy/9BF7XsvY5063VlxmLsvQMRVp+iREmMZh71m6ajlr?=
+ =?us-ascii?Q?oZbXLRi7QkecfDhw+5pdAmkuT285cvPB9WGpOEXPSqETvUBpVId30nEmKnOK?=
+ =?us-ascii?Q?yopxc6q8NWhdRixm70thx1xTEzvFXFMn8qUDsEQXIZvjqlY5gQWkeROnb2HL?=
+ =?us-ascii?Q?NhYD7MCca5nzmG74hPsS3CqGqFkyKKBbJBdPmfsY1S4DQ7gJDdJ/Q+lfmbHi?=
+ =?us-ascii?Q?VImoxEl3X8c56EA6XH0KpxV9e3xf5UrtfNN6Ln/s3Fu0VmTfZv1ZgTisP6rr?=
+ =?us-ascii?Q?b77OjCvHCQfSsAHk3AM8WUKBsAthk2D5P2BhS7lC87eck9Ix3kiMZ9Fy9Fcy?=
+ =?us-ascii?Q?8w=3D=3D?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 504fc39c-d446-4af5-96ec-08da6298c8d9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9cddda54-16fc-4886-cb8f-08da6298cc9a
 X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2022 17:22:37.1693
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2022 17:22:43.5000
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XYnEV7SrRhf3pM0LhP6ULHSilCYyfSxl25Ck+RCfqlWm9Nwfy43C354yGfFT+D3XoTTNLQg2ndsfLm9LcEUYIPHH9SJOmcGJOp9ztIA61Y8=
+X-MS-Exchange-CrossTenant-UserPrincipalName: G/j+pUKW6o++ADpAwBNNSpkYniuMd82jAYpN27Dsr5p+uXX3NXgE8IY4b62X9E+vs22NY6tnOTmzEqcnpxHvlk/27SkBjQdBA/iJ3ZhEkTw=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8P190MB1109
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This will, ensure, that there is no more, preciously allocated fib_cache
-entries left after deinit.
-Will be used to free allocated resources of nexthop routes, that points
-to "not our" port (e.g. eth0).
+This will be used to implement nexthops related logic in next patches.
+Also try to keep ipv4/6 abstraction to be able to reuse helpers for ipv6
+in the future.
 
+Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
+Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
+Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
 ---
- .../marvell/prestera/prestera_router.c        | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
+ .../marvell/prestera/prestera_router.c        | 311 ++++++++++++++++--
+ 1 file changed, 277 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-index e9b08b541aba..41955c7f8323 100644
+index db327ab4a072..0150aa33c958 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-@@ -334,6 +334,49 @@ prestera_k_arb_fib_evt(struct prestera_switch *sw,
- 	return 0;
+@@ -7,6 +7,7 @@
+ #include <net/inet_dscp.h>
+ #include <net/switchdev.h>
+ #include <linux/rhashtable.h>
++#include <net/nexthop.h>
+ 
+ #include "prestera.h"
+ #include "prestera_router_hw.h"
+@@ -26,9 +27,10 @@ struct prestera_kern_fib_cache {
+ 	} lpm_info; /* hold prepared lpm info */
+ 	/* Indicate if route is not overlapped by another table */
+ 	struct rhash_head ht_node; /* node of prestera_router */
+-	struct fib_info *fi;
+-	dscp_t kern_dscp;
+-	u8 kern_type;
++	union {
++		struct fib_notifier_info info; /* point to any of 4/6 */
++		struct fib_entry_notifier_info fen4_info;
++	};
+ 	bool reachable;
+ };
+ 
+@@ -51,15 +53,253 @@ static u32 prestera_fix_tb_id(u32 tb_id)
  }
  
-+static void __prestera_k_arb_abort_fib(struct prestera_switch *sw)
+ static void
+-prestera_util_fen_info2fib_cache_key(struct fib_entry_notifier_info *fen_info,
++prestera_util_fen_info2fib_cache_key(struct fib_notifier_info *info,
+ 				     struct prestera_kern_fib_cache_key *key)
+ {
++	struct fib_entry_notifier_info *fen_info =
++		container_of(info, struct fib_entry_notifier_info, info);
++
+ 	memset(key, 0, sizeof(*key));
++	key->addr.v = PRESTERA_IPV4;
+ 	key->addr.u.ipv4 = cpu_to_be32(fen_info->dst);
+ 	key->prefix_len = fen_info->dst_len;
+ 	key->kern_tb_id = fen_info->tb_id;
+ }
+ 
++static bool __prestera_fi_is_direct(struct fib_info *fi)
 +{
-+	struct prestera_kern_fib_cache *fib_cache;
-+	struct rhashtable_iter iter;
++	struct fib_nh *fib_nh;
 +
-+	while (1) {
-+		rhashtable_walk_enter(&sw->router->kern_fib_cache_ht, &iter);
-+		rhashtable_walk_start(&iter);
++	if (fib_info_num_path(fi) == 1) {
++		fib_nh = fib_info_nh(fi, 0);
++		if (fib_nh->fib_nh_scope == RT_SCOPE_HOST)
++			return true;
++	}
 +
-+		fib_cache = rhashtable_walk_next(&iter);
++	return false;
++}
 +
-+		rhashtable_walk_stop(&iter);
-+		rhashtable_walk_exit(&iter);
++static bool prestera_fi_is_direct(struct fib_info *fi)
++{
++	if (fi->fib_type != RTN_UNICAST)
++		return false;
 +
-+		if (!fib_cache) {
-+			break;
-+		} else if (IS_ERR(fib_cache)) {
-+			continue;
-+		} else if (fib_cache) {
-+			__prestera_k_arb_fib_lpm_offload_set(sw, fib_cache,
-+							     false, false,
-+							     false);
-+			/* No need to destroy lpm.
-+			 * It will be aborted by destroy_ht
-+			 */
-+			prestera_kern_fib_cache_destroy(sw, fib_cache);
++	return __prestera_fi_is_direct(fi);
++}
++
++static bool prestera_fi_is_nh(struct fib_info *fi)
++{
++	if (fi->fib_type != RTN_UNICAST)
++		return false;
++
++	return !__prestera_fi_is_direct(fi);
++}
++
++static bool __prestera_fi6_is_direct(struct fib6_info *fi)
++{
++	if (!fi->fib6_nh->nh_common.nhc_gw_family)
++		return true;
++
++	return false;
++}
++
++static bool prestera_fi6_is_direct(struct fib6_info *fi)
++{
++	if (fi->fib6_type != RTN_UNICAST)
++		return false;
++
++	return __prestera_fi6_is_direct(fi);
++}
++
++static bool prestera_fi6_is_nh(struct fib6_info *fi)
++{
++	if (fi->fib6_type != RTN_UNICAST)
++		return false;
++
++	return !__prestera_fi6_is_direct(fi);
++}
++
++static bool prestera_fib_info_is_direct(struct fib_notifier_info *info)
++{
++	struct fib6_entry_notifier_info *fen6_info =
++		container_of(info, struct fib6_entry_notifier_info, info);
++	struct fib_entry_notifier_info *fen_info =
++		container_of(info, struct fib_entry_notifier_info, info);
++
++	if (info->family == AF_INET)
++		return prestera_fi_is_direct(fen_info->fi);
++	else
++		return prestera_fi6_is_direct(fen6_info->rt);
++}
++
++static bool prestera_fib_info_is_nh(struct fib_notifier_info *info)
++{
++	struct fib6_entry_notifier_info *fen6_info =
++		container_of(info, struct fib6_entry_notifier_info, info);
++	struct fib_entry_notifier_info *fen_info =
++		container_of(info, struct fib_entry_notifier_info, info);
++
++	if (info->family == AF_INET)
++		return prestera_fi_is_nh(fen_info->fi);
++	else
++		return prestera_fi6_is_nh(fen6_info->rt);
++}
++
++/* must be called with rcu_read_lock() */
++static int prestera_util_kern_get_route(struct fib_result *res, u32 tb_id,
++					__be32 *addr)
++{
++	struct fib_table *tb;
++	struct flowi4 fl4;
++	int ret;
++
++	/* TODO: walkthrough appropriate tables in kernel
++	 * to know if the same prefix exists in several tables
++	 */
++	tb = fib_new_table(&init_net, tb_id);
++	if (!tb)
++		return -ENOENT;
++
++	memset(&fl4, 0, sizeof(fl4));
++	fl4.daddr = *addr;
++	ret = fib_table_lookup(tb, &fl4, res, FIB_LOOKUP_NOREF);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static bool
++__prestera_util_kern_n_is_reachable_v4(u32 tb_id, __be32 *addr,
++				       struct net_device *dev)
++{
++	struct fib_nh *fib_nh;
++	struct fib_result res;
++	bool reachable;
++
++	reachable = false;
++
++	if (!prestera_util_kern_get_route(&res, tb_id, addr))
++		if (prestera_fi_is_direct(res.fi)) {
++			fib_nh = fib_info_nh(res.fi, 0);
++			if (dev == fib_nh->fib_nh_dev)
++				reachable = true;
++		}
++
++	return reachable;
++}
++
++/* Check if neigh route is reachable */
++static bool
++prestera_util_kern_n_is_reachable(u32 tb_id,
++				  struct prestera_ip_addr *addr,
++				  struct net_device *dev)
++{
++	if (addr->v == PRESTERA_IPV4)
++		return __prestera_util_kern_n_is_reachable_v4(tb_id,
++							      &addr->u.ipv4,
++							      dev);
++	else
++		return false;
++}
++
++static void prestera_util_kern_set_neigh_offload(struct neighbour *n,
++						 bool offloaded)
++{
++	if (offloaded)
++		n->flags |= NTF_OFFLOADED;
++	else
++		n->flags &= ~NTF_OFFLOADED;
++}
++
++static void
++prestera_util_kern_set_nh_offload(struct fib_nh_common *nhc, bool offloaded, bool trap)
++{
++		if (offloaded)
++			nhc->nhc_flags |= RTNH_F_OFFLOAD;
++		else
++			nhc->nhc_flags &= ~RTNH_F_OFFLOAD;
++
++		if (trap)
++			nhc->nhc_flags |= RTNH_F_TRAP;
++		else
++			nhc->nhc_flags &= ~RTNH_F_TRAP;
++}
++
++static struct fib_nh_common *
++prestera_kern_fib_info_nhc(struct fib_notifier_info *info, int n)
++{
++	struct fib6_entry_notifier_info *fen6_info;
++	struct fib_entry_notifier_info *fen4_info;
++	struct fib6_info *iter;
++
++	if (info->family == AF_INET) {
++		fen4_info = container_of(info, struct fib_entry_notifier_info,
++					 info);
++		return &fib_info_nh(fen4_info->fi, n)->nh_common;
++	} else if (info->family == AF_INET6) {
++		fen6_info = container_of(info, struct fib6_entry_notifier_info,
++					 info);
++		if (!n)
++			return &fen6_info->rt->fib6_nh->nh_common;
++
++		list_for_each_entry(iter, &fen6_info->rt->fib6_siblings,
++				    fib6_siblings) {
++			if (!--n)
++				return &iter->fib6_nh->nh_common;
 +		}
 +	}
-+}
 +
-+static void prestera_k_arb_abort(struct prestera_switch *sw)
-+{
-+	/* Function to remove all arbiter entries and related hw objects. */
-+	/* Sequence:
-+	 *   1) Clear arbiter tables, but don't touch hw
-+	 *   2) Clear hw
-+	 * We use such approach, because arbiter object is not directly mapped
-+	 * to hw. So deletion of one arbiter object may even lead to creation of
-+	 * hw object (e.g. in case of overlapped routes).
++	/* if family is incorrect - than upper functions has BUG */
++	/* if doesn't find requested index - there is alsi bug, because
++	 * valid index must be produced by nhs, which checks list length
 +	 */
-+	__prestera_k_arb_abort_fib(sw);
++	WARN(1, "Invalid parameters passed to %s n=%d i=%p",
++	     __func__, n, info);
++	return NULL;
 +}
 +
- static int __prestera_inetaddr_port_event(struct net_device *port_dev,
- 					  unsigned long event,
- 					  struct netlink_ext_ack *extack)
-@@ -600,6 +643,9 @@ void prestera_router_fini(struct prestera_switch *sw)
- 	unregister_fib_notifier(&init_net, &sw->router->fib_nb);
- 	unregister_inetaddr_notifier(&sw->router->inetaddr_nb);
- 	unregister_inetaddr_validator_notifier(&sw->router->inetaddr_valid_nb);
++static int prestera_kern_fib_info_nhs(struct fib_notifier_info *info)
++{
++	struct fib6_entry_notifier_info *fen6_info;
++	struct fib_entry_notifier_info *fen4_info;
 +
-+	prestera_k_arb_abort(sw);
++	if (info->family == AF_INET) {
++		fen4_info = container_of(info, struct fib_entry_notifier_info,
++					 info);
++		return fib_info_num_path(fen4_info->fi);
++	} else if (info->family == AF_INET6) {
++		fen6_info = container_of(info, struct fib6_entry_notifier_info,
++					 info);
++		return fen6_info->rt->fib6_nh ?
++			(fen6_info->rt->fib6_nsiblings + 1) : 0;
++	}
 +
- 	kfree(sw->router->nhgrp_hw_state_cache);
- 	rhashtable_destroy(&sw->router->kern_fib_cache_ht);
- 	prestera_router_hw_fini(sw);
++	return 0;
++}
++
++static unsigned char
++prestera_kern_fib_info_type(struct fib_notifier_info *info)
++{
++	struct fib6_entry_notifier_info *fen6_info;
++	struct fib_entry_notifier_info *fen4_info;
++
++	if (info->family == AF_INET) {
++		fen4_info = container_of(info, struct fib_entry_notifier_info,
++					 info);
++		return fen4_info->fi->fib_type;
++	} else if (info->family == AF_INET6) {
++		fen6_info = container_of(info, struct fib6_entry_notifier_info,
++					 info);
++		/* TODO: ECMP in ipv6 is several routes.
++		 * Every route has single nh.
++		 */
++		return fen6_info->rt->fib6_type;
++	}
++
++	return RTN_UNSPEC;
++}
++
+ static struct prestera_kern_fib_cache *
+ prestera_kern_fib_cache_find(struct prestera_switch *sw,
+ 			     struct prestera_kern_fib_cache_key *key)
+@@ -76,7 +316,7 @@ static void
+ prestera_kern_fib_cache_destroy(struct prestera_switch *sw,
+ 				struct prestera_kern_fib_cache *fib_cache)
+ {
+-	fib_info_put(fib_cache->fi);
++	fib_info_put(fib_cache->fen4_info.fi);
+ 	rhashtable_remove_fast(&sw->router->kern_fib_cache_ht,
+ 			       &fib_cache->ht_node,
+ 			       __prestera_kern_fib_cache_ht_params);
+@@ -89,8 +329,10 @@ prestera_kern_fib_cache_destroy(struct prestera_switch *sw,
+ static struct prestera_kern_fib_cache *
+ prestera_kern_fib_cache_create(struct prestera_switch *sw,
+ 			       struct prestera_kern_fib_cache_key *key,
+-			       struct fib_info *fi, dscp_t dscp, u8 type)
++			       struct fib_notifier_info *info)
+ {
++	struct fib_entry_notifier_info *fen_info =
++		container_of(info, struct fib_entry_notifier_info, info);
+ 	struct prestera_kern_fib_cache *fib_cache;
+ 	int err;
+ 
+@@ -99,10 +341,8 @@ prestera_kern_fib_cache_create(struct prestera_switch *sw,
+ 		goto err_kzalloc;
+ 
+ 	memcpy(&fib_cache->key, key, sizeof(*key));
+-	fib_info_hold(fi);
+-	fib_cache->fi = fi;
+-	fib_cache->kern_dscp = dscp;
+-	fib_cache->kern_type = type;
++	fib_info_hold(fen_info->fi);
++	memcpy(&fib_cache->fen4_info, fen_info, sizeof(*fen_info));
+ 
+ 	err = rhashtable_insert_fast(&sw->router->kern_fib_cache_ht,
+ 				     &fib_cache->ht_node,
+@@ -113,7 +353,7 @@ prestera_kern_fib_cache_create(struct prestera_switch *sw,
+ 	return fib_cache;
+ 
+ err_ht_insert:
+-	fib_info_put(fi);
++	fib_info_put(fen_info->fi);
+ 	kfree(fib_cache);
+ err_kzalloc:
+ 	return NULL;
+@@ -126,21 +366,25 @@ __prestera_k_arb_fib_lpm_offload_set(struct prestera_switch *sw,
+ {
+ 	struct fib_rt_info fri;
+ 
+-	if (fc->key.addr.v != PRESTERA_IPV4)
++	switch (fc->key.addr.v) {
++	case PRESTERA_IPV4:
++		fri.fi = fc->fen4_info.fi;
++		fri.tb_id = fc->key.kern_tb_id;
++		fri.dst = fc->key.addr.u.ipv4;
++		fri.dst_len = fc->key.prefix_len;
++		fri.dscp = fc->fen4_info.dscp;
++		fri.type = fc->fen4_info.type;
++		/* flags begin */
++		fri.offload = offload;
++		fri.trap = trap;
++		fri.offload_failed = fail;
++		/* flags end */
++		fib_alias_hw_flags_set(&init_net, &fri);
+ 		return;
+-
+-	fri.fi = fc->fi;
+-	fri.tb_id = fc->key.kern_tb_id;
+-	fri.dst = fc->key.addr.u.ipv4;
+-	fri.dst_len = fc->key.prefix_len;
+-	fri.dscp = fc->kern_dscp;
+-	fri.type = fc->kern_type;
+-	/* flags begin */
+-	fri.offload = offload;
+-	fri.trap = trap;
+-	fri.offload_failed = fail;
+-	/* flags end */
+-	fib_alias_hw_flags_set(&init_net, &fri);
++	case PRESTERA_IPV6:
++		/* TODO */
++		return;
++	}
+ }
+ 
+ static int
+@@ -149,7 +393,7 @@ __prestera_pr_k_arb_fc_lpm_info_calc(struct prestera_switch *sw,
+ {
+ 	memset(&fc->lpm_info, 0, sizeof(fc->lpm_info));
+ 
+-	switch (fc->fi->fib_type) {
++	switch (prestera_kern_fib_info_type(&fc->info)) {
+ 	case RTN_UNICAST:
+ 		fc->lpm_info.fib_type = PRESTERA_FIB_TYPE_TRAP;
+ 		break;
+@@ -274,14 +518,14 @@ __prestera_k_arb_util_fib_overlapped(struct prestera_switch *sw,
+ static int
+ prestera_k_arb_fib_evt(struct prestera_switch *sw,
+ 		       bool replace, /* replace or del */
+-		       struct fib_entry_notifier_info *fen_info)
++		       struct fib_notifier_info *info)
+ {
+ 	struct prestera_kern_fib_cache *tfib_cache, *bfib_cache; /* top/btm */
+ 	struct prestera_kern_fib_cache_key fc_key;
+ 	struct prestera_kern_fib_cache *fib_cache;
+ 	int err;
+ 
+-	prestera_util_fen_info2fib_cache_key(fen_info, &fc_key);
++	prestera_util_fen_info2fib_cache_key(info, &fc_key);
+ 	fib_cache = prestera_kern_fib_cache_find(sw, &fc_key);
+ 	if (fib_cache) {
+ 		fib_cache->reachable = false;
+@@ -304,10 +548,7 @@ prestera_k_arb_fib_evt(struct prestera_switch *sw,
+ 	}
+ 
+ 	if (replace) {
+-		fib_cache = prestera_kern_fib_cache_create(sw, &fc_key,
+-							   fen_info->fi,
+-							   fen_info->dscp,
+-							   fen_info->type);
++		fib_cache = prestera_kern_fib_cache_create(sw, &fc_key, info);
+ 		if (!fib_cache) {
+ 			dev_err(sw->dev->dev, "fib_cache == NULL");
+ 			return -ENOENT;
+@@ -512,13 +753,15 @@ static void __prestera_router_fib_event_work(struct work_struct *work)
+ 
+ 	switch (fib_work->event) {
+ 	case FIB_EVENT_ENTRY_REPLACE:
+-		err = prestera_k_arb_fib_evt(sw, true, &fib_work->fen_info);
++		err = prestera_k_arb_fib_evt(sw, true,
++					     &fib_work->fen_info.info);
+ 		if (err)
+ 			goto err_out;
+ 
+ 		break;
+ 	case FIB_EVENT_ENTRY_DEL:
+-		err = prestera_k_arb_fib_evt(sw, false, &fib_work->fen_info);
++		err = prestera_k_arb_fib_evt(sw, false,
++					     &fib_work->fen_info.info);
+ 		if (err)
+ 			goto err_out;
+ 
 -- 
 2.17.1
 
