@@ -2,130 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5BECCA47C
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 02:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24016C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 03:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiGJCk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 22:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
+        id S229492AbiGJDpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 23:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiGJCkz (ORCPT
+        with ESMTP id S229450AbiGJDpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 22:40:55 -0400
-Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BE913D5C;
-        Sat,  9 Jul 2022 19:40:53 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4LgWSq1fdKz6P4H3;
-        Sun, 10 Jul 2022 10:39:55 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-        by APP3 (Coremail) with SMTP id _Ch0CgAHamkwPMpiR35SAg--.17742S3;
-        Sun, 10 Jul 2022 10:40:50 +0800 (CST)
-Subject: Re: [PATCH RESEND v6 0/8] bugfix and cleanup for blk-throttle
-To:     Yu Kuai <yukuai1@huaweicloud.com>, tj@kernel.org, mkoutny@suse.com,
-        axboe@kernel.dk, ming.lei@redhat.com
-Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-References: <20220701093441.885741-1-yukuai1@huaweicloud.com>
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <e1d6b26d-2eae-7b78-277a-0bb737dc9c4b@huaweicloud.com>
-Date:   Sun, 10 Jul 2022 10:40:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Sat, 9 Jul 2022 23:45:53 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C3011814;
+        Sat,  9 Jul 2022 20:45:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657424752; x=1688960752;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=EstlRZ+njSWlv76Nln8G2irxpf1Uxid3bbJ992h6v8U=;
+  b=WSkAg1XlDIgp6jnGG1+jvS1y7x2RpwFc7ZF9WJEyOuJXmlals3OyQJJQ
+   vLVedUAIwc50hVMW9qxBPICegkrYzLZZR9ZjUFm7zyaUZJH7Wkfw6EOw4
+   NhKWDEH2KFppyKM5hZfwRISpEYn33WWaeUUoUWJlK9GCkwVLq7NMKbwAQ
+   GKLMB4aGJK66vwH4yWPdfp7T7apr8c1lUe4SYGrwquRjtcXAHVEtRa43K
+   7qUfmlSxDBk5x92GnZY8DoXSi9Op5nme1WNVECqjh35w4jSphD70ywF47
+   vvLIvLtIbpYK44jpX+tFvA5uH86AW8vMlKqcnZtUjglc/LwvJeDsBLTIq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10403"; a="283232015"
+X-IronPort-AV: E=Sophos;i="5.92,260,1650956400"; 
+   d="scan'208";a="283232015"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2022 20:45:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,260,1650956400"; 
+   d="scan'208";a="569377038"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 09 Jul 2022 20:45:51 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oANtG-000PRM-By;
+        Sun, 10 Jul 2022 03:45:50 +0000
+Date:   Sun, 10 Jul 2022 11:44:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: [djwong-xfs:vectorized-scrub 16/368] htmldocs:
+ Documentation/filesystems/xfs-online-fsck-design.rst:3691: WARNING:
+ Duplicate explicit target name: "kernel".
+Message-ID: <202207101126.VEXGZ19c-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220701093441.885741-1-yukuai1@huaweicloud.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _Ch0CgAHamkwPMpiR35SAg--.17742S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxCr4xJr1xJw43ZFWrXw4UXFb_yoW5Gr48pF
-        Waqr45Cw4UJrnrCw43Gw43ZFWrGan7Xw15X3sxJw1fu3WqvryUtr1v9w4ruFyIyFZ7KrWI
-        9F1jqFn7CFyUZ37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCYjI0SjxkI62AI1cAE67vI
-        Y487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y
-        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-        WUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUU
-        UU=
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
+head:   569bd1ce4bb5c53a1b892fbe6d99693bf637063b
+commit: a7934b8211da00f08827e4aeb97e477d20e91c23 [16/368] xfs: document future directions of online fsck
+reproduce: make htmldocs
 
-ÔÚ 2022/07/01 17:34, Yu Kuai Ð´µÀ:
-> From: Yu Kuai <yukuai3@huawei.com>
-> 
-> Resend v5 by a new mail address(huaweicloud.com) because old
-> address(huawei.com)has some problem that emails can end up in spam.
-> Please let me know if anyone still see this patchset end up in spam.
-> 
-> Changes in v6:
->   - rename parameter in patch 3
->   - add comments and reviewed tag for patch 4
-> Changes in v5:
->   - add comments in patch 4
->   - clear bytes/io_skipped in throtl_start_new_slice_with_credit() in
->   patch 4
->   - and cleanup patches 5-8
-> Changes in v4:
->   - add reviewed-by tag for patch 1
->   - add patch 2,3
->   - use a different way to fix io hung in patch 4
-> Changes in v3:
->   - fix a check in patch 1
->   - fix link err in patch 2 on 32-bit platform
->   - handle overflow in patch 2
-> Changes in v2:
->   - use a new solution suggested by Ming
->   - change the title of patch 1
->   - add patch 2
-> 
-> Patch 1 fix that blk-throttle can't work if multiple bios are throttle,
-> Patch 2 fix overflow while calculating wait time
-> Patch 3,4 fix io hung due to configuration updates.
-> Patch 5-8 are cleanup patches, there are no functional changes, just
-> some places that I think can be optimized during code review.
-> 
-Jens and Michal,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Can you receive this patchset normally(not end up in spam)?
+All warnings (new ones prefixed by >>):
 
-If so, Tejun, can you take a look? This patchset do fix some problems in
-blk-throttle.
+>> Documentation/filesystems/xfs-online-fsck-design.rst:3691: WARNING: Duplicate explicit target name: "kernel".
 
-BTW, Michal and Ming, it'll be great if you can take a look at other
-patches as well.
+vim +/kernel +3691 Documentation/filesystems/xfs-online-fsck-design.rst
 
-Thansk,
-Kuai
-> Previous version:
-> v1: https://lore.kernel.org/all/20220517134909.2910251-1-yukuai3@huawei.com/
-> v2: https://lore.kernel.org/all/20220518072751.1188163-1-yukuai3@huawei.com/
-> v3: https://lore.kernel.org/all/20220519085811.879097-1-yukuai3@huawei.com/
-> v4: https://lore.kernel.org/all/20220523082633.2324980-1-yukuai3@huawei.com/
-> v5: https://lore.kernel.org/all/20220528064330.3471000-1-yukuai3@huawei.com/
-> 
-> Yu Kuai (8):
->    blk-throttle: fix that io throttle can only work for single bio
->    blk-throttle: prevent overflow while calculating wait time
->    blk-throttle: factor out code to calculate ios/bytes_allowed
->    blk-throttle: fix io hung due to config updates
->    blk-throttle: use 'READ/WRITE' instead of '0/1'
->    blk-throttle: calling throtl_dequeue/enqueue_tg in pairs
->    blk-throttle: cleanup tg_update_disptime()
->    blk-throttle: clean up flag 'THROTL_TG_PENDING'
-> 
->   block/blk-throttle.c | 168 +++++++++++++++++++++++++++++--------------
->   block/blk-throttle.h |  16 +++--
->   2 files changed, 128 insertions(+), 56 deletions(-)
-> 
+  3689	
+  3690	Future Work
+> 3691	===========
+  3692	
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
