@@ -2,148 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 373C2C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 19:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA07C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 19:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbiGJTKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 15:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S229608AbiGJTNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 15:13:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiGJTK1 (ORCPT
+        with ESMTP id S229517AbiGJTNc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 15:10:27 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C420514D26
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 12:10:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657480226; x=1689016226;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2Sr38xJM7rG2LsJ2u/A6vSrlv1ER55RqfPr58rXKOdQ=;
-  b=hjrb6pO4zf0dp0vVsmBoMRwTmEuZg3wnYkFOe6OnCsw69S2+73/hwVDr
-   q/Lsd3kiX8pNywBSVQMO18BDqldVkuSGFtuMZNLgL3M3T3fHQ2seaHxi7
-   JGk6SVokcriVJA6s195BYfPBffNQsBEl3nbl751wPxJ9vJIfTJ60nT6Bw
-   sBFulD9MopZTUGjC6nAJsjG2MyJhAnwAM5/PiACErhk7b1xbKXkjgZfwH
-   dnAzcVQViVZJFuoHGZRtQ5dRLzKi2tP94nYI7oLBmbvaH3uPPK4gJH66D
-   M+fuKpYhiPIRhPxnsMBKILNmBCRD87OtrxJ2WRfbLY2b6HiTrPDAdEMeJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="346220076"
-X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
-   d="scan'208";a="346220076"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 12:10:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
-   d="scan'208";a="544772245"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 10 Jul 2022 12:10:24 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oAcJz-000Q7F-Cx;
-        Sun, 10 Jul 2022 19:10:23 +0000
-Date:   Mon, 11 Jul 2022 03:10:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tramp_27 24/33] kernel/bpf/trampoline.c:315:14:
- error: call to undeclared function 'is_tracing_multi'; ISO C99 and later do
- not support implicit function declarations
-Message-ID: <202207110343.uPXNDCd7-lkp@intel.com>
+        Sun, 10 Jul 2022 15:13:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BF314D0C
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 12:13:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 61352CE0EB9
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 19:13:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B2FC341D2
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 19:13:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657480405;
+        bh=3hkmLeoPA94cguxwWVvXXxv3VcnHAir/c52ak4ViFbA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ShhJs+CwJ0mATbKIljdmTB0BEj4Xh/8n7CNhzbStAtyoTJMmi8fD1azjRYNy8VmnY
+         5//BNxPQA2fYCY3AWQyLWV4os77A8LuA7JhDC5bWRJmAm8PuQk3ygJ9i/u9nmRLCjB
+         XnTbIFtVLLCl/snNNALgf3PTmLgwV7rVdNWXvZJIUrJb7ZVNH/ttX0U8fxv9a2dS0A
+         sJ4JslvKrnfcScwn995fBK0o+ZgfOTXShwmEcT60mCwhs++Bgy4PM8J8P3qlv8ePTn
+         9d3V8jAUMzx0PQTOLRuF8oNQ21AxD0JXL52iwnGEHZ7AOXlRIFvIIuvgwq+2uSQsIU
+         f6TDGpXuzyyuA==
+Received: by mail-yb1-f180.google.com with SMTP id h62so3032201ybb.11
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 12:13:25 -0700 (PDT)
+X-Gm-Message-State: AJIora/aduvDz/TfExBbnz7nCLPI6E0FDug5J4TOApgedCsVPS9DnNuW
+        kAV1y4MAGb5DM6VIDIxMQZV/OCQUN44LWfoJ5Jk=
+X-Google-Smtp-Source: AGRyM1v1+pbuX33zfo/UTqTwqWe49lEPj5DVrFrYna2ZGAzjmIVOdIfpTz0xQRfFfS93XK23Rrs6t1nulIoluusPsxU=
+X-Received: by 2002:a25:9f87:0:b0:669:4345:a8c0 with SMTP id
+ u7-20020a259f87000000b006694345a8c0mr14394151ybq.472.1657480404689; Sun, 10
+ Jul 2022 12:13:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220708231520.3958391-1-ndesaulniers@google.com>
+In-Reply-To: <20220708231520.3958391-1-ndesaulniers@google.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sun, 10 Jul 2022 21:13:08 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0x2KJuCjupKuj6XAYUAeF47ZV4bWuEGUQFOcOK_Do2jA@mail.gmail.com>
+Message-ID: <CAK8P3a0x2KJuCjupKuj6XAYUAeF47ZV4bWuEGUQFOcOK_Do2jA@mail.gmail.com>
+Subject: Re: [PATCH v6] coresight: etm4x: avoid build failure with unrolled loops
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        David Laight <David.Laight@aculab.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, coresight@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_27
-head:   08201713df8992b94d140b43fd4f20f1ad4aedb3
-commit: 83e7574907cf2bdc5e551a6e39a2b897d0830062 [24/33] bpf: Add support to attach multi trampolines
-config: arm-randconfig-r021-20220710 (https://download.01.org/0day-ci/archive/20220711/202207110343.uPXNDCd7-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6ce63e267aab79ca87bf63453d34dd3909ab978d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=83e7574907cf2bdc5e551a6e39a2b897d0830062
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf bpf/tramp_27
-        git checkout 83e7574907cf2bdc5e551a6e39a2b897d0830062
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash kernel/
+On Sat, Jul 9, 2022 at 1:15 AM Nick Desaulniers <ndesaulniers@google.com> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+>         ({                                                                      \
+>                 u64 __val;                                                      \
+>                                                                                 \
+> -               if (__builtin_constant_p((offset)))                             \
+> +               if (__is_constexpr((offset)))                                   \
+>                         __val = read_etm4x_sysreg_const_offset((offset));       \
+>                 else                                                            \
+>                         __val = etm4x_sysreg_read((offset), true, (_64bit));    \
+>
 
-All errors (new ones prefixed by >>):
+This is clearly better than the current version using
+__builtin_constant_p(), but
+I don't think it's safe in all cases, since there are expressions that
+are constant
+expressions to the compiler but are not valid input to the assembler.
 
->> kernel/bpf/trampoline.c:315:14: error: call to undeclared function 'is_tracing_multi'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                           *multi |= is_tracing_multi(prog->expected_attach_type);
-                                     ^
-   kernel/bpf/trampoline.c:947:9: error: call to undeclared function 'ftrace_hash_alloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-                  ^
-   kernel/bpf/trampoline.c:947:27: error: use of undeclared identifier 'FTRACE_HASH_MAX_BITS'
-           hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-                                    ^
-   kernel/bpf/trampoline.c:974:5: error: call to undeclared function 'ftrace_hash_add_entry'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                                   ftrace_hash_add_entry(hash, entry);
-                                   ^
-   kernel/bpf/trampoline.c:984:4: error: call to undeclared function 'ftrace_hash_add_entry'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                           ftrace_hash_add_entry(hash, entry);
-                           ^
-   kernel/bpf/trampoline.c:988:8: error: call to undeclared function 'set_ftrace_direct'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           err = set_ftrace_direct(hash);
-                 ^
-   kernel/bpf/trampoline.c:990:2: error: call to undeclared function 'ftrace_hash_free'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           ftrace_hash_free(hash);
-           ^
-   7 errors generated.
+I would prefer to see this fixed differently, but doing this one first is also
+fine with me:
 
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-vim +/is_tracing_multi +315 kernel/bpf/trampoline.c
-
-   287	
-   288	static struct bpf_tramp_progs *
-   289	bpf_trampoline_get_progs(const struct bpf_trampoline *tr, int *total, bool *ip_arg, bool *multi)
-   290	{
-   291		const struct bpf_prog_array_item *item;
-   292		struct bpf_prog_array *prog_array;
-   293		struct bpf_tramp_progs *tprogs;
-   294		struct bpf_tramp_prog *tp;
-   295		struct bpf_prog *prog;
-   296		int kind;
-   297	
-   298		*total = 0;
-   299		tprogs = kcalloc(BPF_TRAMP_MAX, sizeof(*tprogs), GFP_KERNEL);
-   300		if (!tprogs)
-   301			return ERR_PTR(-ENOMEM);
-   302	
-   303		for (kind = 0; kind < BPF_TRAMP_MAX; kind++) {
-   304			tprogs[kind].nr_progs = tr->progs_cnt[kind];
-   305			*total += tr->progs_cnt[kind];
-   306			tp = &tprogs[kind].progs[0];
-   307	
-   308			prog_array = tr->progs_array[kind];
-   309			if (!prog_array)
-   310				continue;
-   311			item = &prog_array->items[0];
-   312	
-   313			while ((prog = READ_ONCE(item->prog))) {
-   314				*ip_arg |= prog->call_get_func_ip;
- > 315				*multi |= is_tracing_multi(prog->expected_attach_type);
-   316				tp->prog = prog;
-   317				tp->cookie = item->bpf_cookie;
-   318				tp++; item++;
-   319			}
-   320		}
-   321		return tprogs;
-   322	}
-   323	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+        Arnd
