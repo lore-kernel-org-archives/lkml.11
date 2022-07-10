@@ -2,154 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D223C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A393AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbiGJPRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 11:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
+        id S229632AbiGJPVf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 11:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiGJPRE (ORCPT
+        with ESMTP id S229601AbiGJPVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 11:17:04 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C8DCE25
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:17:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=N0rqnDTrHAjPRGrAyMQmskD/2xe+zwWD0acZaTVuWqg=; b=uzP+h+7p/LPKqky6+oL+o9lJCW
-        gNsBo1+ZVbzTfTzJnAMimxbKk51ZOdKi243xGClR5xNl5/7DTpXWu2xVH6f25q3uXzR8ZIqekZchz
-        VNEvnpEG+RHh4mY+b/aDxq6sfSkK524/hQe5sQX1nxk4gX2/kI7mtNEMIX0JoTQZW7B+kqergTg+J
-        UyKkAs9TOg806l73tUL7xyxle5AQeXuRcreik+5WPCOrKpuLnpvXUMytM3HBxTaQ68ekUr0tPscnZ
-        AKwouTjNjtsCqONpvVcC1TF5fkCimTfr4QlY2U1wMJx1kl3EnKQMnDfmBALrCDhNepQioemd4/d/4
-        P8MkF9DS0ll1G+SmzH3hXMokCHXwmMXJp4cxbeesVBhldDx419dZIQRzT/r3EOJJRNWmwNGvM8vQy
-        CCROas6fEwTy17Z8emdpWwg8N4lMIb668Dydwo8l6QO0I55w1+pU4P9WuWhDDzffjJLjibhO7P2k1
-        40ds9zkCtPkk82GPWjrudPRVK/jbpQNgE9QN7T8oPKI/ihrhDCVA2vUw65IclrRKRIcNaNUl+HoR2
-        z7VLXUhLV6hDZtuA2Lgvqjh1u2MXP+F43FgDStuLu5Sj1AQUvdY8m+luePiHA1aqxJ/vuXEiPkeCw
-        xmfTJcJITnVhJYvhlOwsqjIS28bMl65e7NjYjW3Jg=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        linux-kernel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>, Greg Kurz <groug@kaod.org>
-Subject: Re: [PATCH 3/3] 9p: Add mempools for RPCs
-Date:   Sun, 10 Jul 2022 17:16:45 +0200
-Message-ID: <12950409.o0bIpVV1Ut@silver>
-In-Reply-To: <YsrR/M+fna44trHm@codewreck.org>
-References: <20220704010945.C230AC341C7@smtp.kernel.org> <13813647.qg49PginWZ@silver>
- <YsrR/M+fna44trHm@codewreck.org>
+        Sun, 10 Jul 2022 11:21:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51F3A46F
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:21:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94C0FB80955
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 15:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC25CC3411E;
+        Sun, 10 Jul 2022 15:21:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657466491;
+        bh=cFR4r+OUsNc5EddjcX3rp0pvn2lEkDokCA1fWCgPZ2Q=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VAHuxJSOoRnSmkT9iWZdZom9RZ7uM1F9MstnhVkm9jmW7rhtKzNJlmq38FJbJqsdF
+         9LnqYKpTxQY8ee+jRlqZGiV6OPBOh+wcJzgRimaYoPfS8FJhnX1K3/lw157TCGIOm8
+         CXfGNuemln6TNLPWNFxqn+1sAzn9CI08a2qxcbno=
+Date:   Sun, 10 Jul 2022 17:21:28 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Char/Misc driver fixes 5.19-rc6
+Message-ID: <YsrueF8EfYIOyCk/@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sonntag, 10. Juli 2022 15:19:56 CEST Dominique Martinet wrote:
-> Christian Schoenebeck wrote on Sun, Jul 10, 2022 at 02:57:58PM +0200:
-> > On Samstag, 9. Juli 2022 22:50:30 CEST Dominique Martinet wrote:
-> > > Christian Schoenebeck wrote on Sat, Jul 09, 2022 at 08:08:41PM +0200:
-[...]
-> > > late replies to the oldtag are no longer allowed once rflush has been
-> > > sent.
-> > 
-> > That's not quite correct, it also explicitly says this:
-> > 
-> > "The server may respond to the pending request before responding to the
-> > Tflush."
-> > 
-> > And independent of what the 9p2000 spec says, consider this:
-> > 
-> > 1. client sends a huge Twrite request
-> > 2. server starts to perform that write but it takes very long
-> > 3.A impatient client sends a Tflush to abort it
-> > 3.B server finally responds to Twrite with a normal Rwrite
-> > 
-> > These last two actions 3.A and 3.B may happen concurrently within the same
-> > transport time frame, or "at the same time" if you will. There is no way
-> > to
-> > prevent that from happening.
-> 
-> Yes, and that is precisely why we cannot free the buffers from the
-> Twrite until we got the Rflush.
-> Until the Rflush comes, a Rwrite can still come at any time so we cannot
-> just free these resources.
+The following changes since commit 03c765b0e3b4cb5063276b086c76f7a612856a9a:
 
-With current client version, agreed, as it might potentially incorrectly 
-lookup a wrong (new) request with the already recycled tag number then. With 
-consecutive tag numbers this would not happen. Client lookup with the old tag 
-number would fail -> ignore reply. However ...
+  Linux 5.19-rc4 (2022-06-26 14:22:10 -0700)
 
-> In theory it'd be possible to free the buffers for some protocol and
-> throw the data with the bathwater, but the man page says that in this
-> case we should ignore the flush and behave as if the request behaved
-> properly because of side-effects e.g. even if you try to interrupt an
-> unlink() call if the server says it removed it, well, it's removed so we
-> should tell userspace that.
+are available in the Git repository at:
 
-... good point! I was probably too much thinking about Twrite/Tread examples, 
-so I haven't considered that case indeed.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-5.19-rc6
 
-> > > > When the client sends a Tflush, it must wait to receive the
-> > > > corresponding Rflush before reusing oldtag for subsequent messages
-> > > 
-> > > if we free the request at this point we'd reuse the tag immediately,
-> > > which definitely lead to troubles.
-> > 
-> > Yes, that's the point I never understood why this is done by Linux client.
-> > I find it problematic to recycle IDs in a distributed system within a
-> > short time window. Additionally it also makes 9p protocol debugging more
-> > difficult, as you often look at tag numbers in logs and think, "does this
-> > reference the previous request, or is it about a new one now?"
-> 
-> I can definitely agree with that.
-> We need to keep track of used tags, but we don't need to pick the lowest
-> tag available -- maybe the IDR code that allocates tag can be configured
-> to endlessly increment and loop around, only avoiding duplicates?
-> 
-> Ah, here it is, from Documentation/core-api/idr.rst:
-> 
->   If you need to allocate IDs sequentially, you can use
->   idr_alloc_cyclic().  The IDR becomes less efficient when dealing
->   with larger IDs, so using this function comes at a slight cost.
-> 
-> 
-> That would be another "easy change", if you'd like to check that cost at
-> some point...
+for you to fetch changes up to 2cd37c2e72449a7add6da1183d20a6247d6db111:
 
-Nice! I'll definitely give this a whirl and will report back!
+  misc: rtsx_usb: set return value in rsp_buf alloc err path (2022-07-02 16:20:56 +0200)
 
-> (until we notice that some server has a static array for tags and stop
-> working once you use a tag > 64 or something...)
+----------------------------------------------------------------
+Char/Misc driver fixes for 5.19-rc6
 
-That would be an incorrect server implementation then, a.k.a. bug. The spec is 
-clear that tag numbers are generated by client and does not mandate any 
-sequential structure.
+Here are 4 small char/misc driver fixes for 5.19-rc6 to resolve some
+reported issues.  They only affect 2 drivers:
+	- rtsx_usb: fix for of-reported DMA warning error, the driver
+	  was handling memory buffers in odd ways, it has now been fixed
+	  up to be much simpler and correct by Shuah.
+	- at25 eeprom driver bugfix for reported problem
 
-> Anyway, this is getting off-topic -- the point is that we need to keep
-> resources around for the original reply when we send a tflush, so we
-> can't just free that buffer first unless you're really good with it.
-> 
-> It'd be tempting to just steal its buffers but these might still be
-> useful, if e.g. both replies come in parallel.
-> (speaking of which, why do we need two buffers? Do we ever re-use the
-> sent buffer once the reply comes?... this all looks sequential to me...)
+All of these have been in linux-next for a week with no reported
+problems.
 
-Yep, I was thinking the exact same, but for now I would leave it this way.
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-> So instead of arguing here I'd say let's first finish your smaller reqs
-> patches and make mempool again on top of that with a failsafe just for
-> flush buffers to never fallback on mempool; I think that'll be easier to
-> do in this order.
+----------------------------------------------------------------
+Geert Uytterhoeven (1):
+      eeprom: at25: Rework buggy read splitting
 
-OK then, fine with me!
+Shuah Khan (3):
+      misc: rtsx_usb: fix use of dma mapped buffer for usb bulk transfer
+      misc: rtsx_usb: use separate command and response buffers
+      misc: rtsx_usb: set return value in rsp_buf alloc err path
 
-No time today, but I hope to post a new version next week.
-
-Best regards,
-Christian Schoenebeck
-
-
+ drivers/misc/cardreader/rtsx_usb.c | 27 +++++++++++++++++++--------
+ drivers/misc/eeprom/at25.c         | 26 ++++++++++++--------------
+ include/linux/rtsx_usb.h           |  2 --
+ 3 files changed, 31 insertions(+), 24 deletions(-)
