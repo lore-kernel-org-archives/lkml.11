@@ -2,114 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A30C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 01:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 01:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbiGJBbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Jul 2022 21:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
+        id S229543AbiGJBiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Jul 2022 21:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbiGJBbk (ORCPT
+        with ESMTP id S229462AbiGJBiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Jul 2022 21:31:40 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9236015A21;
-        Sat,  9 Jul 2022 18:31:39 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id y22so532127qki.7;
-        Sat, 09 Jul 2022 18:31:39 -0700 (PDT)
+        Sat, 9 Jul 2022 21:38:03 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D181BEB9
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Jul 2022 18:38:02 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id g1so1654362qkl.9
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Jul 2022 18:38:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=W+RUA8QatinY3k/ikkS0kUMcoOi6M3AlFiU1N+5j9MI=;
-        b=lSv4WQ8HlrpD3fVbm2Yhta7lhAIa3r+j6LUNquuxXWx2DuXhRxAZQvSqg/m50VHKQC
-         EW2osXIdWeE0MtrdWqzVDzrQjkrGeyYPyCKgzZYNiqJBwp6Sx22neu2OghHSswDtN1TS
-         ZKTRrW6SDlcsPxo6Wxu68ICDQMwwau5BO3t1uZy8sRpiyPyBOpr+2Jq37ihO6ak4mohw
-         yF257n4+LPPgDq42Ny5XWkqHaeO3Aj9oDHOGZnHYb+nTg5Ew6EAjOwuAnlVT0YnOteKq
-         Pd1Qxtbb6XTFAnVRrGC125EkJuzp5ZYO+yodyR0vrujo9vuLRLbZEwww/xGvmLDWxq2Y
-         A8Og==
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Zg8kU8L72tPIvWCiVTIJw7BwgVkbotl+8MU4rFDgnnU=;
+        b=UAaQT1JtDJ1xuvBsX5S5V6w+9jyRdy2+ltqupEmsuQP/30BEtpMrY01IdKQDBoD0NL
+         4HOlmKpek4e9rVX4nyhJb+4GNkneEJDRKld+yLRLEgw6SZGcVaAHQL25DgYFXZd+Asqe
+         E/ns/MDptEsjBvCopunZNQ3YM+t3SGrp5gSYQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=W+RUA8QatinY3k/ikkS0kUMcoOi6M3AlFiU1N+5j9MI=;
-        b=T0ltGjJKE+ZMumigFn8d9AZIzM0COGXTq/hofB5XTPDEXKLIObvTjeeiIIYalVJFLM
-         oXpMlV6/oXu1ThlidzChB2VZ0qbNumz0FojyvkTdo/RXLW1/uHAtDE7LvRyGz+ok86gv
-         kOAdIZaorpd05iu0jZsJpTpHpyazPl4GkGwiT8YsJhxA6sO/aHAOfQjbjLon5ePvzjrW
-         uqrUP3HWcP7Zr+qGT6npF78ZReQYo4rTxcB8prsA0eHOJ2gwdk7d1gdcjxiWP9iMvYtR
-         w3v4lpF1zeY7UaZfdT6YRFYPoM5GdLI2+iKNrE3HDNlZLaQdp84GlGAdVVyenBBw7P/u
-         bsMA==
-X-Gm-Message-State: AJIora8FUZQfcuSPuEzeOfKBxIXnrL/+QZVxTkGpIbvJ5qrED99BA1cV
-        t9viL0y9F1y2GIpJKMDgtNU=
-X-Google-Smtp-Source: AGRyM1vS5JUfU8T3Ux084nZAemZhx6XwdCnyFbQzlb424f0DwOZriBhvMfpqBHpAZWiHp+aa7w0wBg==
-X-Received: by 2002:a37:9241:0:b0:6b5:738c:be25 with SMTP id u62-20020a379241000000b006b5738cbe25mr3094264qkd.178.1657416698628;
-        Sat, 09 Jul 2022 18:31:38 -0700 (PDT)
-Received: from shaak.xiphos.ca (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id j13-20020a05620a410d00b006b575a9775csm2137258qko.45.2022.07.09.18.31.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Zg8kU8L72tPIvWCiVTIJw7BwgVkbotl+8MU4rFDgnnU=;
+        b=DOoYdTpfWYqTdgCRAbhzi7f94p+paUH6XC9rW6jlcfhDS64HmRbYFALYJmnmdAWNKK
+         Hi656q7/G7HFhRKUbLTXUNs77ZHpxLaNmJqVk9JNusE9YhQGvegOVOy+ULNR1VkenNNl
+         AuJtq9ufKjweDAfiek787RiDvOX5IijLjPbroNFtiL9tKw/5I98Q3oitwDTAC6xHnN+F
+         UXCmd47ym8kFHnFUv5mB8uV29BKFUgtEczHg9huQi/lCdP/0EatiL+OfRuPu305NHovP
+         IlLP7ceZYYPu6nPgXmWML0xaWYBXeTKaGbF4MD0QvPwbYYTu+PNTaK9mxM7CrUdMSHpH
+         gSRA==
+X-Gm-Message-State: AJIora/0iJ8BfjbI89vRhZqxF7C7NOtdCpHFJixxBsQJ/UhH2kz3pRDw
+        oMGCoFweEwkpYYyUzwWsQyq9Vw==
+X-Google-Smtp-Source: AGRyM1u1wLfeOuQd+BLT9o7UuMOH1Jb/yp3QUKowdVefD30sHot9hR3rTHgVPcL7Yol1J4fsYAAnyg==
+X-Received: by 2002:a05:620a:27cc:b0:6b5:4dd4:d177 with SMTP id i12-20020a05620a27cc00b006b54dd4d177mr7508946qkp.70.1657417082083;
+        Sat, 09 Jul 2022 18:38:02 -0700 (PDT)
+Received: from localhost (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
+        by smtp.gmail.com with ESMTPSA id ci17-20020a05622a261100b00304f55e56e4sm2503726qtb.40.2022.07.09.18.38.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jul 2022 18:31:38 -0700 (PDT)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, jic23@kernel.org, geert@linux-m68k.org
-Cc:     peda@axentia.se, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 5/5] iio: test: rework Kconfig to support modules
-Date:   Sat,  9 Jul 2022 21:31:09 -0400
-Message-Id: <20220710013109.3349104-6-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
-In-Reply-To: <20220710013109.3349104-1-liambeguin@gmail.com>
-References: <20220710013109.3349104-1-liambeguin@gmail.com>
+        Sat, 09 Jul 2022 18:38:01 -0700 (PDT)
+Date:   Sun, 10 Jul 2022 01:38:01 +0000
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rushikesh.s.kadam@intel.com, urezki@gmail.com,
+        neeraj.iitr10@gmail.com, frederic@kernel.org, rostedt@goodmis.org,
+        vineeth@bitbyteword.org
+Subject: Re: [PATCH v2 0/8] Implement call_rcu_lazy() and miscellaneous fixes
+Message-ID: <YsoteYyJoOSzMGsr@google.com>
+References: <20220622225102.2112026-1-joel@joelfernandes.org>
+ <20220626031206.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <Ysev2jbxFGNkLvjG@google.com>
+ <20220708224514.GB1790663@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220708224514.GB1790663@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rework the IIO test Kconfig to support building KUnit tests as modules.
-This lets users execute tests at runtime in addition to the usual
-tools/testing/kunit/kunit.py script.
+On Fri, Jul 08, 2022 at 03:45:14PM -0700, Paul E. McKenney wrote:
+> On Fri, Jul 08, 2022 at 04:17:30AM +0000, Joel Fernandes wrote:
+> > On Sat, Jun 25, 2022 at 08:12:06PM -0700, Paul E. McKenney wrote:
+> > > On Wed, Jun 22, 2022 at 10:50:53PM +0000, Joel Fernandes (Google) wrote:
+> > > > 
+> > > > Hello!
+> > > > Please find the next improved version of call_rcu_lazy() attached.  The main
+> > > > difference between the previous version is that it is now using bypass lists,
+> > > > and thus handling rcu_barrier() and hotplug situations, with some small changes
+> > > > to those parts.
+> > > > 
+> > > > I also don't see the TREE07 RCU stall from v1 anymore.
+> > > > 
+> > > > In the v1, we some numbers below (testing on v2 is in progress). Rushikesh,
+> > > > feel free to pull these patches into your tree. Just to note, you will also
+> > > > need to pull the call_rcu_lazy() user patches from v1. I have dropped in this
+> > > > series, just to make the series focus on the feature code first.
+> > > > 
+> > > > Following are power savings we see on top of RCU_NOCB_CPU on an Intel platform.
+> > > > The observation is that due to a 'trickle down' effect of RCU callbacks, the
+> > > > system is very lightly loaded but constantly running few RCU callbacks very
+> > > > often. This confuses the power management hardware that the system is active,
+> > > > when it is in fact idle.
+> > > > 
+> > > > For example, when ChromeOS screen is off and user is not doing anything on the
+> > > > system, we can see big power savings.
+> > > > Before:
+> > > > Pk%pc10 = 72.13
+> > > > PkgWatt = 0.58
+> > > > CorWatt = 0.04
+> > > > 
+> > > > After:
+> > > > Pk%pc10 = 81.28
+> > > > PkgWatt = 0.41
+> > > > CorWatt = 0.03
+> > > 
+> > > So not quite 30% savings in power at the package level?  Not bad at all!
+> > 
+> > Yes this is the package residency amount, not the amount of power. This % is
+> > not power.
+> 
+> So what exactly is PkgWatt, then?  If you can say.  That is where I was
+> getting the 30% from.
 
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
----
- drivers/iio/test/Kconfig | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+Its the total package power (SoC power) - so like not just the CPU but also
+the interconnect, other controllers and other blocks in there.
 
-diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
-index 7dbf51bc4934..82924727b2cc 100644
---- a/drivers/iio/test/Kconfig
-+++ b/drivers/iio/test/Kconfig
-@@ -5,15 +5,25 @@
- 
- # Keep in alphabetical order
- config IIO_RESCALE_KUNIT_TEST
--	bool "Test IIO rescale conversion functions"
--	depends on KUNIT=y && IIO_RESCALE=y
-+	tristate "Test IIO rescale conversion functions" if !KUNIT_ALL_TESTS
-+	depends on KUNIT && IIO_RESCALE
- 	default KUNIT_ALL_TESTS
- 	help
--	  If you want to run tests on the iio-rescale code say Y here.
-+	  build unit tests for the iio-rescale code.
- 
--	  This takes advantage of ARCH=um to run tests and should be used by
--	  developers to tests their changes to the rescaling logic.
-+	  For more information on KUnit and unit tests in general, please refer
-+	  to the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+	  If unsure, say N.
- 
- config IIO_FORMAT_KUNIT_TEST
--        bool "Test IIO formatting functions"
--        depends on KUNIT=y
-+	tristate "Test IIO formatting functions" if !KUNIT_ALL_TESTS
-+	depends on KUNIT
-+	default KUNIT_ALL_TESTS
-+	help
-+	  build unit tests for the IIO formatting functions.
-+
-+	  For more information on KUnit and unit tests in general, please refer
-+	  to the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+	  If unsure, say N.
--- 
-2.35.1.4.g5d01301f2b86
+This output is from the turbostat program and the number is mentioned in the
+manpage:
+"PkgWatt Watts consumed by the whole package."
+https://manpages.debian.org/testing/linux-cpupower/turbostat.8.en.html
 
+
+> > > > Further, when ChromeOS screen is ON but system is idle or lightly loaded, we
+> > > > can see that the display pipeline is constantly doing RCU callback queuing due
+> > > > to open/close of file descriptors associated with graphics buffers. This is
+> > > > attributed to the file_free_rcu() path which this patch series also touches.
+> > > > 
+> > > > This patch series adds a simple but effective, and lockless implementation of
+> > > > RCU callback batching. On memory pressure, timeout or queue growing too big, we
+> > > > initiate a flush of one or more per-CPU lists.
+> > > 
+> > > It is no longer lockless, correct?  Or am I missing something subtle?
+> > > 
+> > > Full disclosure: I don't see a whole lot of benefit to its being lockless.
+> > > But truth in advertising!  ;-)
+> > 
+> > Yes, you are right. Maybe a better way I could put it is it is "lock
+> > contention less" :D
+> 
+> Yes, "reduced lock contention" would be a good phrase.  As long as you
+> carefully indicate exactly what scenario with greater lock contention
+> you are comparing to.
+> 
+> But aren't you acquiring the bypass lock at about the same rate as it
+> would be aquired without laziness?  What am I missing here?
+
+You are right, why not I just drop the locking phrases from the summary.
+Anyway the main win from this work is not related to locking.
+
+thanks,
+
+ - Joel
+
+> 
+> 							Thanx, Paul
+> 
+> > > > Similar results can be achieved by increasing jiffies_till_first_fqs, however
+> > > > that also has the effect of slowing down RCU. Especially I saw huge slow down
+> > > > of function graph tracer when increasing that.
+> > > > 
+> > > > One drawback of this series is, if another frequent RCU callback creeps up in
+> > > > the future, that's not lazy, then that will again hurt the power. However, I
+> > > > believe identifying and fixing those is a more reasonable approach than slowing
+> > > > RCU down for the whole system.
+> > > 
+> > > Very good!  I have you down as the official call_rcu_lazy() whack-a-mole
+> > > developer.  ;-)
+> > 
+> > :-D
+> > 
+> > thanks,
+> > 
+> >  - Joel
+> > 
