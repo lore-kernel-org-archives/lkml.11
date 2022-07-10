@@ -2,60 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D0ACCA479
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 21:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA398CCA479
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 21:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiGJV0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 17:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
+        id S229744AbiGJV0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 17:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiGJVZo (ORCPT
+        with ESMTP id S229648AbiGJVZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 17:25:44 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755AA165B7
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 14:25:18 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id d16so4742852wrv.10
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 14:25:18 -0700 (PDT)
+        Sun, 10 Jul 2022 17:25:51 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25E2167CB
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 14:25:19 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id d13-20020a05600c34cd00b003a2dc1cf0b4so2016683wmq.4
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 14:25:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linexp-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0VqD6Kev6VpOnlemDKOOgsLknXMbXjfC/c5SvSd/sfA=;
-        b=3tN7jm+EAe27LAGDzDjITeX7X69ZTvKB7Pg2lBkNSRSxJpzDCk5NWODvshf2VgMO3P
-         3jYYCGHZNpdllYmBB0KZHDNPSj8v9uUFnQBK//R1QgcuYz0OTvtzRa3owN1WnOrvzUjC
-         5cTqpuptbLDB1tkB7cWPDiEmGBnvZAj+hRoDK03cTl6PPL9daSTzm1vw79TNALglN6l/
-         4QULZnavS3EHGEZRHFJXYgiwo1a81rmEOqeqOKu8PHGypecspPsG6tKZdS5COhZnsnpo
-         u2nAKw4E+cChsBlS91UMCepzS4w3TQIN0yWIkSfcx7UgsNHv9f631Mi592V4H/pxm+ex
-         4Mrw==
+        bh=bIVAQgjKJeGSe1gmg5bAAUf+sy08/mvTvr//Arvl8d4=;
+        b=bwX6DCXV1ANz93kGzRrBmIE/uBbuJYI+xg3LHrquj+GqnzRrXEwv2HZISLJZRSW78o
+         GODhKJHDXJfbj9ZT8y+gmA2bXumlAY4BOTyrDf9HbdkC1easWhcVHrvT+W+ZcdMoTRTr
+         0UiUeG5ZpH1hqUduzq5ntInHXeWUZec9LwsVNTISLAMTaEp0IGQS/lhesFRQb37jLfNv
+         a5eJ9spCAqNawYa2oeQxtgldjk3j89qfJ6M9l03mEfjBnAAcl3qKuVMyT6hpIGP3WQjO
+         4JJlkE8MzN5CMvsuggDbJoehMwEB00/3fW6hE0yon1yGp65J0Vwdfjcq9rsQBxQUAGts
+         kbjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0VqD6Kev6VpOnlemDKOOgsLknXMbXjfC/c5SvSd/sfA=;
-        b=P7ZYa4/eBhDjcSQAQ3W/nvb4ibTGyI8L7RmmRKPdCEp32k+1FOU7HWW2TsJe9+1VjP
-         uRuTlBe0sFyjcFsK/32cq/9g9J2pfQAulX5kJoJIy30ZW7q9+5IB0fvi2Qs5K0859mHL
-         bgp+40b5MvyAXV49Qav8talG6bHh/iCVsezyV3MGm19t4MEmz5LvDn8kxrgjGH1vSFai
-         CrrvsAg0CBKx9S2sZ9WDG3lQUVIGlXaBUwX0MqAh7krQ9Kpxa2vmTrDybi6e0fNohT1e
-         aruxH4i8YzPPX7tsIVIPRjNjEncEd17AUiV1UhbdXZ2atCEfSKkEzMnva6KgHvdO12AE
-         CHfg==
-X-Gm-Message-State: AJIora+3QFdcUXOcjazRXqzOyDKllfghoX/GNKWBQbz/2qMqBSD/dSCJ
-        X9Hqtw3MXmc5OU2CyLA2y72s7w==
-X-Google-Smtp-Source: AGRyM1sSzyB7CSYFxqqnGpSGjUZBq9fLCMzcB7U7MimlSfil5Ogoz1VbACTlDbQfsuw8bJXO2djvfw==
-X-Received: by 2002:a05:6000:15c3:b0:21d:9f5a:df83 with SMTP id y3-20020a05600015c300b0021d9f5adf83mr4931743wry.360.1657488302963;
-        Sun, 10 Jul 2022 14:25:02 -0700 (PDT)
+        bh=bIVAQgjKJeGSe1gmg5bAAUf+sy08/mvTvr//Arvl8d4=;
+        b=N228ErUvZkrGmc6+mgX8CrvXMayeWQO34gsn+nGqQhog2N+uxcwZfRz/Oa4hW1kBZ4
+         OrUznfz9AzK01IyzeT2BLWJmFPbqcoh+oGRvE1ygeBaSM2xyNqVg293aFuFm6X/JuAvx
+         EaEjwrLlxdCFwLCWglgi4ocujpuhB+YPh7BUpFZarwDq/3pztl83TO1PUdeMMPW3gF0c
+         JOspvWacYM0blq8EeC+rwuBalaRAF/xmVkvJ85HmeEBZv/8CfFvDGL9iFdbAxxd0CrwL
+         UrmqU4p3aZDJbdBI51Tr0zfHo0cGTWbA5xW50BVXkMbNwgRfXqNHgshKbexDpFCIbbEI
+         knNQ==
+X-Gm-Message-State: AJIora9B8TFr2N/Zr7f3CiBo2RDsfr7iOEVpO27MzjjxZpaoEkEqAnTW
+        YdVqarLHZRMVF56/rUDKQ9L45fV2X1hdrw==
+X-Google-Smtp-Source: AGRyM1uo9Otvut72zMkDjHYnOsl3cCTcguJq1mSCKLu7tr3jw2jx6zah1dNAu0rjKPZTlUupXnCIMg==
+X-Received: by 2002:a05:600c:190a:b0:3a2:e8cc:57ca with SMTP id j10-20020a05600c190a00b003a2e8cc57camr383824wmq.118.1657488319230;
+        Sun, 10 Jul 2022 14:25:19 -0700 (PDT)
 Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:c7c0:6823:f3ce:2447])
-        by smtp.gmail.com with ESMTPSA id m19-20020a05600c3b1300b003a2dd0d21f0sm7142759wms.13.2022.07.10.14.25.02
+        by smtp.gmail.com with ESMTPSA id m19-20020a05600c3b1300b003a2dd0d21f0sm7142759wms.13.2022.07.10.14.25.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 14:25:02 -0700 (PDT)
+        Sun, 10 Jul 2022 14:25:18 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linexp.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, khilman@baylibre.com, abailon@baylibre.com,
         amitk@kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v1 14/33] thermal/drivers/armada: Switch to new of API
-Date:   Sun, 10 Jul 2022 23:24:04 +0200
-Message-Id: <20220710212423.681301-15-daniel.lezcano@linexp.org>
+        linux-pm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
+        sunXi SoC support),
+        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
+Subject: [PATCH v1 27/33] iio/drivers/sun4i_gpadc: Switch to new of thermal API
+Date:   Sun, 10 Jul 2022 23:24:17 +0200
+Message-Id: <20220710212423.681301-28-daniel.lezcano@linexp.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220710212423.681301-1-daniel.lezcano@linexp.org>
 References: <20220710212423.681301-1-daniel.lezcano@linexp.org>
@@ -72,47 +80,47 @@ Use this new API.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
 ---
- drivers/thermal/armada_thermal.c | 12 ++++++------
+ drivers/iio/adc/sun4i-gpadc-iio.c | 12 ++++++------
  1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/thermal/armada_thermal.c b/drivers/thermal/armada_thermal.c
-index c2ebfb5be4b3..72346cf1335a 100644
---- a/drivers/thermal/armada_thermal.c
-+++ b/drivers/thermal/armada_thermal.c
-@@ -420,9 +420,9 @@ static struct thermal_zone_device_ops legacy_ops = {
- 	.get_temp = armada_get_temp_legacy,
- };
- 
--static int armada_get_temp(void *_sensor, int *temp)
-+static int armada_get_temp(struct thermal_zone_device *tz, int *temp)
- {
--	struct armada_thermal_sensor *sensor = _sensor;
-+	struct armada_thermal_sensor *sensor = tz->devdata;
- 	struct armada_thermal_priv *priv = sensor->priv;
- 	int ret;
- 
-@@ -450,7 +450,7 @@ static int armada_get_temp(void *_sensor, int *temp)
- 	return ret;
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index 2d393a4dfff6..7aebfd337871 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -412,9 +412,9 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
+ 	return 0;
  }
  
--static const struct thermal_zone_of_device_ops of_ops = {
-+static struct thermal_zone_device_ops of_ops = {
- 	.get_temp = armada_get_temp,
+-static int sun4i_gpadc_get_temp(void *data, int *temp)
++static int sun4i_gpadc_get_temp(struct thermal_zone_device *tz, int *temp)
+ {
+-	struct sun4i_gpadc_iio *info = data;
++	struct sun4i_gpadc_iio *info = tz->devdata;
+ 	int val, scale, offset;
+ 
+ 	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
+@@ -428,7 +428,7 @@ static int sun4i_gpadc_get_temp(void *data, int *temp)
+ 	return 0;
+ }
+ 
+-static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
++static struct thermal_zone_device_ops sun4i_ts_tz_ops = {
+ 	.get_temp = &sun4i_gpadc_get_temp,
  };
  
-@@ -928,9 +928,9 @@ static int armada_thermal_probe(struct platform_device *pdev)
- 		/* Register the sensor */
- 		sensor->priv = priv;
- 		sensor->id = sensor_id;
--		tz = devm_thermal_zone_of_sensor_register(&pdev->dev,
--							  sensor->id, sensor,
--							  &of_ops);
-+		tz = devm_thermal_of_zone_register(&pdev->dev,
-+						   sensor->id, sensor,
-+						   &of_ops);
- 		if (IS_ERR(tz)) {
- 			dev_info(&pdev->dev, "Thermal sensor %d unavailable\n",
- 				 sensor_id);
+@@ -637,9 +637,9 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(&pdev->dev);
+ 
+ 	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+-		info->tzd = thermal_zone_of_sensor_register(info->sensor_device,
+-							    0, info,
+-							    &sun4i_ts_tz_ops);
++		info->tzd = thermal_of_zone_register(info->sensor_device,
++						     0, info,
++						     &sun4i_ts_tz_ops);
+ 		/*
+ 		 * Do not fail driver probing when failing to register in
+ 		 * thermal because no thermal DT node is found.
 -- 
 2.25.1
 
