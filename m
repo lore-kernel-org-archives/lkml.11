@@ -2,91 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA07C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 19:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 19:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbiGJTNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 15:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
+        id S229619AbiGJTU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 15:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiGJTNc (ORCPT
+        with ESMTP id S229456AbiGJTU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 15:13:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BF314D0C
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 12:13:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 61352CE0EB9
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 19:13:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B2FC341D2
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 19:13:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657480405;
-        bh=3hkmLeoPA94cguxwWVvXXxv3VcnHAir/c52ak4ViFbA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ShhJs+CwJ0mATbKIljdmTB0BEj4Xh/8n7CNhzbStAtyoTJMmi8fD1azjRYNy8VmnY
-         5//BNxPQA2fYCY3AWQyLWV4os77A8LuA7JhDC5bWRJmAm8PuQk3ygJ9i/u9nmRLCjB
-         XnTbIFtVLLCl/snNNALgf3PTmLgwV7rVdNWXvZJIUrJb7ZVNH/ttX0U8fxv9a2dS0A
-         sJ4JslvKrnfcScwn995fBK0o+ZgfOTXShwmEcT60mCwhs++Bgy4PM8J8P3qlv8ePTn
-         9d3V8jAUMzx0PQTOLRuF8oNQ21AxD0JXL52iwnGEHZ7AOXlRIFvIIuvgwq+2uSQsIU
-         f6TDGpXuzyyuA==
-Received: by mail-yb1-f180.google.com with SMTP id h62so3032201ybb.11
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 12:13:25 -0700 (PDT)
-X-Gm-Message-State: AJIora/aduvDz/TfExBbnz7nCLPI6E0FDug5J4TOApgedCsVPS9DnNuW
-        kAV1y4MAGb5DM6VIDIxMQZV/OCQUN44LWfoJ5Jk=
-X-Google-Smtp-Source: AGRyM1v1+pbuX33zfo/UTqTwqWe49lEPj5DVrFrYna2ZGAzjmIVOdIfpTz0xQRfFfS93XK23Rrs6t1nulIoluusPsxU=
-X-Received: by 2002:a25:9f87:0:b0:669:4345:a8c0 with SMTP id
- u7-20020a259f87000000b006694345a8c0mr14394151ybq.472.1657480404689; Sun, 10
- Jul 2022 12:13:24 -0700 (PDT)
+        Sun, 10 Jul 2022 15:20:27 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3F2BC9A
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 12:20:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657480825; x=1689016825;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=69gOGoGXhW2chzFXjKMMkPA8Ddg/6/ejvL81GS1H418=;
+  b=ZXP2o05uhDoyIuwxdJwwS9sDkYt6TSAla6HYhQ+ermJlfm8A1XatMij5
+   3z6yGYoPd523yXkZDOJWZG4ZEmigfMo5mL5V4pf3FT+M7zVDWOo7fc6fl
+   kmwo7Eb3TCmRn6yhgG3X74lt2PTlY2/RQfm2aZfLtNJ33xorIT1Qcufgk
+   MCVV5AHB7z6v97XRF1+XUY4VAvadJEon2iVguYPuIhO7rHf9plwOwCUOE
+   iwlX4J7RDaeTsZ/yeBVFc3XgbaufVqqhNO7E2Er9KVhTiObZbeG++PsiW
+   owKCTtcrtPY+aXdi4L8oNIBuP+32a7j0bLYHByw/088vdqcay9rdnPL3c
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="284555243"
+X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
+   d="scan'208";a="284555243"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 12:20:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
+   d="scan'208";a="594657655"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 10 Jul 2022 12:20:24 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAcTf-000Q7k-K5;
+        Sun, 10 Jul 2022 19:20:23 +0000
+Date:   Mon, 11 Jul 2022 03:20:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ogabbay:gaudi2 52/62]
+ drivers/misc/habanalabs/gaudi2/gaudi2.c:9500:48-53: WARNING: conversion to
+ bool not needed here
+Message-ID: <202207110303.LlORIomX-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220708231520.3958391-1-ndesaulniers@google.com>
-In-Reply-To: <20220708231520.3958391-1-ndesaulniers@google.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sun, 10 Jul 2022 21:13:08 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0x2KJuCjupKuj6XAYUAeF47ZV4bWuEGUQFOcOK_Do2jA@mail.gmail.com>
-Message-ID: <CAK8P3a0x2KJuCjupKuj6XAYUAeF47ZV4bWuEGUQFOcOK_Do2jA@mail.gmail.com>
-Subject: Re: [PATCH v6] coresight: etm4x: avoid build failure with unrolled loops
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        David Laight <David.Laight@aculab.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, coresight@lists.linaro.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 9, 2022 at 1:15 AM Nick Desaulniers <ndesaulniers@google.com> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2
+head:   cdf0db9c5190d3f87662583db935ef9f5c0b7e4a
+commit: db0c0cf75ce55851443487f3b7c6e033f112102d [52/62] habanalabs: add gaudi2 asic-specific code
+config: xtensa-randconfig-c004-20220710 (https://download.01.org/0day-ci/archive/20220711/202207110303.LlORIomX-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.3.0
 
->         ({                                                                      \
->                 u64 __val;                                                      \
->                                                                                 \
-> -               if (__builtin_constant_p((offset)))                             \
-> +               if (__is_constexpr((offset)))                                   \
->                         __val = read_etm4x_sysreg_const_offset((offset));       \
->                 else                                                            \
->                         __val = etm4x_sysreg_read((offset), true, (_64bit));    \
->
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-This is clearly better than the current version using
-__builtin_constant_p(), but
-I don't think it's safe in all cases, since there are expressions that
-are constant
-expressions to the compiler but are not valid input to the assembler.
 
-I would prefer to see this fixed differently, but doing this one first is also
-fine with me:
+cocci warnings: (new ones prefixed by >>)
+>> drivers/misc/habanalabs/gaudi2/gaudi2.c:9500:48-53: WARNING: conversion to bool not needed here
+--
+>> drivers/misc/habanalabs/gaudi2/gaudi2.c:8016:2-3: Unneeded semicolon
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-
-        Arnd
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
