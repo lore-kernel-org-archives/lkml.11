@@ -2,201 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A3DC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 16:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4834CCA483
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 16:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229622AbiGJQng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 12:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
+        id S229645AbiGJQpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 12:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiGJQnd (ORCPT
+        with ESMTP id S229463AbiGJQpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 12:43:33 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CA8C3;
-        Sun, 10 Jul 2022 09:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657471411; x=1689007411;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=yRRBea6Y3QLaonfSKAMKa+9ziamAqSdc37e71uQU/RI=;
-  b=F1t01rxGlXHkHPNLWPetf2EeRlRJmozHff6JSUDJnaHyLAjePOOGo+eg
-   Pr5UasiGWC910ArYO6tIRRdGyNPpWN2A4GSnSuUkDVJoN+YPYWFlAnWsa
-   TRwhQofTQFZ4qqycAIMQdQdvaO1yy4JtkdU5+ZEw7MBI08UpRQg+tdTNk
-   pg4RldMdBx/XxG4WlyX11RfwUAMWmxvkxhvPokrZ9eq/CtYswyq+3k8er
-   qbSTlWH79b3ZBus6jMx5wI6nuH8TzkRh/8wUKl0/zPgnXmxw0HizQmf8B
-   LRjaLviVY9mZ0OaONstO21jtewlJ/GXVw2beTA0iJHAZBWZk+fkWarNIa
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="267566828"
-X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
-   d="scan'208";a="267566828"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 09:43:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
-   d="scan'208";a="684148494"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by FMSMGA003.fm.intel.com with ESMTP; 10 Jul 2022 09:43:30 -0700
-Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Sun, 10 Jul 2022 09:43:30 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Sun, 10 Jul 2022 09:43:30 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Sun, 10 Jul 2022 09:43:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bkNfKjKb6rdcA05e7i38XIzNrjF3piz93uGEFjo5G8/MGrYM6PYt+rft3Cp+MZBBfAiRE4+lpytYFmYPEqLnrqIu30SXs1ZbHSDKAbcd3sC/vNUp3GkXbI/6N6unHPCV2bEzkpYZLn1rAtLi0/G9PTq3vLIrFZ1sXPHuox5T2k8Ee9uMTg3pVJG2xb0ftBGYENzOz4PXKCvfheX5yodfCCc3ryzo3G3pMC4RzILfzYa6286cpe2qtgD8dsew8pewFjh0SMH87pp2UDcLpiGBC+REFfTrquUi7nk0cyfejx7U2S0S1F9sDr/rZJWusZBlIzjFTzaCli9v+Y/0vJ/GWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EhcvcBlhUZU6BDuQDIW1TobphCs5mSTnHzTH7hVTqfk=;
- b=jZgOmehEIXuu9c0TQbFzxpJorvql54IOm3sbFjHb/kzlEikLYWQJN2am9u0ZYUkTWqFqPE5UcQj5u3DVvvkTxksgt8BeDREhIc+A0l0Igwy8KTTSLsyLgkgFEV8NbGhVpJ2R72e2H90Cogo/OYwn0DnDVfoxW4XK3sWzQgKMsXsaNEfWtq2uMtVPqsE4DoeQFoYVkwpmr/z97Ut46/O4UmTsVSEBXxMVZ9cvpngjutHTpLvJxioKBYqmDhKHwD/InvKiZqjqQ4vKhTQ/QsDfzdEUTSKYJ1cF/IRmBkOWC193jRXwm8JOxUBbq629fOu4yH1k5224uOn/g+hlssOaxg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3768.namprd11.prod.outlook.com (2603:10b6:a03:fa::20)
- by BN6PR1101MB2242.namprd11.prod.outlook.com (2603:10b6:405:58::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Sun, 10 Jul
- 2022 16:43:27 +0000
-Received: from BYAPR11MB3768.namprd11.prod.outlook.com
- ([fe80::f43b:140f:a945:c4a8]) by BYAPR11MB3768.namprd11.prod.outlook.com
- ([fe80::f43b:140f:a945:c4a8%3]) with mapi id 15.20.5417.026; Sun, 10 Jul 2022
- 16:43:27 +0000
-Message-ID: <63640c73-1ff2-08a1-0a92-cc330b2d4f35@intel.com>
-Date:   Sun, 10 Jul 2022 09:43:24 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] platform/x86/intel/ifs: Allow non-default names for
- IFS image
-Content-Language: en-US
-To:     Hans de Goede <hdegoede@redhat.com>, <markgross@kernel.org>
-CC:     <ashok.raj@intel.com>, <tony.luck@intel.com>,
-        <gregkh@linuxfoundation.org>, <ravi.v.shankar@intel.com>,
-        <linux-kernel@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>, <patches@lists.linux.dev>
-References: <20220710160011.995800-1-jithu.joseph@intel.com>
- <535ccbeb-b6e5-b7ef-47b4-894af24c00b0@redhat.com>
-From:   "Joseph, Jithu" <jithu.joseph@intel.com>
-In-Reply-To: <535ccbeb-b6e5-b7ef-47b4-894af24c00b0@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0163.namprd05.prod.outlook.com
- (2603:10b6:a03:339::18) To BYAPR11MB3768.namprd11.prod.outlook.com
- (2603:10b6:a03:fa::20)
+        Sun, 10 Jul 2022 12:45:17 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE6511C2D;
+        Sun, 10 Jul 2022 09:45:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1657471498;
+        bh=0HR3Zv5yqKQt68jtTzgddRrz6zgVoGHjCf/opyPjVSw=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=igYmmq57v09yY5TCm/EEXRWHE2BDQ0q2qoXUJuwBy5/Fa23GX3Wd3aFauWp+nL5JO
+         jg8RO1c4w/lPru6wVhYj0YqUprMmCb0hZvjmTRzcTUUV4QLRu7ZDopd38tHCEL1hyj
+         qfyiwhta6G3m2H7MIs5Pi+nm20hFVnFqVNoZpFi0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([46.223.3.243]) by mail.gmx.net
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1Mk0JM-1niAC230BM-00kNno; Sun, 10 Jul 2022 18:44:58 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: [PATCH v4 8/8] serial: 8250: lpc18xx: Remove redundant sanity check for RS485 flags
+Date:   Sun, 10 Jul 2022 18:44:42 +0200
+Message-Id: <20220710164442.2958979-9-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220710164442.2958979-1-LinoSanfilippo@gmx.de>
+References: <20220710164442.2958979-1-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 52fde8cd-f8b6-4806-a9c1-08da62935069
-X-MS-TrafficTypeDiagnostic: BN6PR1101MB2242:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YDj0/g+tvvRD+tz283kcBL1xBeexAa4xVP6u05KhROIzec6xgVHuwS0xXfYiBhFsx0k77WaHSk/r/KFJFbReKJtBcaw+Je4ipCj1EtmeyxjKWukCmnQczM39Hpn9CDoi9kgxZYF60ed1yDZI9tGssxTX3g1aZd/M1R1PFPEKDACExtg21AOAnyJzEmilV4ZDjCfmdj7zL+oiday/m5KFSwS+7O4D1q5pQaVTI4sd2QpLOnl/Md8ueJ2gAuHazt2bWTB6kuhDzTyckvLxz2tp/nhqZPo45q6SEJchjLxpLMbMlA7A9AqL5bnfdMToy8jF/IgsJvBLbL3VtZTGuwgVmt9vb3Qvsm1bXbYC4QbkY20931g+PS0CXswisY0zVlsLkyMdiFIfM/wdM8wWPLW4qWmDIV4hioXsB9DxJRAfCwO9+oXYTdfbMC7um6atF0RP8EstPxbOSvPQBMXC6tSXbNdbkW97PWuFRJtn3Ju3Ukub3+KxE4/X3X6tRX5a11DQwiCY7ihwL/o2w14LbsSPq7Ie00YPncdAcT+bs12yF9iPC7+hOQywaBnqC9h6OM0zQ5uDlWEX6OLeJ3zB/wB6hCuATzh601o/cCD9CzJ+3g49IkrV1AZggwKhm7qiJKEhRnHir0xIEZJWJO9VdTYjDAEUhgmQT61lytwJohFpz5EecOBQq2Z0d8AegfmR+Gn0phu4EYsahhpuvTBTcKF7Ou1ZXR32e5R00qfAQQsy9YhQGj03XGpFiIPXINoT6hJyUZr8/puG0kGpjNztf95EDXDe1QBAVGoopImQU3vd8HgbdUYxDpOb5QqaxJ6DakSQK/Yz0xGY/b7o6avYXUwlau9IJE9u9razhkSrK7modYc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3768.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(366004)(346002)(39860400002)(376002)(186003)(26005)(53546011)(66556008)(66476007)(6506007)(2616005)(6512007)(31696002)(38100700002)(86362001)(82960400001)(66946007)(6666004)(83380400001)(6486002)(478600001)(31686004)(8936002)(5660300002)(316002)(36756003)(2906002)(4326008)(8676002)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WFE5SFk4S1lBeVRyY2ZsMHZDT2ZQODQvREFNdjBJZS9UcEtUS3cveVRtOElE?=
- =?utf-8?B?OVJpYjlsSkRCcGU5UWVJY0g2bTNnK1JrR1ZzZlhUTUF0aXlBMVNsaWRPLytp?=
- =?utf-8?B?dnNDU2lCV1IrYWFFdy9rODRPMHg5emMxSHZnK3FYNWdGTU1kK0xrODR6UE5Q?=
- =?utf-8?B?OWlLd0ZpLzczczREVWhaRkRERDFWdFV3UHpGa09jWk84b2gwUldYL01uWHRr?=
- =?utf-8?B?Z0x0Um1iMlp1VWVYUE5YN043bC9aMXJKekVHSE85OGdoQ3k5cXNtVU9XNC8y?=
- =?utf-8?B?ektodnBjbnV0MEhLSDRhck1ESituVUt3NHpWQWYvdFJDWjRGZTF5MUU2ZDJr?=
- =?utf-8?B?eDZzN25hMDNucloxc1d6QnNPVFhZT3ZVQW83RnhRcGhGUnRoclZuZnpkT0F6?=
- =?utf-8?B?M0tlUFFNRTVsQldUb3FaQ0hSV2thd1pmeTFrRDZnemExajFaZ3dWK0d2eXNQ?=
- =?utf-8?B?UlVUVkwzdzRMenB2Nno1QkR5VWdOZmJ0dGlKelQyeUEwbEFueHpFcUg4RzY5?=
- =?utf-8?B?U2RzRitROUgzOC9FcjFPRDdyeExnZDRQQkdiRkNnK0l5ZkZDQVd4V3hQVGZm?=
- =?utf-8?B?NS9BT1pZZEw1b2ordGp4ZUR3NWc4ZDhHVUkwT3JnTy9Vb3BtSStWa2hKMkZK?=
- =?utf-8?B?Y0VwOFArS0xJUU1JWlF0WnJNcE5JYWJqcGk4cFArWGRqblMrN1UwaVQ1c25L?=
- =?utf-8?B?anoyUXZiODVBUnNSY0laR1A2S3lCTHpyNFMyUFFRSE1UTk94YUpTaHo0bW90?=
- =?utf-8?B?MExtbWE2WVNCejJIUmZUMmlhTEd3TlIwWnZ0dmI1bnArNUw3c0JJTXNVa0RO?=
- =?utf-8?B?S0VPVGxETWIrYkJiQVFad0JTNWxQNTBsdHFVa1JWTHljT1crRG1PODdmUytW?=
- =?utf-8?B?NGhROW8xMHlCSWJwcmNZdStQR2w2MHJ1Y0xYRXVScFVFa3BSL0xQNms2dDB2?=
- =?utf-8?B?RCtjbDF5MjhnLzlWMWo3WVFzN254RTY5SDhrdUUvYUxXeXp2V2x1cUU3K1lh?=
- =?utf-8?B?a2lmTUJxbllzakdXdmZqdzJhVnB1YVFYWUtUSjkrQitlODJod2JNZ3ZxVjZR?=
- =?utf-8?B?SkU2TWVJL3ZtQmN5S3FqRUVsSmdqWDM0NVBQVE9qejJnTGlYZG5DWmhrYVh3?=
- =?utf-8?B?eVdINlA2SXArai9rZ1JWdkhFVlc0Z2NwYXlkdjBmLzFCMExHcW9Va3J6VnlT?=
- =?utf-8?B?czloMWo4eVNVMEt3ZkllNnV6MkErWnhYN2lZUWRDN0kxejc5K1NKbTZld2lT?=
- =?utf-8?B?ckVlQTk0U1hWMlhNUFc2MmxZVEU2UkFlQjJwTzd1U3NIdVE2UGJ0aWR6VGhM?=
- =?utf-8?B?TVFpQkZMSVBaMVd1Q2hGVFVoMElGaDZmOXB1WkswQlV0TzFXam5PNHRQcS95?=
- =?utf-8?B?VTBTdkVKRUx5NmlnNXoweXlDOHlKbzBzWjlJMDNrUlZ1LzF4U0VkdlhoWm1u?=
- =?utf-8?B?RTNJNUcxUlRRV0NORUV3TTVMOUUzK3dTVm1lbEtpU3NmQmNsQWNrWFg1T2Rq?=
- =?utf-8?B?cmhrUzRWZG9td3ZJS1Yzc1RwWFRreHdWRWw0NWJNZGFLMFhoamIyZHVXb0ZS?=
- =?utf-8?B?Z2dsTVZ5dkg4NXVZclhTcmhoMzRnT3l3YzM4U1VhQUt2dDUwY09JZlZ4Q3Zm?=
- =?utf-8?B?dC9LVTdhZnZiMzc5c2hscUVRMG1EUmh6dS9XelFhakwwUitMUGRHcHRBZHFi?=
- =?utf-8?B?Nkhmb1VDQytmOEpQZjk0SUYxSndqdUJ0ZVNRZjdrTW9ZdTg5dzNLWlRRVk9i?=
- =?utf-8?B?NFdoL1V6bCttdzl6cEwrNEo3dmtJSzhnUXppWUx5YzN5Yit2dkdhRUVaVlFx?=
- =?utf-8?B?UVF4eHZ5U0VxRzcxU25iaWNaOHZNU2MzNFUrRkJoeWtQWWw3NXY4WE1XQTJy?=
- =?utf-8?B?YkNSMmZ6ekoxZ2VSdlRDSXcrSnRYdHpWbnBCZVp0Y3djemI0YVI5czJ5Q0Z4?=
- =?utf-8?B?YnBwZFVvcjZmMTN2dWx0M2xyQ0NDT3ZjcFp2a3ZPUTRxTU1CVXVqZ2lseDE0?=
- =?utf-8?B?aVlCR0lvdWNDZTFWaFVZTUV1QW5jTlZHTUhwTkltZkQzNWVSc3lLMC9DTGov?=
- =?utf-8?B?enoxYXFPTEQ0ZzRyMVByOHlDV1VaT29QS0tLclJuZk5DOVZYN2JpRE5GWjVj?=
- =?utf-8?B?eVo3RlE3MHZiTXoxRjBaTGVKb3JrSXplTTRycmZYcThWa29OOTRBd3Q1Y3J5?=
- =?utf-8?B?Q0E9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 52fde8cd-f8b6-4806-a9c1-08da62935069
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3768.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2022 16:43:27.6569
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pKqyvtOAuO2K3Gq6556IXehedajHNzmkQrOFEspdOimaeDqhKyYQhHaHmqCjqtSoeVhlVDsKZhpewmZih2a3Xg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2242
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:utoOmTsnfe/Q24WFmaru+XmVgFVIdOtiXrB3erIIRDRENkVZzm7
+ edqUoy/EUeaB5WiZx42ILFdtsA8P6fdMkjzqTlE+ty6zC7Qc400H/KX/VG1jcXahq/0+kLr
+ LbDOcrdcpuzoYpQD728PIsNmo7C4mSAefduXs+mpLQFyTn7on/Lc8EAuisOXTobz5/DwKyC
+ 693B854VYP0yoFVDWZMow==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:KkTfvqotrcM=:GhmoW+RnNyay85NkMwVp11
+ /izaJC+pMyDx8YtkIu3hzLuTxuZSarXmbIc764KoMtKCvEyX4efCiX2W/N6dRJsNJj8Y+z5Fq
+ LJNDo+bCn+hnY+WOabNKXE9VJeAxDKrGJotvUTToRo12DGGpk+P+KHqUUfMKSiKIzHeG4PJhq
+ QMKC9jG38UQDuI8qFNGERX3qiI7v8QHBAPZnMabCc9zft/w3ldU9WhfsagEqkvPmiWUimVOgt
+ tQAZXsmRHCJfk27RMXgi4yDLOxzGcRN7hRmU88yzDMnW1S2nW9x+rLudH/NruoaeZT3AB6K44
+ 9hgFyONhy9Gh6KBQ2TQ3CXlDa26qdHm/HeTKVm0WhfoVA/SV4DVuJYq6OREMgbXkn3ERRTc7z
+ 7lYswfynj4pdCdaP0QKwyaIe44fGdkmuhRyurKnRVtl8ukv7NUV+/Gb+ZdhUpC2xtp9nUAFdj
+ o0ZxK/1N8lzqi86tuub2ILjDmHllcOr8NiBsulqbLfzpDd5nQudSdQBQA/aPFThemZxsA3xLv
+ vxnqvnJXJeqhrb6w7uhTBrsY0HHUzn7AC7AWkPFDX4DqBALelzgCSQbkQT2rgvuE/88bwJ6Ch
+ kLhnVMRjzgSFEzGOnYpsG2u12eMdCCYJqSfYKWfCxNyJENQTUIOwbhaZlg4KLltTgsuXXWmuq
+ P2wI5fwIcmE9YpXi09viaAdYfVtwDxEChSCxFbT60sovwN59qicqlGKg3IwtY3Trs8R7+3vPA
+ oK2AIdbzcJzaAQE2zAl5lRZAU4XX95JH7jttdEavax0bVtOmxYY0GKnvsjfB1nsSQITB30zMG
+ 1fh6BnA66Y4+vdJwDkq4QsCcBb51tMSCxtGZgseYDoaH0xye605WHM0hSV6jSkMcfCO8eakPh
+ 7jZW09TE4RY7PLXmMrnO5646WaKszx+mo/tcFiZ7h7B5t7a970eoC0uh8e7p1jfQenkJ7y7kJ
+ Bg9eCTHpdGFWfZMAe/lGbGSeLVyjuvINmR8v9ijXB6DJIvS8DG1zb9rxtbDYI1xNzs3316U90
+ fwuxyu9kP/t20cxrI8rBu4wsy/AF5nBOH6ByyFn6Zb8MKBEzpm73vDVWykLXCfBgVfy5rFCsG
+ vR+UNLqutUVULFiOdTL8ae6PrGVjkZz0FTM89iR8GAJusXeFkuGVNf+ng==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 7/10/2022 9:12 AM, Hans de Goede wrote:
-> Hi,
-> 
-> On 7/10/22 18:00, Jithu Joseph wrote:
->> Existing implementation limits IFS images to be loaded only from
->> a default file-name /lib/firmware/intel/ifs/ff-mm-ss.scan.
->>
->> But there are situations where there may be multiple scan files
->> that can be run on a particular system stored in /lib/firmware/intel/ifs
->>
->> E.g.
->> 1. Because test contents are larger than the memory reserved for IFS by BIOS
->> 2. To provide increased test coverage
->> 3. Custom test files to debug certain specific issues in the field
->>
->> Renaming each of these to ff-mm-ss.scan and then loading might be
->> possible in some environments. But on systems where /lib is read-only
->> this is not a practical solution.
->>
->> Modify the semantics of the driver file
->> /sys/devices/virtual/misc/intel_ifs_0/reload such that,
->> it interprets the input as the filename to be loaded.
-> 
-> Much better, but I do wonder about the behavior of still loading
-> the default filename at module-init?   If there can be multiple
-> different "test-patterns" then does it not make more sense to
-> let the user always load the desired pattern before testing first?
-
-The default image provides bulk of the test coverage and the additional ones
-provide marginal additional test coverage. That is why, we still kept
-loading it by default
-
-> 
-> Not doing the initial load at module-load time will also speed-up
-> the module initialization and thus booting the system. Especially
-> on many-core servers this might make a measurable difference
-> in module-init time.
-
-Thanks for these inputs Hans, I do see your concern. Let me take these
-concerns to internal folks, before I get back on this.
-
-Jithu
-
+RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KCkJlZm9yZSB0
+aGUgZHJpdmVycyByczQ4NV9jb25maWcoKSBmdW5jdGlvbiBpcyBjYWxsZWQgdGhlIHNlcmlhbCBj
+b3JlCmFscmVhZHkgZW5zdXJlcyB0aGF0IG9ubHkgb25lIG9mIGJvdGggb3B0aW9ucyBSVFMgb24g
+c2VuZCBvciBSVFMgYWZ0ZXIgc2VuZAppcyBzZXQuIFNvIHJlbW92ZSB0aGUgY29uY2VybmluZyBz
+YW5pdHkgY2hlY2sgaW4gdGhlIGRyaXZlciBmdW5jdGlvbiB0bwphdm9pZCByZWR1bmRhbmN5LgoK
+U2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4K
+UmV2aWV3ZWQtYnk6IElscG8gSsOkcnZpbmVuIDxpbHBvLmphcnZpbmVuQGxpbnV4LmludGVsLmNv
+bT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2xwYzE4eHguYyB8IDYgKy0tLS0t
+CiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDUgZGVsZXRpb25zKC0pCgpkaWZmIC0t
+Z2l0IGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9scGMxOHh4LmMgYi9kcml2ZXJzL3R0
+eS9zZXJpYWwvODI1MC84MjUwX2xwYzE4eHguYwppbmRleCBkNmNhMGQ0N2U5ZDUuLjZkYzg1YWFi
+YTVkMCAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9scGMxOHh4LmMK
+KysrIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9scGMxOHh4LmMKQEAgLTQ0LDEyICs0
+NCw4IEBAIHN0YXRpYyBpbnQgbHBjMTh4eF9yczQ4NV9jb25maWcoc3RydWN0IHVhcnRfcG9ydCAq
+cG9ydCwgc3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9zCiAJCXJzNDg1X2N0cmxfcmVnIHw9IExQQzE4
+WFhfVUFSVF9SUzQ4NUNUUkxfTk1NRU4gfAogCQkJCSAgTFBDMThYWF9VQVJUX1JTNDg1Q1RSTF9E
+Q1RSTDsKIAotCQlpZiAocnM0ODUtPmZsYWdzICYgU0VSX1JTNDg1X1JUU19PTl9TRU5EKSB7CisJ
+CWlmIChyczQ4NS0+ZmxhZ3MgJiBTRVJfUlM0ODVfUlRTX09OX1NFTkQpCiAJCQlyczQ4NV9jdHJs
+X3JlZyB8PSBMUEMxOFhYX1VBUlRfUlM0ODVDVFJMX09JTlY7Ci0JCQlyczQ4NS0+ZmxhZ3MgJj0g
+flNFUl9SUzQ4NV9SVFNfQUZURVJfU0VORDsKLQkJfSBlbHNlIHsKLQkJCXJzNDg1LT5mbGFncyB8
+PSBTRVJfUlM0ODVfUlRTX0FGVEVSX1NFTkQ7Ci0JCX0KIAl9CiAKIAlpZiAocnM0ODUtPmRlbGF5
+X3J0c19hZnRlcl9zZW5kKSB7Ci0tIAoyLjI1LjEKCg==
