@@ -2,129 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C17C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 12:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCE5CCA482
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 13:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbiGJMhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 08:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59324 "EHLO
+        id S229592AbiGJNA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 09:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbiGJMhI (ORCPT
+        with ESMTP id S229469AbiGJNAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 08:37:08 -0400
-Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C5313EBC
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 05:36:41 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id AWAhoAvD20JImAWAho6ELU; Sun, 10 Jul 2022 14:36:24 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 10 Jul 2022 14:36:24 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH] net/mlx5: Use the bitmap API to allocate bitmaps
-Date:   Sun, 10 Jul 2022 14:36:22 +0200
-Message-Id: <ca036ba3d0c2ee307e1d8cc94aaaab1686ebf1c9.1657456513.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Sun, 10 Jul 2022 09:00:25 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE41642C;
+        Sun, 10 Jul 2022 06:00:24 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id o19-20020a05600c511300b003a2de48b4bbso2212771wms.5;
+        Sun, 10 Jul 2022 06:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=URkBqTaJYZiBKaHkMPyuusVxdAfWQV7wmB1QtdU3dqc=;
+        b=H28NNWSz9kCHmESG/8FbsQ+m+Jzxy0qUH0fyz1nTVT1VnfBfH5jiuEPkD53FXHjSzn
+         B/1dX86SUM+LrKgLI+OYmFPx82FdsB7V7yt8sf5XzwbtSzPbPhDXFQePbTiQi3lyyDyP
+         gMD3/4c+Za4D22NF6y4FK7z/NMbKVISAdm+vnmThUgp797/YBqaFhAmGGecJT+SZcrvc
+         nZn0bWReEM8Dfarg2Hm6x7djFxVUPsFttf22okgYsWEwwHRp6hldOhLKJUHUfEK3zrDn
+         HiqibjwQLKcAMiflSho4wiD/UVJX6XpYIzFXuACDbKgxRHdZNZO8RPbciEo4gE2fs92g
+         WkIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=URkBqTaJYZiBKaHkMPyuusVxdAfWQV7wmB1QtdU3dqc=;
+        b=KojpgyeKoH2cLjkG0xmtD2aPZuhOAbdEo9wkqDXnqebBrOz6PArZzIebMTDwVDX8d6
+         RC6/BWrLOZXiorJmKMaIlCmdg1W9VwNqDPmTeaphieCauXNkyvq7nS7W7qzZ1L0+PQzK
+         rr5hf8rvjVyxSt1DZIzQ2by+GrBnVVtwNi6Qa4YdKqbrT2pEvwgpfZp4wvxkVT6Q0fbK
+         NvIFgWBWckZnjZYcR9RRfBgqTszrAIfRxRYNLm8ve3hl0XkhB6MyO474UlR3iKoTCHJS
+         3o0++BgyGJJI8lFE4CvKmLRDAzIgAsGASjI1F48Vjhx/EBLtAhGwq6coeAlL/hJIUBiG
+         WycA==
+X-Gm-Message-State: AJIora8Vl5Rx5OHe8cHufP82IIaMPm/3nKqUHfDyTKo9jQvejNaOH0gH
+        zsI7VcNenxAAyWwtNXzNv1M=
+X-Google-Smtp-Source: AGRyM1vsTGSbf96VTwX0XNh02DsOlmP27A9LgNPMyEn1EV6Jd3PuivbWE971HAL4v79NdOzdGIsDng==
+X-Received: by 2002:a05:600c:4f4d:b0:3a1:98de:abde with SMTP id m13-20020a05600c4f4d00b003a198deabdemr10439595wmq.36.1657458022784;
+        Sun, 10 Jul 2022 06:00:22 -0700 (PDT)
+Received: from mandalorian.koija ([2a02:587:4ba0:ca00:f1ee:516:279c:45e9])
+        by smtp.gmail.com with ESMTPSA id j2-20020a05600c2b8200b0039c8a22554bsm3876989wmc.27.2022.07.10.06.00.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Jul 2022 06:00:22 -0700 (PDT)
+Date:   Sun, 10 Jul 2022 16:00:19 +0300
+From:   Christos Kollintzas <c.kollintzas.92@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: fbtft: replace udelay with usleep_range
+Message-ID: <YsrNY+uU8tUXJiPV@mandalorian.koija>
+References: <YslTQLhM7GSaGXki@mandalorian.koija>
+ <YslY25NnW6O5Tn+p@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YslY25NnW6O5Tn+p@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+On Sat, Jul 09, 2022 at 12:30:51PM +0200, Greg KH wrote:
+> On Sat, Jul 09, 2022 at 01:06:56PM +0300, Christos Kollintzas wrote:
+> > Adhere to Linux kernel coding style.
+> > 
+> > Reported by checkpatch:
+> > 
+> > CHECK: usleep_range is preferred over udelay
+> > 
+> > Signed-off-by: Christos Kollintzas <c.kollintzas.92@gmail.com>
+> > ---
+> >  drivers/staging/fbtft/fb_upd161704.c | 18 +++++++++---------
+> >  1 file changed, 9 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/staging/fbtft/fb_upd161704.c b/drivers/staging/fbtft/fb_upd161704.c
+> > index c680160d6380..eeafbab4ace1 100644
+> > --- a/drivers/staging/fbtft/fb_upd161704.c
+> > +++ b/drivers/staging/fbtft/fb_upd161704.c
+> > @@ -32,27 +32,27 @@ static int init_display(struct fbtft_par *par)
+> >  
+> >  	/* oscillator start */
+> >  	write_reg(par, 0x003A, 0x0001);	/*Oscillator 0: stop, 1: operation */
+> > -	udelay(100);
+> > +	usleep_range(100, 110);
+> 
+> When doing these types of changes, you really need access to the
+> hardware involved in order to be able to properly test it.
+> 
+> Especially for this type of function which is trying to do timing
+> changes which the hardware requires.
+> 
+> Did you test this on the real hardware and did it work properly?
+> 
+> thanks,
+> 
+> greg k-h
 
-It is less verbose and it improves the semantic.
+I did not.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- .../net/ethernet/mellanox/mlx5/core/lib/dm.c  | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+I will try to find the hardware and send a patch that is
+properly tested.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
-index 7e02cbe8c3b9..9482e51ac82a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
-@@ -38,8 +38,7 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
- 			    MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
- 
- 		dm->steering_sw_icm_alloc_blocks =
--			kcalloc(BITS_TO_LONGS(steering_icm_blocks),
--				sizeof(unsigned long), GFP_KERNEL);
-+			bitmap_zalloc(steering_icm_blocks, GFP_KERNEL);
- 		if (!dm->steering_sw_icm_alloc_blocks)
- 			goto err_steering;
- 	}
-@@ -50,8 +49,7 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
- 			    MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
- 
- 		dm->header_modify_sw_icm_alloc_blocks =
--			kcalloc(BITS_TO_LONGS(header_modify_icm_blocks),
--				sizeof(unsigned long), GFP_KERNEL);
-+			bitmap_zalloc(header_modify_icm_blocks, GFP_KERNEL);
- 		if (!dm->header_modify_sw_icm_alloc_blocks)
- 			goto err_modify_hdr;
- 	}
-@@ -66,8 +64,7 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
- 			    MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
- 
- 		dm->header_modify_pattern_sw_icm_alloc_blocks =
--			kcalloc(BITS_TO_LONGS(header_modify_pattern_icm_blocks),
--				sizeof(unsigned long), GFP_KERNEL);
-+			bitmap_zalloc(header_modify_pattern_icm_blocks, GFP_KERNEL);
- 		if (!dm->header_modify_pattern_sw_icm_alloc_blocks)
- 			goto err_pattern;
- 	}
-@@ -75,10 +72,10 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
- 	return dm;
- 
- err_pattern:
--	kfree(dm->header_modify_sw_icm_alloc_blocks);
-+	bitmap_free(dm->header_modify_sw_icm_alloc_blocks);
- 
- err_modify_hdr:
--	kfree(dm->steering_sw_icm_alloc_blocks);
-+	bitmap_free(dm->steering_sw_icm_alloc_blocks);
- 
- err_steering:
- 	kfree(dm);
-@@ -97,7 +94,7 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
- 		WARN_ON(!bitmap_empty(dm->steering_sw_icm_alloc_blocks,
- 				      BIT(MLX5_CAP_DEV_MEM(dev, log_steering_sw_icm_size) -
- 					  MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))));
--		kfree(dm->steering_sw_icm_alloc_blocks);
-+		bitmap_free(dm->steering_sw_icm_alloc_blocks);
- 	}
- 
- 	if (dm->header_modify_sw_icm_alloc_blocks) {
-@@ -105,7 +102,7 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
- 				      BIT(MLX5_CAP_DEV_MEM(dev,
- 							   log_header_modify_sw_icm_size) -
- 				      MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))));
--		kfree(dm->header_modify_sw_icm_alloc_blocks);
-+		bitmap_free(dm->header_modify_sw_icm_alloc_blocks);
- 	}
- 
- 	if (dm->header_modify_pattern_sw_icm_alloc_blocks) {
-@@ -113,7 +110,7 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
- 				      BIT(MLX5_CAP_DEV_MEM(dev,
- 							   log_header_modify_pattern_sw_icm_size) -
- 					  MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))));
--		kfree(dm->header_modify_pattern_sw_icm_alloc_blocks);
-+		bitmap_free(dm->header_modify_pattern_sw_icm_alloc_blocks);
- 	}
- 
- 	kfree(dm);
--- 
-2.34.1
+thanks,
 
+Christos Kollintzas
