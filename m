@@ -2,109 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 705BBC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1214C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbiGJPE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 11:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
+        id S229505AbiGJPHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 11:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiGJPEE (ORCPT
+        with ESMTP id S229450AbiGJPHD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 11:04:04 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDECF64C9;
-        Sun, 10 Jul 2022 08:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1657465409;
-        bh=bCCo/6Am2R09b4nHHeMnoc0FW6xyrYI6zkvE1m2Jm4A=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=Y/FtNncUF0YYrHQPa7Evn+Mb1X+P6w+n53UBeJWw/TLxD9fLIWe4cYb5JVkpuh/LY
-         J6yKdBT8hBDADzp61Bd9gjm761JMMmgW8xDryyqHOI6RZZc37HF/F0KR3woiBY3qma
-         a5S8c5/uYkYaBixTKAKVLnWbJMTt8MipDb/cI4CY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.localdomain ([46.223.3.243]) by mail.gmx.net
- (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MTzay-1o16Gp0pN4-00R1T5; Sun, 10 Jul 2022 17:03:29 +0200
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        andriy.shevchenko@linux.intel.com, vz@mleia.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lukas@wunner.de, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: [PATCH v3 0/8] Fixes and cleanup for RS485
-Date:   Sun, 10 Jul 2022 17:03:14 +0200
-Message-Id: <20220710150322.2846170-1-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.25.1
+        Sun, 10 Jul 2022 11:07:03 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048B864D9
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:07:01 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id t25so5026554lfg.7
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:07:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vGEjMzeV4rTjdQROSqSy+BxXp6ecV7Lq7pIOwPsbuAE=;
+        b=s6BThfFG4EarVDkAudG5X1ZYaeWgrZtXddhCPSddcKAWl3WKXtDLI9eXl6KE20VvMd
+         t/oGvsaAJZWZYCiO3bT9P1UCDWBfwNs5XcVcnoiHBF/BbtCBL/Idttd2ihyJQ19h/BoU
+         ktb7lHfVkwj0/gzQuxVagEn6nN0p5nGsQCvR3UXlsQdnwyJCP6F2OG8M3IiwwW/k85F1
+         IKOlRQv9xnYEh32kHH5aquQCmkNVrGKrZdxbcKNk2b8+5W/e47baqTzISIfUdIvevKsa
+         W8YOKzY/PIq4wIniikImWReEBiDm+kKu5q2vQv7elmorYYab2D8rI1qpXl9C7Td4ZCoW
+         zdoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vGEjMzeV4rTjdQROSqSy+BxXp6ecV7Lq7pIOwPsbuAE=;
+        b=oGTI1wTRbC6hd61nLaur/lZRSpDmczziAoYOikF2rc2WHjxi4PTGOcszrLBV/prq2U
+         CSHelZztRD6V4C6sUj9CBnXJ1NFo47nZlYJplk9xlXmdjWUrbKHZVI9iP/9Lj8Wmmmeu
+         mIi4f0jo4kGkACe2ZQtcEvlWOH7VGoXfnetMWmY+ASYKimzXQ+UmdDB/G7s9kgWzTa54
+         sszpGq0dzAj47vyMuzVuTp5zDHP9Hv9eoN/EbjETy8DU0GWyy0nHA9nSuKxZ5L0jl2JQ
+         /sFJhhEZr0j3BA1DmR4b2bO8emqNk5KbsSbgU32GWJhnB3i8jIFX961aQi26jVTs7A24
+         0lrA==
+X-Gm-Message-State: AJIora9XMoVE5yofNRSqSJB7EKp2qmJJO/S/a+ZEJCyyJoRXD362QXm6
+        N4V09uLrc82l2Z3si0GhBrFS6UTFBPajUwNh
+X-Google-Smtp-Source: AGRyM1vLwUbT2fb18HuVdKAPiyMGsyAUDEdTOU9pfeGW5RW3V3XRBkBfjuEgnFng75vcKN/rWNUzYw==
+X-Received: by 2002:a05:6512:3188:b0:489:de7c:101e with SMTP id i8-20020a056512318800b00489de7c101emr130634lfe.595.1657465619290;
+        Sun, 10 Jul 2022 08:06:59 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5cac-200.bb.online.no. [88.92.172.200])
+        by smtp.gmail.com with ESMTPSA id bg33-20020a05651c0ba100b0025a91928236sm1122078ljb.90.2022.07.10.08.06.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Jul 2022 08:06:58 -0700 (PDT)
+Message-ID: <1f3189ef-7d3f-27b3-a691-b9649090b650@linaro.org>
+Date:   Sun, 10 Jul 2022 17:06:56 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC] Correct memory layout reporting for "jedec,lpddr2" and
+ related bindings
+Content-Language: en-US
+To:     Julius Werner <jwerner@chromium.org>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jian-Jia Su <jjsu@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Nikola Milosavljevic <mnidza@outlook.com>
+References: <CAODwPW9E8wWwxbYKyf4_-JFb4F-JSmLR3qOF_iudjX0f9ndF0A@mail.gmail.com>
+ <CAODwPW8fiFSNehZbZDdR9kjHxohLGiyE7edU=Opy0xV_P8JbEQ@mail.gmail.com>
+ <3bb0ffa0-8091-0848-66af-180a41a68bf7@linaro.org>
+ <CAODwPW89xZQZiZdQNt6+CcRjz=nbEAAFH0h_dBFSE5v3aFU4rQ@mail.gmail.com>
+ <8f51aed8-956b-ac09-3baf-2b4572db1352@linaro.org>
+ <CAODwPW9MvYJo8QbKOoVcUAKJ8Hxon2MCv_H5qpv=yaSTLLc+ug@mail.gmail.com>
+ <628a7302-1409-81f7-f72b-6b1645df9225@linaro.org>
+ <CAODwPW-4i+idH8Nz6=EmNUXYWgWkoOHs3wOZ7BbrH5GwGDZ1Ww@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAODwPW-4i+idH8Nz6=EmNUXYWgWkoOHs3wOZ7BbrH5GwGDZ1Ww@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:AQK75PXDxb8ruYEg4RoE/3q8W5jyQVLOL7VSy14r6hTADfPrxRR
- 2EbnzXFyawPbUTdYZQ/ykqJKFLSyDxYcCc08iF0u2+el+0T+7zW5bDItAYoYWxe3511SRjH
- zp/O8BrHcMqU/cDJZgQ4MVXQTW6Et4MLmXF3DcBOFk/Wuhs8hS2Fr2VtDYI57ufmxEJqifA
- IPJjiw/8Pc0Dd34+hAq9Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:iEbjkL/2hfg=:niaR/DQ/WNAO6Mr0TXesA4
- 7gn2DKaXLYCgjGJL2cwr1hYeBSQlm6MDWRht1KOpSsbmy84kuixgGaBBnTit/j1M+oBo+7zWJ
- vfuJvSxvNdbAoMEtkuorCq3NiLx//sSXBICZtJl1r7xqWTFCJh/bdcBLGkwomox8iiZ7aXVap
- Phg62UdCotuVHHhhurjq3Vuuk0djKShT9X/eaoBahL+Hv1EN/wKxLTAXbXozbiDUbXl1rZloD
- dq9LKR8SEtyoaQGOD3iXvdQUMMGp7xl/DS7zzfRZHdwrZtQsUKJTfaFFxOBnslYgFrRyhAnFL
- VNCWK8rZ2Xn20f+b7IwUlvO+LFwJNhY0Htlh+sflUYcMCEqKCW+mvewG9r9+WX/QvdHVs0jrQ
- jkZfDYVdALp3UAF6MYceVzVzEqyZm6aRgEZcRXb0w24Y2InldZzLlzbSTWvkgnu0kW9w6jSuQ
- 4emzhGykA3e54lc6Q1PDKrG7/jHDGfZJvHfgPW7D1/VW4GxANbWwDMUhbaKhhAJ+nDqS8EEqI
- 32Q9bWREoZernoY7W1FZp3PomWZCPaRVYbIJNMVQ+IL8lgBlqI/UeX8VrP8jQIxrIVuieG2mI
- pbAJ3ikBRKTX9N03+1P5Cbq4dbBK9ZbjJxHpo+Lx5wf8gsbLjtwY5m9y1fNczx7H7H0JwL11x
- +jHaPn9IFqmnkZG/gXFCqx6ndTC9iwT+A0jEt+29vSt5BZcrRFsSO7Jt6D+xb5yY+2LsQyKC1
- 4qWJqPmL4fJecPQdo1D1YAOEjjd3zdX0fJDY7OBQDgIAmwgH1hf5+7E6ZagYAmMHyKTZzTGLA
- b//NE1vryMacSFEGt4EkZHg1akzOtylW79Fxl3WsVUNsO2lmivS35ZFGneE8Azqtih4zUmRT7
- ShJ44SyU5NSFj0kCy1cPTNVQ1JYVQL7dod037n/c9d7V+71dOSMBJRyedPiqid0xEssXHpJzu
- B/bBcL3c9S240qIDXh9PcCSAl6RYvwH88PeIV4UEIXgrCt2yF0x9gn9CtkEhdJqOU49bVXnmk
- 2XCJ4Wtp/5dihsnOrvhBsmfURyI7qp77S+rUTuceEwJjmEOiRjuqBprf4F5RCzGIL48zGYhrF
- W4Lz0XotMr7jvXfdNwrZsLz+FJct55QDAupfTMGhtfrPJkcXiC8DfoH3w==
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KClRoZSBmb2xs
-b3dpbmcgc2VyaWVzIGluY2x1ZGVzIGNsZWFudXAgYW5kIGZpeGVzIGFyb3VuZCBSUzQ4NSBpbiB0
-aGUgc2VyaWFsCmNvcmUgYW5kIHVhcnQgZHJpdmVyczoKClBhdGNoIDE6IGFyOTMzeDogRml4IGNo
-ZWNrIGZvciBSUzQ4NSBzdXBwb3J0ClBhdGNoIDI6IFJlbW92ZSBzdXBlcmZsdW91cyBjb2RlIGlu
-IGFyOTMzeC4KUGF0Y2ggMzogU2V0IHRoZSByczQ4NSB0ZXJtaW5hdGlvbiBHUElPIGluIHRoZSBz
-ZXJpYWwgY29yZS4gVGhpcyBpcyBuZWVkZWQKCSBzaW5jZSBpZiB0aGUgZ3BpbyBpcyBvbmx5IGFj
-Y2Vzc2libGUgaW4gc2xlZXBhYmxlIGNvbnRleHQuIEl0IGFsc28KCSBpcyBhIGZ1cnRoZXIgc3Rl
-cCB0byBtYWtlIHRoZSBSUzQ4NSBoYW5kbGluZyBtb3JlIGdlbmVyaWMuClBhdGNoIDQ6IE1vdmUg
-c2FuaXRpemluZyBvZiBSUzQ4NSBkZWxheXMgaW50byBhbiBvd24gZnVuY3Rpb24uIFRoaXMgaXMg
-aW4gCgkgcHJlcGFyYXRpb24gb2YgcGF0Y2ggNC4KUGF0Y2ggNTogU2FuaXRpemUgUlM0ODUgZGVs
-YXlzIHJlYWQgZnJvbSBkZXZpY2UgdHJlZS4KUGF0Y2ggNjogQ29ycmVjdCBSUzQ4NSBkZWxheXMg
-aW4gYmluZGluZyBkb2N1bWVudGF0aW9uLgpQYXRjaCA3OiBSZW1vdmUgcmVkdW5kYW50IGNvZGUg
-aW4gODI1MF9kd2xpYi4KUGF0Y2ggODogUmVtb3ZlIHJlZHVuZGFudCBjb2RlIGluIDgyNTAtbHBj
-MTh4eC4KCkNoYW5nZXMgaW4gdjM6Ci0gcmVtb3ZlIG9ic29sZXRlIHBhdGNoIChkdWUgdG8gY2hh
-bmdlcyBieSBJbHBvKQotIGNvcnJlY3RlZCBhbmQgcmVwaHJhc2UgY29tbWl0IG1lc3NhZ2VzIChw
-b2ludGVkIG91dCBieSBBbmR5KQotIHJlbW92ZSBzdXBlcmZsdW91cyBjaGVjayAocG9pbnRlZCBv
-dXQgYnkgQW5keSkKLSBzZXBhcmF0ZSBhcjkzM3ggVUFSVCBidWdmaXggYW5kIGNsZWFudXAgaW50
-byBkaWZmZXJlbnQgcGF0Y2hlcyAoYXMKICBzdWdnZXN0ZWQgYnkgSWxwbykKLSBwdXQgdGhlIGFy
-OTMzeCBmaXggYXQgdGhlIGJlZ2lubmluZyBvZiB0aGUgc2VyaWVzIChhcyBzdWdnZXN0ZWQgYnkg
-QW5keSkKCkNoYW5nZXMgaW4gdjI6Ci0gcHJpbnQgYSB3YXJuaW5nIGlmIHRlcm1pbmF0aW9uIEdQ
-SU8gaXMgc3BlY2lmaWVkIGluIERUL0FDUEkgYnV0IGlzIG5vdAogIHN1cHBvcnRlZCBieSBkcml2
-ZXIgCi0gZml4ZWQgY29tbWl0IG1lc3NhZ2UgZm9yIGRldnRyZWUgZG9jdW1lbnRhdGlvbiAoYXMg
-c3VnZ2VzdGVkIGJ5IEFuZHkpCi0gZml4ZWQgY29kZSBjb21tZW50Ci0gYWRkZWQgcGF0Y2ggNwoK
-Ckxpbm8gU2FuZmlsaXBwbyAoOCk6CiAgc2VyaWFsOiBhcjkzM3g6IEZpeCBjaGVjayBmb3IgUlM0
-ODUgc3VwcG9ydAogIHNlcmlhbDogYXI5MzN4OiBSZW1vdmUgc3VwZXJmbHVvdXMgY29kZSBpbiBh
-cjkzM3hfY29uZmlnX3JzNDg1KCkKICBzZXJpYWw6IGNvcmUsIDgyNTA6IHNldCBSUzQ4NSB0ZXJt
-aW5hdGlvbiBncGlvIGluIHNlcmlhbCBjb3JlCiAgc2VyaWFsOiBjb3JlOiBtb3ZlIHNhbml0aXpp
-bmcgb2YgUlM0ODUgZGVsYXlzIGludG8gb3duIGZ1bmN0aW9uCiAgc2VyaWFsOiBjb3JlOiBzYW5p
-dGl6ZSBSUzQ4NSBkZWxheXMgcmVhZCBmcm9tIGRldmljZSB0cmVlCiAgZHRfYmluZGluZ3M6IHJz
-NDg1OiBDb3JyZWN0IGRlbGF5IHZhbHVlcwogIHNlcmlhbDogODI1MF9kd2xpYjogcmVtb3ZlIHJl
-ZHVuZGFudCBzYW5pdHkgY2hlY2sgZm9yIFJTNDg1IGZsYWdzCiAgc2VyaWFsOiA4MjUwOiBscGMx
-OHh4OiBSZW1vdmUgcmVkdW5kYW50IHNhbml0eSBjaGVjayBmb3IgUlM0ODUgZmxhZ3MKCiAuLi4v
-ZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvcnM0ODUueWFtbCAgICAgfCAgNCArLQogZHJpdmVy
-cy90dHkvc2VyaWFsLzgyNTAvODI1MF9kd2xpYi5jICAgICAgICAgIHwgMTAgKy0tLQogZHJpdmVy
-cy90dHkvc2VyaWFsLzgyNTAvODI1MF9scGMxOHh4LmMgICAgICAgIHwgIDYgKy0KIGRyaXZlcnMv
-dHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jICAgICAgICAgICB8ICAzIC0KIGRyaXZlcnMvdHR5
-L3NlcmlhbC9hcjkzM3hfdWFydC5jICAgICAgICAgICAgICB8IDE4ICsrLS0tLQogZHJpdmVycy90
-dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMgICAgICAgICAgICAgIHwgNjAgKysrKysrKysrKysrLS0t
-LS0tLQogNiBmaWxlcyBjaGFuZ2VkLCA1MCBpbnNlcnRpb25zKCspLCA1MSBkZWxldGlvbnMoLSkK
-CgpiYXNlLWNvbW1pdDogN2U1YjQzMjJjZGUwNjdlMWQwZjFiZjhmNDkwZTkzZjY2NGE3Yzg0Mwot
-LSAKMi4yNS4xCgo=
+On 08/07/2022 03:20, Julius Werner wrote:
+>> Then I would assume that all lpddr properties can differ between ranks,
+>> including the timings. But probably some SDRAM memory expert should
+>> clarify that.
+> 
+> Right, so that's what my proposal does -- separate timings nodes per
+> rank (and channel).
+> 
+>>> That really doesn't work for our use case, we can't generate a
+>>> specific compatible string for each part number. This may work when
+>>> your board is only using a single memory part and you can hardcode
+>>> that in the DTB blob bundled with the kernel, but we are trying to do
+>>> runtime identification between dozens of different parts on our
+>>> boards. The whole point of us wanting to add these bindings is that we
+>>> want to have the firmware inject the raw values it can read from mode
+>>> registers into the device tree (with just the compatible string
+>>> "jedec,lpddr3"),
+>>
+>> You cannot have jedec,lpddr3 alone. You need specific compatible.
+> 
+> Sorry, what do you mean we cannot? Why not? 
+
+Currently bindings do not allow it.
+
+Whether this can be changed, I responded in last paragraph of my
+previous email.
+
+> That's the way we need to
+> do it for our use case. Why shouldn't it work that way? As far as I
+> understand the binding definition, this is one of the legal compatible
+> strings for it. (I'm not saying other platforms can't register and
+> provide specific compatible strings if they want to, of course, but
+> for our situation that really doesn't work.)
+
+Not for LPDDR3 bindings, yes for LPDDR2. Inconsistency is actually a bit
+confusing.
+
+> 
+>>> so that we can then delegate the task of matching
+>>> those values to part numbers to a userspace process.
+>>
+>> Constructing a vendor from mode registers is like 10 lines of C code, so
+>> this is not a problem. Trouble would be with device part of compatible.
+> 
+> There's potentially 255 different manufacturer codes, and the
+> assignments may be different for different LPDDR versions. That's a
+> big string table that we don't want to have to fit in our firmware
+> flash. Besides, as you said, that still only gives you the vendor...
+> so then should we use "micron,lpddr3" or "elpida,lpddr3" instead of
+> "jedec,lpddr3"? Where's the advantage in that?
+> 
+>>> Can we please revert that deprecation and at least keep the property
+>>> around as optional?
+>>
+>> Yes, we can. You still would need to generate the compatible according
+>> to the current bindings. Whether we can change it I am not sure. I think
+>> it depends how much customization is possible per vendor, according to
+>> JEDEC spec. If we never ever have to identify specific part, because
+>> JEDEC spec and registers tell us everything, then we could skip it,
+>> similarly to lpddr2 and jedec,spi-nor.
+> 
+> Shouldn't that be decided per use case? In general LPDDR is a pretty
+> rigid set of standards and memory controllers are generally compatible
+> with any vendor without hardcoding vendor-specific behavior, so I
+> don't anticipate that this would be likely (particularly since there
+> is no "real" kernel device driver that needs to initialize the full
+> memory controller, after all, these bindings are mostly
+> informational). 
+
+If decided per use case understood as "decided depending how to use the
+bindings" then answer is rather not. For example Linux implementation is
+usually not the best argument to shape the bindings and usually to such
+arguments answer is: "implementation does not matter".
+
+If by "use case" you mean actual hardware or specification
+characteristics, then yes, of course. This is why I wrote "it depends".
+
+> Of course there may always be mistakes and broken
+> devices that need custom handling, and if someone has a platform with
+> such a case I of course don't want to preclude them from tying special
+> behavior to a custom compatible string. But why would that mean we
+> need to make this mandatory for all platforms even if it's not
+> relevant (and not practically feasible) for them? Why not allow both?
+
+Depends. If generic compatible is not enough (works only for your case)
+then it should have never been added alone.
+
+> 
+>>> We need to be able to report the information that's currently encoded
+>>> in the "jedec,lpddr2" binding separately for each channel+rank
+>>> combination, and we need to be able to tell how many LPDDR chips are
+>>> combined under a single memory channel.
+>>
+>> Who and why needs that information?
+>>
+>> To me it's not a very useful information without knowing how memory
+>> ranges are mapped to the chips and then only kernel drivers should be
+>> able to utilize that info in a meaningful way. What driver are we
+>> talking about?
+> 
+> We're using this for diagnostic purposes, to be able to accurately
+> report the installed memory configuration to the user or in automated
+> error reporting. We're planning to just read it from userspace (via
+> /proc/device-tree) and not actually add a kernel driver for it, but
+> since it needs to come from the firmware through the device tree it
+> should have a standardized binding all the same.
+
+Sorry, I don't understand to whom you reply. It's a reply to me but you
+quoted here few pieces of emails which were not from me. If you
+argue/comment/discuss with any of my statements, please write your reply
+under my quote. This allows me easily to find the relevant point of
+discussion.
+
+Best regards,
+Krzysztof
