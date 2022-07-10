@@ -2,144 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF727C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 08:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1211C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 08:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiGJIl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 04:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        id S229589AbiGJImI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 04:42:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiGJIlZ (ORCPT
+        with ESMTP id S229497AbiGJImG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 04:41:25 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4B0186F6;
-        Sun, 10 Jul 2022 01:41:24 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id w83so3631812oiw.1;
-        Sun, 10 Jul 2022 01:41:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=pV0ib9A/Zqn3DAPzUpkTVTd8pzK2zpC1aB/N9OYfh5Y=;
-        b=kCXhVzyFMw7S+lCU/LwpvzAgmS+/lwBU9Y9wpSCzuN8j/7QA+3wkf7yzUmi/kPbLHf
-         J/fixpM0ErV7ewQxrhAqwBZ0k2lmXYEDeSYvh5BzrQYiIrKZo+4fml4ZDjcE5uILr0QT
-         AqSR21dHKUr6+RQ0PKm3wpi9AlY8ZMUr4/E+vg+tnu61GeL0YH+TwOSAmbaiBYwn/oke
-         Jw09mIja3s3RYDeRIZBvYZxyRWvedwuFXD/TokPlT1FdSwWXdag9pakoy179+DyMKq0r
-         Fqph5L4mMCUMLex8y/R8760NWeEbFUpd6jPdgF3CxQTOk8wmYMEWDTBF0WLA6o/RQXcJ
-         ZZww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=pV0ib9A/Zqn3DAPzUpkTVTd8pzK2zpC1aB/N9OYfh5Y=;
-        b=8HwgW9Zx2gAl9EvnsCwN/AOzRlhuFOQfv1nDrfnZpW6gC/Kz4FbITl6sFLzKglWbRh
-         Fo5aEYZcoBTV7GiCX2rl6hAj1GsEinswjDUBlwDHcL22r7V+40RDb7SnlPJvNrohKtUu
-         ENjSXoFSWGSKmZKSmsx3oWT00ZkQRiWclPX/IsF4JcTRgVKKH4AG5mi6tmOjkHymwMpX
-         WAf0uTL9pKJHV0rPgwsHlX2f2jfNhmaPrgspGZru320hku7hlhJX5/B0J/pabMMXUPt4
-         efjXGjJCuQ2VBtzBdg+ZcjbCpfGo+tDO7SpsmEXaMH1n0f0UUjE44Orran7oJUDRrobu
-         tR9A==
-X-Gm-Message-State: AJIora+t+SSp0soQ/2BIsaKLN25nS0DNebdiuPbkSGzZ5nSsWaIV17TF
-        NOy6327zRisYHKSzZZm6cy2fCra3RnA00fbwKfO/ADXpSP02eg==
-X-Google-Smtp-Source: AGRyM1vCDFTJqvW+Rt/d3cAvtm4skROzzW1zVKfoq0OrYxutUdiMJZfk5XddtrqB1ox7OHdtCEe6EW/NrHNJVRbDq10=
-X-Received: by 2002:a05:6808:302b:b0:2f9:eeef:f03 with SMTP id
- ay43-20020a056808302b00b002f9eeef0f03mr4446745oib.128.1657442483540; Sun, 10
- Jul 2022 01:41:23 -0700 (PDT)
+        Sun, 10 Jul 2022 04:42:06 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521CE18E13
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 01:42:05 -0700 (PDT)
+Date:   Sun, 10 Jul 2022 08:42:02 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657442523;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kuj9+uK8+oEXBlpOpZP+PLNEOeOuptazmGiCRlsXMwY=;
+        b=bCtcYln1JOkcoR/5Yybz99Ganerozh3Ey60b1s4WdCJxnV7seLwuD54R50PmFuhnO/a6va
+        Se104Y4tWyTP3WzerBUU7cFyUK+z9bWRoTsqmI/evvatFPwWgcKaX8uPHwhYrAWmsmD+h3
+        Js1H44Rhsq2k4ucUsso29BsbsnVnC/IZ40TAFx/iqtIQy/zNaovZBCugpxx+cgmcY3dpGu
+        JO+wXevYmzbPOPHctCXvBNdK2/33Te5h7ri1hhhWXyP+vs1kqXt+3bJJ0zFDCaO29qChXo
+        BX94WvbwfcWLUBVDsaS0GuRHbB6l6fDOuQc4osnHwA7HmENriy4xJpXlZ433zw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657442523;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kuj9+uK8+oEXBlpOpZP+PLNEOeOuptazmGiCRlsXMwY=;
+        b=93ckst3CXbI4qSM3qEhPE5k4oZwOcPgflHvGBC6GXGePN2dLKHCyVSSp5GXskHDVbWaEdc
+        fgKtr0nzCdXXGIAg==
+From:   "irqchip-bot for Lad Prabhakar" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] dt-bindings: pinctrl:
+ renesas,rzg2l-pinctrl: Document the properties to handle GPIO IRQ
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        tglx@linutronix.de
+In-Reply-To: <20220707182314.66610-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220707182314.66610-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-References: <9154d66961804027b1bdc26f1ff08012bb7f9df8.1657269675.git.bristot@kernel.org>
-In-Reply-To: <9154d66961804027b1bdc26f1ff08012bb7f9df8.1657269675.git.bristot@kernel.org>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Sun, 10 Jul 2022 10:40:47 +0200
-Message-ID: <CA+icZUUKiODjF0gZ1MaHPgVZS8zKEweR-1NkjHcegsLoRNUQ9w@mail.gmail.com>
-Subject: Re: [PATCH] rtla: Fix Makefile when called from -C tools/
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <165744252232.15455.3508408173355052319.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 2:17 PM Daniel Bristot de Oliveira
-<bristot@kernel.org> wrote:
->
-> Sedat Dilek reported an error on rtla Makefile when running:
->
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Hi Daniel,
+Commit-ID:     35c37efd12733d8ddbdc11ab9c8dbcee472a487f
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/35c37efd12733d8ddbdc11ab9c8dbcee472a487f
+Author:        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+AuthorDate:    Thu, 07 Jul 2022 19:23:13 +01:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Sun, 10 Jul 2022 09:30:00 +01:00
 
-Thanks for the patch.
+dt-bindings: pinctrl: renesas,rzg2l-pinctrl: Document the properties to handle GPIO IRQ
 
->     $ make -C tools/
+Document the required properties to handle GPIO IRQ.
 
-No, that was with...
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220707182314.66610-6-prabhakar.mahadev-lad.rj@bp.renesas.com
+---
+ Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-$ make -C tools/ clean
-
->     [...]
->     make[2]: Entering directory
->     '/home/dileks/src/linux-kernel/git/tools/tracing/rtla'
->     [...]
->     '/home/dileks/src/linux-kernel/git/Documentation/tools/rtla'
->     /bin/sh: 1: test: rtla-make[2]:: unexpected operator    <------ The problem
->     rm: cannot remove '/home/dileks/src/linux-kernel/git': Is a directory
->     make[2]: *** [Makefile:120: clean] Error 1
->     make[2]: Leaving directory
->
-> This occurred because the rtla calls kernel's Makefile to get the
-> version in silence mode, e.g.,
->
->     $ make -sC ../../.. kernelversion
->     5.19.0-rc4
->
-> But the -s is being ignored when rtla's makefile is called from indirectly,
-> so the output looks like:
->
->     $ make -C ../../.. kernelversion
->     make: Entering directory '/root/linux'
->     5.19.0-rc4
->     make: Leaving directory '/root/linux'
->
-> 'grep -v make' to avoid this problem, e.g.,
->
-
-Missing word at the beginning soething like:
-
-Use 'grep -v make' to avoid this problem ...
-
->     $ make -C ../../.. kernelversion | grep -v make
->     5.19.0-rc4
->
-
-Shouldn't that be:
-
-$ make -sC ... (missing "s")
-
-Regards,
--Sedat-
-
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Fixes: 8619e32825fd ("rtla: Follow kernel version")
-> Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
-> Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
-> Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-> ---
->  tools/tracing/rtla/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-> index 3822f4ea5f49..1bea2d16d4c1 100644
-> --- a/tools/tracing/rtla/Makefile
-> +++ b/tools/tracing/rtla/Makefile
-> @@ -1,6 +1,6 @@
->  NAME   :=      rtla
->  # Follow the kernel version
-> -VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion)
-> +VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion | grep -v make)
->
->  # From libtracefs:
->  # Makefiles suck: This macro sets a default value of $(2) for the
-> --
-> 2.32.0
->
+diff --git a/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
+index 52df1b1..997b746 100644
+--- a/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
+@@ -47,6 +47,17 @@ properties:
+   gpio-ranges:
+     maxItems: 1
+ 
++  interrupt-controller: true
++
++  '#interrupt-cells':
++    const: 2
++    description:
++      The first cell contains the global GPIO port index, constructed using the
++      RZG2L_GPIO() helper macro in <dt-bindings/pinctrl/rzg2l-pinctrl.h> and the
++      second cell is used to specify the flag.
++      E.g. "interrupts = <RZG2L_GPIO(43, 0) IRQ_TYPE_EDGE_FALLING>;" if P43_0 is
++      being used as an interrupt.
++
+   clocks:
+     maxItems: 1
+ 
+@@ -110,6 +121,8 @@ required:
+   - gpio-controller
+   - '#gpio-cells'
+   - gpio-ranges
++  - interrupt-controller
++  - '#interrupt-cells'
+   - clocks
+   - power-domains
+   - resets
+@@ -126,6 +139,8 @@ examples:
+             gpio-controller;
+             #gpio-cells = <2>;
+             gpio-ranges = <&pinctrl 0 0 392>;
++            interrupt-controller;
++            #interrupt-cells = <2>;
+             clocks = <&cpg CPG_MOD R9A07G044_GPIO_HCLK>;
+             resets = <&cpg R9A07G044_GPIO_RSTN>,
+                      <&cpg R9A07G044_GPIO_PORT_RESETN>,
