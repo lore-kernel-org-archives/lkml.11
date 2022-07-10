@@ -2,91 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D85C0CCA481
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 19:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED796C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 19:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229463AbiGJTjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 15:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
+        id S229628AbiGJTl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 15:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiGJTjq (ORCPT
+        with ESMTP id S229469AbiGJTl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 15:39:46 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE8D14D39;
-        Sun, 10 Jul 2022 12:39:44 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id f73so5685601yba.10;
-        Sun, 10 Jul 2022 12:39:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jHig/kgCW9rPtBLTmyT6ZlPMMNP9pICXSeKn7E/q6GU=;
-        b=Fk+voQovmCT95EZAP5dIwBiWwpfksM05+vO7WNxv4z+jWewvoGKeW9BYnwYiAL3Lt5
-         NnKHpGsMR34gyvz0OO1QmecK0S26n3Lbbfuur3tSz1YU28eKxeJFMosnSrxe1+nbbgwc
-         QFBaFLyPSiIzVDDa0U0ird0Yh9YUmFZjXEYjCnzHWkuh2ESgkivGydZ5m3fl7qhrlQL/
-         30wS0ZQ9vjRsK3a3yG4AkgYFTozRA7rUpoEyZJMY0LET8xkV9fWy8Dn1RHalweG9Kb2S
-         9oBMPy6/5t05e37OjTkLU+azjYy9IPD/CCxAJo9/OxXi3QFpXzkcpB74GM5lqaxhIC2n
-         hUBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jHig/kgCW9rPtBLTmyT6ZlPMMNP9pICXSeKn7E/q6GU=;
-        b=WrB3O8fuJ8P2GUfOoExIxuiZlRiK/ciuQReS6tIBpHH/71KvSEuM5toOZUuTbSXlP0
-         lGtca5fSNVXcFLYSJEFn1jjBsmd4pHIG3G3WgTRYBPKWzt8/NjFyzcPf7f3ebUGE2K5Z
-         PjbQp365+yPzpqwY60wC5hUAdfUSNeXvR234zf447spzLkPxS51yU5cX7p50a4eTRqwK
-         MoAyST+EDlOesxO8V1e50yq6CH1RloYnJ/zNF//F/At1b15wG4XNpq3qtrPXl8QmSPYc
-         RSxU68+UoshklmSe6ix01KAHMuQIT85UhNvRMZseP4e2eVzXq7bXwrgYsV2b30YBWVqZ
-         SiKg==
-X-Gm-Message-State: AJIora+PrfgKFbVCYnmGennVQbbhv01mkSGm65AbUjuorp5PVhyhKMeX
-        GJ9LZ8EHfZUael7XdIESnjszkPXkGndqg+uRa28=
-X-Google-Smtp-Source: AGRyM1ueLrKTNFu8t419Verj8miOH/Kb/uR9xKk9ctJSVPuuKbdaLbhj10023Cfq3Ol7WXK26dXTYxFflLklyu8e0mA=
-X-Received: by 2002:a05:6902:686:b0:66e:627f:4d29 with SMTP id
- i6-20020a056902068600b0066e627f4d29mr13182800ybt.385.1657481983485; Sun, 10
- Jul 2022 12:39:43 -0700 (PDT)
+        Sun, 10 Jul 2022 15:41:27 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC17C12AC9
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 12:41:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657482086; x=1689018086;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OLLSePAlcksAVoSxv2ud3tiGxluhBiH6TPyR5x8FGnI=;
+  b=cVKIh4qH1UyjJT5uJDaiuxxAjlFSIjaTQJQ4naVvEiRg0r2SBVTPikxn
+   D03ZX9Nrq3B4ArXjJDK0k4mViy+yDI3LX9fgUHhxlh0Oe8eF9TvuNegM4
+   UWHZmy1SzdiDWZL6mjOcTW3yNAFjLRroQGFpKI9qYSospNV9+06dq65AU
+   kcZqESiIjer3i3w1XUvFtx7W3E/R3fB8kOfGtF4my5+kreF4Ofjg5AF3O
+   wmRKQL68DTp3g2ySm1wn9MOKsBv7y9xqrVbsAE1Tb4PXG9Mqf5YygxVBr
+   XwSPicb9eizTxwnJHyn3Qy8ZZQpX3IUwbTWGul+8zFkuCZapG5432w91g
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="284556423"
+X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
+   d="scan'208";a="284556423"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 12:41:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
+   d="scan'208";a="684175141"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 10 Jul 2022 12:41:25 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAco0-000Q96-H3;
+        Sun, 10 Jul 2022 19:41:24 +0000
+Date:   Mon, 11 Jul 2022 03:40:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/tramp_27 25/33] kernel/bpf/syscall.c:3145:9: error:
+ implicit declaration of function 'bpf_tramp_id_put'; did you mean
+ 'bpf_trampoline_put'?
+Message-ID: <202207110306.PVeAPeww-lkp@intel.com>
 MIME-Version: 1.0
-References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
- <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
- <87czegxccb.fsf@jogness.linutronix.de> <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
- <87tu7qvx1q.fsf@jogness.linutronix.de>
-In-Reply-To: <87tu7qvx1q.fsf@jogness.linutronix.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 10 Jul 2022 21:39:07 +0200
-Message-ID: <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
-Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
- (printk issue)
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     todd.e.brandt@linux.intel.com, Petr Mladek <pmladek@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 9, 2022 at 10:48 PM John Ogness <john.ogness@linutronix.de> wrote:
->
-> On 2022-07-08, Todd Brandt <todd.e.brandt@linux.intel.com> wrote:
-> > The dmesg logs are in the html timelines themselves, just click the
-> > "dmesg" button in the upper right hand corner. The log button shows
-> > all kinds of system info as well.
->
-> Since the beginning of the kernel log is missing, I still do not see
-> information about which serial driver you are using. But since it is
-> x86, I'll assume it is an 8250.
->
-> Looking at freeze-5.19.0-rc1-bad.html, at 3431.221039 we see that
-> suspend_console() was called. The additional 1-second delay you are
-> referring to would be 3432.436187, where serial is suspended. pr_flush()
-> would have been satisfied when the message at 3431.221039 was
-> printed. So the question is, why is there still printing going on?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_27
+head:   08201713df8992b94d140b43fd4f20f1ad4aedb3
+commit: 09c2a865c50223e0a31377f51bd567e5d5943e73 [25/33] bpf: Add support for tracing multi link
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220711/202207110306.PVeAPeww-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=09c2a865c50223e0a31377f51bd567e5d5943e73
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf bpf/tramp_27
+        git checkout 09c2a865c50223e0a31377f51bd567e5d5943e73
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-It might be no_console_suspend hack. Are you, btw, aware of this ugly
-hack in the kernel?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   kernel/bpf/syscall.c: In function 'bpf_prog_load':
+   kernel/bpf/syscall.c:2503:22: error: implicit declaration of function 'is_tracing_multi' [-Werror=implicit-function-declaration]
+    2503 |         multi_func = is_tracing_multi(attr->expected_attach_type);
+         |                      ^~~~~~~~~~~~~~~~
+   In file included from arch/x86/include/asm/bug.h:87,
+                    from include/linux/bug.h:5,
+                    from include/linux/cpumask.h:14,
+                    from arch/x86/include/asm/cpumask.h:5,
+                    from arch/x86/include/asm/msr.h:11,
+                    from arch/x86/include/asm/processor.h:22,
+                    from arch/x86/include/asm/timex.h:5,
+                    from include/linux/timex.h:67,
+                    from include/linux/time32.h:13,
+                    from include/linux/time.h:60,
+                    from include/linux/ktime.h:24,
+                    from include/linux/timer.h:6,
+                    from include/linux/workqueue.h:9,
+                    from include/linux/bpf.h:10,
+                    from kernel/bpf/syscall.c:4:
+   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_link_release':
+   kernel/bpf/syscall.c:3137:22: error: implicit declaration of function 'bpf_trampoline_multi_detach' [-Werror=implicit-function-declaration]
+    3137 |         WARN_ON_ONCE(bpf_trampoline_multi_detach(&tr_link->tp, tr_link->id));
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/asm-generic/bug.h:110:32: note: in definition of macro 'WARN_ON_ONCE'
+     110 |         int __ret_warn_on = !!(condition);                      \
+         |                                ^~~~~~~~~
+   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_link_dealloc':
+>> kernel/bpf/syscall.c:3145:9: error: implicit declaration of function 'bpf_tramp_id_put'; did you mean 'bpf_trampoline_put'? [-Werror=implicit-function-declaration]
+    3145 |         bpf_tramp_id_put(tr_link->id);
+         |         ^~~~~~~~~~~~~~~~
+         |         bpf_trampoline_put
+   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_attach':
+   kernel/bpf/syscall.c:3308:14: error: implicit declaration of function 'bpf_tramp_id_alloc'; did you mean 'bpf_tramp_id_resolve'? [-Werror=implicit-function-declaration]
+    3308 |         id = bpf_tramp_id_alloc(cnt);
+         |              ^~~~~~~~~~~~~~~~~~
+         |              bpf_tramp_id_resolve
+   kernel/bpf/syscall.c:3308:12: warning: assignment to 'struct bpf_tramp_id *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+    3308 |         id = bpf_tramp_id_alloc(cnt);
+         |            ^
+   kernel/bpf/syscall.c:3349:15: error: implicit declaration of function 'bpf_trampoline_multi_attach'; did you mean 'bpf_tracing_multi_attach'? [-Werror=implicit-function-declaration]
+    3349 |         err = bpf_trampoline_multi_attach(&link->tp, id);
+         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |               bpf_tracing_multi_attach
+   cc1: some warnings being treated as errors
+
+
+vim +3145 kernel/bpf/syscall.c
+
+  3139	
+  3140	static void bpf_tracing_multi_link_dealloc(struct bpf_link *link)
+  3141	{
+  3142		struct bpf_tracing_multi_link *tr_link =
+  3143			container_of(link, struct bpf_tracing_multi_link, link);
+  3144	
+> 3145		bpf_tramp_id_put(tr_link->id);
+  3146		kfree(tr_link);
+  3147	}
+  3148	
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
