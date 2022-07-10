@@ -2,107 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0570FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DD7CCA482
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbiGJPLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 11:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
+        id S229530AbiGJPMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 11:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiGJPLp (ORCPT
+        with ESMTP id S229450AbiGJPMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 11:11:45 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42962BCA8
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:11:44 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so6107578pjo.3
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:11:44 -0700 (PDT)
+        Sun, 10 Jul 2022 11:12:52 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272DABC99
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:12:51 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id bx13so3639660ljb.1
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:12:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZiGKAq8E/61V/xfD2osUhAigUxFAGIjOAFkVRU11S5c=;
-        b=SwASqhsqF/uwpbfqLellpCwOiSzS2k5/C73tZViHwi+wlDrtSvqy/CLZnD2QvQx14O
-         05Hik6bMxgJLrqyo0hAR3hJVC2DjtGviASL9QpxRfJ2Mr7prJ0NLHiUeNc6BuYBZft4X
-         ZTAqYVdhB8j7EjMsADYyuJSDB4RG6atPSLW3MPkjzoKYaSrWiG9MEd4+xUmzJ7pjW7n0
-         v8/5ZFNEOPxeviRy8dbKLUM+VbcoYbCkWE78lVU+ATrf/m6cHHGj76Xk5hFSN2VmLNRw
-         k84hTH7nPLuk9tK4wybq6iny6+lXDfG8UDKS9AImQNoG7IoP2xyJCGkMNzNNgc+CpBIZ
-         UO2A==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NrSFqXui8IuFWW18AV7BX9JJnZg6RCMbeeOF3ySerrE=;
+        b=QMoJgDgrWpoHgt8V935Yj0tZ7gW3LZdDygouB/iufA4mk/EYDXJyLplXfyn9C8aN3A
+         uIDA0Tu/wnZF2BfBFlpKqh4VyroAYuQZqBcdpiZdNqmtc1Z5K0m7VaZCj9hr+NPEj35l
+         BPUIU1LpogI7MI0Z2g9xvpzLPWDCfvUhqRZswOndvhygeYTuQ8N329fsjMyYoMlPMYqw
+         F5KZ/a6Qya+85rPNA5stUj9xKIurX7xzNqVFP9yMbwrQYxAP3NoSkTUTKHqlfCKkzx6r
+         PnWE30Qp6vO43T+WD+r3zVXt+y24fZZfpGbNtPSRRMTbGF8XcgFbk+cwU5SF+8I8uRG7
+         8q0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=ZiGKAq8E/61V/xfD2osUhAigUxFAGIjOAFkVRU11S5c=;
-        b=C0YZhxt18+E/P3kAvFxrpTCFZ22Zm1J5GVy5+NK9Uatz3VOjQ/AvvUCxwLZEjyBoJX
-         F12n4AEa6U/KZEx2EHze6rBfVO38S+p9MbyFxz6kRqsR/EvPPn1PH0AUMatp1OOXt7ck
-         TWAbDysr75g5aGqiufSufVdxXvEc004QRPRUe20yvVgQgpjKbzu3cXjyH2Kf9PVUqMwM
-         nG10oYx4oNvaRV1cpgL6zJvwxJh4MB1Bl+m7rYQO3Ly3P0/LWwkbplYSRT6r9g24Zr7e
-         HZi55bl0oUJSXNTY6AKTi5BUOp/kwyFZZ3ViHTVyFDDOaQ7d+NEV1pD9xuC04xC5nGwg
-         pHOw==
-X-Gm-Message-State: AJIora8dvLrIxcP6gx+nBVM85M+d7+1j0KO1eWxqenoExn1SvyhePvMG
-        FmyuiCgmK8lPqrfNRirTxIsTHw==
-X-Google-Smtp-Source: AGRyM1sR9ZDu/2Ia1wh+BMIiL0MAl4yRxaD0cHdlrNSxgTTfrD37Fazff0AZYrTaHIbPHcXWL6e9XQ==
-X-Received: by 2002:a17:90b:1c86:b0:1ee:e795:a6a with SMTP id oo6-20020a17090b1c8600b001eee7950a6amr11794505pjb.205.1657465903563;
-        Sun, 10 Jul 2022 08:11:43 -0700 (PDT)
-Received: from anup-ubuntu64-vm.. ([122.167.98.167])
-        by smtp.gmail.com with ESMTPSA id a200-20020a621ad1000000b0052ab37ef3absm3014756pfa.116.2022.07.10.08.11.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 08:11:42 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Bin Meng <bmeng.cn@gmail.com>,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Anup Patel <anup@brainfault.org>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH] RISC-V: KVM: Fix SRCU deadlock caused by kvm_riscv_check_vcpu_requests()
-Date:   Sun, 10 Jul 2022 20:41:05 +0530
-Message-Id: <20220710151105.687193-1-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.34.1
+        bh=NrSFqXui8IuFWW18AV7BX9JJnZg6RCMbeeOF3ySerrE=;
+        b=XbvGYb9hwKiKwKkuPySp3fSEJTV651kz4Ek0Jl5dpKMcIH6UTQv6HvvJ+/R0GKVMWQ
+         oPJhlyHZXSzbteY9kV2Cp61Rcv38N/pZ8pBbcfEt020bx+X2jmQJvh0Gl3oOPLqapWHn
+         MZf/zokm0Zd3iYzEAEwm+FYEQ1vvZuIJc0oziy6dKEmKOIIgxmIPdX4tx+1P6YZvQhSx
+         02AFTeoNhRgnCUw1q6UXoULg+Bc/Yf4Yl1WE6fgzTpBNl9myy+42HKm5W9vMTHRPc769
+         8iN89UuJKz7E+K4JngnxvJTwDEFVk43Ay5G4CSGzt+P+4Hwbjwj7vAjWFAlPCvKPxpxA
+         jd3g==
+X-Gm-Message-State: AJIora+vJiw72OyTpPcsQl230jz1mMZTeGVBTDdi/C5ny4Q4THmJVWGp
+        VUOywu8aMmEYC+OWSgpv9LAmDw==
+X-Google-Smtp-Source: AGRyM1u4TGEfXbOJWoo2B3uuptUDQWrvhmxrihGijpLpTSzFLDT2nPpmDzKjXMxyCnypzScxX8fVbA==
+X-Received: by 2002:a2e:83c7:0:b0:25b:c007:29e0 with SMTP id s7-20020a2e83c7000000b0025bc00729e0mr7525140ljh.378.1657465969512;
+        Sun, 10 Jul 2022 08:12:49 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5cac-200.bb.online.no. [88.92.172.200])
+        by smtp.gmail.com with ESMTPSA id y18-20020a199152000000b00486d8a63c07sm976213lfj.121.2022.07.10.08.12.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Jul 2022 08:12:49 -0700 (PDT)
+Message-ID: <f6ab024a-582f-45b0-7d26-94a85858c761@linaro.org>
+Date:   Sun, 10 Jul 2022 17:12:46 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 25/33] dt-bindings: crypto: rockchip: convert to new
+ driver bindings
+Content-Language: en-US
+To:     LABBE Corentin <clabbe@baylibre.com>
+Cc:     Rob Herring <robh@kernel.org>, john@metanate.com, heiko@sntech.de,
+        p.zabel@pengutronix.de, krzysztof.kozlowski+dt@linaro.org,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        didi.debian@cknow.org, herbert@gondor.apana.org.au,
+        sboyd@kernel.org, mturquette@baylibre.com,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org
+References: <20220706090412.806101-1-clabbe@baylibre.com>
+ <20220706090412.806101-26-clabbe@baylibre.com>
+ <1657114144.957232.4099933.nullmailer@robh.at.kernel.org>
+ <YsWcGDwPCX+/95i3@Red> <3e47b853-bb82-8766-8884-3da931c038a2@linaro.org>
+ <YsabXrOyAsCkUUVN@Red>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YsabXrOyAsCkUUVN@Red>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kvm_riscv_check_vcpu_requests() is called with SRCU read lock held
-and for KVM_REQ_SLEEP request it will block the VCPU without releasing
-SRCU read lock. This causes KVM ioctls (such as KVM_IOEVENTFD) from
-other VCPUs of the same Guest/VM to hang/deadlock if there is any
-synchronize_srcu() or synchronize_srcu_expedited() in the path.
+On 07/07/2022 10:37, LABBE Corentin wrote:
+> Le Wed, Jul 06, 2022 at 05:25:21PM +0200, Krzysztof Kozlowski a écrit :
+>> On 06/07/2022 16:28, LABBE Corentin wrote:
+>>> Le Wed, Jul 06, 2022 at 07:29:04AM -0600, Rob Herring a écrit :
+>>>> On Wed, 06 Jul 2022 09:04:04 +0000, Corentin Labbe wrote:
+>>>>> The latest addition to the rockchip crypto driver need to update the
+>>>>> driver bindings.
+>>>>>
+>>>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>>>> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+>>>>> ---
+>>>>>  .../crypto/rockchip,rk3288-crypto.yaml        | 85 +++++++++++++++++--
+>>>>>  1 file changed, 77 insertions(+), 8 deletions(-)
+>>>>>
+>>>>
+>>>> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+>>>> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>>>>
+>>>> yamllint warnings/errors:
+>>>>
+>>>> dtschema/dtc warnings/errors:
+>>>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml: allOf:0:then:properties:clock-names: 'oneOf' conditional failed, one must be fixed:
+>>>> 	[{'const': 'aclk'}, {'const': 'hclk'}, {'const': 'sclk'}, {'const': 'apb_pclk'}] is too long
+>>>> 	[{'const': 'aclk'}, {'const': 'hclk'}, {'const': 'sclk'}, {'const': 'apb_pclk'}] is too short
+>>>> 	False schema does not allow 4
+>>>> 	1 was expected
+>>>> 	4 is greater than the maximum of 2
+>>>> 	4 is greater than the maximum of 3
+>>>
+>>> Hello
+>>>
+>>> I upgraded to dt-schema 2022.07 and fail to reproduce all errors.
+>>
+>> Visible on older dtschema (2022.6.dev10+gcd64f75fe091), visible on
+>> newest (2022.7).
+>>
+>> Exactly the same error.
+>>
+> 
+> Hello
+> 
+> I am sorry, I finally succesfully reproduced it.
+> Just doing what the hints gives (removing max/min-items) from "static" list fix the issue.
 
-To fix the above in kvm_riscv_check_vcpu_requests(), we should do SRCU
-read unlock before blocking the VCPU and do SRCU read lock after VCPU
-wakeup.
+Not sure what do you mean by "static list". I think you should drop
+min/maxItems from clock-names/reset-names in allOf:if:then sections.
 
-Fixes: cce69aff689e ("RISC-V: KVM: Implement VCPU interrupts and
-requests handling")
-Reported-by: Bin Meng <bmeng.cn@gmail.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/kvm/vcpu.c | 2 ++
- 1 file changed, 2 insertions(+)
+> Does I need to remove your Reviewed-by ?
 
-diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
-index b7a433c54d0f..5d271b597613 100644
---- a/arch/riscv/kvm/vcpu.c
-+++ b/arch/riscv/kvm/vcpu.c
-@@ -845,9 +845,11 @@ static void kvm_riscv_check_vcpu_requests(struct kvm_vcpu *vcpu)
- 
- 	if (kvm_request_pending(vcpu)) {
- 		if (kvm_check_request(KVM_REQ_SLEEP, vcpu)) {
-+			kvm_vcpu_srcu_read_unlock(vcpu);
- 			rcuwait_wait_event(wait,
- 				(!vcpu->arch.power_off) && (!vcpu->arch.pause),
- 				TASK_INTERRUPTIBLE);
-+			kvm_vcpu_srcu_read_lock(vcpu);
- 
- 			if (vcpu->arch.power_off || vcpu->arch.pause) {
- 				/*
--- 
-2.34.1
+Let's drop, so it will be back to my to-review queue.
 
+Best regards,
+Krzysztof
