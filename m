@@ -2,106 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1073C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FDEC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 15:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiGJPVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 11:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        id S229674AbiGJPWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 11:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiGJPVk (ORCPT
+        with ESMTP id S229660AbiGJPVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 11:21:40 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253A6DE9E;
-        Sun, 10 Jul 2022 08:21:40 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id r6so98973plg.3;
-        Sun, 10 Jul 2022 08:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WVaXUpEXnFSePOO8ybge03AZi2rbsxwDM73MjsfciaA=;
-        b=fjOx5BDu2Ebd4rD5ClRZmZKdSiH64xI+ffYK12U2eZ3Ho9NVhY5cUI4WGrMYopF/zE
-         n7yOlrbwBD206k/nLmjhpEW7/Fb3HNYM15hJbhz2nCpIApJ34FAkvtrADJFRvKLjEMOX
-         s6NI9pdvd+sE3/zXzwOwGq/OmmjVDW/IS1zOgru3Pq8ekvBoxzPFhDermDMWx2cshfN3
-         NavwUBAm1axI9ZpKpNPE/GKO8LjxRVm6qPlRv/GOIN1YPiTozObjUQZay8rTh3n1XuiW
-         4t2F0INqf0PZ4+5f5Ct1249duxQjPyFlxq0NP28w9sBBVOow+aozUJjbcL5huklbiJ9B
-         A88w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WVaXUpEXnFSePOO8ybge03AZi2rbsxwDM73MjsfciaA=;
-        b=7r0bag83p/uiBbezTnhdqH778CIAi7T76MZhk5i/7X8dfoopvp46AUDW/i4Kj9TzOP
-         F3gK2CH5BHdOq+FTHV+q7+x66j7kvwtGsuNoeEE/n5GJ4VJTNJBXTQK4lKvY/kGPLRhs
-         hUp4lzHxsnT/fGZuv4RE47SQslULufyibxCpgmLgBiuGRnM9xHcOgRFH0HF5oT4p1ttn
-         99ohEWkbR0MlmZ3ws/ysuBMzUYnSTSwJ9EZMQ9q5VO/N47CEKiUDtt6tO/uWb7X2dQaf
-         OQrsc6Y58P8FcyBwX3mgSqE7ycOmxHpR/HF9MTPfD55FIiQA+DNHtAWOiNJtiTfguB1q
-         RE4g==
-X-Gm-Message-State: AJIora9AMIXfDbG23suxP5lavYPFwaogAYQJRs81tZTuZiJ5HzleAGg+
-        BdDicYcD4GBIko5S+h5IH3ibaS4vQmuA1Q==
-X-Google-Smtp-Source: AGRyM1uDT4EZLLkG/lfBYLjkz+l0bIFgpzJg21wnjuCPAtAtF3Rw1V7fqt4/ExumSYrGYfiJomopQg==
-X-Received: by 2002:a17:90b:388f:b0:1ed:3b:6c64 with SMTP id mu15-20020a17090b388f00b001ed003b6c64mr12367462pjb.34.1657466499621;
-        Sun, 10 Jul 2022 08:21:39 -0700 (PDT)
-Received: from eddie-laptop.localdomain (125-231-140-178.dynamic-ip.hinet.net. [125.231.140.178])
-        by smtp.gmail.com with ESMTPSA id nk9-20020a17090b194900b001ef93f1dc6asm2917724pjb.50.2022.07.10.08.21.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 08:21:39 -0700 (PDT)
-From:   Eddie Lin <eddielin0926@gmail.com>
-To:     arnd@arndb.de
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, eddielin0926@gmail.com
-Subject: [PATCH] sched: fix comment for sched_find_first_bit()
-Date:   Sun, 10 Jul 2022 23:21:19 +0800
-Message-Id: <20220710152119.3803-1-eddielin0926@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 10 Jul 2022 11:21:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDF3E004
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 08:21:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F11D261242
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 15:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06785C3411E;
+        Sun, 10 Jul 2022 15:21:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657466511;
+        bh=eNc0PmLL2Ko+1em/1YMUW9O7J4oGLSyO49CmNZWDL3s=;
+        h=Date:From:To:Cc:Subject:From;
+        b=YneoYT5w0sWI7g9Z1bKENxDy4CQT+b1TX+xAweyPjteHMlt4UmDfzA5Y1H+8NWxRq
+         NWyeHUtOSJNbqs7R1RqOjiGSnDb3q9iGgRXvSF65XhvuGzjuW1I0tvBETiq6o4WHb1
+         bAU34HuXZoR0mGUJFueVryr+9DmQo6OTjgVJyo1E=
+Date:   Sun, 10 Jul 2022 17:21:48 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: [GIT PULL] Staging driver fix for 5.19-rc6
+Message-ID: <YsrujMflc51TazvD@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The result of __ffs is undefined if the word is zero. Therefore, it
-should be guaranteed that at least one of the 100 bits is set.
+The following changes since commit a111daf0c53ae91e71fd2bfe7497862d14132e3e:
 
-Signed-off-by: Eddie Lin <eddielin0926@gmail.com>
----
- arch/alpha/include/asm/bitops.h    | 4 ++--
- include/asm-generic/bitops/sched.h | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+  Linux 5.19-rc3 (2022-06-19 15:06:47 -0500)
 
-diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
-index e1d8483a4..9af3528f5 100644
---- a/arch/alpha/include/asm/bitops.h
-+++ b/arch/alpha/include/asm/bitops.h
-@@ -434,8 +434,8 @@ static inline unsigned int __arch_hweight8(unsigned int w)
- 
- /*
-  * Every architecture must define this function. It's the fastest
-- * way of searching a 100-bit bitmap.  It's guaranteed that at least
-- * one of the 100 bits is cleared.
-+ * way of searching a 100-bit bitmap. It's guaranteed that at least
-+ * one of the 100 bits is set.
-  */
- static inline unsigned long
- sched_find_first_bit(const unsigned long b[2])
-diff --git a/include/asm-generic/bitops/sched.h b/include/asm-generic/bitops/sched.h
-index 86470cfce..2b614eb40 100644
---- a/include/asm-generic/bitops/sched.h
-+++ b/include/asm-generic/bitops/sched.h
-@@ -7,8 +7,8 @@
- 
- /*
-  * Every architecture must define this function. It's the fastest
-- * way of searching a 100-bit bitmap.  It's guaranteed that at least
-- * one of the 100 bits is cleared.
-+ * way of searching a 100-bit bitmap. It's guaranteed that at least
-+ * one of the 100 bits is set.
-  */
- static inline int sched_find_first_bit(const unsigned long *b)
- {
--- 
-2.25.1
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git tags/staging-5.19-rc6
+
+for you to fetch changes up to ee6c6e7342471d468096a16bee9f89b5a6c1e39d:
+
+  staging/wlan-ng: get the correct struct hfa384x in work callback (2022-07-01 09:58:58 +0200)
+
+----------------------------------------------------------------
+Staging driver fix for 5.19-rc6
+
+Here is a single staging driver fix for a reported problem that showed
+up in 5.19-rc1 in the wlan-ng driver.  It has been in linux-next for a
+week with no reported problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Davidlohr Bueso (1):
+      staging/wlan-ng: get the correct struct hfa384x in work callback
+
+ drivers/staging/wlan-ng/hfa384x_usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
