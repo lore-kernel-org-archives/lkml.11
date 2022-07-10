@@ -2,147 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB2DCCA480
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 04:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A8CCCA479
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Jul 2022 04:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiGJEJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 00:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
+        id S229637AbiGJELo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 00:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiGJEJh (ORCPT
+        with ESMTP id S229543AbiGJELl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 00:09:37 -0400
-Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBFE12D3C;
-        Sat,  9 Jul 2022 21:09:35 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LgYRK1vLQzl0rR;
-        Sun, 10 Jul 2022 12:08:45 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP3 (Coremail) with SMTP id _Ch0CgB32mn4UMpiguJUAg--.16364S6;
-        Sun, 10 Jul 2022 12:09:33 +0800 (CST)
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-To:     axboe@kernel.dk, asml.silence@gmail.com, osandov@fb.com,
-        jack@suse.cz
-Cc:     kbusch@kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
-        yukuai1@huaweicloud.com, yi.zhang@huawei.com
-Subject: [PATCH RFC v3 2/3] sbitmap: fix invalid wakeup on the wrong waitqueue
-Date:   Sun, 10 Jul 2022 12:21:59 +0800
-Message-Id: <20220710042200.20936-3-yukuai1@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220710042200.20936-1-yukuai1@huaweicloud.com>
-References: <20220710042200.20936-1-yukuai1@huaweicloud.com>
+        Sun, 10 Jul 2022 00:11:41 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7470212D2B;
+        Sat,  9 Jul 2022 21:11:36 -0700 (PDT)
+X-QQ-mid: bizesmtp77t1657426231tnuffod5
+Received: from localhost.localdomain ( [182.148.15.109])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 10 Jul 2022 12:10:12 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000B00A0000000
+X-QQ-FEAT: oxgq2YVMtX9MQTofHkQKgiDEHM7Bgjj+t/NFgLdd7CEME+1B/eNaBqi1ws05s
+        YNvpzpCRPLk8iav88zBeDfnOm3jF5xFQo++nca7E+BF3CWdmUE68NlmjyXHaiwD+hLNXWsb
+        9DaEl+0kJFavTRVQjU7ByHCQpAatXO4iLCqERkZyFNe32newUVyPNHz098fLcYQo82eGJAW
+        2ICYIepIh7XIwWLsshdLOzMIyCIpFG441jZiybS6V5M+mj+0rZCMts2zaejQ6h6CWGmWSYD
+        HpMXfZ7PG7W47GnQ1ASZ5OaZVRPDo0wFTnh1pt98yCIMs1BDXF+vvF5pPcqVY7zubtiPEeq
+        JjbFWpNLUDLAgXyUxEQokvahLKqLw==
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     imitsyanko@quantenna.com, geomatsi@gmail.co, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] wifi: qtnfmac: fix repeated words in comments
+Date:   Sun, 10 Jul 2022 12:10:05 +0800
+Message-Id: <20220710041005.10950-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _Ch0CgB32mn4UMpiguJUAg--.16364S6
-X-Coremail-Antispam: 1UD129KBjvJXoWxWr17AF4xtFWrXr4xtF1DKFg_yoW5Gr17pr
-        43GFn2qanYvrWIywsrJr4jy3WYk3yvk3yxGrW5G348Cr17trsIkr10grn3Zry8CrZ5XFy3
-        Jr43JrZ3CFyUXaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBK14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-        8EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
-        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
-        vE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
-        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04
-        v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_
-        Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x
-        0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8
-        JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIx
-        AIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjYiiDUUUUU=
-        =
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+ Delete the redundant word 'the'.
 
-For example, 2 * wake_batch tags are put, while only wake_batch threads
-are woken:
-
-__sbq_wake_up
- atomic_cmpxchg -> reset wait_cnt
-			__sbq_wake_up -> decrease wait_cnt
-			...
-			__sbq_wake_up -> wait_cnt is decreased to 0 again
-			 atomic_cmpxchg
-			 sbq_index_atomic_inc -> increase wake_index
-			 wake_up_nr -> wake up and waitqueue might be empty
- sbq_index_atomic_inc -> increase again, one waitqueue is skipped
- wake_up_nr -> invalid wake up because old wakequeue might be empty
-
-To fix the problem, increasing 'wake_index' before resetting 'wait_cnt'.
-
-Fixes: 88459642cba4 ("blk-mq: abstract tag allocation out into sbitmap library")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- lib/sbitmap.c | 45 +++++++++++++++++++++++----------------------
- 1 file changed, 23 insertions(+), 22 deletions(-)
+ drivers/net/wireless/quantenna/qtnfmac/qlink.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/lib/sbitmap.c b/lib/sbitmap.c
-index b46fce1beb3a..57095dd88a33 100644
---- a/lib/sbitmap.c
-+++ b/lib/sbitmap.c
-@@ -616,32 +616,33 @@ static bool __sbq_wake_up(struct sbitmap_queue *sbq)
- 		return false;
- 
- 	wait_cnt = atomic_dec_return(&ws->wait_cnt);
--	if (wait_cnt <= 0) {
--		int ret;
-+	if (wait_cnt > 0)
-+		return false;
- 
--		wake_batch = READ_ONCE(sbq->wake_batch);
-+	/*
-+	 * For concurrent callers of this, callers should call this function
-+	 * again to wakeup a new batch on a different 'ws'.
-+	 */
-+	if (wait_cnt < 0)
-+		return true;
- 
--		/*
--		 * Pairs with the memory barrier in sbitmap_queue_resize() to
--		 * ensure that we see the batch size update before the wait
--		 * count is reset.
--		 */
--		smp_mb__before_atomic();
-+	wake_batch = READ_ONCE(sbq->wake_batch);
- 
--		/*
--		 * For concurrent callers of this, the one that failed the
--		 * atomic_cmpxhcg() race should call this function again
--		 * to wakeup a new batch on a different 'ws'.
--		 */
--		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
--		if (ret == wait_cnt) {
--			sbq_index_atomic_inc(&sbq->wake_index);
--			wake_up_nr(&ws->wait, wake_batch);
--			return false;
--		}
-+	/*
-+	 * Pairs with the memory barrier in sbitmap_queue_resize() to
-+	 * ensure that we see the batch size update before the wait
-+	 * count is reset.
-+	 */
-+	smp_mb__before_atomic();
- 
--		return true;
--	}
-+	/*
-+	 * Increase wake_index before updating wait_cnt, otherwise concurrent
-+	 * callers can see valid wait_cnt in old waitqueue, which can cause
-+	 * invalid wakeup on the old waitqueue.
-+	 */
-+	sbq_index_atomic_inc(&sbq->wake_index);
-+	atomic_set(&ws->wait_cnt, wake_batch);
-+	wake_up_nr(&ws->wait, wake_batch);
- 
- 	return false;
- }
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/qlink.h b/drivers/net/wireless/quantenna/qtnfmac/qlink.h
+index 2dda4c5d7427..674461fa7fb3 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/qlink.h
++++ b/drivers/net/wireless/quantenna/qtnfmac/qlink.h
+@@ -1721,8 +1721,8 @@ enum qlink_chan_stat {
+  * @time_on: amount of time radio operated on that channel.
+  * @time_tx: amount of time radio spent transmitting on the channel.
+  * @time_rx: amount of time radio spent receiving on the channel.
+- * @cca_busy: amount of time the the primary channel was busy.
+- * @cca_busy_ext: amount of time the the secondary channel was busy.
++ * @cca_busy: amount of time the primary channel was busy.
++ * @cca_busy_ext: amount of time the secondary channel was busy.
+  * @time_scan: amount of radio spent scanning on the channel.
+  * @chan_noise: channel noise.
+  */
 -- 
-2.31.1
+2.36.1
 
