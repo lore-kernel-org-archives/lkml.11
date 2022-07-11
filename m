@@ -2,89 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4208ACCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D867C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbiGKMKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
+        id S231615AbiGKMKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231603AbiGKMKN (ORCPT
+        with ESMTP id S229890AbiGKMKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:10:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E05F491FD;
-        Mon, 11 Jul 2022 05:10:12 -0700 (PDT)
+        Mon, 11 Jul 2022 08:10:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2783348EB9;
+        Mon, 11 Jul 2022 05:10:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D2ACB80ED5;
-        Mon, 11 Jul 2022 12:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97F91C34115;
-        Mon, 11 Jul 2022 12:10:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94478611F1;
+        Mon, 11 Jul 2022 12:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D09B6C34115;
+        Mon, 11 Jul 2022 12:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657541409;
-        bh=JidRq+aIP/KXPZW1wchQTZoyRdoLEIqVo+G5vnBfgzs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YdURxBL8s5KFA6/l+0muCip0f35rftbIwYV0+0cXJyNPljhWxBFJodKI+qv0Ip2DP
-         KnsNSGxgoyvXa0Z6OHPAAqi7MbGLi6hr9hF2p2YTpNGA+SKLNrgf51rEP6AbMDIvel
-         KoFNezaykyWMe6GTNuirFEfxbG0uFeDE2zAI1Sy2r+h/pnQhaRYZoq2mefu0D/ZPYO
-         Pl04YVa+t0NUIYHBpz0ZOPpwT25EhIQdCtzV9xOaDtH1VA6gCtOsgOuFZUAZaAyjN0
-         /1zXZUznzNCnhMlveAB0wg7vkwV/6R9eMNK0e+LKMe94djge8UJtsDMwVThMWe/CIz
-         B/JGmm3FNTjXQ==
+        s=k20201202; t=1657541444;
+        bh=UhBDGGujuZLS3CJAhdKmbeMA357lNLuZ6bu22I/qh4A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=glwCOyvV3axdfL+tWz2pua8rdElVCMNOlQzDZgTqkg6bkBUQflkGYTDBloo5+qn34
+         YAWULHW98zKKiF+4HtfR22GfgSW63DJSJwtRfOiWKEkf59aofgKHR/OPoXQ2SBYBNI
+         lPzNRvJLM/njn7/ReVj17yBf6IAE2qBNEZGQCpy0z9uotk7wDlzWy4P2G5rZl+IEA1
+         wKv65EdTpqCL56+cSM8+plBiBmTLKo6xJEdlrJuVOtWzthZ5uoMGQqvaNMEkoRgPgs
+         KlQph1Y+1tpHtU+wJiMz3B6ap7tNcHJZyJO022mFBvvkJA/wpGdQi4ELsnrDaqTIPL
+         W8zflwMU86cyg==
 Received: by pali.im (Postfix)
-        id 9500D9D7; Mon, 11 Jul 2022 14:10:06 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 14:10:06 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Rob Herring <robh@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        id 874E09D7; Mon, 11 Jul 2022 14:10:41 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: leds: register-bit-led: Add value
- property
-Message-ID: <20220711121006.kjk44rubi5gpqycj@pali>
-References: <20220706112828.27278-1-pali@kernel.org>
- <20220706162111.GA145516-robh@kernel.org>
- <20220706162335.2eewgf7l3xghdjtr@pali>
- <CACRpkdYncdsVW8LysQ3--rOF-KUF6dkkPyX4tg4e10vn2K+8FQ@mail.gmail.com>
+Subject: [PATCH 1/3] PCI: aardvark: Dispose INTx irqs prior to removing INTx domain
+Date:   Mon, 11 Jul 2022 14:06:24 +0200
+Message-Id: <20220711120626.11492-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACRpkdYncdsVW8LysQ3--rOF-KUF6dkkPyX4tg4e10vn2K+8FQ@mail.gmail.com>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Monday 11 July 2022 14:06:50 Linus Walleij wrote:
-> On Wed, Jul 6, 2022 at 6:23 PM Pali Rohár <pali@kernel.org> wrote:
-> > On Wednesday 06 July 2022 10:21:11 Rob Herring wrote:
-> > > On Wed, Jul 06, 2022 at 01:28:27PM +0200, Pali Rohár wrote:
-> > > > Allow to define inverted logic (0 - enable LED, 1 - disable LED) via value
-> > > > property. This property name is already used by other syscon drivers, e.g.
-> > > > syscon-reboot.
-> > >
-> > > Yes, but those are potentially multi-bit values. This is a single bit
-> > > value, and the only value that's ever needed is 0. Why not just use
-> > > 'active-low' here?
-> >
-> > Just because to have uniform definitions across more syscon nodes.
-> 
-> But what happens if he mask and value don't line up?
-> 
-> mask = 0x10;
-> value = 0x08;
+Documentation for irq_domain_remove() says that all mapping within the
+domain must be disposed prior to domain remove.
 
-Same what would happen in other drivers, no?
+Currently INTx irqs are not disposed in pci-aardvark.c device unbind callback
+which cause that kernel crashes after unloading driver and trying to read
+/sys/kernel/debug/irq/irqs/<num> or /proc/interrupts.
 
-Only those value bits are take into account which are also sets in the mask.
+Fixes: 526a76991b7b ("PCI: aardvark: Implement driver 'remove' function and allow to build it as module")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ drivers/pci/controller/pci-aardvark.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-> If you just state active-low; this kind of mistake is not possible to make.
-> 
-> So I'd rather go for active-low;
-> 
-> Yours,
-> Linus Walleij
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index ffec82c8a523..6cb65e64859d 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1433,6 +1433,14 @@ static int advk_pcie_init_irq_domain(struct advk_pcie *pcie)
+ 
+ static void advk_pcie_remove_irq_domain(struct advk_pcie *pcie)
+ {
++	int virq, i;
++
++	for (i = 0; i < PCI_NUM_INTX; i++) {
++		virq = irq_find_mapping(pcie->irq_domain, i);
++		if (virq > 0)
++			irq_dispose_mapping(virq);
++	}
++
+ 	irq_domain_remove(pcie->irq_domain);
+ }
+ 
+-- 
+2.20.1
+
