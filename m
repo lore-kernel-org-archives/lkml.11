@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E84BCCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93545CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232073AbiGKJZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55496 "EHLO
+        id S232099AbiGKJZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbiGKJXr (ORCPT
+        with ESMTP id S232094AbiGKJYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:23:47 -0400
+        Mon, 11 Jul 2022 05:24:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05F723BE1;
-        Mon, 11 Jul 2022 02:14:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76926313A8;
+        Mon, 11 Jul 2022 02:14:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36F0CB80CEF;
-        Mon, 11 Jul 2022 09:14:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D180C34115;
-        Mon, 11 Jul 2022 09:13:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C5B9B80DBA;
+        Mon, 11 Jul 2022 09:14:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D4AFC34115;
+        Mon, 11 Jul 2022 09:14:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530840;
-        bh=7glkkp0LLer/1vOu19Ra/fd2zYttlhPNl2QaoAA/NUM=;
+        s=korg; t=1657530842;
+        bh=K6jNGp2dUuNiWhAggovJ4j01QWBZArB13C35cE1qd8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xQwVLOU0Pbkbl8NQTUvLMzOj6xk4msazL/E22AbzwHMWc6d8Xj+E/L+axA1pCkFJt
-         G3P3AepbEgmmdiQ3ex8vLsyZQxzUF+mVUABNPe1wvkBdAEl6GgU/PpO8i50bNAJb2f
-         6zkTWIA2VE3MsQtw1fPv6ajxlsqIwJVKs1TESvtM=
+        b=t9aQNkX3VwwU4zwvU/6IIkChnafhwf0uY1540hgeWW7JD3Hn/b49Mjy/O6VFtppMB
+         slUBNb3QISnRYPgme9LpV6uXVoQW5AULGxpKFbTbzEFe3Ob2ofjF2zZwif656lwUCV
+         U3K/zQFccdXlX/bAeMFC6LQ1GinB0dkZN/j1o+T8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.10 19/55] video: of_display_timing.h: include errno.h
-Date:   Mon, 11 Jul 2022 11:07:07 +0200
-Message-Id: <20220711090542.333314533@linuxfoundation.org>
+        stable@vger.kernel.org, Sachin Sant <sachinp@linux.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 20/55] powerpc/powernv: delay rng platform device creation until later in boot
+Date:   Mon, 11 Jul 2022 11:07:08 +0200
+Message-Id: <20220711090542.362424663@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -49,33 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 3663a2fb325b8782524f3edb0ae32d6faa615109 upstream.
+commit 887502826549caa7e4215fd9e628f48f14c0825a upstream.
 
-If CONFIG_OF is not enabled, default of_get_display_timing() returns an
-errno, so include the header.
+The platform device for the rng must be created much later in boot.
+Otherwise it tries to connect to a parent that doesn't yet exist,
+resulting in this splat:
 
-Fixes: 422b67e0b31a ("videomode: provide dummy inline functions for !CONFIG_OF")
-Suggested-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
+  [    0.000478] kobject: '(null)' ((____ptrval____)): is not initialized, yet kobject_get() is being called.
+  [    0.002925] [c000000002a0fb30] [c00000000073b0bc] kobject_get+0x8c/0x100 (unreliable)
+  [    0.003071] [c000000002a0fba0] [c00000000087e464] device_add+0xf4/0xb00
+  [    0.003194] [c000000002a0fc80] [c000000000a7f6e4] of_device_add+0x64/0x80
+  [    0.003321] [c000000002a0fcb0] [c000000000a800d0] of_platform_device_create_pdata+0xd0/0x1b0
+  [    0.003476] [c000000002a0fd00] [c00000000201fa44] pnv_get_random_long_early+0x240/0x2e4
+  [    0.003623] [c000000002a0fe20] [c000000002060c38] random_init+0xc0/0x214
+
+This patch fixes the issue by doing the platform device creation inside
+of machine_subsys_initcall.
+
+Fixes: f3eac426657d ("powerpc/powernv: wire up rng during setup_arch")
+Cc: stable@vger.kernel.org
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+[mpe: Change "of node" to "platform device" in change log]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220630121654.1939181-1-Jason@zx2c4.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/video/of_display_timing.h |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/platforms/powernv/rng.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/include/video/of_display_timing.h
-+++ b/include/video/of_display_timing.h
-@@ -8,6 +8,8 @@
- #ifndef __LINUX_OF_DISPLAY_TIMING_H
- #define __LINUX_OF_DISPLAY_TIMING_H
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -176,12 +176,8 @@ static int __init pnv_get_random_long_ea
+ 		    NULL) != pnv_get_random_long_early)
+ 		return 0;
  
-+#include <linux/errno.h>
+-	for_each_compatible_node(dn, NULL, "ibm,power-rng") {
+-		if (rng_create(dn))
+-			continue;
+-		/* Create devices for hwrng driver */
+-		of_platform_device_create(dn, NULL, NULL);
+-	}
++	for_each_compatible_node(dn, NULL, "ibm,power-rng")
++		rng_create(dn);
+ 
+ 	if (!ppc_md.get_random_seed)
+ 		return 0;
+@@ -205,10 +201,18 @@ void __init pnv_rng_init(void)
+ 
+ static int __init pnv_rng_late_init(void)
+ {
++	struct device_node *dn;
+ 	unsigned long v;
 +
- struct device_node;
- struct display_timing;
- struct display_timings;
+ 	/* In case it wasn't called during init for some other reason. */
+ 	if (ppc_md.get_random_seed == pnv_get_random_long_early)
+ 		pnv_get_random_long_early(&v);
++
++	if (ppc_md.get_random_seed == powernv_get_random_long) {
++		for_each_compatible_node(dn, NULL, "ibm,power-rng")
++			of_platform_device_create(dn, NULL, NULL);
++	}
++
+ 	return 0;
+ }
+ machine_subsys_initcall(powernv, pnv_rng_late_init);
 
 
