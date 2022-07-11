@@ -2,137 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28703C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E10C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbiGKH0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
+        id S230139AbiGKH04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiGKH0Q (ORCPT
+        with ESMTP id S229900AbiGKH0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:26:16 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F7217AA3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:26:15 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id i128-20020a1c3b86000000b003a2ce31b4f8so4479814wma.1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:26:15 -0700 (PDT)
+        Mon, 11 Jul 2022 03:26:53 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B374715FD4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:26:51 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id g126so4084358pfb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:26:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=t/PqRBXDv8XnbGqXCKFv3DtaQWbjJ/k2C/kwgKRLS8c=;
-        b=SCFXq1nfYobOAwlRKYd50zeNz2wJyny1c0M+7nes2JxU4njk6mzBs9jEeFDN4PuYet
-         Ave52lUzwL0R4iw+kc066bJkVLCtBFI1toXwXn7f6Un+YuX3ZsAuy+4LgRmdIqOxz2tS
-         jkVznlF7REbbg7PR+xCkNW0HVzeEe03KeNo2vyiqndvITucQgxRrPZjzGii724sx8R1y
-         kSVmIJ2mbKQqbLKcAvQom3qhm7ljLUQaCB9ikKPJ6Eip5iUc3oAS8orX/LdLLlKWL5sW
-         /f5Rp3DJPSbxuRGjkYjSQ5fSl1oKbaEjkxO7rXB2dWT8v2ScYmTNV5ssj5qa7Ehb8tBV
-         kwVQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=g0y3SC6bOT8thGbHuA6qSx7QbiLdoqkXfjgc3hKF3gg=;
+        b=c3L5Jn+qP+R/5L9g7PHJawl1hpB6alX2ytZTd5j3j+amBGnLZB10zsIAqauKvmpCzM
+         2QQcdW3Dd7Z42VjUdyfdAT23UhqSArmiK07vVrzK1whhy8kSXRvA2fD+/7Ql4ii4nkm6
+         nGAVOMnrJMjFCAGVDuRYedHEyw8sk4GJrZ1f0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=t/PqRBXDv8XnbGqXCKFv3DtaQWbjJ/k2C/kwgKRLS8c=;
-        b=k3mFcpznm+J0+D8BIsG216pIy2iSgDSwGdmvoqiZFNrW/rELP5LIMLA4eSke3ARXxF
-         +YVZ4DJL6H5TN1Pj6ly9d4ZZgVTBqsxBy2jM2e33i3CMxO/trcrnsU761SNdgFnNsg03
-         F5bReRgscXV/GG/A0KpjQTj/hSUumW9sXQDbnAj7Xbh3qdvQ5NEs1nmHjaupO/Vhzv/s
-         +e7ojSQvCp5Qw8A8e4Lo8eBju9L9MZUt24zysDeYjGh9f+zzDAayvW5XBuKimjaaSuPK
-         F7O6ED3IHdu4MWypVtNaMTWuqU8VJeaIuIyariqnV2Axi3tiklurVPR257Bgp0DubmlV
-         1ZsA==
-X-Gm-Message-State: AJIora+EydHU9FScbYq3EIeol41BZkOjhW32Itdw8RPQ0zsTDQJqiRet
-        MFrKUcOJwmgQnBQrHlXPsfEgEA==
-X-Google-Smtp-Source: AGRyM1uNu4zxhtyxybrkVox/XEc9FSkT3LpZkh5+naANwfdc/8jbNfqrSS/S31sCE69W6rNsJP1ySw==
-X-Received: by 2002:a7b:cbcb:0:b0:3a2:e899:7dc9 with SMTP id n11-20020a7bcbcb000000b003a2e8997dc9mr3200161wmi.82.1657524373754;
-        Mon, 11 Jul 2022 00:26:13 -0700 (PDT)
-Received: from [10.35.4.171] ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id j30-20020a05600c1c1e00b003a02de5de80sm9103140wms.4.2022.07.11.00.26.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 00:26:13 -0700 (PDT)
-Message-ID: <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com>
-Date:   Mon, 11 Jul 2022 08:26:12 +0100
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=g0y3SC6bOT8thGbHuA6qSx7QbiLdoqkXfjgc3hKF3gg=;
+        b=yiVj7+y4lipRp9EP4hKg2dmOs4wvGn8y3TNoUTzaFZVXmhi3mWvFUZC4Kc5Mb2rbBj
+         /1oyYO6JVKlCpH+/YqoWr57AgW2pZQ+CuSvz+iZF6pK2XGXqWARU76Uz8uMMmbijTwjs
+         UfJy+8Gh02FXHc8qHxgQJTQMEk1TiT6cJIMGqxqizVUHpm2BccHRLQrEVFxtpyMq734L
+         maTPOhWbgeKhY584eqvbwN6tVbFuuGhFHRCgM2wsciryIPfadggHL/BeKFyf3+DmtDSt
+         jF0xdeg6MatpqPsgeqXcxUzHhWjEbRt5HY0PJtdz1qAgcDHnCyt8bYjfL4i4hOVlkWRw
+         92kA==
+X-Gm-Message-State: AJIora9sOqWaoICieSn8nrknmVqIAtQBpFP8MvUT2yoyuVqSEGK1LQm8
+        FY2dLIUOQLpLUXRZnM+lhN59UJKbhETJtw==
+X-Google-Smtp-Source: AGRyM1sqQPx1xTgugrJrpJPcoZCdyIXuaRyfEwl5fR1nVKVbFINK99ftPjb4slaHft/Qx3gTAATIyA==
+X-Received: by 2002:a65:6bca:0:b0:411:f92b:5e39 with SMTP id e10-20020a656bca000000b00411f92b5e39mr15344480pgw.259.1657524410959;
+        Mon, 11 Jul 2022 00:26:50 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id z8-20020aa79e48000000b0051bc5f4df1csm4012839pfq.154.2022.07.11.00.26.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 00:26:50 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        kernel test robot <lkp@intel.com>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v4 4/9] platform/chrome: cros_typec_switch: Add switch driver
+Date:   Mon, 11 Jul 2022 07:22:58 +0000
+Message-Id: <20220711072333.2064341-5-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
+In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
+References: <20220711072333.2064341-1-pmalani@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
- initialised
-Content-Language: en-GB
-To:     Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, iommu@lists.linux-foundation.org
-Cc:     Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>
-References: <20220708170811.270589-1-ben.dooks@sifive.com>
- <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com>
-From:   Ben Dooks <ben.dooks@sifive.com>
-In-Reply-To: <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/07/2022 21:32, Robin Murphy wrote:
-> On 2022-07-08 18:08, Ben Dooks wrote:
->> If the io_tlb_default_mem is used by a device that then gets used
->> by the swiotlb code, the spinlock warning is triggered causing a
->> lot of stack-trace.
-> 
-> Hang on, how have we got as far as trying to allocate out of an 
-> uninitialised SWIOTLB at all? That seems like either something's gone 
-> more fundamentally wrong or we're missing a proper check somewhere. I 
-> don't think papering over it like this is right.
-> 
-> Thanks,
-> Robin
-We have a system where we have no DMA capable memory in the 32bit
-window, which means even if we initialise swiotlb we don't have
-any dma capable memory. The code says go use an IOMMU but we don't
-have one of those either (and all peripherals are capable of DMA
-from any of the memory, so there shouldn't be the need for one)
+Introduce a driver to configure USB Type-C mode switches and retimers
+which are controlled by the Chrome OS EC (Embedded Controller).
+This allows Type-C port drivers, as well as alternate mode drivers to
+configure their relevant mode switches and retimers according to the
+Type-C state they want to achieve.
 
-Is there any other way of fixing this DMA allocation issue?
+ACPI devices with ID GOOG001A will bind to this driver.
 
-I added this fix as swiotlb prints an error but also causes
-an annoying stack backtrace.
+Currently, we only register a retimer switch with a stub set function.
+Subsequent patches will implement the host command set functionality,
+and introduce mode switches.
 
-> 
->> Fix this by making the structure's lock initialised at build time.
->>
->> Avoids the following BUG trigger:
->>
->> [    3.046401] BUG: spinlock bad magic on CPU#3, kworker/u8:0/7
->> [    3.046689]  lock: io_tlb_default_mem+0x30/0x60, .magic: 00000000, 
->> .owner: <none>/-1, .owner_cpu: 0
->> [    3.047217] CPU: 3 PID: 7 Comm: kworker/u8:0 Not tainted 
->> 5.17.0-00056-g1e9bac738084-dirty #310
->> [    3.048363] Workqueue: events_unbound deferred_probe_work_func
->> [    3.048892] Call Trace:
->> [    3.049224] [<ffffffff800048aa>] dump_backtrace+0x1c/0x24
->> [    3.049576] [<ffffffff805c5f74>] show_stack+0x2c/0x38
->> [    3.049898] [<ffffffff805cade2>] dump_stack_lvl+0x40/0x58
->> [    3.050216] [<ffffffff805cae0e>] dump_stack+0x14/0x1c
->> [    3.050460] [<ffffffff805c69f6>] spin_dump+0x62/0x6e
->> [    3.050681] [<ffffffff8004e000>] do_raw_spin_lock+0xb0/0xd0
->> [    3.050934] [<ffffffff805d5b58>] _raw_spin_lock_irqsave+0x20/0x2c
->> [    3.051157] [<ffffffff80067e38>] swiotlb_tbl_map_single+0xce/0x3da
->> [    3.051372] [<ffffffff80068320>] swiotlb_map+0x3a/0x15c
->> [    3.051668] [<ffffffff80065a56>] dma_map_page_attrs+0x76/0x162
->> [    3.051975] [<ffffffff8031d542>] dw_pcie_host_init+0x326/0x3f2
->>
->> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
->> ---
->>   kernel/dma/swiotlb.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index cb50f8d38360..a707a944c39a 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -65,7 +65,7 @@
->>   static bool swiotlb_force_bounce;
->>   static bool swiotlb_force_disable;
->> -struct io_tlb_mem io_tlb_default_mem;
->> +struct io_tlb_mem io_tlb_default_mem = { .lock = 
->> __SPIN_LOCK_UNLOCKED(io_tlb_default_mem.lock) } ;
->>   phys_addr_t swiotlb_unencrypted_base;
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
+
+Changes since v3:
+- No changes.
+
+Changes since v2:
+- Fixed missing "static" identifier.
+- Removed unnecessary new line for function signature.
+
+Changes since v1:
+- No changes.
+
+ MAINTAINERS                                 |   1 +
+ drivers/platform/chrome/Kconfig             |  11 ++
+ drivers/platform/chrome/Makefile            |   1 +
+ drivers/platform/chrome/cros_typec_switch.c | 170 ++++++++++++++++++++
+ 4 files changed, 183 insertions(+)
+ create mode 100644 drivers/platform/chrome/cros_typec_switch.c
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7533cb27adc0..35ea91c619b7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4752,6 +4752,7 @@ M:	Prashant Malani <pmalani@chromium.org>
+ L:	chrome-platform@lists.linux.dev
+ S:	Maintained
+ F:	drivers/platform/chrome/cros_ec_typec.c
++F:	drivers/platform/chrome/cros_typec_switch.c
+ 
+ CHROMEOS EC USB PD NOTIFY DRIVER
+ M:	Prashant Malani <pmalani@chromium.org>
+diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
+index 717299cbccac..c62a514a087f 100644
+--- a/drivers/platform/chrome/Kconfig
++++ b/drivers/platform/chrome/Kconfig
+@@ -265,6 +265,17 @@ config CHROMEOS_PRIVACY_SCREEN
+ 	  this should probably always be built into the kernel to avoid or
+ 	  minimize drm probe deferral.
+ 
++config CROS_TYPEC_SWITCH
++	tristate "ChromeOS EC Type-C Switch Control"
++	depends on MFD_CROS_EC_DEV && TYPEC
++	default MFD_CROS_EC_DEV
++	help
++	  If you say Y here, you get support for configuring the Chrome OS EC Type C
++	  muxes and retimers.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called cros_typec_switch.
++
+ source "drivers/platform/chrome/wilco_ec/Kconfig"
+ 
+ endif # CHROMEOS_PLATFORMS
+diff --git a/drivers/platform/chrome/Makefile b/drivers/platform/chrome/Makefile
+index 52f5a2dde8b8..0dcaf6a7ed27 100644
+--- a/drivers/platform/chrome/Makefile
++++ b/drivers/platform/chrome/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_CHROMEOS_TBMC)		+= chromeos_tbmc.o
+ obj-$(CONFIG_CROS_EC)			+= cros_ec.o
+ obj-$(CONFIG_CROS_EC_I2C)		+= cros_ec_i2c.o
+ obj-$(CONFIG_CROS_EC_ISHTP)		+= cros_ec_ishtp.o
++obj-$(CONFIG_CROS_TYPEC_SWITCH)		+= cros_typec_switch.o
+ obj-$(CONFIG_CROS_EC_RPMSG)		+= cros_ec_rpmsg.o
+ obj-$(CONFIG_CROS_EC_SPI)		+= cros_ec_spi.o
+ cros_ec_lpcs-objs			:= cros_ec_lpc.o cros_ec_lpc_mec.o
+diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
+new file mode 100644
+index 000000000000..0d319e315d57
+--- /dev/null
++++ b/drivers/platform/chrome/cros_typec_switch.c
+@@ -0,0 +1,170 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright 2022 Google LLC
++ *
++ * This driver provides the ability to configure Type C muxes and retimers which are controlled by
++ * the Chrome OS EC.
++ */
++
++#include <linux/acpi.h>
++#include <linux/module.h>
++#include <linux/platform_data/cros_ec_commands.h>
++#include <linux/platform_device.h>
++#include <linux/usb/typec_retimer.h>
++
++#define DRV_NAME "cros-typec-switch"
++
++/* Handles and other relevant data required for each port's switches. */
++struct cros_typec_port {
++	int port_num;
++	struct typec_retimer *retimer;
++	struct cros_typec_switch_data *sdata;
++};
++
++/* Driver-specific data. */
++struct cros_typec_switch_data {
++	struct device *dev;
++	struct cros_ec_device *ec;
++	struct cros_typec_port *ports[EC_USB_PD_MAX_PORTS];
++};
++
++static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
++{
++	return 0;
++}
++
++static void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
++{
++	int i;
++
++	for (i = 0; i < EC_USB_PD_MAX_PORTS; i++) {
++		if (!sdata->ports[i])
++			continue;
++		typec_retimer_unregister(sdata->ports[i]->retimer);
++	}
++}
++
++static int cros_typec_register_retimer(struct cros_typec_port *port, struct fwnode_handle *fwnode)
++{
++	struct typec_retimer_desc retimer_desc = {
++		.fwnode = fwnode,
++		.drvdata = port,
++		.name = fwnode_get_name(fwnode),
++		.set = cros_typec_retimer_set,
++	};
++
++	port->retimer = typec_retimer_register(port->sdata->dev, &retimer_desc);
++	if (IS_ERR(port->retimer))
++		return PTR_ERR(port->retimer);
++
++	return 0;
++}
++
++static int cros_typec_register_switches(struct cros_typec_switch_data *sdata)
++{
++	struct cros_typec_port *port = NULL;
++	struct device *dev = sdata->dev;
++	struct fwnode_handle *fwnode;
++	struct acpi_device *adev;
++	unsigned long long index;
++	int ret = 0;
++	int nports;
++
++	nports = device_get_child_node_count(dev);
++	if (nports == 0) {
++		dev_err(dev, "No switch devices found.\n");
++		return -ENODEV;
++	}
++
++	device_for_each_child_node(dev, fwnode) {
++		port = devm_kzalloc(dev, sizeof(*port), GFP_KERNEL);
++		if (!port) {
++			ret = -ENOMEM;
++			goto err_switch;
++		}
++
++		adev = to_acpi_device_node(fwnode);
++		if (!adev) {
++			dev_err(fwnode->dev, "Couldn't get ACPI device handle\n");
++			ret = -ENODEV;
++			goto err_switch;
++		}
++
++		ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
++		if (ACPI_FAILURE(ret)) {
++			dev_err(fwnode->dev, "_ADR wasn't evaluated\n");
++			ret = -ENODATA;
++			goto err_switch;
++		}
++
++		if (index < 0 || index >= EC_USB_PD_MAX_PORTS) {
++			dev_err(fwnode->dev, "Invalid port index number: %llu", index);
++			ret = -EINVAL;
++			goto err_switch;
++		}
++		port->sdata = sdata;
++		port->port_num = index;
++		sdata->ports[index] = port;
++
++		ret = cros_typec_register_retimer(port, fwnode);
++		if (ret) {
++			dev_err(dev, "Retimer switch register failed\n");
++			goto err_switch;
++		}
++
++		dev_dbg(dev, "Retimer switch registered for index %llu\n", index);
++	}
++
++	return 0;
++err_switch:
++	cros_typec_unregister_switches(sdata);
++	return ret;
++}
++
++static int cros_typec_switch_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct cros_typec_switch_data *sdata;
++
++	sdata = devm_kzalloc(dev, sizeof(*sdata), GFP_KERNEL);
++	if (!sdata)
++		return -ENOMEM;
++
++	sdata->dev = dev;
++	sdata->ec = dev_get_drvdata(pdev->dev.parent);
++
++	platform_set_drvdata(pdev, sdata);
++
++	return cros_typec_register_switches(sdata);
++}
++
++static int cros_typec_switch_remove(struct platform_device *pdev)
++{
++	struct cros_typec_switch_data *sdata = platform_get_drvdata(pdev);
++
++	cros_typec_unregister_switches(sdata);
++	return 0;
++}
++
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id cros_typec_switch_acpi_id[] = {
++	{ "GOOG001A", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(acpi, cros_typec_switch_acpi_id);
++#endif
++
++static struct platform_driver cros_typec_switch_driver = {
++	.driver	= {
++		.name = DRV_NAME,
++		.acpi_match_table = ACPI_PTR(cros_typec_switch_acpi_id),
++	},
++	.probe = cros_typec_switch_probe,
++	.remove = cros_typec_switch_remove,
++};
++
++module_platform_driver(cros_typec_switch_driver);
++
++MODULE_AUTHOR("Prashant Malani <pmalani@chromium.org>");
++MODULE_DESCRIPTION("Chrome OS EC Type C Switch control");
++MODULE_LICENSE("GPL");
+-- 
+2.37.0.144.g8ac04bfd2-goog
 
