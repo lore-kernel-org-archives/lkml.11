@@ -2,111 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1765CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0965C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbiGKH3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
+        id S230032AbiGKH3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiGKH3a (ORCPT
+        with ESMTP id S230000AbiGKH3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:29:30 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B9915A08
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:29:29 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id s206so4036446pgs.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:29:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ARuOjXkb9WXnMbJXcHgDAqXcx2iKK+w+U5wn5FQDR6Y=;
-        b=LsrfyOyORhRqy17RRdlUiq4/FL4fmPohUX0HMOTvZcv3yzrGxL/RLEQkQLySym6zT8
-         geDq4SkIulIvPi8e0WHHf2dW07ZZMJt8dp24O+BtXaI0YO58AfnC7Zqwzsci2gIJbXZt
-         a+aFY/sJvcltJ2Kr5EIRakDkQo/wWXvOeY0H4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ARuOjXkb9WXnMbJXcHgDAqXcx2iKK+w+U5wn5FQDR6Y=;
-        b=t2Mo3d7nTYPxrr+b3iS16r86AZ4LJQfXTCWZ0Jm4ioU61towl1skceArMhu7kyIXAr
-         cdRxX/q9uIpgV3wsk30rpJq03C2lIN6bgkmB8OMPMzArkXz8IX5UrN82vXRkCmaLLN8x
-         SCrk2rvcma859pXSS7dusliT6UoOIkWpbowj5cruRB4B02t5u6zMTNIB3R48gRxdBYWU
-         1z5oKnhdataB5o3Op6Z3udHHV75QEAx0SgctGvwLm+775depRzUUWxj5Ey2OmbJRY3Nl
-         xU8zZvdu0ajwYzRgBOHWabZsNTN065UdR5d1bYNvqqf4tcKhq4w1INuqNZEGe6EOthCN
-         w8Eg==
-X-Gm-Message-State: AJIora9+HT4pZYYl6lPWuEgEDg7/H1oUxckg+fJIItW+s82/Tf2IBqp2
-        /Oo0GHpNHOckY3F2OSfV9RgiqtoPJca4Qg==
-X-Google-Smtp-Source: AGRyM1uXjFYsxXcTBMnm60zGyOA7F3T8MVkEl93WM7/+YkjruocghxWq4EfsD+tnXUN+29P8LY1rYw==
-X-Received: by 2002:a05:6a02:11b:b0:40d:dfdc:95d7 with SMTP id bg27-20020a056a02011b00b0040ddfdc95d7mr14907022pgb.536.1657524568710;
-        Mon, 11 Jul 2022 00:29:28 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id z8-20020aa79e48000000b0051bc5f4df1csm4012839pfq.154.2022.07.11.00.29.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 00:29:28 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH v4 8/9] platform/chrome: cros_ec_typec: Cleanup switch handle return paths
-Date:   Mon, 11 Jul 2022 07:23:02 +0000
-Message-Id: <20220711072333.2064341-9-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
-In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
-References: <20220711072333.2064341-1-pmalani@chromium.org>
+        Mon, 11 Jul 2022 03:29:33 -0400
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 333031572D;
+        Mon, 11 Jul 2022 00:29:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=I8+m1
+        YAsVZ4gl1y1umKlRTUNyEHJgsOKvTyV1H7WmOY=; b=FwmkrMFXFr/vChhjh8X1r
+        cR26ZV6bNosnkAScnaDfPrNOlBwTSAywa+4kczhfrktr3AdUiLX/JQznsYpPFxNz
+        xIxK4fPjJ7hz7e+3+KfJFlG0svk8pOL0OMZoDMWQB+zwdz3y9VAXOEDpqUNiDiAe
+        UhQLcHNcJTn77xcWjTWCeg=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp2 (Coremail) with SMTP id GtxpCgBX5vg00ctiUDjsOQ--.9309S4;
+        Mon, 11 Jul 2022 15:29:06 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH v2] net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
+Date:   Mon, 11 Jul 2022 15:28:51 +0800
+Message-Id: <20220711072851.2319308-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgBX5vg00ctiUDjsOQ--.9309S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Ar4rWF4fCF17Zw1xZr43ZFb_yoW8Jw4Dpa
+        15ZwsrCF1qqrWI93ZrCw4UWF1rXayUtryagry7C3yfua4kJw1rWFy0kFyI9Fy5AryxGF48
+        ZrWvyr47AFn8C37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRha9hUUUUU=
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbB0Qg7jFzIB3B7eAABsP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the return paths for the cros_typec_get_switch_handles()
-aren't necessary. Clean up the return paths to only undo the handle
-get's which succeeded.
+init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
+key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
+occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
+released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
+key.tfm, which will lead to a resource leak.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+We should call macsec_rxsa_put() instead of kfree() to decrease the ref
+count of rx_sa and release the relevant resource if the refcount is 0.
+The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
+fixes the above two bugs.
+
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
 ---
+ drivers/net/macsec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Changes since v3:
-- No changes.
-
-Changes since v2:
-- No changes.
-
-Changes since v1:
-- No changes.
-
- drivers/platform/chrome/cros_ec_typec.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-index 7cb2e35c4ded..39e6fd4491a9 100644
---- a/drivers/platform/chrome/cros_ec_typec.c
-+++ b/drivers/platform/chrome/cros_ec_typec.c
-@@ -157,12 +157,10 @@ static int cros_typec_get_switch_handles(struct cros_typec_port *port,
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 817577e713d7..ac3ff624a8dd 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1842,7 +1842,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
  	return 0;
  
- role_sw_err:
--	usb_role_switch_put(port->role_sw);
--ori_sw_err:
- 	typec_switch_put(port->ori_sw);
--mux_err:
-+ori_sw_err:
- 	typec_mux_put(port->mux);
--
-+mux_err:
- 	return -ENODEV;
+ cleanup:
+-	kfree(rx_sa);
++	macsec_rxsa_put(rx_sa);
+ 	rtnl_unlock();
+ 	return err;
  }
+@@ -2085,7 +2085,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
  
+ cleanup:
+ 	secy->operational = was_operational;
+-	kfree(tx_sa);
++	macsec_txsa_put(tx_sa);
+ 	rtnl_unlock();
+ 	return err;
+ }
 -- 
-2.37.0.144.g8ac04bfd2-goog
+2.25.1
 
