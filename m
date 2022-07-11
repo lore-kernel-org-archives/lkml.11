@@ -2,211 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61AE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4463FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiGKS6b convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 14:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        id S229978AbiGKS6m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 14:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbiGKS6a (ORCPT
+        with ESMTP id S231499AbiGKS6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 14:58:30 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4412981D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 11:58:29 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:60174)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oAyc0-009Spw-17; Mon, 11 Jul 2022 12:58:28 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36236 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oAyby-00BbzY-Qe; Mon, 11 Jul 2022 12:58:27 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-References: <YrslT9h0whngMIhw@zx2c4.com>
-        <20220628161441.892925-1-Jason@zx2c4.com> <YsLbggVXONPJcZsn@zx2c4.com>
-        <CAHmME9qt9hUTgJQSdv3_Yzkc3e7H8OkhPSv_pUaXV_2AOA1S=g@mail.gmail.com>
-Date:   Mon, 11 Jul 2022 13:57:55 -0500
-In-Reply-To: <CAHmME9qt9hUTgJQSdv3_Yzkc3e7H8OkhPSv_pUaXV_2AOA1S=g@mail.gmail.com>
-        (Jason A. Donenfeld's message of "Mon, 11 Jul 2022 19:53:58 +0200")
-Message-ID: <87o7xvcw98.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 11 Jul 2022 14:58:39 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66115F74;
+        Mon, 11 Jul 2022 11:58:37 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id s27so5474223pga.13;
+        Mon, 11 Jul 2022 11:58:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pXX16zqMZ21Xtym4SCeJoGfTd6FvLAtGuHb0Wc+2xVA=;
+        b=fXSVFS76kQzdYPhlEkz2WR8jl9DRkR6qf/KO+SiMyHvhKDQ7FH1dw5pcJRCsGnw42M
+         SgOvIX1R8gaX218xibtzBGu4D6mbx+zCQ9ubus7FN0sAFJwC9RBTO8uv2SQbbgwKy4vU
+         vdbJ4UGoHo1YrNyLIJBdJ92/mQkAeuOEtWkhVyBJFNph62a2S7JU77/qCYbpo095Mh+h
+         KvBbUS1F5iWKBhiOWwdCmkF2snuYAh8jN59m71fUmZiZLz5mDObVnM3rh9ZhHxOogVtA
+         g9PlIdDbghhSssAt4IJyjtlL5yZMyA4ng4rWQy8Vz/p/JCo9XUFmocC6AnA4BA21m10Y
+         6XOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pXX16zqMZ21Xtym4SCeJoGfTd6FvLAtGuHb0Wc+2xVA=;
+        b=PzWHv1SdXgCbOuPu4F2LNuH6XgEdmqjYsFL24aMsAKptIcFkfzBpHF1+2WqdmeFlcP
+         hqvm+cruFh0X4tAwXGfCQR4JR2GUemyqycIqIX52GAaT8yAIZAq6jdKEpSrKA2qKaTa8
+         Uj9yaf7r2DbAap4BnoCYORLsgkAqOOAHf4gaBhl9buI4DpKgVEBipdmyV5zSro+0xOwx
+         yz5Sabm0/tJDiPfrdDsy46BA/Wq0ZlJhZZ6sf6XKDFvgAopHIYED/4pItRbEY0LnS+hI
+         8Yo/CFfvKtgSABBBJHLNQKOAAI54+tP5YAQwhsI5RrhE2ivf+8WOIK788vhArcP0x/Sk
+         AnKg==
+X-Gm-Message-State: AJIora8Ma8xr+R0eWwqp4WNtvsBJCUAYMuajcRlUDPGKveCxhIv91dE9
+        2fpEwm3Gv41Sqr2YPXtdQ/IYSggivJc=
+X-Google-Smtp-Source: AGRyM1vVAWYdcExpXi1U9BZQmsySr0inBXLH+XNCJcF2zpBepQ2/FY7pF/tHIQyC/CV16/XMr/TxnQ==
+X-Received: by 2002:a63:eb03:0:b0:412:b1d6:94ca with SMTP id t3-20020a63eb03000000b00412b1d694camr17095871pgh.468.1657565916971;
+        Mon, 11 Jul 2022 11:58:36 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m12-20020a63710c000000b0040d287f1378sm4547570pgc.7.2022.07.11.11.58.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jul 2022 11:58:36 -0700 (PDT)
+Message-ID: <98186d7f-42e6-2f85-29eb-a0a37b639e58@gmail.com>
+Date:   Mon, 11 Jul 2022 11:58:33 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1oAyby-00BbzY-Qe;;;mid=<87o7xvcw98.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+yibo3j9tgKX9sWkguCQrnLgqK1MYZqKI=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v3] signal: break out of wait loops on kthread_stop()
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 5.18 000/112] 5.18.11-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220711090549.543317027@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+On 7/11/22 02:06, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.11 release.
+> There are 112 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 13 Jul 2022 09:05:28 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.11-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-> Hi Eric,
->
-> On Mon, Jul 4, 2022 at 2:22 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->>
->> Hey Eric,
->>
->> On Tue, Jun 28, 2022 at 06:14:41PM +0200, Jason A. Donenfeld wrote:
->> > I was recently surprised to learn that msleep_interruptible(),
->> > wait_for_completion_interruptible_timeout(), and related functions
->> > simply hung when I called kthread_stop() on kthreads using them. The
->> > solution to fixing the case with msleep_interruptible() was more simply
->> > to move to schedule_timeout_interruptible(). Why?
->> >
->> > The reason is that msleep_interruptible(), and many functions just like
->> > it, has a loop like this:
->> >
->> >         while (timeout && !signal_pending(current))
->> >                 timeout = schedule_timeout_interruptible(timeout);
->> >
->> > The call to kthread_stop() woke up the thread, so schedule_timeout_
->> > interruptible() returned early, but because signal_pending() returned
->> > true, it went back into another timeout, which was never woken up.
->> >
->> > This wait loop pattern is common to various pieces of code, and I
->> > suspect that the subtle misuse in a kthread that caused a deadlock in
->> > the code I looked at last week is also found elsewhere.
->> >
->> > So this commit causes signal_pending() to return true when
->> > kthread_stop() is called, by setting TIF_NOTIFY_SIGNAL.
->> >
->> > The same also applies to the similar kthread_park() functionality.
->> >
->> > Cc: Ingo Molnar <mingo@redhat.com>
->> > Cc: Peter Zijlstra <peterz@infradead.org>
->> > Cc: Eric W. Biederman <ebiederm@xmission.com>
->> > Cc: Toke Høiland-Jørgensen <toke@redhat.com>
->> > Cc: Kalle Valo <kvalo@kernel.org>
->> > Cc: Johannes Berg <johannes@sipsolutions.net>
->> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
->> > ---
->> >  kernel/kthread.c | 4 ++++
->> >  1 file changed, 4 insertions(+)
->> >
->> > diff --git a/kernel/kthread.c b/kernel/kthread.c
->> > index 3c677918d8f2..63d5a1f4cb93 100644
->> > --- a/kernel/kthread.c
->> > +++ b/kernel/kthread.c
->> > @@ -661,12 +661,14 @@ int kthread_park(struct task_struct *k)
->> >
->> >       set_bit(KTHREAD_SHOULD_PARK, &kthread->flags);
->> >       if (k != current) {
->> > +             test_and_set_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);
->> >               wake_up_process(k);
->> >               /*
->> >                * Wait for __kthread_parkme() to complete(), this means we
->> >                * _will_ have TASK_PARKED and are about to call schedule().
->> >                */
->> >               wait_for_completion(&kthread->parked);
->> > +             clear_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);
->> >               /*
->> >                * Now wait for that schedule() to complete and the task to
->> >                * get scheduled out.
->> > @@ -704,8 +706,10 @@ int kthread_stop(struct task_struct *k)
->> >       kthread = to_kthread(k);
->> >       set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
->> >       kthread_unpark(k);
->> > +     test_and_set_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);
->> >       wake_up_process(k);
->> >       wait_for_completion(&kthread->exited);
->> > +     clear_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);
->> >       ret = kthread->result;
->> >       put_task_struct(k);
->> >
->> > --
->> > 2.35.1
->> >
->>
->> Is this more to the tune of what you had in mind in your message [1]?
->>
->> Jason
->>
->> [1] https://lore.kernel.org/lkml/877d51udc7.fsf@email.froward.int.ebiederm.org/
->
-> Paging again...
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Overall it looks reasonable.
-
-For kthread_stop clearing TIF_NOTIFY_SIGNAL seems pointless as the
-process has exited.
-
-I wonder if we should clear TIF_NOTIFY_SIGNAL in kthread_parkme.
-
-Ordinarily TIF_NOTIFY_SIGNAL gets cleared when the target process
-calls get_signal.  Which doesn't happen for kernel threads.
-So I am not certain what the best pattern is, but my sense is that
-keeping things as close to how TIF_NOTIFY_SIGNAL is processed
-in the rest of the kernel seems the least error prone pattern.
-
-So I am thinking the code should do something like:
-
-diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 544fd4097406..c80e8d44e405 100644
---- a/kernel/kthread.c
-+++ b/kernel/kthread.c
-@@ -266,6 +266,7 @@ static void __kthread_parkme(struct kthread *self)
- 		 * changin from TASK_PARKED and us failing the
- 		 * wait_task_inactive() in kthread_park().
- 		 */
-+		clear_notify_signal();
- 		set_special_state(TASK_PARKED);
- 		if (!test_bit(KTHREAD_SHOULD_PARK, &self->flags))
- 			break;
-
-
-To ensure that TIF_NOTIFY_SIGNAL is not set.
-
-I am trying to think about how things interact if two threads call
-kthread_park.  If the target thread is not responsible for clearing
-TIF_NOTIFY_SIGNAL it feels like two threads could get into a race.  A
-race where one thread sees the target thread has parked itself right
-after another thread calls kthread_park and sets TIF_NOTIFY_SIGNAL.
-
-Given the nature of kthread_park that scenario is probably completely
-ridiculous, but it is all I can think of at the moment to demonstrate
-my concerns.
-
-In practice kthread_park is pretty specialized.  Do you have any
-evidence that we need to break out of interruptible loops to make it
-more reliable.  Perhaps it is best just to handle kthread_stop, and
-leave kthread_park for when it actually matters.  Which would ensure
-there are examples that people care about to help sort through exactly
-how the code should behave in the kthread_park case.
-
-Which I guess my long way of saying I think you can just change
-kthread_stop to say:
-
-diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 544fd4097406..52e9b3432496 100644
---- a/kernel/kthread.c
-+++ b/kernel/kthread.c
-@@ -704,6 +704,7 @@ int kthread_stop(struct task_struct *k)
- 	kthread = to_kthread(k);
- 	set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
- 	kthread_unpark(k);
-+	set_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);
- 	wake_up_process(k);
- 	wait_for_completion(&kthread->exited);
- 	ret = kthread->result;
-
-
-Your patch is correct that most of set_notify_signal is redundant with
-wake_up_process(k).  Further if you aren't going to use the return value
-like set_notify_signal does there is no need to test if the flag gets
-set.
-
-Eric
-
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
