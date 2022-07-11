@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDEBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C20C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232233AbiGKJZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47268 "EHLO
+        id S232245AbiGKJZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232326AbiGKJY2 (ORCPT
+        with ESMTP id S232342AbiGKJYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3690E28701;
-        Mon, 11 Jul 2022 02:14:30 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B001248C3;
+        Mon, 11 Jul 2022 02:14:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6208B80CEF;
-        Mon, 11 Jul 2022 09:14:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C5BC34115;
-        Mon, 11 Jul 2022 09:14:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F340B80CEF;
+        Mon, 11 Jul 2022 09:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6943EC34115;
+        Mon, 11 Jul 2022 09:14:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530867;
-        bh=md5Iwx5idA89husX/GHelj2HKMmJ5QIfXFbbhQRgCII=;
+        s=korg; t=1657530875;
+        bh=jB0H8cSNf+eVpBWlZgcCCXpWZ7iENjkNJUguFijwHjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4z3PlloF/0/XYClrygbl8Yw8WsuzNjrngy23x0qG5HOg16WVjagPc3JkP59JJG/4
-         xzfXHZFvUp/H7BtVvT8WOhi9LOE9vPzCO16VT4GPqRLuXdyZYRWrAuFpcHYMtv9AI/
-         xtjypcEWdPw2wqKWdPXHzXYK/+hL4bU52jV7aqrs=
+        b=Z45c/kQsmngOX7VXe4pGcuB4+JXF2uXqS7DGdB6iXknB+tqErw31qfVsxCtzJwhiC
+         jHUP5UMzzfQidaSDljSIqSHI1Wd/QKVinb5Vn1r8p1X97lg5YkFHV3q0aaauiazqL9
+         U9aIOzEy9o15AIVXAXMiN5tWXg9U2ZHS34Jc7e0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pavel Modilaynen <pavel.modilaynen@volvocars.com>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.18 013/112] can: mcp251xfd: mcp251xfd_regmap_crc_read(): improve workaround handling for mcp2517fd
-Date:   Mon, 11 Jul 2022 11:06:13 +0200
-Message-Id: <20220711090549.934935044@linuxfoundation.org>
+        stable@vger.kernel.org, Kuee K1r0a <liulin063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.18 016/112] bpf: Fix incorrect verifier simulation around jmp32s jeq/jne
+Date:   Mon, 11 Jul 2022 11:06:16 +0200
+Message-Id: <20220711090550.020730354@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,71 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Kopp <thomas.kopp@microchip.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-commit 406cc9cdb3e8d644b15e8028948f091b82abdbca upstream.
+commit a12ca6277eca6aeeccf66e840c23a2b520e24c8f upstream.
 
-The mcp251xfd compatible chips have an erratum ([1], [2]), where the
-received CRC doesn't match the calculated CRC. In commit
-c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
-around broken CRC on TBC register") the following workaround was
-implementierend.
+Kuee reported a quirk in the jmp32's jeq/jne simulation, namely that the
+register value does not match expectations for the fall-through path. For
+example:
 
-- If a CRC read error on the TBC register is detected and the first
-  byte is 0x00 or 0x80, the most significant bit of the first byte is
-  flipped and the CRC is calculated again.
-- If the CRC now matches, the _original_ data is passed to the reader.
-  For now we assume transferred data was OK.
+Before fix:
 
-Measurements on the mcp2517fd show that the workaround is applicable
-not only of the lowest byte is 0x00 or 0x80, but also if 3 least
-significant bits are set.
+  0: R1=ctx(off=0,imm=0) R10=fp0
+  0: (b7) r2 = 0                        ; R2_w=P0
+  1: (b7) r6 = 563                      ; R6_w=P563
+  2: (87) r2 = -r2                      ; R2_w=Pscalar()
+  3: (87) r2 = -r2                      ; R2_w=Pscalar()
+  4: (4c) w2 |= w6                      ; R2_w=Pscalar(umin=563,umax=4294967295,var_off=(0x233; 0xfffffdcc),s32_min=-2147483085) R6_w=P563
+  5: (56) if w2 != 0x8 goto pc+1        ; R2_w=P571  <--- [*]
+  6: (95) exit
+  R0 !read_ok
 
-Update check on 1st data byte and workaround description accordingly.
+After fix:
 
-[1] mcp2517fd: DS80000792C: "Incorrect CRC for certain READ_CRC commands"
-[2] mcp2518fd: DS80000789C: "Incorrect CRC for certain READ_CRC commands"
+  0: R1=ctx(off=0,imm=0) R10=fp0
+  0: (b7) r2 = 0                        ; R2_w=P0
+  1: (b7) r6 = 563                      ; R6_w=P563
+  2: (87) r2 = -r2                      ; R2_w=Pscalar()
+  3: (87) r2 = -r2                      ; R2_w=Pscalar()
+  4: (4c) w2 |= w6                      ; R2_w=Pscalar(umin=563,umax=4294967295,var_off=(0x233; 0xfffffdcc),s32_min=-2147483085) R6_w=P563
+  5: (56) if w2 != 0x8 goto pc+1        ; R2_w=P8  <--- [*]
+  6: (95) exit
+  R0 !read_ok
 
-Link: https://lore.kernel.org/all/DM4PR11MB53901D49578FE265B239E55AFB7C9@DM4PR11MB5390.namprd11.prod.outlook.com
-Fixes: c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work around broken CRC on TBC register")
-Cc: stable@vger.kernel.org
-Reported-by: Pavel Modilaynen <pavel.modilaynen@volvocars.com>
-Signed-off-by: Thomas Kopp <thomas.kopp@microchip.com>
-[mkl: split into 2 patches, update patch description and documentation]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+As can be seen on line 5 for the branch fall-through path in R2 [*] is that
+given condition w2 != 0x8 is false, verifier should conclude that r2 = 8 as
+upper 32 bit are known to be zero. However, verifier incorrectly concludes
+that r2 = 571 which is far off.
+
+The problem is it only marks false{true}_reg as known in the switch for JE/NE
+case, but at the end of the function, it uses {false,true}_{64,32}off to
+update {false,true}_reg->var_off and they still hold the prior value of
+{false,true}_reg->var_off before it got marked as known. The subsequent
+__reg_combine_32_into_64() then propagates this old var_off and derives new
+bounds. The information between min/max bounds on {false,true}_reg from
+setting the register to known const combined with the {false,true}_reg->var_off
+based on the old information then derives wrong register data.
+
+Fix it by detangling the BPF_JEQ/BPF_JNE cases and updating relevant
+{false,true}_{64,32}off tnums along with the register marking to known
+constant.
+
+Fixes: 3f50f132d840 ("bpf: Verifier, do explicit ALU32 bounds tracking")
+Reported-by: Kuee K1r0a <liulin063@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220701124727.11153-1-daniel@iogearbox.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ kernel/bpf/verifier.c |   41 ++++++++++++++++++++++++-----------------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
 
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
-@@ -334,10 +334,12 @@ mcp251xfd_regmap_crc_read(void *context,
- 		 * register. It increments once per SYS clock tick,
- 		 * which is 20 or 40 MHz.
- 		 *
--		 * Observation shows that if the lowest byte (which is
--		 * transferred first on the SPI bus) of that register
--		 * is 0x00 or 0x80 the calculated CRC doesn't always
--		 * match the transferred one.
-+		 * Observation on the mcp2518fd shows that if the
-+		 * lowest byte (which is transferred first on the SPI
-+		 * bus) of that register is 0x00 or 0x80 the
-+		 * calculated CRC doesn't always match the transferred
-+		 * one. On the mcp2517fd this problem is not limited
-+		 * to the first byte being 0x00 or 0x80.
- 		 *
- 		 * If the highest bit in the lowest byte is flipped
- 		 * the transferred CRC matches the calculated one. We
-@@ -346,7 +348,8 @@ mcp251xfd_regmap_crc_read(void *context,
- 		 * correct.
- 		 */
- 		if (reg == MCP251XFD_REG_TBC &&
--		    (buf_rx->data[0] == 0x0 || buf_rx->data[0] == 0x80)) {
-+		    ((buf_rx->data[0] & 0xf8) == 0x0 ||
-+		     (buf_rx->data[0] & 0xf8) == 0x80)) {
- 			/* Flip highest bit in lowest byte of le32 */
- 			buf_rx->data[0] ^= 0x80;
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9068,26 +9068,33 @@ static void reg_set_min_max(struct bpf_r
+ 		return;
  
+ 	switch (opcode) {
++	/* JEQ/JNE comparison doesn't change the register equivalence.
++	 *
++	 * r1 = r2;
++	 * if (r1 == 42) goto label;
++	 * ...
++	 * label: // here both r1 and r2 are known to be 42.
++	 *
++	 * Hence when marking register as known preserve it's ID.
++	 */
+ 	case BPF_JEQ:
++		if (is_jmp32) {
++			__mark_reg32_known(true_reg, val32);
++			true_32off = tnum_subreg(true_reg->var_off);
++		} else {
++			___mark_reg_known(true_reg, val);
++			true_64off = true_reg->var_off;
++		}
++		break;
+ 	case BPF_JNE:
+-	{
+-		struct bpf_reg_state *reg =
+-			opcode == BPF_JEQ ? true_reg : false_reg;
+-
+-		/* JEQ/JNE comparison doesn't change the register equivalence.
+-		 * r1 = r2;
+-		 * if (r1 == 42) goto label;
+-		 * ...
+-		 * label: // here both r1 and r2 are known to be 42.
+-		 *
+-		 * Hence when marking register as known preserve it's ID.
+-		 */
+-		if (is_jmp32)
+-			__mark_reg32_known(reg, val32);
+-		else
+-			___mark_reg_known(reg, val);
++		if (is_jmp32) {
++			__mark_reg32_known(false_reg, val32);
++			false_32off = tnum_subreg(false_reg->var_off);
++		} else {
++			___mark_reg_known(false_reg, val);
++			false_64off = false_reg->var_off;
++		}
+ 		break;
+-	}
+ 	case BPF_JSET:
+ 		if (is_jmp32) {
+ 			false_32off = tnum_and(false_32off, tnum_const(~val32));
 
 
