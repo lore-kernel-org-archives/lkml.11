@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B690C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B39C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbiGKJH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        id S231169AbiGKJHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbiGKJHO (ORCPT
+        with ESMTP id S229905AbiGKJHS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:07:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B7522BD6;
-        Mon, 11 Jul 2022 02:07:07 -0700 (PDT)
+        Mon, 11 Jul 2022 05:07:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8282922B11;
+        Mon, 11 Jul 2022 02:07:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1AF06115B;
-        Mon, 11 Jul 2022 09:07:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF4A1C34115;
-        Mon, 11 Jul 2022 09:07:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83CC1B80E75;
+        Mon, 11 Jul 2022 09:07:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A89A9C34115;
+        Mon, 11 Jul 2022 09:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530426;
-        bh=3Rmk8qZWpW2yMzZ5SsMzHiMd/7zR1ly06CyIaurBVtM=;
+        s=korg; t=1657530429;
+        bh=fp98nAGWj3Oh0tmQUoRSJjv6bGkAOPoy0RzBcwiYceE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b9LlgR20keYs0zimBSBBjgZ/Zn9LbHAx8ptUTcfGmUCcn+ky8hGMjP3Dvnoc4D29v
-         pNcV7PqnUNc6Fj93TTDWuMzIg9Z32jHbkT3dway5dSqd6WxSXZcZetNa7jmuSNPKcz
-         UuKh4gLfL8wbxOD+QWEJBtJqgc3uegZN650uo5Q8=
+        b=tNZqOUnPVwksDDoO27az1YTFkoVeoSsJQRsXZtsxIMGz9JGT9/NpXI/0XEG4URZnm
+         ggR/0ZMv2n2ECrSfhBYnUegpKc7LIfD5Jpf/j+gf9cC6ajb8cZDV/4h5jZbl5eOOms
+         vljgpV73Iv0cN1XjwocxjeklnJxsyypuFnmaVStE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.9 07/14] video: of_display_timing.h: include errno.h
-Date:   Mon, 11 Jul 2022 11:06:26 +0200
-Message-Id: <20220711090535.736124488@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Eric Sandeen <sandeen@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Subject: [PATCH 4.9 08/14] xfs: remove incorrect ASSERT in xfs_rename
+Date:   Mon, 11 Jul 2022 11:06:27 +0200
+Message-Id: <20220711090535.764777080@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090535.517697227@linuxfoundation.org>
 References: <20220711090535.517697227@linuxfoundation.org>
@@ -49,33 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+From: Eric Sandeen <sandeen@redhat.com>
 
-commit 3663a2fb325b8782524f3edb0ae32d6faa615109 upstream.
+commit e445976537ad139162980bee015b7364e5b64fff upstream.
 
-If CONFIG_OF is not enabled, default of_get_display_timing() returns an
-errno, so include the header.
+This ASSERT in xfs_rename is a) incorrect, because
+(RENAME_WHITEOUT|RENAME_NOREPLACE) is a valid combination, and
+b) unnecessary, because actual invalid flag combinations are already
+handled at the vfs level in do_renameat2() before we get called.
+So, remove it.
 
-Fixes: 422b67e0b31a ("videomode: provide dummy inline functions for !CONFIG_OF")
-Suggested-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Reported-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Fixes: 7dcf5c3e4527 ("xfs: add RENAME_WHITEOUT support")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/video/of_display_timing.h |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/xfs/xfs_inode.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/include/video/of_display_timing.h
-+++ b/include/video/of_display_timing.h
-@@ -9,6 +9,8 @@
- #ifndef __LINUX_OF_DISPLAY_TIMING_H
- #define __LINUX_OF_DISPLAY_TIMING_H
- 
-+#include <linux/errno.h>
-+
- struct device_node;
- struct display_timing;
- struct display_timings;
+--- a/fs/xfs/xfs_inode.c
++++ b/fs/xfs/xfs_inode.c
+@@ -2973,7 +2973,6 @@ xfs_rename(
+ 	 * appropriately.
+ 	 */
+ 	if (flags & RENAME_WHITEOUT) {
+-		ASSERT(!(flags & (RENAME_NOREPLACE | RENAME_EXCHANGE)));
+ 		error = xfs_rename_alloc_whiteout(target_dp, &wip);
+ 		if (error)
+ 			return error;
 
 
