@@ -2,77 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 164BCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE36DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231464AbiGKQN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 12:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
+        id S231878AbiGKQNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiGKQNZ (ORCPT
+        with ESMTP id S231593AbiGKQNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 12:13:25 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE927A50F;
-        Mon, 11 Jul 2022 09:13:24 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id v21so2321492plo.0;
-        Mon, 11 Jul 2022 09:13:24 -0700 (PDT)
+        Mon, 11 Jul 2022 12:13:38 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810CC10BF
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:13:36 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2ef5380669cso54074757b3.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:13:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=1BtirUFZlUNsNaJ0rGa4j2n8R2Nb+qFWRgftNDn7dlM=;
-        b=h2gP/eINh3df/khVpYyOKAFueaRwnze8whTPM4NWnJhXedhNVdiYw7q36eqbuk2+b2
-         x9yIbcmMZ07Xc7n7eTivCKkImfW2gbCrlNL7Va25RMwU9StsglbqTN88W1rLDjwueG2U
-         MA8Agg8kStw9PZ+SHWNSZHh5bL+8vfgdcGvT+aszFKSptbnsV42YwLIvz2NmhlfT6KWP
-         0psdwRlghGHK0zrh7XZehpiSD3xdWr7xD56y07PrqCexG4YVWeznvWxWcy6LHvIc8B/l
-         7kcJlwCMs9z53KdaK9c8p3mQ7Vrimb+0YNsRHZlO1N+d/Xv2hdgezVoi22iNgkExNUCr
-         poqQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BOu1n0uYdCsudxoJVtyz5/UL8tUbc5xPCGC+9KrKzU4=;
+        b=jfZhtAzNU5rTNiQTs4mptKw1m2kTa9R6IQTrIM+PBmuO9yyCHXVyohDAlN7KTzn6Ah
+         we0Ko3BSxqQWXKVCJWUqcjMFYTQ78+eNUIvCbS8SdyauGnfHltCkJdcl53p9aqKvWY3m
+         IRJ3N9l8PXZ6ZZNwNwgBnoO6YhW3Kajtwmk3Yppwor2+/X/PfamcxKpfKaKnsiD5jMwe
+         C7PQoBo9a8L6Gtf9tzt2aclez/bEA+frq7ccjV5CWtuVTh7ZAko/VlLMTBm4+dOZMCSz
+         yHdAEc6RTrY4quwMSVG8R6BnUsgBhGlxx3SUpp5nDkGFTpMdMtR9QNkzjQOQ51Hqem1r
+         ROgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=1BtirUFZlUNsNaJ0rGa4j2n8R2Nb+qFWRgftNDn7dlM=;
-        b=jJsmT/lqqHKfMe4j5FMz0qjOYmEnsiJA9yRc+EunXLnfEkoPcInborXMcFOzTAvxIY
-         QT2n6g2JVDJ/oRNexzYDH8AAqxNHnlZOn4Lpx5f0yIR9aHMSEsKjhKPxOISjcovSa1Bv
-         /BrPCONOIH+bSvwd6eP3JjwmmJVavwQiKv4gNWzGyMv5pW4SMJYXHIqUV+92q3AZjtpY
-         x1oPCs43ZuvDFcq7Yb7z3a4p0aYNE4KJiGlSTyV9qAKsbgJjZy7wdbgO+udkO8DSz+cb
-         PiD5OoCB9QuJz8gA/Cyj8cVtE6qHxuQWlzB8XwcNRA5CIeKcstPZdoFbfDK6LhnZy3sa
-         ZmtA==
-X-Gm-Message-State: AJIora++j08gyPt4itBy2O9UeS65tW/mLBzmjimK4B8hUIadC8nWorKu
-        ol8VQYQeYKCa23QX/+yRclY=
-X-Google-Smtp-Source: AGRyM1uGPEntwk/brrDrAanebOrOr3Lt4WdZYw78TD8cNiNnyXHKbxBrBweYKn9sc24tLdRLZ3CAOQ==
-X-Received: by 2002:a17:903:2452:b0:16c:18f4:7997 with SMTP id l18-20020a170903245200b0016c18f47997mr19363436pls.68.1657556003779;
-        Mon, 11 Jul 2022 09:13:23 -0700 (PDT)
-Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id h10-20020a170902f54a00b0016bdf0032b9sm4932804plf.110.2022.07.11.09.13.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 09:13:22 -0700 (PDT)
-References: <20220321053815.71316-1-schspa@gmail.com>
- <YjhF/jWXY5L3I+DZ@linutronix.de>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     pmladek@suse.com, sergey.senozhatsky@gmail.com,
-        rostedt@goodmis.org, john.ogness@linutronix.de,
-        linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tglx@linutronix.de
-Subject: Re: [PATCH 5.10-rt] printk: fix suppressed message print when
- reboot/panic
-Date:   Tue, 12 Jul 2022 00:05:51 +0800
-In-reply-to: <YjhF/jWXY5L3I+DZ@linutronix.de>
-Message-ID: <m2r12rocfd.fsf@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BOu1n0uYdCsudxoJVtyz5/UL8tUbc5xPCGC+9KrKzU4=;
+        b=PuVZ+S0Af3FxhT6OcZKdN1Ansg0pK2jbcf0SXw9TPSDHUl1qRtVgqfBbnHH5FiFZdu
+         g0+l4VGftSwmZscII4dnxS/JBcpa1Z1blgXu7hJRD/YT8XDj3OICYfOQz12fGh54OdQe
+         ej9Rz4LtWbt1lqC1R9CwqRSeiOC5REwfper6QtxJGP4dMm8XpTAqzPqOJeAqN6sz2BHM
+         2tFrBj1ZTOvgqo+etoTrkRCY9vWdAqVOxQDuwFSmTScg9zDPzCbsIgXtOC0WVi8AYFfd
+         nLaF5tghooYHS/+oE5/gPCcd43tZgN3U98Zs22q3dId0hv9VTzIvS3tXR0zGI1qQZAxi
+         hEQw==
+X-Gm-Message-State: AJIora+c/9sTCvdqJZy9bdgefKpJ6h61HiYI+DBEpLCDudWuja6Kg+kU
+        edb5w3pF7C01vWsh6zgxluJrGBq9PZ9Zgl21EQKixQ==
+X-Google-Smtp-Source: AGRyM1u7w4vwWQLqCchegA4jWk07R+nBUJyoXBnwnNANR5KSe1C5dJ2LQvRXdoOq/VOfMNDgU8kdjtBCXiK48O1MRt0=
+X-Received: by 2002:a81:98d:0:b0:31c:921c:9783 with SMTP id
+ 135-20020a81098d000000b0031c921c9783mr19996386ywj.316.1657556015569; Mon, 11
+ Jul 2022 09:13:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-10-glider@google.com>
+In-Reply-To: <20220701142310.2188015-10-glider@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Mon, 11 Jul 2022 18:12:59 +0200
+Message-ID: <CANpmjNN8xD2WK_Au86ww1eqGaUbWr+B=m0GuzrDrbhKA=hJYwQ@mail.gmail.com>
+Subject: Re: [PATCH v4 09/45] x86: kmsan: pgtable: reduce vmalloc space
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi guys:
+On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
+>
+> KMSAN is going to use 3/4 of existing vmalloc space to hold the
+> metadata, therefore we lower VMALLOC_END to make sure vmalloc() doesn't
+> allocate past the first 1/4.
+>
+> Signed-off-by: Alexander Potapenko <glider@google.com>
+> ---
+> v2:
+>  -- added x86: to the title
+>
+> Link: https://linux-review.googlesource.com/id/I9d8b7f0a88a639f1263bc693cbd5c136626f7efd
+> ---
+>  arch/x86/include/asm/pgtable_64_types.h | 41 ++++++++++++++++++++++++-
+>  arch/x86/mm/init_64.c                   |  2 +-
+>  2 files changed, 41 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/pgtable_64_types.h b/arch/x86/include/asm/pgtable_64_types.h
+> index 70e360a2e5fb7..ad6ded5b1dedf 100644
+> --- a/arch/x86/include/asm/pgtable_64_types.h
+> +++ b/arch/x86/include/asm/pgtable_64_types.h
+> @@ -139,7 +139,46 @@ extern unsigned int ptrs_per_p4d;
+>  # define VMEMMAP_START         __VMEMMAP_BASE_L4
+>  #endif /* CONFIG_DYNAMIC_MEMORY_LAYOUT */
+>
+> -#define VMALLOC_END            (VMALLOC_START + (VMALLOC_SIZE_TB << 40) - 1)
+> +#define VMEMORY_END            (VMALLOC_START + (VMALLOC_SIZE_TB << 40) - 1)
 
-   Do we need to add this to the rt stable tree?
-   The stable tree still have this issues.
+Comment what VMEMORY_END is? (Seems obvious, but less guessing is better here.)
 
--- 
-BRs
-Schspa Shi
+> +#ifndef CONFIG_KMSAN
+> +#define VMALLOC_END            VMEMORY_END
+> +#else
+> +/*
+> + * In KMSAN builds vmalloc area is four times smaller, and the remaining 3/4
+> + * are used to keep the metadata for virtual pages. The memory formerly
+> + * belonging to vmalloc area is now laid out as follows:
+> + *
+> + * 1st quarter: VMALLOC_START to VMALLOC_END - new vmalloc area
+> + * 2nd quarter: KMSAN_VMALLOC_SHADOW_START to
+> + *              VMALLOC_END+KMSAN_VMALLOC_SHADOW_OFFSET - vmalloc area shadow
+> + * 3rd quarter: KMSAN_VMALLOC_ORIGIN_START to
+> + *              VMALLOC_END+KMSAN_VMALLOC_ORIGIN_OFFSET - vmalloc area origins
+> + * 4th quarter: KMSAN_MODULES_SHADOW_START to KMSAN_MODULES_ORIGIN_START
+> + *              - shadow for modules,
+> + *              KMSAN_MODULES_ORIGIN_START to
+> + *              KMSAN_MODULES_ORIGIN_START + MODULES_LEN - origins for modules.
+> + */
+> +#define VMALLOC_QUARTER_SIZE   ((VMALLOC_SIZE_TB << 40) >> 2)
+> +#define VMALLOC_END            (VMALLOC_START + VMALLOC_QUARTER_SIZE - 1)
+> +
+> +/*
+> + * vmalloc metadata addresses are calculated by adding shadow/origin offsets
+> + * to vmalloc address.
+> + */
+> +#define KMSAN_VMALLOC_SHADOW_OFFSET    VMALLOC_QUARTER_SIZE
+> +#define KMSAN_VMALLOC_ORIGIN_OFFSET    (VMALLOC_QUARTER_SIZE << 1)
+> +
+> +#define KMSAN_VMALLOC_SHADOW_START     (VMALLOC_START + KMSAN_VMALLOC_SHADOW_OFFSET)
+> +#define KMSAN_VMALLOC_ORIGIN_START     (VMALLOC_START + KMSAN_VMALLOC_ORIGIN_OFFSET)
+> +
+> +/*
+> + * The shadow/origin for modules are placed one by one in the last 1/4 of
+> + * vmalloc space.
+> + */
+> +#define KMSAN_MODULES_SHADOW_START     (VMALLOC_END + KMSAN_VMALLOC_ORIGIN_OFFSET + 1)
+> +#define KMSAN_MODULES_ORIGIN_START     (KMSAN_MODULES_SHADOW_START + MODULES_LEN)
+> +#endif /* CONFIG_KMSAN */
+>
+>  #define MODULES_VADDR          (__START_KERNEL_map + KERNEL_IMAGE_SIZE)
+>  /* The module sections ends with the start of the fixmap */
+> diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+> index 39c5246964a91..5806331172361 100644
+> --- a/arch/x86/mm/init_64.c
+> +++ b/arch/x86/mm/init_64.c
+> @@ -1287,7 +1287,7 @@ static void __init preallocate_vmalloc_pages(void)
+>         unsigned long addr;
+>         const char *lvl;
+>
+> -       for (addr = VMALLOC_START; addr <= VMALLOC_END; addr = ALIGN(addr + 1, PGDIR_SIZE)) {
+> +       for (addr = VMALLOC_START; addr <= VMEMORY_END; addr = ALIGN(addr + 1, PGDIR_SIZE)) {
+>                 pgd_t *pgd = pgd_offset_k(addr);
+>                 p4d_t *p4d;
+>                 pud_t *pud;
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
