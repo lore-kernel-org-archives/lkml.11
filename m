@@ -2,87 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE75C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F59CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231584AbiGKJ7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46374 "EHLO
+        id S234137AbiGKJ75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234217AbiGKJ6o (ORCPT
+        with ESMTP id S234250AbiGKJ6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:58:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD4BB5D16;
-        Mon, 11 Jul 2022 02:27:29 -0700 (PDT)
+        Mon, 11 Jul 2022 05:58:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C0EB628F;
+        Mon, 11 Jul 2022 02:27:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A819B80D2C;
-        Mon, 11 Jul 2022 09:27:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2F7AC34115;
-        Mon, 11 Jul 2022 09:27:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531648;
-        bh=n0hYW14P2MKpZwo1i5aFk7orNBSieQ8KYy2b4+bCFyM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jm281VnOWQIOe18JArJwlJQZO0F/RsYuHa4UXtC2N0g9U6DjkNAC0V3qnBWwGb4n9
-         9zKXrLVEhSLOuxaxXy6p+cUqvszFeapNXLhGuonlXnh5ECnYQERoFr5qbEjI+wEa8P
-         xk5IJ/9H6yYycjjRfqXdCCAMq5VeS2eDkKabk7N0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Ye Guojin <ye.guojin@zte.com.cn>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: [PATCH 5.15 174/230] virtio-blk: modify the value type of num in virtio_queue_rq()
-Date:   Mon, 11 Jul 2022 11:07:10 +0200
-Message-Id: <20220711090608.997252359@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
-References: <20220711090604.055883544@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E25D61372;
+        Mon, 11 Jul 2022 09:27:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4BCC341C0;
+        Mon, 11 Jul 2022 09:27:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657531639;
+        bh=+UJrGtjpka8nSRM77e2YQUJSg61eV0JzLk4848lxeJE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MfE8LqQNYPDPYj35zNe/S4tOd01xxjfLIyzaJi0TUejoE4EsuDFhtQuhYbig7oEHI
+         uaO9PTIEhDARQXEP264/pjRuz5Xz2r52a3fZ6Hl3USlAbj6hzIbEFaB4Nw/8yhPHNt
+         qaoJCPhKHA3CZUJFqIBSDQFDYzQ2ewy7YNeU3YQRLqputkGAPL9rIeNfi6dSjCfspF
+         ReG106sk7j5xfiu4zC5+jKCgGZ0AoI8XHM9ZQZ2V5DqGBjd+cZNHr0WiAXETrPSuct
+         0B7pQPZrFa2u+Ix1IWCFdCLbX1uosdXsIudoa3+ogdeFI7WpJETnooOcLRQsB7T6XX
+         uckVuce4+HYeg==
+Message-ID: <e1d1b0d3-b6d3-db91-df9f-a06ef69d1834@kernel.org>
+Date:   Mon, 11 Jul 2022 11:27:14 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 2/2] pwm: Add clock based PWM output driver
+Content-Language: en-US
+To:     Nikita Travkin <nikita@trvn.ru>, thierry.reding@gmail.com,
+        lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+References: <20220711062330.4923-1-nikita@trvn.ru>
+ <20220711062330.4923-3-nikita@trvn.ru>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220711062330.4923-3-nikita@trvn.ru>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Guojin <ye.guojin@zte.com.cn>
+On 11/07/2022 08:23, Nikita Travkin wrote:
+> Some systems have clocks exposed to external devices. If the clock
+> controller supports duty-cycle configuration, such clocks can be used as
+> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
+> similar way and an "opposite" driver already exists (clk-pwm). Add a
+> driver that would enable pwm devices to be used via clk subsystem.
+> 
+> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+> --
+> 
 
-commit 0466a39bd0b6c462338f10d18076703d14a552de upstream.
+Also not correct patch.
 
-This was found by coccicheck:
-./drivers/block/virtio_blk.c, 334, 14-17, WARNING Unsigned expression
-compared with zero  num < 0
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
-Link: https://lore.kernel.org/r/20211117063955.160777-1-ye.guojin@zte.com.cn
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Fixes: 02746e26c39e ("virtio-blk: avoid preallocating big SGL for data")
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/block/virtio_blk.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -308,7 +308,7 @@ static blk_status_t virtio_queue_rq(stru
- 	struct request *req = bd->rq;
- 	struct virtblk_req *vbr = blk_mq_rq_to_pdu(req);
- 	unsigned long flags;
--	unsigned int num;
-+	int num;
- 	int qid = hctx->queue_num;
- 	int err;
- 	bool notify = false;
-
-
+Best regards,
+Krzysztof
