@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B04CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0D8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232177AbiGKJ1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
+        id S232420AbiGKJ1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231913AbiGKJZH (ORCPT
+        with ESMTP id S232186AbiGKJZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:25:07 -0400
+        Mon, 11 Jul 2022 05:25:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A6A3AE63;
-        Mon, 11 Jul 2022 02:15:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812BC3C15E;
+        Mon, 11 Jul 2022 02:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEC8DB80DB7;
-        Mon, 11 Jul 2022 09:15:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56CC3C34115;
-        Mon, 11 Jul 2022 09:15:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD772B80E6D;
+        Mon, 11 Jul 2022 09:15:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C99FC385A2;
+        Mon, 11 Jul 2022 09:15:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530916;
-        bh=nxxkMb4NrN9k+YIwms6fxAfJIchR/V3HenrDCucwkxg=;
+        s=korg; t=1657530919;
+        bh=3Oqf7mTGRy74t/mYgL2BARavYyB7H0SI+5g6itj9mUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nh9Ih7/yKN11yRoJRbyCO02iVZe1PNo5psAA/DHsqZumZqW6XrFlNv0NgEHazR55I
-         MJ6/G1fnxSUi0bClp/JO7sWvbhByxFEOWBnZ1iIC+ZV4wYx1wEbEF0ZAgRdyfzveYE
-         rjW2/fcyL/4Upu7i+p2sm6BAsqE9T9cwQofb1aNA=
+        b=QTUX16Lq5sU3WtvNRHfTV+/bCfUWM9xvPV1XbJMoe7f0SUYxwL0zLfJqcDt8kfs0l
+         ThYzs73AGEelHbNtgv+tvIUPuXCmsA9KFsQ4RDqadLUi8nRygbNQdRkiS8OaKovLpH
+         GUKv/dwT7asLuo8ksuqszgo7DeDFe12OfdeeUyng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 003/112] ALSA: hda/realtek: Add quirk for Clevo L140PU
-Date:   Mon, 11 Jul 2022 11:06:03 +0200
-Message-Id: <20220711090549.646221762@linuxfoundation.org>
+        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
+        Ethan Zhao <haifeng.zhao@linux.intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.18 030/112] iommu/vt-d: Fix RID2PASID setup/teardown failure
+Date:   Mon, 11 Jul 2022 11:06:30 +0200
+Message-Id: <20220711090550.422283157@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -48,30 +51,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-commit 11bea26929a1a3a9dd1a287b60c2f471701bf706 upstream.
+commit 4140d77a022101376bbfa3ec3e3da5063455c60e upstream.
 
-Fixes headset detection on Clevo L140PU.
+The IOMMU driver shares the pasid table for PCI alias devices. When the
+RID2PASID entry of the shared pasid table has been filled by the first
+device, the subsequent device will encounter the "DMAR: Setup RID2PASID
+failed" failure as the pasid entry has already been marked as present.
+As the result, the IOMMU probing process will be aborted.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220624144109.3957-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+On the contrary, when any alias device is hot-removed from the system,
+for example, by writing to /sys/bus/pci/devices/.../remove, the shared
+RID2PASID will be cleared without any notifications to other devices.
+As the result, any DMAs from those rest devices are blocked.
+
+Sharing pasid table among PCI alias devices could save two memory pages
+for devices underneath the PCIe-to-PCI bridges. Anyway, considering that
+those devices are rare on modern platforms that support VT-d in scalable
+mode and the saved memory is negligible, it's reasonable to remove this
+part of immature code to make the driver feasible and stable.
+
+Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
+Reported-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220623065720.727849-1-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20220625133430.2200315-2-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/intel/iommu.c |   24 ---------------
+ drivers/iommu/intel/pasid.c |   69 +-------------------------------------------
+ drivers/iommu/intel/pasid.h |    1 
+ include/linux/intel-iommu.h |    3 -
+ 4 files changed, 3 insertions(+), 94 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9264,6 +9264,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x7718, "Clevo L140PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8521, "Clevo NH77D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -320,30 +320,6 @@ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped
+ DEFINE_SPINLOCK(device_domain_lock);
+ static LIST_HEAD(device_domain_list);
+ 
+-/*
+- * Iterate over elements in device_domain_list and call the specified
+- * callback @fn against each element.
+- */
+-int for_each_device_domain(int (*fn)(struct device_domain_info *info,
+-				     void *data), void *data)
+-{
+-	int ret = 0;
+-	unsigned long flags;
+-	struct device_domain_info *info;
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry(info, &device_domain_list, global) {
+-		ret = fn(info, data);
+-		if (ret) {
+-			spin_unlock_irqrestore(&device_domain_lock, flags);
+-			return ret;
+-		}
+-	}
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-	return 0;
+-}
+-
+ const struct iommu_ops intel_iommu_ops;
+ 
+ static bool translation_pre_enabled(struct intel_iommu *iommu)
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -86,54 +86,6 @@ void vcmd_free_pasid(struct intel_iommu
+ /*
+  * Per device pasid table management:
+  */
+-static inline void
+-device_attach_pasid_table(struct device_domain_info *info,
+-			  struct pasid_table *pasid_table)
+-{
+-	info->pasid_table = pasid_table;
+-	list_add(&info->table, &pasid_table->dev);
+-}
+-
+-static inline void
+-device_detach_pasid_table(struct device_domain_info *info,
+-			  struct pasid_table *pasid_table)
+-{
+-	info->pasid_table = NULL;
+-	list_del(&info->table);
+-}
+-
+-struct pasid_table_opaque {
+-	struct pasid_table	**pasid_table;
+-	int			segment;
+-	int			bus;
+-	int			devfn;
+-};
+-
+-static int search_pasid_table(struct device_domain_info *info, void *opaque)
+-{
+-	struct pasid_table_opaque *data = opaque;
+-
+-	if (info->iommu->segment == data->segment &&
+-	    info->bus == data->bus &&
+-	    info->devfn == data->devfn &&
+-	    info->pasid_table) {
+-		*data->pasid_table = info->pasid_table;
+-		return 1;
+-	}
+-
+-	return 0;
+-}
+-
+-static int get_alias_pasid_table(struct pci_dev *pdev, u16 alias, void *opaque)
+-{
+-	struct pasid_table_opaque *data = opaque;
+-
+-	data->segment = pci_domain_nr(pdev->bus);
+-	data->bus = PCI_BUS_NUM(alias);
+-	data->devfn = alias & 0xff;
+-
+-	return for_each_device_domain(&search_pasid_table, data);
+-}
+ 
+ /*
+  * Allocate a pasid table for @dev. It should be called in a
+@@ -143,28 +95,18 @@ int intel_pasid_alloc_table(struct devic
+ {
+ 	struct device_domain_info *info;
+ 	struct pasid_table *pasid_table;
+-	struct pasid_table_opaque data;
+ 	struct page *pages;
+ 	u32 max_pasid = 0;
+-	int ret, order;
+-	int size;
++	int order, size;
+ 
+ 	might_sleep();
+ 	info = dev_iommu_priv_get(dev);
+ 	if (WARN_ON(!info || !dev_is_pci(dev) || info->pasid_table))
+ 		return -EINVAL;
+ 
+-	/* DMA alias device already has a pasid table, use it: */
+-	data.pasid_table = &pasid_table;
+-	ret = pci_for_each_dma_alias(to_pci_dev(dev),
+-				     &get_alias_pasid_table, &data);
+-	if (ret)
+-		goto attach_out;
+-
+ 	pasid_table = kzalloc(sizeof(*pasid_table), GFP_KERNEL);
+ 	if (!pasid_table)
+ 		return -ENOMEM;
+-	INIT_LIST_HEAD(&pasid_table->dev);
+ 
+ 	if (info->pasid_supported)
+ 		max_pasid = min_t(u32, pci_max_pasids(to_pci_dev(dev)),
+@@ -182,9 +124,7 @@ int intel_pasid_alloc_table(struct devic
+ 	pasid_table->table = page_address(pages);
+ 	pasid_table->order = order;
+ 	pasid_table->max_pasid = 1 << (order + PAGE_SHIFT + 3);
+-
+-attach_out:
+-	device_attach_pasid_table(info, pasid_table);
++	info->pasid_table = pasid_table;
+ 
+ 	return 0;
+ }
+@@ -202,10 +142,7 @@ void intel_pasid_free_table(struct devic
+ 		return;
+ 
+ 	pasid_table = info->pasid_table;
+-	device_detach_pasid_table(info, pasid_table);
+-
+-	if (!list_empty(&pasid_table->dev))
+-		return;
++	info->pasid_table = NULL;
+ 
+ 	/* Free scalable mode PASID directory tables: */
+ 	dir = pasid_table->table;
+--- a/drivers/iommu/intel/pasid.h
++++ b/drivers/iommu/intel/pasid.h
+@@ -74,7 +74,6 @@ struct pasid_table {
+ 	void			*table;		/* pasid table pointer */
+ 	int			order;		/* page order of pasid table */
+ 	u32			max_pasid;	/* max pasid */
+-	struct list_head	dev;		/* device list */
+ };
+ 
+ /* Get PRESENT bit of a PASID directory entry. */
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -611,7 +611,6 @@ struct intel_iommu {
+ struct device_domain_info {
+ 	struct list_head link;	/* link to domain siblings */
+ 	struct list_head global; /* link to global list */
+-	struct list_head table;	/* link to pasid table */
+ 	u32 segment;		/* PCI segment number */
+ 	u8 bus;			/* PCI bus number */
+ 	u8 devfn;		/* PCI devfn number */
+@@ -728,8 +727,6 @@ extern int dmar_ir_support(void);
+ void *alloc_pgtable_page(int node);
+ void free_pgtable_page(void *vaddr);
+ struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
+-int for_each_device_domain(int (*fn)(struct device_domain_info *info,
+-				     void *data), void *data);
+ void iommu_flush_write_buffer(struct intel_iommu *iommu);
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
+ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
 
 
