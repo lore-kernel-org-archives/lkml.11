@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231329AbiGKU0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44546 "EHLO
+        id S231390AbiGKU0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbiGKUZa (ORCPT
+        with ESMTP id S229670AbiGKUZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 16:25:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09E633424
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:26 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C614B0E9;
+        Mon, 11 Jul 2022 13:25:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33162B81211
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B213C341CE;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FECF6163D;
+        Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE72EC341ED;
         Mon, 11 Jul 2022 20:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657571123;
-        bh=iPo5yEgWndhfMQR64zKLfth2omME0GYPHNfw6ZASCpQ=;
+        bh=Fo89D3DwUo2r9d3JU5/iQMjVQfwJrqQdTu5vKaQ+2BU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4whE9rwW4KXNlMHWzbc7yx6XzNTYs9ra7km0iqGCLFDSLSmTni+LfhcvLghZeXyo
-         cfLGuGuLp8khxdX4eYIE/2X/pDzsup0ditp5lTcwMkCfKbSm5LV6bawjEYAvHr34ui
-         /jVq5+jx2ky7bEWrHOCnVtcX7zF8l4om6DPr7iH0bvI5oFiTEDympLGL/aAtjaY1jY
-         sWOkkCmowZ8nVUVlsmsg0BKU6Wp+hkQE2zzBlKtFz1Eci8I0QJ45ucMzN8WLseNgZw
-         aWTIf+VCcDacRzHJZnWbCP9C6T3JEYLudQ7VbBG9OVbKyE0JCnf5Jga06VDVK5i5PU
-         WqGCMrIJ2kJeg==
+        b=LEYH1A936lTmyZNiyj0MT0WiP10O4qEgvudZoJdBYqRU6NF/sL3LiCVKN2cGE+M9H
+         zfsWTBxN8D469E8xGm+kLNGWRb4ibpIhJkqWwq9l5YzGayp+LMczoexjgAhC5+5Njt
+         BNgeU3eL66hmGE+r2hHW3z14WmVa2zHD1pwsbQCbgYx/EvAGjbCiXLTrtkQHw5XCPM
+         KJ3H7hZxNg4Q4BM6rL8JNAAx5jR0Cq7gXxZ2CZo+S6vQ3oDLoxNe9wSiq2JnzxBhqk
+         u/ScZpHQDgRp3GLf6SB+0pjhLuGfVN2P63s6yonHV8wWosGI43hgPhQ7utyHkMk4z4
+         XKPvE8He+A/1g==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e8k-PG;
+        id 1oAzy3-004e9O-Vt;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
@@ -43,13 +43,17 @@ Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 22/32] drm/i915: i915_vma_resource.c: fix some kernel-doc markups
-Date:   Mon, 11 Jul 2022 21:25:07 +0100
-Message-Id: <7d31d5221e03c875f3b366e320355faaf98a10a4.1657565224.git.mchehab@kernel.org>
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 32/32] docs: gpu: i915.rst: add the remaining kernel-doc markup files
+Date:   Mon, 11 Jul 2022 21:25:17 +0100
+Message-Id: <3936b74484d0125147158f137edb8c4f162a462d.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
@@ -60,14 +64,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Building docs currently produces two warnings:
+There are other files with kernel-doc markups:
 
-    Documentation/foo/i915:71: ./drivers/gpu/drm/i915/i915_vma_resource.c:286: WARNING: Inline strong start-string without end-string.
-    Documentation/foo/i915:71: ./drivers/gpu/drm/i915/i915_vma_resource.c:370: WARNING: Inline strong start-string without end-string.
+	$ git grep -l "/\*\*" $(git ls-files|grep drivers/gpu/drm/i915/) >kernel-doc-files
+	$ for i in $(cat kernel-doc-files); do if [ "$(git grep $i Documentation/)" == "" ]; then echo "$i"; fi; done >aaa
 
-That's because @foo evaluates into **foo**, and placing anything
-after it without spaces cause Sphinx to warn and do the wrong
-thing.. So, replace them by a different Sphinx-compatible tag.
+Add them to i915.rst as well.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -75,31 +77,142 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/i915_vma_resource.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/gpu/i915.rst | 87 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/i915_vma_resource.c b/drivers/gpu/drm/i915/i915_vma_resource.c
-index 27c55027387a..fa5a678018d9 100644
---- a/drivers/gpu/drm/i915/i915_vma_resource.c
-+++ b/drivers/gpu/drm/i915/i915_vma_resource.c
-@@ -283,7 +283,7 @@ i915_vma_resource_color_adjust_range(struct i915_address_space *vm,
-  *
-  * The function needs to be called with the vm lock held.
-  *
-- * Return: Zero on success, -ERESTARTSYS if interrupted and @intr==true
-+ * Return: Zero on success, -ERESTARTSYS if interrupted and ``intr==true``
-  */
- int i915_vma_resource_bind_dep_sync(struct i915_address_space *vm,
- 				    u64 offset,
-@@ -367,7 +367,7 @@ void i915_vma_resource_bind_dep_sync_all(struct i915_address_space *vm)
-  * this means that during heavy memory pressure, we will sync in this
-  * function.
-  *
-- * Return: Zero on success, -ERESTARTSYS if interrupted and @intr==true
-+ * Return: Zero on success, -ERESTARTSYS if interrupted and ``intr==true``
-  */
- int i915_vma_resource_bind_dep_await(struct i915_address_space *vm,
- 				     struct i915_sw_fence *sw_fence,
+diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
+index 974754586be8..6bb50edc6d79 100644
+--- a/Documentation/gpu/i915.rst
++++ b/Documentation/gpu/i915.rst
+@@ -13,6 +13,11 @@ Core Driver Infrastructure
+ This section covers core driver infrastructure used by both the display
+ and the GEM parts of the driver.
+ 
++Core driver
++-----------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_driver.c
++
+ Runtime Power Management
+ ------------------------
+ 
+@@ -29,6 +34,10 @@ Runtime Power Management
+ 
+ .. kernel-doc:: drivers/gpu/drm/i915/intel_pm.c
+ 
++.. kernel-doc:: drivers/gpu/drm/i915/intel_wakeref.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_active.h
++
+ Interrupt Handling
+ ------------------
+ 
+@@ -44,6 +53,28 @@ Interrupt Handling
+ .. kernel-doc:: drivers/gpu/drm/i915/i915_irq.c
+    :functions: intel_runtime_pm_enable_interrupts
+ 
++Error handling
++--------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_gpu_error.c
++
++Memory Handling
++---------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma_resource.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma_resource.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_mm.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_memory_region.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_memcpy.c
++
+ Intel GVT-g Guest Support(vGPU)
+ -------------------------------
+ 
+@@ -109,6 +140,54 @@ Workarounds
+ .. kernel-doc:: drivers/gpu/drm/i915/gt/intel_workarounds.c
+    :doc: Hardware workarounds
+ 
++32-bits compatible ioctl Logic
++------------------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_ioc32.c
++
++Scatterlist handling
++--------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_scatterlist.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_scatterlist.c
++
++i915 request
++------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_request.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_request.c
++
++Ancillary routines
++------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_deps.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_deps.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_device_info.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_params.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_sw_fence_work.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_syncmap.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_pcode.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_reg_defs.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_wopcm.h
++
++
++PXP
++---
++
++.. kernel-doc:: drivers/gpu/drm/i915/pxp/intel_pxp_irq.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/pxp/intel_pxp_tee.c
++
+ Display Hardware Handling
+ =========================
+ 
+@@ -618,6 +697,12 @@ Protected Objects
+ Table Manager (TTM)
+ -------------------
+ 
++.. kernel-doc:: drivers/gpu/drm/i915/i915_ttm_buddy_manager.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_ttm_buddy_manager.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_region_ttm.c
++
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+ 
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm.h
+@@ -627,6 +712,8 @@ Table Manager (TTM)
+ Graphics Execution Manager (GEM)
+ --------------------------------
+ 
++.. kernel-doc:: drivers/gpu/drm/i915/i915_gem.c
++
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_create.c
+ 
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_domain.c
 -- 
 2.36.1
 
