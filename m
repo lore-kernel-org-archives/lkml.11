@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98AE1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C162CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbiGKJUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
+        id S231888AbiGKJUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231862AbiGKJUN (ORCPT
+        with ESMTP id S231879AbiGKJUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:20:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD2352FC8;
-        Mon, 11 Jul 2022 02:12:26 -0700 (PDT)
+        Mon, 11 Jul 2022 05:20:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769FE53D02;
+        Mon, 11 Jul 2022 02:12:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45E32B80E76;
-        Mon, 11 Jul 2022 09:12:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8C26C341C0;
-        Mon, 11 Jul 2022 09:12:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EBE36111F;
+        Mon, 11 Jul 2022 09:12:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77BB1C34115;
+        Mon, 11 Jul 2022 09:12:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530743;
-        bh=WupakI2RpoIXjYqEa31FSAGvYP6KTiAF4owg9wrvApk=;
+        s=korg; t=1657530745;
+        bh=8xduzV9XPwv+MRJJNBuvjbGKAF/YIl6fxiUCeWx2Z4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fIkytrQI95nrHjYU8aZTUfzGHapftrTvOkBCdwzp5w9YFdwWY4eSPO8vAEDkeh1bc
-         dzCu2oEHJ/mRRU1wPb5nmqkITklyrZVUmLdPjzz3mnaLIqV7n1Lx7VDxf6XMeQAAUt
-         9Z2BRFQXur8fsHvIgwlk4hLYTrNF78hcQ98i+Anw=
+        b=VwsucE8dsAEX23+J9Trjn/+G+ynXAReAt07NfPdMGivqF3SJLo2/0BsazdLEntg2D
+         PfBZPoF5aHJQG82NGxeDu3AYerF/f/0O31rJwXf1zrF52APmOkcnIuUV+d2TRC9Bib
+         O6+7YufUIPHRVZS75JwnHYTu/osHk3DKbgb9xv+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Eric Sandeen <sandeen@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>
-Subject: [PATCH 5.10 24/55] xfs: remove incorrect ASSERT in xfs_rename
-Date:   Mon, 11 Jul 2022 11:07:12 +0200
-Message-Id: <20220711090542.478899270@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 25/55] ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
+Date:   Mon, 11 Jul 2022 11:07:13 +0200
+Message-Id: <20220711090542.507811982@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -50,37 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Sandeen <sandeen@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit e445976537ad139162980bee015b7364e5b64fff upstream.
+[ Upstream commit 34d2cd3fccced12b958b8848e3eff0ee4296764c ]
 
-This ASSERT in xfs_rename is a) incorrect, because
-(RENAME_WHITEOUT|RENAME_NOREPLACE) is a valid combination, and
-b) unnecessary, because actual invalid flag combinations are already
-handled at the vfs level in do_renameat2() before we get called.
-So, remove it.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Reported-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Eric Sandeen <sandeen@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Fixes: 7dcf5c3e4527 ("xfs: add RENAME_WHITEOUT support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d850f3e5d296 ("ARM: meson: Add SMP bringup code for Meson8 and Meson8b")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220512021611.47921-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/xfs/xfs_inode.c |    1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/mach-meson/platsmp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/xfs/xfs_inode.c
-+++ b/fs/xfs/xfs_inode.c
-@@ -3170,7 +3170,6 @@ xfs_rename(
- 	 * appropriately.
- 	 */
- 	if (flags & RENAME_WHITEOUT) {
--		ASSERT(!(flags & (RENAME_NOREPLACE | RENAME_EXCHANGE)));
- 		error = xfs_rename_alloc_whiteout(target_dp, &wip);
- 		if (error)
- 			return error;
+diff --git a/arch/arm/mach-meson/platsmp.c b/arch/arm/mach-meson/platsmp.c
+index 4b8ad728bb42..32ac60b89fdc 100644
+--- a/arch/arm/mach-meson/platsmp.c
++++ b/arch/arm/mach-meson/platsmp.c
+@@ -71,6 +71,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ 	}
+ 
+ 	sram_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!sram_base) {
+ 		pr_err("Couldn't map SRAM registers\n");
+ 		return;
+@@ -91,6 +92,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ 	}
+ 
+ 	scu_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!scu_base) {
+ 		pr_err("Couldn't map SCU registers\n");
+ 		return;
+-- 
+2.35.1
+
 
 
