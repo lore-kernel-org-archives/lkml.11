@@ -2,145 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E347C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbiGKOUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:20:36 -0400
+        id S230452AbiGKOUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:20:44 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiGKOUN (ORCPT
+        with ESMTP id S230466AbiGKOUU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:20:13 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5959E64E34;
-        Mon, 11 Jul 2022 07:20:12 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id EF837228DA;
-        Mon, 11 Jul 2022 14:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1657549210; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YiTnZfzqK+vaJ506/FvXxN2Ij+2hfacNUNDwf2VMYjc=;
-        b=D/EDII2w4VO91Gg7HnFQShFYhcanzqt4a14ZahAxOQBCoGYGugbrJ6mIQIBAeyiZmfG/Da
-        IrZbVFyCn48wZyxlFdNFdFDh/7d/b9tlcD0Niv84izqeXgPV47uYpDnMn3OsYUszaEkrhj
-        JmnUmnNlJvEIJ+iUk6ZGEdjN+/4291Q=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1657549210;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YiTnZfzqK+vaJ506/FvXxN2Ij+2hfacNUNDwf2VMYjc=;
-        b=JRD1Gq2k4lVEB/2UKz26tIOwUU8FgODCX8dGqY8fT3Pk9nQr/7iHIrilALMdaQcsnC+cXk
-        gmxel9LwjcAwHeBQ==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CEA7E2C141;
-        Mon, 11 Jul 2022 14:20:09 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 77A39A063F; Mon, 11 Jul 2022 16:20:09 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 16:20:09 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     axboe@kernel.dk, asml.silence@gmail.com, osandov@fb.com,
-        jack@suse.cz, kbusch@kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH RFC v3 1/3] sbitmap: fix that same waitqueue can be woken
- up continuously
-Message-ID: <20220711142009.jz2ilqrxjgtwuvq6@quack3.lan>
-References: <20220710042200.20936-1-yukuai1@huaweicloud.com>
- <20220710042200.20936-2-yukuai1@huaweicloud.com>
+        Mon, 11 Jul 2022 10:20:20 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E99E9643F5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:20:18 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LhQyT4Vhcz9t1p;
+        Mon, 11 Jul 2022 16:20:17 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 9-0GJUldNXWa; Mon, 11 Jul 2022 16:20:17 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LhQyS32Kbz9syk;
+        Mon, 11 Jul 2022 16:20:16 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 546588B763;
+        Mon, 11 Jul 2022 16:20:16 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 0Wg31UiOYWHL; Mon, 11 Jul 2022 16:20:16 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 29FA28B76E;
+        Mon, 11 Jul 2022 16:20:16 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 26BEK4kM1585541
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 11 Jul 2022 16:20:05 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 26BEK4Sf1585529;
+        Mon, 11 Jul 2022 16:20:04 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v1 4/5] powerpc/44x: Fix build failure with GCC 12 (unrecognized opcode: `wrteei')
+Date:   Mon, 11 Jul 2022 16:19:32 +0200
+Message-Id: <b0d982e223314ed82ab959f5d4ad2c4c00bedb99.1657549153.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu>
+References: <8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220710042200.20936-2-yukuai1@huaweicloud.com>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1657549171; l=6141; s=20211009; h=from:subject:message-id; bh=++/30QlSJ8vkqeESZh8XVzHeyFmX60G9YMu3JnOoFos=; b=haDTntHgoktJ85zE5iG0rkUYAdj/MyWUebuCiYl4fSW1PrmmiDRBZUzXlAlBA6bflAZG+fMoMaS+ R9PcLUzrD2sDxdLRR7jR4kFyZ7UxL4f2Nzb2ufjXflj9/4Fh0oN7
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 10-07-22 12:21:58, Yu Kuai wrote:
-> From: Yu Kuai <yukuai3@huawei.com>
-> 
-> __sbq_wake_up		__sbq_wake_up
->  sbq_wake_ptr -> assume	0
-> 			 sbq_wake_ptr -> 0
->  atomic_dec_return
-> 			atomic_dec_return
->  atomic_cmpxchg -> succeed
-> 			 atomic_cmpxchg -> failed
-> 			  return true
-> 
-> 			__sbq_wake_up
-> 			 sbq_wake_ptr
-> 			  atomic_read(&sbq->wake_index) -> still 0
->  sbq_index_atomic_inc -> inc to 1
-> 			  if (waitqueue_active(&ws->wait))
-> 			   if (wake_index != atomic_read(&sbq->wake_index))
-> 			    atomic_set -> reset from 1 to 0
->  wake_up_nr -> wake up first waitqueue
-> 			    // continue to wake up in first waitqueue
-> 
-> Fix the problem by using atomic_cmpxchg() instead of atomic_set()
-> to update 'wake_index'.
-> 
-> Fixes: 417232880c8a ("sbitmap: Replace cmpxchg with xchg")
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Building ppc40x_defconfig leads to following error
 
-I don't think this patch is really needed after the following patches.  As
-I see it, wake_index is just a performance optimization (plus a fairness
-improvement) but in principle the code in sbq_wake_ptr() is always prone to
-races as the waitqueue it returns needn't have any waiters by the time we
-return. So for correctness the check-and-retry loop needs to happen at
-higher level than inside sbq_wake_ptr() and occasional wrong setting of
-wake_index will result only in a bit of unfairness and more scanning
-looking for suitable waitqueue but I don't think that really justifies the
-cost of atomic operations in cmpxchg loop...
+  CC      arch/powerpc/kernel/idle.o
+{standard input}: Assembler messages:
+{standard input}:67: Error: unrecognized opcode: `wrteei'
+{standard input}:78: Error: unrecognized opcode: `wrteei'
 
-								Honza
-> ---
->  lib/sbitmap.c | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
-> 
-> diff --git a/lib/sbitmap.c b/lib/sbitmap.c
-> index 29eb0484215a..b46fce1beb3a 100644
-> --- a/lib/sbitmap.c
-> +++ b/lib/sbitmap.c
-> @@ -579,19 +579,24 @@ EXPORT_SYMBOL_GPL(sbitmap_queue_min_shallow_depth);
->  
->  static struct sbq_wait_state *sbq_wake_ptr(struct sbitmap_queue *sbq)
->  {
-> -	int i, wake_index;
-> +	int i, wake_index, old_wake_index;
->  
-> +again:
->  	if (!atomic_read(&sbq->ws_active))
->  		return NULL;
->  
-> -	wake_index = atomic_read(&sbq->wake_index);
-> +	old_wake_index = wake_index = atomic_read(&sbq->wake_index);
->  	for (i = 0; i < SBQ_WAIT_QUEUES; i++) {
->  		struct sbq_wait_state *ws = &sbq->ws[wake_index];
->  
->  		if (waitqueue_active(&ws->wait)) {
-> -			if (wake_index != atomic_read(&sbq->wake_index))
-> -				atomic_set(&sbq->wake_index, wake_index);
-> -			return ws;
-> +			if (wake_index == old_wake_index)
-> +				return ws;
-> +
-> +			if (atomic_cmpxchg(&sbq->wake_index, old_wake_index,
-> +					   wake_index) == old_wake_index)
-> +				return ws;
-> +			goto again;
->  		}
->  
->  		wake_index = sbq_index_inc(wake_index);
-> -- 
-> 2.31.1
-> 
+Add -mcpu=440 by default and alternatively 464 and 476.
+
+Once that's done, -mcpu=powerpc is only for book3s/32 now.
+
+But then comes
+
+  CC      arch/powerpc/kernel/io.o
+{standard input}: Assembler messages:
+{standard input}:198: Error: unrecognized opcode: `eieio'
+{standard input}:230: Error: unrecognized opcode: `eieio'
+{standard input}:245: Error: unrecognized opcode: `eieio'
+{standard input}:254: Error: unrecognized opcode: `eieio'
+{standard input}:273: Error: unrecognized opcode: `eieio'
+{standard input}:396: Error: unrecognized opcode: `eieio'
+{standard input}:404: Error: unrecognized opcode: `eieio'
+{standard input}:423: Error: unrecognized opcode: `eieio'
+{standard input}:512: Error: unrecognized opcode: `eieio'
+{standard input}:520: Error: unrecognized opcode: `eieio'
+{standard input}:539: Error: unrecognized opcode: `eieio'
+{standard input}:628: Error: unrecognized opcode: `eieio'
+{standard input}:636: Error: unrecognized opcode: `eieio'
+{standard input}:655: Error: unrecognized opcode: `eieio'
+
+Fix it by replacing eieio by mbar on booke.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/include/asm/barrier.h        |  2 ++
+ arch/powerpc/include/asm/nohash/pgtable.h |  2 +-
+ arch/powerpc/include/asm/synch.h          |  5 ++++-
+ arch/powerpc/mm/nohash/tlb_low.S          |  4 ++--
+ arch/powerpc/platforms/Kconfig.cputype    | 17 ++++++++++++++++-
+ arch/powerpc/sysdev/fsl_rio.c             | 12 ++++++++++--
+ 6 files changed, 35 insertions(+), 7 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/barrier.h b/arch/powerpc/include/asm/barrier.h
+index f0e687236484..ef2d8b15eaab 100644
+--- a/arch/powerpc/include/asm/barrier.h
++++ b/arch/powerpc/include/asm/barrier.h
+@@ -42,6 +42,8 @@
+ /* The sub-arch has lwsync */
+ #if defined(CONFIG_PPC64) || defined(CONFIG_PPC_E500MC)
+ #    define SMPWMB      LWSYNC
++#elif defined(CONFIG_BOOKE)
++#    define SMPWMB      mbar
+ #else
+ #    define SMPWMB      eieio
+ #endif
+diff --git a/arch/powerpc/include/asm/nohash/pgtable.h b/arch/powerpc/include/asm/nohash/pgtable.h
+index ac75f4ab0dba..b499da6c1a99 100644
+--- a/arch/powerpc/include/asm/nohash/pgtable.h
++++ b/arch/powerpc/include/asm/nohash/pgtable.h
+@@ -193,7 +193,7 @@ static inline void __set_pte_at(struct mm_struct *mm, unsigned long addr,
+ 	if (IS_ENABLED(CONFIG_PPC32) && IS_ENABLED(CONFIG_PTE_64BIT) && !percpu) {
+ 		__asm__ __volatile__("\
+ 			stw%X0 %2,%0\n\
+-			eieio\n\
++			mbar\n\
+ 			stw%X1 %L2,%1"
+ 		: "=m" (*ptep), "=m" (*((unsigned char *)ptep+4))
+ 		: "r" (pte) : "memory");
+diff --git a/arch/powerpc/include/asm/synch.h b/arch/powerpc/include/asm/synch.h
+index 1d67bc8d7bc6..7130176d8cb8 100644
+--- a/arch/powerpc/include/asm/synch.h
++++ b/arch/powerpc/include/asm/synch.h
+@@ -14,7 +14,10 @@ extern void do_lwsync_fixups(unsigned long value, void *fixup_start,
+ 
+ static inline void eieio(void)
+ {
+-	__asm__ __volatile__ ("eieio" : : : "memory");
++	if (IS_ENABLED(CONFIG_BOOKE))
++		__asm__ __volatile__ ("mbar" : : : "memory");
++	else
++		__asm__ __volatile__ ("eieio" : : : "memory");
+ }
+ 
+ static inline void isync(void)
+diff --git a/arch/powerpc/mm/nohash/tlb_low.S b/arch/powerpc/mm/nohash/tlb_low.S
+index dd39074de9af..d62b613a0d5d 100644
+--- a/arch/powerpc/mm/nohash/tlb_low.S
++++ b/arch/powerpc/mm/nohash/tlb_low.S
+@@ -186,7 +186,7 @@ _GLOBAL(_tlbivax_bcast)
+ 	isync
+ 	PPC_TLBIVAX(0, R3)
+ 	isync
+-	eieio
++	mbar
+ 	tlbsync
+ BEGIN_FTR_SECTION
+ 	b	1f
+@@ -355,7 +355,7 @@ _GLOBAL(_tlbivax_bcast)
+ 	rlwimi	r4,r6,MAS6_SIND_SHIFT,MAS6_SIND
+ 1:	mtspr	SPRN_MAS6,r4		/* assume AS=0 for now */
+ 	PPC_TLBIVAX(0,R3)
+-	eieio
++	mbar
+ 	tlbsync
+ 	sync
+ 	wrtee	r10
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index e14000557ebd..3cc8452b8660 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -137,7 +137,7 @@ config GENERIC_CPU
+ 
+ config POWERPC_CPU
+ 	bool "Generic 32 bits powerpc"
+-	depends on PPC32 && !PPC_8xx && !PPC_85xx && !40x
++	depends on PPC_BOOK3S_32
+ 
+ config CELL_CPU
+ 	bool "Cell Broadband Engine"
+@@ -183,6 +183,18 @@ config 405_CPU
+ 	bool "40x family"
+ 	depends on 40x
+ 
++config 440_CPU
++	bool "440 (44x family)"
++	depends on 44x
++
++config 464_CPU
++	bool "464 (44x family)"
++	depends on 44x
++
++config 476_CPU
++	bool "476 (47x family)"
++	depends on PPC_47x
++
+ config 860_CPU
+ 	bool "8xx family"
+ 	depends on PPC_8xx
+@@ -228,6 +240,9 @@ config TARGET_CPU
+ 	default "power8" if POWER8_CPU
+ 	default "power9" if POWER9_CPU
+ 	default "405" if 405_CPU
++	default "440" if 440_CPU
++	default "464" if 464_CPU
++	default "476" if 476_CPU
+ 	default "860" if 860_CPU
+ 	default "e300c2" if E300C2_CPU
+ 	default "e300c3" if E300C3_CPU
+diff --git a/arch/powerpc/sysdev/fsl_rio.c b/arch/powerpc/sysdev/fsl_rio.c
+index 1bfc9afa8a1a..4647c6074f3b 100644
+--- a/arch/powerpc/sysdev/fsl_rio.c
++++ b/arch/powerpc/sysdev/fsl_rio.c
+@@ -69,10 +69,10 @@
+ 
+ static DEFINE_SPINLOCK(fsl_rio_config_lock);
+ 
+-#define __fsl_read_rio_config(x, addr, err, op)		\
++#define ___fsl_read_rio_config(x, addr, err, op, barrier)	\
+ 	__asm__ __volatile__(				\
+ 		"1:	"op" %1,0(%2)\n"		\
+-		"	eieio\n"			\
++		"	"barrier"\n"			\
+ 		"2:\n"					\
+ 		".section .fixup,\"ax\"\n"		\
+ 		"3:	li %1,-1\n"			\
+@@ -83,6 +83,14 @@ static DEFINE_SPINLOCK(fsl_rio_config_lock);
+ 		: "=r" (err), "=r" (x)			\
+ 		: "b" (addr), "i" (-EFAULT), "0" (err))
+ 
++#ifdef CONFIG_BOOKE
++#define __fsl_read_rio_config(x, addr, err, op)	\
++	___fsl_read_rio_config(x, addr, err, op, "mbar")
++#else
++#define __fsl_read_rio_config(x, addr, err, op)	\
++	___fsl_read_rio_config(x, addr, err, op, "eieio")
++#endif
++
+ void __iomem *rio_regs_win;
+ void __iomem *rmu_regs_win;
+ resource_size_t rio_law_start;
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.36.1
+
