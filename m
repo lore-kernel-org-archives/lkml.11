@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF4DCCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbiGKKFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
+        id S230113AbiGKKFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234519AbiGKKDc (ORCPT
+        with ESMTP id S234464AbiGKKDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:03:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057773F308;
-        Mon, 11 Jul 2022 02:29:34 -0700 (PDT)
+        Mon, 11 Jul 2022 06:03:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF54BC5;
+        Mon, 11 Jul 2022 02:29:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5CA3BCE126A;
-        Mon, 11 Jul 2022 09:29:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6899EC341C0;
-        Mon, 11 Jul 2022 09:29:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFB13B80D2C;
+        Mon, 11 Jul 2022 09:29:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A386C34115;
+        Mon, 11 Jul 2022 09:29:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531770;
-        bh=lh7AYL4Z8YvuRd3eo1vbbmlhCCo0hOo/6FSah1I1Stk=;
+        s=korg; t=1657531773;
+        bh=ur65PibzAH0/HeYoG7xlVWHkoCmHI6P0kGITk0OY2Nw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eG+wWQmEMXi7PiLczA2aU9Nw5GRY5jYUrNpki+0www8Md2EnKh7PHGiLPcjZmeHG7
-         +lf4cr7gWZ40AULs5UpCEs9wRQFCRHPFBefAQSyY39htHASiDws4rsZhp1mOPnN7kf
-         7+AAUnlpdVypDEJFz6g9Rpq7khiy6tJtptkV6Etk=
+        b=pPzx/UQuW+AFW8yAyqXhl0n78DpmG2lA2NvZbU8jpaXs0pDCIbORE7PT7x27+Bkua
+         V0ZvPgiMzHKux7gX8X4YmXqBEcnaGDZrYxOQD4Pt8G2XwqC1pTdjfdRX6VW/lOAGmW
+         FtNP0yMqkQgnnhGYbIFWNveLymlRkoEfBN0uwqW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable <stable@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 5.15 218/230] misc: rtsx_usb: set return value in rsp_buf alloc err path
-Date:   Mon, 11 Jul 2022 11:07:54 +0200
-Message-Id: <20220711090610.285193241@linuxfoundation.org>
+        stable@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 227/230] dmaengine: qcom: bam_dma: fix runtime PM underflow
+Date:   Mon, 11 Jul 2022 11:08:03 +0200
+Message-Id: <20220711090610.541031728@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,50 +49,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Caleb Connolly <caleb.connolly@linaro.org>
 
-commit 2cd37c2e72449a7add6da1183d20a6247d6db111 upstream.
+commit 0ac9c3dd0d6fe293cd5044cfad10bec27d171e4e upstream.
 
-Set return value in rsp_buf alloc error path before going to
-error handling.
+Commit dbad41e7bb5f ("dmaengine: qcom: bam_dma: check if the runtime pm enabled")
+caused unbalanced pm_runtime_get/put() calls when the bam is
+controlled remotely. This commit reverts it and just enables pm_runtime
+in all cases, the clk_* functions already just nop when the clock is NULL.
 
-drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!ucr->rsp_buf)
-               ^~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
-           if (!ucr->rsp_buf)
-           ^~~~~~~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
+Also clean up a bit by removing unnecessary bamclk null checks.
 
-Fixes: 3776c7855985 ("misc: rtsx_usb: use separate command and response buffers")
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220701165352.15687-1-skhan@linuxfoundation.org
+Suggested-by: Stephan Gerhold <stephan@gerhold.net>
+Fixes: dbad41e7bb5f ("dmaengine: qcom: bam_dma: check if the runtime pm enabled")
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+Link: https://lore.kernel.org/r/20220629140559.118537-1-caleb.connolly@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/dma/qcom/bam_dma.c |   39 +++++++++++----------------------------
+ 1 file changed, 11 insertions(+), 28 deletions(-)
 
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -636,8 +636,10 @@ static int rtsx_usb_probe(struct usb_int
- 		return -ENOMEM;
+--- a/drivers/dma/qcom/bam_dma.c
++++ b/drivers/dma/qcom/bam_dma.c
+@@ -515,14 +515,6 @@ static int bam_alloc_chan(struct dma_cha
+ 	return 0;
+ }
  
- 	ucr->rsp_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
--	if (!ucr->rsp_buf)
-+	if (!ucr->rsp_buf) {
-+		ret = -ENOMEM;
- 		goto out_free_cmd_buf;
-+	}
+-static int bam_pm_runtime_get_sync(struct device *dev)
+-{
+-	if (pm_runtime_enabled(dev))
+-		return pm_runtime_get_sync(dev);
+-
+-	return 0;
+-}
+-
+ /**
+  * bam_free_chan - Frees dma resources associated with specific channel
+  * @chan: specified channel
+@@ -538,7 +530,7 @@ static void bam_free_chan(struct dma_cha
+ 	unsigned long flags;
+ 	int ret;
  
- 	usb_set_intfdata(intf, ucr);
+-	ret = bam_pm_runtime_get_sync(bdev->dev);
++	ret = pm_runtime_get_sync(bdev->dev);
+ 	if (ret < 0)
+ 		return;
  
+@@ -734,7 +726,7 @@ static int bam_pause(struct dma_chan *ch
+ 	unsigned long flag;
+ 	int ret;
+ 
+-	ret = bam_pm_runtime_get_sync(bdev->dev);
++	ret = pm_runtime_get_sync(bdev->dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -760,7 +752,7 @@ static int bam_resume(struct dma_chan *c
+ 	unsigned long flag;
+ 	int ret;
+ 
+-	ret = bam_pm_runtime_get_sync(bdev->dev);
++	ret = pm_runtime_get_sync(bdev->dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -869,7 +861,7 @@ static irqreturn_t bam_dma_irq(int irq,
+ 	if (srcs & P_IRQ)
+ 		tasklet_schedule(&bdev->task);
+ 
+-	ret = bam_pm_runtime_get_sync(bdev->dev);
++	ret = pm_runtime_get_sync(bdev->dev);
+ 	if (ret < 0)
+ 		return IRQ_NONE;
+ 
+@@ -987,7 +979,7 @@ static void bam_start_dma(struct bam_cha
+ 	if (!vd)
+ 		return;
+ 
+-	ret = bam_pm_runtime_get_sync(bdev->dev);
++	ret = pm_runtime_get_sync(bdev->dev);
+ 	if (ret < 0)
+ 		return;
+ 
+@@ -1350,11 +1342,6 @@ static int bam_dma_probe(struct platform
+ 	if (ret)
+ 		goto err_unregister_dma;
+ 
+-	if (!bdev->bamclk) {
+-		pm_runtime_disable(&pdev->dev);
+-		return 0;
+-	}
+-
+ 	pm_runtime_irq_safe(&pdev->dev);
+ 	pm_runtime_set_autosuspend_delay(&pdev->dev, BAM_DMA_AUTOSUSPEND_DELAY);
+ 	pm_runtime_use_autosuspend(&pdev->dev);
+@@ -1438,10 +1425,8 @@ static int __maybe_unused bam_dma_suspen
+ {
+ 	struct bam_device *bdev = dev_get_drvdata(dev);
+ 
+-	if (bdev->bamclk) {
+-		pm_runtime_force_suspend(dev);
+-		clk_unprepare(bdev->bamclk);
+-	}
++	pm_runtime_force_suspend(dev);
++	clk_unprepare(bdev->bamclk);
+ 
+ 	return 0;
+ }
+@@ -1451,13 +1436,11 @@ static int __maybe_unused bam_dma_resume
+ 	struct bam_device *bdev = dev_get_drvdata(dev);
+ 	int ret;
+ 
+-	if (bdev->bamclk) {
+-		ret = clk_prepare(bdev->bamclk);
+-		if (ret)
+-			return ret;
++	ret = clk_prepare(bdev->bamclk);
++	if (ret)
++		return ret;
+ 
+-		pm_runtime_force_resume(dev);
+-	}
++	pm_runtime_force_resume(dev);
+ 
+ 	return 0;
+ }
 
 
