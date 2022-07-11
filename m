@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 736A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231359AbiGKPux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
+        id S231444AbiGKPu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbiGKPun (ORCPT
+        with ESMTP id S230442AbiGKPun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 11:50:43 -0400
 Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1B076EAC
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A395C9EA
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:50:39 -0700 (PDT)
 Received: from ramsan.of.borg ([84.195.186.194])
         by xavier.telenet-ops.be with bizsmtp
-        id trqe2700d4C55Sk01rqe4f; Mon, 11 Jul 2022 17:50:38 +0200
+        id trqd2700a4C55Sk01rqd49; Mon, 11 Jul 2022 17:50:38 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oAvgD-0036x0-N6; Mon, 11 Jul 2022 17:50:37 +0200
+        id 1oAvgD-0036ww-8s; Mon, 11 Jul 2022 17:50:37 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oAvgC-006shU-Tl; Mon, 11 Jul 2022 17:50:36 +0200
+        id 1oAvgC-006sh5-QN; Mon, 11 Jul 2022 17:50:36 +0200
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Helge Deller <deller@gmx.de>
 Cc:     Michael Schmitz <schmitzmic@gmail.com>,
@@ -33,44 +33,54 @@ Cc:     Michael Schmitz <schmitzmic@gmail.com>,
         linux-doc@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 04/10] video: fbdev: atari: Fix ext_setcolreg()
-Date:   Mon, 11 Jul 2022 17:50:28 +0200
-Message-Id: <f807e1c6deedb2b819a309347295b0fd2f89c2c2.1657554353.git.geert@linux-m68k.org>
+Subject: [PATCH 00/10] video: fbdev: atari: Miscellaneous fixes and cleanups
+Date:   Mon, 11 Jul 2022 17:50:24 +0200
+Message-Id: <cover.1657554353.git.geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1657554353.git.geert@linux-m68k.org>
-References: <cover.1657554353.git.geert@linux-m68k.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The red, green, and blue color values are 16-bit, while the external
-graphics hardware registers are 8-bit.
-Add the missing conversion from 16-bit to 8-bit.
+	Hi all,
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-Untested due to lack of hardware.
----
- drivers/video/fbdev/atafb.c | 4 ++++
- 1 file changed, 4 insertions(+)
+This patch series contains miscellaneous fixes and cleanups for the
+Atari frame buffer device driver, which were identified while working on
+the Atari DRM driver.
 
-diff --git a/drivers/video/fbdev/atafb.c b/drivers/video/fbdev/atafb.c
-index 39c3b860a797d4bc..a36cd8f1f4200dd5 100644
---- a/drivers/video/fbdev/atafb.c
-+++ b/drivers/video/fbdev/atafb.c
-@@ -2206,6 +2206,10 @@ static int ext_setcolreg(unsigned int regno, unsigned int red,
- 	if (regno > 255)
- 		return 1;
- 
-+	red >>= 8;
-+	green >>= 8;
-+	blue >>= 8;
-+
- 	switch (external_card_type) {
- 	case IS_VGA:
- 		OUTB(0x3c8, regno);
+Most of them have been tested on ARAnyM, and should be safe to apply,
+except perhaps for the last one, which is marked RFC.
+
+Thanks for your comments!
+
+Geert Uytterhoeven (10):
+  video: fbdev: atari: Simplify atafb_pan_display()
+  video: fbdev: atari: Remove bogus FB_VMODE_YWRAP flags
+  video: fbdev: atari: Fix inverse handling
+  video: fbdev: atari: Fix ext_setcolreg()
+  video: fbdev: atari: Remove unneeded casts from void *
+  video: fbdev: atari: Remove unneeded casts to void *
+  video: fbdev: atari: Fix TT High video mode vertical refresh
+  video: fbdev: atari: Fix VGA modes
+  video: fbdev: atari: Remove unused definitions and variables
+  [RFC] video: fbdev: atari: Remove backward bug-compatibility
+
+ Documentation/m68k/kernel-options.rst |   4 +-
+ drivers/video/fbdev/atafb.c           | 101 +++++++-------------------
+ 2 files changed, 29 insertions(+), 76 deletions(-)
+
 -- 
 2.25.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
