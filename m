@@ -2,139 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F42C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE58C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiGKPxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
+        id S230192AbiGKPzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiGKPxm (ORCPT
+        with ESMTP id S229635AbiGKPzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:53:42 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18FD0205EB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:53:39 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id bn33so6686650ljb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=85DEu1xuo9m6TpYYmG3UGJAS94hTnePhq7yS+YuyNtE=;
-        b=V65HvM1rKqLT8eCjdFPbWBLPRJKLb9JlT3XSZEPP/urQZEO4bcFQd7goxwj5fxFNAX
-         QxusI58KfS/8HjeD8BuCpGnZdVcwgxW8FfTv/oVqk1+WQj/5q5J8VJ6nl7BVXfX6k/lu
-         wNRUM9ck+V9UT/Z2Hf9Y3MRbxgKg+XKC3+xHOHLj5DW+xpTq84FLdR2v9tCRkpLS+fBt
-         3d0X1+QSzUoOJNwDlayMqCfhN+AQrP8MlmleQgz7EeBg3+0pCGSrjlH3eibUEOXO5KaF
-         3P2D+vvqwPjTlSPSEb799RqqPzSq5R7sE3tNcXmRq23ekIUSV1amUYbWuke3SAP3eDsI
-         XEiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=85DEu1xuo9m6TpYYmG3UGJAS94hTnePhq7yS+YuyNtE=;
-        b=E+1tST3Lm51Nqa33FUKq3sukStgJEHIXQbJEKmH23y9PIRFyOgShMVgP2Dft4M0S5q
-         RiZ9TTkySYWhRts956KpQc3SSDpMfTPeSuq1kn7PTzHBDdTSelLPczpSuQcU/BJr7Pe7
-         vnjqfF60fxD/ud/hLu+/+DS3nyQ5noAHGsz5pjSlWksZjZq1YpGDubw06iSf7gHBVqsP
-         9/ja44yoibAkLNwORQsLttAEQeNgx7Uf2fofW4vl2XA/BIKxc8CeSvMiWXcAc1c2ygdX
-         d15NF3y13K4X1TgCbWWEERZRXi5g/p1nH+NYsLRwv7QmLdCbozTFsOaAt1EeKdAlyN1t
-         RVBg==
-X-Gm-Message-State: AJIora8ssj/PDC1Ipsak/vebBDyB0AJNwuNpRziVX/WWJjXO78Vu6A8O
-        uTPLqHDsUU2M1Ru4QNSSCs+GGvESO9L9Vg==
-X-Google-Smtp-Source: AGRyM1uGsEFytWwLuoILQFiiprIrbwpKTlL6wKeQDwG/joC8wYBKrG+Puw8l4ehXLtTdXYNJ9EawYg==
-X-Received: by 2002:a2e:bd89:0:b0:25a:86c8:93ca with SMTP id o9-20020a2ebd89000000b0025a86c893camr9942346ljq.419.1657554817892;
-        Mon, 11 Jul 2022 08:53:37 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id a28-20020a2eb17c000000b0025d3c2e6b8dsm1779848ljm.105.2022.07.11.08.53.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 08:53:37 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 18:53:35 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        soc@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 1/2] bus: bt1-apb: Don't print error on
- -EPROBE_DEFER
-Message-ID: <20220711155335.ltctlk66vylwcpcj@mobilestation>
-References: <20220708194448.10700-1-Sergey.Semin@baikalelectronics.ru>
+        Mon, 11 Jul 2022 11:55:36 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FDB27CD2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:55:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657554935; x=1689090935;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/lBUXvFbuDKqJhn10UzZd1HkLo026hUSTaL1EnIl+pM=;
+  b=AcRHI/u/7w7JZzS4wfHiATI/mf4KjAqaYY1RzfO8UeIHrNaw20ld8Rwb
+   WRzIZM+2l7nevAyvsUCV3JAdoouMfKE9d3n2oZLi1xAJfdx2/tiu5oXYi
+   w2rh9gI6CqtiBIxyYU0EL4SNArJH/qrzPe2rwN9YzSoPpjZnWn2OatSuj
+   NzIoRIHD3zPq495xWOuGC/oJQB0bCl6mL2o3l43VlHT69SrnhX26dMmXy
+   7f7P8nGQrOxjM0UTaekKqiRT74Ot3Ed8kri+mLk4JEZV1CPBKpn+i27ge
+   19KvGxre75IyGffqMxEKKVGyVq37JtYLaOwZTZujU75s84lQMdPj/NpXI
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="283449251"
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="283449251"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 08:55:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="622126872"
+Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 11 Jul 2022 08:55:33 -0700
+Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAvky-0000wb-NO;
+        Mon, 11 Jul 2022 15:55:32 +0000
+Date:   Mon, 11 Jul 2022 23:54:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Leon Romanovsky <leon@kernel.org>
+Subject: [leon-rdma:rdma-next 19/27] ERROR: modpost:
+ "interval_tree_iter_first" [drivers/vfio/vfio.ko] undefined!
+Message-ID: <202207112353.TpyzFpSc-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220708194448.10700-1-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd, Philipp
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git rdma-next
+head:   325f0cb55fe7505ffc12020edf66e91f1bdbe021
+commit: de08f6b555c0b4687890265b2f2358f69f28512a [19/27] vfio: Introduce the DMA logging feature support
+config: m68k-randconfig-r032-20220710 (https://download.01.org/0day-ci/archive/20220711/202207112353.TpyzFpSc-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?id=de08f6b555c0b4687890265b2f2358f69f28512a
+        git remote add leon-rdma https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git
+        git fetch --no-tags leon-rdma rdma-next
+        git checkout de08f6b555c0b4687890265b2f2358f69f28512a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
-Since no comments have been posted for the patches lately and the @Philipp
-notes have been fixed way on v2, could you please consider merge the
-patchset in through any of your repos?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
--Sergey
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-On Fri, Jul 08, 2022 at 10:44:47PM +0300, Serge Semin wrote:
-> The Baikal-T1 APB bus driver correctly handles the deferred probe
-> situation, but still pollutes the system log with a misleading error
-> message. Let's fix that by using the dev_err_probe() method to print the
-> log message in case of the clocks/resets request errors.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
-> ---
-> 
-> Link: https://lore.kernel.org/lkml/20220610080103.10689-1-Sergey.Semin@baikalelectronics.ru/
-> Changelog v2:
-> - Use the dev_err_probe() return value as the return status of the
->   corresponding method. (@Philipp)
-> 
-> Link: https://lore.kernel.org/lkml/20220610104030.28399-1-Sergey.Semin@baikalelectronics.ru
-> Changelog v3:
-> - Just resend.
-> - Rebase onto the kernel v5.19-rcX.
-> 
-> Link: https://lore.kernel.org/lkml/20220624211233.7529-1-Sergey.Semin@baikalelectronics.ru/
-> Changelog v4:
-> - Just resend.
-> ---
->  drivers/bus/bt1-apb.c | 14 ++++++--------
->  1 file changed, 6 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/bus/bt1-apb.c b/drivers/bus/bt1-apb.c
-> index b25ff941e7c7..63b1b4a76671 100644
-> --- a/drivers/bus/bt1-apb.c
-> +++ b/drivers/bus/bt1-apb.c
-> @@ -175,10 +175,9 @@ static int bt1_apb_request_rst(struct bt1_apb *apb)
->  	int ret;
->  
->  	apb->prst = devm_reset_control_get_optional_exclusive(apb->dev, "prst");
-> -	if (IS_ERR(apb->prst)) {
-> -		dev_warn(apb->dev, "Couldn't get reset control line\n");
-> -		return PTR_ERR(apb->prst);
-> -	}
-> +	if (IS_ERR(apb->prst))
-> +		return dev_err_probe(apb->dev, PTR_ERR(apb->prst),
-> +				     "Couldn't get reset control line\n");
->  
->  	ret = reset_control_deassert(apb->prst);
->  	if (ret)
-> @@ -199,10 +198,9 @@ static int bt1_apb_request_clk(struct bt1_apb *apb)
->  	int ret;
->  
->  	apb->pclk = devm_clk_get(apb->dev, "pclk");
-> -	if (IS_ERR(apb->pclk)) {
-> -		dev_err(apb->dev, "Couldn't get APB clock descriptor\n");
-> -		return PTR_ERR(apb->pclk);
-> -	}
-> +	if (IS_ERR(apb->pclk))
-> +		return dev_err_probe(apb->dev, PTR_ERR(apb->pclk),
-> +				     "Couldn't get APB clock descriptor\n");
->  
->  	ret = clk_prepare_enable(apb->pclk);
->  	if (ret) {
-> -- 
-> 2.35.1
-> 
+>> ERROR: modpost: "interval_tree_iter_first" [drivers/vfio/vfio.ko] undefined!
+>> ERROR: modpost: "interval_tree_insert" [drivers/vfio/vfio.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
