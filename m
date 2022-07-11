@@ -2,83 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E85C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC99C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiGLAgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 20:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42312 "EHLO
+        id S231948AbiGLAgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 20:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231503AbiGLAgA (ORCPT
+        with ESMTP id S231312AbiGLAgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 20:36:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139A8286FB;
-        Mon, 11 Jul 2022 17:35:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EEE5614D0;
-        Tue, 12 Jul 2022 00:35:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48765C34115;
-        Tue, 12 Jul 2022 00:35:56 +0000 (UTC)
-Date:   Mon, 11 Jul 2022 20:35:54 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH] selftests/ftrace: func_event_triggers: fix typo in user
- message
-Message-ID: <20220711203554.0466ec53@gandalf.local.home>
-In-Reply-To: <20220105185609.4ca10a41@gandalf.local.home>
-References: <20211226023204.18315-1-rdunlap@infradead.org>
-        <20220105185609.4ca10a41@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 11 Jul 2022 20:36:11 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96A83C8F1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:36:10 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso9876955pjc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:36:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WAek49bBLKkEe+owxVCfCub6H+seciPz++KKwv+pX/8=;
+        b=QDw+FfNDyyo7ET4Yu6iVaWbAg7q7ADy3JRspXKlrjaWn4rW+kjvwl3M9GBsptsk0Dd
+         pZX+NXWQXVQfhEgdkLv4nTSsGEjDUz6cBQ5BVm+Uir17aJT0eLwLGl03G1Tj5kwF5B4X
+         hXIUESZLOkKYsa2A5MAWwBVnysAZSQvQ1bz8vhAK/XBUcrdwBrRPduPZPZT5KUjHTRsx
+         ZH1m47BHO+5ECbo2cazzS2xbRLgv4WxteXUgav804PfV+dscEqDa2bysI3RCPyT4ALgg
+         9zZkKm1KXPZsckkyOzAUoVxyUM5aKeu2KdmLIdDZ6oHEvH0j2B81td2UyEo6MRJZ25n3
+         enig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WAek49bBLKkEe+owxVCfCub6H+seciPz++KKwv+pX/8=;
+        b=B8tc+6MwtSEMzF/LFu3lx1WoKSHCRbH5V5Td7SSH6g9jPgAb1s1sZe3L1qpRwySeRc
+         819xxdp6md5jGKSa72yvrpCDhZdBmPnUGtOxS7badFPvsf5vHX5Hd/ZjB/B6CawZ7hS2
+         jomnq6yr1Oksg1Qbmr0LAcFjVLlOhib30heXTi4O9C8xThZODFh09WhlMsLlAIVghOLa
+         pND/3mj3m64+Df5m8ciKW5ua4DJ51PURFMSp9nCfhBOiduUQIm173uXF+ggpo4YplSEx
+         ay3lv4oFC8v5kq6FxV9rcZP0PHXXGw9VhYNgWYf0BGr6XWiSNHEKI/KiXvWAUv817fq1
+         gpqg==
+X-Gm-Message-State: AJIora+BTTh+4uW3bR7FrJcWnw9shw2HxTkvujU7eHOEMwgX/RJpxwf5
+        +Wb86sRNWh5hh3IxuS57wOQ=
+X-Google-Smtp-Source: AGRyM1ugPCkcRJ13KLoZL3PklL8129Ta2OlycUJbNj+aX35eV5I5+1+gCdFt7k7PWpiPss34srfJrw==
+X-Received: by 2002:a17:902:ce05:b0:16c:2a1:c335 with SMTP id k5-20020a170902ce0500b0016c02a1c335mr21404368plg.5.1657586170126;
+        Mon, 11 Jul 2022 17:36:10 -0700 (PDT)
+Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
+        by smtp.gmail.com with ESMTPSA id u8-20020a1709026e0800b001635b86a790sm5337867plk.44.2022.07.11.17.36.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 17:36:09 -0700 (PDT)
+From:   Nadav Amit <nadav.amit@gmail.com>
+X-Google-Original-From: Nadav Amit
+To:     Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Nadav Amit <namit@vmware.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>
+Subject: [PATCH v2] x86/mm/tlb: Skip tracing when flush is not done
+Date:   Mon, 11 Jul 2022 10:01:43 -0700
+Message-Id: <20220711170143.2996-1-namit@vmware.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 5 Jan 2022 18:56:09 -0500
-Steven Rostedt <rostedt@goodmis.org> wrote:
+From: Nadav Amit <namit@vmware.com>
 
-> On Sat, 25 Dec 2021 18:32:04 -0800
-> Randy Dunlap <rdunlap@infradead.org> wrote:
-> 
-> > Correct typo of "it's" to "it".
-> >   
-> 
-> Shuah, want to take this?
+Currently, if flush_tlb_func() does not flush for some reason, the
+tracing of the flush will be done only in certain cases, depending on
+the reason of the flush. Be consistent and just do not trace in all
+cases when the flush was eventually not done.
 
-I guess this fell through the cracks.
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Nadav Amit <namit@vmware.com>
 
-Shuah?
+---
 
--- Steve
+v1->v2:
+* Remove comment [Andy]
+---
+ arch/x86/mm/tlb.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> 
-> > Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Ingo Molnar <mingo@redhat.com>
-> > Cc: Shuah Khan <shuah@kernel.org>
-> > Cc: linux-kselftest@vger.kernel.org
-> > ---
-> >  tools/testing/selftests/ftrace/test.d/ftrace/func_event_triggers.tc |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > --- linux-next-20211224.orig/tools/testing/selftests/ftrace/test.d/ftrace/func_event_triggers.tc
-> > +++ linux-next-20211224/tools/testing/selftests/ftrace/test.d/ftrace/func_event_triggers.tc
-> > @@ -85,7 +85,7 @@ run_enable_disable() {
-> >  	echo $check_disable > $EVENT_ENABLE
-> >      done
-> >      sleep $SLEEP_TIME
-> > -    echo " make sure it's still works"
-> > +    echo " make sure it still works"
-> >      test_event_enabled $check_enable_star
-> >  
-> >      reset_ftrace_filter  
-> 
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 0f346c51dd99..f012445f6d94 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -736,7 +736,7 @@ static void flush_tlb_func(void *info)
+ 	u32 loaded_mm_asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
+ 	u64 local_tlb_gen = this_cpu_read(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen);
+ 	bool local = smp_processor_id() == f->initiating_cpu;
+-	unsigned long nr_invalidate = 0;
++	unsigned long nr_invalidate;
+ 	u64 mm_tlb_gen;
+ 
+ 	/* This code cannot presently handle being reentered. */
+@@ -795,7 +795,7 @@ static void flush_tlb_func(void *info)
+ 		 * be handled can catch us all the way up, leaving no work for
+ 		 * the second flush.
+ 		 */
+-		goto done;
++		return;
+ 	}
+ 
+ 	WARN_ON_ONCE(local_tlb_gen > mm_tlb_gen);
+@@ -870,8 +870,6 @@ static void flush_tlb_func(void *info)
+ 	/* Both paths above update our state to mm_tlb_gen. */
+ 	this_cpu_write(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen, mm_tlb_gen);
+ 
+-	/* Tracing is done in a unified manner to reduce the code size */
+-done:
+ 	trace_tlb_flush(!local ? TLB_REMOTE_SHOOTDOWN :
+ 				(f->mm == NULL) ? TLB_LOCAL_SHOOTDOWN :
+ 						  TLB_LOCAL_MM_SHOOTDOWN,
+-- 
+2.25.1
 
