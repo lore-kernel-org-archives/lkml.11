@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07092C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B326C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232583AbiGKJzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
+        id S233499AbiGKJz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234069AbiGKJzI (ORCPT
+        with ESMTP id S233668AbiGKJzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:55:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AFDB1945;
-        Mon, 11 Jul 2022 02:26:14 -0700 (PDT)
+        Mon, 11 Jul 2022 05:55:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8AC33341;
+        Mon, 11 Jul 2022 02:26:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E39046112E;
-        Mon, 11 Jul 2022 09:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF017C34115;
-        Mon, 11 Jul 2022 09:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0506C61376;
+        Mon, 11 Jul 2022 09:26:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC29C34115;
+        Mon, 11 Jul 2022 09:26:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531571;
-        bh=s9qJw2urS+Yhp6Cits5M/AupqYxACgwsDJBxw1SWSS0=;
+        s=korg; t=1657531579;
+        bh=w7ayt6OeqqIe/QS+tSiV48KClRgPaOXmOyVXYHm6Q08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YuyIYcHHDTzuRfe9kBhXit5pxs1VB1KbVdiRzuGFSrof5B5DcFsF0VHCAiPfluRiM
-         wx+vBWxKflmBGcIB7J7ryzxsDgpBIrKsrHdcz040e24CkbNAk9IwXOG43fbOkBtABJ
-         +D0I+t1bRbkued9Kqlgi8xzUWnY+hoZb/uTrtH8Q=
+        b=EF1tLtFB9O1+ezCuxJOFcK9ZVJNaYK5qURPFeWWD3PGXsKzJH6ftSdIwkzY9volwi
+         SScOqzepS8Q1NhilkxaRZDva2y2SHbPWA5B4qg3ri/wdk+W8TF07UL4xjAFgTS48Kw
+         Wwfb1aAUwaO9BHOkdldueRmmYZ2l2rkqU9tIAdw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 153/230] rxrpc: Fix locking issue
-Date:   Mon, 11 Jul 2022 11:06:49 +0200
-Message-Id: <20220711090608.399787157@linuxfoundation.org>
+Subject: [PATCH 5.15 156/230] module: change to print useful messages from elf_validity_check()
+Date:   Mon, 11 Jul 2022 11:06:52 +0200
+Message-Id: <20220711090608.486184291@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,276 +50,177 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-[ Upstream commit ad25f5cb39872ca14bcbe00816ae65c22fe04b89 ]
+[ Upstream commit 7fd982f394c42f25a73fe9dfbf1e6b11fa26b40a ]
 
-There's a locking issue with the per-netns list of calls in rxrpc.  The
-pieces of code that add and remove a call from the list use write_lock()
-and the calls procfile uses read_lock() to access it.  However, the timer
-callback function may trigger a removal by trying to queue a call for
-processing and finding that it's already queued - at which point it has a
-spare refcount that it has to do something with.  Unfortunately, if it puts
-the call and this reduces the refcount to 0, the call will be removed from
-the list.  Unfortunately, since the _bh variants of the locking functions
-aren't used, this can deadlock.
+elf_validity_check() checks ELF headers for errors and ELF Spec.
+compliance and if any of them fail it returns -ENOEXEC from all of
+these error paths. Almost all of them don't print any messages.
 
-================================
-WARNING: inconsistent lock state
-5.18.0-rc3-build4+ #10 Not tainted
---------------------------------
-inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-ksoftirqd/2/25 [HC0[0]:SC1[1]:HE1:SE0] takes:
-ffff888107ac4038 (&rxnet->call_lock){+.?.}-{2:2}, at: rxrpc_put_call+0x103/0x14b
-{SOFTIRQ-ON-W} state was registered at:
-...
- Possible unsafe locking scenario:
+When elf_validity_check() returns an error, load_module() prints an
+error message without error code. It is hard to determine why the
+module ELF structure is invalid, even if load_module() prints the
+error code which is -ENOEXEC in all of these cases.
 
-       CPU0
-       ----
-  lock(&rxnet->call_lock);
-  <Interrupt>
-    lock(&rxnet->call_lock);
+Change to print useful error messages from elf_validity_check() to
+clearly say what went wrong and why the ELF validity checks failed.
 
- *** DEADLOCK ***
+Remove the load_module() error message which is no longer needed.
+This patch includes changes to fix build warns on 32-bit platforms:
 
-1 lock held by ksoftirqd/2/25:
- #0: ffff8881008ffdb0 ((&call->timer)){+.-.}-{0:0}, at: call_timer_fn+0x5/0x23d
+warning: format '%llu' expects argument of type 'long long unsigned int',
+but argument 3 has type 'Elf32_Off' {aka 'unsigned int'}
+Reported-by: kernel test robot <lkp@intel.com>
 
-Changes
-=======
-ver #2)
- - Changed to using list_next_rcu() rather than rcu_dereference() directly.
-
-Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/seq_file.c            | 32 ++++++++++++++++++++++++++++++++
- include/linux/list.h     | 10 ++++++++++
- include/linux/seq_file.h |  4 ++++
- net/rxrpc/ar-internal.h  |  2 +-
- net/rxrpc/call_accept.c  |  6 +++---
- net/rxrpc/call_object.c  | 18 +++++++++---------
- net/rxrpc/net_ns.c       |  2 +-
- net/rxrpc/proc.c         | 10 ++--------
- 8 files changed, 62 insertions(+), 22 deletions(-)
+ kernel/module.c | 75 +++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 54 insertions(+), 21 deletions(-)
 
-diff --git a/fs/seq_file.c b/fs/seq_file.c
-index 4a2cda04d3e2..b17ee4c4f618 100644
---- a/fs/seq_file.c
-+++ b/fs/seq_file.c
-@@ -947,6 +947,38 @@ struct list_head *seq_list_next(void *v, struct list_head *head, loff_t *ppos)
- }
- EXPORT_SYMBOL(seq_list_next);
+diff --git a/kernel/module.c b/kernel/module.c
+index 83991c2d5af9..256b3c80a771 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -2967,14 +2967,29 @@ static int elf_validity_check(struct load_info *info)
+ 	Elf_Shdr *shdr, *strhdr;
+ 	int err;
  
-+struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos)
-+{
-+	struct list_head *lh;
-+
-+	list_for_each_rcu(lh, head)
-+		if (pos-- == 0)
-+			return lh;
-+
-+	return NULL;
-+}
-+EXPORT_SYMBOL(seq_list_start_rcu);
-+
-+struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos)
-+{
-+	if (!pos)
-+		return head;
-+
-+	return seq_list_start_rcu(head, pos - 1);
-+}
-+EXPORT_SYMBOL(seq_list_start_head_rcu);
-+
-+struct list_head *seq_list_next_rcu(void *v, struct list_head *head,
-+				    loff_t *ppos)
-+{
-+	struct list_head *lh;
-+
-+	lh = list_next_rcu((struct list_head *)v);
-+	++*ppos;
-+	return lh == head ? NULL : lh;
-+}
-+EXPORT_SYMBOL(seq_list_next_rcu);
-+
- /**
-  * seq_hlist_start - start an iteration of a hlist
-  * @head: the head of the hlist
-diff --git a/include/linux/list.h b/include/linux/list.h
-index a119dd1990d4..d206ae93c06d 100644
---- a/include/linux/list.h
-+++ b/include/linux/list.h
-@@ -577,6 +577,16 @@ static inline void list_splice_tail_init(struct list_head *list,
- #define list_for_each(pos, head) \
- 	for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
+-	if (info->len < sizeof(*(info->hdr)))
+-		return -ENOEXEC;
++	if (info->len < sizeof(*(info->hdr))) {
++		pr_err("Invalid ELF header len %lu\n", info->len);
++		goto no_exec;
++	}
  
-+/**
-+ * list_for_each_rcu - Iterate over a list in an RCU-safe fashion
-+ * @pos:	the &struct list_head to use as a loop cursor.
-+ * @head:	the head for your list.
-+ */
-+#define list_for_each_rcu(pos, head)		  \
-+	for (pos = rcu_dereference((head)->next); \
-+	     !list_is_head(pos, (head)); \
-+	     pos = rcu_dereference(pos->next))
-+
- /**
-  * list_for_each_continue - continue iteration over a list
-  * @pos:	the &struct list_head to use as a loop cursor.
-diff --git a/include/linux/seq_file.h b/include/linux/seq_file.h
-index 5733890df64f..0b429111f85e 100644
---- a/include/linux/seq_file.h
-+++ b/include/linux/seq_file.h
-@@ -261,6 +261,10 @@ extern struct list_head *seq_list_start_head(struct list_head *head,
- extern struct list_head *seq_list_next(void *v, struct list_head *head,
- 		loff_t *ppos);
+-	if (memcmp(info->hdr->e_ident, ELFMAG, SELFMAG) != 0
+-	    || info->hdr->e_type != ET_REL
+-	    || !elf_check_arch(info->hdr)
+-	    || info->hdr->e_shentsize != sizeof(Elf_Shdr))
+-		return -ENOEXEC;
++	if (memcmp(info->hdr->e_ident, ELFMAG, SELFMAG) != 0) {
++		pr_err("Invalid ELF header magic: != %s\n", ELFMAG);
++		goto no_exec;
++	}
++	if (info->hdr->e_type != ET_REL) {
++		pr_err("Invalid ELF header type: %u != %u\n",
++		       info->hdr->e_type, ET_REL);
++		goto no_exec;
++	}
++	if (!elf_check_arch(info->hdr)) {
++		pr_err("Invalid architecture in ELF header: %u\n",
++		       info->hdr->e_machine);
++		goto no_exec;
++	}
++	if (info->hdr->e_shentsize != sizeof(Elf_Shdr)) {
++		pr_err("Invalid ELF section header size\n");
++		goto no_exec;
++	}
  
-+extern struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos);
-+extern struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos);
-+extern struct list_head *seq_list_next_rcu(void *v, struct list_head *head, loff_t *ppos);
-+
- /*
-  * Helpers for iteration over hlist_head-s in seq_files
-  */
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index dce056adb78c..f2d593e27b64 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -68,7 +68,7 @@ struct rxrpc_net {
- 	struct proc_dir_entry	*proc_net;	/* Subdir in /proc/net */
- 	u32			epoch;		/* Local epoch for detecting local-end reset */
- 	struct list_head	calls;		/* List of calls active in this namespace */
--	rwlock_t		call_lock;	/* Lock for ->calls */
-+	spinlock_t		call_lock;	/* Lock for ->calls */
- 	atomic_t		nr_calls;	/* Count of allocated calls */
+ 	/*
+ 	 * e_shnum is 16 bits, and sizeof(Elf_Shdr) is
+@@ -2983,8 +2998,10 @@ static int elf_validity_check(struct load_info *info)
+ 	 */
+ 	if (info->hdr->e_shoff >= info->len
+ 	    || (info->hdr->e_shnum * sizeof(Elf_Shdr) >
+-		info->len - info->hdr->e_shoff))
+-		return -ENOEXEC;
++		info->len - info->hdr->e_shoff)) {
++		pr_err("Invalid ELF section header overflow\n");
++		goto no_exec;
++	}
  
- 	atomic_t		nr_conns;
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 1ae90fb97936..8b24ffbc72ef 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -140,9 +140,9 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
+ 	info->sechdrs = (void *)info->hdr + info->hdr->e_shoff;
  
- 	rxnet = call->rxnet;
--	write_lock(&rxnet->call_lock);
--	list_add_tail(&call->link, &rxnet->calls);
--	write_unlock(&rxnet->call_lock);
-+	spin_lock_bh(&rxnet->call_lock);
-+	list_add_tail_rcu(&call->link, &rxnet->calls);
-+	spin_unlock_bh(&rxnet->call_lock);
+@@ -2992,13 +3009,19 @@ static int elf_validity_check(struct load_info *info)
+ 	 * Verify if the section name table index is valid.
+ 	 */
+ 	if (info->hdr->e_shstrndx == SHN_UNDEF
+-	    || info->hdr->e_shstrndx >= info->hdr->e_shnum)
+-		return -ENOEXEC;
++	    || info->hdr->e_shstrndx >= info->hdr->e_shnum) {
++		pr_err("Invalid ELF section name index: %d || e_shstrndx (%d) >= e_shnum (%d)\n",
++		       info->hdr->e_shstrndx, info->hdr->e_shstrndx,
++		       info->hdr->e_shnum);
++		goto no_exec;
++	}
  
- 	b->call_backlog[call_head] = call;
- 	smp_store_release(&b->call_backlog_head, (call_head + 1) & (size - 1));
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 043508fd8d8a..25c9a2cbf048 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -337,9 +337,9 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
+ 	strhdr = &info->sechdrs[info->hdr->e_shstrndx];
+ 	err = validate_section_offset(info, strhdr);
+-	if (err < 0)
++	if (err < 0) {
++		pr_err("Invalid ELF section hdr(type %u)\n", strhdr->sh_type);
+ 		return err;
++	}
  
- 	rxnet = call->rxnet;
--	write_lock(&rxnet->call_lock);
--	list_add_tail(&call->link, &rxnet->calls);
--	write_unlock(&rxnet->call_lock);
-+	spin_lock_bh(&rxnet->call_lock);
-+	list_add_tail_rcu(&call->link, &rxnet->calls);
-+	spin_unlock_bh(&rxnet->call_lock);
+ 	/*
+ 	 * The section name table must be NUL-terminated, as required
+@@ -3006,8 +3029,10 @@ static int elf_validity_check(struct load_info *info)
+ 	 * strings in the section safe.
+ 	 */
+ 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
+-	if (info->secstrings[strhdr->sh_size - 1] != '\0')
+-		return -ENOEXEC;
++	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
++		pr_err("ELF Spec violation: section name table isn't null terminated\n");
++		goto no_exec;
++	}
  
- 	/* From this point on, the call is protected by its own lock. */
- 	release_sock(&rx->sk);
-@@ -631,9 +631,9 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
- 		ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 	/*
+ 	 * The code assumes that section 0 has a length of zero and
+@@ -3015,8 +3040,11 @@ static int elf_validity_check(struct load_info *info)
+ 	 */
+ 	if (info->sechdrs[0].sh_type != SHT_NULL
+ 	    || info->sechdrs[0].sh_size != 0
+-	    || info->sechdrs[0].sh_addr != 0)
+-		return -ENOEXEC;
++	    || info->sechdrs[0].sh_addr != 0) {
++		pr_err("ELF Spec violation: section 0 type(%d)!=SH_NULL or non-zero len or addr\n",
++		       info->sechdrs[0].sh_type);
++		goto no_exec;
++	}
  
- 		if (!list_empty(&call->link)) {
--			write_lock(&rxnet->call_lock);
-+			spin_lock_bh(&rxnet->call_lock);
- 			list_del_init(&call->link);
--			write_unlock(&rxnet->call_lock);
-+			spin_unlock_bh(&rxnet->call_lock);
- 		}
- 
- 		rxrpc_cleanup_call(call);
-@@ -705,7 +705,7 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 	_enter("");
- 
- 	if (!list_empty(&rxnet->calls)) {
--		write_lock(&rxnet->call_lock);
-+		spin_lock_bh(&rxnet->call_lock);
- 
- 		while (!list_empty(&rxnet->calls)) {
- 			call = list_entry(rxnet->calls.next,
-@@ -720,12 +720,12 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 			       rxrpc_call_states[call->state],
- 			       call->flags, call->events);
- 
--			write_unlock(&rxnet->call_lock);
-+			spin_unlock_bh(&rxnet->call_lock);
- 			cond_resched();
--			write_lock(&rxnet->call_lock);
-+			spin_lock_bh(&rxnet->call_lock);
- 		}
- 
--		write_unlock(&rxnet->call_lock);
-+		spin_unlock_bh(&rxnet->call_lock);
+ 	for (i = 1; i < info->hdr->e_shnum; i++) {
+ 		shdr = &info->sechdrs[i];
+@@ -3026,8 +3054,12 @@ static int elf_validity_check(struct load_info *info)
+ 			continue;
+ 		case SHT_SYMTAB:
+ 			if (shdr->sh_link == SHN_UNDEF
+-			    || shdr->sh_link >= info->hdr->e_shnum)
+-				return -ENOEXEC;
++			    || shdr->sh_link >= info->hdr->e_shnum) {
++				pr_err("Invalid ELF sh_link!=SHN_UNDEF(%d) or (sh_link(%d) >= hdr->e_shnum(%d)\n",
++				       shdr->sh_link, shdr->sh_link,
++				       info->hdr->e_shnum);
++				goto no_exec;
++			}
+ 			fallthrough;
+ 		default:
+ 			err = validate_section_offset(info, shdr);
+@@ -3049,6 +3081,9 @@ static int elf_validity_check(struct load_info *info)
  	}
  
- 	atomic_dec(&rxnet->nr_calls);
-diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
-index cc7e30733feb..e4d6d432515b 100644
---- a/net/rxrpc/net_ns.c
-+++ b/net/rxrpc/net_ns.c
-@@ -50,7 +50,7 @@ static __net_init int rxrpc_init_net(struct net *net)
- 	rxnet->epoch |= RXRPC_RANDOM_EPOCH;
- 
- 	INIT_LIST_HEAD(&rxnet->calls);
--	rwlock_init(&rxnet->call_lock);
-+	spin_lock_init(&rxnet->call_lock);
- 	atomic_set(&rxnet->nr_calls, 1);
- 
- 	atomic_set(&rxnet->nr_conns, 1);
-diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
-index e2f990754f88..5a67955cc00f 100644
---- a/net/rxrpc/proc.c
-+++ b/net/rxrpc/proc.c
-@@ -26,29 +26,23 @@ static const char *const rxrpc_conn_states[RXRPC_CONN__NR_STATES] = {
-  */
- static void *rxrpc_call_seq_start(struct seq_file *seq, loff_t *_pos)
- 	__acquires(rcu)
--	__acquires(rxnet->call_lock)
- {
- 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
- 
- 	rcu_read_lock();
--	read_lock(&rxnet->call_lock);
--	return seq_list_start_head(&rxnet->calls, *_pos);
-+	return seq_list_start_head_rcu(&rxnet->calls, *_pos);
+ 	return 0;
++
++no_exec:
++	return -ENOEXEC;
  }
  
- static void *rxrpc_call_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
- 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+ #define COPY_CHUNK_SIZE (16*PAGE_SIZE)
+@@ -3925,10 +3960,8 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 	 * sections.
+ 	 */
+ 	err = elf_validity_check(info);
+-	if (err) {
+-		pr_err("Module has invalid ELF structures\n");
++	if (err)
+ 		goto free_copy;
+-	}
  
--	return seq_list_next(v, &rxnet->calls, pos);
-+	return seq_list_next_rcu(v, &rxnet->calls, pos);
- }
- 
- static void rxrpc_call_seq_stop(struct seq_file *seq, void *v)
--	__releases(rxnet->call_lock)
- 	__releases(rcu)
- {
--	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
--
--	read_unlock(&rxnet->call_lock);
- 	rcu_read_unlock();
- }
- 
+ 	/*
+ 	 * Everything checks out, so set up the section info
 -- 
 2.35.1
 
