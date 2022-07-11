@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FD7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D40ECCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231961AbiGKJ6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
+        id S234247AbiGKJ6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234226AbiGKJ6H (ORCPT
+        with ESMTP id S234160AbiGKJ6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:58:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8BB3C8D1;
-        Mon, 11 Jul 2022 02:27:08 -0700 (PDT)
+        Mon, 11 Jul 2022 05:58:08 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D858AB4BD9;
+        Mon, 11 Jul 2022 02:27:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A0A861363;
-        Mon, 11 Jul 2022 09:27:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB9FCC34115;
-        Mon, 11 Jul 2022 09:27:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 03BD6CE126E;
+        Mon, 11 Jul 2022 09:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16CA3C34115;
+        Mon, 11 Jul 2022 09:27:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531626;
-        bh=sdJokJh/mT6NTEEZR+84538Xzs9PvYlTM6kDBhenlis=;
+        s=korg; t=1657531631;
+        bh=G3XdD4ZflwNdqfaY4yjkjFso/enpN8n0LYdk3KU1qK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tTWcjakxlatJtJ7KXYTSGOakj5TiV44VinyNGzYArj2mwEsz5KR2x2HEW08IDRJBv
-         iYXqX0yjwKb/yPRqICKVtwwWRvL1EDrE/7ifMeJ0Y9LH0vCNU+oyldAuxuCOFgR2AP
-         qKHWKzrjA56rAZc84YRfD/x6HM5gogAgvSy/9pgU=
+        b=OQb3oxKDlGk3BXmyKcfFkk406Dqvl202qd6JJSNFMKndRGIlv3nlMClJhAash5i16
+         b3L8YbTrVL2DaBINa6syD0pY3YL2JJ6JG0sUgHhG8GkkNLSd2o8CxkcxSM4O2eDDf1
+         HKhnW6eOup39kHwvtsh8xJpS2BCnHsTpRn8NyRi8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Eric Sandeen <sandeen@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Ayushman Dutta <ayudutta@amazon.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>
-Subject: [PATCH 5.15 171/230] xfs: remove incorrect ASSERT in xfs_rename
-Date:   Mon, 11 Jul 2022 11:07:07 +0200
-Message-Id: <20220711090608.911844588@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Modra <amodra@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 135/230] powerpc/vdso: Fix incorrect CFI in gettimeofday.S
+Date:   Mon, 11 Jul 2022 11:06:31 +0200
+Message-Id: <20220711090607.893284695@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,38 +50,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Sandeen <sandeen@redhat.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit e445976537ad139162980bee015b7364e5b64fff upstream.
+[ Upstream commit 6d65028eb67dbb7627651adfc460d64196d38bd8 ]
 
-This ASSERT in xfs_rename is a) incorrect, because
-(RENAME_WHITEOUT|RENAME_NOREPLACE) is a valid combination, and
-b) unnecessary, because actual invalid flag combinations are already
-handled at the vfs level in do_renameat2() before we get called.
-So, remove it.
+As reported by Alan, the CFI (Call Frame Information) in the VDSO time
+routines is incorrect since commit ce7d8056e38b ("powerpc/vdso: Prepare
+for switching VDSO to generic C implementation.").
 
-Reported-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Eric Sandeen <sandeen@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Fixes: 7dcf5c3e4527 ("xfs: add RENAME_WHITEOUT support")
-Reported-by: Ayushman Dutta <ayudutta@amazon.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+DWARF has a concept called the CFA (Canonical Frame Address), which on
+powerpc is calculated as an offset from the stack pointer (r1). That
+means when the stack pointer is changed there must be a corresponding
+CFI directive to update the calculation of the CFA.
+
+The current code is missing those directives for the changes to r1,
+which prevents gdb from being able to generate a backtrace from inside
+VDSO functions, eg:
+
+  Breakpoint 1, 0x00007ffff7f804dc in __kernel_clock_gettime ()
+  (gdb) bt
+  #0  0x00007ffff7f804dc in __kernel_clock_gettime ()
+  #1  0x00007ffff7d8872c in clock_gettime@@GLIBC_2.17 () from /lib64/libc.so.6
+  #2  0x00007fffffffd960 in ?? ()
+  #3  0x00007ffff7d8872c in clock_gettime@@GLIBC_2.17 () from /lib64/libc.so.6
+  Backtrace stopped: frame did not save the PC
+
+Alan helpfully describes some rules for correctly maintaining the CFI information:
+
+  1) Every adjustment to the current frame address reg (ie. r1) must be
+     described, and exactly at the instruction where r1 changes. Why?
+     Because stack unwinding might want to access previous frames.
+
+  2) If a function changes LR or any non-volatile register, the save
+     location for those regs must be given. The CFI can be at any
+     instruction after the saves up to the point that the reg is
+     changed.
+     (Exception: LR save should be described before a bl. not after)
+
+  3) If asychronous unwind info is needed then restores of LR and
+     non-volatile regs must also be described. The CFI can be at any
+     instruction after the reg is restored up to the point where the
+     save location is (potentially) trashed.
+
+Fix the inability to backtrace by adding CFI directives describing the
+changes to r1, ie. satisfying rule 1.
+
+Also change the information for LR to point to the copy saved on the
+stack, not the value in r0 that will be overwritten by the function
+call.
+
+Finally, add CFI directives describing the save/restore of r2.
+
+With the fix gdb can correctly back trace and navigate up and down the stack:
+
+  Breakpoint 1, 0x00007ffff7f804dc in __kernel_clock_gettime ()
+  (gdb) bt
+  #0  0x00007ffff7f804dc in __kernel_clock_gettime ()
+  #1  0x00007ffff7d8872c in clock_gettime@@GLIBC_2.17 () from /lib64/libc.so.6
+  #2  0x0000000100015b60 in gettime ()
+  #3  0x000000010000c8bc in print_long_format ()
+  #4  0x000000010000d180 in print_current_files ()
+  #5  0x00000001000054ac in main ()
+  (gdb) up
+  #1  0x00007ffff7d8872c in clock_gettime@@GLIBC_2.17 () from /lib64/libc.so.6
+  (gdb)
+  #2  0x0000000100015b60 in gettime ()
+  (gdb)
+  #3  0x000000010000c8bc in print_long_format ()
+  (gdb)
+  #4  0x000000010000d180 in print_current_files ()
+  (gdb)
+  #5  0x00000001000054ac in main ()
+  (gdb)
+  Initial frame selected; you cannot go up.
+  (gdb) down
+  #4  0x000000010000d180 in print_current_files ()
+  (gdb)
+  #3  0x000000010000c8bc in print_long_format ()
+  (gdb)
+  #2  0x0000000100015b60 in gettime ()
+  (gdb)
+  #1  0x00007ffff7d8872c in clock_gettime@@GLIBC_2.17 () from /lib64/libc.so.6
+  (gdb)
+  #0  0x00007ffff7f804dc in __kernel_clock_gettime ()
+  (gdb)
+
+Fixes: ce7d8056e38b ("powerpc/vdso: Prepare for switching VDSO to generic C implementation.")
+Cc: stable@vger.kernel.org # v5.11+
+Reported-by: Alan Modra <amodra@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+Link: https://lore.kernel.org/r/20220502125010.1319370-1-mpe@ellerman.id.au
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/xfs/xfs_inode.c |    1 -
- 1 file changed, 1 deletion(-)
+ arch/powerpc/kernel/vdso32/gettimeofday.S | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/fs/xfs/xfs_inode.c
-+++ b/fs/xfs/xfs_inode.c
-@@ -3128,7 +3128,6 @@ xfs_rename(
- 	 * appropriately.
- 	 */
- 	if (flags & RENAME_WHITEOUT) {
--		ASSERT(!(flags & (RENAME_NOREPLACE | RENAME_EXCHANGE)));
- 		error = xfs_rename_alloc_whiteout(mnt_userns, target_dp, &wip);
- 		if (error)
- 			return error;
+diff --git a/arch/powerpc/kernel/vdso32/gettimeofday.S b/arch/powerpc/kernel/vdso32/gettimeofday.S
+index dd2099128b8f..42d40f895c1f 100644
+--- a/arch/powerpc/kernel/vdso32/gettimeofday.S
++++ b/arch/powerpc/kernel/vdso32/gettimeofday.S
+@@ -22,12 +22,15 @@
+ .macro cvdso_call funct call_time=0
+   .cfi_startproc
+ 	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
++  .cfi_adjust_cfa_offset PPC_MIN_STKFRM
+ 	mflr		r0
+-  .cfi_register lr, r0
+ 	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
++  .cfi_adjust_cfa_offset PPC_MIN_STKFRM
+ 	PPC_STL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
++  .cfi_rel_offset lr, PPC_MIN_STKFRM + PPC_LR_STKOFF
+ #ifdef __powerpc64__
+ 	PPC_STL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
++  .cfi_rel_offset r2, PPC_MIN_STKFRM + STK_GOT
+ #endif
+ 	get_datapage	r5
+ 	.ifeq	\call_time
+@@ -39,13 +42,15 @@
+ 	PPC_LL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
+ #ifdef __powerpc64__
+ 	PPC_LL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
++  .cfi_restore r2
+ #endif
+ 	.ifeq	\call_time
+ 	cmpwi		r3, 0
+ 	.endif
+ 	mtlr		r0
+-  .cfi_restore lr
+ 	addi		r1, r1, 2 * PPC_MIN_STKFRM
++  .cfi_restore lr
++  .cfi_def_cfa_offset 0
+ 	crclr		so
+ 	.ifeq	\call_time
+ 	beqlr+
+-- 
+2.35.1
+
 
 
