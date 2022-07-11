@@ -2,235 +2,376 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0D7CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiGKIhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
+        id S230315AbiGKIh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230285AbiGKIh0 (ORCPT
+        with ESMTP id S230289AbiGKIh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 04:37:26 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2804813D13
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:37:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657528645; x=1689064645;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=g9SmQ8wfGwhk0MsY3t3oS2JR1R4VILZNOmqok5xSlNY=;
-  b=EZb3W+4nEmgopYEtK1FNpBNrQLItnt+mPgVWG2An2evBimvdfiLjaqXh
-   RRzfRkabXDues4lbLI0sb1SBWkmQ3C7N66qUDOQygN/QZn5l+dGMpM3wW
-   egq17j4L7AxaDKBKB3XtKBsuYT2D6E07I4fdxuIONIg3rsN/FrjdvJjga
-   pXLzaviiCNghS8iINLKoYoe2dMwFbd4MAXH200BpwjO/pf+6+0Eg4MIK6
-   oCKyyAuWRz4k7gKwsnnTUTNpUBzyX+abnwRVS3QsPpKv+YOhWNEFmY3rB
-   tHuxzDOTG2ofOZRpXT/kx4JXjNrbTb4Ya+ew2YeTk54E1K5Ul/7ugxUCV
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="370917816"
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="370917816"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 01:37:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="621988207"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 11 Jul 2022 01:37:22 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oAouv-0000cz-Sp;
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F92DEE4;
+        Mon, 11 Jul 2022 01:37:25 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26B8I9E8032457;
+        Mon, 11 Jul 2022 08:37:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=YR6Yk7sJWpZLekUTmhs2XN9rXpmaPyA4t+JLSpNFtM4=;
+ b=snlhCzK0pZtvTkKEtPiuFy0R9PQYGc7uHhKnxqMlywDo3hFrylB4vYBOdetzWT3lyN0g
+ xE/k36wrxQZe1ykYT+zn+9dN9hYU7LAITY4SVzk7REnoMiiHWHbJ0Ucck7XrCp0UYvCi
+ GAEG8pK1js3RjvpotHfx16fS/rtBXVwJf54R50/kV+qiKA9NZeig4jBpHs/wcQ0zO4ce
+ gEqdIlPmhiRhRoRpodtjC7TvnTGn/MMPTBPeRFKWzqWWp0th0Kbx55twged4Yo301ILb
+ NXLurgmPjm8SnzWFPNr9/tol3yrBHPb/Azixt4ZDAVukOOCrcd1n6FJuU7/ne6CVJQNK bQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h83y54hfr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Jul 2022 08:37:24 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26B8Jl7P025066;
+        Mon, 11 Jul 2022 08:37:24 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h83y54hf6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Jul 2022 08:37:23 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26B8aiAv021327;
+        Mon, 11 Jul 2022 08:37:22 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma01fra.de.ibm.com with ESMTP id 3h71a8su0w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Mon, 11 Jul 2022 08:37:21 +0000
-Date:   Mon, 11 Jul 2022 16:36:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chen Lin <chen45464546@163.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [linux-stable-rc:linux-5.15.y 7889/8235]
- drivers/net/ethernet/mediatek/mtk_eth_soc.c:1325:23: warning: result of
- comparison of constant 65536 with expression of type 'u16' (aka 'unsigned
- short') is always true
-Message-ID: <202207111644.LOc31cfI-lkp@intel.com>
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26B8bIdb24052140
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Jul 2022 08:37:18 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 77B51A404D;
+        Mon, 11 Jul 2022 08:37:18 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D46CBA4040;
+        Mon, 11 Jul 2022 08:37:15 +0000 (GMT)
+Received: from li-c6ac47cc-293c-11b2-a85c-d421c8e4747b.ibm.com.com (unknown [9.171.7.160])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 11 Jul 2022 08:37:15 +0000 (GMT)
+From:   Pierre Morel <pmorel@linux.ibm.com>
+To:     kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, pmorel@linux.ibm.com,
+        wintera@linux.ibm.com, seiden@linux.ibm.com, nrb@linux.ibm.com,
+        scgl@linux.ibm.com
+Subject: [PATCH v12 1/3] KVM: s390: Cleanup ipte lock access and SIIF facility checks
+Date:   Mon, 11 Jul 2022 10:41:46 +0200
+Message-Id: <20220711084148.25017-2-pmorel@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220711084148.25017-1-pmorel@linux.ibm.com>
+References: <20220711084148.25017-1-pmorel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: u9P2yECOm1AuJz1bH_pwjcX47GAGAD1h
+X-Proofpoint-ORIG-GUID: 7ygES9D3AUCJ_Zj5WL6osrYsGiuveMsp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-11_13,2022-07-08_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 clxscore=1015 phishscore=0 mlxlogscore=930 malwarescore=0
+ spamscore=0 impostorscore=0 adultscore=0 bulkscore=0 lowpriorityscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207110036
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-head:   eb18ccd146339b58faa47c1837f1b61ba05a1acf
-commit: fcba12a4308143f1f1dcb0face8b3ffb51edcc5c [7889/8235] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
-config: arm64-randconfig-r003-20220710 (https://download.01.org/0day-ci/archive/20220711/202207111644.LOc31cfI-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6ce63e267aab79ca87bf63453d34dd3909ab978d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=fcba12a4308143f1f1dcb0face8b3ffb51edcc5c
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.15.y
-        git checkout fcba12a4308143f1f1dcb0face8b3ffb51edcc5c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mediatek/
+We can check if SIIF is enabled by testing the sclp_info struct
+instead of testing the sie control block eca variable as that
+facility is always enabled if available.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Also let's cleanup all the ipte related struct member accesses
+which currently happen by referencing the KVM struct via the
+VCPU struct.
+Making the KVM struct the parameter to the ipte_* functions
+removes one level of indirection which makes the code more readable.
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
+---
+ arch/s390/kvm/gaccess.c | 96 ++++++++++++++++++++---------------------
+ arch/s390/kvm/gaccess.h |  6 +--
+ arch/s390/kvm/priv.c    |  6 +--
+ 3 files changed, 54 insertions(+), 54 deletions(-)
 
->> drivers/net/ethernet/mediatek/mtk_eth_soc.c:1325:23: warning: result of comparison of constant 65536 with expression of type 'u16' (aka 'unsigned short') is always true [-Wtautological-constant-out-of-range-compare]
-                   if (ring->frag_size <= PAGE_SIZE)
-                       ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~
-   drivers/net/ethernet/mediatek/mtk_eth_soc.c:1742:23: warning: result of comparison of constant 65536 with expression of type 'u16' (aka 'unsigned short') is always true [-Wtautological-constant-out-of-range-compare]
-                   if (ring->frag_size <= PAGE_SIZE)
-                       ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~
-   2 warnings generated.
-
-
-vim +1325 drivers/net/ethernet/mediatek/mtk_eth_soc.c
-
-  1277	
-  1278	static int mtk_poll_rx(struct napi_struct *napi, int budget,
-  1279			       struct mtk_eth *eth)
-  1280	{
-  1281		struct dim_sample dim_sample = {};
-  1282		struct mtk_rx_ring *ring;
-  1283		int idx;
-  1284		struct sk_buff *skb;
-  1285		u8 *data, *new_data;
-  1286		struct mtk_rx_dma *rxd, trxd;
-  1287		int done = 0, bytes = 0;
-  1288	
-  1289		while (done < budget) {
-  1290			struct net_device *netdev;
-  1291			unsigned int pktlen;
-  1292			dma_addr_t dma_addr;
-  1293			u32 hash;
-  1294			int mac;
-  1295	
-  1296			ring = mtk_get_rx_ring(eth);
-  1297			if (unlikely(!ring))
-  1298				goto rx_done;
-  1299	
-  1300			idx = NEXT_DESP_IDX(ring->calc_idx, ring->dma_size);
-  1301			rxd = &ring->dma[idx];
-  1302			data = ring->data[idx];
-  1303	
-  1304			if (!mtk_rx_get_desc(&trxd, rxd))
-  1305				break;
-  1306	
-  1307			/* find out which mac the packet come from. values start at 1 */
-  1308			if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) ||
-  1309			    (trxd.rxd4 & RX_DMA_SPECIAL_TAG))
-  1310				mac = 0;
-  1311			else
-  1312				mac = ((trxd.rxd4 >> RX_DMA_FPORT_SHIFT) &
-  1313				       RX_DMA_FPORT_MASK) - 1;
-  1314	
-  1315			if (unlikely(mac < 0 || mac >= MTK_MAC_COUNT ||
-  1316				     !eth->netdev[mac]))
-  1317				goto release_desc;
-  1318	
-  1319			netdev = eth->netdev[mac];
-  1320	
-  1321			if (unlikely(test_bit(MTK_RESETTING, &eth->state)))
-  1322				goto release_desc;
-  1323	
-  1324			/* alloc new buffer */
-> 1325			if (ring->frag_size <= PAGE_SIZE)
-  1326				new_data = napi_alloc_frag(ring->frag_size);
-  1327			else
-  1328				new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
-  1329			if (unlikely(!new_data)) {
-  1330				netdev->stats.rx_dropped++;
-  1331				goto release_desc;
-  1332			}
-  1333			dma_addr = dma_map_single(eth->dev,
-  1334						  new_data + NET_SKB_PAD +
-  1335						  eth->ip_align,
-  1336						  ring->buf_size,
-  1337						  DMA_FROM_DEVICE);
-  1338			if (unlikely(dma_mapping_error(eth->dev, dma_addr))) {
-  1339				skb_free_frag(new_data);
-  1340				netdev->stats.rx_dropped++;
-  1341				goto release_desc;
-  1342			}
-  1343	
-  1344			dma_unmap_single(eth->dev, trxd.rxd1,
-  1345					 ring->buf_size, DMA_FROM_DEVICE);
-  1346	
-  1347			/* receive data */
-  1348			skb = build_skb(data, ring->frag_size);
-  1349			if (unlikely(!skb)) {
-  1350				skb_free_frag(data);
-  1351				netdev->stats.rx_dropped++;
-  1352				goto skip_rx;
-  1353			}
-  1354			skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
-  1355	
-  1356			pktlen = RX_DMA_GET_PLEN0(trxd.rxd2);
-  1357			skb->dev = netdev;
-  1358			skb_put(skb, pktlen);
-  1359			if (trxd.rxd4 & eth->rx_dma_l4_valid)
-  1360				skb->ip_summed = CHECKSUM_UNNECESSARY;
-  1361			else
-  1362				skb_checksum_none_assert(skb);
-  1363			skb->protocol = eth_type_trans(skb, netdev);
-  1364			bytes += pktlen;
-  1365	
-  1366			hash = trxd.rxd4 & MTK_RXD4_FOE_ENTRY;
-  1367			if (hash != MTK_RXD4_FOE_ENTRY) {
-  1368				hash = jhash_1word(hash, 0);
-  1369				skb_set_hash(skb, hash, PKT_HASH_TYPE_L4);
-  1370			}
-  1371	
-  1372			if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
-  1373			    (trxd.rxd2 & RX_DMA_VTAG))
-  1374				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-  1375						       RX_DMA_VID(trxd.rxd3));
-  1376			skb_record_rx_queue(skb, 0);
-  1377			napi_gro_receive(napi, skb);
-  1378	
-  1379	skip_rx:
-  1380			ring->data[idx] = new_data;
-  1381			rxd->rxd1 = (unsigned int)dma_addr;
-  1382	
-  1383	release_desc:
-  1384			if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
-  1385				rxd->rxd2 = RX_DMA_LSO;
-  1386			else
-  1387				rxd->rxd2 = RX_DMA_PLEN0(ring->buf_size);
-  1388	
-  1389			ring->calc_idx = idx;
-  1390	
-  1391			done++;
-  1392		}
-  1393	
-  1394	rx_done:
-  1395		if (done) {
-  1396			/* make sure that all changes to the dma ring are flushed before
-  1397			 * we continue
-  1398			 */
-  1399			wmb();
-  1400			mtk_update_rx_cpu_idx(eth);
-  1401		}
-  1402	
-  1403		eth->rx_packets += done;
-  1404		eth->rx_bytes += bytes;
-  1405		dim_update_sample(eth->rx_events, eth->rx_packets, eth->rx_bytes,
-  1406				  &dim_sample);
-  1407		net_dim(&eth->rx_dim, dim_sample);
-  1408	
-  1409		return done;
-  1410	}
-  1411	
-
+diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
+index 227ed0009354..082ec5f2c3a5 100644
+--- a/arch/s390/kvm/gaccess.c
++++ b/arch/s390/kvm/gaccess.c
+@@ -262,77 +262,77 @@ struct aste {
+ 	/* .. more fields there */
+ };
+ 
+-int ipte_lock_held(struct kvm_vcpu *vcpu)
++int ipte_lock_held(struct kvm *kvm)
+ {
+-	if (vcpu->arch.sie_block->eca & ECA_SII) {
++	if (sclp.has_siif) {
+ 		int rc;
+ 
+-		read_lock(&vcpu->kvm->arch.sca_lock);
+-		rc = kvm_s390_get_ipte_control(vcpu->kvm)->kh != 0;
+-		read_unlock(&vcpu->kvm->arch.sca_lock);
++		read_lock(&kvm->arch.sca_lock);
++		rc = kvm_s390_get_ipte_control(kvm)->kh != 0;
++		read_unlock(&kvm->arch.sca_lock);
+ 		return rc;
+ 	}
+-	return vcpu->kvm->arch.ipte_lock_count != 0;
++	return kvm->arch.ipte_lock_count != 0;
+ }
+ 
+-static void ipte_lock_simple(struct kvm_vcpu *vcpu)
++static void ipte_lock_simple(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+-	mutex_lock(&vcpu->kvm->arch.ipte_mutex);
+-	vcpu->kvm->arch.ipte_lock_count++;
+-	if (vcpu->kvm->arch.ipte_lock_count > 1)
++	mutex_lock(&kvm->arch.ipte_mutex);
++	kvm->arch.ipte_lock_count++;
++	if (kvm->arch.ipte_lock_count > 1)
+ 		goto out;
+ retry:
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		if (old.k) {
+-			read_unlock(&vcpu->kvm->arch.sca_lock);
++			read_unlock(&kvm->arch.sca_lock);
+ 			cond_resched();
+ 			goto retry;
+ 		}
+ 		new = old;
+ 		new.k = 1;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
++	read_unlock(&kvm->arch.sca_lock);
+ out:
+-	mutex_unlock(&vcpu->kvm->arch.ipte_mutex);
++	mutex_unlock(&kvm->arch.ipte_mutex);
+ }
+ 
+-static void ipte_unlock_simple(struct kvm_vcpu *vcpu)
++static void ipte_unlock_simple(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+-	mutex_lock(&vcpu->kvm->arch.ipte_mutex);
+-	vcpu->kvm->arch.ipte_lock_count--;
+-	if (vcpu->kvm->arch.ipte_lock_count)
++	mutex_lock(&kvm->arch.ipte_mutex);
++	kvm->arch.ipte_lock_count--;
++	if (kvm->arch.ipte_lock_count)
+ 		goto out;
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		new = old;
+ 		new.k = 0;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
+-	wake_up(&vcpu->kvm->arch.ipte_wq);
++	read_unlock(&kvm->arch.sca_lock);
++	wake_up(&kvm->arch.ipte_wq);
+ out:
+-	mutex_unlock(&vcpu->kvm->arch.ipte_mutex);
++	mutex_unlock(&kvm->arch.ipte_mutex);
+ }
+ 
+-static void ipte_lock_siif(struct kvm_vcpu *vcpu)
++static void ipte_lock_siif(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+ retry:
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		if (old.kg) {
+-			read_unlock(&vcpu->kvm->arch.sca_lock);
++			read_unlock(&kvm->arch.sca_lock);
+ 			cond_resched();
+ 			goto retry;
+ 		}
+@@ -340,15 +340,15 @@ static void ipte_lock_siif(struct kvm_vcpu *vcpu)
+ 		new.k = 1;
+ 		new.kh++;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
++	read_unlock(&kvm->arch.sca_lock);
+ }
+ 
+-static void ipte_unlock_siif(struct kvm_vcpu *vcpu)
++static void ipte_unlock_siif(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		new = old;
+@@ -356,25 +356,25 @@ static void ipte_unlock_siif(struct kvm_vcpu *vcpu)
+ 		if (!new.kh)
+ 			new.k = 0;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
++	read_unlock(&kvm->arch.sca_lock);
+ 	if (!new.kh)
+-		wake_up(&vcpu->kvm->arch.ipte_wq);
++		wake_up(&kvm->arch.ipte_wq);
+ }
+ 
+-void ipte_lock(struct kvm_vcpu *vcpu)
++void ipte_lock(struct kvm *kvm)
+ {
+-	if (vcpu->arch.sie_block->eca & ECA_SII)
+-		ipte_lock_siif(vcpu);
++	if (sclp.has_siif)
++		ipte_lock_siif(kvm);
+ 	else
+-		ipte_lock_simple(vcpu);
++		ipte_lock_simple(kvm);
+ }
+ 
+-void ipte_unlock(struct kvm_vcpu *vcpu)
++void ipte_unlock(struct kvm *kvm)
+ {
+-	if (vcpu->arch.sie_block->eca & ECA_SII)
+-		ipte_unlock_siif(vcpu);
++	if (sclp.has_siif)
++		ipte_unlock_siif(kvm);
+ 	else
+-		ipte_unlock_simple(vcpu);
++		ipte_unlock_simple(kvm);
+ }
+ 
+ static int ar_translation(struct kvm_vcpu *vcpu, union asce *asce, u8 ar,
+@@ -1086,7 +1086,7 @@ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 	try_storage_prot_override = storage_prot_override_applicable(vcpu);
+ 	need_ipte_lock = psw_bits(*psw).dat && !asce.r;
+ 	if (need_ipte_lock)
+-		ipte_lock(vcpu);
++		ipte_lock(vcpu->kvm);
+ 	/*
+ 	 * Since we do the access further down ultimately via a move instruction
+ 	 * that does key checking and returns an error in case of a protection
+@@ -1127,7 +1127,7 @@ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 	}
+ out_unlock:
+ 	if (need_ipte_lock)
+-		ipte_unlock(vcpu);
++		ipte_unlock(vcpu->kvm);
+ 	if (nr_pages > ARRAY_SIZE(gpa_array))
+ 		vfree(gpas);
+ 	return rc;
+@@ -1199,10 +1199,10 @@ int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+ 	rc = get_vcpu_asce(vcpu, &asce, gva, ar, mode);
+ 	if (rc)
+ 		return rc;
+-	ipte_lock(vcpu);
++	ipte_lock(vcpu->kvm);
+ 	rc = guest_range_to_gpas(vcpu, gva, ar, NULL, length, asce, mode,
+ 				 access_key);
+-	ipte_unlock(vcpu);
++	ipte_unlock(vcpu->kvm);
+ 
+ 	return rc;
+ }
+@@ -1465,7 +1465,7 @@ int kvm_s390_shadow_fault(struct kvm_vcpu *vcpu, struct gmap *sg,
+ 	 * tables/pointers we read stay valid - unshadowing is however
+ 	 * always possible - only guest_table_lock protects us.
+ 	 */
+-	ipte_lock(vcpu);
++	ipte_lock(vcpu->kvm);
+ 
+ 	rc = gmap_shadow_pgt_lookup(sg, saddr, &pgt, &dat_protection, &fake);
+ 	if (rc)
+@@ -1499,7 +1499,7 @@ int kvm_s390_shadow_fault(struct kvm_vcpu *vcpu, struct gmap *sg,
+ 	pte.p |= dat_protection;
+ 	if (!rc)
+ 		rc = gmap_shadow_page(sg, saddr, __pte(pte.val));
+-	ipte_unlock(vcpu);
++	ipte_unlock(vcpu->kvm);
+ 	mmap_read_unlock(sg->mm);
+ 	return rc;
+ }
+diff --git a/arch/s390/kvm/gaccess.h b/arch/s390/kvm/gaccess.h
+index 1124ff282012..9408d6cc8e2c 100644
+--- a/arch/s390/kvm/gaccess.h
++++ b/arch/s390/kvm/gaccess.h
+@@ -440,9 +440,9 @@ int read_guest_real(struct kvm_vcpu *vcpu, unsigned long gra, void *data,
+ 	return access_guest_real(vcpu, gra, data, len, 0);
+ }
+ 
+-void ipte_lock(struct kvm_vcpu *vcpu);
+-void ipte_unlock(struct kvm_vcpu *vcpu);
+-int ipte_lock_held(struct kvm_vcpu *vcpu);
++void ipte_lock(struct kvm *kvm);
++void ipte_unlock(struct kvm *kvm);
++int ipte_lock_held(struct kvm *kvm);
+ int kvm_s390_check_low_addr_prot_real(struct kvm_vcpu *vcpu, unsigned long gra);
+ 
+ /* MVPG PEI indication bits */
+diff --git a/arch/s390/kvm/priv.c b/arch/s390/kvm/priv.c
+index 83bb5cf97282..12c464c7cddf 100644
+--- a/arch/s390/kvm/priv.c
++++ b/arch/s390/kvm/priv.c
+@@ -442,7 +442,7 @@ static int handle_ipte_interlock(struct kvm_vcpu *vcpu)
+ 	vcpu->stat.instruction_ipte_interlock++;
+ 	if (psw_bits(vcpu->arch.sie_block->gpsw).pstate)
+ 		return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
+-	wait_event(vcpu->kvm->arch.ipte_wq, !ipte_lock_held(vcpu));
++	wait_event(vcpu->kvm->arch.ipte_wq, !ipte_lock_held(vcpu->kvm));
+ 	kvm_s390_retry_instr(vcpu);
+ 	VCPU_EVENT(vcpu, 4, "%s", "retrying ipte interlock operation");
+ 	return 0;
+@@ -1471,7 +1471,7 @@ static int handle_tprot(struct kvm_vcpu *vcpu)
+ 	access_key = (operand2 & 0xf0) >> 4;
+ 
+ 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_DAT)
+-		ipte_lock(vcpu);
++		ipte_lock(vcpu->kvm);
+ 
+ 	ret = guest_translate_address_with_key(vcpu, address, ar, &gpa,
+ 					       GACC_STORE, access_key);
+@@ -1508,7 +1508,7 @@ static int handle_tprot(struct kvm_vcpu *vcpu)
+ 	}
+ 
+ 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_DAT)
+-		ipte_unlock(vcpu);
++		ipte_unlock(vcpu->kvm);
+ 	return ret;
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.31.1
+
