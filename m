@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D04B1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD49C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234178AbiGKJ4x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S234074AbiGKJ47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234045AbiGKJ4Y (ORCPT
+        with ESMTP id S233720AbiGKJ4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:56:24 -0400
+        Mon, 11 Jul 2022 05:56:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6846B38CA;
-        Mon, 11 Jul 2022 02:26:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FE0B38E7;
+        Mon, 11 Jul 2022 02:26:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F31BB80E8B;
-        Mon, 11 Jul 2022 09:26:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C0F2C34115;
-        Mon, 11 Jul 2022 09:26:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E83EBB80E91;
+        Mon, 11 Jul 2022 09:26:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BBA6C34115;
+        Mon, 11 Jul 2022 09:26:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531598;
-        bh=/arBt1W/MCDb9c/f3TGb/Hvy8ldRKHztfHDnFIYTmpQ=;
+        s=korg; t=1657531601;
+        bh=NL2ogyRTiRWJHJiqmYU+cNarar9DcAoC2rgdkm966C0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tjcVDC/JllWSPGxYf0TejLWT7qTCt1LS3YgCdNxxaFne4cKFaXVrLdZFEMGyRCjKZ
-         gdjDYiZV8cJsNw+OvDzQqOueoEzKFMXj7OEJLRYqQ2d9OAGhmY2tb2At9HhMrtRTvX
-         WeRh/Ds7ZG8ndsCxlZfBrATsUrVK66YPLBE8eX30=
+        b=Z84AN8+/+SN57c3muZAe4S8srGHnl+93FwGxNj64YvY5h+r8U9nyKvnhJyjJAPajm
+         ZiEhBSP5yfQsQuXhfPpG/2hrAK8oyR5lazXdQ+ix2S/nOsorwaAyeIlD/lqe3/o4lf
+         5AABo+suCPdQE0W4sgaRWu9VrFSXetn2X6PkHuPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5.15 162/230] fbcon: Prevent that screen size is smaller than font size
-Date:   Mon, 11 Jul 2022 11:06:58 +0200
-Message-Id: <20220711090608.656936314@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 163/230] PM: runtime: Redefine pm_runtime_release_supplier()
+Date:   Mon, 11 Jul 2022 11:06:59 +0200
+Message-Id: <20220711090608.686442021@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,99 +48,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit e64242caef18b4a5840b0e7a9bff37abd4f4f933 upstream.
+commit 07358194badf73e267289b40b761f5dc56928eab upstream.
 
-We need to prevent that users configure a screen size which is smaller than the
-currently selected font size. Otherwise rendering chars on the screen will
-access memory outside the graphics memory region.
+Instead of passing an extra bool argument to pm_runtime_release_supplier(),
+make its callers take care of triggering a runtime-suspend of the
+supplier device as needed.
 
-This patch adds a new function fbcon_modechange_possible() which
-implements this check and which later may be extended with other checks
-if necessary.  The new function is called from the FBIOPUT_VSCREENINFO
-ioctl handler in fbmem.c, which will return -EINVAL if userspace asked
-for a too small screen size.
+No expected functional impact.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: stable@vger.kernel.org # v5.4+
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbcon.c |   28 ++++++++++++++++++++++++++++
- drivers/video/fbdev/core/fbmem.c |    4 +++-
- include/linux/fbcon.h            |    4 ++++
- 3 files changed, 35 insertions(+), 1 deletion(-)
+ drivers/base/core.c          |    3 ++-
+ drivers/base/power/runtime.c |   20 +++++++++-----------
+ include/linux/pm_runtime.h   |    5 ++---
+ 3 files changed, 13 insertions(+), 15 deletions(-)
 
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2747,6 +2747,34 @@ void fbcon_update_vcs(struct fb_info *in
- }
- EXPORT_SYMBOL(fbcon_update_vcs);
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -485,7 +485,8 @@ static void device_link_release_fn(struc
+ 	/* Ensure that all references to the link object have been dropped. */
+ 	device_link_synchronize_removal();
  
-+/* let fbcon check if it supports a new screen resolution */
-+int fbcon_modechange_possible(struct fb_info *info, struct fb_var_screeninfo *var)
-+{
-+	struct fbcon_ops *ops = info->fbcon_par;
-+	struct vc_data *vc;
-+	unsigned int i;
-+
-+	WARN_CONSOLE_UNLOCKED();
-+
-+	if (!ops)
-+		return 0;
-+
-+	/* prevent setting a screen size which is smaller than font size */
-+	for (i = first_fb_vc; i <= last_fb_vc; i++) {
-+		vc = vc_cons[i].d;
-+		if (!vc || vc->vc_mode != KD_TEXT ||
-+			   registered_fb[con2fb_map[i]] != info)
-+			continue;
-+
-+		if (vc->vc_font.width  > FBCON_SWAP(var->rotate, var->xres, var->yres) ||
-+		    vc->vc_font.height > FBCON_SWAP(var->rotate, var->yres, var->xres))
-+			return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(fbcon_modechange_possible);
-+
- int fbcon_mode_deleted(struct fb_info *info,
- 		       struct fb_videomode *mode)
+-	pm_runtime_release_supplier(link, true);
++	pm_runtime_release_supplier(link);
++	pm_request_idle(link->supplier);
+ 
+ 	put_device(link->consumer);
+ 	put_device(link->supplier);
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -308,13 +308,10 @@ static int rpm_get_suppliers(struct devi
+ /**
+  * pm_runtime_release_supplier - Drop references to device link's supplier.
+  * @link: Target device link.
+- * @check_idle: Whether or not to check if the supplier device is idle.
+  *
+- * Drop all runtime PM references associated with @link to its supplier device
+- * and if @check_idle is set, check if that device is idle (and so it can be
+- * suspended).
++ * Drop all runtime PM references associated with @link to its supplier device.
+  */
+-void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
++void pm_runtime_release_supplier(struct device_link *link)
  {
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1120,7 +1120,9 @@ static long do_fb_ioctl(struct fb_info *
- 			return -EFAULT;
- 		console_lock();
- 		lock_fb_info(info);
--		ret = fb_set_var(info, &var);
-+		ret = fbcon_modechange_possible(info, &var);
-+		if (!ret)
-+			ret = fb_set_var(info, &var);
- 		if (!ret)
- 			fbcon_update_vcs(info, var.activate & FB_ACTIVATE_ALL);
- 		unlock_fb_info(info);
---- a/include/linux/fbcon.h
-+++ b/include/linux/fbcon.h
-@@ -15,6 +15,8 @@ void fbcon_new_modelist(struct fb_info *
- void fbcon_get_requirement(struct fb_info *info,
- 			   struct fb_blit_caps *caps);
- void fbcon_fb_blanked(struct fb_info *info, int blank);
-+int  fbcon_modechange_possible(struct fb_info *info,
-+			       struct fb_var_screeninfo *var);
- void fbcon_update_vcs(struct fb_info *info, bool all);
- void fbcon_remap_all(struct fb_info *info);
- int fbcon_set_con2fb_map_ioctl(void __user *argp);
-@@ -33,6 +35,8 @@ static inline void fbcon_new_modelist(st
- static inline void fbcon_get_requirement(struct fb_info *info,
- 					 struct fb_blit_caps *caps) {}
- static inline void fbcon_fb_blanked(struct fb_info *info, int blank) {}
-+static inline int  fbcon_modechange_possible(struct fb_info *info,
-+				struct fb_var_screeninfo *var) { return 0; }
- static inline void fbcon_update_vcs(struct fb_info *info, bool all) {}
- static inline void fbcon_remap_all(struct fb_info *info) {}
- static inline int fbcon_set_con2fb_map_ioctl(void __user *argp) { return 0; }
+ 	struct device *supplier = link->supplier;
+ 
+@@ -327,9 +324,6 @@ void pm_runtime_release_supplier(struct
+ 	while (refcount_dec_not_one(&link->rpm_active) &&
+ 	       atomic_read(&supplier->power.usage_count) > 0)
+ 		pm_runtime_put_noidle(supplier);
+-
+-	if (check_idle)
+-		pm_request_idle(supplier);
+ }
+ 
+ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+@@ -337,8 +331,11 @@ static void __rpm_put_suppliers(struct d
+ 	struct device_link *link;
+ 
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+-				device_links_read_lock_held())
+-		pm_runtime_release_supplier(link, try_to_suspend);
++				device_links_read_lock_held()) {
++		pm_runtime_release_supplier(link);
++		if (try_to_suspend)
++			pm_request_idle(link->supplier);
++	}
+ }
+ 
+ static void rpm_put_suppliers(struct device *dev)
+@@ -1791,7 +1788,8 @@ void pm_runtime_drop_link(struct device_
+ 		return;
+ 
+ 	pm_runtime_drop_link_count(link->consumer);
+-	pm_runtime_release_supplier(link, true);
++	pm_runtime_release_supplier(link);
++	pm_request_idle(link->supplier);
+ }
+ 
+ static bool pm_runtime_need_not_resume(struct device *dev)
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -58,7 +58,7 @@ extern void pm_runtime_get_suppliers(str
+ extern void pm_runtime_put_suppliers(struct device *dev);
+ extern void pm_runtime_new_link(struct device *dev);
+ extern void pm_runtime_drop_link(struct device_link *link);
+-extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
++extern void pm_runtime_release_supplier(struct device_link *link);
+ 
+ extern int devm_pm_runtime_enable(struct device *dev);
+ 
+@@ -284,8 +284,7 @@ static inline void pm_runtime_get_suppli
+ static inline void pm_runtime_put_suppliers(struct device *dev) {}
+ static inline void pm_runtime_new_link(struct device *dev) {}
+ static inline void pm_runtime_drop_link(struct device_link *link) {}
+-static inline void pm_runtime_release_supplier(struct device_link *link,
+-					       bool check_idle) {}
++static inline void pm_runtime_release_supplier(struct device_link *link) {}
+ 
+ #endif /* !CONFIG_PM */
+ 
 
 
