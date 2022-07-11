@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B326C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED87C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233499AbiGKJz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
+        id S234122AbiGKJ4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233668AbiGKJzS (ORCPT
+        with ESMTP id S233848AbiGKJza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:55:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8AC33341;
+        Mon, 11 Jul 2022 05:55:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2438C37F8D;
         Mon, 11 Jul 2022 02:26:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0506C61376;
-        Mon, 11 Jul 2022 09:26:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC29C34115;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03BC3B80D2C;
         Mon, 11 Jul 2022 09:26:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55BFCC341C0;
+        Mon, 11 Jul 2022 09:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531579;
-        bh=w7ayt6OeqqIe/QS+tSiV48KClRgPaOXmOyVXYHm6Q08=;
+        s=korg; t=1657531576;
+        bh=iavFSzIg6J15DD6EpN1kRCljEYmVOhPE1G5qPmcCNms=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EF1tLtFB9O1+ezCuxJOFcK9ZVJNaYK5qURPFeWWD3PGXsKzJH6ftSdIwkzY9volwi
-         SScOqzepS8Q1NhilkxaRZDva2y2SHbPWA5B4qg3ri/wdk+W8TF07UL4xjAFgTS48Kw
-         Wwfb1aAUwaO9BHOkdldueRmmYZ2l2rkqU9tIAdw8=
+        b=QwREpGyifiokTqzuBKuc89quLBBdo/IfmlMtZDJ6wOPiNCUkw7PY5AX7tSKkg1GGj
+         6d6SCxnOltuiM8YH2LO0XkdlCF6Y9RIb9v7Mh8p4QINlu85CMUgAzHak9VJvIB6NRD
+         ZCIOT41NcEfOevNrctc/lORMzGwZpLU1J7c9xGe4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 156/230] module: change to print useful messages from elf_validity_check()
-Date:   Mon, 11 Jul 2022 11:06:52 +0200
-Message-Id: <20220711090608.486184291@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 155/230] dt-bindings: soc: qcom: smd-rpm: Fix missing MSM8936 compatible
+Date:   Mon, 11 Jul 2022 11:06:51 +0200
+Message-Id: <20220711090608.458292462@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,177 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-[ Upstream commit 7fd982f394c42f25a73fe9dfbf1e6b11fa26b40a ]
+[ Upstream commit e930244918092d44b60a7b538cf60d737010ceef ]
 
-elf_validity_check() checks ELF headers for errors and ELF Spec.
-compliance and if any of them fail it returns -ENOEXEC from all of
-these error paths. Almost all of them don't print any messages.
+Add compatible msm8936. msm8936 covers both msm8936 and msm8939.
+The relevant driver already has the compat string but, we haven't
+documented it.
 
-When elf_validity_check() returns an error, load_module() prints an
-error message without error code. It is hard to determine why the
-module ELF structure is invalid, even if load_module() prints the
-error code which is -ENOEXEC in all of these cases.
-
-Change to print useful error messages from elf_validity_check() to
-clearly say what went wrong and why the ELF validity checks failed.
-
-Remove the load_module() error message which is no longer needed.
-This patch includes changes to fix build warns on 32-bit platforms:
-
-warning: format '%llu' expects argument of type 'long long unsigned int',
-but argument 3 has type 'Elf32_Off' {aka 'unsigned int'}
-Reported-by: kernel test robot <lkp@intel.com>
-
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Fixes: d6e52482f5ab ("drivers: soc: Add MSM8936 SMD RPM compatible")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220418231857.3061053-1-bryan.odonoghue@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/module.c | 75 +++++++++++++++++++++++++++++++++++--------------
- 1 file changed, 54 insertions(+), 21 deletions(-)
+ Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 83991c2d5af9..256b3c80a771 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -2967,14 +2967,29 @@ static int elf_validity_check(struct load_info *info)
- 	Elf_Shdr *shdr, *strhdr;
- 	int err;
- 
--	if (info->len < sizeof(*(info->hdr)))
--		return -ENOEXEC;
-+	if (info->len < sizeof(*(info->hdr))) {
-+		pr_err("Invalid ELF header len %lu\n", info->len);
-+		goto no_exec;
-+	}
- 
--	if (memcmp(info->hdr->e_ident, ELFMAG, SELFMAG) != 0
--	    || info->hdr->e_type != ET_REL
--	    || !elf_check_arch(info->hdr)
--	    || info->hdr->e_shentsize != sizeof(Elf_Shdr))
--		return -ENOEXEC;
-+	if (memcmp(info->hdr->e_ident, ELFMAG, SELFMAG) != 0) {
-+		pr_err("Invalid ELF header magic: != %s\n", ELFMAG);
-+		goto no_exec;
-+	}
-+	if (info->hdr->e_type != ET_REL) {
-+		pr_err("Invalid ELF header type: %u != %u\n",
-+		       info->hdr->e_type, ET_REL);
-+		goto no_exec;
-+	}
-+	if (!elf_check_arch(info->hdr)) {
-+		pr_err("Invalid architecture in ELF header: %u\n",
-+		       info->hdr->e_machine);
-+		goto no_exec;
-+	}
-+	if (info->hdr->e_shentsize != sizeof(Elf_Shdr)) {
-+		pr_err("Invalid ELF section header size\n");
-+		goto no_exec;
-+	}
- 
- 	/*
- 	 * e_shnum is 16 bits, and sizeof(Elf_Shdr) is
-@@ -2983,8 +2998,10 @@ static int elf_validity_check(struct load_info *info)
- 	 */
- 	if (info->hdr->e_shoff >= info->len
- 	    || (info->hdr->e_shnum * sizeof(Elf_Shdr) >
--		info->len - info->hdr->e_shoff))
--		return -ENOEXEC;
-+		info->len - info->hdr->e_shoff)) {
-+		pr_err("Invalid ELF section header overflow\n");
-+		goto no_exec;
-+	}
- 
- 	info->sechdrs = (void *)info->hdr + info->hdr->e_shoff;
- 
-@@ -2992,13 +3009,19 @@ static int elf_validity_check(struct load_info *info)
- 	 * Verify if the section name table index is valid.
- 	 */
- 	if (info->hdr->e_shstrndx == SHN_UNDEF
--	    || info->hdr->e_shstrndx >= info->hdr->e_shnum)
--		return -ENOEXEC;
-+	    || info->hdr->e_shstrndx >= info->hdr->e_shnum) {
-+		pr_err("Invalid ELF section name index: %d || e_shstrndx (%d) >= e_shnum (%d)\n",
-+		       info->hdr->e_shstrndx, info->hdr->e_shstrndx,
-+		       info->hdr->e_shnum);
-+		goto no_exec;
-+	}
- 
- 	strhdr = &info->sechdrs[info->hdr->e_shstrndx];
- 	err = validate_section_offset(info, strhdr);
--	if (err < 0)
-+	if (err < 0) {
-+		pr_err("Invalid ELF section hdr(type %u)\n", strhdr->sh_type);
- 		return err;
-+	}
- 
- 	/*
- 	 * The section name table must be NUL-terminated, as required
-@@ -3006,8 +3029,10 @@ static int elf_validity_check(struct load_info *info)
- 	 * strings in the section safe.
- 	 */
- 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
--	if (info->secstrings[strhdr->sh_size - 1] != '\0')
--		return -ENOEXEC;
-+	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
-+		pr_err("ELF Spec violation: section name table isn't null terminated\n");
-+		goto no_exec;
-+	}
- 
- 	/*
- 	 * The code assumes that section 0 has a length of zero and
-@@ -3015,8 +3040,11 @@ static int elf_validity_check(struct load_info *info)
- 	 */
- 	if (info->sechdrs[0].sh_type != SHT_NULL
- 	    || info->sechdrs[0].sh_size != 0
--	    || info->sechdrs[0].sh_addr != 0)
--		return -ENOEXEC;
-+	    || info->sechdrs[0].sh_addr != 0) {
-+		pr_err("ELF Spec violation: section 0 type(%d)!=SH_NULL or non-zero len or addr\n",
-+		       info->sechdrs[0].sh_type);
-+		goto no_exec;
-+	}
- 
- 	for (i = 1; i < info->hdr->e_shnum; i++) {
- 		shdr = &info->sechdrs[i];
-@@ -3026,8 +3054,12 @@ static int elf_validity_check(struct load_info *info)
- 			continue;
- 		case SHT_SYMTAB:
- 			if (shdr->sh_link == SHN_UNDEF
--			    || shdr->sh_link >= info->hdr->e_shnum)
--				return -ENOEXEC;
-+			    || shdr->sh_link >= info->hdr->e_shnum) {
-+				pr_err("Invalid ELF sh_link!=SHN_UNDEF(%d) or (sh_link(%d) >= hdr->e_shnum(%d)\n",
-+				       shdr->sh_link, shdr->sh_link,
-+				       info->hdr->e_shnum);
-+				goto no_exec;
-+			}
- 			fallthrough;
- 		default:
- 			err = validate_section_offset(info, shdr);
-@@ -3049,6 +3081,9 @@ static int elf_validity_check(struct load_info *info)
- 	}
- 
- 	return 0;
-+
-+no_exec:
-+	return -ENOEXEC;
- }
- 
- #define COPY_CHUNK_SIZE (16*PAGE_SIZE)
-@@ -3925,10 +3960,8 @@ static int load_module(struct load_info *info, const char __user *uargs,
- 	 * sections.
- 	 */
- 	err = elf_validity_check(info);
--	if (err) {
--		pr_err("Module has invalid ELF structures\n");
-+	if (err)
- 		goto free_copy;
--	}
- 
- 	/*
- 	 * Everything checks out, so set up the section info
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
+index 77963b86b714..1b0062e3c1a4 100644
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
+@@ -34,6 +34,7 @@ properties:
+       - qcom,rpm-ipq6018
+       - qcom,rpm-msm8226
+       - qcom,rpm-msm8916
++      - qcom,rpm-msm8936
+       - qcom,rpm-msm8953
+       - qcom,rpm-msm8974
+       - qcom,rpm-msm8976
 -- 
 2.35.1
 
