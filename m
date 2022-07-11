@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 116D1CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3359DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233890AbiGKJvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
+        id S233790AbiGKJvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233193AbiGKJuc (ORCPT
+        with ESMTP id S233761AbiGKJuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:50:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DAE313A7;
-        Mon, 11 Jul 2022 02:24:34 -0700 (PDT)
+        Mon, 11 Jul 2022 05:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ACA31224;
+        Mon, 11 Jul 2022 02:24:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5E8DB80D2C;
-        Mon, 11 Jul 2022 09:24:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32138C341C0;
-        Mon, 11 Jul 2022 09:24:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 699E16112E;
+        Mon, 11 Jul 2022 09:24:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C8DC34115;
+        Mon, 11 Jul 2022 09:24:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531471;
-        bh=xZz0qpVyBij1ECB9UEqppt9fb3xkzJWlXqnbQzD241E=;
+        s=korg; t=1657531468;
+        bh=U0t7320AYDbcwwyLOZh9lTpswuXbCQhm6S7HxSJKKR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tlrz2eXoukHe8KHEapEYFtFIey496FM8RJFKkH1IzRz60rhGHN25rJ4QmzlCx7BOR
-         aIK4Ry8ZEnNfeALjorOBFKx60k2yxiCmvFfXax6PjKgSCr9r7jEWds67W5JQNcNuHQ
-         0mcGfb4zkmKsViIgEdv/gRiJhV+HJ3hw8YX/ayI4=
+        b=FO4CnZ996AG2Sv7sveLFVeXtG86KHWUtMu4GotvLd5f3rdl8Rcdo1nfl1c8SnOhac
+         qMkvtsv4gdmqRXbA4rE9NBxWFlyfPVdbtmLqUAS4qTrgXxq4DWoU+MnVagWPvyHpnp
+         J1g14BXcvXWJQ8T94VeIuEakLjrbQZc6NcpY37zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wu Bo <wubo40@huawei.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, James Zhu <James.Zhu@amd.com>,
+        tiancyin <tianci.yin@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 090/230] drbd: Fix double free problem in drbd_create_device
-Date:   Mon, 11 Jul 2022 11:05:46 +0200
-Message-Id: <20220711090606.625323058@linuxfoundation.org>
+Subject: [PATCH 5.15 116/230] drm/amd/vcn: fix an error msg on vcn 3.0
+Date:   Mon, 11 Jul 2022 11:06:12 +0200
+Message-Id: <20220711090607.357523545@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,48 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wu Bo <wubo40@huawei.com>
+From: tiancyin <tianci.yin@amd.com>
 
-[ Upstream commit 27548088ac628109f70eb0b1eb521d035844dba8 ]
+[ Upstream commit 425d7a87e54ee358f580eaf10cf28dc95f7121c1 ]
 
-In drbd_create_device(), the 'out_no_io_page' lable has called
-blk_cleanup_disk() when return failed.
+Some video card has more than one vcn instance, passing 0 to
+vcn_v3_0_pause_dpg_mode is incorrect.
 
-So remove the 'out_cleanup_disk' lable to avoid double free the
-disk pointer.
+Error msg:
+Register(1) [mmUVD_POWER_STATUS] failed to reach value
+0x00000001 != 0x00000002
 
-Fixes: e92ab4eda516 ("drbd: add error handling support for add_disk()")
-Signed-off-by: Wu Bo <wubo40@huawei.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/1636013229-26309-1-git-send-email-wubo40@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reviewed-by: James Zhu <James.Zhu@amd.com>
+Signed-off-by: tiancyin <tianci.yin@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index ae6a136d278e..b91d2a9dc238 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -2800,7 +2800,7 @@ enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsig
+diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+index 6e56bef4fdf8..1310617f030f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+@@ -1511,7 +1511,7 @@ static int vcn_v3_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
+ 	struct dpg_pause_state state = {.fw_based = VCN_DPG_STATE__UNPAUSE};
+ 	uint32_t tmp;
  
- 	err = add_disk(disk);
- 	if (err)
--		goto out_cleanup_disk;
-+		goto out_idr_remove_vol;
+-	vcn_v3_0_pause_dpg_mode(adev, 0, &state);
++	vcn_v3_0_pause_dpg_mode(adev, inst_idx, &state);
  
- 	/* inherit the connection state */
- 	device->state.conn = first_connection(resource)->cstate;
-@@ -2814,8 +2814,6 @@ enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsig
- 	drbd_debugfs_device_add(device);
- 	return NO_ERROR;
- 
--out_cleanup_disk:
--	blk_cleanup_disk(disk);
- out_idr_remove_vol:
- 	idr_remove(&connection->peer_devices, vnr);
- out_idr_remove_from_resource:
+ 	/* Wait for power status to be 1 */
+ 	SOC15_WAIT_ON_RREG(VCN, inst_idx, mmUVD_POWER_STATUS, 1,
 -- 
 2.35.1
 
