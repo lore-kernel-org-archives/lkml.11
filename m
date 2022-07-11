@@ -2,83 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E94AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12184C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234012AbiGKJx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35698 "EHLO
+        id S234016AbiGKJxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233813AbiGKJxF (ORCPT
+        with ESMTP id S233809AbiGKJxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:53:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F52ADD58;
-        Mon, 11 Jul 2022 02:25:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53C35B80E89;
-        Mon, 11 Jul 2022 09:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA916C34115;
-        Mon, 11 Jul 2022 09:25:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531524;
-        bh=WMMimb6oH2aQKjY001SDEoyVxYdl3PN4VWbitUA/0lU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FT0DUt0Yv7LmDfgA3IsstQqQJBOUeeNsGm/q7Nay9zxUNILv0nbDc/4mpHMYmMZ64
-         0kX5tcd70dVw9WbDcAEfQAnRTOuCw9znNg8ovzc3d3HSB1GLU+0JRdRIAb5fDwDILP
-         fjNOVombmeQHgO6swYST0lzZqEsmjOOf9ci3dNOM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Myrtle Shah <gatecat@ds0.me>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/230] riscv/mm: Add XIP_FIXUP for riscv_pfn_base
-Date:   Mon, 11 Jul 2022 11:05:52 +0200
-Message-Id: <20220711090606.793876247@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
-References: <20220711090604.055883544@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C6A7ADD51;
+        Mon, 11 Jul 2022 02:25:26 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9865415BF;
+        Mon, 11 Jul 2022 02:25:25 -0700 (PDT)
+Received: from [10.57.43.82] (unknown [10.57.43.82])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E3E43F73D;
+        Mon, 11 Jul 2022 02:25:22 -0700 (PDT)
+Message-ID: <8d282e87-c1c8-f7a0-631b-8d569c2154a6@arm.com>
+Date:   Mon, 11 Jul 2022 10:25:20 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/8] perf evsel: Do not request ptrauth sample field if
+ not supported
+Content-Language: en-US
+To:     Vince Weaver <vincent.weaver@maine.edu>,
+        Andrew Kilroy <andrew.kilroy@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Tom Rix <trix@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, llvm@lists.linux.dev
+References: <20220704145333.22557-1-andrew.kilroy@arm.com>
+ <20220704145333.22557-3-andrew.kilroy@arm.com>
+ <d67dff7-73c3-e5a-eb7b-f132e8f565cc@maine.edu>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <d67dff7-73c3-e5a-eb7b-f132e8f565cc@maine.edu>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
-
-[ Upstream commit ca0cb9a60f6d86d4b2139c6f393a78f39edcd7cb ]
-
-This manifests as a crash early in boot on VexRiscv.
-
-Signed-off-by: Myrtle Shah <gatecat@ds0.me>
-[Palmer: split commit]
-Fixes: 44c922572952 ("RISC-V: enable XIP")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/riscv/mm/init.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index 7f130ac3b9f9..c58a7c77989b 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -265,6 +265,7 @@ pgd_t early_pg_dir[PTRS_PER_PGD] __initdata __aligned(PAGE_SIZE);
- static pmd_t __maybe_unused early_dtb_pmd[PTRS_PER_PMD] __initdata __aligned(PAGE_SIZE);
- 
- #ifdef CONFIG_XIP_KERNEL
-+#define riscv_pfn_base         (*(unsigned long  *)XIP_FIXUP(&riscv_pfn_base))
- #define trampoline_pg_dir      ((pgd_t *)XIP_FIXUP(trampoline_pg_dir))
- #define fixmap_pte             ((pte_t *)XIP_FIXUP(fixmap_pte))
- #define early_pg_dir           ((pgd_t *)XIP_FIXUP(early_pg_dir))
--- 
-2.35.1
 
 
+On 06/07/2022 17:01, Vince Weaver wrote:
+> On Mon, 4 Jul 2022, Andrew Kilroy wrote:
+> 
+>> A subsequent patch alters perf to perf_event_open with the
+>> PERF_SAMPLE_ARCH_1 bit on.
+>>
+>> This patch deals with the case where the kernel does not know about the
+>> PERF_SAMPLE_ARCH_1 bit, and does not know to send the pointer
+>> authentication masks.  In this case the perf_event_open system call
+>> returns -EINVAL (-22) and perf exits with an error.
+>>
+>> This patch causes userspace process to re-attempt the perf_event_open
+>> system call but without asking for the PERF_SAMPLE_ARCH_1 sample
+>> field, allowing the perf_event_open system call to succeed.
+> 
+> So in this case you are leaking ARM64-specific info into the generic 
+> perf_event_open() call?  Is there any way the kernel could implement this 
+> without userspace having to deal with the issue?
 
+Hi Vince,
+
+The alternative to this change is just to call it "PERF_SAMPLE_POINTER_AUTH_MASK"
+and then it's not Arm specific, it's just that only Arm implements it for now.
+This is definitely an option.
+
+But if no platform ever implements something similar then that bit is wasted.
+The intention of adding "PERF_SAMPLE_ARCH_1" was to prevent wasting that bit.
+But as you say, maybe making it arch specific isn't the right way either.
+
+I wouldn't say the perf_event_open call is currently generic though, lots of
+it already requires knowledge of the current platform, and searching for 'x86'
+in the docs for it gives 10 matches.
+
+> 
+> There are a few recent ARM64 perf_event related patches that are pushing 
+> ARM specific interfaces into the generic code, with the apparent 
+> assumption that it will just be implemented in the userspace perf tool.  
+> However there are a number of outside-the-kernel codebases that also use 
+> perf_event_open() and it seems a bit onerous if all of them have to start 
+> adding a lot of extra ARM64-specific code, especially because as far as I 
+
+Because pointer auth is a hardware feature, other tools have no choice but
+to implement this if they do Dwarf based stack unwinding. There is no way
+around that. The pointers are stored mangled and they don't make sense
+without masking them. GDB has already implemented support for it. If they
+don't do Dwarf based stack unwinding then they can carry on as they are
+and everything will still work.
+
+> can tell there haven't been any documentation patches included for the 
+> Makefile.
+
+We plan to update the docs for the syscall, but it's in another repo, and
+we'll wait for this change to be finalised first. I'm not sure what you
+mean about the Makefile?
+
+Thanks
+James
+
+> 
+> The other recent change that's annoying for userspace is the addition of 
+> the ARM-specific /proc/sys/kernel/perf_user_access that duplicates 
+> functionality found in /sys/devices/cpu/rdpmc
+> 
+> Vince Weaver
+> vincent.weaver@maine.edu
