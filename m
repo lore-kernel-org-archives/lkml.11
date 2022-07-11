@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD42BCCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C7ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbiGKM5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        id S232212AbiGKM5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbiGKM5f (ORCPT
+        with ESMTP id S230158AbiGKM5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:57:35 -0400
+        Mon, 11 Jul 2022 08:57:36 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9DF2F653;
-        Mon, 11 Jul 2022 05:57:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313F24AD4A;
+        Mon, 11 Jul 2022 05:57:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1657544255; x=1689080255;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=Ag4KJcMdjJYGFz4PndGZ7BSSeB/P26WcU/vYUyjwibI=;
-  b=zBCBuN7rlFhk/4HYqPmiTMn5sQcRodgiOHLtgRrKRWKeIzVGmM7+LYJS
-   6mqBSsIvZ9YBSj/+nEQiJp3uEOrfNVwEM1jpNt7kso7+L7haiRYUNacLo
-   kBw5tDZKflGDXxD4IKRBlMWZlpXkV3JEvxltSyU9dyjwdo+94IpXP1BBC
-   8=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 05:57:34 -0700
+  bh=MNeDAxnXQfipcSD834nu51vTb5T/I9gJyiXyWDx9IL4=;
+  b=uBtiWQmjBdsNfYptSPMDPmTSuUCpX9wQIYb6KmpX3nrKbuaYCO6f8S9n
+   oNfUy6L+IMPA8nE2OOW96M9azn+FvjLlOnJeVrNDUq8vgdjGVZlPDDK0V
+   ZIHlWifQJx+LCOwa5ev/naMZPwzTGXXfPff+xtmPy/b4Lnhs9fyXPMpav
+   A=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 05:57:35 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 05:57:33 -0700
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 05:57:33 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 18:27:08 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 18:27:11 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id C45583E36; Mon, 11 Jul 2022 18:27:06 +0530 (IST)
+        id 25E483E49; Mon, 11 Jul 2022 18:27:07 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
@@ -45,9 +45,9 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
         bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
         quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
-Subject: [PATCH v6 01/10] drm/msm/disp/dpu: clear dpu_assign_crtc and get crtc from connector state instead of dpu_enc
-Date:   Mon, 11 Jul 2022 18:26:55 +0530
-Message-Id: <1657544224-10680-2-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [PATCH v6 05/10] drm/msm/dp: use the eDP bridge ops to validate eDP modes
+Date:   Mon, 11 Jul 2022 18:26:59 +0530
+Message-Id: <1657544224-10680-6-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
 References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
@@ -55,132 +55,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update crtc retrieval from dpu_enc to dpu_enc connector state,
-since new links get set as part of the dpu enc virt mode set.
-The dpu_enc->crtc cache is no more needed, hence cleaning it as
-part of this change.
+The eDP and DP interfaces shared the bridge operations and
+the eDP specific changes were implemented under is_edp check.
+To add psr support for eDP, we started using a new set of eDP
+bridge ops. We are moving the eDP specific code in the
+dp_bridge_mode_valid function to a new eDP function,
+edp_bridge_mode_valid under the eDP bridge ops.
 
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  4 ----
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 30 ++++++++++++++---------------
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  8 --------
- 3 files changed, 14 insertions(+), 28 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_display.c |  8 --------
+ drivers/gpu/drm/msm/dp/dp_drm.c     | 34 +++++++++++++++++++++++++++++++++-
+ 2 files changed, 33 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-index b56f777..f91e3d1 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-@@ -972,7 +972,6 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
- 		 */
- 		if (dpu_encoder_get_intf_mode(encoder) == INTF_MODE_VIDEO)
- 			release_bandwidth = true;
--		dpu_encoder_assign_crtc(encoder, NULL);
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 64a6254..2b3ec6b 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -986,14 +986,6 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
+ 		return -EINVAL;
  	}
  
- 	/* wait for frame_event_done completion */
-@@ -1042,9 +1041,6 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
- 	trace_dpu_crtc_enable(DRMID(crtc), true, dpu_crtc);
- 	dpu_crtc->enabled = true;
- 
--	drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state->encoder_mask)
--		dpu_encoder_assign_crtc(encoder, crtc);
+-	/*
+-	 * The eDP controller currently does not have a reliable way of
+-	 * enabling panel power to read sink capabilities. So, we rely
+-	 * on the panel driver to populate only supported modes for now.
+-	 */
+-	if (dp->is_edp)
+-		return MODE_OK;
 -
- 	/* Enable/restore vblank irq handling */
- 	drm_crtc_vblank_on(crtc);
- }
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 52516eb..0fddc9d 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -181,7 +181,6 @@ struct dpu_encoder_virt {
+ 	if (mode->clock > DP_MAX_PIXEL_CLK_KHZ)
+ 		return MODE_BAD;
  
- 	bool intfs_swapped;
- 
--	struct drm_crtc *crtc;
- 	struct drm_connector *connector;
- 
- 	struct dentry *debugfs_root;
-@@ -1245,6 +1244,7 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
- 		struct dpu_encoder_phys *phy_enc)
- {
- 	struct dpu_encoder_virt *dpu_enc = NULL;
-+	struct drm_crtc *crtc;
- 	unsigned long lock_flags;
- 
- 	if (!drm_enc || !phy_enc)
-@@ -1253,9 +1253,14 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
- 	DPU_ATRACE_BEGIN("encoder_vblank_callback");
- 	dpu_enc = to_dpu_encoder_virt(drm_enc);
- 
-+	if (!dpu_enc->connector || !dpu_enc->connector->state)
-+		return;
-+
-+	crtc = dpu_enc->connector->state->crtc;
-+
- 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
--	if (dpu_enc->crtc)
--		dpu_crtc_vblank_callback(dpu_enc->crtc);
-+	if (crtc)
-+		dpu_crtc_vblank_callback(crtc);
- 	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
- 
- 	atomic_inc(&phy_enc->vsync_cnt);
-@@ -1280,29 +1285,22 @@ static void dpu_encoder_underrun_callback(struct drm_encoder *drm_enc,
- 	DPU_ATRACE_END("encoder_underrun_callback");
+diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
+index 8ca0b37..2bf8c8d 100644
+--- a/drivers/gpu/drm/msm/dp/dp_drm.c
++++ b/drivers/gpu/drm/msm/dp/dp_drm.c
+@@ -181,12 +181,44 @@ static void edp_bridge_atomic_post_disable(struct drm_bridge *drm_bridge,
+ 	dp_bridge_atomic_post_disable(drm_bridge, old_bridge_state);
  }
  
--void dpu_encoder_assign_crtc(struct drm_encoder *drm_enc, struct drm_crtc *crtc)
--{
--	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
--	unsigned long lock_flags;
--
--	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
--	/* crtc should always be cleared before re-assigning */
--	WARN_ON(crtc && dpu_enc->crtc);
--	dpu_enc->crtc = crtc;
--	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
--}
--
- void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder *drm_enc,
- 					struct drm_crtc *crtc, bool enable)
- {
- 	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
-+	struct drm_crtc *new_crtc;
- 	unsigned long lock_flags;
- 	int i;
- 
- 	trace_dpu_enc_vblank_cb(DRMID(drm_enc), enable);
- 
-+	if (!dpu_enc->connector || !dpu_enc->connector->state)
-+		return;
++/**
++ * edp_bridge_mode_valid - callback to determine if specified mode is valid
++ * @bridge: Pointer to drm bridge structure
++ * @info: display info
++ * @mode: Pointer to drm mode structure
++ * Returns: Validity status for specified mode
++ */
++static enum drm_mode_status edp_bridge_mode_valid(struct drm_bridge *bridge,
++					  const struct drm_display_info *info,
++					  const struct drm_display_mode *mode)
++{
++	struct msm_dp *dp;
++	int mode_pclk_khz = mode->clock;
 +
-+	new_crtc = dpu_enc->connector->state->crtc;
- 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
--	if (dpu_enc->crtc != crtc) {
-+	if (!new_crtc || new_crtc != crtc) {
- 		spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
- 		return;
- 	}
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-index 781d41c..edba815 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-@@ -39,14 +39,6 @@ struct msm_display_info {
- };
- 
- /**
-- * dpu_encoder_assign_crtc - Link the encoder to the crtc it's assigned to
-- * @encoder:	encoder pointer
-- * @crtc:	crtc pointer
-- */
--void dpu_encoder_assign_crtc(struct drm_encoder *encoder,
--			     struct drm_crtc *crtc);
--
--/**
-  * dpu_encoder_toggle_vblank_for_crtc - Toggles vblank interrupts on or off if
-  *	the encoder is assigned to the given crtc
-  * @encoder:	encoder pointer
++	dp = to_dp_bridge(bridge)->dp_display;
++
++	if (!dp || !mode_pclk_khz || !dp->connector) {
++		DRM_ERROR("invalid params\n");
++		return -EINVAL;
++	}
++
++	if (mode->clock > DP_MAX_PIXEL_CLK_KHZ)
++		return MODE_CLOCK_HIGH;
++
++	/*
++	 * The eDP controller currently does not have a reliable way of
++	 * enabling panel power to read sink capabilities. So, we rely
++	 * on the panel driver to populate only supported modes for now.
++	 */
++	return MODE_OK;
++}
++
+ static const struct drm_bridge_funcs edp_bridge_ops = {
+ 	.atomic_enable = edp_bridge_atomic_enable,
+ 	.atomic_disable = edp_bridge_atomic_disable,
+ 	.atomic_post_disable = edp_bridge_atomic_post_disable,
+ 	.mode_set = dp_bridge_mode_set,
+-	.mode_valid = dp_bridge_mode_valid,
++	.mode_valid = edp_bridge_mode_valid,
+ 	.atomic_reset = drm_atomic_helper_bridge_reset,
+ 	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
+ 	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
 -- 
 2.7.4
 
