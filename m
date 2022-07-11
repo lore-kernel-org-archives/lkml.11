@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDDFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230266AbiGKNwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 09:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
+        id S230389AbiGKNwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 09:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiGKNwl (ORCPT
+        with ESMTP id S229877AbiGKNwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 09:52:41 -0400
+        Mon, 11 Jul 2022 09:52:42 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA3565C97B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:52:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93E6A61B17
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:52:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657547559;
+        s=mimecast20190719; t=1657547560;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SXxw8023X5Ng7EOWnmeS1q1VSSsbgfI4xN4bjScnx08=;
-        b=B5ojYFmUvcUPr4Ur9cvARWRSGY672n6DKk8cdycC2eRdoiDxjHi9iiMT3DT0Cw9nTo087w
-        zgp9KSxgbyCOcwihQwSvQRTMD8cUMbjwQGUdSYXNhhJaOH5Xh3eS6PxMzTysDbbMweDEy0
-        XO9ioo8oqEYG7KgfbZKZZJ/dqK59vHE=
+        bh=ZZi7tQd5jc7PjCR++DRTDi/vBjqHkl8WrqcY6+kDf54=;
+        b=bLzjBTwzOnpEzt+ETxLBwapn8Dg/hLDXsVmbFVqEll6p/S/p84AnSbN3TMh7ZbonL8yXdi
+        5cvMn/2Xek3IsgPjXM5mjGESWRSMfjlbTltrx8WMeqNFbx87mVoph/kr9sLwBKWviFqBEQ
+        /vW0/GoJuiuHuBoytNZHFGleu0QNN4s=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-632-TJYriBkXMFySrijOEM6Z1w-1; Mon, 11 Jul 2022 09:52:38 -0400
-X-MC-Unique: TJYriBkXMFySrijOEM6Z1w-1
+ us-mta-622-2FbtIBGBPJiSAqOprJ_oBg-1; Mon, 11 Jul 2022 09:52:39 -0400
+X-MC-Unique: 2FbtIBGBPJiSAqOprJ_oBg-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 555A938005C4;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D31431C01B23;
         Mon, 11 Jul 2022 13:52:38 +0000 (UTC)
 Received: from bfoster.redhat.com (unknown [10.22.32.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 22B8F18EA8;
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9EA4618EA8;
         Mon, 11 Jul 2022 13:52:38 +0000 (UTC)
 From:   Brian Foster <bfoster@redhat.com>
 To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     ikent@redhat.com, onestero@redhat.com, willy@infradead.org
-Subject: [PATCH v2 2/4] idr: support optional id tagging
-Date:   Mon, 11 Jul 2022 09:52:35 -0400
-Message-Id: <20220711135237.173667-3-bfoster@redhat.com>
+Subject: [PATCH v2 4/4] procfs: use efficient tgid pid search on root readdir
+Date:   Mon, 11 Jul 2022 09:52:37 -0400
+Message-Id: <20220711135237.173667-5-bfoster@redhat.com>
 In-Reply-To: <20220711135237.173667-1-bfoster@redhat.com>
 References: <20220711135237.173667-1-bfoster@redhat.com>
 MIME-Version: 1.0
@@ -54,63 +54,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Certain idr users can benefit from generic tagging support of the
-underlying radix-tree (or xarray) data structure. For example, a
-readdir of the /proc root dir performs an inefficient walk of the
-pid namespace idr tree. This involves checking the entry of every
-allocated id for a group leader task association. Expose a simple,
-single tag interface for idr users to facilitate more efficient
-scans in situations like this.
+find_ge_pid() walks every allocated id and checks every associated
+pid in the namespace for a link to a PIDTYPE_TGID task. If the pid
+namespace contains processes with large numbers of threads, this
+search doesn't scale and can notably increase getdents() syscall
+latency.
+
+For example, on a mostly idle 2.4GHz Intel Xeon running Fedora on
+5.19.0-rc2, 'strace -T xfs_io -c readdir /proc' shows the following:
+
+  getdents64(... /* 814 entries */, 32768) = 20624 <0.000568>
+
+With the addition of a dummy (i.e. idle) process running that
+creates an additional 100k threads, that latency increases to:
+
+  getdents64(... /* 815 entries */, 32768) = 20656 <0.011315>
+
+While this may not be noticeable to users in one off /proc scans or
+simple usage of ps or top, we have users that report problems caused
+by this latency increase in these sort of scaled environments with
+custom tooling that makes heavier use of task monitoring.
+
+Optimize the tgid task scanning in proc_pid_readdir() by using the
+more efficient find_get_tgid_task() helper. This significantly
+improves readdir() latency when the pid namespace is populated with
+processes with very large thread counts. For example, the above 100k
+idle task test against a patched kernel now results in the
+following:
+
+Idle:
+  getdents64(... /* 861 entries */, 32768) = 21048 <0.000670>
+
+"" + 100k threads:
+  getdents64(... /* 862 entries */, 32768) = 21096 <0.000959>
+
+... which is a much smaller latency hit after the high thread count
+task is started.
 
 Signed-off-by: Brian Foster <bfoster@redhat.com>
 ---
- include/linux/idr.h | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ fs/proc/base.c | 17 +----------------
+ 1 file changed, 1 insertion(+), 16 deletions(-)
 
-diff --git a/include/linux/idr.h b/include/linux/idr.h
-index a0dce14090a9..44e8bb287d0e 100644
---- a/include/linux/idr.h
-+++ b/include/linux/idr.h
-@@ -27,6 +27,7 @@ struct idr {
-  * to users.  Use tag 0 to track whether a node has free space below it.
-  */
- #define IDR_FREE	0
-+#define IDR_TAG		1
- 
- /* Set the IDR flag and the IDR_FREE tag */
- #define IDR_RT_MARKER	(ROOT_IS_IDR | (__force gfp_t)			\
-@@ -174,6 +175,31 @@ static inline void idr_preload_end(void)
- 	local_unlock(&radix_tree_preloads.lock);
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index 8dfa36a99c74..b3bff6d26dcc 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -3429,24 +3429,9 @@ struct tgid_iter {
+ };
+ static struct tgid_iter next_tgid(struct pid_namespace *ns, struct tgid_iter iter)
+ {
+-	struct pid *pid;
+-
+ 	if (iter.task)
+ 		put_task_struct(iter.task);
+-	rcu_read_lock();
+-retry:
+-	iter.task = NULL;
+-	pid = find_ge_pid(iter.tgid, ns);
+-	if (pid) {
+-		iter.tgid = pid_nr_ns(pid, ns);
+-		iter.task = pid_task(pid, PIDTYPE_TGID);
+-		if (!iter.task) {
+-			iter.tgid += 1;
+-			goto retry;
+-		}
+-		get_task_struct(iter.task);
+-	}
+-	rcu_read_unlock();
++	iter.task = find_get_tgid_task(&iter.tgid, ns);
+ 	return iter;
  }
  
-+static inline void idr_set_tag(struct idr *idr, unsigned long id)
-+{
-+	radix_tree_tag_set(&idr->idr_rt, id - idr->idr_base, IDR_TAG);
-+}
-+
-+static inline bool idr_get_tag(struct idr *idr, unsigned long id)
-+{
-+	return radix_tree_tag_get(&idr->idr_rt, id - idr->idr_base, IDR_TAG);
-+}
-+
-+/*
-+ * Find the next id with the internal tag set.
-+ */
-+static inline void *idr_get_next_tag(struct idr *idr, unsigned long id)
-+{
-+	unsigned int ret;
-+	void *entry;
-+
-+	ret = radix_tree_gang_lookup_tag(&idr->idr_rt, &entry,
-+					 id - idr->idr_base, 1, IDR_TAG);
-+	if (ret != 1)
-+		return NULL;
-+	return entry;
-+}
-+
- /**
-  * idr_for_each_entry() - Iterate over an IDR's elements of a given type.
-  * @idr: IDR handle.
 -- 
 2.35.3
 
