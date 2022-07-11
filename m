@@ -2,85 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 475C3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6077C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbiGKIl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
+        id S230360AbiGKIm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbiGKIkr (ORCPT
+        with ESMTP id S230362AbiGKImK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:40:47 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D401B21E2E;
-        Mon, 11 Jul 2022 01:40:07 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oAoxa-0006eA-00; Mon, 11 Jul 2022 10:40:06 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 95B8DC0344; Mon, 11 Jul 2022 10:37:35 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 10:37:35 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH] MIPS: math-emu: Use the bitmap API to allocate bitmaps
-Message-ID: <20220711083735.GA6084@alpha.franken.de>
-References: <dd954ccb2472019c64da0dd3a90d7b39a2fadc98.1656960999.git.christophe.jaillet@wanadoo.fr>
+        Mon, 11 Jul 2022 04:42:10 -0400
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [5.144.164.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D44521801;
+        Mon, 11 Jul 2022 01:41:33 -0700 (PDT)
+Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 07AEC1F4E8;
+        Mon, 11 Jul 2022 10:41:30 +0200 (CEST)
+Message-ID: <09f3f093-f6a0-455f-ad03-23f34fb71ecc@somainline.org>
+Date:   Mon, 11 Jul 2022 10:41:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dd954ccb2472019c64da0dd3a90d7b39a2fadc98.1656960999.git.christophe.jaillet@wanadoo.fr>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 3/3] arm64: dts: qcom: msm8998: add MSM8998 SDCC specific
+ compatible
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     Douglas Anderson <dianders@chromium.org>
+References: <20220711082709.39102-1-krzysztof.kozlowski@linaro.org>
+ <20220711082709.39102-3-krzysztof.kozlowski@linaro.org>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <20220711082709.39102-3-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 08:56:52PM +0200, Christophe JAILLET wrote:
-> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+
+
+On 11.07.2022 10:27, Krzysztof Kozlowski wrote:
+> Add a MSM8998-specific SDCC compatible, because using only a generic
+> qcom,sdhci-msm-v4 fallback is deprecated.
 > 
-> It is less verbose and it improves the semantic.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  arch/mips/math-emu/dsemul.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+
+Konrad
+>  arch/arm64/boot/dts/qcom/msm8998.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/arch/mips/math-emu/dsemul.c b/arch/mips/math-emu/dsemul.c
-> index e2d46cb93ca9..e02bd20b60a6 100644
-> --- a/arch/mips/math-emu/dsemul.c
-> +++ b/arch/mips/math-emu/dsemul.c
-> @@ -82,11 +82,8 @@ static int alloc_emuframe(void)
+> diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+> index 91153a0234f5..c98f36f95f3c 100644
+> --- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+> @@ -2076,7 +2076,7 @@ qusb2phy: phy@c012000 {
+>  		};
 >  
->  	/* Ensure we have an allocation bitmap */
->  	if (!mm_ctx->bd_emupage_allocmap) {
-> -		mm_ctx->bd_emupage_allocmap =
-> -			kcalloc(BITS_TO_LONGS(emupage_frame_count),
-> -					      sizeof(unsigned long),
-> -				GFP_ATOMIC);
-> -
-> +		mm_ctx->bd_emupage_allocmap = bitmap_zalloc(emupage_frame_count,
-> +							    GFP_ATOMIC);
->  		if (!mm_ctx->bd_emupage_allocmap) {
->  			idx = BD_EMUFRAME_NONE;
->  			goto out_unlock;
-> @@ -206,7 +203,7 @@ void dsemul_mm_cleanup(struct mm_struct *mm)
->  {
->  	mm_context_t *mm_ctx = &mm->context;
+>  		sdhc2: mmc@c0a4900 {
+> -			compatible = "qcom,sdhci-msm-v4";
+> +			compatible = "qcom,msm8998-sdhci", "qcom,sdhci-msm-v4";
+>  			reg = <0x0c0a4900 0x314>, <0x0c0a4000 0x800>;
+>  			reg-names = "hc", "core";
 >  
-> -	kfree(mm_ctx->bd_emupage_allocmap);
-> +	bitmap_free(mm_ctx->bd_emupage_allocmap);
->  }
->  
->  int mips_dsemul(struct pt_regs *regs, mips_instruction ir,
-> -- 
-> 2.34.1
-
-applied to mips-next.
-
-Thomas.
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
