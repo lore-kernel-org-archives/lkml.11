@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34825C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B458C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbiGKGl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 02:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40928 "EHLO
+        id S229799AbiGKGl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 02:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiGKGlX (ORCPT
+        with ESMTP id S229634AbiGKGlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 02:41:23 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E8517070
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:41:22 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id e1-20020a05660222c100b0067b95ec5046so757207ioe.18
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:41:22 -0700 (PDT)
+        Mon, 11 Jul 2022 02:41:24 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39760167CD
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:41:23 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id a23-20020a5d9597000000b00678d2dbf957so2229149ioo.8
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:41:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=W3Kz+I1koeulszWwKka+ACCAqii80NtWXfp+IS9cHao=;
-        b=vA27it/FAJeo/NB36RpggZffg+UpAzTdN9HPYc6XBsNHfvpvkLvAMEKYFDXHgpNK67
-         s9RzM/aNDSBWToptv8NK4YUhtQ+QKdSh5zD/iKWTCBpeDM90naq6KDEwQyMXqLeQappY
-         Mx2VPDWhtK6nBxgUwKTWyYy0+5IqYtXmRR6zNq3USegdDn3mPYrNyKhrPvopqhN6pacd
-         SZ/q+rxl8JojSz7rbR1WLKU33IYK1zuJ9yZBIxet4wSBnuSFu9x8uM23p6UPt5tbjNF5
-         K7fDBPqbB7QzQKDaocBWAG27n1CabVrLtSUQsogHl5espE69XxORc00YLTObO8zTSLrS
-         /33g==
-X-Gm-Message-State: AJIora8pCh0SIXqqrI137rP3Pg7ZPTpAMzTdIybeU8uCMFD1dFk12gDV
-        GzxEqhfS9xvqhHu47tKKT9Su0rqTKU917fjS2bIrbNMq9sr0
-X-Google-Smtp-Source: AGRyM1tckUCk0+fbHQnzT+47Fyw/9pK9qqc1cnysayIJtjXHOXnrryWanU2swGq/ycieai4v4mYK1T/h+7xxDJdjV310QHtExxEj
+        bh=jEtPsZ71e8la7mMUwAKneUEqUuftnUjt58BQdp8JnXE=;
+        b=qnoJ6UKALgq8J9+Ix8gOD97uIUCjyUdYjY816Md84mdhlSoht+scs+5swod+fHaiNr
+         rt3x+z7WgI5k3eQFFYabVHfErN3e8aGAW/aizLN+IHIirDbI3eGIeIYq1qgwcj+LryyR
+         ygJM/6szeH27NwbUdrMEVx4XkRH4cY9HYIynp7ggUXCs6kmIKXYUC1pTpjApEefzu3TQ
+         qX0nzH0cYT/R3dJYGmP0w1dkFYe4YnEVD55VMcf3x5kfAcCgL454NB9sQKK4fNAPE5pL
+         vWaM0caYDv9JHL0OMDXAT0bMN64rRhwzDJqsMwnBI6nKWfUAmrGWgctheHDWlUcH769z
+         zYog==
+X-Gm-Message-State: AJIora+EugaPuRYJmn1n57V2ybi2EXaDjut0+YMXVBmf7mET+c1jPWC6
+        z/S5+QHp7KklGhclKSbyglu5QXGqHMWuD6ioP5z8qKAwJca4
+X-Google-Smtp-Source: AGRyM1tldaAG/vst03t3098xtY+DG1LLb3O69uQkFr1PGrnvv1+HluXD9pi0qVxdbbbNN2xf8E4zF5P14zMamhDMukg4eMl+Ioge
 MIME-Version: 1.0
-X-Received: by 2002:a92:c901:0:b0:2da:8497:501f with SMTP id
- t1-20020a92c901000000b002da8497501fmr8441207ilp.182.1657521682332; Sun, 10
+X-Received: by 2002:a02:9995:0:b0:33f:1def:a856 with SMTP id
+ a21-20020a029995000000b0033f1defa856mr9712173jal.140.1657521682552; Sun, 10
  Jul 2022 23:41:22 -0700 (PDT)
 Date:   Sun, 10 Jul 2022 23:41:22 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001544f005e381d722@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in kill_fasync
-From:   syzbot <syzbot+382c8824777dca2812fe@syzkaller.appspotmail.com>
-To:     chuck.lever@oracle.com, jlayton@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Message-ID: <000000000000189d0f05e381d702@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in mprotect_fixup
+From:   syzbot <syzbot+b707736a1ad47fda6500@syzkaller.appspotmail.com>
+To:     Liam.Howlett@Oracle.com, akpm@linux-foundation.org,
+        liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
+        willy@infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,29 +55,35 @@ syzbot found the following issue on:
 
 HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
 git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13a297cc080000
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=111640c8080000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
-dashboard link: https://syzkaller.appspot.com/bug?extid=382c8824777dca2812fe
+dashboard link: https://syzkaller.appspot.com/bug?extid=b707736a1ad47fda6500
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=115fdbec080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132e4c92080000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=148349a2080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1266d768080000
 
-Bisection is inconclusive: the issue happens on the oldest tested release.
+The issue was bisected to:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15a3c0a4080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17a3c0a4080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13a3c0a4080000
+commit 2ee236fe53a8e2ab54679c74e8a1fb77e55b29bb
+Author: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Date:   Tue Jun 21 20:46:53 2022 +0000
+
+    mm: start tracking VMAs with maple tree
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=170fe714080000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=148fe714080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=108fe714080000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+382c8824777dca2812fe@syzkaller.appspotmail.com
+Reported-by: syzbot+b707736a1ad47fda6500@syzkaller.appspotmail.com
+Fixes: 2ee236fe53a8 ("mm: start tracking VMAs with maple tree")
 
 ==================================================================
-BUG: KASAN: use-after-free in kill_fasync+0x45e/0x470 fs/fcntl.c:1014
-Read of size 8 at addr ffff88807dc93168 by task kworker/0:2/144
+BUG: KASAN: use-after-free in mprotect_fixup+0x8fc/0x960 mm/mprotect.c:606
+Read of size 8 at addr ffff88801f89ed80 by task syz-executor107/3608
 
-CPU: 0 PID: 144 Comm: kworker/0:2 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+CPU: 0 PID: 3608 Comm: syz-executor107 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-Workqueue: events key_garbage_collector
 Call Trace:
  <TASK>
  __dump_stack lib/dump_stack.c:88 [inline]
@@ -84,40 +91,48 @@ Call Trace:
  print_address_description mm/kasan/report.c:317 [inline]
  print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
  kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
- kill_fasync+0x45e/0x470 fs/fcntl.c:1014
- post_one_notification.isra.0+0x6e4/0x990 kernel/watch_queue.c:128
- remove_watch_from_object+0x35a/0x9d0 kernel/watch_queue.c:527
- remove_watch_list include/linux/watch_queue.h:115 [inline]
- key_gc_unused_keys.constprop.0+0x2e5/0x600 security/keys/gc.c:135
- key_garbage_collector+0x3d7/0x920 security/keys/gc.c:297
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ mprotect_fixup+0x8fc/0x960 mm/mprotect.c:606
+ do_mprotect_pkey+0x70f/0xa80 mm/mprotect.c:781
+ __do_sys_pkey_mprotect mm/mprotect.c:816 [inline]
+ __se_sys_pkey_mprotect mm/mprotect.c:813 [inline]
+ __x64_sys_pkey_mprotect+0x93/0xf0 mm/mprotect.c:813
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fb254db5389
+Code: 28 c3 e8 1a 17 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffcd8258c98 EFLAGS: 00000246 ORIG_RAX: 0000000000000149
+RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007fb254db5389
+RDX: 0000000000000000 RSI: 0000000000003000 RDI: 0000000020ffd000
+RBP: 0000000000000003 R08: 0000000000000001 R09: 0000000038303633
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007ffcd8258da0
+R13: 00007ffcd8258cc0 R14: 00007fb254df10a1 R15: 0000000000000000
  </TASK>
 
-Allocated by task 5494:
+Allocated by task 3608:
  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
  kasan_set_track mm/kasan/common.c:45 [inline]
  set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
- kmalloc include/linux/slab.h:600 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- alloc_pipe_info+0x105/0x590 fs/pipe.c:790
- get_pipe_inode fs/pipe.c:881 [inline]
- create_pipe_files+0x8d/0x880 fs/pipe.c:913
- __do_pipe_flags fs/pipe.c:962 [inline]
- do_pipe2+0x96/0x1b0 fs/pipe.c:1010
- __do_sys_pipe2 fs/pipe.c:1028 [inline]
- __se_sys_pipe2 fs/pipe.c:1026 [inline]
- __x64_sys_pipe2+0x50/0x70 fs/pipe.c:1026
+ __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:736 [inline]
+ slab_alloc_node mm/slub.c:3243 [inline]
+ slab_alloc mm/slub.c:3251 [inline]
+ __kmem_cache_alloc_lru mm/slub.c:3258 [inline]
+ kmem_cache_alloc+0x2d6/0x4c0 mm/slub.c:3268
+ vm_area_dup+0x81/0x380 kernel/fork.c:466
+ __split_vma+0x9f/0x530 mm/mmap.c:2276
+ split_vma+0x9f/0xe0 mm/mmap.c:2335
+ mprotect_fixup+0x6c7/0x960 mm/mprotect.c:607
+ do_mprotect_pkey+0x70f/0xa80 mm/mprotect.c:781
+ __do_sys_pkey_mprotect mm/mprotect.c:816 [inline]
+ __se_sys_pkey_mprotect mm/mprotect.c:813 [inline]
+ __x64_sys_pkey_mprotect+0x93/0xf0 mm/mprotect.c:813
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Freed by task 5494:
+Freed by task 3608:
  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
@@ -127,35 +142,31 @@ Freed by task 5494:
  slab_free_hook mm/slub.c:1754 [inline]
  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
  slab_free mm/slub.c:3534 [inline]
- kfree+0xe2/0x4d0 mm/slub.c:4562
- put_pipe_info fs/pipe.c:711 [inline]
- pipe_release+0x2b6/0x310 fs/pipe.c:734
- __fput+0x277/0x9d0 fs/file_table.c:317
- task_work_run+0xdd/0x1a0 kernel/task_work.c:177
- exit_task_work include/linux/task_work.h:38 [inline]
- do_exit+0xaf1/0x29f0 kernel/exit.c:795
- do_group_exit+0xd2/0x2f0 kernel/exit.c:925
- __do_sys_exit_group kernel/exit.c:936 [inline]
- __se_sys_exit_group kernel/exit.c:934 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+ kmem_cache_free+0xeb/0x5b0 mm/slub.c:3551
+ __vma_adjust+0x9ab/0x1900 mm/mmap.c:889
+ vma_merge+0x590/0x870 mm/mmap.c:1122
+ mprotect_fixup+0x338/0x960 mm/mprotect.c:595
+ do_mprotect_pkey+0x70f/0xa80 mm/mprotect.c:781
+ __do_sys_pkey_mprotect mm/mprotect.c:816 [inline]
+ __se_sys_pkey_mprotect mm/mprotect.c:813 [inline]
+ __x64_sys_pkey_mprotect+0x93/0xf0 mm/mprotect.c:813
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-The buggy address belongs to the object at ffff88807dc93000
- which belongs to the cache kmalloc-cg-512 of size 512
-The buggy address is located 360 bytes inside of
- 512-byte region [ffff88807dc93000, ffff88807dc93200)
+The buggy address belongs to the object at ffff88801f89ed80
+ which belongs to the cache vm_area_struct of size 152
+The buggy address is located 0 bytes inside of
+ 152-byte region [ffff88801f89ed80, ffff88801f89ee18)
 
 The buggy address belongs to the physical page:
-page:ffffea0001f72400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7dc90
-head:ffffea0001f72400 order:2 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 0000000000000000 dead000000000122 ffff888011842dc0
-raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
+page:ffffea00007e2780 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1f89e
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 0000000000000000 dead000000000122 ffff888140006b40
+raw: 0000000000000000 0000000080120012 00000001ffffffff 0000000000000000
 page dumped because: kasan: bad access detected
 page_owner tracks the page as allocated
-page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5470, tgid 5470 (syz-executor105), ts 76271246150, free_ts 76264094282
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 3603, tgid 3603 (sshd), ts 50397360264, free_ts 45063905366
  prep_new_page mm/page_alloc.c:2535 [inline]
  get_page_from_freelist+0x210d/0x3a30 mm/page_alloc.c:4282
  __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5506
@@ -167,17 +178,15 @@ page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_I
  __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
  slab_alloc_node mm/slub.c:3209 [inline]
  slab_alloc mm/slub.c:3251 [inline]
- kmem_cache_alloc_trace+0x323/0x3e0 mm/slub.c:3282
- kmalloc include/linux/slab.h:600 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- alloc_pipe_info+0x105/0x590 fs/pipe.c:790
- get_pipe_inode fs/pipe.c:881 [inline]
- create_pipe_files+0x8d/0x880 fs/pipe.c:913
- __do_pipe_flags fs/pipe.c:962 [inline]
- do_pipe2+0x96/0x1b0 fs/pipe.c:1010
- __do_sys_pipe2 fs/pipe.c:1028 [inline]
- __se_sys_pipe2 fs/pipe.c:1026 [inline]
- __x64_sys_pipe2+0x50/0x70 fs/pipe.c:1026
+ __kmem_cache_alloc_lru mm/slub.c:3258 [inline]
+ kmem_cache_alloc+0x3fb/0x4c0 mm/slub.c:3268
+ vm_area_dup+0x81/0x380 kernel/fork.c:466
+ dup_mmap+0x642/0x1070 kernel/fork.c:640
+ dup_mm+0x91/0x370 kernel/fork.c:1520
+ copy_mm kernel/fork.c:1569 [inline]
+ copy_process+0x3ca8/0x7080 kernel/fork.c:2237
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2652
+ __do_sys_clone+0xba/0x100 kernel/fork.c:2786
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x46/0xb0
@@ -186,36 +195,32 @@ page last free stack trace:
  free_pages_prepare mm/page_alloc.c:1453 [inline]
  free_pcp_prepare+0x5e4/0xd20 mm/page_alloc.c:1503
  free_unref_page_prepare mm/page_alloc.c:3383 [inline]
- free_unref_page+0x19/0x4d0 mm/page_alloc.c:3479
- __stack_depot_save+0x168/0x500 lib/stackdepot.c:489
- kasan_save_stack+0x2e/0x40 mm/kasan/common.c:39
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
- kmalloc include/linux/slab.h:605 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- kobject_get_path+0xbe/0x230 lib/kobject.c:147
- kobject_uevent_env+0x254/0x1640 lib/kobject_uevent.c:529
- call_crda+0x17e/0x3b0 net/wireless/reg.c:583
- reg_query_database net/wireless/reg.c:1158 [inline]
- reg_process_hint_core net/wireless/reg.c:2693 [inline]
- reg_process_hint+0x925/0x1710 net/wireless/reg.c:3036
- reg_process_pending_hints net/wireless/reg.c:3124 [inline]
- reg_todo+0x1a5/0x7d0 net/wireless/reg.c:3212
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ free_unref_page_list+0x16f/0xb90 mm/page_alloc.c:3525
+ release_pages+0xbe8/0x1810 mm/swap.c:1017
+ tlb_batch_pages_flush+0xa8/0x1a0 mm/mmu_gather.c:58
+ tlb_flush_mmu_free mm/mmu_gather.c:255 [inline]
+ tlb_flush_mmu mm/mmu_gather.c:262 [inline]
+ tlb_finish_mmu+0x147/0x7e0 mm/mmu_gather.c:353
+ exit_mmap+0x1fe/0x720 mm/mmap.c:3212
+ __mmput+0x128/0x4c0 kernel/fork.c:1180
+ mmput+0x5c/0x70 kernel/fork.c:1201
+ exit_mm kernel/exit.c:510 [inline]
+ do_exit+0xa09/0x29f0 kernel/exit.c:782
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+ __do_sys_exit_group kernel/exit.c:936 [inline]
+ __se_sys_exit_group kernel/exit.c:934 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
 Memory state around the buggy address:
- ffff88807dc93000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88807dc93080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88807dc93100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                          ^
- ffff88807dc93180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88807dc93200: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88801f89ec80: fc fc fc fc fc 00 00 00 00 00 00 00 00 00 00 00
+ ffff88801f89ed00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+>ffff88801f89ed80: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff88801f89ee00: fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88801f89ee80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
 ==================================================================
 
 
