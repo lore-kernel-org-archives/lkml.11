@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B67C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D61C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233525AbiGKJqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50102 "EHLO
+        id S233550AbiGKJqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233867AbiGKJpF (ORCPT
+        with ESMTP id S233894AbiGKJpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:45:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB1FA9E6C;
-        Mon, 11 Jul 2022 02:22:32 -0700 (PDT)
+        Mon, 11 Jul 2022 05:45:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A62A9E77;
+        Mon, 11 Jul 2022 02:22:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7D70B80E7F;
-        Mon, 11 Jul 2022 09:22:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43DD2C34115;
-        Mon, 11 Jul 2022 09:22:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD868B80D2C;
+        Mon, 11 Jul 2022 09:22:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A82C34115;
+        Mon, 11 Jul 2022 09:22:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531349;
-        bh=0gd7H/PDn7gfPt/8kA00oAnxY4DvAvEYKewAvbpW1YY=;
+        s=korg; t=1657531352;
+        bh=8De3sl8vo6g6gUNyQnO3fBSHDA2H/6A7rO9gphhjK10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dZETOW1JJ0uC+hc+2IriwVYeB09jHCZKoPPhJSZeVrQKL04c2RNoHimIObTEfzZrF
-         maarvdc/yzOhPfaY1cRorPZQ9tmt6BaT9TPmtHP8r3xAj3oD1tK/lto5ZT0YIBU4OQ
-         7KMWZ+S9g1APlSbjFUdafcOmOIT5ehLe7CUoCg3k=
+        b=mg3QgpUqe8/SXn20R4lN4Z94mnVktvaK3nqWJMV+lG9bMHLv57XOhY4ODpgjK+kUf
+         nml83mq29aWjfeTjBD4/bHx8o56pbCpeGW9XtC1tX9VAtiKZSudF1txk9OoNJ/VlqX
+         QcmoFfr0enFVAZab8fv7ogcLUObqzZCkmoNMtCYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 073/230] mt76: mt76_connac: fix MCU_CE_CMD_SET_ROC definition error
-Date:   Mon, 11 Jul 2022 11:05:29 +0200
-Message-Id: <20220711090606.147920434@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 047/230] riscv: defconfig: enable DRM_NOUVEAU
+Date:   Mon, 11 Jul 2022 11:05:03 +0200
+Message-Id: <20220711090605.417740083@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,34 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
 
-[ Upstream commit bf9727a27442a50c75b7d99a5088330c578b2a42 ]
+[ Upstream commit ffa7a9141bb70702744a312f904b190ca064bdd7 ]
 
-Fixed an MCU_CE_CMD_SET_ROC definition error that occurred from a previous
-refactor work.
+Both RADEON and NOUVEAU graphics cards are supported on RISC-V. Enabling
+the one and not the other does not make sense.
 
-Fixes: d0e274af2f2e4 ("mt76: mt76_connac: create mcu library")
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+As typically at most one of RADEON, NOUVEAU, or VIRTIO GPU support will be
+needed DRM drivers should be compiled as modules.
+
+Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/configs/defconfig | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-index 77d4435e4581..72a70a7046fb 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-@@ -556,7 +556,7 @@ enum {
- 	MCU_CMD_SET_BSS_CONNECTED = MCU_CE_PREFIX | 0x16,
- 	MCU_CMD_SET_BSS_ABORT = MCU_CE_PREFIX | 0x17,
- 	MCU_CMD_CANCEL_HW_SCAN = MCU_CE_PREFIX | 0x1b,
--	MCU_CMD_SET_ROC = MCU_CE_PREFIX | 0x1d,
-+	MCU_CMD_SET_ROC = MCU_CE_PREFIX | 0x1c,
- 	MCU_CMD_SET_P2P_OPPPS = MCU_CE_PREFIX | 0x33,
- 	MCU_CMD_SET_RATE_TX_POWER = MCU_CE_PREFIX | 0x5d,
- 	MCU_CMD_SCHED_SCAN_ENABLE = MCU_CE_PREFIX | 0x61,
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index 4ebc80315f01..c252fd5706d2 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -72,9 +72,10 @@ CONFIG_GPIOLIB=y
+ CONFIG_GPIO_SIFIVE=y
+ # CONFIG_PTP_1588_CLOCK is not set
+ CONFIG_POWER_RESET=y
+-CONFIG_DRM=y
+-CONFIG_DRM_RADEON=y
+-CONFIG_DRM_VIRTIO_GPU=y
++CONFIG_DRM=m
++CONFIG_DRM_RADEON=m
++CONFIG_DRM_NOUVEAU=m
++CONFIG_DRM_VIRTIO_GPU=m
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_USB=y
+ CONFIG_USB_XHCI_HCD=y
 -- 
 2.35.1
 
