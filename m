@@ -2,88 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9162DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BB2CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbiGKWTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 18:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
+        id S231281AbiGKWXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 18:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbiGKWTg (ORCPT
+        with ESMTP id S229615AbiGKWXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 18:19:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB27D2A972
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:19:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71D43B815F2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:19:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B99C34115
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:19:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657577973;
-        bh=LGLSsH08DHX7hTExbQG+GETVb+tRcxDggleTNnB8dKc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=OPosPcZ1GoxqYhTeiD4rAT6iHTJVtF7tRT0W4Jl5W/Nxdhf367pj7Sx1Od52/qP7m
-         1UXoA5KZ9z9PEJH5kSBSZmmu2s83hbCv6ittQ5NqNV2A91jU0Al5Aw9MPm7UkPK6lV
-         w4YRrytyLb6HB09/pqDf6qR8jimW4kz2SVdLRLXozAotQw2wdNGipXT8GRzaRpHGBm
-         HV8e/HnMtcSwkuL38xJAyV4tcZvp2kO9/O9KRUjhZ+ozYbuDMt9yM9iv/E4ZjrH0wN
-         02XJUmRh6eZo9f1TvtmlNi6iapmD0FnJhmltprlOrPujFqEbMSP/iHlJji6o0HLb/G
-         9BEpt7dcSmQfA==
-Received: by mail-vs1-f44.google.com with SMTP id a184so6222723vsa.1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:19:33 -0700 (PDT)
-X-Gm-Message-State: AJIora8I8S8OOyB+6+jhGFZIeHEGkXobYp0C6BN65AG72Xixf02pi+Im
-        bs7+JmlV0i1FG0kaz52YhsmyE+PKckcsxWtIEQ==
-X-Google-Smtp-Source: AGRyM1uzFdX28Bckk4TwxkS2Gn6yCtnEQ4o5H/6GY0pvbiFULK429raKGjQMv7b6opxK5tv6ihpNHn+vsRc+J+RXj7c=
-X-Received: by 2002:a67:f301:0:b0:357:1b13:2691 with SMTP id
- p1-20020a67f301000000b003571b132691mr6745053vsf.6.1657577972063; Mon, 11 Jul
- 2022 15:19:32 -0700 (PDT)
+        Mon, 11 Jul 2022 18:23:14 -0400
+X-Greylist: delayed 397 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Jul 2022 15:23:11 PDT
+Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DCB2A951
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:23:11 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 39402 invoked from network); 12 Jul 2022 00:16:29 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1657577790; bh=FgTwvTq1JSrz7mNIp0oVdLzTuHaPTbJ115CWdvj3IsY=;
+          h=From:To:Cc:Subject;
+          b=dGF+JIvhtiNwRtOLhAFoU3bdxIOTiLFqUQqRJ0hYY9kTH2XXPLelltdRlzWJh77Gw
+           g0yfU8HALnN7CZ05qIMYHo+BahPsPC3/dRrjUjAAT1x0JJ2pcphq2zLY4+RcY9fBhA
+           xxdN+wh4Ifh0/3RF7rWZd2iR5iq/kpSCYRAAzxiU=
+Received: from unknown (HELO kicinski-fedora-PC1C0HJN) (kubakici@wp.pl@[163.114.132.128])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <justinstitt@google.com>; 12 Jul 2022 00:16:29 +0200
+Date:   Mon, 11 Jul 2022 15:16:11 -0700
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] mediatek: mt7601u: fix clang -Wformat warning
+Message-ID: <20220711151611.573190f5@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20220711212932.1501592-1-justinstitt@google.com>
+References: <20220711212932.1501592-1-justinstitt@google.com>
 MIME-Version: 1.0
-References: <20220707081826.953449-1-Naresh.Solanki@9elements.com> <20220707081826.953449-2-Naresh.Solanki@9elements.com>
-In-Reply-To: <20220707081826.953449-2-Naresh.Solanki@9elements.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 11 Jul 2022 16:19:20 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJ0pkcCmt_ER7cyU278aeTu=0Mu2HzEXMvU=DXsfms_6A@mail.gmail.com>
-Message-ID: <CAL_JsqJ0pkcCmt_ER7cyU278aeTu=0Mu2HzEXMvU=DXsfms_6A@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] dt-bindings: vendor-prefixes: add 9elements
-To:     Naresh Solanki <naresh.solanki@9elements.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: 2595572855169aaa33be638c199b8625
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000A [wVN0]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 2:19 AM Naresh Solanki
-<naresh.solanki@9elements.com> wrote:
->
-> The vendor prefix for 9elements GmbH [1].
+On Mon, 11 Jul 2022 14:29:32 -0700 Justin Stitt wrote:
+> When building with Clang we encounter this warning:
+> | drivers/net/wireless/mediatek/mt7601u/debugfs.c:92:6: error: format
+> | specifies type 'unsigned char' but the argument has type 'int'
+> | [-Werror,-Wformat] dev->ee->reg.start + dev->ee->reg.num - 1);
+> 
+> The format specifier used is `%hhu` which describes a u8. Both
+> `dev->ee->reg.start` and `.num` are u8 as well. However, the expression
+> as a whole is promoted to an int as you cannot get smaller-than-int from
+> addition. Therefore, to fix the warning, use the promoted-to-type's
+> format specifier -- in this case `%d`.
 
-Use get_maintainers.pl to send to the right lists if you want this
-reviewed and/or applied.
-
->
-> [1] https://9elements.com/
->
-> Signed-off-by: Naresh Solanki <Naresh.Solanki@9elements.com>
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> index 0496773a3c4d..2b3c929b1332 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -29,6 +29,8 @@ patternProperties:
->      description: 70mai Co., Ltd.
->    "^8dev,.*":
->      description: 8devices, UAB
-> +  "^9elements,.*":
-> +    description: 9elements GmbH
->    "^abb,.*":
->      description: ABB
->    "^abilis,.*":
-> --
-> 2.35.3
->
+Acked-by: Jakub Kicinski <kubakici@wp.pl>
