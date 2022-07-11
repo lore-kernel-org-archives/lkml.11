@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 869CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B67C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233518AbiGKJqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
+        id S233525AbiGKJqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233766AbiGKJo4 (ORCPT
+        with ESMTP id S233867AbiGKJpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:44:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE3165579;
-        Mon, 11 Jul 2022 02:22:25 -0700 (PDT)
+        Mon, 11 Jul 2022 05:45:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB1FA9E6C;
+        Mon, 11 Jul 2022 02:22:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAD3E612F1;
-        Mon, 11 Jul 2022 09:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5B49C34115;
-        Mon, 11 Jul 2022 09:22:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7D70B80E7F;
+        Mon, 11 Jul 2022 09:22:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43DD2C34115;
+        Mon, 11 Jul 2022 09:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531344;
-        bh=AUh9IYr5aMUKXPDT6lbV8vkYuEZJ42X0dasAyZ14M6g=;
+        s=korg; t=1657531349;
+        bh=0gd7H/PDn7gfPt/8kA00oAnxY4DvAvEYKewAvbpW1YY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J6HoQLGCOxD9EHCpZL4zdpQJnAX6KF5dFr+gCs/oWHXhWV4vaZU3EeriL/ZbO38mD
-         99o3zb215yJa2QIJamXT/WMnZJ0lx3j08eH7UIXIj2gg9QxyVxWdeRvnObbLbzapGb
-         7TOaT4ypVhOo/QyI0KH6jTtH2mu7yHrndGFNqyoo=
+        b=dZETOW1JJ0uC+hc+2IriwVYeB09jHCZKoPPhJSZeVrQKL04c2RNoHimIObTEfzZrF
+         maarvdc/yzOhPfaY1cRorPZQ9tmt6BaT9TPmtHP8r3xAj3oD1tK/lto5ZT0YIBU4OQ
+         7KMWZ+S9g1APlSbjFUdafcOmOIT5ehLe7CUoCg3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 071/230] media: omap3isp: Use struct_group() for memcpy() region
-Date:   Mon, 11 Jul 2022 11:05:27 +0200
-Message-Id: <20220711090606.090894937@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 073/230] mt76: mt76_connac: fix MCU_CE_CMD_SET_ROC definition error
+Date:   Mon, 11 Jul 2022 11:05:29 +0200
+Message-Id: <20220711090606.147920434@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -53,133 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit d4568fc8525897e683983806f813be1ae9eedaed ]
+[ Upstream commit bf9727a27442a50c75b7d99a5088330c578b2a42 ]
 
-In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally writing across neighboring fields. Wrap the target region
-in struct_group(). This additionally fixes a theoretical misalignment
-of the copy (since the size of "buf" changes between 64-bit and 32-bit,
-but this is likely never built for 64-bit).
+Fixed an MCU_CE_CMD_SET_ROC definition error that occurred from a previous
+refactor work.
 
-FWIW, I think this code is totally broken on 64-bit (which appears to
-not be a "real" build configuration): it would either always fail (with
-an uninitialized data->buf_size) or would cause corruption in userspace
-due to the copy_to_user() in the call path against an uninitialized
-data->buf value:
-
-omap3isp_stat_request_statistics_time32(...)
-    struct omap3isp_stat_data data64;
-    ...
-    omap3isp_stat_request_statistics(stat, &data64);
-
-int omap3isp_stat_request_statistics(struct ispstat *stat,
-                                     struct omap3isp_stat_data *data)
-    ...
-    buf = isp_stat_buf_get(stat, data);
-
-static struct ispstat_buffer *isp_stat_buf_get(struct ispstat *stat,
-                                               struct omap3isp_stat_data *data)
-...
-    if (buf->buf_size > data->buf_size) {
-            ...
-            return ERR_PTR(-EINVAL);
-    }
-    ...
-    rval = copy_to_user(data->buf,
-                        buf->virt_addr,
-                        buf->buf_size);
-
-Regardless, additionally initialize data64 to be zero-filled to avoid
-undefined behavior.
-
-Link: https://lore.kernel.org/lkml/20211215220505.GB21862@embeddedor
-
-Cc: Arnd Bergmann <arnd@arndb.de>
-Fixes: 378e3f81cb56 ("media: omap3isp: support 64-bit version of omap3isp_stat_data")
-Cc: stable@vger.kernel.org
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: d0e274af2f2e4 ("mt76: mt76_connac: create mcu library")
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/omap3isp/ispstat.c |  5 +++--
- include/uapi/linux/omap3isp.h             | 21 +++++++++++++--------
- 2 files changed, 16 insertions(+), 10 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/omap3isp/ispstat.c b/drivers/media/platform/omap3isp/ispstat.c
-index 5b9b57f4d9bf..68cf68dbcace 100644
---- a/drivers/media/platform/omap3isp/ispstat.c
-+++ b/drivers/media/platform/omap3isp/ispstat.c
-@@ -512,7 +512,7 @@ int omap3isp_stat_request_statistics(struct ispstat *stat,
- int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
- 					struct omap3isp_stat_data_time32 *data)
- {
--	struct omap3isp_stat_data data64;
-+	struct omap3isp_stat_data data64 = { };
- 	int ret;
- 
- 	ret = omap3isp_stat_request_statistics(stat, &data64);
-@@ -521,7 +521,8 @@ int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
- 
- 	data->ts.tv_sec = data64.ts.tv_sec;
- 	data->ts.tv_usec = data64.ts.tv_usec;
--	memcpy(&data->buf, &data64.buf, sizeof(*data) - sizeof(data->ts));
-+	data->buf = (uintptr_t)data64.buf;
-+	memcpy(&data->frame, &data64.frame, sizeof(data->frame));
- 
- 	return 0;
- }
-diff --git a/include/uapi/linux/omap3isp.h b/include/uapi/linux/omap3isp.h
-index 87b55755f4ff..d9db7ad43890 100644
---- a/include/uapi/linux/omap3isp.h
-+++ b/include/uapi/linux/omap3isp.h
-@@ -162,6 +162,7 @@ struct omap3isp_h3a_aewb_config {
-  * struct omap3isp_stat_data - Statistic data sent to or received from user
-  * @ts: Timestamp of returned framestats.
-  * @buf: Pointer to pass to user.
-+ * @buf_size: Size of buffer.
-  * @frame_number: Frame number of requested stats.
-  * @cur_frame: Current frame number being processed.
-  * @config_counter: Number of the configuration associated with the data.
-@@ -176,10 +177,12 @@ struct omap3isp_stat_data {
- 	struct timeval ts;
- #endif
- 	void __user *buf;
--	__u32 buf_size;
--	__u16 frame_number;
--	__u16 cur_frame;
--	__u16 config_counter;
-+	__struct_group(/* no tag */, frame, /* no attrs */,
-+		__u32 buf_size;
-+		__u16 frame_number;
-+		__u16 cur_frame;
-+		__u16 config_counter;
-+	);
- };
- 
- #ifdef __KERNEL__
-@@ -189,10 +192,12 @@ struct omap3isp_stat_data_time32 {
- 		__s32	tv_usec;
- 	} ts;
- 	__u32 buf;
--	__u32 buf_size;
--	__u16 frame_number;
--	__u16 cur_frame;
--	__u16 config_counter;
-+	__struct_group(/* no tag */, frame, /* no attrs */,
-+		__u32 buf_size;
-+		__u16 frame_number;
-+		__u16 cur_frame;
-+		__u16 config_counter;
-+	);
- };
- #endif
- 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+index 77d4435e4581..72a70a7046fb 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+@@ -556,7 +556,7 @@ enum {
+ 	MCU_CMD_SET_BSS_CONNECTED = MCU_CE_PREFIX | 0x16,
+ 	MCU_CMD_SET_BSS_ABORT = MCU_CE_PREFIX | 0x17,
+ 	MCU_CMD_CANCEL_HW_SCAN = MCU_CE_PREFIX | 0x1b,
+-	MCU_CMD_SET_ROC = MCU_CE_PREFIX | 0x1d,
++	MCU_CMD_SET_ROC = MCU_CE_PREFIX | 0x1c,
+ 	MCU_CMD_SET_P2P_OPPPS = MCU_CE_PREFIX | 0x33,
+ 	MCU_CMD_SET_RATE_TX_POWER = MCU_CE_PREFIX | 0x5d,
+ 	MCU_CMD_SCHED_SCAN_ENABLE = MCU_CE_PREFIX | 0x61,
 -- 
 2.35.1
 
