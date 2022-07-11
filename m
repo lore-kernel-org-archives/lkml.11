@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D64CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCAD6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232276AbiGKJ0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        id S232282AbiGKJ0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232355AbiGKJYd (ORCPT
+        with ESMTP id S232343AbiGKJYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6F1248F7;
-        Mon, 11 Jul 2022 02:14:46 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6C123150;
+        Mon, 11 Jul 2022 02:14:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42A6BB80956;
-        Mon, 11 Jul 2022 09:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A62C34115;
-        Mon, 11 Jul 2022 09:14:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DEE8610A5;
+        Mon, 11 Jul 2022 09:14:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B2E2C34115;
+        Mon, 11 Jul 2022 09:14:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530884;
-        bh=lIq5QL1O+Kc+TdTym8+QkepgY8j0DpxAsVZjsV1n+AI=;
+        s=korg; t=1657530878;
+        bh=5D836XQBOGnEC4gj8gALZ38OdTXjtmvc8NRllUhKRfg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pq8O3yR3g8KYbWIVBqlqK6bODKqRrpTjBNGM0oei3+cVXUMoPrPhVs6n6KfShC/Ij
-         0nGpgngf6fDnjw5kUfJZMLYAoc75mNcESpUTnOxbgT7/Oyd0RKqoEYcsd87Ei/xiDK
-         Jp90cm3vrqXLElfEojk7vHUZuyt+n2xc5LYLL98k=
+        b=GhGveSKxqYVrVCCVlXCVok+w/imsSRJ73vgp51UTf6oc76jaaNVF20sNv/sIETpbW
+         BjkVPLClDgmCEv/tloDxKfB45MYusEn9Kpf2M4NmpJBhV6WUPELVqx3ygKTsFy+dId
+         KouhCG7FFsecDv5+4twy96qLSD0Tu8mDgwK8cBRc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 019/112] net: rose: fix UAF bug caused by rose_t0timer_expiry
-Date:   Mon, 11 Jul 2022 11:06:19 +0200
-Message-Id: <20220711090550.104404747@linuxfoundation.org>
+        stable@vger.kernel.org, Kuee K1r0a <liulin063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.18 017/112] bpf: Fix insufficient bounds propagation from adjust_scalar_min_max_vals
+Date:   Mon, 11 Jul 2022 11:06:17 +0200
+Message-Id: <20220711090550.048634501@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -48,73 +50,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-commit 148ca04518070910739dfc4eeda765057856403d upstream.
+commit 3844d153a41adea718202c10ae91dc96b37453b5 upstream.
 
-There are UAF bugs caused by rose_t0timer_expiry(). The
-root cause is that del_timer() could not stop the timer
-handler that is running and there is no synchronization.
-One of the race conditions is shown below:
+Kuee reported a corner case where the tnum becomes constant after the call
+to __reg_bound_offset(), but the register's bounds are not, that is, its
+min bounds are still not equal to the register's max bounds.
 
-    (thread 1)             |        (thread 2)
-                           | rose_device_event
-                           |   rose_rt_device_down
-                           |     rose_remove_neigh
-rose_t0timer_expiry        |       rose_stop_t0timer(rose_neigh)
-  ...                      |         del_timer(&neigh->t0timer)
-                           |         kfree(rose_neigh) //[1]FREE
-  neigh->dce_mode //[2]USE |
+This in turn allows to leak pointers through turning a pointer register as
+is into an unknown scalar via adjust_ptr_min_max_vals().
 
-The rose_neigh is deallocated in position [1] and use in
-position [2].
+Before:
 
-The crash trace triggered by POC is like below:
+  func#0 @0
+  0: R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  0: (b7) r0 = 1                        ; R0_w=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0))
+  1: (b7) r3 = 0                        ; R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0))
+  2: (87) r3 = -r3                      ; R3_w=scalar()
+  3: (87) r3 = -r3                      ; R3_w=scalar()
+  4: (47) r3 |= 32767                   ; R3_w=scalar(smin=-9223372036854743041,umin=32767,var_off=(0x7fff; 0xffffffffffff8000),s32_min=-2147450881)
+  5: (75) if r3 s>= 0x0 goto pc+1       ; R3_w=scalar(umin=9223372036854808575,var_off=(0x8000000000007fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  6: (95) exit
 
-BUG: KASAN: use-after-free in expire_timers+0x144/0x320
-Write of size 8 at addr ffff888009b19658 by task swapper/0/0
-...
-Call Trace:
- <IRQ>
- dump_stack_lvl+0xbf/0xee
- print_address_description+0x7b/0x440
- print_report+0x101/0x230
- ? expire_timers+0x144/0x320
- kasan_report+0xed/0x120
- ? expire_timers+0x144/0x320
- expire_timers+0x144/0x320
- __run_timers+0x3ff/0x4d0
- run_timer_softirq+0x41/0x80
- __do_softirq+0x233/0x544
- ...
+  from 5 to 7: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  7: (d5) if r3 s<= 0x8000 goto pc+1    ; R3=scalar(umin=32769,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  8: (95) exit
 
-This patch changes rose_stop_ftimer() and rose_stop_t0timer()
-in rose_remove_neigh() to del_timer_sync() in order that the
-timer handler could be finished before the resources such as
-rose_neigh and so on are deallocated. As a result, the UAF
-bugs could be mitigated.
+  from 7 to 9: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=32768,var_off=(0x7fff; 0x8000)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  9: (07) r3 += -32767                  ; R3_w=scalar(imm=0,umax=1,var_off=(0x0; 0x0))  <--- [*]
+  10: (95) exit
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220705125610.77971-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+What can be seen here is that R3=scalar(umin=32767,umax=32768,var_off=(0x7fff;
+0x8000)) after the operation R3 += -32767 results in a 'malformed' constant, that
+is, R3_w=scalar(imm=0,umax=1,var_off=(0x0; 0x0)). Intersecting with var_off has
+not been done at that point via __update_reg_bounds(), which would have improved
+the umax to be equal to umin.
+
+Refactor the tnum <> min/max bounds information flow into a reg_bounds_sync()
+helper and use it consistently everywhere. After the fix, bounds have been
+corrected to R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0)) and thus the register
+is regarded as a 'proper' constant scalar of 0.
+
+After:
+
+  func#0 @0
+  0: R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  0: (b7) r0 = 1                        ; R0_w=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0))
+  1: (b7) r3 = 0                        ; R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0))
+  2: (87) r3 = -r3                      ; R3_w=scalar()
+  3: (87) r3 = -r3                      ; R3_w=scalar()
+  4: (47) r3 |= 32767                   ; R3_w=scalar(smin=-9223372036854743041,umin=32767,var_off=(0x7fff; 0xffffffffffff8000),s32_min=-2147450881)
+  5: (75) if r3 s>= 0x0 goto pc+1       ; R3_w=scalar(umin=9223372036854808575,var_off=(0x8000000000007fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  6: (95) exit
+
+  from 5 to 7: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  7: (d5) if r3 s<= 0x8000 goto pc+1    ; R3=scalar(umin=32769,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  8: (95) exit
+
+  from 7 to 9: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=32768,var_off=(0x7fff; 0x8000)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  9: (07) r3 += -32767                  ; R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0))  <--- [*]
+  10: (95) exit
+
+Fixes: b03c9f9fdc37 ("bpf/verifier: track signed and unsigned min/max values")
+Reported-by: Kuee K1r0a <liulin063@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220701124727.11153-2-daniel@iogearbox.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/rose/rose_route.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/bpf/verifier.c |   72 +++++++++++++++-----------------------------------
+ 1 file changed, 23 insertions(+), 49 deletions(-)
 
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -227,8 +227,8 @@ static void rose_remove_neigh(struct ros
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1417,6 +1417,21 @@ static void __reg_bound_offset(struct bp
+ 	reg->var_off = tnum_or(tnum_clear_subreg(var64_off), var32_off);
+ }
+ 
++static void reg_bounds_sync(struct bpf_reg_state *reg)
++{
++	/* We might have learned new bounds from the var_off. */
++	__update_reg_bounds(reg);
++	/* We might have learned something about the sign bit. */
++	__reg_deduce_bounds(reg);
++	/* We might have learned some bits from the bounds. */
++	__reg_bound_offset(reg);
++	/* Intersecting with the old var_off might have improved our bounds
++	 * slightly, e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
++	 * then new var_off is (0; 0x7f...fc) which improves our umax.
++	 */
++	__update_reg_bounds(reg);
++}
++
+ static bool __reg32_bound_s64(s32 a)
  {
- 	struct rose_neigh *s;
+ 	return a >= 0 && a <= S32_MAX;
+@@ -1458,16 +1473,8 @@ static void __reg_combine_32_into_64(str
+ 		 * so they do not impact tnum bounds calculation.
+ 		 */
+ 		__mark_reg64_unbounded(reg);
+-		__update_reg_bounds(reg);
+ 	}
+-
+-	/* Intersecting with the old var_off might have improved our bounds
+-	 * slightly.  e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
+-	 * then new var_off is (0; 0x7f...fc) which improves our umax.
+-	 */
+-	__reg_deduce_bounds(reg);
+-	__reg_bound_offset(reg);
+-	__update_reg_bounds(reg);
++	reg_bounds_sync(reg);
+ }
  
--	rose_stop_ftimer(rose_neigh);
--	rose_stop_t0timer(rose_neigh);
-+	del_timer_sync(&rose_neigh->ftimer);
-+	del_timer_sync(&rose_neigh->t0timer);
+ static bool __reg64_bound_s32(s64 a)
+@@ -1483,7 +1490,6 @@ static bool __reg64_bound_u32(u64 a)
+ static void __reg_combine_64_into_32(struct bpf_reg_state *reg)
+ {
+ 	__mark_reg32_unbounded(reg);
+-
+ 	if (__reg64_bound_s32(reg->smin_value) && __reg64_bound_s32(reg->smax_value)) {
+ 		reg->s32_min_value = (s32)reg->smin_value;
+ 		reg->s32_max_value = (s32)reg->smax_value;
+@@ -1492,14 +1498,7 @@ static void __reg_combine_64_into_32(str
+ 		reg->u32_min_value = (u32)reg->umin_value;
+ 		reg->u32_max_value = (u32)reg->umax_value;
+ 	}
+-
+-	/* Intersecting with the old var_off might have improved our bounds
+-	 * slightly.  e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
+-	 * then new var_off is (0; 0x7f...fc) which improves our umax.
+-	 */
+-	__reg_deduce_bounds(reg);
+-	__reg_bound_offset(reg);
+-	__update_reg_bounds(reg);
++	reg_bounds_sync(reg);
+ }
  
- 	skb_queue_purge(&rose_neigh->queue);
+ /* Mark a register as having a completely unknown (scalar) value. */
+@@ -6485,9 +6484,7 @@ static void do_refine_retval_range(struc
+ 	ret_reg->s32_max_value = meta->msize_max_value;
+ 	ret_reg->smin_value = -MAX_ERRNO;
+ 	ret_reg->s32_min_value = -MAX_ERRNO;
+-	__reg_deduce_bounds(ret_reg);
+-	__reg_bound_offset(ret_reg);
+-	__update_reg_bounds(ret_reg);
++	reg_bounds_sync(ret_reg);
+ }
  
+ static int
+@@ -7693,11 +7690,7 @@ static int adjust_ptr_min_max_vals(struc
+ 
+ 	if (!check_reg_sane_offset(env, dst_reg, ptr_reg->type))
+ 		return -EINVAL;
+-
+-	__update_reg_bounds(dst_reg);
+-	__reg_deduce_bounds(dst_reg);
+-	__reg_bound_offset(dst_reg);
+-
++	reg_bounds_sync(dst_reg);
+ 	if (sanitize_check_bounds(env, insn, dst_reg) < 0)
+ 		return -EACCES;
+ 	if (sanitize_needed(opcode)) {
+@@ -8435,10 +8428,7 @@ static int adjust_scalar_min_max_vals(st
+ 	/* ALU32 ops are zero extended into 64bit register */
+ 	if (alu32)
+ 		zext_32_to_64(dst_reg);
+-
+-	__update_reg_bounds(dst_reg);
+-	__reg_deduce_bounds(dst_reg);
+-	__reg_bound_offset(dst_reg);
++	reg_bounds_sync(dst_reg);
+ 	return 0;
+ }
+ 
+@@ -8627,10 +8617,7 @@ static int check_alu_op(struct bpf_verif
+ 							 insn->dst_reg);
+ 				}
+ 				zext_32_to_64(dst_reg);
+-
+-				__update_reg_bounds(dst_reg);
+-				__reg_deduce_bounds(dst_reg);
+-				__reg_bound_offset(dst_reg);
++				reg_bounds_sync(dst_reg);
+ 			}
+ 		} else {
+ 			/* case: R = imm
+@@ -9233,21 +9220,8 @@ static void __reg_combine_min_max(struct
+ 							dst_reg->smax_value);
+ 	src_reg->var_off = dst_reg->var_off = tnum_intersect(src_reg->var_off,
+ 							     dst_reg->var_off);
+-	/* We might have learned new bounds from the var_off. */
+-	__update_reg_bounds(src_reg);
+-	__update_reg_bounds(dst_reg);
+-	/* We might have learned something about the sign bit. */
+-	__reg_deduce_bounds(src_reg);
+-	__reg_deduce_bounds(dst_reg);
+-	/* We might have learned some bits from the bounds. */
+-	__reg_bound_offset(src_reg);
+-	__reg_bound_offset(dst_reg);
+-	/* Intersecting with the old var_off might have improved our bounds
+-	 * slightly.  e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
+-	 * then new var_off is (0; 0x7f...fc) which improves our umax.
+-	 */
+-	__update_reg_bounds(src_reg);
+-	__update_reg_bounds(dst_reg);
++	reg_bounds_sync(src_reg);
++	reg_bounds_sync(dst_reg);
+ }
+ 
+ static void reg_combine_min_max(struct bpf_reg_state *true_src,
 
 
