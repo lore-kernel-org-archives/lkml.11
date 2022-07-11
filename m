@@ -2,57 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92845C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67798C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbiGKQBO convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 12:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
+        id S231189AbiGKQCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiGKQBL (ORCPT
+        with ESMTP id S229699AbiGKQCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 12:01:11 -0400
-X-Greylist: delayed 20968 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Jul 2022 09:01:03 PDT
-Received: from ps11.myhostcenter.com (ps11.myhostcenter.com [64.6.248.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430F9422EF
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:01:03 -0700 (PDT)
-Received: (qmail 19182 invoked from network); 11 Jul 2022 03:33:13 -0400
-Received: from ec2-3-140-195-239.us-east-2.compute.amazonaws.com (HELO baosteel.com) (3.140.195.239)
-  by s55.n249.n6.n64.static.myhostcenter.net with (DHE-RSA-AES256-SHA encrypted) SMTP; 11 Jul 2022 03:33:13 -0400
-Reply-To: lmarshal742@gmail.com, lmarshal742marshal@gmail.com
-From:   BAOSTEEL <marshal.lee0862@baosteel.com>
-To:     linux-kernel@vger.kernel.org
-Subject: Will you be interested in representing us in the USA
-Date:   11 Jul 2022 17:33:11 +1000
-Message-ID: <20220711164446.0A6C18A7861DCABB@baosteel.com>
+        Mon, 11 Jul 2022 12:02:38 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E05422F1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:02:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8tw7+5o1eNNksdmkuvrSyMN7jBNIPnt7KKD+kh71+7w=; b=I1ZnIgnm2ujuBsAUXF0WHAl0d0
+        SG/pigoiiZB4fSofQyGQoMQinBvx5eQKskB6k9vA+Hn2a51XL8DZ+DO5zbP7wEA1HZ/d1EQ8KwrFT
+        CewerfxW5HiaABPrAeTGlKisjXXNnn0fYwjqxYnw3c43HGvp9plNVNC8vCUkYhk7cENYIjZfR7dK0
+        UeEd0CL1lpIbY6SlJLRvXb5v+4KegnJS2IdI9X6xApYjWNpliVZBJVt5Xb9vKulkJ13n8NmRb5dPt
+        S0jqWIGoQo8BLwGZunT4OLly8jyIksrSkc3usX5DVdt6K/hQ9LV2bzvxsUU+Dh6OrKJI/Ct+cqtEH
+        NFSonGEg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oAvrg-0035XW-Hj; Mon, 11 Jul 2022 16:02:28 +0000
+Date:   Mon, 11 Jul 2022 09:02:28 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Aaron Tomlin <atomlin@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] modules: Fix corruption of /proc/kallsyms
+Message-ID: <YsxJlIEEjlvZKSRg@bombadil.infradead.org>
+References: <20220701094403.3044-1-adrian.hunter@intel.com>
+ <Yr9p4YOOfJp5evCq@bombadil.infradead.org>
+ <edcf6946-1c47-c01a-e795-e874f42b2e2d@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <edcf6946-1c47-c01a-e795-e874f42b2e2d@intel.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Atten: linux-kernel
+On Mon, Jul 11, 2022 at 10:48:16AM +0300, Adrian Hunter wrote:
+> On 2/07/22 00:40, Luis Chamberlain wrote:
+> > On Fri, Jul 01, 2022 at 12:44:03PM +0300, Adrian Hunter wrote:
+> >> The commit 91fb02f31505 ("module: Move kallsyms support into a separate
+> >> file") changed from using strlcpy() to using strscpy() which created a
+> >> buffer overflow. That happened because:
+> >>  1) an incorrect value was passed as the buffer length
+> >>  2) strscpy() (unlike strlcpy()) may copy beyond the length of the
+> >>     input string when copying word-by-word.
+> >> The assumption was that because it was already known that the strings
+> >> being copied would fit in the space available, it was not necessary
+> >> to correctly set the buffer length.  strscpy() breaks that assumption
+> >> because although it will not touch bytes beyond the given buffer length
+> >> it may write bytes beyond the input string length when writing
+> >> word-by-word.
+> >>
+> >> The result of the buffer overflow is to corrupt the symbol type
+> >> information that follows. e.g.
+> >>
+> >>  $ sudo cat -v /proc/kallsyms | grep '\^' | head
+> >>  ffffffffc0615000 ^@ rfcomm_session_get  [rfcomm]
+> >>  ffffffffc061c060 ^@ session_list        [rfcomm]
+> >>  ffffffffc06150d0 ^@ rfcomm_send_frame   [rfcomm]
+> >>  ffffffffc0615130 ^@ rfcomm_make_uih     [rfcomm]
+> >>  ffffffffc07ed58d ^@ bnep_exit   [bnep]
+> >>  ffffffffc07ec000 ^@ bnep_rx_control     [bnep]
+> >>  ffffffffc07ec1a0 ^@ bnep_session        [bnep]
+> >>  ffffffffc07e7000 ^@ input_leds_event    [input_leds]
+> >>  ffffffffc07e9000 ^@ input_leds_handler  [input_leds]
+> >>  ffffffffc07e7010 ^@ input_leds_disconnect       [input_leds]
+> >>
+> >> Notably, the null bytes (represented above by ^@) can confuse tools.
+> >>
+> >> Fix by correcting the buffer length.
+> >>
+> >> Fixes: 91fb02f31505 ("module: Move kallsyms support into a separate file")
+> >> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> > 
+> > Queued up thanks!
+> > 
+> >   Luis
+> 
+> Thanks for processing this.
+> 
+> I notice it is -rc6 and I do not see it in Linus' tree. This is a fix
+> for a regression, shouldn't it be included in 5.19?
 
-Will you be interested in making some extra cash in representing 
-us in the USA without you contributing a dollar, All our 
-transactions are 100% Legal.
+Yeah sorry this will get to Linus today.
 
-If you are in, let us know so  more details can be provided to 
-you.
-
-Finally, you do not need to know about steel for you to be our 
-REP. it's just a side work
-
-Marshal Lee
-Consultant
-BAOSTEEL GROUP
-lmarshal742@gmail.com
-marshal.lee@baosteel-group.net
-www.baosteel.com
-ADD:Baosteel Tower, Pu Dian Road 370, Pudong New District,
-Shanghai, 200122, P.R. China
-Postal Code:20012
-
+  Luis
