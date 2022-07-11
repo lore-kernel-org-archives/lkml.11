@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DF2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE16CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232441AbiGKJ37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41434 "EHLO
+        id S232455AbiGKJaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbiGKJ2x (ORCPT
+        with ESMTP id S232464AbiGKJ26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:28:53 -0400
+        Mon, 11 Jul 2022 05:28:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08AAA67CB3;
-        Mon, 11 Jul 2022 02:16:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7028C3D5AA;
+        Mon, 11 Jul 2022 02:16:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 275D061226;
-        Mon, 11 Jul 2022 09:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E632C34115;
-        Mon, 11 Jul 2022 09:16:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAC0761243;
+        Mon, 11 Jul 2022 09:16:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5C53C34115;
+        Mon, 11 Jul 2022 09:16:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530969;
-        bh=aGhW0L5S5/qszPA/VigzEF4H7aLqd5d9aPEeEJjbKXo=;
+        s=korg; t=1657530972;
+        bh=FBu7KY5YYbZo+WK5Ypy6wwAPJNUeHar+h74qFtStpgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y6f9bSWUJi9DghfpybpyOVNz4vmG98u0/9OYBF4J7mAUCsvyrN5a8S5cd8Pe22Wci
-         k+cEwTskXPyno3JFv45lkCspGDTD7MqgeEcrSHqFj5zJbIxw4y8vLRjcc7VQx8qT0v
-         CpdV+QePMEbPeqSWTtT9NZ3FneeySoRjOi9ol0xI=
+        b=k09N59zIOh/VOnEj+MXk9uD2iFhLIJa6KduHngKSo8RTwpAXcuWuoOGxE4H5VJ/81
+         b00pd1CN52IVOtNdnyJra7NPs54R05/yAgdNiKhYHESdXGgp1U5n7xRiu8nYwoeUVe
+         jjvpOcmHcK1ykqR/MDOeOmjYUZvZ+d/9wt7bKCeg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
         Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
         Bard Liao <yung-chuan.liao@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 050/112] ASoC: codecs: rt700/rt711/rt711-sdca: resume bus/codec in .set_jack_detect
-Date:   Mon, 11 Jul 2022 11:06:50 +0200
-Message-Id: <20220711090550.991819916@linuxfoundation.org>
+Subject: [PATCH 5.18 051/112] ASoC: SOF: ipc3-topology: Move and correct size checks in sof_ipc3_control_load_bytes()
+Date:   Mon, 11 Jul 2022 11:06:51 +0200
+Message-Id: <20220711090551.020035523@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -52,199 +53,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit 40737057b48f1b4db67b0d766b95c87ba8fc5e03 ]
+[ Upstream commit c2d1aec3f5da2475aa13a487d329823b7d27d499 ]
 
-The .set_jack_detect() codec component callback is invoked during card
-registration, which happens when the machine driver is probed.
+Move the size checks prior to allocating memory as these checks do not need
+the data to be allocated and in case of an error we would not need to free
+the allocation.
 
-The issue is that this callback can race with the bus suspend/resume,
-and IO timeouts can happen. This can be reproduced very easily if the
-machine driver is 'blacklisted' and manually probed after the bus
-suspends. The bus and codec need to be re-initialized using pm_runtime
-helpers.
+The max size must not be less than the size of
+struct sof_ipc_ctrl_data + struct sof_abi_hdr as the ABI header needs to
+be present under all circumstances.
+The check was incorrectly used or between the two size checks.
 
-Previous contributions tried to make sure accesses to the bus during
-the .set_jack_detect() component callback only happen when the bus is
-active. This was done by changing the regcache status on a component
-remove. This is however a layering violation, the regcache status
-should only be modified on device probe, suspend and resume. The
-component probe/remove should not modify how the device regcache is
-handled. This solution also didn't handle all the possible race
-conditions, and the RT700 headset codec was not handled.
-
-This patch tries to resume the codec device before handling the jack
-initializations. In case the codec has not yet been initialized,
-pm_runtime may not be enabled yet, so we don't squelch the -EACCES
-error code and only stop the jack information. When the codec reports
-as attached, the jack initialization will proceed as usual.
-
-BugLink: https://github.com/thesofproject/linux/issues/3643
-Fixes: 7ad4d237e7c4a ('ASoC: rt711-sdca: Add RT711 SDCA vendor-specific driver')
-Fixes: 899b12542b089 ('ASoC: rt711: add snd_soc_component remove callback')
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
+Fixes: b5cee8feb1d4 ("ASoC: SOF: topology: Make control parsing IPC agnostic")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-8-pierre-louis.bossart@linux.intel.com
+Link: https://lore.kernel.org/r/20220610084735.19397-1-peter.ujfalusi@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt700.c      | 16 +++++++++++++---
- sound/soc/codecs/rt711-sdca.c | 26 ++++++++++++++------------
- sound/soc/codecs/rt711.c      | 24 +++++++++++++-----------
- 3 files changed, 40 insertions(+), 26 deletions(-)
+ sound/soc/sof/ipc3-topology.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/sound/soc/codecs/rt700.c b/sound/soc/codecs/rt700.c
-index e61a8257bf64..360d61a36c35 100644
---- a/sound/soc/codecs/rt700.c
-+++ b/sound/soc/codecs/rt700.c
-@@ -315,17 +315,27 @@ static int rt700_set_jack_detect(struct snd_soc_component *component,
- 	struct snd_soc_jack *hs_jack, void *data)
- {
- 	struct rt700_priv *rt700 = snd_soc_component_get_drvdata(component);
-+	int ret;
+diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
+index cdff48c4195f..80fb82ece38d 100644
+--- a/sound/soc/sof/ipc3-topology.c
++++ b/sound/soc/sof/ipc3-topology.c
+@@ -1578,24 +1578,23 @@ static int sof_ipc3_control_load_bytes(struct snd_sof_dev *sdev, struct snd_sof_
+ 	struct sof_ipc_ctrl_data *cdata;
+ 	int ret;
  
- 	rt700->hs_jack = hs_jack;
- 
--	if (!rt700->hw_init) {
--		dev_dbg(&rt700->slave->dev,
--			"%s hw_init not ready yet\n", __func__);
-+	ret = pm_runtime_resume_and_get(component->dev);
-+	if (ret < 0) {
-+		if (ret != -EACCES) {
-+			dev_err(component->dev, "%s: failed to resume %d\n", __func__, ret);
-+			return ret;
-+		}
-+
-+		/* pm_runtime not enabled yet */
-+		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
- 		return 0;
+-	scontrol->ipc_control_data = kzalloc(scontrol->max_size, GFP_KERNEL);
+-	if (!scontrol->ipc_control_data)
+-		return -ENOMEM;
+-
+-	if (scontrol->max_size < sizeof(*cdata) ||
+-	    scontrol->max_size < sizeof(struct sof_abi_hdr)) {
+-		ret = -EINVAL;
+-		goto err;
++	if (scontrol->max_size < (sizeof(*cdata) + sizeof(struct sof_abi_hdr))) {
++		dev_err(sdev->dev, "%s: insufficient size for a bytes control: %zu.\n",
++			__func__, scontrol->max_size);
++		return -EINVAL;
  	}
  
- 	rt700_jack_init(rt700);
- 
-+	pm_runtime_mark_last_busy(component->dev);
-+	pm_runtime_put_autosuspend(component->dev);
-+
- 	return 0;
- }
- 
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index 57629c18db38..9d59e653b941 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -487,16 +487,27 @@ static int rt711_sdca_set_jack_detect(struct snd_soc_component *component,
- 	struct snd_soc_jack *hs_jack, void *data)
- {
- 	struct rt711_sdca_priv *rt711 = snd_soc_component_get_drvdata(component);
-+	int ret;
- 
- 	rt711->hs_jack = hs_jack;
- 
--	if (!rt711->hw_init) {
--		dev_dbg(&rt711->slave->dev,
--			"%s hw_init not ready yet\n", __func__);
-+	ret = pm_runtime_resume_and_get(component->dev);
-+	if (ret < 0) {
-+		if (ret != -EACCES) {
-+			dev_err(component->dev, "%s: failed to resume %d\n", __func__, ret);
-+			return ret;
-+		}
-+
-+		/* pm_runtime not enabled yet */
-+		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
- 		return 0;
+-	/* init the get/put bytes data */
+ 	if (scontrol->priv_size > scontrol->max_size - sizeof(*cdata)) {
+-		dev_err(sdev->dev, "err: bytes data size %zu exceeds max %zu.\n",
++		dev_err(sdev->dev,
++			"%s: bytes data size %zu exceeds max %zu.\n", __func__,
+ 			scontrol->priv_size, scontrol->max_size - sizeof(*cdata));
+-		ret = -EINVAL;
+-		goto err;
++		return -EINVAL;
  	}
  
- 	rt711_sdca_jack_init(rt711);
++	scontrol->ipc_control_data = kzalloc(scontrol->max_size, GFP_KERNEL);
++	if (!scontrol->ipc_control_data)
++		return -ENOMEM;
 +
-+	pm_runtime_mark_last_busy(component->dev);
-+	pm_runtime_put_autosuspend(component->dev);
-+
- 	return 0;
- }
+ 	scontrol->size = sizeof(struct sof_ipc_ctrl_data) + scontrol->priv_size;
  
-@@ -1190,14 +1201,6 @@ static int rt711_sdca_probe(struct snd_soc_component *component)
- 	return 0;
- }
- 
--static void rt711_sdca_remove(struct snd_soc_component *component)
--{
--	struct rt711_sdca_priv *rt711 = snd_soc_component_get_drvdata(component);
--
--	regcache_cache_only(rt711->regmap, true);
--	regcache_cache_only(rt711->mbq_regmap, true);
--}
--
- static const struct snd_soc_component_driver soc_sdca_dev_rt711 = {
- 	.probe = rt711_sdca_probe,
- 	.controls = rt711_sdca_snd_controls,
-@@ -1207,7 +1210,6 @@ static const struct snd_soc_component_driver soc_sdca_dev_rt711 = {
- 	.dapm_routes = rt711_sdca_audio_map,
- 	.num_dapm_routes = ARRAY_SIZE(rt711_sdca_audio_map),
- 	.set_jack = rt711_sdca_set_jack_detect,
--	.remove = rt711_sdca_remove,
- 	.endianness = 1,
- };
- 
-diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
-index 9838fb4d5b9c..9958067e80f1 100644
---- a/sound/soc/codecs/rt711.c
-+++ b/sound/soc/codecs/rt711.c
-@@ -457,17 +457,27 @@ static int rt711_set_jack_detect(struct snd_soc_component *component,
- 	struct snd_soc_jack *hs_jack, void *data)
- {
- 	struct rt711_priv *rt711 = snd_soc_component_get_drvdata(component);
-+	int ret;
- 
- 	rt711->hs_jack = hs_jack;
- 
--	if (!rt711->hw_init) {
--		dev_dbg(&rt711->slave->dev,
--			"%s hw_init not ready yet\n", __func__);
-+	ret = pm_runtime_resume_and_get(component->dev);
-+	if (ret < 0) {
-+		if (ret != -EACCES) {
-+			dev_err(component->dev, "%s: failed to resume %d\n", __func__, ret);
-+			return ret;
-+		}
-+
-+		/* pm_runtime not enabled yet */
-+		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
- 		return 0;
- 	}
- 
- 	rt711_jack_init(rt711);
- 
-+	pm_runtime_mark_last_busy(component->dev);
-+	pm_runtime_put_autosuspend(component->dev);
-+
- 	return 0;
- }
- 
-@@ -932,13 +942,6 @@ static int rt711_probe(struct snd_soc_component *component)
- 	return 0;
- }
- 
--static void rt711_remove(struct snd_soc_component *component)
--{
--	struct rt711_priv *rt711 = snd_soc_component_get_drvdata(component);
--
--	regcache_cache_only(rt711->regmap, true);
--}
--
- static const struct snd_soc_component_driver soc_codec_dev_rt711 = {
- 	.probe = rt711_probe,
- 	.set_bias_level = rt711_set_bias_level,
-@@ -949,7 +952,6 @@ static const struct snd_soc_component_driver soc_codec_dev_rt711 = {
- 	.dapm_routes = rt711_audio_map,
- 	.num_dapm_routes = ARRAY_SIZE(rt711_audio_map),
- 	.set_jack = rt711_set_jack_detect,
--	.remove = rt711_remove,
- 	.endianness = 1,
- };
- 
+ 	cdata = scontrol->ipc_control_data;
 -- 
 2.35.1
 
