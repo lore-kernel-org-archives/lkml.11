@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 060DEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A7ECCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234470AbiGKKDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
+        id S234505AbiGKKDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234451AbiGKKCy (ORCPT
+        with ESMTP id S234480AbiGKKC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:02:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301165C9C8;
-        Mon, 11 Jul 2022 02:28:57 -0700 (PDT)
+        Mon, 11 Jul 2022 06:02:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065AF65D50;
+        Mon, 11 Jul 2022 02:29:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE39BB80E88;
-        Mon, 11 Jul 2022 09:28:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10884C34115;
-        Mon, 11 Jul 2022 09:28:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A7B461360;
+        Mon, 11 Jul 2022 09:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82034C34115;
+        Mon, 11 Jul 2022 09:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531734;
-        bh=Tusqk7Lmxx7rh/jamATplaHs7GoHvwB/yxhV6tXDDpA=;
+        s=korg; t=1657531739;
+        bh=8xduzV9XPwv+MRJJNBuvjbGKAF/YIl6fxiUCeWx2Z4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wSb9rBYYZCja/7xNC38W/ZDsFFm/858YLJePFOL26atYUIwuKo+BOknD8n8UtN0Dd
-         IMsJP0AJfdBWyOXuQLYAJgRIgLAhuuYovE4q6e18LGDXkBkBhFe96LVlDRI/yZcmEE
-         FZr4ov1r4Qwy2yLNr2/S0HEKKAvNQn94yHKpPi9M=
+        b=2T/QQqn2JMftqnj47FCpOccdiTVDzmEoKQWrjBD3giGki3mBi5+KgW3hyDwfIaSiP
+         7VTdNBJlEs1tzU9F3EB+xTn15v9RXHkhi48wwwVg/xsZvAjGswUarmYPJRuYQ2wp5g
+         EgPow6TmEIzTOVzTxl0TSM14ngDTKWVhHxrsdLTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 211/230] selftests: forwarding: fix learning_test when h1 supports IFF_UNICAST_FLT
-Date:   Mon, 11 Jul 2022 11:07:47 +0200
-Message-Id: <20220711090610.089221940@linuxfoundation.org>
+Subject: [PATCH 5.15 177/230] ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
+Date:   Mon, 11 Jul 2022 11:07:13 +0200
+Message-Id: <20220711090609.134134578@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,47 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 1a635d3e1c80626237fdae47a5545b6655d8d81c ]
+[ Upstream commit 34d2cd3fccced12b958b8848e3eff0ee4296764c ]
 
-The first host interface has by default no interest in receiving packets
-MAC DA de:ad:be:ef:13:37, so it might drop them before they hit the tc
-filter and this might confuse the selftest.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Enable promiscuous mode such that the filter properly counts received
-packets.
-
-Fixes: d4deb01467ec ("selftests: forwarding: Add a test for FDB learning")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: d850f3e5d296 ("ARM: meson: Add SMP bringup code for Meson8 and Meson8b")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220512021611.47921-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/forwarding/lib.sh | 2 ++
+ arch/arm/mach-meson/platsmp.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 8a9c55fe841a..0db6ea8d7e05 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -1149,6 +1149,7 @@ learning_test()
- 	# FDB entry was installed.
- 	bridge link set dev $br_port1 flood off
+diff --git a/arch/arm/mach-meson/platsmp.c b/arch/arm/mach-meson/platsmp.c
+index 4b8ad728bb42..32ac60b89fdc 100644
+--- a/arch/arm/mach-meson/platsmp.c
++++ b/arch/arm/mach-meson/platsmp.c
+@@ -71,6 +71,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ 	}
  
-+	ip link set $host1_if promisc on
- 	tc qdisc add dev $host1_if ingress
- 	tc filter add dev $host1_if ingress protocol ip pref 1 handle 101 \
- 		flower dst_mac $mac action drop
-@@ -1198,6 +1199,7 @@ learning_test()
+ 	sram_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!sram_base) {
+ 		pr_err("Couldn't map SRAM registers\n");
+ 		return;
+@@ -91,6 +92,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ 	}
  
- 	tc filter del dev $host1_if ingress protocol ip pref 1 handle 101 flower
- 	tc qdisc del dev $host1_if ingress
-+	ip link set $host1_if promisc off
- 
- 	bridge link set dev $br_port1 flood on
- 
+ 	scu_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!scu_base) {
+ 		pr_err("Couldn't map SCU registers\n");
+ 		return;
 -- 
 2.35.1
 
