@@ -2,160 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98000C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8B4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230096AbiGKL6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51404 "EHLO
+        id S230050AbiGKL6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiGKL6V (ORCPT
+        with ESMTP id S230140AbiGKL61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:58:21 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D008D32BBB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:58:19 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id i128-20020a1c3b86000000b003a2ce31b4f8so4867812wma.1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:58:19 -0700 (PDT)
+        Mon, 11 Jul 2022 07:58:27 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41C232BB3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:58:21 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-31c8a1e9e33so46184437b3.5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:58:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BQEPX2oLS4VAKW2DD0EGpgirZ7z4jyQAcpaLby2W2Ts=;
-        b=bhB6lDedVM5GCtm3RN67vsyj7pGah/TwUoSfOWdn7V8TyJdb5ImGupDVq4LfeiheP/
-         KOAscNuTWRp2WFA0yWg6PBhk4UflvQSCKtdrR/o8DmDJnusIQpGZ6X3sv8hq/HcnTaDl
-         UtPSJxS5OjS6SFYzs67C1X9WJm5wy4Vg1T7GbPv+2+l8mJdvsv/0KEw799t1lHz+KPcl
-         2tUeYFJNL2DMko4SuvFPGuwDrxN3x+WMThq2y+xZ6IuXke/gdPqPJpkNJ5rXUe1N+twN
-         zblYstSj4Q0P9QIlaE91xbdF6b9AYALeUc/uVmOc8QXcW+gRehj/bEfrOrWSY+4fibSw
-         OCcA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kb9KHIuo4IosRBw4fXiFNpYBgAtjRiuQdEYMHy61dYk=;
+        b=uuzucqYoJK9QyuGI60SrzoVpti+2eBlJqaCC6sB9ZZJd08dlBVmeCukV4HfC6zZVhe
+         1/X/qe6RzkOA/Q+PuOEA0auY09gTuarB3qd9dqHvZTDV3zFz2f++mKS7gh0uMHZz/QaB
+         rrdn12qHtkuMmBtsPJc3r1Ohad2owVw1j4OQI2HRw1CbbNkim870g3cUO6VQ9Lvgm8Zp
+         QTDX/2jmvmoB/kKzXTbrY19GS92XKmd/rAkm/4WYpC3ZXPJ+fS5EnaXEMj1SdT6sBWP8
+         9j3WF8jB6rdPDEHdldwClYu2VKbdZQ6i0P2XBLQgjXq3lg+CzUXaBSMaFuhDmOqlGYB1
+         yZPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BQEPX2oLS4VAKW2DD0EGpgirZ7z4jyQAcpaLby2W2Ts=;
-        b=6X82mAtFTArwUSLpl3q7V/XB1INq/HGAs6eZpJpZJGWGtINlUNTyeBOOj28ar/qztT
-         8pbja873FdNqnCu9vrygEjgBqyhjInQRmrWNH653uYqjN4clEOvnuNFGKuODcu7HMvD2
-         V/Zw4uYgdnGNkDJTdaPbDxl/P9f15rBpTgW1Dims257qPyWVSl7aj8JeYh3G27J+dOOW
-         mFF5NR4h2fUI8v0lgZ3wqFQR1/wShdRMArhGW/lfPypJ3bWBxPBzG0IFFk4WtJTqovF+
-         0HX7COofUGXUF3jEccqCh1t+crotNiMsmilyG/fZC9cKWXXLAxCUPz6msFlOeEGhkAea
-         6Utg==
-X-Gm-Message-State: AJIora9Ur4vUu0+30dg2yRULyDgxWk5mYqKqdMI1Nc5JWywouEfdciyF
-        8i2mJXUCUu19C/AfI/q2qH6W3w==
-X-Google-Smtp-Source: AGRyM1uEchsOaegipf3GjUUvcb3Np4cRU36PBEf3G1M1h2oadk+gzl6uHqzdYQujNkpiR2MHW0tajg==
-X-Received: by 2002:a05:600c:1e10:b0:3a2:e35c:f5fb with SMTP id ay16-20020a05600c1e1000b003a2e35cf5fbmr10434045wmb.27.1657540698361;
-        Mon, 11 Jul 2022 04:58:18 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id ch9-20020a5d5d09000000b0021da4b6c6f7sm2898365wrb.40.2022.07.11.04.58.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 04:58:17 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 12:57:52 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Will Deacon <will@kernel.org>, KP Singh <kpsingh@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        James Morse <james.morse@arm.com>,
-        Hou Tao <houtao1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: Re: [PATCH bpf-next v7 4/4] bpf, arm64: bpf trampoline for arm64
-Message-ID: <YswQQG7CUoTXCbDa@myrica>
-References: <20220708093032.1832755-1-xukuohai@huawei.com>
- <20220708093032.1832755-5-xukuohai@huawei.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kb9KHIuo4IosRBw4fXiFNpYBgAtjRiuQdEYMHy61dYk=;
+        b=Q857MgnqgD+i5Z2SA+ggLzMgT7I5aQimEsL/S4X564UoklnBp34z/MibWexkLA8Fm+
+         dERzCDWUnBOq+MxOeg6lBu0tmEsPV9N/VOgFfdt3Oh0c2NTZQxrN6R4qP6Qhoj6s39iq
+         z5wdzCLfJuYhK28lzPHMYGReU4fscLrHLtHclObuSGpD41GAXpTKyUyYiNmy/3INZCwO
+         i4eas9Nb5Wg2VxAN9TbWBC0mIvFjwKhPkcQgkSI2KDQBLABfZedZ5v+TWeotCck61e5e
+         sYV+nVU40PqcOwK59EXew9wwXTwcPhapFpBZ1GMKxiUJiJLvCo3N4dj/QMmnJoy/tgxq
+         LGXA==
+X-Gm-Message-State: AJIora+9LcblWIAxM4yXrZCYux75qW944Ym/jI/qzCmpRpNWFOm5IMSp
+        q/Kos7SiNYCV+ifyiQ/7lfHemO3j1lDf2VTEHyqw/w==
+X-Google-Smtp-Source: AGRyM1s/a3hRCOR5r59cRwkAhmMUw0kBr01CcqkFmETfUZZ7ZH7MngwVHzji1O6LK5sxiEbLLw+AGGSOXnjRa4RncAA=
+X-Received: by 2002:a81:34c:0:b0:31c:8b37:6595 with SMTP id
+ 73-20020a81034c000000b0031c8b376595mr19493629ywd.126.1657540701119; Mon, 11
+ Jul 2022 04:58:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708093032.1832755-5-xukuohai@huawei.com>
+References: <20220630122334.216903-1-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220630122334.216903-1-angelogioacchino.delregno@collabora.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 11 Jul 2022 13:58:10 +0200
+Message-ID: <CACRpkdbkpBwABmj31yY0GN++gvbaaox6=i7GkrRYu6ESROZzGg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: pinctrl: mt8195: Fix name for mediatek,rsel-resistance-in-si-unit
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, sean.wang@mediatek.com,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        nfraprado@collabora.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 05:30:32AM -0400, Xu Kuohai wrote:
-> +static void invoke_bpf_prog(struct jit_ctx *ctx, struct bpf_tramp_link *l,
-> +			    int args_off, int retval_off, int run_ctx_off,
-> +			    bool save_ret)
-> +{
-> +	u32 *branch;
-> +	u64 enter_prog;
-> +	u64 exit_prog;
-> +	u8 r0 = bpf2a64[BPF_REG_0];
-> +	struct bpf_prog *p = l->link.prog;
-> +	int cookie_off = offsetof(struct bpf_tramp_run_ctx, bpf_cookie);
-> +
-> +	if (p->aux->sleepable) {
-> +		enter_prog = (u64)__bpf_prog_enter_sleepable;
-> +		exit_prog = (u64)__bpf_prog_exit_sleepable;
-> +	} else {
-> +		enter_prog = (u64)__bpf_prog_enter;
-> +		exit_prog = (u64)__bpf_prog_exit;
-> +	}
-> +
-> +	if (l->cookie == 0) {
-> +		/* if cookie is zero, one instruction is enough to store it */
-> +		emit(A64_STR64I(A64_ZR, A64_SP, run_ctx_off + cookie_off), ctx);
-> +	} else {
-> +		emit_a64_mov_i64(A64_R(10), l->cookie, ctx);
-> +		emit(A64_STR64I(A64_R(10), A64_SP, run_ctx_off + cookie_off),
-> +		     ctx);
-> +	}
-> +
-> +	/* save p to callee saved register x19 to avoid loading p with mov_i64
-> +	 * each time.
-> +	 */
-> +	emit_addr_mov_i64(A64_R(19), (const u64)p, ctx);
-> +
-> +	/* arg1: prog */
-> +	emit(A64_MOV(1, A64_R(0), A64_R(19)), ctx);
-> +	/* arg2: &run_ctx */
-> +	emit(A64_ADD_I(1, A64_R(1), A64_SP, run_ctx_off), ctx);
-> +
-> +	emit_call(enter_prog, ctx);
-> +
-> +	/* if (__bpf_prog_enter(prog) == 0)
-> +	 *         goto skip_exec_of_prog;
-> +	 */
-> +	branch = ctx->image + ctx->idx;
-> +	emit(A64_NOP, ctx);
-> +
-> +	/* save return value to callee saved register x20 */
-> +	emit(A64_MOV(1, A64_R(20), A64_R(0)), ctx);
-> +
-> +	emit(A64_ADD_I(1, A64_R(0), A64_SP, args_off), ctx);
-> +	if (!p->jited)
-> +		emit_addr_mov_i64(A64_R(1), (const u64)p->insnsi, ctx);
-> +
-> +	emit_call((const u64)p->bpf_func, ctx);
-> +
-> +	/* store return value, which is held in r0 for JIT and in x0
-> +	 * for interpreter.
-> +	 */
-> +	if (save_ret)
-> +		emit(A64_STR64I(p->jited ? r0 : A64_R(0), A64_SP, retval_off),
-> +		     ctx);
+On Thu, Jun 30, 2022 at 2:23 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
 
-This should be only A64_R(0), not r0. r0 happens to equal A64_R(0) when
-jitted due to the way build_epilogue() builds the function at the moment,
-but we shouldn't rely on that.
+> When this property was introduced, it contained underscores, but
+> the actual code wants dashes.
+>
+> Change it from mediatek,rsel_resistance_in_si_unit to
+> mediatek,rsel-resistance-in-si-unit.
+>
+> Fixes: 91e7edceda96 ("dt-bindings: pinctrl: mt8195: change pull up/down description")
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Apart from that, for the series
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
+Patch applied!
+Yours,
+Linus Walleij
