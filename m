@@ -2,82 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A887C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7D8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:12:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234721AbiGKKL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
+        id S234634AbiGKKMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234578AbiGKKKc (ORCPT
+        with ESMTP id S231411AbiGKKKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:10:32 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70E578222;
-        Mon, 11 Jul 2022 02:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657531994; x=1689067994;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/XMNx68flhNUFZWIfR1uqdJgwP7vZetAfA4HOwuX0ac=;
-  b=j941F69Ri2hH88HXMZ94KM4ELsXkf5WvnLPcCCTJHa2Hrb06pwqQN9IN
-   p1gl27lTO/yn35u9dhJoXXfcLewm+/qOOwMJBPH3qt/sxlyL2aLjN1DCV
-   81ZiWi4pLe0V+mIqdJg04T3+4glPIZ9NNMXL68OOrS/4AXX/ayNJZpJHG
-   IeWEtjjGWAZ0Ki6Co3D2vs6MTXMrfojtquHZ06y7q8TTjXHD6B9/mSGXh
-   fRpoyYXtgKV/F4avhtaT4Jt4NFXNw87+zuLkz74jYTB1BLiRTJlAldqld
-   TfQBaFE1WAA+3YjuVdXubySRQwxGmCl2ckrfAEmi6rGUCEUFgXKXQ/1hh
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="283371577"
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="283371577"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 02:33:14 -0700
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="652387102"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.51.111])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 02:33:12 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH 14/35] perf tools: Use sample->machine_pid to find guest machine
-Date:   Mon, 11 Jul 2022 12:31:57 +0300
-Message-Id: <20220711093218.10967-15-adrian.hunter@intel.com>
+        Mon, 11 Jul 2022 06:10:33 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150C9BCB6;
+        Mon, 11 Jul 2022 02:33:17 -0700 (PDT)
+Received: from rustam-GF63-Thin-9RCX.intra.ispras.ru (unknown [83.149.199.65])
+        by mail.ispras.ru (Postfix) with ESMTPS id 692F740737A7;
+        Mon, 11 Jul 2022 09:33:11 +0000 (UTC)
+From:   Rustam Subkhankulov <subkhankulov@ispras.ru>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maor Gottlieb <maorg@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH] net/mlx5e: Removed useless code in function
+Date:   Mon, 11 Jul 2022 12:33:03 +0300
+Message-Id: <20220711093303.14511-1-subkhankulov@ispras.ru>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220711093218.10967-1-adrian.hunter@intel.com>
-References: <20220711093218.10967-1-adrian.hunter@intel.com>
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If machine_pid is set, use it to find the guest machine.
+Comparison of eth_ft->ft with NULL is useless, because
+get_flow_table() returns either pointer 'eth_ft'
+such that eth_ft->ft != NULL, or an erroneous value that is
+handled on return, causing mlx5e_ethtool_flow_replace()
+to terminate before checking whether eth_ft->ft equals NULL.
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+Fixes: 6dc6071cfcde ("net/mlx5e: Add ethtool flow steering support")
 ---
- tools/perf/util/session.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index 91a091c35945..f3e9fa557bc9 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -1418,7 +1418,9 @@ static struct machine *machines__find_for_cpumode(struct machines *machines,
- 	     (sample->cpumode == PERF_RECORD_MISC_GUEST_USER))) {
- 		u32 pid;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
+index ad0d234632a3..9466202fd97b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
+@@ -742,10 +742,7 @@ mlx5e_ethtool_flow_replace(struct mlx5e_priv *priv,
  
--		if (event->header.type == PERF_RECORD_MMAP
-+		if (sample->machine_pid)
-+			pid = sample->machine_pid;
-+		else if (event->header.type == PERF_RECORD_MMAP
- 		    || event->header.type == PERF_RECORD_MMAP2)
- 			pid = event->mmap.pid;
- 		else
+ 	eth_rule->flow_spec = *fs;
+ 	eth_rule->eth_ft = eth_ft;
+-	if (!eth_ft->ft) {
+-		err = -EINVAL;
+-		goto del_ethtool_rule;
+-	}
++
+ 	rule = add_ethtool_flow_rule(priv, eth_rule, eth_ft->ft, fs, rss_context);
+ 	if (IS_ERR(rule)) {
+ 		err = PTR_ERR(rule);
 -- 
 2.25.1
 
