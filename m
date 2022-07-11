@@ -2,93 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F3EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1765CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiGKH3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
+        id S230016AbiGKH3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiGKH3O (ORCPT
+        with ESMTP id S230000AbiGKH3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:29:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C9D1572D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:29:13 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oAnqi-0006ib-SU; Mon, 11 Jul 2022 09:28:56 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oAnqh-000GRm-QP; Mon, 11 Jul 2022 09:28:55 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oAnqh-004TFL-4x; Mon, 11 Jul 2022 09:28:55 +0200
-Date:   Mon, 11 Jul 2022 09:28:41 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Nikita Travkin <nikita@trvn.ru>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
-        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
-        masneyb@onstation.org, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH v8 2/2] pwm: Add clock based PWM output driver
-Message-ID: <20220711072841.vtdgjbtefzphhtb7@pengutronix.de>
-References: <20220711062330.4923-1-nikita@trvn.ru>
- <20220711062330.4923-3-nikita@trvn.ru>
+        Mon, 11 Jul 2022 03:29:30 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B9915A08
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:29:29 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id s206so4036446pgs.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ARuOjXkb9WXnMbJXcHgDAqXcx2iKK+w+U5wn5FQDR6Y=;
+        b=LsrfyOyORhRqy17RRdlUiq4/FL4fmPohUX0HMOTvZcv3yzrGxL/RLEQkQLySym6zT8
+         geDq4SkIulIvPi8e0WHHf2dW07ZZMJt8dp24O+BtXaI0YO58AfnC7Zqwzsci2gIJbXZt
+         a+aFY/sJvcltJ2Kr5EIRakDkQo/wWXvOeY0H4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ARuOjXkb9WXnMbJXcHgDAqXcx2iKK+w+U5wn5FQDR6Y=;
+        b=t2Mo3d7nTYPxrr+b3iS16r86AZ4LJQfXTCWZ0Jm4ioU61towl1skceArMhu7kyIXAr
+         cdRxX/q9uIpgV3wsk30rpJq03C2lIN6bgkmB8OMPMzArkXz8IX5UrN82vXRkCmaLLN8x
+         SCrk2rvcma859pXSS7dusliT6UoOIkWpbowj5cruRB4B02t5u6zMTNIB3R48gRxdBYWU
+         1z5oKnhdataB5o3Op6Z3udHHV75QEAx0SgctGvwLm+775depRzUUWxj5Ey2OmbJRY3Nl
+         xU8zZvdu0ajwYzRgBOHWabZsNTN065UdR5d1bYNvqqf4tcKhq4w1INuqNZEGe6EOthCN
+         w8Eg==
+X-Gm-Message-State: AJIora9+HT4pZYYl6lPWuEgEDg7/H1oUxckg+fJIItW+s82/Tf2IBqp2
+        /Oo0GHpNHOckY3F2OSfV9RgiqtoPJca4Qg==
+X-Google-Smtp-Source: AGRyM1uXjFYsxXcTBMnm60zGyOA7F3T8MVkEl93WM7/+YkjruocghxWq4EfsD+tnXUN+29P8LY1rYw==
+X-Received: by 2002:a05:6a02:11b:b0:40d:dfdc:95d7 with SMTP id bg27-20020a056a02011b00b0040ddfdc95d7mr14907022pgb.536.1657524568710;
+        Mon, 11 Jul 2022 00:29:28 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id z8-20020aa79e48000000b0051bc5f4df1csm4012839pfq.154.2022.07.11.00.29.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 00:29:28 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v4 8/9] platform/chrome: cros_ec_typec: Cleanup switch handle return paths
+Date:   Mon, 11 Jul 2022 07:23:02 +0000
+Message-Id: <20220711072333.2064341-9-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
+In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
+References: <20220711072333.2064341-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ikxnmvrhzqbsjtde"
-Content-Disposition: inline
-In-Reply-To: <20220711062330.4923-3-nikita@trvn.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Some of the return paths for the cros_typec_get_switch_handles()
+aren't necessary. Clean up the return paths to only undo the handle
+get's which succeeded.
 
---ikxnmvrhzqbsjtde
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
 
-On Mon, Jul 11, 2022 at 11:23:30AM +0500, Nikita Travkin wrote:
-> Some systems have clocks exposed to external devices. If the clock
-> controller supports duty-cycle configuration, such clocks can be used as
-> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
-> similar way and an "opposite" driver already exists (clk-pwm). Add a
-> driver that would enable pwm devices to be used via clk subsystem.
->=20
-> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Changes since v3:
+- No changes.
 
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+Changes since v2:
+- No changes.
 
-Thanks
-Uwe
+Changes since v1:
+- No changes.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+ drivers/platform/chrome/cros_ec_typec.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---ikxnmvrhzqbsjtde
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
+index 7cb2e35c4ded..39e6fd4491a9 100644
+--- a/drivers/platform/chrome/cros_ec_typec.c
++++ b/drivers/platform/chrome/cros_ec_typec.c
+@@ -157,12 +157,10 @@ static int cros_typec_get_switch_handles(struct cros_typec_port *port,
+ 	return 0;
+ 
+ role_sw_err:
+-	usb_role_switch_put(port->role_sw);
+-ori_sw_err:
+ 	typec_switch_put(port->ori_sw);
+-mux_err:
++ori_sw_err:
+ 	typec_mux_put(port->mux);
+-
++mux_err:
+ 	return -ENODEV;
+ }
+ 
+-- 
+2.37.0.144.g8ac04bfd2-goog
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLL0SEACgkQwfwUeK3K
-7AkFAQf7B2/hjKRRsYekNT1WInfl0CTPzvlXJpWLpi3R1D8Lh2O6Ks12TczXBfoA
-cykJs7PBZ5DzhGwGQSqSvVhaBEar5V8RVdeNLblYMXmMKTPRH3aHd7NieOfllQBd
-ApOisebie2PUTJBt0bWeobVuO02dQtfi66F34GuzoMj4j7qNG9MRbTgiIaw7dAqs
-bqFvdOKQEX+/voGjeRDwACPyqtUYyvcIyR1eCCOkyuIK87w0kNa0OPJc9Qxg280v
-4NhE4Vktqp+ZImRgL6Fy1JDIY5Z8XHTT9NkTqAzozyZC1Zp/R5Tls0NUbYh+QzRJ
-XqNihElDHcts0eX4GLqwITFr27+rFw==
-=Gkns
------END PGP SIGNATURE-----
-
---ikxnmvrhzqbsjtde--
