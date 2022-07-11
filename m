@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62462C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED56CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231896AbiGKJU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
+        id S231815AbiGKJVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbiGKJUW (ORCPT
+        with ESMTP id S231898AbiGKJUb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:20:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7FF51A37;
-        Mon, 11 Jul 2022 02:12:29 -0700 (PDT)
+        Mon, 11 Jul 2022 05:20:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C44545C0;
+        Mon, 11 Jul 2022 02:12:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21ED461148;
-        Mon, 11 Jul 2022 09:12:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F2BC34115;
-        Mon, 11 Jul 2022 09:12:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFD17611F0;
+        Mon, 11 Jul 2022 09:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E03C34115;
+        Mon, 11 Jul 2022 09:12:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530748;
-        bh=JnbQUXFmoCPU/Ryxi5nJ3JILasfWjNYUzM7FYb5s3Dg=;
+        s=korg; t=1657530751;
+        bh=pv8T9gUxJhcDfY1EK6DBaogYnmWJsFaGPg8dgKdd82o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y9ZBqAkNkHn3qZPHtAeTw6LNJGJ7LVghiL1/34ziFvGq2rLy3Jud6rUjZStX+fJO9
-         3mK8MOheL+aP7ichuIA6WPkwlvCl/pVwvAGo48+8Q7+SkLvl/Sn873kqNVic+2pCDO
-         f1HjFPRsM9vFUJ3UucWKV6ZRq+KFyGbNdn6hfT2k=
+        b=g+ySHDxf7DT5lVRbevyXUiBCt+VKkF/UIR6Em26Cgn+626BqWbeUx+663BxT3AUz9
+         hTcmSjrPE2NX4t88MNo3Ggp+mapUyFSU+jG1CBkrre+68wNZyisSoWdtJSb/Gjvaw1
+         2TfXQWpaF/9ATncZm6GIYk5lYd6WGtZk/3uVMfag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 26/55] pinctrl: sunxi: a83t: Fix NAND function name for some pins
-Date:   Mon, 11 Jul 2022 11:07:14 +0200
-Message-Id: <20220711090542.536268245@linuxfoundation.org>
+Subject: [PATCH 5.10 27/55] arm64: dts: qcom: msm8994: Fix CPU6/7 reg values
+Date:   Mon, 11 Jul 2022 11:07:15 +0200
+Message-Id: <20220711090542.565896031@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -50,59 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit aaefa29270d9551b604165a08406543efa9d16f5 ]
+[ Upstream commit 47bf59c4755930f616dd90c8c6a85f40a6d347ea ]
 
-The other NAND pins on Port C use the "nand0" function name.
-"nand0" also matches all of the other Allwinner SoCs.
+CPU6 and CPU7 were mistakengly pointing to CPU5 reg. Fix it.
 
-Fixes: 4730f33f0d82 ("pinctrl: sunxi: add allwinner A83T PIO controller support")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220526024956.49500-1-samuel@sholland.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 02d8091bbca0 ("arm64: dts: qcom: msm8994: Add a proper CPU map")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220501184016.64138-1-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-index 4ada80317a3b..b5c1a8f363f3 100644
---- a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-@@ -158,26 +158,26 @@ static const struct sunxi_desc_pin sun8i_a83t_pins[] = {
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 14),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ6 */
-+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ6 */
- 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D6 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 15),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ7 */
-+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ7 */
- 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D7 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 16),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand"),		/* DQS */
-+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQS */
- 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* RST */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 17),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand")),		/* CE2 */
-+		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE2 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 18),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand")),		/* CE3 */
-+		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE3 */
- 	/* Hole */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 2),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 297408b947ff..aeb5762566e9 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -92,7 +92,7 @@
+ 		CPU6: cpu@102 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a57";
+-			reg = <0x0 0x101>;
++			reg = <0x0 0x102>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2_1>;
+ 		};
+@@ -100,7 +100,7 @@
+ 		CPU7: cpu@103 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a57";
+-			reg = <0x0 0x101>;
++			reg = <0x0 0x103>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2_1>;
+ 		};
 -- 
 2.35.1
 
