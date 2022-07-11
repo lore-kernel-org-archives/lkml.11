@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E23C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE744C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbiGKJNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58860 "EHLO
+        id S231246AbiGKJNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiGKJMd (ORCPT
+        with ESMTP id S231373AbiGKJMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:12:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966CE24BFC;
-        Mon, 11 Jul 2022 02:09:24 -0700 (PDT)
+        Mon, 11 Jul 2022 05:12:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F472C11F;
+        Mon, 11 Jul 2022 02:09:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4562DB80E7B;
-        Mon, 11 Jul 2022 09:09:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9226DC34115;
-        Mon, 11 Jul 2022 09:09:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A008611CD;
+        Mon, 11 Jul 2022 09:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37ADAC34115;
+        Mon, 11 Jul 2022 09:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530561;
-        bh=8tFdo+OIIS3mTEzo0rS2Tz8lJWzmLaRAn8Rg1nhuTjE=;
+        s=korg; t=1657530566;
+        bh=Pzmd/zN1nIln9o0WDMVsAXhhz3zAUCufCzsOSJga0K8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xULFXLQyMza2rmd2oqtH1IxfUEEOzIp+AtDroZa+7y/LrWkUoEHLI5HBEx6uPaAMK
-         DDifTYQ/zfhqkVnOghoDRBU1/a880hVEh6WottnXxkk22R9ZJomvRdw6PmipOfqIy7
-         GA8kfO7LZd1LN/13yfyD4OhgrZgKMTjuNh/Y2Qx8=
+        b=jw0oS8WU511GRW3LlC++u8fWHpKeOAypOnAM8WphvwIrfDYQ+ajSVg/oyI+kmbtf2
+         sQs87o9wlaGTVaVYRfh+k28ACK7CQuSyBX4ly4CT3b7jfTKKcmjiZFSUDBx6CiPo/+
+         L8uxPRRnxYl1q2FCbQ3y6yxcQmVfNUbLmj8Z8YMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
         Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.19 29/31] dmaengine: at_xdma: handle errors of at_xdmac_alloc_desc() correctly
-Date:   Mon, 11 Jul 2022 11:07:08 +0200
-Message-Id: <20220711090538.706635240@linuxfoundation.org>
+Subject: [PATCH 4.19 31/31] dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
+Date:   Mon, 11 Jul 2022 11:07:10 +0200
+Message-Id: <20220711090538.765377355@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090537.841305347@linuxfoundation.org>
 References: <20220711090537.841305347@linuxfoundation.org>
@@ -48,36 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 3770d92bd5237d686e49da7b2fb86f53ee6ed259 upstream.
+commit 615a4bfc426e11dba05c2cf343f9ac752fb381d2 upstream.
 
-It seems that it is valid to have less than the requested number of
-descriptors. But what is not valid and leads to subsequent errors is to
-have zero descriptors. In that case, abort the probing.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220526135111.1470926-1-michael@walle.cc
+Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Link: https://lore.kernel.org/r/20220605042723.17668-1-linmq006@gmail.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/dma/ti/dma-crossbar.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1804,6 +1804,11 @@ static int at_xdmac_alloc_chan_resources
- 	for (i = 0; i < init_nr_desc_per_channel; i++) {
- 		desc = at_xdmac_alloc_desc(chan, GFP_ATOMIC);
- 		if (!desc) {
-+			if (i == 0) {
-+				dev_warn(chan2dev(chan),
-+					 "can't allocate any descriptors\n");
-+				return -EIO;
-+			}
- 			dev_warn(chan2dev(chan),
- 				"only %d descriptors have been allocated\n", i);
- 			break;
+--- a/drivers/dma/ti/dma-crossbar.c
++++ b/drivers/dma/ti/dma-crossbar.c
+@@ -251,6 +251,7 @@ static void *ti_dra7_xbar_route_allocate
+ 	if (dma_spec->args[0] >= xbar->xbar_requests) {
+ 		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
+ 			dma_spec->args[0]);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+@@ -258,12 +259,14 @@ static void *ti_dra7_xbar_route_allocate
+ 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
+ 	if (!dma_spec->np) {
+ 		dev_err(&pdev->dev, "Can't get DMA master\n");
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	map = kzalloc(sizeof(*map), GFP_KERNEL);
+ 	if (!map) {
+ 		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 
+@@ -275,6 +278,7 @@ static void *ti_dra7_xbar_route_allocate
+ 		dev_err(&pdev->dev, "Run out of free DMA requests\n");
+ 		kfree(map);
+ 		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 	set_bit(map->xbar_out, xbar->dma_inuse);
 
 
