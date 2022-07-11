@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C2D8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52591C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbiGKUXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        id S230114AbiGKUY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbiGKUXG (ORCPT
+        with ESMTP id S229745AbiGKUY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:23:06 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904ED357FF;
-        Mon, 11 Jul 2022 13:23:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657570984; x=1689106984;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sNVS+KcPsWhAjJnadCcEhTGBjML0xg+WgJRGyIyOaj0=;
-  b=WQGwEcncRO4y/T69LEi9bW8XTw18l6X3GxZwokcoR2Zq+OQZYMYrQHly
-   1DmYdhDHFpa0/aX8clq345PjFQOf5Q1rgaR+DDke7+Vv3HKiCSkicRqTg
-   bt435hT7Ym53uaukaCVCAAxGhN+aVQAWRzzWSEIYmYBbnCeTWPdGTK2ZP
-   L5spoxeq03cZoYYiqJDBTC2nJbSqaFvN1ePBvtT2UIKh+vRvDvRsHVz3Y
-   U3buYyjlaZKX82qKzIygL21FIt/J08X1LRpa4bWO4E+7lKnteeqqQqkJV
-   zMAYYcrQMi+qLihaaruGyEhsX0X7CGIgP7OEscdsfwU1qxrtKei/uRErB
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="103985574"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Jul 2022 13:22:46 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Jul 2022 13:22:45 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 11 Jul 2022 13:22:45 -0700
-Date:   Mon, 11 Jul 2022 22:26:46 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <kavyasree.kotagiri@microchip.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v3 2/2] pinctrl: ocelot: Fix pincfg
-Message-ID: <20220711202646.om65vrksyifvkfkw@soft-dev3-1.localhost>
-References: <20220711192113.3522664-1-horatiu.vultur@microchip.com>
- <20220711192113.3522664-3-horatiu.vultur@microchip.com>
- <CAHp75VdeZSP62qoOdQf=g4b7AheFd4=jNxfjMh-_T7Q1Zi=LbA@mail.gmail.com>
+        Mon, 11 Jul 2022 16:24:58 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D47E2717E;
+        Mon, 11 Jul 2022 13:24:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=GpUxC4xM2q0YHyxeurm32X0RDwIgOBVOHXbx9JCax3s=; b=qoM8VEm+ykd3JseVkxElopsHN0
+        HDA+4r27tlPXq4X28R6Ly4e45e7EhW1MCqP3iepZXuYstAXEyCpFmQ80OhUVx0khdSKSTcB9jaCi1
+        aB7U0Ona0i28+mZ5YEofqmzJoWURRdJ9WBhRcWuBs/LkTWFCmyiZXuRn72ghKOxGM4iPULOXnaF0k
+        ACpyM168x8fsS2MFOOMPa37HgV48OQYc87dGxGwPcSG6rBeUaTrvn+eXYvQfxdoEiy6Uq/ETa6Rvg
+        Cxwd5csG7Exks19VF1zGH68oOZB9Wr8vFp89PCKjioyC+Ueju4NRG62HlfoKZzL9bFi2n/f4lJDdQ
+        rQyd9/PA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oAzxd-006G6r-1S; Mon, 11 Jul 2022 20:24:53 +0000
+Date:   Mon, 11 Jul 2022 21:24:53 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Brian Foster <bfoster@redhat.com>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ikent@redhat.com, onestero@redhat.com
+Subject: Re: [PATCH 1/3] radix-tree: propagate all tags in idr tree
+Message-ID: <YsyHFe9wph7pmpWS@casper.infradead.org>
+References: <20220614180949.102914-1-bfoster@redhat.com>
+ <20220614180949.102914-2-bfoster@redhat.com>
+ <Yqm+jmkDA+um2+hd@infradead.org>
+ <YqnXVMtBkS2nbx70@bfoster>
+ <YqnhW2CI1kbJ3NqR@casper.infradead.org>
+ <YqnwFZxmiekL5ZOC@bfoster>
+ <YqoJ+p83dLOcGfwX@casper.infradead.org>
+ <20220628125511.s2frv6lw7zgyzou5@wittgenstein>
+ <YrsV/uT2MDgNPMvR@bfoster>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdeZSP62qoOdQf=g4b7AheFd4=jNxfjMh-_T7Q1Zi=LbA@mail.gmail.com>
+In-Reply-To: <YrsV/uT2MDgNPMvR@bfoster>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 07/11/2022 21:51, Andy Shevchenko wrote:
+On Tue, Jun 28, 2022 at 10:53:50AM -0400, Brian Foster wrote:
+> On Tue, Jun 28, 2022 at 02:55:11PM +0200, Christian Brauner wrote:
+> > On Wed, Jun 15, 2022 at 05:34:02PM +0100, Matthew Wilcox wrote:
+> > > On Wed, Jun 15, 2022 at 10:43:33AM -0400, Brian Foster wrote:
+> > > > Interesting, thanks. I'll have to dig more into this to grok the current
+> > > > state of the radix-tree interface vs. the underlying data structure. If
+> > > > I follow correctly, you're saying the radix-tree api is essentially
+> > > > already a translation layer to the xarray these days, and we just need
+> > > > to move legacy users off the radix-tree api so we can eventually kill it
+> > > > off...
+> > > 
+> > > If only it were that easy ... the XArray has a whole bunch of debugging
+> > > asserts to make sure the users are actually using it correctly, and a
+> > > lot of radix tree users don't (they're probably not buggy, but they
+> > > don't use the XArray's embedded lock).
+> > > 
+> > > Anyway, here's a first cut at converting the PID allocator from the IDR
+> > > to the XArray API.  It boots, but I haven't tried to do anything tricky
+> > > with PID namespaces or CRIU.
+> > 
+> > It'd be great to see that conversion done.
+> > Fwiw, there's test cases for e.g. nested pid namespace creation with
+> > specifically requested PIDs in
+> > 
 > 
-> On Mon, Jul 11, 2022 at 9:17 PM Horatiu Vultur
-> <horatiu.vultur@microchip.com> wrote:
-> >
-> > The blamed commit changed to use regmaps instead of __iomem. But it
-> > didn't update the register offsets to be at word offset, so it uses byte
-> > offset.
-> > Another issue with the same commit is that it has a limit of 32 registers
-> > which is incorrect. The sparx5 has 64 while lan966x has 77.
-> 
-> ...
-> 
-> > -static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
-> > +static struct regmap *ocelot_pinctrl_create_pincfg(struct ocelot_pinctrl *info,
-> > +                                                  struct platform_device *pdev)
-> 
-> const?
-> 
-> And I would leave pdev to be the first parameter, if there are no
-> other functions that have them like this.
+> Ok, but I'm a little confused. Why open code the xarray usage as opposed
+> to work the idr bits closer to being able to use the xarray api (and/or
+> work the xarray to better support the idr use case)? I see 150+ callers
+> of idr_init(). Is the goal to eventually open code them all? That seems
+> a lot of potential api churn for something that is presumably a generic
+> interface (and perhaps inconsistent with ida, which looks like it uses
+> xarray directly?), but I'm probably missing details.
 
-I will do that in the next version.
-Just for my understanding/knowledge why is this desire to have const or
-to keep the const?
-
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
-
--- 
-/Horatiu
+It's not "open coding".  It's "using the XArray API instead of the
+IDR API".  The IDR API is inferior in a number of ways, and yes, I
+do want to be rid of it entirely.
