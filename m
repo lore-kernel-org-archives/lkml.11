@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A673FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D64CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbiGKJ0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S232276AbiGKJ0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232334AbiGKJYa (ORCPT
+        with ESMTP id S232355AbiGKJYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3B7240B8;
-        Mon, 11 Jul 2022 02:14:33 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6F1248F7;
+        Mon, 11 Jul 2022 02:14:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1969CCE1259;
-        Mon, 11 Jul 2022 09:14:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0A78C34115;
-        Mon, 11 Jul 2022 09:14:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42A6BB80956;
+        Mon, 11 Jul 2022 09:14:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A62C34115;
+        Mon, 11 Jul 2022 09:14:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530870;
-        bh=TRtp90YBaVG03YygRHmLfEk23dEDAC+1e/I54l6MBK0=;
+        s=korg; t=1657530884;
+        bh=lIq5QL1O+Kc+TdTym8+QkepgY8j0DpxAsVZjsV1n+AI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xAKViFAe3ccsJ0IfM7Aqkor+bOR0L63uoStpXfNM2vao5MsB473nk0daYxLr0LwWl
-         yKK41+SvQtxlxcI0mSM9RmjFdUnhUoRu3VXZRpIFTWZzPtT1suZStsmbVCHNbYo9q6
-         zzgYgmVWFBkAR4mnCjxuTaFknb6Nfx4ELiW8Gka0=
+        b=Pq8O3yR3g8KYbWIVBqlqK6bODKqRrpTjBNGM0oei3+cVXUMoPrPhVs6n6KfShC/Ij
+         0nGpgngf6fDnjw5kUfJZMLYAoc75mNcESpUTnOxbgT7/Oyd0RKqoEYcsd87Ei/xiDK
+         Jp90cm3vrqXLElfEojk7vHUZuyt+n2xc5LYLL98k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Kopp <thomas.kopp@microchip.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.18 014/112] can: mcp251xfd: mcp251xfd_regmap_crc_read(): update workaround broken CRC on TBC register
-Date:   Mon, 11 Jul 2022 11:06:14 +0200
-Message-Id: <20220711090549.963890864@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 019/112] net: rose: fix UAF bug caused by rose_t0timer_expiry
+Date:   Mon, 11 Jul 2022 11:06:19 +0200
+Message-Id: <20220711090550.104404747@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -48,68 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Kopp <thomas.kopp@microchip.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit e3d4ee7d5f7f5256dfe89219afcc7a2d553b731f upstream.
+commit 148ca04518070910739dfc4eeda765057856403d upstream.
 
-The mcp251xfd compatible chips have an erratum ([1], [2]), where the
-received CRC doesn't match the calculated CRC. In commit
-c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
-around broken CRC on TBC register") the following workaround was
-implementierend.
+There are UAF bugs caused by rose_t0timer_expiry(). The
+root cause is that del_timer() could not stop the timer
+handler that is running and there is no synchronization.
+One of the race conditions is shown below:
 
-- If a CRC read error on the TBC register is detected and the first
-  byte is 0x00 or 0x80, the most significant bit of the first byte is
-  flipped and the CRC is calculated again.
-- If the CRC now matches, the _original_ data is passed to the reader.
-  For now we assume transferred data was OK.
+    (thread 1)             |        (thread 2)
+                           | rose_device_event
+                           |   rose_rt_device_down
+                           |     rose_remove_neigh
+rose_t0timer_expiry        |       rose_stop_t0timer(rose_neigh)
+  ...                      |         del_timer(&neigh->t0timer)
+                           |         kfree(rose_neigh) //[1]FREE
+  neigh->dce_mode //[2]USE |
 
-New investigations and simulations indicate that the CRC send by the
-device is calculated on correct data, and the data is incorrectly
-received by the SPI host controller.
+The rose_neigh is deallocated in position [1] and use in
+position [2].
 
-Use flipped instead of original data and update workaround description
-in mcp251xfd_regmap_crc_read().
+The crash trace triggered by POC is like below:
 
-[1] mcp2517fd: DS80000792C: "Incorrect CRC for certain READ_CRC commands"
-[2] mcp2518fd: DS80000789C: "Incorrect CRC for certain READ_CRC commands"
+BUG: KASAN: use-after-free in expire_timers+0x144/0x320
+Write of size 8 at addr ffff888009b19658 by task swapper/0/0
+...
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0xbf/0xee
+ print_address_description+0x7b/0x440
+ print_report+0x101/0x230
+ ? expire_timers+0x144/0x320
+ kasan_report+0xed/0x120
+ ? expire_timers+0x144/0x320
+ expire_timers+0x144/0x320
+ __run_timers+0x3ff/0x4d0
+ run_timer_softirq+0x41/0x80
+ __do_softirq+0x233/0x544
+ ...
 
-Link: https://lore.kernel.org/all/DM4PR11MB53901D49578FE265B239E55AFB7C9@DM4PR11MB5390.namprd11.prod.outlook.com
-Fixes: c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work around broken CRC on TBC register")
-Cc: stable@vger.kernel.org
-Signed-off-by: Thomas Kopp <thomas.kopp@microchip.com>
-[mkl: split into 2 patches, update patch description and documentation]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+This patch changes rose_stop_ftimer() and rose_stop_t0timer()
+in rose_remove_neigh() to del_timer_sync() in order that the
+timer handler could be finished before the resources such as
+rose_neigh and so on are deallocated. As a result, the UAF
+bugs could be mitigated.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220705125610.77971-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c |    9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ net/rose/rose_route.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
-@@ -343,9 +343,8 @@ mcp251xfd_regmap_crc_read(void *context,
- 		 *
- 		 * If the highest bit in the lowest byte is flipped
- 		 * the transferred CRC matches the calculated one. We
--		 * assume for now the CRC calculation in the chip
--		 * works on wrong data and the transferred data is
--		 * correct.
-+		 * assume for now the CRC operates on the correct
-+		 * data.
- 		 */
- 		if (reg == MCP251XFD_REG_TBC &&
- 		    ((buf_rx->data[0] & 0xf8) == 0x0 ||
-@@ -359,10 +358,8 @@ mcp251xfd_regmap_crc_read(void *context,
- 								  val_len);
- 			if (!err) {
- 				/* If CRC is now correct, assume
--				 * transferred data was OK, flip bit
--				 * back to original value.
-+				 * flipped data is OK.
- 				 */
--				buf_rx->data[0] ^= 0x80;
- 				goto out;
- 			}
- 		}
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -227,8 +227,8 @@ static void rose_remove_neigh(struct ros
+ {
+ 	struct rose_neigh *s;
+ 
+-	rose_stop_ftimer(rose_neigh);
+-	rose_stop_t0timer(rose_neigh);
++	del_timer_sync(&rose_neigh->ftimer);
++	del_timer_sync(&rose_neigh->t0timer);
+ 
+ 	skb_queue_purge(&rose_neigh->queue);
+ 
 
 
