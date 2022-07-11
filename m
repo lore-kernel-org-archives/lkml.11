@@ -2,97 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 635CEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05BB7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbiGKSVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 14:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
+        id S230048AbiGKSWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 14:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiGKSVr (ORCPT
+        with ESMTP id S229635AbiGKSWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 14:21:47 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969FB5D0E0;
-        Mon, 11 Jul 2022 11:21:42 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id r6so2696026plg.3;
-        Mon, 11 Jul 2022 11:21:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IEhXinuEzpmvFUBM70vs9k4IkheO/2JqCVe0yT+x34U=;
-        b=nGL8giCRxgSDzuQiJApnh6wMNBfkjFf/yaAc5m94gkgTmzetH3npWlRzLtBLctkykS
-         Ywl0GTFZzQ30dzZYOklyG+wyJfjvL3TLsfMYy8kshNQd0gv9yHZctkAkWQuNAurVk8Lw
-         nvoK4VjsLJIfbZmZ0l5yoG3XtFXzmkBiBEYcUoIiZIG/XONd6piuiLmcj4oCJm1/SkRX
-         eCQpoZGFat3/iyVgNptOR4q55v6dKpF8sCfzrK5stROjTRgsblgPmclTrIC2AqmhcDY2
-         4zApFR89tjyexR4tmGCJnu3DErxRXMau0Sy0BOCuonLyVGCV+oPWEpao2mgT2MTy6e+n
-         0/PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IEhXinuEzpmvFUBM70vs9k4IkheO/2JqCVe0yT+x34U=;
-        b=oDMLbZyeQYrdd0BrOkhqGhyNmyELle7HKcqchhWXvDVmSA7WCtuMmLlGunjWcjHEnI
-         Hb37Zk4EIfIzbCCCi9+uwKFAfWS5V0/cffGXULNoNIlTRdTLbwgId1WvptgJ1hOg1J8B
-         Ov/mmEaZRQ/S6j+oSecibwE3dqxUo1GIflhshiobUppd9hvPWnrJaab7PDX3RHvUV9XF
-         ARumBL6jw0YBCAuywbjvSnJ4KvIuXDZHMjQXrIHuyjwK1EKeUspA3QojUdY1qtVtWsEP
-         f+Y3EpcmegqrnadhkSRXHv4qmAtnwbIkX42/t1gsW/IOa/1duqFWtz/EGW2DtB9kQvkz
-         4mlQ==
-X-Gm-Message-State: AJIora+37VqMp9VU90Q18YeaT27RuknV36wjT1bEodLgJsJBm8nkLlve
-        E5a/rvSoAlB9gK9yfgxcpHY=
-X-Google-Smtp-Source: AGRyM1tHheKKocOba0CKrsfbDYdVbHNdbz+fAkJ+drBAZKLIcv2sc+rsi3UwpNQosftErrwi51ZRJg==
-X-Received: by 2002:a17:903:244d:b0:16c:52f1:d12 with SMTP id l13-20020a170903244d00b0016c52f10d12mr2909632pls.44.1657563702085;
-        Mon, 11 Jul 2022 11:21:42 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o13-20020a170902d4cd00b0016c438b233bsm2953403plg.277.2022.07.11.11.20.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 11:21:41 -0700 (PDT)
-Message-ID: <9152b47b-a75c-57b9-d56d-2cfda3502f05@gmail.com>
-Date:   Mon, 11 Jul 2022 11:20:12 -0700
+        Mon, 11 Jul 2022 14:22:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8068532470;
+        Mon, 11 Jul 2022 11:22:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24329614DB;
+        Mon, 11 Jul 2022 18:22:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9625C34115;
+        Mon, 11 Jul 2022 18:22:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657563739;
+        bh=CvQRlE/ufLqF5vMtPD31qdoYcNYjoAvuZ3UjFo4NIrA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kuHdm9IZqSaGlxtM3jWp0VqxJgW8mxBvW8RhxQQI/wqhqG9zQDcc6uqKwJac3DRy2
+         nHx36rn5b7/rEniXgAKi7kp7ZvmUCyPlFDeEwNFyrcVTz8ubG5iVxoKMFvmdmAaK32
+         GyrYtRuVPnk92U9vGUG4rhdC6V9TSwDCBkf4HPYaLqQOjoKP/hHeFDkXHyNViBd4BM
+         1WymX3Imn3xMxzrhiEb5Spf6V8ivZ1jbQQXW054QUA0/RRyU8msJcqlrkL288sxJdD
+         K6UyHJhlCet0ylR73YPmkOX9v2Od9C8Dd5wgYUEXSuF/4UQGooHihol4p1D9zcoNqy
+         QgaDSVAlEmH7g==
+Date:   Mon, 11 Jul 2022 11:22:09 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        katie.morris@in-advantage.com
+Subject: Re: [PATCH v13 net-next 2/9] net: mdio: mscc-miim: add ability to
+ be used in a non-mmio configuration
+Message-ID: <20220711112209.4902720b@kernel.org>
+In-Reply-To: <20220705204743.3224692-3-colin.foster@in-advantage.com>
+References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
+        <20220705204743.3224692-3-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 5.10 00/55] 5.10.130-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220711090541.764895984@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/11/22 02:06, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.130 release.
-> There are 55 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue,  5 Jul 2022 13:47:36 -0700 Colin Foster wrote:
+> There are a few Ocelot chips that contain the logic for this bus, but are
+> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
+> the externally controlled configurations these registers are not
+> memory-mapped.
 > 
-> Responses should be made by Wed, 13 Jul 2022 09:05:28 +0000.
-> Anything received after that time might be too late.
+> Add support for these non-memory-mapped configurations.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.130-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Since the patch may go via MFD:
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Acked-by: Jakub Kicinski <kuba@kernel.org>
