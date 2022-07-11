@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 274A2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232677AbiGKJdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
+        id S232711AbiGKJdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232289AbiGKJc4 (ORCPT
+        with ESMTP id S232743AbiGKJdA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:32:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9639B78DD7;
-        Mon, 11 Jul 2022 02:17:39 -0700 (PDT)
+        Mon, 11 Jul 2022 05:33:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86BF778DC1;
+        Mon, 11 Jul 2022 02:17:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A18F6122D;
-        Mon, 11 Jul 2022 09:17:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1939DC34115;
-        Mon, 11 Jul 2022 09:17:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C55FE61227;
+        Mon, 11 Jul 2022 09:17:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D169AC34115;
+        Mon, 11 Jul 2022 09:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531058;
-        bh=DoAdjjA6vsIejV4loK50pbT1nheKnTBbr6OKl7P5HVM=;
+        s=korg; t=1657531061;
+        bh=YYUyytMC0pUftyIXjxoK3jnBzW0leo2WLvAhxuXrFMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xI2r2tV2oaCCmHe8jjDMDLyEbyEtQaxqRhy2mMYSe2pefYuoQprR+rruR23qvVTm2
-         fTaRFsOMO9+b0YPNuje1LW+5s4WFWRZzQxrO506r3t2PTK2RO7VIv61lCqJSEl8VVj
-         mUxaxM5Sl8vFsfjjFv0sDhEKbiR1SOBtXxueEESs=
+        b=npD0GjuXEakmizbNC47q/fXRmf2R4axDAY6wJ267dh5pN8RXl6msi/Z5x4ikruypm
+         LO1WZBmSo7SH8y6vZtrxqpvkEfE6yPrYloh0Kojn/u8kyAWXody+1SZY+AdlAjLbyP
+         ZijuMZFNXu8oTigwiRzXsglxdzdS1xqazHkYbiRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Kellermann <mk@cm4all.com>,
-        David Howells <dhowells@redhat.com>
-Subject: [PATCH 5.18 041/112] fscache: Fix invalidation/lookup race
-Date:   Mon, 11 Jul 2022 11:06:41 +0200
-Message-Id: <20220711090550.739560152@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH 5.18 032/112] cxl: Fix cleanup of port devices on failure to probe driver.
+Date:   Mon, 11 Jul 2022 11:06:32 +0200
+Message-Id: <20220711090550.479566633@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -48,85 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-commit 85e4ea1049c70fb99de5c6057e835d151fb647da upstream.
+commit db9a3a35d31ea337331f0e6e07e04bcd52642894 upstream.
 
-If an NFS file is opened for writing and closed, fscache_invalidate() will
-be asked to invalidate the file - however, if the cookie is in the
-LOOKING_UP state (or the CREATING state), then request to invalidate
-doesn't get recorded for fscache_cookie_state_machine() to do something
-with.
+The device is created, and then there is a check if a driver succesfully
+bound to it. In event of failing the bind (e.g. failure in cxl_port_probe())
+the device is left registered. When a bus rescan later occurs, fresh
+devices are created leading to a multiple device representing the same
+underlying hardware. Bad things may follow and at very least we have far too many
+devices.
 
-Fix this by making __fscache_invalidate() set a flag if it sees the cookie
-is in the LOOKING_UP state to indicate that we need to go to invalidation.
-Note that this requires a count on the n_accesses counter for the state
-machine, which that will release when it's done.
+Fix by ensuring autoremove is registered if the device create succeeds,
+but doesn't depend on sucessful binding to a driver.
 
-fscache_cookie_state_machine() then shifts to the INVALIDATING state if it
-sees the flag.
+Bug was observed as side effect of incorrect ownership in
+[PATCH v9 6/9] cxl/port: Read CDAT table
+but will result from any failure to in cxl_port_probe().
 
-Without this, an nfs file can get corrupted if it gets modified locally and
-then read locally as the cache contents may not get updated.
-
-Fixes: d24af13e2e23 ("fscache: Implement cookie invalidation")
-Reported-by: Max Kellermann <mk@cm4all.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Tested-by: Max Kellermann <mk@cm4all.com>
-Link: https://lore.kernel.org/r/YlWWbpW5Foynjllo@rabbit.intern.cm-ag [1]
+Fixes: 8dd2bc0f8e02 ("cxl/mem: Add the cxl_mem driver")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Link: https://lore.kernel.org/r/20220609134519.11668-1-Jonathan.Cameron@huawei.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fscache/cookie.c     |   15 ++++++++++++++-
- include/linux/fscache.h |    1 +
- 2 files changed, 15 insertions(+), 1 deletion(-)
+ drivers/cxl/mem.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/fs/fscache/cookie.c
-+++ b/fs/fscache/cookie.c
-@@ -517,7 +517,14 @@ static void fscache_perform_lookup(struc
+--- a/drivers/cxl/mem.c
++++ b/drivers/cxl/mem.c
+@@ -46,6 +46,7 @@ static int create_endpoint(struct cxl_me
+ {
+ 	struct cxl_dev_state *cxlds = cxlmd->cxlds;
+ 	struct cxl_port *endpoint;
++	int rc;
+ 
+ 	endpoint = devm_cxl_add_port(&parent_port->dev, &cxlmd->dev,
+ 				     cxlds->component_reg_phys, parent_port);
+@@ -54,13 +55,17 @@ static int create_endpoint(struct cxl_me
+ 
+ 	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
+ 
++	rc = cxl_endpoint_autoremove(cxlmd, endpoint);
++	if (rc)
++		return rc;
++
+ 	if (!endpoint->dev.driver) {
+ 		dev_err(&cxlmd->dev, "%s failed probe\n",
+ 			dev_name(&endpoint->dev));
+ 		return -ENXIO;
  	}
  
- 	fscache_see_cookie(cookie, fscache_cookie_see_active);
--	fscache_set_cookie_state(cookie, FSCACHE_COOKIE_STATE_ACTIVE);
-+	spin_lock(&cookie->lock);
-+	if (test_and_clear_bit(FSCACHE_COOKIE_DO_INVALIDATE, &cookie->flags))
-+		__fscache_set_cookie_state(cookie,
-+					   FSCACHE_COOKIE_STATE_INVALIDATING);
-+	else
-+		__fscache_set_cookie_state(cookie, FSCACHE_COOKIE_STATE_ACTIVE);
-+	spin_unlock(&cookie->lock);
-+	wake_up_cookie_state(cookie);
- 	trace = fscache_access_lookup_cookie_end;
+-	return cxl_endpoint_autoremove(cxlmd, endpoint);
++	return 0;
+ }
  
- out:
-@@ -752,6 +759,9 @@ again_locked:
- 			spin_lock(&cookie->lock);
- 		}
- 
-+		if (test_and_clear_bit(FSCACHE_COOKIE_DO_INVALIDATE, &cookie->flags))
-+			fscache_end_cookie_access(cookie, fscache_access_invalidate_cookie_end);
-+
- 		switch (state) {
- 		case FSCACHE_COOKIE_STATE_RELINQUISHING:
- 			fscache_see_cookie(cookie, fscache_cookie_see_relinquish);
-@@ -1048,6 +1058,9 @@ void __fscache_invalidate(struct fscache
- 		return;
- 
- 	case FSCACHE_COOKIE_STATE_LOOKING_UP:
-+		__fscache_begin_cookie_access(cookie, fscache_access_invalidate_cookie);
-+		set_bit(FSCACHE_COOKIE_DO_INVALIDATE, &cookie->flags);
-+		fallthrough;
- 	case FSCACHE_COOKIE_STATE_CREATING:
- 		spin_unlock(&cookie->lock);
- 		_leave(" [look %x]", cookie->inval_counter);
---- a/include/linux/fscache.h
-+++ b/include/linux/fscache.h
-@@ -129,6 +129,7 @@ struct fscache_cookie {
- #define FSCACHE_COOKIE_DO_PREP_TO_WRITE	12		/* T if cookie needs write preparation */
- #define FSCACHE_COOKIE_HAVE_DATA	13		/* T if this cookie has data stored */
- #define FSCACHE_COOKIE_IS_HASHED	14		/* T if this cookie is hashed */
-+#define FSCACHE_COOKIE_DO_INVALIDATE	15		/* T if cookie needs invalidation */
- 
- 	enum fscache_cookie_state	state;
- 	u8				advice;		/* FSCACHE_ADV_* */
+ /**
 
 
