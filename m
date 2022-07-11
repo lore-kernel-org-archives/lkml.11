@@ -2,115 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D02C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:04:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9289DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:05:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231976AbiGKPEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
+        id S232035AbiGKPF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbiGKPEl (ORCPT
+        with ESMTP id S229670AbiGKPFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:04:41 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E117025595
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:04:40 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id bu42so9234503lfb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:04:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RgUS82K2zhP325p8wjy8l4MlvN11hbzE1cFNOBCQxvk=;
-        b=GdTS2TUW+MKBGeytBsDh+01B8SSagYtpNa8iZEYMVgtRkJXiVtGKG/Sn6L5ulw8VZj
-         USog3UCmjJyVfyYP4CazkBpndDGdLflG5tl8u+wgZCDolfKCyP2ImFnZKFQAv9N9Gv/p
-         8Y/enTeqUR01OOvMjLRme6G7rwT7cxL4FTfKviVk8xEEzEfRyAvRfFJcTF8DVUHf6do9
-         zY60LXSuWxJPQXKyauTzwiqNm9ayDmYh5YRxwV9s/jEiDKgIk0G6M/fZfABsSksWwWGh
-         ahxN9jgXWZPpmmyxkO/ozmGhIlPfacXrl6v9AHHIlS2S2T6heTMNhQWPqsgSt3T8gvgi
-         Tslw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RgUS82K2zhP325p8wjy8l4MlvN11hbzE1cFNOBCQxvk=;
-        b=7mB0v0GSm0a1gn11RJ6muMnHx1OIpil1uV4+b7xLC4Blpon0PKqbTZ77ZVfQwkVt42
-         PaIMFOvhhxZ+VnXLym3XiXqBl2MnsiCPq5kcy4c8sZCiksS9SS1w28gyqpRSAMWAoRPv
-         6+nYCGgFXMcqT+AW1Py8f9ynRURntPR+/7G68Dyjno9wRuZuftM00dkvXrUf98yFq9Xw
-         0IySDLDMz0kQ9l4Rbx3k0iedu/Sfj+7RfveaTD1FSrITGslFysLw8nZA5iIWsWjOT91j
-         XBwkom06lvxiWInuOwo2KN/9OvhpRKg8/sveiZhoFkokXmffeaZcsXzHFuVFaxkds59M
-         ddrA==
-X-Gm-Message-State: AJIora/N5/Ex2B5rA+64ohnQZTKM+YBk/hRWsOM5rAc3s9fpPmMbjliL
-        LYAhC8hpH6n9ZUPAcB1IDd9Gxo0RPxlbP5G8D/qMdPIeL7A=
-X-Google-Smtp-Source: AGRyM1t+zU3BMjodTIBb1odDySeQMaK1DpIwSRMsOXG7y3vqRH+ot5y07mqKhFJNT1tfn6xpW3t0PAbm6Dio/ktMQOg=
-X-Received: by 2002:a05:6512:33c4:b0:489:da1c:76cc with SMTP id
- d4-20020a05651233c400b00489da1c76ccmr5240202lfg.237.1657551879124; Mon, 11
- Jul 2022 08:04:39 -0700 (PDT)
+        Mon, 11 Jul 2022 11:05:25 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A5F57264
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:05:23 -0700 (PDT)
+Received: from mail-yw1-f178.google.com ([209.85.128.178]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MNtGq-1nvYug0Do8-00OCKL for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022
+ 17:05:22 +0200
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-31d7db3e6e5so21394087b3.11
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:05:21 -0700 (PDT)
+X-Gm-Message-State: AJIora/bupNDVOcYUW3XvHZ/nNzjLo71B+a0GbVamxMo4PLAU3l+kVAX
+        N6W+UJyXViK2IK8xT16hUD32NsE+kRhtujIDGLU=
+X-Google-Smtp-Source: AGRyM1uuR/3jowLZkJ4wNlbdpbRAfi5CN2W88/co9aQy/bRsGm6Pe6SDOiUAMoudRqc3oLXRF/2zn2EYg7LCb5Ma+f4=
+X-Received: by 2002:a0d:df0f:0:b0:31b:e000:7942 with SMTP id
+ i15-20020a0ddf0f000000b0031be0007942mr19298786ywe.320.1657551920821; Mon, 11
+ Jul 2022 08:05:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220708071802.751003711@infradead.org> <20220708071834.149930530@infradead.org>
- <CAG48ez1eFwoDYnuyqp3FSDCaEOFsQEbBzsT4pGS7Xw0eLVf+nQ@mail.gmail.com> <Ysk+aUdA+3olVRtT@worktop.programming.kicks-ass.net>
-In-Reply-To: <Ysk+aUdA+3olVRtT@worktop.programming.kicks-ass.net>
-From:   Jann Horn <jannh@google.com>
-Date:   Mon, 11 Jul 2022 17:04:02 +0200
-Message-ID: <CAG48ez0XK-js7h3Aes=W7cpctkuQ0_aAjFb2SmOdFfszZgoZOQ@mail.gmail.com>
-Subject: Re: [PATCH 4/4] mmu_gather: Force tlb-flush VM_PFNMAP vmas
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Dave Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guo Ren <guoren@kernel.org>, David Miller <davem@davemloft.net>
+References: <8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu>
+ <b0d982e223314ed82ab959f5d4ad2c4c00bedb99.1657549153.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <b0d982e223314ed82ab959f5d4ad2c4c00bedb99.1657549153.git.christophe.leroy@csgroup.eu>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 11 Jul 2022 17:05:04 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a33jf5CUpyzWmRHpoUDMWB7TqSw5afUW=rcmMVSK8BvRA@mail.gmail.com>
+Message-ID: <CAK8P3a33jf5CUpyzWmRHpoUDMWB7TqSw5afUW=rcmMVSK8BvRA@mail.gmail.com>
+Subject: Re: [PATCH v1 4/5] powerpc/44x: Fix build failure with GCC 12
+ (unrecognized opcode: `wrteei')
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:9pyF81zv4Lav/kgvY4gFtT9dHnr9vn1MUdQ/5bDFFAV2Vev7bMX
+ akMTWkrMLiRBOnH7qJ8eOzru/IFUFflT9woT3XcDwM8RfLpkA/gFDfiFPyYVtEvIwGdOwen
+ QoXbyoA3Ql2Soi8bq7K1JvyikolsDYfCgUt8mtIufZpt2zvxtRG14vec86GEl6hKuW3lRYp
+ 7obloZ+3cH+AenpCcE40g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:obUCBNVaeZQ=:TNJaDxiZTUqYH3eL4bM9Qq
+ iHHThrxjU2Jv8uBEHDO7DPj/ot1yxztphcWATF/0spYTNCcEfW+OWfYC0zf+clbRcecC06fkA
+ dCBpBwQvwtkFjbMFHpwnqNX2zrFBkFsUMdEfoWauJLHM3OwzF33xfNrp3zQegD3KaHZutDW8f
+ +lziqZgeH+ekS9HMVqD0ShoucHmN3+Jn7sktKr+pPgD1KjuChDcJDpC1JxE53QPn6HNYBfBYH
+ sGIomlUx5Uy4C4gWlJVCzKMopHSn8xhpXEr9qX6n2IUdkrduiiLFKmnNXLKfL3AtcwroduOEH
+ C63nTruWT2faR1GVaY90hmeE709q9nBdQrhHza/pbdZmT0moymxxy4VOxgiTQovdS9JnZqHBj
+ lGcV6n3u7q+YfykuWDO1olwIw14/ysdmKGrqgPVhMBN1zwkKeJkq2bJDz0U6fzCRQeeEp5dmG
+ ZnCrlWVXytblq3bZM4lSIa8CM1tPVI4yffO1Z6fCDAbPI6OVVKysKPnmh4VwWfnD8ZuOJ7oIl
+ 0+Vt39atPN6ll1blObHTygi/e+UfaDYrAioWhM8p9huNOJFs2ycD1wMMN8JmH0qt0ocgJJh9C
+ 5muXBZq8c4tiAhigblY8b+jzF7483JWaOeWThTosGnY92/khLPZ9Y39MWvs4+zHcTTGo1SeY7
+ ju26XNVy+KdInoyWdSTX6CzPmPSuok+KTwyhnFn01wZD9bxJGa6+9FkumrRzIiOVZ0NabWQrs
+ UVFsSfbNKzrJI1aN+t3XKnb7EQpY2+dcfYAc3nw1XK9NZ9VLGzyz1zL6WPYKM97lzk2UlfODx
+ AH6oL3R8fXu66jKaBnQ8wDZoSKGii9IzC9qN3tF3K7HkkYn8x9YyoIkWl6rcD50wHV3WsLU7e
+ R3Qlq4ttj5ShCOKUIqCQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 9, 2022 at 10:38 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> On Fri, Jul 08, 2022 at 04:04:38PM +0200, Jann Horn wrote:
-> > On Fri, Jul 8, 2022 at 9:19 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> > > @@ -507,16 +502,22 @@ static inline void tlb_start_vma(struct
-> > >
-> > >  static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vma)
-> > >  {
-> > > -       if (tlb->fullmm || IS_ENABLED(CONFIG_MMU_GATHER_MERGE_VMAS))
-> > > +       if (tlb->fullmm)
-> > >                 return;
-> >
-> > Is this correct, or would there still be a race between MM teardown
-> > (which sets ->fullmm, see exit_mmap()->tlb_gather_mmu_fullmm()) and
-> > unmap_mapping_range()? My understanding is that ->fullmm only
-> > guarantees a flush at tlb_finish_mmu(), but here we're trying to
-> > ensure a flush before unlink_file_vma().
+On Mon, Jul 11, 2022 at 4:19 PM Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
+> @@ -183,6 +183,18 @@ config 405_CPU
+>         bool "40x family"
+>         depends on 40x
 >
-> fullmm is when the last user of the mm goes away, there should not be
+> +config 440_CPU
+> +       bool "440 (44x family)"
+> +       depends on 44x
+> +
+> +config 464_CPU
+> +       bool "464 (44x family)"
+> +       depends on 44x
+> +
+> +config 476_CPU
+> +       bool "476 (47x family)"
+> +       depends on PPC_47x
 
-(FWIW, there also seems to be an error path in write_ldt ->
-free_ldt_pgtables -> tlb_gather_mmu_fullmm where ->fullmm can be set
-for a TLB shootdown in a live process, but that's irrelevant for this
-patch.)
+Is there any value in building for -mcpu=440 or -mcpu=464 when targeting a 476?
+Maybe add another !PPC_47x dependency for the first two. Ideally we would also
+enforce that 440/464 based boards cannot be selected together with 476, though
+I guess that is a separate issue.
 
-> any races on the address space at that time. Also see the comment with
-> tlb_gather_mmu_fullmm() and its users.
+Is there a practical difference between 440 and 464 when building kernels?
+gcc seems to treat them the same way, so maybe one option for both is enough
+here.
 
-Ah, right, aside from the LDT weirdness, fullmm is only used in
-exit_mmap, and at that point there can be no more parallel access to
-the MM except for remote memory reaping (which is synchronized against
-using mmap_write_lock()) and rmap walks...
-
-> Subject: mmu_gather: Force TLB-flush VM_PFNMAP|VM_MIXEDMAP vmas
-> From: Peter Zijlstra <peterz@infradead.org>
-> Date: Thu Jul 7 11:51:16 CEST 2022
->
-> Jann reported a race between munmap() and unmap_mapping_range(), where
-> unmap_mapping_range() will no-op once unmap_vmas() has unlinked the
-> VMA; however munmap() will not yet have invalidated the TLBs.
->
-> Therefore unmap_mapping_range() will complete while there are still
-> (stale) TLB entries for the specified range.
->
-> Mitigate this by force flushing TLBs for VM_PFNMAP ranges.
->
-> Reported-by: Jann Horn <jannh@google.com>
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-
-Looks good to me.
+     Arnd
