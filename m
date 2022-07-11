@@ -2,178 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86406C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232166AbiGKJZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56718 "EHLO
+        id S232172AbiGKJZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232195AbiGKJYP (ORCPT
+        with ESMTP id S232226AbiGKJYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:15 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73BE5E309
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:14:11 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id n10so6149929wrc.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:14:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=toTJieFv9f/pSHX/0n3XdcIK9rJ0wxvA9fZtkf2IMTU=;
-        b=rmqN/9K7W+rjXou0xRQVst21CLoD4meHcdq4UoisXooZHOETqScwd1+LGSflf4jK8T
-         JDNdBA99A6g5+pkL1lnmAYseWAv+UFcUUytorP9k2UWqLp+N7sGRhujdfqKr2ZNycYlx
-         pFCKL/LZtpoDnPTD39z4i0w+FMGmqGgcFaMYlKUFO3jpEZstOTG2uxhTD/VxWoB3bcH9
-         eX5t0cyEc8fOhQpaBfQgL+5mdYkFqCMM/zavTh+Jb0BBSzPczkmHG4QqCcsdSh3Kvqw+
-         3Y1+e/4LMJnBFhA3GVemzAOHMpQKJphT9BQZvclHoyPS4uAFj8OGhoMN2EZKB5q+6MT5
-         XEMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=toTJieFv9f/pSHX/0n3XdcIK9rJ0wxvA9fZtkf2IMTU=;
-        b=8ErZHhlO8nzkBDpK8U0rsDvoN3WOG0f3TfDsm1gx/gsynCHM/jkvnlqjWC6gxyP3MT
-         V/uKevJ8K8NOPzPC1ONINiPgnLpO/QvLnjaOnY36yqRE8niUJtfRN1RIIzrJwW5k0/pB
-         XbiqZFuWfVKUwb7pM+nAY4AZo0lGb7uUddzezzt1jYbsKIG773uZd4x4ytv1psfWABHW
-         hqqfjbhpvM2dHTcGY+pxmmw5F0NrNevgVI9y/tlvH0/1Xkp1mtd51fgWqn2p3CgVrM/X
-         5bkpUNxCPQK6Q5kd9CCF4GDNtvReIVx1N94Y2CIihNU43sEABUKA1reaC17DxfpkZiQj
-         oQMg==
-X-Gm-Message-State: AJIora8pGk1qi13f654ZRCyYpMbSL/JMm9IlXrFySnhPaO6j44yokjLI
-        m7ykhviUMQoK2CoKgUjyUxyK/Q==
-X-Google-Smtp-Source: AGRyM1uKnt27o24VXDAxHEF/Z1WFQnlsz18DorttQo+uJFB7N/f4MjHn3Nlow83bySlWLAIqNTjDzg==
-X-Received: by 2002:a05:6000:10c1:b0:21d:76e0:c6de with SMTP id b1-20020a05600010c100b0021d76e0c6demr15695289wrx.623.1657530849366;
-        Mon, 11 Jul 2022 02:14:09 -0700 (PDT)
-Received: from ?IPV6:2a05:6e02:1041:c10:c7c0:6823:f3ce:2447? ([2a05:6e02:1041:c10:c7c0:6823:f3ce:2447])
-        by smtp.googlemail.com with ESMTPSA id z15-20020a056000110f00b0021d6c7a9f50sm5511386wrw.41.2022.07.11.02.14.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 02:14:08 -0700 (PDT)
-Message-ID: <e50842cf-0179-7b70-3925-dacb4ce728ea@linaro.org>
-Date:   Mon, 11 Jul 2022 11:14:06 +0200
+        Mon, 11 Jul 2022 05:24:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C6A5E315;
+        Mon, 11 Jul 2022 02:14:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3AAD61140;
+        Mon, 11 Jul 2022 09:14:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF80C34115;
+        Mon, 11 Jul 2022 09:14:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657530851;
+        bh=ISSddOJwrfYJ67l+qWRGRS53lNFwLCrHeQ3tWTBa6Yg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=y9TlbWjkJH/hgick//+ta+Uq/RCJoJjaLn9BlG7SgHgm9jUWR2UgCNG0m67JRvM6U
+         ZF10Uw9LwldObHModEAKH/+VmZcQ2GeQhSWDWcVZWsLnV7rvnlQ4W25lku7qJGSmjN
+         QCg31FQDVI4bggMx3ge9N5IMATty/YS7Y/A7YYEc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org,
+        "stable@vger.kernel.org, linux-can@vger.kernel.org, Marc Kleine-Budde" 
+        <mkl@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>
+Subject: [PATCH 5.10 23/55] can: kvaser_usb: kvaser_usb_leaf: fix bittiming limits
+Date:   Mon, 11 Jul 2022 11:07:11 +0200
+Message-Id: <20220711090542.450358256@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
+References: <20220711090541.764895984@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1 25/33] ata/drivers/ahci_imx: Switch to new of thermal
- API
-Content-Language: en-US
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Daniel Lezcano <daniel.lezcano@linexp.org>, rafael@kernel.org
-Cc:     rui.zhang@intel.com, khilman@baylibre.com, abailon@baylibre.com,
-        amitk@kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220710212423.681301-1-daniel.lezcano@linexp.org>
- <20220710212423.681301-26-daniel.lezcano@linexp.org>
- <a424890d-8647-48c5-68ab-742a95bb6865@opensource.wdc.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <a424890d-8647-48c5-68ab-742a95bb6865@opensource.wdc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/07/2022 01:18, Damien Le Moal wrote:
-> On 7/11/22 06:24, Daniel Lezcano wrote:
->> The thermal OF code has a new API allowing to migrate the OF
->> initialization to a simpler approach.
->>
->> Use this new API.
->>
->> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
->> ---
->>   drivers/ata/ahci_imx.c | 15 ++++++++++-----
->>   1 file changed, 10 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/ata/ahci_imx.c b/drivers/ata/ahci_imx.c
->> index 79aa9f285312..5ad9a890e71a 100644
->> --- a/drivers/ata/ahci_imx.c
->> +++ b/drivers/ata/ahci_imx.c
->> @@ -327,7 +327,7 @@ static int read_adc_sum(void *dev, u16 rtune_ctl_reg, void __iomem * mmio)
->>   }
->>   
->>   /* SATA AHCI temperature monitor */
->> -static int sata_ahci_read_temperature(void *dev, int *temp)
->> +static int __sata_ahci_read_temperature(void *dev, int *temp)
->>   {
->>   	u16 mpll_test_reg, rtune_ctl_reg, dac_ctl_reg, read_sum;
->>   	u32 str1, str2, str3, str4;
->> @@ -416,6 +416,11 @@ static int sata_ahci_read_temperature(void *dev, int *temp)
->>   	return 0;
->>   }
->>   
->> +static int sata_ahci_read_temperature(struct thermal_zone_device *tz, int *temp)
->> +{
->> +	return __sata_ahci_read_temperature(tz->devdata, temp);
->> +}
->> +
->>   static ssize_t sata_ahci_show_temp(struct device *dev,
->>   				   struct device_attribute *da,
->>   				   char *buf)
->> @@ -423,14 +428,14 @@ static ssize_t sata_ahci_show_temp(struct device *dev,
->>   	unsigned int temp = 0;
->>   	int err;
->>   
->> -	err = sata_ahci_read_temperature(dev, &temp);
->> +	err = __sata_ahci_read_temperature(dev, &temp);
->>   	if (err < 0)
->>   		return err;
->>   
->>   	return sprintf(buf, "%u\n", temp);
->>   }
-> 
-> I do not see why the above changes are necessary. Please explain.
+From: Jimmy Assarsson <extja@kvaser.com>
 
-sata_ahci_read_temperature() is used by sata_ahci_show_temp() also.
+commit b3b6df2c56d80b8c6740433cff5f016668b8de70 upstream.
 
-So in order to change the function prototype for the get_temp ops which 
-does not take a void* but a thermal_zone_device* structure, this 
-function wraps the call.
+Use correct bittiming limits depending on device. For devices based on
+USBcanII, Leaf M32C or Leaf i.MX28.
 
-Do you prefer sata_ahci_read_temperature() becomes sata_ahci_get_temp() 
-and keep __sata_ahci_read_temperature() name untouched ?
+Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB devices")
+Fixes: b4f20130af23 ("can: kvaser_usb: add support for Kvaser Leaf v2 and usb mini PCIe")
+Fixes: f5d4abea3ce0 ("can: kvaser_usb: Add support for the USBcan-II family")
+Link: https://lore.kernel.org/all/20220603083820.800246-4-extja@kvaser.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
+[mkl: remove stray netlink.h include]
+[mkl: keep struct can_bittiming_const kvaser_usb_flexc_bittiming_const in kvaser_usb_hydra.c]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/can/usb/kvaser_usb/kvaser_usb.h       |    2 
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c |    4 -
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  |   76 ++++++++++++----------
+ 3 files changed, 47 insertions(+), 35 deletions(-)
 
->>   
->> -static const struct thermal_zone_of_device_ops fsl_sata_ahci_of_thermal_ops = {
->> +static struct thermal_zone_device_ops fsl_sata_ahci_of_thermal_ops = {
-> 
-> Why remove the const ?
-> 
->>   	.get_temp = sata_ahci_read_temperature,
->>   };
->>   
->> @@ -1131,8 +1136,8 @@ static int imx_ahci_probe(struct platform_device *pdev)
->>   			ret = PTR_ERR(hwmon_dev);
->>   			goto disable_clk;
->>   		}
->> -		devm_thermal_zone_of_sensor_register(hwmon_dev, 0, hwmon_dev,
->> -					     &fsl_sata_ahci_of_thermal_ops);
->> +		devm_thermal_of_zone_register(hwmon_dev, 0, hwmon_dev,
->> +					      &fsl_sata_ahci_of_thermal_ops);
-> 
-> This is the only change that seems necessary.
-> 
->>   		dev_info(dev, "%s: sensor 'sata_ahci'\n", dev_name(hwmon_dev));
->>   	}
->>   
-> 
-> And it is hard to review a patch without the full series for context.
-> Please send all patches next time.
-> 
-> 
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
+@@ -188,4 +188,6 @@ int kvaser_usb_send_cmd_async(struct kva
+ 
+ int kvaser_usb_can_rx_over_error(struct net_device *netdev);
+ 
++extern const struct can_bittiming_const kvaser_usb_flexc_bittiming_const;
++
+ #endif /* KVASER_USB_H */
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
+@@ -371,7 +371,7 @@ static const struct can_bittiming_const
+ 	.brp_inc = 1,
+ };
+ 
+-static const struct can_bittiming_const kvaser_usb_hydra_flexc_bittiming_c = {
++const struct can_bittiming_const kvaser_usb_flexc_bittiming_const = {
+ 	.name = "kvaser_usb_flex",
+ 	.tseg1_min = 4,
+ 	.tseg1_max = 16,
+@@ -2024,5 +2024,5 @@ static const struct kvaser_usb_dev_cfg k
+ 		.freq = 24000000,
+ 	},
+ 	.timestamp_freq = 1,
+-	.bittiming_const = &kvaser_usb_hydra_flexc_bittiming_c,
++	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
+ };
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+@@ -100,16 +100,6 @@
+ #define USBCAN_ERROR_STATE_RX_ERROR	BIT(1)
+ #define USBCAN_ERROR_STATE_BUSERROR	BIT(2)
+ 
+-/* bittiming parameters */
+-#define KVASER_USB_TSEG1_MIN		1
+-#define KVASER_USB_TSEG1_MAX		16
+-#define KVASER_USB_TSEG2_MIN		1
+-#define KVASER_USB_TSEG2_MAX		8
+-#define KVASER_USB_SJW_MAX		4
+-#define KVASER_USB_BRP_MIN		1
+-#define KVASER_USB_BRP_MAX		64
+-#define KVASER_USB_BRP_INC		1
+-
+ /* ctrl modes */
+ #define KVASER_CTRL_MODE_NORMAL		1
+ #define KVASER_CTRL_MODE_SILENT		2
+@@ -342,48 +332,68 @@ struct kvaser_usb_err_summary {
+ 	};
+ };
+ 
+-static const struct can_bittiming_const kvaser_usb_leaf_bittiming_const = {
+-	.name = "kvaser_usb",
+-	.tseg1_min = KVASER_USB_TSEG1_MIN,
+-	.tseg1_max = KVASER_USB_TSEG1_MAX,
+-	.tseg2_min = KVASER_USB_TSEG2_MIN,
+-	.tseg2_max = KVASER_USB_TSEG2_MAX,
+-	.sjw_max = KVASER_USB_SJW_MAX,
+-	.brp_min = KVASER_USB_BRP_MIN,
+-	.brp_max = KVASER_USB_BRP_MAX,
+-	.brp_inc = KVASER_USB_BRP_INC,
++static const struct can_bittiming_const kvaser_usb_leaf_m16c_bittiming_const = {
++	.name = "kvaser_usb_ucii",
++	.tseg1_min = 4,
++	.tseg1_max = 16,
++	.tseg2_min = 2,
++	.tseg2_max = 8,
++	.sjw_max = 4,
++	.brp_min = 1,
++	.brp_max = 16,
++	.brp_inc = 1,
++};
++
++static const struct can_bittiming_const kvaser_usb_leaf_m32c_bittiming_const = {
++	.name = "kvaser_usb_leaf",
++	.tseg1_min = 3,
++	.tseg1_max = 16,
++	.tseg2_min = 2,
++	.tseg2_max = 8,
++	.sjw_max = 4,
++	.brp_min = 2,
++	.brp_max = 128,
++	.brp_inc = 2,
+ };
+ 
+-static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_8mhz = {
++static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_usbcan_dev_cfg = {
+ 	.clock = {
+ 		.freq = 8000000,
+ 	},
+ 	.timestamp_freq = 1,
+-	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
++	.bittiming_const = &kvaser_usb_leaf_m16c_bittiming_const,
++};
++
++static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_m32c_dev_cfg = {
++	.clock = {
++		.freq = 16000000,
++	},
++	.timestamp_freq = 1,
++	.bittiming_const = &kvaser_usb_leaf_m32c_bittiming_const,
+ };
+ 
+-static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_16mhz = {
++static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_16mhz = {
+ 	.clock = {
+ 		.freq = 16000000,
+ 	},
+ 	.timestamp_freq = 1,
+-	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
++	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
+ };
+ 
+-static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_24mhz = {
++static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_24mhz = {
+ 	.clock = {
+ 		.freq = 24000000,
+ 	},
+ 	.timestamp_freq = 1,
+-	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
++	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
+ };
+ 
+-static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_32mhz = {
++static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_32mhz = {
+ 	.clock = {
+ 		.freq = 32000000,
+ 	},
+ 	.timestamp_freq = 1,
+-	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
++	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
+ };
+ 
+ static void *
+@@ -529,17 +539,17 @@ static void kvaser_usb_leaf_get_software
+ 		/* Firmware expects bittiming parameters calculated for 16MHz
+ 		 * clock, regardless of the actual clock
+ 		 */
+-		dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
++		dev->cfg = &kvaser_usb_leaf_m32c_dev_cfg;
+ 	} else {
+ 		switch (sw_options & KVASER_USB_LEAF_SWOPTION_FREQ_MASK) {
+ 		case KVASER_USB_LEAF_SWOPTION_FREQ_16_MHZ_CLK:
+-			dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
++			dev->cfg = &kvaser_usb_leaf_imx_dev_cfg_16mhz;
+ 			break;
+ 		case KVASER_USB_LEAF_SWOPTION_FREQ_24_MHZ_CLK:
+-			dev->cfg = &kvaser_usb_leaf_dev_cfg_24mhz;
++			dev->cfg = &kvaser_usb_leaf_imx_dev_cfg_24mhz;
+ 			break;
+ 		case KVASER_USB_LEAF_SWOPTION_FREQ_32_MHZ_CLK:
+-			dev->cfg = &kvaser_usb_leaf_dev_cfg_32mhz;
++			dev->cfg = &kvaser_usb_leaf_imx_dev_cfg_32mhz;
+ 			break;
+ 		}
+ 	}
+@@ -566,7 +576,7 @@ static int kvaser_usb_leaf_get_software_
+ 		dev->fw_version = le32_to_cpu(cmd.u.usbcan.softinfo.fw_version);
+ 		dev->max_tx_urbs =
+ 			le16_to_cpu(cmd.u.usbcan.softinfo.max_outstanding_tx);
+-		dev->cfg = &kvaser_usb_leaf_dev_cfg_8mhz;
++		dev->cfg = &kvaser_usb_leaf_usbcan_dev_cfg;
+ 		break;
+ 	}
+ 
 
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
