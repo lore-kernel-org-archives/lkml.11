@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39EAAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D78EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233472AbiGKJpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37998 "EHLO
+        id S233482AbiGKJqA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233499AbiGKJoP (ORCPT
+        with ESMTP id S233684AbiGKJoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:44:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4372EA2E6E;
-        Mon, 11 Jul 2022 02:22:00 -0700 (PDT)
+        Mon, 11 Jul 2022 05:44:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0663965550;
+        Mon, 11 Jul 2022 02:22:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A92BD612E8;
-        Mon, 11 Jul 2022 09:21:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4CC0C34115;
-        Mon, 11 Jul 2022 09:21:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65FF2B80D2C;
+        Mon, 11 Jul 2022 09:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0011C34115;
+        Mon, 11 Jul 2022 09:22:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531319;
-        bh=nQtP9y8c4IgLOcZn+HDIIgDf2vPne8ZLgK4tRrshfMc=;
+        s=korg; t=1657531330;
+        bh=0gSaiwLMGnnaQodJeKaLiO2p8CWmE/nCdtGe/1xzvJI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uj5fX9Jw+LPDYv5xsbPsSX3KYJJsl5DhQoDl36pObENxhAVmahAl1i2QkguQ0Bhhd
-         +c3ki2VFkSugbaDdIVn8eEEHOkmuQvwHcCzyCMXBcBXCVTJPaHe6OUB7CWppCV494P
-         ywiVF7h49+t7VV64t5R4x7rgYWZeiY/2XzOHcC0M=
+        b=AxzRWLJFNLAjtNvpIqk/Xha4ylfop8LbDM+f+3+mWD5Rbh3USpFMJhGVtkYkixCwn
+         O2ezwjyob/+DJOWe60QRWVbn2ZeHoiNscudQWF97WvxrAApPa3AfXMbDqaFGz3YDaG
+         y3XZbwbxleBgX6JAKlO/wSlUuAQWiFin1Jew2rM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 063/230] ibmvnic: clear fop when retrying probe
-Date:   Mon, 11 Jul 2022 11:05:19 +0200
-Message-Id: <20220711090605.864445518@linuxfoundation.org>
+Subject: [PATCH 5.15 066/230] io_uring: ensure that fsnotify is always called
+Date:   Mon, 11 Jul 2022 11:05:22 +0200
+Message-Id: <20220711090605.950070957@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,44 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit f628ad531b4f34fdba0984255b4a2850dd369513 ]
+[ Upstream commit f63cf5192fe3418ad5ae1a4412eba5694b145f79 ]
 
-Clear ->failover_pending flag that may have been set in the previous
-pass of registering CRQ. If we don't clear, a subsequent ibmvnic_open()
-call would be misled into thinking a failover is pending and assuming
-that the reset worker thread would open the adapter. If this pass of
-registering the CRQ succeeds (i.e there is no transport event), there
-wouldn't be a reset worker thread.
+Ensure that we call fsnotify_modify() if we write a file, and that we
+do fsnotify_access() if we read it. This enables anyone using inotify
+on the file to get notified.
 
-This would leave the adapter unconfigured and require manual intervention
-to bring it up during boot.
+Ditto for fallocate, ensure that fsnotify_modify() is called.
 
-Fixes: 5a18e1e0c193 ("ibmvnic: Fix failover case for non-redundant configuration")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ fs/io_uring.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 70267bd73429..9f4f40564d74 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5612,6 +5612,11 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	do {
- 		reinit_init_done(adapter);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 189323740324..0c5dcda0b622 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -2686,8 +2686,12 @@ static bool io_rw_should_reissue(struct io_kiocb *req)
  
-+		/* clear any failovers we got in the previous pass
-+		 * since we are reinitializing the CRQ
-+		 */
-+		adapter->failover_pending = false;
-+
- 		rc = init_crq_queue(adapter);
- 		if (rc) {
- 			dev_err(&dev->dev, "Couldn't initialize crq. rc=%d\n",
+ static bool __io_complete_rw_common(struct io_kiocb *req, long res)
+ {
+-	if (req->rw.kiocb.ki_flags & IOCB_WRITE)
++	if (req->rw.kiocb.ki_flags & IOCB_WRITE) {
+ 		kiocb_end_write(req);
++		fsnotify_modify(req->file);
++	} else {
++		fsnotify_access(req->file);
++	}
+ 	if (res != req->result) {
+ 		if ((res == -EAGAIN || res == -EOPNOTSUPP) &&
+ 		    io_rw_should_reissue(req)) {
+@@ -4183,6 +4187,8 @@ static int io_fallocate(struct io_kiocb *req, unsigned int issue_flags)
+ 				req->sync.len);
+ 	if (ret < 0)
+ 		req_set_fail(req);
++	else
++		fsnotify_modify(req->file);
+ 	io_req_complete(req, ret);
+ 	return 0;
+ }
 -- 
 2.35.1
 
