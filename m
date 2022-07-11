@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232599AbiGKJa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41510 "EHLO
+        id S232641AbiGKJbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:31:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232474AbiGKJaB (ORCPT
+        with ESMTP id S231431AbiGKJ2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:30:01 -0400
+        Mon, 11 Jul 2022 05:28:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5717C71706;
-        Mon, 11 Jul 2022 02:16:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11ABC67597;
+        Mon, 11 Jul 2022 02:16:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39E92B80DB7;
-        Mon, 11 Jul 2022 09:16:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93531C34115;
-        Mon, 11 Jul 2022 09:16:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2956FB80DB7;
+        Mon, 11 Jul 2022 09:16:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DFF4C34115;
+        Mon, 11 Jul 2022 09:16:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530999;
-        bh=xJbSYnmH/54BOp4rxr0Fm4HlFwlIftTdla6newmm24M=;
+        s=korg; t=1657530963;
+        bh=ZF+WrzFbhV5KX1eMz2BAXCroj3WkNOc6oPxo40Y+VAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bfXvE5PdqKPnSXReKP8ntnszD4bxOApJQa0a5XQJ3m+6pGGeKhipoFCpJcDw/rL4o
-         m8mTy61WpEr7CJz740VcfqAEkuprW/T/K69i9oKfZiD6oaX19fL6CDgtahoDIlswcT
-         vYBLoRPtdy2pVcmxaFp3gQf3WlKldhkjj0WBnZOE=
+        b=sIS3VmYr7gUUNAwu8jDugOEVZzI8KuzQ6Qush6t78GnzDMYUUlyxgbJz+ddbeAcfH
+         gMTiJwtJ4hi8TVE2EKERxwofuzI303Aboh0hAvtA6G0oxUby3Hzj5GqhomQjKm0/Pm
+         uOgOm8DWX3r/a7TfSr5WkbKcg3Xtq1tphW6dZBiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 060/112] arm64: dts: imx8mp-evk: correct vbus pad settings
-Date:   Mon, 11 Jul 2022 11:07:00 +0200
-Message-Id: <20220711090551.276566045@linuxfoundation.org>
+Subject: [PATCH 5.18 048/112] ASoC: rt711: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 11 Jul 2022 11:06:48 +0200
+Message-Id: <20220711090550.935510604@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,39 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit e2c00820a99c55c9bb40642d5818a904a1e0d664 ]
+[ Upstream commit 33f06beac3ade10834a82ad4105dcd91d4b00d61 ]
 
-0x19 is not a valid setting. According to RM bit layout, BIT3 and BIT0
-are reserved.
-  8  7   6   5   4   3  2 1  0
- PE HYS PUE ODE FSEL X  DSE  X
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over a SoundWire DAI and as such
+should have endianness applied.
 
-Not set reserved bit.
-
-Fixes: 43da4f92a611 ("arm64: dts: imx8mp-evk: enable usb1 as host mode")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-31-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/rt711.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index 4ff75c4cbddc..a28ce8af61bd 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -513,7 +513,7 @@
+diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
+index ea25fd58d43a..9838fb4d5b9c 100644
+--- a/sound/soc/codecs/rt711.c
++++ b/sound/soc/codecs/rt711.c
+@@ -950,6 +950,7 @@ static const struct snd_soc_component_driver soc_codec_dev_rt711 = {
+ 	.num_dapm_routes = ARRAY_SIZE(rt711_audio_map),
+ 	.set_jack = rt711_set_jack_detect,
+ 	.remove = rt711_remove,
++	.endianness = 1,
+ };
  
- 	pinctrl_usb1_vbus: usb1grp {
- 		fsl,pins = <
--			MX8MP_IOMUXC_GPIO1_IO14__USB2_OTG_PWR	0x19
-+			MX8MP_IOMUXC_GPIO1_IO14__USB2_OTG_PWR	0x10
- 		>;
- 	};
- 
+ static int rt711_set_sdw_stream(struct snd_soc_dai *dai, void *sdw_stream,
 -- 
 2.35.1
 
