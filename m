@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2632C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A68C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233286AbiGKJk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
+        id S233232AbiGKJlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233232AbiGKJkV (ORCPT
+        with ESMTP id S233258AbiGKJkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:40:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01DBB8C760;
-        Mon, 11 Jul 2022 02:20:35 -0700 (PDT)
+        Mon, 11 Jul 2022 05:40:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657B35289A;
+        Mon, 11 Jul 2022 02:20:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82436612A3;
-        Mon, 11 Jul 2022 09:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9546EC34115;
-        Mon, 11 Jul 2022 09:20:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EA44B80E7A;
+        Mon, 11 Jul 2022 09:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F8DC34115;
+        Mon, 11 Jul 2022 09:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531233;
-        bh=gn6z5xNUSkjtagaL4BSFt6iLReVorGh4Ro3OTLFfa/w=;
+        s=korg; t=1657531236;
+        bh=Oc8LmOjFtOIVcOaO6TY+N7i6SkFtqCkhytIlUUqIE84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yz40VyOH3AceSZsG6Zne3a21efxkwhnuIBai4TM7KqtK8lrMM3m0sdk2NfBblZU2K
-         7HXSdadfu9T6jv6ImpJtBRbYWWYvq9MN8umhTbHk10t2na9c4DQmS/Vy/rSBzZ32Hb
-         80bZKl1/MlzsFYO+Cf8nPzzYv4Gijq3tmVOCkgZ4=
+        b=iNnAc6+ejm+pORN3xmd56F4tyttPHp99UVySseM3AO/H2S0vY89Fw/jUil5qhMdoO
+         h5kZc0/K8zJMkzorcDJg88vAqk77rB3IkIFujMai3Fo5iqYOTN/pxZ7iQpWnpk3vh3
+         Gx/CLunp40o70he0v11edxgViunAKpLz+4RwjvEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 004/230] ALSA: usb-audio: Workarounds for Behringer UMC 204/404 HD
-Date:   Mon, 11 Jul 2022 11:04:20 +0200
-Message-Id: <20220711090604.193001581@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Brost <matthew.brost@intel.com>,
+        John Harrison <John.C.Harrison@Intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 031/230] drm/i915: Disable bonding on gen12+ platforms
+Date:   Mon, 11 Jul 2022 11:04:47 +0200
+Message-Id: <20220711090604.961757355@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -47,42 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Matthew Brost <matthew.brost@intel.com>
 
-commit ae8b1631561a3634cc09d0c62bbdd938eade05ec upstream.
+[ Upstream commit ce7e75c7ef1bf8ea3d947da8c674d2f40fd7d734 ]
 
-Both Behringer UMC 202 HD and 404 HD need explicit quirks to enable
-the implicit feedback mode and start the playback stream primarily.
-The former seems fixing the stuttering and the latter is required for
-a playback-only case.
+Disable bonding on gen12+ platforms aside from ones already supported by
+the i915 - TGL, RKL, and ADL-S.
 
-Note that the "clock source 41 is not valid" error message still
-appears even after this fix, but it should be only once at probe.
-The reason of the error is still unknown, but this seems to be mostly
-harmless as it's a one-off error and the driver retires the clock
-setup and it succeeds afterwards.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215934
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220624101132.14528-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Matthew Brost <matthew.brost@intel.com>
+Reviewed-by: John Harrison <John.C.Harrison@Intel.com>
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Matt Roper <matthew.d.roper@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210728192100.132425-1-matthew.brost@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/quirks.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/i915/gem/i915_gem_context.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1842,6 +1842,10 @@ static const struct usb_audio_quirk_flag
- 		   QUIRK_FLAG_SHARE_MEDIA_DEVICE | QUIRK_FLAG_ALIGN_TRANSFER),
- 	DEVICE_FLG(0x1395, 0x740a, /* Sennheiser DECT */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x1397, 0x0508, /* Behringer UMC204HD */
-+		   QUIRK_FLAG_PLAYBACK_FIRST | QUIRK_FLAG_GENERIC_IMPLICIT_FB),
-+	DEVICE_FLG(0x1397, 0x0509, /* Behringer UMC404HD */
-+		   QUIRK_FLAG_PLAYBACK_FIRST | QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 	DEVICE_FLG(0x13e5, 0x0001, /* Serato Phono */
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x154e, 0x1002, /* Denon DCD-1500RE */
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_context.c b/drivers/gpu/drm/i915/gem/i915_gem_context.c
+index ee0c0b712522..ba2e037a82e4 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_context.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_context.c
+@@ -442,6 +442,13 @@ set_proto_ctx_engines_bond(struct i915_user_extension __user *base, void *data)
+ 	u16 idx, num_bonds;
+ 	int err, n;
+ 
++	if (GRAPHICS_VER(i915) >= 12 && !IS_TIGERLAKE(i915) &&
++	    !IS_ROCKETLAKE(i915) && !IS_ALDERLAKE_S(i915)) {
++		drm_dbg(&i915->drm,
++			"Bonding on gen12+ aside from TGL, RKL, and ADL_S not supported\n");
++		return -ENODEV;
++	}
++
+ 	if (get_user(idx, &ext->virtual_index))
+ 		return -EFAULT;
+ 
+-- 
+2.35.1
+
 
 
