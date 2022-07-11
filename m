@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB57C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbiGKJdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        id S232726AbiGKJdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232743AbiGKJdA (ORCPT
+        with ESMTP id S232757AbiGKJdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:33:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86BF778DC1;
-        Mon, 11 Jul 2022 02:17:42 -0700 (PDT)
+        Mon, 11 Jul 2022 05:33:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5588D78DF2;
+        Mon, 11 Jul 2022 02:17:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C55FE61227;
-        Mon, 11 Jul 2022 09:17:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D169AC34115;
-        Mon, 11 Jul 2022 09:17:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B28B56129D;
+        Mon, 11 Jul 2022 09:17:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A7BC34115;
+        Mon, 11 Jul 2022 09:17:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531061;
-        bh=YYUyytMC0pUftyIXjxoK3jnBzW0leo2WLvAhxuXrFMw=;
+        s=korg; t=1657531064;
+        bh=+JD6V1ZUOHmjXkK9EI6NbALLnIhn7jm5/ts2zJED3dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=npD0GjuXEakmizbNC47q/fXRmf2R4axDAY6wJ267dh5pN8RXl6msi/Z5x4ikruypm
-         LO1WZBmSo7SH8y6vZtrxqpvkEfE6yPrYloh0Kojn/u8kyAWXody+1SZY+AdlAjLbyP
-         ZijuMZFNXu8oTigwiRzXsglxdzdS1xqazHkYbiRE=
+        b=ZfJzg1pWoIX8PwM/y1tOn5yVYRSYAK3z8NyXWhh2fW1hIJ05OOAYtisJIKcDIqNsG
+         x1DD5ziAOoQc7jcwvZwTI96tZ263HPXwl6ffs6QBwjP3V/cc7+LpF8hOqRk4Ewe8Jx
+         LmmFQVvjeRyJiz+0n+xXDWJfNNmq6PGgjB81gYCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 5.18 032/112] cxl: Fix cleanup of port devices on failure to probe driver.
-Date:   Mon, 11 Jul 2022 11:06:32 +0200
-Message-Id: <20220711090550.479566633@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Malov <ivan.malov@oktetlabs.ru>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 076/112] xsk: Clear page contiguity bit when unmapping pool
+Date:   Mon, 11 Jul 2022 11:07:16 +0200
+Message-Id: <20220711090551.728724924@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,62 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Ivan Malov <ivan.malov@oktetlabs.ru>
 
-commit db9a3a35d31ea337331f0e6e07e04bcd52642894 upstream.
+[ Upstream commit 512d1999b8e94a5d43fba3afc73e774849674742 ]
 
-The device is created, and then there is a check if a driver succesfully
-bound to it. In event of failing the bind (e.g. failure in cxl_port_probe())
-the device is left registered. When a bus rescan later occurs, fresh
-devices are created leading to a multiple device representing the same
-underlying hardware. Bad things may follow and at very least we have far too many
-devices.
+When a XSK pool gets mapped, xp_check_dma_contiguity() adds bit 0x1
+to pages' DMA addresses that go in ascending order and at 4K stride.
 
-Fix by ensuring autoremove is registered if the device create succeeds,
-but doesn't depend on sucessful binding to a driver.
+The problem is that the bit does not get cleared before doing unmap.
+As a result, a lot of warnings from iommu_dma_unmap_page() are seen
+in dmesg, which indicates that lookups by iommu_iova_to_phys() fail.
 
-Bug was observed as side effect of incorrect ownership in
-[PATCH v9 6/9] cxl/port: Read CDAT table
-but will result from any failure to in cxl_port_probe().
-
-Fixes: 8dd2bc0f8e02 ("cxl/mem: Add the cxl_mem driver")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Link: https://lore.kernel.org/r/20220609134519.11668-1-Jonathan.Cameron@huawei.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+Signed-off-by: Ivan Malov <ivan.malov@oktetlabs.ru>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Link: https://lore.kernel.org/bpf/20220628091848.534803-1-ivan.malov@oktetlabs.ru
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cxl/mem.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/xdp/xsk_buff_pool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/cxl/mem.c
-+++ b/drivers/cxl/mem.c
-@@ -46,6 +46,7 @@ static int create_endpoint(struct cxl_me
- {
- 	struct cxl_dev_state *cxlds = cxlmd->cxlds;
- 	struct cxl_port *endpoint;
-+	int rc;
- 
- 	endpoint = devm_cxl_add_port(&parent_port->dev, &cxlmd->dev,
- 				     cxlds->component_reg_phys, parent_port);
-@@ -54,13 +55,17 @@ static int create_endpoint(struct cxl_me
- 
- 	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
- 
-+	rc = cxl_endpoint_autoremove(cxlmd, endpoint);
-+	if (rc)
-+		return rc;
-+
- 	if (!endpoint->dev.driver) {
- 		dev_err(&cxlmd->dev, "%s failed probe\n",
- 			dev_name(&endpoint->dev));
- 		return -ENXIO;
- 	}
- 
--	return cxl_endpoint_autoremove(cxlmd, endpoint);
-+	return 0;
- }
- 
- /**
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 87bdd71c7bb6..f70112176b7c 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -332,6 +332,7 @@ static void __xp_dma_unmap(struct xsk_dma_map *dma_map, unsigned long attrs)
+ 	for (i = 0; i < dma_map->dma_pages_cnt; i++) {
+ 		dma = &dma_map->dma_pages[i];
+ 		if (*dma) {
++			*dma &= ~XSK_NEXT_PG_CONTIG_MASK;
+ 			dma_unmap_page_attrs(dma_map->dev, *dma, PAGE_SIZE,
+ 					     DMA_BIDIRECTIONAL, attrs);
+ 			*dma = 0;
+-- 
+2.35.1
+
 
 
