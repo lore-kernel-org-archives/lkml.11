@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5E6CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DF2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232405AbiGKJ34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
+        id S232441AbiGKJ37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232311AbiGKJ2l (ORCPT
+        with ESMTP id S232336AbiGKJ2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:28:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933E966BAE;
-        Mon, 11 Jul 2022 02:16:02 -0700 (PDT)
+        Mon, 11 Jul 2022 05:28:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08AAA67CB3;
+        Mon, 11 Jul 2022 02:16:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 740DFB80E76;
-        Mon, 11 Jul 2022 09:15:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C6A7C341C0;
-        Mon, 11 Jul 2022 09:15:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 275D061226;
+        Mon, 11 Jul 2022 09:16:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E632C34115;
+        Mon, 11 Jul 2022 09:16:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530958;
-        bh=JnbQUXFmoCPU/Ryxi5nJ3JILasfWjNYUzM7FYb5s3Dg=;
+        s=korg; t=1657530969;
+        bh=aGhW0L5S5/qszPA/VigzEF4H7aLqd5d9aPEeEJjbKXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v3cOSiqDotguFJ+lWWhl4b06ja+7eu0UwX9S8vf6NVwv55460T15eW+hNxlkUwYAA
-         r3RXGM7BEDhT5SWu/r5rJvsUtqEV52Tw1kH1B7kSOSOHojbNUr3NvEZjqL+T6eiOo+
-         bya79tCnnGwLygYlzwzQDe1P1BlEp6Du/wsHjEls=
+        b=y6f9bSWUJi9DghfpybpyOVNz4vmG98u0/9OYBF4J7mAUCsvyrN5a8S5cd8Pe22Wci
+         k+cEwTskXPyno3JFv45lkCspGDTD7MqgeEcrSHqFj5zJbIxw4y8vLRjcc7VQx8qT0v
+         CpdV+QePMEbPeqSWTtT9NZ3FneeySoRjOi9ol0xI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 046/112] pinctrl: sunxi: a83t: Fix NAND function name for some pins
-Date:   Mon, 11 Jul 2022 11:06:46 +0200
-Message-Id: <20220711090550.879919936@linuxfoundation.org>
+Subject: [PATCH 5.18 050/112] ASoC: codecs: rt700/rt711/rt711-sdca: resume bus/codec in .set_jack_detect
+Date:   Mon, 11 Jul 2022 11:06:50 +0200
+Message-Id: <20220711090550.991819916@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,59 +52,199 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit aaefa29270d9551b604165a08406543efa9d16f5 ]
+[ Upstream commit 40737057b48f1b4db67b0d766b95c87ba8fc5e03 ]
 
-The other NAND pins on Port C use the "nand0" function name.
-"nand0" also matches all of the other Allwinner SoCs.
+The .set_jack_detect() codec component callback is invoked during card
+registration, which happens when the machine driver is probed.
 
-Fixes: 4730f33f0d82 ("pinctrl: sunxi: add allwinner A83T PIO controller support")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220526024956.49500-1-samuel@sholland.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+The issue is that this callback can race with the bus suspend/resume,
+and IO timeouts can happen. This can be reproduced very easily if the
+machine driver is 'blacklisted' and manually probed after the bus
+suspends. The bus and codec need to be re-initialized using pm_runtime
+helpers.
+
+Previous contributions tried to make sure accesses to the bus during
+the .set_jack_detect() component callback only happen when the bus is
+active. This was done by changing the regcache status on a component
+remove. This is however a layering violation, the regcache status
+should only be modified on device probe, suspend and resume. The
+component probe/remove should not modify how the device regcache is
+handled. This solution also didn't handle all the possible race
+conditions, and the RT700 headset codec was not handled.
+
+This patch tries to resume the codec device before handling the jack
+initializations. In case the codec has not yet been initialized,
+pm_runtime may not be enabled yet, so we don't squelch the -EACCES
+error code and only stop the jack information. When the codec reports
+as attached, the jack initialization will proceed as usual.
+
+BugLink: https://github.com/thesofproject/linux/issues/3643
+Fixes: 7ad4d237e7c4a ('ASoC: rt711-sdca: Add RT711 SDCA vendor-specific driver')
+Fixes: 899b12542b089 ('ASoC: rt711: add snd_soc_component remove callback')
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220606203752.144159-8-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ sound/soc/codecs/rt700.c      | 16 +++++++++++++---
+ sound/soc/codecs/rt711-sdca.c | 26 ++++++++++++++------------
+ sound/soc/codecs/rt711.c      | 24 +++++++++++++-----------
+ 3 files changed, 40 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-index 4ada80317a3b..b5c1a8f363f3 100644
---- a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-@@ -158,26 +158,26 @@ static const struct sunxi_desc_pin sun8i_a83t_pins[] = {
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 14),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ6 */
-+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ6 */
- 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D6 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 15),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ7 */
-+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ7 */
- 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D7 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 16),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand"),		/* DQS */
-+		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQS */
- 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* RST */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 17),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand")),		/* CE2 */
-+		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE2 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 18),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x2, "nand")),		/* CE3 */
-+		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE3 */
- 	/* Hole */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 2),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+diff --git a/sound/soc/codecs/rt700.c b/sound/soc/codecs/rt700.c
+index e61a8257bf64..360d61a36c35 100644
+--- a/sound/soc/codecs/rt700.c
++++ b/sound/soc/codecs/rt700.c
+@@ -315,17 +315,27 @@ static int rt700_set_jack_detect(struct snd_soc_component *component,
+ 	struct snd_soc_jack *hs_jack, void *data)
+ {
+ 	struct rt700_priv *rt700 = snd_soc_component_get_drvdata(component);
++	int ret;
+ 
+ 	rt700->hs_jack = hs_jack;
+ 
+-	if (!rt700->hw_init) {
+-		dev_dbg(&rt700->slave->dev,
+-			"%s hw_init not ready yet\n", __func__);
++	ret = pm_runtime_resume_and_get(component->dev);
++	if (ret < 0) {
++		if (ret != -EACCES) {
++			dev_err(component->dev, "%s: failed to resume %d\n", __func__, ret);
++			return ret;
++		}
++
++		/* pm_runtime not enabled yet */
++		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
+ 		return 0;
+ 	}
+ 
+ 	rt700_jack_init(rt700);
+ 
++	pm_runtime_mark_last_busy(component->dev);
++	pm_runtime_put_autosuspend(component->dev);
++
+ 	return 0;
+ }
+ 
+diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
+index 57629c18db38..9d59e653b941 100644
+--- a/sound/soc/codecs/rt711-sdca.c
++++ b/sound/soc/codecs/rt711-sdca.c
+@@ -487,16 +487,27 @@ static int rt711_sdca_set_jack_detect(struct snd_soc_component *component,
+ 	struct snd_soc_jack *hs_jack, void *data)
+ {
+ 	struct rt711_sdca_priv *rt711 = snd_soc_component_get_drvdata(component);
++	int ret;
+ 
+ 	rt711->hs_jack = hs_jack;
+ 
+-	if (!rt711->hw_init) {
+-		dev_dbg(&rt711->slave->dev,
+-			"%s hw_init not ready yet\n", __func__);
++	ret = pm_runtime_resume_and_get(component->dev);
++	if (ret < 0) {
++		if (ret != -EACCES) {
++			dev_err(component->dev, "%s: failed to resume %d\n", __func__, ret);
++			return ret;
++		}
++
++		/* pm_runtime not enabled yet */
++		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
+ 		return 0;
+ 	}
+ 
+ 	rt711_sdca_jack_init(rt711);
++
++	pm_runtime_mark_last_busy(component->dev);
++	pm_runtime_put_autosuspend(component->dev);
++
+ 	return 0;
+ }
+ 
+@@ -1190,14 +1201,6 @@ static int rt711_sdca_probe(struct snd_soc_component *component)
+ 	return 0;
+ }
+ 
+-static void rt711_sdca_remove(struct snd_soc_component *component)
+-{
+-	struct rt711_sdca_priv *rt711 = snd_soc_component_get_drvdata(component);
+-
+-	regcache_cache_only(rt711->regmap, true);
+-	regcache_cache_only(rt711->mbq_regmap, true);
+-}
+-
+ static const struct snd_soc_component_driver soc_sdca_dev_rt711 = {
+ 	.probe = rt711_sdca_probe,
+ 	.controls = rt711_sdca_snd_controls,
+@@ -1207,7 +1210,6 @@ static const struct snd_soc_component_driver soc_sdca_dev_rt711 = {
+ 	.dapm_routes = rt711_sdca_audio_map,
+ 	.num_dapm_routes = ARRAY_SIZE(rt711_sdca_audio_map),
+ 	.set_jack = rt711_sdca_set_jack_detect,
+-	.remove = rt711_sdca_remove,
+ 	.endianness = 1,
+ };
+ 
+diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
+index 9838fb4d5b9c..9958067e80f1 100644
+--- a/sound/soc/codecs/rt711.c
++++ b/sound/soc/codecs/rt711.c
+@@ -457,17 +457,27 @@ static int rt711_set_jack_detect(struct snd_soc_component *component,
+ 	struct snd_soc_jack *hs_jack, void *data)
+ {
+ 	struct rt711_priv *rt711 = snd_soc_component_get_drvdata(component);
++	int ret;
+ 
+ 	rt711->hs_jack = hs_jack;
+ 
+-	if (!rt711->hw_init) {
+-		dev_dbg(&rt711->slave->dev,
+-			"%s hw_init not ready yet\n", __func__);
++	ret = pm_runtime_resume_and_get(component->dev);
++	if (ret < 0) {
++		if (ret != -EACCES) {
++			dev_err(component->dev, "%s: failed to resume %d\n", __func__, ret);
++			return ret;
++		}
++
++		/* pm_runtime not enabled yet */
++		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
+ 		return 0;
+ 	}
+ 
+ 	rt711_jack_init(rt711);
+ 
++	pm_runtime_mark_last_busy(component->dev);
++	pm_runtime_put_autosuspend(component->dev);
++
+ 	return 0;
+ }
+ 
+@@ -932,13 +942,6 @@ static int rt711_probe(struct snd_soc_component *component)
+ 	return 0;
+ }
+ 
+-static void rt711_remove(struct snd_soc_component *component)
+-{
+-	struct rt711_priv *rt711 = snd_soc_component_get_drvdata(component);
+-
+-	regcache_cache_only(rt711->regmap, true);
+-}
+-
+ static const struct snd_soc_component_driver soc_codec_dev_rt711 = {
+ 	.probe = rt711_probe,
+ 	.set_bias_level = rt711_set_bias_level,
+@@ -949,7 +952,6 @@ static const struct snd_soc_component_driver soc_codec_dev_rt711 = {
+ 	.dapm_routes = rt711_audio_map,
+ 	.num_dapm_routes = ARRAY_SIZE(rt711_audio_map),
+ 	.set_jack = rt711_set_jack_detect,
+-	.remove = rt711_remove,
+ 	.endianness = 1,
+ };
+ 
 -- 
 2.35.1
 
