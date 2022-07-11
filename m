@@ -2,275 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E17AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4117C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiGKGYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 02:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57732 "EHLO
+        id S229679AbiGKG2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 02:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiGKGYG (ORCPT
+        with ESMTP id S229501AbiGKG2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 02:24:06 -0400
-Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4870647E;
-        Sun, 10 Jul 2022 23:24:01 -0700 (PDT)
-Received: from authenticated-user (box.trvn.ru [194.87.146.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id 1E3D841A6F;
-        Mon, 11 Jul 2022 11:23:59 +0500 (+05)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1657520639; bh=Uan2rxuWIYoyp2E+T74/Z4/1U8ihO7HhCKFSPFJ8fpU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=auN/fE6ro3Q0aMIKo81keSnWcSxatiWRKw5/4CVIYBvmO/W3U8ZL7grT6AlVc9qA4
-         +pfGsm2ZHlIcv8FotoszJueL40Xv3NITxc/w6kdBTAOctBiJivZ+l/MZZwXrQsYlMK
-         PV3nHbTH1VrD8GQvmEyAlJ0RuFdzbiV5ddHekHYG+BlSBRCOxOFgy4qQ+7IO9yG0Kv
-         1hGHaTdRNOiR03CcWGcN0T1zZ50Bh0H7tG4Tk/AZk51UnRE6k2a4KClOaL1ss8QCvF
-         D3DlwjAOVHf1avynXlmh1wHnH0Sj8dQjLx+VU8dOjMSk40so63aeDS8gkIbgDX9Un6
-         Mb48XuQjGUiCA==
-From:   Nikita Travkin <nikita@trvn.ru>
-To:     thierry.reding@gmail.com, lee.jones@linaro.org
-Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
-        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
-        masneyb@onstation.org, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Nikita Travkin <nikita@trvn.ru>
-Subject: [PATCH v8 2/2] pwm: Add clock based PWM output driver
-Date:   Mon, 11 Jul 2022 11:23:30 +0500
-Message-Id: <20220711062330.4923-3-nikita@trvn.ru>
-In-Reply-To: <20220711062330.4923-1-nikita@trvn.ru>
-References: <20220711062330.4923-1-nikita@trvn.ru>
+        Mon, 11 Jul 2022 02:28:46 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90ADA615A;
+        Sun, 10 Jul 2022 23:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657520924; x=1689056924;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jnuK+Gi/cRODQo4O9kzhi4uU17l1Kq80dhyXZxzWvUs=;
+  b=O2CuO1v6u6wH4Aw9j0J0uo6baSq9EKYtEZZi4uhxt4Tg1MeUBWD6KjNN
+   7vA0zL5aZZi3BTSQ4UxDGP0WSZ2pKPGqQVkv6NvCBk1RZ6NEer+inmhr1
+   PBrJXa6mSK8oguwel9GPh0K8hWCZvQQgIMcvf6z52X+WgF+miNZa4DlGb
+   EbVd6H3NUwbGKZtsUC7ODaugSKpWNjdCroZJdMYo815d1RCSP0FHEF5iJ
+   BbmkX+PNT/Ozl0sJc1+6eeVsrdcaq73UV7PRrsweinhkOPqDdebpR2KpK
+   xlt0JQ4vlxcTbSgwp/nALAtgIxmWF4UBRpIHcPOBOGrPKF2TpAh1QXPgU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="370896403"
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="370896403"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 23:28:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="652329888"
+Received: from yy-desk-7060.sh.intel.com (HELO localhost) ([10.239.159.76])
+  by fmsmga008.fm.intel.com with ESMTP; 10 Jul 2022 23:28:42 -0700
+Date:   Mon, 11 Jul 2022 14:28:41 +0800
+From:   Yuan Yao <yuan.yao@linux.intel.com>
+To:     isaku.yamahata@intel.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v7 044/102] KVM: x86/mmu: Add a private pointer to struct
+ kvm_mmu_page
+Message-ID: <20220711062841.sbaytrbt7tuezojo@yy-desk-7060>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <392839e09c48ff4e14a598ff6ed8bd56429bf17b.1656366338.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <392839e09c48ff4e14a598ff6ed8bd56429bf17b.1656366338.git.isaku.yamahata@intel.com>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some systems have clocks exposed to external devices. If the clock
-controller supports duty-cycle configuration, such clocks can be used as
-pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
-similar way and an "opposite" driver already exists (clk-pwm). Add a
-driver that would enable pwm devices to be used via clk subsystem.
+On Mon, Jun 27, 2022 at 02:53:36PM -0700, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+>
+> For private GPA, CPU refers a private page table whose contents are
+> encrypted.  The dedicated APIs to operate on it (e.g. updating/reading its
+> PTE entry) are used and their cost is expensive.
+>
+> When KVM resolves KVM page fault, it walks the page tables.  To reuse the
+> existing KVM MMU code and mitigate the heavy cost to directly walk
+> encrypted private page table, allocate a more page to mirror the existing
+> KVM page table.  Resolve KVM page fault with the existing code, and do
+> additional operations necessary for the mirrored private page table.  To
+> distinguish such cases, the existing KVM page table is called a shared page
+> table (i.e. no mirrored private page table), and the KVM page table with
+> mirrored private page table is called a private page table.  The
+> relationship is depicted below.
+>
+> Add private pointer to struct kvm_mmu_page for mirrored private page table
+> and add helper functions to allocate/initialize/free a mirrored private
+> page table page.  Also, add helper functions to check if a given
+> kvm_mmu_page is private.  The later patch introduces hooks to operate on
+> the mirrored private page table.
+>
+>               KVM page fault                     |
+>                      |                           |
+>                      V                           |
+>         -------------+----------                 |
+>         |                      |                 |
+>         V                      V                 |
+>      shared GPA           private GPA            |
+>         |                      |                 |
+>         V                      V                 |
+>  CPU/KVM shared PT root  KVM private PT root     |  CPU private PT root
+>         |                      |                 |           |
+>         V                      V                 |           V
+>      shared PT            private PT <----mirror----> mirrored private PT
+>         |                      |                 |           |
+>         |                      \-----------------+------\    |
+>         |                                        |      |    |
+>         V                                        |      V    V
+>   shared guest page                              |    private guest page
+>                                                  |
+>                            non-encrypted memory  |    encrypted memory
+>                                                  |
+> PT: page table
+>
+> Both CPU and KVM refer to CPU/KVM shared page table.  Private page table
+> is used only by KVM.  CPU refers to mirrored private page table.
+>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>  arch/x86/include/asm/kvm_host.h |  1 +
+>  arch/x86/kvm/mmu/mmu.c          |  9 ++++
+>  arch/x86/kvm/mmu/mmu_internal.h | 84 +++++++++++++++++++++++++++++++++
+>  arch/x86/kvm/mmu/tdp_mmu.c      |  3 ++
+>  4 files changed, 97 insertions(+)
+>
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index f4d4ed41641b..bfc934dc9a33 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -716,6 +716,7 @@ struct kvm_vcpu_arch {
+>  	struct kvm_mmu_memory_cache mmu_shadow_page_cache;
+>  	struct kvm_mmu_memory_cache mmu_gfn_array_cache;
+>  	struct kvm_mmu_memory_cache mmu_page_header_cache;
+> +	struct kvm_mmu_memory_cache mmu_private_sp_cache;
+>
+>  	/*
+>  	 * QEMU userspace and the guest each have their own FPU state.
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index c517c7bca105..a5bf3e40e209 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -691,6 +691,13 @@ static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
+>  	int start, end, i, r;
+>  	bool is_tdp_mmu = is_tdp_mmu_enabled(vcpu->kvm);
+>
+> +	if (kvm_gfn_shared_mask(vcpu->kvm)) {
+> +		r = kvm_mmu_topup_memory_cache(&vcpu->arch.mmu_private_sp_cache,
+> +					       PT64_ROOT_MAX_LEVEL);
+> +		if (r)
+> +			return r;
+> +	}
+> +
+>  	if (is_tdp_mmu && shadow_nonpresent_value)
+>  		start = kvm_mmu_memory_cache_nr_free_objects(mc);
+>
+> @@ -732,6 +739,7 @@ static void mmu_free_memory_caches(struct kvm_vcpu *vcpu)
+>  {
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_pte_list_desc_cache);
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_shadow_page_cache);
+> +	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_private_sp_cache);
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_gfn_array_cache);
+>  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_page_header_cache);
+>  }
+> @@ -1736,6 +1744,7 @@ static struct kvm_mmu_page *kvm_mmu_alloc_page(struct kvm_vcpu *vcpu, int direct
+>  	if (!direct)
+>  		sp->gfns = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_gfn_array_cache);
+>  	set_page_private(virt_to_page(sp->spt), (unsigned long)sp);
+> +	kvm_mmu_init_private_sp(sp, NULL);
+>
+>  	/*
+>  	 * active_mmu_pages must be a FIFO list, as kvm_zap_obsolete_pages()
+> diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+> index 44a04fad4bed..9f3a6bea60a3 100644
+> --- a/arch/x86/kvm/mmu/mmu_internal.h
+> +++ b/arch/x86/kvm/mmu/mmu_internal.h
+> @@ -55,6 +55,10 @@ struct kvm_mmu_page {
+>  	u64 *spt;
+>  	/* hold the gfn of each spte inside spt */
+>  	gfn_t *gfns;
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +	/* associated private shadow page, e.g. SEPT page. */
+> +	void *private_sp;
+> +#endif
+>  	/* Currently serving as active root */
+>  	union {
+>  		int root_count;
+> @@ -115,6 +119,86 @@ static inline int kvm_mmu_page_as_id(struct kvm_mmu_page *sp)
+>  	return kvm_mmu_role_as_id(sp->role);
+>  }
+>
+> +/*
+> + * TDX vcpu allocates page for root Secure EPT page and assigns to CPU secure
 
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
---
+"TDX vcpu" is a little confused, how about "TDX moudule allocates(or manages) page
+for ..." ?
 
-Changes in v2:
- - Address Uwe's review comments:
-   - Round set clk rate up
-   - Add a description with limitations of the driver
-   - Disable and unprepare clock before removing pwmchip
-Changes in v3:
- - Use 64bit version of div round up
- - Address Uwe's review comments:
-   - Reword the limitations to avoid incorrect claims
-   - Move the clk_enabled flag assignment
-   - Drop unnecessary statements
-Changes in v5:
- - add missed returns
-Changes in v6:
- - Unprepare the clock on error
- - Drop redundant limitations points
-Changes in v7:
- - Rename some variables to be in line with common naming
-Changes in v8:
- - Document the glitch that happens inbetween multiple clock operations
----
- drivers/pwm/Kconfig   |  10 +++
- drivers/pwm/Makefile  |   1 +
- drivers/pwm/pwm-clk.c | 148 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 159 insertions(+)
- create mode 100644 drivers/pwm/pwm-clk.c
+> + * EPT pointer.  KVM doesn't need to allocate and link to the secure EPT.
+> + * Dummy value to make is_pivate_sp() return true.
+> + */
+> +#define KVM_MMU_PRIVATE_SP_ROOT	((void *)1)
+> +
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +static inline bool is_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return !!sp->private_sp;
+> +}
+> +
+> +static inline bool is_private_sptep(u64 *sptep)
+> +{
+> +	WARN_ON(!sptep);
+> +	return is_private_sp(sptep_to_sp(sptep));
+> +}
+> +
+> +static inline void *kvm_mmu_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return sp->private_sp;
+> +}
+> +
+> +static inline void kvm_mmu_init_private_sp(struct kvm_mmu_page *sp, void *private_sp)
+> +{
+> +	sp->private_sp = private_sp;
+> +}
+> +
+> +/* Valid sp->role.level is required. */
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 904de8d61828..60d13a949bc5 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -140,6 +140,16 @@ config PWM_BRCMSTB
- 	  To compile this driver as a module, choose M Here: the module
- 	  will be called pwm-brcmstb.c.
- 
-+config PWM_CLK
-+	tristate "Clock based PWM support"
-+	depends on HAVE_CLK || COMPILE_TEST
-+	help
-+	  Generic PWM framework driver for outputs that can be
-+	  muxed to clocks.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-clk.
-+
- config PWM_CLPS711X
- 	tristate "CLPS711X PWM support"
- 	depends on ARCH_CLPS711X || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 5c08bdb817b4..7bf1a29f02b8 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
- obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
- obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
- obj-$(CONFIG_PWM_BRCMSTB)	+= pwm-brcmstb.o
-+obj-$(CONFIG_PWM_CLK)		+= pwm-clk.o
- obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
- obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
- obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
-diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
-new file mode 100644
-index 000000000000..c2a503d684a7
---- /dev/null
-+++ b/drivers/pwm/pwm-clk.c
-@@ -0,0 +1,148 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Clock based PWM controller
-+ *
-+ * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
-+ *
-+ * This is an "adapter" driver that allows PWM consumers to use
-+ * system clocks with duty cycle control as PWM outputs.
-+ *
-+ * Limitations:
-+ * - Due to the fact that exact behavior depends on the underlying
-+ *   clock driver, various limitations are possible.
-+ * - Underlying clock may not be able to give 0% or 100% duty cycle
-+ *   (constant off or on), exact behavior will depend on the clock.
-+ * - When the PWM is disabled, the clock will be disabled as well,
-+ *   line state will depend on the clock.
-+ * - The clk API doesn't expose the necessary calls to implement
-+ *   .get_state().
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/math64.h>
-+#include <linux/err.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/clk.h>
-+#include <linux/pwm.h>
-+
-+struct pwm_clk_chip {
-+	struct pwm_chip chip;
-+	struct clk *clk;
-+	bool clk_enabled;
-+};
-+
-+#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, chip)
-+
-+static int pwm_clk_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			 const struct pwm_state *state)
-+{
-+	struct pwm_clk_chip *pcchip = to_pwm_clk_chip(chip);
-+	int ret;
-+	u32 rate;
-+	u64 period = state->period;
-+	u64 duty_cycle = state->duty_cycle;
-+
-+	if (!state->enabled) {
-+		if (pwm->state.enabled) {
-+			clk_disable(pcchip->clk);
-+			pcchip->clk_enabled = false;
-+		}
-+		return 0;
-+	} else if (!pwm->state.enabled) {
-+		ret = clk_enable(pcchip->clk);
-+		if (ret)
-+			return ret;
-+		pcchip->clk_enabled = true;
-+	}
-+
-+	/*
-+	 * We have to enable the clk before setting the rate and duty_cycle,
-+	 * that however results in a window where the clk is on with a
-+	 * (potentially) different setting. Also setting period and duty_cycle
-+	 * are two separate calls, so that probably isn't atomic either.
-+	 */
-+
-+	rate = DIV64_U64_ROUND_UP(NSEC_PER_SEC, period);
-+	ret = clk_set_rate(pcchip->clk, rate);
-+	if (ret)
-+		return ret;
-+
-+	if (state->polarity == PWM_POLARITY_INVERSED)
-+		duty_cycle = period - duty_cycle;
-+
-+	return clk_set_duty_cycle(pcchip->clk, duty_cycle, period);
-+}
-+
-+static const struct pwm_ops pwm_clk_ops = {
-+	.apply = pwm_clk_apply,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int pwm_clk_probe(struct platform_device *pdev)
-+{
-+	struct pwm_clk_chip *pcchip;
-+	int ret;
-+
-+	pcchip = devm_kzalloc(&pdev->dev, sizeof(*pcchip), GFP_KERNEL);
-+	if (!pcchip)
-+		return -ENOMEM;
-+
-+	pcchip->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(pcchip->clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(pcchip->clk),
-+				     "Failed to get clock\n");
-+
-+	pcchip->chip.dev = &pdev->dev;
-+	pcchip->chip.ops = &pwm_clk_ops;
-+	pcchip->chip.npwm = 1;
-+
-+	ret = clk_prepare(pcchip->clk);
-+	if (ret < 0)
-+		return dev_err_probe(&pdev->dev, ret, "Failed to prepare clock\n");
-+
-+	ret = pwmchip_add(&pcchip->chip);
-+	if (ret < 0) {
-+		clk_unprepare(pcchip->clk);
-+		return dev_err_probe(&pdev->dev, ret, "Failed to add pwm chip\n");
-+	}
-+
-+	platform_set_drvdata(pdev, pcchip);
-+	return 0;
-+}
-+
-+static int pwm_clk_remove(struct platform_device *pdev)
-+{
-+	struct pwm_clk_chip *pcchip = platform_get_drvdata(pdev);
-+
-+	pwmchip_remove(&pcchip->chip);
-+
-+	if (pcchip->clk_enabled)
-+		clk_disable(pcchip->clk);
-+
-+	clk_unprepare(pcchip->clk);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id pwm_clk_dt_ids[] = {
-+	{ .compatible = "clk-pwm", },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, pwm_clk_dt_ids);
-+
-+static struct platform_driver pwm_clk_driver = {
-+	.driver = {
-+		.name = "pwm-clk",
-+		.of_match_table = pwm_clk_dt_ids,
-+	},
-+	.probe = pwm_clk_probe,
-+	.remove = pwm_clk_remove,
-+};
-+module_platform_driver(pwm_clk_driver);
-+
-+MODULE_ALIAS("platform:pwm-clk");
-+MODULE_AUTHOR("Nikita Travkin <nikita@trvn.ru>");
-+MODULE_DESCRIPTION("Clock based PWM driver");
-+MODULE_LICENSE("GPL");
--- 
-2.35.3
+I didn't see such requirement in kvm_mmu_alloc_private_sp(), please
+consider to move the comment with the code that introduces such
+requirement together.
 
+> +static inline void kvm_mmu_alloc_private_sp(
+> +	struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp, bool is_root)
+> +{
+> +	if (is_root)
+> +		sp->private_sp = KVM_MMU_PRIVATE_SP_ROOT;
+> +	else
+> +		sp->private_sp = kvm_mmu_memory_cache_alloc(
+> +			&vcpu->arch.mmu_private_sp_cache);
+> +	/*
+> +	 * Because mmu_private_sp_cache is topped up before staring kvm page
+> +	 * fault resolving, the allocation above shouldn't fail.
+> +	 */
+> +	WARN_ON_ONCE(!sp->private_sp);
+> +}
+> +
+> +static inline void kvm_mmu_free_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	if (sp->private_sp != KVM_MMU_PRIVATE_SP_ROOT)
+> +		free_page((unsigned long)sp->private_sp);
+> +}
+> +#else
+> +static inline bool is_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline bool is_private_sptep(u64 *sptep)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline void *kvm_mmu_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void kvm_mmu_init_private_sp(struct kvm_mmu_page *sp, void *private_sp)
+> +{
+> +}
+> +
+> +static inline void kvm_mmu_alloc_private_sp(
+> +	struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp, bool is_root)
+> +{
+> +}
+> +
+> +static inline void kvm_mmu_free_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +}
+> +#endif
+> +
+>  static inline bool kvm_mmu_page_ad_need_write_protect(struct kvm_mmu_page *sp)
+>  {
+>  	/*
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 7eb41b176d1e..b2568b062faa 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -72,6 +72,8 @@ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
+>
+>  static void tdp_mmu_free_sp(struct kvm_mmu_page *sp)
+>  {
+> +	if (is_private_sp(sp))
+> +		kvm_mmu_free_private_sp(sp);
+>  	free_page((unsigned long)sp->spt);
+>  	kmem_cache_free(mmu_page_header_cache, sp);
+>  }
+> @@ -295,6 +297,7 @@ static void tdp_mmu_init_sp(struct kvm_mmu_page *sp, tdp_ptep_t sptep,
+>  	sp->gfn = gfn;
+>  	sp->ptep = sptep;
+>  	sp->tdp_mmu_page = true;
+> +	kvm_mmu_init_private_sp(sp);
+>
+>  	trace_kvm_mmu_get_page(sp, true);
+>  }
+> --
+> 2.25.1
+>
