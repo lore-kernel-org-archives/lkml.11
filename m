@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56395C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 116D1CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233875AbiGKJvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
+        id S233890AbiGKJvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233716AbiGKJuC (ORCPT
+        with ESMTP id S233193AbiGKJuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:50:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198BD27FD0;
-        Mon, 11 Jul 2022 02:24:27 -0700 (PDT)
+        Mon, 11 Jul 2022 05:50:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DAE313A7;
+        Mon, 11 Jul 2022 02:24:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8A5A61137;
-        Mon, 11 Jul 2022 09:24:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAD97C34115;
-        Mon, 11 Jul 2022 09:24:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5E8DB80D2C;
+        Mon, 11 Jul 2022 09:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32138C341C0;
+        Mon, 11 Jul 2022 09:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531466;
-        bh=07WT9RtlxwLOxY71BOZkHyVY+aRKwX1I6w6eyvoueyY=;
+        s=korg; t=1657531471;
+        bh=xZz0qpVyBij1ECB9UEqppt9fb3xkzJWlXqnbQzD241E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSV4X/EPBggYQ7XgdZrPg+Ux1iUuFlLAdKlULj8ceCeMrrfrJk/qMT283/zMbumAr
-         0XZM3ZADC9Dgdq8IAbW0FLdIxATdYcGxiW8pjanKO7VPo3TpuBsqWBUTuyZJpC/yxh
-         JnSk7oxrojUjwC5IF2R1yUgkQPTURVyu6VGDKnDM=
+        b=tlrz2eXoukHe8KHEapEYFtFIey496FM8RJFKkH1IzRz60rhGHN25rJ4QmzlCx7BOR
+         aIK4Ry8ZEnNfeALjorOBFKx60k2yxiCmvFfXax6PjKgSCr9r7jEWds67W5JQNcNuHQ
+         0mcGfb4zkmKsViIgEdv/gRiJhV+HJ3hw8YX/ayI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Wu Bo <wubo40@huawei.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 115/230] ASoC: rt5682: fix an incorrect NULL check on list iterator
-Date:   Mon, 11 Jul 2022 11:06:11 +0200
-Message-Id: <20220711090607.329020791@linuxfoundation.org>
+Subject: [PATCH 5.15 090/230] drbd: Fix double free problem in drbd_create_device
+Date:   Mon, 11 Jul 2022 11:05:46 +0200
+Message-Id: <20220711090606.625323058@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,58 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Wu Bo <wubo40@huawei.com>
 
-[ Upstream commit c8618d65007ba68d7891130642d73e89372101e8 ]
+[ Upstream commit 27548088ac628109f70eb0b1eb521d035844dba8 ]
 
-The bug is here:
-	if (!dai) {
+In drbd_create_device(), the 'out_no_io_page' lable has called
+blk_cleanup_disk() when return failed.
 
-The list iterator value 'dai' will *always* be set and non-NULL
-by for_each_component_dais(), so it is incorrect to assume that
-the iterator value will be NULL if the list is empty or no element
-is found (In fact, it will be a bogus pointer to an invalid struct
-object containing the HEAD). Otherwise it will bypass the check
-'if (!dai) {' (never call dev_err() and never return -ENODEV;)
-and lead to invalid memory access lately when calling
-'rt5682_set_bclk1_ratio(dai, factor);'.
+So remove the 'out_cleanup_disk' lable to avoid double free the
+disk pointer.
 
-To fix the bug, just return rt5682_set_bclk1_ratio(dai, factor);
-when found the 'dai', otherwise dev_err() and return -ENODEV;
-
-Cc: stable@vger.kernel.org
-Fixes: ebbfabc16d23d ("ASoC: rt5682: Add CCF usage for providing I2S clks")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327081002.12684-1-xiam0nd.tong@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: e92ab4eda516 ("drbd: add error handling support for add_disk()")
+Signed-off-by: Wu Bo <wubo40@huawei.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/1636013229-26309-1-git-send-email-wubo40@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5682.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/block/drbd/drbd_main.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
-index 80d199843b8c..8a9e1a4fa03e 100644
---- a/sound/soc/codecs/rt5682.c
-+++ b/sound/soc/codecs/rt5682.c
-@@ -2822,14 +2822,11 @@ static int rt5682_bclk_set_rate(struct clk_hw *hw, unsigned long rate,
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index ae6a136d278e..b91d2a9dc238 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -2800,7 +2800,7 @@ enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsig
  
- 	for_each_component_dais(component, dai)
- 		if (dai->id == RT5682_AIF1)
--			break;
--	if (!dai) {
--		dev_err(rt5682->i2c_dev, "dai %d not found in component\n",
--			RT5682_AIF1);
--		return -ENODEV;
--	}
-+			return rt5682_set_bclk1_ratio(dai, factor);
+ 	err = add_disk(disk);
+ 	if (err)
+-		goto out_cleanup_disk;
++		goto out_idr_remove_vol;
  
--	return rt5682_set_bclk1_ratio(dai, factor);
-+	dev_err(rt5682->i2c_dev, "dai %d not found in component\n",
-+		RT5682_AIF1);
-+	return -ENODEV;
- }
+ 	/* inherit the connection state */
+ 	device->state.conn = first_connection(resource)->cstate;
+@@ -2814,8 +2814,6 @@ enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsig
+ 	drbd_debugfs_device_add(device);
+ 	return NO_ERROR;
  
- static const struct clk_ops rt5682_dai_clk_ops[RT5682_DAI_NUM_CLKS] = {
+-out_cleanup_disk:
+-	blk_cleanup_disk(disk);
+ out_idr_remove_vol:
+ 	idr_remove(&connection->peer_devices, vnr);
+ out_idr_remove_from_resource:
 -- 
 2.35.1
 
