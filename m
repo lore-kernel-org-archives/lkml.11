@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED81C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC3FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234273AbiGKKAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
+        id S234319AbiGKKAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234277AbiGKJ7L (ORCPT
+        with ESMTP id S234306AbiGKJ7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:59:11 -0400
+        Mon, 11 Jul 2022 05:59:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15FD624A7;
-        Mon, 11 Jul 2022 02:27:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1035063911;
+        Mon, 11 Jul 2022 02:27:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69D4B613F8;
-        Mon, 11 Jul 2022 09:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD29C34115;
-        Mon, 11 Jul 2022 09:27:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8F1761372;
+        Mon, 11 Jul 2022 09:27:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6390C34115;
+        Mon, 11 Jul 2022 09:27:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531653;
-        bh=wpauSRjKkxczRqOFAKR0G9QBSNrt+x6DlEL/bNnxU/o=;
+        s=korg; t=1657531662;
+        bh=XUoSAv6TxAwN+8OKNJOnZbAN/7rSjDyG73oAYspuHQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h/rL3QdQpqogNpHlkVkeJr9A22NpOL9+wytUBTQGbFNWi+j3x96wcYLQWrLGp8AeP
-         bgTeRwbFxUxX63XmE2CQL67Vy13NY6e0HRAe7pevomPemKwtP5bpHY5NOVY2f5snUx
-         qfYs4GvXIkYs6FetiSLFZNuw4Fpb2auRtBZ2BxHQ=
+        b=1jupjsNGqxTm2ziXn1JfImzpQkdvDVRlnaUDzrbJ9YyojDUSOjIr+9dX5jH+QYq0X
+         W0BvLtzYO/2jC7RjP33x7i20VmI23LIX5ijUJW2eQzvv7cgCD1wdSTLWDIKd8iKlTr
+         hUxIfuED/H2LgiZr1JNGTBeb/36LaCBAFzrZNpbQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 184/230] ARM: mxs_defconfig: Enable the framebuffer
-Date:   Mon, 11 Jul 2022 11:07:20 +0200
-Message-Id: <20220711090609.329087746@linuxfoundation.org>
+Subject: [PATCH 5.15 187/230] arm64: dts: imx8mp-evk: correct gpio-led pad settings
+Date:   Mon, 11 Jul 2022 11:07:23 +0200
+Message-Id: <20220711090609.412872318@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,41 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit b10ef5f2ddb3a5a22ac0936c8d91a50ac5e55e77 ]
+[ Upstream commit b838582ab8d5fb11b2c0275056a9f34e1d94fece ]
 
-Currently, when booting Linux on a imx28-evk board there is
-no display activity.
+0x19 is not a valid setting. According to RM bit layout,
+BIT3 and BIT0 are reserved.
+  8  7   6   5   4   3  2 1  0
+ PE HYS PUE ODE FSEL X  DSE  X
 
-Enable CONFIG_FB which is nowadays required for CONFIG_DRM_PANEL_LVDS,
-CONFIG_DRM_PANEL_SIMPLE, CONFIG_DRM_PANEL_SEIKO_43WVF1G,
-CONFIG_FB_MODE_HELPERS, CONFIG_BACKLIGHT_PWM, CONFIG_BACKLIGHT_GPIO,
-CONFIG_FRAMEBUFFER_CONSOLE, CONFIG_LOGO, CONFIG_FONTS, CONFIG_FONT_8x8
-and CONFIG_FONT_8x16.
+Correct setting with PE PUE set, DSE set to 0.
 
-Based on commit c54467482ffd ("ARM: imx_v6_v7_defconfig: enable fb").
-
-Fixes: f611b1e7624c ("drm: Avoid circular dependencies for CONFIG_FB")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
+Fixes: 50d336b12f34 ("arm64: dts: imx8mp-evk: Add GPIO LED support")
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/configs/mxs_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/configs/mxs_defconfig b/arch/arm/configs/mxs_defconfig
-index ca32446b187f..f53086ddc48b 100644
---- a/arch/arm/configs/mxs_defconfig
-+++ b/arch/arm/configs/mxs_defconfig
-@@ -93,6 +93,7 @@ CONFIG_REGULATOR_FIXED_VOLTAGE=y
- CONFIG_DRM=y
- CONFIG_DRM_PANEL_SEIKO_43WVF1G=y
- CONFIG_DRM_MXSFB=y
-+CONFIG_FB=y
- CONFIG_FB_MODE_HELPERS=y
- CONFIG_LCD_CLASS_DEVICE=y
- CONFIG_BACKLIGHT_CLASS_DEVICE=y
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
+index 3f424a8937f1..be3b01b5e159 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
+@@ -351,7 +351,7 @@
+ 
+ 	pinctrl_gpio_led: gpioledgrp {
+ 		fsl,pins = <
+-			MX8MP_IOMUXC_NAND_READY_B__GPIO3_IO16	0x19
++			MX8MP_IOMUXC_NAND_READY_B__GPIO3_IO16	0x140
+ 		>;
+ 	};
+ 
 -- 
 2.35.1
 
