@@ -2,131 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA61C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 910F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231979AbiGKVQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 17:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
+        id S232025AbiGKVQ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 17:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbiGKVQG (ORCPT
+        with ESMTP id S231858AbiGKVQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 17:16:06 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FBE80531
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:16:04 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id h23so10906993ejj.12
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R0dZKbSqpa4RMujXbJGg6O0Ik7zsKtCn/44ZHpByEck=;
-        b=e6FVL2N1GoCx6ewvM5xcIt8X8A6DT47CZWwxmgZ6VEhVfW/hLzx4AqmMaA8ZxTGFWS
-         uYsECq9XltW1jX3WXVDCSl4hyA9wycz2iyuri01alyZn2ODyJEot44R/twY9O5rDye4a
-         okyW5qblZM0/RglcNNdkRWagXv8tPsS3+AXd314ElWLjuM77zrlG4L/FF+NpVR2YLvre
-         Egz2+eM0ShDiJiiv8apuJHGtKQXg0HaU7gPvRPFxF6UE4x4PTRSalTbp4Nan52wvFcYl
-         c/LTWEM3iI+8HolUo3hHSptP5Ux92BrNrF/ln3ThBN9BCLSH90A3+Pd7o1pLhD6YRk89
-         TP2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R0dZKbSqpa4RMujXbJGg6O0Ik7zsKtCn/44ZHpByEck=;
-        b=Co6mslfsJxBzn2lfuNrFRMTswIxsKcyTUAgrCWOjFrIql8L8TGz7LopOZYPoTOvpjE
-         TzgT+ZxyzinNhUA8AKTMA3+VN2MvtrjnIqwPJuuO1/+VWKzuP7hmjJsXwA3FqUQp5W2G
-         SmsAV96WsSNhCV2LNB/oXqnkQ/OhgwkvLP7EsdnDOSB6/THXZHngVS+WwzratfVpRb/S
-         qKvFUd+27AIsyIphnCwXmLaFBV5t3kCnRHaufUSrK9P4bZTFZEcw4fjrM6jyS4E47F3K
-         phm09FiBDVBOzMRGoI2UwzUt28ptKlpIwchA8mpe5PloC3139idun2nsyf2YT46ZtVU6
-         cC4w==
-X-Gm-Message-State: AJIora/2c1SZwyUVNMsqPxZmDyhL2uy8cIDAITIgiRa60N3VjhxPHapy
-        U957f7J8WggTnePP2NI7TbkkHg3Wn3KoUyCrEW6qvw==
-X-Google-Smtp-Source: AGRyM1tGmmZU3SpBCKiz6GQosaxZhhIYryeBP+xKYRre/YM9KWGoV/EtlPDw7fJzN8sXY5wD80lfJtt1tOD20TpLJD0=
-X-Received: by 2002:a17:906:5a5b:b0:72b:39cf:6042 with SMTP id
- my27-20020a1709065a5b00b0072b39cf6042mr13921828ejc.301.1657574163407; Mon, 11
- Jul 2022 14:16:03 -0700 (PDT)
+        Mon, 11 Jul 2022 17:16:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C45F80511
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:16:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657574182;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B17g9wAT+9shoXVHnJnHIlRvD72JVpKr/HdI9ugSZ80=;
+        b=eVoBr/yoiV9Q9RvfxupDNxu9tGbVFK6wzolPkTCfKWcS8u1I1wfzOqshhdoHedHONfGwmZ
+        +R/MHvphbzSwosyV0tiN+Kib+c3E75h8IsbYIw1e07/PcN1R67v5ant4upXYX/GziZHNo9
+        YFfOy58XCzkBlY+auV5YSRZpcA4Hnk0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-675-BymDG5gsMMiVt8p7M54asw-1; Mon, 11 Jul 2022 17:16:21 -0400
+X-MC-Unique: BymDG5gsMMiVt8p7M54asw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A0D6F8032EA;
+        Mon, 11 Jul 2022 21:16:20 +0000 (UTC)
+Received: from pauld.bos.com (dhcp-17-237.bos.redhat.com [10.18.17.237])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F5212166B26;
+        Mon, 11 Jul 2022 21:16:20 +0000 (UTC)
+From:   Phil Auld <pauld@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Valentin Schneider <vschneid@redhat.com>
+Subject: [PATCH v3 1/2] cpuhp: make target_store() a nop when target == state
+Date:   Mon, 11 Jul 2022 17:16:18 -0400
+Message-Id: <20220711211619.112854-2-pauld@redhat.com>
+In-Reply-To: <20220711211619.112854-1-pauld@redhat.com>
+References: <20220711211619.112854-1-pauld@redhat.com>
 MIME-Version: 1.0
-References: <20220706182901.78949-1-jernej.skrabec@gmail.com>
-In-Reply-To: <20220706182901.78949-1-jernej.skrabec@gmail.com>
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Date:   Mon, 11 Jul 2022 18:15:52 -0300
-Message-ID: <CAAEAJfBYXXZ2CGFTQFEsBNGu8++MW=jsXNpO1F8T-K2m-jAu7A@mail.gmail.com>
-Subject: Re: [PATCH v3 0/7] media: hantro: Add 10-bit support
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jernej,
+writing the current state back in hotplug/target calls cpu_down()
+which will set cpu dying even when it isn't and then nothing will
+ever clear it. A stress test that reads values and writes them back
+for all cpu device files in sysfs will trigger the BUG() in
+select_fallback_rq once all cpus are marked as dying.
 
-On Wed, Jul 6, 2022 at 3:29 PM Jernej Skrabec <jernej.skrabec@gmail.com> wrote:
->
-> This series adds support for 10-bit format handling in Hantro driver.
-> Most patches adjust postproc behaviour to be more universal. There is
-> a lot of assumptions, which need to be replaced with more generalized.
->
-> Tested on Allwinner H6. Tested with vp92-2-20-10bit-yuv420.webm sample,
-> which produces correct checksum.
->
-> Please take a look.
->
+kernel/cpu.c::target_store()
+	...
+        if (st->state < target)
+                ret = cpu_up(dev->id, target);
+        else
+                ret = cpu_down(dev->id, target);
 
-Looks really good.
+cpu_down() -> cpu_set_state()
+	 bool bringup = st->state < target;
+	 ...
+	 if (cpu_dying(cpu) != !bringup)
+		set_cpu_dying(cpu, !bringup);
 
-Thanks for working on this.
-Ezequiel
+Fix this by letting state==target fall through in the target_store()
+conditional. Also make sure st->target == target in that case.
 
-> Best regards,
-> Jernej
->
-> Changes fron v2:
-> - rebased on media-stage/master
-> - added P010 4L4 format documentation
-> - added t-b and r-b tags
->
-> Changes from RFC:
-> - fixed typo in function name
-> - removed merged patch (P010 format)
-> - removed broken patch (sunxi frequency change)
-> - added new patch (media: hantro: postproc: Properly calculate chroma offset)
-> - added r-b from Ezequiel
->
-> Ezequiel Garcia (1):
->   media: Add P010 tiled format
->
-> Jernej Skrabec (6):
->   media: hantro: Support format filtering by depth
->   media: hantro: postproc: Fix buffer size calculation
->   media: hantro: postproc: Fix legacy regs configuration
->   media: hantro: postproc: Properly calculate chroma offset
->   media: hantro: Store VP9 bit depth in context
->   media: hantro: sunxi: Enable 10-bit decoding
->
->  .../media/v4l/pixfmt-yuv-planar.rst           | 18 +++++--
->  drivers/media/v4l2-core/v4l2-common.c         |  1 +
->  drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
->  drivers/staging/media/hantro/hantro.h         |  4 ++
->  drivers/staging/media/hantro/hantro_drv.c     | 23 +++++++++
->  .../staging/media/hantro/hantro_g2_vp9_dec.c  |  8 ---
->  .../staging/media/hantro/hantro_postproc.c    | 38 +++++++++++---
->  drivers/staging/media/hantro/hantro_v4l2.c    | 50 +++++++++++++++++--
->  drivers/staging/media/hantro/hantro_v4l2.h    |  3 ++
->  drivers/staging/media/hantro/sunxi_vpu_hw.c   | 27 ++++++++++
->  include/uapi/linux/videodev2.h                |  1 +
->  11 files changed, 151 insertions(+), 23 deletions(-)
->
-> --
-> 2.37.0
->
+Signed-off-by: Phil Auld <pauld@redhat.com>
+---
+ kernel/cpu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index bbad5e375d3b..305694a2ca26 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -2326,8 +2326,10 @@ static ssize_t target_store(struct device *dev, struct device_attribute *attr,
+ 
+ 	if (st->state < target)
+ 		ret = cpu_up(dev->id, target);
+-	else
++	else if (st->state > target)
+ 		ret = cpu_down(dev->id, target);
++	else if (st->target != target)
++		st->target = target;
+ out:
+ 	unlock_device_hotplug();
+ 	return ret ? ret : count;
+-- 
+2.31.1
+
