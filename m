@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E0FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233956AbiGKJzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        id S233761AbiGKJzU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:55:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234000AbiGKJyG (ORCPT
+        with ESMTP id S234243AbiGKJyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:54:06 -0400
+        Mon, 11 Jul 2022 05:54:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5B1AEF73;
-        Mon, 11 Jul 2022 02:25:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E499D33A0A;
+        Mon, 11 Jul 2022 02:26:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D0E5B80E7E;
-        Mon, 11 Jul 2022 09:25:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E226C34115;
-        Mon, 11 Jul 2022 09:25:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98F17B80D2C;
+        Mon, 11 Jul 2022 09:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59BFC34115;
+        Mon, 11 Jul 2022 09:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531543;
-        bh=0OYdaRbdLWNZ8z/6ur+Zqcb5Wq5UHeldQUWNjF/45oE=;
+        s=korg; t=1657531560;
+        bh=Alp2MHh6Ac99EuP+tf9BV2sOZk7KseWriY8CNcxWR9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AgxpaJq9rYp2SDJr9BErdngy26ItLhQwe1AqayuhAefL5CnT3qNU4bpM7tSUEs0tE
-         M6DY44lR9aFNaODwPHcoo8GQazMpKXmsGjWLhgsUOak+KvRFZBR9FHIwtdOVfR5YtU
-         ea6hqlpPXcqBGhsJSXPNt/Nr/RPKWndDeOUdPIjg=
+        b=xeXiaqnWGU7HRviybDx/K9KYNLSUEJ+BvS9wbRnqnqfjSZ5qlEKxziHTRRUGTl4dn
+         AadkNNtRZmFQlnuX9G874UVbw3E9jsPHDD+Vvk4wNiSazA0qbdL7lr6m3VpNIAjyLa
+         qerzacx39ohhVCoa9DnsAZZvLAMgQfOVdI63eG7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        "jason-jh.lin" <jason-jh.lin@mediatek.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 144/230] drm/mediatek: Use mailbox rx_callback instead of cmdq_task_cb
-Date:   Mon, 11 Jul 2022 11:06:40 +0200
-Message-Id: <20220711090608.147755342@linuxfoundation.org>
+Subject: [PATCH 5.15 132/230] tty: n_gsm: fix sometimes uninitialized warning in gsm_dlci_modem_output()
+Date:   Mon, 11 Jul 2022 11:06:28 +0200
+Message-Id: <20220711090607.809091125@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,70 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 1ee07a683b7e4e6ad9ad4f77fce4751741bc8ceb ]
+[ Upstream commit 19317433057dc1f2ca9a975e4e6b547282c2a5ef ]
 
-rx_callback is a standard mailbox callback mechanism and could cover the
-function of proprietary cmdq_task_cb, so use the standard one instead of
-the proprietary one.
+'size' may be used uninitialized in gsm_dlci_modem_output() if called with
+an adaption that is neither 1 nor 2. The function is currently only called
+by gsm_modem_upd_via_data() and only for adaption 2.
+Properly handle every invalid case by returning -EINVAL to silence the
+compiler warning and avoid future regressions.
 
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
+Fixes: c19ffe00fed6 ("tty: n_gsm: fix invalid use of MSC in advanced option")
+Cc: stable@vger.kernel.org
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220425104726.7986-1-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_drm_crtc.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/tty/n_gsm.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-index a4e80e499674..369d3e68c0b6 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-@@ -4,6 +4,8 @@
-  */
- 
- #include <linux/clk.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/mailbox_controller.h>
- #include <linux/pm_runtime.h>
- #include <linux/soc/mediatek/mtk-cmdq.h>
- #include <linux/soc/mediatek/mtk-mmsys.h>
-@@ -222,9 +224,11 @@ struct mtk_ddp_comp *mtk_drm_ddp_comp_for_plane(struct drm_crtc *crtc,
- }
- 
- #if IS_REACHABLE(CONFIG_MTK_CMDQ)
--static void ddp_cmdq_cb(struct cmdq_cb_data data)
-+static void ddp_cmdq_cb(struct mbox_client *cl, void *mssg)
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index c8ca00fad8e4..fd4a86111a6e 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -945,18 +945,21 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
  {
--	cmdq_pkt_destroy(data.data);
-+	struct cmdq_cb_data *data = mssg;
-+
-+	cmdq_pkt_destroy(data->pkt);
- }
- #endif
+ 	u8 *dp = NULL;
+ 	struct gsm_msg *msg;
+-	int size;
++	int size = 0;
  
-@@ -475,7 +479,12 @@ static void mtk_drm_crtc_update_config(struct mtk_drm_crtc *mtk_crtc,
- 		cmdq_pkt_wfe(cmdq_handle, mtk_crtc->cmdq_event, false);
- 		mtk_crtc_ddp_config(crtc, cmdq_handle);
- 		cmdq_pkt_finalize(cmdq_handle);
--		cmdq_pkt_flush_async(cmdq_handle, ddp_cmdq_cb, cmdq_handle);
-+		dma_sync_single_for_device(mtk_crtc->cmdq_client->chan->mbox->dev,
-+					   cmdq_handle->pa_base,
-+					   cmdq_handle->cmd_buf_size,
-+					   DMA_TO_DEVICE);
-+		mbox_send_message(mtk_crtc->cmdq_client->chan, cmdq_handle);
-+		mbox_client_txdone(mtk_crtc->cmdq_client->chan, 0);
- 	}
- #endif
- 	mtk_crtc->config_updating = false;
-@@ -839,6 +848,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+ 	/* for modem bits without break data */
+-	if (dlci->adaption == 1) {
+-		size = 0;
+-	} else if (dlci->adaption == 2) {
+-		size = 1;
++	switch (dlci->adaption) {
++	case 1: /* Unstructured */
++		break;
++	case 2: /* Unstructured with modem bits. */
++		size++;
+ 		if (brk > 0)
+ 			size++;
+-	} else {
++		break;
++	default:
+ 		pr_err("%s: unsupported adaption %d\n", __func__,
+ 		       dlci->adaption);
++		return -EINVAL;
  	}
  
- 	if (mtk_crtc->cmdq_client) {
-+		mtk_crtc->cmdq_client->client.rx_callback = ddp_cmdq_cb;
- 		ret = of_property_read_u32_index(priv->mutex_node,
- 						 "mediatek,gce-events",
- 						 drm_crtc_index(&mtk_crtc->base),
+ 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
 -- 
 2.35.1
 
