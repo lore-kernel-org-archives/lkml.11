@@ -2,62 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2077C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D34C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbiGKV12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 17:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43202 "EHLO
+        id S229953AbiGKVbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 17:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiGKV10 (ORCPT
+        with ESMTP id S229572AbiGKVbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 17:27:26 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478E8326CC;
-        Mon, 11 Jul 2022 14:27:24 -0700 (PDT)
-Received: from [192.168.100.20] ([46.142.32.91]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MRC7g-1nwlKw2WOK-00N6Ay; Mon, 11 Jul 2022 23:27:22 +0200
-Message-ID: <0506af84-fedf-d431-3cd3-811c559d3776@online.de>
-Date:   Mon, 11 Jul 2022 23:27:22 +0200
+        Mon, 11 Jul 2022 17:31:16 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A265A28705
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:31:14 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id g126so5848831pfb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:31:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=THO9DfPZbcbt/fbJX/PNalaQ/aO0CkM5BdMU2In6QAw=;
+        b=dT6zvLmWza30XRRuY7TcScu9MmNOvi5cWPhePSoiWMe1AvRU8uKSvczpN7zLDmpazJ
+         i3caLWHebo5zkz0rFugit1TU1LTng9pq0CCmD3gLz6PTd53MC6PTdQ4dnpjNwrq2O9C0
+         UcI6pF8QuWuzLTFH739uCpkK1V969vZGqd7tRQ5eHYTSxeOvn/CeBuNNBasAND8MBK0z
+         W/nvmJ5Nxg2VwFIQbVQuI/oiqzucUXY3voFe+vb4dRjaCHFofdmbSv65J81zoB55CQdk
+         Qc5jpIsZ9dYbC6h32URtIb25ehQIa0crzWlTj0iyCK1jK7eqLxmS2o/dwntxOfTDg2/P
+         R+QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=THO9DfPZbcbt/fbJX/PNalaQ/aO0CkM5BdMU2In6QAw=;
+        b=HaLGVremVeGye8Dz4DVHAmEWBDjZFCTLTcNhHGwgrjRfwbxNOlAnXtQ3d2uaKn6sxB
+         rEFrwDj4fKaHG76Jrocol53Jg8YVE3GBlkc9acwUmJuyGOZJYn+j08GpSjQcDedZ4yC+
+         A1GpDttmLU/pSkLRMh0W4N3SXAZmZmEExvj230191Hh1aPLwTHOPPhTYC3UDs5Winrqk
+         jhZmpke6o0vU16jCOO/G+Hhcb/ob9EDgU1xvzSQh8m8Ez/oeCTh1mjeht6nNlTSJTUQB
+         eyMBImcD+jaPqD0w61wWzCO6tni8k2w5oSMGZR8v3TgqbnW13nu48QfT/Z2GtKQMbArF
+         abWw==
+X-Gm-Message-State: AJIora/SJC0KBSQnmo2b/luRXyHdSgcfIJDG3wdkT81FP4kBDZ0FofG8
+        0BBY2HoUTfV0wC8oMyAcCzk=
+X-Google-Smtp-Source: AGRyM1vb71MrN2AYW+E5i4Nh+A4PuxGpYiUHMtTQZY55vqusc3QbSEGLORCVbPEVuYbrlV23q9gtlw==
+X-Received: by 2002:a05:6a00:124a:b0:525:894b:7924 with SMTP id u10-20020a056a00124a00b00525894b7924mr20292973pfi.31.1657575074185;
+        Mon, 11 Jul 2022 14:31:14 -0700 (PDT)
+Received: from ArtixLinux.localdomain ([116.193.141.30])
+        by smtp.gmail.com with ESMTPSA id j3-20020a17090a7e8300b001ef78b9d0d7sm5224187pjl.30.2022.07.11.14.31.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 14:31:13 -0700 (PDT)
+From:   Shinyzenith <aakashsensharma@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org,
+        Shinyzenith <aakashsensharma@gmail.com>
+Subject: [PATCH] drivers: android: bind_alloc: asm/cacheflush to linux/cacheflush
+Date:   Tue, 12 Jul 2022 03:00:59 +0530
+Message-Id: <20220711213059.7197-1-aakashsensharma@gmail.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   sixpack13 <sixpack13@online.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.18 000/112] 5.18.11-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:cGLX+dILWc0H2wIBTYsDx/alFcq90Yml5zBCuCySNSC7n9TmvmT
- Fd7BVr0L+gzzmqvNomnLt3JtNB+K6SMOVENWNtN/pZY6BeThxwvzKzXiuyul/nUv1kg8t7c
- iOTR7L3eYntvpFrevJjLNwx7Cazgcnv7nqltSKDL5t3oSIVuabNE2w/UwJccgJ54Mzu3o8i
- buIh6JvW1g5ivXKxwb69w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Et0tlnx+zYs=:aM9KfIhn7E8MuBUqlEjhqu
- 2hJqzIxj0RkQXw8pTlNbN2BC9QgXB9HsiRE2RfDiDsuzl1HBX2w0+fNcWGNtaDMgINjfonWp0
- u9FEG69BOg45zQ1xt/mtsUteGFTqZMLUySnJDRJiq7aKb0dEjaRNZPKToBvEsLYV53vE0PMRV
- o7hA1aUZ+c8PrtEM8HHhdThAlpDkijK1nTbIOcIhtXXlOYwRsY54++Htwxcc0Fo4F1d+hzFBM
- 4XnCX2CpDi1wnETNEckseeN2+acJyz0OtojKc25BFcg0SLC3VqdtyPte+YqG/t7Jwh17UYNq7
- vyxjvGYyckvccM8VszPHhTrZGY5i3diKcQA5Y4OI6JZu45rQ4Yfdvcpy8VGfUvTJlZ/BS9kNG
- OaH7GFJSTCferBPJzpV3wknNYA/qCEZ5lbq5Ji6n7M+fjR4iY21hrNdSitc3O6tynfl7lIPS2
- cwCOdUePb1gkj0Q22+KZpUbqECj/zNOtr5P0qhhhT50yj+Z85cU7OFrDCTCaEftllmqh+XkoK
- ZURa8pK1OgjtCswgDjqY3s/09TOZUm1lK2ZkEgOE0UMhzUOrmyutSEehXho7CEyQ/JquTNiIU
- 6SC0jH8Cw8YwtqfDp6BhQYqsULN+mHOwOCfqubfVZKHyc8DAXb5oVHTq0UY44iaF3sgpFmzlY
- GvrIuA2lhpXFz9fWrbxgZBUA/uSSh+GCTsk8JsMjIzwFyaq2VQHcCddm3hxXGfVPciyF+jQRQ
- GBGP/jNLTq0dpe5lMGrkCDnXC2RRoV31mpUWZQ==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+* Removing checkpatch warnings.
+* No functional changes.
 
-5.18.11-rc1
+Signed-off-by: Shinyzenith <aakashsensharma@gmail.com>
+---
+ drivers/android/binder_alloc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-compiles, boots and runs here on x86_64
-(Intel i5-11400, Fedora 36)
-
-Thanks
-
-Tested-by: sixpack13@online.de
+diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
+index 5649a0371a1f..795132af0c15 100644
+--- a/drivers/android/binder_alloc.c
++++ b/drivers/android/binder_alloc.c
+@@ -1,6 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+-/* binder_alloc.c
+- *
++/*
+  * Android IPC Subsystem
+  *
+  * Copyright (C) 2007-2017 Google, Inc.
+@@ -19,7 +18,7 @@
+ #include <linux/sched.h>
+ #include <linux/list_lru.h>
+ #include <linux/ratelimit.h>
+-#include <asm/cacheflush.h>
++#include <linux/cacheflush.h>
+ #include <linux/uaccess.h>
+ #include <linux/highmem.h>
+ #include <linux/sizes.h>
+-- 
+2.37.0
 
