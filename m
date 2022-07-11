@@ -2,138 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12950CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE42C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbiGKQYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 12:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
+        id S231223AbiGKQZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiGKQYj (ORCPT
+        with ESMTP id S229664AbiGKQZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 12:24:39 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA15B21835;
-        Mon, 11 Jul 2022 09:24:37 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6D6542298F;
-        Mon, 11 Jul 2022 16:24:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1657556676; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M+ZIKuMBKYf6iILzZp439lcSa19VN5bgrLR+ASf2Bx0=;
-        b=TnIjaLMox+kOMiA7MSs9PGijGwpUTPR1Gp3apVzCIokhbYQ/jpXYrxi56aGQM93pgcazcV
-        /fXxuL0Y8zRKuKpKzJVNuCn2/hUNZ3eSeR1pVnORgSH48LLn8wR6r1zBEi2S8rOeQAe8yr
-        +9TNNW9znECSwf3bVawntAU3+i4U8l0=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DE6482C141;
-        Mon, 11 Jul 2022 16:24:35 +0000 (UTC)
-Date:   Mon, 11 Jul 2022 18:24:32 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Shakeel Butt <shakeelb@google.com>, kernel@openvz.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Cgroups <cgroups@vger.kernel.org>
-Subject: Re: [PATCH mm v5 0/9] memcg: accounting for objects allocated by
- mkdir, cgroup
-Message-ID: <YsxOwEI7HOqdkRpz@dhcp22.suse.cz>
-References: <4e685057-b07d-745d-fdaa-1a6a5a681060@openvz.org>
- <0fe836b4-5c0f-0e32-d511-db816d359748@openvz.org>
- <c516033f-a9e4-3485-26d9-a68afa694c1d@openvz.org>
- <YrSP25ebDmXE+kPS@dhcp22.suse.cz>
- <CALvZod4WsmrpfZtfnP4AmvtnkvBRngXXGyhM6+aQzkdfjsinAQ@mail.gmail.com>
- <YrXDV7uPpmDigh3G@dhcp22.suse.cz>
- <CALvZod6U8DvMUcuUNfpQRwfkevQB7=nP4ZLA2gWGNf_JGdyARQ@mail.gmail.com>
- <Yr7Ukyy0vhBjebo4@dhcp22.suse.cz>
- <1a64fc6a-a33d-03f4-ec12-980e42148061@openvz.org>
+        Mon, 11 Jul 2022 12:25:10 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396934B0D6
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:25:10 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id c15so30771pla.6
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:25:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ukc3FdWjfLcH/LmKOFw9wVHJnBYxyOJ3TZo5iySD7CM=;
+        b=mos/Mg0hb/2sKrl+1pyR3cc5pWrcxHNMusFW9vCuu+2DGtN5aBipvTN30Jc6drre+T
+         /RFl5RGuERg3AZGdQXD0762fpVS5LkIrZ+Dmfr0iPstEiYmS197oZdnqO/gsd0V2LLrA
+         dMbFtl9QauwEhNzOkDMmTLhCVI/jC7ytB3nJg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ukc3FdWjfLcH/LmKOFw9wVHJnBYxyOJ3TZo5iySD7CM=;
+        b=Py+qk9WuZbz1XrNu+2EgxzA6giPnHTvPfaZUf6IIZuW0cE8m4QET4e3fkdnHli6PLD
+         llDqztOoyn+LsQITzzFmHVyyReYEEFOxMgmxiYuRRZCbolMxR+5yZNusFxl4Nr/QvjnG
+         enicZHVFRwaB+QvWq+NLdM4ZhgcZof4bqFK7Def5ewgarRHApvgxXThzueCiIR0O7T+5
+         i+a+JrbTA7GDG0hQnJeHNAKpR3PNzDpL/zn7PViWzDff3K7BE2KfTw6DfqTwkQDJj9er
+         zqzxxbwS0CKKYC95bfG/wg7FKOZeRYDvvp745bCCcR2SXpVtWWdBjM9/faW1/JgX4gwS
+         IlhA==
+X-Gm-Message-State: AJIora9yGYg0bOm+o4ChsX+f44ih+Tp5paRzEW/nSvAuUpsilBKGbeaN
+        u4dJlw4ggaDoUN/0c7JBGlDeXA==
+X-Google-Smtp-Source: AGRyM1sqfkSPHvkTxOaPtZOcTNkMYSm2yWVjkihbwLCJH3gYz50+9KRFnfZffXUT+5VHv4SdyYdA7g==
+X-Received: by 2002:a17:902:f64f:b0:16c:23c2:e2dd with SMTP id m15-20020a170902f64f00b0016c23c2e2ddmr19017073plg.3.1657556709786;
+        Mon, 11 Jul 2022 09:25:09 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:7b75:79f4:3be2:2c65])
+        by smtp.gmail.com with UTF8SMTPSA id e7-20020aa79807000000b0052a8128699fsm4967587pfl.207.2022.07.11.09.25.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jul 2022 09:25:09 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-usb@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Ravi Chandra Sadineni <ravisadineni@chromium.org>
+Subject: [PATCH] usb: misc: onboard_hub: Fix 'missing prototype' warning
+Date:   Mon, 11 Jul 2022 09:25:05 -0700
+Message-Id: <20220711092431.1.I4016c759fd7fe2b32dd482994a20661f36e2cae3@changeid>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1a64fc6a-a33d-03f4-ec12-980e42148061@openvz.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 10-07-22 21:53:34, Vasily Averin wrote:
-> On 7/1/22 14:03, Michal Hocko wrote:
-> > On Mon 27-06-22 09:37:14, Shakeel Butt wrote:
-> >> On Fri, Jun 24, 2022 at 6:59 AM Michal Hocko <mhocko@suse.com> wrote:
-> > [...]
-> >>> Is it even possible to prevent from id
-> >>> depletion by the memory consumption? Any medium sized memcg can easily
-> >>> consume all the ids AFAICS.
-> >>
-> >> Though the patch series is pitched as protection against OOMs, I think
-> >> it is beneficial irrespective. Protection against an adversarial actor
-> >> should not be the aim here. IMO this patch series improves the memory
-> >> association to the actual user which is better than unattributed
-> >> memory treated as system overhead.
-> > 
-> > Considering the amount of memory and "normal" cgroup usage (I guess we
-> > can agree that delegated subtrees do not count their cgroups in
-> > thousands) is this really something that is worth bothering with?
-> > 
-> > I mean, these patches are really small and not really disruptive so I do
-> > not really see any problem with them. Except that they clearly add a
-> > maintenance overhead. Not directly with the memory they track but any
-> > future cgroup/memcg metadata related objects would need to be tracked as
-> > well and I am worried this will get quickly out of sync. So we will have
-> > a half assed solution in place that doesn't really help any containment
-> > nor it provides a good and robust consumption tracking.
-> > 
-> > All that being said I find these changes rather without a great value or
-> > use.
-> 
-> Dear Michal,
-> I sill have 2 questions:
-> 1) if you do not want to account any memory allocated for cgroup objects,
-> should you perhaps revert commit 3e38e0aaca9e "mm: memcg: charge memcg percpu
-> memory to the parent cgroup". Is it an exception perhaps?
-> (in fact I hope you will not revert this patch, I just would like to know 
-> your explanations about this accounting)
+When building with 'W=1' the compiler complains about missing
+prototypes for onboard_hub_create/destroy_pdevs(). Include the
+header with the prototypes to fix this.
 
-Well, I have to say I was not a great fan of this patch when it was
-proposed but I didn't really have strong arguments against it to nack
-it. It was simple enough, rather self contained in few places. Just to
-give you an insight into my thinking here. Your patchseries is also not
-something I would nack (nor I have done that). I am not super fan of it
-either. I voiced against it because it just hit my internal thrashold of
-how many different places are patched without any systemic approach. If
-we consider that it doesn't really help with the initial intention to
-protect against adversaries then what is the point of all the churn?
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
 
-Others might think differently and if you can get acks by other
-maintainers then I won't stand in the way. I have voiced my concerns and
-I hope my thinking is clear now.
+ drivers/usb/misc/onboard_usb_hub_pdevs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 2) my patch set includes kernfs accounting required for proper netdevices accounting
-> 
-> Allocs  Alloc   Allocation
-> number  size
-> --------------------------------------------
-> 1   +  128      (__kernfs_new_node+0x4d)	kernfs node
-> 1   +   88      (__kernfs_iattrs+0x57)		kernfs iattrs
-> 1   +   96      (simple_xattr_alloc+0x28)	simple_xattr, can grow over 4Kb
-> 1       32      (simple_xattr_set+0x59)
-> 1       8       (__kernfs_new_node+0x30)
-> 
->  2/9] memcg: enable accounting for kernfs nodes
->  3/9] memcg: enable accounting for kernfs iattrs
->  4/9] memcg: enable accounting for struct simple_xattr
-> 
-> What do you think about them? Should I resend them as a new separate patch set?
-
-kernfs is not really my area so I cannot really comment on those.
-
+diff --git a/drivers/usb/misc/onboard_usb_hub_pdevs.c b/drivers/usb/misc/onboard_usb_hub_pdevs.c
+index a0a5f719129f..ed22a18f4ab7 100644
+--- a/drivers/usb/misc/onboard_usb_hub_pdevs.c
++++ b/drivers/usb/misc/onboard_usb_hub_pdevs.c
+@@ -15,6 +15,7 @@
+ #include <linux/usb.h>
+ #include <linux/usb/hcd.h>
+ #include <linux/usb/of.h>
++#include <linux/usb/onboard_hub.h>
+ 
+ #include "onboard_usb_hub.h"
+ 
 -- 
-Michal Hocko
-SUSE Labs
+2.37.0.rc0.161.g10f37bed90-goog
+
