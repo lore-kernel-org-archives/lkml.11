@@ -2,141 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA9CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2887FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:32:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231319AbiGKUcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        id S231901AbiGKUc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231890AbiGKUbu (ORCPT
+        with ESMTP id S229796AbiGKUcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:31:50 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9054D812
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:30:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657571444; x=1689107444;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eIsTB0Pt504SFh4kF57CTygGapGxny7sePVJFDogJlk=;
-  b=Uu/GkhRBpku8k9O6b2nWGkCEpGIcVpPVZkdVvYkvwBszRFInzeqZFP6J
-   1Ue0e9+sp497BIselEXNLtiBEI8Ns7cxHZh8gEUR6UA0omlHF1KeMdb6H
-   gp6rT0nAhmQ4GeIPpWxuz+dcdL99+Tu7knssyByFWGbmTwVyV57la8R+a
-   YrV8SJclh/Cwo40P0JUrQnEgJyqLklkmomgvaNg85deJ1gCybCjvKdwWL
-   anOIsSn5Elq4d9pvagDsL0BXTbv33TocSk+4UQWfWK8fuDicAA/7ugTzP
-   itJJwmuHWqciTFFuDOuQuVvSJnfFlBU/D1sz+nfAvPEhkQhmUCERq5m40
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="284789023"
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="284789023"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 13:30:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="721727476"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 11 Jul 2022 13:30:41 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oB03E-0001CZ-GO;
-        Mon, 11 Jul 2022 20:30:40 +0000
-Date:   Tue, 12 Jul 2022 04:30:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chenyang Li <lichenyang@loongson.cn>,
-        Maxime Ripard <mripard@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Dan Carpenter <error27@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, devel@linuxdriverproject.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Sam Ravnborg <sam@ravnborg.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 3/4] drm/loongson: Add interrupt driver for LS7A.
-Message-ID: <202207120454.PJBS1e9p-lkp@intel.com>
-References: <20220625090715.3663-3-lichenyang@loongson.cn>
+        Mon, 11 Jul 2022 16:32:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5855E009
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:31:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657571462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UKJ4oj2UiV/tUg28XSAFfYDURbHg6O4Bi1B7FR3XWgQ=;
+        b=CUCtbNsP4NKalLuuChCo12v9tcxmh5gIHlEoDpDNRqLxtM6JIh0/D1UeUvIZ92hT6pr4dv
+        KITH2qiqxVmU1V1eACjpgxDae947/gyTRRlEXjxtgoOlJ90yFlD0SiksD6kyRLHZtysBbu
+        J9fLKYl7Bi9xxN6V8aazmN74NjpKvqU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-186-n-gZLs3CPPO6cRTJza7piw-1; Mon, 11 Jul 2022 16:30:53 -0400
+X-MC-Unique: n-gZLs3CPPO6cRTJza7piw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 57C74801590;
+        Mon, 11 Jul 2022 20:30:53 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4BFCC18EA8;
+        Mon, 11 Jul 2022 20:30:53 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 26BKUrXb005616;
+        Mon, 11 Jul 2022 16:30:53 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 26BKUqlo005612;
+        Mon, 11 Jul 2022 16:30:53 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Mon, 11 Jul 2022 16:30:52 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     Yu Kuai <yukuai1@huaweicloud.com>,
+        Mike Snitzer <msnitzer@redhat.com>
+cc:     agk@redhat.com, dm-devel@redhat.com, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yi.zhang@huawei.com
+Subject: [PATCH 2/4] dm-writecache: count the number of blocks read, not the
+ number of read bios
+In-Reply-To: <alpine.LRH.2.02.2207111627260.5249@file01.intranet.prod.int.rdu2.redhat.com>
+Message-ID: <alpine.LRH.2.02.2207111630310.5249@file01.intranet.prod.int.rdu2.redhat.com>
+References: <20220706093146.1961598-1-yukuai1@huaweicloud.com> <alpine.LRH.2.02.2207111627260.5249@file01.intranet.prod.int.rdu2.redhat.com>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220625090715.3663-3-lichenyang@loongson.cn>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chenyang,
+Change dm-writecache, so that it counts the number of blocks read instead
+of the number of read bios. Bios can be split and requeued using the
+dm_accept_partial_bio function, so counting of bios provided inaccurate
+results.
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Reported-by: Yu Kuai <yukuai1@huaweicloud.com>
 
-[auto build test WARNING on drm-misc/drm-misc-next]
-[also build test WARNING on linus/master v5.19-rc6 next-20220708]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Index: linux-2.6/drivers/md/dm-writecache.c
+===================================================================
+--- linux-2.6.orig/drivers/md/dm-writecache.c
++++ linux-2.6/drivers/md/dm-writecache.c
+@@ -1365,6 +1365,7 @@ read_next_block:
+ 		}
+ 	} else {
+ 		writecache_map_remap_origin(wc, bio, e);
++		wc->stats.reads += (bio->bi_iter.bi_size - wc->block_size) >> wc->block_size_bits;
+ 		map_op = WC_MAP_REMAP_ORIGIN;
+ 	}
+ 
+Index: linux-2.6/Documentation/admin-guide/device-mapper/writecache.rst
+===================================================================
+--- linux-2.6.orig/Documentation/admin-guide/device-mapper/writecache.rst
++++ linux-2.6/Documentation/admin-guide/device-mapper/writecache.rst
+@@ -78,8 +78,8 @@ Status:
+ 2. the number of blocks
+ 3. the number of free blocks
+ 4. the number of blocks under writeback
+-5. the number of read requests
+-6. the number of read requests that hit the cache
++5. the number of read blocks
++6. the number of read blocks that hit the cache
+ 7. the number of write requests
+ 8. the number of write requests that hit uncommitted block
+ 9. the number of write requests that hit committed block
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chenyang-Li/drm-loongson-Add-DRM-Driver-for-Loongson-7A1000-bridge-chip/20220625-171037
-base:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220712/202207120454.PJBS1e9p-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 77a38f6839980bfac61babb40d83772c51427011)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/7cad653ee3a3b83188e2d91335269753e134b808
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Chenyang-Li/drm-loongson-Add-DRM-Driver-for-Loongson-7A1000-bridge-chip/20220625-171037
-        git checkout 7cad653ee3a3b83188e2d91335269753e134b808
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/loongson/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/loongson/loongson_irq.c:24:11: warning: variable 'lcrtc' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           else if (val & FB_VSYNC1_INT)
-                    ^~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/loongson/loongson_irq.c:27:26: note: uninitialized use occurs here
-           drm_crtc_handle_vblank(&lcrtc->base);
-                                   ^~~~~
-   drivers/gpu/drm/loongson/loongson_irq.c:24:7: note: remove the 'if' if its condition is always true
-           else if (val & FB_VSYNC1_INT)
-                ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/loongson/loongson_irq.c:16:29: note: initialize the variable 'lcrtc' to silence this warning
-           struct loongson_crtc *lcrtc;
-                                      ^
-                                       = NULL
-   1 warning generated.
-
-
-vim +24 drivers/gpu/drm/loongson/loongson_irq.c
-
-    11	
-    12	static irqreturn_t loongson_irq_handler(int irq, void *arg)
-    13	{
-    14		struct drm_device *dev = (struct drm_device *) arg;
-    15		struct loongson_device *ldev = to_loongson_device(dev);
-    16		struct loongson_crtc *lcrtc;
-    17		u32 val;
-    18	
-    19		val = ls7a_mm_rreg(ldev, FB_INT_REG);
-    20		ls7a_mm_wreg(ldev, FB_INT_REG, val & (0xffff << 16));
-    21	
-    22		if (val & FB_VSYNC0_INT)
-    23			lcrtc = ldev->mode_info[0].crtc;
-  > 24		else if (val & FB_VSYNC1_INT)
-    25			lcrtc = ldev->mode_info[1].crtc;
-    26	
-    27		drm_crtc_handle_vblank(&lcrtc->base);
-    28	
-    29		return IRQ_HANDLED;
-    30	}
-    31	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
