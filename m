@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 575FEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C81CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232149AbiGKJYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        id S231522AbiGKJZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231967AbiGKJXS (ORCPT
+        with ESMTP id S232108AbiGKJXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:23:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCF5BE31;
-        Mon, 11 Jul 2022 02:13:52 -0700 (PDT)
+        Mon, 11 Jul 2022 05:23:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E7D31209;
+        Mon, 11 Jul 2022 02:13:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D10516121F;
-        Mon, 11 Jul 2022 09:13:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCCDAC34115;
-        Mon, 11 Jul 2022 09:13:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8359FB80DB7;
+        Mon, 11 Jul 2022 09:13:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF0B7C34115;
+        Mon, 11 Jul 2022 09:13:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530831;
-        bh=SKoJobLuXWL5FRX92QKZJyelch0U0Zzj/8c/a3u1sTk=;
+        s=korg; t=1657530834;
+        bh=Hk/f5HEXN2CGqKGi2hWX/5xqot39iQo6TVSPqo3c+18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jlv2r9V2rOhT/aDKaPBfi2n954tgaMP3JsIPHmDj93nqbVR70S5AY5nxsjyeyxNXc
-         3Es7DoPlhhEWAo+C7jaiXdI0kbqMBmPLIPgMrJSf6OV0gMF7HBpycagEjZfr9LSv5c
-         LICjO3B3srhXTAxlQkNuM2kCwPDZOZxB2av/Ll+c=
+        b=NYA+MoA/pW6ePyECjqyee8+S/eRl3GehEQrjB4Smd6Eqt4kCRLWIeo+sZMsTmXnRz
+         4NcMOpl4gI2/2mHlAgqpgKbLEVrofDGhMnW6cn7Wy6RNWUCfKrGyJAuFw5MVAf75yg
+         HO15VPn/1Mz8yamEaNj8LRpKjPTeOMrFr9awlzO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 5.10 18/55] memregion: Fix memregion_free() fallback definition
-Date:   Mon, 11 Jul 2022 11:07:06 +0200
-Message-Id: <20220711090542.303296560@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.10 54/55] dmaengine: ti: Fix refcount leak in ti_dra7_xbar_route_allocate
+Date:   Mon, 11 Jul 2022 11:07:42 +0200
+Message-Id: <20220711090543.343274588@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -49,39 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit f50974eee5c4a5de1e4f1a3d873099f170df25f8 upstream.
+commit c132fe78ad7b4ce8b5d49a501a15c29d08eeb23a upstream.
 
-In the CONFIG_MEMREGION=n case, memregion_free() is meant to be a static
-inline. 0day reports:
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not needed anymore.
 
-    In file included from drivers/cxl/core/port.c:4:
-    include/linux/memregion.h:19:6: warning: no previous prototype for
-    function 'memregion_free' [-Wmissing-prototypes]
+Add missing of_node_put() in to fix this.
 
-Mark memregion_free() static.
-
-Fixes: 33dd70752cd7 ("lib: Uplevel the pmem "region" ida to a global allocator")
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Alison Schofield <alison.schofield@intel.com>
-Link: https://lore.kernel.org/r/165601455171.4042645.3350844271068713515.stgit@dwillia2-xfh
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: ec9bfa1e1a79 ("dmaengine: ti-dma-crossbar: dra7: Use bitops instead of idr")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220605042723.17668-2-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/memregion.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/ti/dma-crossbar.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/linux/memregion.h
-+++ b/include/linux/memregion.h
-@@ -16,7 +16,7 @@ static inline int memregion_alloc(gfp_t
- {
- 	return -ENOMEM;
- }
--void memregion_free(int id)
-+static inline void memregion_free(int id)
- {
- }
- #endif
+--- a/drivers/dma/ti/dma-crossbar.c
++++ b/drivers/dma/ti/dma-crossbar.c
+@@ -268,6 +268,7 @@ static void *ti_dra7_xbar_route_allocate
+ 		mutex_unlock(&xbar->mutex);
+ 		dev_err(&pdev->dev, "Run out of free DMA requests\n");
+ 		kfree(map);
++		of_node_put(dma_spec->np);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 	set_bit(map->xbar_out, xbar->dma_inuse);
 
 
