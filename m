@@ -2,89 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D25B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 19:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC47CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 19:20:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231213AbiGKTUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 15:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S231424AbiGKTUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 15:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiGKTU2 (ORCPT
+        with ESMTP id S230353AbiGKTUc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 15:20:28 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B783AB14
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 12:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=yeatAA7c4woASlu6p943MCUP6aWF68CFbJiBR8Awayc=; b=QScllVEELXl/YZKDOJRngNzOdT
-        Ujzm65/KqIljrVyVD09HcG2/19c/Nw4cmeYOelWDLJ80UoN1cPcl40pvHQT+CJTY6LYMrc/Ll6TTT
-        zeDhS0R9+FVU3HU+YJbT1Ta4+Ibf6HicD+tlgH55FMEv4/YKB+v92xJjlwfT+L4vLT+8KhAy/F+h3
-        fOGP2Ce2dD70tSWeZWuJPVKrRZpy6YTZerO8tg/uufS9tjL7tAWEpuT7skd3uYla67jGcOc2fNonU
-        bNHr/YZWPpYGoWj/fszONb8hrQUoD6VUkMPsYcRucYe+UFV+5Y+JAcOH49VVAoWpBm0dwydAB9Yyk
-        GdV1BB5g==;
-Received: from [177.45.248.119] (helo=localhost.localdomain)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oAyxC-00CJom-VR; Mon, 11 Jul 2022 21:20:23 +0200
-From:   =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>
-To:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?=27Christian=20K=C3=B6nig=27?= <christian.koenig@amd.com>,
-        'Pan Xinhui' <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jack Xiao <Jack.Xiao@amd.com>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     kernel-dev@igalia.com,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>
-Subject: [PATCH 1/2] drm/amd/pm: Add GFXOFF registers for vangogh
-Date:   Mon, 11 Jul 2022 16:19:52 -0300
-Message-Id: <20220711191953.145518-2-andrealmeid@igalia.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711191953.145518-1-andrealmeid@igalia.com>
-References: <20220711191953.145518-1-andrealmeid@igalia.com>
+        Mon, 11 Jul 2022 15:20:32 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC5C71724
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 12:20:31 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id c15so438351pla.6
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 12:20:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NrYdGTk0yKCuMljUwPZ7/uXlafiom1+RNi/pXfEgS+Y=;
+        b=avtznRRY4iS1AmoNE+xFYckNON9ycVHYL5nrww0X0/cL24DXv29e4e7u9Ra3AulsGp
+         t8nShsS3H0X29qd3p2cDNwKAQ+T1Lc6bZfy2P+sNHEhC773m5LtNMKtdbh7p4XerMl3+
+         WxVrB5yDkfmcO8w7XD9Vna5BS8Y7HSlmDtonN0dcDUgaB+8GsyYbXvPaLe8B8Y15QS5F
+         4fpAqxlzmXrZeei0rEj/LduqDgjqPXhsTN5zJeQzqMQGXLs0hKXTbbD81UbEHtdDz6zO
+         Yvkseu6BtC9cklXVX5PtKZ568HnkGJJ32D9CrRb+kVJVC4mqqqh2dvIHjoJjg9Mvao4Y
+         Lvdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NrYdGTk0yKCuMljUwPZ7/uXlafiom1+RNi/pXfEgS+Y=;
+        b=QyCeLTxc3rG0Hjis7kkm0hocNa32BM1tJYcoFs9B77KlzoU2mrb+8pSIfNTI9aKpqZ
+         VmNB3VmvlQB3S0BieyjipoGlz2kGT5eZ7qdWTpUTnpY92vEyzLRTgs1vBEkgejb477Ou
+         ox5ZY//GYSF98ZF13IXjCfJ+IjkS4bHD1I8Px2QXL6xTxAG2CdYBuQy0GNV9zFeXKfQo
+         bf3nBRFmP7wYrSD4EsRWGcpR8C4DYXtBZfoOYOc1o8fHZQhH6iZ+RcbuTAcj9tbTdMXK
+         OnjU48PWpSocuTlETRVeFYRNJttY2jhn+QyI9bADkEpBQav3gwwMd3rQciC2FUeJ/tny
+         d0gA==
+X-Gm-Message-State: AJIora8Kk7iOrtWPArmDYCIrQpZcqcg/uPx4CwXn9RLeQSL+xwOQC4mX
+        JxTpls4JxVcqsxpQM8q+XXORSg==
+X-Google-Smtp-Source: AGRyM1t/be+eF6H+YW5M2kcvwqqjrTB3VqZ6D3Mx34zzp6TePEh7gNQILyffnVjxOuTtoikVhDnlfQ==
+X-Received: by 2002:a17:902:8f87:b0:16c:2c88:39ec with SMTP id z7-20020a1709028f8700b0016c2c8839ecmr17150281plo.52.1657567231016;
+        Mon, 11 Jul 2022 12:20:31 -0700 (PDT)
+Received: from google.com ([2620:15c:201:2:a8b3:6eff:f380:e88b])
+        by smtp.gmail.com with ESMTPSA id o33-20020a17090a0a2400b001ece32cbec9sm7270672pjo.24.2022.07.11.12.20.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 12:20:29 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 12:20:22 -0700
+From:   Sami Tolvanen <samitolvanen@google.com>
+To:     Haibo Li <haibo.li@mediatek.com>
+Cc:     xiaoming.yu@mediatek.com, Kees Cook <keescook@chromium.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2 0/2] cfi: free old cfi shadow asynchronously
+Message-ID: <Ysx39t+I56lDGe4i@google.com>
+References: <20220704014046.34596-1-haibo.li@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704014046.34596-1-haibo.li@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add register values to access GFXOFF data for vangogh GPU.
+On Mon, Jul 04, 2022 at 09:40:44AM +0800, Haibo Li wrote:
+> This patchset changes synchronize_rcu to call_rcu in update_shadow.
+> 
+> Patch 1 enables the CFI sanitization for cfi.c and 
+> bypass __cfi_slowpath_diag.
+> It is the prerequisite for using call_rcu in cfi.c.
+> 
+> Patch 2 changes synchronize_rcu to call_rcu and
+> free old cfi shadow in rcu cb
+> 
+> Changes in v2:
+>  - Remove _run_cfi_check,add __nocfi to __cfi_slowpath_diag directly
+>  - Rename _cfi_shadow_free_rcu to free_shadow
+> 
+> Haibo Li (2):
+>   cfi: enable sanitize for cfi.c
+>   cfi: free old cfi shadow asynchronously
+> 
+>  kernel/Makefile |  3 ---
+>  kernel/cfi.c    | 14 +++++++++++---
+>  2 files changed, 11 insertions(+), 6 deletions(-)
 
-Signed-off-by: André Almeida <andrealmeid@igalia.com>
----
- .../pm/swsmu/inc/pmfw_if/smu11_driver_if_vangogh.h   | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Thanks for sending v2! For the series:
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_vangogh.h b/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_vangogh.h
-index 8361ebd8d876..9c7b0004d842 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_vangogh.h
-+++ b/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_vangogh.h
-@@ -279,4 +279,16 @@ typedef enum {
- #define TILE_ISPPRE_MASK    ((1<<6) | (1<<7))
- #define TILE_ISPPOST_MASK   ((1<<8) | (1<<9))
- 
-+// Registers related to GFXOFF
-+// addressBlock: smuio_smuio_SmuSmuioDec
-+// base address: 0x5a000
-+#define mmSMUIO_GFX_MISC_CNTL			0x00c5
-+#define mmSMUIO_GFX_MISC_CNTL_BASE_IDX		0
-+
-+//SMUIO_GFX_MISC_CNTL
-+#define SMUIO_GFX_MISC_CNTL__SMU_GFX_cold_vs_gfxoff__SHIFT	0x0
-+#define SMUIO_GFX_MISC_CNTL__PWR_GFXOFF_STATUS__SHIFT		0x1
-+#define SMUIO_GFX_MISC_CNTL__SMU_GFX_cold_vs_gfxoff_MASK	0x00000001L
-+#define SMUIO_GFX_MISC_CNTL__PWR_GFXOFF_STATUS_MASK		0x00000006L
-+
- #endif
--- 
-2.37.0
+Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
 
+Sami
