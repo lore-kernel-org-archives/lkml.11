@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F116BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6323BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234182AbiGKJ6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
+        id S234132AbiGKJ6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234179AbiGKJ50 (ORCPT
+        with ESMTP id S234099AbiGKJ5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:57:26 -0400
+        Mon, 11 Jul 2022 05:57:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5467FB4BF8;
-        Mon, 11 Jul 2022 02:27:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B213C8FA;
+        Mon, 11 Jul 2022 02:27:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98159B80E93;
-        Mon, 11 Jul 2022 09:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D78C341C0;
-        Mon, 11 Jul 2022 09:26:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56DCAB80E91;
+        Mon, 11 Jul 2022 09:26:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5C8AC34115;
+        Mon, 11 Jul 2022 09:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531612;
-        bh=YqtQP35jXWYBrQLN/cToll7pQXBag6WgH9ZCEqVLZqI=;
+        s=korg; t=1657531618;
+        bh=uKKAqgqXf3T0j+MdqN2lR9VI38gLlZEfScmFSyQ+XsA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDcPASoI4017RjWKxApzpGY3hszY4O4+P8FioF3BeXNI0FhfYbUkMxXDI3ZUACiHM
-         UwUegjZly1P9Hat7yhFFu/AzrfxWez9JLC+hwpTWSYedgRCf+oI8RDIOCPWVH6vMN2
-         l097QVscXcCwDwN3s/SVfoxtBSoDsf8ZcuzE/+Ig=
+        b=Hu/YYuroTh5ozr4N+m9Czo6n4aUGRK4bACW28Ol3rOO39bkHJTQ0P04DYQxcOSTjm
+         nkEqYByryb+SZ7R8WlUzA+CpTMsTqUxB4h5sV10Oy0HsXMi9yendGfHXrcOuXu8acH
+         6TxJsCo53q0YHoWSfptXY52IE27/pSFQ1xPWVvvQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org,
+        "stable@vger.kernel.org, linux-can@vger.kernel.org, Marc Kleine-Budde" 
+        <mkl@pengutronix.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Marangi <ansuelsmth@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 167/230] net: dsa: qca8k: reset cpu port on MTU change
-Date:   Mon, 11 Jul 2022 11:07:03 +0200
-Message-Id: <20220711090608.797548765@linuxfoundation.org>
+        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>
+Subject: [PATCH 5.15 169/230] can: kvaser_usb: kvaser_usb_leaf: fix CAN clock frequency regression
+Date:   Mon, 11 Jul 2022 11:07:05 +0200
+Message-Id: <20220711090608.854222675@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,71 +49,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Marangi <ansuelsmth@gmail.com>
+From: Jimmy Assarsson <extja@kvaser.com>
 
-commit 386228c694bf1e7a7688e44412cb33500b0ac585 upstream.
+commit e6c80e601053ffdac5709f11ff3ec1e19ed05f7b upstream.
 
-It was discovered that the Documentation lacks of a fundamental detail
-on how to correctly change the MAX_FRAME_SIZE of the switch.
+The firmware of M32C based Leaf devices expects bittiming parameters
+calculated for 16MHz clock. Since we use the actual clock frequency of
+the device, the device may end up with wrong bittiming parameters,
+depending on user requested parameters.
 
-In fact if the MAX_FRAME_SIZE is changed while the cpu port is on, the
-switch panics and cease to send any packet. This cause the mgmt ethernet
-system to not receive any packet (the slow fallback still works) and
-makes the device not reachable. To recover from this a switch reset is
-required.
+This regression affects M32C based Leaf devices with non-16MHz clock.
 
-To correctly handle this, turn off the cpu ports before changing the
-MAX_FRAME_SIZE and turn on again after the value is applied.
-
-Fixes: f58d2598cf70 ("net: dsa: qca8k: implement the port MTU callbacks")
+Fixes: a8b513b824e4 ("can: kvaser_usb: get CAN clock frequency from device")
+Link: https://lore.kernel.org/all/20220603083820.800246-3-extja@kvaser.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Link: https://lore.kernel.org/r/20220621151122.10220-1-ansuelsmth@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/qca8k.c |   23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ drivers/net/can/usb/kvaser_usb/kvaser_usb.h      |    1 
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c |   33 ++++++++++++++---------
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c |   25 +++++++++++------
+ 3 files changed, 38 insertions(+), 21 deletions(-)
 
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1599,7 +1599,7 @@ static int
- qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- {
- 	struct qca8k_priv *priv = ds->priv;
--	int i, mtu = 0;
-+	int ret, i, mtu = 0;
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
+@@ -38,6 +38,7 @@
+ /* Kvaser USB device quirks */
+ #define KVASER_USB_QUIRK_HAS_SILENT_MODE	BIT(0)
+ #define KVASER_USB_QUIRK_HAS_TXRX_ERRORS	BIT(1)
++#define KVASER_USB_QUIRK_IGNORE_CLK_FREQ	BIT(2)
  
- 	priv->port_mtu[port] = new_mtu;
+ /* Device capabilities */
+ #define KVASER_USB_CAP_BERR_CAP			0x01
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
+@@ -101,26 +101,33 @@ static const struct kvaser_usb_driver_in
+ };
  
-@@ -1607,8 +1607,27 @@ qca8k_port_change_mtu(struct dsa_switch
- 		if (priv->port_mtu[i] > mtu)
- 			mtu = priv->port_mtu[i];
+ static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf = {
+-	.quirks = 0,
++	.quirks = KVASER_USB_QUIRK_IGNORE_CLK_FREQ,
+ 	.family = KVASER_LEAF,
+ 	.ops = &kvaser_usb_leaf_dev_ops,
+ };
  
-+	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
-+	 * the switch panics.
-+	 * Turn off both cpu ports before applying the new value to prevent
-+	 * this.
-+	 */
-+	if (priv->port_sts[0].enabled)
-+		qca8k_port_set_status(priv, 0, 0);
+ static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf_err = {
+-	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS,
++	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS |
++		  KVASER_USB_QUIRK_IGNORE_CLK_FREQ,
+ 	.family = KVASER_LEAF,
+ 	.ops = &kvaser_usb_leaf_dev_ops,
+ };
+ 
+ static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf_err_listen = {
+ 	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS |
+-		  KVASER_USB_QUIRK_HAS_SILENT_MODE,
++		  KVASER_USB_QUIRK_HAS_SILENT_MODE |
++		  KVASER_USB_QUIRK_IGNORE_CLK_FREQ,
+ 	.family = KVASER_LEAF,
+ 	.ops = &kvaser_usb_leaf_dev_ops,
+ };
+ 
++static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leafimx = {
++	.quirks = 0,
++	.ops = &kvaser_usb_leaf_dev_ops,
++};
 +
-+	if (priv->port_sts[6].enabled)
-+		qca8k_port_set_status(priv, 6, 0);
+ static const struct usb_device_id kvaser_usb_table[] = {
+-	/* Leaf USB product IDs */
++	/* Leaf M32C USB product IDs */
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_DEVEL_PRODUCT_ID),
+ 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_PRODUCT_ID),
+@@ -161,22 +168,24 @@ static const struct usb_device_id kvaser
+ 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_CAN_R_PRODUCT_ID),
+ 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
 +
- 	/* Include L2 header / FCS length */
--	return qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
-+	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
-+
-+	if (priv->port_sts[0].enabled)
-+		qca8k_port_set_status(priv, 0, 1);
-+
-+	if (priv->port_sts[6].enabled)
-+		qca8k_port_set_status(priv, 6, 1);
-+
-+	return ret;
++	/* Leaf i.MX28 USB product IDs */
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_V2_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_HS_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LIGHT_HS_V2_OEM_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_LIGHT_2HS_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_2HS_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_R_V2_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LIGHT_R_V2_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LIGHT_HS_V2_OEM2_PRODUCT_ID),
+-		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
++		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
+ 
+ 	/* USBCANII USB product IDs */
+ 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN2_PRODUCT_ID),
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+@@ -525,16 +525,23 @@ static void kvaser_usb_leaf_get_software
+ 	dev->fw_version = le32_to_cpu(softinfo->fw_version);
+ 	dev->max_tx_urbs = le16_to_cpu(softinfo->max_outstanding_tx);
+ 
+-	switch (sw_options & KVASER_USB_LEAF_SWOPTION_FREQ_MASK) {
+-	case KVASER_USB_LEAF_SWOPTION_FREQ_16_MHZ_CLK:
++	if (dev->driver_info->quirks & KVASER_USB_QUIRK_IGNORE_CLK_FREQ) {
++		/* Firmware expects bittiming parameters calculated for 16MHz
++		 * clock, regardless of the actual clock
++		 */
+ 		dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
+-		break;
+-	case KVASER_USB_LEAF_SWOPTION_FREQ_24_MHZ_CLK:
+-		dev->cfg = &kvaser_usb_leaf_dev_cfg_24mhz;
+-		break;
+-	case KVASER_USB_LEAF_SWOPTION_FREQ_32_MHZ_CLK:
+-		dev->cfg = &kvaser_usb_leaf_dev_cfg_32mhz;
+-		break;
++	} else {
++		switch (sw_options & KVASER_USB_LEAF_SWOPTION_FREQ_MASK) {
++		case KVASER_USB_LEAF_SWOPTION_FREQ_16_MHZ_CLK:
++			dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
++			break;
++		case KVASER_USB_LEAF_SWOPTION_FREQ_24_MHZ_CLK:
++			dev->cfg = &kvaser_usb_leaf_dev_cfg_24mhz;
++			break;
++		case KVASER_USB_LEAF_SWOPTION_FREQ_32_MHZ_CLK:
++			dev->cfg = &kvaser_usb_leaf_dev_cfg_32mhz;
++			break;
++		}
+ 	}
  }
  
- static int
 
 
