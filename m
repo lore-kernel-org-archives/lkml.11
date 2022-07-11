@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87603C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE24CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234577AbiGKKEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
+        id S234436AbiGKKEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234438AbiGKKD2 (ORCPT
+        with ESMTP id S234513AbiGKKDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:03:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93CC67CAF;
-        Mon, 11 Jul 2022 02:29:20 -0700 (PDT)
+        Mon, 11 Jul 2022 06:03:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0501B48E8F;
+        Mon, 11 Jul 2022 02:29:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44F1961414;
-        Mon, 11 Jul 2022 09:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48DC5C34115;
-        Mon, 11 Jul 2022 09:29:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96B8961414;
+        Mon, 11 Jul 2022 09:29:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E03AC34115;
+        Mon, 11 Jul 2022 09:29:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531759;
-        bh=8zI3HCloRYHVOHZCHLLz52FB/eHr8XOjH38oxYCQtKs=;
+        s=korg; t=1657531768;
+        bh=dXCyeXMzsanEOjnWTi9p5QfZZN2jI9uPP4wKsJmHxbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xe9Kfi9xL9yoqmoc+RWy/GS5Vm47N54tbD8U8NSbN3sCwIGAr5+mdqlmohgu4MfbA
-         eivow276HTmV/mewaTZYWx5igO09xXVqHJhRVi7v2sGPS/JVo+efQDpIH2cx9EUVoZ
-         essztqWuFFaJ4nVTx6k/ytCr19jmj4/VWSUdRLG4=
+        b=GlnXxTNFq43952O+l3WRpGCDBm8Iu7DnF9GSwDIzEdoT3zZw49N99fY+hMEgn2ZqD
+         8BT+u5MUE+ynUBzKP2WJ5JPFHmpbXYuWGnVYyHEOTVSFIDMnLDBj1YvRDG6rdTBcK7
+         7bUC/zbZSs/nM4atY9XnPWMkkDcueFAtZkKrhB1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 180/230] ASoC: rt711-sdca: Add endianness flag in snd_soc_component_driver
-Date:   Mon, 11 Jul 2022 11:07:16 +0200
-Message-Id: <20220711090609.218222690@linuxfoundation.org>
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 173/230] btrfs: fix error pointer dereference in btrfs_ioctl_rm_dev_v2()
+Date:   Mon, 11 Jul 2022 11:07:09 +0200
+Message-Id: <20220711090608.969302812@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,37 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 3e50a5001055d79c04ea1c79fe4b4ff937a3339c ]
+commit d815b3f2f273537cb8afaf5ab11a46851f6c03e5 upstream.
 
-The endianness flag is used on the CODEC side to specify an
-ambivalence to endian, typically because it is lost over the hardware
-link. This device receives audio over a SoundWire DAI and as such
-should have endianness applied.
+If memdup_user() fails the error handing will crash when it tries
+to kfree() an error pointer.  Just return directly because there is
+no cleanup required.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-32-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1a15eb724aae ("btrfs: use btrfs_get_dev_args_from_path in dev removal ioctls")
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/rt711-sdca.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/ioctl.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index 2e992589f1e4..b168e9303ea9 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -1208,6 +1208,7 @@ static const struct snd_soc_component_driver soc_sdca_dev_rt711 = {
- 	.num_dapm_routes = ARRAY_SIZE(rt711_sdca_audio_map),
- 	.set_jack = rt711_sdca_set_jack_detect,
- 	.remove = rt711_sdca_remove,
-+	.endianness = 1,
- };
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -3231,10 +3231,8 @@ static long btrfs_ioctl_rm_dev_v2(struct
+ 		return -EPERM;
  
- static int rt711_sdca_set_sdw_stream(struct snd_soc_dai *dai, void *sdw_stream,
--- 
-2.35.1
-
+ 	vol_args = memdup_user(arg, sizeof(*vol_args));
+-	if (IS_ERR(vol_args)) {
+-		ret = PTR_ERR(vol_args);
+-		goto out;
+-	}
++	if (IS_ERR(vol_args))
++		return PTR_ERR(vol_args);
+ 
+ 	if (vol_args->flags & ~BTRFS_DEVICE_REMOVE_ARGS_MASK) {
+ 		ret = -EOPNOTSUPP;
 
 
