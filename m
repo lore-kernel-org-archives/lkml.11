@@ -2,250 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 398E9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230491AbiGKLPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53648 "EHLO
+        id S230419AbiGKLPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiGKLOj (ORCPT
+        with ESMTP id S230407AbiGKLOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:14:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C284725C73
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:33:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657535587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7SouKYlMkWzuBqZN4rXZnGRyOzkCR8tKbjyAs7q8HvU=;
-        b=YSOhjSUUsfQf4RZJ9KhA4xJFNPrpZchme5VaNhCX3QntJyTvLnOzuLHCqHUt+8I4Mg1HMQ
-        yLywTyost7vWKQfXXNnUJ93aXAntJGxgvHAN8de3ivsZP5tM+pt4ShNzcpHVuezofbaaDs
-        a6tAKRs41F97li3IhI5pJj9Gp5WJtwo=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-25-0TTnxUPUPxaUzSJk2g7nOA-1; Mon, 11 Jul 2022 06:33:06 -0400
-X-MC-Unique: 0TTnxUPUPxaUzSJk2g7nOA-1
-Received: by mail-qv1-f69.google.com with SMTP id e1-20020ad44181000000b00472f8ad6e71so36037qvp.20
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:33:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=7SouKYlMkWzuBqZN4rXZnGRyOzkCR8tKbjyAs7q8HvU=;
-        b=kEzmrCTh7VrWD/M1ITVlqbPoiLWqtogZ9mmbj7CcRrAzuStkbz82IQaqRJWmTjTZH5
-         4PzsZkZ5LCs3zsmZlU60x4GJ7K1B1jlxt/VKg5uJSqsmDdK/wiXi68atFcSH1m5ZsY1S
-         PdI/sVtrtSp1ayLeJMvAEXBdWml/H9PouNeKPTqE+Y7xykiPykc0dRnYVbQmQTqN3UIz
-         4kegtjoAv1dLbQIIZl+i9kumCJK+r+qGo3StENfyZ15gSNS+BPvk8OPz5hPyxVKs50H4
-         S1PtACrMB7nuIqQuts3jOaSjv6EFdRd0oGDnHCzWrrQX3oG6l/z5OJmerfUbQL8AB4fS
-         Poww==
-X-Gm-Message-State: AJIora9RcxunPIQzm//G+aexLim34xdTTQpTpdbwQiLgQDIqojZockaj
-        236xwONc8jb8NbragJT4Od8tSdlUgliLgCuo6EeTp1frDc7HpxRillWd3+C+F2KFXRpOXZc3TpU
-        pSFV1fJVT70b0stdIHlZ0ZpHd
-X-Received: by 2002:a05:620a:248b:b0:6af:4f9b:b0b3 with SMTP id i11-20020a05620a248b00b006af4f9bb0b3mr10744904qkn.408.1657535586047;
-        Mon, 11 Jul 2022 03:33:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sVs/FGj4fU/SHmbL6FO7aKqyMJktULJSdpAV9Q8sEhXC5/1g0kdZI7wuRnJVLLrBO2Fvn7aw==
-X-Received: by 2002:a05:620a:248b:b0:6af:4f9b:b0b3 with SMTP id i11-20020a05620a248b00b006af4f9bb0b3mr10744892qkn.408.1657535585813;
-        Mon, 11 Jul 2022 03:33:05 -0700 (PDT)
-Received: from [192.168.1.3] (68-20-15-154.lightspeed.rlghnc.sbcglobal.net. [68.20.15.154])
-        by smtp.gmail.com with ESMTPSA id w22-20020ac87e96000000b0031eb5648b86sm2016792qtj.41.2022.07.11.03.33.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 03:33:05 -0700 (PDT)
-Message-ID: <5268baed1650b4cba32978ad32d14a5ef00539f2.camel@redhat.com>
-Subject: Re: [GIT PULL] nfsd changes for 5.18
-From:   Jeff Layton <jlayton@redhat.com>
-To:     Chuck Lever III <chuck.lever@oracle.com>,
-        Igor Mammedov <imammedo@redhat.com>
-Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        Ondrej Valousek <ondrej.valousek.xm@renesas.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Bruce Fields <bfields@fieldses.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 11 Jul 2022 06:33:04 -0400
-In-Reply-To: <B62B3A57-A8F7-478B-BBAB-785D0C2EE51C@oracle.com>
-References: <EF97E1F5-B70F-4F9F-AC6D-7B48336AE3E5@oracle.com>
-         <20220710124344.36dfd857@redhat.com>
-         <B62B3A57-A8F7-478B-BBAB-785D0C2EE51C@oracle.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Mon, 11 Jul 2022 07:14:49 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6C513E24;
+        Mon, 11 Jul 2022 03:33:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657535609; x=1689071609;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=jQJ0PsLAVVMGpecHIYsJ66cU3yPvOicuCMQl00Ndhyg=;
+  b=GspE4IoHUHByP5RVuMQoVEPtfvj/UBVxSEoYRvdoJZINlYhRiKG0lS5Y
+   ag5kWrOqiWlLbRfX2hb3zFJcmhvpUjoGZ8rnLXbbPAOjHBndPGiLIlP48
+   MoKEEjZYYcOknT5/F7Bp/yUiF296q1T2dYAfyoBF9gS9oSbrcFk5jWPSx
+   ZfQJXo0D3QVqobHKVBGY8lo3LH8f5QqShNdmT8BAQEERKvjSPEvanEkLu
+   kOdpdq+z8X9VBy+3tWyrflo2VR/iw7VCRj68EPSAD6YKwrFhAqiihpCtM
+   /FOzewb4umkQ7wU1hOHyQmPM7MHpnB6ZeDZgJ9N9oi9KdFXO02ec52bOf
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="103895437"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Jul 2022 03:33:28 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 11 Jul 2022 03:33:27 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Mon, 11 Jul 2022 03:33:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=D1+i4HDCIOUOZFckJa5JAnNnfPcUfQuESbIkU+uI0s+b40Sy4GPgoZ6Ea3xhlrApXcHC3LB5B94jSKSxYoqNNYsJQO18KcmLuIPNH+vkeew/8b/5buMsQJaxl6knkHyuzOW7Qj30NxRFsqnQibUDcMrfyVACq2Q5upu5pQz24YNIbWTEPq3rHru0/xWljN+U3Bv7bmPk7Wotp0EpSeGNHLNheJ3Miy9lxMD9o6i6dGhLVhdFb2uLe5IpXMA97ywteNivpHztFWHl9rPCQcbUH0fZlL2Bz/ch3I48mnPUHDmofPWvuJ+ep071RXeAhmqDPpDPEz1NULICtGqMtqafKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jQJ0PsLAVVMGpecHIYsJ66cU3yPvOicuCMQl00Ndhyg=;
+ b=NMm4YG7Elx2NzqXaHvjKEHoxLvSX8YhMvYauQRyvqlimtGkH7FEDRWrEsVOkt1aJxqEBotKF4R1Zko83ja+aCKFLFkn+rpKn5H80fVHjSP1ap9GzxTqgPz3MUfDHv5T5swvhkkvf+Z3N9l78HpsVSP8Kc4fWdiEeYoFFyc84/cLFKYyhCYFzkCkIleInnJmQNRSCQNcz/nug06zxsnvYIcYdu81EDx6Zu+WUqhLpumjdWFBzLdV5lpRoYx2iCbVuae74OW5z4vP0xZoRRpECF/AfZ8yOvLQR4z4ANO3iVoL0VlCuPMiJej8JeMDp/mhKMdl+O6Gn3qURmrm/njDW9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jQJ0PsLAVVMGpecHIYsJ66cU3yPvOicuCMQl00Ndhyg=;
+ b=YF7Md8komi6khW+QUD3Tn/457KolPdTaQ9spqsS8eF3Hl4RqrgpMGqNC07gOA15NQCXKwf0kF1e3frFQKColHGStDWTVZD96aea2kwW8ZXAhKnDgHF0ZquAE/W6KLh+bHkF7sQ5+PSL+TnN73N08P7/LqywwhP9+YQoB0sJ+1Tw=
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
+ by BN6PR11MB4052.namprd11.prod.outlook.com (2603:10b6:405:7a::37) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Mon, 11 Jul
+ 2022 10:33:22 +0000
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::8d4a:1681:398d:9714]) by CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::8d4a:1681:398d:9714%5]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
+ 10:33:22 +0000
+From:   <Conor.Dooley@microchip.com>
+To:     <geert+renesas@glider.be>, <broonie@kernel.org>,
+        <Daire.McNamara@microchip.com>
+CC:     <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] spi: SPI_MICROCHIP_CORE should depend on
+ SOC_MICROCHIP_POLARFIRE
+Thread-Topic: [PATCH] spi: SPI_MICROCHIP_CORE should depend on
+ SOC_MICROCHIP_POLARFIRE
+Thread-Index: AQHYlRDscDs8Hw01AUS3IkiKDybfsa14+TKA
+Date:   Mon, 11 Jul 2022 10:33:22 +0000
+Message-ID: <373b74b4-657c-b6b7-9532-f6602d6b2a8e@microchip.com>
+References: <4e78693a87d6b83847056d22468c370e7232f390.1657529125.git.geert+renesas@glider.be>
+In-Reply-To: <4e78693a87d6b83847056d22468c370e7232f390.1657529125.git.geert+renesas@glider.be>
+Accept-Language: en-IE, en-US
+Content-Language: en-IE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e28c752f-ea6e-464b-c8a4-08da6328c7a1
+x-ms-traffictypediagnostic: BN6PR11MB4052:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0+CC1lP7lFQcArCOIAb25W7RxUBvClN7HQ/Bww8zZn0rrdSljb5F36jRUMEJ39qmYv/hS0w7zh8dgU+ONuw1UTpM7B9o46aA0UAqxjsBn7d75H4r4Msg8mIa8ZiLJIx4I3Y44nHk1+5FRO1XYsUafCg/1e1ohWYbOUORCpdMEJ9+BUsL9nP5yyaNGt6tep7S89xWSWTke8v9+XbTqfib5Sn7Hro3cdFookS2ffdWytnUmW9ffUEbZbCkvVnBlR2yW+594dksfHdQ6SH8s64jMFJ/VYAtB0Rf9WbHJsTUzcjGfbtszkLKkpYd9rKpt5paZn//nsNkka2QYSU78EH+mJRUgeri069vK2e/1uS3pien0/bG1XQ6Qqg/QvSd2hqoZzCZv33f/EfE8zDlgGF87dpZ2jXb+kHItW6/+Eucrb2HTNMViRs+T6GUFjFzRGLQ1os+g25vUhaWIRIiZ3GsLE8Pp4pukc0H5U5AZIkHIq0LAq4LZ0Qd+YYXMvZ7T9RE4OFx6JfGyb2q/V/g3iA+x1sj+NdevUz+Nrrm7dGwJWUVwcirbjK/5CCEpx04U+99U27tIUSv6hG+C77CMhoYcimrhTNGSDitQcQMfEhDVS2C/BpoInXK5eyTIrF778stgGWFTHIzsSpe8f9GIr9f5r/vEadZK/5DOdczcN6OPh58c/2J5o2NBHNBDMX1IwYnhRvdo3+pG1J2HjEPU2Hz+BIeIuoYOxSW1/7AQu7m8FXxdaOJ3Qq59kWQSfblrdIwx3+1VeGh6AP8eBPVAvnw4VhV6UotXRM4g34lknS8n2UvzzzUuGqMw9yD46QXmi0OrKGQFYNoloUCMVq0LOhteL3EzWPwVWhQmSOO3rQfZ1kqu109hjDk2k3hblxFGlKH
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(346002)(39860400002)(376002)(366004)(316002)(110136005)(71200400001)(4326008)(2906002)(31686004)(41300700001)(478600001)(6636002)(54906003)(36756003)(53546011)(6512007)(26005)(2616005)(6506007)(91956017)(64756008)(66476007)(66946007)(76116006)(66446008)(8676002)(66556008)(186003)(122000001)(31696002)(86362001)(38070700005)(8936002)(38100700002)(6486002)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZmcyWlpHVXovcXlMWnFQVHFyam1NcXdOVGpVSWF0K0xOeTZsSmxvTjlhTjNj?=
+ =?utf-8?B?bllPUlByVGtwaWx4dDRvdS9oTFVqcGV0QlVxaGJ4b0NqZ3Nsc1BjUHQ4SXhn?=
+ =?utf-8?B?T292MjhQMThoaW9BTzR6eDlsMkE0Z2lHY2QrQVlTclBTSHBKdlJ4bDhzZTMr?=
+ =?utf-8?B?NFdPVXlYbEU3cmd1WDNwMVFra1ZORTkxUUJjOVdOWldaTFdNVkxzZXJKL1J2?=
+ =?utf-8?B?UFE1a2ZpQTZwR3M4dGsyS2J3MXhwYlBwaGRpS3A1c2ZVa2lmekJGNzJZTURK?=
+ =?utf-8?B?c3hCOWFPalFtaVhXN3RDVUNSNjlYTUthWWlJTDBGUk9NRjVyNjFHeURmUHE2?=
+ =?utf-8?B?OFZSYk9xVUdmWG8vTWp1OHlvdGN0ZGFpeUpLZVdZL2JnQW5BV1MwUnoyRWhK?=
+ =?utf-8?B?RytzN1hMNVQyY2pXNjRIZThLTmpnM3MzNk1vUEFRNGpiM25wUU9BdU9Uc0pl?=
+ =?utf-8?B?eWFvSzQxWmJFWHZDbVhNeForbzZPWXM0UE5CMHJRbVJBY1dHYzdYVFZ0ZDRZ?=
+ =?utf-8?B?KzcyZ2E1eWRnbTE1bVVnMnJJQU9VWkFyWXJPQ2cvRm82YzRpaTdXcXJpYjdn?=
+ =?utf-8?B?SzFSeDQ1bEpLZVRyK3BXV0hOVlpmZjlUWUttUGNWblAvekd4eEtzTTFlVm9w?=
+ =?utf-8?B?K3ZLU1EvVi9EZWRCc2RMRm92ZzM5bHQwbzVCMDI3S2lMZWluajJETGNGSW50?=
+ =?utf-8?B?TjgxdXU2N1NQYzI2Q2tnTG96NWF6eERvQU9uek5YRktYUU9XT0s5RW1VWk5W?=
+ =?utf-8?B?U3JxYW5xRVBRYk15d1Job2psaHVzeFJ1MVE3dWZpcTRLMXVlT29QRk14L2Rk?=
+ =?utf-8?B?NUZXeXJIWk9ScUZFUDFid3c2cEtWTU8yQ0dETVdvYVpIclNORld1RW42VW5M?=
+ =?utf-8?B?WEpDQXFrQ2d2NzFCV0VRejA4c3lEVU9zZWxTZDc0SFZzTytDRlg3a0pwSlBN?=
+ =?utf-8?B?Mi9maElwUUZCRG1HcTBqSzdINkZ0L2YxMHN6YWhObjhMWUhSdkd1bExaZE1p?=
+ =?utf-8?B?enpuckZvYTdxT2MzNFZWVXNGNlpXTTV3d3lCREVxeURaUmRJS3NNZkJxZWU0?=
+ =?utf-8?B?UTZ6aEM5djlEUk1ZZis5Q2ovSHBWcnFTMGRHSDdDNEtIOThaN3JFWis1OEtJ?=
+ =?utf-8?B?djVPalg1Mk1VREhTcGxtOUFJcUc2cEs3YmtHUDA1YW1VdjFOL3lsMEhmY1Ay?=
+ =?utf-8?B?MnMxOXJpQW1KT1VaNE5kaVFQR1ZCTzV4VHFFQ2JEOXpSZC9RM0RCU3UvTDV5?=
+ =?utf-8?B?VDhPc1R5NGR2bUw0VkJIQTVBT0h1ZEphMUFucHZMVG1FMXlua2JwOXZRY0JQ?=
+ =?utf-8?B?UmkxQUE2QlVNcjByakJJRXRsZ3BrK2dHbFVuTGFoTEdkdEljZ3hVZTQzTEtU?=
+ =?utf-8?B?ZCtja24raTlkRC9SUlh4UmVRcUxLdHhlL3R2cm4rVEc5Zk5nNnpmOGxLWmlr?=
+ =?utf-8?B?R3ZWTjY3OWx2ay9yWlZJUDdrWi9KTEdzYlovNkRkZm1zL0paS3Bhc0V3VzdE?=
+ =?utf-8?B?eHlURmFzaVU2bkROMFpMTVg5SmtQUTI5NUpNbVNPbzEva3V5S041L3ZGT1Rs?=
+ =?utf-8?B?VzJuUzMzRG9hNjhlSGptV2VGR25Ca2xvT0gzNzhTVGJMYnhsVGtiVUJrT3RF?=
+ =?utf-8?B?TWxaMG1VZkNsais5SE85THptZW93dkk3bHdQakJrRDVxYTNnbmNueWE3K3N5?=
+ =?utf-8?B?bHpTUHpqb05ScEh2V3BIYUYvSW1VWkltV2lxKzZIL0ZBQ3NtUUlGakh2aTdE?=
+ =?utf-8?B?aElHZ01KR1kwMXZnVVpZcmZlclB1ZFBZd0VXV2pCbzV5OUJvMWNnbEZ5YzUz?=
+ =?utf-8?B?bDk4MXpWMkdtSzN0RjErRzQ0SzhGUHYwUStobjdFZ01uemEvVE5qNVpxUEFz?=
+ =?utf-8?B?YnFrcG5EME1VRjRFUXlobFhCK0JPdE43R2tsSkw0R2RiVWF0VmJFaVlJbm81?=
+ =?utf-8?B?dFkzQWZLTWxEZ05CMzdTa0txeHNOVkJzN0RZYTA1dE1KSkJxeHpRemdVVlQx?=
+ =?utf-8?B?TjJHSGljT3ZlMytmZGhlTmNzTFdWeGJ5VFhBd1Nja2pJYU8rUDBvWnozYnEw?=
+ =?utf-8?B?WTJqa0pkSU9vd2FHT3RvVUI5Qk94OW54MXRJS3J6akRyblNsUi85U2tuOVpm?=
+ =?utf-8?Q?yZVpXYi0U3AwSdkYkAZ1mg4tj?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BC3F3A040381B0419D3EF733627BA1A2@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e28c752f-ea6e-464b-c8a4-08da6328c7a1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 10:33:22.4832
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eEgJx7hhK9fCgKw/Nx534eEGyMtZ8ckXd/DPCMUCrhWbz+Fb4ow0sLISwMVERrCVHDMKpBAJUx2ca1rLYo4eSIX9uAEnpP2ULSB8AY30NVk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB4052
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-07-10 at 16:42 +0000, Chuck Lever III wrote:
->=20
-> > On Jul 10, 2022, at 6:43 AM, Igor Mammedov <imammedo@redhat.com> wrote:
-> >=20
-> > On Mon, 21 Mar 2022 14:12:31 +0000
-> > Chuck Lever III <chuck.lever@oracle.com> wrote:
-> >=20
-> > couldn't find offender patch on ML so replying here
->=20
-> Probably:
->=20
-> https://lore.kernel.org/linux-nfs/AEC24099-5BC9-49C8-B759-920824F23F3C@or=
-acle.com/
->=20
->=20
-> > > Hi Linus-
-> > >=20
-> > > The following changes since commit 7e57714cd0ad2d5bb90e50b5096a0e671d=
-ec1ef3:
-> > >=20
-> > > Linux 5.17-rc6 (2022-02-27 14:36:33 -0800)
-> > >=20
-> > > are available in the Git repository at:
-> > >=20
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git tags/nfsd=
--5.18
-> > >=20
-> > > for you to fetch changes up to 4fc5f5346592cdc91689455d83885b0af65d71=
-b8:
-> > >=20
-> > > nfsd: fix using the correct variable for sizeof() (2022-03-20 12:49:3=
-8 -0400)
-> > >=20
-> > > ----------------------------------------------------------------
-> > > New features:
-> > > - NFSv3 support in NFSD is now always built
-> > > - Added NFSD support for the NFSv4 birth-time file attribute
-> > [...]
-> >=20
-> > > Ondrej Valousek (1):
-> > > nfsd: Add support for the birth time attribute
->=20
-> Thank you for the report, Igor.
->=20
->=20
-> > This patch regressed clients that support TIME_CREATE attribute.
-> > Starting with this patch client might think that server supports
-> > TIME_CREATE and start sending this attribute in its requests.
->=20
-> Indeed, e377a3e698fb ("nfsd: Add support for the birth time
-> attribute") does not include a change to nfsd4_decode_fattr4()
-> that decodes the birth time attribute.
->=20
-> I don't immediately see another storage protocol stack in our
-> kernel that supports a client setting the birth time, so NFSD
-> might have to ignore the client-provided value.
->=20
-
-Cephfs allows this. My thinking at the time that I implemented it was
-that it should be settable for backup purposes, but this was possibly a
-mistake. On most filesystems, the btime seems to be equivalent to inode
-creation time and is read-only.
-
->=20
-> > However kernel on server side (since this patch and to
-> > current master) upon getting such request will return EINVAL.
-> > (my guess is that TIME_CREATE not being decoded properly and
-> > that messes up request parsing).
->=20
-> I'll send a quick-and-dirty fix your way as we explore the
-> question of whether NFSD needs to ignore the birth time value
-> in this case.
->=20
->=20
-> > End result is unusable mount (unless it's treated as readonly).
->=20
-> That seems odd, and not clear whether that's a client or server
-> problem. I hope that will clear up once the server deals with
-> the time_create attribute appropriately.
->=20
->=20
-> > Reproduces with current master (HEAD at e5524c2a1fc40) and MacOS
-> > client (Big Sur or newest Monterey).
-> >=20
-> > server is typical setup exporting files from XFS (Fedora36)
-> >=20
-> > #  rpcdebug -m nfsd -s all
-> >=20
-> > on client:
-> >=20
-> > % mount -t nfs -o vers=3D4,rw,nfc,sec=3Dsys testnas:/mnt  ~/test
-> > % touch ~/test/fff
-> >     touch: test/fff: Invalid argument
-> >=20
-> > server logs:
-> >=20
-> > nfsd: fh_compose(exp fd:00/128 fff, ino=3D0)
-> > NFSD: nfsd4_open filename  op_openowner 0000000000000000
-> >=20
-> > Here is a request the touch generates:
-> >        Network File System, Ops(6): PUTFH, SAVEFH, OPEN, GETATTR, RESTO=
-REFH, GETATTR
-> >            [Program Version: 4]
-> >            [V4 Procedure: COMPOUND (1)]
-> >            Tag: create
-> >            minorversion: 0
-> >            Operations (count: 6): PUTFH, SAVEFH, OPEN, GETATTR, RESTORE=
-FH, GETATTR
-> >                Opcode: PUTFH (22)
-> >                Opcode: SAVEFH (32)
-> >                Opcode: OPEN (18)
-> >                    seqid: 0x00000004
-> >                    share_access: OPEN4_SHARE_ACCESS_BOTH (3)
-> >                    share_deny: OPEN4_SHARE_DENY_NONE (0)
-> >                    clientid: 0xba93c9620aec46ea
-> >                    owner: <DATA>
-> >                    Open Type: OPEN4_CREATE (1)
-> >                        Create Mode: UNCHECKED4 (0)
-> >                        Attr mask: 0x00040002 (Mode, Time_Create)
-> >                            reco_attr: Mode (33)
-> >                            reco_attr: Time_Create (50)
-> >                    Claim Type: CLAIM_NULL (0)
-> >                        Name: fff
-> >=20
-> >        [...]
-> >=20
-> > when trying to copy file via GUI (Finder) it goes a different route
-> > but ends up with error anyway and with leftover 0-length file on server
-> > with messed up permissions, i.e.
->=20
-> The current NFSv4 OPEN(CREATE) code path is still not right. Fixing
-> the TIME_CREATE problem should make this symptom go away for now,
-> but eventually that path will need to be restructured so that it
-> cannot leave a turd if the whole create process was not able to
-> complete.
->=20
->=20
-> > open/create without Time_Create succeeds but followup
-> > setattr with Time_Create fails EINVAL.
-> >=20
-> >        Network File System, Ops(3): PUTFH, SETATTR, GETATTR
-> >            [Program Version: 4]
-> >            [V4 Procedure: COMPOUND (1)]
-> >            Tag: setattr
-> >            minorversion: 0
-> >            Operations (count: 3): PUTFH, SETATTR, GETATTR
-> >                Opcode: PUTFH (22)
-> >                Opcode: SETATTR (34)
-> >                    StateID
-> >                    Attr mask: 0x00450002 (Mode, Time_Access_Set, Time_C=
-reate, Time_Modify_Set)
-> >                        reco_attr: Mode (33)
-> >                        reco_attr: Time_Access_Set (48)
-> >                        reco_attr: Time_Create (50)
-> >                        reco_attr: Time_Modify_Set (54)
-> >                Opcode: GETATTR (9)
-> >            [Main Opcode: SETATTR (34)]
-> >=20
-> > [...]
-> > > --
-> > > Chuck Lever
->=20
-> --
-> Chuck Lever
->=20
->=20
->=20
-
---=20
-Jeff Layton <jlayton@redhat.com>
-
+T24gMTEvMDcvMjAyMiAwOTo0NSwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOg0KPiBFWFRFUk5B
+TCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlv
+dSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gDQo+IFRoZSBNaWNyb2NoaXAgImhhcmQiIEZQ
+R0EgU1BJIGNvbnRyb2xsZXIgaXMgb25seSBwcmVzZW50IG9uIE1pY3JvY2hpcA0KPiBQb2xhckZp
+cmUgU29Dcy4gIEhlbmNlIGFkZCBhIGRlcGVuZGVuY3kgb24gU09DX01JQ1JPQ0hJUF9QT0xBUkZJ
+UkUsIHRvDQo+IHByZXZlbnQgYXNraW5nIHRoZSB1c2VyIGFib3V0IHRoaXMgZHJpdmVyIHdoZW4g
+Y29uZmlndXJpbmcgYSBrZXJuZWwNCj4gd2l0aG91dCBNaWNyb2NoaXAgUG9sYXJGaXJlIFNvQyBz
+dXBwb3J0Lg0KPiANCj4gRml4ZXM6IDlhYzhkMTc2OTRiNjZkNTQgKCJzcGk6IGFkZCBzdXBwb3J0
+IGZvciBtaWNyb2NoaXAgZnBnYSBzcGkgY29udHJvbGxlcnMiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBH
+ZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPg0KDQpVbnRpbCBJIGdl
+dCB0aGUgInNvZnQiIHZlcnNpb24gc29ydGVkLCBtYWtlcyBzZW5zZSB0byBtZS4NClJldmlld2Vk
+LWJ5OiBDb25vciBEb29sZXkgPGNvbm9yLmRvb2xleUBtaWNyb2NoaXAuY29tPg0KDQo+IC0tLQ0K
+PiAgIGRyaXZlcnMvc3BpL0tjb25maWcgfCAxICsNCj4gICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNl
+cnRpb24oKykNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3NwaS9LY29uZmlnIGIvZHJpdmVy
+cy9zcGkvS2NvbmZpZw0KPiBpbmRleCBlMDNjZDE2ZjQ0NjkwNzllLi5iMWNiN2ZlMTI5ZmY4NmRh
+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3NwaS9LY29uZmlnDQo+ICsrKyBiL2RyaXZlcnMvc3Bp
+L0tjb25maWcNCj4gQEAgLTU4NSw2ICs1ODUsNyBAQCBjb25maWcgU1BJX01FU09OX1NQSUZDDQo+
+ICAgY29uZmlnIFNQSV9NSUNST0NISVBfQ09SRQ0KPiAgICAgICAgICB0cmlzdGF0ZSAiTWljcm9j
+aGlwIEZQR0EgU1BJIGNvbnRyb2xsZXJzIg0KPiAgICAgICAgICBkZXBlbmRzIG9uIFNQSV9NQVNU
+RVINCj4gKyAgICAgICBkZXBlbmRzIG9uIFNPQ19NSUNST0NISVBfUE9MQVJGSVJFIHx8IENPTVBJ
+TEVfVEVTVA0KPiAgICAgICAgICBoZWxwDQo+ICAgICAgICAgICAgVGhpcyBlbmFibGVzIHRoZSBT
+UEkgZHJpdmVyIGZvciBNaWNyb2NoaXAgRlBHQSBTUEkgY29udHJvbGxlcnMuDQo+ICAgICAgICAg
+ICAgU2F5IFkgb3IgTSBoZXJlIGlmIHlvdSB3YW50IHRvIHVzZSB0aGUgImhhcmQiIGNvbnRyb2xs
+ZXJzIG9uDQo+IC0tDQo+IDIuMjUuMQ0KPiANCg0K
