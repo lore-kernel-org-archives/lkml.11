@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C464C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234033AbiGKJ6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46374 "EHLO
+        id S234055AbiGKJ6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234220AbiGKJ6O (ORCPT
+        with ESMTP id S231280AbiGKJ6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:58:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C830045F6D;
-        Mon, 11 Jul 2022 02:27:22 -0700 (PDT)
+        Mon, 11 Jul 2022 05:58:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8B13C148;
+        Mon, 11 Jul 2022 02:27:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF6E161137;
-        Mon, 11 Jul 2022 09:27:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 066BDC34115;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0191BB80D2C;
         Mon, 11 Jul 2022 09:27:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51FC5C34115;
+        Mon, 11 Jul 2022 09:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531623;
-        bh=VbEduvmmM1AuODkVN1ppk9QzuyHdgUEgBWpZMa+qDm0=;
+        s=korg; t=1657531620;
+        bh=W3FkDVsaLvy6NEH/0/OxivKco67wNMOeiRL3HtMFaUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EAO4dvMf+q/4UiG+bkZ498Qqh8RPnubN8Z5BX710z6uZlAx9vhP16w0sa63TNtoXZ
-         DkZ14nczwWnII0MTi0SyAxHcqt3913ud+l/1MkfIM+bUmcDTDc2/Zdpvday2QZXFW+
-         js40SBZ1u2zCWKDXBlXl45Yx66RkVqTlWsE3wQS8=
+        b=sBB6Xs4idaGIfu3TQK/PAwZH/8r+Geh6uG9IG8z31IqeXLjp7ycy4MCT7hhg7u30F
+         4VL1iSgpYO8caBf8mzGFMbBCr6VIFcC/NC5FqsyD0UYKzzA+ZDhG+IjgL2BfabMu09
+         R+weYhwGChflVWwMjAYKq0Pg3pKCAZCzKJ/CIJ0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org,
-        "stable@vger.kernel.org, linux-can@vger.kernel.org, Marc Kleine-Budde" 
-        <mkl@pengutronix.de>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>
-Subject: [PATCH 5.15 170/230] can: kvaser_usb: kvaser_usb_leaf: fix bittiming limits
-Date:   Mon, 11 Jul 2022 11:07:06 +0200
-Message-Id: <20220711090608.882514911@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 134/230] powerpc/vdso: Move cvdso_call macro into gettimeofday.S
+Date:   Mon, 11 Jul 2022 11:06:30 +0200
+Message-Id: <20220711090607.865563405@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,194 +50,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jimmy Assarsson <extja@kvaser.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit b3b6df2c56d80b8c6740433cff5f016668b8de70 upstream.
+[ Upstream commit 692b21d78046851e75dc25bba773189c670b49c2 ]
 
-Use correct bittiming limits depending on device. For devices based on
-USBcanII, Leaf M32C or Leaf i.MX28.
+Now that gettimeofday.S is unique, move cvdso_call macro
+into that file which is the only user.
 
-Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB devices")
-Fixes: b4f20130af23 ("can: kvaser_usb: add support for Kvaser Leaf v2 and usb mini PCIe")
-Fixes: f5d4abea3ce0 ("can: kvaser_usb: Add support for the USBcan-II family")
-Link: https://lore.kernel.org/all/20220603083820.800246-4-extja@kvaser.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
-[mkl: remove stray netlink.h include]
-[mkl: keep struct can_bittiming_const kvaser_usb_flexc_bittiming_const in kvaser_usb_hydra.c]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/72720359d4c58e3a3b96dd74952741225faac3de.1642782130.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb.h       |    2 
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c |    4 -
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  |   76 ++++++++++++----------
- 3 files changed, 47 insertions(+), 35 deletions(-)
+ arch/powerpc/include/asm/vdso/gettimeofday.h | 52 +-------------------
+ arch/powerpc/kernel/vdso32/gettimeofday.S    | 44 ++++++++++++++++-
+ 2 files changed, 45 insertions(+), 51 deletions(-)
 
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
-@@ -188,4 +188,6 @@ int kvaser_usb_send_cmd_async(struct kva
+diff --git a/arch/powerpc/include/asm/vdso/gettimeofday.h b/arch/powerpc/include/asm/vdso/gettimeofday.h
+index df00e91c9a90..f0a4cf01e85c 100644
+--- a/arch/powerpc/include/asm/vdso/gettimeofday.h
++++ b/arch/powerpc/include/asm/vdso/gettimeofday.h
+@@ -2,57 +2,9 @@
+ #ifndef _ASM_POWERPC_VDSO_GETTIMEOFDAY_H
+ #define _ASM_POWERPC_VDSO_GETTIMEOFDAY_H
  
- int kvaser_usb_can_rx_over_error(struct net_device *netdev);
- 
-+extern const struct can_bittiming_const kvaser_usb_flexc_bittiming_const;
-+
- #endif /* KVASER_USB_H */
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-@@ -373,7 +373,7 @@ static const struct can_bittiming_const
- 	.brp_inc = 1,
- };
- 
--static const struct can_bittiming_const kvaser_usb_hydra_flexc_bittiming_c = {
-+const struct can_bittiming_const kvaser_usb_flexc_bittiming_const = {
- 	.name = "kvaser_usb_flex",
- 	.tseg1_min = 4,
- 	.tseg1_max = 16,
-@@ -2052,7 +2052,7 @@ static const struct kvaser_usb_dev_cfg k
- 		.freq = 24000000,
- 	},
- 	.timestamp_freq = 1,
--	.bittiming_const = &kvaser_usb_hydra_flexc_bittiming_c,
-+	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
- };
- 
- static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_rt = {
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -100,16 +100,6 @@
- #define USBCAN_ERROR_STATE_RX_ERROR	BIT(1)
- #define USBCAN_ERROR_STATE_BUSERROR	BIT(2)
- 
--/* bittiming parameters */
--#define KVASER_USB_TSEG1_MIN		1
--#define KVASER_USB_TSEG1_MAX		16
--#define KVASER_USB_TSEG2_MIN		1
--#define KVASER_USB_TSEG2_MAX		8
--#define KVASER_USB_SJW_MAX		4
--#define KVASER_USB_BRP_MIN		1
--#define KVASER_USB_BRP_MAX		64
--#define KVASER_USB_BRP_INC		1
+-#include <asm/page.h>
 -
- /* ctrl modes */
- #define KVASER_CTRL_MODE_NORMAL		1
- #define KVASER_CTRL_MODE_SILENT		2
-@@ -342,48 +332,68 @@ struct kvaser_usb_err_summary {
- 	};
- };
+-#ifdef __ASSEMBLY__
+-
+-#include <asm/ppc_asm.h>
+-
+-/*
+- * The macro sets two stack frames, one for the caller and one for the callee
+- * because there are no requirement for the caller to set a stack frame when
+- * calling VDSO so it may have omitted to set one, especially on PPC64
+- */
+-
+-.macro cvdso_call funct call_time=0
+-  .cfi_startproc
+-	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
+-	mflr		r0
+-  .cfi_register lr, r0
+-	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
+-	PPC_STL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
+-#ifdef __powerpc64__
+-	PPC_STL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
+-#endif
+-	get_datapage	r5
+-	.ifeq	\call_time
+-	addi		r5, r5, VDSO_DATA_OFFSET
+-	.else
+-	addi		r4, r5, VDSO_DATA_OFFSET
+-	.endif
+-	bl		DOTSYM(\funct)
+-	PPC_LL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
+-#ifdef __powerpc64__
+-	PPC_LL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
+-#endif
+-	.ifeq	\call_time
+-	cmpwi		r3, 0
+-	.endif
+-	mtlr		r0
+-  .cfi_restore lr
+-	addi		r1, r1, 2 * PPC_MIN_STKFRM
+-	crclr		so
+-	.ifeq	\call_time
+-	beqlr+
+-	crset		so
+-	neg		r3, r3
+-	.endif
+-	blr
+-  .cfi_endproc
+-.endm
+-
+-#else
++#ifndef __ASSEMBLY__
  
--static const struct can_bittiming_const kvaser_usb_leaf_bittiming_const = {
--	.name = "kvaser_usb",
--	.tseg1_min = KVASER_USB_TSEG1_MIN,
--	.tseg1_max = KVASER_USB_TSEG1_MAX,
--	.tseg2_min = KVASER_USB_TSEG2_MIN,
--	.tseg2_max = KVASER_USB_TSEG2_MAX,
--	.sjw_max = KVASER_USB_SJW_MAX,
--	.brp_min = KVASER_USB_BRP_MIN,
--	.brp_max = KVASER_USB_BRP_MAX,
--	.brp_inc = KVASER_USB_BRP_INC,
-+static const struct can_bittiming_const kvaser_usb_leaf_m16c_bittiming_const = {
-+	.name = "kvaser_usb_ucii",
-+	.tseg1_min = 4,
-+	.tseg1_max = 16,
-+	.tseg2_min = 2,
-+	.tseg2_max = 8,
-+	.sjw_max = 4,
-+	.brp_min = 1,
-+	.brp_max = 16,
-+	.brp_inc = 1,
-+};
++#include <asm/page.h>
+ #include <asm/vdso/timebase.h>
+ #include <asm/barrier.h>
+ #include <asm/unistd.h>
+diff --git a/arch/powerpc/kernel/vdso32/gettimeofday.S b/arch/powerpc/kernel/vdso32/gettimeofday.S
+index 9b3ac09423c8..dd2099128b8f 100644
+--- a/arch/powerpc/kernel/vdso32/gettimeofday.S
++++ b/arch/powerpc/kernel/vdso32/gettimeofday.S
+@@ -12,7 +12,49 @@
+ #include <asm/vdso_datapage.h>
+ #include <asm/asm-offsets.h>
+ #include <asm/unistd.h>
+-#include <asm/vdso/gettimeofday.h>
 +
-+static const struct can_bittiming_const kvaser_usb_leaf_m32c_bittiming_const = {
-+	.name = "kvaser_usb_leaf",
-+	.tseg1_min = 3,
-+	.tseg1_max = 16,
-+	.tseg2_min = 2,
-+	.tseg2_max = 8,
-+	.sjw_max = 4,
-+	.brp_min = 2,
-+	.brp_max = 128,
-+	.brp_inc = 2,
- };
- 
--static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_8mhz = {
-+static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_usbcan_dev_cfg = {
- 	.clock = {
- 		.freq = 8000000,
- 	},
- 	.timestamp_freq = 1,
--	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
-+	.bittiming_const = &kvaser_usb_leaf_m16c_bittiming_const,
-+};
++/*
++ * The macro sets two stack frames, one for the caller and one for the callee
++ * because there are no requirement for the caller to set a stack frame when
++ * calling VDSO so it may have omitted to set one, especially on PPC64
++ */
 +
-+static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_m32c_dev_cfg = {
-+	.clock = {
-+		.freq = 16000000,
-+	},
-+	.timestamp_freq = 1,
-+	.bittiming_const = &kvaser_usb_leaf_m32c_bittiming_const,
- };
++.macro cvdso_call funct call_time=0
++  .cfi_startproc
++	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
++	mflr		r0
++  .cfi_register lr, r0
++	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
++	PPC_STL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
++#ifdef __powerpc64__
++	PPC_STL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
++#endif
++	get_datapage	r5
++	.ifeq	\call_time
++	addi		r5, r5, VDSO_DATA_OFFSET
++	.else
++	addi		r4, r5, VDSO_DATA_OFFSET
++	.endif
++	bl		DOTSYM(\funct)
++	PPC_LL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
++#ifdef __powerpc64__
++	PPC_LL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
++#endif
++	.ifeq	\call_time
++	cmpwi		r3, 0
++	.endif
++	mtlr		r0
++  .cfi_restore lr
++	addi		r1, r1, 2 * PPC_MIN_STKFRM
++	crclr		so
++	.ifeq	\call_time
++	beqlr+
++	crset		so
++	neg		r3, r3
++	.endif
++	blr
++  .cfi_endproc
++.endm
  
--static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_16mhz = {
-+static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_16mhz = {
- 	.clock = {
- 		.freq = 16000000,
- 	},
- 	.timestamp_freq = 1,
--	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
-+	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
- };
- 
--static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_24mhz = {
-+static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_24mhz = {
- 	.clock = {
- 		.freq = 24000000,
- 	},
- 	.timestamp_freq = 1,
--	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
-+	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
- };
- 
--static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_32mhz = {
-+static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_32mhz = {
- 	.clock = {
- 		.freq = 32000000,
- 	},
- 	.timestamp_freq = 1,
--	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
-+	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
- };
- 
- static void *
-@@ -529,17 +539,17 @@ static void kvaser_usb_leaf_get_software
- 		/* Firmware expects bittiming parameters calculated for 16MHz
- 		 * clock, regardless of the actual clock
- 		 */
--		dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
-+		dev->cfg = &kvaser_usb_leaf_m32c_dev_cfg;
- 	} else {
- 		switch (sw_options & KVASER_USB_LEAF_SWOPTION_FREQ_MASK) {
- 		case KVASER_USB_LEAF_SWOPTION_FREQ_16_MHZ_CLK:
--			dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
-+			dev->cfg = &kvaser_usb_leaf_imx_dev_cfg_16mhz;
- 			break;
- 		case KVASER_USB_LEAF_SWOPTION_FREQ_24_MHZ_CLK:
--			dev->cfg = &kvaser_usb_leaf_dev_cfg_24mhz;
-+			dev->cfg = &kvaser_usb_leaf_imx_dev_cfg_24mhz;
- 			break;
- 		case KVASER_USB_LEAF_SWOPTION_FREQ_32_MHZ_CLK:
--			dev->cfg = &kvaser_usb_leaf_dev_cfg_32mhz;
-+			dev->cfg = &kvaser_usb_leaf_imx_dev_cfg_32mhz;
- 			break;
- 		}
- 	}
-@@ -566,7 +576,7 @@ static int kvaser_usb_leaf_get_software_
- 		dev->fw_version = le32_to_cpu(cmd.u.usbcan.softinfo.fw_version);
- 		dev->max_tx_urbs =
- 			le16_to_cpu(cmd.u.usbcan.softinfo.max_outstanding_tx);
--		dev->cfg = &kvaser_usb_leaf_dev_cfg_8mhz;
-+		dev->cfg = &kvaser_usb_leaf_usbcan_dev_cfg;
- 		break;
- 	}
- 
+ 	.text
+ /*
+-- 
+2.35.1
+
 
 
