@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F2BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1249C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234098AbiGKJ4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S234139AbiGKJ4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233853AbiGKJza (ORCPT
+        with ESMTP id S234024AbiGKJzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:55:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FB833A27;
-        Mon, 11 Jul 2022 02:26:19 -0700 (PDT)
+        Mon, 11 Jul 2022 05:55:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F236B196F;
+        Mon, 11 Jul 2022 02:26:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AFA62CE1268;
-        Mon, 11 Jul 2022 09:26:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A330EC34115;
-        Mon, 11 Jul 2022 09:26:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EAF361366;
+        Mon, 11 Jul 2022 09:26:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1233C34115;
+        Mon, 11 Jul 2022 09:26:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531574;
-        bh=zwrZQNaTn0ZHycoDdEB+Kr7r7722XnecbnkQ7TC4xjs=;
+        s=korg; t=1657531582;
+        bh=jnOphOWqpgoZV4dWNukkzUVmQEoSgCbpw4TlAg2/yL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=shat7RjuUYsb9M+wyDKV25WkBmzxtJt06iTEqKIOccky24QH+4PhJF8xJsPLEosF1
-         7QoBOpONcJPgJLT5TVwjYPycti/J6s3/4OTtiB7ORJtk0fyijaQF0mtbq1ZXUv2PCV
-         6mZ8KuAKFEAfGtOvZ6crHbwmTrXn+B1GgNOQWaOc=
+        b=HXQEODg9HeXN3v+3RAmA+MFIt1hw1C7E3vud1LJW66htzynH6ZmY/pWWqoedOOYVY
+         KFBpuxMlUqigaP+/Xzv0KbgUyJmfuBHzofQ/eMyWAAc+cp6M1NuGjy6uPv8fOItz8q
+         FJILZKirxYatbUHxqSlrl4cQj83R+2hJ7LuEDFZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Adam Skladowski <a_skl39@protonmail.com>,
-        Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 154/230] dt-bindings: soc: qcom: smd-rpm: Add compatible for MSM8953 SoC
-Date:   Mon, 11 Jul 2022 11:06:50 +0200
-Message-Id: <20220711090608.429338303@linuxfoundation.org>
+Subject: [PATCH 5.15 157/230] module: fix [e_shstrndx].sh_size=0 OOB access
+Date:   Mon, 11 Jul 2022 11:06:53 +0200
+Message-Id: <20220711090608.514645585@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -52,43 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Lypak <vladimir.lypak@gmail.com>
+From: Alexey Dobriyan <adobriyan@gmail.com>
 
-[ Upstream commit 96c42812f798c5e48d55cd6fc2101ce99af19608 ]
+[ Upstream commit 391e982bfa632b8315235d8be9c0a81374c6a19c ]
 
-Document compatible for MSM8953 SoC.
+It is trivial to craft a module to trigger OOB access in this line:
 
-Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-Signed-off-by: Adam Skladowski <a_skl39@protonmail.com>
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20210825165943.19415-1-sireeshkodali1@gmail.com
+	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+
+BUG: unable to handle page fault for address: ffffc90000aa0fff
+PGD 100000067 P4D 100000067 PUD 100066067 PMD 10436f067 PTE 0
+Oops: 0000 [#1] PREEMPT SMP PTI
+CPU: 7 PID: 1215 Comm: insmod Not tainted 5.18.0-rc5-00007-g9bf578647087-dirty #10
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
+RIP: 0010:load_module+0x19b/0x2391
+
+Fixes: ec2a29593c83 ("module: harden ELF info handling")
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+[rebased patch onto modules-next]
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/module.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-index cc3fe5ed7421..77963b86b714 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
-@@ -34,6 +34,7 @@ properties:
-       - qcom,rpm-ipq6018
-       - qcom,rpm-msm8226
-       - qcom,rpm-msm8916
-+      - qcom,rpm-msm8953
-       - qcom,rpm-msm8974
-       - qcom,rpm-msm8976
-       - qcom,rpm-msm8996
-@@ -57,6 +58,7 @@ if:
-           - qcom,rpm-apq8084
-           - qcom,rpm-msm8916
-           - qcom,rpm-msm8974
-+          - qcom,rpm-msm8953
- then:
-   required:
-     - qcom,smd-channels
+diff --git a/kernel/module.c b/kernel/module.c
+index 256b3c80a771..ef79f4dbda87 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3029,6 +3029,10 @@ static int elf_validity_check(struct load_info *info)
+ 	 * strings in the section safe.
+ 	 */
+ 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
++	if (strhdr->sh_size == 0) {
++		pr_err("empty section name table\n");
++		goto no_exec;
++	}
+ 	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+ 		pr_err("ELF Spec violation: section name table isn't null terminated\n");
+ 		goto no_exec;
 -- 
 2.35.1
 
