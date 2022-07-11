@@ -2,86 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbiGKHfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54348 "EHLO
+        id S230177AbiGKHhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiGKHf0 (ORCPT
+        with ESMTP id S229478AbiGKHg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:35:26 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49D41BE8B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:35:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zxI5Ju1zn3Hrr6mLV73xoE3t9N0u61rDH0mqVeKgZCY=; b=ZF8aIfKr9b2YLBkkHLIxZkEniy
-        suzNpZbhoOai42F1cMIVtEA8WxLfW9HP78e6XUwls3/sgevvyRY/591wcSwAUVuKMI+te/Rt4SFyE
-        Bj6Zc9QLG5L9iicV5Qjos6lZ9IRCcv83fkBPZlZ2JgLrA8Rq+Oseg4AMEOpgVFwtSeM12+9lFeDe7
-        OmxNNv0JQ2yWpwNaO5r0ApnYywRhNkkQrS6d+FsvF9BsO9GjgQPedCcRs0xFHKJVHHgaVrX5R8/pR
-        z2aHgNzMxiJ4jy6QD/E46VNNman1B10mkLvgQPQaGy9g1EUh76R9kCQCs6r9bSmrqPEmdsK/AdaFJ
-        wOtRTHNQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oAnwf-005lQL-OH; Mon, 11 Jul 2022 07:35:05 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 81821300110;
-        Mon, 11 Jul 2022 09:35:03 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6C9832015BE8D; Mon, 11 Jul 2022 09:35:03 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 09:35:03 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/8] sched/fair: remove redundant cpu_cgrp_subsys->fork()
-Message-ID: <YsvSpyrJxNv7jsQz@hirez.programming.kicks-ass.net>
-References: <20220709151353.32883-1-zhouchengming@bytedance.com>
- <20220709151353.32883-4-zhouchengming@bytedance.com>
+        Mon, 11 Jul 2022 03:36:58 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7671B787;
+        Mon, 11 Jul 2022 00:36:57 -0700 (PDT)
+Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LhFw362hPz686pl;
+        Mon, 11 Jul 2022 15:32:35 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 11 Jul 2022 09:36:55 +0200
+Received: from [10.195.33.182] (10.195.33.182) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 11 Jul 2022 08:36:53 +0100
+Message-ID: <a415e4a1-72ce-53e1-437a-fc7e56e4b913@huawei.com>
+Date:   Mon, 11 Jul 2022 08:36:53 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220709151353.32883-4-zhouchengming@bytedance.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Christoph Hellwig <hch@lst.de>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
+        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>,
+        <linuxarm@huawei.com>
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
+ <20220706134447.GA23753@lst.de> <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
+ <5fd4814a-81b1-0e71-58e0-57a747eb684e@huawei.com>
+ <6367a264-a3d3-8857-9b5a-2afcd25580cb@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <6367a264-a3d3-8857-9b5a-2afcd25580cb@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.195.33.182]
+X-ClientProxiedBy: lhreml726-chm.china.huawei.com (10.201.108.77) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 11:13:48PM +0800, Chengming Zhou wrote:
-> We use cpu_cgrp_subsys->fork() to set task group for the new fair task
-> in cgroup_post_fork().
-> 
-> Since commit b1e8206582f9 ("sched: Fix yet more sched_fork() races")
-> has already set task group for the new fair task in sched_cgroup_fork(),
-> so cpu_cgrp_subsys->fork() can be removed.
-> 
->   cgroup_can_fork()	--> pin parent's sched_task_group
->   sched_cgroup_fork()
->     __set_task_cpu	--> set task group
->   cgroup_post_fork()
->     ss->fork() := cpu_cgroup_fork()	--> set again
-> 
-> After this patch's change, task_change_group_fair() only need to
-> care about task cgroup migration, make the code much simplier.
+On 11/07/2022 00:08, Damien Le Moal wrote:
+>> Ah, I think that I misunderstood Damien's question. I thought he was
+>> asking why not keep shost max_sectors at dma_max_mapping_size() and then
+>> init each sdev request queue max hw sectors at dma_opt_mapping_size().
+> I was suggesting the reverse:)  Keep the device hard limit
+> (max_hw_sectors) to the max dma mapping and set the soft limit
+> (max_sectors) to the optimal dma mapping size.
 
-This:
+Sure, but as I mentioned below, I only see a small % of requests whose 
+mapping size exceeds max_sectors but that still causes a big performance 
+hit. So that is why I want to set the hard limit as the optimal dma 
+mapping size.
 
-> This patch also move the task se depth setting to set_task_rq(), which
-> will set correct depth for the new task se in sched_cgroup_fork().
+Indeed, the IOMMU IOVA caching limit is already the same as default 
+max_sectors for the disks in my system - 128Kb for 4k page size.
+
 > 
-> The se depth setting in attach_entity_cfs_rq() is removed since
-> set_task_rq() is a better place to do this when task moves across
-> CPUs/groups.
+>> But he seems that you want to know why not have the request queue max
+>> sectors at dma_opt_mapping_size(). The answer is related to meaning of
+>> dma_opt_mapping_size(). If we get any mappings which exceed this size
+>> then it can have a big dma mapping performance hit. So I set max hw
+>> sectors at this ‘opt’ mapping size to ensure that we get no mappings
+>> which exceed this size. Indeed, I think max sectors is 128Kb today for
+>> my host, which would be same as dma_opt_mapping_size() value with an
+>> IOMMU enabled. And I find that only a small % of request size may exceed
+>> this 128kb size, but it still has a big performance impact.
+>>
 
-really should have been it's own patch. And this actually scares me. Did
-you test with priority inheritance bumping the task to FIFO while things
-change?
-
-This has nothing to do with fork().
+Thanks,
+John
