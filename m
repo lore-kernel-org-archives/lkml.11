@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75528C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B2DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbiGKJMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        id S231378AbiGKJMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231314AbiGKJLZ (ORCPT
+        with ESMTP id S231327AbiGKJLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:11:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A9C21E1D;
-        Mon, 11 Jul 2022 02:09:07 -0700 (PDT)
+        Mon, 11 Jul 2022 05:11:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1D313F8D;
+        Mon, 11 Jul 2022 02:09:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A15D9B80D2C;
-        Mon, 11 Jul 2022 09:09:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02313C34115;
-        Mon, 11 Jul 2022 09:09:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C0CCB80E79;
+        Mon, 11 Jul 2022 09:09:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCE04C34115;
+        Mon, 11 Jul 2022 09:09:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530544;
-        bh=v5eUeA18m15U5X6LLB4bwYaPJNJlHiDo3j5eQplBYEQ=;
+        s=korg; t=1657530547;
+        bh=ZhQFFpqOzrp5tNcwgIlKbIO90e6rRqoCkAD4zr6R61A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=08xTpOiIXW9jW+BihsBRLPk50v86gLXtQzdVaKgViRR51eDTO4GvzS6KsvwwZPi/1
-         3vuYBa9r1e1MpDJmmsuqbQjeanEn+6XmVTok5J0KA58vXVbWEdEc1QCjw8RsE+E4Wy
-         QTNcQHlMyuGHtKUrH/P8M/cmzlOxaNiHPd1tL+Vc=
+        b=ZPSqjJtZSIOWb+0ws2C69OEWKSvgM3sPVcXnhaYhxiP0nActrMbGInmQ0JIKjLH99
+         z7Gq/fZKOzNMk9kWPUEjX/mbxc64moi8qtdmMiUVKbeE0jWuisy29q8pCSR2u9Ryxn
+         Z8ktsERFS4n8SylmohL1KVWHHUFm0yKKGt0fdeI8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Eric Sandeen <sandeen@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>
-Subject: [PATCH 4.19 15/31] xfs: remove incorrect ASSERT in xfs_rename
-Date:   Mon, 11 Jul 2022 11:06:54 +0200
-Message-Id: <20220711090538.299004397@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        stable <stable@kernel.org>
+Subject: [PATCH 4.19 24/31] misc: rtsx_usb: fix use of dma mapped buffer for usb bulk transfer
+Date:   Mon, 11 Jul 2022 11:07:03 +0200
+Message-Id: <20220711090538.561194382@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090537.841305347@linuxfoundation.org>
 References: <20220711090537.841305347@linuxfoundation.org>
@@ -50,37 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Sandeen <sandeen@redhat.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-commit e445976537ad139162980bee015b7364e5b64fff upstream.
+commit eb7f8e28420372787933eec079735c35034bda7d upstream.
 
-This ASSERT in xfs_rename is a) incorrect, because
-(RENAME_WHITEOUT|RENAME_NOREPLACE) is a valid combination, and
-b) unnecessary, because actual invalid flag combinations are already
-handled at the vfs level in do_renameat2() before we get called.
-So, remove it.
+rtsx_usb driver allocates coherent dma buffer for urb transfers.
+This buffer is passed to usb_bulk_msg() and usb core tries to
+map already mapped buffer running into a dma mapping error.
 
-Reported-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Eric Sandeen <sandeen@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Fixes: 7dcf5c3e4527 ("xfs: add RENAME_WHITEOUT support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
+xhci_hcd 0000:01:00.0: rejecting DMA map of vmalloc memory
+WARNING: CPU: 1 PID: 279 at include/linux/dma-mapping.h:326 usb_ hcd_map_urb_for_dma+0x7d6/0x820
+
+...
+
+xhci_map_urb_for_dma+0x291/0x4e0
+usb_hcd_submit_urb+0x199/0x12b0
+...
+usb_submit_urb+0x3b8/0x9e0
+usb_start_wait_urb+0xe3/0x2d0
+usb_bulk_msg+0x115/0x240
+rtsx_usb_transfer_data+0x185/0x1a8 [rtsx_usb]
+rtsx_usb_send_cmd+0xbb/0x123 [rtsx_usb]
+rtsx_usb_write_register+0x12c/0x143 [rtsx_usb]
+rtsx_usb_probe+0x226/0x4b2 [rtsx_usb]
+
+Fix it to use kmalloc() to get DMA-able memory region instead.
+
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/667d627d502e1ba9ff4f9b94966df3299d2d3c0d.1656642167.git.skhan@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_inode.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/misc/cardreader/rtsx_usb.c |   13 +++++++------
+ include/linux/rtsx_usb.h           |    1 -
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
---- a/fs/xfs/xfs_inode.c
-+++ b/fs/xfs/xfs_inode.c
-@@ -2899,7 +2899,6 @@ xfs_rename(
- 	 * appropriately.
- 	 */
- 	if (flags & RENAME_WHITEOUT) {
--		ASSERT(!(flags & (RENAME_NOREPLACE | RENAME_EXCHANGE)));
- 		error = xfs_rename_alloc_whiteout(target_dp, &wip);
- 		if (error)
- 			return error;
+--- a/drivers/misc/cardreader/rtsx_usb.c
++++ b/drivers/misc/cardreader/rtsx_usb.c
+@@ -642,8 +642,7 @@ static int rtsx_usb_probe(struct usb_int
+ 
+ 	ucr->pusb_dev = usb_dev;
+ 
+-	ucr->iobuf = usb_alloc_coherent(ucr->pusb_dev, IOBUF_SIZE,
+-			GFP_KERNEL, &ucr->iobuf_dma);
++	ucr->iobuf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
+ 	if (!ucr->iobuf)
+ 		return -ENOMEM;
+ 
+@@ -679,8 +678,9 @@ static int rtsx_usb_probe(struct usb_int
+ 
+ out_init_fail:
+ 	usb_set_intfdata(ucr->pusb_intf, NULL);
+-	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
+-			ucr->iobuf_dma);
++	kfree(ucr->iobuf);
++	ucr->iobuf = NULL;
++	ucr->cmd_buf = ucr->rsp_buf = NULL;
+ 	return ret;
+ }
+ 
+@@ -693,8 +693,9 @@ static void rtsx_usb_disconnect(struct u
+ 	mfd_remove_devices(&intf->dev);
+ 
+ 	usb_set_intfdata(ucr->pusb_intf, NULL);
+-	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
+-			ucr->iobuf_dma);
++	kfree(ucr->iobuf);
++	ucr->iobuf = NULL;
++	ucr->cmd_buf = ucr->rsp_buf = NULL;
+ }
+ 
+ #ifdef CONFIG_PM
+--- a/include/linux/rtsx_usb.h
++++ b/include/linux/rtsx_usb.h
+@@ -66,7 +66,6 @@ struct rtsx_ucr {
+ 	struct usb_interface	*pusb_intf;
+ 	struct usb_sg_request	current_sg;
+ 	unsigned char		*iobuf;
+-	dma_addr_t		iobuf_dma;
+ 
+ 	struct timer_list	sg_timer;
+ 	struct mutex		dev_mutex;
 
 
