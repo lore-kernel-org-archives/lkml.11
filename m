@@ -2,67 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF46CCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C370C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbiGKIlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
+        id S230434AbiGKIlH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230088AbiGKIkp (ORCPT
+        with ESMTP id S230124AbiGKIkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 04:40:45 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8C616390;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8E3B21E26;
         Mon, 11 Jul 2022 01:40:07 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oAoxa-0006eA-03; Mon, 11 Jul 2022 10:40:06 +0200
+        id 1oAoxb-0006eA-00; Mon, 11 Jul 2022 10:40:07 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 31751C0353; Mon, 11 Jul 2022 10:38:29 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 10:38:29 +0200
+        id 59B68C0353; Mon, 11 Jul 2022 10:39:38 +0200 (CEST)
+Date:   Mon, 11 Jul 2022 10:39:38 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-mips@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] MIPS: Make phys_to_virt utilize __va()
-Message-ID: <20220711083829.GD6084@alpha.franken.de>
-References: <20220707203743.1226302-1-f.fainelli@gmail.com>
+Cc:     linux-mips@vger.kernel.org, fancer.lancer@gmail.com,
+        gerg@kernel.org, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] MIPS: Enable ARCH_HAS_DEBUG_VIRTUAL for 64-bit
+Message-ID: <20220711083938.GF6084@alpha.franken.de>
+References: <20220707220428.1731083-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220707203743.1226302-1-f.fainelli@gmail.com>
+In-Reply-To: <20220707220428.1731083-1-f.fainelli@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 01:37:42PM -0700, Florian Fainelli wrote:
-> The implementation is exactly the same, so avoid open-coding it in two
-> different locations.
+On Thu, Jul 07, 2022 at 03:04:27PM -0700, Florian Fainelli wrote:
+> Update __debug_virt_addr_valid() to check for a virtual address'
+> validity below CKSSEG and remove the !64BIT dependency on
+> ARCH_HAS_DEBUG_VIRTUAL to make DEBUG_VIRTUAL selectable.
 > 
 > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
->  arch/mips/include/asm/io.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> This requires the previous patch to be applied for this to work cleanly.
 > 
-> diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
-> index 6f5c86d2bab4..880048a54362 100644
-> --- a/arch/mips/include/asm/io.h
-> +++ b/arch/mips/include/asm/io.h
-> @@ -131,7 +131,7 @@ static inline phys_addr_t virt_to_phys(const volatile void *x)
->   */
->  static inline void * phys_to_virt(unsigned long address)
->  {
-> -	return (void *)(address + PAGE_OFFSET - PHYS_OFFSET);
-> +	return __va(address);
->  }
+>  arch/mips/Kconfig       | 2 +-
+>  arch/mips/mm/physaddr.c | 4 ++++
+>  2 files changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+> index db09d45d59ec..ddb6bde8fa1f 100644
+> --- a/arch/mips/Kconfig
+> +++ b/arch/mips/Kconfig
+> @@ -5,7 +5,7 @@ config MIPS
+>  	select ARCH_32BIT_OFF_T if !64BIT
+>  	select ARCH_BINFMT_ELF_STATE if MIPS_FP_SUPPORT
+>  	select ARCH_HAS_CURRENT_STACK_POINTER if !CC_IS_CLANG || CLANG_VERSION >= 140000
+> -	select ARCH_HAS_DEBUG_VIRTUAL if !64BIT
+> +	select ARCH_HAS_DEBUG_VIRTUAL
+>  	select ARCH_HAS_FORTIFY_SOURCE
+>  	select ARCH_HAS_KCOV
+>  	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE if !EVA
+> diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
+> index a82f8f57a652..3076238943d3 100644
+> --- a/arch/mips/mm/physaddr.c
+> +++ b/arch/mips/mm/physaddr.c
+> @@ -31,7 +31,11 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
+>  	if (x == MAX_DMA_ADDRESS)
+>  		return true;
 >  
->  /*
-> -- 
-> 2.25.1
+> +#ifdef CONFIG_64BIT
+> +	return KSEGX(x) < CKSSEG;
 
-applied to mips-next.
+as KSEGX does 32bit casts, I have some doubts that this is correct.
+What do I miss ?
 
 Thomas.
 
