@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4FACCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D14E0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbiGKIby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
+        id S230120AbiGKIcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbiGKIbt (ORCPT
+        with ESMTP id S230103AbiGKIcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:31:49 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12A51F2C0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:31:47 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31c9b70c382so41525287b3.6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3J9IyHuNdf4RzUYhyAwrvjFLRiRYfpINA65MRt4kKgM=;
-        b=WxLDiTDJ/cGeyxc13LPwdMBwqy9mf7NUwb8pTiIlyxslwk4PbnCJ5wM4ZxQ35hQTGW
-         6TdMU9/dafniNVuenzFjx8a4yzjl2UN+41lCphU9wQ862bHH/avz5vqbTBj9jqQaFTop
-         t8HZ+LNAl5fhEr5lPMGTw8emV50wpE1Z0y/D+PtanoEug9S0I/UR/GQ0bIkGpXqWChXT
-         CkuPZLS4pRGNHOkZbqcNlOGOWC5EV6GRURwUkV01gXNwuLub3EVxobjhfETIqSQVT9b+
-         wP0ObIClelaK0DwNKkMyl6qbPjhB/sHo2bzFrYhWWiwB5gnKjXI2bQ5PXWtp/oubc5um
-         +6Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3J9IyHuNdf4RzUYhyAwrvjFLRiRYfpINA65MRt4kKgM=;
-        b=jyMCkDVbJJPOQDqUsHJyKFj214HerBAKB7hXaYU67N2AumejU0cTIf0eACTOzEAhEJ
-         JGuz34i58CC2zLk5/im4+QCooZRHYnYeoKheK/l3tpO8RoMJhZLjPa+my6LmLE+mfwpy
-         ttKNZjMlEmY/0AZuIL/FFjI7uIcblapevEh08TH0XT9/8PAsG9QPFsgtoMSRlLUbN1C8
-         qOirCq9LJmtJ6PaQE4XDc6Ex9G8NvD60hn32egiuZgE+InLEba4DElz7D/Vs1qJPb/Ef
-         ePW5QliMcAHg0rv/3nJKgsKf1gEbgI9sRZz6B98klxuK9L3fFX/Qg5sjd+9lXyqXutFJ
-         Ra8Q==
-X-Gm-Message-State: AJIora91WzvqYltIwfXG+dBVUd0uo04dDIF66bPJzEMCSnlEN7H3EMrV
-        s7WkfyMJABblLgo9pnApdQKd1afc4q+GkBMFGKN1lA==
-X-Google-Smtp-Source: AGRyM1u/2OXTB+9LffDEL+06zw4GuQSG0hG72hUyRzuw00qzHcEs9iDFO58dE3J4U/ALR03h0POcpnK5re78d+8pfSI=
-X-Received: by 2002:a81:6cf:0:b0:31c:913c:144c with SMTP id
- 198-20020a8106cf000000b0031c913c144cmr18316528ywg.437.1657528307206; Mon, 11
- Jul 2022 01:31:47 -0700 (PDT)
+        Mon, 11 Jul 2022 04:32:16 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F211F2DA
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:32:14 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id ADE4C227A0;
+        Mon, 11 Jul 2022 08:32:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657528333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YoBpN1lvaI78X/r2NUb3VKRDnI51NNOYRbZMd29y4RQ=;
+        b=fuhsIEI3JBw5P6zU6Qz0+dis0c9M02cRQJpY64Z+7xlikuJkEzDebQvC2UAiclEdXpVFDX
+        PQ+uCwaw13j6UPDFbU3yMHkJZpE5gmquCJ7Tnn5ITca0FL0zthyLOu8M7oY3UHsU764+ju
+        smrA7K4kfi165Q8p4eFgvZNquUBGoCc=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 625A42C171;
+        Mon, 11 Jul 2022 08:32:13 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 10:32:13 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Chris Down <chris@chrisdown.name>, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
+Subject: Re: design: was: Re: [RFC PATCH v2] printk: console: Allow each
+ console to have its own loglevel
+Message-ID: <YsvgDRQICB3nEc1l@alley>
+References: <YoeQLxhDeIk4VSmx@chrisdown.name>
+ <YshL2M8VdIEONDdc@alley>
+ <87o7xz5su4.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-References: <cover.1656583541.git.hakan.jansson@infineon.com> <e3f949c067ad07a1dd34247efc49f3d913c4f7c6.1656583541.git.hakan.jansson@infineon.com>
-In-Reply-To: <e3f949c067ad07a1dd34247efc49f3d913c4f7c6.1656583541.git.hakan.jansson@infineon.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 11 Jul 2022 10:31:36 +0200
-Message-ID: <CACRpkdYoe1-kCepz2J3h7H15rcG-a2o6y-GHOwaC6f+ipLTQhg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] dt-bindings: net: broadcom-bluetooth: Add CYW55572
- DT binding
-To:     Hakan Jansson <hakan.jansson@infineon.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87o7xz5su4.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 2:46 PM Hakan Jansson
-<hakan.jansson@infineon.com> wrote:
+On Fri 2022-07-08 21:10:35, John Ogness wrote:
+> On 2022-07-08, Petr Mladek <pmladek@suse.com> wrote:
+> > The console-specific loglevel might be set by:
+> >
+> >   + "console=device,options/loglevel" kernel parameter at boot time
+> 
+> I ask if we avoid the use of "/loglevel" and instead use a generic
+> scheme of:
+> 
+> console=device,option,option,option
+> 
+> Of course, it would mean that the type of option would need to be
+> specified. Something like:
+> 
+> console=ttyS0,115200n8,loglevel=3
 
-> CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
-> Extend the binding with its DT compatible.
->
-> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+I like this. It is longer but it makes the meaning very obvious.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+I just think about using ':' instead of '=' to distinguish
+the assignment of outer 'console' vs the inner 'loglevel' parameters.
 
-Yours,
-Linus Walleij
+It seems to be used in some cases, for example, for ca_keys, crashkernel,
+drm.edid_firmware, efi_fake_mem. Even earlyprintk uses it for
+bus:device.function.
+
+> The reason why I make such a request is because I would like to be able
+> to support disabling threading for certain consoles. Something like:
+> 
+> console=ttyS0,115200n8,nothread
+> 
+> or when we have atomic consoles that we can specify that they are always
+> used with a "sync" option:
+> 
+> console=ttyS0,115200n8,sync
+
+Good point.
+
+Best Regards,
+Petr
