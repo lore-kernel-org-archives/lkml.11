@@ -2,65 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC998C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C203C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232046AbiGKU1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
+        id S232051AbiGKU1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiGKUZb (ORCPT
+        with ESMTP id S230333AbiGKUZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 16:25:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700A2509D5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708B7509FF;
+        Mon, 11 Jul 2022 13:25:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01362B81229
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22074C341D0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16003B8122D;
+        Mon, 11 Jul 2022 20:25:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94604C341EA;
         Mon, 11 Jul 2022 20:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657571123;
-        bh=uBjnGr7bd6z/XHon20k4gxPYwk3XvCvLDx4EnZY8//o=;
+        bh=r3W63NJWrdS0Vy07BtL9oix19YbndHPlmCwb9o4vglU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pf3nxghwFOhAy6Zx5S8AdpiI9Vw8v3VoIvDI4jDa9PAOyKq6k1E5fpDlJPap7znho
-         WPs9QxRYZ70fGJZNcYnPs36dpbXR/ZqF0x+r5IpdjkrmIMhzwpZVu5JCJ8S2mn1KYU
-         kbYzBaUPwUVN4reqTl3IboarK/51jn1LoomZtYdU0rs+nAJpcqXB+oL+mcGMGJe2KD
-         Y7jcvUSl7HSlxD7haEf9XI5S35077JFJZPhko3YT4xIMyOhrT9KD5qTYvTmiE3m9KE
-         xQx4vNLiT2PU+SezK8DWeL8w+LQ4Z+mtO/v5sCctLD/UUI27G+qdDW7eWCSe6/ekn8
-         uVluMvqz3aLmg==
+        b=NdARCe/QsxWvA3TRtTGk58YbkclQO/ywDMeQ/EjhYKu2pGdaIN0sJhO5X3tEs7Pz6
+         g52H5FnyHNp9SMWougn6WXlhC9yB5qmRIMq4LT68mzZ2fuEC4itKNB1sufP/7bgres
+         9J1EWaQyqw+6kBGjwBKivf/iCGRPA53ZQgH76Omo4J8Ff1Dzic4FkKM23AnPth3lQB
+         T1uDpL9Zxcyq9hsAtUOjJ8a6K8H3lrj8DolDLn4uPJrdWdC07fkkqEiLrRtI+9jxtf
+         1tY3WjOMDSFHlS+1YmPFWcHjhb564ZX25lZQjalKRRu0zD1IkTwJCYMJzrMc48fMut
+         fRKfCkD3UBrXA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e7g-D2;
+        id 1oAzy3-004e9K-V6;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "Jani Nikula" <jani.nikula@linux.intel.com>,
         "Lucas De Marchi" <lucas.demarchi@intel.com>,
-        =?UTF-8?q?Micha=C5=82=20Winiarski?= <michal.winiarski@intel.com>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
         David Airlie <airlied@linux.ie>,
-        Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
+        Jonathan Corbet <corbet@lwn.net>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Kenneth Graunke <kenneth@whitecape.org>,
         Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Ramalingam C <ramalingam.c@intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 05/32] drm/i915: gem: fix some Kernel-doc issues
-Date:   Mon, 11 Jul 2022 21:24:50 +0100
-Message-Id: <1841dd3bba41ea85c4e393afe2126efc3f522988.1657565224.git.mchehab@kernel.org>
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 31/32] docs: gpu: i915.rst: GEM/TTM: add more kernel-doc markups
+Date:   Mon, 11 Jul 2022 21:25:16 +0100
+Message-Id: <692da4d8c56a1ab99c95042e7fc18deeb608c022.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
@@ -71,26 +64,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several trivial issueson kernel-doc markups at gem:
-
-	drivers/gpu/drm/i915/gem/i915_gem_create.c:146: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-	drivers/gpu/drm/i915/gem/i915_gem_create.c:217: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-	drivers/gpu/drm/i915/gem/i915_gem_create.c:401: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-	drivers/gpu/drm/i915/gem/i915_gem_domain.c:116: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-	drivers/gpu/drm/i915/gem/i915_gem_domain.c:177: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-	drivers/gpu/drm/i915/gem/i915_gem_domain.c:262: warning: expecting prototype for Changes the cache(). Prototype was for i915_gem_object_set_cache_level() instead
-	drivers/gpu/drm/i915/gem/i915_gem_domain.c:456: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-	drivers/gpu/drm/i915/gem/i915_gem_domain.c:500: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-	drivers/gpu/drm/i915/gem/i915_gem_object.h:110: warning: Function parameter or member 'file' not described in 'i915_gem_object_lookup_rcu'
-	drivers/gpu/drm/i915/gem/i915_gem_object.h:110: warning: Excess function parameter 'filp' description in 'i915_gem_object_lookup_rcu'
-	drivers/gpu/drm/i915/gem/i915_gem_region.h:35: warning: Function parameter or member 'process_obj' not described in 'i915_gem_apply_to_region_ops'
-	drivers/gpu/drm/i915/gem/i915_gem_wait.c:130: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-
-Caused by:
-	- lack of function name at the kernel-doc markup;
-	- renamed parameters.
-
-Address them.
+There are several documented GEM/TTM kAPI that aren't currently part
+of the docs. Add them, as this allows identifying issues with
+badly-formatted tags.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -98,127 +74,58 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gem/i915_gem_create.c |  8 +++++---
- drivers/gpu/drm/i915/gem/i915_gem_domain.c | 17 +++++++++++------
- drivers/gpu/drm/i915/gem/i915_gem_object.h |  2 +-
- drivers/gpu/drm/i915/gem/i915_gem_wait.c   |  2 +-
- 4 files changed, 18 insertions(+), 11 deletions(-)
+ Documentation/gpu/i915.rst | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_create.c b/drivers/gpu/drm/i915/gem/i915_gem_create.c
-index 33673fe7ee0a..8cb2eb092031 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_create.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_create.c
-@@ -143,7 +143,8 @@ __i915_gem_object_create_user_ext(struct drm_i915_private *i915, u64 size,
- }
+diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
+index c32409c03d32..974754586be8 100644
+--- a/Documentation/gpu/i915.rst
++++ b/Documentation/gpu/i915.rst
+@@ -615,6 +615,44 @@ Protected Objects
  
- /**
-- * Creates a new object using the same path as DRM_I915_GEM_CREATE_EXT
-+ * __i915_gem_object_create_user - Creates a new object using the same path
-+ *	as DRM_I915_GEM_CREATE_EXT
-  * @i915: i915 private
-  * @size: size of the buffer, in bytes
-  * @placements: possible placement regions, in priority order
-@@ -214,7 +215,7 @@ i915_gem_dumb_create(struct drm_file *file,
- }
+ .. kernel-doc:: drivers/gpu/drm/i915/pxp/intel_pxp_types.h
  
- /**
-- * Creates a new mm object and returns a handle to it.
-+ * i915_gem_create_ioctl - Creates a new mm object and returns a handle to it.
-  * @dev: drm device pointer
-  * @data: ioctl data blob
-  * @file: drm file pointer
-@@ -398,7 +399,8 @@ static const i915_user_extension_fn create_extensions[] = {
- };
++Table Manager (TTM)
++-------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++
++Graphics Execution Manager (GEM)
++--------------------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_create.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_domain.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_internal.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_lmem.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_mman.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_object.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_object.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_object_types.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_region.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_region.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm_pm.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_userptr.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_wait.c
++
+ Microcontrollers
+ ================
  
- /**
-- * Creates a new mm object and returns a handle to it.
-+ * i915_gem_create_ext_ioctl - Creates a new mm object and returns a handle
-+ *	to it.
-  * @dev: drm device pointer
-  * @data: ioctl data blob
-  * @file: drm file pointer
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_domain.c b/drivers/gpu/drm/i915/gem/i915_gem_domain.c
-index 1674b0c5802b..23635aaa4b4d 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_domain.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_domain.c
-@@ -113,7 +113,8 @@ void i915_gem_object_flush_if_display_locked(struct drm_i915_gem_object *obj)
- }
- 
- /**
-- * Moves a single object to the WC read, and possibly write domain.
-+ * i915_gem_object_set_to_wc_domain - Moves a single object to the WC read,
-+ * 	and possibly write domain.
-  * @obj: object to act on
-  * @write: ask for write access or read only
-  *
-@@ -174,7 +175,8 @@ i915_gem_object_set_to_wc_domain(struct drm_i915_gem_object *obj, bool write)
- }
- 
- /**
-- * Moves a single object to the GTT read, and possibly write domain.
-+ * i915_gem_object_set_to_gtt_domain - Moves a single object to the GTT read,
-+ *	and possibly write domain.
-  * @obj: object to act on
-  * @write: ask for write access or read only
-  *
-@@ -243,7 +245,8 @@ i915_gem_object_set_to_gtt_domain(struct drm_i915_gem_object *obj, bool write)
- }
- 
- /**
-- * Changes the cache-level of an object across all VMA.
-+ * i915_gem_object_set_cache_level - Changes the cache-level of an object
-+ *	across all VMA.
-  * @obj: object to act on
-  * @cache_level: new cache level to set for the object
-  *
-@@ -453,7 +456,8 @@ i915_gem_object_pin_to_display_plane(struct drm_i915_gem_object *obj,
- }
- 
- /**
-- * Moves a single object to the CPU read, and possibly write domain.
-+ * i915_gem_object_set_to_cpu_domain - Moves a single object to the CPU read,
-+ * 	and possibly write domain.
-  * @obj: object to act on
-  * @write: requesting write or read-only access
-  *
-@@ -497,8 +501,9 @@ i915_gem_object_set_to_cpu_domain(struct drm_i915_gem_object *obj, bool write)
- }
- 
- /**
-- * Called when user space prepares to use an object with the CPU, either
-- * through the mmap ioctl's mapping or a GTT mapping.
-+ * i915_gem_set_domain_ioctl - Called when user space prepares to use an
-+ *	object with the CPU, either through the mmap ioctl's mapping or a
-+ *	GTT mapping.
-  * @dev: drm device
-  * @data: ioctl data blob
-  * @file: drm file
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.h b/drivers/gpu/drm/i915/gem/i915_gem_object.h
-index 6f0a3ce35567..222608df66df 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.h
-@@ -96,7 +96,7 @@ __i915_gem_object_unset_pages(struct drm_i915_gem_object *obj);
- 
- /**
-  * i915_gem_object_lookup_rcu - look up a temporary GEM object from its handle
-- * @filp: DRM file private date
-+ * @file: DRM file private date
-  * @handle: userspace handle
-  *
-  * Returns:
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_wait.c b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
-index 319936f91ac5..bdba05492582 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_wait.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
-@@ -127,7 +127,7 @@ i915_gem_object_wait_priority(struct drm_i915_gem_object *obj,
- }
- 
- /**
-- * Waits for rendering to the object to be completed
-+ * i915_gem_object_wait - Waits for rendering to the object to be completed
-  * @obj: i915 gem object
-  * @flags: how to wait (under a lock, for all rendering or just for writes etc)
-  * @timeout: how long to wait
 -- 
 2.36.1
 
