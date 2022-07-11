@@ -2,138 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA5BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C278CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbiGKMLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39272 "EHLO
+        id S231462AbiGKMNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbiGKMKs (ORCPT
+        with ESMTP id S229615AbiGKMNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:10:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B10C49B4B;
-        Mon, 11 Jul 2022 05:10:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 11 Jul 2022 08:13:07 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CF44A833
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:13:06 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3846CB80ED7;
-        Mon, 11 Jul 2022 12:10:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8895C34115;
-        Mon, 11 Jul 2022 12:10:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657541445;
-        bh=A2vqBbzpMVWKfDpC3m2AhDB490zHtivAEnRyuR6TAjY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ue5p6kKSr04mMCumm+ey6QjwRCScrVXkcQFvhov3N8VFxcOvj1Z8hMxH8tMHH8sU+
-         HnydaS6OeroOUvNXnn/dJ8URrtOrgMgRd0mQKua7ZsNX7tRDmvHm2ez85poO1yTcbk
-         dHVo2Id1iTcVl+nMk6j4bxs1nJqOBVRnOlkNWfEZxMJCqPxj5qMvt6FlVehufTNhTj
-         oD0Smi6zULtkbVrVl+oeUv9YyuZGUQpL29jKNepGzajkFEu6Md12wRDVGQUZaQ7kpX
-         Kv6nwALF2Afz+F4iwpDKAs5DvNFzZKIXTSB5WDlmwwOM/l4k0AeyZ26qulfxUuiFWT
-         alfxwduBeHAVA==
-Received: by pali.im (Postfix)
-        id 61D32276F; Mon, 11 Jul 2022 14:10:42 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] PCI: aardvark: Do static allocation of irq_chip
-Date:   Mon, 11 Jul 2022 14:06:26 +0200
-Message-Id: <20220711120626.11492-3-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220711120626.11492-1-pali@kernel.org>
-References: <20220711120626.11492-1-pali@kernel.org>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id A1A6A202F3;
+        Mon, 11 Jul 2022 12:13:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657541585; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RJTrqX4wTRC4bsbLa+oGGurpnRSIqFoGGm8rRNepF1U=;
+        b=zWV2YtKM8u0yyeLAWJTZzMxHn40zWPKElXCwuTkoPuYgiCoFhPwZhsyCItkYFa7N/4Cwgb
+        eorXLQtF4Vfng6IZvAGrd7zPPaxKUbLsRbnoT4m0SCJ8AYWFhBT8DYSBEwI+D5n6Qlb4s6
+        VY2tORPRBMXnduLHG9SGzQXTwh4ic8Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657541585;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RJTrqX4wTRC4bsbLa+oGGurpnRSIqFoGGm8rRNepF1U=;
+        b=2VOaoIIwZYq3AABcC05h0mvfyzwswoQ1gsj93jIqbTHuPSZhO+OaM4FCIhJKU/5NyaGqcV
+        yR1PRBzv5MpRXxDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 747B613524;
+        Mon, 11 Jul 2022 12:13:05 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id BOhMG9ETzGIOCwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Mon, 11 Jul 2022 12:13:05 +0000
+Date:   Mon, 11 Jul 2022 14:13:04 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Huang Ying <ying.huang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
+Subject: Re: [PATCH -V2 4/7] migrate_pages(): fix failure counting for THP
+ subpages retrying
+Message-ID: <YswT0OoJFRGP065E@localhost.localdomain>
+References: <20220711084948.274787-1-ying.huang@intel.com>
+ <20220711084948.274787-5-ying.huang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711084948.274787-5-ying.huang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need to allocate struct irq_chip in pci-aardvark.c dynamically
-at runtime. Use static allocation like for any other irq_chip usage.
+On Mon, Jul 11, 2022 at 04:49:45PM +0800, Huang Ying wrote:
+> If THP is failed to be migrated for -ENOSYS and -ENOMEM, the THP will
+> be split into thp_split_pages, and after other pages are migrated,
+> pages in thp_split_pages will be migrated with no_subpage_counting ==
+> true, because its failure have been counted already.  If some pages in
+> thp_split_pages are retried during migration, we should not count
+> their failure if no_subpage_counting == true too.  This is done this
+> patch to fix the failure counting for THP subpages retrying.
+> 
+> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+> Fixes: 5984fabb6e82 ("mm: move_pages: report the number of non-attempted pages")
+> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Cc: Zi Yan <ziy@nvidia.com>
+> Cc: Yang Shi <shy828301@gmail.com>
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/pci/controller/pci-aardvark.c | 24 +++++++-----------------
- 1 file changed, 7 insertions(+), 17 deletions(-)
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
 
-diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-index 8bea5801d50a..74511f015168 100644
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -274,7 +274,6 @@ struct advk_pcie {
- 	u8 wins_count;
- 	struct irq_domain *rp_irq_domain;
- 	struct irq_domain *irq_domain;
--	struct irq_chip irq_chip;
- 	raw_spinlock_t irq_lock;
- 	struct irq_domain *msi_domain;
- 	struct irq_domain *msi_inner_domain;
-@@ -1328,13 +1327,19 @@ static void advk_pcie_irq_unmask(struct irq_data *d)
- 	raw_spin_unlock_irqrestore(&pcie->irq_lock, flags);
- }
- 
-+static struct irq_chip advk_irq_chip = {
-+	.name = "advk-INTx",
-+	.irq_mask = advk_pcie_irq_mask,
-+	.irq_unmask = advk_pcie_irq_unmask,
-+};
-+
- static int advk_pcie_irq_map(struct irq_domain *h,
- 			     unsigned int virq, irq_hw_number_t hwirq)
- {
- 	struct advk_pcie *pcie = h->host_data;
- 
- 	irq_set_status_flags(virq, IRQ_LEVEL);
--	irq_set_chip_and_handler(virq, &pcie->irq_chip,
-+	irq_set_chip_and_handler(virq, &advk_irq_chip,
- 				 handle_level_irq);
- 	irq_set_chip_data(virq, pcie);
- 
-@@ -1394,7 +1399,6 @@ static int advk_pcie_init_irq_domain(struct advk_pcie *pcie)
- 	struct device *dev = &pcie->pdev->dev;
- 	struct device_node *node = dev->of_node;
- 	struct device_node *pcie_intc_node;
--	struct irq_chip *irq_chip;
- 	int ret = 0;
- 
- 	raw_spin_lock_init(&pcie->irq_lock);
-@@ -1405,28 +1409,14 @@ static int advk_pcie_init_irq_domain(struct advk_pcie *pcie)
- 		return -ENODEV;
- 	}
- 
--	irq_chip = &pcie->irq_chip;
--
--	irq_chip->name = devm_kasprintf(dev, GFP_KERNEL, "%s-irq",
--					dev_name(dev));
--	if (!irq_chip->name) {
--		ret = -ENOMEM;
--		goto out_put_node;
--	}
--
--	irq_chip->irq_mask = advk_pcie_irq_mask;
--	irq_chip->irq_unmask = advk_pcie_irq_unmask;
--
- 	pcie->irq_domain =
- 		irq_domain_add_linear(pcie_intc_node, PCI_NUM_INTX,
- 				      &advk_pcie_irq_domain_ops, pcie);
- 	if (!pcie->irq_domain) {
- 		dev_err(dev, "Failed to get a INTx IRQ domain\n");
- 		ret = -ENOMEM;
--		goto out_put_node;
- 	}
- 
--out_put_node:
- 	of_node_put(pcie_intc_node);
- 	return ret;
- }
+
 -- 
-2.20.1
-
+Oscar Salvador
+SUSE Labs
