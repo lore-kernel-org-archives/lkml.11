@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CAFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 787F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232816AbiGKJf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:35:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
+        id S232823AbiGKJfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232775AbiGKJeI (ORCPT
+        with ESMTP id S232835AbiGKJeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:34:08 -0400
+        Mon, 11 Jul 2022 05:34:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35D37AC39;
-        Mon, 11 Jul 2022 02:18:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E697B34E;
+        Mon, 11 Jul 2022 02:18:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE89B612A4;
-        Mon, 11 Jul 2022 09:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE434C34115;
-        Mon, 11 Jul 2022 09:18:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4DE56111F;
+        Mon, 11 Jul 2022 09:18:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F76C34115;
+        Mon, 11 Jul 2022 09:18:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531092;
-        bh=7eKPgAvwlYCxbUAwj8QUdkVCmwJ5akFGqrV1jD3Hl4o=;
+        s=korg; t=1657531095;
+        bh=vWqdF/QbE599LGS+3jp14cUHjUuyTGGqsN3uKJFlhX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Sit3gZEdOJec7VAT/lT8d/72LKafVkh7ilvzEdxARoKms4OrC/gZUlGmIssfnV8J
-         8pInildLTayOfOZpb1XckHNSEyp7CkjiAFSddcjRA8ALrTMRBkrm0FhqSgf0FNadsc
-         fv3yaiPPRQBRRPhXyvwVSVKKWA/N2ER1TKdWk2qM=
+        b=m9o6/gZVaidwP++YmzV/qhvp7kRX1eV0uPCByezbZvjNQMBz6TjBfoyC7UHrEwiL6
+         KU9XbqcuIirluX5SjGqbKlgb4WMPGb90FuYcqmYgLlXCAbNdyefMYtYy7pNnWXkGWr
+         zgDhr5U2jA0xxw5jIOA8JrausH/Hp+zzAbCHwUm4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Satish Nagireddy <satish.nagireddy@getcruise.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@amd.com>,
+        stable@vger.kernel.org, Jean Delvare <jdelvare@suse.de>,
+        Yi Zhang <yi.zhang@redhat.com>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Terry Bowman <Terry.Bowman@amd.com>,
         Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 094/112] i2c: cadence: Unregister the clk notifier in error path
-Date:   Mon, 11 Jul 2022 11:07:34 +0200
-Message-Id: <20220711090552.238440866@linuxfoundation.org>
+Subject: [PATCH 5.18 077/112] i2c: piix4: Fix a memory leak in the EFCH MMIO support
+Date:   Mon, 11 Jul 2022 11:07:17 +0200
+Message-Id: <20220711090551.756719392@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -51,35 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Satish Nagireddy <satish.nagireddy@getcruise.com>
+From: Jean Delvare <jdelvare@suse.de>
 
-[ Upstream commit 3501f0c663063513ad604fb1b3f06af637d3396d ]
+[ Upstream commit 8ad59b397f86a4d8014966fdc0552095a0c4fb2b ]
 
-This patch ensures that the clock notifier is unregistered
-when driver probe is returning error.
+The recently added support for EFCH MMIO regions introduced a memory
+leak in that code path. The leak is caused by the fact that
+release_resource() merely removes the resource from the tree but does
+not free its memory. We need to call release_mem_region() instead,
+which does free the memory. As a nice side effect, this brings back
+some symmetry between the legacy and MMIO paths.
 
-Fixes: df8eb5691c48 ("i2c: Add driver for Cadence I2C controller")
-Signed-off-by: Satish Nagireddy <satish.nagireddy@getcruise.com>
-Tested-by: Lars-Peter Clausen <lars@metafoo.de>
-Reviewed-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Jean Delvare <jdelvare@suse.de>
+Reported-by: Yi Zhang <yi.zhang@redhat.com>
+Tested-by: Yi Zhang <yi.zhang@redhat.com>
+Reviewed-by: Terry Bowman <terry.bowman@amd.com>
+Tested-by: Terry Bowman <Terry.Bowman@amd.com>
+Fixes: 7c148722d074 ("i2c: piix4: Add EFCH MMIO support to region request and release")
 Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-piix4.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index b4c1ad19cdae..3d6f8ee355bf 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -1338,6 +1338,7 @@ static int cdns_i2c_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/i2c/busses/i2c-piix4.c b/drivers/i2c/busses/i2c-piix4.c
+index ac8e7d60672a..39cb1b7bb865 100644
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -161,7 +161,6 @@ static const char *piix4_aux_port_name_sb800 = " port 1";
  
- err_clk_dis:
-+	clk_notifier_unregister(id->clk, &id->clk_rate_change_nb);
- 	clk_disable_unprepare(id->clk);
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_set_suspended(&pdev->dev);
+ struct sb800_mmio_cfg {
+ 	void __iomem *addr;
+-	struct resource *res;
+ 	bool use_mmio;
+ };
+ 
+@@ -179,13 +178,11 @@ static int piix4_sb800_region_request(struct device *dev,
+ 				      struct sb800_mmio_cfg *mmio_cfg)
+ {
+ 	if (mmio_cfg->use_mmio) {
+-		struct resource *res;
+ 		void __iomem *addr;
+ 
+-		res = request_mem_region_muxed(SB800_PIIX4_FCH_PM_ADDR,
+-					       SB800_PIIX4_FCH_PM_SIZE,
+-					       "sb800_piix4_smb");
+-		if (!res) {
++		if (!request_mem_region_muxed(SB800_PIIX4_FCH_PM_ADDR,
++					      SB800_PIIX4_FCH_PM_SIZE,
++					      "sb800_piix4_smb")) {
+ 			dev_err(dev,
+ 				"SMBus base address memory region 0x%x already in use.\n",
+ 				SB800_PIIX4_FCH_PM_ADDR);
+@@ -195,12 +192,12 @@ static int piix4_sb800_region_request(struct device *dev,
+ 		addr = ioremap(SB800_PIIX4_FCH_PM_ADDR,
+ 			       SB800_PIIX4_FCH_PM_SIZE);
+ 		if (!addr) {
+-			release_resource(res);
++			release_mem_region(SB800_PIIX4_FCH_PM_ADDR,
++					   SB800_PIIX4_FCH_PM_SIZE);
+ 			dev_err(dev, "SMBus base address mapping failed.\n");
+ 			return -ENOMEM;
+ 		}
+ 
+-		mmio_cfg->res = res;
+ 		mmio_cfg->addr = addr;
+ 
+ 		return 0;
+@@ -222,7 +219,8 @@ static void piix4_sb800_region_release(struct device *dev,
+ {
+ 	if (mmio_cfg->use_mmio) {
+ 		iounmap(mmio_cfg->addr);
+-		release_resource(mmio_cfg->res);
++		release_mem_region(SB800_PIIX4_FCH_PM_ADDR,
++				   SB800_PIIX4_FCH_PM_SIZE);
+ 		return;
+ 	}
+ 
 -- 
 2.35.1
 
