@@ -2,87 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81091CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92845C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbiGKP6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
+        id S230304AbiGKQBO convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiGKP6y (ORCPT
+        with ESMTP id S229699AbiGKQBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:58:54 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2701BE004;
-        Mon, 11 Jul 2022 08:58:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657555133; x=1689091133;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=S0aVjTXj2Le1bMsppCv/J/CSeM8z/oxYGI4UYRM8yvU=;
-  b=Y7mSmvnNAfwUjvUJFa3/wzTRCfg025ONwacqD2tdtzKyH4jX/SmbUouS
-   YxCl84f31tV7ELdDlpCEbnBE0FTXM/mZQFqe3O9fP4h+vDpe5KJZWC2Vz
-   qqqkAm+z9SkZnuSYnKV5ImqeD1jWMuZuQ8aUfpQbNpFgLot7xwaLMMD3t
-   s=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 11 Jul 2022 08:58:52 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 08:58:51 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Jul 2022 08:58:51 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Jul 2022 08:58:50 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <dianders@chromium.org>, <vkoul@kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <quic_mkrishn@quicinc.com>, <quic_kalyant@quicinc.coml>,
-        <freedreno@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] arm64: dta: qcom: sc7280: delete vdda-1p2 and vdda-0p9 from mdss_edp
-Date:   Mon, 11 Jul 2022 08:58:42 -0700
-Message-ID: <1657555122-18605-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 11 Jul 2022 12:01:11 -0400
+X-Greylist: delayed 20968 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Jul 2022 09:01:03 PDT
+Received: from ps11.myhostcenter.com (ps11.myhostcenter.com [64.6.248.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430F9422EF
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:01:03 -0700 (PDT)
+Received: (qmail 19182 invoked from network); 11 Jul 2022 03:33:13 -0400
+Received: from ec2-3-140-195-239.us-east-2.compute.amazonaws.com (HELO baosteel.com) (3.140.195.239)
+  by s55.n249.n6.n64.static.myhostcenter.net with (DHE-RSA-AES256-SHA encrypted) SMTP; 11 Jul 2022 03:33:13 -0400
+Reply-To: lmarshal742@gmail.com, lmarshal742marshal@gmail.com
+From:   BAOSTEEL <marshal.lee0862@baosteel.com>
+To:     linux-kernel@vger.kernel.org
+Subject: Will you be interested in representing us in the USA
+Date:   11 Jul 2022 17:33:11 +1000
+Message-ID: <20220711164446.0A6C18A7861DCABB@baosteel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Both vdda-1p2-supply and vdda-0p9-supply regulators are controlled
-by dp combo phy. Therefore remove them from dp controller.
+Atten: linux-kernel
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 3 ---
- 1 file changed, 3 deletions(-)
+Will you be interested in making some extra cash in representing 
+us in the USA without you contributing a dollar, All our 
+transactions are 100% Legal.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-index d59002d..f7a4b6b6 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-@@ -305,9 +305,6 @@
- 
- /* NOTE: Not all Qcards have eDP connector stuffed */
- &mdss_edp {
--	vdda-0p9-supply = <&vdd_a_edp_0_0p9>;
--	vdda-1p2-supply = <&vdd_a_edp_0_1p2>;
--
- 	aux-bus {
- 		edp_panel: panel {
- 			compatible = "edp-panel";
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+If you are in, let us know so  more details can be provided to 
+you.
+
+Finally, you do not need to know about steel for you to be our 
+REP. it's just a side work
+
+Marshal Lee
+Consultant
+BAOSTEEL GROUP
+lmarshal742@gmail.com
+marshal.lee@baosteel-group.net
+www.baosteel.com
+ADD:Baosteel Tower, Pu Dian Road 370, Pudong New District,
+Shanghai, 200122, P.R. China
+Postal Code:20012
 
