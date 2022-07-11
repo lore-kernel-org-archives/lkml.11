@@ -2,72 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F26C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88752C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiGKKyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:54:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
+        id S230000AbiGKKz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbiGKKyE (ORCPT
+        with ESMTP id S229764AbiGKKzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:54:04 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D502B79D8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:00:07 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by albert.telenet-ops.be with bizsmtp
-        id tm022700o4C55Sk06m02yF; Mon, 11 Jul 2022 12:00:03 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oAqCw-0032if-As; Mon, 11 Jul 2022 12:00:02 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oApI8-0054vV-Tl; Mon, 11 Jul 2022 11:01:20 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Marek Vasut <marex@denx.de>, Stefan Agner <stefan@agner.ch>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Lucas Stach <l.stach@pengutronix.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 2/2] drm: mxsfb: DRM_IMX_LCDIF should depend on ARCH_MXC
-Date:   Mon, 11 Jul 2022 11:01:19 +0200
-Message-Id: <5689170a22b3e2a76f0989dd3993a2b132ade8b6.1657530040.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <379f49058c7455802302c42bfbf615aaf3400f2c.1657530040.git.geert+renesas@glider.be>
-References: <379f49058c7455802302c42bfbf615aaf3400f2c.1657530040.git.geert+renesas@glider.be>
+        Mon, 11 Jul 2022 06:55:41 -0400
+Received: from smtpproxy21.qq.com (smtpbg704.qq.com [203.205.195.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FBBFD50C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:00:54 -0700 (PDT)
+X-QQ-mid: bizesmtp90t1657533647tvco1blo
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 11 Jul 2022 18:00:42 +0800 (CST)
+X-QQ-SSF: 01400000002000G0T000B00A0000000
+X-QQ-FEAT: swyrzWPvyR2Uu3lbSHNBUQj+FIenmLTanjTjxlOammbysUvhsUnCrkb+4NP8u
+        z+Idjgqytr5udTEpd73w/5qL3vqPNdrhaSIFQ527IXit4QoOAzS9rFPpfCxQUVexUlkiQ72
+        1j2A6+0ptmHTKcksbzNA94oykS2SzMpgblKPnkBibRSq5DLjvZL94xNPD68MdCPhPsbkuIn
+        k/t/fMbaM2UWrIxizF49jFVrLuyg2+JDRgsnyvjXFtJW2w66YFnDJmjzobj8Ne47GVK7TLp
+        fx1cQv6tGnTLJorj/C4392XfDXfeV+GQFu3/7CNZ4Yaf2dYIkOzurDYK0RH7KHe12QzDHSd
+        neqMAr6+smpIIZKa08RZVNrdoQNjWhO806i0Z+oUjiWSUfrLN3C4mXe4PxequfNZnelAK7i
+        1zB4p3vSZos=
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     perex@perex.cz, tiwai@suse.com, bo.liu@senarytech.com,
+        huangwenhuia@uniontech.com, tangmeng@uniontech.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: hda/conexant: Apply quirk for another HP ProDesk 600 G3 model
+Date:   Mon, 11 Jul 2022 18:00:41 +0800
+Message-Id: <20220711100041.22422-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign4
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Freescale/NXP i.MX LCDIFv3 LCD controller is only present on
-Freescale/NXP i.MX SoCs.  Hence add a dependency on ARCH_MXC, to prevent
-asking the user about this driver when configuring a kernel without
-Freescale/NXP i.MX support.
+There is another HP ProDesk 600 G3 model with the PCI SSID 103c:82b4
+that requires the same quirk for controlling the mute LED.  Add the
+corresponding entry to the quirk table.
 
-Fixes: 9db35bb349a0ef32 ("drm: lcdif: Add support for i.MX8MP LCDIF variant")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- drivers/gpu/drm/mxsfb/Kconfig | 1 +
+ sound/pci/hda/patch_conexant.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/mxsfb/Kconfig b/drivers/gpu/drm/mxsfb/Kconfig
-index 02cf19fcef315724..40cc9b8fb749f3e4 100644
---- a/drivers/gpu/drm/mxsfb/Kconfig
-+++ b/drivers/gpu/drm/mxsfb/Kconfig
-@@ -25,6 +25,7 @@ config DRM_IMX_LCDIF
- 	tristate "i.MX LCDIFv3 LCD controller"
- 	depends on DRM && OF
- 	depends on COMMON_CLK
-+	depends on ARCH_MXC || COMPILE_TEST
- 	select DRM_MXS
- 	select DRM_KMS_HELPER
- 	select DRM_GEM_CMA_HELPER
+diff --git a/sound/pci/hda/patch_conexant.c b/sound/pci/hda/patch_conexant.c
+index 3e541a4c0423..e90da8020881 100644
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -944,6 +944,7 @@ static const struct snd_pci_quirk cxt5066_fixups[] = {
+ 	SND_PCI_QUIRK(0x103c, 0x828c, "HP EliteBook 840 G4", CXT_FIXUP_HP_DOCK),
+ 	SND_PCI_QUIRK(0x103c, 0x8299, "HP 800 G3 SFF", CXT_FIXUP_HP_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x829a, "HP 800 G3 DM", CXT_FIXUP_HP_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x103c, 0x82b4, "HP ProDesk 600 G3", CXT_FIXUP_MUTE_LED_GPIO),
+ 	SND_PCI_QUIRK(0x103c, 0x836e, "HP ProBook 455 G5", CXT_FIXUP_MUTE_LED_GPIO),
+ 	SND_PCI_QUIRK(0x103c, 0x837f, "HP ProBook 470 G5", CXT_FIXUP_MUTE_LED_GPIO),
+ 	SND_PCI_QUIRK(0x103c, 0x83b2, "HP EliteBook 840 G5", CXT_FIXUP_HP_DOCK),
 -- 
-2.25.1
+2.20.1
+
+
 
