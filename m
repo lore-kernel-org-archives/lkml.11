@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85959C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB50AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231196AbiGKJMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
+        id S231372AbiGKJMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231340AbiGKJLw (ORCPT
+        with ESMTP id S231236AbiGKJLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:11:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB532497C;
-        Mon, 11 Jul 2022 02:09:13 -0700 (PDT)
+        Mon, 11 Jul 2022 05:11:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F188D252B6;
+        Mon, 11 Jul 2022 02:09:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EFFA6118F;
-        Mon, 11 Jul 2022 09:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 694CBC34115;
-        Mon, 11 Jul 2022 09:09:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E5196118F;
+        Mon, 11 Jul 2022 09:09:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21033C36AE2;
+        Mon, 11 Jul 2022 09:09:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530552;
-        bh=HnhxTr+4nZF2l5NxyJbulsJQA3Ua+EnyXX1DfFFt/Cc=;
+        s=korg; t=1657530555;
+        bh=p7Eab160yQGOQfojhbMWmzyaYKJ94lupJbD+g6sDDAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0en6wQcy8qcUqyB4J7KKIYOoXDedpejTRUDO6T19iwG1i/GTD1i5i/3xZpnNRo0bM
-         +AxZCwpMnDTcr5JYV/oVb7CuyovcsoTXOMsPVCjRJ+B0tC+/vnHsTX6rCS4KbfiLS1
-         K2rHc+Pfvz+1Fvdjte5IwklXEPu5Zg6cdDbueScc=
+        b=ycWu1bgbpy4zfg6XvKumelQJpljnG6bcFLlYp9E67NNhpjpuAJ2eoLPjLLhGQXrJS
+         lNXTISpYjA7KtRu1roMAKVdJxNj5w6t8zhR5qat/7PThTGsCivWD056MzIJ2SENRqg
+         by0VDxR8B60dL4AZS0G+5x+bQkzmvenXs2KcAB/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable <stable@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 4.19 26/31] misc: rtsx_usb: set return value in rsp_buf alloc err path
-Date:   Mon, 11 Jul 2022 11:07:05 +0200
-Message-Id: <20220711090538.619148342@linuxfoundation.org>
+        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 27/31] ida: dont use BUG_ON() for debugging
+Date:   Mon, 11 Jul 2022 11:07:06 +0200
+Message-Id: <20220711090538.648147293@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090537.841305347@linuxfoundation.org>
 References: <20220711090537.841305347@linuxfoundation.org>
@@ -49,50 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 2cd37c2e72449a7add6da1183d20a6247d6db111 upstream.
+commit fc82bbf4dede758007763867d0282353c06d1121 upstream.
 
-Set return value in rsp_buf alloc error path before going to
-error handling.
+This is another old BUG_ON() that just shouldn't exist (see also commit
+a382f8fee42c: "signal handling: don't use BUG_ON() for debugging").
 
-drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!ucr->rsp_buf)
-               ^~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
-           if (!ucr->rsp_buf)
-           ^~~~~~~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
+In fact, as Matthew Wilcox points out, this condition shouldn't really
+even result in a warning, since a negative id allocation result is just
+a normal allocation failure:
 
-Fixes: 3776c7855985 ("misc: rtsx_usb: use separate command and response buffers")
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220701165352.15687-1-skhan@linuxfoundation.org
+  "I wonder if we should even warn here -- sure, the caller is trying to
+   free something that wasn't allocated, but we don't warn for
+   kfree(NULL)"
+
+and goes on to point out how that current error check is only causing
+people to unnecessarily do their own index range checking before freeing
+it.
+
+This was noted by Itay Iellin, because the bluetooth HCI socket cookie
+code does *not* do that range checking, and ends up just freeing the
+error case too, triggering the BUG_ON().
+
+The HCI code requires CAP_NET_RAW, and seems to just result in an ugly
+splat, but there really is no reason to BUG_ON() here, and we have
+generally striven for allocation models where it's always ok to just do
+
+    free(alloc());
+
+even if the allocation were to fail for some random reason (usually
+obviously that "random" reason being some resource limit).
+
+Fixes: 88eca0207cf1 ("ida: simplified functions for id allocation")
+Reported-by: Itay Iellin <ieitayie@gmail.com>
+Suggested-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c |    4 +++-
+ lib/idr.c |    4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -647,8 +647,10 @@ static int rtsx_usb_probe(struct usb_int
- 		return -ENOMEM;
+--- a/lib/idr.c
++++ b/lib/idr.c
+@@ -573,7 +573,9 @@ void ida_free(struct ida *ida, unsigned
+ {
+ 	unsigned long flags;
  
- 	ucr->rsp_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
--	if (!ucr->rsp_buf)
-+	if (!ucr->rsp_buf) {
-+		ret = -ENOMEM;
- 		goto out_free_cmd_buf;
-+	}
- 
- 	usb_set_intfdata(intf, ucr);
- 
+-	BUG_ON((int)id < 0);
++	if ((int)id < 0)
++		return;
++
+ 	xa_lock_irqsave(&ida->ida_rt, flags);
+ 	ida_remove(ida, id);
+ 	xa_unlock_irqrestore(&ida->ida_rt, flags);
 
 
