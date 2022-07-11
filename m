@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD58BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A65C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiGKGaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 02:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
+        id S229810AbiGKGad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 02:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiGKGaR (ORCPT
+        with ESMTP id S229555AbiGKGaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 02:30:17 -0400
+        Mon, 11 Jul 2022 02:30:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9DC29FC5
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:30:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CB0AB491
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:30:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67293611E0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 048A5C3411C;
-        Mon, 11 Jul 2022 06:30:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A051611EE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACECDC341C0;
+        Mon, 11 Jul 2022 06:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657521015;
-        bh=MEnl6Y9aAxF+5Le8CAQRnOg9hB1/tyRcMD2t6N/tNFg=;
+        s=k20201202; t=1657521018;
+        bh=AnjlGY0oPQW4urpHEI87j2xxZ/49V3A13LD+O7W1b08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SLLds8q38TJx8yyqLeJWVu05j5eFNqGIQfyrs4OTpQRvbQBnRVZydOvCjj+1pPZ/Z
-         B33Xog0OE4R2PIiqYBaxJMRKlIPk1n2DsF8qdIWPMgr8RLUaJf52QT4iTQL7XT7rmd
-         RFombc1RHnQDlPMvJSwCSbdBEUpgXPeUkbyGrWtUc0Rrr4P8D2P4yaRcx8k0M1t1wi
-         7/81mzh/RM49MF9bQCZBQxn8avRbhtqRS3+odf4g1KLbW6McXwTw5v8y3UWPgBe/zy
-         tC29l5Z7Ojn0lyhQFezLuYpg5sGFw5MAxxn812uwlGm7kHWkhfHAEPHGuoyf2kpqH6
-         60uB+FO+sucUw==
+        b=fB388AwwBUbRbkWJ3U4q1nvfpiEYod1Or8DNJ02CumrWRIdhOXceUHgkCRYkaUL8V
+         pNOWFgEcuAE+bU3UFOEkbYMO9WxOkiGIR1aE41b7WpBW01HF+I653RqyqdtDjyNIkU
+         vzuQQiZBGIGe48a2CkVmkIVGlyeA7GNz3GAn1L/8Wm5meCpksJmffzpn6fRIvKOaC3
+         p2XzfuzeAurtsXBD8nxvAcAPUep/qgLMUm55khPA84YnVSMlPlOkY6asvjMF23ky0G
+         iKzxEauHozNGEQevsYt8tFB10D+x1JeOkgPKbOhiAVIVX60fBSJBoYAYFh8/y+YwqG
+         A3U4NjlRBI4WA==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Tomer Tayar <ttayar@habana.ai>
-Subject: [PATCH 06/12] habanalabs/gaudi2: modify decoder to use virtual MSI-X doorbell
-Date:   Mon, 11 Jul 2022 09:29:57 +0300
-Message-Id: <20220711063003.3182795-6-ogabbay@kernel.org>
+Cc:     Ofir Bitton <obitton@habana.ai>
+Subject: [PATCH 08/12] habanalabs: expose only valid debugfs nodes
+Date:   Mon, 11 Jul 2022 09:29:59 +0300
+Message-Id: <20220711063003.3182795-8-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220711063003.3182795-1-ogabbay@kernel.org>
 References: <20220711063003.3182795-1-ogabbay@kernel.org>
@@ -47,277 +47,213 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomer Tayar <ttayar@habana.ai>
+From: Ofir Bitton <obitton@habana.ai>
 
-Modify the decoder wrapper blocks to generate interrupts using the
-virtual MSI-X doorbell.
+In case security is enabled on the device, some debugfs nodes will
+fail. Hence, we do not expose them.
 
-As a decoder wrapper block cannot write directly to HBW upon completion,
-it writes instead to SOB which is monitored by a master monitor.
-When resolved, this monitor will be the one to actually write to the
-virtual MSI-X doorbell.
-
-Signed-off-by: Tomer Tayar <ttayar@habana.ai>
+Signed-off-by: Ofir Bitton <obitton@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/gaudi2/gaudi2.c       | 141 +++++++++++++++++-
- drivers/misc/habanalabs/gaudi2/gaudi2P.h      |  15 ++
- drivers/misc/habanalabs/gaudi2/gaudi2_masks.h |   3 +
- .../include/gaudi2/asic_reg/gaudi2_regs.h     |   6 +
- 4 files changed, 160 insertions(+), 5 deletions(-)
+ .../ABI/testing/debugfs-driver-habanalabs     | 24 +++--
+ drivers/misc/habanalabs/common/debugfs.c      | 94 ++++++++++---------
+ 2 files changed, 66 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-index 60e11007e3ea..760ce5b7f955 100644
---- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
-+++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-@@ -4252,6 +4252,109 @@ static void gaudi2_init_edma(struct hl_device *hdev)
- 	}
- }
+diff --git a/Documentation/ABI/testing/debugfs-driver-habanalabs b/Documentation/ABI/testing/debugfs-driver-habanalabs
+index d9580f5d08a0..c915bf17b293 100644
+--- a/Documentation/ABI/testing/debugfs-driver-habanalabs
++++ b/Documentation/ABI/testing/debugfs-driver-habanalabs
+@@ -130,14 +130,16 @@ Date:           Jan 2019
+ KernelVersion:  5.1
+ Contact:        ogabbay@kernel.org
+ Description:    Sets I2C device address for I2C transaction that is generated
+-                by the device's CPU
++                by the device's CPU, Not available when device is loaded with secured
++                firmware
  
-+/*
-+ * gaudi2_arm_monitors_for_virt_msix_db() - Arm monitors for writing to the virtual MSI-X doorbell.
-+ * @hdev: pointer to habanalabs device structure.
-+ * @sob_id: sync object ID.
-+ * @first_mon_id: ID of first monitor out of 3 consecutive monitors.
-+ * @interrupt_id: interrupt ID.
-+ *
-+ * Some initiators cannot have HBW address in their completion address registers, and thus cannot
-+ * write directly to the HBW host memory of the virtual MSI-X doorbell.
-+ * Instead, they are configured to LBW write to a sync object, and a monitor will do the HBW write.
-+ *
-+ * The mechanism in the sync manager block is composed of a master monitor with 3 messages.
-+ * In addition to the HBW write, the other 2 messages are for preparing the monitor to next
-+ * completion, by decrementing the sync object value and re-arming the monitor.
-+ */
-+static void gaudi2_arm_monitors_for_virt_msix_db(struct hl_device *hdev, u32 sob_id,
-+							u32 first_mon_id, u32 interrupt_id)
-+{
-+	u32 sob_offset, first_mon_offset, mon_offset, payload, sob_group, mode, arm, config;
-+	struct gaudi2_device *gaudi2 = hdev->asic_specific;
-+	u64 addr;
-+	u8 mask;
-+
-+	/* Reset the SOB value */
-+	sob_offset = sob_id * sizeof(u32);
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_offset, 0);
-+
-+	/* Configure 3 monitors:
-+	 * 1. Write interrupt ID to the virtual MSI-X doorbell (master monitor)
-+	 * 2. Decrement SOB value by 1.
-+	 * 3. Re-arm the master monitor.
-+	 */
-+
-+	first_mon_offset = first_mon_id * sizeof(u32);
-+
-+	/* 2nd monitor: Decrement SOB value by 1 */
-+	mon_offset = first_mon_offset + sizeof(u32);
-+
-+	addr = CFG_BASE + mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_offset;
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + mon_offset, lower_32_bits(addr));
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRH_0 + mon_offset, upper_32_bits(addr));
-+
-+	payload = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_VAL_MASK, 0x7FFF) | /* "-1" */
-+			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_SIGN_MASK, 1) |
-+			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_INC_MASK, 1);
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + mon_offset, payload);
-+
-+	/* 3rd monitor: Re-arm the master monitor */
-+	mon_offset = first_mon_offset + 2 * sizeof(u32);
-+
-+	addr = CFG_BASE + mmDCORE0_SYNC_MNGR_OBJS_MON_ARM_0 + first_mon_offset;
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + mon_offset, lower_32_bits(addr));
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRH_0 + mon_offset, upper_32_bits(addr));
-+
-+	sob_group = sob_id / 8;
-+	mask = ~BIT(sob_id & 0x7);
-+	mode = 0; /* comparison mode is "greater than or equal to" */
-+	arm = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SID_MASK, sob_group) |
-+			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_MASK_MASK, mask) |
-+			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SOP_MASK, mode) |
-+			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SOD_MASK, 1);
-+
-+	payload = arm;
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + mon_offset, payload);
-+
-+	/* 1st monitor (master): Write interrupt ID to the virtual MSI-X doorbell */
-+	mon_offset = first_mon_offset;
-+
-+	config = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_CONFIG_WR_NUM_MASK, 2); /* "2": 3 writes */
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_CONFIG_0 + mon_offset, config);
-+
-+	addr = gaudi2->virt_msix_db_dma_addr;
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + mon_offset, lower_32_bits(addr));
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRH_0 + mon_offset, upper_32_bits(addr));
-+
-+	payload = interrupt_id;
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + mon_offset, payload);
-+
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_ARM_0 + mon_offset, arm);
-+}
-+
-+static void gaudi2_prepare_sm_for_virt_msix_db(struct hl_device *hdev)
-+{
-+	u32 decoder_id, sob_id, first_mon_id, interrupt_id;
-+	struct asic_fixed_properties *prop = &hdev->asic_prop;
-+
-+	/* Decoder normal/abnormal interrupts */
-+	for (decoder_id = 0 ; decoder_id < NUMBER_OF_DEC ; ++decoder_id) {
-+		if (!(prop->decoder_enabled_mask & BIT(decoder_id)))
-+			continue;
-+
-+		sob_id = GAUDI2_RESERVED_SOB_DEC_NRM_FIRST + decoder_id;
-+		first_mon_id = GAUDI2_RESERVED_MON_DEC_NRM_FIRST + 3 * decoder_id;
-+		interrupt_id = GAUDI2_IRQ_NUM_DCORE0_DEC0_NRM + 2 * decoder_id;
-+		gaudi2_arm_monitors_for_virt_msix_db(hdev, sob_id, first_mon_id, interrupt_id);
-+
-+		sob_id = GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST + decoder_id;
-+		first_mon_id = GAUDI2_RESERVED_MON_DEC_ABNRM_FIRST + 3 * decoder_id;
-+		interrupt_id += 1;
-+		gaudi2_arm_monitors_for_virt_msix_db(hdev, sob_id, first_mon_id, interrupt_id);
-+	}
-+}
-+
- static void gaudi2_init_sm(struct hl_device *hdev)
- {
- 	struct gaudi2_device *gaudi2 = hdev->asic_specific;
-@@ -4304,6 +4407,9 @@ static void gaudi2_init_sm(struct hl_device *hdev)
- 	/* Configure kernel ASID and MMU BP*/
- 	WREG32(mmDCORE0_SYNC_MNGR_GLBL_ASID_SEC, 0x10000);
- 	WREG32(mmDCORE0_SYNC_MNGR_GLBL_ASID_NONE_SEC_PRIV, 0);
-+
-+	/* Initialize sync objects and monitors which are used for the virtual MSI-X doorbell */
-+	gaudi2_prepare_sm_for_virt_msix_db(hdev);
- }
+ What:           /sys/kernel/debug/habanalabs/hl<n>/i2c_bus
+ Date:           Jan 2019
+ KernelVersion:  5.1
+ Contact:        ogabbay@kernel.org
+ Description:    Sets I2C bus address for I2C transaction that is generated by
+-                the device's CPU
++                the device's CPU, Not available when device is loaded with secured
++                firmware
  
- static void gaudi2_init_mme_acc(struct hl_device *hdev, u32 reg_base)
-@@ -4452,10 +4558,35 @@ static void gaudi2_init_rotator(struct hl_device *hdev)
- 	}
- }
+ What:           /sys/kernel/debug/habanalabs/hl<n>/i2c_data
+ Date:           Jan 2019
+@@ -145,39 +147,45 @@ KernelVersion:  5.1
+ Contact:        ogabbay@kernel.org
+ Description:    Triggers an I2C transaction that is generated by the device's
+                 CPU. Writing to this file generates a write transaction while
+-                reading from the file generates a read transaction
++                reading from the file generates a read transaction, Not available
++                when device is loaded with secured firmware
  
--static void gaudi2_init_vdec_brdg_ctrl(struct hl_device *hdev, u64 base_addr, u32 msix_id)
-+static void gaudi2_init_vdec_brdg_ctrl(struct hl_device *hdev, u64 base_addr, u32 decoder_id)
- {
--	WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_WDATA, msix_id);
--	WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_WDATA, msix_id + 1);
-+	u32 sob_id;
-+
-+	/* TODO:
-+	 * Remove when virtual MSI-X doorbell is supported in simulator (SW-93022) and in F/W
-+	 * (SW-93024).
-+	 */
-+	if (!hdev->pdev || hdev->asic_prop.fw_security_enabled) {
-+		u32 interrupt_id = GAUDI2_IRQ_NUM_DCORE0_DEC0_NRM + 2 * decoder_id;
-+
-+		WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_AWADDR, mmPCIE_DBI_MSIX_DOORBELL_OFF);
-+		WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_WDATA, interrupt_id);
-+		WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR, mmPCIE_DBI_MSIX_DOORBELL_OFF);
-+		WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_WDATA, interrupt_id + 1);
-+		return;
-+	}
-+
-+	/* VCMD normal interrupt */
-+	sob_id = GAUDI2_RESERVED_SOB_DEC_NRM_FIRST + decoder_id;
-+	WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_AWADDR,
-+			mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_id * sizeof(u32));
-+	WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_WDATA, GAUDI2_SOB_INCREMENT_BY_ONE);
-+
-+	/* VCMD abnormal interrupt */
-+	sob_id = GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST + decoder_id;
-+	WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR,
-+			mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_id * sizeof(u32));
-+	WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_WDATA, GAUDI2_SOB_INCREMENT_BY_ONE);
- }
+ What:           /sys/kernel/debug/habanalabs/hl<n>/i2c_len
+ Date:           Dec 2021
+ KernelVersion:  5.17
+ Contact:        obitton@habana.ai
+ Description:    Sets I2C length in bytes for I2C transaction that is generated by
+-                the device's CPU
++                the device's CPU, Not available when device is loaded with secured
++                firmware
  
- static void gaudi2_init_dec(struct hl_device *hdev)
-@@ -4485,7 +4616,7 @@ static void gaudi2_init_dec(struct hl_device *hdev)
- 			msix_id = GAUDI2_IRQ_NUM_DCORE0_DEC0_NRM +
- 				(dcore_id * NUM_OF_DEC_PER_DCORE + dec_id) * 2;
+ What:           /sys/kernel/debug/habanalabs/hl<n>/i2c_reg
+ Date:           Jan 2019
+ KernelVersion:  5.1
+ Contact:        ogabbay@kernel.org
+ Description:    Sets I2C register id for I2C transaction that is generated by
+-                the device's CPU
++                the device's CPU, Not available when device is loaded with secured
++                firmware
  
--			gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, msix_id);
-+			gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, dec_bit);
+ What:           /sys/kernel/debug/habanalabs/hl<n>/led0
+ Date:           Jan 2019
+ KernelVersion:  5.1
+ Contact:        ogabbay@kernel.org
+-Description:    Sets the state of the first S/W led on the device
++Description:    Sets the state of the first S/W led on the device, Not available
++                when device is loaded with secured firmware
  
- 			gaudi2->dec_hw_cap_initialized |= BIT_ULL(HW_CAP_DEC_SHIFT + dec_bit);
- 		}
-@@ -4500,7 +4631,7 @@ static void gaudi2_init_dec(struct hl_device *hdev)
+ What:           /sys/kernel/debug/habanalabs/hl<n>/led1
+ Date:           Jan 2019
+ KernelVersion:  5.1
+ Contact:        ogabbay@kernel.org
+-Description:    Sets the state of the second S/W led on the device
++Description:    Sets the state of the second S/W led on the device, Not available
++                when device is loaded with secured firmware
  
- 		msix_id = GAUDI2_IRQ_NUM_SHARED_DEC0_NRM + (dec_id * 2);
+ What:           /sys/kernel/debug/habanalabs/hl<n>/led2
+ Date:           Jan 2019
+ KernelVersion:  5.1
+ Contact:        ogabbay@kernel.org
+-Description:    Sets the state of the third S/W led on the device
++Description:    Sets the state of the third S/W led on the device, Not available
++                when device is loaded with secured firmware
  
--		gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, msix_id);
-+		gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, dec_bit);
- 
- 		gaudi2->dec_hw_cap_initialized |= BIT_ULL(HW_CAP_DEC_SHIFT + dec_bit);
- 	}
-diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2P.h b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-index 826d24284dc5..e4bc4009f05b 100644
---- a/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-+++ b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-@@ -243,11 +243,20 @@
- 
- #define GAUDI2_ARC_PCI_MSB_ADDR(addr)	(((addr) & GENMASK_ULL(49, 28)) >> 28)
- 
-+#define GAUDI2_SOB_INCREMENT_BY_ONE	(FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_VAL_MASK, 1) | \
-+					FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_INC_MASK, 1))
-+
- enum gaudi2_reserved_sob_id {
- 	GAUDI2_RESERVED_SOB_CS_COMPLETION_FIRST,
- 	GAUDI2_RESERVED_SOB_CS_COMPLETION_LAST =
- 			GAUDI2_RESERVED_SOB_CS_COMPLETION_FIRST + GAUDI2_MAX_PENDING_CS - 1,
- 	GAUDI2_RESERVED_SOB_KDMA_COMPLETION,
-+	GAUDI2_RESERVED_SOB_DEC_NRM_FIRST,
-+	GAUDI2_RESERVED_SOB_DEC_NRM_LAST =
-+			GAUDI2_RESERVED_SOB_DEC_NRM_FIRST + NUMBER_OF_DEC - 1,
-+	GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST,
-+	GAUDI2_RESERVED_SOB_DEC_ABNRM_LAST =
-+			GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST + NUMBER_OF_DEC - 1,
- 	GAUDI2_RESERVED_SOB_NUMBER
+ What:           /sys/kernel/debug/habanalabs/hl<n>/memory_scrub
+ Date:           May 2022
+diff --git a/drivers/misc/habanalabs/common/debugfs.c b/drivers/misc/habanalabs/common/debugfs.c
+index 3da39662abd9..64439f33a19b 100644
+--- a/drivers/misc/habanalabs/common/debugfs.c
++++ b/drivers/misc/habanalabs/common/debugfs.c
+@@ -1562,6 +1562,53 @@ static const struct file_operations hl_debugfs_fops = {
+ 	.release = single_release,
  };
  
-@@ -256,6 +265,12 @@ enum gaudi2_reserved_mon_id {
- 	GAUDI2_RESERVED_MON_CS_COMPLETION_LAST =
- 			GAUDI2_RESERVED_MON_CS_COMPLETION_FIRST + GAUDI2_MAX_PENDING_CS - 1,
- 	GAUDI2_RESERVED_MON_KDMA_COMPLETION,
-+	GAUDI2_RESERVED_MON_DEC_NRM_FIRST,
-+	GAUDI2_RESERVED_MON_DEC_NRM_LAST =
-+			GAUDI2_RESERVED_MON_DEC_NRM_FIRST + 3 * NUMBER_OF_DEC - 1,
-+	GAUDI2_RESERVED_MON_DEC_ABNRM_FIRST,
-+	GAUDI2_RESERVED_MON_DEC_ABNRM_LAST =
-+			GAUDI2_RESERVED_MON_DEC_ABNRM_FIRST + 3 * NUMBER_OF_DEC - 1,
- 	GAUDI2_RESERVED_MON_NUMBER
- };
- 
-diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h b/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
-index 3fd5cf4a8645..eed16d642a5a 100644
---- a/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
-+++ b/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
-@@ -135,4 +135,7 @@
- #define PCIE_DBI_MSIX_ADDRESS_MATCH_LOW_OFF_MSIX_ADDRESS_MATCH_EN_SHIFT	0
- #define PCIE_DBI_MSIX_ADDRESS_MATCH_LOW_OFF_MSIX_ADDRESS_MATCH_EN_MASK	0x1
- 
-+#define DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_SIGN_SHIFT	15
-+#define DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_SIGN_MASK		0x8000
++static void add_secured_nodes(struct hl_dbg_device_entry *dev_entry)
++{
++	debugfs_create_u8("i2c_bus",
++				0644,
++				dev_entry->root,
++				&dev_entry->i2c_bus);
 +
- #endif /* GAUDI2_MASKS_H_ */
-diff --git a/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h b/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h
-index e5fe9d5e07f5..d0e2c68a639f 100644
---- a/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h
-+++ b/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h
-@@ -415,9 +415,15 @@
- #define SFT_DCORE_OFFSET (mmSFT1_HBW_RTR_IF0_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE)
- #define SFT_IF_OFFSET (mmSFT0_HBW_RTR_IF1_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE)
- 
-+#define BRDG_CTRL_NRM_MSIX_LBW_AWADDR	\
-+	(mmDCORE0_VDEC0_BRDG_CTRL_NRM_MSIX_LBW_AWADDR - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
++	debugfs_create_u8("i2c_addr",
++				0644,
++				dev_entry->root,
++				&dev_entry->i2c_addr);
 +
- #define BRDG_CTRL_NRM_MSIX_LBW_WDATA	\
- 	(mmDCORE0_VDEC0_BRDG_CTRL_NRM_MSIX_LBW_WDATA - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
- 
-+#define BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR	\
-+	(mmDCORE0_VDEC0_BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
++	debugfs_create_u8("i2c_reg",
++				0644,
++				dev_entry->root,
++				&dev_entry->i2c_reg);
 +
- #define BRDG_CTRL_ABNRM_MSIX_LBW_WDATA	\
- 	(mmDCORE0_VDEC0_BRDG_CTRL_ABNRM_MSIX_LBW_WDATA - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
++	debugfs_create_u8("i2c_len",
++				0644,
++				dev_entry->root,
++				&dev_entry->i2c_len);
++
++	debugfs_create_file("i2c_data",
++				0644,
++				dev_entry->root,
++				dev_entry,
++				&hl_i2c_data_fops);
++
++	debugfs_create_file("led0",
++				0200,
++				dev_entry->root,
++				dev_entry,
++				&hl_led0_fops);
++
++	debugfs_create_file("led1",
++				0200,
++				dev_entry->root,
++				dev_entry,
++				&hl_led1_fops);
++
++	debugfs_create_file("led2",
++				0200,
++				dev_entry->root,
++				dev_entry,
++				&hl_led2_fops);
++}
++
+ void hl_debugfs_add_device(struct hl_device *hdev)
+ {
+ 	struct hl_dbg_device_entry *dev_entry = &hdev->hl_debugfs;
+@@ -1632,50 +1679,6 @@ void hl_debugfs_add_device(struct hl_device *hdev)
+ 				dev_entry,
+ 				&hl_power_fops);
  
+-	debugfs_create_u8("i2c_bus",
+-				0644,
+-				dev_entry->root,
+-				&dev_entry->i2c_bus);
+-
+-	debugfs_create_u8("i2c_addr",
+-				0644,
+-				dev_entry->root,
+-				&dev_entry->i2c_addr);
+-
+-	debugfs_create_u8("i2c_reg",
+-				0644,
+-				dev_entry->root,
+-				&dev_entry->i2c_reg);
+-
+-	debugfs_create_u8("i2c_len",
+-				0644,
+-				dev_entry->root,
+-				&dev_entry->i2c_len);
+-
+-	debugfs_create_file("i2c_data",
+-				0644,
+-				dev_entry->root,
+-				dev_entry,
+-				&hl_i2c_data_fops);
+-
+-	debugfs_create_file("led0",
+-				0200,
+-				dev_entry->root,
+-				dev_entry,
+-				&hl_led0_fops);
+-
+-	debugfs_create_file("led1",
+-				0200,
+-				dev_entry->root,
+-				dev_entry,
+-				&hl_led1_fops);
+-
+-	debugfs_create_file("led2",
+-				0200,
+-				dev_entry->root,
+-				dev_entry,
+-				&hl_led2_fops);
+-
+ 	debugfs_create_file("device",
+ 				0200,
+ 				dev_entry->root,
+@@ -1754,6 +1757,9 @@ void hl_debugfs_add_device(struct hl_device *hdev)
+ 		entry->info_ent = &hl_debugfs_list[i];
+ 		entry->dev_entry = dev_entry;
+ 	}
++
++	if (!hdev->asic_prop.fw_security_enabled)
++		add_secured_nodes(dev_entry);
+ }
+ 
+ void hl_debugfs_remove_device(struct hl_device *hdev)
 -- 
 2.25.1
 
