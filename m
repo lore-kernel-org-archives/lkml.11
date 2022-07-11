@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A53CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B643C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234386AbiGKKAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        id S234287AbiGKKAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234488AbiGKJ7l (ORCPT
+        with ESMTP id S234514AbiGKJ7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:59:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F0174E37;
-        Mon, 11 Jul 2022 02:27:57 -0700 (PDT)
+        Mon, 11 Jul 2022 05:59:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FE5B7D49;
+        Mon, 11 Jul 2022 02:28:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4AF26136E;
-        Mon, 11 Jul 2022 09:27:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E91A1C34115;
-        Mon, 11 Jul 2022 09:27:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A029B80D2C;
+        Mon, 11 Jul 2022 09:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C3C3C34115;
+        Mon, 11 Jul 2022 09:27:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531676;
-        bh=eChDofblrc/z9HyIYPzqly3n06khJx7Bm7VoQk/EUFk=;
+        s=korg; t=1657531679;
+        bh=qXisc+E/ALompKboJG36VZK8MAarwbjXLP9t9pP4C+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jJpJwCYu8Wu/gnTj6vMXBmTqeT0oOYOGuPwSlAWoVax/N3lcwPFAkz/rqKKmJuom+
-         vlAybCSZcHqgcTD1MeEPgv5Qbi+KwlTgwYfi/+64a7vAyMxUQ7pb2mcFr93IM/udv2
-         +GJXHpiqufwYtjs798lB+LyaLFRElZkoq5U+3ZNk=
+        b=wWqQemC2DusARXLkvp2AiTqJCfuX0TMfIES6+V1ImDaEfIj4yZtaichRJ/UdnfNye
+         vtTUwtLV8tYt3ydanwvtcDZajltl6rDd4DBlht8yyU9JSBKGVXEyxljuTuz2VZmjh1
+         Jz31rjFBW26LPONmXd5OdkcZblR7KC5GYTmI+b1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 192/230] arm64: dts: imx8mp-phyboard-pollux-rdk: correct uart pad settings
-Date:   Mon, 11 Jul 2022 11:07:28 +0200
-Message-Id: <20220711090609.552212460@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Anand Jain <anand.jain@oracle.com>, Tom Rix <trix@redhat.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 175/230] btrfs: fix use of uninitialized variable at rm device ioctl
+Date:   Mon, 11 Jul 2022 11:07:11 +0200
+Message-Id: <20220711090609.025325347@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,38 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit e266c155bd88e95f9b86379d6b0add6ac6e5452e ]
+commit 37b4599547e324589e011c20f74b021d6d25cb7f upstream.
 
-BIT3 and BIT0 are reserved bits, should not touch.
+Clang static analysis reports this problem
+ioctl.c:3333:8: warning: 3rd function call argument is an
+  uninitialized value
+    ret = exclop_start_or_cancel_reloc(fs_info,
 
-Fixes: 846f752866bd ("arm64: dts: imx8mp-phyboard-pollux-rdk: Change debug UART")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+cancel is only set in one branch of an if-check and is always used.  So
+initialize to false.
+
+Fixes: 1a15eb724aae ("btrfs: use btrfs_get_dev_args_from_path in dev removal ioctls")
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-index 984a6b9ded8d..e34076954897 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-@@ -156,8 +156,8 @@
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -3291,7 +3291,7 @@ static long btrfs_ioctl_rm_dev(struct fi
+ 	struct block_device *bdev = NULL;
+ 	fmode_t mode;
+ 	int ret;
+-	bool cancel;
++	bool cancel = false;
  
- 	pinctrl_uart1: uart1grp {
- 		fsl,pins = <
--			MX8MP_IOMUXC_UART1_RXD__UART1_DCE_RX	0x49
--			MX8MP_IOMUXC_UART1_TXD__UART1_DCE_TX	0x49
-+			MX8MP_IOMUXC_UART1_RXD__UART1_DCE_RX	0x40
-+			MX8MP_IOMUXC_UART1_TXD__UART1_DCE_TX	0x40
- 		>;
- 	};
- 
--- 
-2.35.1
-
+ 	if (!capable(CAP_SYS_ADMIN))
+ 		return -EPERM;
 
 
