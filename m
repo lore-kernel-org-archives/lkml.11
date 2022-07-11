@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A50CEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B04CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232400AbiGKJ0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
+        id S232177AbiGKJ1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232516AbiGKJYx (ORCPT
+        with ESMTP id S231913AbiGKJZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:53 -0400
+        Mon, 11 Jul 2022 05:25:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3154A37186;
-        Mon, 11 Jul 2022 02:15:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A6A3AE63;
+        Mon, 11 Jul 2022 02:15:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4650CB80E7E;
-        Mon, 11 Jul 2022 09:15:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0269C341C0;
-        Mon, 11 Jul 2022 09:15:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEC8DB80DB7;
+        Mon, 11 Jul 2022 09:15:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56CC3C34115;
+        Mon, 11 Jul 2022 09:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530914;
-        bh=cI6yKnCywpfP9pCIdeMRNme6AxuT+26wTSRXrQmwRB0=;
+        s=korg; t=1657530916;
+        bh=nxxkMb4NrN9k+YIwms6fxAfJIchR/V3HenrDCucwkxg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qqGhJw6ArpkgLMGqyZ7CIcpv6KDxqeQ30gQ6nqRwYjREQ7k7+sObWEj9Pa4qQlSBh
-         RENSNtVJZiHc8g5o7Tm3wHcNJHmmH+pNWtwnEXz+oY3OM4vs+n2ilcAD+sukp6MVxq
-         bY7AS5xFgQi2CQ0jTALp4zswXSxD3ecgcZ2HGKL0=
+        b=Nh9Ih7/yKN11yRoJRbyCO02iVZe1PNo5psAA/DHsqZumZqW6XrFlNv0NgEHazR55I
+         MJ6/G1fnxSUi0bClp/JO7sWvbhByxFEOWBnZ1iIC+ZV4wYx1wEbEF0ZAgRdyfzveYE
+         rjW2/fcyL/4Upu7i+p2sm6BAsqE9T9cwQofb1aNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Zhang, Bernice" <bernice.zhang@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Yian Chen <yian.chen@intel.com>,
-        Joerg Roedel <jroedel@suse.de>, Zhang@vger.kernel.org
-Subject: [PATCH 5.18 029/112] iommu/vt-d: Fix PCI bus rescan device hot add
-Date:   Mon, 11 Jul 2022 11:06:29 +0200
-Message-Id: <20220711090550.393546816@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 003/112] ALSA: hda/realtek: Add quirk for Clevo L140PU
+Date:   Mon, 11 Jul 2022 11:06:03 +0200
+Message-Id: <20220711090549.646221762@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,57 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yian Chen <yian.chen@intel.com>
+From: Tim Crawford <tcrawford@system76.com>
 
-commit 316f92a705a4c2bf4712135180d56f3cca09243a upstream.
+commit 11bea26929a1a3a9dd1a287b60c2f471701bf706 upstream.
 
-Notifier calling chain uses priority to determine the execution
-order of the notifiers or listeners registered to the chain.
-PCI bus device hot add utilizes the notification mechanism.
+Fixes headset detection on Clevo L140PU.
 
-The current code sets low priority (INT_MIN) to Intel
-dmar_pci_bus_notifier and postpones DMAR decoding after adding
-new device into IOMMU. The result is that struct device pointer
-cannot be found in DRHD search for the new device's DMAR/IOMMU.
-Subsequently, the device is put under the "catch-all" IOMMU
-instead of the correct one. This could cause system hang when
-device TLB invalidation is sent to the wrong IOMMU. Invalidation
-timeout error and hard lockup have been observed and data
-inconsistency/crush may occur as well.
-
-This patch fixes the issue by setting a positive priority(1) for
-dmar_pci_bus_notifier while the priority of IOMMU bus notifier
-uses the default value(0), therefore DMAR decoding will be in
-advance of DRHD search for a new device to find the correct IOMMU.
-
-Following is a 2-step example that triggers the bug by simulating
-PCI device hot add behavior in Intel Sapphire Rapids server.
-
-echo 1 > /sys/bus/pci/devices/0000:6a:01.0/remove
-echo 1 > /sys/bus/pci/rescan
-
-Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
-Cc: stable@vger.kernel.org # v3.15+
-Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Yian Chen <yian.chen@intel.com>
-Link: https://lore.kernel.org/r/20220521002115.1624069-1-yian.chen@intel.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220624144109.3957-1-tcrawford@system76.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/intel/dmar.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -383,7 +383,7 @@ static int dmar_pci_bus_notifier(struct
- 
- static struct notifier_block dmar_pci_bus_nb = {
- 	.notifier_call = dmar_pci_bus_notifier,
--	.priority = INT_MIN,
-+	.priority = 1,
- };
- 
- static struct dmar_drhd_unit *
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9264,6 +9264,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x7718, "Clevo L140PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8521, "Clevo NH77D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
 
 
