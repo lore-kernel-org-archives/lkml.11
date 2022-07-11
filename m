@@ -2,97 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C54C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50886C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbiGKLws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        id S230104AbiGKLw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbiGKLwh (ORCPT
+        with ESMTP id S230281AbiGKLwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:52:37 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1367123BE6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:52:37 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B5926202F3;
-        Mon, 11 Jul 2022 11:52:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1657540355; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TdFY1RWwGYvBePPQsPedAbt4Dp/hBwt/0QCbIDf8xuw=;
-        b=xSvia/5kjnsgiJTeS1+fnuBLnvUcBv36rtCfS7WIITz0oa/2oUbO7QBdPgDJHRbsnLAu23
-        OSZjd7R4m+dDBcrCfboDKQHUGndAsgjHGUvh0Uu3f6p7D2TZmyrvUeDFXAyglK7odwySjF
-        F6WQwSEPc6GZPis4SvofV6als9x5WYc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1657540355;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TdFY1RWwGYvBePPQsPedAbt4Dp/hBwt/0QCbIDf8xuw=;
-        b=nadu+SnQgfvxOj2JXvvu2dsqQgtx7xswMcDR1BVYnm2uo/8CuykxWfZV2Uwk1sdX3uOYI8
-        58A41V7jd8QdtaBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8B75413524;
-        Mon, 11 Jul 2022 11:52:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 8fjpIAMPzGK1fwAAMHmgww
-        (envelope-from <osalvador@suse.de>); Mon, 11 Jul 2022 11:52:35 +0000
-Date:   Mon, 11 Jul 2022 13:52:34 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Huang Ying <ying.huang@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
-Subject: Re: [PATCH -V2 1/7] migrate: fix syscall move_pages() return value
- for failure
-Message-ID: <YswPApwvAjvX1VEd@localhost.localdomain>
-References: <20220711084948.274787-1-ying.huang@intel.com>
- <20220711084948.274787-2-ying.huang@intel.com>
+        Mon, 11 Jul 2022 07:52:51 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6506B1EC4A
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:52:49 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31c89653790so45734397b3.13
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:52:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aAqLxWPd9+QMBWFuEQElxn6/m6yxdZof4mEq0mm4r/g=;
+        b=G8tiwiBmBQyNAC/YUp7zzlb/tvBvYcRsAyIb3Gxu4I5xX7/XHwQtTr3WUygVlyGoNu
+         ys/CbQEb10BEEYtXsfeM5CPH1+b6bgS5dx1GfUw+q/AKOgpS92oQjmcYYkGElsF8pPCG
+         +rTsZgkjSye3wx4NgfBtYJfv+QGzMOves6QjKXc/pTV46Q2Qoe5CZDNSB0DiZOLB3bXg
+         nAylFEpi+EH3Hpj/H59EpQARcn3tuDLLtikQtOenF0cPVrMTuVKQ8GVfKpZ1pruYpzW9
+         E8lxLUOVCKrKoYFi8WcYIlZJ/ugxEJYSItftV+CEuc8yHhI35bRXv7Ja24705OBwyVDx
+         Ryuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aAqLxWPd9+QMBWFuEQElxn6/m6yxdZof4mEq0mm4r/g=;
+        b=TqvZitbi444Qf15OIDNVrL2I4vtCcjeftL6e9uJD0qZmpPmYD7s0TLPnlg/fgpB64p
+         9xXVeW4YTxobSJF+XunOTqyEzWOyBeS12SUc+dk0iGocRuambnHtN5wFs2SkVtyd0/oE
+         54SFVuQdMJYQ1+w26MZW1O62jWT3s2DW0d5IuSO8jTAW56mdnU8uqQiWvBcUKsrYZG5a
+         bpd7GzN0MMGMKXz0obtOGhvURWU579zjYyAOmJ8B9+ZZtet10FfFI5BR6Qn3srPoFDOU
+         NPGyiRz4cHjKC5dqwfm3d1SKBF0METCb7GR+8+FbRU1d7zAe9kYl5VF2ZNCE26LtgZiK
+         8hfg==
+X-Gm-Message-State: AJIora/uIVO74zYKf17ziXGpOHY/fVZ/atjgZD6qZh9392cbHVBL79Rb
+        kzH3LEH0JLymzCMs5D8fJCkRUKZNGxf8t/iA+vZP/w40po4=
+X-Google-Smtp-Source: AGRyM1sgT6upZ6LE9E+vwHMw8/K7pb8ZXNzqZhsZcIXJFzBSPVrR6dJbU4LyhPS6k2GOEJ4S/VxgN/DxGpA4vKWjseE=
+X-Received: by 2002:a81:6cf:0:b0:31c:913c:144c with SMTP id
+ 198-20020a8106cf000000b0031c913c144cmr19070291ywg.437.1657540368693; Mon, 11
+ Jul 2022 04:52:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711084948.274787-2-ying.huang@intel.com>
+References: <20220704101253.808519-1-claudiu.beznea@microchip.com>
+In-Reply-To: <20220704101253.808519-1-claudiu.beznea@microchip.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 11 Jul 2022 13:52:37 +0200
+Message-ID: <CACRpkdZAccZCYXnzvZLZpnPm5k0cn6gc7BDzbA+QWHASn1GNaA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] pinctrl: at91-pio4: remove #ifdef CONFIG_PM_SLEEP
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     ludovic.desroches@microchip.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 04:49:42PM +0800, Huang Ying wrote:
->  	return store_status(status, start, node, i - start);
-> @@ -1768,8 +1768,12 @@ static int do_pages_move(struct mm_struct *mm, nodemask_t task_nodes,
->  
->  		err = move_pages_and_store_status(mm, current_node, &pagelist,
->  				status, start, i, nr_pages);
-> -		if (err)
-> +		if (err) {
-> +			/* We have stored status of page i */
+On Mon, Jul 4, 2022 at 12:10 PM Claudiu Beznea
+<claudiu.beznea@microchip.com> wrote:
 
-IMHO, "We have accounted for page i" gives a more clear statement.
+> Remove #ifdef CONFIG_PM_SLEEP and use pm_sleep_ptr() macro instead.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Both patches applied!
 
-> +			if (err > 0)
-> +				err--;
->  			goto out;
-> +		}
->  		current_node = NUMA_NO_NODE;
->  	}
->  out_flush:
-> -- 
-> 2.30.2
-> 
-> 
-
--- 
-Oscar Salvador
-SUSE Labs
+Yours,
+Linus Walleij
