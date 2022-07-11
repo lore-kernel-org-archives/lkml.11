@@ -2,166 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9493EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbiGKHYt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
+        id S229689AbiGKHZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiGKHYr (ORCPT
+        with ESMTP id S230132AbiGKHY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:24:47 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A85B13FB6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:24:46 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id e15so5141855edj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:24:46 -0700 (PDT)
+        Mon, 11 Jul 2022 03:24:56 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB07186F4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:24:54 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id v7so2008668pfb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:24:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wDveJzFZvRjiL1p9LtdiJFd70DGE33Tfto29/Q9eZIc=;
-        b=faCMdkRJbTLAW1mT2GEpBEvgCpZbtj4RfoLXG75nue3CJ/SqoLmZGuLfHs/21mK5e6
-         4sARlKgvrEhQ8rhJOEi1P1hf8qPUjiq0yXfgagquQm9wJHr3mQixjkEx5LfyOYXy469F
-         sLc8sohYou4aJy2giHSCUjlbVfYuGzVCFO9JfPpDJYOYicAMCyVnBsXVgQ5ByMT49Pi0
-         u4Wpe3WZzVKLDaFHsQi4qw2TYlbbYgk40ZlDX3lnnJkB5MZVv0ZRiebHOkmHFGDfKCCh
-         3fR1b5Dc3CcsT4inKT5rMvLtWYUBTodWRDswp4RRDuBMZTEyv8KzSXdwggESl/orK6IJ
-         lqaQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Fbb8SneSCjlmPlmsdgGOqvR9vFnuRN+8XsuuuV97jTk=;
+        b=ZVKUq5m0ZGeJ0bDPk/Of0lw3vBoAXuog+tiV0oMC8syhvllGn1ciGoliPyV853yuKm
+         sVVc6Y2oOXnO+hVVZX7nkCW3QXv6hyjdC8gJtuMBKib3QOjiikDNvVMwVtSVDzMyKZpJ
+         krYJ/WakyTmo6Mbs2UVgIxUlQgki2I0GOQHqM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wDveJzFZvRjiL1p9LtdiJFd70DGE33Tfto29/Q9eZIc=;
-        b=GNVSKjJ2U9GcTBdlduEoLeZzXOh3L+8vneZglqsCkm08JhjBxRaVm9rMMgLToCpTf2
-         6FJjOSJj+U52Vhb9j715C8d+leAJBFdyn7BEMmNyXFlOYwB17JGVKHnaN1rK9izsozmO
-         HRLr9UpneOBN6EEM/375iCOWLvXIXBLWRdkYFFBAy+bo2/Lri60BdVeopPz/T9m5OAjz
-         KZJcBc01Qp63z6E72qBhU5NOkK/B1T2Moe3BnEIdPU2eEV95vtHax1BOgCAVb6AApR8R
-         7LDyDgkaHIPqLvMVpuA1506eTkAn5563AJN1NSDxh/OC3jfCFoxEzU2xwkTgYLI/jKE3
-         JhTg==
-X-Gm-Message-State: AJIora9St4OSyQZlafRff0hrXGCeP8MazMQfZI4P+lswRMp/uH5pauRI
-        DUQNhIRuT8oddpjPGjwfKSaZonFqfi7h9+Ed1g/i
-X-Google-Smtp-Source: AGRyM1vv0aPwxFE/jj4WcGMRymePPG14ezSoC47aHzECUL2MuCr+eTMM0BvBw0+r4HWJPU5QcGRM3VnUbYrpnMYBr4Q=
-X-Received: by 2002:a05:6402:240a:b0:437:d2b6:3dde with SMTP id
- t10-20020a056402240a00b00437d2b63ddemr23062785eda.62.1657524284790; Mon, 11
- Jul 2022 00:24:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Fbb8SneSCjlmPlmsdgGOqvR9vFnuRN+8XsuuuV97jTk=;
+        b=tcWAsGp+EXmMIVd6ccKjRQqVRo00eL1FzZi89RyGCSfqgQqzL2wSUaAcpHH6ZvPc5O
+         YcUCeClgWNrbL+hbdN6OIJ5I3ZDEpSeVfNYOR2gIiKjgzqeTFwn7gARSYVTzYDFhsOD0
+         1nqNTuidVNSVUB6BQIhWpZQFaC+3r5Tac1TJLwLcjpTzCuj/ViVACFNoS8RGhfakWpQN
+         7YZphitDf5xAG5t9w+9hmAubWHSy19d0gHX0a1EBkcb45s+btP9Sn56hKTsv2o+HtB7h
+         ezj2V+1BAOv8LwUk4ta1OTpeMppc+SZW17uNfAHpIMIQWnKIN6jkM/Nrp4Dxz1uSyVuQ
+         hPuA==
+X-Gm-Message-State: AJIora+s+TscIqHmupPnzR8JXw/wCDld3Aq9gA7lsMIIsp0ztNvvT3Kd
+        m57lTRogj5QgXnNYz+64Li7in7aCYcjz6w==
+X-Google-Smtp-Source: AGRyM1sfH/Q2h4TbuPD98mQptsgz1V0zqedGbU2qSmm2w78N9wr2dQSx0cPWrKh87Zb6IhQ0gNZ/vQ==
+X-Received: by 2002:a65:6bca:0:b0:411:f92b:5e39 with SMTP id e10-20020a656bca000000b00411f92b5e39mr15338585pgw.259.1657524294041;
+        Mon, 11 Jul 2022 00:24:54 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id z8-20020aa79e48000000b0051bc5f4df1csm4012839pfq.154.2022.07.11.00.24.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 00:24:53 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v4 2/9] usb: typec: Add retimer handle to port
+Date:   Mon, 11 Jul 2022 07:22:56 +0000
+Message-Id: <20220711072333.2064341-3-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
+In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
+References: <20220711072333.2064341-1-pmalani@chromium.org>
 MIME-Version: 1.0
-References: <20220706050503.171-1-xieyongji@bytedance.com> <CACGkMEv1tzenaGSUvYXEuxdmXyaZxQ24QspXRRA_95mMp4PWSg@mail.gmail.com>
- <CACycT3u3kOzzQjKBYNAB5vtpgcmPg7FjJ5yTYMtQo0SJVrBmZg@mail.gmail.com>
- <CACGkMEvtC1VmGjhV6QpEeu+nUikGj5eT79hhyS59rpK1s31TUg@mail.gmail.com>
- <CACycT3sNnmV8jrnjFkft6oST_6SGLc43f8Y4ZpomkPeOsvsorQ@mail.gmail.com> <CACGkMEsuGif+X4Maa-qSNYLzfkvBKV9ZkVEUFgYnjsUUwS4Dkw@mail.gmail.com>
-In-Reply-To: <CACGkMEsuGif+X4Maa-qSNYLzfkvBKV9ZkVEUFgYnjsUUwS4Dkw@mail.gmail.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Mon, 11 Jul 2022 15:24:33 +0800
-Message-ID: <CACycT3vgaOrLVq+GDRK1PqqBRCkUAU0bYH=2CDvudsX0F9FBDA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/5] VDUSE: Support registering userspace memory as
- bounce buffer
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst <mst@redhat.com>, Liu Xiaodong <xiaodong.liu@intel.com>,
-        Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:02 PM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Fri, Jul 8, 2022 at 5:53 PM Yongji Xie <xieyongji@bytedance.com> wrote:
-> >
-> > On Fri, Jul 8, 2022 at 4:38 PM Jason Wang <jasowang@redhat.com> wrote:
-> > >
-> > > On Wed, Jul 6, 2022 at 6:16 PM Yongji Xie <xieyongji@bytedance.com> wrote:
-> > > >
-> > > > On Wed, Jul 6, 2022 at 5:30 PM Jason Wang <jasowang@redhat.com> wrote:
-> > > > >
-> > > > > On Wed, Jul 6, 2022 at 1:05 PM Xie Yongji <xieyongji@bytedance.com> wrote:
-> > > > > >
-> > > > > > Hi all,
-> > > > > >
-> > > > > > This series introduces some new ioctls: VDUSE_IOTLB_GET_INFO,
-> > > > > > VDUSE_IOTLB_REG_UMEM and VDUSE_IOTLB_DEREG_UMEM to support
-> > > > > > registering and de-registering userspace memory for IOTLB
-> > > > > > as bounce buffer in virtio-vdpa case.
-> > > > > >
-> > > > > > The VDUSE_IOTLB_GET_INFO ioctl can help user to query IOLTB
-> > > > > > information such as bounce buffer size. Then user can use
-> > > > > > those information on VDUSE_IOTLB_REG_UMEM and
-> > > > > > VDUSE_IOTLB_DEREG_UMEM ioctls to register and de-register
-> > > > > > userspace memory for IOTLB.
-> > > > > >
-> > > > > > During registering and de-registering, the DMA data in use
-> > > > > > would be copied from kernel bounce pages to userspace bounce
-> > > > > > pages and back.
-> > > > > >
-> > > > > > With this feature, some existing application such as SPDK
-> > > > > > and DPDK can leverage the datapath of VDUSE directly and
-> > > > > > efficiently as discussed before [1][2]. They can register
-> > > > > > some preallocated hugepages to VDUSE to avoid an extra
-> > > > > > memcpy from bounce-buffer to hugepages.
-> > > > >
-> > > > > This is really interesting.
-> > > > >
-> > > > > But a small concern on uAPI is that this seems to expose the VDUSE
-> > > > > internal implementation (bounce buffer) to userspace. We tried hard to
-> > > > > hide it via the GET_FD before. Anyway can we keep it?
-> > > > >
-> > > >
-> > > > Another way is changing GET_FD ioctl to add a flag or reuse 'perm'
-> > > > field to indicate whether a IOVA region supports userspace memory
-> > > > registration. Then userspace can use
-> > > > VDUSE_IOTLB_REG_UMEM/VDUSE_IOTLB_DEREG_UMEM to register/deregister
-> > > > userspace memory for this IOVA region.
-> > >
-> > > Looks better.
-> > >
-> >
-> > OK.
-> >
-> > > > Any suggestions?
-> > >
-> > > I wonder what's the value of keeping the compatibility with the kernel
-> > > mmaped bounce buffer. It means we need to take extra care on e.g data
-> > > copying when reg/reg user space memory.
-> > >
-> >
-> > I'm not sure I get your point on the compatibility with the kernel
-> > bounce buffer. Do you mean they use the same iova region?
->
-> Yes.
->
-> >
-> > The userspace daemon might crash or reboot. In those cases, we still
-> > need a kernel buffer to store/recover the data.
->
-> Yes, this should be a good point.
->
-> >
-> > > Can we simply allow the third kind of fd that only works for umem registration?
-> > >
-> >
-> > Do you mean using another iova region for umem?
->
-> I meant having a new kind of fd that only allows umem registration.
->
+Similar to mux and orientation switch, add a handle for registered
+retimer to the port, so that it has handles to the various switches
+connected to it.
 
-OK. It seems to be a little complicated to allow mapping a registered
-user memory via a new fd, e.g. how to handle the mapping if the
-userspace daemon exits but the fd is already passed to another
-process.
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
 
-> >I think we don't need
-> > a fd in umem case since the userspace daemon can access the memory
-> > directly without using mmap() to map it into the address space in
-> > advance.
->
-> Ok, I will have a look at the code and get back.
->
+Changes since v3:
+- No changes.
 
-OK. Looking forward to your reply.
+Changes since v2:
+- No changes.
 
-Thanks,
-Yongji
+Changes since v1:
+- Relinquish retimer reference during typec_release.
+
+ drivers/usb/typec/class.c | 9 +++++++++
+ drivers/usb/typec/class.h | 1 +
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+index 9062836bb638..f08e32d552b4 100644
+--- a/drivers/usb/typec/class.c
++++ b/drivers/usb/typec/class.c
+@@ -12,6 +12,7 @@
+ #include <linux/slab.h>
+ #include <linux/usb/pd_vdo.h>
+ #include <linux/usb/typec_mux.h>
++#include <linux/usb/typec_retimer.h>
+ 
+ #include "bus.h"
+ #include "class.h"
+@@ -1736,6 +1737,7 @@ static void typec_release(struct device *dev)
+ 	ida_destroy(&port->mode_ids);
+ 	typec_switch_put(port->sw);
+ 	typec_mux_put(port->mux);
++	typec_retimer_put(port->retimer);
+ 	kfree(port->cap);
+ 	kfree(port);
+ }
+@@ -2249,6 +2251,13 @@ struct typec_port *typec_register_port(struct device *parent,
+ 		return ERR_PTR(ret);
+ 	}
+ 
++	port->retimer = typec_retimer_get(&port->dev);
++	if (IS_ERR(port->retimer)) {
++		ret = PTR_ERR(port->retimer);
++		put_device(&port->dev);
++		return ERR_PTR(ret);
++	}
++
+ 	ret = device_add(&port->dev);
+ 	if (ret) {
+ 		dev_err(parent, "failed to register port (%d)\n", ret);
+diff --git a/drivers/usb/typec/class.h b/drivers/usb/typec/class.h
+index 43fcf9e37a8c..673b2952b074 100644
+--- a/drivers/usb/typec/class.h
++++ b/drivers/usb/typec/class.h
+@@ -55,6 +55,7 @@ struct typec_port {
+ 	enum typec_orientation		orientation;
+ 	struct typec_switch		*sw;
+ 	struct typec_mux		*mux;
++	struct typec_retimer		*retimer;
+ 
+ 	const struct typec_capability	*cap;
+ 	const struct typec_operations   *ops;
+-- 
+2.37.0.144.g8ac04bfd2-goog
+
