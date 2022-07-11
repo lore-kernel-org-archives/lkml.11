@@ -2,152 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFC4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 592A1CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbiGKJCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:02:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
+        id S230354AbiGKJDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiGKJCs (ORCPT
+        with ESMTP id S229652AbiGKJDm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:02:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FA8E21E31
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:02:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657530166;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Mon, 11 Jul 2022 05:03:42 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212FF64EB;
+        Mon, 11 Jul 2022 02:03:40 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 03FBB226B2;
+        Mon, 11 Jul 2022 09:03:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657530219; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=KahG8dPujyuQmr3vS7XPH97ViH9jTIKR8+ux8kd1QT8=;
-        b=W3sTrSuhCr6HC+/MmWLSGXz4MACtGvnM4IBuMXA21UG8ANLcESZgYdVrRVrdd0YLb1s4K7
-        9mTwDw/7uvDXcKLqjAjWZH7oCKoiGe0Q81GtvsqvGZ/f2gXHnyWXE63JTHz8T2MoCMmlUA
-        ngiNCaWI0zHiqZWg9EHgyOQ8nTXKOyE=
-Received: from mail-ua1-f71.google.com (mail-ua1-f71.google.com
- [209.85.222.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-564-EGLab0c2NcqI8CLq9OEUJA-1; Mon, 11 Jul 2022 05:02:45 -0400
-X-MC-Unique: EGLab0c2NcqI8CLq9OEUJA-1
-Received: by mail-ua1-f71.google.com with SMTP id o5-20020ab01505000000b00382efb8efabso898477uae.12
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:02:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KahG8dPujyuQmr3vS7XPH97ViH9jTIKR8+ux8kd1QT8=;
-        b=eIRCRXn/bonukV7C0vdIqGLg9TkRGrq+7FvNYb4hmsIfzUkmyp7r+QzngglP3gmyxZ
-         FHStY3YcoU5IC4qaXoVvrvnlkVdBg7IfX6igctOPJwJ613Lyp9ITl2Aebk74wpb8VhB3
-         CQLeYu53hg5C4aXoLvhEAqnMMgRK2P5QM+4X29mRUeXK0BQnyE/aaeH1YfRr8Rw8EsRm
-         LSLFivdjiI05Xx4irBMkt9Y0b70+R7KTQQxCcbD67PGk72G3Au1Yqn0b/4ZH/bUvc1oU
-         BB1mhAAv5czDy9QFAMutWlf9hTlDtddlSVB6R5unOzn4qanjGefm/puU9LZ+/76k5xHU
-         XgDQ==
-X-Gm-Message-State: AJIora8RORzcRluzqFcwq/gBNMIefsIzxM7FsCMw/5bIxS+w2FmMGOMM
-        pNVPMUdmbA+d7OwhgokQy+uEZXKTYrCc4OBoOPZW4hpYxXj3zQBjSO4pyWipQl0cJ/nZttP2stb
-        FOT8YL7JH45kOZ28OlAi23Y7/HX0nuV3AERCBpCBg
-X-Received: by 2002:a67:c894:0:b0:324:c5da:a9b5 with SMTP id v20-20020a67c894000000b00324c5daa9b5mr5669763vsk.33.1657530164718;
-        Mon, 11 Jul 2022 02:02:44 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1teULKkvMHQJT95HO1uc0BNaAWznMll/Eik667wlaxMwKBx5Q4HHSX6ytTJUr0wN8GaaKbk1p8dwuemfZtwOG4=
-X-Received: by 2002:a67:c894:0:b0:324:c5da:a9b5 with SMTP id
- v20-20020a67c894000000b00324c5daa9b5mr5669757vsk.33.1657530164473; Mon, 11
- Jul 2022 02:02:44 -0700 (PDT)
+        bh=YHFvpJ9HZGIrPeQPuzym79G8/kyQVIfu90WIp/40lrI=;
+        b=r//wUZgrU9F6EXZ67R6ut5+bIdVZD/pOqxHq//7tgykvfDP5E2fL+fHSCGc0vRSGW037FD
+        27Q0Ytov5xgQic1WjcJGyVGjmfNAlFlrCJN+XIN3/U1NSzFURJYDukaMHKne3MeM5utNNq
+        YIwNALqqS4+CpqoDbeG040384kLHToU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657530219;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YHFvpJ9HZGIrPeQPuzym79G8/kyQVIfu90WIp/40lrI=;
+        b=8+nc45zwLuD3FGlEN42gW8xKvgVizWg0IaZuN3qR5/w0fyUEokB+d1JcFri1kqlZ/8l2IP
+        ohLa3YzDe5Cf3qCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B717A13322;
+        Mon, 11 Jul 2022 09:03:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +6aoK2rny2I+NQAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Mon, 11 Jul 2022 09:03:38 +0000
+Message-ID: <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de>
+Date:   Mon, 11 Jul 2022 11:03:38 +0200
 MIME-Version: 1.0
-References: <20220711075225.15687-1-mlombard@redhat.com>
-In-Reply-To: <20220711075225.15687-1-mlombard@redhat.com>
-From:   Maurizio Lombardi <mlombard@redhat.com>
-Date:   Mon, 11 Jul 2022 11:02:33 +0200
-Message-ID: <CAFL455nFxcrpezZENBHhMe_D7mE9N_v9mN9YjYQr1Z=-E3inug@mail.gmail.com>
-Subject: Re: [PATCH] mm: prevent page_frag_alloc() from corrupting the memory
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?5oSa5qCR?= <chen45464546@163.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 4/5] drm/modes: Add support for driver-specific named
+ modes
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hans de Goede <hdegoede@redhat.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1657301107.git.geert@linux-m68k.org>
+ <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------i9HZ5JhPjq6YARR0Q2xTKKbe"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tested with this kernel module:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------i9HZ5JhPjq6YARR0Q2xTKKbe
+Content-Type: multipart/mixed; boundary="------------0dPtI0BWIf6KarQZJXsRZvt7";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Geert Uytterhoeven <geert@linux-m68k.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Airlie <airlied@linux.ie>,
+ Daniel Vetter <daniel@ffwll.ch>, Hans de Goede <hdegoede@redhat.com>
+Cc: dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+ linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de>
+Subject: Re: [PATCH 4/5] drm/modes: Add support for driver-specific named
+ modes
+References: <cover.1657301107.git.geert@linux-m68k.org>
+ <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
+In-Reply-To: <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
 
-http://bsdbackstore.eu/misc/oomk/
+--------------0dPtI0BWIf6KarQZJXsRZvt7
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-It requires 2 parameters: the first one is the amount of memory you
-want to allocate with page_frag_alloc(), the second one is the size of
-the fragment
-I tested it on a machine with ~7Gb of free memory.
+SGkgR2VlcnQNCg0KQW0gMDguMDcuMjIgdW0gMjA6MjEgc2NocmllYiBHZWVydCBVeXR0ZXJo
+b2V2ZW46DQo+IFRoZSBtb2RlIHBhcnNpbmcgY29kZSByZWNvZ25pemVzIG5hbWVkIG1vZGVz
+IG9ubHkgaWYgdGhleSBhcmUgZXhwbGljaXRseQ0KPiBsaXN0ZWQgaW4gdGhlIGludGVybmFs
+IHdoaXRlbGlzdCwgd2hpY2ggaXMgY3VycmVudGx5IGxpbWl0ZWQgdG8gIk5UU0MiDQo+IGFu
+ZCAiUEFMIi4NCj4gDQo+IFByb3ZpZGUgYSBtZWNoYW5pc20gZm9yIGRyaXZlcnMgdG8gb3Zl
+cnJpZGUgdGhpcyBsaXN0IHRvIHN1cHBvcnQgY3VzdG9tDQo+IG1vZGUgbmFtZXMuDQo+IA0K
+PiBJZGVhbGx5LCB0aGlzIGxpc3Qgc2hvdWxkIGp1c3QgY29tZSBmcm9tIHRoZSBkcml2ZXIn
+cyBhY3R1YWwgbGlzdCBvZg0KPiBtb2RlcywgYnV0IGNvbm5lY3Rvci0+cHJvYmVkX21vZGVz
+IGlzIG5vdCB5ZXQgcG9wdWxhdGVkIGF0IHRoZSB0aW1lIG9mDQo+IHBhcnNpbmcuDQoNCkkn
+dmUgbG9va2VkIGZvciBjb2RlIHRoYXQgdXNlcyB0aGVzZSBuYW1lcywgY291bGRuJ3QgZmlu
+ZCBhbnkuIEhvdyBpcyANCnRoaXMgYmVpbmcgdXNlZCBpbiBwcmFjdGljZT8gRm9yIGV4YW1w
+bGUsIGlmIEkgc2F5ICJQQUwiIG9uIHRoZSBjb21tYW5kIA0KbGluZSwgaXMgdGhlcmUgRFJN
+IGNvZGUgdGhhdCBmaWxscyBpbiB0aGUgUEFMIG1vZGUgcGFyYW1ldGVycz8NCg0KQW5kIGFu
+b3RoZXIgcXVlc3Rpb24gSSBoYXZlIGlzIHdoZXRoZXIgdGhpcyB3aGl0ZWxpc3QgYmVsb25n
+cyBpbnRvIHRoZSANCmRyaXZlciBhdCBhbGwuIFN0YW5kYXJkIG1vZGVzIGV4aXN0IGluZGVw
+ZW5kZW50IGZyb20gZHJpdmVycyBvciANCmhhcmR3YXJlLiBTaG91bGRuJ3QgdGhlcmUgc2lt
+cGx5IGJlIGEgZ2xvYmFsIGxpc3Qgb2YgYWxsIHBvc3NpYmxlIG1vZGUgDQpuYW1lcz8gRHJp
+dmVycyB3b3VsZCBmaWx0ZXIgb3V0IHRoZSB1bnN1cHBvcnRlZCBtb2RlcyBhbnl3YXkuDQoN
+CkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEdlZXJ0IFV5
+dHRlcmhvZXZlbiA8Z2VlcnRAbGludXgtbTY4ay5vcmc+DQo+IC0tLQ0KPiAgIGRyaXZlcnMv
+Z3B1L2RybS9kcm1fbW9kZXMuYyB8IDE1ICsrKysrKysrKysrLS0tLQ0KPiAgIGluY2x1ZGUv
+ZHJtL2RybV9jb25uZWN0b3IuaCB8IDEwICsrKysrKysrKysNCj4gICAyIGZpbGVzIGNoYW5n
+ZWQsIDIxIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9ncHUvZHJtL2RybV9tb2Rlcy5jIGIvZHJpdmVycy9ncHUvZHJtL2RybV9t
+b2Rlcy5jDQo+IGluZGV4IDljZTI3NWZiZGE1NjZiN2MuLjdhMDBlYjZkZjUwMmU5OTEgMTAw
+NjQ0DQo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9kcm1fbW9kZXMuYw0KPiArKysgYi9kcml2
+ZXJzL2dwdS9kcm0vZHJtX21vZGVzLmMNCj4gQEAgLTE3NDgsMjUgKzE3NDgsMzEgQEAgc3Rh
+dGljIGludCBkcm1fbW9kZV9wYXJzZV9jbWRsaW5lX29wdGlvbnMoY29uc3QgY2hhciAqc3Ry
+LA0KPiAgIHN0YXRpYyBjb25zdCBjaGFyICogY29uc3QgZHJtX25hbWVkX21vZGVzX3doaXRl
+bGlzdFtdID0gew0KPiAgIAkiTlRTQyIsDQo+ICAgCSJQQUwiLA0KPiArCU5VTEwNCj4gICB9
+Ow0KPiAgIA0KPiAgIHN0YXRpYyBpbnQgZHJtX21vZGVfcGFyc2VfY21kbGluZV9uYW1lZF9t
+b2RlKGNvbnN0IGNoYXIgKm5hbWUsDQo+ICAgCQkJCQkgICAgIHVuc2lnbmVkIGludCBsZW5n
+dGgsDQo+ICAgCQkJCQkgICAgIGJvb2wgcmVmcmVzaCwNCj4gKwkJCQkJICAgICBjb25zdCBz
+dHJ1Y3QgZHJtX2Nvbm5lY3RvciAqY29ubmVjdG9yLA0KPiAgIAkJCQkJICAgICBzdHJ1Y3Qg
+ZHJtX2NtZGxpbmVfbW9kZSAqbW9kZSkNCj4gICB7DQo+ICsJY29uc3QgY2hhciAqIGNvbnN0
+ICpuYW1lZF9tb2Rlc193aGl0ZWxpc3Q7DQo+ICAgCXVuc2lnbmVkIGludCBpOw0KPiAgIAlp
+bnQgcmV0Ow0KPiAgIA0KPiAtCWZvciAoaSA9IDA7IGkgPCBBUlJBWV9TSVpFKGRybV9uYW1l
+ZF9tb2Rlc193aGl0ZWxpc3QpOyBpKyspIHsNCj4gLQkJcmV0ID0gc3RyX2hhc19wcmVmaXgo
+bmFtZSwgZHJtX25hbWVkX21vZGVzX3doaXRlbGlzdFtpXSk7DQo+ICsJbmFtZWRfbW9kZXNf
+d2hpdGVsaXN0ID0gY29ubmVjdG9yLT5uYW1lZF9tb2Rlc193aGl0ZWxpc3QgPyA6DQo+ICsJ
+CQkJZHJtX25hbWVkX21vZGVzX3doaXRlbGlzdDsNCj4gKw0KPiArCWZvciAoaSA9IDA7IG5h
+bWVkX21vZGVzX3doaXRlbGlzdFtpXTsgaSsrKSB7DQo+ICsJCXJldCA9IHN0cl9oYXNfcHJl
+Zml4KG5hbWUsIG5hbWVkX21vZGVzX3doaXRlbGlzdFtpXSk7DQo+ICAgCQlpZiAoIXJldCkN
+Cj4gICAJCQljb250aW51ZTsNCj4gICANCj4gICAJCWlmIChyZWZyZXNoKQ0KPiAgIAkJCXJl
+dHVybiAtRUlOVkFMOyAvKiBuYW1lZCArIHJlZnJlc2ggaXMgaW52YWxpZCAqLw0KPiAgIA0K
+PiAtCQlzdHJjcHkobW9kZS0+bmFtZSwgZHJtX25hbWVkX21vZGVzX3doaXRlbGlzdFtpXSk7
+DQo+ICsJCXN0cmNweShtb2RlLT5uYW1lLCBuYW1lZF9tb2Rlc193aGl0ZWxpc3RbaV0pOw0K
+PiAgIAkJbW9kZS0+c3BlY2lmaWVkID0gdHJ1ZTsNCj4gICAJCXJldHVybiAwOw0KPiAgIAl9
+DQo+IEBAIC0xODUwLDcgKzE4NTYsOCBAQCBib29sIGRybV9tb2RlX3BhcnNlX2NvbW1hbmRf
+bGluZV9mb3JfY29ubmVjdG9yKGNvbnN0IGNoYXIgKm1vZGVfb3B0aW9uLA0KPiAgIAkvKiBG
+aXJzdCBjaGVjayBmb3IgYSBuYW1lZCBtb2RlICovDQo+ICAgCWlmIChtb2RlX2VuZCkgew0K
+PiAgIAkJcmV0ID0gZHJtX21vZGVfcGFyc2VfY21kbGluZV9uYW1lZF9tb2RlKG5hbWUsIG1v
+ZGVfZW5kLA0KPiAtCQkJCQkJCXJlZnJlc2hfcHRyLCBtb2RlKTsNCj4gKwkJCQkJCQlyZWZy
+ZXNoX3B0ciwgY29ubmVjdG9yLA0KPiArCQkJCQkJCW1vZGUpOw0KPiAgIAkJaWYgKHJldCkN
+Cj4gICAJCQlyZXR1cm4gZmFsc2U7DQo+ICAgCX0NCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
+ZHJtL2RybV9jb25uZWN0b3IuaCBiL2luY2x1ZGUvZHJtL2RybV9jb25uZWN0b3IuaA0KPiBp
+bmRleCAzYWM0YmY4N2YyNTcxYzRjLi42MzYxZjhhNTk2YzAxMTA3IDEwMDY0NA0KPiAtLS0g
+YS9pbmNsdWRlL2RybS9kcm1fY29ubmVjdG9yLmgNCj4gKysrIGIvaW5jbHVkZS9kcm0vZHJt
+X2Nvbm5lY3Rvci5oDQo+IEBAIC0xNjU5LDYgKzE2NTksMTYgQEAgc3RydWN0IGRybV9jb25u
+ZWN0b3Igew0KPiAgIA0KPiAgIAkvKiogQGhkcl9zaW5rX21ldGFkYXRhOiBIRFIgTWV0YWRh
+dGEgSW5mb3JtYXRpb24gcmVhZCBmcm9tIHNpbmsgKi8NCj4gICAJc3RydWN0IGhkcl9zaW5r
+X21ldGFkYXRhIGhkcl9zaW5rX21ldGFkYXRhOw0KPiArDQo+ICsJLyoqDQo+ICsJICogQG5h
+bWVkX21vZGVzX3doaXRlbGlzdDoNCj4gKwkgKg0KPiArCSAqIE9wdGlvbmFsIE5VTEwtdGVy
+bWluYXRlZCBhcnJheSBvZiBuYW1lcyB0byBiZSBjb25zaWRlcmVkIHZhbGlkIG1vZGUNCj4g
+KwkgKiBuYW1lcy4gIFRoaXMgbGV0cyB0aGUgY29tbWFuZCBsaW5lIG9wdGlvbiBwYXJzZXIg
+ZGlzdGluZ3Vpc2ggYmV0d2Vlbg0KPiArCSAqIG1vZGUgbmFtZXMgYW5kIGZyZWVzdGFuZGlu
+ZyBleHRyYXMgYW5kL29yIG9wdGlvbnMuDQo+ICsJICogSWYgbm90IHNldCwgYSBzZXQgb2Yg
+ZGVmYXVsdHMgd2lsbCBiZSB1c2VkLg0KPiArCSAqLw0KPiArCWNvbnN0IGNoYXIgKiBjb25z
+dCAqbmFtZWRfbW9kZXNfd2hpdGVsaXN0Ow0KPiAgIH07DQo+ICAgDQo+ICAgI2RlZmluZSBv
+YmpfdG9fY29ubmVjdG9yKHgpIGNvbnRhaW5lcl9vZih4LCBzdHJ1Y3QgZHJtX2Nvbm5lY3Rv
+ciwgYmFzZSkNCg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERl
+dmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxk
+c3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJu
+YmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYNCg==
 
-Without the patch:
--------------------------------------------------
-3Gb of memory will be used with frag size = 1024 byte. No issue:
+--------------0dPtI0BWIf6KarQZJXsRZvt7--
 
-#insmod oomk.ko memory_size_gb=3 fragsize=1024
+--------------i9HZ5JhPjq6YARR0Q2xTKKbe
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-[  177.875107] Test begins, memory size = 3 fragsize = 1024
-[  177.974538] Test completed!
+-----BEGIN PGP SIGNATURE-----
 
-10 Gb of memory, 1024 byte frag. page allocation failure but the
-kernel handles it and doesn't crash:
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmLL52oFAwAAAAAACgkQlh/E3EQov+AL
+yQ//T1sdtC7YTRKogLLqelJAozXBm8YVBGwx46Tx0OM3fS4AJRH5a7VxaAu4VY/koVsNhXomDocb
+PfWfy+mixDOSpxyBv4j6b9rn/nuG2wrHvBFvqzJTA8WthwGQtKImAG1b+QUdG7DAQQs5ILRtQZRi
+TO0dK1pzJ5DLsclz9wgMxBiaZ0ikzNdHx05ok9CIRbqpWb+dzM7RncMVM+i+kPY/J+DFKOzFdnUr
+imDnX5Y/XM4K/arrJGSeSTQiWCvlqO5SysRAfKYQcv9e7JN388N3qyDZQEMpqUbjSmvK0/zh5NO/
+CMXzSIoOC9ClBCjsrqM9JzsFJFJ87o6ExIP3qzxdtc8Jq+gR8YKt710e83kaDJDSGIl6ssjYFI/8
+4/PZkAjYbrZVqc45/gJgRIwcegw6MXoGl1gAQX45jQj4OSCECnbSwxAdQ9cD0bc2FSC4yz+Q861W
+4bQkXLctnKFsOE1rDfTF1QKLZm3hh8jzFhmL5LE0f0OYXl5P12Tcmx/0gw3Xg54GvacB4ctCFzbZ
+hd103iaGPvPaqIJkkuIRcmAeOcSG4vIM8OBIUMPrO2mVCxq7c6cferG8UTkVx6m2OlCoGHWftB4v
+pdGujCckewx7fo90JDfC4+97UejVfwLHMGrjv79HrVgod1wM01kJHXa2i1XWuHo+cuL1d/aKGA1J
+A/k=
+=YsXd
+-----END PGP SIGNATURE-----
 
-#insmod oomk.ko memory_size_gb=10 fragsize=1024
-
-[  215.104801] Test begins, memory size = 10 fragsize = 1024
-[  215.227854] insmod: page allocation failure: order:0,
-mode:0xa20(GFP_ATOMIC), nodemask=(null),cpuset=/,mems_allowed=0
-[  215.230231] CPU: 1 PID: 1738 Comm: insmod Kdump: loaded Tainted: G
-         OE    --------- ---  5.14.0-124.kpq0.el9.x86_64 #1
-[  215.232344] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-[  215.233523] Call Trace:
-[  215.234001]  dump_stack_lvl+0x34/0x44
-[  215.234894]  warn_alloc+0x134/0x160
-[  215.235592]  __alloc_pages_slowpath.constprop.0+0x809/0x840
-[  215.236687]  ? get_page_from_freelist+0xc6/0x500
-[  215.237569]  __alloc_pages+0x1fa/0x230
-[  215.238381]  page_frag_alloc_align+0x16c/0x1a0
-[...]
-[  215.315722] allocation number 7379888 failed!
-[  215.426227] Test completed!
-
-10Gb, 4097 byte frag. Kernel crashes:
-
-#insmod oomk.ko memory_size_gb=10 fragsize=4097
-[  623.461505] BUG: Bad page state in process insmod  pfn:10a80c
-[  623.462634] page:000000000654dc14 refcount:0 mapcount:0
-mapping:000000007a56d6cd index:0x0 pfn:0x10a80c
-[  623.464401] memcg:ffff900343a5b501
-[  623.465058] aops:0xffff9003409e5d38 with invalid host inode 00003524480055f0
-[  623.466394] flags: 0x17ffffc0000000(node=0|zone=2|lastcpupid=0x1fffff)
-[  623.467632] raw: 0017ffffc0000000 dead000000000100 dead000000000122
-ffff900346cf2900
-[  623.469069] raw: 0000000000000000 0000000000100010 00000000ffffffff
-ffff900343a5b501
-[  623.470521] page dumped because: page still charged to cgroup
-[...]
-[  626.632838] general protection fault, probably for non-canonical
-address 0xdead000000000108: 0000 [#1] PREEMPT SMP PTI
-[  626.633913] ------------[ cut here ]------------
-[  626.639981] CPU: 0 PID: 722 Comm: agetty Kdump: loaded Tainted: G
- B      OE    --------- ---  5.14.0-124.kpq0.el9.x86_64 #1
-[  626.640923] WARNING: CPU: 1 PID: 22 at mm/slub.c:4566 __ksize+0xc4/0xe0
-[  626.645018] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-[  626.645021] RIP: 0010:___slab_alloc+0x1b7/0x5c0
-
-
-------------------------------------------
-
-With the patch the kernel doesn't crash:
-
-#insmod oomk.ko memory_size_gb=10 fragsize=4097
-[ 4859.358496] Test begins, memory size = 10 fragsize = 4097
-[ 4859.459674] allocation number 607754 failed!
-[ 4859.495489] Test completed!
-
-#insmod oomk.ko memory_size_gb=10 fragsize=40000
-[ 8428.021491] Test begins, memory size = 10 fragsize = 40000
-[ 8428.024308] allocation number 0 failed!
-[ 8428.025709] Test completed!
-
-Maurizio
-
+--------------i9HZ5JhPjq6YARR0Q2xTKKbe--
