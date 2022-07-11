@@ -2,124 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 908A1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 19:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE25C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 19:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230404AbiGKTsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 15:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50282 "EHLO
+        id S229753AbiGKTs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 15:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiGKTse (ORCPT
+        with ESMTP id S230359AbiGKTsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 15:48:34 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC2726C;
-        Mon, 11 Jul 2022 12:48:30 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id f73so10423237yba.10;
-        Mon, 11 Jul 2022 12:48:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VkomuDQLIrGkpVVzmeFT3DYYD8yFSVIJULiDQqnLKDw=;
-        b=o5Js5nG9JFrnJw8FTiNWMEV88/jxGJgvHjwEV4Gq4kBjLVyQPqioyP0vEKHho5OYsb
-         nUrTreABi1P6j0Com5OJ+nHYveim720M8LxJjduQ1g4khIkBdWL4BiyUvtXhvgS4WJnY
-         CdiJXESyLtomBUrhIafge6ECdQ02REUXb8nOMp5Kr0EXoLsPtBGdTxEVLtA+ujs/y3+x
-         Q434BIhOY75cziF/DL4771iz4nr81QNA8KAIV6gtSaD+G5O3JWp3N4tJxdcLKeILEDyb
-         oDTSIx9ShPXrcP+gU873yiLx3I+4nc5kSfa7tiUJham162qK0oF/NUsPfN83w7U4bL0i
-         VZTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VkomuDQLIrGkpVVzmeFT3DYYD8yFSVIJULiDQqnLKDw=;
-        b=cD4XzwpFz5RHKnZL88UNIGckBnUhn7Vo4MVmKiNi3XsdFhgLvOjAJwCg+v5TLgDa1g
-         l5ltfBiwMAiVUBiaEBAWeVA7ieihEdzBr4vZZw2blYG7zDwvZ7jvBKiLn99sqSxnbUi6
-         XpBoX8+9jnck45j8oZ1H5o42d9zbIHP0VGzS+y47gb5pg0Jt5AdI8bxhRHeGNJBWlKoB
-         12zhgLuOUBj3MVm2M6JgpsH9yvndwqban/DfgBk6qslARu5jmJo5OOMZhKzUVdiyYBWP
-         sE5XLtrIA5tpV9PbQIH0Wcfu744voex1pYvviDh624FAGUyOoasKyyP0tMXalG3/FQAT
-         OSkQ==
-X-Gm-Message-State: AJIora88TQgLcEa8Oum6SzqXkrdjFchjvsVnhwa00ZudGb1ShP9Wh6/d
-        27Jo9i3wk7tXc2x0KG6VC2xvpQejLQU3M+cOmH4=
-X-Google-Smtp-Source: AGRyM1uJ2YrRHaWNO/NcEhC1mvA+w9x+HZp1INbuCKtI+dHb6RiQx7Z9HGo20m4O7PWUREkPpZKWsxNuqM9JyhIqvps=
-X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
- w9-20020a05690210c900b00668e27c08f7mr18789665ybu.128.1657568910080; Mon, 11
- Jul 2022 12:48:30 -0700 (PDT)
+        Mon, 11 Jul 2022 15:48:54 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F04D92A276
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 12:48:52 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id AzHUoaJcY26JCAzHUoNSUF; Mon, 11 Jul 2022 21:41:20 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Mon, 11 Jul 2022 21:41:20 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-input@vger.kernel.org
+Subject: [PATCH] HID: multitouch: Use the bitmap API to allocate bitmaps
+Date:   Mon, 11 Jul 2022 21:41:18 +0200
+Message-Id: <3ff2b491c397ba4f763fd2fbcb6795f0c33da2f3.1657568452.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220711192113.3522664-1-horatiu.vultur@microchip.com> <20220711192113.3522664-2-horatiu.vultur@microchip.com>
-In-Reply-To: <20220711192113.3522664-2-horatiu.vultur@microchip.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 11 Jul 2022 21:47:53 +0200
-Message-ID: <CAHp75Vfs8EH-rRn58cS692tZMRFmjFLv6=kB4oqVEGXi5R8BHQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] pinctrl: ocelot: Fix pincfg for lan966x
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        kavyasree.kotagiri@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Michael Walle <michael@walle.cc>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 9:17 PM Horatiu Vultur
-<horatiu.vultur@microchip.com> wrote:
->
-> The blamed commit introduce support for lan966x which use the same
-> pinconf_ops as sparx5. The problem is that pinconf_ops is specific to
-> sparx5. More precisely the offset of the bits in the pincfg register are
-> different and also lan966x doesn't have support for
-> PIN_CONFIG_INPUT_SCHMITT_ENABLE.
->
-> Fix this by making pinconf_ops more generic such that it can be also
-> used by lan966x. This is done by introducing 'ocelot_pincfg_data' which
-> contains the offset and what is supported for each SOC.
+Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 
-Thanks for an update!
-My comments below.
+It is less verbose and it improves the semantic.
 
-...
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/hid/hid-multitouch.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-I believe introducing
-
-  struct ocelot_pincfg_data *opd = info->pincfg_data;
-
-may allow to reduce LoCs...
-
-> +                       *val = regcfg &
-> +                               (info->pincfg_data->pd_bit |
-> +                                info->pincfg_data->pu_bit);
-
-...like here:
-
- *val = regcfg & (opd->pd_bit | opd->pu_bit);
-
-...
-
-> +       info->desc = devm_kmemdup(dev, &data->desc,
-> +                                 sizeof(struct pinctrl_desc), GFP_KERNEL);
-
-sizeof(*info->desc)
-
-and missed the NULL check.
-
-...
-
-> +       info->pincfg_data = devm_kmemdup(dev, &data->pincfg_data,
-> +                                        sizeof(struct ocelot_match_data),
-
-sizeof(*info->pincfg_data)
-(isn't it a bug here?)
-
-> +                                        GFP_KERNEL);
-
-and missed the NULL check.
-
+diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
+index 2e72922e36f5..2b19938e0fb8 100644
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -1300,10 +1300,9 @@ static int mt_touch_input_configured(struct hid_device *hdev,
+ 	if (td->is_buttonpad)
+ 		__set_bit(INPUT_PROP_BUTTONPAD, input->propbit);
+ 
+-	app->pending_palm_slots = devm_kcalloc(&hi->input->dev,
+-					       BITS_TO_LONGS(td->maxcontacts),
+-					       sizeof(long),
+-					       GFP_KERNEL);
++	app->pending_palm_slots = devm_bitmap_zalloc(&hi->input->dev,
++						     td->maxcontacts,
++						     GFP_KERNEL);
+ 	if (!app->pending_palm_slots)
+ 		return -ENOMEM;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
+
