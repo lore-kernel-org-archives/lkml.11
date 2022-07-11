@@ -2,206 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1349FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89101C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231139AbiGKNxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 09:53:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
+        id S230052AbiGKNx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 09:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230447AbiGKNwv (ORCPT
+        with ESMTP id S231174AbiGKNxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 09:52:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FB0961D66
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:52:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657547567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rop7OK4IumhZoT3E3GNMDnS+35IynqSezhWluPU0kXM=;
-        b=L3wGLXEcAT4ZNqu12K0wCQmcnuaWlf5TY1mqdRNw7pixoTDp6EMg9BzZ564LqXnzMc0OUq
-        8An0K1saj2Fc2WN4Da7uLq3UlCRz/MO/oubQqSv7Eqvj0zt6O8z/tpG0SDvGF15XUE/ad2
-        xS5CvyX8mv26u12v/zem3krMtPYh/kg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-166-fVzmwPV6NGmL3XJbDS8qWQ-1; Mon, 11 Jul 2022 09:52:38 -0400
-X-MC-Unique: fVzmwPV6NGmL3XJbDS8qWQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 938C0857A87;
-        Mon, 11 Jul 2022 13:52:38 +0000 (UTC)
-Received: from bfoster.redhat.com (unknown [10.22.32.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6154518ECC;
-        Mon, 11 Jul 2022 13:52:38 +0000 (UTC)
-From:   Brian Foster <bfoster@redhat.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     ikent@redhat.com, onestero@redhat.com, willy@infradead.org
-Subject: [PATCH v2 3/4] pid: tag pids associated with group leader tasks
-Date:   Mon, 11 Jul 2022 09:52:36 -0400
-Message-Id: <20220711135237.173667-4-bfoster@redhat.com>
-In-Reply-To: <20220711135237.173667-1-bfoster@redhat.com>
-References: <20220711135237.173667-1-bfoster@redhat.com>
+        Mon, 11 Jul 2022 09:53:31 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A20B6392C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:53:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=KCysq4rIc3V+HabhmuRWm/KRrKmTWkEH77lnoa+T7RU=; b=ekDBXtBa6voeGbJmmrgsnnpD2h
+        +xfj1dHAqrBLA+weftZC9xSI+szm9pDzmeOS4IYaIqfPmRoOlyyX8zAj4cqojchLSGKsatPOly7OX
+        S5XB8SHGTnnePd7/NOx1pPb0uu2YJ21vEpbT6C0uv5yDmPSyQ17BVlxIGNishq00bS8JUjhB5UiVO
+        gX7+p97EPvgB8uO6KYTwYksaoU6hHVF5YK23zkoweSTsObVXnrqQDltDt0hT9trY+yQaoTXR3gJdY
+        UwfYB3MglJrAANt5ApGL9M35svKan+8dpgPDAkayTweVusWY+mVfxMR/INfygUEJ7p4PP9Ecryb6W
+        xOxHnqcg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oAtqf-0060Nx-DG; Mon, 11 Jul 2022 13:53:17 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 78E0B300110;
+        Mon, 11 Jul 2022 15:53:14 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5C05120D271D1; Mon, 11 Jul 2022 15:53:14 +0200 (CEST)
+Date:   Mon, 11 Jul 2022 15:53:14 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mingo@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [External] Re: [PATCH 3/8] sched/fair: remove redundant
+ cpu_cgrp_subsys->fork()
+Message-ID: <YswrSi46s+XLD18R@hirez.programming.kicks-ass.net>
+References: <20220709151353.32883-1-zhouchengming@bytedance.com>
+ <20220709151353.32883-4-zhouchengming@bytedance.com>
+ <YsvSpyrJxNv7jsQz@hirez.programming.kicks-ass.net>
+ <a41b3436-6875-d3aa-a110-6c438c97126e@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a41b3436-6875-d3aa-a110-6c438c97126e@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Searching the pid_namespace for group leader tasks is a fairly
-inefficient operation. Listing the root directory of a procfs mount
-performs a linear scan of allocated pids, checking each entry for an
-associated PIDTYPE_TGID task to determine whether to populate a
-directory entry. This can cause a significant increase in readdir()
-syscall latency when run in namespaces that might have one or more
-processes with significant thread counts.
+On Mon, Jul 11, 2022 at 09:02:07PM +0800, Chengming Zhou wrote:
+> On 2022/7/11 15:35, Peter Zijlstra wrote:
+> > On Sat, Jul 09, 2022 at 11:13:48PM +0800, Chengming Zhou wrote:
+> >> We use cpu_cgrp_subsys->fork() to set task group for the new fair task
+> >> in cgroup_post_fork().
+> >>
+> >> Since commit b1e8206582f9 ("sched: Fix yet more sched_fork() races")
+> >> has already set task group for the new fair task in sched_cgroup_fork(),
+> >> so cpu_cgrp_subsys->fork() can be removed.
+> >>
+> >>   cgroup_can_fork()	--> pin parent's sched_task_group
+> >>   sched_cgroup_fork()
+> >>     __set_task_cpu	--> set task group
+> >>   cgroup_post_fork()
+> >>     ss->fork() := cpu_cgroup_fork()	--> set again
+> >>
+> >> After this patch's change, task_change_group_fair() only need to
+> >> care about task cgroup migration, make the code much simplier.
+> > 
+> > This:
+> > 
+> >> This patch also move the task se depth setting to set_task_rq(), which
+> >> will set correct depth for the new task se in sched_cgroup_fork().
+> >>
+> >> The se depth setting in attach_entity_cfs_rq() is removed since
+> >> set_task_rq() is a better place to do this when task moves across
+> >> CPUs/groups.
+> > 
+> > really should have been it's own patch. And this actually scares me. Did
+> > you test with priority inheritance bumping the task to FIFO while things
+> > change?
+> > 
+> > This has nothing to do with fork().
+> 
+> Ok, will put this in another patch, so this patch still need this line:
+> 
+>   p->se.depth = tg->se[cpu] ? tg->se[cpu]->depth + 1 : 0;
+> 
+> in set_task_rq() to set depth for new forked task.
 
-To facilitate improved TGID pid searches, tag the ids of pid entries
-that are likely to have an associated PIDTYPE_TGID task. To keep the
-code simple and avoid having to maintain synchronization between tag
-state and post-fork pid-task association changes, the tag is applied
-to all pids allocated for tasks cloned without CLONE_THREAD.
+That would suggest you ordered your patches wrong.
 
-This means that it is possible for a pid to remain tagged in the idr
-tree after being disassociated from the group leader task. For
-example, a process that does a setsid() followed by fork() and
-exit() (to daemonize) will remain associated with the original pid
-for the session, but link with the child pid as the group leader.
-OTOH, the only place other than fork() where a tgid association
-occurs is in the exec() path, which kills all other tasks in the
-group and associates the current task with the preexisting leader
-pid. Therefore, the semantics of the tag are that false positives
-(tagged pids without PIDTYPE_TGID tasks) are possible, but false
-negatives (untagged pids without PIDTYPE_TGID tasks) should never
-occur.
+> I didn't test with "priority inheritance bumping the task to FIFO" case,
+> do you mean the rt_mutex_setprio() bump a fair task to FIFO?
+> 
+> Sorry, I don't get how removing depth setting in attach_entity_cfs_rq()
+> affect that. Could you explain more so I can test it?
 
-This is an effective optimization because false negatives are fairly
-uncommon and don't add overhead (i.e. we already have to check
-pid_task() for tagged entries), but still filters out thread pids
-that are guaranteed not to have TGID task association.
+Well, if you look at the commit that introduced that code:
 
-Tag entries in the pid allocation path when the caller specifies
-that the pid associates with a new thread group. Since false
-negatives are not allowed, warn in the event that a PIDTYPE_TGID
-task is ever attached to an untagged pid. Finally, create a helper
-to implement the task search based on the tag semantics defined
-above (based on search logic currently implemented by next_tgid() in
-procfs).
+  eb7a59b2c888 ("sched/fair: Reset se-depth when task switched to FAIR")
 
-Signed-off-by: Brian Foster <bfoster@redhat.com>
----
- include/linux/pid.h |  3 ++-
- kernel/fork.c       |  2 +-
- kernel/pid.c        | 40 +++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 42 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/pid.h b/include/linux/pid.h
-index 343abf22092e..64caf21be256 100644
---- a/include/linux/pid.h
-+++ b/include/linux/pid.h
-@@ -132,9 +132,10 @@ extern struct pid *find_vpid(int nr);
-  */
- extern struct pid *find_get_pid(int nr);
- extern struct pid *find_ge_pid(int nr, struct pid_namespace *);
-+struct task_struct *find_get_tgid_task(int *id, struct pid_namespace *);
- 
- extern struct pid *alloc_pid(struct pid_namespace *ns, pid_t *set_tid,
--			     size_t set_tid_size);
-+			     size_t set_tid_size, bool group_leader);
- extern void free_pid(struct pid *pid);
- extern void disable_pid_allocation(struct pid_namespace *ns);
- 
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 9d44f2d46c69..3c52f45ec93e 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -2254,7 +2254,7 @@ static __latent_entropy struct task_struct *copy_process(
- 
- 	if (pid != &init_struct_pid) {
- 		pid = alloc_pid(p->nsproxy->pid_ns_for_children, args->set_tid,
--				args->set_tid_size);
-+				args->set_tid_size, !(clone_flags & CLONE_THREAD));
- 		if (IS_ERR(pid)) {
- 			retval = PTR_ERR(pid);
- 			goto bad_fork_cleanup_thread;
-diff --git a/kernel/pid.c b/kernel/pid.c
-index 2fc0a16ec77b..bd72d1dbff95 100644
---- a/kernel/pid.c
-+++ b/kernel/pid.c
-@@ -157,7 +157,7 @@ void free_pid(struct pid *pid)
- }
- 
- struct pid *alloc_pid(struct pid_namespace *ns, pid_t *set_tid,
--		      size_t set_tid_size)
-+		      size_t set_tid_size, bool group_leader)
- {
- 	struct pid *pid;
- 	enum pid_type type;
-@@ -272,6 +272,8 @@ struct pid *alloc_pid(struct pid_namespace *ns, pid_t *set_tid,
- 	for ( ; upid >= pid->numbers; --upid) {
- 		/* Make the PID visible to find_pid_ns. */
- 		idr_replace(&upid->ns->idr, pid, upid->nr);
-+		if (group_leader)
-+			idr_set_tag(&upid->ns->idr, upid->nr);
- 		upid->ns->pid_allocated++;
- 	}
- 	spin_unlock_irq(&pidmap_lock);
-@@ -331,6 +333,10 @@ static struct pid **task_pid_ptr(struct task_struct *task, enum pid_type type)
- void attach_pid(struct task_struct *task, enum pid_type type)
- {
- 	struct pid *pid = *task_pid_ptr(task, type);
-+	struct pid_namespace *pid_ns = ns_of_pid(pid);
-+	pid_t pid_nr = pid_nr_ns(pid, pid_ns);
-+
-+	WARN_ON(type == PIDTYPE_TGID && !idr_get_tag(&pid_ns->idr, pid_nr));
- 	hlist_add_head_rcu(&task->pid_links[type], &pid->tasks[type]);
- }
- 
-@@ -520,6 +526,38 @@ struct pid *find_ge_pid(int nr, struct pid_namespace *ns)
- 	return idr_get_next(&ns->idr, &nr);
- }
- 
-+/*
-+ * Used by proc to find the first thread group leader task with an id greater
-+ * than or equal to *id.
-+ *
-+ * Use the idr tag hint to find the next best pid. The tag does not guarantee a
-+ * linked task exists, so retry until a suitable entry is found.
-+ */
-+struct task_struct *find_get_tgid_task(int *id, struct pid_namespace *ns)
-+{
-+	struct pid *pid;
-+	struct task_struct *t;
-+	unsigned int nr = *id;
-+
-+	rcu_read_lock();
-+
-+	do {
-+		pid = idr_get_next_tag(&ns->idr, nr);
-+		if (!pid) {
-+			rcu_read_unlock();
-+			return NULL;
-+		}
-+		t = pid_task(pid, PIDTYPE_TGID);
-+		nr++;
-+	} while (!t);
-+
-+	*id = pid_nr_ns(pid, ns);
-+	get_task_struct(t);
-+	rcu_read_unlock();
-+
-+	return t;
-+}
-+
- struct pid *pidfd_get_pid(unsigned int fd, unsigned int *flags)
- {
- 	struct fd f;
--- 
-2.35.3
+then it's clear that the original problem was the task temporarily not
+being in the fair class. The most common way for that to be so is
+through PI.
 
