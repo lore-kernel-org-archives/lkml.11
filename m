@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE16CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AA0CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232455AbiGKJaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S232491AbiGKJaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232464AbiGKJ26 (ORCPT
+        with ESMTP id S232430AbiGKJ26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:28:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7028C3D5AA;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42ABD3D5BB;
         Mon, 11 Jul 2022 02:16:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAC0761243;
-        Mon, 11 Jul 2022 09:16:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5C53C34115;
-        Mon, 11 Jul 2022 09:16:11 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4C3AECE1257;
+        Mon, 11 Jul 2022 09:16:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3596EC34115;
+        Mon, 11 Jul 2022 09:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530972;
-        bh=FBu7KY5YYbZo+WK5Ypy6wwAPJNUeHar+h74qFtStpgk=;
+        s=korg; t=1657530966;
+        bh=JPTtwrhYO+9fwde/gMayrS/kfAgw334mCpu7LaLrJOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k09N59zIOh/VOnEj+MXk9uD2iFhLIJa6KduHngKSo8RTwpAXcuWuoOGxE4H5VJ/81
-         b00pd1CN52IVOtNdnyJra7NPs54R05/yAgdNiKhYHESdXGgp1U5n7xRiu8nYwoeUVe
-         jjvpOcmHcK1ykqR/MDOeOmjYUZvZ+d/9wt7bKCeg=
+        b=PvAOPLoyQTU/f096wBGZMRHNGf/Ftg0Au6nEyN7UyFcFDjI/JGikwfhibOOwDbLq/
+         bVVIgS7IgGiWwdDyRN5UfrIwJmYwJyq9FUZWI0IxF0G922QwLuzc9TqmfuQgQFPDMg
+         3+6EJ69OfTW9TSNls5z6LyZtvGTf89TaCDYyy7fE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 051/112] ASoC: SOF: ipc3-topology: Move and correct size checks in sof_ipc3_control_load_bytes()
-Date:   Mon, 11 Jul 2022 11:06:51 +0200
-Message-Id: <20220711090551.020035523@linuxfoundation.org>
+Subject: [PATCH 5.18 049/112] ASoC: rt711-sdca: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 11 Jul 2022 11:06:49 +0200
+Message-Id: <20220711090550.964084337@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -53,71 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit c2d1aec3f5da2475aa13a487d329823b7d27d499 ]
+[ Upstream commit 3e50a5001055d79c04ea1c79fe4b4ff937a3339c ]
 
-Move the size checks prior to allocating memory as these checks do not need
-the data to be allocated and in case of an error we would not need to free
-the allocation.
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over a SoundWire DAI and as such
+should have endianness applied.
 
-The max size must not be less than the size of
-struct sof_ipc_ctrl_data + struct sof_abi_hdr as the ABI header needs to
-be present under all circumstances.
-The check was incorrectly used or between the two size checks.
-
-Fixes: b5cee8feb1d4 ("ASoC: SOF: topology: Make control parsing IPC agnostic")
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220610084735.19397-1-peter.ujfalusi@linux.intel.com
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-32-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/ipc3-topology.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ sound/soc/codecs/rt711-sdca.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
-index cdff48c4195f..80fb82ece38d 100644
---- a/sound/soc/sof/ipc3-topology.c
-+++ b/sound/soc/sof/ipc3-topology.c
-@@ -1578,24 +1578,23 @@ static int sof_ipc3_control_load_bytes(struct snd_sof_dev *sdev, struct snd_sof_
- 	struct sof_ipc_ctrl_data *cdata;
- 	int ret;
+diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
+index bdb1375f0338..57629c18db38 100644
+--- a/sound/soc/codecs/rt711-sdca.c
++++ b/sound/soc/codecs/rt711-sdca.c
+@@ -1208,6 +1208,7 @@ static const struct snd_soc_component_driver soc_sdca_dev_rt711 = {
+ 	.num_dapm_routes = ARRAY_SIZE(rt711_sdca_audio_map),
+ 	.set_jack = rt711_sdca_set_jack_detect,
+ 	.remove = rt711_sdca_remove,
++	.endianness = 1,
+ };
  
--	scontrol->ipc_control_data = kzalloc(scontrol->max_size, GFP_KERNEL);
--	if (!scontrol->ipc_control_data)
--		return -ENOMEM;
--
--	if (scontrol->max_size < sizeof(*cdata) ||
--	    scontrol->max_size < sizeof(struct sof_abi_hdr)) {
--		ret = -EINVAL;
--		goto err;
-+	if (scontrol->max_size < (sizeof(*cdata) + sizeof(struct sof_abi_hdr))) {
-+		dev_err(sdev->dev, "%s: insufficient size for a bytes control: %zu.\n",
-+			__func__, scontrol->max_size);
-+		return -EINVAL;
- 	}
- 
--	/* init the get/put bytes data */
- 	if (scontrol->priv_size > scontrol->max_size - sizeof(*cdata)) {
--		dev_err(sdev->dev, "err: bytes data size %zu exceeds max %zu.\n",
-+		dev_err(sdev->dev,
-+			"%s: bytes data size %zu exceeds max %zu.\n", __func__,
- 			scontrol->priv_size, scontrol->max_size - sizeof(*cdata));
--		ret = -EINVAL;
--		goto err;
-+		return -EINVAL;
- 	}
- 
-+	scontrol->ipc_control_data = kzalloc(scontrol->max_size, GFP_KERNEL);
-+	if (!scontrol->ipc_control_data)
-+		return -ENOMEM;
-+
- 	scontrol->size = sizeof(struct sof_ipc_ctrl_data) + scontrol->priv_size;
- 
- 	cdata = scontrol->ipc_control_data;
+ static int rt711_sdca_set_sdw_stream(struct snd_soc_dai *dai, void *sdw_stream,
 -- 
 2.35.1
 
