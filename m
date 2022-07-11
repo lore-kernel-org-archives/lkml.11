@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B01C5CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD42BCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232068AbiGKM5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59534 "EHLO
+        id S231516AbiGKM5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230453AbiGKM5e (ORCPT
+        with ESMTP id S230014AbiGKM5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:57:34 -0400
+        Mon, 11 Jul 2022 08:57:35 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC872A957;
-        Mon, 11 Jul 2022 05:57:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9DF2F653;
+        Mon, 11 Jul 2022 05:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657544253; x=1689080253;
+  t=1657544255; x=1689080255;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=Kr0TfdyUrLeQLzT7iw1OK58CqnVvhb7gtQzXDXQFHjY=;
-  b=BZCmFlY0dBKLlTJJUy2TQ1yXNnJtjOzr8fH1nnB2IvfyD2KUZejaK2gE
-   HFA3l9cyg9kL0h+DUPYDyGOLrjQ61xTHUQB4Q8dvo461Xq8JqoYwPRWVT
-   tkfIuRj5T+R5fcf175sTMM7b4B3t7Tgfl5qXLS7RiQ47RrMLUDUUJynco
-   4=;
+  bh=Ag4KJcMdjJYGFz4PndGZ7BSSeB/P26WcU/vYUyjwibI=;
+  b=zBCBuN7rlFhk/4HYqPmiTMn5sQcRodgiOHLtgRrKRWKeIzVGmM7+LYJS
+   6mqBSsIvZ9YBSj/+nEQiJp3uEOrfNVwEM1jpNt7kso7+L7haiRYUNacLo
+   kBw5tDZKflGDXxD4IKRBlMWZlpXkV3JEvxltSyU9dyjwdo+94IpXP1BBC
+   8=;
 Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 05:57:33 -0700
+  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 05:57:34 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 05:57:31 -0700
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 05:57:33 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 18:27:11 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 18:27:08 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 82AF03E4E; Mon, 11 Jul 2022 18:27:07 +0530 (IST)
+        id C45583E36; Mon, 11 Jul 2022 18:27:06 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
@@ -45,9 +45,9 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
         bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
         quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
-Subject: [PATCH v6 09/10] drm/msm/disp/dpu: add PSR support for eDP interface in dpu driver
-Date:   Mon, 11 Jul 2022 18:27:03 +0530
-Message-Id: <1657544224-10680-10-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [PATCH v6 01/10] drm/msm/disp/dpu: clear dpu_assign_crtc and get crtc from connector state instead of dpu_enc
+Date:   Mon, 11 Jul 2022 18:26:55 +0530
+Message-Id: <1657544224-10680-2-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
 References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
@@ -55,113 +55,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable PSR on eDP interface using drm self-refresh librabry.
-This patch uses a trigger from self-refresh library to enter/exit
-into PSR, when there are no updates from framework.
+Update crtc retrieval from dpu_enc to dpu_enc connector state,
+since new links get set as part of the dpu enc virt mode set.
+The dpu_enc->crtc cache is no more needed, hence cleaning it as
+part of this change.
 
-Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
 Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    | 13 ++++++++++++-
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 14 ++++++++++++++
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c     |  2 +-
- 3 files changed, 27 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  4 ----
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 30 ++++++++++++++---------------
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  8 --------
+ 3 files changed, 14 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-index f91e3d1..eb3915a 100644
+index b56f777..f91e3d1 100644
 --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
 +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-@@ -18,6 +18,7 @@
- #include <drm/drm_probe_helper.h>
- #include <drm/drm_rect.h>
- #include <drm/drm_vblank.h>
-+#include <drm/drm_self_refresh_helper.h>
+@@ -972,7 +972,6 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
+ 		 */
+ 		if (dpu_encoder_get_intf_mode(encoder) == INTF_MODE_VIDEO)
+ 			release_bandwidth = true;
+-		dpu_encoder_assign_crtc(encoder, NULL);
+ 	}
  
- #include "dpu_kms.h"
- #include "dpu_hw_lm.h"
-@@ -961,6 +962,9 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
+ 	/* wait for frame_event_done completion */
+@@ -1042,9 +1041,6 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
+ 	trace_dpu_crtc_enable(DRMID(crtc), true, dpu_crtc);
+ 	dpu_crtc->enabled = true;
  
- 	DRM_DEBUG_KMS("crtc%d\n", crtc->base.id);
- 
-+	if (old_crtc_state->self_refresh_active)
-+		return;
-+
- 	/* Disable/save vblank irq handling */
- 	drm_crtc_vblank_off(crtc);
- 
-@@ -1521,7 +1525,7 @@ struct drm_crtc *dpu_crtc_init(struct drm_device *dev, struct drm_plane *plane,
- {
- 	struct drm_crtc *crtc = NULL;
- 	struct dpu_crtc *dpu_crtc = NULL;
--	int i;
-+	int i, ret;
- 
- 	dpu_crtc = kzalloc(sizeof(*dpu_crtc), GFP_KERNEL);
- 	if (!dpu_crtc)
-@@ -1558,6 +1562,13 @@ struct drm_crtc *dpu_crtc_init(struct drm_device *dev, struct drm_plane *plane,
- 	/* initialize event handling */
- 	spin_lock_init(&dpu_crtc->event_lock);
- 
-+	ret = drm_self_refresh_helper_init(crtc);
-+	if (ret) {
-+		DPU_ERROR("Failed to initialize %s with self-refresh helpers %d\n",
-+			crtc->name, ret);
-+		return ERR_PTR(ret);
-+	}
-+
- 	DRM_DEBUG_KMS("%s: successfully initialized crtc\n", dpu_crtc->name);
- 	return crtc;
+-	drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state->encoder_mask)
+-		dpu_encoder_assign_crtc(encoder, crtc);
+-
+ 	/* Enable/restore vblank irq handling */
+ 	drm_crtc_vblank_on(crtc);
  }
 diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 3156efb..5dfb56a 100644
+index 52516eb..0fddc9d 100644
 --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
 +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -12,6 +12,7 @@
- #include <linux/kthread.h>
- #include <linux/seq_file.h>
+@@ -181,7 +181,6 @@ struct dpu_encoder_virt {
  
-+#include <drm/drm_atomic.h>
- #include <drm/drm_crtc.h>
- #include <drm/drm_file.h>
- #include <drm/drm_probe_helper.h>
-@@ -1170,11 +1171,24 @@ static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
- 					struct drm_atomic_state *state)
+ 	bool intfs_swapped;
+ 
+-	struct drm_crtc *crtc;
+ 	struct drm_connector *connector;
+ 
+ 	struct dentry *debugfs_root;
+@@ -1245,6 +1244,7 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+ 		struct dpu_encoder_phys *phy_enc)
  {
  	struct dpu_encoder_virt *dpu_enc = NULL;
 +	struct drm_crtc *crtc;
-+	struct drm_crtc_state *old_state = NULL;
- 	int i = 0;
+ 	unsigned long lock_flags;
  
+ 	if (!drm_enc || !phy_enc)
+@@ -1253,9 +1253,14 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+ 	DPU_ATRACE_BEGIN("encoder_vblank_callback");
  	dpu_enc = to_dpu_encoder_virt(drm_enc);
- 	DPU_DEBUG_ENC(dpu_enc, "\n");
  
-+	crtc = drm_atomic_get_old_crtc_for_encoder(state, drm_enc);
-+	if (crtc)
-+		old_state = drm_atomic_get_old_crtc_state(state, crtc);
-+
-+	/*
-+	 * The encoder is already disabled if self refresh mode was set earlier,
-+	 * in the old_state for the corresponding crtc.
-+	 */
-+	if (old_state && old_state->self_refresh_active)
++	if (!dpu_enc->connector || !dpu_enc->connector->state)
 +		return;
 +
- 	mutex_lock(&dpu_enc->enc_lock);
- 	dpu_enc->enabled = false;
++	crtc = dpu_enc->connector->state->crtc;
++
+ 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+-	if (dpu_enc->crtc)
+-		dpu_crtc_vblank_callback(dpu_enc->crtc);
++	if (crtc)
++		dpu_crtc_vblank_callback(crtc);
+ 	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
  
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index bce4764..cc0a674 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -507,7 +507,7 @@ static void dpu_kms_wait_for_commit_done(struct msm_kms *kms,
+ 	atomic_inc(&phy_enc->vsync_cnt);
+@@ -1280,29 +1285,22 @@ static void dpu_encoder_underrun_callback(struct drm_encoder *drm_enc,
+ 	DPU_ATRACE_END("encoder_underrun_callback");
+ }
+ 
+-void dpu_encoder_assign_crtc(struct drm_encoder *drm_enc, struct drm_crtc *crtc)
+-{
+-	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
+-	unsigned long lock_flags;
+-
+-	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+-	/* crtc should always be cleared before re-assigning */
+-	WARN_ON(crtc && dpu_enc->crtc);
+-	dpu_enc->crtc = crtc;
+-	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+-}
+-
+ void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder *drm_enc,
+ 					struct drm_crtc *crtc, bool enable)
+ {
+ 	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
++	struct drm_crtc *new_crtc;
+ 	unsigned long lock_flags;
+ 	int i;
+ 
+ 	trace_dpu_enc_vblank_cb(DRMID(drm_enc), enable);
+ 
++	if (!dpu_enc->connector || !dpu_enc->connector->state)
++		return;
++
++	new_crtc = dpu_enc->connector->state->crtc;
+ 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+-	if (dpu_enc->crtc != crtc) {
++	if (!new_crtc || new_crtc != crtc) {
+ 		spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
  		return;
  	}
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+index 781d41c..edba815 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+@@ -39,14 +39,6 @@ struct msm_display_info {
+ };
  
--	if (!crtc->state->active) {
-+	if (!drm_atomic_crtc_effectively_active(crtc->state)) {
- 		DPU_DEBUG("[crtc:%d] not active\n", crtc->base.id);
- 		return;
- 	}
+ /**
+- * dpu_encoder_assign_crtc - Link the encoder to the crtc it's assigned to
+- * @encoder:	encoder pointer
+- * @crtc:	crtc pointer
+- */
+-void dpu_encoder_assign_crtc(struct drm_encoder *encoder,
+-			     struct drm_crtc *crtc);
+-
+-/**
+  * dpu_encoder_toggle_vblank_for_crtc - Toggles vblank interrupts on or off if
+  *	the encoder is assigned to the given crtc
+  * @encoder:	encoder pointer
 -- 
 2.7.4
 
