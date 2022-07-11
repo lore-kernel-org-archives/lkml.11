@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0DAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86720C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232138AbiGKJXw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55480 "EHLO
+        id S231601AbiGKJX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231895AbiGKJXN (ORCPT
+        with ESMTP id S231959AbiGKJXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:23:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2809312D0A;
-        Mon, 11 Jul 2022 02:13:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5DEF5BD;
+        Mon, 11 Jul 2022 02:13:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19AD861224;
-        Mon, 11 Jul 2022 09:13:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A8BC34115;
-        Mon, 11 Jul 2022 09:13:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C9ACB80D2C;
+        Mon, 11 Jul 2022 09:13:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2F32C34115;
+        Mon, 11 Jul 2022 09:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530828;
-        bh=xJvYm1Xz/bOAfFScisv+CCaGh5cTJMv5RPCtTdhN8Xg=;
+        s=korg; t=1657530823;
+        bh=T7xOkgvjtE3PbkwxKocejNJRefdrZpo1wFeudSfDjeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FkLtWb5PgvPBFpNQabuMdkZJn4ErTyfQsBpVbUXW9icmiCufVs3HdnR8aSpzcH+Md
-         f0svQEp+OronNk+Y5f/SsWAGbkM0L+iRxycv7KluiRsp12+Gi5xyZc4VWNSs6RWvxr
-         B7n4UQ5z113Dzn2GOjYohNjRptLl7YdvMBir2dKI=
+        b=xNkXKI6uakFcZikxiliwddPPR9ZqkUYezsixZf+kIPaKiHLEuYiACy3uzTvQnZpSj
+         kAtwyvdU9AZfEl38Zka8MVRjZUlXz190HwjMuILt1FqDQ1AoJMWAeWUrf/481MHELi
+         OMlISDg1a4xnn7QNPkqNRVaVUs7LnGP7pMJmCeME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.10 53/55] dmaengine: at_xdma: handle errors of at_xdmac_alloc_desc() correctly
-Date:   Mon, 11 Jul 2022 11:07:41 +0200
-Message-Id: <20220711090543.314872553@linuxfoundation.org>
+        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 51/55] ida: dont use BUG_ON() for debugging
+Date:   Mon, 11 Jul 2022 11:07:39 +0200
+Message-Id: <20220711090543.258212313@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -48,36 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 3770d92bd5237d686e49da7b2fb86f53ee6ed259 upstream.
+commit fc82bbf4dede758007763867d0282353c06d1121 upstream.
 
-It seems that it is valid to have less than the requested number of
-descriptors. But what is not valid and leads to subsequent errors is to
-have zero descriptors. In that case, abort the probing.
+This is another old BUG_ON() that just shouldn't exist (see also commit
+a382f8fee42c: "signal handling: don't use BUG_ON() for debugging").
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220526135111.1470926-1-michael@walle.cc
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+In fact, as Matthew Wilcox points out, this condition shouldn't really
+even result in a warning, since a negative id allocation result is just
+a normal allocation failure:
+
+  "I wonder if we should even warn here -- sure, the caller is trying to
+   free something that wasn't allocated, but we don't warn for
+   kfree(NULL)"
+
+and goes on to point out how that current error check is only causing
+people to unnecessarily do their own index range checking before freeing
+it.
+
+This was noted by Itay Iellin, because the bluetooth HCI socket cookie
+code does *not* do that range checking, and ends up just freeing the
+error case too, triggering the BUG_ON().
+
+The HCI code requires CAP_NET_RAW, and seems to just result in an ugly
+splat, but there really is no reason to BUG_ON() here, and we have
+generally striven for allocation models where it's always ok to just do
+
+    free(alloc());
+
+even if the allocation were to fail for some random reason (usually
+obviously that "random" reason being some resource limit).
+
+Fixes: 88eca0207cf1 ("ida: simplified functions for id allocation")
+Reported-by: Itay Iellin <ieitayie@gmail.com>
+Suggested-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ lib/idr.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1838,6 +1838,11 @@ static int at_xdmac_alloc_chan_resources
- 	for (i = 0; i < init_nr_desc_per_channel; i++) {
- 		desc = at_xdmac_alloc_desc(chan, GFP_KERNEL);
- 		if (!desc) {
-+			if (i == 0) {
-+				dev_warn(chan2dev(chan),
-+					 "can't allocate any descriptors\n");
-+				return -EIO;
-+			}
- 			dev_warn(chan2dev(chan),
- 				"only %d descriptors have been allocated\n", i);
- 			break;
+--- a/lib/idr.c
++++ b/lib/idr.c
+@@ -491,7 +491,8 @@ void ida_free(struct ida *ida, unsigned
+ 	struct ida_bitmap *bitmap;
+ 	unsigned long flags;
+ 
+-	BUG_ON((int)id < 0);
++	if ((int)id < 0)
++		return;
+ 
+ 	xas_lock_irqsave(&xas, flags);
+ 	bitmap = xas_load(&xas);
 
 
