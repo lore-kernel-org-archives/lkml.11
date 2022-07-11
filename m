@@ -2,119 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE4AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB81C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbiGKVh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 17:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        id S230306AbiGKVhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 17:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiGKVhY (ORCPT
+        with ESMTP id S230399AbiGKVhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 17:37:24 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA93B286E9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:37:23 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id p7-20020a25d807000000b0066e36989a90so4585112ybg.8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:37:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=zHqFC2vAvLBhn+dr9vFDSM6RsrMGwj0OEAPrK2Tbzq8=;
-        b=VTXLdAFTNd9UwJNVkky3hIozNLYY6mYM83YMxH8oGI4oLZBAwrAybsmBIb5wT4hiOp
-         bdGWsm17JWHSCJzj49qhZRobzJj/cMC/zFrpRXnXqFDoInwf3JdxlvrDAWJZGhsTJcch
-         UqKYp01WFjLcw6OpeHOtG8tmI5eii8XLUf7i1ZVfdU5Igxkj37TUP1Zb1KO0bHFDD1lq
-         kuGrwfn8OQJCUwzPCCJ4y4gnAwUy0gtn0C1Z+DnLJZbKF4EEoW7lnKV/30evtMD6VW1+
-         IGqFHOAYi+nDRuQEH5rVGt2b/P+iT6IuRMDfxQOEtoVoLo7alxaHnaDQ39NvfAs6Nr78
-         1A9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=zHqFC2vAvLBhn+dr9vFDSM6RsrMGwj0OEAPrK2Tbzq8=;
-        b=8D+XIECxlWsMei2vyx43jafEALtw9fji8byfvwY4cKFVdRlGUBiKFvgDYDaxHKhkID
-         p3rvQIr3iOakxVovPayL1EgnBWnjAg5IPprvEIbO5MvAFd36Y1QoK5jGFWTKnPPr5/Zg
-         oIddYoHACyhPnNryqHyu4jHdVRdkGkcytwDQDR1DyFOtqcMncRbnDfODf0vaCu3PBMnG
-         Yc6Usjuu7edwWM7vAZZd3XhNMF0Yhl+B7rhNUrdJqymOgT7SoX/Yo46dwQJTxQl75cZ+
-         Ha59J+TV6f9UpGy3k+2rfug/Xuv49poRMkQLBcIdzS4tPudBNxFuc8olv+S9gVW1VHfW
-         VGKg==
-X-Gm-Message-State: AJIora+fvCZfsszS6+Jwc+Uic6dyuC+DVmYBmyojpzQAnxh1h6+mMY/q
-        zfVmieueNmEXE8PfaSpsVvte1inPJ/eRBCekFA==
-X-Google-Smtp-Source: AGRyM1t+1oh1h9sGwQmRmQGmeG2XnD9OhdrwpWmEnE6iE7hFzFQEg9WRj9cDgGkg4MOgmMnXwYe5lebG86W+m7D/eA==
-X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:4bd0:f760:5332:9f1c])
- (user=justinstitt job=sendgmr) by 2002:a0d:df48:0:b0:31c:973f:b444 with SMTP
- id i69-20020a0ddf48000000b0031c973fb444mr21768515ywe.119.1657574997770; Mon,
- 11 Jul 2022 14:29:57 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 14:29:32 -0700
-Message-Id: <20220711212932.1501592-1-justinstitt@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
-Subject: [PATCH] mediatek: mt7601u: fix clang -Wformat warning
-From:   Justin Stitt <justinstitt@google.com>
-To:     Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Justin Stitt <justinstitt@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 11 Jul 2022 17:37:48 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E810032BB2;
+        Mon, 11 Jul 2022 14:37:46 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:56004)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oB169-00Fyyi-KE; Mon, 11 Jul 2022 15:37:45 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:45020 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oB168-00GwFM-AH; Mon, 11 Jul 2022 15:37:45 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Tycho Andersen <tycho@tycho.pizza>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>,
+        Christian Brauner <brauner@kernel.org>,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <YrShFXRLtRt6T/j+@risky>
+        <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
+        <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
+        <YsyHMVLuT5U6mm+I@netflix>
+Date:   Mon, 11 Jul 2022 16:37:12 -0500
+In-Reply-To: <YsyHMVLuT5U6mm+I@netflix> (Tycho Andersen's message of "Mon, 11
+        Jul 2022 14:25:21 -0600")
+Message-ID: <877d4jbabb.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-XM-SPF: eid=1oB168-00GwFM-AH;;;mid=<877d4jbabb.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+BNhhz/q5rz9OSWYm2QD2VMDoDaU2rMNc=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: strange interaction between fuse + pidns
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building with Clang we encounter this warning:
-| drivers/net/wireless/mediatek/mt7601u/debugfs.c:92:6: error: format
-| specifies type 'unsigned char' but the argument has type 'int'
-| [-Werror,-Wformat] dev->ee->reg.start + dev->ee->reg.num - 1);
+Tycho Andersen <tycho@tycho.pizza> writes:
 
-The format specifier used is `%hhu` which describes a u8. Both
-`dev->ee->reg.start` and `.num` are u8 as well. However, the expression
-as a whole is promoted to an int as you cannot get smaller-than-int from
-addition. Therefore, to fix the warning, use the promoted-to-type's
-format specifier -- in this case `%d`.
+> Hi all,
+>
+> On Mon, Jul 11, 2022 at 03:59:15PM +0200, Miklos Szeredi wrote:
+>> On Mon, 11 Jul 2022 at 12:35, Miklos Szeredi <miklos@szeredi.hu> wrote:
+>> >
+>> > Can you try the attached untested patch?
+>> 
+>> Updated patch to avoid use after free on req->args.
+>> 
+>> Still mostly untested.
+>
+> Thanks, when I applied your patch, I still ended up with tasks stuck
+> waiting with a SIGKILL pending. So I looked into that and came up with
+> the patch below. With both your patch and mine, my testcase exits
+> cleanly.
+>
+> Eric (or Christian, or anyone), can you comment on the patch below? I
+> have no idea what this will break. Maybe instead a better approach is
+> some additional special case in __send_signal_locked()?
+>
+> Tycho
+>
+> From b7ea26adcf3546be5745063cc86658acb5ed37e9 Mon Sep 17 00:00:00 2001
+> From: Tycho Andersen <tycho@tycho.pizza>
+> Date: Mon, 11 Jul 2022 11:26:58 -0600
+> Subject: [PATCH] sched: __fatal_signal_pending() should also check shared
+>  signals
+>
+> The wait_* code uses signal_pending_state() to test whether a thread has
+> been interrupted, which ultimately uses __fatal_signal_pending() to detect
+> if there is a fatal signal.
+>
+> When a pid ns dies, in zap_pid_ns_processes() it does:
+>
+>     group_send_sig_info(SIGKILL, SEND_SIG_PRIV, task, PIDTYPE_MAX);
+>
+> for all the tasks in the pid ns. That calls through:
+>
+>     group_send_sig_info() ->
+>       do_send_sig_info() ->
+>         send_signal_locked() ->
+>           __send_signal_locked()
+>
+> which does:
+>
+>     pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
+>
+> which puts sigkill in the set of shared signals, but not the individual
+> pending ones. If tasks are stuck in a killable wait (e.g. a fuse flush
+> operation), they won't see this shared signal, and will hang forever, since
+> TIF_SIGPENDING is set, but the fatal signal can't be detected.
 
-example:
-```
-uint8_t a = 4, b = 7;
-int size = sizeof(a + b - 1);
-printf("%d\n", size);
-// output: 4
-```
+Hmm.
 
-See more:
-(https://wiki.sei.cmu.edu/confluence/display/c/INT02-C.+Understand+integer+conversion+rules)
-"Integer types smaller than int are promoted when an operation is
-performed on them. If all values of the original type can be represented
-as an int, the value of the smaller type is converted to an int;
-otherwise, it is converted to an unsigned int."
+That is perplexing.
 
-Signed-off-by: Justin Stitt <justinstitt@google.com>
----
-Note: This patch silences the -Wformat warning for this file (which is
-the goal) but in reality all instances of `%hh[dux]` should be converted
-to `%[dux]` for this file and probably every file. That's a bit larger
-scope than the goal of enabling -Wformat for Clang builds, though.
+__send_signal_locked calls complete_signal.  Then if any of the tasks of
+the process can receive the signal, complete_signal will loop through
+all of the tasks of the process and set the per thread SIGKILL.  Pretty
+much by definition tasks can always receive SIGKILL.
 
- drivers/net/wireless/mediatek/mt7601u/debugfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Is complete_signal not being able to do that?
 
-diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-index 20669eacb66e..230b0e1061a7 100644
---- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-@@ -88,7 +88,7 @@ mt7601u_eeprom_param_show(struct seq_file *file, void *data)
- 		   dev->ee->rssi_offset[0], dev->ee->rssi_offset[1]);
- 	seq_printf(file, "Reference temp: %hhx\n", dev->ee->ref_temp);
- 	seq_printf(file, "LNA gain: %hhx\n", dev->ee->lna_gain);
--	seq_printf(file, "Reg channels: %hhu-%hhu\n", dev->ee->reg.start,
-+	seq_printf(file, "Reg channels: %hhu-%d\n", dev->ee->reg.start,
- 		   dev->ee->reg.start + dev->ee->reg.num - 1);
- 
- 	seq_puts(file, "Per rate power:\n");
--- 
-2.37.0.144.g8ac04bfd2-goog
+The patch below really should not be necessary, and I have pending work
+that if I can push over the finish line won't even make sense.
 
+As it is currently an abuse to use the per thread SIGKILL to indicate
+that a fatal signal has been short circuit delivered.  That abuse as
+well as being unclean tends to confuse people reading the code.
+
+Eric
+
+> Signed-off-by: Tycho Andersen <tycho@tycho.pizza>
+> ---
+>  include/linux/sched/signal.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
+> index cafbe03eed01..a033ccb0a729 100644
+> --- a/include/linux/sched/signal.h
+> +++ b/include/linux/sched/signal.h
+> @@ -402,7 +402,8 @@ static inline int signal_pending(struct task_struct *p)
+>  
+>  static inline int __fatal_signal_pending(struct task_struct *p)
+>  {
+> -	return unlikely(sigismember(&p->pending.signal, SIGKILL));
+> +	return unlikely(sigismember(&p->pending.signal, SIGKILL) ||
+> +			sigismember(&p->signal->shared_pending.signal, SIGKILL));
+>  }
+>  
+>  static inline int fatal_signal_pending(struct task_struct *p)
+>
+> base-commit: 32346491ddf24599decca06190ebca03ff9de7f8
