@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF059C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A33C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234641AbiGKKGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41064 "EHLO
+        id S234646AbiGKKGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:06:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234686AbiGKKEY (ORCPT
+        with ESMTP id S233909AbiGKKDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:04:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0954487F79;
-        Mon, 11 Jul 2022 02:30:08 -0700 (PDT)
+        Mon, 11 Jul 2022 06:03:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7074D66AFC;
+        Mon, 11 Jul 2022 02:29:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C604B80E90;
-        Mon, 11 Jul 2022 09:30:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A210EC341C0;
-        Mon, 11 Jul 2022 09:30:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 020A161411;
+        Mon, 11 Jul 2022 09:29:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11603C34115;
+        Mon, 11 Jul 2022 09:29:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531806;
-        bh=6P8CXs3MGbhhmsH5Oe+Hzg9axBWkQxRbYazFIsEe6KE=;
+        s=korg; t=1657531784;
+        bh=t9YP5Tngn5X3VBS+MR/tAb2ZKRQvST36CAK14z8o50Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A3XTbgQlgNzf7lQVX7iE5b9n1qqgojN6w0twAbwdzDBlgu/rKf2wazhm1zifY4jAa
-         sblxIXBeJp71HBJst9+yxJe4wIbPB8kUtZlEEtOOLDBY0gOTNMe2++JKLtPq0iKMPE
-         2Td5GUoA0dy661lxVd2Gq/FHjgt4rwSzdRV6IUTg=
+        b=0MIh8IgOWwcyRU+BLwu/3VvBkcDQonJd2yfZdSgD80leERKtdz1C/UOxA8w7FTba8
+         RwazltTILfzPPLP8enyuFwJLKTDp5oL1yinQOy6vkNeLJHR85530EiMGJGD9Gi1HZw
+         yeKFM0ZVOb/mExWN3CSFCt/e4j0Esa85AN907+rA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        stable <stable@kernel.org>
-Subject: [PATCH 5.15 217/230] misc: rtsx_usb: use separate command and response buffers
-Date:   Mon, 11 Jul 2022 11:07:53 +0200
-Message-Id: <20220711090610.256939326@linuxfoundation.org>
+        stable@vger.kernel.org, Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 219/230] Revert "mm/memory-failure.c: fix race with changing page compound again"
+Date:   Mon, 11 Jul 2022 11:07:55 +0200
+Message-Id: <20220711090610.314638268@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,89 +52,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-commit 3776c78559853fd151be7c41e369fd076fb679d5 upstream.
+commit 2ba2b008a8bf5fd268a43d03ba79e0ad464d6836 upstream.
 
-rtsx_usb uses same buffer for command and response. There could
-be a potential conflict using the same buffer for both especially
-if retries and timeouts are involved.
+Reverts commit 888af2701db7 ("mm/memory-failure.c: fix race with changing
+page compound again") because now we fetch the page refcount under
+hugetlb_lock in try_memory_failure_hugetlb() so that the race check is no
+longer necessary.
 
-Use separate command and response buffers to avoid conflicts.
-
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/07e3721804ff07aaab9ef5b39a5691d0718b9ade.1656642167.git.skhan@linuxfoundation.org
+Link: https://lkml.kernel.org/r/20220408135323.1559401-4-naoya.horiguchi@linux.dev
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Suggested-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Yang Shi <shy828301@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c |   26 +++++++++++++++++---------
- include/linux/rtsx_usb.h           |    1 -
- 2 files changed, 17 insertions(+), 10 deletions(-)
+ include/linux/mm.h      |    1 -
+ include/ras/ras_event.h |    1 -
+ mm/memory-failure.c     |   11 -----------
+ 3 files changed, 13 deletions(-)
 
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -631,15 +631,18 @@ static int rtsx_usb_probe(struct usb_int
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3175,7 +3175,6 @@ enum mf_action_page_type {
+ 	MF_MSG_BUDDY_2ND,
+ 	MF_MSG_DAX,
+ 	MF_MSG_UNSPLIT_THP,
+-	MF_MSG_DIFFERENT_PAGE_SIZE,
+ 	MF_MSG_UNKNOWN,
+ };
  
- 	ucr->pusb_dev = usb_dev;
+--- a/include/ras/ras_event.h
++++ b/include/ras/ras_event.h
+@@ -376,7 +376,6 @@ TRACE_EVENT(aer_event,
+ 	EM ( MF_MSG_BUDDY_2ND, "free buddy page (2nd try)" )		\
+ 	EM ( MF_MSG_DAX, "dax page" )					\
+ 	EM ( MF_MSG_UNSPLIT_THP, "unsplit thp" )			\
+-	EM ( MF_MSG_DIFFERENT_PAGE_SIZE, "different page size" )	\
+ 	EMe ( MF_MSG_UNKNOWN, "unknown page" )
  
--	ucr->iobuf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
--	if (!ucr->iobuf)
-+	ucr->cmd_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
-+	if (!ucr->cmd_buf)
- 		return -ENOMEM;
+ /*
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -741,7 +741,6 @@ static const char * const action_page_ty
+ 	[MF_MSG_BUDDY_2ND]		= "free buddy page (2nd try)",
+ 	[MF_MSG_DAX]			= "dax page",
+ 	[MF_MSG_UNSPLIT_THP]		= "unsplit thp",
+-	[MF_MSG_DIFFERENT_PAGE_SIZE]	= "different page size",
+ 	[MF_MSG_UNKNOWN]		= "unknown page",
+ };
  
-+	ucr->rsp_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
-+	if (!ucr->rsp_buf)
-+		goto out_free_cmd_buf;
-+
- 	usb_set_intfdata(intf, ucr);
+@@ -1526,16 +1525,6 @@ retry:
+ 		return res == MF_RECOVERED ? 0 : -EBUSY;
+ 	}
  
- 	ucr->vendor_id = id->idVendor;
- 	ucr->product_id = id->idProduct;
--	ucr->cmd_buf = ucr->rsp_buf = ucr->iobuf;
+-	/*
+-	 * The page could have changed compound pages due to race window.
+-	 * If this happens just bail out.
+-	 */
+-	if (!PageHuge(p) || compound_head(p) != head) {
+-		action_result(pfn, MF_MSG_DIFFERENT_PAGE_SIZE, MF_IGNORED);
+-		res = -EBUSY;
+-		goto out;
+-	}
+-
+ 	page_flags = head->flags;
  
- 	mutex_init(&ucr->dev_mutex);
- 
-@@ -667,9 +670,11 @@ static int rtsx_usb_probe(struct usb_int
- 
- out_init_fail:
- 	usb_set_intfdata(ucr->pusb_intf, NULL);
--	kfree(ucr->iobuf);
--	ucr->iobuf = NULL;
--	ucr->cmd_buf = ucr->rsp_buf = NULL;
-+	kfree(ucr->rsp_buf);
-+	ucr->rsp_buf = NULL;
-+out_free_cmd_buf:
-+	kfree(ucr->cmd_buf);
-+	ucr->cmd_buf = NULL;
- 	return ret;
- }
- 
-@@ -682,9 +687,12 @@ static void rtsx_usb_disconnect(struct u
- 	mfd_remove_devices(&intf->dev);
- 
- 	usb_set_intfdata(ucr->pusb_intf, NULL);
--	kfree(ucr->iobuf);
--	ucr->iobuf = NULL;
--	ucr->cmd_buf = ucr->rsp_buf = NULL;
-+
-+	kfree(ucr->cmd_buf);
-+	ucr->cmd_buf = NULL;
-+
-+	kfree(ucr->rsp_buf);
-+	ucr->rsp_buf = NULL;
- }
- 
- #ifdef CONFIG_PM
---- a/include/linux/rtsx_usb.h
-+++ b/include/linux/rtsx_usb.h
-@@ -54,7 +54,6 @@ struct rtsx_ucr {
- 	struct usb_device	*pusb_dev;
- 	struct usb_interface	*pusb_intf;
- 	struct usb_sg_request	current_sg;
--	unsigned char		*iobuf;
- 
- 	struct timer_list	sg_timer;
- 	struct mutex		dev_mutex;
+ 	/*
 
 
