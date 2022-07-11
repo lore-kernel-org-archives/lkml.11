@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE8EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB95C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbiGKJIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
+        id S230057AbiGKJI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbiGKJHk (ORCPT
+        with ESMTP id S231176AbiGKJHy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:07:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9267522BD2;
-        Mon, 11 Jul 2022 02:07:27 -0700 (PDT)
+        Mon, 11 Jul 2022 05:07:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF00D24952;
+        Mon, 11 Jul 2022 02:07:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C956118B;
-        Mon, 11 Jul 2022 09:07:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9051EC341D1;
-        Mon, 11 Jul 2022 09:07:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64601B80E7D;
+        Mon, 11 Jul 2022 09:07:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A57E2C34115;
+        Mon, 11 Jul 2022 09:07:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530446;
-        bh=eAlf2ThEJ0oh3s9MfqamQLqIhi0NIAtmAN9WqohRE7s=;
+        s=korg; t=1657530449;
+        bh=VtGNo2A9OFnwe6G3BOiowxmO1MwkozVOw/vTKsK1Tig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vkJmxqYPT8OURuzDPSXUnQCO/04vqwH58wQH1uzOyHzzB2S3vxR9pScY8fBBCLJig
-         WwIhCeG93d5RwdvE+T9EEhjAeOflF5uFdGnYZU3Cf1nJ0fdv/OhP5y2f+lTT+FNuWn
-         37fmVB7ienKJlf1CuiKlzJaIxKCYkh17JnuqPs6w=
+        b=C9HVi0s+Db0RT862Z6rROmaUKgszBJofuvS2CATI06woVMn6eppwYCSO8DGCS6vPc
+         kJ2WJmxHcMvpR65wRAXxDb4r0iTnHBJPuZRlGEilADvp8+h+p7++IScRtDwn6Y0XKk
+         6tDuxhqAlfQ3L5t2MCeJCweKY43h4a52WfVg5UyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.9 14/14] dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
-Date:   Mon, 11 Jul 2022 11:06:33 +0200
-Message-Id: <20220711090535.943227980@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 09/14] pinctrl: sunxi: a83t: Fix NAND function name for some pins
+Date:   Mon, 11 Jul 2022 11:06:28 +0200
+Message-Id: <20220711090535.795538668@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090535.517697227@linuxfoundation.org>
 References: <20220711090535.517697227@linuxfoundation.org>
@@ -49,55 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 615a4bfc426e11dba05c2cf343f9ac752fb381d2 upstream.
+[ Upstream commit aaefa29270d9551b604165a08406543efa9d16f5 ]
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it when not need anymore.
+The other NAND pins on Port C use the "nand0" function name.
+"nand0" also matches all of the other Allwinner SoCs.
 
-Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Link: https://lore.kernel.org/r/20220605042723.17668-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4730f33f0d82 ("pinctrl: sunxi: add allwinner A83T PIO controller support")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220526024956.49500-1-samuel@sholland.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/ti-dma-crossbar.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/dma/ti-dma-crossbar.c
-+++ b/drivers/dma/ti-dma-crossbar.c
-@@ -251,6 +251,7 @@ static void *ti_dra7_xbar_route_allocate
- 	if (dma_spec->args[0] >= xbar->xbar_requests) {
- 		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
- 			dma_spec->args[0]);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-EINVAL);
- 	}
- 
-@@ -258,12 +259,14 @@ static void *ti_dra7_xbar_route_allocate
- 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
- 	if (!dma_spec->np) {
- 		dev_err(&pdev->dev, "Can't get DMA master\n");
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-EINVAL);
- 	}
- 
- 	map = kzalloc(sizeof(*map), GFP_KERNEL);
- 	if (!map) {
- 		of_node_put(dma_spec->np);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-@@ -275,6 +278,7 @@ static void *ti_dra7_xbar_route_allocate
- 		dev_err(&pdev->dev, "Run out of free DMA requests\n");
- 		kfree(map);
- 		of_node_put(dma_spec->np);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENOMEM);
- 	}
- 	set_bit(map->xbar_out, xbar->dma_inuse);
+diff --git a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
+index 383977ea3a3c..0b5aba4bf338 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
+@@ -158,26 +158,26 @@ static const struct sunxi_desc_pin sun8i_a83t_pins[] = {
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 14),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+-		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ6 */
++		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ6 */
+ 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D6 */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 15),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+-		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ7 */
++		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ7 */
+ 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D7 */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 16),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+-		  SUNXI_FUNCTION(0x2, "nand"),		/* DQS */
++		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQS */
+ 		  SUNXI_FUNCTION(0x3, "mmc2")),		/* RST */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 17),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+-		  SUNXI_FUNCTION(0x2, "nand")),		/* CE2 */
++		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE2 */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 18),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+-		  SUNXI_FUNCTION(0x2, "nand")),		/* CE3 */
++		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE3 */
+ 	/* Hole */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 2),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+-- 
+2.35.1
+
 
 
