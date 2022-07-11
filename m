@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E23CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 519B1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiGKJtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
+        id S233524AbiGKJtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233694AbiGKJsh (ORCPT
+        with ESMTP id S233650AbiGKJsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:48:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70283EAD;
-        Mon, 11 Jul 2022 02:23:32 -0700 (PDT)
+        Mon, 11 Jul 2022 05:48:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751E42BD9;
+        Mon, 11 Jul 2022 02:23:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86964B80CEF;
-        Mon, 11 Jul 2022 09:23:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8051C34115;
-        Mon, 11 Jul 2022 09:23:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09F1CB80E7F;
+        Mon, 11 Jul 2022 09:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E097C34115;
+        Mon, 11 Jul 2022 09:23:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531410;
-        bh=DviDe3YdOiK48VV2ouMZ/mwRhFKQstraiLFaIzZug6A=;
+        s=korg; t=1657531418;
+        bh=nF3W83uGiPxnuF4oBfW8Fn1L0YBcmi8QxYzK9yQiV8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKio/0v65gs/cZQyZOVHGIwowt2KPVGWajRpdajdIwBEkpPKFeTbPqe/FRSnK8ypb
-         iyQyjbG7HspjmzRoiMISqUXIRHjm3ClmhKNSsjXswFBNlIZ3h/di9EkB0VHb8zsifW
-         NQq8fWrcne1d7aIVJp+aXyfcVhYg5OodlROUgztk=
+        b=NeU/QpC4eamZ/TJs8RPtxNRzLkcHEgMQYwUpA9SxYeCS5Kd4FIAlEJ4nDQ/ypJN+j
+         vs0R+vxVhJRK1lHNjWH/RgTdewJjja+s5IxHopd/b1U/Bzbp8tq0Z5u+H+dd2hnRRp
+         XhB1tO6NyCBTM8XWji3pmKnVKxOS6Ta7Ik0pAzFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Luca=20B=C3=A9la=20Palkovics?= 
-        <luca.bela.palkovics@gmail.com>,
-        Anand Jain <anand.jain@oracle.com>, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Michael Walle <michael@walle.cc>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/230] btrfs: remove device item and update super block in the same transaction
-Date:   Mon, 11 Jul 2022 11:05:44 +0200
-Message-Id: <20220711090606.568460790@linuxfoundation.org>
+Subject: [PATCH 5.15 099/230] mtd: spi-nor: Skip erase logic when SPI_NOR_NO_ERASE is set
+Date:   Mon, 11 Jul 2022 11:05:55 +0200
+Message-Id: <20220711090606.878475325@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -52,216 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit bbac58698a55cc0a6f0c0d69a6dcd3f9f3134c11 ]
+[ Upstream commit 151c6b49d679872d6fc0b50e0ad96303091694a2 ]
 
-[BUG]
-There is a report that a btrfs has a bad super block num devices.
+Even if SPI_NOR_NO_ERASE was set, one could still send erase opcodes
+to the flash. It is not recommended to send unsupported opcodes to
+flashes. Fix the logic and do not set mtd->_erase when SPI_NOR_NO_ERASE
+is specified. With this users will not be able to issue erase opcodes to
+flashes and instead they will recive an -ENOTSUPP error.
 
-This makes btrfs to reject the fs completely.
-
-  BTRFS error (device sdd3): super_num_devices 3 mismatch with num_devices 2 found here
-  BTRFS error (device sdd3): failed to read chunk tree: -22
-  BTRFS error (device sdd3): open_ctree failed
-
-[CAUSE]
-During btrfs device removal, chunk tree and super block num devs are
-updated in two different transactions:
-
-  btrfs_rm_device()
-  |- btrfs_rm_dev_item(device)
-  |  |- trans = btrfs_start_transaction()
-  |  |  Now we got transaction X
-  |  |
-  |  |- btrfs_del_item()
-  |  |  Now device item is removed from chunk tree
-  |  |
-  |  |- btrfs_commit_transaction()
-  |     Transaction X got committed, super num devs untouched,
-  |     but device item removed from chunk tree.
-  |     (AKA, super num devs is already incorrect)
-  |
-  |- cur_devices->num_devices--;
-  |- cur_devices->total_devices--;
-  |- btrfs_set_super_num_devices()
-     All those operations are not in transaction X, thus it will
-     only be written back to disk in next transaction.
-
-So after the transaction X in btrfs_rm_dev_item() committed, but before
-transaction X+1 (which can be minutes away), a power loss happen, then
-we got the super num mismatch.
-
-[FIX]
-Instead of starting and committing a transaction inside
-btrfs_rm_dev_item(), start a transaction in side btrfs_rm_device() and
-pass it to btrfs_rm_dev_item().
-
-And only commit the transaction after everything is done.
-
-Reported-by: Luca Béla Palkovics <luca.bela.palkovics@gmail.com>
-Link: https://lore.kernel.org/linux-btrfs/CA+8xDSpvdm_U0QLBAnrH=zqDq_cWCOH5TiV46CKmp3igr44okQ@mail.gmail.com/
-CC: stable@vger.kernel.org # 4.14+
-Reviewed-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: b199489d37b2 ("mtd: spi-nor: add the framework for SPI NOR")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Michael Walle <michael@walle.cc>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220228163334.277730-1-tudor.ambarus@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/volumes.c | 65 ++++++++++++++++++++--------------------------
- 1 file changed, 28 insertions(+), 37 deletions(-)
+ drivers/mtd/spi-nor/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-index 3bd68f1b79e6..cec54c6e1cdd 100644
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -1942,23 +1942,18 @@ static void update_dev_time(const char *device_path)
- 	path_put(&path);
- }
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index 90f39aabc1ff..d97cdbc2b9de 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -3148,7 +3148,6 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
+ 	mtd->writesize = nor->params->writesize;
+ 	mtd->flags = MTD_CAP_NORFLASH;
+ 	mtd->size = nor->params->size;
+-	mtd->_erase = spi_nor_erase;
+ 	mtd->_read = spi_nor_read;
+ 	mtd->_suspend = spi_nor_suspend;
+ 	mtd->_resume = spi_nor_resume;
+@@ -3178,6 +3177,8 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
  
--static int btrfs_rm_dev_item(struct btrfs_device *device)
-+static int btrfs_rm_dev_item(struct btrfs_trans_handle *trans,
-+			     struct btrfs_device *device)
- {
- 	struct btrfs_root *root = device->fs_info->chunk_root;
- 	int ret;
- 	struct btrfs_path *path;
- 	struct btrfs_key key;
--	struct btrfs_trans_handle *trans;
+ 	if (info->flags & SPI_NOR_NO_ERASE)
+ 		mtd->flags |= MTD_NO_ERASE;
++	else
++		mtd->_erase = spi_nor_erase;
  
- 	path = btrfs_alloc_path();
- 	if (!path)
- 		return -ENOMEM;
- 
--	trans = btrfs_start_transaction(root, 0);
--	if (IS_ERR(trans)) {
--		btrfs_free_path(path);
--		return PTR_ERR(trans);
--	}
- 	key.objectid = BTRFS_DEV_ITEMS_OBJECTID;
- 	key.type = BTRFS_DEV_ITEM_KEY;
- 	key.offset = device->devid;
-@@ -1969,21 +1964,12 @@ static int btrfs_rm_dev_item(struct btrfs_device *device)
- 	if (ret) {
- 		if (ret > 0)
- 			ret = -ENOENT;
--		btrfs_abort_transaction(trans, ret);
--		btrfs_end_transaction(trans);
- 		goto out;
- 	}
- 
- 	ret = btrfs_del_item(trans, root, path);
--	if (ret) {
--		btrfs_abort_transaction(trans, ret);
--		btrfs_end_transaction(trans);
--	}
--
- out:
- 	btrfs_free_path(path);
--	if (!ret)
--		ret = btrfs_commit_transaction(trans);
- 	return ret;
- }
- 
-@@ -2124,6 +2110,7 @@ int btrfs_rm_device(struct btrfs_fs_info *fs_info,
- 		    struct btrfs_dev_lookup_args *args,
- 		    struct block_device **bdev, fmode_t *mode)
- {
-+	struct btrfs_trans_handle *trans;
- 	struct btrfs_device *device;
- 	struct btrfs_fs_devices *cur_devices;
- 	struct btrfs_fs_devices *fs_devices = fs_info->fs_devices;
-@@ -2139,7 +2126,7 @@ int btrfs_rm_device(struct btrfs_fs_info *fs_info,
- 
- 	ret = btrfs_check_raid_min_devices(fs_info, num_devices - 1);
- 	if (ret)
--		goto out;
-+		return ret;
- 
- 	device = btrfs_find_device(fs_info->fs_devices, args);
- 	if (!device) {
-@@ -2147,27 +2134,22 @@ int btrfs_rm_device(struct btrfs_fs_info *fs_info,
- 			ret = BTRFS_ERROR_DEV_MISSING_NOT_FOUND;
- 		else
- 			ret = -ENOENT;
--		goto out;
-+		return ret;
- 	}
- 
- 	if (btrfs_pinned_by_swapfile(fs_info, device)) {
- 		btrfs_warn_in_rcu(fs_info,
- 		  "cannot remove device %s (devid %llu) due to active swapfile",
- 				  rcu_str_deref(device->name), device->devid);
--		ret = -ETXTBSY;
--		goto out;
-+		return -ETXTBSY;
- 	}
- 
--	if (test_bit(BTRFS_DEV_STATE_REPLACE_TGT, &device->dev_state)) {
--		ret = BTRFS_ERROR_DEV_TGT_REPLACE;
--		goto out;
--	}
-+	if (test_bit(BTRFS_DEV_STATE_REPLACE_TGT, &device->dev_state))
-+		return BTRFS_ERROR_DEV_TGT_REPLACE;
- 
- 	if (test_bit(BTRFS_DEV_STATE_WRITEABLE, &device->dev_state) &&
--	    fs_info->fs_devices->rw_devices == 1) {
--		ret = BTRFS_ERROR_DEV_ONLY_WRITABLE;
--		goto out;
--	}
-+	    fs_info->fs_devices->rw_devices == 1)
-+		return BTRFS_ERROR_DEV_ONLY_WRITABLE;
- 
- 	if (test_bit(BTRFS_DEV_STATE_WRITEABLE, &device->dev_state)) {
- 		mutex_lock(&fs_info->chunk_mutex);
-@@ -2182,14 +2164,22 @@ int btrfs_rm_device(struct btrfs_fs_info *fs_info,
- 	if (ret)
- 		goto error_undo;
- 
--	/*
--	 * TODO: the superblock still includes this device in its num_devices
--	 * counter although write_all_supers() is not locked out. This
--	 * could give a filesystem state which requires a degraded mount.
--	 */
--	ret = btrfs_rm_dev_item(device);
--	if (ret)
-+	trans = btrfs_start_transaction(fs_info->chunk_root, 0);
-+	if (IS_ERR(trans)) {
-+		ret = PTR_ERR(trans);
- 		goto error_undo;
-+	}
-+
-+	ret = btrfs_rm_dev_item(trans, device);
-+	if (ret) {
-+		/* Any error in dev item removal is critical */
-+		btrfs_crit(fs_info,
-+			   "failed to remove device item for devid %llu: %d",
-+			   device->devid, ret);
-+		btrfs_abort_transaction(trans, ret);
-+		btrfs_end_transaction(trans);
-+		return ret;
-+	}
- 
- 	clear_bit(BTRFS_DEV_STATE_IN_FS_METADATA, &device->dev_state);
- 	btrfs_scrub_cancel_dev(device);
-@@ -2264,7 +2254,8 @@ int btrfs_rm_device(struct btrfs_fs_info *fs_info,
- 		free_fs_devices(cur_devices);
- 	}
- 
--out:
-+	ret = btrfs_commit_transaction(trans);
-+
- 	return ret;
- 
- error_undo:
-@@ -2276,7 +2267,7 @@ int btrfs_rm_device(struct btrfs_fs_info *fs_info,
- 		device->fs_devices->rw_devices++;
- 		mutex_unlock(&fs_info->chunk_mutex);
- 	}
--	goto out;
-+	return ret;
- }
- 
- void btrfs_rm_dev_replace_remove_srcdev(struct btrfs_device *srcdev)
+ 	mtd->dev.parent = dev;
+ 	nor->page_size = nor->params->page_size;
 -- 
 2.35.1
 
