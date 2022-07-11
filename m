@@ -2,75 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DD3CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3361ACCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbiGKOd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53532 "EHLO
+        id S230476AbiGKOdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbiGKOdY (ORCPT
+        with ESMTP id S231129AbiGKOdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:33:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB6463911;
-        Mon, 11 Jul 2022 07:33:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23BCD6150E;
-        Mon, 11 Jul 2022 14:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F3BC34115;
-        Mon, 11 Jul 2022 14:33:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657550002;
-        bh=MSEj7+VO4mdQqRSJbsD57UztsJqhRFCYrTs18jUyAeQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZknyyheT/aYeZF2cu3sch5puRITMNBuJ896WE6Oql+0nM/7K2k4Tor6HMzDvfzyd0
-         r1vkBf1aPSUJyGRSTumjI0/ZG5b2JJiILikdNR42rbY4Eqrcgs1RLTyVjIurhYCj67
-         eMT6UPjqUoNntD71ZFYJhi7lcDS/XqaoNNw+Rgvo=
-Date:   Mon, 11 Jul 2022 16:33:19 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Cameron Williams <cang1@live.co.uk>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        Mon, 11 Jul 2022 10:33:37 -0400
+Received: from jari.cn (unknown [218.92.28.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 962CC25D2;
+        Mon, 11 Jul 2022 07:33:33 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Mon, 11 Jul
+ 2022 22:27:58 +0800 (GMT+08:00)
+X-Originating-IP: [182.148.15.109]
+Date:   Mon, 11 Jul 2022 22:27:58 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "XueBing Chen" <chenxuebing@jari.cn>
+To:     johannes@sipsolutions.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: 8250: Add support for Brainboxes PX cards.
-Message-ID: <Ysw0r9xSrbx188xe@kroah.com>
-References: <AM5PR0202MB2564E7101DA29351041CB4C9C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com>
+Subject: [PATCH] wireless: use strscpy to replace strlcpy
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM5PR0202MB2564E7101DA29351041CB4C9C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com>
+Message-ID: <2d2fcbf7.e33.181eda8e70e.Coremail.chenxuebing@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwAXIW9uM8xi5uRIAA--.894W
+X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAECmFEYxs0ZwAFsE
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW5Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 02:50:35PM +0100, Cameron Williams wrote:
-> Add support for some of the Brainboxes PCIe (PX) range of
-> serial cards, including the PX-101, PX-235/PX-246,
-> PX-203/PX-257, PX-260/PX-701, PX-310, PX-313,
-> PX-320/PX-324/PX-376/PX-387, PX-335/PX-346, PX-368, PX-420,
-> PX-803 and PX-846.
-> 
-> Signed-off-by: Cameron Williams <cang1@live.co.uk>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 116 ++++++++++++++++++++++++++++-
->  1 file changed, 113 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index a17619db7939..4a0ea79ca9d6 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -4973,7 +4973,7 @@ static const struct pci_device_id serial_pci_tbl[] = {
->  	/*
->  	* Brainboxes UC-101
->  	*/
-> -	{       PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
-> +	{	PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
-
-You seem to have included a bunch of no-needed whitespace changes.  Can
-you redo this to only make the additional device id support instead?
-
-thanks,
-
-greg k-h
+ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
+dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
+WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIG5ldC93aXJlbGVzcy9ldGh0
+b29sLmMgfCAxMiArKysrKystLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyks
+IDYgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvbmV0L3dpcmVsZXNzL2V0aHRvb2wuYyBiL25l
+dC93aXJlbGVzcy9ldGh0b29sLmMKaW5kZXggMjRlMTg0MDVjZGI0Li4yNjEzZDZhYzBmZGEgMTAw
+NjQ0Ci0tLSBhL25ldC93aXJlbGVzcy9ldGh0b29sLmMKKysrIGIvbmV0L3dpcmVsZXNzL2V0aHRv
+b2wuYwpAQCAtMTAsMjAgKzEwLDIwIEBAIHZvaWQgY2ZnODAyMTFfZ2V0X2RydmluZm8oc3RydWN0
+IG5ldF9kZXZpY2UgKmRldiwgc3RydWN0IGV0aHRvb2xfZHJ2aW5mbyAqaW5mbykKIAlzdHJ1Y3Qg
+ZGV2aWNlICpwZGV2ID0gd2lwaHlfZGV2KHdkZXYtPndpcGh5KTsKIAogCWlmIChwZGV2LT5kcml2
+ZXIpCi0JCXN0cmxjcHkoaW5mby0+ZHJpdmVyLCBwZGV2LT5kcml2ZXItPm5hbWUsCisJCXN0cnNj
+cHkoaW5mby0+ZHJpdmVyLCBwZGV2LT5kcml2ZXItPm5hbWUsCiAJCQlzaXplb2YoaW5mby0+ZHJp
+dmVyKSk7CiAJZWxzZQotCQlzdHJsY3B5KGluZm8tPmRyaXZlciwgIk4vQSIsIHNpemVvZihpbmZv
+LT5kcml2ZXIpKTsKKwkJc3Ryc2NweShpbmZvLT5kcml2ZXIsICJOL0EiLCBzaXplb2YoaW5mby0+
+ZHJpdmVyKSk7CiAKLQlzdHJsY3B5KGluZm8tPnZlcnNpb24sIGluaXRfdXRzbmFtZSgpLT5yZWxl
+YXNlLCBzaXplb2YoaW5mby0+dmVyc2lvbikpOworCXN0cnNjcHkoaW5mby0+dmVyc2lvbiwgaW5p
+dF91dHNuYW1lKCktPnJlbGVhc2UsIHNpemVvZihpbmZvLT52ZXJzaW9uKSk7CiAKIAlpZiAod2Rl
+di0+d2lwaHktPmZ3X3ZlcnNpb25bMF0pCi0JCXN0cmxjcHkoaW5mby0+ZndfdmVyc2lvbiwgd2Rl
+di0+d2lwaHktPmZ3X3ZlcnNpb24sCisJCXN0cnNjcHkoaW5mby0+ZndfdmVyc2lvbiwgd2Rldi0+
+d2lwaHktPmZ3X3ZlcnNpb24sCiAJCQlzaXplb2YoaW5mby0+ZndfdmVyc2lvbikpOwogCWVsc2UK
+LQkJc3RybGNweShpbmZvLT5md192ZXJzaW9uLCAiTi9BIiwgc2l6ZW9mKGluZm8tPmZ3X3ZlcnNp
+b24pKTsKKwkJc3Ryc2NweShpbmZvLT5md192ZXJzaW9uLCAiTi9BIiwgc2l6ZW9mKGluZm8tPmZ3
+X3ZlcnNpb24pKTsKIAotCXN0cmxjcHkoaW5mby0+YnVzX2luZm8sIGRldl9uYW1lKHdpcGh5X2Rl
+dih3ZGV2LT53aXBoeSkpLAorCXN0cnNjcHkoaW5mby0+YnVzX2luZm8sIGRldl9uYW1lKHdpcGh5
+X2Rldih3ZGV2LT53aXBoeSkpLAogCQlzaXplb2YoaW5mby0+YnVzX2luZm8pKTsKIH0KIEVYUE9S
+VF9TWU1CT0woY2ZnODAyMTFfZ2V0X2RydmluZm8pOwotLSAKMi4yNS4xCg==
