@@ -2,106 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbiGKKv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
+        id S229463AbiGKKvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbiGKKvP (ORCPT
+        with ESMTP id S229537AbiGKKvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:51:15 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289AAF78B4
+        Mon, 11 Jul 2022 06:51:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BDCEB41BC
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:57:36 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id s27so4279308pga.13
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:57:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ucIABpm0tHgZbugMVpXR/cvUpPRiZNPssbWbAhXi7gg=;
-        b=rNmK0O6/+Lj6vxcMBnC3KBcmhOIh5Ic2wZj2otu6RA+O59tfRCYmBngCYG+901kZxL
-         bcLdoGG7dH6wcQ1OIeQwd8U65ldL1NjQbcAPJELi97B+TPum+uX23qFHoBDa0FnRlCKj
-         3c/SGPLHeAv0SJOFum0MZM83m7KXs5k2Yi6F0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ucIABpm0tHgZbugMVpXR/cvUpPRiZNPssbWbAhXi7gg=;
-        b=CqtK+3w1suoXtCuDuE2S6jXWKYjdMS1NLe0L6eT5YSjU95ohNSKy5FzQuLXzikcTS8
-         /PNB1IL4ybxrjMaS9YXZcoMqem2cGAd6glEhcmatGFccXnmKlgNZGFgNmj5kMpbI4hh5
-         c5xpET+RHtC+sdeVernBY4hqUGJSrZXGD19rToEYxR0RlbjlbvNODzDC6fxeqvDLhApU
-         bmC3byNYOWjCdTDBBEl9qXUkYZ6aEjOsrYUXzRf4vkg8G0RtYJpYSQ9qpE6nyMhhKKa8
-         7U+vTlVCmQniVTwW/9i3Gg5ffIuyS8NF1veQIvryh7/bOW7NOh5nasGTcv6dmD1hlHbd
-         aACw==
-X-Gm-Message-State: AJIora95eCF1ok0MpYkhAK83Qd88mC/AhJdnBIvSgVIMhYKbM2Ptqh93
-        ACJBkuMc3QMs5mJuW4yIBeoAiKBLgQN7wE5Qdv8=
-X-Google-Smtp-Source: AGRyM1shcbcdZucQQ7F1qcDmpMRqkfAOfjxb3Q05U7MTeRf2MEHZ1fAJoCmUS3y5HaN1ewWsco7fFQ==
-X-Received: by 2002:a05:6a00:2292:b0:525:6c57:8dd5 with SMTP id f18-20020a056a00229200b005256c578dd5mr17866670pfe.17.1657533455349;
-        Mon, 11 Jul 2022 02:57:35 -0700 (PDT)
-Received: from localhost.localdomain ([183.83.136.224])
-        by smtp.gmail.com with ESMTPSA id y3-20020a17090a390300b001ef81bac701sm6560814pjb.42.2022.07.11.02.57.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 02:57:34 -0700 (PDT)
-From:   Suniel Mahesh <sunil@amarulasolutions.com>
-To:     Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime.ripard@free-electrons.com>,
-        Christopher Vollo <chris@renewoutreach.org>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Jagan Teki <jagan@amarulasolutions.com>
-Cc:     dri-devel@lists.freedesktop.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        linux-amarula@amarulasolutions.com
-Subject: [PATCH v3 0/2] Add R16 Vista E board from RenewWorldOutreach
-Date:   Mon, 11 Jul 2022 15:27:19 +0530
-Message-Id: <20220711095721.1935377-1-sunil@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657533455;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4705b3O605hQms9a0r/rRAuyFE62gnfa/SJiHrJ15tU=;
+        b=ejlKOh0sGEMW4JnAk7+XDa9nz9czr2+srWdTPIYT17WaUqnIYI/Aexy1C6UyayadmSduxp
+        EN3GAEJTk6NJGAQvr3/wBSo87Mx5TC3ze5bWnFgCgAZG3l5qEEay+53dGPE2f93eXIFfY+
+        bvg2w2JQjrTm7YzrLXH8ErDfqAtA6OA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-669-V-cREPW3Nguxdxphd5LsrQ-1; Mon, 11 Jul 2022 05:57:30 -0400
+X-MC-Unique: V-cREPW3Nguxdxphd5LsrQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C048985A581;
+        Mon, 11 Jul 2022 09:57:29 +0000 (UTC)
+Received: from localhost (ovpn-12-204.pek2.redhat.com [10.72.12.204])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2D4C0492CA4;
+        Mon, 11 Jul 2022 09:57:28 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 17:57:24 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Eric DeVolder <eric.devolder@oracle.com>
+Cc:     Sourabh Jain <sourabhjain@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v9 7/7] x86/crash: Add x86 crash hotplug support
+Message-ID: <Ysv0BEMOmN/WnhVg@MiWiFi-R3L-srv>
+References: <20220613224240.79400-1-eric.devolder@oracle.com>
+ <20220613224240.79400-8-eric.devolder@oracle.com>
+ <94f5e036-770d-4ca5-c386-9a43e7333b43@linux.ibm.com>
+ <e96c42ee-7a14-3565-16cd-dbf7cf163c21@oracle.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <e96c42ee-7a14-3565-16cd-dbf7cf163c21@oracle.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series adds the R16-Vista-E board from RenewWorldOutreach based
-on allwinner R16(A33).
+On 07/07/22 at 07:55am, Eric DeVolder wrote:
+> 
+> 
+> On 6/20/22 00:06, Sourabh Jain wrote:
+> > Hello Eric,
+> > 
+> > On 14/06/22 04:12, Eric DeVolder wrote:
+> > > For x86_64, when CPU or memory is hot un/plugged, the crash
+> > > elfcorehdr, which describes the CPUs and memory in the system,
+> > > must also be updated.
+> > > 
+> > > When loading the crash kernel via kexec_load or kexec_file_load,
+> > > the elfcorehdr is identified at run time in
+> > > crash_core:handle_hotplug_event().
+> > > 
+> > > To update the elfcorehdr for x86_64, a new elfcorehdr must be
+> > > generated from the available CPUs and memory. The new elfcorehdr
+> > > is prepared into a buffer, and then installed over the top of
+> > > the existing elfcorehdr.
+> > > 
+> > > In the patch 'kexec: exclude elfcorehdr from the segment digest'
+> > > the need to update purgatory due to the change in elfcorehdr was
+> > > eliminated.  As a result, no changes to purgatory or boot_params
+> > > (as the elfcorehdr= kernel command line parameter pointer
+> > > remains unchanged and correct) are needed, just elfcorehdr.
+> > > 
+> > > To accommodate a growing number of resources via hotplug, the
+> > > elfcorehdr segment must be sufficiently large enough to accommodate
+> > > changes, see the CRASH_MAX_MEMORY_RANGES configure item.
+> > > 
+> > > With this change, crash hotplug for kexec_file_load syscall
+> > > is supported. The kexec_load is also supported, but also
+> > > requires a corresponding change to userspace kexec-tools.
+> > > 
+> > > Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+> > > ---
+> > >   arch/x86/Kconfig        |  11 ++++
+> > >   arch/x86/kernel/crash.c | 116 ++++++++++++++++++++++++++++++++++++++++
+> > >   2 files changed, 127 insertions(+)
+> > > 
+> > > diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> > > index 762a0b6ab8b6..e9eecff3b97d 100644
+> > > --- a/arch/x86/Kconfig
+> > > +++ b/arch/x86/Kconfig
+> > > @@ -2082,6 +2082,17 @@ config CRASH_DUMP
+> > >         (CONFIG_RELOCATABLE=y).
+> > >         For more details see Documentation/admin-guide/kdump/kdump.rst
+> > > +config CRASH_MAX_MEMORY_RANGES
+> > > +    depends on CRASH_DUMP && KEXEC_FILE && (HOTPLUG_CPU || MEMORY_HOTPLUG)
+> > > +    int
+> > > +    default 32768
+> > > +    help
+> > > +      For the kexec_file_load path, specify the maximum number of
+> > > +      memory regions, eg. as represented by the 'System RAM' entries
+> > > +      in /proc/iomem, that the elfcorehdr buffer/segment can accommodate.
+> > > +      This value is combined with NR_CPUS and multiplied by Elf64_Phdr
+> > > +      size to determine the final buffer size.
+> > > +
+> > >   config KEXEC_JUMP
+> > >       bool "kexec jump"
+> > >       depends on KEXEC && HIBERNATION
+> > > diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+> > > index 9db41cce8d97..b9cdf7a0d868 100644
+> > > --- a/arch/x86/kernel/crash.c
+> > > +++ b/arch/x86/kernel/crash.c
+> > > @@ -25,6 +25,7 @@
+> > >   #include <linux/slab.h>
+> > >   #include <linux/vmalloc.h>
+> > >   #include <linux/memblock.h>
+> > > +#include <linux/highmem.h>
+> > >   #include <asm/processor.h>
+> > >   #include <asm/hardirq.h>
+> > > @@ -398,7 +399,17 @@ int crash_load_segments(struct kimage *image)
+> > >       image->elf_headers = kbuf.buffer;
+> > >       image->elf_headers_sz = kbuf.bufsz;
+> > > +#if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_MEMORY_HOTPLUG)
+> > > +    /* Ensure elfcorehdr segment large enough for hotplug changes */
+> > > +    kbuf.memsz = (CONFIG_NR_CPUS_DEFAULT + CONFIG_CRASH_MAX_MEMORY_RANGES) * sizeof(Elf64_Phdr);
+> > > +    /* For marking as usable to crash kernel */
+> > > +    image->elf_headers_sz = kbuf.memsz;
+> > > +    /* Record the index of the elfcorehdr segment */
+> > > +    image->elfcorehdr_index = image->nr_segments;
+> > > +    image->elfcorehdr_index_valid = true;
+> > > +#else
+> > >       kbuf.memsz = kbuf.bufsz;
+> > > +#endif
+> > >       kbuf.buf_align = ELF_CORE_HEADER_ALIGN;
+> > >       kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
+> > >       ret = kexec_add_buffer(&kbuf);
+> > > @@ -413,3 +424,108 @@ int crash_load_segments(struct kimage *image)
+> > >       return ret;
+> > >   }
+> > >   #endif /* CONFIG_KEXEC_FILE */
+> > > +
+> > > +#if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_MEMORY_HOTPLUG)
+> > > +int crash_hotplug_support(void) { return 1; }
+> > > +void *arch_map_crash_pages(unsigned long paddr, unsigned long size)
+> > > +{
+> > > +    /*
+> > > +     * NOTE: The addresses and sizes passed to this routine have
+> > > +     * already been fully aligned on page boundaries. There is no
+> > > +     * need for massaging the address or size.
+> > > +     */
+> > > +    void *ptr = NULL;
+> > > +
+> > > +    /* NOTE: requires arch_kexec_[un]protect_crashkres() for write access */
+> > > +    if (size > 0) {
+> > > +        struct page *page = pfn_to_page(paddr >> PAGE_SHIFT);
+> > > +
+> > > +        ptr = kmap(page);
+> > > +    }
+> > > +
+> > > +    return ptr;
+> > > +}
+> > > +
+> > > +void arch_unmap_crash_pages(void **ptr)
+> > > +{
+> > > +    if (ptr) {
+> > > +        if (*ptr)
+> > > +            kunmap(*ptr);
+> > > +        *ptr = NULL;
+> > > +    }
+> > > +}
+> > 
+> > Aren't arch will have build issue if arch_[un]map_crash_pages methods are not defined?
+> Sourabh,
+> Yes, you are correct. I'll add __weak versions of each in crash_core.c in the next patch.
 
-Patch 1/2 adds the dt-bindings for the board.
+Just a reminder, __weak is deprecated and has been cleaned up in
+kernel/kexec*.c in below patch.
 
-Patch 2/2 adds the board with the following below features:
-
-General features:
-- 1GB RAM
-- microSD slot
-- Realtek Wifi
-- 1 x USB 2.0
-- HDMI IN
-- HDMI OUT
-- Audio out
-- MIPI DSI
-- TI DLPC3433
-
-It has also connectors to connect an external mini keypad.
-
-v2 patches can be found here:
-https://lore.kernel.org/all/20220615093900.344726-1-sunil@amarulasolutions.com/
-
-Suniel Mahesh (2):
-  dt-bindings: arm: sunxi: Add binding for RenewWorldOutReach
-    R16-Vista-E board
-  ARM: dts: sun8i: Add R16 Vista E board from RenewWorldOutreach
-
- .../devicetree/bindings/arm/sunxi.yaml        |   6 +
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- arch/arm/boot/dts/Makefile                    |   1 +
- arch/arm/boot/dts/sun8i-r16-renew-vista-e.dts | 362 ++++++++++++++++++
- 4 files changed, 371 insertions(+)
- create mode 100644 arch/arm/boot/dts/sun8i-r16-renew-vista-e.dts
-
--- 
-2.25.1
+[PATCH 0/2] kexec: Drop __weak attributes from functions
 
