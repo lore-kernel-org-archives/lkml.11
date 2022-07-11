@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 516CAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8AAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiGKU0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
+        id S231959AbiGKU0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbiGKUZa (ORCPT
+        with ESMTP id S230319AbiGKUZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 16:25:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACF64E630
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85ED4F6A3
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C312B81215
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B106C61657
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22AB6C341D3;
-        Mon, 11 Jul 2022 20:25:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E795C341D1;
+        Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657571123;
-        bh=3lAjOtZKG1Fsuzuu547FeZgxDGSHEVrd4ycZakefxQU=;
+        s=k20201202; t=1657571125;
+        bh=ijCPUHCQ+PvIvqv0lj0eAF28GMG83iZ88gPn2azWN00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OhYuzbhYp9t7p0QqTKMcJi4FdczRgYqUlbfQ1ZD6YzlQPXXHOtXAvu3UxRYlyG9Ez
-         /Lff//0mZmams33pJGRj+yD0Ic85dV6R7dQPWUt7gb9flyr5X3+KDcDnbnLbfpqsgg
-         CrqkW3OxeAbSEMNY3ug/ddNnmoZRIHrpxTQ2soCN2vcfiZZ1+A0E9aeMO/7iX5ID7e
-         sLwgaxCfJJRb8UKVe54OsPsDJG7x1NAhbYfk1H4pHbReTmaEv/G4Y1cyJQs1FssZid
-         K1WVMTX/E1dY2/VYO9qZqoHc9HZlvXL/bp38voRWC1F2QfoEIqT/cNJO5qaPnrMHJd
-         F7LUU/L2Eg5GA==
+        b=LuT7CaQRkdWFb8J/EDSonrTwNrneFh4vQzZa34mfbf3abyiL9uJB0RNLTsPkHeCg9
+         Gvy/qehbvXma6MzykQXN6Q3bAWc9AgkVRyK737bGrBp4jccYBKwaoDhHHmVQ68qfkL
+         QxNqwvTJi2HNVQLXX5pxdT9uId/imH0kHyPC4xg6F6hJ6PoR8puYgEKWx1mJr4pdTP
+         xp4QpPXQmhDIu74KD0OzuNfbuv0W0qDQDEhsz7OshIbocDgDlNWJs/g9txY5KijQMz
+         LEXa5jPSdb82yxhavdHFzgrH+8LNGXx1r4ih4RoBXA7oxqc2FReW+kwZEV2CdgUHhq
+         7aqWQhvXVAkKw==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e87-JL;
+        id 1oAzy3-004e8I-LS;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "Jani Nikula" <jani.nikula@linux.intel.com>,
         "Lucas De Marchi" <lucas.demarchi@intel.com>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Imre Deak <imre.deak@intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Manasi Navare <manasi.d.navare@intel.com>,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 14/32] drm/i915: skl_scaler: fix return value kernel-doc markup
-Date:   Mon, 11 Jul 2022 21:24:59 +0100
-Message-Id: <7d22a4d16d7b3670ce090d6040f3bdc9a524f2a0.1657565224.git.mchehab@kernel.org>
+Subject: [PATCH 17/32] drm/i915: i915_gem_wait.c: fix a kernel-doc markup
+Date:   Mon, 11 Jul 2022 21:25:02 +0100
+Message-Id: <54d781157866d7dc4f656b50500f228dca4070ed.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
@@ -65,11 +65,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The way it is, it produces this warning:
-
-	Documentation/gpu/i915:150: ./drivers/gpu/drm/i915/display/skl_scaler.c:213: WARNING: Block quote ends without a blank line; unexpected unindent.
-
-Use list markups to suppress the warning.
+The return codes for i915_gem_wait_ioctl() have identation issues,
+and will be displayed on a very confusing way. Use lists to improve
+its output.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -77,26 +75,50 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/display/skl_scaler.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_wait.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/display/skl_scaler.c b/drivers/gpu/drm/i915/display/skl_scaler.c
-index 4092679be21e..59099f793d3e 100644
---- a/drivers/gpu/drm/i915/display/skl_scaler.c
-+++ b/drivers/gpu/drm/i915/display/skl_scaler.c
-@@ -208,9 +208,9 @@ int skl_update_scaler_crtc(struct intel_crtc_state *crtc_state)
-  * @crtc_state: crtc's scaler state
-  * @plane_state: atomic plane state to update
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_wait.c b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
+index bdba05492582..7b4e216a295b 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_wait.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
+@@ -176,23 +176,25 @@ static unsigned long to_wait_timeout(s64 timeout_ns)
+  * @data: ioctl data blob
+  * @file: drm file pointer
   *
-- * Return
-- *     0 - scaler_usage updated successfully
-- *    error - requested scaling cannot be supported or other error condition
-+ * Return:
-+ * * 0 - scaler_usage updated successfully
-+ * * error - requested scaling cannot be supported or other error condition
+- * Returns 0 if successful, else an error is returned with the remaining time in
+- * the timeout parameter.
+- *  -ETIME: object is still busy after timeout
+- *  -ERESTARTSYS: signal interrupted the wait
+- *  -ENONENT: object doesn't exist
+- * Also possible, but rare:
+- *  -EAGAIN: incomplete, restart syscall
+- *  -ENOMEM: damn
+- *  -ENODEV: Internal IRQ fail
+- *  -E?: The add request failed
+- *
+  * The wait ioctl with a timeout of 0 reimplements the busy ioctl. With any
+  * non-zero timeout parameter the wait ioctl will wait for the given number of
+  * nanoseconds on an object becoming unbusy. Since the wait itself does so
+  * without holding struct_mutex the object may become re-busied before this
+  * function completes. A similar but shorter * race condition exists in the busy
+  * ioctl
++ *
++ * Returns:
++ * 0 if successful, else an error is returned with the remaining time in
++ * the timeout parameter.
++ * * -ETIME: object is still busy after timeout
++ * * -ERESTARTSYS: signal interrupted the wait
++ * * -ENONENT: object doesn't exist
++ *
++ * Also possible, but rare:
++ * * -EAGAIN: incomplete, restart syscall
++ * * -ENOMEM: damn
++ * * -ENODEV: Internal IRQ fail
++ * * -E?: The add request failed
   */
- int skl_update_scaler_plane(struct intel_crtc_state *crtc_state,
- 			    struct intel_plane_state *plane_state)
+ int
+ i915_gem_wait_ioctl(struct drm_device *dev, void *data, struct drm_file *file)
 -- 
 2.36.1
 
