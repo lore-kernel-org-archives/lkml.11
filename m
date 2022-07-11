@@ -2,108 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA88CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56822C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbiGKOTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
+        id S230200AbiGKOT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGKOTv (ORCPT
+        with ESMTP id S229923AbiGKOTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:19:51 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA97531902
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:19:50 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id e28so5355744lfj.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:19:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EbTGKdHG+1YrudsLr33VcIPNPd0JWleJZSy38WYsqHA=;
-        b=GCJd/iOWc1D1t4INDMA/nNooKIuFLbEp/2dZ+mbivmOWS3NGfry0pyVGLIO/gE6/mg
-         ZCoIYHnxY0on102bwNhY876TLdnpm9jXO/donroJ51Mp2Q/SVgHPgBa/C3ZMG+XBVv+U
-         ncIQ4yP0ooa8DpKGpKsmWBVU7/QIpalYAdMAWVCVxaF7dZ9B3iIltaL8qw8+azxg28o3
-         /bXrRNap6aoHuRgGW98sxezqS6bSt17J8VwU3w4oV6Vl9+p+a38iZ1teQlrvv9fna5pr
-         gVP3nqytTYtVVPqXzLFXj3DDRnx2sD8MTNDTJruabECz9nuyfaQ+pbGHFR5rHlLn2Mgh
-         jwhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EbTGKdHG+1YrudsLr33VcIPNPd0JWleJZSy38WYsqHA=;
-        b=nPpPt0QdnDhDzhgyP1G/ytF9NPJQSA6WledtYzHMTE/aomPCq4ZmgCg3FcMga1OG47
-         vb3WJRv9CEkzK6Uu6i2dmQx6z+BQLytSCmsqT5iZnSDbez2YzTHmBG62IQlsA2Nfrp5g
-         D13Wphn5xTQwE659s61xtfuodV3rLcbzXi/vd/86WYcNIx+qrnJFN1H21/4qTq9wN7oR
-         Gpf6Hdc58S8Z49lndt9wdtWYr9UQJeIig7phJr4N9/hAaxj+nbvLS0YDvV5isPnUhi3s
-         4zB5U4Z1aiND/7yyuiPNnUETv6wxHZ5XF1wk2V+TvNOXOBr6oBFE5ADubJ4hQp7H8QcF
-         uPMw==
-X-Gm-Message-State: AJIora8EatS9/NkwHdPjxkDeroFYKDZBkg4G5bMfNt1RPWAkvoQr1liH
-        mmlEaaNamA9gIVLL6tbAjZ364A==
-X-Google-Smtp-Source: AGRyM1vtxA3URIMoW5Kpq+Ah7ii7RSPYMDjIX30bY30Yj6lyVAWnXi7dhZAKcPwMDRtRtEY2LLkaxQ==
-X-Received: by 2002:a05:6512:3b90:b0:47f:79df:62d3 with SMTP id g16-20020a0565123b9000b0047f79df62d3mr11952730lfv.486.1657549189273;
-        Mon, 11 Jul 2022 07:19:49 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id 9-20020ac25f09000000b0047f6a1237e5sm1562594lfq.291.2022.07.11.07.19.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 07:19:48 -0700 (PDT)
-Message-ID: <2ba431fb-ec22-81da-29fb-1d7ecd1a8722@linaro.org>
-Date:   Mon, 11 Jul 2022 17:19:48 +0300
+        Mon, 11 Jul 2022 10:19:53 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EDE32BAD
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:19:51 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LhQxw6mVpz9sy3;
+        Mon, 11 Jul 2022 16:19:48 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id sEwUWcBuijtK; Mon, 11 Jul 2022 16:19:48 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LhQxw5zZXz9sy2;
+        Mon, 11 Jul 2022 16:19:48 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id B59F98B767;
+        Mon, 11 Jul 2022 16:19:48 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id PDug5ro-mtP4; Mon, 11 Jul 2022 16:19:48 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9FFDD8B763;
+        Mon, 11 Jul 2022 16:19:48 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 26BEJZA41585422
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 11 Jul 2022 16:19:35 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 26BEJYoC1585421;
+        Mon, 11 Jul 2022 16:19:34 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v1 1/5] powerpc/32: Do not allow selection of e5500 or e6500 CPUs on PPC32
+Date:   Mon, 11 Jul 2022 16:19:29 +0200
+Message-Id: <8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 10/10] drm/msm/disp/dpu: check for crtc enable rather
- than crtc active to release shared resources
-Content-Language: en-GB
-To:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, swboyd@chromium.org,
-        quic_kalyant@quicinc.com, quic_khsieh@quicinc.com,
-        quic_vproddut@quicinc.com, bjorn.andersson@linaro.org,
-        quic_aravindh@quicinc.com, quic_abhinavk@quicinc.com,
-        quic_sbillaka@quicinc.com
-References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
- <1657544224-10680-11-git-send-email-quic_vpolimer@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <1657544224-10680-11-git-send-email-quic_vpolimer@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1657549171; l=1188; s=20211009; h=from:subject:message-id; bh=zbDq6NxwXwlkwZBaVuUjU96KJcBMe59aI2CjCuBbbW0=; b=nvquTDXxK4F5f7+tn9OG4myo91gcXQ+gwfwVbURPctKw20MDNI3R2XD51fkpnhqXGWwL6NHsEhcW uL5UdERGA9Szz6uQYRatryZ4Dkw3SaqNlmnGc7qX5+NdV9DWt7Xg
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/07/2022 15:57, Vinod Polimera wrote:
-> According to KMS documentation, The driver must not release any shared
-> resources if active is set to false but enable still true.
-> 
-> Fixes: ccc862b957c6 ("drm/msm/dpu: Fix reservation failures in modeset")
-> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Commit 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+enlarged the CPU selection logic to PPC32 by removing depend to
+PPC64, and failed to restrict that depend to E5500_CPU and E6500_CPU.
+Fortunately that got unnoticed because -mcpu=8540 will override the
+-mcpu=e500mc64 or -mpcu=e6500 as they are ealier, but that's
+fragile and may no be right in the future.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Add back the depend PPC64 on E5500_CPU and E6500_CPU.
 
-> ---
->   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> index 5dfb56a..02a71d1 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-> @@ -592,7 +592,7 @@ static int dpu_encoder_virt_atomic_check(
->   		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
->   			dpu_rm_release(global_state, drm_enc);
->   
-> -			if (!crtc_state->active_changed || crtc_state->active)
-> +			if (!crtc_state->active_changed || crtc_state->enable)
->   				ret = dpu_rm_reserve(&dpu_kms->rm, global_state,
->   						drm_enc, crtc_state, topology);
->   		}
+Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/platforms/Kconfig.cputype | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index 383ed4fe6013..9805a2c717b9 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -173,11 +173,11 @@ config POWER9_CPU
+ 
+ config E5500_CPU
+ 	bool "Freescale e5500"
+-	depends on E500
++	depends on PPC64 && E500
+ 
+ config E6500_CPU
+ 	bool "Freescale e6500"
+-	depends on E500
++	depends on PPC64 && E500
+ 
+ config 860_CPU
+ 	bool "8xx family"
 -- 
-With best wishes
-Dmitry
+2.36.1
+
