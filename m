@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE29C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B807DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiGKJmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37760 "EHLO
+        id S233345AbiGKJmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233283AbiGKJmN (ORCPT
+        with ESMTP id S233046AbiGKJmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:42:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24DFD13F89;
-        Mon, 11 Jul 2022 02:21:07 -0700 (PDT)
+        Mon, 11 Jul 2022 05:42:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4E89B191;
+        Mon, 11 Jul 2022 02:21:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B2B7B80E7A;
-        Mon, 11 Jul 2022 09:21:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E55D9C34115;
-        Mon, 11 Jul 2022 09:21:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6315F612F3;
+        Mon, 11 Jul 2022 09:21:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 715C4C34115;
+        Mon, 11 Jul 2022 09:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531264;
-        bh=IaRUgGfHA+RRFpBTMZHWM764kBfEr2w8k+wgK7DdwJ0=;
+        s=korg; t=1657531269;
+        bh=DuRnfld3GVLwDCJgA7tVCkA/1g0bZZs/tHdu9/d1NME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXa+HQ/tOvfHf/8xYkNCxrYInzSLD4szqLRKxjgRvJxATFSpGL7WolHc8HtGypvUO
-         zi2B/El4qZNunYaSJ0bCwyHPA/X2ikPteeAA+VRjk2yeRSU8e2mlKk1aiBy/i4vYTT
-         2zy+I0tD/qGB4QR05qT27hKHoovMn1uFaCP7HIbU=
+        b=gUmfpv/SncEhxw5dItkV4PH6dj1IN3xmQVcaq3NIgpcbxzOV2ICjRH1NohCOfObMy
+         0BUxH0oPPwYJtzuXlq2vbMrjXpOHEg4sa0uUlYMIAGBPSy3R6QuL1g0LYkX0P5x4i7
+         U8dhmEFaNJhLzdm1lOjGXp5zT+LrMwU+4Ej9WruI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 005/230] ALSA: hda/realtek: Add quirk for Clevo L140PU
-Date:   Mon, 11 Jul 2022 11:04:21 +0200
-Message-Id: <20220711090604.220884239@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 042/230] platform/x86: wmi: Fix driver->notify() vs ->probe() race
+Date:   Mon, 11 Jul 2022 11:04:58 +0200
+Message-Id: <20220711090605.277376059@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,30 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 11bea26929a1a3a9dd1a287b60c2f471701bf706 upstream.
+[ Upstream commit 9918878676a5f9e99b98679f04b9e6c0f5426b0a ]
 
-Fixes headset detection on Clevo L140PU.
+The driver core sets struct device->driver before calling out
+to the bus' probe() method, this leaves a window where an ACPI
+notify may happen on the WMI object before the driver's
+probe() method has completed running, causing e.g. the
+driver's notify() callback to get called with drvdata
+not yet being set leading to a NULL pointer deref.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220624144109.3957-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+At a check for this to the WMI core, ensuring that the notify()
+callback is not called before the driver is ready.
+
+Fixes: 1686f5444546 ("platform/x86: wmi: Incorporate acpi_install_notify_handler")
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20211128190031.405620-2-hdegoede@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/platform/x86/wmi.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9001,6 +9001,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x7718, "Clevo L140PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8521, "Clevo NH77D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+diff --git a/drivers/platform/x86/wmi.c b/drivers/platform/x86/wmi.c
+index a00b72ace6d2..c4f917d45b51 100644
+--- a/drivers/platform/x86/wmi.c
++++ b/drivers/platform/x86/wmi.c
+@@ -53,6 +53,7 @@ struct guid_block {
+ 
+ enum {	/* wmi_block flags */
+ 	WMI_READ_TAKES_NO_ARGS,
++	WMI_PROBED,
+ };
+ 
+ struct wmi_block {
+@@ -980,6 +981,7 @@ static int wmi_dev_probe(struct device *dev)
+ 		}
+ 	}
+ 
++	set_bit(WMI_PROBED, &wblock->flags);
+ 	return 0;
+ 
+ probe_misc_failure:
+@@ -997,6 +999,8 @@ static void wmi_dev_remove(struct device *dev)
+ 	struct wmi_block *wblock = dev_to_wblock(dev);
+ 	struct wmi_driver *wdriver = drv_to_wdrv(dev->driver);
+ 
++	clear_bit(WMI_PROBED, &wblock->flags);
++
+ 	if (wdriver->filter_callback) {
+ 		misc_deregister(&wblock->char_dev);
+ 		kfree(wblock->char_dev.name);
+@@ -1299,7 +1303,7 @@ static void acpi_wmi_notify_handler(acpi_handle handle, u32 event,
+ 		return;
+ 
+ 	/* If a driver is bound, then notify the driver. */
+-	if (wblock->dev.dev.driver) {
++	if (test_bit(WMI_PROBED, &wblock->flags) && wblock->dev.dev.driver) {
+ 		struct wmi_driver *driver = drv_to_wdrv(wblock->dev.dev.driver);
+ 		struct acpi_object_list input;
+ 		union acpi_object params[1];
+-- 
+2.35.1
+
 
 
