@@ -2,174 +2,349 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbiGKMbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
+        id S230205AbiGKMcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230318AbiGKMaw (ORCPT
+        with ESMTP id S229572AbiGKMct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:30:52 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB7CB4E600
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:30:51 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ez10so8507057ejc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:30:51 -0700 (PDT)
+        Mon, 11 Jul 2022 08:32:49 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525E54E603
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:32:48 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id mf4so7379214ejc.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:32:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oYvWlChUTRjZ40L2MhpeE72DGwoPhHfF/1ipkuBiJBE=;
-        b=b/Aa+wXf5yJPAx+b+cKVIzEPsd/fK4KDVHLBkpiBJlEe6/xTnwrsojoh5acydEzceI
-         BZ6xqSQ2iUzlRC9oj8dv5+RsJamcVJLzRL855YavTAkhKtqtDynEF2UIoo92TUJF7pGY
-         GlXYDZUrd7nnHVfp7WdK0blwj3Rr+anWSdeCc=
+        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hx4Xj0vKM3i9b8JRtUJiv/sbaqsj2HeLHhMvN2rvbzQ=;
+        b=InkBM8ViDKm5aLb2MeT/zAOxVF3eGAC8WlnxhjWChE7n2CDLvHpCe3Dq+yAnlWY6y5
+         op0wpFNoTFP1AXUj0T5v2K8D4abTewJPr26cMOYUUGI2dz2GvGghJxuuSMSlRRKm68qS
+         fBIllUi8s5VTs6u0fczmV+Gy3C/hJFD1sLOnGNDY/2tR+JLiWaK9SMpHm5b4XrwCEFea
+         KruUDwljlzZF2DhfpSyArfYq9nTxQ8udeAM0Aw7SZE/saGyCdscgpovFlPcNS5oN1hBI
+         orvTarntKuH2FOtLUxG4AQI3V1yi2zV1EN5AnftGKZV3CUBjHsuRIgUzXnwjYAyU8W3G
+         9EGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oYvWlChUTRjZ40L2MhpeE72DGwoPhHfF/1ipkuBiJBE=;
-        b=hHBLIqmugIwEe/jtChkLRsrFzGkjFWeHjJcrMwtxK4TW3us9Z3HVtN/RKPSjJMwCuK
-         fzuydZ84nzKgoYkX3nW+2nRUHkxE0Qxlvisws5Rg8c5PngCGsZVokvxqtA7o0p7f63Lq
-         5VPG7Fgva6KXVUUlKZ8sItinhkNf9YqLnUEPbHa+kd2CCzRw4YbTTpssARwwTzUXuu2F
-         kmj2JNbGfVviSWDMO8zvMR1nA2bP4Mr7xNPm9lCHMV4lB7GUZ/0Ajt1fhVu6o+DLjnmc
-         eE36wLcWuO/EHVQhwrH93JVsXm3sjQDGlBQUkCQfaoNQDSJ7w5lIzpyjC3eSCvTrhWlI
-         AH2g==
-X-Gm-Message-State: AJIora/ABnn002tTk8k9KEs9nyiVhZNkf8y3BbvMsl7CkDRB8oaz8KPj
-        eJGTygyxbltSP2Si95s4sv3qeQ==
-X-Google-Smtp-Source: AGRyM1v82oZO0az0Nf6XSyx/DfS6/dODO82EVOMfKtCbzwizV+rE6Q2Kcqmp6s+ussAHNPGgtsISKA==
-X-Received: by 2002:a17:906:8a45:b0:72b:31d4:d537 with SMTP id gx5-20020a1709068a4500b0072b31d4d537mr14585748ejc.170.1657542650255;
-        Mon, 11 Jul 2022 05:30:50 -0700 (PDT)
-Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b0072b16a57cdcsm738785eja.118.2022.07.11.05.30.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 05:30:48 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        van Spriel <arend@broadcom.com>
-Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH 2/2] wifi: brcmfmac: support brcm,ccode-map-trivial DT property
-Date:   Mon, 11 Jul 2022 14:30:04 +0200
-Message-Id: <20220711123005.3055300-3-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711123005.3055300-1-alvin@pqrs.dk>
-References: <20220711123005.3055300-1-alvin@pqrs.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hx4Xj0vKM3i9b8JRtUJiv/sbaqsj2HeLHhMvN2rvbzQ=;
+        b=rR1eVqM5yFWpOiiiIbR0QXa7GQv6QvTjPdZprsZWsu9x8pgMipSC/t0c4ymxQxfrHR
+         97pZLgkmKQQHmaSr7CqR+FceG7H3kZ8d1kznHG4s1rE3p9sgbT03ZhMywVA+FXP8gciq
+         KMdNNtRNT4hmoznu0+SggojSVoeZ7nCnJV8JdLcaJP8AUyXSjNZTfCePUAT8/4OA3uXE
+         mwVQSME/mrLBapMUB3waOYVK+SNlv6rApHr4QSnU0i2k7BcnQzgaP8WnZlChWH8FKBec
+         0+2W1vFK9NSaPwgw5Pj1F5dTUvXpaFODjUpON4I1F+lm4kMdjdBwQf12DdHCeZKF2LOk
+         uofw==
+X-Gm-Message-State: AJIora/dtC7z3nPDrHo61QdutfItAcbbFoabYfXvWraVGgQPkiuwhr1u
+        OowFKWLWyPiMV0lVVOrvyY4PF+03rlBHN8KbB52WbA==
+X-Google-Smtp-Source: AGRyM1t2GYOvYiSczm91nCPcsRJRH4FqjR9E7NVKZ+m4L5fqZwnWxrxafS/w6hG5adH2Z02J62sZu85S85XMttB+tZA=
+X-Received: by 2002:a17:906:2086:b0:717:4e91:f1db with SMTP id
+ 6-20020a170906208600b007174e91f1dbmr18061273ejq.345.1657542766827; Mon, 11
+ Jul 2022 05:32:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220125171129.472775-1-aford173@gmail.com> <20220125171129.472775-8-aford173@gmail.com>
+ <d6c5c5663f8ae904d409240063295cf516e17dd1.camel@puri.sm> <4b958892ba788a0e9e73a9135c305aacbe33294d.camel@pengutronix.de>
+ <c11a58ecc5da2e206fc2b942980223a04a103f19.camel@puri.sm> <17c5ef22479cfea3f43dce1885f6613f1bef8064.camel@pengutronix.de>
+ <2f25ea965289f6fdcd5fc0f12f445b174637ce74.camel@puri.sm>
+In-Reply-To: <2f25ea965289f6fdcd5fc0f12f445b174637ce74.camel@puri.sm>
+From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Date:   Mon, 11 Jul 2022 09:32:35 -0300
+Message-ID: <CAAEAJfACXrhHwF-Z9ygnZTUgKBQ3u1jHNDaMhgivq_rDr8xTNw@mail.gmail.com>
+Subject: Re: [PATCH V4 07/11] arm64: dts: imx8mq: Enable both G1 and G2 VPU's
+ with vpu-blk-ctrl
+To:     Martin Kepplinger <martin.kepplinger@puri.sm>
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        Adam Ford <aford173@gmail.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Chris Healy <cphealy@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+Hi Martin,
 
-Commit a21bf90e927f ("brcmfmac: use ISO3166 country code and 0 rev as
-fallback on some devices") introduced a fallback mechanism whereby a
-trivial mapping from ISO3166 country codes to firmware country code and
-revision is used on some devices. This fallback operates on the device
-level, so it is enabled only for certain supported chipsets.
+On Mon, Jul 11, 2022 at 6:53 AM Martin Kepplinger
+<martin.kepplinger@puri.sm> wrote:
+>
+> Am Dienstag, dem 26.04.2022 um 12:43 +0200 schrieb Lucas Stach:
+> > Am Dienstag, dem 26.04.2022 um 09:38 +0200 schrieb Martin Kepplinger:
+> > > Am Montag, dem 25.04.2022 um 17:34 +0200 schrieb Lucas Stach:
+> > > > Hi Martin,
+> > > >
+> > > > Am Montag, dem 25.04.2022 um 17:22 +0200 schrieb Martin
+> > > > Kepplinger:
+> > > > > Am Dienstag, dem 25.01.2022 um 11:11 -0600 schrieb Adam Ford:
+> > > > > > With the Hantro G1 and G2 now setup to run independently,
+> > > > > > update
+> > > > > > the device tree to allow both to operate.  This requires the
+> > > > > > vpu-blk-ctrl node to be configured.  Since vpu-blk-ctrl needs
+> > > > > > certain clock enabled to handle the gating of the G1 and G2
+> > > > > > fuses, the clock-parents and clock-rates for the various
+> > > > > > VPU's
+> > > > > > to be moved into the pgc_vpu because they cannot get re-
+> > > > > > parented
+> > > > > > once enabled, and the pgc_vpu is the highest in the chain.
+> > > > > >
+> > > > > > Signed-off-by: Adam Ford <aford173@gmail.com>
+> > > > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > > > Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+> > > > > >
+> > > > > > diff --git a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > > b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > > index 2df2510d0118..549b2440f55d 100644
+> > > > > > --- a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > > +++ b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > > @@ -737,7 +737,21 @@ pgc_gpu: power-domain@5 {
+> > > > > >                                         pgc_vpu: power-
+> > > > > > domain@6 {
+> > > > > >                                                 #power-
+> > > > > > domain-
+> > > > > > cells =
+> > > > > > <0>;
+> > > > > >                                                 reg =
+> > > > > > <IMX8M_POWER_DOMAIN_VPU>;
+> > > > > > -                                               clocks =
+> > > > > > <&clk
+> > > > > > IMX8MQ_CLK_VPU_DEC_ROOT>;
+> > > > > > +                                               clocks =
+> > > > > > <&clk
+> > > > > > IMX8MQ_CLK_VPU_DEC_ROOT>,
+> > > > > > +
+> > > > > > <&clk
+> > > > > > IMX8MQ_CLK_VPU_G1_ROOT>,
+> > > > > > +
+> > > > > > <&clk
+> > > > > > IMX8MQ_CLK_VPU_G2_ROOT>;
+> > > > > > +                                               assigned-
+> > > > > > clocks =
+> > > > > > <&clk IMX8MQ_CLK_VPU_G1>,
+> > > > > > +
+> > > > > >
+> > > > > > <&clk IMX8MQ_CLK_VPU_G2>,
+> > > > > > +
+> > > > > >
+> > > > > > <&clk IMX8MQ_CLK_VPU_BUS>,
+> > > > > > +
+> > > > > >
+> > > > > > <&clk IMX8MQ_VPU_PLL_BYPASS>;
+> > > > > > +                                               assigned-
+> > > > > > clock-
+> > > > > > parents = <&clk IMX8MQ_VPU_PLL_OUT>,
+> > > > > > +
+> > > > > >
+> > > > > >
+> > > > > >     <&clk IMX8MQ_VPU_PLL_OUT>,
+> > > > > > +
+> > > > > >
+> > > > > >
+> > > > > >     <&clk IMX8MQ_SYS1_PLL_800M>,
+> > > > > > +
+> > > > > >
+> > > > > >
+> > > > > >     <&clk IMX8MQ_VPU_PLL>;
+> > > > > > +                                               assigned-
+> > > > > > clock-
+> > > > > > rates
+> > > > > > = <600000000>,
+> > > > > > +
+> > > > > >
+> > > > > >
+> > > > > >   <600000000>,
+> > > > > > +
+> > > > > >
+> > > > > >
+> > > > > >   <800000000>,
+> > > > > > +
+> > > > > >
+> > > > > >
+> > > > > >   <0>;
+> > > > > >                                         };
+> > > > > >
+> > > > > >                                         pgc_disp:
+> > > > > > power-domain@7
+> > > > > > {
+> > > > > > @@ -1457,30 +1471,31 @@ usb3_phy1: usb-phy@382f0040 {
+> > > > > >                         status = "disabled";
+> > > > > >                 };
+> > > > > >
+> > > > > > -               vpu: video-codec@38300000 {
+> > > > > > -                       compatible = "nxp,imx8mq-vpu";
+> > > > > > -                       reg = <0x38300000 0x10000>,
+> > > > > > -                             <0x38310000 0x10000>,
+> > > > > > -                             <0x38320000 0x10000>;
+> > > > > > -                       reg-names = "g1", "g2", "ctrl";
+> > > > > > -                       interrupts = <GIC_SPI 7
+> > > > > > IRQ_TYPE_LEVEL_HIGH>,
+> > > > > > -                                    <GIC_SPI 8
+> > > > > > IRQ_TYPE_LEVEL_HIGH>;
+> > > > > > -                       interrupt-names = "g1", "g2";
+> > > > > > +               vpu_g1: video-codec@38300000 {
+> > > > > > +                       compatible = "nxp,imx8mq-vpu-g1";
+> > > > > > +                       reg = <0x38300000 0x10000>;
+> > > > > > +                       interrupts = <GIC_SPI 7
+> > > > > > IRQ_TYPE_LEVEL_HIGH>;
+> > > > > > +                       clocks = <&clk
+> > > > > > IMX8MQ_CLK_VPU_G1_ROOT>;
+> > > > > > +                       power-domains = <&vpu_blk_ctrl
+> > > > > > IMX8MQ_VPUBLK_PD_G1>;
+> > > > > > +               };
+> > > > > > +
+> > > > > > +               vpu_g2: video-codec@38310000 {
+> > > > > > +                       compatible = "nxp,imx8mq-vpu-g2";
+> > > > > > +                       reg = <0x38310000 0x10000>;
+> > > > > > +                       interrupts = <GIC_SPI 8
+> > > > > > IRQ_TYPE_LEVEL_HIGH>;
+> > > > > > +                       clocks = <&clk
+> > > > > > IMX8MQ_CLK_VPU_G2_ROOT>;
+> > > > > > +                       power-domains = <&vpu_blk_ctrl
+> > > > > > IMX8MQ_VPUBLK_PD_G2>;
+> > > > > > +               };
+> > > > > > +
+> > > > > > +               vpu_blk_ctrl: blk-ctrl@38320000 {
+> > > > > > +                       compatible = "fsl,imx8mq-vpu-blk-
+> > > > > > ctrl";
+> > > > > > +                       reg = <0x38320000 0x100>;
+> > > > > > +                       power-domains = <&pgc_vpu>,
+> > > > > > <&pgc_vpu>,
+> > > > > > <&pgc_vpu>;
+> > > > > > +                       power-domain-names = "bus", "g1",
+> > > > > > "g2";
+> > > > > >                         clocks = <&clk
+> > > > > > IMX8MQ_CLK_VPU_G1_ROOT>,
+> > > > > > -                                <&clk
+> > > > > > IMX8MQ_CLK_VPU_G2_ROOT>,
+> > > > > > -                                <&clk
+> > > > > > IMX8MQ_CLK_VPU_DEC_ROOT>;
+> > > > > > -                       clock-names = "g1", "g2", "bus";
+> > > > > > -                       assigned-clocks = <&clk
+> > > > > > IMX8MQ_CLK_VPU_G1>,
+> > > > > > -                                         <&clk
+> > > > > > IMX8MQ_CLK_VPU_G2>,
+> > > > > > -                                         <&clk
+> > > > > > IMX8MQ_CLK_VPU_BUS>,
+> > > > > > -                                         <&clk
+> > > > > > IMX8MQ_VPU_PLL_BYPASS>;
+> > > > > > -                       assigned-clock-parents = <&clk
+> > > > > > IMX8MQ_VPU_PLL_OUT>,
+> > > > > > -                                                <&clk
+> > > > > > IMX8MQ_VPU_PLL_OUT>,
+> > > > > > -                                                <&clk
+> > > > > > IMX8MQ_SYS1_PLL_800M>,
+> > > > > > -                                                <&clk
+> > > > > > IMX8MQ_VPU_PLL>;
+> > > > > > -                       assigned-clock-rates = <600000000>,
+> > > > > > <600000000>,
+> > > > > > -                                              <800000000>,
+> > > > > > <0>;
+> > > > > > -                       power-domains = <&pgc_vpu>;
+> > > > > > +                                <&clk
+> > > > > > IMX8MQ_CLK_VPU_G2_ROOT>;
+> > > > > > +                       clock-names = "g1", "g2";
+> > > > > > +                       #power-domain-cells = <1>;
+> > > > > >                 };
+> > > > > >
+> > > > > >                 pcie0: pcie@33800000 {
+> > > > >
+> > > > > With this update, when testing suspend to ram on imx8mq, I get:
+> > > > >
+> > > > > buck4: failed to disable: -ETIMEDOUT
+> > > > >
+> > > > > where buck4 is power-supply of pgc_vpu. And thus the transition
+> > > > > to
+> > > > > suspend (and resuming) fails.
+> > > > >
+> > > > > Have you tested system suspend after the imx8m-blk-ctrl update
+> > > > > on
+> > > > > imx8mq?
+> > > >
+> > > > I haven't tested system suspend, don't know if anyone else did.
+> > > > However
+> > > > I guess that this is just uncovering a preexisting issue in the
+> > > > system
+> > > > suspend sequencing, which you would also hit if the video
+> > > > decoders
+> > > > were
+> > > > active at system suspend time.
+> > > >
+> > > > My guess is that the regulator disable fails, due to the power
+> > > > domains
+> > > > being disabled quite late in the suspend sequence, where i2c
+> > > > communication with the PMIC is no longer possible due to i2c
+> > > > being
+> > > > suspended already or something like that. Maybe you can dig in a
+> > > > bit
+> > > > on
+> > > > the actual sequence on your system and we can see how we can
+> > > > rework
+> > > > things to suspend the power domains at a time where communication
+> > > > with
+> > > > the PMIC is still possible?
+> > >
+> > > What exactly would you like to see? Here's all gpcv2 regulators
+> > > disabling on suspend. (gpu (domain 5) is disabled by runtime pm
+> > > often):
+> > >
+> > > [   47.138700] imx-pgc imx-pgc-domain.5: disabling regulator
+> > > [   47.298071] Freezing user space processes ... (elapsed 0.008
+> > > seconds) done.
+> > > [   47.313432] OOM killer disabled.
+> > > [   47.316670] Freezing remaining freezable tasks ... (elapsed
+> > > 2.221
+> > > seconds) done.
+> > > [   49.672052] imx8m-blk-ctrl 38320000.blk-ctrl:
+> > > imx8m_blk_ctrl_suspend
+> > > start
+> > > [   49.704417] imx-pgc imx-pgc-domain.0: disabling regulator
+> > > [   49.711114] imx-pgc imx-pgc-domain.6: disabling regulator
+> > > [   49.819064] buck4: failed to disable: -ETIMEDOUT
+> > >
+> > > The stack looks pretty much the same for all of them, from
+> > > pm_suspend()
+> > > over genpd_suspend_noiry().
+> >
+> > So the GPU domain is already suspended before the system suspend,
+> > probably due to short runtime PM timeouts.
+> >
+> > Can you please check at which point the i2c subsystem is suspended? I
+> > think we are already past that point when running the PM domain
+> > suspend
+> > from a _noirq callback. I'll take a look on how we can properly
+> > change
+> > this ordering.
+> >
+> > Regards,
+> > Lucas
+> >
+>
+> hi Lucas, sorry for not following up on this for so long. This fixes
+> suspend/resume for me:
+>
+> https://lore.kernel.org/linux-arm-kernel/20220711094549.3445566-1-martin.kepplinger@puri.sm/T/#t
+>
+> thank you for you help so far,
+>
 
-In general though, the firmware country codes are determined by the CLM
-blob, which is board-specific and may vary despite the underlying
-chipset being the same.
+Thanks a lot for keeping us posted. The fix for suspend/resume
+looks great!
 
-The aforementioned commit is actually a refinement of a previous commit
-that was reverted in commit 151a7c12c4fc ("Revert "brcmfmac: use ISO3166
-country code and 0 rev as fallback"") due to regressions with a BCM4359
-device. The refinement restricted the fallback mechanism to specific
-chipsets such as the BCM4345.
-
-We use a chipset - CYW88359 - that the driver identifies as a BCM4359
-too. But in our case, the CLM blob uses ISO3166 country codes
-internally, and all with revision 0. So the trivial mapping is exactly
-what is needed in order for the driver to sync the kernel regulatory
-domain to the firmware. This is just a matter of how the CLM blob was
-prepared by the hardware vendor. The same could hold for other boards
-too.
-
-Although the brcm,ccode-map device tree property is useful for cases
-where the mapping is more complex, the trivial case invites a much
-simpler specification. This patch adds support for parsing the
-brcm,ccode-map-trivial device tree property. Subordinate to the more
-specific brcm,ccode-map property, this new proprety simply informs the
-driver that the fallback method should be used in every case.
-
-In the absence of the new property in the device tree, expect no
-functional change.
-
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 3 +++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h   | 2 ++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c       | 6 ++++++
- 3 files changed, 11 insertions(+)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index 3ae6779fe153..db45da33adfd 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -7481,6 +7481,9 @@ int brcmf_cfg80211_wait_vif_event(struct brcmf_cfg80211_info *cfg,
- 
- static bool brmcf_use_iso3166_ccode_fallback(struct brcmf_pub *drvr)
- {
-+	if (drvr->settings->trivial_ccode_map)
-+		return true;
-+
- 	switch (drvr->bus_if->chip) {
- 	case BRCM_CC_4345_CHIP_ID:
- 	case BRCM_CC_43602_CHIP_ID:
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-index 15accc88d5c0..fe717cce5d55 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-@@ -38,6 +38,7 @@ extern struct brcmf_mp_global_t brcmf_mp_global;
-  * @fcmode: FWS flow control.
-  * @roamoff: Firmware roaming off?
-  * @ignore_probe_fail: Ignore probe failure.
-+ * @trivial_ccode_map: Assume firmware uses ISO3166 country codes with rev 0
-  * @country_codes: If available, pointer to struct for translating country codes
-  * @bus: Bus specific platform data. Only SDIO at the mmoment.
-  */
-@@ -48,6 +49,7 @@ struct brcmf_mp_device {
- 	bool		roamoff;
- 	bool		iapp;
- 	bool		ignore_probe_fail;
-+	bool		trivial_ccode_map;
- 	struct brcmfmac_pd_cc *country_codes;
- 	const char	*board_type;
- 	unsigned char	mac[ETH_ALEN];
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index 083ac58f466d..1add942462f8 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -24,6 +24,12 @@ static int brcmf_of_get_country_codes(struct device *dev,
- 
- 	count = of_property_count_strings(np, "brcm,ccode-map");
- 	if (count < 0) {
-+		/* If no explicit country code map is specified, check whether
-+		 * the trivial map should be used.
-+		 */
-+		settings->trivial_ccode_map =
-+			of_property_read_bool(np, "brcm,ccode-map-trivial");
-+
- 		/* The property is optional, so return success if it doesn't
- 		 * exist. Otherwise propagate the error code.
- 		 */
--- 
-2.37.0
-
+Ezequiel
