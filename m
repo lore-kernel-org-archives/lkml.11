@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86720C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 575FEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiGKJX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
+        id S232149AbiGKJYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231959AbiGKJXN (ORCPT
+        with ESMTP id S231967AbiGKJXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:23:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5DEF5BD;
-        Mon, 11 Jul 2022 02:13:49 -0700 (PDT)
+        Mon, 11 Jul 2022 05:23:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCF5BE31;
+        Mon, 11 Jul 2022 02:13:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C9ACB80D2C;
-        Mon, 11 Jul 2022 09:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2F32C34115;
-        Mon, 11 Jul 2022 09:13:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D10516121F;
+        Mon, 11 Jul 2022 09:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCCDAC34115;
+        Mon, 11 Jul 2022 09:13:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530823;
-        bh=T7xOkgvjtE3PbkwxKocejNJRefdrZpo1wFeudSfDjeQ=;
+        s=korg; t=1657530831;
+        bh=SKoJobLuXWL5FRX92QKZJyelch0U0Zzj/8c/a3u1sTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xNkXKI6uakFcZikxiliwddPPR9ZqkUYezsixZf+kIPaKiHLEuYiACy3uzTvQnZpSj
-         kAtwyvdU9AZfEl38Zka8MVRjZUlXz190HwjMuILt1FqDQ1AoJMWAeWUrf/481MHELi
-         OMlISDg1a4xnn7QNPkqNRVaVUs7LnGP7pMJmCeME=
+        b=jlv2r9V2rOhT/aDKaPBfi2n954tgaMP3JsIPHmDj93nqbVR70S5AY5nxsjyeyxNXc
+         3Es7DoPlhhEWAo+C7jaiXdI0kbqMBmPLIPgMrJSf6OV0gMF7HBpycagEjZfr9LSv5c
+         LICjO3B3srhXTAxlQkNuM2kCwPDZOZxB2av/Ll+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 51/55] ida: dont use BUG_ON() for debugging
-Date:   Mon, 11 Jul 2022 11:07:39 +0200
-Message-Id: <20220711090543.258212313@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH 5.10 18/55] memregion: Fix memregion_free() fallback definition
+Date:   Mon, 11 Jul 2022 11:07:06 +0200
+Message-Id: <20220711090542.303296560@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -49,58 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Dan Williams <dan.j.williams@intel.com>
 
-commit fc82bbf4dede758007763867d0282353c06d1121 upstream.
+commit f50974eee5c4a5de1e4f1a3d873099f170df25f8 upstream.
 
-This is another old BUG_ON() that just shouldn't exist (see also commit
-a382f8fee42c: "signal handling: don't use BUG_ON() for debugging").
+In the CONFIG_MEMREGION=n case, memregion_free() is meant to be a static
+inline. 0day reports:
 
-In fact, as Matthew Wilcox points out, this condition shouldn't really
-even result in a warning, since a negative id allocation result is just
-a normal allocation failure:
+    In file included from drivers/cxl/core/port.c:4:
+    include/linux/memregion.h:19:6: warning: no previous prototype for
+    function 'memregion_free' [-Wmissing-prototypes]
 
-  "I wonder if we should even warn here -- sure, the caller is trying to
-   free something that wasn't allocated, but we don't warn for
-   kfree(NULL)"
+Mark memregion_free() static.
 
-and goes on to point out how that current error check is only causing
-people to unnecessarily do their own index range checking before freeing
-it.
-
-This was noted by Itay Iellin, because the bluetooth HCI socket cookie
-code does *not* do that range checking, and ends up just freeing the
-error case too, triggering the BUG_ON().
-
-The HCI code requires CAP_NET_RAW, and seems to just result in an ugly
-splat, but there really is no reason to BUG_ON() here, and we have
-generally striven for allocation models where it's always ok to just do
-
-    free(alloc());
-
-even if the allocation were to fail for some random reason (usually
-obviously that "random" reason being some resource limit).
-
-Fixes: 88eca0207cf1 ("ida: simplified functions for id allocation")
-Reported-by: Itay Iellin <ieitayie@gmail.com>
-Suggested-by: Matthew Wilcox <willy@infradead.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 33dd70752cd7 ("lib: Uplevel the pmem "region" ida to a global allocator")
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Alison Schofield <alison.schofield@intel.com>
+Link: https://lore.kernel.org/r/165601455171.4042645.3350844271068713515.stgit@dwillia2-xfh
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/idr.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/memregion.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/lib/idr.c
-+++ b/lib/idr.c
-@@ -491,7 +491,8 @@ void ida_free(struct ida *ida, unsigned
- 	struct ida_bitmap *bitmap;
- 	unsigned long flags;
- 
--	BUG_ON((int)id < 0);
-+	if ((int)id < 0)
-+		return;
- 
- 	xas_lock_irqsave(&xas, flags);
- 	bitmap = xas_load(&xas);
+--- a/include/linux/memregion.h
++++ b/include/linux/memregion.h
+@@ -16,7 +16,7 @@ static inline int memregion_alloc(gfp_t
+ {
+ 	return -ENOMEM;
+ }
+-void memregion_free(int id)
++static inline void memregion_free(int id)
+ {
+ }
+ #endif
 
 
