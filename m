@@ -2,188 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7727DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CB1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229954AbiGKLL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        id S230191AbiGKLLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiGKLLC (ORCPT
+        with ESMTP id S229456AbiGKLLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:11:02 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278A855B0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:18:10 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LhKXb0NPNzkX2s;
-        Mon, 11 Jul 2022 18:15:59 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Jul 2022 18:18:08 +0800
-Received: from huawei.com (10.175.101.6) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
- 2022 18:18:07 +0800
-From:   ZhaoLong Wang <wangzhaolong1@huawei.com>
-To:     <richard@nod.at>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <wangzhaolong1@huawei.com>,
-        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
-Subject: [PATCH V2] ubifs: Fix the issue that UBIFS be read-only due to truncate in the encrypted directory.
-Date:   Mon, 11 Jul 2022 18:26:39 +0800
-Message-ID: <20220711102639.1331660-1-wangzhaolong1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 11 Jul 2022 07:11:06 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696A3C1FEC
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:18:22 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id s21so4429427pjq.4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:18:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OEP5c1Ts3y3jjcZd/vxo+DFJNaZAkcnY9wcB9rKwQk0=;
+        b=8XMkm5VW53KdDaQvf+q37G9BYrf6ehTATfsf9ZgZosxgK5egvreQu1XDJoLFzGoxrY
+         Spx4dIrYlGbHhKpGEAcH5SzpGOAVzKW0A/dn/krSdYeqGQoe5Sok0fUzEw74itmR57FW
+         G8icen7/bsNrDOQqcQAy1CAUZHxDT3MyQLnFq0auLHAN1gCb808h7M1YXNy+iKHSZdUh
+         QrkiA4RJfYEvDm7KtWKvEEuFML8KJBUfdV/5rhTe2Q6tHj0+o8ywPyFv3/0dCQ/Xrp8r
+         hv6IlainqJPCGq+AN++UdANZFlv0xPCR6W+DIh/6wI4wQ7EIElt95OaP5psBkJ15one+
+         7lAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OEP5c1Ts3y3jjcZd/vxo+DFJNaZAkcnY9wcB9rKwQk0=;
+        b=Npj3mpTdGwjvmufaPiC0myY7hSjcqPj+XCWo1zL1UjxpE1q4ezodYiktyXo/Py7UVW
+         kH9LbfyiTZeYKDa/YbbeWsFKk0zeevwVsETswFj+1B53vExChPrF+OuionWEyrvO2bVS
+         1/OFvUS5Sejvgfcax4U2KFLtXPUP+wmR4GR1CXpHqg0NO+0XQKqOZ3BUlG70SVhzI9w7
+         EeNen8OjtRyl7JMucHSf2q/kV2nTOk9plDUw9ipLIo6CglONQ4/GkoY24Mrp+BjYPxRT
+         nNignxQkZGKuTDnYr1KoAiicd5dGEy4g+8oSofEK3b04P6SrXeFCng6KSv7Y9Fi4My7M
+         n0uA==
+X-Gm-Message-State: AJIora9NakFKsaGkFiEv/zNuxbBLIlQBT8WZ/splHGr1m4MzNg4wH+By
+        55cl/nl0RzNmNhz5LzkFgQjC+A==
+X-Google-Smtp-Source: AGRyM1sIYzLIe4/E3L+3duTvdoRwBoXV+BsrpUmKJRMQpAv5GS6y4B0utoiHVD2sU7/U5uNCjty5uQ==
+X-Received: by 2002:a17:902:aa82:b0:16c:4bee:1f90 with SMTP id d2-20020a170902aa8200b0016c4bee1f90mr4181686plr.69.1657534701800;
+        Mon, 11 Jul 2022 03:18:21 -0700 (PDT)
+Received: from localhost ([61.120.150.77])
+        by smtp.gmail.com with ESMTPSA id k22-20020aa79736000000b00528f9597fb3sm4383091pfg.197.2022.07.11.03.18.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 03:18:21 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 18:18:18 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hugetlb: fix memoryleak in hugetlb_mcopy_atomic_pte
+Message-ID: <Ysv46rUQDluYICn7@FVFYT0MHHV2J>
+References: <20220709092629.54291-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220709092629.54291-1-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ubifs_compress() function does not compress the data When the
-data length is short than 128 bytes or the compressed data length
-is not ideal.It cause that the compressed length of the truncated
-data in the truncate_data_node() function may be greater than the
-length of the raw data read from the flash.
+On Sat, Jul 09, 2022 at 05:26:29PM +0800, Miaohe Lin wrote:
+> When alloc_huge_page fails, *pagep is set to NULL without put_page first.
+> So the hugepage indicated by *pagep is leaked.
+> 
+> Fixes: 8cc5fcbb5be8 ("mm, hugetlb: fix racy resv_huge_pages underflow on UFFDIO_COPY")
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-The above two lengths are transferred to the ubifs_encrypt()
-function as parameters. This may lead to assertion fails and then
-the file system becomes read-only.
+Acked-by: Muchun Song <songmuchun@bytedance.com>
 
-This patch use the actual length of the data in the memory as the
-input parameter for assert comparison, which avoids the problem.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216213
-Signed-off-by: ZhaoLong Wang <wangzhaolong1@huawei.com>
----
- V1->V2
-   Change:
-	1. An extra space is deleted.
-	2. The code text aligns like the previous code
-	3. dn_size variable in ubifs_jnl_truncate() declare on previous line.
- fs/ubifs/crypto.c  | 11 +++++++++++
- fs/ubifs/journal.c | 28 +++++++++++++++++-----------
- 2 files changed, 28 insertions(+), 11 deletions(-)
-
-diff --git a/fs/ubifs/crypto.c b/fs/ubifs/crypto.c
-index c57b46a352d8..3125e76376ee 100644
---- a/fs/ubifs/crypto.c
-+++ b/fs/ubifs/crypto.c
-@@ -24,6 +24,17 @@ static bool ubifs_crypt_empty_dir(struct inode *inode)
- 	return ubifs_check_dir_empty(inode) == 0;
- }
- 
-+/**
-+ * ubifs_encrypt - Encrypt data.
-+ * @inode: inode which refers to the data node
-+ * @dn: data node to encrypt
-+ * @in_len: length of data to be compressed
-+ * @out_len: allocated memory size for the data area of @dn
-+ * @block: logical block number of the block
-+ *
-+ * This function encrypt a possibly-compressed data in the data node.
-+ * The encrypted data length will store in @out_len.
-+ */
- int ubifs_encrypt(const struct inode *inode, struct ubifs_data_node *dn,
- 		  unsigned int in_len, unsigned int *out_len, int block)
- {
-diff --git a/fs/ubifs/journal.c b/fs/ubifs/journal.c
-index 75dab0ae3939..2b1d7c4297bf 100644
---- a/fs/ubifs/journal.c
-+++ b/fs/ubifs/journal.c
-@@ -1472,23 +1472,25 @@ int ubifs_jnl_rename(struct ubifs_info *c, const struct inode *old_dir,
-  * @block: data block number
-  * @dn: data node to re-compress
-  * @new_len: new length
-+ * @dn_size: size of the data node @dn in memory
-  *
-  * This function is used when an inode is truncated and the last data node of
-  * the inode has to be re-compressed/encrypted and re-written.
-  */
- static int truncate_data_node(const struct ubifs_info *c, const struct inode *inode,
- 			      unsigned int block, struct ubifs_data_node *dn,
--			      int *new_len)
-+			      int *new_len, int dn_size)
- {
- 	void *buf;
--	int err, dlen, compr_type, out_len, old_dlen;
-+	int err, dlen, compr_type, out_len, data_size;
- 
- 	out_len = le32_to_cpu(dn->size);
- 	buf = kmalloc_array(out_len, WORST_COMPR_FACTOR, GFP_NOFS);
- 	if (!buf)
- 		return -ENOMEM;
- 
--	dlen = old_dlen = le32_to_cpu(dn->ch.len) - UBIFS_DATA_NODE_SZ;
-+	dlen = le32_to_cpu(dn->ch.len) - UBIFS_DATA_NODE_SZ;
-+	data_size = dn_size - UBIFS_DATA_NODE_SZ;
- 	compr_type = le16_to_cpu(dn->compr_type);
- 
- 	if (IS_ENCRYPTED(inode)) {
-@@ -1508,11 +1510,11 @@ static int truncate_data_node(const struct ubifs_info *c, const struct inode *in
- 	}
- 
- 	if (IS_ENCRYPTED(inode)) {
--		err = ubifs_encrypt(inode, dn, out_len, &old_dlen, block);
-+		err = ubifs_encrypt(inode, dn, out_len, &data_size, block);
- 		if (err)
- 			goto out;
- 
--		out_len = old_dlen;
-+		out_len = data_size;
- 	} else {
- 		dn->compr_size = 0;
- 	}
-@@ -1550,6 +1552,6 @@ int ubifs_jnl_truncate(struct ubifs_info *c, const struct inode *inode,
- 	struct ubifs_trun_node *trun;
- 	struct ubifs_data_node *dn;
--	int err, dlen, len, lnum, offs, bit, sz, sync = IS_SYNC(inode);
-+	int err, dlen, len, lnum, offs, bit, sz, dn_size, sync = IS_SYNC(inode);
- 	struct ubifs_inode *ui = ubifs_inode(inode);
- 	ino_t inum = inode->i_ino;
- 	unsigned int blk;
-@@ -1562,10 +1565,13 @@ int ubifs_jnl_truncate(struct ubifs_info *c, const struct inode *inode,
- 	ubifs_assert(c, S_ISREG(inode->i_mode));
- 	ubifs_assert(c, mutex_is_locked(&ui->ui_mutex));
- 
--	sz = UBIFS_TRUN_NODE_SZ + UBIFS_INO_NODE_SZ +
--	     UBIFS_MAX_DATA_NODE_SZ * WORST_COMPR_FACTOR;
-+	dn_size = COMPRESSED_DATA_NODE_BUF_SZ;
- 
--	sz += ubifs_auth_node_sz(c);
-+	if (IS_ENCRYPTED(inode))
-+		dn_size += UBIFS_CIPHER_BLOCK_SIZE;
-+
-+	sz = UBIFS_TRUN_NODE_SZ + UBIFS_INO_NODE_SZ +
-+	     dn_size + ubifs_auth_node_sz(c);
- 
- 	ino = kmalloc(sz, GFP_NOFS);
- 	if (!ino)
-@@ -1596,15 +1602,15 @@ int ubifs_jnl_truncate(struct ubifs_info *c, const struct inode *inode,
- 			if (dn_len <= 0 || dn_len > UBIFS_BLOCK_SIZE) {
- 				ubifs_err(c, "bad data node (block %u, inode %lu)",
- 					  blk, inode->i_ino);
--				ubifs_dump_node(c, dn, sz - UBIFS_INO_NODE_SZ -
--						UBIFS_TRUN_NODE_SZ);
-+				ubifs_dump_node(c, dn, dn_size);
- 				goto out_free;
- 			}
- 
- 			if (dn_len <= dlen)
- 				dlen = 0; /* Nothing to do */
- 			else {
--				err = truncate_data_node(c, inode, blk, dn, &dlen);
-+				err = truncate_data_node(c, inode, blk, dn,
-+						&dlen, dn_size);
- 				if (err)
- 					goto out_free;
- 			}
--- 
-2.31.1
-
+Thanks.
