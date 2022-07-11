@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCD1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC480C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbiGKJmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37736 "EHLO
+        id S233324AbiGKJmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233343AbiGKJls (ORCPT
+        with ESMTP id S233273AbiGKJmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:41:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936E997A29;
-        Mon, 11 Jul 2022 02:21:02 -0700 (PDT)
+        Mon, 11 Jul 2022 05:42:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A5B9A6AE;
+        Mon, 11 Jul 2022 02:21:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 79F57CE1256;
-        Mon, 11 Jul 2022 09:21:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65A72C34115;
-        Mon, 11 Jul 2022 09:20:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE8BB80E87;
+        Mon, 11 Jul 2022 09:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE360C341CB;
+        Mon, 11 Jul 2022 09:21:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531258;
-        bh=6wpvfPx7HWP4AWB4A4y3rp0pXm8akVz7duV++56Giq0=;
+        s=korg; t=1657531267;
+        bh=ZW4rVaNnZVyHbKOzlfPdxJiSJjl1u7LswruOjxCA1rc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AEE1L3foD8tR2ox2gg+h1kneYCBqSzjRNDgK7jtqEXbzeXSAekae6xY5wcoCfssos
-         kxEehL8NDC+5EjHMyMAa2hncCQv8ofSQSLuWmc7UOBQkn68Kz1f0ff31vmk7qYzzH9
-         bc48TE2tmokEXhAiiIpHihj+a4zLdDj3tO4+1ai0=
+        b=XCGi73Wos92Ssm9a+O2h3QbxGfxa+uFRTgj+ZeQHTkmDNc8bjO6E7GG6rj3PubiDN
+         1wLrI+yxF64ldCKHCbEbKLkpjmnAv8ngsziWSnyg/6CkSkVsPmKjNYVqROHlbKPbR8
+         H4qrzsFLqqNDeEf8KHdx1l65/VvuQFuCNEE0Y2PA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Shai Malin <smalin@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 039/230] qed: Improve the stack space of filter_config()
-Date:   Mon, 11 Jul 2022 11:04:55 +0200
-Message-Id: <20220711090605.192560383@linuxfoundation.org>
+Subject: [PATCH 5.15 041/230] platform/x86: wmi: Replace read_takes_no_args with a flags field
+Date:   Mon, 11 Jul 2022 11:04:57 +0200
+Message-Id: <20220711090605.249153243@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,213 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shai Malin <smalin@marvell.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit f55e36d5ab76c3097ff36ecea60b91c6b0d80fc8 ]
+[ Upstream commit a90b38c58667142ecff2521481ed44286d46b140 ]
 
-As it was reported and discussed in: https://lore.kernel.org/lkml/CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com/
-This patch improves the stack space of qede_config_rx_mode() by
-splitting filter_config() to 3 functions and removing the
-union qed_filter_type_params.
+Replace the wmi_block.read_takes_no_args bool field with
+an unsigned long flags field, used together with test_bit()
+and friends.
 
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This is a preparation patch for fixing a driver->notify() vs ->probe()
+race, which requires atomic flag handling.
+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20211128190031.405620-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_l2.c      | 23 ++-------
- .../net/ethernet/qlogic/qede/qede_filter.c    | 47 ++++++++-----------
- include/linux/qed/qed_eth_if.h                | 21 ++++-----
- 3 files changed, 30 insertions(+), 61 deletions(-)
+ drivers/platform/x86/wmi.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-index dfaf10edfabf..ba8c7a31cce1 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-@@ -2763,25 +2763,6 @@ static int qed_configure_filter_mcast(struct qed_dev *cdev,
- 	return qed_filter_mcast_cmd(cdev, &mcast, QED_SPQ_MODE_CB, NULL);
- }
+diff --git a/drivers/platform/x86/wmi.c b/drivers/platform/x86/wmi.c
+index 9aeb1a009097..a00b72ace6d2 100644
+--- a/drivers/platform/x86/wmi.c
++++ b/drivers/platform/x86/wmi.c
+@@ -51,6 +51,10 @@ struct guid_block {
+ 	u8 flags;
+ };
  
--static int qed_configure_filter(struct qed_dev *cdev,
--				struct qed_filter_params *params)
--{
--	enum qed_filter_rx_mode_type accept_flags;
++enum {	/* wmi_block flags */
++	WMI_READ_TAKES_NO_ARGS,
++};
++
+ struct wmi_block {
+ 	struct wmi_device dev;
+ 	struct list_head list;
+@@ -61,8 +65,7 @@ struct wmi_block {
+ 	wmi_notify_handler handler;
+ 	void *handler_data;
+ 	u64 req_buf_size;
 -
--	switch (params->type) {
--	case QED_FILTER_TYPE_UCAST:
--		return qed_configure_filter_ucast(cdev, &params->filter.ucast);
--	case QED_FILTER_TYPE_MCAST:
--		return qed_configure_filter_mcast(cdev, &params->filter.mcast);
--	case QED_FILTER_TYPE_RX_MODE:
--		accept_flags = params->filter.accept_flags;
--		return qed_configure_filter_rx_mode(cdev, accept_flags);
--	default:
--		DP_NOTICE(cdev, "Unknown filter type %d\n", (int)params->type);
--		return -EINVAL;
--	}
--}
--
- static int qed_configure_arfs_searcher(struct qed_dev *cdev,
- 				       enum qed_filter_config_mode mode)
- {
-@@ -2904,7 +2885,9 @@ static const struct qed_eth_ops qed_eth_ops_pass = {
- 	.q_rx_stop = &qed_stop_rxq,
- 	.q_tx_start = &qed_start_txq,
- 	.q_tx_stop = &qed_stop_txq,
--	.filter_config = &qed_configure_filter,
-+	.filter_config_rx_mode = &qed_configure_filter_rx_mode,
-+	.filter_config_ucast = &qed_configure_filter_ucast,
-+	.filter_config_mcast = &qed_configure_filter_mcast,
- 	.fastpath_stop = &qed_fastpath_stop,
- 	.eth_cqe_completion = &qed_fp_cqe_completion,
- 	.get_vport_stats = &qed_get_vport_stats,
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index a2e4dfb5cb44..f99b085b56a5 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -619,30 +619,28 @@ static int qede_set_ucast_rx_mac(struct qede_dev *edev,
- 				 enum qed_filter_xcast_params_type opcode,
- 				 unsigned char mac[ETH_ALEN])
- {
--	struct qed_filter_params filter_cmd;
-+	struct qed_filter_ucast_params ucast;
+-	bool read_takes_no_args;
++	unsigned long flags;
+ };
  
--	memset(&filter_cmd, 0, sizeof(filter_cmd));
--	filter_cmd.type = QED_FILTER_TYPE_UCAST;
--	filter_cmd.filter.ucast.type = opcode;
--	filter_cmd.filter.ucast.mac_valid = 1;
--	ether_addr_copy(filter_cmd.filter.ucast.mac, mac);
-+	memset(&ucast, 0, sizeof(ucast));
-+	ucast.type = opcode;
-+	ucast.mac_valid = 1;
-+	ether_addr_copy(ucast.mac, mac);
  
--	return edev->ops->filter_config(edev->cdev, &filter_cmd);
-+	return edev->ops->filter_config_ucast(edev->cdev, &ucast);
- }
+@@ -325,7 +328,7 @@ static acpi_status __query_block(struct wmi_block *wblock, u8 instance,
+ 	wq_params[0].type = ACPI_TYPE_INTEGER;
+ 	wq_params[0].integer.value = instance;
  
- static int qede_set_ucast_rx_vlan(struct qede_dev *edev,
- 				  enum qed_filter_xcast_params_type opcode,
- 				  u16 vid)
- {
--	struct qed_filter_params filter_cmd;
-+	struct qed_filter_ucast_params ucast;
+-	if (instance == 0 && wblock->read_takes_no_args)
++	if (instance == 0 && test_bit(WMI_READ_TAKES_NO_ARGS, &wblock->flags))
+ 		input.count = 0;
  
--	memset(&filter_cmd, 0, sizeof(filter_cmd));
--	filter_cmd.type = QED_FILTER_TYPE_UCAST;
--	filter_cmd.filter.ucast.type = opcode;
--	filter_cmd.filter.ucast.vlan_valid = 1;
--	filter_cmd.filter.ucast.vlan = vid;
-+	memset(&ucast, 0, sizeof(ucast));
-+	ucast.type = opcode;
-+	ucast.vlan_valid = 1;
-+	ucast.vlan = vid;
- 
--	return edev->ops->filter_config(edev->cdev, &filter_cmd);
-+	return edev->ops->filter_config_ucast(edev->cdev, &ucast);
- }
- 
- static int qede_config_accept_any_vlan(struct qede_dev *edev, bool action)
-@@ -1057,18 +1055,17 @@ static int qede_set_mcast_rx_mac(struct qede_dev *edev,
- 				 enum qed_filter_xcast_params_type opcode,
- 				 unsigned char *mac, int num_macs)
- {
--	struct qed_filter_params filter_cmd;
-+	struct qed_filter_mcast_params mcast;
- 	int i;
- 
--	memset(&filter_cmd, 0, sizeof(filter_cmd));
--	filter_cmd.type = QED_FILTER_TYPE_MCAST;
--	filter_cmd.filter.mcast.type = opcode;
--	filter_cmd.filter.mcast.num = num_macs;
-+	memset(&mcast, 0, sizeof(mcast));
-+	mcast.type = opcode;
-+	mcast.num = num_macs;
- 
- 	for (i = 0; i < num_macs; i++, mac += ETH_ALEN)
--		ether_addr_copy(filter_cmd.filter.mcast.mac[i], mac);
-+		ether_addr_copy(mcast.mac[i], mac);
- 
--	return edev->ops->filter_config(edev->cdev, &filter_cmd);
-+	return edev->ops->filter_config_mcast(edev->cdev, &mcast);
- }
- 
- int qede_set_mac_addr(struct net_device *ndev, void *p)
-@@ -1194,7 +1191,6 @@ void qede_config_rx_mode(struct net_device *ndev)
- {
- 	enum qed_filter_rx_mode_type accept_flags;
- 	struct qede_dev *edev = netdev_priv(ndev);
--	struct qed_filter_params rx_mode;
- 	unsigned char *uc_macs, *temp;
- 	struct netdev_hw_addr *ha;
- 	int rc, uc_count;
-@@ -1220,10 +1216,6 @@ void qede_config_rx_mode(struct net_device *ndev)
- 
- 	netif_addr_unlock_bh(ndev);
- 
--	/* Configure the struct for the Rx mode */
--	memset(&rx_mode, 0, sizeof(struct qed_filter_params));
--	rx_mode.type = QED_FILTER_TYPE_RX_MODE;
--
- 	/* Remove all previous unicast secondary macs and multicast macs
- 	 * (configure / leave the primary mac)
+ 	/*
+@@ -1087,7 +1090,7 @@ static int wmi_create_device(struct device *wmi_bus_dev,
+ 	 * laptops, WQxx may not be a method at all.)
  	 */
-@@ -1271,8 +1263,7 @@ void qede_config_rx_mode(struct net_device *ndev)
- 		qede_config_accept_any_vlan(edev, false);
- 	}
+ 	if (info->type != ACPI_TYPE_METHOD || info->param_count == 0)
+-		wblock->read_takes_no_args = true;
++		set_bit(WMI_READ_TAKES_NO_ARGS, &wblock->flags);
  
--	rx_mode.filter.accept_flags = accept_flags;
--	edev->ops->filter_config(edev->cdev, &rx_mode);
-+	edev->ops->filter_config_rx_mode(edev->cdev, accept_flags);
- out:
- 	kfree(uc_macs);
- }
-diff --git a/include/linux/qed/qed_eth_if.h b/include/linux/qed/qed_eth_if.h
-index 812a4d751163..4df0bf0a0864 100644
---- a/include/linux/qed/qed_eth_if.h
-+++ b/include/linux/qed/qed_eth_if.h
-@@ -145,12 +145,6 @@ struct qed_filter_mcast_params {
- 	unsigned char mac[64][ETH_ALEN];
- };
- 
--union qed_filter_type_params {
--	enum qed_filter_rx_mode_type accept_flags;
--	struct qed_filter_ucast_params ucast;
--	struct qed_filter_mcast_params mcast;
--};
--
- enum qed_filter_type {
- 	QED_FILTER_TYPE_UCAST,
- 	QED_FILTER_TYPE_MCAST,
-@@ -158,11 +152,6 @@ enum qed_filter_type {
- 	QED_MAX_FILTER_TYPES,
- };
- 
--struct qed_filter_params {
--	enum qed_filter_type type;
--	union qed_filter_type_params filter;
--};
--
- struct qed_tunn_params {
- 	u16 vxlan_port;
- 	u8 update_vxlan_port;
-@@ -314,8 +303,14 @@ struct qed_eth_ops {
- 
- 	int (*q_tx_stop)(struct qed_dev *cdev, u8 rss_id, void *handle);
- 
--	int (*filter_config)(struct qed_dev *cdev,
--			     struct qed_filter_params *params);
-+	int (*filter_config_rx_mode)(struct qed_dev *cdev,
-+				     enum qed_filter_rx_mode_type type);
-+
-+	int (*filter_config_ucast)(struct qed_dev *cdev,
-+				   struct qed_filter_ucast_params *params);
-+
-+	int (*filter_config_mcast)(struct qed_dev *cdev,
-+				   struct qed_filter_mcast_params *params);
- 
- 	int (*fastpath_stop)(struct qed_dev *cdev);
+ 	kfree(info);
  
 -- 
 2.35.1
