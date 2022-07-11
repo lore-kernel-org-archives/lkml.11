@@ -2,120 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD089C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbiGKKUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
+        id S230152AbiGKKWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:22:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbiGKKTX (ORCPT
+        with ESMTP id S230258AbiGKKVx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:19:23 -0400
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB4DC5944;
-        Mon, 11 Jul 2022 02:36:05 -0700 (PDT)
-Received: by mail-qk1-f174.google.com with SMTP id l26so3392499qkl.10;
-        Mon, 11 Jul 2022 02:36:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DVJUGFx3bR67+/E6+DBeYAU8MgftXdOcu6+8ewnr6LE=;
-        b=Grb1mICe/KhbwLOEfAkKDySeSxSgknGkd+imBlMn5B3iGw309ODADz+Eg//P2ZT7iV
-         3utw/l1fNrnbwYfqGyFeNqmIVrb1YW4A0RehUd3Jk0GqWEl9vMEUrXuDiDgLjJ8WqQN4
-         tl7nl721wzrX/YV0tmyyfnAlXAYyhsfSYUxkW/F6nSEyBDTIN1bES3pdoEG5X8McxXhl
-         KVLqcUNLmxjPu7OUOtYFaf0gqJmlWuFXBE4Na+rBei5sFi+jgNZPTmTsd1HCpwnocEC0
-         IXa8hOazblbkU/dL7jQDX8OcxGEadX1bYWuiWe12nS9l9/etlohe7+q2VT+vj0kpay5u
-         njJQ==
-X-Gm-Message-State: AJIora/MaWNWJeoWUexTtHx7MFiJuFrAK06DWdFRBoe5IiGQHUGr4Dhd
-        LP7hPE4xQQy1AO1kHtb5xGt391qORApzmA==
-X-Google-Smtp-Source: AGRyM1vZzBucHiqPQeSQ/wXnca/TSwvQ/zQg9JGqNdFX+0Q2mLUM/6ehODCCxvHYTFcAisSYYK4hAw==
-X-Received: by 2002:a05:620a:254f:b0:6a6:313:3ccc with SMTP id s15-20020a05620a254f00b006a603133cccmr10787076qko.716.1657532164248;
-        Mon, 11 Jul 2022 02:36:04 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id v15-20020a05620a0f0f00b006a785ba0c25sm5993061qkl.77.2022.07.11.02.36.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 02:36:03 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-31d85f82f0bso7031027b3.7;
-        Mon, 11 Jul 2022 02:36:03 -0700 (PDT)
-X-Received: by 2002:a81:9209:0:b0:31c:b1b7:b063 with SMTP id
- j9-20020a819209000000b0031cb1b7b063mr18545635ywg.383.1657532162961; Mon, 11
- Jul 2022 02:36:02 -0700 (PDT)
+        Mon, 11 Jul 2022 06:21:53 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9708238B;
+        Mon, 11 Jul 2022 02:37:08 -0700 (PDT)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id DD15820012;
+        Mon, 11 Jul 2022 09:37:00 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 11:36:59 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
+        quentin.schulz@theobroma-systems.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 5/6] media: dt-bindings: ov5693: document YAML binding
+Message-ID: <20220711093659.mf7i4uqtrejtfong@uno.localdomain>
+References: <20220630134835.592521-1-tommaso.merciai@amarulasolutions.com>
+ <20220630134835.592521-6-tommaso.merciai@amarulasolutions.com>
 MIME-Version: 1.0
-References: <cover.1657301107.git.geert@linux-m68k.org> <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
- <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de>
-In-Reply-To: <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 11 Jul 2022 11:35:51 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUqo-_5tyhmx_QqPJhqQdoRDE6_Q7b1AJWeBZc67RsBSA@mail.gmail.com>
-Message-ID: <CAMuHMdUqo-_5tyhmx_QqPJhqQdoRDE6_Q7b1AJWeBZc67RsBSA@mail.gmail.com>
-Subject: Re: [PATCH 4/5] drm/modes: Add support for driver-specific named modes
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hans de Goede <hdegoede@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220630134835.592521-6-tommaso.merciai@amarulasolutions.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+Hi Tommaso, Krzysztof,
 
-On Mon, Jul 11, 2022 at 11:03 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> Am 08.07.22 um 20:21 schrieb Geert Uytterhoeven:
-> > The mode parsing code recognizes named modes only if they are explicitly
-> > listed in the internal whitelist, which is currently limited to "NTSC"
-> > and "PAL".
-> >
-> > Provide a mechanism for drivers to override this list to support custom
-> > mode names.
-> >
-> > Ideally, this list should just come from the driver's actual list of
-> > modes, but connector->probed_modes is not yet populated at the time of
-> > parsing.
+   This has been reviewed by Krzysztof already, so I guess it's fine,
+but let me ask anyway
+
+On Thu, Jun 30, 2022 at 03:48:34PM +0200, Tommaso Merciai wrote:
+> Add documentation of device tree in YAML schema for the OV5693
+> CMOS image sensor from Omnivision
 >
-> I've looked for code that uses these names, couldn't find any. How is
-> this being used in practice? For example, if I say "PAL" on the command
-> line, is there DRM code that fills in the PAL mode parameters?
+> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+> Changes since v1:
+>  - Fix allOf position as suggested by Krzysztof
+>  - Remove port description as suggested by Krzysztof
+>  - Fix EOF as suggested by Krzysztof
+>
+> Changes since v2:
+>  - Fix commit body as suggested by Krzysztof
+>
+> Changes since v3:
+>  - Add reviewed-by tags, suggested by Jacopo, Krzysztof
+>
+> Changes since v4:
+>  - Remove wrong Sakari reviewed-by tag, suggested by Krzysztof, Sakari
+>
+>  .../bindings/media/i2c/ovti,ov5693.yaml       | 106 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 107 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml b/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+> new file mode 100644
+> index 000000000000..b83c9fc04023
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+> @@ -0,0 +1,106 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (c) 2022 Amarulasolutions
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/i2c/ovti,ov5693.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Omnivision OV5693 CMOS Sensor
+> +
+> +maintainers:
+> +  - Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> +
+> +description: |
+> +  The Omnivision OV5693 is a high performance, 1/4-inch, 5 megapixel, CMOS
+> +  image sensor that delivers 2592x1944 at 30fps. It provides full-frame,
+> +  sub-sampled, and windowed 10-bit MIPI images in various formats via the
+> +  Serial Camera Control Bus (SCCB) interface.
+> +
+> +  OV5693 is controlled via I2C and two-wire Serial Camera Control Bus (SCCB).
+> +  The sensor output is available via CSI-2 serial data output (up to 2-lane).
+> +
+> +allOf:
+> +  - $ref: /schemas/media/video-interface-devices.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: ovti,ov5693
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    description:
+> +      System input clock (aka XVCLK). From 6 to 27 MHz.
+> +    maxItems: 1
+> +
+> +  dovdd-supply:
+> +    description:
+> +      Digital I/O voltage supply, 1.8V.
+> +
+> +  avdd-supply:
+> +    description:
+> +      Analog voltage supply, 2.8V.
+> +
+> +  dvdd-supply:
+> +    description:
+> +      Digital core voltage supply, 1.2V.
+> +
+> +  reset-gpios:
+> +    description:
+> +      The phandle and specifier for the GPIO that controls sensor reset.
+> +      This corresponds to the hardware pin XSHUTDN which is physically
+> +      active low.
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - dovdd-supply
+> +  - avdd-supply
+> +  - dvdd-supply
 
-I guess Maxime knows, as he added the whitelist?
-Reading the description of commit 3764137906a5acec ("drm/modes:
-Introduce a whitelist for the named modes"), it looks like this is
-more about preventing the parser from taking any string as a random
-mode, than about adding support for "PAL" or "NTSC"?
+Should supplies be made mandatory ? Sensors are often powered by fixed
+rails. Do we want DTS writers to create "fixed-regulators" for all of
+them ? The fact the regulator framework creates dummies if there's no
+entry in .dts for a regulator makes me think it's fine to have them
+optional, but I understand how Linux works should not be an indication
+of how a bindings should look like.
 
-Note that drivers/gpu/drm/i915/display/intel_tv.c defines an array of
-tv_modes[], including "PAL", so perhaps these end up as named modes?
-
-> And another question I have is whether this whitelist belongs into the
-> driver at all. Standard modes exist independent from drivers or
-> hardware. Shouldn't there simply be a global list of all possible mode
-> names? Drivers would filter out the unsupported modes anyway.
-
-For standard modes, I agree.  And these are usually specified by
-resolution and refresh rate (e.g. "640x480@60", instead of "480p").
-
-But legacy hardware may have very limited support for programmable
-pixel clocks (e.g. Amiga is limited to pixel clocks of 7, 14, or 28
-MHz), so the standard modes are a bad match, or may not work at all.
-Hence drivers may need to provide their own modes, but it seems wrong
-to me to make these non-standard modes global, and possibly pollute
-the experience for everyone.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> +  - port
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/px30-cru.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/pinctrl/rockchip.h>
+> +
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        ov5693: camera@36 {
+> +            compatible = "ovti,ov5693";
+> +            reg = <0x36>;
+> +
+> +            reset-gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
+> +            pinctrl-names = "default";
+> +            pinctrl-0 = <&cif_clkout_m0>;
+> +
+> +            clocks = <&cru SCLK_CIF_OUT>;
+> +            assigned-clocks = <&cru SCLK_CIF_OUT>;
+> +            assigned-clock-rates = <19200000>;
+> +
+> +            avdd-supply = <&vcc_1v8>;
+> +            dvdd-supply = <&vcc_1v2>;
+> +            dovdd-supply = <&vcc_2v8>;
+> +
+> +            rotation = <90>;
+> +            orientation = <0>;
+> +
+> +            port {
+> +                ucam_out: endpoint {
+> +                    remote-endpoint = <&mipi_in_ucam>;
+> +                    data-lanes = <1 2>;
+> +                    link-frequencies = /bits/ 64 <450000000>;
+> +                };
+> +            };
+> +        };
+> +    };
+> +
+> +...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1fc9ead83d2a..844307cb20c4 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14719,6 +14719,7 @@ M:	Daniel Scally <djrscally@gmail.com>
+>  L:	linux-media@vger.kernel.org
+>  S:	Maintained
+>  T:	git git://linuxtv.org/media_tree.git
+> +F:	Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+>  F:	drivers/media/i2c/ov5693.c
+>
+>  OMNIVISION OV5695 SENSOR DRIVER
+> --
+> 2.25.1
+>
