@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07643C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E9ACCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbiGKKjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
+        id S230301AbiGKKjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiGKKip (ORCPT
+        with ESMTP id S229985AbiGKKiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:38:45 -0400
+        Mon, 11 Jul 2022 06:38:46 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC939D516C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A7FE0F70;
         Mon, 11 Jul 2022 02:48:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1657532912; x=1689068912;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=QqSZUWmfilHMHP4Yj179aJwceeQUx/oJvSsXM245WDw=;
-  b=Ih9oSEeL34/0yM6vVKItpo5DY4dP1wX4M9OIVBQ07i40bADGYqCOkt9Q
-   x//teqsfZYBfLd+IHAhqKAQifwU693DOLG4fu/ISnud7qKko+G1RNnJFv
-   u/SKExVeXvY0lnohKLmI9tzNv0YEcctiazBR4kPPPtBCnTW3qkolLwHuo
+  bh=MZqKo1epEDx8vu5+yKkZe958Q//MP53T8jFmGBAiY+E=;
+  b=PT3oDD9lcIwQiPm7xXNDqF+qRYBChHppLwdWIP3Qc7bscyMhga8MtMtX
+   uV8GlFR4R1pdq2YAbWSsXgh7MdOP7DA+0pqVaKZkyvjLNDmba6u69UADs
+   rYqHrNFBkXo+cIo6jr7Dhuu/rYsxD/83EQj2WoiUPQe6vwCxy88cDh3ns
    M=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 02:48:32 -0700
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 02:48:31 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 02:48:30 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 02:48:30 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 15:18:05 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 15:18:08 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 592873E48; Mon, 11 Jul 2022 15:18:04 +0530 (IST)
+        id E84903E51; Mon, 11 Jul 2022 15:18:04 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
@@ -45,9 +45,9 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
         bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
         quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
-Subject: [PATCH v5 03/10] drm/msm/dp: use atomic callbacks for DP bridge ops
-Date:   Mon, 11 Jul 2022 15:17:52 +0530
-Message-Id: <1657532880-12897-4-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [PATCH v5 08/10] drm/msm/disp/dpu1: use atomic enable/disable callbacks for encoder functions
+Date:   Mon, 11 Jul 2022 15:17:58 +0530
+Message-Id: <1657532880-12897-10-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1657532880-12897-1-git-send-email-quic_vpolimer@quicinc.com>
 References: <1657532880-12897-1-git-send-email-quic_vpolimer@quicinc.com>
@@ -55,81 +55,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use atomic variants for DP bridge callback functions so that
-the atomic state can be accessed in the interface drivers.
-The atomic state will help the driver find out if the display
-is in self refresh state.
+Use atomic variants for encoder callback functions such that
+certain states like self-refresh can be accessed as part of
+enable/disable sequence.
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
 Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c |  9 ++++++---
- drivers/gpu/drm/msm/dp/dp_drm.c     | 18 +++++++++++-------
- 2 files changed, 17 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index bce7793..5bd6677 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1652,7 +1652,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 	return 0;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 8fb3e15..cd7d568 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1130,7 +1130,8 @@ void dpu_encoder_virt_runtime_resume(struct drm_encoder *drm_enc)
+ 	mutex_unlock(&dpu_enc->enc_lock);
  }
  
--void dp_bridge_enable(struct drm_bridge *drm_bridge)
-+void dp_bridge_atomic_enable(struct drm_bridge *drm_bridge,
-+			     struct drm_bridge_state *old_bridge_state)
+-static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
++static void dpu_encoder_virt_atomic_enable(struct drm_encoder *drm_enc,
++					struct drm_atomic_state *state)
  {
- 	struct msm_dp_bridge *dp_bridge = to_dp_bridge(drm_bridge);
- 	struct msm_dp *dp = dp_bridge->dp_display;
-@@ -1716,7 +1717,8 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
- 	mutex_unlock(&dp_display->event_mutex);
+ 	struct dpu_encoder_virt *dpu_enc = NULL;
+ 	int ret = 0;
+@@ -1166,7 +1167,8 @@ static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
+ 	mutex_unlock(&dpu_enc->enc_lock);
  }
  
--void dp_bridge_disable(struct drm_bridge *drm_bridge)
-+void dp_bridge_atomic_disable(struct drm_bridge *drm_bridge,
-+			      struct drm_bridge_state *old_bridge_state)
+-static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc)
++static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
++					struct drm_atomic_state *state)
  {
- 	struct msm_dp_bridge *dp_bridge = to_dp_bridge(drm_bridge);
- 	struct msm_dp *dp = dp_bridge->dp_display;
-@@ -1727,7 +1729,8 @@ void dp_bridge_disable(struct drm_bridge *drm_bridge)
- 	dp_ctrl_push_idle(dp_display->ctrl);
- }
+ 	struct dpu_encoder_virt *dpu_enc = NULL;
+ 	int i = 0;
+@@ -2331,8 +2333,8 @@ static void dpu_encoder_frame_done_timeout(struct timer_list *t)
  
--void dp_bridge_post_disable(struct drm_bridge *drm_bridge)
-+void dp_bridge_atomic_post_disable(struct drm_bridge *drm_bridge,
-+				   struct drm_bridge_state *old_bridge_state)
- {
- 	struct msm_dp_bridge *dp_bridge = to_dp_bridge(drm_bridge);
- 	struct msm_dp *dp = dp_bridge->dp_display;
-diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
-index 62d58b9..9d0fc74 100644
---- a/drivers/gpu/drm/msm/dp/dp_drm.c
-+++ b/drivers/gpu/drm/msm/dp/dp_drm.c
-@@ -61,13 +61,17 @@ static int dp_bridge_get_modes(struct drm_bridge *bridge, struct drm_connector *
- }
- 
- static const struct drm_bridge_funcs dp_bridge_ops = {
--	.enable       = dp_bridge_enable,
--	.disable      = dp_bridge_disable,
--	.post_disable = dp_bridge_post_disable,
--	.mode_set     = dp_bridge_mode_set,
--	.mode_valid   = dp_bridge_mode_valid,
--	.get_modes    = dp_bridge_get_modes,
--	.detect       = dp_bridge_detect,
-+	.atomic_enable = dp_bridge_atomic_enable,
-+	.atomic_disable = dp_bridge_atomic_disable,
-+	.atomic_post_disable = dp_bridge_atomic_post_disable,
-+	.mode_set = dp_bridge_mode_set,
-+	.mode_valid = dp_bridge_mode_valid,
-+	.get_modes = dp_bridge_get_modes,
-+	.detect = dp_bridge_detect,
-+	.atomic_reset = drm_atomic_helper_bridge_reset,
-+	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
-+	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
-+	.atomic_check = edp_bridge_atomic_check,
+ static const struct drm_encoder_helper_funcs dpu_encoder_helper_funcs = {
+ 	.atomic_mode_set = dpu_encoder_virt_atomic_mode_set,
+-	.disable = dpu_encoder_virt_disable,
+-	.enable = dpu_encoder_virt_enable,
++	.atomic_disable = dpu_encoder_virt_atomic_disable,
++	.atomic_enable = dpu_encoder_virt_atomic_enable,
+ 	.atomic_check = dpu_encoder_virt_atomic_check,
  };
  
- struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *dev,
 -- 
 2.7.4
 
