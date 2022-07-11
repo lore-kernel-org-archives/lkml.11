@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B25C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbiGKJcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        id S232713AbiGKJcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231796AbiGKJbc (ORCPT
+        with ESMTP id S232677AbiGKJbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:31:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDF2747A7;
-        Mon, 11 Jul 2022 02:17:11 -0700 (PDT)
+        Mon, 11 Jul 2022 05:31:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143F574DDD;
+        Mon, 11 Jul 2022 02:17:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37BBE61227;
-        Mon, 11 Jul 2022 09:17:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 436AAC34115;
-        Mon, 11 Jul 2022 09:17:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83C2DB80DB7;
+        Mon, 11 Jul 2022 09:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DD6C34115;
+        Mon, 11 Jul 2022 09:17:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531027;
-        bh=CvZxMF564fImUCGGwfXZ9rZR8Plvf1bwcZjjJWcrvAE=;
+        s=korg; t=1657531030;
+        bh=IScW0LFMmcTStFPx2URycrFLwFhfPk+cUhNi93H2wMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=slzW9vM2bvQhphegeZxFh/lOcAq6IuIB/8hYU0YGkvAOj5yF/DsbDXfPYpueEEM/O
-         vjgvuO2LhN9lwQy8KxwaF+IqTTLNfq/dMheGp9d3B266zgf/dFqpTy7fX4huiapJ8E
-         /mBvujLWK5fBUG9KPvTrrHSbgE6QK05mzjsvEL2I=
+        b=bnFeZpc7kD3FfA717v8R3QJC0V3yvUhfJeoHN01iHLPWOgQ0uFmBRKDsetsznL0DV
+         TkDFEbl3X3G0TiL7LmPM611AIZBMSqa/569AkzGUfs4yhEIS+FquXNUkvaH9aDYtXU
+         lzN9V+vrZT6gl33MNeblRbncyvac3RXan/gSyT1Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 069/112] arm64: dts: qcom: msm8992-*: Fix vdd_lvs1_2-supply typo
-Date:   Mon, 11 Jul 2022 11:07:09 +0200
-Message-Id: <20220711090551.532705662@linuxfoundation.org>
+Subject: [PATCH 5.18 070/112] ARM: at91: pm: use proper compatible for sama5d2s rtc
+Date:   Mon, 11 Jul 2022 11:07:10 +0200
+Message-Id: <20220711090551.560301623@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -51,65 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit 5fb779558f1c97e2bf2794cb59553e569c38e2f9 ]
+[ Upstream commit ddc980da8043779119acaca106c6d9b445c9b65b ]
 
-"make dtbs_check" complains about the missing "-supply" suffix for
-vdd_lvs1_2 which is clearly a typo, originally introduced in the
-msm8994-smd-rpm.dtsi file and apparently later copied to
-msm8992-xiaomi-libra.dts:
+Use proper compatible strings for SAMA5D2's RTC IPs. This is necessary
+for configuring wakeup sources for ULP1 PM mode.
 
-msm8992-lg-bullhead-rev-10/101.dtb: pm8994-regulators: 'vdd_lvs1_2'
-does not match any of the regexes:
-  '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
->From schema: regulator/qcom,smd-rpm-regulator.yaml
-
-msm8992-xiaomi-libra.dtb: pm8994-regulators: 'vdd_lvs1_2'
-does not match any of the regexes:
-  '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
->From schema: regulator/qcom,smd-rpm-regulator.yaml
-
-Reported-by: Rob Herring <robh@kernel.org>
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-Fixes: f3b2c99e73be ("arm64: dts: Enable onboard SDHCI on msm8992")
-Fixes: 0f5cdb31e850 ("arm64: dts: qcom: Add Xiaomi Libra (Mi 4C) device tree")
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220627135938.2901871-1-stephan.gerhold@kernkonzept.com
+Fixes: d7484f5c6b3b ("ARM: at91: pm: configure wakeup sources for ULP1 mode")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220523092421.317345-2-claudiu.beznea@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8992-lg-bullhead.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-at91/pm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8992-lg-bullhead.dtsi b/arch/arm64/boot/dts/qcom/msm8992-lg-bullhead.dtsi
-index 3b0cc85d6674..71e373b11de9 100644
---- a/arch/arm64/boot/dts/qcom/msm8992-lg-bullhead.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8992-lg-bullhead.dtsi
-@@ -74,7 +74,7 @@
- 		vdd_l17_29-supply = <&vph_pwr>;
- 		vdd_l20_21-supply = <&vph_pwr>;
- 		vdd_l25-supply = <&pm8994_s5>;
--		vdd_lvs1_2 = <&pm8994_s4>;
-+		vdd_lvs1_2-supply = <&pm8994_s4>;
+diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
+index 0fd609e26615..0da13a7afa31 100644
+--- a/arch/arm/mach-at91/pm.c
++++ b/arch/arm/mach-at91/pm.c
+@@ -146,7 +146,7 @@ static const struct wakeup_source_info ws_info[] = {
  
- 		/* S1, S2, S6 and S12 are managed by RPMPD */
- 
-diff --git a/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts b/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
-index 84558ab5fe86..ae882bfbf48d 100644
---- a/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
-+++ b/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
-@@ -143,7 +143,7 @@
- 		vdd_l17_29-supply = <&vph_pwr>;
- 		vdd_l20_21-supply = <&vph_pwr>;
- 		vdd_l25-supply = <&pm8994_s5>;
--		vdd_lvs1_2 = <&pm8994_s4>;
-+		vdd_lvs1_2-supply = <&pm8994_s4>;
- 
- 		/* S1, S2, S6 and S12 are managed by RPMPD */
- 
+ static const struct of_device_id sama5d2_ws_ids[] = {
+ 	{ .compatible = "atmel,sama5d2-gem",		.data = &ws_info[0] },
+-	{ .compatible = "atmel,at91rm9200-rtc",		.data = &ws_info[1] },
++	{ .compatible = "atmel,sama5d2-rtc",		.data = &ws_info[1] },
+ 	{ .compatible = "atmel,sama5d3-udc",		.data = &ws_info[2] },
+ 	{ .compatible = "atmel,at91rm9200-ohci",	.data = &ws_info[2] },
+ 	{ .compatible = "usb-ohci",			.data = &ws_info[2] },
 -- 
 2.35.1
 
