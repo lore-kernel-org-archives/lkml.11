@@ -2,158 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 593F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbiGKLpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36108 "EHLO
+        id S230160AbiGKLpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbiGKLox (ORCPT
+        with ESMTP id S230376AbiGKLp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:44:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 561971D7
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:41:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657539675;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gHZTeBa+zo6V5aGVigu7pGUwqHAZBzzfDHWLTO9INzI=;
-        b=VnME6Q7nQgsS30ursDvkPyRslJgOQr0nbpJ0wrgV7GYn0ryV7GTKcRewRXhwLpiQdxoUmV
-        7zKQfHzB/yj9wy1rDgsNWLiF4sARvsZJpK4e6QJ9Krzk6V0+j3IPQq3VlnrUxueHmO2Yha
-        NUImyKaBKh8gmd1o+YoVn2DtHKTcurE=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-149-FKQKtNkQPUSZgoLKc59SHw-1; Mon, 11 Jul 2022 07:41:14 -0400
-X-MC-Unique: FKQKtNkQPUSZgoLKc59SHw-1
-Received: by mail-wm1-f69.google.com with SMTP id r186-20020a1c44c3000000b003a2daf644f9so4813196wma.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:41:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=gHZTeBa+zo6V5aGVigu7pGUwqHAZBzzfDHWLTO9INzI=;
-        b=j5hRt06afRNgLEmvwAFQdE5/XFfvaRWQojmETtTFRO4F6lQd0HY7wq3tdrH6H8GfLC
-         YrfruILEUf+q8BEoMTDbXHfWjteXjIqqJ3V1PThk5w2+eRLZWtfy1leXxumG9E3CPNFI
-         wpLT/RJbLHi6VYKIYkf1DTTDHRGWNMavZVhgJeTdBh6ZujmTjTKQ5ZYfO6kQnEOfRHbq
-         MuPyzPBBdkVnK2ke9/IWYosZRD6/p4KlvaEcXVvCwp8fEQsS7goRk+VXuK6+FZsYkeW0
-         2A1YsLSCsXbxxOdXfBihESY2S6tdwCXoOvpANZCxtego+6JeN9FPVw7q7mVQtflQ3kVl
-         oT3A==
-X-Gm-Message-State: AJIora/esBF5vm9CFIj6GHeefrMhk9voB96C2gIjm6Jj+tYmoQWySQaG
-        aquwPXojDc+gcYI5jbvyeq6ZYCdi7R2OJU0fVrZB4T/Sv1xG7isnIDwa9yA8a+zFZZHISz3fmT0
-        FleUNlvj/Q3U8qef/q5/szI22
-X-Received: by 2002:adf:fbc6:0:b0:21d:3fc3:99e with SMTP id d6-20020adffbc6000000b0021d3fc3099emr16603227wrs.550.1657539673360;
-        Mon, 11 Jul 2022 04:41:13 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tqCQTI5mdoLJYyLC9KKsKSmRT9hOYxAFOVKHCeTy+01po4lrgNtzb/0y31cJeV8TLUEzjpoQ==
-X-Received: by 2002:adf:fbc6:0:b0:21d:3fc3:99e with SMTP id d6-20020adffbc6000000b0021d3fc3099emr16603219wrs.550.1657539673173;
-        Mon, 11 Jul 2022 04:41:13 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id u20-20020adfa194000000b0021da61caa10sm2434566wru.56.2022.07.11.04.41.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 04:41:12 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Gregory Erwin <gregerwin256@gmail.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Rui Salvaterra <rsalvaterra@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v8] ath9k: let sleep be interrupted when unregistering
- hwrng
-In-Reply-To: <87v8s8ubws.fsf@kernel.org>
-References: <Yrw5f8GN2fh2orid@zx2c4.com>
- <20220629114240.946411-1-Jason@zx2c4.com> <87v8s8ubws.fsf@kernel.org>
-Date:   Mon, 11 Jul 2022 12:41:12 +0100
-Message-ID: <xhsmho7xv512f.mognet@vschneid.remote.csb>
+        Mon, 11 Jul 2022 07:45:29 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848831B7B9;
+        Mon, 11 Jul 2022 04:42:14 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8E1955C013B;
+        Mon, 11 Jul 2022 07:42:10 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 11 Jul 2022 07:42:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1657539730; x=1657626130; bh=65xJGGrqgx
+        njVVpdic5sDfiZGfil8T9lrpxrDrPHf8g=; b=HH/oTqjkcgrCHZYQXcX34oNi2K
+        v2nwKLFL6z8ieVJvkDHC2/65uCw4GqEi7rfDiBQ3+va/U9slT9f18Y9zKOXK9X4k
+        9ilYU46tQruBfK6Xa8pn+UjeoQcKPU2/g+30tOimqCTZJcSBxvKnGA1bFLSmBw6L
+        TTvBjWDvx6ACJuzhc/sU6BRTVbi/vQcTb0mrgzv1xEP5sxZ+xByigzyuXEOgv/2q
+        98qc7V1d8rglqZkngnrnkqzkLPqhADyQo8qYPojZGFwpUg5eue2yZ7H//bReDeJF
+        KerxiCkE1e3uUMCRN0RkLEuGrpXZD7q85BBVCg/rWUsqogj40QxrWGO7vrkQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1657539730; x=1657626130; bh=65xJGGrqgxnjVVpdic5sDfiZGfil
+        8T9lrpxrDrPHf8g=; b=SM3pwVw/xvpwPzEDiqdckW7A4Y+apqrkRj2qxW2dHpSr
+        W32C+6Yr2aW6lEClvZgzLSa1dl9T5s9zuMPQTe4YLAJx/vBroR3Cyh+KgyouUSr9
+        u/2ZxyXhLxXPQg1nw1tlfcZ3FIQQ3kdQgA12znOPg1+JntdJnKEKz5dgWDwAFnvN
+        qxS5A9piswC9OdTwScnXKKTQRXAHPTV9gsx0CWiCsu3nKrLBXPirWAMq9chKxJKj
+        hg3ekMROL5/X0H2YoMHV7IduIkpNI8KV+sCvL0T3fUgxNJvvG+EEgDHk44/c3/TN
+        tprAeyYSU6CSa+R8OpFx1gcstGWKeR8F9rzQnvZOoA==
+X-ME-Sender: <xms:kQzMYv6aGsTlyGCWJj2O8_3HBbowEcshnFvorQPQMXV1g3wE_HGc5A>
+    <xme:kQzMYk5OstTLK1E3FOtat7kPi8KBy7NhDj2vRdj5pbZxFRQTmXRGHlUL6kFLXIW2N
+    gwGgaV2XmP1motf3ow>
+X-ME-Received: <xmr:kQzMYmfDjY1o2XAncdq2l8XzWaTHY9aRFocnAQmF76LGF-pGByeWRxy-5eL45gp1k2LOBEVLwJCJTyqqSSonyaKQrpdeLdKaZ9AaUc8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejfedgfeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpefgkeevueetgffhueeujefhgeejiefgiedtveefgfdugefhteejgedufedv
+    geeukeenucffohhmrghinhepsghoohhtlhhinhdrtghomhdpfihikhhiphgvughirgdroh
+    hrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehm
+    rgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:kQzMYgIpwlyetzGyREVDazqmlrNxuxwjsUwYDYiCSpoMUYI5JiyNrA>
+    <xmx:kQzMYjIGn7UY-kdG9RPUgDecNKS9Q7x8WOGXiSR47xexBommMXEiig>
+    <xmx:kQzMYpwrRcfOhPv-CTR3BPIAulKFPs98dXVR_JaA-0cffCl8IX0X6A>
+    <xmx:kgzMYq9T4G60-J4BnJWcyTtUCNNfVlt7Nhz10dG_BXN6yCUelZWuaA>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 11 Jul 2022 07:42:09 -0400 (EDT)
+Date:   Mon, 11 Jul 2022 13:42:06 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/5] drm/modes: Add support for driver-specific named
+ modes
+Message-ID: <20220711114206.sawqdl54ibuxsxp4@houat>
+References: <cover.1657301107.git.geert@linux-m68k.org>
+ <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
+ <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de>
+ <20220711093513.wilv6e6aqcuyg52w@houat>
+ <43d75dce-988a-0a95-cb0a-0d0a7c81ca63@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ochmvmz2mndf2rso"
+Content-Disposition: inline
+In-Reply-To: <43d75dce-988a-0a95-cb0a-0d0a7c81ca63@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/07/22 19:26, Kalle Valo wrote:
-> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+
+--ochmvmz2mndf2rso
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Jul 11, 2022 at 01:11:14PM +0200, Thomas Zimmermann wrote:
+> Hi Maxime
+>=20
+> Am 11.07.22 um 11:35 schrieb Maxime Ripard:
+> > Hi Thomas,
+> >=20
+> > On Mon, Jul 11, 2022 at 11:03:38AM +0200, Thomas Zimmermann wrote:
+> > > Am 08.07.22 um 20:21 schrieb Geert Uytterhoeven:
+> > > > The mode parsing code recognizes named modes only if they are expli=
+citly
+> > > > listed in the internal whitelist, which is currently limited to "NT=
+SC"
+> > > > and "PAL".
+> > > >=20
+> > > > Provide a mechanism for drivers to override this list to support cu=
+stom
+> > > > mode names.
+> > > >=20
+> > > > Ideally, this list should just come from the driver's actual list of
+> > > > modes, but connector->probed_modes is not yet populated at the time=
+ of
+> > > > parsing.
+> > >=20
+> > > I've looked for code that uses these names, couldn't find any. How is=
+ this
+> > > being used in practice? For example, if I say "PAL" on the command li=
+ne, is
+> > > there DRM code that fills in the PAL mode parameters?
+> >=20
+> > We have some code to deal with this in sun4i:
+> > https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/sun4i/su=
+n4i_tv.c#L292
+> >=20
+> > It's a bit off topic, but for TV standards, I'm still not sure what the
+> > best course of action is. There's several interactions that make this a
+> > bit troublesome:
+> >=20
+> >    * Some TV standards differ by their mode (ie, PAL vs NSTC), but some
+> >      other differ by parameters that are not part of drm_display_mode
+> >      (NTSC vs NSTC-J where the only difference is the black and blanking
+> >      signal levels for example).
+> >=20
+> >    * The mode names allow to provide a fairly convenient way to add that
+> >      extra information, but the userspace is free to create its own mode
+> >      and might omit the mode name entirely.
+> >=20
+> > So in the code above, if the name has been preserved we match by name,
+> > but we fall back to matching by mode if it hasn't been, which in this
+> > case means that we have no way to differentiate between NTSC, NTSC-J,
+> > PAL-M in this case.
+> >=20
+> > We have some patches downstream for the RaspberryPi that has the TV
+> > standard as a property. There's a few extra logic required for the
+> > userspace (like setting the PAL property, with the NTSC mode) so I'm not
+> > sure it's preferable.
+> >=20
+> > Or we could do something like a property to try that standard, and
+> > another that reports the one we actually chose.
+> >=20
+> > > And another question I have is whether this whitelist belongs into the
+> > > driver at all. Standard modes exist independent from drivers or hardw=
+are.
+> > > Shouldn't there simply be a global list of all possible mode names? D=
+rivers
+> > > would filter out the unsupported modes anyway.
+> >=20
+> > We should totally do something like that, yeah
+>=20
+> That sun code already looks like sometihng the DRM core/helpers should be
+> doing. And if we want to support named modes well, there's a long list of
+> modes in Wikipedia.
 >
->> There are two deadlock scenarios that need addressing, which cause
->> problems when the computer goes to sleep, the interface is set down, and
->> hwrng_unregister() is called. When the deadlock is hit, sleep is delayed
->> for tens of seconds, causing it to fail. These scenarios are:
->>
->> 1) The hwrng kthread can't be stopped while it's sleeping, because it
->>    uses msleep_interruptible() instead of schedule_timeout_interruptible=
-().
->>    The fix is a simple moving to the correct function. At the same time,
->>    we should cleanup a common and useless dmesg splat in the same area.
->>
->> 2) A normal user thread can't be interrupted by hwrng_unregister() while
->>    it's sleeping, because hwrng_unregister() is called from elsewhere.
->>    The solution here is to keep track of which thread is currently
->>    reading, and asleep, and signal that thread when it's time to
->>    unregister. There's a bit of book keeping required to prevent
->>    lifetime issues on current.
->>
->> Reported-by: Gregory Erwin <gregerwin256@gmail.com>
->> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> Cc: Kalle Valo <kvalo@kernel.org>
->> Cc: Rui Salvaterra <rsalvaterra@gmail.com>
->> Cc: Herbert Xu <herbert@gondor.apana.org.au>
->> Cc: stable@vger.kernel.org
->> Fixes: fcd09c90c3c5 ("ath9k: use hw_random API instead of directly dumpi=
-ng into random.c")
->> Link: https://lore.kernel.org/all/CAO+Okf6ZJC5-nTE_EJUGQtd8JiCkiEHytGgDs=
-FGTEjs0c00giw@mail.gmail.com/
->> Link: https://lore.kernel.org/lkml/CAO+Okf5k+C+SE6pMVfPf-d8MfVPVq4PO7EY8=
-Hys_DVXtent3HA@mail.gmail.com/
->> Link: https://bugs.archlinux.org/task/75138
->> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
->> ---
->> Changes v7->v8:
->> - Add a missing export_symbol.
->>
->>  drivers/char/hw_random/core.c        | 30 ++++++++++++++++++++++++----
->>  drivers/net/wireless/ath/ath9k/rng.c | 19 +++++++-----------
->>  kernel/sched/core.c                  |  1 +
->>  3 files changed, 34 insertions(+), 16 deletions(-)
->
-> I don't see any acks for the hw_random and the scheduler change, adding m=
-ore
-> people to CC. Full patch here:
->
-> https://patchwork.kernel.org/project/linux-wireless/patch/20220629114240.=
-946411-1-Jason@zx2c4.com/
->
-> Are everyone ok if I take this patch via wireless-next?
->
+> https://en.wikipedia.org/wiki/Video_Graphics_Array#/media/File:Vector_Vid=
+eo_Standards2.svg
 
-Thanks for the Cc.
+Yeah, and NTSC is missing :)
 
-I'm not hot on the export of wake_up_state(), IMO any wakeup with
-!(state & TASK_NORMAL) should be reserved to kernel internals. Now, here
-IIUC the problem is that the patch uses an inline invoking
+Thinking about this some more, I'm not sure how we would do that. Like I
+said, we would need some extra parameters to drm_display_mode (like
+blanking levels) that the core would need to pass to the driver.
 
-  wake_up_state(p, TASK_INTERRUPTIBLE)
+If we go through the property route, I think the core could just look at
+the name, with the new mode and state, and the driver should deal with
+it. I'm not sure we can do more than that.
 
-so this isn't playing with any 'exotic' task state, thus it shouldn't
-actually need the export.
+Maxime
 
-I've been trying to figure out if this could work with just a
-wake_up_process(), but the sleeping pattern here is not very conforming
-(cf. 'wait loop' pattern in sched/core.c), AFAICT the signal is used to
-circumvent that :/
+--ochmvmz2mndf2rso
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYswMjgAKCRDj7w1vZxhR
+xVEnAP9X1YCEDZqn7PwDG4wC6RHwW3pwln90ztgI5n66WY0ckgEA3+Owyei3UCjf
+z4cZW6l3/ZzQj6xt4UxCXTf9Cd2AVAo=
+=2IFI
+-----END PGP SIGNATURE-----
+
+--ochmvmz2mndf2rso--
