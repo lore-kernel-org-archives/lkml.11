@@ -2,110 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A22C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbiGKOQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
+        id S229732AbiGKOSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiGKOQr (ORCPT
+        with ESMTP id S229470AbiGKOSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:16:47 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A14F2E9C4;
-        Mon, 11 Jul 2022 07:16:46 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id r3so8933967ybr.6;
-        Mon, 11 Jul 2022 07:16:46 -0700 (PDT)
+        Mon, 11 Jul 2022 10:18:06 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631FD5FAD1;
+        Mon, 11 Jul 2022 07:18:05 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id c13so4551415pla.6;
+        Mon, 11 Jul 2022 07:18:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vf+VTyyTWGsnZnHhl+GAHyRGdszNXCGk/WkrL9vpyfI=;
-        b=X0asbNSZ/Y7jCOKEBpas/c4n4OwC80T9tb9l/BhDwIDJpeLk0iTbLxlHcXvyemkXSU
-         OJC2nqFEO6p9/XMcyD4JBTnH4BLCtqV0Rol9+upzxpISvgbdEUWVeOWm31YoyL4bOj82
-         mcgv4yXSZeCV0Y/ks8U0t8DyeDtJ0evxZplTay+u+RbCd1MufmfaA2VLTCAiG94333e7
-         dtCNNyGUEd0k58gRIqkDdPIRMR3v2vfZPo711l4OtghEihiQLjPb7PtK5LYelUnO5hFD
-         rhueqr7PJ7fqo/L9PZufFXYNU9h/eUX3nxNRYtSbqCpzv66JG96Hzna4Q9UDDxU2LoBu
-         IAGA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=voWEGFF3KA1IgeGevlbZtwzM22a66pKEyYkCo2Z4mHg=;
+        b=jmIdWsTUwnSmas9w6Wbygx3XWVWnePOHR86nRpTMSaF+GcfjhgM0h8WA7dP1mMwjDr
+         9UIz7H1FOkhin165XWv/D/aQZk8Lpw8nv4PehzfuZo07QZnuql6pG4IkuNT7yNT5R3cv
+         a6+C1oOE1zT6CQW1/teAC+h8oeDxiCraf1T28tYJFFtx17cB0/T7UQ9om1CZsUhSSp1a
+         /NPjLuxHyn2CFFjqhrTwLVkjy1264onD6vsqzWHK93R0uLx5q6baVVqkt+ODde0YEH54
+         toEzhzH2p5DPl1s1bjdMvR1ETXG1lG3snfV2bdoD+du9KjbuPAv0DlwmxDgRr9MNGK8F
+         V32w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vf+VTyyTWGsnZnHhl+GAHyRGdszNXCGk/WkrL9vpyfI=;
-        b=md/OLBsVdpe8tGoJAX0fifHUDpdhCzW+yVwNb3GZycsQ8VU1Nit2W+w5Va8WhxSIUc
-         PQ7ZzDE5t3tkFvNSwuLJRLfblE35sWtDbi70Zy9U30dn/V5pG6x+uoNzVL9HehNv4hOx
-         X7LWtq+FOjys+JSWSmSrBKL5lDag3Pbpjv0vPpL78OHaVic7bEqeBQy/P5JxCdixnAlQ
-         0MYClSm1wD2/+cj6nVKUhiSsHDrUS0Xz4rdxtFQiGacsyuWjqDXLNd2j36XMnrAerFtL
-         YRJ5+dgYmePmE/GpB95vZlZ/nkt8KZCfyjBE+aLljk4zQDaLBa1/I08XX482CbCYOO1s
-         NMDw==
-X-Gm-Message-State: AJIora9CnYOm60W9m73DNqXYLuzcccHgmiUCfmhS4wJ5LxRMWFoCJd3p
-        4lROKCXEZQY40jIySRS/0SvGXb22sZu1RJfZcYw=
-X-Google-Smtp-Source: AGRyM1tjs3lX/e7/uuqpiknfoZcI/CSEGGAMIL8sSGkCYSy5OiaTV9RyVK7prX3xacTNgQEQOM7zwicT+muV5R/LniQ=
-X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
- w9-20020a05690210c900b00668e27c08f7mr17319442ybu.128.1657549005246; Mon, 11
- Jul 2022 07:16:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=voWEGFF3KA1IgeGevlbZtwzM22a66pKEyYkCo2Z4mHg=;
+        b=WB4NndAdfdb7r/u9BPFTEn/uYVxM3IAsN1aZ3FPNcT91BnCodeHj6ToA9yfrqfIoPD
+         S3BlqcQ0Px4GfblNs6nsu2+CnAUy2JrbJho9uvOgVlC2KaYvxaaXaMO5rleByjekUuEy
+         oL5pU2xK9p8sYUFFTfeI30eNFkb1uvVLPJQrxiHNrvOicwZU8mL7gr1Vu4NBG2cVFjJA
+         Lt80vUrSWQRTrMWDfLCMDqW+BldXxuUkuSkEtDrHgEVfbduqgqt/fBSFOcaRaB1PtaOy
+         pASCr23gw9RpNqL6FKPbEpQSkAPM6YwKGBkXqoEHy0ozeuCVHSQJkVvq4UKsgtUCNfXh
+         DVnQ==
+X-Gm-Message-State: AJIora/Iw90nEYiSqkhP+FfCcFuAjTlhPT+YKcKy13u3uIE/gcXzkUvv
+        jhPIWkre9hLxBKr4xHfRvfX2JLlm6Y+L7Y6g
+X-Google-Smtp-Source: AGRyM1unencx6BMiBSpETxK3OBiNwIN8O6n/z4ZYThj84ioc03yLqTZNYssmTTZ+RhQu3/1KDWiIYQ==
+X-Received: by 2002:a17:902:c102:b0:16b:e03a:40ff with SMTP id 2-20020a170902c10200b0016be03a40ffmr18899416pli.29.1657549084843;
+        Mon, 11 Jul 2022 07:18:04 -0700 (PDT)
+Received: from ArtixLinux.localdomain ([116.193.141.74])
+        by smtp.gmail.com with ESMTPSA id z19-20020a170903409300b001675d843332sm4769751plc.63.2022.07.11.07.18.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 07:18:04 -0700 (PDT)
+From:   Aakash Sen Sharma <aakashsensharma@gmail.com>
+To:     brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Aakash Sen Sharma <aakashsensharma@gmail.com>
+Subject: [PATCH] gpio: 104-idi-48: unsigned to unsigned int cleanup
+Date:   Mon, 11 Jul 2022 19:47:53 +0530
+Message-Id: <20220711141753.32523-1-aakashsensharma@gmail.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-References: <20220711134312.234268-1-tmaimon77@gmail.com> <20220711134312.234268-3-tmaimon77@gmail.com>
- <CAHp75VdXsiH9ityqopznRpjxvwOboS_Zbi9iO6nRZ03TuKxTtg@mail.gmail.com>
-In-Reply-To: <CAHp75VdXsiH9ityqopznRpjxvwOboS_Zbi9iO6nRZ03TuKxTtg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 11 Jul 2022 16:16:08 +0200
-Message-ID: <CAHp75VeCPRVUMHYdNWgPja2eWeStokRDSogW-7ALz10_yEaDMA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] iio: adc: npcm: Add NPCM8XX support
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 4:14 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Mon, Jul 11, 2022 at 3:59 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
+* Removing checkpatch warnings.
+* No functional changes.
 
-...
+Signed-off-by: Aakash Sen Sharma <aakashsensharma@gmail.com>
+---
+ drivers/gpio/gpio-104-idi-48.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-> >         struct device *dev = &pdev->dev;
-> > +       const struct of_device_id *match;
-
-> > +       match = of_match_node(npcm_adc_match, pdev->dev.of_node);
-> > +       if (!match || !match->data) {
-> > +               dev_err(dev, "Failed getting npcm_adc_data\n");
-> > +               return -ENODEV;
-> > +       }
-> >
-> > +       info->data = (struct npcm_adc_info *)match->data;
->
-> Instead of above
->
->   info->data = device_get_match_data(dev);
->   if (!info->data)
-
-
->     return -ENODEV;
-
-Or
-
-  return dev_err_probe(dev, -EINVAL, "...\n");
-
-if you want that message to be issued.
-
-
+diff --git a/drivers/gpio/gpio-104-idi-48.c b/drivers/gpio/gpio-104-idi-48.c
+index 9521ece3ebef..c1e4c3629e17 100644
+--- a/drivers/gpio/gpio-104-idi-48.c
++++ b/drivers/gpio/gpio-104-idi-48.c
+@@ -51,23 +51,23 @@ struct idi_48_gpio {
+ 	unsigned char cos_enb;
+ };
+ 
+-static int idi_48_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
++static int idi_48_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	return GPIO_LINE_DIRECTION_IN;
+ }
+ 
+-static int idi_48_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
++static int idi_48_gpio_direction_input(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	return 0;
+ }
+ 
+-static int idi_48_gpio_get(struct gpio_chip *chip, unsigned offset)
++static int idi_48_gpio_get(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct idi_48_gpio *const idi48gpio = gpiochip_get_data(chip);
+-	unsigned i;
++	unsigned int i;
+ 	static const unsigned int register_offset[6] = { 0, 1, 2, 4, 5, 6 };
+ 	void __iomem *port_addr;
+-	unsigned mask;
++	unsigned int mask;
+ 
+ 	for (i = 0; i < 48; i += 8)
+ 		if (offset < i + 8) {
+@@ -112,10 +112,10 @@ static void idi_48_irq_mask(struct irq_data *data)
+ {
+ 	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
+ 	struct idi_48_gpio *const idi48gpio = gpiochip_get_data(chip);
+-	const unsigned offset = irqd_to_hwirq(data);
+-	unsigned i;
+-	unsigned mask;
+-	unsigned boundary;
++	const unsigned int offset = irqd_to_hwirq(data);
++	unsigned int i;
++	unsigned int mask;
++	unsigned int boundary;
+ 	unsigned long flags;
+ 
+ 	for (i = 0; i < 48; i += 8)
+@@ -143,11 +143,11 @@ static void idi_48_irq_unmask(struct irq_data *data)
+ {
+ 	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
+ 	struct idi_48_gpio *const idi48gpio = gpiochip_get_data(chip);
+-	const unsigned offset = irqd_to_hwirq(data);
+-	unsigned i;
+-	unsigned mask;
+-	unsigned boundary;
+-	unsigned prev_irq_mask;
++	const unsigned int offset = irqd_to_hwirq(data);
++	unsigned int i;
++	unsigned int mask;
++	unsigned int boundary;
++	unsigned int prev_irq_mask;
+ 	unsigned long flags;
+ 
+ 	for (i = 0; i < 48; i += 8)
+@@ -172,7 +172,7 @@ static void idi_48_irq_unmask(struct irq_data *data)
+ 		}
+ }
+ 
+-static int idi_48_irq_set_type(struct irq_data *data, unsigned flow_type)
++static int idi_48_irq_set_type(struct irq_data *data, unsigned int flow_type)
+ {
+ 	/* The only valid irq types are none and both-edges */
+ 	if (flow_type != IRQ_TYPE_NONE &&
 -- 
-With Best Regards,
-Andy Shevchenko
+2.37.0
+
