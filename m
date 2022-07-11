@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B41F7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiGKJqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
+        id S233507AbiGKJq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233794AbiGKJo7 (ORCPT
+        with ESMTP id S233502AbiGKJoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:44:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FF0A9E44;
-        Mon, 11 Jul 2022 02:22:28 -0700 (PDT)
+        Mon, 11 Jul 2022 05:44:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C890AA7D65;
+        Mon, 11 Jul 2022 02:21:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91613612F1;
-        Mon, 11 Jul 2022 09:22:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D057C34115;
-        Mon, 11 Jul 2022 09:22:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1320ACE1261;
+        Mon, 11 Jul 2022 09:21:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F31C34115;
+        Mon, 11 Jul 2022 09:21:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531347;
-        bh=pTxtoLbMkPQmSeDvjO5YStqyjNXGzgQQA4ofL0zE1wQ=;
+        s=korg; t=1657531316;
+        bh=Qp/4vTTjsjQl1T0Fo2W+iWdD6MYDxyl9nKH1aVGXKmU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y7zgrKe9KT+w9DERtLdY+B2NiNm+SOnY+WG6qcPFhxuVycRqlVtjUYgaF1w5yfa7s
-         oYD5MEkXc4tQIFFtowMckeZ12ZcvT63Eeqg31O7I2Iq9Hm38CLVrHEPAA4Np656qzY
-         mYX+bXK7hQkTTLaqWLqs6ZHSU74nG0dSkA3O+vsQ=
+        b=oQFprLtRYm8Gpll4M4eBN6lvDxkZMiihbCAQf4tB4MHgr9KOB0o43aMHNcgNEVf/v
+         TjjD609WyVJm2lffWZ+f6yXkHGfwixTZ5O39OqQhTU1pANJZPelG+fADCysZFuYGYZ
+         8Ya1SNF+joIBd3QNYc1LxaybI+YhLa7Qy75jN4YE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-        Johan Hovold <johan@kernel.org>,
-        Lad Prabhakar <prabhakar.csengg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 072/230] media: davinci: vpif: fix use-after-free on driver unbind
-Date:   Mon, 11 Jul 2022 11:05:28 +0200
-Message-Id: <20220711090606.118956055@linuxfoundation.org>
+Subject: [PATCH 5.15 062/230] ibmvnic: init init_done_rc earlier
+Date:   Mon, 11 Jul 2022 11:05:18 +0200
+Message-Id: <20220711090605.836475160@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -52,187 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 43acb728bbc40169d2e2425e84a80068270974be ]
+[ Upstream commit ae16bf15374d8b055e040ac6f3f1147ab1c9bb7d ]
 
-The driver allocates and registers two platform device structures during
-probe, but the devices were never deregistered on driver unbind.
+We currently initialize the ->init_done completion/return code fields
+before issuing a CRQ_INIT command. But if we get a transport event soon
+after registering the CRQ the taskslet may already have recorded the
+completion and error code. If we initialize here, we might overwrite/
+lose that and end up issuing the CRQ_INIT only to timeout later.
 
-This results in a use-after-free on driver unbind as the device
-structures were allocated using devres and would be freed by driver
-core when remove() returns.
+If that timeout happens during probe, we will leave the adapter in the
+DOWN state rather than retrying to register/init the CRQ.
 
-Fix this by adding the missing deregistration calls to the remove()
-callback and failing probe on registration errors.
+Initialize the completion before registering the CRQ so we don't lose
+the notification.
 
-Note that the platform device structures must be freed using a proper
-release callback to avoid leaking associated resources like device
-names.
-
-Fixes: 479f7a118105 ("[media] davinci: vpif: adaptions for DT support")
-Cc: stable@vger.kernel.org      # 4.12
-Cc: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 032c5e82847a ("Driver for IBM System i/p VNIC protocol")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/davinci/vpif.c | 97 ++++++++++++++++++++-------
- 1 file changed, 71 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/platform/davinci/vpif.c b/drivers/media/platform/davinci/vpif.c
-index 5658c7f148d7..8ffc01c606d0 100644
---- a/drivers/media/platform/davinci/vpif.c
-+++ b/drivers/media/platform/davinci/vpif.c
-@@ -41,6 +41,11 @@ MODULE_ALIAS("platform:" VPIF_DRIVER_NAME);
- #define VPIF_CH2_MAX_MODES	15
- #define VPIF_CH3_MAX_MODES	2
- 
-+struct vpif_data {
-+	struct platform_device *capture;
-+	struct platform_device *display;
-+};
-+
- DEFINE_SPINLOCK(vpif_lock);
- EXPORT_SYMBOL_GPL(vpif_lock);
- 
-@@ -423,11 +428,19 @@ int vpif_channel_getfid(u8 channel_id)
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index b262aa84b6a2..70267bd73429 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2063,6 +2063,19 @@ static const char *reset_reason_to_string(enum ibmvnic_reset_reason reason)
+ 	return "UNKNOWN";
  }
- EXPORT_SYMBOL(vpif_channel_getfid);
  
-+static void vpif_pdev_release(struct device *dev)
++/*
++ * Initialize the init_done completion and return code values. We
++ * can get a transport event just after registering the CRQ and the
++ * tasklet will use this to communicate the transport event. To ensure
++ * we don't miss the notification/error, initialize these _before_
++ * regisering the CRQ.
++ */
++static inline void reinit_init_done(struct ibmvnic_adapter *adapter)
 +{
-+	struct platform_device *pdev = to_platform_device(dev);
-+
-+	kfree(pdev);
++	reinit_completion(&adapter->init_done);
++	adapter->init_done_rc = 0;
 +}
 +
- static int vpif_probe(struct platform_device *pdev)
- {
- 	static struct resource	*res, *res_irq;
- 	struct platform_device *pdev_capture, *pdev_display;
- 	struct device_node *endpoint = NULL;
-+	struct vpif_data *data;
- 	int ret;
+ /*
+  * do_reset returns zero if we are able to keep processing reset events, or
+  * non-zero if we hit a fatal error and must halt.
+@@ -2169,6 +2182,8 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		 */
+ 		adapter->state = VNIC_PROBED;
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -435,6 +448,12 @@ static int vpif_probe(struct platform_device *pdev)
- 	if (IS_ERR(vpif_base))
- 		return PTR_ERR(vpif_base);
- 
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
++		reinit_init_done(adapter);
 +
-+	platform_set_drvdata(pdev, data);
-+
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_get(&pdev->dev);
+ 		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+ 			rc = init_crq_queue(adapter);
+ 		} else if (adapter->reset_reason == VNIC_RESET_MOBILITY) {
+@@ -2314,7 +2329,8 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
+ 	 */
+ 	adapter->state = VNIC_PROBED;
  
-@@ -462,49 +481,75 @@ static int vpif_probe(struct platform_device *pdev)
- 		goto err_put_rpm;
+-	reinit_completion(&adapter->init_done);
++	reinit_init_done(adapter);
++
+ 	rc = init_crq_queue(adapter);
+ 	if (rc) {
+ 		netdev_err(adapter->netdev,
+@@ -5485,10 +5501,6 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
+ 
+ 	adapter->from_passive_init = false;
+ 
+-	if (reset)
+-		reinit_completion(&adapter->init_done);
+-
+-	adapter->init_done_rc = 0;
+ 	rc = ibmvnic_send_crq_init(adapter);
+ 	if (rc) {
+ 		dev_err(dev, "Send crq init failed with error %d\n", rc);
+@@ -5502,12 +5514,14 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
+ 
+ 	if (adapter->init_done_rc) {
+ 		release_crq_queue(adapter);
++		dev_err(dev, "CRQ-init failed, %d\n", adapter->init_done_rc);
+ 		return adapter->init_done_rc;
  	}
  
--	pdev_capture = devm_kzalloc(&pdev->dev, sizeof(*pdev_capture),
--				    GFP_KERNEL);
--	if (pdev_capture) {
--		pdev_capture->name = "vpif_capture";
--		pdev_capture->id = -1;
--		pdev_capture->resource = res_irq;
--		pdev_capture->num_resources = 1;
--		pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
--		pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
--		pdev_capture->dev.parent = &pdev->dev;
--		platform_device_register(pdev_capture);
--	} else {
--		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_capture.\n");
-+	pdev_capture = kzalloc(sizeof(*pdev_capture), GFP_KERNEL);
-+	if (!pdev_capture) {
-+		ret = -ENOMEM;
-+		goto err_put_rpm;
+ 	if (adapter->from_passive_init) {
+ 		adapter->state = VNIC_OPEN;
+ 		adapter->from_passive_init = false;
++		dev_err(dev, "CRQ-init failed, passive-init\n");
+ 		return -1;
  	}
  
--	pdev_display = devm_kzalloc(&pdev->dev, sizeof(*pdev_display),
--				    GFP_KERNEL);
--	if (pdev_display) {
--		pdev_display->name = "vpif_display";
--		pdev_display->id = -1;
--		pdev_display->resource = res_irq;
--		pdev_display->num_resources = 1;
--		pdev_display->dev.dma_mask = pdev->dev.dma_mask;
--		pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
--		pdev_display->dev.parent = &pdev->dev;
--		platform_device_register(pdev_display);
--	} else {
--		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_display.\n");
-+	pdev_capture->name = "vpif_capture";
-+	pdev_capture->id = -1;
-+	pdev_capture->resource = res_irq;
-+	pdev_capture->num_resources = 1;
-+	pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
-+	pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
-+	pdev_capture->dev.parent = &pdev->dev;
-+	pdev_capture->dev.release = vpif_pdev_release;
-+
-+	ret = platform_device_register(pdev_capture);
-+	if (ret)
-+		goto err_put_pdev_capture;
-+
-+	pdev_display = kzalloc(sizeof(*pdev_display), GFP_KERNEL);
-+	if (!pdev_display) {
-+		ret = -ENOMEM;
-+		goto err_put_pdev_capture;
- 	}
+@@ -5596,6 +5610,8 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
  
-+	pdev_display->name = "vpif_display";
-+	pdev_display->id = -1;
-+	pdev_display->resource = res_irq;
-+	pdev_display->num_resources = 1;
-+	pdev_display->dev.dma_mask = pdev->dev.dma_mask;
-+	pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
-+	pdev_display->dev.parent = &pdev->dev;
-+	pdev_display->dev.release = vpif_pdev_release;
+ 	init_success = false;
+ 	do {
++		reinit_init_done(adapter);
 +
-+	ret = platform_device_register(pdev_display);
-+	if (ret)
-+		goto err_put_pdev_display;
-+
-+	data->capture = pdev_capture;
-+	data->display = pdev_display;
-+
- 	return 0;
- 
-+err_put_pdev_display:
-+	platform_device_put(pdev_display);
-+err_put_pdev_capture:
-+	platform_device_put(pdev_capture);
- err_put_rpm:
- 	pm_runtime_put(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-+	kfree(data);
- 
- 	return ret;
- }
- 
- static int vpif_remove(struct platform_device *pdev)
- {
-+	struct vpif_data *data = platform_get_drvdata(pdev);
-+
-+	if (data->capture)
-+		platform_device_unregister(data->capture);
-+	if (data->display)
-+		platform_device_unregister(data->display);
-+
- 	pm_runtime_put(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-+
-+	kfree(data);
-+
- 	return 0;
- }
- 
+ 		rc = init_crq_queue(adapter);
+ 		if (rc) {
+ 			dev_err(&dev->dev, "Couldn't initialize crq. rc=%d\n",
 -- 
 2.35.1
 
