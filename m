@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8812AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358ECC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232970AbiGKJmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
+        id S233353AbiGKJm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232557AbiGKJmR (ORCPT
+        with ESMTP id S229456AbiGKJmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:42:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF2E9B9D5;
-        Mon, 11 Jul 2022 02:21:17 -0700 (PDT)
+        Mon, 11 Jul 2022 05:42:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B23550A0;
+        Mon, 11 Jul 2022 02:21:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 269F1CE1256;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E39EB61227;
+        Mon, 11 Jul 2022 09:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDEB8C34115;
         Mon, 11 Jul 2022 09:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E27EC34115;
-        Mon, 11 Jul 2022 09:21:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531272;
-        bh=wct9TWBIQK2Q+mh6dK2ze1PHgs5Waxx3OF/u1J/ohq8=;
+        s=korg; t=1657531275;
+        bh=4WZcDCsFE9fpCFpZDFTLUsccbZ30dyi6tyVEhn+pBDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LEh+7VUG6UDUhIFQZSZuML74eRbmLN3UmWT8pQ1uMF8ZM31geKPHCaB6QhR5ODEeS
-         t7UJHo6BRd1pW5oIOmSpt5SW6W/2nhv8daia/OsJpQxaEH+WG2JucWkTOII5crEtnA
-         Mc8Flac1nIALztNIgjkR5pE5OeXFze5UnpUbcrDo=
+        b=nINfFq1ktqICL9BqTPcnjgd/qXfN4JkLJ7Nta1cub76XW85ARzg92yV9npvI1Im8/
+         h9uVoaN/JYkT4gR472oUEHDZ8KbSGjvRzMvy9CjJ9zOYe3BahRGh26SP7ZBHl5mrMi
+         rBGd8v84XniKPQKj7zt2S+x1J1MHWw9zwA/N3Aoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 043/230] mt76: mt7921: get rid of mt7921_mac_set_beacon_filter
-Date:   Mon, 11 Jul 2022 11:04:59 +0200
-Message-Id: <20220711090605.304966389@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Jan Engelhardt <jengelh@inai.de>
+Subject: [PATCH 5.15 006/230] ALSA: cs46xx: Fix missing snd_card_free() call at probe error
+Date:   Mon, 11 Jul 2022 11:04:22 +0200
+Message-Id: <20220711090604.248954336@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,75 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit b30363102a4122f6eed37927b64a2c7ac70b8859 ]
+commit c5e58c4545a69677d078b4c813b5d10d3481be9c upstream.
 
-Remove mt7921_mac_set_beacon_filter routine since it is no longer used.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch fixes it by calling snd_card_free() manually on the error
+from the probe callback.
+
+Fixes: 5bff69b3645d ("ALSA: cs46xx: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Reported-and-tested-by: Jan Engelhardt <jengelh@inai.de>
+Link: https://lore.kernel.org/r/p2p1s96o-746-74p4-s95-61qo1p7782pn@vanv.qr
+Link: https://lore.kernel.org/r/20220705152336.350-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/wireless/mediatek/mt76/mt7921/mac.c   | 28 -------------------
- .../wireless/mediatek/mt76/mt7921/mt7921.h    |  3 --
- 2 files changed, 31 deletions(-)
+ sound/pci/cs46xx/cs46xx.c |   22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index bef8d4a76ed9..426e7a32bdc8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -1573,34 +1573,6 @@ void mt7921_pm_power_save_work(struct work_struct *work)
- 	queue_delayed_work(dev->mt76.wq, &dev->pm.ps_work, delta);
+--- a/sound/pci/cs46xx/cs46xx.c
++++ b/sound/pci/cs46xx/cs46xx.c
+@@ -74,36 +74,36 @@ static int snd_card_cs46xx_probe(struct
+ 	err = snd_cs46xx_create(card, pci,
+ 				external_amp[dev], thinkpad[dev]);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	card->private_data = chip;
+ 	chip->accept_valid = mmap_valid[dev];
+ 	err = snd_cs46xx_pcm(chip, 0);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ #ifdef CONFIG_SND_CS46XX_NEW_DSP
+ 	err = snd_cs46xx_pcm_rear(chip, 1);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	err = snd_cs46xx_pcm_iec958(chip, 2);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ #endif
+ 	err = snd_cs46xx_mixer(chip, 2);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ #ifdef CONFIG_SND_CS46XX_NEW_DSP
+ 	if (chip->nr_ac97_codecs ==2) {
+ 		err = snd_cs46xx_pcm_center_lfe(chip, 3);
+ 		if (err < 0)
+-			return err;
++			goto error;
+ 	}
+ #endif
+ 	err = snd_cs46xx_midi(chip, 0);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	err = snd_cs46xx_start_dsp(chip);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 
+ 	snd_cs46xx_gameport(chip);
+ 
+@@ -117,11 +117,15 @@ static int snd_card_cs46xx_probe(struct
+ 
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
+ 	return 0;
++
++ error:
++	snd_card_free(card);
++	return err;
  }
  
--int mt7921_mac_set_beacon_filter(struct mt7921_phy *phy,
--				 struct ieee80211_vif *vif,
--				 bool enable)
--{
--	struct mt7921_dev *dev = phy->dev;
--	bool ext_phy = phy != &dev->phy;
--	int err;
--
--	if (!dev->pm.enable)
--		return -EOPNOTSUPP;
--
--	err = mt7921_mcu_set_bss_pm(dev, vif, enable);
--	if (err)
--		return err;
--
--	if (enable) {
--		vif->driver_flags |= IEEE80211_VIF_BEACON_FILTER;
--		mt76_set(dev, MT_WF_RFCR(ext_phy),
--			 MT_WF_RFCR_DROP_OTHER_BEACON);
--	} else {
--		vif->driver_flags &= ~IEEE80211_VIF_BEACON_FILTER;
--		mt76_clear(dev, MT_WF_RFCR(ext_phy),
--			   MT_WF_RFCR_DROP_OTHER_BEACON);
--	}
--
--	return 0;
--}
--
- void mt7921_coredump_work(struct work_struct *work)
- {
- 	struct mt7921_dev *dev;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
-index 2d8bd6bfc820..1aafd8723b3a 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
-@@ -381,9 +381,6 @@ int mt7921_mcu_fw_pmctrl(struct mt7921_dev *dev);
- void mt7921_pm_wake_work(struct work_struct *work);
- void mt7921_pm_power_save_work(struct work_struct *work);
- bool mt7921_wait_for_mcu_init(struct mt7921_dev *dev);
--int mt7921_mac_set_beacon_filter(struct mt7921_phy *phy,
--				 struct ieee80211_vif *vif,
--				 bool enable);
- void mt7921_pm_interface_iter(void *priv, u8 *mac, struct ieee80211_vif *vif);
- void mt7921_coredump_work(struct work_struct *work);
- int mt7921_wfsys_reset(struct mt7921_dev *dev);
--- 
-2.35.1
-
+ static struct pci_driver cs46xx_driver = {
 
 
