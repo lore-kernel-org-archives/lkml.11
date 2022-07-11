@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D61C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB71C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbiGKJqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
+        id S233559AbiGKJqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233894AbiGKJpI (ORCPT
+        with ESMTP id S233903AbiGKJpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:45:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A62A9E77;
-        Mon, 11 Jul 2022 02:22:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D193599C6;
+        Mon, 11 Jul 2022 02:22:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD868B80D2C;
-        Mon, 11 Jul 2022 09:22:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A82C34115;
-        Mon, 11 Jul 2022 09:22:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1334612B7;
+        Mon, 11 Jul 2022 09:22:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE153C34115;
+        Mon, 11 Jul 2022 09:22:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531352;
-        bh=8De3sl8vo6g6gUNyQnO3fBSHDA2H/6A7rO9gphhjK10=;
+        s=korg; t=1657531355;
+        bh=ibPMo5ETyDCzk+1MyI+Rq7SjNwIpy1QqCC3YTqmPCyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mg3QgpUqe8/SXn20R4lN4Z94mnVktvaK3nqWJMV+lG9bMHLv57XOhY4ODpgjK+kUf
-         nml83mq29aWjfeTjBD4/bHx8o56pbCpeGW9XtC1tX9VAtiKZSudF1txk9OoNJ/VlqX
-         QcmoFfr0enFVAZab8fv7ogcLUObqzZCkmoNMtCYo=
+        b=A6TsF78SRTRePvCtn0nteNW/SmwmfCK1flXwwcCOwMRpZoUcOAdwfePY+a5kciGGi
+         nnAxvrcBdiH34rjE3X21fftE/LJfZrEPSI2z19yeIvipizJOqjD+NOSEZTYSS5aKWY
+         xafLFz0ebtTBRjvx8TpSsdbunqBJ/YEqc3P+CwAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 047/230] riscv: defconfig: enable DRM_NOUVEAU
-Date:   Mon, 11 Jul 2022 11:05:03 +0200
-Message-Id: <20220711090605.417740083@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 074/230] mt76: mt7921: do not always disable fw runtime-pm
+Date:   Mon, 11 Jul 2022 11:05:30 +0200
+Message-Id: <20220711090606.175784253@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,41 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit ffa7a9141bb70702744a312f904b190ca064bdd7 ]
+[ Upstream commit b44eeb8cbdf2b88f2844f11e4f263b0abed5b5b0 ]
 
-Both RADEON and NOUVEAU graphics cards are supported on RISC-V. Enabling
-the one and not the other does not make sense.
+After commit 'd430dffbe9dd ("mt76: mt7921: fix a possible race
+enabling/disabling runtime-pm")', runtime-pm is always disabled in the
+fw even if the user requests to enable it toggling debugfs node since
+mt7921_pm_interface_iter routine will use pm->enable to configure the fw.
+Fix the issue moving enable variable configuration before running
+mt7921_pm_interface_iter routine.
 
-As typically at most one of RADEON, NOUVEAU, or VIRTIO GPU support will be
-needed DRM drivers should be compiled as modules.
-
-Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Fixes: d430dffbe9dd ("mt76: mt7921: fix a possible race enabling/disabling runtime-pm")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/configs/defconfig | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 4ebc80315f01..c252fd5706d2 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -72,9 +72,10 @@ CONFIG_GPIOLIB=y
- CONFIG_GPIO_SIFIVE=y
- # CONFIG_PTP_1588_CLOCK is not set
- CONFIG_POWER_RESET=y
--CONFIG_DRM=y
--CONFIG_DRM_RADEON=y
--CONFIG_DRM_VIRTIO_GPU=y
-+CONFIG_DRM=m
-+CONFIG_DRM_RADEON=m
-+CONFIG_DRM_NOUVEAU=m
-+CONFIG_DRM_VIRTIO_GPU=m
- CONFIG_FRAMEBUFFER_CONSOLE=y
- CONFIG_USB=y
- CONFIG_USB_XHCI_HCD=y
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+index b9f25599227d..cfcf7964c688 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+@@ -291,13 +291,12 @@ mt7921_pm_set(void *data, u64 val)
+ 	pm->enable = false;
+ 	mt76_connac_pm_wake(&dev->mphy, pm);
+ 
++	pm->enable = val;
+ 	ieee80211_iterate_active_interfaces(mt76_hw(dev),
+ 					    IEEE80211_IFACE_ITER_RESUME_ALL,
+ 					    mt7921_pm_interface_iter, dev);
+ 
+ 	mt76_connac_mcu_set_deep_sleep(&dev->mt76, pm->ds_enable);
+-
+-	pm->enable = val;
+ 	mt76_connac_power_save_sched(&dev->mphy, pm);
+ out:
+ 	mutex_unlock(&dev->mt76.mutex);
 -- 
 2.35.1
 
