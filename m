@@ -2,147 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA7AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbiGKJFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        id S229616AbiGKJGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbiGKJFC (ORCPT
+        with ESMTP id S229623AbiGKJGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:05:02 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF8C2250B;
-        Mon, 11 Jul 2022 02:04:57 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id ED62922657;
-        Mon, 11 Jul 2022 09:04:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1657530295; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N0sttl0ghGHc4NwpD95kFENTiz7dJoV0LAQnPFHiJdM=;
-        b=BL1qicO8etdbohkZP4vyLCW676vYunHdTLI1gdP9tURjW1E98xCPcahrqy7wxqWOI68FLe
-        c8zJjGPCtD9StTRQZJcXN5JTocNr+KAwuOLc4clu41VIUYEUVp8NYL/vSt/vBa8jWnPyNi
-        bMEUTUmTBUkpbyBmOZ3QuU+ESNjE1BE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1657530295;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N0sttl0ghGHc4NwpD95kFENTiz7dJoV0LAQnPFHiJdM=;
-        b=9zsjIUp7S+NWZHRmxK9cY1E2nr6XZCekJCp6uEk6M6J7mIH7yAajZj/EJwaggiOgSsTzih
-        ACoVEt8icKCTThBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AC91313322;
-        Mon, 11 Jul 2022 09:04:55 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id hogsKbfny2LbNQAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Mon, 11 Jul 2022 09:04:55 +0000
-Message-ID: <b1990861-37a6-00b0-c955-ae325963593b@suse.de>
-Date:   Mon, 11 Jul 2022 11:04:55 +0200
+        Mon, 11 Jul 2022 05:06:43 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F50220F5;
+        Mon, 11 Jul 2022 02:06:42 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 26B96XxH054462;
+        Mon, 11 Jul 2022 04:06:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657530393;
+        bh=Jsfv6F5djTNvrM+DmDKOJgOO8ViuBYqVPEjeLGyCQVQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=c4C1U6oloKqe42eo+R9Da3UpkD1s0H6yZqOi+qoDgz4NixzilHQGo3U8xPnDAj6Pd
+         Od8yMAExRoj6WMHnwZ0uwvN89yGW1f/yioIcwirnieQaPp6fFZNjUgTezXQNjehe99
+         qtuELmgoMUNTRTX/NWJFUJIM2pq2RNCBdiX/TLzk=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 26B96XYV073090
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 11 Jul 2022 04:06:33 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 11
+ Jul 2022 04:06:33 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 11 Jul 2022 04:06:33 -0500
+Received: from [172.24.145.60] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 26B96TYq017843;
+        Mon, 11 Jul 2022 04:06:30 -0500
+Subject: Re: [PATCH] dt-bindings: crypto: ti,sa2ul: drop dma-coherent property
+To:     Rob Herring <robh@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
+        <vigneshr@ti.com>, <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <herbert@gondor.apana.org.au>, <j-keerthy@ti.com>
+References: <20220707110756.16169-1-j-choudhary@ti.com>
+ <1657315922.470955.1508205.nullmailer@robh.at.kernel.org>
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+Message-ID: <5d9c0f44-efb6-7a1a-e9e4-51a060701ec3@ti.com>
+Date:   Mon, 11 Jul 2022 14:36:29 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 0/5] drm/modes: Command line mode selection fixes and
- improvements
+In-Reply-To: <1657315922.470955.1508205.nullmailer@robh.at.kernel.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hans de Goede <hdegoede@redhat.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1657301107.git.geert@linux-m68k.org>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <cover.1657301107.git.geert@linux-m68k.org>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------K5h1qKOTkM9qgv7nA3vTW7TU"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------K5h1qKOTkM9qgv7nA3vTW7TU
-Content-Type: multipart/mixed; boundary="------------u3HmIz0aJJ4N0WCgApdFnNb9";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, David Airlie <airlied@linux.ie>,
- Daniel Vetter <daniel@ffwll.ch>, Hans de Goede <hdegoede@redhat.com>
-Cc: dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
- linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <b1990861-37a6-00b0-c955-ae325963593b@suse.de>
-Subject: Re: [PATCH 0/5] drm/modes: Command line mode selection fixes and
- improvements
-References: <cover.1657301107.git.geert@linux-m68k.org>
-In-Reply-To: <cover.1657301107.git.geert@linux-m68k.org>
+Hi Rob,
 
---------------u3HmIz0aJJ4N0WCgApdFnNb9
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+On 09/07/22 3:02 am, Rob Herring wrote:
+> On Thu, 07 Jul 2022 16:37:56 +0530, Jayesh Choudhary wrote:
+>> crypto driver itself is not dma-coherent. It is the dmaengine
+>> that moves data and the buffers are to be mapped to the
+>> dmaengine provider. So this property should be dropped.
+>>
+>> Fixes: 2ce9a7299bf6 ('dt-bindings: crypto: Add TI SA2UL crypto accelerator documentation')
+>> Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
+>> ---
+>>  .../devicetree/bindings/crypto/ti,sa2ul.yaml        | 13 -------------
+>>  1 file changed, 13 deletions(-)
+>>
+> 
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
+> 
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
+> 
+> Full log is available here: https://patchwork.ozlabs.org/patch/
+> 
+> 
+> crypto@4e00000: 'dma-coherent' does not match any of the regexes: '^rng@[a-f0-9]+$', 'pinctrl-[0-9]+'
+> 	arch/arm64/boot/dts/ti/k3-am6528-iot2050-basic.dtb
+> 	arch/arm64/boot/dts/ti/k3-am6528-iot2050-basic-pg2.dtb
+> 	arch/arm64/boot/dts/ti/k3-am6548-iot2050-advanced.dtb
+> 	arch/arm64/boot/dts/ti/k3-am6548-iot2050-advanced-pg2.dtb
+> 	arch/arm64/boot/dts/ti/k3-am654-base-board.dtb
+> 	arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb
+> 	arch/arm64/boot/dts/ti/k3-j721e-sk.dtb
+> 
 
-SGkNCg0KQW0gMDguMDcuMjIgdW0gMjA6MjEgc2NocmllYiBHZWVydCBVeXR0ZXJob2V2ZW46
-DQo+IAlIaSBhbGwsDQo+IA0KPiBUaGlzIHBhdGNoIHNlcmllcyBjb250YWlucyBmaXhlcyBh
-bmQgaW1wcm92ZW1lbnRzIGZvciBzcGVjaWZ5aW5nIHZpZGVvDQo+IG1vZGVzIG9uIHRoZSBr
-ZXJuZWwgY29tbWFuZCBsaW5lLg0KPiANCj4gVGhpcyBoYXMgYmVlbiB0ZXN0ZWQgb24gQVJB
-bnlNIHVzaW5nIGEgd29yay1pbi1wcm9ncmVzcyBBdGFyaSBEUk0gZHJpdmVyDQo+IChtb3Jl
-IGluZm8gYW5kIHJlbGF0ZWQgcGF0Y2hlcyBjYW4gYmUgZm91bmQgaW4gWzFdKS4NCj4gDQo+
-IFRoYW5rcyBmb3IgeW91ciBjb21tZW50cyENCg0KUGF0Y2hlcyAxIHRvIDMgbG9vayByZWFz
-b25hYmxlIHRvIG1lLiBGb3IgdGhvc2U6DQoNCkFja2VkLWJ5OiBUaG9tYXMgWmltbWVybWFu
-biA8dHppbW1lcm1hbm5Ac3VzZS5kZT4NCg0KUGxlYXNlIHNlZSBteSBxdWVzdGlvbnMgb24g
-cGF0Y2ggNC4NCg0KQmVzdCByZWdhcmRzDQpUaG9tYXMNCg0KPiANCj4gWzFdICJbUEFUQ0gg
-djMgMDAvMTBdIGRybTogQWRkIHN1cHBvcnQgZm9yIGxvdy1jb2xvciBmcmFtZSBidWZmZXIg
-Zm9ybWF0cyINCj4gICAgICBodHRwczovL2xvcmUua2VybmVsLm9yZy9yL2NvdmVyLjE2NTcy
-OTQ5MzEuZ2l0LmdlZXJ0QGxpbnV4LW02OGsub3JnDQo+IA0KPiBHZWVydCBVeXR0ZXJob2V2
-ZW4gKDUpOg0KPiAgICBkcm0vbW9kZXM6IHBhcnNlX2NtZGxpbmU6IEhhbmRsZSBlbXB0eSBt
-b2RlIG5hbWUgcGFydA0KPiAgICBkcm0vbW9kZXM6IEV4dHJhY3QgZHJtX21vZGVfcGFyc2Vf
-Y21kbGluZV9uYW1lZF9tb2RlKCkNCj4gICAgZHJtL21vZGVzOiBwYXJzZV9jbWRsaW5lOiBN
-YWtlIG1vZGUtPipzcGVjaWZpZWQgaGFuZGxpbmcgbW9yZSB1bmlmb3JtDQo+ICAgIGRybS9t
-b2RlczogQWRkIHN1cHBvcnQgZm9yIGRyaXZlci1zcGVjaWZpYyBuYW1lZCBtb2Rlcw0KPiAg
-ICBkcm0vbW9kZXM6IHBhcnNlX2NtZGxpbmU6IEFkZCBzdXBwb3J0IGZvciBuYW1lZCBtb2Rl
-cyBjb250YWluaW5nDQo+ICAgICAgZGFzaGVzDQo+IA0KPiAgIGRyaXZlcnMvZ3B1L2RybS9k
-cm1fbW9kZXMuYyB8IDU3ICsrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0N
-Cj4gICBpbmNsdWRlL2RybS9kcm1fY29ubmVjdG9yLmggfCAxMCArKysrKysrDQo+ICAgMiBm
-aWxlcyBjaGFuZ2VkLCA1MCBpbnNlcnRpb25zKCspLCAxNyBkZWxldGlvbnMoLSkNCj4gDQoN
-Ci0tIA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNV
-U0UgU29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0
-MDkgTsO8cm5iZXJnLCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNj
-aMOkZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
+These warnings are expected. dt-node fixes need to be there.
+I will send the dt-node fixes once this patch gets in due to
+dependency. Or should I proceed any other way?
 
---------------u3HmIz0aJJ4N0WCgApdFnNb9--
-
---------------K5h1qKOTkM9qgv7nA3vTW7TU
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmLL57cFAwAAAAAACgkQlh/E3EQov+C4
-+g//ZY4pBbx+ZYf4euN6IfqV4Ve3NVVXKbT9weRRRosL0DGRYpluLqGgtmlenBzGh3ak3X6IQ8pH
-5ovyQDGZXKplAGATH4r1qRZ/JhpKWrON/Mm9b0YIMkkrE5NnyKMBHuemVRjEXmQaP+GPrrzkcpJZ
-fa8EpGNnM13UD/A0eR5vyda4goYeiFcI5dMECOaOrPEg18SIyEPsIb5dbCQJEE7cOVwzePu7Y6Nb
-2+C6RdKPuH6ndp41gAnVMAH8tw5KsZTEnZKoem6QBn5vm0CbxsJv+p26pTbtFVFyWZwsg3sxu19J
-rAQQXuVwqWwb2a1ZBCA/Ze8jZOstjwE8fyPyTU6noE0cqte9r4JnTjK9GVi8V9LeZzn/laNagQd2
-QD6Hf9L+K5b3JNI0tO4UUNl7rjoXT3XhiY+QVY22RiRDtAzA1Br2PlOrhCvhU1ybqOLJeXIeQ5qU
-ogHc4vR8HQUQQylvZdGhfFlNEoYowndWGxF8IpKq2olBxSD98E2X3rni0g2vI46B3UTGrUU/DxtW
-Gv4GjlHtjEcYJ0/KB0xmvbych0WFv6VuZ4sX9bubDFJjeT8/y7zlqIsItxx8Z9VaZat/ydF1K8Wo
-5uVfK/KSBwhfEWC6/9Ky6+cBJovW2pSVAtdSDKX4bF1ARQGgCvXSXzpAweoPSoZv0+jJkQNhR8EA
-mFM=
-=2hAh
------END PGP SIGNATURE-----
-
---------------K5h1qKOTkM9qgv7nA3vTW7TU--
+Thanks,
+Jayesh
