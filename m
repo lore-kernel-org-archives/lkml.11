@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD74C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 268BCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232673AbiGKJcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        id S232909AbiGKJdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232640AbiGKJcN (ORCPT
+        with ESMTP id S231447AbiGKJcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:32:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D013C4330F;
-        Mon, 11 Jul 2022 02:17:25 -0700 (PDT)
+        Mon, 11 Jul 2022 05:32:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BB17822A;
+        Mon, 11 Jul 2022 02:17:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB32D61243;
-        Mon, 11 Jul 2022 09:17:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3689C341C0;
-        Mon, 11 Jul 2022 09:17:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 774B1B80E74;
+        Mon, 11 Jul 2022 09:17:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4747C341CE;
+        Mon, 11 Jul 2022 09:17:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531044;
-        bh=sHcfpShKWSDRKQYb8GObnyX1seYyzwG9Pz2xF486Y9M=;
+        s=korg; t=1657531050;
+        bh=YVnFkwa8Y6Ua+2s8C/87eVG7a1hYAbDX9XzAqUxF8pU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q3OXiC661ocFEmfXf4AXNmQUHiaaq5j5N+YfRtYZWsF0qYphlBZidyApwbkLMXtRW
-         23fZCl26JefuXfsoBGCZwfn6nFUlTEFO69T8pvu/F3VKBth3yUp8mY6xdTSh1PL4oy
-         pkTClaSO116nQJH/oezYuUaYSLEzwhU2KEc4v54U=
+        b=KKpre+DunpdAOKlOFGvQ+Mm3GmoyY+9EwTJYDXmd3jvUduZQtB7GYLuAYsQet8jN7
+         3aluaxs5hDFKcdJZXzDTSxXMR1n9afjjyZpKSy5GAFydcatjFEhXo4dBGlo29+/s3L
+         7QMiqQy8M65zT0zYuYKfV9WGKL4lZ7N8ZT0LC46Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 074/112] ARM: dts: at91: sama5d2_icp: fix eeprom compatibles
-Date:   Mon, 11 Jul 2022 11:07:14 +0200
-Message-Id: <20220711090551.672969978@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Wang <peter.wang@mediatek.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.18 038/112] PM: runtime: Fix supplier device management during consumer probe
+Date:   Mon, 11 Jul 2022 11:06:38 +0200
+Message-Id: <20220711090550.653474614@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,54 +48,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 416ce193d73a734ded6d09fe141017b38af1c567 ]
+commit 887371066039011144b4a94af97d9328df6869a2 upstream.
 
-The eeprom memories on the board are microchip 24aa025e48, which are 2 Kbits
-and are compatible with at24c02 not at24c32.
+Because pm_runtime_get_suppliers() bumps up the rpm_active counter
+of each device link to a supplier of the given device in addition
+to bumping up the supplier's PM-runtime usage counter, a runtime
+suspend of the consumer device may case the latter to go down to 0
+when pm_runtime_put_suppliers() is running on a remote CPU.  If that
+happens after pm_runtime_put_suppliers() has released power.lock for
+the consumer device, and a runtime resume of that device takes place
+immediately after it, before pm_runtime_put() is called for the
+supplier, that pm_runtime_put() call may cause the supplier to be
+suspended even though the consumer is active.
 
-Fixes: 68a95ef72cefe ("ARM: dts: at91: sama5d2-icp: add SAMA5D2-ICP")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220607090455.80433-2-eugen.hristev@microchip.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To prevent that from happening, modify pm_runtime_get_suppliers() to
+call pm_runtime_get_sync() for the given device's suppliers without
+touching the rpm_active counters of the involved device links
+Accordingly, modify pm_runtime_put_suppliers() to call pm_runtime_put()
+for the given device's suppliers without looking at the rpm_active
+counters of the device links at hand.  [This is analogous to what
+happened before commit 4c06c4e6cf63 ("driver core: Fix possible
+supplier PM-usage counter imbalance").]
+
+Since pm_runtime_get_suppliers() sets supplier_preactivated for each
+device link where the supplier's PM-runtime usage counter has been
+incremented and pm_runtime_put_suppliers() calls pm_runtime_put() for
+the suppliers whose device links have supplier_preactivated set, the
+PM-runtime usage counter is balanced for each supplier and this is
+independent of the runtime suspend and resume of the consumer device.
+
+However, in case a device link with DL_FLAG_PM_RUNTIME set is dropped
+during the consumer device probe, so pm_runtime_get_suppliers() bumps
+up the supplier's PM-runtime usage counter, but it cannot be dropped by
+pm_runtime_put_suppliers(), make device_link_release_fn() take care of
+that.
+
+Fixes: 4c06c4e6cf63 ("driver core: Fix possible supplier PM-usage counter imbalance")
+Reported-by: Peter Wang <peter.wang@mediatek.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Peter Wang <peter.wang@mediatek.com>
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/at91-sama5d2_icp.dts | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/base/core.c          |   10 ++++++++++
+ drivers/base/power/runtime.c |   14 +-------------
+ 2 files changed, 11 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/boot/dts/at91-sama5d2_icp.dts b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-index 806eb1d911d7..164201a8fbf2 100644
---- a/arch/arm/boot/dts/at91-sama5d2_icp.dts
-+++ b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-@@ -329,21 +329,21 @@
- 	status = "okay";
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -486,6 +486,16 @@ static void device_link_release_fn(struc
+ 	device_link_synchronize_removal();
  
- 	eeprom@50 {
--		compatible = "atmel,24c32";
-+		compatible = "atmel,24c02";
- 		reg = <0x50>;
- 		pagesize = <16>;
- 		status = "okay";
- 	};
+ 	pm_runtime_release_supplier(link);
++	/*
++	 * If supplier_preactivated is set, the link has been dropped between
++	 * the pm_runtime_get_suppliers() and pm_runtime_put_suppliers() calls
++	 * in __driver_probe_device().  In that case, drop the supplier's
++	 * PM-runtime usage counter to remove the reference taken by
++	 * pm_runtime_get_suppliers().
++	 */
++	if (link->supplier_preactivated)
++		pm_runtime_put_noidle(link->supplier);
++
+ 	pm_request_idle(link->supplier);
  
- 	eeprom@52 {
--		compatible = "atmel,24c32";
-+		compatible = "atmel,24c02";
- 		reg = <0x52>;
- 		pagesize = <16>;
- 		status = "disabled";
- 	};
+ 	put_device(link->consumer);
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -1737,7 +1737,6 @@ void pm_runtime_get_suppliers(struct dev
+ 		if (link->flags & DL_FLAG_PM_RUNTIME) {
+ 			link->supplier_preactivated = true;
+ 			pm_runtime_get_sync(link->supplier);
+-			refcount_inc(&link->rpm_active);
+ 		}
  
- 	eeprom@53 {
--		compatible = "atmel,24c32";
-+		compatible = "atmel,24c02";
- 		reg = <0x53>;
- 		pagesize = <16>;
- 		status = "disabled";
--- 
-2.35.1
-
+ 	device_links_read_unlock(idx);
+@@ -1757,19 +1756,8 @@ void pm_runtime_put_suppliers(struct dev
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+ 				device_links_read_lock_held())
+ 		if (link->supplier_preactivated) {
+-			bool put;
+-
+ 			link->supplier_preactivated = false;
+-
+-			spin_lock_irq(&dev->power.lock);
+-
+-			put = pm_runtime_status_suspended(dev) &&
+-			      refcount_dec_not_one(&link->rpm_active);
+-
+-			spin_unlock_irq(&dev->power.lock);
+-
+-			if (put)
+-				pm_runtime_put(link->supplier);
++			pm_runtime_put(link->supplier);
+ 		}
+ 
+ 	device_links_read_unlock(idx);
 
 
