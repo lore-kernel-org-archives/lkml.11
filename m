@@ -2,135 +2,368 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 01:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6728EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 01:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbiGKBcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 21:32:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
+        id S229740AbiGKBcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 21:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiGKBcA (ORCPT
+        with ESMTP id S229743AbiGKBcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 21:32:00 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020023.outbound.protection.outlook.com [52.101.61.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D701217042;
-        Sun, 10 Jul 2022 18:31:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=igBAO4AfOGcLiflxT1EIGsoRlOtq5oBswfI451Cl6bX4JVZSmrjDmoirbFkG8Zcvmv7n5ncm5p0f/9w6DrGuCTq6uyeCxWq/IWX4PHtP0iKkRlb3e265bCgB9/s36POhA82zlPboZ9lOqPq78/PLtAIHZqnL9TldMQpsRxWCMnGqyZ9qcf1i0KPvH5Dj95fVcpyuZBecd8yDScIg3WvHDqM5qPdUCCedMoPYKWDsAPNBdM8flsb6ISDdv1cwkvMQJ6c0x7Dpyx0p6ljidTA/OAbPNBbXxXge/jX3dZV/luy56tyTc2dXO/SwiJdfTjJLIs3yswLNgo8J6KabVLRN1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CEyHmBfTCb1sTZhgNdmBxPopA2Asgle0ajr/uGlo/R4=;
- b=QyhbmZePrscMGHKxzM87IuTAvJzX/jMwx7d6zkq/yxIWjXkTWlqOPXvb99kHDid7VQnq22arzFS0MPKGpPJ7EtvdPZIwK+/mg4w8vBTwdapjUfZqOs9bNMn+SjDt7N/p8kvR+M6mYc3Y9AsFTfvGFakA3MjvyySv0thBfjOLymdgcFKulauyMz3Iir8MVuoQ8Fpf08e62Jo9bzk9pAquWiQmPoqigGklTYf/bvQy2KuzGVBsnfrvcTSkF8f3/tEv6NvzLLdsC8CZB4HMLhzTVRanfMcKCl/6IaBNzE7oBmVuLrhcB6zKj9mcyZ9SOsqfN76BCjqvfJgQgkEi4r4bjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CEyHmBfTCb1sTZhgNdmBxPopA2Asgle0ajr/uGlo/R4=;
- b=cUZCxDr8SqduQ27MdD0hmXeqceEDMGqSpUCNSmqROg7XmqXP2FJdipSduu0BFL2JUj4JZvZUGzx2iUXNvUAYBs5LYkOmV7lr7auwe2JLBkxKJ29Pg+7RI0HPRbDsoJHMbnOfrtjVQ/XidkvZHquXfBXKy6RJ+ub2137sjdy573Q=
-Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
- (2603:10b6:805:107::9) by MN0PR21MB3508.namprd21.prod.outlook.com
- (2603:10b6:208:3d3::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.2; Mon, 11 Jul
- 2022 01:31:57 +0000
-Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
- ([fe80::59ea:cdde:5229:d4f0]) by SN6PR2101MB1327.namprd21.prod.outlook.com
- ([fe80::59ea:cdde:5229:d4f0%7]) with mapi id 15.20.5458.003; Mon, 11 Jul 2022
- 01:31:57 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Long Li <longli@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [Patch v4 08/12] net: mana: Record port number in netdev
-Thread-Topic: [Patch v4 08/12] net: mana: Record port number in netdev
-Thread-Index: AQHYgSXZgFZeGzZvSUSVSDNCEYcOwa12/BuQ
-Date:   Mon, 11 Jul 2022 01:31:56 +0000
-Message-ID: <SN6PR2101MB1327C18BB9EE8FCC090F15E6BF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
-References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
- <1655345240-26411-9-git-send-email-longli@linuxonhyperv.com>
-In-Reply-To: <1655345240-26411-9-git-send-email-longli@linuxonhyperv.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=bd39efa9-e617-410e-8cd3-c56dc4a4d996;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-10T01:48:49Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fd574e9e-0b77-4cd2-136c-08da62dd24b1
-x-ms-traffictypediagnostic: MN0PR21MB3508:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: h9aK6y2DzjTmcnx6XNiPjpCm58DpVjg3EyAZ0yjvMQ+8WP8SaCRI3t0NV7hgq0eO7/ZDajzXYo4E00RPIEiI+w0GXSuwpJ0jDBhTpjzREQLLHQxoC5xPymZSFUHxaz+FpRsjDtv0W8IR8p3qZ8jLWUdE9EsCjRQSvFvAa69IfdtusnC1Dhpr9qwkU8POmcFKnpaNJyQDJJEBdg39fb/F6o/A9FSvh3TnbEP8n9QdfGcCAqw8QOBb97JdKviNgZ56iXdSqyZQQySzknbl6+Sc67fJPup04WzXpSWrTh1tT46ANlBVNiOu9+4ROoZjkAm/SYd+o8NBhbPsGu1lL1PhgtJalgrjJvk1SnW3e+9NsYpNwc3m6vk68SjEtj5BnhHJ9bKmuiulRi0t2f3LT3lC/DjC5p4+QSFp85BMtoMZilWZMF+T+j8Tn8OsXswHBiY63V059Bieprysk22MCnCB0cUDh9YDzb9RxsymFAXDW9K9y4UkXtac507ON7lr3m35U1eNkFua4x/n4gCfvVW19Y4di5dj734u9CR4NWhHeK+rsxG8mHHxpVYHlPR0aFLew/wol7AEaOxKen4lLdZoxbl+NUFWHiIFMAm0lAGQoBzVoeXTXgmriUicqrgEPclRqXc4iYwQoP5v0QiVHmJODjijibJOw+WsgPcrrXB8kD5xF1nxKfUldtkfwr8mRsRqQ7W3pV5kCQ9oPWk18yn9p5SRemfM/fKJ1dKZELJyR4xax0mTyzaI0AYPC1LYcd4q3glOk4GEhwUZhaF1TUDUSmlq9cINGJNvjtAaUTwu2TSDH8fyLBH94XIbGHQUEorUy9xfLhablfygE2Gi9Wql7kP7WpsvPPZYZqM0auhjIvw/eGiidsgmiG69HQvdarPx
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR2101MB1327.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(366004)(136003)(396003)(376002)(451199009)(2906002)(6506007)(558084003)(55016003)(7696005)(41300700001)(33656002)(186003)(26005)(8990500004)(9686003)(71200400001)(66446008)(66476007)(66556008)(66946007)(64756008)(54906003)(316002)(110136005)(8676002)(38070700005)(10290500003)(86362001)(8936002)(6636002)(52536014)(4326008)(5660300002)(7416002)(478600001)(122000001)(38100700002)(921005)(82950400001)(76116006)(82960400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?IDARfNMO208d3Z4dtSNeWtXHDQ1KvMTf/m5aqcf7nIGzWXkuG8oWrfmHfhk9?=
- =?us-ascii?Q?a0uKTZAa276EYd+dx/KVW03Fs51f0ER1xHPoY7hg6iOc/WfO2k/VZeh+L3lS?=
- =?us-ascii?Q?DSs3eIuOQ50+kk2Ii0qUM69Ib6HoYgBWSmOSQ6lCy/XPQgYrfS08XnCWdGkJ?=
- =?us-ascii?Q?MirU1Se7KvCv8ynVzSId+zNEgRedBCtdCX58vzN2MKDDelJpiwhGAMzC9FQD?=
- =?us-ascii?Q?4eCQd+TzNZziplzxjVW8DK2/VOvC+tp+go+QKKzCkw8gGX8fKZMbmJNec9T5?=
- =?us-ascii?Q?F63Biplv3R/SGqvmoCPhW/LfH+Vz6J15RNGb4WJ/DwuTLHmIe88WB0yB4RN6?=
- =?us-ascii?Q?9p9knU5Ika+DszEpJKgld5jvOT+QNW3ZBPp5QIq4isCj9PE95rz+JhoysO4D?=
- =?us-ascii?Q?+aB2S0AcEiTKBhNhsZVrcyKF2RcM11SPmmXmtCjyUcwuCNE02JwBhDdjhebN?=
- =?us-ascii?Q?wXERAI1al8tn8RKDGokgnmpjN9sEvte0j3GaLdseFU6grwC0uYbVl6cEYU/4?=
- =?us-ascii?Q?NMPpPpOCiQ4I/ErT+hWK4Js2zP66VDKJOChNmF58kppzNeJMsjZMIPAYCxSU?=
- =?us-ascii?Q?ifFX1GhIuNct53qTQV7VknfG5klr2J6q/ITGkqSEoFYAWe58nkS+iCMs5DGM?=
- =?us-ascii?Q?g+9UUT0YUQaGulkp9NAXDQo6cugsFx0LX6618c1Hs+uhflkLx7ax2C3+wpxr?=
- =?us-ascii?Q?V8SSEQNOJp9NBfSSL99TqsIFsOiu4iSXkqBhIITr0NAP7AgrXDliPMmFR0ud?=
- =?us-ascii?Q?2oW+zTlagauGRGzNVlL5urBud+CiEd0wIA2WbubawTYs6J92PVCAGSW6c2ng?=
- =?us-ascii?Q?7st82ngljQMByPJDldhR4uerpi63v9gXjZz+O8Eo11B/g4NiDUdomucZDfN9?=
- =?us-ascii?Q?eS2bvwNNab0Tsl0pQ0+Dh54AfxNmmbNtRHV22Q897XG/KK1qbPa8OVNmEOSc?=
- =?us-ascii?Q?/bQStXzXW+BfFHNqWszzSddcCRNmtb5A2zk42UvwoVfCfnoVvPjIfs9RkBkO?=
- =?us-ascii?Q?C3OWs168ffCWC33WZ2/O4ENQCWHPw0sJybkvw2zLgxOKAC6ipE/XXYPBdbQj?=
- =?us-ascii?Q?dnAyGwpjj49AtRIgobd2zsR3/RVvrKJCgvBux5WCFL7C0D2rZD5UtBwCmP3F?=
- =?us-ascii?Q?+bq0IER6yM9t/gMvuM6KpOY0NRr+OkB6bLrkDzlePpj+GbIsjJoI+uHImBSo?=
- =?us-ascii?Q?mIDwnxnX2WvGqC1Bi2mRRX7/jzIgG7BBYwqzm0irIh9tAoS/6h79BANSJ2ac?=
- =?us-ascii?Q?MkFxP2UdFlLPkdlFQNathpEMpxYpV0Q1P9bl4vGY2MZUELSb+6FtatuORoDk?=
- =?us-ascii?Q?R2TVzrlbnPOAsFxaxRD9Px9XHnOyFvvoHVEVVXY8VK+3KwJ1ddGmXe8vhJcG?=
- =?us-ascii?Q?A+5O5OlKyxwMLxw0mTrAhVA1y/cJsIniSTPGrVgBn9OTJfRbcVGYoa9KrFth?=
- =?us-ascii?Q?PFk4zkM0DM5xCKNUt9wnuTvvm7XG6kN8noUTpZ3SbHNfMSCem8xurv1Liixd?=
- =?us-ascii?Q?TMw67Y5mFcG1cID4oraT2I3qjnrzgs2PHnbT9mZo10/LDuFolXFT9chOnZBD?=
- =?us-ascii?Q?/5nWTxDY0D1gl0KYgdN+RiGKMs3rjX4/PHSzGSy/?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Sun, 10 Jul 2022 21:32:11 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40806175A0
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 18:32:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657503128; x=1689039128;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Do+BW5NtmQCWf25mXM2YMS+0i+lDGjpkd8tw8rKmEiU=;
+  b=DeduY02A63yO5GGyqMbHj9yzFuO0kLQCtjAXF8zdHq6P90qY6BJoCl8Z
+   BI2HFDOsbOl5txjYIt5oVzTOp57Y1UWBbuhtwDKbv6QdddVilJE3i+uAp
+   fAjtt6x1H0w9VpJoNRD84DY+Ojy+AYJO7iig/jDo3C3i7OHi3dPw67pWM
+   5i/q5m6/Mr27ifDELnhoK6jZgrnVB5staJM9YGngvHkFXKzg+d0EjvSUB
+   VuKLb5LT8Qo5SU2tASZVZ66auLa3sBMYonp1JA8qpxVbaH3nJ5cKGQQpA
+   UjN1kSK0uhOI9BLiKjj4f0oUPGrliyEiApHJv2mGdHOr5tVVhht5BmoSc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="264965455"
+X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
+   d="scan'208";a="264965455"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 18:32:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,261,1650956400"; 
+   d="scan'208";a="652263497"
+Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 10 Jul 2022 18:32:06 -0700
+Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAiHN-00006z-Im;
+        Mon, 11 Jul 2022 01:32:05 +0000
+Date:   Mon, 11 Jul 2022 09:31:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Subject: drivers/gpu/drm/bridge/synopsys/dw-hdmi.c:143:8: warning: Excessive
+ padding in 'struct dw_hdmi' (36 padding bytes, where 4 is optimal). Optimal
+ fields order: next_bridge, audio, cec, dev, isfr_clk, iahb_clk, cec_clk,
+ i2c, plat_data, ddc, regs, pinctrl, de...
+Message-ID: <202207110750.5CHg2vAB-lkp@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR2101MB1327.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd574e9e-0b77-4cd2-136c-08da62dd24b1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 01:31:56.8912
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hkQhAjpAf29uspazY8iR9AdmYTpkSv+m0aibOpiXDfeGwWEtwshUkDetEMnOfO+Vovns0Ndk7ZIK9I1CptHM/Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3508
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: longli@linuxonhyperv.com <longli@linuxonhyperv.com>
-> Sent: Wednesday, June 15, 2022 7:07 PM
-> ...
-> The port number is useful for user-mode application to identify this
-> net device based on port index. Set to the correct value in ndev.
->=20
-> Signed-off-by: Long Li <longli@microsoft.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   952c53cd357c71338a59d444933ed48a879229e1
+commit: 5bcc48395b9f35dace564de47fcf434cdb67a8e1 drm: bridge: dw-hdmi: Attach to next bridge if available
+date:   12 months ago
+config: s390-randconfig-c005-20220703 (https://download.01.org/0day-ci/archive/20220711/202207110750.5CHg2vAB-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f7a80c3d08d4821e621fc88d6a2e435291f82dff)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5bcc48395b9f35dace564de47fcf434cdb67a8e1
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 5bcc48395b9f35dace564de47fcf434cdb67a8e1
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=s390 clang-analyzer 
 
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+clang-analyzer warnings: (new ones prefixed by >>)
+           ^
+   include/linux/irqflags.h:238:34: note: expanded from macro 'local_irq_restore'
+   #define local_irq_restore(flags) do { raw_local_irq_restore(flags); } while (0)
+                                    ^
+   include/linux/spinlock_api_smp.h:161:2: note: Calling 'should_resched'
+           preempt_enable();
+           ^
+   include/linux/preempt.h:195:15: note: expanded from macro 'preempt_enable'
+           if (unlikely(preempt_count_dec_and_test())) \
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/preempt.h:160:27: note: expanded from macro 'preempt_count_dec_and_test'
+           ({ preempt_count_sub(1); should_resched(0); })
+                                    ^~~~~~~~~~~~~~~~~
+   include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
+   # define unlikely(x)    __builtin_expect(!!(x), 0)
+                                               ^
+   arch/s390/include/asm/preempt.h:67:18: note: Left side of '||' is false
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:21: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+                              ^
+   include/linux/compiler_types.h:290:3: note: expanded from macro '__native_word'
+           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
+            ^
+   arch/s390/include/asm/preempt.h:67:18: note: Left side of '||' is false
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:21: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+                              ^
+   include/linux/compiler_types.h:290:3: note: expanded from macro '__native_word'
+           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
+            ^
+   arch/s390/include/asm/preempt.h:67:18: note: Left side of '||' is true
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:21: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+                              ^
+   include/linux/compiler_types.h:291:28: note: expanded from macro '__native_word'
+            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
+                                     ^
+   arch/s390/include/asm/preempt.h:67:18: note: Taking false branch
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:2: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+           ^
+   include/linux/compiler_types.h:328:2: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ^
+   include/linux/compiler_types.h:316:2: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ^
+   include/linux/compiler_types.h:308:3: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                   ^
+   arch/s390/include/asm/preempt.h:67:18: note: Loop condition is false.  Exiting loop
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:2: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+           ^
+   include/linux/compiler_types.h:328:2: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ^
+   include/linux/compiler_types.h:316:2: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ^
+   include/linux/compiler_types.h:306:2: note: expanded from macro '__compiletime_assert'
+           do {                                                            \
+           ^
+   arch/s390/include/asm/preempt.h:67:18: note: Dereference of null pointer
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:50:2: note: expanded from macro 'READ_ONCE'
+           __READ_ONCE(x);                                                 \
+           ^
+   include/asm-generic/rwonce.h:44:24: note: expanded from macro '__READ_ONCE'
+   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
+                           ^
+   include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
+   # define unlikely(x)    __builtin_expect(!!(x), 0)
+                                               ^
+>> drivers/gpu/drm/bridge/synopsys/dw-hdmi.c:143:8: warning: Excessive padding in 'struct dw_hdmi' (36 padding bytes, where 4 is optimal). Optimal fields order: next_bridge, audio, cec, dev, isfr_clk, iahb_clk, cec_clk, i2c, plat_data, ddc, regs, pinctrl, default_state, unwedge_state, curr_conn, regm, enable_audio, disable_audio, cec_notifier, plugged_cb, codec_dev, phy, mutex, audio_mutex, cec_notifier_mutex, previous_mode, bridge, connector, version, vic, force, audio_lock, sample_rate, audio_cts, audio_n, reg_shift, last_connector_result, hdmi_data, sink_is_hdmi, sink_has_audio, disabled, bridge_is_on, rxsense, phy_mask, mc_clkdis, audio_enable, edid, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct dw_hdmi {
+   ~~~~~~~^~~~~~~~~
+   drivers/gpu/drm/bridge/synopsys/dw-hdmi.c:143:8: note: Excessive padding in 'struct dw_hdmi' (36 padding bytes, where 4 is optimal). Optimal fields order: next_bridge, audio, cec, dev, isfr_clk, iahb_clk, cec_clk, i2c, plat_data, ddc, regs, pinctrl, default_state, unwedge_state, curr_conn, regm, enable_audio, disable_audio, cec_notifier, plugged_cb, codec_dev, phy, mutex, audio_mutex, cec_notifier_mutex, previous_mode, bridge, connector, version, vic, force, audio_lock, sample_rate, audio_cts, audio_n, reg_shift, last_connector_result, hdmi_data, sink_is_hdmi, sink_has_audio, disabled, bridge_is_on, rxsense, phy_mask, mc_clkdis, audio_enable, edid, consider reordering the fields or adding explicit padding members
+   struct dw_hdmi {
+   ~~~~~~~^~~~~~~~~
+   Suppressed 20 warnings (8 in non-user code, 12 with check filters).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   18 warnings generated.
+   arch/s390/include/asm/preempt.h:67:18: warning: Dereference of null pointer [clang-analyzer-core.NullDereference]
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:50:2: note: expanded from macro 'READ_ONCE'
+           __READ_ONCE(x);                                                 \
+           ^
+   include/asm-generic/rwonce.h:44:24: note: expanded from macro '__READ_ONCE'
+   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
+                           ^
+   drivers/dma-buf/dma-buf.c:425:6: note: Assuming field 'name' is null
+           if (dmabuf->name)
+               ^~~~~~~~~~~~
+   drivers/dma-buf/dma-buf.c:425:2: note: Taking false branch
+           if (dmabuf->name)
+           ^
+   drivers/dma-buf/dma-buf.c:427:2: note: Calling 'spin_unlock'
+           spin_unlock(&dmabuf->name_lock);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/spinlock.h:394:2: note: Calling '__raw_spin_unlock'
+           raw_spin_unlock(&lock->rlock);
+           ^
+   include/linux/spinlock.h:284:32: note: expanded from macro 'raw_spin_unlock'
+   #define raw_spin_unlock(lock)           _raw_spin_unlock(lock)
+                                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/spinlock_api_smp.h:71:32: note: expanded from macro '_raw_spin_unlock'
+   #define _raw_spin_unlock(lock) __raw_spin_unlock(lock)
+                                  ^~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/spinlock_api_smp.h:150:2: note: Loop condition is false.  Exiting loop
+           spin_release(&lock->dep_map, _RET_IP_);
+           ^
+   include/linux/lockdep.h:540:30: note: expanded from macro 'spin_release'
+   #define spin_release(l, i)                      lock_release(l, i)
+                                                   ^
+   include/linux/lockdep.h:360:31: note: expanded from macro 'lock_release'
+   # define lock_release(l, i)                     do { } while (0)
+                                                   ^
+   include/linux/spinlock_api_smp.h:152:2: note: Calling 'should_resched'
+           preempt_enable();
+           ^
+   include/linux/preempt.h:195:15: note: expanded from macro 'preempt_enable'
+           if (unlikely(preempt_count_dec_and_test())) \
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/preempt.h:160:27: note: expanded from macro 'preempt_count_dec_and_test'
+           ({ preempt_count_sub(1); should_resched(0); })
+                                    ^~~~~~~~~~~~~~~~~
+   include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
+   # define unlikely(x)    __builtin_expect(!!(x), 0)
+                                               ^
+   arch/s390/include/asm/preempt.h:67:18: note: Left side of '||' is false
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:21: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+                              ^
+   include/linux/compiler_types.h:290:3: note: expanded from macro '__native_word'
+           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
+            ^
+   arch/s390/include/asm/preempt.h:67:18: note: Left side of '||' is false
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:21: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+                              ^
+   include/linux/compiler_types.h:290:3: note: expanded from macro '__native_word'
+           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
+            ^
+   arch/s390/include/asm/preempt.h:67:18: note: Left side of '||' is true
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:21: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+                              ^
+   include/linux/compiler_types.h:291:28: note: expanded from macro '__native_word'
+            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
+                                     ^
+   arch/s390/include/asm/preempt.h:67:18: note: Taking false branch
+           return unlikely(READ_ONCE(S390_lowcore.preempt_count) ==
+                           ^
+   include/asm-generic/rwonce.h:49:2: note: expanded from macro 'READ_ONCE'
+           compiletime_assert_rwonce_type(x);                              \
+           ^
+   include/asm-generic/rwonce.h:36:2: note: expanded from macro 'compiletime_assert_rwonce_type'
+           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
+
+vim +143 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+
+faba6c3cff1776 drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-01-17  142  
+b21f4b658df885 drivers/gpu/drm/bridge/dw_hdmi.c          Andy Yan              2014-12-05 @143  struct dw_hdmi {
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  144  	struct drm_connector connector;
+70c963ec4f15a1 drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-01-17  145  	struct drm_bridge bridge;
+5bcc48395b9f35 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Laurent Pinchart      2020-05-14  146  	struct drm_bridge *next_bridge;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  147  
+be41fc55f1aa3c drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-01-17  148  	unsigned int version;
+be41fc55f1aa3c drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-01-17  149  
+be41fc55f1aa3c drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-01-17  150  	struct platform_device *audio;
+a616e63c56ef35 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Russell King          2017-08-02  151  	struct platform_device *cec;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  152  	struct device *dev;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  153  	struct clk *isfr_clk;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  154  	struct clk *iahb_clk;
+ebe32c3e282a62 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Pierre-Hugues Husson  2017-11-25  155  	struct clk *cec_clk;
+3efc2fa3b777e6 drivers/gpu/drm/bridge/dw-hdmi.c          Vladimir Zapolskiy    2016-08-24  156  	struct dw_hdmi_i2c *i2c;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  157  
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  158  	struct hdmi_data_info hdmi_data;
+b21f4b658df885 drivers/gpu/drm/bridge/dw_hdmi.c          Andy Yan              2014-12-05  159  	const struct dw_hdmi_plat_data *plat_data;
+b21f4b658df885 drivers/gpu/drm/bridge/dw_hdmi.c          Andy Yan              2014-12-05  160  
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  161  	int vic;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  162  
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  163  	u8 edid[HDMI_EDID_LEN];
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  164  
+f1585f6e29f5ab drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-03-06  165  	struct {
+f1585f6e29f5ab drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-03-06  166  		const struct dw_hdmi_phy_ops *ops;
+f1585f6e29f5ab drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-03-06  167  		const char *name;
+f1585f6e29f5ab drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-03-06  168  		void *data;
+f1585f6e29f5ab drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-03-06  169  		bool enabled;
+f1585f6e29f5ab drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-03-06  170  	} phy;
+faba6c3cff1776 drivers/gpu/drm/bridge/dw-hdmi.c          Laurent Pinchart      2017-01-17  171  
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  172  	struct drm_display_mode previous_mode;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  173  
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  174  	struct i2c_adapter *ddc;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  175  	void __iomem *regs;
+05b1342f5014b7 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-07-21  176  	bool sink_is_hdmi;
+f709ec07e38a71 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-07-21  177  	bool sink_has_audio;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  178  
+50f9495efe308e drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Douglas Anderson      2019-05-02  179  	struct pinctrl *pinctrl;
+50f9495efe308e drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Douglas Anderson      2019-05-02  180  	struct pinctrl_state *default_state;
+50f9495efe308e drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Douglas Anderson      2019-05-02  181  	struct pinctrl_state *unwedge_state;
+50f9495efe308e drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Douglas Anderson      2019-05-02  182  
+b872a8e16b3fb1 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-06-05  183  	struct mutex mutex;		/* for state below and previous_mode */
+381f05a7a8428c drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-06-05  184  	enum drm_connector_force force;	/* mutex-protected force state */
+ca7b6b7176ffea drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Laurent Pinchart      2020-05-26  185  	struct drm_connector *curr_conn;/* current connector (only valid when !disabled) */
+b872a8e16b3fb1 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-06-05  186  	bool disabled;			/* DRM has disabled our bridge */
+381f05a7a8428c drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-06-05  187  	bool bridge_is_on;		/* indicates the bridge is on */
+aeac23bda87fd9 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-06-05  188  	bool rxsense;			/* rxsense state */
+aeac23bda87fd9 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-06-05  189  	u8 phy_mask;			/* desired phy int mask settings */
+7cc4ab225ae30b drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Russell King          2017-07-31  190  	u8 mc_clkdis;			/* clock disable register */
+b872a8e16b3fb1 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-06-05  191  
+b90120a9660884 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-03-27  192  	spinlock_t audio_lock;
+6bcf495317857e drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-02-02  193  	struct mutex audio_mutex;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  194  	unsigned int sample_rate;
+b90120a9660884 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-03-27  195  	unsigned int audio_cts;
+b90120a9660884 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-03-27  196  	unsigned int audio_n;
+b90120a9660884 drivers/gpu/drm/bridge/dw_hdmi.c          Russell King          2015-03-27  197  	bool audio_enable;
+0cd9d1428322ec drivers/gpu/drm/bridge/dw_hdmi.c          Andy Yan              2014-12-05  198  
+80e2f97968b537 drivers/gpu/drm/bridge/dw-hdmi.c          Neil Armstrong        2017-03-03  199  	unsigned int reg_shift;
+80e2f97968b537 drivers/gpu/drm/bridge/dw-hdmi.c          Neil Armstrong        2017-03-03  200  	struct regmap *regm;
+a7d555d2f2bd67 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Romain Perier         2017-04-14  201  	void (*enable_audio)(struct dw_hdmi *hdmi);
+a7d555d2f2bd67 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Romain Perier         2017-04-14  202  	void (*disable_audio)(struct dw_hdmi *hdmi);
+e84b8d75ac116e drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Russell King          2017-07-31  203  
+7070fe7386c1a4 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Dariusz Marcinkiewicz 2019-08-14  204  	struct mutex cec_notifier_mutex;
+e84b8d75ac116e drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Russell King          2017-07-31  205  	struct cec_notifier *cec_notifier;
+a9c82d63ca4819 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Cheng-Yi Chiang       2019-10-28  206  
+a9c82d63ca4819 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Cheng-Yi Chiang       2019-10-28  207  	hdmi_codec_plugged_cb plugged_cb;
+a9c82d63ca4819 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Cheng-Yi Chiang       2019-10-28  208  	struct device *codec_dev;
+a9c82d63ca4819 drivers/gpu/drm/bridge/synopsys/dw-hdmi.c Cheng-Yi Chiang       2019-10-28  209  	enum drm_connector_status last_connector_result;
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  210  };
+9aaf880ed4ee3c drivers/staging/imx-drm/imx-hdmi.c        Fabio Estevam         2013-11-29  211  
+
+:::::: The code at line 143 was first introduced by commit
+:::::: b21f4b658df885068c65852ef3d9d2f4f2821b03 drm: imx: imx-hdmi: move imx-hdmi to bridge/dw_hdmi
+
+:::::: TO: Andy Yan <andy.yan@rock-chips.com>
+:::::: CC: Philipp Zabel <p.zabel@pengutronix.de>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
