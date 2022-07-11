@@ -2,489 +2,342 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2AE6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73693C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiGKKvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
+        id S229991AbiGKKwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiGKKvV (ORCPT
+        with ESMTP id S229605AbiGKKwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:51:21 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E73B521E
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:57:47 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id f11so4011091plr.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:57:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/dH5AuNv3/3xu+UZsaeD0vwZDTjCSjjCkh8LEd+YI1o=;
-        b=psYo5QDqDg0MR1r4CavqDmkceWxQGNJNibEvsvR5kJpqNj7b1teQL6n+IdxX3DBD6l
-         Zx9nIf22sHdpSiVjzCPW1IFm4M726NzNpzqFFdlKpIbP0aKOGZDpjv/DunvAJflSCoSr
-         YIgh0k8bCSYIVSLmTFds8IhI0cuzFqyu70I38=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/dH5AuNv3/3xu+UZsaeD0vwZDTjCSjjCkh8LEd+YI1o=;
-        b=HdX0hvCErvILvXALtOsGNTnb4YZZ6X/EOafKGwxR8TmK7dxcCh0/g/imt8dsWoehSb
-         AkAFCHdoQNVrbaEmRi46GsFIYdvVn50WTDYR7G2qzdGN/orH6rkZn6Yv/8svxnkhdEqO
-         J0Ukh1ESWYdx4qosla0FBMcr9V4yd8kI6IxaKaYDJ5AVbC3GFBAA9fQjMT4AXCj96IbB
-         mPia81AbQc7eCMr0HngHDWaIew3jes2BMjC61mZ2yZ4TYpuHw/OtBqZgMFKihi4Xd3UW
-         wmBjg7VnhbNa5SfKM3h6Hh1hAPJsz41XWzQF/0Am6ST1WPHvFvkR6x3YCFqwE4Jiljvc
-         WHrA==
-X-Gm-Message-State: AJIora8oUjWNU+1T9RS9lwEICmTJmU6zsfr8eOGua+RWtIfgMFmmy+bl
-        xfrhBLgmLoBscBbaJwBMBilj2A==
-X-Google-Smtp-Source: AGRyM1u71WxKsvtMvsMoeCRY1aLWWAcnNsU10Js1zwhm6QaCtzgBnurLthcyu6WuASW8T98+0p74Gw==
-X-Received: by 2002:a17:902:cf03:b0:16b:a91d:aff4 with SMTP id i3-20020a170902cf0300b0016ba91daff4mr17868029plg.66.1657533466584;
-        Mon, 11 Jul 2022 02:57:46 -0700 (PDT)
-Received: from localhost.localdomain ([183.83.136.224])
-        by smtp.gmail.com with ESMTPSA id y3-20020a17090a390300b001ef81bac701sm6560814pjb.42.2022.07.11.02.57.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 02:57:45 -0700 (PDT)
-From:   Suniel Mahesh <sunil@amarulasolutions.com>
-To:     Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime.ripard@free-electrons.com>,
-        Christopher Vollo <chris@renewoutreach.org>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Jagan Teki <jagan@amarulasolutions.com>
-Cc:     dri-devel@lists.freedesktop.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        linux-amarula@amarulasolutions.com
-Subject: [PATCH v3 2/2] ARM: dts: sun8i: Add R16 Vista E board from RenewWorldOutreach
-Date:   Mon, 11 Jul 2022 15:27:21 +0530
-Message-Id: <20220711095721.1935377-3-sunil@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220711095721.1935377-1-sunil@amarulasolutions.com>
-References: <20220711095721.1935377-1-sunil@amarulasolutions.com>
+        Mon, 11 Jul 2022 06:52:33 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027693C8E8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:58:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657533526; x=1689069526;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LjdX+LF/NKbHZWtN8A0s6n7Sww3GeGIsI297RxDs2QQ=;
+  b=Hzq9HKFT2J7mM0eNZnNluB9nPyUMlczlvPGEW+A3DVHVgmP8LXIKTiJ4
+   VDsbpB9sOk0qv72wnTK/kMyNshvGVuuGegVeB2xiYQCU7Gooldmw/fTkt
+   kLvvUaF3WUsXQF+A7jpEtdpwpGMylkxQvY6XXBRA6YJSUs3Yfv1WHNFBM
+   rKNC886GEXdNMh03BpTQ0KNrlOCjjqtEkgiB0iyHoA2r6yRbCQsXyccU5
+   oM/WJdImusb/krm2mi6HG/5MPB3YJwy6zOxi9Xix219KPFlR6atF/Xbgd
+   daQ3HMrb+z63eWmDYgUWTYqQYNDoVrr1j8jdmFKUUerj/yWCKGJw9zjnY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="283375544"
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="283375544"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 02:58:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="544952023"
+Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 11 Jul 2022 02:58:23 -0700
+Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAqBK-0000ez-TP;
+        Mon, 11 Jul 2022 09:58:22 +0000
+Date:   Mon, 11 Jul 2022 17:58:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: drivers/soc/qcom/llcc-qcom.c:88:8: warning: Excessive padding in
+ 'struct llcc_slice_config' (6 padding bytes, where 2 is optimal). Optimal
+ fields order: usecase_id, slice_id, max_cap, priority, bonus_ways, res_ways,
+ cache_mode, probe_target_ways, fixed_si...
+Message-ID: <202207111703.pE1rkAYv-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The R16-Vista-E board from RenewWorldOutreach based on allwinner
-R16(A33).
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   32346491ddf24599decca06190ebca03ff9de7f8
+commit: 2b8175a1f108361c2c1a11b27415631994efbfce soc: qcom: llcc: Add write-cache cacheable support
+date:   5 months ago
+config: riscv-randconfig-c006-20220707 (https://download.01.org/0day-ci/archive/20220711/202207111703.pE1rkAYv-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 77a38f6839980bfac61babb40d83772c51427011)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2b8175a1f108361c2c1a11b27415631994efbfce
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 2b8175a1f108361c2c1a11b27415631994efbfce
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=riscv clang-analyzer 
 
-General features:
-- 1GB RAM
-- microSD slot
-- Realtek Wifi
-- 1 x USB 2.0
-- HDMI IN
-- HDMI OUT
-- Audio out
-- MIPI DSI
-- TI DLPC3433
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-It has also connectors to connect an external mini keypad.
 
-Signed-off-by: Suniel Mahesh <sunil@amarulasolutions.com>
-Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
-Signed-off-by: Christopher Vollo <chris@renewoutreach.org>
- ---
-    Changes for v3:
-    - As suggested by Samuel Holland:
-    - changed binding to gpio-fan
-    - changed widgets to DACL and DACR to describe audio routing
-    - fixed indentation
-    - primary author of the commit should be the first signer
+clang-analyzer warnings: (new ones prefixed by >>)
+                                                      ^~~~
+   Suppressed 7 warnings (7 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   8 warnings generated.
+   drivers/gpio/gpio-virtio.c:24:8: warning: Excessive padding in 'struct virtio_gpio_line' (158 padding bytes, where 30 is optimal). Optimal fields order: res, rxlen, completion, req, lock, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct virtio_gpio_line {
+   ~~~~~~~^~~~~~~~~~~~~~~~~~
+   drivers/gpio/gpio-virtio.c:24:8: note: Excessive padding in 'struct virtio_gpio_line' (158 padding bytes, where 30 is optimal). Optimal fields order: res, rxlen, completion, req, lock, consider reordering the fields or adding explicit padding members
+   struct virtio_gpio_line {
+   ~~~~~~~^~~~~~~~~~~~~~~~~~
+   drivers/gpio/gpio-virtio.c:32:8: warning: Excessive padding in 'struct vgpio_irq_line' (183 padding bytes, where 119 is optimal). Optimal fields order: ires, type, disabled, masked, queued, update_pending, queue_pending, ireq, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct vgpio_irq_line {
+   ~~~~~~~^~~~~~~~~~~~~~~~
+   drivers/gpio/gpio-virtio.c:32:8: note: Excessive padding in 'struct vgpio_irq_line' (183 padding bytes, where 119 is optimal). Optimal fields order: ires, type, disabled, masked, queued, update_pending, queue_pending, ireq, consider reordering the fields or adding explicit padding members
+   struct vgpio_irq_line {
+   ~~~~~~~^~~~~~~~~~~~~~~~
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   7 warnings generated.
+   Suppressed 7 warnings (7 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   12 warnings generated.
+   drivers/bus/mhi/core/pm.c:320:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:320:17: note: Value stored to 'dev' during its initialization is never read
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:377:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:377:17: note: Value stored to 'dev' during its initialization is never read
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:720:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:720:17: note: Value stored to 'dev' during its initialization is never read
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:739:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:739:17: note: Value stored to 'dev' during its initialization is never read
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:1201:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/mhi/core/pm.c:1201:17: note: Value stored to 'dev' during its initialization is never read
+           struct device *dev = &mhi_cntrl->mhi_dev->dev;
+                          ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~
+   Suppressed 7 warnings (7 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   7 warnings generated.
+   drivers/usb/cdns3/cdns3-ti.c:160:2: warning: Value stored to 'reg' is never read [clang-analyzer-deadcode.DeadStores]
+           reg = cdns_ti_readl(data, USBSS_STATIC_CONFIG);
+           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/usb/cdns3/cdns3-ti.c:160:2: note: Value stored to 'reg' is never read
+           reg = cdns_ti_readl(data, USBSS_STATIC_CONFIG);
+           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   10 warnings generated.
+   Suppressed 10 warnings (10 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+>> drivers/soc/qcom/llcc-qcom.c:88:8: warning: Excessive padding in 'struct llcc_slice_config' (6 padding bytes, where 2 is optimal). Optimal fields order: usecase_id, slice_id, max_cap, priority, bonus_ways, res_ways, cache_mode, probe_target_ways, fixed_size, dis_cap_alloc, retain_on_pc, activate_on_init, write_scid_en, write_scid_cacheable_en, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct llcc_slice_config {
+   ~~~~~~~^~~~~~~~~~~~~~~~~~~
+   drivers/soc/qcom/llcc-qcom.c:88:8: note: Excessive padding in 'struct llcc_slice_config' (6 padding bytes, where 2 is optimal). Optimal fields order: usecase_id, slice_id, max_cap, priority, bonus_ways, res_ways, cache_mode, probe_target_ways, fixed_size, dis_cap_alloc, retain_on_pc, activate_on_init, write_scid_en, write_scid_cacheable_en, consider reordering the fields or adding explicit padding members
+   struct llcc_slice_config {
+   ~~~~~~~^~~~~~~~~~~~~~~~~~~
+   Suppressed 5 warnings (5 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   5 warnings generated.
+   Suppressed 5 warnings (5 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   5 warnings generated.
+   Suppressed 5 warnings (5 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   Suppressed 2 warnings (2 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   Suppressed 2 warnings (2 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   6 warnings generated.
+   Suppressed 6 warnings (6 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   10 warnings generated.
+   drivers/firewire/core-cdev.c:611:2: warning: 7th function call argument is an uninitialized value [clang-analyzer-core.CallAndMessage]
+           fw_send_request(client->device->card, &e->r.transaction,
+           ^
+   drivers/firewire/core-cdev.c:1481:6: note: Assuming field 'speed' is <= field 'link_speed'
+           if (a->speed > client->device->card->link_speed ||
+               ^
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                                                 ^~~~
+   include/linux/compiler.h:58:52: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                      ^~~~
+   drivers/firewire/core-cdev.c:1481:6: note: Left side of '||' is false
+           if (a->speed > client->device->card->link_speed ||
+               ^
+   drivers/firewire/core-cdev.c:1482:6: note: Assuming the condition is false
+               a->length > 1024 << a->speed)
+               ^
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                                                 ^~~~
+   include/linux/compiler.h:58:52: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                      ^~~~
+   drivers/firewire/core-cdev.c:1481:2: note: '?' condition is false
+           if (a->speed > client->device->card->link_speed ||
+           ^
+   include/linux/compiler.h:56:28: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                              ^
+   include/linux/compiler.h:58:31: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                 ^
+   drivers/firewire/core-cdev.c:1481:9: note: Field 'speed' is <= field 'link_speed'
+           if (a->speed > client->device->card->link_speed ||
+                  ^
+   drivers/firewire/core-cdev.c:1481:6: note: Left side of '||' is false
+           if (a->speed > client->device->card->link_speed ||
+               ^
+   drivers/firewire/core-cdev.c:1481:2: note: '?' condition is false
+           if (a->speed > client->device->card->link_speed ||
+           ^
+   include/linux/compiler.h:56:28: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                              ^
+   include/linux/compiler.h:58:69: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                                       ^
+   include/linux/compiler.h:69:2: note: expanded from macro '__trace_if_value'
+           (cond) ?                                        \
+           ^
+   drivers/firewire/core-cdev.c:1481:2: note: Taking false branch
+           if (a->speed > client->device->card->link_speed ||
+           ^
+   include/linux/compiler.h:56:23: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                         ^
+   drivers/firewire/core-cdev.c:1485:6: note: Assuming field 'tag' is <= 3
+           if (a->tag > 3 || a->channel > 63 || a->sy > 15)
+               ^
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                                                 ^~~~
+   include/linux/compiler.h:58:52: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                      ^~~~
+   drivers/firewire/core-cdev.c:1485:6: note: Left side of '||' is false
+           if (a->tag > 3 || a->channel > 63 || a->sy > 15)
+               ^
+   drivers/firewire/core-cdev.c:1485:20: note: Assuming field 'channel' is <= 63
+           if (a->tag > 3 || a->channel > 63 || a->sy > 15)
+                             ^
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
 
-    Changes for v2:
-    - Add missing compatible string
-    - insert missing signatures of contributors
----
- arch/arm/boot/dts/Makefile                    |   1 +
- arch/arm/boot/dts/sun8i-r16-renew-vista-e.dts | 362 ++++++++++++++++++
- 2 files changed, 363 insertions(+)
- create mode 100644 arch/arm/boot/dts/sun8i-r16-renew-vista-e.dts
+vim +88 drivers/soc/qcom/llcc-qcom.c
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 184899808ee7..b5966c0742e1 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -1353,6 +1353,7 @@ dtb-$(CONFIG_MACH_SUN8I) += \
- 	sun8i-r16-nintendo-nes-classic.dtb \
- 	sun8i-r16-nintendo-super-nes-classic.dtb \
- 	sun8i-r16-parrot.dtb \
-+	sun8i-r16-renew-vista-e.dtb \
- 	sun8i-r40-bananapi-m2-ultra.dtb \
- 	sun8i-r40-oka40i-c.dtb \
- 	sun8i-s3-elimo-initium.dtb \
-diff --git a/arch/arm/boot/dts/sun8i-r16-renew-vista-e.dts b/arch/arm/boot/dts/sun8i-r16-renew-vista-e.dts
-new file mode 100644
-index 000000000000..ff72914eb110
---- /dev/null
-+++ b/arch/arm/boot/dts/sun8i-r16-renew-vista-e.dts
-@@ -0,0 +1,362 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright (C) 2022 RenewWorldOutreach
-+ * Copyright (C) 2022 Amarula Solutions(India)
-+ */
-+
-+/dts-v1/;
-+#include "sun8i-a33.dtsi"
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
-+
-+/ {
-+	model = "RenewWorldOutreach R16-Vista-E";
-+	compatible = "renewworldoutreach,r16-vista-e", "allwinner,sun8i-r16", "allwinner,sun8i-a33";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	gpio-keys-polled {
-+		compatible = "gpio-keys-polled";
-+		poll-interval = <100>;
-+
-+		ok {
-+			label = "ok";
-+			linux,code = <KEY_ENTER>;
-+			gpios = <&pio 4 0 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		left {
-+			label = "left";
-+			linux,code = <KEY_LEFT>;
-+			gpios = <&pio 4 1 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		right {
-+			label = "right";
-+			linux,code = <KEY_RIGHT>;
-+			gpios = <&pio 4 2 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		up {
-+			label = "up";
-+			linux,code = <KEY_UP>;
-+			gpios = <&pio 4 3 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		down {
-+			label = "down";
-+			linux,code = <KEY_DOWN>;
-+			gpios = <&pio 4 4 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		back {
-+			label = "back";
-+			linux,code = <KEY_BACK>;
-+			gpios = <&pio 4 5 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		power {
-+			label = "power";
-+			linux,code = <KEY_POWER>;
-+			gpios = <&pio 4 6 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		vol-down {
-+			label = "vol-down";
-+			linux,code = <KEY_VOLUMEDOWN>;
-+			gpios = <&pio 7 3 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		vol-up {
-+			label = "vol-up";
-+			linux,code = <KEY_VOLUMEUP>;
-+			gpios = <&pio 7 9 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		battery-led0 {
-+			label = "renew-e:battery-led0";
-+			gpios = <&r_pio 0 2 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		battery-led1 {
-+			label = "renew-e:battery-led1";
-+			gpios = <&r_pio 0 3 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		battery-led2 {
-+			label = "renew-e:battery-led2";
-+			gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		battery-led3 {
-+			label = "renew-e:battery-led3";
-+			gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		battery-led4 {
-+			label = "renew-e:battery-led4";
-+			gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		volume-led0 {
-+			label = "renew-e:volume-led0";
-+			gpios = <&pio 7 2 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		volume-led1 {
-+			label = "renew-e:volume-led1";
-+			gpios = <&pio 6 13 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		volume-led2 {
-+			label = "renew-e:volume-led2";
-+			gpios = <&pio 6 12 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		volume-led3 {
-+			label = "renew-e:volume-led3";
-+			gpios = <&pio 6 11 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		volume-led4 {
-+			label = "renew-e:volume-led4";
-+			gpios = <&pio 6 10 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		led-pad-intz {
-+			label = "renew-e:led-pad-intz";
-+			gpios = <&pio 4 16 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
-+	};
-+
-+	gpio-fan {
-+		compatible = "gpio-fan";
-+		gpios = <&pio 4 14 GPIO_ACTIVE_HIGH>; /* FAN_ON/OFF: PE14 */
-+		gpio-fan,speed-map = <0 0 6000 1>;
-+	};
-+
-+	reg_vcc5v0: vcc5v0 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc5v0";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+	};
-+};
-+
-+&codec {
-+	status = "okay";
-+};
-+
-+&cpu0 {
-+	cpu-supply = <&reg_dcdc3>;
-+};
-+
-+&cpu0_opp_table {
-+	opp-1104000000 {
-+		opp-hz = /bits/ 64 <1104000000>;
-+		opp-microvolt = <1320000>;
-+		clock-latency-ns = <244144>; /* 8 32k periods */
-+	};
-+
-+	opp-1200000000 {
-+		opp-hz = /bits/ 64 <1200000000>;
-+		opp-microvolt = <1320000>;
-+		clock-latency-ns = <244144>; /* 8 32k periods */
-+	};
-+};
-+
-+&dai {
-+	status = "okay";
-+};
-+
-+&de {
-+	status = "okay";
-+};
-+
-+&dphy {
-+	status = "okay";
-+};
-+
-+&ehci0 {
-+	status = "okay";
-+};
-+
-+&mmc0 {
-+	vmmc-supply = <&reg_dcdc1>;
-+	bus-width = <4>;
-+	non-removable;
-+	status = "okay";
-+};
-+
-+&mmc1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mmc1_pg_pins>;
-+	vmmc-supply = <&reg_dcdc1>;
-+	bus-width = <4>;
-+	broken-cd;
-+	status = "okay";
-+};
-+
-+&ohci0 {
-+	status = "okay";
-+};
-+
-+&r_rsb {
-+	status = "okay";
-+
-+	axp22x: pmic@3a3 {
-+		compatible = "x-powers,axp223";
-+		reg = <0x3a3>;
-+		interrupt-parent = <&r_intc>;
-+		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_LOW>;
-+		eldoin-supply = <&reg_dcdc1>;
-+		x-powers,drive-vbus-en;
-+	};
-+};
-+
-+#include "axp223.dtsi"
-+
-+&ac_power_supply {
-+	status = "okay";
-+};
-+
-+&reg_aldo1 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <3000000>;
-+	regulator-max-microvolt = <3000000>;
-+	regulator-name = "vcc-io";
-+};
-+
-+&reg_aldo2 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <2500000>;
-+	regulator-max-microvolt = <2500000>;
-+	regulator-name = "vdd-dll";
-+};
-+
-+&reg_aldo3 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <3000000>;
-+	regulator-max-microvolt = <3000000>;
-+	regulator-name = "avcc";
-+};
-+
-+&reg_dc1sw {
-+	regulator-name = "vcc-lcd";
-+};
-+
-+&reg_dc5ldo {
-+	regulator-always-on;
-+	regulator-min-microvolt = <900000>;
-+	regulator-max-microvolt = <1400000>;
-+	regulator-name = "vdd-cpus";
-+};
-+
-+&reg_dcdc1 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <3000000>;
-+	regulator-max-microvolt = <3000000>;
-+	regulator-name = "vcc-3v0";
-+};
-+
-+&reg_dcdc2 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <900000>;
-+	regulator-max-microvolt = <1400000>;
-+	regulator-name = "vdd-sys";
-+};
-+
-+&reg_dcdc3 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <900000>;
-+	regulator-max-microvolt = <1400000>;
-+	regulator-name = "vdd-cpu";
-+};
-+
-+&reg_dcdc5 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <1500000>;
-+	regulator-max-microvolt = <1500000>;
-+	regulator-name = "vcc-dram";
-+};
-+
-+&reg_dldo1 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <3300000>;
-+	regulator-max-microvolt = <3300000>;
-+	regulator-name = "vcc-3v3-main1";
-+};
-+
-+&reg_dldo2 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <3300000>;
-+	regulator-max-microvolt = <3300000>;
-+	regulator-name = "vcc-3v3-main2";
-+};
-+
-+&reg_dldo3 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <3300000>;
-+	regulator-max-microvolt = <3300000>;
-+	regulator-name = "vcc-3v3-main3";
-+};
-+
-+&reg_dldo4 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <3300000>;
-+	regulator-max-microvolt = <3300000>;
-+	regulator-name = "vcc-3v3-main4";
-+};
-+
-+&reg_eldo1 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <1200000>;
-+	regulator-max-microvolt = <1200000>;
-+	regulator-name = "vcc-1v2-hdmi";
-+};
-+
-+&reg_drivevbus {
-+	regulator-name = "usb0-vbus";
-+	status = "okay";
-+};
-+
-+&reg_rtc_ldo {
-+	regulator-name = "vcc-rtc";
-+};
-+
-+&sound {
-+	status = "okay";
-+	simple-audio-card,routing =
-+		"Left DAC", "DACL",
-+		"Right DAC", "DACR";
-+};
-+
-+&uart0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart0_pb_pins>;
-+	status = "okay";
-+};
-+
-+&usb_otg {
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usbphy {
-+	/* VBUS is always on because it is wired to the power supply */
-+	usb0_vbus-supply = <&reg_vcc5v0>;
-+	status = "okay";
-+};
+8008e7902f28eb Sai Prakash Ranjan    2022-01-28   60  
+99356b03b431f9 Vivek Gautam          2019-07-18   61  /**
+171c03171a4cdf Lee Jones             2020-11-03   62   * struct llcc_slice_config - Data associated with the llcc slice
+99356b03b431f9 Vivek Gautam          2019-07-18   63   * @usecase_id: Unique id for the client's use case
+99356b03b431f9 Vivek Gautam          2019-07-18   64   * @slice_id: llcc slice id for each client
+99356b03b431f9 Vivek Gautam          2019-07-18   65   * @max_cap: The maximum capacity of the cache slice provided in KB
+99356b03b431f9 Vivek Gautam          2019-07-18   66   * @priority: Priority of the client used to select victim line for replacement
+99356b03b431f9 Vivek Gautam          2019-07-18   67   * @fixed_size: Boolean indicating if the slice has a fixed capacity
+99356b03b431f9 Vivek Gautam          2019-07-18   68   * @bonus_ways: Bonus ways are additional ways to be used for any slice,
+99356b03b431f9 Vivek Gautam          2019-07-18   69   *		if client ends up using more than reserved cache ways. Bonus
+99356b03b431f9 Vivek Gautam          2019-07-18   70   *		ways are allocated only if they are not reserved for some
+99356b03b431f9 Vivek Gautam          2019-07-18   71   *		other client.
+99356b03b431f9 Vivek Gautam          2019-07-18   72   * @res_ways: Reserved ways for the cache slice, the reserved ways cannot
+99356b03b431f9 Vivek Gautam          2019-07-18   73   *		be used by any other client than the one its assigned to.
+99356b03b431f9 Vivek Gautam          2019-07-18   74   * @cache_mode: Each slice operates as a cache, this controls the mode of the
+99356b03b431f9 Vivek Gautam          2019-07-18   75   *             slice: normal or TCM(Tightly Coupled Memory)
+99356b03b431f9 Vivek Gautam          2019-07-18   76   * @probe_target_ways: Determines what ways to probe for access hit. When
+99356b03b431f9 Vivek Gautam          2019-07-18   77   *                    configured to 1 only bonus and reserved ways are probed.
+99356b03b431f9 Vivek Gautam          2019-07-18   78   *                    When configured to 0 all ways in llcc are probed.
+99356b03b431f9 Vivek Gautam          2019-07-18   79   * @dis_cap_alloc: Disable capacity based allocation for a client
+99356b03b431f9 Vivek Gautam          2019-07-18   80   * @retain_on_pc: If this bit is set and client has maintained active vote
+99356b03b431f9 Vivek Gautam          2019-07-18   81   *               then the ways assigned to this client are not flushed on power
+99356b03b431f9 Vivek Gautam          2019-07-18   82   *               collapse.
+99356b03b431f9 Vivek Gautam          2019-07-18   83   * @activate_on_init: Activate the slice immediately after it is programmed
+c4df37fe186de4 Manivannan Sadhasivam 2020-11-30   84   * @write_scid_en: Bit enables write cache support for a given scid.
+2b8175a1f10836 Sai Prakash Ranjan    2022-01-28   85   * @write_scid_cacheable_en: Enables write cache cacheable support for a
+2b8175a1f10836 Sai Prakash Ranjan    2022-01-28   86   *			     given scid (not supported on v2 or older hardware).
+99356b03b431f9 Vivek Gautam          2019-07-18   87   */
+99356b03b431f9 Vivek Gautam          2019-07-18  @88  struct llcc_slice_config {
+99356b03b431f9 Vivek Gautam          2019-07-18   89  	u32 usecase_id;
+99356b03b431f9 Vivek Gautam          2019-07-18   90  	u32 slice_id;
+99356b03b431f9 Vivek Gautam          2019-07-18   91  	u32 max_cap;
+99356b03b431f9 Vivek Gautam          2019-07-18   92  	u32 priority;
+99356b03b431f9 Vivek Gautam          2019-07-18   93  	bool fixed_size;
+99356b03b431f9 Vivek Gautam          2019-07-18   94  	u32 bonus_ways;
+99356b03b431f9 Vivek Gautam          2019-07-18   95  	u32 res_ways;
+99356b03b431f9 Vivek Gautam          2019-07-18   96  	u32 cache_mode;
+99356b03b431f9 Vivek Gautam          2019-07-18   97  	u32 probe_target_ways;
+99356b03b431f9 Vivek Gautam          2019-07-18   98  	bool dis_cap_alloc;
+99356b03b431f9 Vivek Gautam          2019-07-18   99  	bool retain_on_pc;
+99356b03b431f9 Vivek Gautam          2019-07-18  100  	bool activate_on_init;
+c4df37fe186de4 Manivannan Sadhasivam 2020-11-30  101  	bool write_scid_en;
+2b8175a1f10836 Sai Prakash Ranjan    2022-01-28  102  	bool write_scid_cacheable_en;
+99356b03b431f9 Vivek Gautam          2019-07-18  103  };
+99356b03b431f9 Vivek Gautam          2019-07-18  104  
+
+:::::: The code at line 88 was first introduced by commit
+:::::: 99356b03b431f9589bbaec2bc5bacceccb3dd99a soc: qcom: Make llcc-qcom a generic driver
+
+:::::: TO: Vivek Gautam <vivek.gautam@codeaurora.org>
+:::::: CC: Bjorn Andersson <bjorn.andersson@linaro.org>
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
