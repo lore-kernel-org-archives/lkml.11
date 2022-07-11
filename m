@@ -2,126 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B681CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 024C4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiGKOi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
+        id S231493AbiGKOjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231379AbiGKOir (ORCPT
+        with ESMTP id S231417AbiGKOir (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 10:38:47 -0400
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB6C110F;
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC892605;
         Mon, 11 Jul 2022 07:38:45 -0700 (PDT)
-Received: by mail-il1-f181.google.com with SMTP id v2so3118641ilo.7;
-        Mon, 11 Jul 2022 07:38:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QI8NoXmTu99A3BGvUDI/8ShLiNFWmdGoMBR5ix0lWDo=;
-        b=isFWdPpUsJEtb3YRqEZyVZhJdZUgu6rdoaukTP8lBnC3z2f8C7vYXvm2NozLaGg5lw
-         TFT+4lZQc/RFEFZASQzNz5nrZ26Rq7RFhrgBV3/fE3CzHSq5cXToSiHuDJPqyaNQ5QHt
-         1Jd2jl9+CPja65JysdSisuAhBlzoUvkd6PDuUJR0xITokLDEytfr2rTagL4+aMTOGhJU
-         QIaw6qW9wxPgyoZKgO0PMu7xZ9TQy9kugpNSk61mLCmWJSjzITQQeJb7tFRyk+8nDdyu
-         4wUkkh36wnL4qH/SC6upR4gYHa6zj6Ka2yrx9ZYNxPqpXf8szltwE20H5nBHbfJYyn2b
-         l0Vg==
-X-Gm-Message-State: AJIora+vMsqjZHl2nThta2mBgmSov+a5uKhzx5UHgiCbN5Q9ujwoqOws
-        rHm+K3A2uEjcZzx1T5ZkCA==
-X-Google-Smtp-Source: AGRyM1vv3IGpJxVA3/ctWFf3shZBxzdiPh3c5Ui151b/79yHG8d9Nn0GwZ8SPYFxfnp8pK50KoGb7g==
-X-Received: by 2002:a05:6e02:164b:b0:2dc:85e3:238b with SMTP id v11-20020a056e02164b00b002dc85e3238bmr1220980ilu.121.1657550324397;
-        Mon, 11 Jul 2022 07:38:44 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id r16-20020a92c5b0000000b002dad39ff841sm2787827ilt.19.2022.07.11.07.38.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 07:38:44 -0700 (PDT)
-Received: (nullmailer pid 3845949 invoked by uid 1000);
-        Mon, 11 Jul 2022 14:38:42 -0000
-Date:   Mon, 11 Jul 2022 08:38:42 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Vidya Sagar <vidyas@nvidia.com>
-Cc:     kthota@nvidia.com, sagar.tv@gmail.com, lpieralisi@kernel.org,
-        bhelgaas@google.com, krzysztof.kozlowski+dt@linaro.org,
-        kishon@ti.com, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, jonathanh@nvidia.com,
-        gustavo.pimentel@synopsys.com, linux-tegra@vger.kernel.org,
-        thierry.reding@gmail.com, mmaddireddy@nvidia.com,
-        jingoohan1@gmail.com, kw@linux.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4 3/9] dt-bindings: PCI: tegra234: Add schema for
- tegra234 endpoint mode
-Message-ID: <20220711143842.GA3840001-robh@kernel.org>
-References: <20220707081301.29961-1-vidyas@nvidia.com>
- <20220707081301.29961-4-vidyas@nvidia.com>
- <1657196871.476299.1454231.nullmailer@robh.at.kernel.org>
- <afc9cd15-a895-792f-3f49-1dca3694b0f3@nvidia.com>
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LhRJm6msqzhZ81;
+        Mon, 11 Jul 2022 22:36:08 +0800 (CST)
+Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
+ 2022 22:38:40 +0800
+From:   Xu Kuohai <xukuohai@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Will Deacon <will@kernel.org>, KP Singh <kpsingh@kernel.org>
+CC:     Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH bpf-next v8 0/4] bpf trampoline for arm64
+Date:   Mon, 11 Jul 2022 10:47:18 -0400
+Message-ID: <20220711144722.2100039-1-xukuohai@huawei.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afc9cd15-a895-792f-3f49-1dca3694b0f3@nvidia.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.197]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 08:03:45AM +0530, Vidya Sagar wrote:
-> 
-> 
-> On 7/7/2022 5:57 PM, Rob Herring wrote:
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > On Thu, 07 Jul 2022 13:42:55 +0530, Vidya Sagar wrote:
-> > > Add support for PCIe controllers that operate in the endpoint mode
-> > > in tegra234 chipset.
-> > > 
-> > > Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-> > > ---
-> > > V4:
-> > > * Rebased on top of previous patch
-> > > 
-> > > V3:
-> > > * New patch in this series
-> > > 
-> > >   .../bindings/pci/nvidia,tegra194-pcie-ep.yaml | 123 +++++++++++++++++-
-> > >   1 file changed, 117 insertions(+), 6 deletions(-)
-> > > 
-> > 
-> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> > 
-> > yamllint warnings/errors:
-> > 
-> > dtschema/dtc warnings/errors:
-> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pci/nvidia,tegra194-pcie-ep.example.dtb: pcie-ep@141a0000: Unevaluated properties are not allowed ('nvidia,enable-ext-refclk' was unexpected)
-> >          From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pci/nvidia,tegra194-pcie-ep.yaml
-> > 
-> > doc reference errors (make refcheckdocs):
-> > 
-> > See https://patchwork.ozlabs.org/patch/
-> > 
-> > This check can fail if there are any dependencies. The base for a patch
-> > series is generally the most recent rc1.
-> > 
-> > If you already ran 'make dt_binding_check' and didn't see the above
-> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> > date:
-> > 
-> > pip3 install dtschema --upgrade
-> > 
-> > Please check and re-submit.
-> 
-> I did run 'make dt_binding_check' before sending the patches for review and
-> didn't observe any issue. Just to make sure that I observe the same issue
-> locally, I updated dtschema and gave DT_CHECKER_FLAGS=-m and yet didn't
-> observe the tool reporting any issue.
-> FWIW, I think I missed adding the documentation for
-> 'nvidia,enable-ext-refclk' property. I'll add it and send again, but before
-> that, I would like to see if my change addresses the issue correctly and
-> also there are no other issues. Could you please help me with why I'm not
-> observing the issue locally?
+This patchset introduces bpf trampoline on arm64. A bpf trampoline converts
+native calling convention to bpf calling convention and is used to implement
+various bpf features, such as fentry, fexit, fmod_ret and struct_ops.
 
-There's a fix for unevaluatedProperties that's only in the dtschema main 
-branch and not yet in a release.
+The trampoline introduced does essentially the same thing as the bpf
+trampoline does on x86.
 
-Rob
+Tested on raspberry pi 4b and qemu:
+
+ #18 /1     bpf_tcp_ca/dctcp:OK
+ #18 /2     bpf_tcp_ca/cubic:OK
+ #18 /3     bpf_tcp_ca/invalid_license:OK
+ #18 /4     bpf_tcp_ca/dctcp_fallback:OK
+ #18 /5     bpf_tcp_ca/rel_setsockopt:OK
+ #18        bpf_tcp_ca:OK
+ #51 /1     dummy_st_ops/dummy_st_ops_attach:OK
+ #51 /2     dummy_st_ops/dummy_init_ret_value:OK
+ #51 /3     dummy_st_ops/dummy_init_ptr_arg:OK
+ #51 /4     dummy_st_ops/dummy_multiple_args:OK
+ #51        dummy_st_ops:OK
+ #57 /1     fexit_bpf2bpf/target_no_callees:OK
+ #57 /2     fexit_bpf2bpf/target_yes_callees:OK
+ #57 /3     fexit_bpf2bpf/func_replace:OK
+ #57 /4     fexit_bpf2bpf/func_replace_verify:OK
+ #57 /5     fexit_bpf2bpf/func_sockmap_update:OK
+ #57 /6     fexit_bpf2bpf/func_replace_return_code:OK
+ #57 /7     fexit_bpf2bpf/func_map_prog_compatibility:OK
+ #57 /8     fexit_bpf2bpf/func_replace_multi:OK
+ #57 /9     fexit_bpf2bpf/fmod_ret_freplace:OK
+ #57        fexit_bpf2bpf:OK
+ #237       xdp_bpf2bpf:OK
+
+v8:
+ - Load return value from A64_R(0) for both non-JITed and JITed bpf prog
+ - Add Jean-Philippe's Reviewed-by
+
+v7: https://lore.kernel.org/bpf/20220708093032.1832755-1-xukuohai@huawei.com/
+ - Fix return value register usage error
+ - Typo fixes, etc
+
+v6: https://lore.kernel.org/bpf/20220625161255.547944-1-xukuohai@huawei.com/
+- Since Mark is refactoring arm64 ftrace to support long jump and reduce the
+  ftrace trampoline overhead, it's not clear how we'll attach bpf trampoline
+  to regular kernel functions, so remove ftrace related patches for now.
+- Add long jump support for attaching bpf trampoline to bpf prog, since bpf
+  trampoline and bpf prog are allocated via vmalloc, there is chance the
+  distance exceeds the max branch range.
+- Collect ACK/Review-by, not sure if the ACK and Review-bys for bpf_arch_text_poke()
+  should be kept, since the changes to it is not trivial
+- Update some commit messages and comments
+
+v5: https://lore.kernel.org/bpf/20220518131638.3401509-1-xukuohai@huawei.com/
+- As Alexei suggested, remove is_valid_bpf_tramp_flags()
+
+v4: https://lore.kernel.org/bpf/20220517071838.3366093-1-xukuohai@huawei.com/
+- Run the test cases on raspberry pi 4b
+- Rebase and add cookie to trampoline
+- As Steve suggested, move trace_direct_tramp() back to entry-ftrace.S to
+  avoid messing up generic code with architecture specific code
+- As Jakub suggested, merge patch 4 and patch 5 of v3 to provide full function
+  in one patch
+- As Mark suggested, add a comment for the use of aarch64_insn_patch_text_nosync()
+- Do not generate trampoline for long jump to avoid triggering ftrace_bug
+- Round stack size to multiples of 16B to avoid SPAlignmentFault
+- Use callee saved register x20 to reduce the use of mov_i64
+- Add missing BTI J instructions
+- Trivial spelling and code style fixes
+
+v3: https://lore.kernel.org/bpf/20220424154028.1698685-1-xukuohai@huawei.com/
+- Append test results for bpf_tcp_ca, dummy_st_ops, fexit_bpf2bpf,
+  xdp_bpf2bpf
+- Support to poke bpf progs
+- Fix return value of arch_prepare_bpf_trampoline() to the total number
+  of bytes instead of number of instructions 
+- Do not check whether CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled in
+  arch_prepare_bpf_trampoline, since the trampoline may be hooked to a bpf
+  prog
+- Restrict bpf_arch_text_poke() to poke bpf text only, as kernel functions
+  are poked by ftrace
+- Rewrite trace_direct_tramp() in inline assembly in trace_selftest.c
+  to avoid messing entry-ftrace.S
+- isolate arch_ftrace_set_direct_caller() with macro
+  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS to avoid compile error
+  when this macro is disabled
+- Some trivial code sytle fixes
+
+v2: https://lore.kernel.org/bpf/20220414162220.1985095-1-xukuohai@huawei.com/
+- Add Song's ACK
+- Change the multi-line comment in is_valid_bpf_tramp_flags() into net
+  style (patch 3)
+- Fix a deadloop issue in ftrace selftest (patch 2)
+- Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
+- Replace "bpf trampoline" with "custom trampoline" in patch 1, as
+  ftrace direct call is not only used by bpf trampoline.
+
+v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
+
+Xu Kuohai (4):
+  bpf: Remove is_valid_bpf_tramp_flags()
+  arm64: Add LDR (literal) instruction
+  bpf, arm64: Implement bpf_arch_text_poke() for arm64
+  bpf, arm64: bpf trampoline for arm64
+
+ arch/arm64/include/asm/insn.h |   3 +
+ arch/arm64/lib/insn.c         |  30 +-
+ arch/arm64/net/bpf_jit.h      |   7 +
+ arch/arm64/net/bpf_jit_comp.c | 718 +++++++++++++++++++++++++++++++++-
+ arch/x86/net/bpf_jit_comp.c   |  20 -
+ kernel/bpf/bpf_struct_ops.c   |   3 +
+ kernel/bpf/trampoline.c       |   3 +
+ 7 files changed, 743 insertions(+), 41 deletions(-)
+
+-- 
+2.30.2
+
