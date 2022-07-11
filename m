@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19023C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C085C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232030AbiGKJW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
+        id S229560AbiGKJXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232020AbiGKJWT (ORCPT
+        with ESMTP id S229944AbiGKJWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:22:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99045A477;
-        Mon, 11 Jul 2022 02:13:19 -0700 (PDT)
+        Mon, 11 Jul 2022 05:22:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760355B040;
+        Mon, 11 Jul 2022 02:13:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A785761148;
-        Mon, 11 Jul 2022 09:13:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAF16C34115;
-        Mon, 11 Jul 2022 09:13:17 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 958E9CE1179;
+        Mon, 11 Jul 2022 09:13:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80471C34115;
+        Mon, 11 Jul 2022 09:13:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530798;
-        bh=roqKuPTyH8/KVR+BQ3zMlSXJknpqALmtGKOY5rOEX24=;
+        s=korg; t=1657530800;
+        bh=DP0RzHgVvpINV93axfH8mlgmW+pA1ynqJkwFKH0gK/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yL4IfTsH7iSK21aLEPftqb7jwyuEUzVt8LHA+XguNh43syIO+BWqAn+zSAX8MtivT
-         ykaW2GBBD1YNzcnIdYcssbWmnMVPvX7SnPeyS8v1725oTF61XZ8AWfjCFKjqN+2KWY
-         UnmwEjRI3+0Gl+xUNQgyZ4gET+w97QqTTTs625U4=
+        b=C6iq4NSmCoJkiClFR5thEWV0Hl101cL6+lFdDLwAB4+OwQKuh42NfeKTNl1HbK62I
+         h/p7NsU79JfNTDiZ9tXxZqXV7w8VcT4ahA7zkACJtC3oSyWK3c1TaZRs1DSGZLBR8T
+         0Fu0/072Z7WygUL5/bOGuAuWIZ6bzXkSx7lNuXxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 43/55] selftests: forwarding: fix error message in learning_test
-Date:   Mon, 11 Jul 2022 11:07:31 +0200
-Message-Id: <20220711090543.027086095@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 17/55] PM: runtime: Redefine pm_runtime_release_supplier()
+Date:   Mon, 11 Jul 2022 11:07:05 +0200
+Message-Id: <20220711090542.273313047@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -50,38 +48,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 83844aacab2015da1dba1df0cc61fc4b4c4e8076 ]
+commit 07358194badf73e267289b40b761f5dc56928eab upstream.
 
-When packets are not received, they aren't received on $host1_if, so the
-message talking about the second host not receiving them is incorrect.
-Fix it.
+Instead of passing an extra bool argument to pm_runtime_release_supplier(),
+make its callers take care of triggering a runtime-suspend of the
+supplier device as needed.
 
-Fixes: d4deb01467ec ("selftests: forwarding: Add a test for FDB learning")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+No expected functional impact.
+
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/forwarding/lib.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/core.c          |    3 ++-
+ drivers/base/power/runtime.c |   20 +++++++++-----------
+ include/linux/pm_runtime.h   |    5 ++---
+ 3 files changed, 13 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index fbda7603f3b3..54020d05a62b 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -1074,7 +1074,7 @@ learning_test()
- 	tc -j -s filter show dev $host1_if ingress \
- 		| jq -e ".[] | select(.options.handle == 101) \
- 		| select(.options.actions[0].stats.packets == 1)" &> /dev/null
--	check_fail $? "Packet reached second host when should not"
-+	check_fail $? "Packet reached first host when should not"
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -348,7 +348,8 @@ static void device_link_release_fn(struc
+ 	/* Ensure that all references to the link object have been dropped. */
+ 	device_link_synchronize_removal();
  
- 	$MZ $host1_if -c 1 -p 64 -a $mac -t ip -q
- 	sleep 1
--- 
-2.35.1
-
+-	pm_runtime_release_supplier(link, true);
++	pm_runtime_release_supplier(link);
++	pm_request_idle(link->supplier);
+ 
+ 	put_device(link->consumer);
+ 	put_device(link->supplier);
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -308,13 +308,10 @@ static int rpm_get_suppliers(struct devi
+ /**
+  * pm_runtime_release_supplier - Drop references to device link's supplier.
+  * @link: Target device link.
+- * @check_idle: Whether or not to check if the supplier device is idle.
+  *
+- * Drop all runtime PM references associated with @link to its supplier device
+- * and if @check_idle is set, check if that device is idle (and so it can be
+- * suspended).
++ * Drop all runtime PM references associated with @link to its supplier device.
+  */
+-void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
++void pm_runtime_release_supplier(struct device_link *link)
+ {
+ 	struct device *supplier = link->supplier;
+ 
+@@ -327,9 +324,6 @@ void pm_runtime_release_supplier(struct
+ 	while (refcount_dec_not_one(&link->rpm_active) &&
+ 	       atomic_read(&supplier->power.usage_count) > 0)
+ 		pm_runtime_put_noidle(supplier);
+-
+-	if (check_idle)
+-		pm_request_idle(supplier);
+ }
+ 
+ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+@@ -337,8 +331,11 @@ static void __rpm_put_suppliers(struct d
+ 	struct device_link *link;
+ 
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+-				device_links_read_lock_held())
+-		pm_runtime_release_supplier(link, try_to_suspend);
++				device_links_read_lock_held()) {
++		pm_runtime_release_supplier(link);
++		if (try_to_suspend)
++			pm_request_idle(link->supplier);
++	}
+ }
+ 
+ static void rpm_put_suppliers(struct device *dev)
+@@ -1776,7 +1773,8 @@ void pm_runtime_drop_link(struct device_
+ 		return;
+ 
+ 	pm_runtime_drop_link_count(link->consumer);
+-	pm_runtime_release_supplier(link, true);
++	pm_runtime_release_supplier(link);
++	pm_request_idle(link->supplier);
+ }
+ 
+ static bool pm_runtime_need_not_resume(struct device *dev)
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -58,7 +58,7 @@ extern void pm_runtime_get_suppliers(str
+ extern void pm_runtime_put_suppliers(struct device *dev);
+ extern void pm_runtime_new_link(struct device *dev);
+ extern void pm_runtime_drop_link(struct device_link *link);
+-extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
++extern void pm_runtime_release_supplier(struct device_link *link);
+ 
+ /**
+  * pm_runtime_get_if_in_use - Conditionally bump up runtime PM usage counter.
+@@ -280,8 +280,7 @@ static inline void pm_runtime_get_suppli
+ static inline void pm_runtime_put_suppliers(struct device *dev) {}
+ static inline void pm_runtime_new_link(struct device *dev) {}
+ static inline void pm_runtime_drop_link(struct device_link *link) {}
+-static inline void pm_runtime_release_supplier(struct device_link *link,
+-					       bool check_idle) {}
++static inline void pm_runtime_release_supplier(struct device_link *link) {}
+ 
+ #endif /* !CONFIG_PM */
+ 
 
 
