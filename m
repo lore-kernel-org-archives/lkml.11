@@ -2,223 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58428C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBE3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiGKIcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        id S230233AbiGKIcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiGKIca (ORCPT
+        with ESMTP id S230165AbiGKIca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 04:32:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E3A81F2DA
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:32:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657528347;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rOvdknNIUIgwtUuGLKnWKb2uga4ygZMa7e3xZ51+vSU=;
-        b=gL5I/FXBsw3FXI5gLgigiPlGuxle2AVzG5kc9MzYtaKuvfTCekJoCOpjAZyrytw55AGplc
-        8SwUbJjnqaKThUiSxYjFbxQ/RgsZFpTlyuB5YbdqIL2AxEaqlf51EgxgrLIBa9ZF9fQBkV
-        x3gm/8pN/k/gpK9Al6sgALrvMCLiC6A=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-267-9CPImoJYPOyARge6nMgrWQ-1; Mon, 11 Jul 2022 04:32:23 -0400
-X-MC-Unique: 9CPImoJYPOyARge6nMgrWQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4D1B18041B5;
-        Mon, 11 Jul 2022 08:32:23 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 09A5F2026D64;
-        Mon, 11 Jul 2022 08:32:22 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id 061281C03BC; Mon, 11 Jul 2022 10:32:22 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Artem Savkov <asavkov@redhat.com>
-Subject: [RFC PATCH bpf-next 4/4] selftests/bpf: bpf_panic selftest
-Date:   Mon, 11 Jul 2022 10:32:20 +0200
-Message-Id: <20220711083220.2175036-5-asavkov@redhat.com>
-In-Reply-To: <20220711083220.2175036-1-asavkov@redhat.com>
-References: <20220711083220.2175036-1-asavkov@redhat.com>
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246771EC4D;
+        Mon, 11 Jul 2022 01:32:29 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id e69so7595628ybh.2;
+        Mon, 11 Jul 2022 01:32:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=rfksFWyKzK95Tycdc7144qcD0Ffw/6KuO+4RVJtE6Fc=;
+        b=RchMSnxfLG2NEh8IKskAz8Sy6KjFd8TNjrt3OVhUV5ljw9MgQ2zE9eok3KhI9QK6Pg
+         cd6QLOSTJs9PoGcNXHQtJbPsDE4sUP2zyh2WU5JrMaidC0lBf+gpcPAB89XZwjI60uqH
+         4bEZpAlJSePjwMpMzUQiA7eJD6VPzMOA+qZIEmOniHCRZ8Yme84kCUR5/RNQDlrYI/Cf
+         8m9QRYcqfKt89unKU5U0jgsMNJV5q8KiBXt6ZbTtqp6XaF0WP/zVrpDg2wafDbXVpqoY
+         3aOTlp881tacjNs82RuKf4JsXfmR6apbkQ2DAy7w9/Y8NU2ksg+5n8LuSKi2Z/BqFDSB
+         Xd1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rfksFWyKzK95Tycdc7144qcD0Ffw/6KuO+4RVJtE6Fc=;
+        b=yM6Lt+SXcRh+jdzBBgfw5WmiJbvX8+KcNLBE74FWk7o/CLLqBeZanQDDa6P7JYAQBf
+         T2KOaDtyTT3Xcu1WqZ6QsKtNaCGSNZ9p3yHafUx1mRb6oOdOfJ9HVid4OI2HfOWnKInj
+         +dl1RcETXMUM2EHjs/osJogJ02btDKk1R92cIxEAH9LiLvPkkNed5D6PFsrSQtQ2Ocyb
+         JB1c/uUE4lQslza7lWKc8weFZOgybBSmAxi3LM8RZZ+Gel6eFDXh/RcIlwOHTopQxCgh
+         9PE6Zlap5lAITFw9aJkoPI4Nwi/Eqrk3oq2Xuk1WUw3qJq5qOjP5+ai4OSnHEyJdsUOt
+         7gzA==
+X-Gm-Message-State: AJIora9FO7iMP237hVW5g36hpd/aWMWUJNBTYB7Nl8tNTuuIgpVvZnXW
+        QSlQFku8CuWo2qPz0IQhe4rpZXYam6Z/n3/YJlhcJFotEX/qXg==
+X-Google-Smtp-Source: AGRyM1sbThsfSVigEKUUzo4aJ6yvcK3MNEtbYQ/gm8rY3wCg3Wd6ubTN8V4QF9eUhSeFNM8A0ub9U4MTMGDWKZFx52o=
+X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
+ b198-20020a25cbcf000000b0066e8893a02cmr16403993ybg.460.1657528348125; Mon, 11
+ Jul 2022 01:32:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+References: <20220708195510.2951661-1-horatiu.vultur@microchip.com>
+ <20220708195510.2951661-2-horatiu.vultur@microchip.com> <CAHp75VdPi8rT_EJd8L8-waAkH_Lm947WVKMLHjjW5MpFW9A06Q@mail.gmail.com>
+ <20220711064950.3fqhuat3b23uabkj@soft-dev3-1.localhost>
+In-Reply-To: <20220711064950.3fqhuat3b23uabkj@soft-dev3-1.localhost>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Jul 2022 10:31:50 +0200
+Message-ID: <CAHp75Vdny6Q3iyO1_Qyz7C+AZ268xRixL6GvCE93f_vfS3bESw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] pinctrl: ocelot: Fix pincfg for lan966x
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        kavyasree.kotagiri@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Michael Walle <michael@walle.cc>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a selftest for bpf_panic() checking that the program will only load
-if all the prerequisites are met.
+On Mon, Jul 11, 2022 at 8:45 AM Horatiu Vultur
+<horatiu.vultur@microchip.com> wrote:
+> The 07/08/2022 23:58, Andy Shevchenko wrote:
+> > On Fri, Jul 8, 2022 at 10:10 PM Horatiu Vultur
+> > <horatiu.vultur@microchip.com> wrote:
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- .../selftests/bpf/prog_tests/bpf_panic.c      | 144 ++++++++++++++++++
- 1 file changed, 144 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_panic.c
+Please, remove unneeded context when replying!
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_panic.c b/tools/testing/selftests/bpf/prog_tests/bpf_panic.c
-new file mode 100644
-index 000000000000..9d008c0a5140
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_panic.c
-@@ -0,0 +1,144 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Red Hat, Inc. */
-+
-+#include <test_progs.h>
-+#include <bpf/btf.h>
-+
-+#include "cap_helpers.h"
-+
-+static int sysctl_get(const char *sysctl_path, char *old_val)
-+{
-+	int ret = 0;
-+	FILE *fp;
-+
-+	fp = fopen(sysctl_path, "r");
-+	if (!fp)
-+		return -errno;
-+
-+	if (fscanf(fp, "%s", old_val) <= 0)
-+		ret = -ENOENT;
-+
-+	fclose(fp);
-+
-+	return ret;
-+}
-+
-+static int sysctl_set(const char *sysctl_path, const char *new_val)
-+{
-+	int ret = 0;
-+	FILE *fp;
-+
-+	fp = fopen(sysctl_path, "w");
-+	if (!fp)
-+		return -errno;
-+
-+	if (fprintf(fp, "%s", new_val) < 0)
-+		ret = -errno;
-+
-+	fclose(fp);
-+
-+	return ret;
-+}
-+
-+static char bpf_vlog[UINT_MAX >> 8];
-+
-+static void test_bpf_panic_conditions(void)
-+{
-+	int fd_prog;
-+	int map_fd;
-+	struct bpf_insn prog_insns[] = {
-+		BPF_LD_MAP_VALUE(BPF_REG_1, 0, 0),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_panic),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	};
-+	const size_t prog_insn_cnt = sizeof(prog_insns) / sizeof(struct bpf_insn);
-+	LIBBPF_OPTS(bpf_prog_load_opts, load_opts);
-+	LIBBPF_OPTS(bpf_map_create_opts, map_create_opts);
-+	int attach_btf_id;
-+	__u64 save_caps = 0;
-+
-+	if (!ASSERT_OK(sysctl_set("/proc/sys/kernel/destructive_bpf_enabled",
-+			 "1"), "set destructive_bpf_enabled"))
-+		return;
-+
-+	load_opts.log_level = 1;
-+	load_opts.log_buf = bpf_vlog;
-+	load_opts.log_size = sizeof(bpf_vlog);
-+	load_opts.expected_attach_type = BPF_TRACE_FENTRY;
-+
-+	attach_btf_id = libbpf_find_vmlinux_btf_id("dentry_open", load_opts.expected_attach_type);
-+	if (!ASSERT_GE(attach_btf_id, 0, "attach_btf_id"))
-+		return;
-+
-+	load_opts.attach_btf_id = attach_btf_id;
-+
-+	map_create_opts.map_flags = BPF_F_RDONLY_PROG;
-+	map_fd = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, 4, 8, 1, &map_create_opts);
-+	if (!ASSERT_GE(map_fd, 0, "bpf_map_create"))
-+		return;
-+	ASSERT_OK(bpf_map_freeze(map_fd), "bpf_map_freeze");
-+
-+	prog_insns[0].imm = map_fd;
-+
-+	fd_prog = bpf_prog_load(BPF_PROG_TYPE_TRACING, "bpf_panic", "GPL", prog_insns, prog_insn_cnt, &load_opts);
-+
-+	if (ASSERT_EQ(fd_prog, -EACCES, "BPF_F_DESTRUCTIVE required")) {
-+		if (!ASSERT_OK_PTR(
-+				strstr(bpf_vlog, "require BPF_F_DESTRUCTIVE"),
-+				"BPF_F_DESTRUCTIVE verifier log")) {
-+			printf("verifier log:\n%s\n", bpf_vlog);
-+		}
-+	}
-+
-+	load_opts.prog_flags = BPF_F_DESTRUCTIVE;
-+	fd_prog = bpf_prog_load(BPF_PROG_TYPE_TRACING, "bpf_panic", "GPL", prog_insns, prog_insn_cnt, &load_opts);
-+
-+	if (ASSERT_GE(fd_prog, 0, "successful load")) {
-+		close(fd_prog);
-+	} else {
-+		printf("verifier log:\n%s\n", bpf_vlog);
-+	}
-+
-+
-+	if (ASSERT_OK(cap_disable_effective(1ULL << CAP_SYS_BOOT, &save_caps), "disable caps")) {
-+		fd_prog = bpf_prog_load(BPF_PROG_TYPE_TRACING, "bpf_panic", "GPL", prog_insns, prog_insn_cnt, &load_opts);
-+		ASSERT_EQ(fd_prog, -EINVAL, "CAP_SYS_BOOT required");
-+		if (!ASSERT_OK_PTR(
-+				strstr(bpf_vlog, "unknown func bpf_panic"),
-+				"CAP_SYS_BOOT verifier log")) {
-+			printf("verifier log:\n%s\n", bpf_vlog);
-+		}
-+		cap_enable_effective(save_caps, NULL);
-+	}
-+
-+	if (ASSERT_OK(sysctl_set("/proc/sys/kernel/destructive_bpf_enabled",
-+			 "0"), "unset destructive_bpf_enabled")) {
-+		fd_prog = bpf_prog_load(BPF_PROG_TYPE_TRACING, "bpf_panic", "GPL", prog_insns, prog_insn_cnt, &load_opts);
-+		ASSERT_EQ(fd_prog, -EINVAL, "!destructive_bpf_enabled");
-+		if (!ASSERT_OK_PTR(
-+				strstr(bpf_vlog, "unknown func bpf_panic"),
-+				"!destructive_bpf_enabled verifier log")) {
-+			printf("verifier log:\n%s\n", bpf_vlog);
-+		}
-+	}
-+	close(map_fd);
-+}
-+
-+void test_bpf_panic(void)
-+{
-+	char destructive_bpf_enabled_orig[32] = {};
-+
-+	if (!ASSERT_OK(sysctl_get("/proc/sys/kernel/destructive_bpf_enabled",
-+			 destructive_bpf_enabled_orig), "read destructive_bpf_enabled"))
-+		goto cleanup;
-+
-+	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
-+	if (test__start_subtest("bpf_panic_conditions"))
-+		test_bpf_panic_conditions();
-+
-+cleanup:
-+	if (strlen(destructive_bpf_enabled_orig) > 0)
-+		sysctl_set("/proc/sys/kernel/destructive_bpf_enabled",
-+				destructive_bpf_enabled_orig);
-+}
--- 
-2.35.3
+...
 
+> > > +       struct ocelot_match_data *data;
+> >
+> > Any specific reason why this is not const?
+> >
+> > > +       data =3D (struct ocelot_match_data *)device_get_match_data(de=
+v);
+> >
+> > And here you drop the qualifier...
+> >
+> > I would recommend making it const and dropping the cast completely.
+>
+> If I make this const, but then few lines after I will get the following
+> warnings:
+>
+> drivers/pinctrl/pinctrl-ocelot.c:1983:13: warning: assignment discards =
+=E2=80=98const=E2=80=99 qualifier from pointer target type [-Wdiscarded-qua=
+lifiers]
+> 1983 |  info->desc =3D &data->desc;
+>      |             ^
+> drivers/pinctrl/pinctrl-ocelot.c:1984:20: warning: assignment discards =
+=E2=80=98const=E2=80=99 qualifier from pointer target type [-Wdiscarded-qua=
+lifiers]
+> 1984 |  info->pincfg_data =3D &data->pincfg_data;
+>      |                    ^
+>
+> Of course I can make also info->desc and info->pincfg_data const but
+> then I will get the following warning:
+>
+> drivers/pinctrl/pinctrl-ocelot.c: In function =E2=80=98ocelot_pinctrl_reg=
+ister=E2=80=99:
+> drivers/pinctrl/pinctrl-ocelot.c:1723:53: warning: passing argument 2 of =
+=E2=80=98devm_pinctrl_register=E2=80=99 discards =E2=80=98const=E2=80=99 qu=
+alifier from pointer target type [-Wdiscarded-qualifiers]
+> 1723 |  info->pctl =3D devm_pinctrl_register(&pdev->dev, info->desc, info=
+);
+>      |                                                 ~~~~^~~~~~
+> In file included from include/linux/gpio/driver.h:10,
+>                  from drivers/pinctrl/pinctrl-ocelot.c:10:
+>                       include/linux/pinctrl/pinctrl.h:166:26: note: expec=
+ted =E2=80=98struct pinctrl_desc *=E2=80=99 but argument is of type =E2=80=
+=98const struct pinctrl_desc *=E2=80=99
+> 166 |     struct pinctrl_desc *pctldesc,
+>     |     ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+>
+> > > +       if (!data)
+> > > +               return -EINVAL;
+
+This is not good. Any chances to make it const?
+
+One way is to copy data in a newly allocated buffer (devm_kmemdup() for tha=
+t).
+
+--=20
+With Best Regards,
+Andy Shevchenko
