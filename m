@@ -2,81 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC97CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbiGKKSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
+        id S229636AbiGKKUA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiGKKRk (ORCPT
+        with ESMTP id S233011AbiGKKTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:17:40 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C27FC3AC8;
-        Mon, 11 Jul 2022 02:35:40 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Mon, 11 Jul 2022 06:19:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946DBC54B0;
+        Mon, 11 Jul 2022 02:36:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 80BD9660198A;
-        Mon, 11 Jul 2022 10:35:38 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657532139;
-        bh=/pQoU97yz4hZOWkwVcb+ZiFvDCPudO0glpdakIglu9E=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XbfSfqC0d0/CMCSy7PwUC1BrVijSWccHQPgI3Y1V8LRbLeDl/OQqQX9CSfEyeFQ7R
-         cBjNSizYFLsaWfhZwHFxuSZvKl8h1AVRnryTXxkgQ5H2DBwnyG6vM0W9L3EQnrspjC
-         SGYnFpmSBVfaQ/Uw30Rwm1A+eibVa0GE5befebxfFpi+QPbyZjpbSY09LtVoFjqYLx
-         MoVdNQc6leAw68bgo1aFgWd5gU3bz2dM4vwaHjyO10XXyFFX4LyUEtTMQ737TC+D0J
-         hVIuzRXAvi8j1HG/wr6k8vhSS5bcR5Xb/IaKa3OVPWtYCoueU8Mu0SgHQ1OgZl/tHo
-         7EQVKKZjJ6myg==
-Message-ID: <c0904c83-d264-41a7-3a3e-4253dfc36004@collabora.com>
-Date:   Mon, 11 Jul 2022 11:35:35 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] Revert "dt-bindings: usb: mtk-xhci: Make all clocks
- required"
-Content-Language: en-US
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kernel@collabora.com, Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6227B80E9D;
+        Mon, 11 Jul 2022 09:36:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 725D8C34115;
+        Mon, 11 Jul 2022 09:36:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657532164;
+        bh=x2fi2zGInfkK5GE+FcEN4aq5PDm1AC+auRutxJljOnk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=APPSS6ZpGlTYzPOIc+D3XQW2CwCGP/IMRIoXGA3p94HZpreF4yANALnJuMSBpqVP0
+         vSm7hgwSlXenfgVMUcIXvnkEqamBoPmKoCyUX9ue8gQGxzyL9oy7MWQQ39FM5jF5Iu
+         WtbLinKW1wzmJiFmoZ6AlsEkK51ueM81XBDJcSneGj6RdgLzaSgxT9ESXIYypqwK19
+         7+IjxVGlla55+f5lxc0aWkHBbSib2zaAlAQGC4h7fiDfse10WKw3DYXuQJb4XwlrPE
+         w1n/zpXtzalDhQcLaI0pERiSrm0cZIcjttn0erVCsO3+LXhYLCamVwGgG5EN4Od7DQ
+         ZUlvLKPs83YOw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oAppk-0006d9-CX; Mon, 11 Jul 2022 11:36:05 +0200
+Date:   Mon, 11 Jul 2022 11:36:04 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-usb@vger.kernel.org
-References: <20220708192605.43351-1-nfraprado@collabora.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220708192605.43351-1-nfraprado@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 04/10] dt-bindings: PCI: qcom: Add SC8280XP to binding
+Message-ID: <YsvvBHtQKzQD8sRE@hovoldconsulting.com>
+References: <20220629141000.18111-1-johan+linaro@kernel.org>
+ <20220629141000.18111-5-johan+linaro@kernel.org>
+ <20220709080053.GK5063@thinkpad>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220709080053.GK5063@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 08/07/22 21:26, Nícolas F. R. A. Prado ha scritto:
-> This reverts commit ebc4969ae125e65fdb563f66f4bfa7aec95f7eb4. That
-> commit was supposed to make the binding better reflect the MediaTek XHCI
-> hardware block by requiring all clocks to be present. But doing that
-> also causes too much noise in the devicetrees, since it requires
-> updating old MediaTek DTs to add clock handles for the fixed clocks, and
-> going forward every new clock added to the binding would require even
-> more updates.
+On Sat, Jul 09, 2022 at 01:30:53PM +0530, Manivannan Sadhasivam wrote:
+> On Wed, Jun 29, 2022 at 04:09:54PM +0200, Johan Hovold wrote:
+> > Add the SC8280XP platform to the binding.
+> > 
+> > SC8280XP use four host interrupts for MSI routing so remove the obsolete
+> > comment referring to newer chipsets supporting one or eight interrupts
+> > (e.g. for backwards compatibility).
+> > 
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > 
-> The commit also didn't update the example to match the changes, causing
-> additional warnings.
-> 
-> Instead let's keep the clocks optional so that old devicetrees can keep
-> omitting the fixed clocks, and we'll just add the clocks as required on
-> new DTs.
-> 
-> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> Wondering why 4 on this SoC. Is this what added in downstream or you also
+> verified it with IP documentation.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+I don't have direct access to the IP docs, but I've verified it with
+people who do.
 
+Johan
