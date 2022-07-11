@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268BCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A87CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232909AbiGKJdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        id S232382AbiGKJda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbiGKJcn (ORCPT
+        with ESMTP id S232731AbiGKJcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:32:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BB17822A;
-        Mon, 11 Jul 2022 02:17:32 -0700 (PDT)
+        Mon, 11 Jul 2022 05:32:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F717820A;
+        Mon, 11 Jul 2022 02:17:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 774B1B80E74;
-        Mon, 11 Jul 2022 09:17:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4747C341CE;
-        Mon, 11 Jul 2022 09:17:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE960B80D2C;
+        Mon, 11 Jul 2022 09:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5E8C34115;
+        Mon, 11 Jul 2022 09:17:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531050;
-        bh=YVnFkwa8Y6Ua+2s8C/87eVG7a1hYAbDX9XzAqUxF8pU=;
+        s=korg; t=1657531047;
+        bh=brbJvPvQyUrPmRBFXJ1vZX/QnauMoQjd4xPA//Wvnoc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KKpre+DunpdAOKlOFGvQ+Mm3GmoyY+9EwTJYDXmd3jvUduZQtB7GYLuAYsQet8jN7
-         3aluaxs5hDFKcdJZXzDTSxXMR1n9afjjyZpKSy5GAFydcatjFEhXo4dBGlo29+/s3L
-         7QMiqQy8M65zT0zYuYKfV9WGKL4lZ7N8ZT0LC46Y=
+        b=xOZwvj3QkYqxUzRvNHgUS7OOwlF1J5gURiEGOcqswcfcSruQq40ocWyzsvaAX4gvR
+         cmDbX6WxRgBwqXl+Qr0yTDNUBtDTb3WjlIgePlR4+h8Kp92dc66b7gHXzjkiWpeJ3d
+         HAUF7YCD8uo6mKglrAZ+rBbBvG2akRCBFu5+KbBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Wang <peter.wang@mediatek.com>,
+        stable@vger.kernel.org,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.18 038/112] PM: runtime: Fix supplier device management during consumer probe
-Date:   Mon, 11 Jul 2022 11:06:38 +0200
-Message-Id: <20220711090550.653474614@linuxfoundation.org>
+Subject: [PATCH 5.18 037/112] PM: runtime: Redefine pm_runtime_release_supplier()
+Date:   Mon, 11 Jul 2022 11:06:37 +0200
+Message-Id: <20220711090550.624905851@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,102 +50,109 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit 887371066039011144b4a94af97d9328df6869a2 upstream.
+commit 07358194badf73e267289b40b761f5dc56928eab upstream.
 
-Because pm_runtime_get_suppliers() bumps up the rpm_active counter
-of each device link to a supplier of the given device in addition
-to bumping up the supplier's PM-runtime usage counter, a runtime
-suspend of the consumer device may case the latter to go down to 0
-when pm_runtime_put_suppliers() is running on a remote CPU.  If that
-happens after pm_runtime_put_suppliers() has released power.lock for
-the consumer device, and a runtime resume of that device takes place
-immediately after it, before pm_runtime_put() is called for the
-supplier, that pm_runtime_put() call may cause the supplier to be
-suspended even though the consumer is active.
+Instead of passing an extra bool argument to pm_runtime_release_supplier(),
+make its callers take care of triggering a runtime-suspend of the
+supplier device as needed.
 
-To prevent that from happening, modify pm_runtime_get_suppliers() to
-call pm_runtime_get_sync() for the given device's suppliers without
-touching the rpm_active counters of the involved device links
-Accordingly, modify pm_runtime_put_suppliers() to call pm_runtime_put()
-for the given device's suppliers without looking at the rpm_active
-counters of the device links at hand.  [This is analogous to what
-happened before commit 4c06c4e6cf63 ("driver core: Fix possible
-supplier PM-usage counter imbalance").]
+No expected functional impact.
 
-Since pm_runtime_get_suppliers() sets supplier_preactivated for each
-device link where the supplier's PM-runtime usage counter has been
-incremented and pm_runtime_put_suppliers() calls pm_runtime_put() for
-the suppliers whose device links have supplier_preactivated set, the
-PM-runtime usage counter is balanced for each supplier and this is
-independent of the runtime suspend and resume of the consumer device.
-
-However, in case a device link with DL_FLAG_PM_RUNTIME set is dropped
-during the consumer device probe, so pm_runtime_get_suppliers() bumps
-up the supplier's PM-runtime usage counter, but it cannot be dropped by
-pm_runtime_put_suppliers(), make device_link_release_fn() take care of
-that.
-
-Fixes: 4c06c4e6cf63 ("driver core: Fix possible supplier PM-usage counter imbalance")
-Reported-by: Peter Wang <peter.wang@mediatek.com>
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Peter Wang <peter.wang@mediatek.com>
 Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/core.c          |   10 ++++++++++
- drivers/base/power/runtime.c |   14 +-------------
- 2 files changed, 11 insertions(+), 13 deletions(-)
+ drivers/base/core.c          |    3 ++-
+ drivers/base/power/runtime.c |   20 +++++++++-----------
+ include/linux/pm_runtime.h   |    5 ++---
+ 3 files changed, 13 insertions(+), 15 deletions(-)
 
 --- a/drivers/base/core.c
 +++ b/drivers/base/core.c
-@@ -486,6 +486,16 @@ static void device_link_release_fn(struc
+@@ -485,7 +485,8 @@ static void device_link_release_fn(struc
+ 	/* Ensure that all references to the link object have been dropped. */
  	device_link_synchronize_removal();
  
- 	pm_runtime_release_supplier(link);
-+	/*
-+	 * If supplier_preactivated is set, the link has been dropped between
-+	 * the pm_runtime_get_suppliers() and pm_runtime_put_suppliers() calls
-+	 * in __driver_probe_device().  In that case, drop the supplier's
-+	 * PM-runtime usage counter to remove the reference taken by
-+	 * pm_runtime_get_suppliers().
-+	 */
-+	if (link->supplier_preactivated)
-+		pm_runtime_put_noidle(link->supplier);
-+
- 	pm_request_idle(link->supplier);
+-	pm_runtime_release_supplier(link, true);
++	pm_runtime_release_supplier(link);
++	pm_request_idle(link->supplier);
  
  	put_device(link->consumer);
+ 	put_device(link->supplier);
 --- a/drivers/base/power/runtime.c
 +++ b/drivers/base/power/runtime.c
-@@ -1737,7 +1737,6 @@ void pm_runtime_get_suppliers(struct dev
- 		if (link->flags & DL_FLAG_PM_RUNTIME) {
- 			link->supplier_preactivated = true;
- 			pm_runtime_get_sync(link->supplier);
--			refcount_inc(&link->rpm_active);
- 		}
+@@ -308,13 +308,10 @@ static int rpm_get_suppliers(struct devi
+ /**
+  * pm_runtime_release_supplier - Drop references to device link's supplier.
+  * @link: Target device link.
+- * @check_idle: Whether or not to check if the supplier device is idle.
+  *
+- * Drop all runtime PM references associated with @link to its supplier device
+- * and if @check_idle is set, check if that device is idle (and so it can be
+- * suspended).
++ * Drop all runtime PM references associated with @link to its supplier device.
+  */
+-void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
++void pm_runtime_release_supplier(struct device_link *link)
+ {
+ 	struct device *supplier = link->supplier;
  
- 	device_links_read_unlock(idx);
-@@ -1757,19 +1756,8 @@ void pm_runtime_put_suppliers(struct dev
+@@ -327,9 +324,6 @@ void pm_runtime_release_supplier(struct
+ 	while (refcount_dec_not_one(&link->rpm_active) &&
+ 	       atomic_read(&supplier->power.usage_count) > 0)
+ 		pm_runtime_put_noidle(supplier);
+-
+-	if (check_idle)
+-		pm_request_idle(supplier);
+ }
+ 
+ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+@@ -337,8 +331,11 @@ static void __rpm_put_suppliers(struct d
+ 	struct device_link *link;
+ 
  	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
- 				device_links_read_lock_held())
- 		if (link->supplier_preactivated) {
--			bool put;
--
- 			link->supplier_preactivated = false;
--
--			spin_lock_irq(&dev->power.lock);
--
--			put = pm_runtime_status_suspended(dev) &&
--			      refcount_dec_not_one(&link->rpm_active);
--
--			spin_unlock_irq(&dev->power.lock);
--
--			if (put)
--				pm_runtime_put(link->supplier);
-+			pm_runtime_put(link->supplier);
- 		}
+-				device_links_read_lock_held())
+-		pm_runtime_release_supplier(link, try_to_suspend);
++				device_links_read_lock_held()) {
++		pm_runtime_release_supplier(link);
++		if (try_to_suspend)
++			pm_request_idle(link->supplier);
++	}
+ }
  
- 	device_links_read_unlock(idx);
+ static void rpm_put_suppliers(struct device *dev)
+@@ -1807,7 +1804,8 @@ void pm_runtime_drop_link(struct device_
+ 		return;
+ 
+ 	pm_runtime_drop_link_count(link->consumer);
+-	pm_runtime_release_supplier(link, true);
++	pm_runtime_release_supplier(link);
++	pm_request_idle(link->supplier);
+ }
+ 
+ static bool pm_runtime_need_not_resume(struct device *dev)
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -82,7 +82,7 @@ extern void pm_runtime_get_suppliers(str
+ extern void pm_runtime_put_suppliers(struct device *dev);
+ extern void pm_runtime_new_link(struct device *dev);
+ extern void pm_runtime_drop_link(struct device_link *link);
+-extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
++extern void pm_runtime_release_supplier(struct device_link *link);
+ 
+ extern int devm_pm_runtime_enable(struct device *dev);
+ 
+@@ -308,8 +308,7 @@ static inline void pm_runtime_get_suppli
+ static inline void pm_runtime_put_suppliers(struct device *dev) {}
+ static inline void pm_runtime_new_link(struct device *dev) {}
+ static inline void pm_runtime_drop_link(struct device_link *link) {}
+-static inline void pm_runtime_release_supplier(struct device_link *link,
+-					       bool check_idle) {}
++static inline void pm_runtime_release_supplier(struct device_link *link) {}
+ 
+ #endif /* !CONFIG_PM */
+ 
 
 
