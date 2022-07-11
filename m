@@ -2,84 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 680E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18F1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234198AbiGKJ5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
+        id S233884AbiGKJ52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234041AbiGKJ4t (ORCPT
+        with ESMTP id S234065AbiGKJ44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:56:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E8FB4189;
-        Mon, 11 Jul 2022 02:26:50 -0700 (PDT)
+        Mon, 11 Jul 2022 05:56:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3D2B4197;
+        Mon, 11 Jul 2022 02:26:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30F2AB80E92;
-        Mon, 11 Jul 2022 09:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86B7AC34115;
-        Mon, 11 Jul 2022 09:26:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531595;
-        bh=S9mbCzU3aDaS30PbSuhcVdHDJcVEx5OvHyDJ8pSdBd8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MIvELIldhA0oAz3LghBU2dP/0GiSSkz2/CS/t4Yjqq/5lHReDLU/8Wu1vS1LHeQI6
-         uEi91IB8vu0vUT9lQYEs4Uhm8OhkHvnUGmLLbtTWWw0d1VZPH7P/W+uZKQ5MRA5eQG
-         Jnf/Edpo0LyvtURQK2YbHTSrKQYc5ihEHkNg+/nM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5.15 161/230] fbcon: Disallow setting font bigger than screen size
-Date:   Mon, 11 Jul 2022 11:06:57 +0200
-Message-Id: <20220711090608.628351902@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
-References: <20220711090604.055883544@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1E1B61137;
+        Mon, 11 Jul 2022 09:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C945C34115;
+        Mon, 11 Jul 2022 09:26:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657531610;
+        bh=7ELGCx4LssDb2Kcwavh1jcH+Hm4i0tljTlzVmh5vsYc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=dHFDA59PDt+xHjRK7XwdiOrO8zkyQezAdkMRONk1ER61ogo+Bd8F+f61sAO3UV+xo
+         JPyHyQmsg4KeHaCRsoHVNyCXfEjOTA9LUi4ypBDfLjSF/MLXW40PShhWexXM1QI6nc
+         h/Gp/cShPhisplqHVfVBFswdsSEDDKyduUMsAmoI9/5XJEsIYPfXQ+hEs3/1J1or6A
+         iZQkCRX4Tx92Xf2MPAW7S+uGF6XEiC5+mPBVZamzLFVPcx+YrUzRKhwJ7RlYPHRb/Z
+         AzbIe5xZ8huZpvFYExUsZ0CWfdmSksOleZeOZL9bj4h274WoPAQEKZYkiOdbQS/Hcf
+         ujHWTS4s32Xcw==
+Message-ID: <5f05d690-0d9d-25f4-29ee-a7b8c05abe95@kernel.org>
+Date:   Mon, 11 Jul 2022 11:26:42 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 1/2] dt-bindings: pwm: Document clk based PWM
+ controller
+Content-Language: en-US
+To:     Nikita Travkin <nikita@trvn.ru>, thierry.reding@gmail.com,
+        lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh@kernel.org>
+References: <20220711062330.4923-1-nikita@trvn.ru>
+ <20220711062330.4923-2-nikita@trvn.ru>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220711062330.4923-2-nikita@trvn.ru>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+On 11/07/2022 08:23, Nikita Travkin wrote:
+> Add YAML devicetree binding for clk based PWM controller
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+> --
 
-commit 65a01e601dbba8b7a51a2677811f70f783766682 upstream.
+This is not correct marker.  You miss blank line before it and it should
+be '---'.
 
-Prevent that users set a font size which is bigger than the physical screen.
-It's unlikely this may happen (because screens are usually much larger than the
-fonts and each font char is limited to 32x32 pixels), but it may happen on
-smaller screens/LCD displays.
+> Changes in v2:
+>  - fix the file name.
+> Changes in v4:
+>  - Use generic node name in the dt bindings example.
+> Changes in v5:
+>  - make compatible required
+> ---
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: stable@vger.kernel.org # v4.14+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/video/fbdev/core/fbcon.c |    5 +++++
- 1 file changed, 5 insertions(+)
-
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2480,6 +2480,11 @@ static int fbcon_set_font(struct vc_data
- 	if (charcount != 256 && charcount != 512)
- 		return -EINVAL;
- 
-+	/* font bigger than screen resolution ? */
-+	if (w > FBCON_SWAP(info->var.rotate, info->var.xres, info->var.yres) ||
-+	    h > FBCON_SWAP(info->var.rotate, info->var.yres, info->var.xres))
-+		return -EINVAL;
-+
- 	/* Make sure drawing engine can handle the font */
- 	if (!(info->pixmap.blit_x & (1 << (font->width - 1))) ||
- 	    !(info->pixmap.blit_y & (1 << (font->height - 1))))
-
-
+Best regards,
+Krzysztof
