@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5041DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 974E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232303AbiGKJ0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
+        id S232319AbiGKJ0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiGKJYg (ORCPT
+        with ESMTP id S232366AbiGKJYf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0C22983B;
-        Mon, 11 Jul 2022 02:14:53 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A6529822;
+        Mon, 11 Jul 2022 02:14:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF1316122D;
-        Mon, 11 Jul 2022 09:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC11BC34115;
-        Mon, 11 Jul 2022 09:14:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAA54B80D2C;
+        Mon, 11 Jul 2022 09:14:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BBABC36AEB;
+        Mon, 11 Jul 2022 09:14:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530892;
-        bh=IGjaSXXz+F58VMvnjySoD6f9kLwkf6beF4+9SB1lVBY=;
+        s=korg; t=1657530889;
+        bh=404RDpCX/R8w6TAuufcmeta5kQhm/fqKDMIEIfueZ68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yDQsW1Pc8vmFR1DGEA1dpHfNFFIYGvPwZxXVKpjRGlT6oYA+bm/RD/BC8LTL85HnE
-         5+2FS8bzVlJmc9+dcYZ0P69ZT+5IzZJ2h9mS2amqvXrp9jZj1i/+CUVc6QoQkdkN/f
-         iMlc4I365Z5XkdYm7W+nUhtOsulyR0oR+/GM3DFc=
+        b=RRFRelNDBAUV1HJrUqnLdB6C63PCqbUa2C6gIqK1eTETL/wiQXwYxbqUoMIv1JdAo
+         VV3sADs1ETEyFi06tu2DxDRr6kZwjkWLF+CThe6fr8rK/Z7OOi2kzs3nV53+5vrWQF
+         ZyYIK9NKhcldrPQOBmfN6jDdlkuall6d9+1w/LRI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Brivio <sbrivio@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.18 021/112] netfilter: nft_set_pipapo: release elements in clone from abort path
-Date:   Mon, 11 Jul 2022 11:06:21 +0200
-Message-Id: <20220711090550.161213436@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 020/112] net: lan966x: hardcode the number of external ports
+Date:   Mon, 11 Jul 2022 11:06:20 +0200
+Message-Id: <20220711090550.133256899@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -48,123 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Michael Walle <michael@walle.cc>
 
-commit 9827a0e6e23bf43003cd3d5b7fb11baf59a35e1e upstream.
+commit e6fa930f73a15238f3cb0c204e2f786c919b815c upstream.
 
-New elements that reside in the clone are not released in case that the
-transaction is aborted.
+Instead of counting the child nodes in the device tree, hardcode the
+number of ports in the driver itself.  The counting won't work at all
+if an ethernet port is marked as disabled, e.g. because it is not
+connected on the board at all.
 
-[16302.231754] ------------[ cut here ]------------
-[16302.231756] WARNING: CPU: 0 PID: 100509 at net/netfilter/nf_tables_api.c:1864 nf_tables_chain_destroy+0x26/0x127 [nf_tables]
-[...]
-[16302.231882] CPU: 0 PID: 100509 Comm: nft Tainted: G        W         5.19.0-rc3+ #155
-[...]
-[16302.231887] RIP: 0010:nf_tables_chain_destroy+0x26/0x127 [nf_tables]
-[16302.231899] Code: f3 fe ff ff 41 55 41 54 55 53 48 8b 6f 10 48 89 fb 48 c7 c7 82 96 d9 a0 8b 55 50 48 8b 75 58 e8 de f5 92 e0 83 7d 50 00 74 09 <0f> 0b 5b 5d 41 5c 41 5d c3 4c 8b 65 00 48 8b 7d 08 49 39 fc 74 05
-[...]
-[16302.231917] Call Trace:
-[16302.231919]  <TASK>
-[16302.231921]  __nf_tables_abort.cold+0x23/0x28 [nf_tables]
-[16302.231934]  nf_tables_abort+0x30/0x50 [nf_tables]
-[16302.231946]  nfnetlink_rcv_batch+0x41a/0x840 [nfnetlink]
-[16302.231952]  ? __nla_validate_parse+0x48/0x190
-[16302.231959]  nfnetlink_rcv+0x110/0x129 [nfnetlink]
-[16302.231963]  netlink_unicast+0x211/0x340
-[16302.231969]  netlink_sendmsg+0x21e/0x460
+It turns out that the LAN9662 and LAN9668 use the same switching IP
+with the same synthesis parameters. The only difference is that the
+output ports are not connected. Thus, we can just hardcode the
+number of physical ports to 8.
 
-Add nft_set_pipapo_match_destroy() helper function to release the
-elements in the lookup tables.
-
-Stefano Brivio says: "We additionally look for elements pointers in the
-cloned matching data if priv->dirty is set, because that means that
-cloned data might point to additional elements we did not commit to the
-working copy yet (such as the abort path case, but perhaps not limited
-to it)."
-
-Fixes: 3c4287f62044 ("nf_tables: Add set type for arbitrary concatenation of ranges")
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: db8bcaad5393 ("net: lan966x: add the basic lan966x driver")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Link: https://lore.kernel.org/r/20220704153654.1167886-1-michael@walle.cc
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_set_pipapo.c |   48 ++++++++++++++++++++++++++++-------------
- 1 file changed, 33 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c |    8 ++------
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.h |    1 +
+ 2 files changed, 3 insertions(+), 6 deletions(-)
 
---- a/net/netfilter/nft_set_pipapo.c
-+++ b/net/netfilter/nft_set_pipapo.c
-@@ -2125,6 +2125,32 @@ out_scratch:
- }
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -979,7 +979,7 @@ static int lan966x_probe(struct platform
+ 	struct fwnode_handle *ports, *portnp;
+ 	struct lan966x *lan966x;
+ 	u8 mac_addr[ETH_ALEN];
+-	int err, i;
++	int err;
  
- /**
-+ * nft_set_pipapo_match_destroy() - Destroy elements from key mapping array
-+ * @set:	nftables API set representation
-+ * @m:		matching data pointing to key mapping array
-+ */
-+static void nft_set_pipapo_match_destroy(const struct nft_set *set,
-+					 struct nft_pipapo_match *m)
-+{
-+	struct nft_pipapo_field *f;
-+	int i, r;
-+
-+	for (i = 0, f = m->f; i < m->field_count - 1; i++, f++)
-+		;
-+
-+	for (r = 0; r < f->rules; r++) {
-+		struct nft_pipapo_elem *e;
-+
-+		if (r < f->rules - 1 && f->mt[r + 1].e == f->mt[r].e)
-+			continue;
-+
-+		e = f->mt[r].e;
-+
-+		nft_set_elem_destroy(set, e, true);
-+	}
-+}
-+
-+/**
-  * nft_pipapo_destroy() - Free private data for set and all committed elements
-  * @set:	nftables API set representation
-  */
-@@ -2132,26 +2158,13 @@ static void nft_pipapo_destroy(const str
- {
- 	struct nft_pipapo *priv = nft_set_priv(set);
- 	struct nft_pipapo_match *m;
--	struct nft_pipapo_field *f;
--	int i, r, cpu;
-+	int cpu;
+ 	lan966x = devm_kzalloc(&pdev->dev, sizeof(*lan966x), GFP_KERNEL);
+ 	if (!lan966x)
+@@ -1010,11 +1010,7 @@ static int lan966x_probe(struct platform
+ 	if (err)
+ 		return dev_err_probe(&pdev->dev, err, "Reset failed");
  
- 	m = rcu_dereference_protected(priv->match, true);
- 	if (m) {
- 		rcu_barrier();
- 
--		for (i = 0, f = m->f; i < m->field_count - 1; i++, f++)
--			;
+-	i = 0;
+-	fwnode_for_each_available_child_node(ports, portnp)
+-		++i;
 -
--		for (r = 0; r < f->rules; r++) {
--			struct nft_pipapo_elem *e;
--
--			if (r < f->rules - 1 && f->mt[r + 1].e == f->mt[r].e)
--				continue;
--
--			e = f->mt[r].e;
--
--			nft_set_elem_destroy(set, e, true);
--		}
-+		nft_set_pipapo_match_destroy(set, m);
+-	lan966x->num_phys_ports = i;
++	lan966x->num_phys_ports = NUM_PHYS_PORTS;
+ 	lan966x->ports = devm_kcalloc(&pdev->dev, lan966x->num_phys_ports,
+ 				      sizeof(struct lan966x_port *),
+ 				      GFP_KERNEL);
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+@@ -31,6 +31,7 @@
+ /* Reserved amount for (SRC, PRIO) at index 8*SRC + PRIO */
+ #define QSYS_Q_RSRV			95
  
- #ifdef NFT_PIPAPO_ALIGN
- 		free_percpu(m->scratch_aligned);
-@@ -2165,6 +2178,11 @@ static void nft_pipapo_destroy(const str
- 	}
++#define NUM_PHYS_PORTS			8
+ #define CPU_PORT			8
  
- 	if (priv->clone) {
-+		m = priv->clone;
-+
-+		if (priv->dirty)
-+			nft_set_pipapo_match_destroy(set, m);
-+
- #ifdef NFT_PIPAPO_ALIGN
- 		free_percpu(priv->clone->scratch_aligned);
- #endif
+ /* Reserved PGIDs */
 
 
