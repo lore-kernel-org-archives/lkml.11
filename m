@@ -2,64 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4814EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D058C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:18:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230471AbiGKQSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 12:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        id S231922AbiGKQSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231868AbiGKQSK (ORCPT
+        with ESMTP id S231871AbiGKQSL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 12:18:10 -0400
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE55B7AC20;
-        Mon, 11 Jul 2022 09:18:09 -0700 (PDT)
-Received: by mail-pj1-f50.google.com with SMTP id y14-20020a17090a644e00b001ef775f7118so8831795pjm.2;
-        Mon, 11 Jul 2022 09:18:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vlCWnpuHBiBhE7oDhpYPIvbDLmOAPgNxuESwMXrAYiU=;
-        b=eqSvVOAIxucBDLsFDxmeW/qXuUk44seYQ6I3IY4SK68SN9Iad3tDh+rEKl0wqoRWcX
-         Mfq3filoGWHgMyeH/MnUIM26MsTzEbPaJDpKoTBhsKYR1M18hUkitsGZ9knW6go4CELl
-         KeC2VNNAKfmQHNu/rHRNIQWuAW9mhNUvnBqWExD/C+wz8Ec3KIpOynWszIcBpAB+OF/D
-         OFHBxS3BVcQlkggDLl2uldNbKRBwIob5O+M8Fi2I11PgRqTSt1mklYjuemqJVzm4aUI/
-         KpvLVvLNXceJh2Mkcyk+ch9pDjJdIMmQBVloXr7DtTzMtt/3ERhioqis4zTRBbuS3hKu
-         yVFg==
-X-Gm-Message-State: AJIora8/FWNGKUVc5g5greKqugKami4KauNRtxr5v9NsX4PDee7pcsw2
-        XzJwKH428oi9AevuuT0Vh73zCr6vyek=
-X-Google-Smtp-Source: AGRyM1tLWkkZqwtTqS/hVhuJzABmpZbeOei2hzW3KRFV8Fvzeep3j8QAn/1PgXUbTXlvSgsDCVpQ2w==
-X-Received: by 2002:a17:903:228c:b0:16c:2f61:9158 with SMTP id b12-20020a170903228c00b0016c2f619158mr14413129plh.140.1657556289325;
-        Mon, 11 Jul 2022 09:18:09 -0700 (PDT)
-Received: from [192.168.50.14] (c-73-241-217-19.hsd1.ca.comcast.net. [73.241.217.19])
-        by smtp.gmail.com with ESMTPSA id p1-20020a17090a348100b001ef7bcb7e61sm7160094pjb.47.2022.07.11.09.18.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 09:18:08 -0700 (PDT)
-Message-ID: <4c63d554-80fb-99bc-68aa-245bdbe4e1a0@acm.org>
-Date:   Mon, 11 Jul 2022 09:18:06 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH -next] scsi: ufs: ufs-mediatek: Fix build error
-Content-Language: en-US
-To:     Ren Zhijie <renzhijie2@huawei.com>, stanley.chu@mediatek.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        matthias.bgg@gmail.com
-Cc:     linux-scsi@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220704025632.235968-1-renzhijie2@huawei.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20220704025632.235968-1-renzhijie2@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 11 Jul 2022 12:18:11 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 485D47AC26
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:18:10 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26BGEhJX006415;
+        Mon, 11 Jul 2022 11:14:43 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26BGEhND006414;
+        Mon, 11 Jul 2022 11:14:43 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Mon, 11 Jul 2022 11:14:42 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Michael Ellerman <michael@ellerman.id.au>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
+Message-ID: <20220711161442.GD25951@gate.crashing.org>
+References: <20220524093939.30927-1-pali@kernel.org> <20220702094405.tp7eo4df7fjvn2ng@pali> <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au> <20220704103951.nm4m4kpgnus3ucqo@pali> <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com> <20220708171227.74nbcgsk63y4bdna@pali> <CAK8P3a3YMqGEjRr+ZD4Enm4pnuNNZOaeXqpY=PDXAP7w3P7y4A@mail.gmail.com> <d9339bb9-2410-bea5-7502-1c7839707f4e@csgroup.eu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d9339bb9-2410-bea5-7502-1c7839707f4e@csgroup.eu>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/3/22 19:56, Ren Zhijie wrote:
+On Sat, Jul 09, 2022 at 09:26:11AM +0000, Christophe Leroy wrote:
+> If I select the GENERIC_CPU or e5500 (with altivec) I get:
 > 
+>    CC      arch/powerpc/kernel/irq.o
+> {standard input}: Assembler messages:
+> {standard input}:3535: Error: unrecognized opcode: `wrteei'
+> {standard input}:5608: Error: unrecognized opcode: `wrteei'
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+What -mcpu= did it use here?
+
+wrteei is not a PowerPC insn (it is BookE, instead), so it is not
+recognised without an appropriate -mcpu=.
+
+> If I select the e5500 (without altivec) or e6500 I get:
+> 
+>    CC      arch/powerpc/kernel/io.o
+> {standard input}: Assembler messages:
+> {standard input}:381: Error: unrecognized opcode: `eieio'
+
+Same question.  eieio is a base PowerPC instruction, so this one is
+"interesting" :-)
+
+
+Segher
