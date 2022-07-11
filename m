@@ -2,78 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD54C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:16:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 241B4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232084AbiGKVQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 17:16:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        id S230162AbiGKVVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 17:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232027AbiGKVQ1 (ORCPT
+        with ESMTP id S229717AbiGKVVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 17:16:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 777F3823B4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:16:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657574185;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HQK/MBlEjX74s0apUftzaPPRJK2H5VXdkugL64NaRtk=;
-        b=aDygW9n92pS3FlOmDMx+XUJcTCfxPYcWKWLk2Y2LP+F7nDi8atNkYlTW/M8HYzFVY+CK2P
-        7zmRx6/XL/nz6D4wJBP7HhE6EyyFqC+i6ku7iioHgIkUgJBdrb1FuDj8epswO/VHMRwzmR
-        DBgcp3wCB5RCcc5bjJyRH3vbpP7Piz8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-127-pYHXJ_uWM-ybrzYxwdO3gg-1; Mon, 11 Jul 2022 17:16:20 -0400
-X-MC-Unique: pYHXJ_uWM-ybrzYxwdO3gg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 11 Jul 2022 17:21:11 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63142A716;
+        Mon, 11 Jul 2022 14:21:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 76A961018AA4;
-        Mon, 11 Jul 2022 21:16:20 +0000 (UTC)
-Received: from pauld.bos.com (dhcp-17-237.bos.redhat.com [10.18.17.237])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 480132166B26;
-        Mon, 11 Jul 2022 21:16:20 +0000 (UTC)
-From:   Phil Auld <pauld@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Valentin Schneider <vschneid@redhat.com>
-Subject: [PATCH v3 0/2] cpuhp: fix some st->target issues
-Date:   Mon, 11 Jul 2022 17:16:17 -0400
-Message-Id: <20220711211619.112854-1-pauld@redhat.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 696A422AB2;
+        Mon, 11 Jul 2022 21:21:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657574468; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=BrBDvl4qC4LTS72QHk/hrHRE5XNXQVEeAobhMNDASnU=;
+        b=r/ycO6YwLIT/Nm+rYaY6umt8Vo7zdVhhQpFUG2p3wZgGrxdkjTAkivKMwSnVz3sXw3RZuI
+        JGfCozr6mDWu+p83F5s/4bF0fc7sSbEBs99y9M3KcMcIb45hd9SAJcH1PsjM1ucP9nfdlu
+        InPp3N3vz/+6x5SDWbyDqMDpH0IHEb0=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 383EA13524;
+        Mon, 11 Jul 2022 21:21:08 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id q/6RDESUzGIuWwAAMHmgww
+        (envelope-from <dsterba@suse.com>); Mon, 11 Jul 2022 21:21:08 +0000
+Date:   Mon, 11 Jul 2022 23:16:19 +0200
+From:   David Sterba <dsterba@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Btrfs fixes for 5.19-rc7
+Message-ID: <cover.1657571742.git.dsterba@suse.com>
+Mail-Followup-To: David Sterba <dsterba@suse.com>,
+        torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Several small fixes that clean up some cpuhp inconsistencies.
-The first prevents target_store() from calling cpu_down() when
-target == state which prevents the cpu being incorrectly marked
-as dying.  The second just makes the boot cpu have a valid cpuhp
-target rather than 0 (CPU_OFFLINE) while being in state
-CPU_ONLINE.
+Hi,
 
-A further issue which these two patches don't address is that
-the cpuX/online file looks at the device->offline state and can
-thus get out of sync with the actual cpuhp state if the cpuhp
-target is used to change state.
+a few more fixes that seem to me to be important enough to get merged
+before release, described below. Please pull, thanks.
 
-v3: Added code to make sure st->target == target in the nop case.
+- in zoned mode, fix leak of a structure when reading zone info, this
+  happens on normal path so this can be significant
 
-Phil Auld (2):
-  cpuhp: make target_store() a nop when target == state
-  cpuhp: Set cpuhp target for boot cpu
+- in zoned mode, revert an optimization added in 5.19-rc1 to finish a
+  zone when the capacity is full, but this is not reliable in all cases
 
- kernel/cpu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+- try to avoid short reads for compressed data or inline files when it's
+  a NOWAIT read, applications should handle that but there are two,
+  qemu and mariadb, that are affected
 
--- 
-2.31.1
+----------------------------------------------------------------
+The following changes since commit 037e127452b973f45b34c1e88a1af183e652e657:
 
+  Documentation: update btrfs list of features and link to readthedocs.io (2022-06-21 14:47:19 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc6-tag
+
+for you to fetch changes up to b3a3b0255797e1d395253366ba24a4cc6c8bdf9c:
+
+  btrfs: zoned: drop optimization of zone finish (2022-07-08 19:18:00 +0200)
+
+----------------------------------------------------------------
+Christoph Hellwig (1):
+      btrfs: zoned: fix a leaked bioc in read_zone_info
+
+Filipe Manana (1):
+      btrfs: return -EAGAIN for NOWAIT dio reads/writes on compressed and inline extents
+
+Naohiro Aota (1):
+      btrfs: zoned: drop optimization of zone finish
+
+ fs/btrfs/inode.c | 14 +++++++++++++-
+ fs/btrfs/zoned.c | 34 ++++++++++++++--------------------
+ 2 files changed, 27 insertions(+), 21 deletions(-)
