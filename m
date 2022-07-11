@@ -2,105 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FB7CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E17C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233084AbiGKJig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
+        id S233087AbiGKJij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiGKJho (ORCPT
+        with ESMTP id S233079AbiGKJhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:37:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0564E872
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:19:39 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 09:19:35 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657531177;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lbBJhKVx5aMwTkvMy1IDVxxzwjunJNxbD3Dkq9aWZ4g=;
-        b=Uw4qGT/tv5kjxRkIOyYFWNcUaIPe9lkeK06IW1NcSXYWAam4ZeU67wHpwTmUo54yd7Y9pm
-        o1FfIaiCrIKkTxknRejMkMHaFVY+cx5qkksXgqImkG1M4+zGzcWhJJkPImEU8RoTEHHplP
-        pgQ2IoASHZTExDpyjpEkLfa1RzmELYPZ/VHYMPlFJR6WyQTI02sduEC4t+62x29VScTXLv
-        4fEzHyeM6ZFkK08SPwJ3Em1m5KQncVLj/Vh4UTwzT96kv/0dNaEKzwNRGWEE9t4Por3rE5
-        lx+pw1DYM0V6hHXgfEbV8dIhaSioS6RmxgkJLyxioc9GNDQG/2ZQmwwiHQOJLQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657531177;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lbBJhKVx5aMwTkvMy1IDVxxzwjunJNxbD3Dkq9aWZ4g=;
-        b=LTpzIaJkvI8YkXHjDbsa0C2b30+H0w4kzGiGSkJFYl1jXzkE05nv0lgPGp4yBz+0v4GBld
-        bHhg7Iw6Xp0NdZCw==
-From:   "irqchip-bot for Michael Walle" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
+        Mon, 11 Jul 2022 05:37:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F8F84EF1;
+        Mon, 11 Jul 2022 02:19:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DECF4B80E6D;
+        Mon, 11 Jul 2022 09:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EB5EC34115;
+        Mon, 11 Jul 2022 09:19:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657531177;
+        bh=EH2MVkJDT0ydmZmxsK/QMoa0QsJj2WesG1Wewf6xwbo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Skk/PXYqdoC8k7Qnx2wRwZBCyhHObTeoq6VlvbLoLNKV+SLku8QVc+eYrnJa8+aZU
+         Sv+4bXne0IvebJ8GCxovkijwCdmIgteaUCkhoxE0T/mclBZpswFHIvB6Pa/+MWpO3j
+         qfkesuFGTWnajjeoZqgHXOWRiaytAIUJ6+eZVZKQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] genirq: Allow
- irq_set_chip_handler_name_locked() to take a const irq_chip
-Cc:     Michael Walle <michael@walle.cc>, Marc Zyngier <maz@kernel.org>,
-        tglx@linutronix.de
-In-Reply-To: <20220706151553.1580790-1-michael@walle.cc>
-References: <20220706151553.1580790-1-michael@walle.cc>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Pavel Modilaynen <pavel.modilaynen@volvocars.com>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 012/230] can: mcp251xfd: mcp251xfd_regmap_crc_read(): improve workaround handling for mcp2517fd
+Date:   Mon, 11 Jul 2022 11:04:28 +0200
+Message-Id: <20220711090604.419830899@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
+References: <20220711090604.055883544@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <165753117562.15455.14225696524286000343.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+From: Thomas Kopp <thomas.kopp@microchip.com>
 
-Commit-ID:     ef6e5d61eb7a0a30f776a829274573094185d03d
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/ef6e5d61eb7a0a30f776a829274573094185d03d
-Author:        Michael Walle <michael@walle.cc>
-AuthorDate:    Wed, 06 Jul 2022 17:15:52 +02:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 11 Jul 2022 10:12:49 +01:00
+commit 406cc9cdb3e8d644b15e8028948f091b82abdbca upstream.
 
-genirq: Allow irq_set_chip_handler_name_locked() to take a const irq_chip
+The mcp251xfd compatible chips have an erratum ([1], [2]), where the
+received CRC doesn't match the calculated CRC. In commit
+c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
+around broken CRC on TBC register") the following workaround was
+implementierend.
 
-Similar to commit 393e1280f765 ("genirq: Allow irq_chip registration
-functions to take a const irq_chip"), allow the
-irq_set_chip_handler_name_locked() function to take a const irq_chip
-argument.
+- If a CRC read error on the TBC register is detected and the first
+  byte is 0x00 or 0x80, the most significant bit of the first byte is
+  flipped and the CRC is calculated again.
+- If the CRC now matches, the _original_ data is passed to the reader.
+  For now we assume transferred data was OK.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220706151553.1580790-1-michael@walle.cc
+Measurements on the mcp2517fd show that the workaround is applicable
+not only of the lowest byte is 0x00 or 0x80, but also if 3 least
+significant bits are set.
+
+Update check on 1st data byte and workaround description accordingly.
+
+[1] mcp2517fd: DS80000792C: "Incorrect CRC for certain READ_CRC commands"
+[2] mcp2518fd: DS80000789C: "Incorrect CRC for certain READ_CRC commands"
+
+Link: https://lore.kernel.org/all/DM4PR11MB53901D49578FE265B239E55AFB7C9@DM4PR11MB5390.namprd11.prod.outlook.com
+Fixes: c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work around broken CRC on TBC register")
+Cc: stable@vger.kernel.org
+Reported-by: Pavel Modilaynen <pavel.modilaynen@volvocars.com>
+Signed-off-by: Thomas Kopp <thomas.kopp@microchip.com>
+[mkl: split into 2 patches, update patch description and documentation]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/irqdesc.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index a775845..1cd4e36 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -209,14 +209,15 @@ static inline void irq_set_handler_locked(struct irq_data *data,
-  * Must be called with irq_desc locked and valid parameters.
-  */
- static inline void
--irq_set_chip_handler_name_locked(struct irq_data *data, struct irq_chip *chip,
-+irq_set_chip_handler_name_locked(struct irq_data *data,
-+				 const struct irq_chip *chip,
- 				 irq_flow_handler_t handler, const char *name)
- {
- 	struct irq_desc *desc = irq_data_to_desc(data);
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
+@@ -325,10 +325,12 @@ mcp251xfd_regmap_crc_read(void *context,
+ 		 * register. It increments once per SYS clock tick,
+ 		 * which is 20 or 40 MHz.
+ 		 *
+-		 * Observation shows that if the lowest byte (which is
+-		 * transferred first on the SPI bus) of that register
+-		 * is 0x00 or 0x80 the calculated CRC doesn't always
+-		 * match the transferred one.
++		 * Observation on the mcp2518fd shows that if the
++		 * lowest byte (which is transferred first on the SPI
++		 * bus) of that register is 0x00 or 0x80 the
++		 * calculated CRC doesn't always match the transferred
++		 * one. On the mcp2517fd this problem is not limited
++		 * to the first byte being 0x00 or 0x80.
+ 		 *
+ 		 * If the highest bit in the lowest byte is flipped
+ 		 * the transferred CRC matches the calculated one. We
+@@ -337,7 +339,8 @@ mcp251xfd_regmap_crc_read(void *context,
+ 		 * correct.
+ 		 */
+ 		if (reg == MCP251XFD_REG_TBC &&
+-		    (buf_rx->data[0] == 0x0 || buf_rx->data[0] == 0x80)) {
++		    ((buf_rx->data[0] & 0xf8) == 0x0 ||
++		     (buf_rx->data[0] & 0xf8) == 0x80)) {
+ 			/* Flip highest bit in lowest byte of le32 */
+ 			buf_rx->data[0] ^= 0x80;
  
- 	desc->handle_irq = handler;
- 	desc->name = name;
--	data->chip = chip;
-+	data->chip = (struct irq_chip *)chip;
- }
- 
- bool irq_check_status_bit(unsigned int irq, unsigned int bitmask);
+
+
