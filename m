@@ -2,67 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D801CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 181F1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230475AbiGKLSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
+        id S231190AbiGKLSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiGKLST (ORCPT
+        with ESMTP id S230405AbiGKLSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:18:19 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FEF2AF6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:40:52 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 4B68483E60;
-        Mon, 11 Jul 2022 12:40:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1657536050;
-        bh=9zk1bsjnS5hxzBFUrq5GBjTb5jqpnX60mpGnUiXtU48=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=IifqAZdmZQPmS0/ISMDYStqN2xo8COBBlltMu/OX8nZaAYvFZ6YWCjYV76sg04St/
-         c78UKOroXLh0eECSdRPI0gPTr0FOPfcRB450CboLLeLLHRXvi1WxpHLx0Pphd5ac6d
-         2NQn8V2keAze36Qif8KahZPyfk7GZ1pgyVbqQSjbvdPUZSaP0AjyFMRZp731A3Z029
-         PbSO9CezR2ZxLIgu7lsB4hXqzJh9awlIgfWF899GCokmlDl7UyJ5TT8npv+KqdMBEQ
-         nBep4qx3KpAZGmsO0R4Y4DjvxtOGDBT1KS7VmMxh2p1BobkOBQX3cYqBfE7zYQyzEy
-         bwX/mGx5BdQ0A==
-Message-ID: <e7c9e1ad-21d2-6a53-0766-a5a947664de4@denx.de>
-Date:   Mon, 11 Jul 2022 12:36:28 +0200
+        Mon, 11 Jul 2022 07:18:22 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995EF273B;
+        Mon, 11 Jul 2022 03:40:56 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id bf9so7946610lfb.13;
+        Mon, 11 Jul 2022 03:40:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tKUP88tFfL4ob57kLuQtLQDMBfz35DAQY6r3VlU1mf0=;
+        b=a9PmZb1xGozPn2iBGEJ+GaeXt02e0hsZkWJj7XS4kv2H1XgVVprv2HeDALTTfu+Z6r
+         umWMgZnd8unLH1HrkEgbSIvx7bvu2gl6DDtu9TQrlQIiwsMXvmbzAbSrhBSUD9yUgnl/
+         iY/nhDDf5ZpsBjxfRhsOl7P/N1k2vyVUfJAQjkJ/eWnffLuaDeuJ6K6ELIj9fvDtQLaN
+         jflsV5WgBROyRRc6wYdOev/rHUsDtr75eGW/tWjkuliyLgstVsDPei1c8ZCGqeOf2SpY
+         lJL4EDfOxknhQpv0U2XpwS+6FmeHcnXh1xZLTQKfIegNMnJL0dJb3Y6EVMiyaeE65Fk6
+         XUhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tKUP88tFfL4ob57kLuQtLQDMBfz35DAQY6r3VlU1mf0=;
+        b=PywIo/h/e8AKLuXMAPuFq5O2Wzo7E8UXFpl8976460TAdlqdTdUqD18d+ePEsIs9t7
+         jprgXFpdmdAehCONn3ihahbb/tSqRIxI20R1YribyKn5rSQIaNkeQmhciuTsVJsBoUCG
+         xWEwiWT/3YALVPDkvtNlgx9ik7inmdxlIY8csJYzhZgrmSzR0VMoYfOwVi3unpvoJFxl
+         Z/77xJdEqPtBiKy0OEbyDz36KlpNgELd3oMRFyKujDiBYE5itF8wr2zzPLCtwltdV4dc
+         M435HBxZUbfpdXzui4/DFLekM1P0ht9vfhA3H0rIl3sXFvhXP/wqQYhigNVqlo0U1Edz
+         Cwcw==
+X-Gm-Message-State: AJIora9GJw1pUCmwwjq+utKD9vUjGslQRUIN8BAcFufrnimfczcD8mQF
+        wr95PvF33OIpnWHSV3963W4=
+X-Google-Smtp-Source: AGRyM1vVW9WXDcKATAA7avv9aPKQVo3u32IId2Oc4FUeeoT0beEGc9ikNKwuWa5D7Eq8T/yf801bvQ==
+X-Received: by 2002:a05:6512:1698:b0:47f:b5a6:6870 with SMTP id bu24-20020a056512169800b0047fb5a66870mr11063346lfb.578.1657536054874;
+        Mon, 11 Jul 2022 03:40:54 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id m5-20020a2ea885000000b0025a7338317esm1625353ljq.64.2022.07.11.03.40.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 03:40:54 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 13:40:52 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        linux-mips@vger.kernel.org, gerg@kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] MIPS: Fixed __debug_virt_addr_valid()
+Message-ID: <20220711104052.ddefbgd34xbbjykg@mobilestation>
+References: <20220707215237.1730283-1-f.fainelli@gmail.com>
+ <20220711083848.GE6084@alpha.franken.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/2] drm: mxsfb: DRM_IMX_LCDIF should depend on ARCH_MXC
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Stefan Agner <stefan@agner.ch>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Lucas Stach <l.stach@pengutronix.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <379f49058c7455802302c42bfbf615aaf3400f2c.1657530040.git.geert+renesas@glider.be>
- <5689170a22b3e2a76f0989dd3993a2b132ade8b6.1657530040.git.geert+renesas@glider.be>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <5689170a22b3e2a76f0989dd3993a2b132ade8b6.1657530040.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711083848.GE6084@alpha.franken.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/11/22 11:01, Geert Uytterhoeven wrote:
-> The Freescale/NXP i.MX LCDIFv3 LCD controller is only present on
-> Freescale/NXP i.MX SoCs.  Hence add a dependency on ARCH_MXC, to prevent
-> asking the user about this driver when configuring a kernel without
-> Freescale/NXP i.MX support.
+On Mon, Jul 11, 2022 at 10:38:48AM +0200, Thomas Bogendoerfer wrote:
+> On Thu, Jul 07, 2022 at 02:52:36PM -0700, Florian Fainelli wrote:
+> > It is permissible for kernel code to call virt_to_phys() against virtual
+> > addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
+> > types. Add a final condition that ensures that the virtual address is
+> > below KSEG2.
+> > 
+> > Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
+> > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> > ---
+> >  arch/mips/mm/physaddr.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
+> > index a1ced5e44951..a82f8f57a652 100644
+> > --- a/arch/mips/mm/physaddr.c
+> > +++ b/arch/mips/mm/physaddr.c
+> > @@ -5,6 +5,7 @@
+> >  #include <linux/mmdebug.h>
+> >  #include <linux/mm.h>
+> >  
+> > +#include <asm/addrspace.h>
+> >  #include <asm/sections.h>
+> >  #include <asm/io.h>
+> >  #include <asm/page.h>
+> > @@ -30,7 +31,7 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
+> >  	if (x == MAX_DMA_ADDRESS)
+> >  		return true;
+> >  
+> > -	return false;
+> > +	return KSEGX(x) < KSEG2;
+> >  }
+> >  
+> >  phys_addr_t __virt_to_phys(volatile const void *x)
+> > -- 
+> > 2.25.1
 > 
-> Fixes: 9db35bb349a0ef32 ("drm: lcdif: Add support for i.MX8MP LCDIF variant")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+> applied to mips-next.
+
+Are you sure it was ready to be applied?
+Link: https://lore.kernel.org/linux-mips/20220708115851.ejsooiilxcopkoei@mobilestation/
+
+-Sergey
+
+> 
+> Thomas.
+> 
+> -- 
+> Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+> good idea.                                                [ RFC1925, 2.3 ]
