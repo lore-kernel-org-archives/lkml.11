@@ -2,58 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 075EAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF924C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbiGKOLL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
+        id S230343AbiGKOPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiGKOLI (ORCPT
+        with ESMTP id S229536AbiGKOPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:11:08 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C176761B23;
-        Mon, 11 Jul 2022 07:11:07 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Mon, 11 Jul
- 2022 22:05:33 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.15.109]
-Date:   Mon, 11 Jul 2022 22:05:33 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     hyun.kwon@xilinx.com, laurent.pinchart@ideasonboard.com,
-        vkoul@kernel.org, michal.simek@xilinx.com
-Cc:     dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dmaengine: xilinx: use strscpy to replace strlcpy
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Mon, 11 Jul 2022 10:15:35 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B272E9C0;
+        Mon, 11 Jul 2022 07:15:34 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id 136so8931751ybl.5;
+        Mon, 11 Jul 2022 07:15:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ix4O2cAc2pqsm/yRTiT9kWoGMUxUU7qp/Fyo8plM1cA=;
+        b=cTTCfqGtaFGZ+SFT/jhxoT87e5ogtYhnJEcyTzj3Z5lfSxCtnwWBgcmbsRYIUbNXnf
+         xJCYCN/yUjcCOmncmokzesQ6DIG2UQSSPGSTxNuqb70SspNU4OpX1+z/OAq74TEH6C3x
+         GYmwKK2MYiIcaYOVbTatc0FOTr4ywxMf35H7adirzJ1xISOdUgaqJNermE0R49APbNxZ
+         Dn074Zw6NrFCx4tZhYuiBnD+KDbd0oQoVUb9kaeGGUbnsZqPjJOEvjVetObWrN24Va6M
+         0EDbTOd+7cASrit+fuTiz/trnizN5kCSn9KXUuEceU++n+lspHoZTrL9A/BgIgAv7iUd
+         v9Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ix4O2cAc2pqsm/yRTiT9kWoGMUxUU7qp/Fyo8plM1cA=;
+        b=PKMM2d+kLHa8Z7BYy27KXrUiI5c1QkLmbNKPd91rZBsKtkSScfgbF9A4dtQx5u7Xjm
+         4zZMJqyQ8sRcqId3GyE5JvDtbX8NgDdGate7ZYMegTYVi8uOLUkWk1YAfWwpmK6/ylCp
+         lDPPI4g2uyaoReMKglvLpGn/47EQbfEx+AAdGKheZaXjLJ00O0nXIhwkrEEw7vP9cl2k
+         1X9NeFOwCgfI8Y5N0o7X0xJHf6IAWOv6vum2efR+m2e19KKLU/WDs5rtAXgQ7Mfy8szt
+         tXSqdTmgiloR0mylcdzZCPM0ZQaMURBys1/0cCAL3FE5b843nOYmGUXElfSoQUhaqqV4
+         oNYw==
+X-Gm-Message-State: AJIora9gFR0Amd9mtfkuaLE9DTIBlNyIabvUV30rjEfCjOng8+FFEGFC
+        ni+fOMRs2hJbZKQmzqkn7H7UcmA8K9ctu/xF3fk=
+X-Google-Smtp-Source: AGRyM1tf30frz7OHaxUhejV0ZdDHvoYvg/3SFqbAGPPfSS3AwqAvh6ZWqpx45V0zmE6drkU04Pn22xREojWPsQI7t/M=
+X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
+ w9-20020a05690210c900b00668e27c08f7mr17313697ybu.128.1657548933686; Mon, 11
+ Jul 2022 07:15:33 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <39aa840f.e31.181ed9461c2.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwBHUW8tLsxigORIAA--.939W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAECmFEYxs0ZwAAsB
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+References: <20220711134312.234268-1-tmaimon77@gmail.com> <20220711134312.234268-3-tmaimon77@gmail.com>
+In-Reply-To: <20220711134312.234268-3-tmaimon77@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Jul 2022 16:14:57 +0200
+Message-ID: <CAHp75VdXsiH9ityqopznRpjxvwOboS_Zbi9iO6nRZ03TuKxTtg@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] iio: adc: npcm: Add NPCM8XX support
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
-dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
-WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIGRyaXZlcnMvZG1hL3hpbGlu
-eC94aWxpbnhfZHBkbWEuYyB8IDIgKy0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwg
-MSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvZG1hL3hpbGlueC94aWxpbnhfZHBk
-bWEuYyBiL2RyaXZlcnMvZG1hL3hpbGlueC94aWxpbnhfZHBkbWEuYwppbmRleCBiMGY0OTQ4YjAw
-YTUuLmY1ODE1NDY1ZTgzYiAxMDA2NDQKLS0tIGEvZHJpdmVycy9kbWEveGlsaW54L3hpbGlueF9k
-cGRtYS5jCisrKyBiL2RyaXZlcnMvZG1hL3hpbGlueC94aWxpbnhfZHBkbWEuYwpAQCAtMzc2LDcg
-KzM3Niw3IEBAIHN0YXRpYyBzc2l6ZV90IHhpbGlueF9kcGRtYV9kZWJ1Z2ZzX3JlYWQoc3RydWN0
-IGZpbGUgKmYsIGNoYXIgX191c2VyICpidWYsCiAJCWlmIChyZXQgPCAwKQogCQkJZ290byBkb25l
-OwogCX0gZWxzZSB7Ci0JCXN0cmxjcHkoa2Vybl9idWZmLCAiTm8gdGVzdGNhc2UgZXhlY3V0ZWQi
-LAorCQlzdHJzY3B5KGtlcm5fYnVmZiwgIk5vIHRlc3RjYXNlIGV4ZWN1dGVkIiwKIAkJCVhJTElO
-WF9EUERNQV9ERUJVR0ZTX1JFQURfTUFYX1NJWkUpOwogCX0KIAotLSAKMi4yNS4xCg==
+On Mon, Jul 11, 2022 at 3:59 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
+>
+> Adding ADC NPCM8XX support to NPCM ADC driver.
+> ADC NPCM8XX uses a different resolution and voltage reference.
+>
+> As part of adding NPCM8XX support:
+> - Add NPCM8XX specific compatible string.
+> - Add data to handle architecture-specific ADC parameters.
+
+Good patch, but one change can make it even better!
+
+...
+
+>         struct device *dev = &pdev->dev;
+> +       const struct of_device_id *match;
+>
+>         indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+>         if (!indio_dev)
+>                 return -ENOMEM;
+>         info = iio_priv(indio_dev);
+>
+> -       mutex_init(&info->lock);
+> +       match = of_match_node(npcm_adc_match, pdev->dev.of_node);
+> +       if (!match || !match->data) {
+> +               dev_err(dev, "Failed getting npcm_adc_data\n");
+> +               return -ENODEV;
+> +       }
+>
+> +       info->data = (struct npcm_adc_info *)match->data;
+
+Instead of above
+
+  info->data = device_get_match_data(dev);
+  if (!info->data)
+    return -ENODEV;
+
+-- 
+With Best Regards,
+Andy Shevchenko
