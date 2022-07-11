@@ -2,164 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C06C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E21CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231657AbiGKPYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49750 "EHLO
+        id S232256AbiGKPZQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbiGKPYf (ORCPT
+        with ESMTP id S231251AbiGKPZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:24:35 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D74D13E0B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:24:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657553074; x=1689089074;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EqdGS3pAl/ZUqCpsxvHzAOGkz0m4s59TctPgjYr1N6g=;
-  b=iIunCF2xrM/K9T4eCNbNljUfigmc4vzwZWHxv4jzE34JzmrPbX7I/BZj
-   z/3DelJNelTaEpFtJNElzzLMVToGjjhk0enLIsWDTiX1H1zbsSoQgZAgV
-   V51QMIWId29DVM0RmToeWydlFQ6cKMKshkbnkMkz5InVW/hn4JzF2NaHu
-   HXsiDAlqWlRyax3SG/FMsWLQ2zWz8MasUeykrG8zb/W1bBykb20Gi/1ow
-   6mMmcMgFIo+Cdyp5iWcTbmxkQ7Yhl1Ju5f7pCLWzK6El3PSBtzbbj8Igu
-   sSyqaYrelSLEf3G8kz5/zEtR4b76hcfr4GvZhdJ7NsIaHaZnzh73stf4h
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="282239584"
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="282239584"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 08:24:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="662585411"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 11 Jul 2022 08:24:32 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oAvGy-0000vH-2q;
-        Mon, 11 Jul 2022 15:24:32 +0000
-Date:   Mon, 11 Jul 2022 23:23:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yishai Hadas <yishaih@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [leon-rdma:rdma-next 19/27] drivers/vfio/vfio_main.c:1658: undefined
- reference to `interval_tree_iter_first'
-Message-ID: <202207112304.RBht9L6V-lkp@intel.com>
+        Mon, 11 Jul 2022 11:25:15 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EDBE252A3;
+        Mon, 11 Jul 2022 08:25:13 -0700 (PDT)
+Received: from andrey-lpc.intra.ispras.ru (unknown [83.149.199.65])
+        by mail.ispras.ru (Postfix) with ESMTPS id 9B57140737D8;
+        Mon, 11 Jul 2022 15:25:11 +0000 (UTC)
+From:   Andrey Strachuk <strochuk@ispras.ru>
+To:     Peter Chen <peter.chen@kernel.org>
+Cc:     Andrey Strachuk <strochuk@ispras.ru>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Subject: [PATCH] usb: remove useless condition _ep_queue()
+Date:   Mon, 11 Jul 2022 18:25:03 +0300
+Message-Id: <20220711152503.17657-1-strochuk@ispras.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git rdma-next
-head:   325f0cb55fe7505ffc12020edf66e91f1bdbe021
-commit: de08f6b555c0b4687890265b2f2358f69f28512a [19/27] vfio: Introduce the DMA logging feature support
-config: arm-randconfig-r035-20220710 (https://download.01.org/0day-ci/archive/20220711/202207112304.RBht9L6V-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?id=de08f6b555c0b4687890265b2f2358f69f28512a
-        git remote add leon-rdma https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git
-        git fetch --no-tags leon-rdma rdma-next
-        git checkout de08f6b555c0b4687890265b2f2358f69f28512a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Comparison of 'ep' with NULL is useless since
+'ep' is a result of container_of and cannot be NULL
+in any reasonable scenario.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-All errors (new ones prefixed by >>):
+Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+Fixes: 2dbc5c4c8314 ("usb: chipidea: get rid of camelcase names")
+---
+ drivers/usb/chipidea/udc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   arm-linux-gnueabi-ld: drivers/vfio/vfio_main.o: in function `vfio_ioctl_device_feature_logging_start':
->> drivers/vfio/vfio_main.c:1658: undefined reference to `interval_tree_iter_first'
->> arm-linux-gnueabi-ld: drivers/vfio/vfio_main.c:1664: undefined reference to `interval_tree_insert'
-
-
-vim +1658 drivers/vfio/vfio_main.c
-
-  1607	
-  1608	static int
-  1609	vfio_ioctl_device_feature_logging_start(struct vfio_device *device,
-  1610						u32 flags, void __user *arg,
-  1611						size_t argsz)
-  1612	{
-  1613		size_t minsz =
-  1614			offsetofend(struct vfio_device_feature_dma_logging_control,
-  1615				    ranges);
-  1616		struct vfio_device_feature_dma_logging_range __user *ranges;
-  1617		struct vfio_device_feature_dma_logging_control control;
-  1618		struct vfio_device_feature_dma_logging_range range;
-  1619		struct rb_root_cached root = RB_ROOT_CACHED;
-  1620		struct interval_tree_node *nodes;
-  1621		u32 nnodes;
-  1622		int i, ret;
-  1623	
-  1624		if (!device->log_ops)
-  1625			return -ENOTTY;
-  1626	
-  1627		ret = vfio_check_feature(flags, argsz,
-  1628					 VFIO_DEVICE_FEATURE_SET,
-  1629					 sizeof(control));
-  1630		if (ret != 1)
-  1631			return ret;
-  1632	
-  1633		if (copy_from_user(&control, arg, minsz))
-  1634			return -EFAULT;
-  1635	
-  1636		nnodes = control.num_ranges;
-  1637		if (!nnodes || nnodes > LOG_MAX_RANGES)
-  1638			return -EINVAL;
-  1639	
-  1640		ranges = u64_to_user_ptr(control.ranges);
-  1641		nodes = kmalloc_array(nnodes, sizeof(struct interval_tree_node),
-  1642				      GFP_KERNEL);
-  1643		if (!nodes)
-  1644			return -ENOMEM;
-  1645	
-  1646		for (i = 0; i < nnodes; i++) {
-  1647			if (copy_from_user(&range, &ranges[i], sizeof(range))) {
-  1648				ret = -EFAULT;
-  1649				goto end;
-  1650			}
-  1651			if (!IS_ALIGNED(range.iova, control.page_size) ||
-  1652			    !IS_ALIGNED(range.length, control.page_size)) {
-  1653				ret = -EINVAL;
-  1654				goto end;
-  1655			}
-  1656			nodes[i].start = range.iova;
-  1657			nodes[i].last = range.iova + range.length - 1;
-> 1658			if (interval_tree_iter_first(&root, nodes[i].start,
-  1659						     nodes[i].last)) {
-  1660				/* Range overlapping */
-  1661				ret = -EINVAL;
-  1662				goto end;
-  1663			}
-> 1664			interval_tree_insert(nodes + i, &root);
-  1665		}
-  1666	
-  1667		ret = device->log_ops->log_start(device, &root, nnodes,
-  1668						 &control.page_size);
-  1669		if (ret)
-  1670			goto end;
-  1671	
-  1672		if (copy_to_user(arg, &control, sizeof(control))) {
-  1673			ret = -EFAULT;
-  1674			device->log_ops->log_stop(device);
-  1675		}
-  1676	
-  1677	end:
-  1678		kfree(nodes);
-  1679		return ret;
-  1680	}
-  1681	
-
+diff --git a/drivers/usb/chipidea/udc.c b/drivers/usb/chipidea/udc.c
+index 3b8bf6daf7d0..8ce31f9933e1 100644
+--- a/drivers/usb/chipidea/udc.c
++++ b/drivers/usb/chipidea/udc.c
+@@ -933,7 +933,7 @@ static int _ep_queue(struct usb_ep *ep, struct usb_request *req,
+ 	struct ci_hdrc *ci = hwep->ci;
+ 	int retval = 0;
+ 
+-	if (ep == NULL || req == NULL || hwep->ep.desc == NULL)
++	if (req == NULL || hwep->ep.desc == NULL)
+ 		return -EINVAL;
+ 
+ 	if (hwep->type == USB_ENDPOINT_XFER_CONTROL) {
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
