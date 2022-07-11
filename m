@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFD8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEB1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbiGKJOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
+        id S231513AbiGKJOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230459AbiGKJNe (ORCPT
+        with ESMTP id S230464AbiGKJNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:13:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF7A27B06;
-        Mon, 11 Jul 2022 02:09:49 -0700 (PDT)
+        Mon, 11 Jul 2022 05:13:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0293F237F3;
+        Mon, 11 Jul 2022 02:09:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0B69B80D2C;
-        Mon, 11 Jul 2022 09:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F0EC341C0;
-        Mon, 11 Jul 2022 09:09:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96D22611CC;
+        Mon, 11 Jul 2022 09:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3DD7C34115;
+        Mon, 11 Jul 2022 09:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530586;
-        bh=ntXr2dtPBrWMgWr8XaLwxtAjgCIpelYIcWAUCYePGFU=;
+        s=korg; t=1657530589;
+        bh=l1Q1wtRwJmFlZezHCLT3SPsTHdqpZxHXhxJwB0kAIlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KUNsNcpSjjskkbOloDgtDHo4khH057nCNjWSwg9Yk8F5txnalx1Q3XB1m6h8ZRBdj
-         BO1eLvNua6zqNAVhLGbxKjL6+Jm8+UF7YNWNuO18Fs0By4i2DZ2gctEC8ZhNMMivPw
-         zMSj93WwqHBO8k+XT+Za0/NR2fkfS7FwoZ2zxUQg=
+        b=slQXpu8i0xf2FPUe4f4mHOOGZ6o30L9OBUrWjo6PE1C3AtyemzdmvU1bdqhvTL/Lf
+         2/oBrmJHrOl7z2UKmch7PrRgmlGVEpsTmErwDWGEYV3G6nUitJyH2yjlTeJQHqjD8C
+         W16zP9yNrfz6j4XRIA+kaqhx7DoW75yfyAIZYfFE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 22/31] selftests: forwarding: fix error message in learning_test
-Date:   Mon, 11 Jul 2022 11:07:01 +0200
-Message-Id: <20220711090538.502323508@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Satish Nagireddy <satish.nagireddy@getcruise.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michal Simek <michal.simek@amd.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 23/31] i2c: cadence: Unregister the clk notifier in error path
+Date:   Mon, 11 Jul 2022 11:07:02 +0200
+Message-Id: <20220711090538.532287250@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090537.841305347@linuxfoundation.org>
 References: <20220711090537.841305347@linuxfoundation.org>
@@ -50,36 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Satish Nagireddy <satish.nagireddy@getcruise.com>
 
-[ Upstream commit 83844aacab2015da1dba1df0cc61fc4b4c4e8076 ]
+[ Upstream commit 3501f0c663063513ad604fb1b3f06af637d3396d ]
 
-When packets are not received, they aren't received on $host1_if, so the
-message talking about the second host not receiving them is incorrect.
-Fix it.
+This patch ensures that the clock notifier is unregistered
+when driver probe is returning error.
 
-Fixes: d4deb01467ec ("selftests: forwarding: Add a test for FDB learning")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: df8eb5691c48 ("i2c: Add driver for Cadence I2C controller")
+Signed-off-by: Satish Nagireddy <satish.nagireddy@getcruise.com>
+Tested-by: Lars-Peter Clausen <lars@metafoo.de>
+Reviewed-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/forwarding/lib.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-cadence.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 054f776c3843..ee03552b4116 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -830,7 +830,7 @@ learning_test()
- 	tc -j -s filter show dev $host1_if ingress \
- 		| jq -e ".[] | select(.options.handle == 101) \
- 		| select(.options.actions[0].stats.packets == 1)" &> /dev/null
--	check_fail $? "Packet reached second host when should not"
-+	check_fail $? "Packet reached first host when should not"
+diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+index 2150afdcc083..273f57e277b3 100644
+--- a/drivers/i2c/busses/i2c-cadence.c
++++ b/drivers/i2c/busses/i2c-cadence.c
+@@ -990,6 +990,7 @@ static int cdns_i2c_probe(struct platform_device *pdev)
+ 	return 0;
  
- 	$MZ $host1_if -c 1 -p 64 -a $mac -t ip -q
- 	sleep 1
+ err_clk_dis:
++	clk_notifier_unregister(id->clk, &id->clk_rate_change_nb);
+ 	clk_disable_unprepare(id->clk);
+ 	pm_runtime_set_suspended(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
 -- 
 2.35.1
 
