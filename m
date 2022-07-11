@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED26CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5446CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232620AbiGKJbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
+        id S232625AbiGKJbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232614AbiGKJbF (ORCPT
+        with ESMTP id S231664AbiGKJbH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:31:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BF63F326;
-        Mon, 11 Jul 2022 02:16:59 -0700 (PDT)
+        Mon, 11 Jul 2022 05:31:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCDE643F;
+        Mon, 11 Jul 2022 02:17:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7FF5B80E7A;
-        Mon, 11 Jul 2022 09:16:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D3AC34115;
-        Mon, 11 Jul 2022 09:16:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D4FE61226;
+        Mon, 11 Jul 2022 09:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85A55C34115;
+        Mon, 11 Jul 2022 09:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531016;
-        bh=eChDofblrc/z9HyIYPzqly3n06khJx7Bm7VoQk/EUFk=;
+        s=korg; t=1657531011;
+        bh=J9c10HAnH2hw2pDgYHAA0dGZKXuDFaJLoxPb6YbGnLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y2xg124P+uh5tqRD4mses5C/p3KSxWCwCoIg8XeDzJ/tNSG+3vhtJ9c+Zub1CsMQE
-         hTkNWPih5zfV1YXgS7+AtoIcQ/mGXaQA6m/z0FP2YSSBvIxQkLlGRmCb8BjdgQuWQ6
-         YTgyB8+hHxmNxhhGKUz8I9yJUdNRKsqEgTCNP62Q=
+        b=1FGiIJKhKwp9rWtYQi+vMYinCO4PzcgToob9im5CBlfpaOIR2glZsRkbu6AKQ+Y4V
+         IHs42czp+8G2XCH72lkE4lZjhhcQolmzogMTZAFgpdf8A+HduNnjy3KUdqOLq/0ScB
+         FSgbEb3WULy99nr6tuGzO+c3ecZlSQRJrHDl1NdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 065/112] arm64: dts: imx8mp-phyboard-pollux-rdk: correct uart pad settings
-Date:   Mon, 11 Jul 2022 11:07:05 +0200
-Message-Id: <20220711090551.418604348@linuxfoundation.org>
+Subject: [PATCH 5.18 063/112] arm64: dts: imx8mp-evk: correct I2C1 pad settings
+Date:   Mon, 11 Jul 2022 11:07:03 +0200
+Message-Id: <20220711090551.362280006@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -52,31 +52,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit e266c155bd88e95f9b86379d6b0add6ac6e5452e ]
+[ Upstream commit 05a7f43478e890513d571f36660bfedc1482a588 ]
 
-BIT3 and BIT0 are reserved bits, should not touch.
+According to RM bit layout, BIT3 and BIT0 are reserved.
+ 8  7   6   5   4   3  2 1  0
+PE HYS PUE ODE FSEL X  DSE  X
 
-Fixes: 846f752866bd ("arm64: dts: imx8mp-phyboard-pollux-rdk: Change debug UART")
+Although function is not broken, we should not set reserved bit.
+
+Fixes: 5497bc2a2bff ("arm64: dts: imx8mp-evk: Add PMIC device")
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts | 4 ++--
+ arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-index 984a6b9ded8d..e34076954897 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-@@ -156,8 +156,8 @@
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
+index 938757b26add..b4499d9953ed 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
+@@ -467,8 +467,8 @@
  
- 	pinctrl_uart1: uart1grp {
+ 	pinctrl_i2c1: i2c1grp {
  		fsl,pins = <
--			MX8MP_IOMUXC_UART1_RXD__UART1_DCE_RX	0x49
--			MX8MP_IOMUXC_UART1_TXD__UART1_DCE_TX	0x49
-+			MX8MP_IOMUXC_UART1_RXD__UART1_DCE_RX	0x40
-+			MX8MP_IOMUXC_UART1_TXD__UART1_DCE_TX	0x40
+-			MX8MP_IOMUXC_I2C1_SCL__I2C1_SCL		0x400001c3
+-			MX8MP_IOMUXC_I2C1_SDA__I2C1_SDA		0x400001c3
++			MX8MP_IOMUXC_I2C1_SCL__I2C1_SCL		0x400001c2
++			MX8MP_IOMUXC_I2C1_SDA__I2C1_SDA		0x400001c2
  		>;
  	};
  
