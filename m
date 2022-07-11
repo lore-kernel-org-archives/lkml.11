@@ -2,271 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E87C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6CACCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbiGKSTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 14:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
+        id S230388AbiGKSTs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 14:19:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiGKSTL (ORCPT
+        with ESMTP id S229601AbiGKSTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 14:19:11 -0400
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9E5DFD5;
-        Mon, 11 Jul 2022 11:19:09 -0700 (PDT)
-Received: from [192.168.16.236] (helo=vzdev.sw.ru)
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <alexander.atanasov@virtuozzo.com>)
-        id 1oAxzO-009oVU-VU;
-        Mon, 11 Jul 2022 20:18:46 +0200
-From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>
-Cc:     kernel@openvz.org,
-        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/1] Create debugfs file with hyper-v balloon usage information
-Date:   Mon, 11 Jul 2022 18:18:22 +0000
-Message-Id: <20220711181825.52318-1-alexander.atanasov@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <PH0PR21MB3025D1111824156FB6B9D0DCD7819@PH0PR21MB3025.namprd21.prod.outlook.com>
-References: <PH0PR21MB3025D1111824156FB6B9D0DCD7819@PH0PR21MB3025.namprd21.prod.outlook.com>
+        Mon, 11 Jul 2022 14:19:46 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5128F2A72A;
+        Mon, 11 Jul 2022 11:19:42 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id A37A0612F; Mon, 11 Jul 2022 14:19:41 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org A37A0612F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1657563581;
+        bh=yTN1iMuS7W4RZG3D9DAoI8ysBN7jOP71+Dr669dLx6k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=whT6OMpOCB9/xvdcePS2enz3qvMMzSekD13C49qtEy9SLe9loGnS6Sxd4xRhU6kQE
+         zI2YUiYDZjBXQWZsJdjgV/ppATgx8ZFV1f5+PMRJPAJEjP/P9wxwZNEo14lDlUHqR5
+         cieZNu8Zyls4rCyVgLhl3pPNWGancK8jibGMNWOo=
+Date:   Mon, 11 Jul 2022 14:19:41 -0400
+From:   Bruce Fields <bfields@fieldses.org>
+To:     Jeff Layton <jlayton@redhat.com>
+Cc:     Chuck Lever III <chuck.lever@oracle.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Ondrej Valousek <ondrej.valousek.xm@renesas.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [GIT PULL] nfsd changes for 5.18
+Message-ID: <20220711181941.GC14184@fieldses.org>
+References: <EF97E1F5-B70F-4F9F-AC6D-7B48336AE3E5@oracle.com>
+ <20220710124344.36dfd857@redhat.com>
+ <B62B3A57-A8F7-478B-BBAB-785D0C2EE51C@oracle.com>
+ <5268baed1650b4cba32978ad32d14a5ef00539f2.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5268baed1650b4cba32978ad32d14a5ef00539f2.camel@redhat.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow the guest to know how much it is ballooned by the host.
-It is useful when debugging out of memory conditions.
+On Mon, Jul 11, 2022 at 06:33:04AM -0400, Jeff Layton wrote:
+> On Sun, 2022-07-10 at 16:42 +0000, Chuck Lever III wrote:
+> > > This patch regressed clients that support TIME_CREATE attribute.
+> > > Starting with this patch client might think that server supports
+> > > TIME_CREATE and start sending this attribute in its requests.
+> > 
+> > Indeed, e377a3e698fb ("nfsd: Add support for the birth time
+> > attribute") does not include a change to nfsd4_decode_fattr4()
+> > that decodes the birth time attribute.
+> > 
+> > I don't immediately see another storage protocol stack in our
+> > kernel that supports a client setting the birth time, so NFSD
+> > might have to ignore the client-provided value.
+> > 
+> 
+> Cephfs allows this. My thinking at the time that I implemented it was
+> that it should be settable for backup purposes, but this was possibly a
+> mistake. On most filesystems, the btime seems to be equivalent to inode
+> creation time and is read-only.
 
-When host gets back memory from the guest it is accounted
-as used memory in the guest but the guest have no way to know
-how much it is actually ballooned.
+So supporting it as read-only seems reasonable.
 
-Expose current state, flags and max possible memory to the guest.
-While at it - fix a 10+ years old typo.
+Clearly, failing to decode the setattr attempt isn't the right way to do
+that.  I'm not sure what exactly it should be doing--some kind of
+permission error on any setattr containing TIME_CREATE?
 
-Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
----
- drivers/hv/hv_balloon.c | 135 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 129 insertions(+), 6 deletions(-)
-
-V1->V2:
- - Fix C&P errors
-V2->V3:
- - Move computation to a separate funcion
- - Remove ifdefs to reduce code clutter
-
-This patch addresses your suggestions. Once again, sorry i have missed
-your email reply last time.
-
-
-diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-index 91e8a72eee14..ba52d3a3e3e3 100644
---- a/drivers/hv/hv_balloon.c
-+++ b/drivers/hv/hv_balloon.c
-@@ -11,6 +11,7 @@
- #include <linux/kernel.h>
- #include <linux/jiffies.h>
- #include <linux/mman.h>
-+#include <linux/debugfs.h>
- #include <linux/delay.h>
- #include <linux/init.h>
- #include <linux/module.h>
-@@ -248,7 +249,7 @@ struct dm_capabilities_resp_msg {
-  * num_committed: Committed memory in pages.
-  * page_file_size: The accumulated size of all page files
-  *		   in the system in pages.
-- * zero_free: The nunber of zero and free pages.
-+ * zero_free: The number of zero and free pages.
-  * page_file_writes: The writes to the page file in pages.
-  * io_diff: An indicator of file cache efficiency or page file activity,
-  *	    calculated as File Cache Page Fault Count - Page Read Count.
-@@ -567,6 +568,11 @@ struct hv_dynmem_device {
- 	__u32 version;
- 
- 	struct page_reporting_dev_info pr_dev_info;
-+
-+	/*
-+	 * Maximum number of pages that can be hot_add-ed
-+	 */
-+	__u64 max_dynamic_page_count;
- };
- 
- static struct hv_dynmem_device dm_device;
-@@ -1078,6 +1084,7 @@ static void process_info(struct hv_dynmem_device *dm, struct dm_info_msg *msg)
- 
- 			pr_info("Max. dynamic memory size: %llu MB\n",
- 				(*max_page_count) >> (20 - HV_HYP_PAGE_SHIFT));
-+			dm->max_dynamic_page_count = *max_page_count;
- 		}
- 
- 		break;
-@@ -1116,6 +1123,19 @@ static unsigned long compute_balloon_floor(void)
- 	return min_pages;
- }
- 
-+/*
-+ * Compute total committed memory pages
-+ */
-+
-+static unsigned long get_pages_committed(struct hv_dynmem_device *dm)
-+{
-+	return vm_memory_committed() +
-+		dm->num_pages_ballooned +
-+		(dm->num_pages_added > dm->num_pages_onlined ?
-+		 dm->num_pages_added - dm->num_pages_onlined : 0) +
-+		compute_balloon_floor();
-+}
-+
- /*
-  * Post our status as it relates memory pressure to the
-  * host. Host expects the guests to post this status
-@@ -1157,11 +1177,7 @@ static void post_status(struct hv_dynmem_device *dm)
- 	 * asking us to balloon them out.
- 	 */
- 	num_pages_avail = si_mem_available();
--	num_pages_committed = vm_memory_committed() +
--		dm->num_pages_ballooned +
--		(dm->num_pages_added > dm->num_pages_onlined ?
--		 dm->num_pages_added - dm->num_pages_onlined : 0) +
--		compute_balloon_floor();
-+	num_pages_committed = get_pages_committed(dm);
- 
- 	trace_balloon_status(num_pages_avail, num_pages_committed,
- 			     vm_memory_committed(), dm->num_pages_ballooned,
-@@ -1807,6 +1823,109 @@ static int balloon_connect_vsp(struct hv_device *dev)
- 	return ret;
- }
- 
-+/*
-+ * DEBUGFS Interface
-+ */
-+#ifdef CONFIG_DEBUG_FS
-+
-+/**
-+ * hv_balloon_debug_show - shows statistics of balloon operations.
-+ * @f: pointer to the &struct seq_file.
-+ * @offset: ignored.
-+ *
-+ * Provides the statistics that can be accessed in hv-balloon in the debugfs.
-+ *
-+ * Return: zero on success or an error code.
-+ */
-+static int hv_balloon_debug_show(struct seq_file *f, void *offset)
-+{
-+	struct hv_dynmem_device *dm = f->private;
-+	char *sname;
-+
-+	seq_printf(f, "%-22s: %u.%u\n", "host_version",
-+				DYNMEM_MAJOR_VERSION(dm->version),
-+				DYNMEM_MINOR_VERSION(dm->version));
-+
-+	seq_printf(f, "%-22s:", "capabilities");
-+	if (ballooning_enabled())
-+		seq_puts(f, " enabled");
-+
-+	if (hot_add_enabled())
-+		seq_puts(f, " hot_add");
-+
-+	seq_puts(f, "\n");
-+
-+	seq_printf(f, "%-22s: %u", "state", dm->state);
-+	switch (dm->state) {
-+	case DM_INITIALIZING:
-+			sname = "Initializing";
-+			break;
-+	case DM_INITIALIZED:
-+			sname = "Initialized";
-+			break;
-+	case DM_BALLOON_UP:
-+			sname = "Balloon Up";
-+			break;
-+	case DM_BALLOON_DOWN:
-+			sname = "Balloon Down";
-+			break;
-+	case DM_HOT_ADD:
-+			sname = "Hot Add";
-+			break;
-+	case DM_INIT_ERROR:
-+			sname = "Error";
-+			break;
-+	default:
-+			sname = "Unknown";
-+	}
-+	seq_printf(f, " (%s)\n", sname);
-+
-+	/* HV Page Size */
-+	seq_printf(f, "%-22s: %ld\n", "page_size", HV_HYP_PAGE_SIZE);
-+
-+	/* Pages added with hot_add */
-+	seq_printf(f, "%-22s: %u\n", "pages_added", dm->num_pages_added);
-+
-+	/* pages that are "onlined"/used from pages_added */
-+	seq_printf(f, "%-22s: %u\n", "pages_onlined", dm->num_pages_onlined);
-+
-+	/* pages we have given back to host */
-+	seq_printf(f, "%-22s: %u\n", "pages_ballooned", dm->num_pages_ballooned);
-+
-+	seq_printf(f, "%-22s: %lu\n", "total_pages_commited",
-+				get_pages_committed(dm));
-+
-+	seq_printf(f, "%-22s: %llu\n", "max_dynamic_page_count",
-+				dm->max_dynamic_page_count);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(hv_balloon_debug);
-+
-+static void  hv_balloon_debugfs_init(struct hv_dynmem_device *b)
-+{
-+	debugfs_create_file("hv-balloon", 0444, NULL, b,
-+			&hv_balloon_debug_fops);
-+}
-+
-+static void  hv_balloon_debugfs_exit(struct hv_dynmem_device *b)
-+{
-+	debugfs_remove(debugfs_lookup("hv-balloon", NULL));
-+}
-+
-+#else
-+
-+static inline void hv_balloon_debugfs_init(struct hv_dynmem_device  *b)
-+{
-+}
-+
-+static inline void hv_balloon_debugfs_exit(struct hv_dynmem_device *b)
-+{
-+}
-+
-+#endif	/* CONFIG_DEBUG_FS */
-+
- static int balloon_probe(struct hv_device *dev,
- 			 const struct hv_vmbus_device_id *dev_id)
- {
-@@ -1854,6 +1973,8 @@ static int balloon_probe(struct hv_device *dev,
- 		goto probe_error;
- 	}
- 
-+	hv_balloon_debugfs_init(&dm_device);
-+
- 	return 0;
- 
- probe_error:
-@@ -1879,6 +2000,8 @@ static int balloon_remove(struct hv_device *dev)
- 	if (dm->num_pages_ballooned != 0)
- 		pr_warn("Ballooned pages: %d\n", dm->num_pages_ballooned);
- 
-+	hv_balloon_debugfs_exit(dm);
-+
- 	cancel_work_sync(&dm->balloon_wrk.wrk);
- 	cancel_work_sync(&dm->ha_wrk.wrk);
- 
--- 
-2.25.1
-
+--b.
