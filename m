@@ -2,190 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFAFCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BABC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiGKNjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 09:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
+        id S230218AbiGKNjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 09:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiGKNjg (ORCPT
+        with ESMTP id S229844AbiGKNji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 09:39:36 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DE141D03;
-        Mon, 11 Jul 2022 06:39:34 -0700 (PDT)
-Received: from [IPV6:2405:201:10:3153:7fbd:8a7b:29b6:89fb] (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: shreeya)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id E800A66019FC;
-        Mon, 11 Jul 2022 14:39:21 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657546773;
-        bh=kcycLdUSAESBhBH1uafESxCPOSsn1Gvf4vdwqP6e/1k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Zm/cmUoteEygUYeUwar5ruyBTHkhJVqUtTpks0krTjloXfpPvdS0CGw6iTccGZofN
-         docyk1AqZwYf3IN0Bj5WP2Ni1woDQMP2tG9jfH+/lO+J22+37uMXrdgzWaluZTWPrx
-         o+24Z9nnwAYWdN6JIqiRYackiZZeVOKmDT78dqmEH2356B/LZheN75qBkEQ1azhlxO
-         moTkzf3PqAY+u9i8TrDndTS5piOtn3MyPvmExGZJorWGQeoMBBuA+IGDuyGTO4Ok4B
-         knq9wXjNLtrUTReG94dc+9kgGj5mbr06L0UN9fGfRviI3nF8AtJdyaydSlaWqH9TnR
-         rbI73kLZU6I0w==
-Message-ID: <c90e7334-5921-886b-2f9c-869fb55216ca@collabora.com>
-Date:   Mon, 11 Jul 2022 19:09:15 +0530
+        Mon, 11 Jul 2022 09:39:38 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D1C8419AE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:39:37 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3857C1596;
+        Mon, 11 Jul 2022 06:39:37 -0700 (PDT)
+Received: from monolith.localdoman (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 22E803F70D;
+        Mon, 11 Jul 2022 06:39:35 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 14:40:08 +0100
+From:   Alexandru Elisei <alexandru.elisei@arm.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        alsa-devel@alsa-project.org, judyhsiao@chromium.org
+Subject: Re: [PATCH] ASoC: rockchip: i2s: Fix NULL pointer dereference when
+ pinctrl is not found
+Message-ID: <YswoOE/sP088lius@monolith.localdoman>
+References: <20220711130522.401551-1-alexandru.elisei@arm.com>
+ <Yswkb6mvwUywOTLg@sirena.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v7 2/2] iio: light: Add support for ltrf216a sensor
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>, Zhigang.Shi@liteon.com,
-        krisman@collabora.com, linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        alvaro.soliverez@collabora.com, dmitry.osipenko@collabora.com
-References: <20220711112900.61363-1-shreeya.patel@collabora.com>
- <20220711112900.61363-3-shreeya.patel@collabora.com>
- <CAHp75Vf3NDsep5_819=e8yrna_AGh5cew=fs+hHe1q8LCa-PyA@mail.gmail.com>
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-In-Reply-To: <CAHp75Vf3NDsep5_819=e8yrna_AGh5cew=fs+hHe1q8LCa-PyA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yswkb6mvwUywOTLg@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Mark,
 
-On 11/07/22 18:36, Andy Shevchenko wrote:
-> On Mon, Jul 11, 2022 at 1:30 PM Shreeya Patel
-> <shreeya.patel@collabora.com> wrote:
->> From: Zhigang Shi <Zhigang.Shi@liteon.com>
->>
->> Add initial support for ltrf216a ambient light sensor.
->>
->> Datasheet: https://gitlab.steamos.cloud/shreeya/iio/-/blob/main/LTRF216A.pdf
->> Co-developed-by: Shreeya Patel <shreeya.patel@collabora.com>
->> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
->> Signed-off-by: Zhigang Shi <Zhigang.Shi@liteon.com>
-> Submitter's SoB always has to be last among SoBs in the proposed change.
-> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
-> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#when-to-use-acked-by-cc-and-co-developed-by
->
-> ...
->
->> +static int ltrf216a_set_power_state(struct ltrf216a_data *data, bool on)
->> +{
->> +       struct device *dev = &data->client->dev;
->> +       int ret;
->> +
->> +       if (on) {
->> +               ret = pm_runtime_resume_and_get(dev);
->> +               if (ret < 0) {
->> +                       dev_err(dev, "Failed to resume runtime PM: %d\n", ret);
->> +                       return ret;
->> +               }
->> +
-> Unneeded blank line.
->
->> +       } else {
->> +               pm_runtime_mark_last_busy(dev);
->> +               ret = pm_runtime_put_autosuspend(dev);
->> +       }
->> +
->> +       return ret;
->> +}
-> ...
->
->> +       ret = regmap_read_poll_timeout(data->regmap, LTRF216A_MAIN_STATUS,
->> +                                      val, val & LTRF216A_ALS_DATA_STATUS,
->> +                                      LTRF216A_ALS_READ_DATA_DELAY_US,
->> +                                      LTRF216A_ALS_READ_DATA_DELAY_US * 50);
->> +       if (ret) {
->> +               dev_err(dev, "Timed out waiting for valid data from LTRF216A_MAIN_STATUS reg: %d\n",
->> +                       ret);
-> THe message is a bit misleading. The loop might be broken by the I/O error.
->
->> +               return ret;
->> +       }
->> +
->> +       ret = regmap_bulk_read(data->regmap, addr, buf, sizeof(buf));
->> +       if (ret < 0) {
->> +               dev_err(dev, "Error reading measurement data: %d\n", ret);
->> +               return ret;
->> +       }
-> ...
->
->> +static const struct regmap_config ltrf216a_regmap_config = {
->> +       .name = LTRF216A_DRV_NAME,
->> +       .reg_bits = 8,
->> +       .val_bits = 8,
->> +       .max_register = LTRF216A_MAX_REG,
-> Why do you use regmap locking? What for?
->
-Hi Andy,
+On Mon, Jul 11, 2022 at 02:23:59PM +0100, Mark Brown wrote:
+> On Mon, Jul 11, 2022 at 02:05:22PM +0100, Alexandru Elisei wrote:
+> > Commit a5450aba737d ("ASoC: rockchip: i2s: switch BCLK to GPIO") switched
+> > BCLK to GPIO functions when probing the i2s bus interface, but missed
+> > adding a check for when devm_pinctrl_get() returns an error.  This can lead
+> > to the following NULL pointer dereference on a rockpro64-v2 if there are no
+> > "pinctrl" properties in the i2s device tree node:
+> > 
+> > [    0.658381] rockchip-i2s ff880000.i2s: failed to find i2s default state
+> > [    0.658993] rockchip-i2s ff880000.i2s: failed to find i2s gpio state
+> > [    0.660072] rockchip-i2s ff890000.i2s: failed to find i2s default state
+> > [    0.660670] rockchip-i2s ff890000.i2s: failed to find i2s gpio state
+> 
+> Please think hard before including complete backtraces in upstream
+> reports, they are very large and contain almost no useful information
 
-Why do we want to skip the internal locking if it doesn't bring any 
-benefits?
+I'm at a loss here. Are you saying that those 4 lines represent a complete
+backtrace and they are very large? Or are you talking about the panic log
+that I've included in the commit message?
 
+> relative to their size so often obscure the relevant content in your
+> message. If part of the backtrace is usefully illustrative (it often is
+> for search engines if nothing else) then it's usually better to pull out
+> the relevant sections.
 
->> +};
-> ...
->
->> +       data->regmap = devm_regmap_init_i2c(client, &ltrf216a_regmap_config);
->> +       if (IS_ERR(data->regmap)) {
->> +               dev_err(&client->dev, "Regmap initialization failed.\n");
->> +               return PTR_ERR(data->regmap);
-> return dev_err_probe(...);
->
->> +       }
-> ...
->
->> +       ret = devm_pm_runtime_enable(&client->dev);
->> +       if (ret < 0) {
->> +               dev_err_probe(&client->dev, ret, "Failed to enable runtime PM\n");
->> +               return ret;
-> Ditto.
->
->> +       }
-> ...
->
->> +               ret = ltrf216a_init(indio_dev);
->> +               if (ret) {
->> +                       dev_err_probe(&client->dev, ret, "Failed to enable the sensor\n");
->> +                       return ret;
-> Ditto.
->
->> +               }
-> ...
->
->> +       if (ret < 0)
-> For all these  ' < 0', please explain what positive return value means
-> there, if any, and why it's being ignored.
->
-> ...
->
->> +static const struct i2c_device_id ltrf216a_id[] = {
->> +       { LTRF216A_DRV_NAME, 0 },
-> Please, use the string literal directly since it's kinda an ABI,
-> defining above for potential changes is not a good idea. Also you may
-> drop the ', 0' part.
->
->> +       {}
->> +};
-> ...
->
->> +static struct i2c_driver ltrf216a_driver = {
->> +       .driver = {
->> +               .name = LTRF216A_DRV_NAME,
-> Ditto.
->
->> +               .pm = pm_ptr(&ltrf216a_pm_ops),
->> +               .of_match_table = ltrf216a_of_match,
->> +       },
->> +       .probe_new      = ltrf216a_probe,
->> +       .id_table       = ltrf216a_id,
->> +};
+Would you mind pointing out what you think the relevant sections are? I
+would also find it very useful (for future patches) if you can explain why
+they are relevant, and why those parts you've left out aren't.  It's not
+very easy to figure out what is relevant when you're not familiar with a
+subsystem.
+
+Thanks,
+Alex
