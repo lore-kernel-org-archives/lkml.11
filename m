@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD80C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E960C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbiGKWcA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 18:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
+        id S231934AbiGKWcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 18:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiGKWby (ORCPT
+        with ESMTP id S229591AbiGKWby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 18:31:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC5952E72
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE9752E64
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:31:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9D7AB815F3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:31:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD4BC341C8;
-        Mon, 11 Jul 2022 22:31:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAC416114C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7748C341CD;
+        Mon, 11 Jul 2022 22:31:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657578710;
-        bh=cLXTxU2gelvkFF4Gn5e4UC2mcdZnC0WgJshS0cSrKsE=;
+        s=k20201202; t=1657578712;
+        bh=liNjlZEwDaM5f46y+Q8Be3KL2yHl0iz31gM4VGjsnCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l1qgkruvSFck6qHRfln1S79eLbzhhAebqNKHHqDmbR32MddPCGMcjhEycZ18dxneF
-         LzG6ik8TVTSKSczxJHVrc2B0RQmYy2fLahRt0WslDKWbCORvoDS6rFDrURNtOb+dV+
-         Wqu3kOcdp6fuDI16v0yzyDkH5l0lvhJ3dpKZyHUudwnulw6X/T8D74tpkoWMs0iGhB
-         SGG6Aq9m745D7wDYDdZYARGmg80sPc7SeDknoGCzFGo/p0FK3IoCSQqYK+0olD4wf0
-         8lNXwRnIqmLWz/7ohbq1FTIl6p9PUMCssCRNJ8CLmiNV+/OuZ5ghpOz4bonfMsv8tc
-         AqUpr3JAezYcA==
+        b=cfplXmIL2e/RDDNqk65IeNEtYeG71/2hCQDSnWhg9QkfsSQt9NhCGKh8V/gJL4O8X
+         Y/3O3uyCE2IelPFQ/k2lyH9e99O4+KelBJK7pTDfQZ14It4jNbFEX3NlTgL+208lFe
+         9Sa2yZgDMgfwj1qMe2aP2XPsyqq/qPI0IgsWcLSamSuxrGS1/ZmjtY1yKtRQ+IzEUB
+         +WHc1uyptZ57kUyPe0ROaSO9c4qxeJGPIMnS6NHfGduv0Q+qLl0ebuOxQiGvHZMxxj
+         viQS0Wykp1T6/btjqKK/IP2vMiaLDVICshhZVaz7eB3LMCyDUtNhpbVvAgnv5gAncK
+         fDV3UzSLiY59g==
 From:   Dinh Nguyen <dinguyen@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     dinguyen@kernel.org, linux-kernel@vger.kernel.org,
-        Ang Tien Sung <tien.sung.ang@intel.com>
-Subject: [PATCH 2/6] firmware: stratix10-svc: add FCS polling command
-Date:   Mon, 11 Jul 2022 17:31:36 -0500
-Message-Id: <20220711223140.2307945-2-dinguyen@kernel.org>
+        Kah Jing Lee <kah.jing.lee@intel.com>,
+        Radu Bacrau <radu.bacrau@intel.com>
+Subject: [PATCH 4/6] firmware: stratix10-rsu: extend RSU driver to get DCMF status
+Date:   Mon, 11 Jul 2022 17:31:38 -0500
+Message-Id: <20220711223140.2307945-4-dinguyen@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220711223140.2307945-1-dinguyen@kernel.org>
 References: <20220711223140.2307945-1-dinguyen@kernel.org>
@@ -48,177 +49,253 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ang Tien Sung <tien.sung.ang@intel.com>
+From: Kah Jing Lee <kah.jing.lee@intel.com>
 
-Introduce a new SMC command INTEL_SIP_SMC_FUNCID_SERVICE_COMPLETED
-that polls if a previous asynchronous command was completed. This
-SMC command is used by the new FPGA Crypto Service (FCS).
-A basic example is that the FCS sends an AES data encryption
-call to the secure device manager(SDM) and waits for the completion
-of the operation by continuously polling the results with the new
-command.
+Extend RSU driver to get DCMF status.
 
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
+The status of each DCMF is reported. The currently used DCMF is used as
+reference, while the other three are compared against it to determine if
+they are corrupted.
+
+DCMF = Decision Configuration Management Firmware.
+RSU = Remote System Update
+
+Signed-off-by: Radu Bacrau <radu.bacrau@intel.com>
+Signed-off-by: Kah Jing Lee <kah.jing.lee@intel.com>
 Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c              | 42 ++++++++++++++++---
- include/linux/firmware/intel/stratix10-smc.h  | 25 +++++++++++
- .../firmware/intel/stratix10-svc-client.h     |  5 +++
- 3 files changed, 67 insertions(+), 5 deletions(-)
+ drivers/firmware/stratix10-rsu.c | 129 +++++++++++++++++++++++++++++--
+ 1 file changed, 124 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index 1fe748c047df..439a4bdf8207 100644
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -248,6 +248,7 @@ static void svc_thread_cmd_config_status(struct stratix10_svc_controller *ctrl,
- {
- 	struct arm_smccc_res res;
- 	int count_in_sec;
-+	unsigned long a0, a1, a2;
+diff --git a/drivers/firmware/stratix10-rsu.c b/drivers/firmware/stratix10-rsu.c
+index 9378075d04e9..e51c95f8d445 100644
+--- a/drivers/firmware/stratix10-rsu.c
++++ b/drivers/firmware/stratix10-rsu.c
+@@ -24,12 +24,16 @@
+ #define RSU_DCMF1_MASK			GENMASK_ULL(63, 32)
+ #define RSU_DCMF2_MASK			GENMASK_ULL(31, 0)
+ #define RSU_DCMF3_MASK			GENMASK_ULL(63, 32)
++#define RSU_DCMF0_STATUS_MASK		GENMASK_ULL(15, 0)
++#define RSU_DCMF1_STATUS_MASK		GENMASK_ULL(31, 16)
++#define RSU_DCMF2_STATUS_MASK		GENMASK_ULL(47, 32)
++#define RSU_DCMF3_STATUS_MASK		GENMASK_ULL(63, 48)
  
- 	cb_data->kaddr1 = NULL;
- 	cb_data->kaddr2 = NULL;
-@@ -256,24 +257,45 @@ static void svc_thread_cmd_config_status(struct stratix10_svc_controller *ctrl,
+ #define RSU_TIMEOUT	(msecs_to_jiffies(SVC_RSU_REQUEST_TIMEOUT_MS))
  
- 	pr_debug("%s: polling config status\n", __func__);
+ #define INVALID_RETRY_COUNTER		0xFF
+ #define INVALID_DCMF_VERSION		0xFF
+-
++#define INVALID_DCMF_STATUS		0xFFFFFFFF
  
-+	a0 = INTEL_SIP_SMC_FPGA_CONFIG_ISDONE;
-+	a1 = (unsigned long)p_data->paddr;
-+	a2 = (unsigned long)p_data->size;
+ typedef void (*rsu_callback)(struct stratix10_svc_client *client,
+ 			     struct stratix10_svc_cb_data *data);
+@@ -49,6 +53,10 @@ typedef void (*rsu_callback)(struct stratix10_svc_client *client,
+  * @dcmf_version.dcmf1: Quartus dcmf1 version
+  * @dcmf_version.dcmf2: Quartus dcmf2 version
+  * @dcmf_version.dcmf3: Quartus dcmf3 version
++ * @dcmf_status.dcmf0: dcmf0 status
++ * @dcmf_status.dcmf1: dcmf1 status
++ * @dcmf_status.dcmf2: dcmf2 status
++ * @dcmf_status.dcmf3: dcmf3 status
+  * @retry_counter: the current image's retry counter
+  * @max_retry: the preset max retry value
+  */
+@@ -73,6 +81,13 @@ struct stratix10_rsu_priv {
+ 		unsigned int dcmf3;
+ 	} dcmf_version;
+ 
++	struct {
++		unsigned int dcmf0;
++		unsigned int dcmf1;
++		unsigned int dcmf2;
++		unsigned int dcmf3;
++	} dcmf_status;
 +
-+	if (p_data->command == COMMAND_POLL_SERVICE_STATUS)
-+		a0 = INTEL_SIP_SMC_SERVICE_COMPLETED;
-+
- 	count_in_sec = FPGA_CONFIG_STATUS_TIMEOUT_SEC;
- 	while (count_in_sec) {
--		ctrl->invoke_fn(INTEL_SIP_SMC_FPGA_CONFIG_ISDONE,
--				0, 0, 0, 0, 0, 0, 0, &res);
-+		ctrl->invoke_fn(a0, a1, a2, 0, 0, 0, 0, 0, &res);
- 		if ((res.a0 == INTEL_SIP_SMC_STATUS_OK) ||
--		    (res.a0 == INTEL_SIP_SMC_STATUS_ERROR))
-+		    (res.a0 == INTEL_SIP_SMC_STATUS_ERROR) ||
-+		    (res.a0 == INTEL_SIP_SMC_STATUS_REJECTED))
- 			break;
+ 	unsigned int retry_counter;
+ 	unsigned int max_retry;
+ };
+@@ -129,7 +144,7 @@ static void rsu_command_callback(struct stratix10_svc_client *client,
+ 	struct stratix10_rsu_priv *priv = client->priv;
  
- 		/*
--		 * configuration is still in progress, wait one second then
-+		 * request is still in progress, wait one second then
- 		 * poll again
- 		 */
- 		msleep(1000);
- 		count_in_sec--;
- 	}
- 
--	if (res.a0 == INTEL_SIP_SMC_STATUS_OK && count_in_sec)
-+	if (!count_in_sec) {
-+		pr_err("%s: poll status timeout\n", __func__);
-+		cb_data->status = BIT(SVC_STATUS_BUSY);
-+	} else if (res.a0 == INTEL_SIP_SMC_STATUS_OK) {
- 		cb_data->status = BIT(SVC_STATUS_COMPLETED);
-+		cb_data->kaddr2 = (res.a2) ?
-+				  svc_pa_to_va(res.a2) : NULL;
-+		cb_data->kaddr3 = (res.a3) ? &res.a3 : NULL;
-+	} else {
-+		pr_err("%s: poll status error\n", __func__);
-+		cb_data->kaddr1 = &res.a1;
-+		cb_data->kaddr2 = (res.a2) ?
-+				  svc_pa_to_va(res.a2) : NULL;
-+		cb_data->kaddr3 = (res.a3) ? &res.a3 : NULL;
-+		cb_data->status = BIT(SVC_STATUS_ERROR);
-+	}
- 
- 	p_data->chan->scl->receive_cb(p_data->chan->scl, cb_data);
+ 	if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
+-		dev_warn(client->dev, "FW doesn't support notify\n");
++		dev_warn(client->dev, "Secure FW doesn't support notify\n");
+ 	else if (data->status == BIT(SVC_STATUS_ERROR))
+ 		dev_err(client->dev, "Failure, returned status is %lu\n",
+ 			BIT(data->status));
+@@ -156,7 +171,7 @@ static void rsu_retry_callback(struct stratix10_svc_client *client,
+ 	if (data->status == BIT(SVC_STATUS_OK))
+ 		priv->retry_counter = *counter;
+ 	else if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
+-		dev_warn(client->dev, "FW doesn't support retry\n");
++		dev_warn(client->dev, "Secure FW doesn't support retry\n");
+ 	else
+ 		dev_err(client->dev, "Failed to get retry counter %lu\n",
+ 			BIT(data->status));
+@@ -181,7 +196,7 @@ static void rsu_max_retry_callback(struct stratix10_svc_client *client,
+ 	if (data->status == BIT(SVC_STATUS_OK))
+ 		priv->max_retry = *max_retry;
+ 	else if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
+-		dev_warn(client->dev, "FW doesn't support max retry\n");
++		dev_warn(client->dev, "Secure FW doesn't support max retry\n");
+ 	else
+ 		dev_err(client->dev, "Failed to get max retry %lu\n",
+ 			BIT(data->status));
+@@ -215,6 +230,35 @@ static void rsu_dcmf_version_callback(struct stratix10_svc_client *client,
+ 	complete(&priv->completion);
  }
-@@ -298,6 +320,7 @@ static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
- 	case COMMAND_RECONFIG:
- 	case COMMAND_RSU_UPDATE:
- 	case COMMAND_RSU_NOTIFY:
-+	case COMMAND_POLL_SERVICE_STATUS:
- 		cb_data->status = BIT(SVC_STATUS_OK);
- 		break;
- 	case COMMAND_RECONFIG_DATA_SUBMIT:
-@@ -430,6 +453,14 @@ static int svc_normal_to_secure_thread(void *data)
- 			a1 = 0;
- 			a2 = 0;
- 			break;
-+		/* for polling */
-+		case COMMAND_POLL_SERVICE_STATUS:
-+			a0 = INTEL_SIP_SMC_SERVICE_COMPLETED;
-+			a1 = (unsigned long)pdata->paddr;
-+			a2 = (unsigned long)pdata->size;
-+
-+			break;
-+
- 		default:
- 			pr_warn("it shouldn't happen\n");
- 			break;
-@@ -470,6 +501,7 @@ static int svc_normal_to_secure_thread(void *data)
- 							  pdata, cbdata);
- 				break;
- 			case COMMAND_RECONFIG_STATUS:
-+			case COMMAND_POLL_SERVICE_STATUS:
- 				svc_thread_cmd_config_status(ctrl,
- 							     pdata, cbdata);
- 				break;
-diff --git a/include/linux/firmware/intel/stratix10-smc.h b/include/linux/firmware/intel/stratix10-smc.h
-index aad497a9ad8b..0de104009566 100644
---- a/include/linux/firmware/intel/stratix10-smc.h
-+++ b/include/linux/firmware/intel/stratix10-smc.h
-@@ -403,6 +403,31 @@ INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FPGA_CONFIG_COMPLETED_WRITE)
- #define INTEL_SIP_SMC_RSU_MAX_RETRY \
- 	INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_RSU_MAX_RETRY)
  
 +/**
-+ * Request INTEL_SIP_SMC_SERVICE_COMPLETED
-+ * Sync call to check if the secure world have completed service request
-+ * or not.
++ * rsu_dcmf_status_callback() - Callback from Intel service layer for getting
++ * the DCMF status
++ * @client: pointer to client
++ * @data: pointer to callback data structure
 + *
-+ * Call register usage:
-+ * a0: INTEL_SIP_SMC_SERVICE_COMPLETED
-+ * a1: this register is optional. If used, it is the physical address for
-+ *     secure firmware to put output data
-+ * a2: this register is optional. If used, it is the size of output data
-+ * a3-a7: not used
-+ *
-+ * Return status:
-+ * a0: INTEL_SIP_SMC_STATUS_OK, INTEL_SIP_SMC_STATUS_ERROR,
-+ *     INTEL_SIP_SMC_REJECTED or INTEL_SIP_SMC_STATUS_BUSY
-+ * a1: mailbox error if a0 is INTEL_SIP_SMC_STATUS_ERROR
-+ * a2: physical address containing the process info
-+ *     for FCS certificate -- the data contains the certificate status
-+ *     for FCS cryption -- the data contains the actual data size FW processes
-+ * a3: output data size
++ * Callback from Intel service layer for DCMF status
 + */
-+#define INTEL_SIP_SMC_FUNCID_SERVICE_COMPLETED 30
-+#define INTEL_SIP_SMC_SERVICE_COMPLETED \
-+	INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_SERVICE_COMPLETED)
++static void rsu_dcmf_status_callback(struct stratix10_svc_client *client,
++				     struct stratix10_svc_cb_data *data)
++{
++	struct stratix10_rsu_priv *priv = client->priv;
++	unsigned long long *value = (unsigned long long *)data->kaddr1;
++
++	if (data->status == BIT(SVC_STATUS_OK)) {
++		priv->dcmf_status.dcmf0 = FIELD_GET(RSU_DCMF0_STATUS_MASK,
++						    *value);
++		priv->dcmf_status.dcmf1 = FIELD_GET(RSU_DCMF1_STATUS_MASK,
++						    *value);
++		priv->dcmf_status.dcmf2 = FIELD_GET(RSU_DCMF2_STATUS_MASK,
++						    *value);
++		priv->dcmf_status.dcmf3 = FIELD_GET(RSU_DCMF3_STATUS_MASK,
++						    *value);
++	} else
++		dev_err(client->dev, "failed to get DCMF status\n");
++
++	complete(&priv->completion);
++}
 +
  /**
-  * Request INTEL_SIP_SMC_FIRMWARE_VERSION
-  *
-diff --git a/include/linux/firmware/intel/stratix10-svc-client.h b/include/linux/firmware/intel/stratix10-svc-client.h
-index 24121f8e0d7c..5d0e814e0c41 100644
---- a/include/linux/firmware/intel/stratix10-svc-client.h
-+++ b/include/linux/firmware/intel/stratix10-svc-client.h
-@@ -106,6 +106,9 @@ struct stratix10_svc_chan;
-  * @COMMAND_RSU_DCMF_VERSION: query firmware for the DCMF version, return status
-  * is SVC_STATUS_OK or SVC_STATUS_ERROR
-  *
-+ * @COMMAND_POLL_SERVICE_STATUS: poll if the service request is complete,
-+ * return statis is SVC_STATUS_OK, SVC_STATUS_ERROR or SVC_STATUS_BUSY
-+ *
-  * @COMMAND_FIRMWARE_VERSION: query running firmware version, return status
-  * is SVC_STATUS_OK or SVC_STATUS_ERROR
-  */
-@@ -122,6 +125,8 @@ enum stratix10_svc_command_code {
- 	COMMAND_RSU_MAX_RETRY,
- 	COMMAND_RSU_DCMF_VERSION,
- 	COMMAND_FIRMWARE_VERSION,
-+	/* for general status poll */
-+	COMMAND_POLL_SERVICE_STATUS = 40,
- };
+  * rsu_send_msg() - send a message to Intel service layer
+  * @priv: pointer to rsu private data
+@@ -361,7 +405,8 @@ static ssize_t max_retry_show(struct device *dev,
+ 	if (!priv)
+ 		return -ENODEV;
  
- /**
+-	return sprintf(buf, "0x%08x\n", priv->max_retry);
++	return scnprintf(buf, sizeof(priv->max_retry),
++			 "0x%08x\n", priv->max_retry);
+ }
+ 
+ static ssize_t dcmf0_show(struct device *dev,
+@@ -408,6 +453,61 @@ static ssize_t dcmf3_show(struct device *dev,
+ 	return sprintf(buf, "0x%08x\n", priv->dcmf_version.dcmf3);
+ }
+ 
++static ssize_t dcmf0_status_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf0 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf0);
++}
++
++static ssize_t dcmf1_status_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf1 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf1);
++}
++
++static ssize_t dcmf2_status_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf2 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf2);
++}
++
++static ssize_t dcmf3_status_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf3 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf3);
++}
+ static ssize_t reboot_image_store(struct device *dev,
+ 				  struct device_attribute *attr,
+ 				  const char *buf, size_t count)
+@@ -484,6 +584,10 @@ static DEVICE_ATTR_RO(dcmf0);
+ static DEVICE_ATTR_RO(dcmf1);
+ static DEVICE_ATTR_RO(dcmf2);
+ static DEVICE_ATTR_RO(dcmf3);
++static DEVICE_ATTR_RO(dcmf0_status);
++static DEVICE_ATTR_RO(dcmf1_status);
++static DEVICE_ATTR_RO(dcmf2_status);
++static DEVICE_ATTR_RO(dcmf3_status);
+ static DEVICE_ATTR_WO(reboot_image);
+ static DEVICE_ATTR_WO(notify);
+ 
+@@ -500,6 +604,10 @@ static struct attribute *rsu_attrs[] = {
+ 	&dev_attr_dcmf1.attr,
+ 	&dev_attr_dcmf2.attr,
+ 	&dev_attr_dcmf3.attr,
++	&dev_attr_dcmf0_status.attr,
++	&dev_attr_dcmf1_status.attr,
++	&dev_attr_dcmf2_status.attr,
++	&dev_attr_dcmf3_status.attr,
+ 	&dev_attr_reboot_image.attr,
+ 	&dev_attr_notify.attr,
+ 	NULL
+@@ -532,6 +640,10 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
+ 	priv->dcmf_version.dcmf2 = INVALID_DCMF_VERSION;
+ 	priv->dcmf_version.dcmf3 = INVALID_DCMF_VERSION;
+ 	priv->max_retry = INVALID_RETRY_COUNTER;
++	priv->dcmf_status.dcmf0 = INVALID_DCMF_STATUS;
++	priv->dcmf_status.dcmf1 = INVALID_DCMF_STATUS;
++	priv->dcmf_status.dcmf2 = INVALID_DCMF_STATUS;
++	priv->dcmf_status.dcmf3 = INVALID_DCMF_STATUS;
+ 
+ 	mutex_init(&priv->lock);
+ 	priv->chan = stratix10_svc_request_channel_byname(&priv->client,
+@@ -561,6 +673,13 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
+ 		stratix10_svc_free_channel(priv->chan);
+ 	}
+ 
++	ret = rsu_send_msg(priv, COMMAND_RSU_DCMF_STATUS,
++			   0, rsu_dcmf_status_callback);
++	if (ret) {
++		dev_err(dev, "Error, getting DCMF status %i\n", ret);
++		stratix10_svc_free_channel(priv->chan);
++	}
++
+ 	ret = rsu_send_msg(priv, COMMAND_RSU_RETRY, 0, rsu_retry_callback);
+ 	if (ret) {
+ 		dev_err(dev, "Error, getting RSU retry %i\n", ret);
 -- 
 2.25.1
 
