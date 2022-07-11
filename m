@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1249C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D44C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234139AbiGKJ4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
+        id S234046AbiGKJ40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234024AbiGKJzj (ORCPT
+        with ESMTP id S234049AbiGKJzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:55:39 -0400
+        Mon, 11 Jul 2022 05:55:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F236B196F;
-        Mon, 11 Jul 2022 02:26:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D39CB23E2;
+        Mon, 11 Jul 2022 02:26:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EAF361366;
-        Mon, 11 Jul 2022 09:26:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1233C34115;
-        Mon, 11 Jul 2022 09:26:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E175461370;
+        Mon, 11 Jul 2022 09:26:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA600C34115;
+        Mon, 11 Jul 2022 09:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531582;
-        bh=jnOphOWqpgoZV4dWNukkzUVmQEoSgCbpw4TlAg2/yL0=;
+        s=korg; t=1657531590;
+        bh=3cODyiIArg5qEo2VckCG8XY4zG4teTgxZicxoXR9kYM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HXQEODg9HeXN3v+3RAmA+MFIt1hw1C7E3vud1LJW66htzynH6ZmY/pWWqoedOOYVY
-         KFBpuxMlUqigaP+/Xzv0KbgUyJmfuBHzofQ/eMyWAAc+cp6M1NuGjy6uPv8fOItz8q
-         FJILZKirxYatbUHxqSlrl4cQj83R+2hJ7LuEDFZg=
+        b=HZR0fA5ZEFcSxAdKtdcIDj/712wnutLrupwlaF8+utqVc5AP3+GlkrHrOBM9DmGxc
+         0zoCEYUcqeWU2ruYmViVM3p54pXuNJfUAbKcyj4MXfUwO7e6PHha7O3LDtf87wFvit
+         XYVxekuobYFy3GpO5ECtSuINVmE+jA58rNLMjSdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 157/230] module: fix [e_shstrndx].sh_size=0 OOB access
-Date:   Mon, 11 Jul 2022 11:06:53 +0200
-Message-Id: <20220711090608.514645585@linuxfoundation.org>
+Subject: [PATCH 5.15 133/230] powerpc/vdso: Remove cvdso_call_time macro
+Date:   Mon, 11 Jul 2022 11:06:29 +0200
+Message-Id: <20220711090607.837197961@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,45 +50,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Dobriyan <adobriyan@gmail.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 391e982bfa632b8315235d8be9c0a81374c6a19c ]
+[ Upstream commit 9b97bea90072a075363a200dd7b54ad4a24e9491 ]
 
-It is trivial to craft a module to trigger OOB access in this line:
+cvdso_call_time macro is very similar to cvdso_call macro.
 
-	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+Add a call_time argument to cvdso_call which is 0 by default
+and set to 1 when using cvdso_call to call __c_kernel_time().
 
-BUG: unable to handle page fault for address: ffffc90000aa0fff
-PGD 100000067 P4D 100000067 PUD 100066067 PMD 10436f067 PTE 0
-Oops: 0000 [#1] PREEMPT SMP PTI
-CPU: 7 PID: 1215 Comm: insmod Not tainted 5.18.0-rc5-00007-g9bf578647087-dirty #10
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
-RIP: 0010:load_module+0x19b/0x2391
+Return returned value as is with CR[SO] cleared when it is used
+for time().
 
-Fixes: ec2a29593c83 ("module: harden ELF info handling")
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-[rebased patch onto modules-next]
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/837a260ad86fc1ce297a562c2117fd69be5f7b5c.1642782130.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/module.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/powerpc/include/asm/vdso/gettimeofday.h | 37 ++++++--------------
+ arch/powerpc/kernel/vdso32/gettimeofday.S    |  2 +-
+ 2 files changed, 11 insertions(+), 28 deletions(-)
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 256b3c80a771..ef79f4dbda87 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -3029,6 +3029,10 @@ static int elf_validity_check(struct load_info *info)
- 	 * strings in the section safe.
- 	 */
- 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
-+	if (strhdr->sh_size == 0) {
-+		pr_err("empty section name table\n");
-+		goto no_exec;
-+	}
- 	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
- 		pr_err("ELF Spec violation: section name table isn't null terminated\n");
- 		goto no_exec;
+diff --git a/arch/powerpc/include/asm/vdso/gettimeofday.h b/arch/powerpc/include/asm/vdso/gettimeofday.h
+index 1faff0be1111..df00e91c9a90 100644
+--- a/arch/powerpc/include/asm/vdso/gettimeofday.h
++++ b/arch/powerpc/include/asm/vdso/gettimeofday.h
+@@ -9,12 +9,12 @@
+ #include <asm/ppc_asm.h>
+ 
+ /*
+- * The macros sets two stack frames, one for the caller and one for the callee
++ * The macro sets two stack frames, one for the caller and one for the callee
+  * because there are no requirement for the caller to set a stack frame when
+  * calling VDSO so it may have omitted to set one, especially on PPC64
+  */
+ 
+-.macro cvdso_call funct
++.macro cvdso_call funct call_time=0
+   .cfi_startproc
+ 	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
+ 	mflr		r0
+@@ -25,45 +25,28 @@
+ 	PPC_STL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
+ #endif
+ 	get_datapage	r5
++	.ifeq	\call_time
+ 	addi		r5, r5, VDSO_DATA_OFFSET
++	.else
++	addi		r4, r5, VDSO_DATA_OFFSET
++	.endif
+ 	bl		DOTSYM(\funct)
+ 	PPC_LL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
+ #ifdef __powerpc64__
+ 	PPC_LL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
+ #endif
++	.ifeq	\call_time
+ 	cmpwi		r3, 0
++	.endif
+ 	mtlr		r0
+   .cfi_restore lr
+ 	addi		r1, r1, 2 * PPC_MIN_STKFRM
+ 	crclr		so
++	.ifeq	\call_time
+ 	beqlr+
+ 	crset		so
+ 	neg		r3, r3
+-	blr
+-  .cfi_endproc
+-.endm
+-
+-.macro cvdso_call_time funct
+-  .cfi_startproc
+-	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
+-	mflr		r0
+-  .cfi_register lr, r0
+-	PPC_STLU	r1, -PPC_MIN_STKFRM(r1)
+-	PPC_STL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
+-#ifdef __powerpc64__
+-	PPC_STL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
+-#endif
+-	get_datapage	r4
+-	addi		r4, r4, VDSO_DATA_OFFSET
+-	bl		DOTSYM(\funct)
+-	PPC_LL		r0, PPC_MIN_STKFRM + PPC_LR_STKOFF(r1)
+-#ifdef __powerpc64__
+-	PPC_LL		r2, PPC_MIN_STKFRM + STK_GOT(r1)
+-#endif
+-	crclr		so
+-	mtlr		r0
+-  .cfi_restore lr
+-	addi		r1, r1, 2 * PPC_MIN_STKFRM
++	.endif
+ 	blr
+   .cfi_endproc
+ .endm
+diff --git a/arch/powerpc/kernel/vdso32/gettimeofday.S b/arch/powerpc/kernel/vdso32/gettimeofday.S
+index d21d08140a5e..9b3ac09423c8 100644
+--- a/arch/powerpc/kernel/vdso32/gettimeofday.S
++++ b/arch/powerpc/kernel/vdso32/gettimeofday.S
+@@ -63,7 +63,7 @@ V_FUNCTION_END(__kernel_clock_getres)
+  *
+  */
+ V_FUNCTION_BEGIN(__kernel_time)
+-	cvdso_call_time __c_kernel_time
++	cvdso_call __c_kernel_time call_time=1
+ V_FUNCTION_END(__kernel_time)
+ 
+ /* Routines for restoring integer registers, called by the compiler.  */
 -- 
 2.35.1
 
