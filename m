@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07632C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD58BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiGKGa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 02:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
+        id S229798AbiGKGaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 02:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiGKGaR (ORCPT
+        with ESMTP id S229723AbiGKGaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 02:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000D79FDE
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:30:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9DC29FC5
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:30:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60C3BB80DA1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11EFCC3411C;
-        Mon, 11 Jul 2022 06:30:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67293611E0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 048A5C3411C;
+        Mon, 11 Jul 2022 06:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657521013;
-        bh=5pbIGIBK4GHTaDaRaErlg2h4kfcH4zLZIFSMl58kGEc=;
+        s=k20201202; t=1657521015;
+        bh=MEnl6Y9aAxF+5Le8CAQRnOg9hB1/tyRcMD2t6N/tNFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cLIH05xV0Za3VQBbaYJLp24JIhgqCuOuSHiiT3SDXN3/3lilYdj76hLrGvlQMzKMs
-         jvOju6dEhryTVWa7zBdMcGZEzo3KMzaVrDqtbHk9rr8Wi0/XD2m7v4M+P+vCBL68W2
-         llmzjCg3o6d2N+Ln/dWoJ6V3a9+RnE8YlpMyGkdJQlS8n8HDfUfnwVMuG4vCSONu3E
-         MEPGWZJmlq0kdoLm1KnRA0NtwIXalhHgTjUH5OF3aGM+p+gTq8WmX2I7qimT0lfW0n
-         CobExqghheLXai4PlDiAf5gVB8cmNh4LWhCLxNDSCd4g6xRymWAJR0Yl68ANAS4jVN
-         aNKgBmohyKUQw==
+        b=SLLds8q38TJx8yyqLeJWVu05j5eFNqGIQfyrs4OTpQRvbQBnRVZydOvCjj+1pPZ/Z
+         B33Xog0OE4R2PIiqYBaxJMRKlIPk1n2DsF8qdIWPMgr8RLUaJf52QT4iTQL7XT7rmd
+         RFombc1RHnQDlPMvJSwCSbdBEUpgXPeUkbyGrWtUc0Rrr4P8D2P4yaRcx8k0M1t1wi
+         7/81mzh/RM49MF9bQCZBQxn8avRbhtqRS3+odf4g1KLbW6McXwTw5v8y3UWPgBe/zy
+         tC29l5Z7Ojn0lyhQFezLuYpg5sGFw5MAxxn812uwlGm7kHWkhfHAEPHGuoyf2kpqH6
+         60uB+FO+sucUw==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Tomer Tayar <ttayar@habana.ai>
-Subject: [PATCH 04/12] habanalabs/gaudi2: replace defines for reserved sob/mob with enums
-Date:   Mon, 11 Jul 2022 09:29:55 +0300
-Message-Id: <20220711063003.3182795-4-ogabbay@kernel.org>
+Subject: [PATCH 06/12] habanalabs/gaudi2: modify decoder to use virtual MSI-X doorbell
+Date:   Mon, 11 Jul 2022 09:29:57 +0300
+Message-Id: <20220711063003.3182795-6-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220711063003.3182795-1-ogabbay@kernel.org>
 References: <20220711063003.3182795-1-ogabbay@kernel.org>
@@ -49,224 +49,275 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Tomer Tayar <ttayar@habana.ai>
 
-Following patches are going to add more reserved sync objects and
-monitors.
-To make the counting of these reserved resources simpler, replace the
-existing RESERVED_* defines with enumerations.
+Modify the decoder wrapper blocks to generate interrupts using the
+virtual MSI-X doorbell.
+
+As a decoder wrapper block cannot write directly to HBW upon completion,
+it writes instead to SOB which is monitored by a master monitor.
+When resolved, this monitor will be the one to actually write to the
+virtual MSI-X doorbell.
 
 Signed-off-by: Tomer Tayar <ttayar@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/gaudi2/gaudi2.c       | 48 ++++++++++---------
- drivers/misc/habanalabs/gaudi2/gaudi2P.h      | 26 ++++++----
- .../misc/habanalabs/gaudi2/gaudi2_security.c  |  4 +-
- 3 files changed, 46 insertions(+), 32 deletions(-)
+ drivers/misc/habanalabs/gaudi2/gaudi2.c       | 141 +++++++++++++++++-
+ drivers/misc/habanalabs/gaudi2/gaudi2P.h      |  15 ++
+ drivers/misc/habanalabs/gaudi2/gaudi2_masks.h |   3 +
+ .../include/gaudi2/asic_reg/gaudi2_regs.h     |   6 +
+ 4 files changed, 160 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-index 539cb88a88e4..398bc0957417 100644
+index 60e11007e3ea..760ce5b7f955 100644
 --- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
 +++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-@@ -1867,8 +1867,8 @@ static int gaudi2_set_fixed_properties(struct hl_device *hdev)
- 	prop->user_dec_intr_count = NUMBER_OF_DEC;
- 	prop->user_interrupt_count = GAUDI2_IRQ_NUM_USER_LAST - GAUDI2_IRQ_NUM_USER_FIRST + 1;
- 	prop->completion_mode = HL_COMPLETION_MODE_CS;
--	prop->sync_stream_first_sob = GAUDI2_RESERVED_SOBS;
--	prop->sync_stream_first_mon = GAUDI2_RESERVED_MONITORS;
-+	prop->sync_stream_first_sob = GAUDI2_RESERVED_SOB_NUMBER;
-+	prop->sync_stream_first_mon = GAUDI2_RESERVED_MON_NUMBER;
- 
- 	prop->sram_base_address = SRAM_BASE_ADDR;
- 	prop->sram_size = SRAM_SIZE;
-@@ -1988,10 +1988,10 @@ static int gaudi2_set_fixed_properties(struct hl_device *hdev)
- 
- 	prop->mme_master_slave_mode = 1;
- 
--	prop->first_available_user_sob[0] = GAUDI2_RESERVED_SOBS +
-+	prop->first_available_user_sob[0] = GAUDI2_RESERVED_SOB_NUMBER +
- 					(num_sync_stream_queues * HL_RSVD_SOBS);
- 
--	prop->first_available_user_mon[0] = GAUDI2_RESERVED_MONITORS +
-+	prop->first_available_user_mon[0] = GAUDI2_RESERVED_MON_NUMBER +
- 					(num_sync_stream_queues * HL_RSVD_MONS);
- 
- 	prop->first_available_user_interrupt = GAUDI2_IRQ_NUM_USER_FIRST;
-@@ -3533,7 +3533,7 @@ static int gaudi2_enable_msix(struct hl_device *hdev)
+@@ -4252,6 +4252,109 @@ static void gaudi2_init_edma(struct hl_device *hdev)
  	}
- 
- 	irq = pci_irq_vector(hdev->pdev, GAUDI2_IRQ_NUM_COMPLETION);
--	cq = &hdev->completion_queue[GAUDI2_RESERVED_CQ_COMPLETION];
-+	cq = &hdev->completion_queue[GAUDI2_RESERVED_CQ_CS_COMPLETION];
- 	rc = request_irq(irq, hl_irq_handler_cq, 0, gaudi2_irq_name(GAUDI2_IRQ_NUM_COMPLETION), cq);
- 	if (rc) {
- 		dev_err(hdev->dev, "Failed to request IRQ %d", irq);
-@@ -3643,7 +3643,7 @@ static void gaudi2_disable_msix(struct hl_device *hdev)
- 	}
- 
- 	irq = pci_irq_vector(hdev->pdev, GAUDI2_IRQ_NUM_COMPLETION);
--	cq = &hdev->completion_queue[GAUDI2_RESERVED_CQ_COMPLETION];
-+	cq = &hdev->completion_queue[GAUDI2_RESERVED_CQ_CS_COMPLETION];
- 	free_irq(irq, cq);
- 
- 	pci_free_irq_vectors(hdev->pdev);
-@@ -4139,7 +4139,7 @@ static void gaudi2_init_qman(struct hl_device *hdev, u32 reg_base,
- 	u32 pq_id;
- 
- 	for (pq_id = 0 ; pq_id < NUM_OF_PQ_PER_QMAN ; pq_id++)
--		hdev->kernel_queues[queue_id_base + pq_id].cq_id = GAUDI2_RESERVED_CQ_COMPLETION;
-+		hdev->kernel_queues[queue_id_base + pq_id].cq_id = GAUDI2_RESERVED_CQ_CS_COMPLETION;
- 
- 	gaudi2_init_qman_pq(hdev, reg_base, queue_id_base);
- 	gaudi2_init_qman_cp(hdev, reg_base);
-@@ -5762,31 +5762,33 @@ static void gaudi2_kdma_set_mmbp_asid(struct hl_device *hdev,
- 	WREG32(mmARC_FARM_KDMA_CTX_AXUSER_HB_MMU_BP, rw_mmu_bp);
  }
  
--static void gaudi2_arm_cq_monitor(struct hl_device *hdev, u32 index, u32 cq_id,
-+static void gaudi2_arm_cq_monitor(struct hl_device *hdev, u32 sob_id, u32 mon_id, u32 cq_id,
- 						u32 mon_payload, u32 sync_value)
- {
--	u32 sync_group_id, mode, mon_arm;
--	int offset = index * 4;
-+	u32 sob_offset, mon_offset, sync_group_id, mode, mon_arm;
- 	u8 mask;
- 
-+	sob_offset = sob_id * 4;
-+	mon_offset = mon_id * 4;
++/*
++ * gaudi2_arm_monitors_for_virt_msix_db() - Arm monitors for writing to the virtual MSI-X doorbell.
++ * @hdev: pointer to habanalabs device structure.
++ * @sob_id: sync object ID.
++ * @first_mon_id: ID of first monitor out of 3 consecutive monitors.
++ * @interrupt_id: interrupt ID.
++ *
++ * Some initiators cannot have HBW address in their completion address registers, and thus cannot
++ * write directly to the HBW host memory of the virtual MSI-X doorbell.
++ * Instead, they are configured to LBW write to a sync object, and a monitor will do the HBW write.
++ *
++ * The mechanism in the sync manager block is composed of a master monitor with 3 messages.
++ * In addition to the HBW write, the other 2 messages are for preparing the monitor to next
++ * completion, by decrementing the sync object value and re-arming the monitor.
++ */
++static void gaudi2_arm_monitors_for_virt_msix_db(struct hl_device *hdev, u32 sob_id,
++							u32 first_mon_id, u32 interrupt_id)
++{
++	u32 sob_offset, first_mon_offset, mon_offset, payload, sob_group, mode, arm, config;
++	struct gaudi2_device *gaudi2 = hdev->asic_specific;
++	u64 addr;
++	u8 mask;
 +
- 	/* Reset the SOB value */
--	WREG32(mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + offset, 0);
++	/* Reset the SOB value */
++	sob_offset = sob_id * sizeof(u32);
 +	WREG32(mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_offset, 0);
- 
- 	/* Configure this address with CQ_ID 0 because CQ_EN is set */
--	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + offset, cq_id);
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + mon_offset, cq_id);
- 
- 	/* Configure this address with CS index because CQ_EN is set */
--	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + offset, mon_payload);
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + mon_offset, mon_payload);
- 
--	sync_group_id = index / 8;
--	mask = ~(1 << (index & 0x7));
-+	sync_group_id = sob_id / 8;
-+	mask = ~(1 << (sob_id & 0x7));
- 	mode = 1; /* comparison mode is "equal to" */
- 
- 	mon_arm = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SOD_MASK, sync_value);
- 	mon_arm |= FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SOP_MASK, mode);
- 	mon_arm |= FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_MASK_MASK, mask);
- 	mon_arm |= FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SID_MASK, sync_group_id);
--	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_ARM_0 + offset, mon_arm);
-+	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_ARM_0 + mon_offset, mon_arm);
- }
- 
- /* This is an internal helper function used by gaudi2_send_job_to_kdma only */
-@@ -5800,11 +5802,12 @@ static int gaudi2_send_job_to_kdma(struct hl_device *hdev,
- 	u64 comp_addr;
- 	int rc;
- 
--	gaudi2_arm_cq_monitor(hdev, GAUDI2_RESERVED_SOB_KDMA_COMP,
-+	gaudi2_arm_cq_monitor(hdev, GAUDI2_RESERVED_SOB_KDMA_COMPLETION,
-+				GAUDI2_RESERVED_MON_KDMA_COMPLETION,
- 				GAUDI2_RESERVED_CQ_KDMA_COMPLETION, 1, 1);
- 
- 	comp_addr = CFG_BASE + mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 +
--			(GAUDI2_RESERVED_SOB_KDMA_COMP * sizeof(u32));
-+			(GAUDI2_RESERVED_SOB_KDMA_COMPLETION * sizeof(u32));
- 
- 	comp_val = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_INC_MASK, 1) |
- 			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_VAL_MASK, 1);
-@@ -9125,24 +9128,25 @@ static int gaudi2_pre_schedule_cs(struct hl_cs *cs)
++
++	/* Configure 3 monitors:
++	 * 1. Write interrupt ID to the virtual MSI-X doorbell (master monitor)
++	 * 2. Decrement SOB value by 1.
++	 * 3. Re-arm the master monitor.
++	 */
++
++	first_mon_offset = first_mon_id * sizeof(u32);
++
++	/* 2nd monitor: Decrement SOB value by 1 */
++	mon_offset = first_mon_offset + sizeof(u32);
++
++	addr = CFG_BASE + mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_offset;
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + mon_offset, lower_32_bits(addr));
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRH_0 + mon_offset, upper_32_bits(addr));
++
++	payload = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_VAL_MASK, 0x7FFF) | /* "-1" */
++			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_SIGN_MASK, 1) |
++			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_INC_MASK, 1);
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + mon_offset, payload);
++
++	/* 3rd monitor: Re-arm the master monitor */
++	mon_offset = first_mon_offset + 2 * sizeof(u32);
++
++	addr = CFG_BASE + mmDCORE0_SYNC_MNGR_OBJS_MON_ARM_0 + first_mon_offset;
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + mon_offset, lower_32_bits(addr));
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRH_0 + mon_offset, upper_32_bits(addr));
++
++	sob_group = sob_id / 8;
++	mask = ~BIT(sob_id & 0x7);
++	mode = 0; /* comparison mode is "greater than or equal to" */
++	arm = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SID_MASK, sob_group) |
++			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_MASK_MASK, mask) |
++			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SOP_MASK, mode) |
++			FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_ARM_SOD_MASK, 1);
++
++	payload = arm;
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + mon_offset, payload);
++
++	/* 1st monitor (master): Write interrupt ID to the virtual MSI-X doorbell */
++	mon_offset = first_mon_offset;
++
++	config = FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_MON_CONFIG_WR_NUM_MASK, 2); /* "2": 3 writes */
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_CONFIG_0 + mon_offset, config);
++
++	addr = gaudi2->virt_msix_db_dma_addr;
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0 + mon_offset, lower_32_bits(addr));
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_ADDRH_0 + mon_offset, upper_32_bits(addr));
++
++	payload = interrupt_id;
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_PAY_DATA_0 + mon_offset, payload);
++
++	WREG32(mmDCORE0_SYNC_MNGR_OBJS_MON_ARM_0 + mon_offset, arm);
++}
++
++static void gaudi2_prepare_sm_for_virt_msix_db(struct hl_device *hdev)
++{
++	u32 decoder_id, sob_id, first_mon_id, interrupt_id;
++	struct asic_fixed_properties *prop = &hdev->asic_prop;
++
++	/* Decoder normal/abnormal interrupts */
++	for (decoder_id = 0 ; decoder_id < NUMBER_OF_DEC ; ++decoder_id) {
++		if (!(prop->decoder_enabled_mask & BIT(decoder_id)))
++			continue;
++
++		sob_id = GAUDI2_RESERVED_SOB_DEC_NRM_FIRST + decoder_id;
++		first_mon_id = GAUDI2_RESERVED_MON_DEC_NRM_FIRST + 3 * decoder_id;
++		interrupt_id = GAUDI2_IRQ_NUM_DCORE0_DEC0_NRM + 2 * decoder_id;
++		gaudi2_arm_monitors_for_virt_msix_db(hdev, sob_id, first_mon_id, interrupt_id);
++
++		sob_id = GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST + decoder_id;
++		first_mon_id = GAUDI2_RESERVED_MON_DEC_ABNRM_FIRST + 3 * decoder_id;
++		interrupt_id += 1;
++		gaudi2_arm_monitors_for_virt_msix_db(hdev, sob_id, first_mon_id, interrupt_id);
++	}
++}
++
+ static void gaudi2_init_sm(struct hl_device *hdev)
  {
- 	struct hl_device *hdev = cs->ctx->hdev;
- 	int index = cs->sequence & (hdev->asic_prop.max_pending_cs - 1);
--	u32 mon_payload;
-+	u32 mon_payload, sob_id, mon_id;
- 
- 	if (!cs_needs_completion(cs))
- 		return 0;
- 
- 	/*
--	 * First 1024 SOB/MON are reserved for driver for QMAN auto completion
-+	 * First 64 SOB/MON are reserved for driver for QMAN auto completion
- 	 * mechanism. Each SOB/MON pair are used for a pending CS with the same
- 	 * cyclic index. The SOB value is increased when each of the CS jobs is
- 	 * completed. When the SOB reaches the number of CS jobs, the monitor
- 	 * generates MSI-X interrupt.
- 	 */
- 
-+	sob_id = mon_id = index;
- 	mon_payload = (1 << CQ_ENTRY_SHADOW_INDEX_VALID_SHIFT) |
- 				(1 << CQ_ENTRY_READY_SHIFT) | index;
- 
--	gaudi2_arm_cq_monitor(hdev, index, GAUDI2_RESERVED_CQ_COMPLETION,
--						mon_payload, cs->jobs_cnt);
-+	gaudi2_arm_cq_monitor(hdev, sob_id, mon_id, GAUDI2_RESERVED_CQ_CS_COMPLETION, mon_payload,
-+				cs->jobs_cnt);
- 
- 	return 0;
+ 	struct gaudi2_device *gaudi2 = hdev->asic_specific;
+@@ -4304,6 +4407,9 @@ static void gaudi2_init_sm(struct hl_device *hdev)
+ 	/* Configure kernel ASID and MMU BP*/
+ 	WREG32(mmDCORE0_SYNC_MNGR_GLBL_ASID_SEC, 0x10000);
+ 	WREG32(mmDCORE0_SYNC_MNGR_GLBL_ASID_NONE_SEC_PRIV, 0);
++
++	/* Initialize sync objects and monitors which are used for the virtual MSI-X doorbell */
++	gaudi2_prepare_sm_for_virt_msix_db(hdev);
  }
+ 
+ static void gaudi2_init_mme_acc(struct hl_device *hdev, u32 reg_base)
+@@ -4452,10 +4558,35 @@ static void gaudi2_init_rotator(struct hl_device *hdev)
+ 	}
+ }
+ 
+-static void gaudi2_init_vdec_brdg_ctrl(struct hl_device *hdev, u64 base_addr, u32 msix_id)
++static void gaudi2_init_vdec_brdg_ctrl(struct hl_device *hdev, u64 base_addr, u32 decoder_id)
+ {
+-	WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_WDATA, msix_id);
+-	WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_WDATA, msix_id + 1);
++	u32 sob_id;
++
++	/* TODO:
++	 * Remove when virtual MSI-X doorbell is supported in simulator (SW-93022) and in F/W
++	 * (SW-93024).
++	 */
++	if (!hdev->pdev || hdev->asic_prop.fw_security_enabled) {
++		u32 interrupt_id = GAUDI2_IRQ_NUM_DCORE0_DEC0_NRM + 2 * decoder_id;
++
++		WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_AWADDR, mmPCIE_DBI_MSIX_DOORBELL_OFF);
++		WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_WDATA, interrupt_id);
++		WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR, mmPCIE_DBI_MSIX_DOORBELL_OFF);
++		WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_WDATA, interrupt_id + 1);
++		return;
++	}
++
++	/* VCMD normal interrupt */
++	sob_id = GAUDI2_RESERVED_SOB_DEC_NRM_FIRST + decoder_id;
++	WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_AWADDR,
++			mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_id * sizeof(u32));
++	WREG32(base_addr + BRDG_CTRL_NRM_MSIX_LBW_WDATA, GAUDI2_SOB_INCREMENT_BY_ONE);
++
++	/* VCMD abnormal interrupt */
++	sob_id = GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST + decoder_id;
++	WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR,
++			mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 + sob_id * sizeof(u32));
++	WREG32(base_addr + BRDG_CTRL_ABNRM_MSIX_LBW_WDATA, GAUDI2_SOB_INCREMENT_BY_ONE);
+ }
+ 
+ static void gaudi2_init_dec(struct hl_device *hdev)
+@@ -4485,7 +4616,7 @@ static void gaudi2_init_dec(struct hl_device *hdev)
+ 			msix_id = GAUDI2_IRQ_NUM_DCORE0_DEC0_NRM +
+ 				(dcore_id * NUM_OF_DEC_PER_DCORE + dec_id) * 2;
+ 
+-			gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, msix_id);
++			gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, dec_bit);
+ 
+ 			gaudi2->dec_hw_cap_initialized |= BIT_ULL(HW_CAP_DEC_SHIFT + dec_bit);
+ 		}
+@@ -4500,7 +4631,7 @@ static void gaudi2_init_dec(struct hl_device *hdev)
+ 
+ 		msix_id = GAUDI2_IRQ_NUM_SHARED_DEC0_NRM + (dec_id * 2);
+ 
+-		gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, msix_id);
++		gaudi2_init_vdec_brdg_ctrl(hdev, base_addr, dec_bit);
+ 
+ 		gaudi2->dec_hw_cap_initialized |= BIT_ULL(HW_CAP_DEC_SHIFT + dec_bit);
+ 	}
 diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2P.h b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-index 012413d7df9a..826d24284dc5 100644
+index 826d24284dc5..e4bc4009f05b 100644
 --- a/drivers/misc/habanalabs/gaudi2/gaudi2P.h
 +++ b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-@@ -80,12 +80,6 @@
- 
- #define GAUDI2_MAX_PENDING_CS		64
- 
--/* Sob/Mon per CS + Sob/Mon for KDMA completion */
--#define GAUDI2_RESERVED_SOBS		(GAUDI2_MAX_PENDING_CS + 1)
--#define GAUDI2_RESERVED_MONITORS	(GAUDI2_MAX_PENDING_CS + 1)
--#define GAUDI2_RESERVED_SOB_KDMA_COMP	(GAUDI2_MAX_PENDING_CS)
--#define GAUDI2_RESERVED_MON_KDMA_COMP	(GAUDI2_MAX_PENDING_CS)
--
- #if !IS_MAX_PENDING_CS_VALID(GAUDI2_MAX_PENDING_CS)
- #error "GAUDI2_MAX_PENDING_CS must be power of 2 and greater than 1"
- #endif
-@@ -249,10 +243,26 @@
+@@ -243,11 +243,20 @@
  
  #define GAUDI2_ARC_PCI_MSB_ADDR(addr)	(((addr) & GENMASK_ULL(49, 28)) >> 28)
  
-+enum gaudi2_reserved_sob_id {
-+	GAUDI2_RESERVED_SOB_CS_COMPLETION_FIRST,
-+	GAUDI2_RESERVED_SOB_CS_COMPLETION_LAST =
-+			GAUDI2_RESERVED_SOB_CS_COMPLETION_FIRST + GAUDI2_MAX_PENDING_CS - 1,
-+	GAUDI2_RESERVED_SOB_KDMA_COMPLETION,
-+	GAUDI2_RESERVED_SOB_NUMBER
-+};
++#define GAUDI2_SOB_INCREMENT_BY_ONE	(FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_VAL_MASK, 1) | \
++					FIELD_PREP(DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_INC_MASK, 1))
 +
-+enum gaudi2_reserved_mon_id {
-+	GAUDI2_RESERVED_MON_CS_COMPLETION_FIRST,
-+	GAUDI2_RESERVED_MON_CS_COMPLETION_LAST =
-+			GAUDI2_RESERVED_MON_CS_COMPLETION_FIRST + GAUDI2_MAX_PENDING_CS - 1,
-+	GAUDI2_RESERVED_MON_KDMA_COMPLETION,
-+	GAUDI2_RESERVED_MON_NUMBER
-+};
-+
- enum gaudi2_reserved_cq_id {
--	GAUDI2_RESERVED_CQ_COMPLETION,
-+	GAUDI2_RESERVED_CQ_CS_COMPLETION,
- 	GAUDI2_RESERVED_CQ_KDMA_COMPLETION,
--	GAUDI2_RESERVED_CQ_NUMBER,
-+	GAUDI2_RESERVED_CQ_NUMBER
+ enum gaudi2_reserved_sob_id {
+ 	GAUDI2_RESERVED_SOB_CS_COMPLETION_FIRST,
+ 	GAUDI2_RESERVED_SOB_CS_COMPLETION_LAST =
+ 			GAUDI2_RESERVED_SOB_CS_COMPLETION_FIRST + GAUDI2_MAX_PENDING_CS - 1,
+ 	GAUDI2_RESERVED_SOB_KDMA_COMPLETION,
++	GAUDI2_RESERVED_SOB_DEC_NRM_FIRST,
++	GAUDI2_RESERVED_SOB_DEC_NRM_LAST =
++			GAUDI2_RESERVED_SOB_DEC_NRM_FIRST + NUMBER_OF_DEC - 1,
++	GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST,
++	GAUDI2_RESERVED_SOB_DEC_ABNRM_LAST =
++			GAUDI2_RESERVED_SOB_DEC_ABNRM_FIRST + NUMBER_OF_DEC - 1,
+ 	GAUDI2_RESERVED_SOB_NUMBER
  };
  
- /*
-diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2_security.c b/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
-index afca8352a223..89a06ff5ba34 100644
---- a/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
-+++ b/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
-@@ -2703,8 +2703,8 @@ static int gaudi2_init_pb_sm_objs(struct hl_device *hdev)
- 	if (!sec_array)
- 		return -ENOMEM;
+@@ -256,6 +265,12 @@ enum gaudi2_reserved_mon_id {
+ 	GAUDI2_RESERVED_MON_CS_COMPLETION_LAST =
+ 			GAUDI2_RESERVED_MON_CS_COMPLETION_FIRST + GAUDI2_MAX_PENDING_CS - 1,
+ 	GAUDI2_RESERVED_MON_KDMA_COMPLETION,
++	GAUDI2_RESERVED_MON_DEC_NRM_FIRST,
++	GAUDI2_RESERVED_MON_DEC_NRM_LAST =
++			GAUDI2_RESERVED_MON_DEC_NRM_FIRST + 3 * NUMBER_OF_DEC - 1,
++	GAUDI2_RESERVED_MON_DEC_ABNRM_FIRST,
++	GAUDI2_RESERVED_MON_DEC_ABNRM_LAST =
++			GAUDI2_RESERVED_MON_DEC_ABNRM_FIRST + 3 * NUMBER_OF_DEC - 1,
+ 	GAUDI2_RESERVED_MON_NUMBER
+ };
  
--	first_sob = GAUDI2_RESERVED_SOBS;
--	first_mon = GAUDI2_RESERVED_MONITORS;
-+	first_sob = GAUDI2_RESERVED_SOB_NUMBER;
-+	first_mon = GAUDI2_RESERVED_MON_NUMBER;
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h b/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
+index 3fd5cf4a8645..eed16d642a5a 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
+@@ -135,4 +135,7 @@
+ #define PCIE_DBI_MSIX_ADDRESS_MATCH_LOW_OFF_MSIX_ADDRESS_MATCH_EN_SHIFT	0
+ #define PCIE_DBI_MSIX_ADDRESS_MATCH_LOW_OFF_MSIX_ADDRESS_MATCH_EN_MASK	0x1
  
- 	/* 8192 SOB_OBJs skipping first GAUDI2_MAX_PENDING_CS of them */
- 	for (j = i = first_sob ; i < DCORE_NUM_OF_SOB ; i++, j++)
++#define DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_SIGN_SHIFT	15
++#define DCORE0_SYNC_MNGR_OBJS_SOB_OBJ_SIGN_MASK		0x8000
++
+ #endif /* GAUDI2_MASKS_H_ */
+diff --git a/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h b/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h
+index e5fe9d5e07f5..d0e2c68a639f 100644
+--- a/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h
++++ b/drivers/misc/habanalabs/include/gaudi2/asic_reg/gaudi2_regs.h
+@@ -415,9 +415,15 @@
+ #define SFT_DCORE_OFFSET (mmSFT1_HBW_RTR_IF0_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE)
+ #define SFT_IF_OFFSET (mmSFT0_HBW_RTR_IF1_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE)
+ 
++#define BRDG_CTRL_NRM_MSIX_LBW_AWADDR	\
++	(mmDCORE0_VDEC0_BRDG_CTRL_NRM_MSIX_LBW_AWADDR - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
++
+ #define BRDG_CTRL_NRM_MSIX_LBW_WDATA	\
+ 	(mmDCORE0_VDEC0_BRDG_CTRL_NRM_MSIX_LBW_WDATA - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
+ 
++#define BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR	\
++	(mmDCORE0_VDEC0_BRDG_CTRL_ABNRM_MSIX_LBW_AWADDR - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
++
+ #define BRDG_CTRL_ABNRM_MSIX_LBW_WDATA	\
+ 	(mmDCORE0_VDEC0_BRDG_CTRL_ABNRM_MSIX_LBW_WDATA - mmDCORE0_VDEC0_BRDG_CTRL_BASE)
+ 
 -- 
 2.25.1
 
