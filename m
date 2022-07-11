@@ -2,119 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F966C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5553C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbiGKWQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 18:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
+        id S229638AbiGKWRD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 18:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiGKWQs (ORCPT
+        with ESMTP id S230468AbiGKWRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 18:16:48 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FE128724
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:16:46 -0700 (PDT)
+        Mon, 11 Jul 2022 18:17:00 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEA03C17C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:17:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657577806; x=1689113806;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0R+juBQCFBsStqkkAeUVW1maHMT0CMoj+nxv2u/r/h0=;
-  b=VSnjE/fy0CW8iYtzHNTktLSLnu74OG/6UMpgq70JfPpTRIvn9kUsGUT8
-   FIr0vqzeggqf2UT80XV3R/rsIjJu05hVs34ZqCf2jGTO/4ExVPdshxsl6
-   0kBuVPU0TnYI4+NuL7gr9Db3M9+laHIgf9M81U1awZCUE/sQyji0ouwa5
-   2izahpdo7I397m1XVkBuoNnpuLhdJeqYe4rTVfONjea3eEOAJ9NHOYNks
-   i5XwgjEPPcfhMXXtEazx1iX3kCDDip5jQiThH5oJSE+o68NzxXk92qjck
-   Ctc2gxR7I/i2YRjIyqiPQQ9a+pu8C7nMAyfpD/ozpGHN4Q/Za5cVReRWB
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="371089236"
+  t=1657577820; x=1689113820;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=a2VEMBrBwf95XawaFo8Ry7AYAN1Bm+G4i5Qf4XWud/c=;
+  b=Pj6kW4CKYTj43HsEcijOyNK8t9hG/b5s3sZJ4bSaolLcxs9EiZaG09cP
+   X5X0R95MTscC7VPdWQqLwIG8c+WApBiZF0nCkff58Vkr6ZzrdPEEXIV8q
+   RaSkMrfvItukSW81YtKYNhgX9pyzVCSxSU9oVW+1dnU6HuHHsPhurAaRN
+   +YmVVguiJ+mJZ2GFpz2/4/1DkOZr8wqrfupF/XKEu1w8hTPTI0T5XasLb
+   hUGsOG0xmvdF8hcJK/vgIbHIii/kIxgmFo3mKIsgPw2k6beLSBgXdDuMX
+   MojZDhOgQo4hYlO5iqRAU+ivkGFc/RmX75aq/NnDSxMpwny2YRJlG9+XG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="265192911"
 X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="371089236"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 15:16:46 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="265192911"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 15:16:59 -0700
 X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="545183466"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 11 Jul 2022 15:16:45 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oB1hs-0001Jd-AG;
-        Mon, 11 Jul 2022 22:16:44 +0000
-Date:   Tue, 12 Jul 2022 06:16:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/urgent] BUILD SUCCESS
- da4600c76da7d787db04ce059b1f176da8a8d375
-Message-ID: <62cca120.9SsyKHZ0KhoD7FB8%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+   d="scan'208";a="841158565"
+Received: from guptapa-desk.jf.intel.com (HELO guptapa-desk) ([10.24.8.127])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 15:16:59 -0700
+Date:   Mon, 11 Jul 2022 15:16:58 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     "Liang, Kan" <kan.liang@linux.intel.com>
+Cc:     Vince Weaver <vincent.weaver@maine.edu>,
+        linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: Re: [perf] unchecked MSR access error: WRMSR to 0x689 in
+ intel_pmu_lbr_restore
+Message-ID: <20220711221658.4gpkizopmftpnav6@guptapa-desk>
+References: <66961a7d-a6d8-2536-9ed3-68c2e7f4e03d@maine.edu>
+ <e71fa75-a718-ffb-c3f3-40cccf77ba9b@maine.edu>
+ <4b15d3d1-389b-fee4-d1b9-8732859e3696@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <4b15d3d1-389b-fee4-d1b9-8732859e3696@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
-branch HEAD: da4600c76da7d787db04ce059b1f176da8a8d375  x86/pat: Fix x86_has_pat_wp()
+On Mon, Jul 11, 2022 at 11:25:34AM -0400, Liang, Kan wrote:
+>
+>
+>On 2022-07-08 12:13 p.m., Vince Weaver wrote:
+>> On Wed, 6 Jul 2022, Vince Weaver wrote:
+>>
+>>> Let the fuzzer running a long time on 5.19-rc1 and after a few weeks it
+>>> triggered this weird trace.  It is repeatable (although I haven't
+>>> narrowed down exactly what's causing it).
+>>>
+>>> It's odd in that it just dumps a <TASK>, it doesn't provide any info on
+>>> what the actual trigger is.
+>>>
+>>> This is on a Haswell machine.
+>>
+>> I bumped up to current git and managed to trigger this again, this time
+>> it actually managed to print the error message.
+>>
+>> [ 7763.384369] unchecked MSR access error: WRMSR to 0x689 (tried to write 0x1fffffff8101349e) at rIP: 0xffffffff810704a4 (native_write_msr+0x4/0x20)
+>
+>The 0x689 is a valid LBR register, which is MSR_LASTBRANCH_9_FROM_IP.
+>The issue should be caused by the known TSX bug, which is mentioned in
+>the commit 9fc9ddd61e0 ("perf/x86/intel: Fix MSR_LAST_BRANCH_FROM_x bug
+>when no TSX"). It looks like the TSX support has been deactivated,
+>however the quirk in the commit isn't applied for some reason.
+>
+>
+>To apply the quirk, perf relies on the boot CPU's flag and LBR format.
+>
+>static inline bool lbr_from_signext_quirk_needed(void)
+>{
+>	bool tsx_support = boot_cpu_has(X86_FEATURE_HLE) ||
+>			   boot_cpu_has(X86_FEATURE_RTM);
+>
+>	return !tsx_support && x86_pmu.lbr_has_tsx;
+>}
+>
+>Could you please share the value of the PERF_CAPABILITIES MSR	0x00000345
+>of the machine?
+>I'd like to double check whether the LBR fromat is correct. 0x5 is expected.
+>
+>
+>If the LBR format is correct, maybe the boot CPU's flag is not cleared
+>when the TSX support is deactivated.
+>I noticed that Pawan recently had several TSX patches merged which may
+>impact the flags.
+>400331f8ffa3 ("x86/tsx: Disable TSX development mode at boot")
+>258f3b8c3210 ("x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits")
+>If you only observe the issue with the latest kernel, you may want to
+>revert the above two patches and see if it helps.
 
-elapsed time: 727m
+Output of below would be helpful:
 
-configs tested: 43
-configs skipped: 81
+# grep "rtm\|hle" /proc/cpuinfo
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+ARCH_CAP
+# rdmsr 0x10a
 
-gcc tested configs:
-s390                       zfcpdump_defconfig
-sh                   sh7724_generic_defconfig
-arm                        mvebu_v7_defconfig
-sh                          polaris_defconfig
-xtensa                generic_kc705_defconfig
-powerpc                 linkstation_defconfig
-sh                          rsk7201_defconfig
-arc                           tb10x_defconfig
-parisc                generic-32bit_defconfig
-mips                        vocore2_defconfig
-i386                                defconfig
-i386                             allyesconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
+TSX_CTRL
+# rdmsr 0x122
 
-clang tested configs:
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
+MCU_OPT_CTRL
+# rdmsr 0x123
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+TSX_FORCE_ABORT
+# rdmsr 0x10f
+
+Please note, some of these MSRs may not exist on your platform.
+
+Thanks,
+Pawan
