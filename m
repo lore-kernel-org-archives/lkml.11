@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DEFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC02C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbiGKJQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58776 "EHLO
+        id S231585AbiGKJQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231693AbiGKJOf (ORCPT
+        with ESMTP id S231742AbiGKJOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:14:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541B523BDE;
-        Mon, 11 Jul 2022 02:10:31 -0700 (PDT)
+        Mon, 11 Jul 2022 05:14:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCD62A428;
+        Mon, 11 Jul 2022 02:10:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC6AB61148;
-        Mon, 11 Jul 2022 09:10:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65B8C34115;
-        Mon, 11 Jul 2022 09:10:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB68F611F9;
+        Mon, 11 Jul 2022 09:10:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2EDAC34115;
+        Mon, 11 Jul 2022 09:10:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530630;
-        bh=9KilP7OB14MW6KxOfwyS+L8S9vkInApzgoS28Yry5UA=;
+        s=korg; t=1657530636;
+        bh=lIq5QL1O+Kc+TdTym8+QkepgY8j0DpxAsVZjsV1n+AI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QQEhAw+JQop4r22LMlNb9hRAGdLaUchEpPcjS9gyN2P/Lkz3td49vEr78x5ZUzjqR
-         3B1rgu5j1DSLQU9IekV8Ms8upw+oFclPn4hH8rT6b6CKpQ9q+4YtKQQ+oJZA7DiyBu
-         7kUeqS5Sluayf6ZLSTkVvJ52QdG+978okXksb+oU=
+        b=nkUgLCsskKyZLF7qmoxehx6brgjuA2RcEyjLRopAISTleALkPWg7bhOlcEYbN0diK
+         os94p6TxCI+OdzWUZcl1/FuFGf5D2zMmi7wdtrBMshXsi2xQS57dMpyaTgD3kHb92m
+         1O5JEAvnojSO0bnLM5bAonCBGwgxevRepBuSGDIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rhett Aultman <rhett.aultman@samsara.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.4 05/38] can: gs_usb: gs_usb_open/close(): fix memory leak
-Date:   Mon, 11 Jul 2022 11:06:47 +0200
-Message-Id: <20220711090538.886431070@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 07/38] net: rose: fix UAF bug caused by rose_t0timer_expiry
+Date:   Mon, 11 Jul 2022 11:06:49 +0200
+Message-Id: <20220711090538.945388564@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -48,113 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rhett Aultman <rhett.aultman@samsara.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 2bda24ef95c0311ab93bda00db40486acf30bd0a upstream.
+commit 148ca04518070910739dfc4eeda765057856403d upstream.
 
-The gs_usb driver appears to suffer from a malady common to many USB
-CAN adapter drivers in that it performs usb_alloc_coherent() to
-allocate a number of USB request blocks (URBs) for RX, and then later
-relies on usb_kill_anchored_urbs() to free them, but this doesn't
-actually free them. As a result, this may be leaking DMA memory that's
-been used by the driver.
+There are UAF bugs caused by rose_t0timer_expiry(). The
+root cause is that del_timer() could not stop the timer
+handler that is running and there is no synchronization.
+One of the race conditions is shown below:
 
-This commit is an adaptation of the techniques found in the esd_usb2
-driver where a similar design pattern led to a memory leak. It
-explicitly frees the RX URBs and their DMA memory via a call to
-usb_free_coherent(). Since the RX URBs were allocated in the
-gs_can_open(), we remove them in gs_can_close() rather than in the
-disconnect function as was done in esd_usb2.
+    (thread 1)             |        (thread 2)
+                           | rose_device_event
+                           |   rose_rt_device_down
+                           |     rose_remove_neigh
+rose_t0timer_expiry        |       rose_stop_t0timer(rose_neigh)
+  ...                      |         del_timer(&neigh->t0timer)
+                           |         kfree(rose_neigh) //[1]FREE
+  neigh->dce_mode //[2]USE |
 
-For more information, see the 928150fad41b ("can: esd_usb2: fix memory
-leak").
+The rose_neigh is deallocated in position [1] and use in
+position [2].
 
-Link: https://lore.kernel.org/all/alpine.DEB.2.22.394.2206031547001.1630869@thelappy
-Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
-Cc: stable@vger.kernel.org
-Signed-off-by: Rhett Aultman <rhett.aultman@samsara.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+The crash trace triggered by POC is like below:
+
+BUG: KASAN: use-after-free in expire_timers+0x144/0x320
+Write of size 8 at addr ffff888009b19658 by task swapper/0/0
+...
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0xbf/0xee
+ print_address_description+0x7b/0x440
+ print_report+0x101/0x230
+ ? expire_timers+0x144/0x320
+ kasan_report+0xed/0x120
+ ? expire_timers+0x144/0x320
+ expire_timers+0x144/0x320
+ __run_timers+0x3ff/0x4d0
+ run_timer_softirq+0x41/0x80
+ __do_softirq+0x233/0x544
+ ...
+
+This patch changes rose_stop_ftimer() and rose_stop_t0timer()
+in rose_remove_neigh() to del_timer_sync() in order that the
+timer handler could be finished before the resources such as
+rose_neigh and so on are deallocated. As a result, the UAF
+bugs could be mitigated.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220705125610.77971-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/gs_usb.c |   23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ net/rose/rose_route.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -184,6 +184,8 @@ struct gs_can {
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -227,8 +227,8 @@ static void rose_remove_neigh(struct ros
+ {
+ 	struct rose_neigh *s;
  
- 	struct usb_anchor tx_submitted;
- 	atomic_t active_tx_urbs;
-+	void *rxbuf[GS_MAX_RX_URBS];
-+	dma_addr_t rxbuf_dma[GS_MAX_RX_URBS];
- };
+-	rose_stop_ftimer(rose_neigh);
+-	rose_stop_t0timer(rose_neigh);
++	del_timer_sync(&rose_neigh->ftimer);
++	del_timer_sync(&rose_neigh->t0timer);
  
- /* usb interface struct */
-@@ -592,6 +594,7 @@ static int gs_can_open(struct net_device
- 		for (i = 0; i < GS_MAX_RX_URBS; i++) {
- 			struct urb *urb;
- 			u8 *buf;
-+			dma_addr_t buf_dma;
+ 	skb_queue_purge(&rose_neigh->queue);
  
- 			/* alloc rx urb */
- 			urb = usb_alloc_urb(0, GFP_KERNEL);
-@@ -602,7 +605,7 @@ static int gs_can_open(struct net_device
- 			buf = usb_alloc_coherent(dev->udev,
- 						 sizeof(struct gs_host_frame),
- 						 GFP_KERNEL,
--						 &urb->transfer_dma);
-+						 &buf_dma);
- 			if (!buf) {
- 				netdev_err(netdev,
- 					   "No memory left for USB buffer\n");
-@@ -610,6 +613,8 @@ static int gs_can_open(struct net_device
- 				return -ENOMEM;
- 			}
- 
-+			urb->transfer_dma = buf_dma;
-+
- 			/* fill, anchor, and submit rx urb */
- 			usb_fill_bulk_urb(urb,
- 					  dev->udev,
-@@ -633,10 +638,17 @@ static int gs_can_open(struct net_device
- 					   rc);
- 
- 				usb_unanchor_urb(urb);
-+				usb_free_coherent(dev->udev,
-+						  sizeof(struct gs_host_frame),
-+						  buf,
-+						  buf_dma);
- 				usb_free_urb(urb);
- 				break;
- 			}
- 
-+			dev->rxbuf[i] = buf;
-+			dev->rxbuf_dma[i] = buf_dma;
-+
- 			/* Drop reference,
- 			 * USB core will take care of freeing it
- 			 */
-@@ -701,13 +713,20 @@ static int gs_can_close(struct net_devic
- 	int rc;
- 	struct gs_can *dev = netdev_priv(netdev);
- 	struct gs_usb *parent = dev->parent;
-+	unsigned int i;
- 
- 	netif_stop_queue(netdev);
- 
- 	/* Stop polling */
- 	parent->active_channels--;
--	if (!parent->active_channels)
-+	if (!parent->active_channels) {
- 		usb_kill_anchored_urbs(&parent->rx_submitted);
-+		for (i = 0; i < GS_MAX_RX_URBS; i++)
-+			usb_free_coherent(dev->udev,
-+					  sizeof(struct gs_host_frame),
-+					  dev->rxbuf[i],
-+					  dev->rxbuf_dma[i]);
-+	}
- 
- 	/* Stop sending URBs */
- 	usb_kill_anchored_urbs(&dev->tx_submitted);
 
 
