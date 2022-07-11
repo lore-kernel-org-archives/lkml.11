@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9641C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231786AbiGKJTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
+        id S231966AbiGKJTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231697AbiGKJS3 (ORCPT
+        with ESMTP id S231449AbiGKJSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:18:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3086C4D174;
-        Mon, 11 Jul 2022 02:11:48 -0700 (PDT)
+        Mon, 11 Jul 2022 05:18:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC0D4D4C9;
+        Mon, 11 Jul 2022 02:11:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F21261148;
-        Mon, 11 Jul 2022 09:11:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB678C34115;
-        Mon, 11 Jul 2022 09:11:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5D65B80D2C;
+        Mon, 11 Jul 2022 09:11:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B88AC34115;
+        Mon, 11 Jul 2022 09:11:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530707;
-        bh=c6lHgrC8ABeMaDjsp0Y9eCQSxBZwkmKPXV7L9DCxXbk=;
+        s=korg; t=1657530709;
+        bh=ruQ50WIOI0+7m3siYikWENO+ppOpQi5iT7iajfkpbn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tSy1nORp1B7iYc4b45yti9e1Uu7vulcpcg8YJqJ0WxFWCHL+J38RAO5hAELKTIRxq
-         Hvyw5cgH+UITHlKgBowDN9M2VrROaV/w3KqYkv4rxKM80NpqKFcMdvVcvuNoMLWXET
-         TtHUdR7ulRbJ0yrb+Sa+w1tsxfol6rP9oV+zu+7Q=
+        b=XhV/g3LDc/DHF6exZ9Fp29SevXhFRpr5W8rRyAEvYcPqOTPi01rOL6e9SzbGTAX68
+         AwaVamlIDYyE9zdzIKDAhRQ+rqt4oL2C2b5hx88jmGGfpZMzGz8SjoN/PIFz7bbPZx
+         Zl42qiR7Fq/L0t4D0///z/bx1rCqp83BTfkOULXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Hugues ANGUELKOV <hanguelkov@randorisec.fr>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.10 11/55] netfilter: nf_tables: stricter validation of element data
-Date:   Mon, 11 Jul 2022 11:06:59 +0200
-Message-Id: <20220711090542.094432740@linuxfoundation.org>
+        stable@vger.kernel.org, "Zhang, Bernice" <bernice.zhang@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Yian Chen <yian.chen@intel.com>,
+        Joerg Roedel <jroedel@suse.de>, Zhang@vger.kernel.org
+Subject: [PATCH 5.10 12/55] iommu/vt-d: Fix PCI bus rescan device hot add
+Date:   Mon, 11 Jul 2022 11:07:00 +0200
+Message-Id: <20220711090542.122959295@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -49,44 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Yian Chen <yian.chen@intel.com>
 
-commit 7e6bc1f6cabcd30aba0b11219d8e01b952eacbb6 upstream.
+commit 316f92a705a4c2bf4712135180d56f3cca09243a upstream.
 
-Make sure element data type and length do not mismatch the one specified
-by the set declaration.
+Notifier calling chain uses priority to determine the execution
+order of the notifiers or listeners registered to the chain.
+PCI bus device hot add utilizes the notification mechanism.
 
-Fixes: 7d7402642eaf ("netfilter: nf_tables: variable sized set element keys / data")
-Reported-by: Hugues ANGUELKOV <hanguelkov@randorisec.fr>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+The current code sets low priority (INT_MIN) to Intel
+dmar_pci_bus_notifier and postpones DMAR decoding after adding
+new device into IOMMU. The result is that struct device pointer
+cannot be found in DRHD search for the new device's DMAR/IOMMU.
+Subsequently, the device is put under the "catch-all" IOMMU
+instead of the correct one. This could cause system hang when
+device TLB invalidation is sent to the wrong IOMMU. Invalidation
+timeout error and hard lockup have been observed and data
+inconsistency/crush may occur as well.
+
+This patch fixes the issue by setting a positive priority(1) for
+dmar_pci_bus_notifier while the priority of IOMMU bus notifier
+uses the default value(0), therefore DMAR decoding will be in
+advance of DRHD search for a new device to find the correct IOMMU.
+
+Following is a 2-step example that triggers the bug by simulating
+PCI device hot add behavior in Intel Sapphire Rapids server.
+
+echo 1 > /sys/bus/pci/devices/0000:6a:01.0/remove
+echo 1 > /sys/bus/pci/rescan
+
+Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
+Cc: stable@vger.kernel.org # v3.15+
+Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Yian Chen <yian.chen@intel.com>
+Link: https://lore.kernel.org/r/20220521002115.1624069-1-yian.chen@intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/dmar.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -4886,13 +4886,20 @@ static int nft_setelem_parse_data(struct
- 				  struct nft_data *data,
- 				  struct nlattr *attr)
- {
-+	u32 dtype;
- 	int err;
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -385,7 +385,7 @@ static int dmar_pci_bus_notifier(struct
  
- 	err = nft_data_init(ctx, data, NFT_DATA_VALUE_MAXLEN, desc, attr);
- 	if (err < 0)
- 		return err;
+ static struct notifier_block dmar_pci_bus_nb = {
+ 	.notifier_call = dmar_pci_bus_notifier,
+-	.priority = INT_MIN,
++	.priority = 1,
+ };
  
--	if (desc->type != NFT_DATA_VERDICT && desc->len != set->dlen) {
-+	if (set->dtype == NFT_DATA_VERDICT)
-+		dtype = NFT_DATA_VERDICT;
-+	else
-+		dtype = NFT_DATA_VALUE;
-+
-+	if (dtype != desc->type ||
-+	    set->dlen != desc->len) {
- 		nft_data_release(data, desc->type);
- 		return -EINVAL;
- 	}
+ static struct dmar_drhd_unit *
 
 
