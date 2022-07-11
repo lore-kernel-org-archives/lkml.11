@@ -2,77 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC80FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD675CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbiGKHwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
+        id S229789AbiGKHyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbiGKHwk (ORCPT
+        with ESMTP id S229552AbiGKHyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:52:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D2E1CB1B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:52:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16A35B80DE7
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44ADC341CA;
-        Mon, 11 Jul 2022 07:52:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657525956;
-        bh=QDuUXmYLSzR4UM0SnVCHqjB0bPq6VFQQciujFgrIRzo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OlK30X0+dVGzgpv7hc6KBqc0RX5orPLBsk0Or6nk8FNrUDefXcCADhAue1Z8ogDgL
-         5u+GCB936VgYbDP7GqN8e2pZ3iZZ0seNY7AyvAj8HzaVTZcXtVH/gh1byicCoqclRe
-         FcFld9RDSWiVFAusxxrTYpqq0OEBJqFo5hKiQ/efwsMLr5jP06qIbirU3/H19aibNQ
-         iD8HMT7hTZ763Rao3B3zERSUhhRb2XAbqsgb9S2C6mRx19fPSVe9XbbU4Wfq/Sgmk4
-         lmzs91Ih4Nw5u55u0eLw3U4dGZZuU4IJYPj+BWelfjRv8lih96eilYBeJGV/jc2kje
-         /wLYjqY43qbqg==
-Received: from johan by xi with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oAoDc-0005fa-I3; Mon, 11 Jul 2022 09:52:37 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH] drm/panel-edp: add AUO B133UAN02.1 panel entry
-Date:   Mon, 11 Jul 2022 09:52:02 +0200
-Message-Id: <20220711075202.21775-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 11 Jul 2022 03:54:19 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68AB511465;
+        Mon, 11 Jul 2022 00:54:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657526058; x=1689062058;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=PNX5zeWScEfvXd7e/yKULO71QZJI9wmiUGZ4xVW8XFY=;
+  b=a5cUioC4tu9KRZW5+59ucgSukb/XWLqF7LLNgqzjsKLSF5lk9qNrG7j8
+   icyBWYgybmedYicsnmrIfdu0ghhdpw3Cwji6feG8Zf+h92hGu3H72qRQi
+   ++Cj9FbjSXqVjdNu7XSq/d6Q8biso/HG897l3mhwsRZHlOUVqN9wevyzR
+   I=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 00:54:18 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 00:54:18 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 11 Jul 2022 00:54:17 -0700
+Received: from [10.216.8.232] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 11 Jul
+ 2022 00:54:13 -0700
+Message-ID: <32cffa34-1088-5e25-3051-192e3049908f@quicinc.com>
+Date:   Mon, 11 Jul 2022 13:24:10 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] arm64: dts: qcom: sc7280: Move wcd specific pin conf
+ to common file
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <devicetree@vger.kernel.org>,
+        <dianders@chromium.org>, <judyhsiao@chromium.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <robh+dt@kernel.org>,
+        <srinivas.kandagatla@linaro.org>
+References: <1657197381-1271-1-git-send-email-quic_srivasam@quicinc.com>
+ <CAE-0n53X8yyWr+Q+3RpciCeZcW+t+jgZs3eqNF9O8hJcw0cq0Q@mail.gmail.com>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <CAE-0n53X8yyWr+Q+3RpciCeZcW+t+jgZs3eqNF9O8hJcw0cq0Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an eDP panel entry for AUO B133UAN02.1.
 
-Due to lack of documentation, use the delay_200_500_e50 timings like
-some other AUO entries for now.
+On 7/8/2022 11:29 PM, Stephen Boyd wrote:
+Thanks for your time Stephen!!!
+> Quoting Srinivasa Rao Mandadapu (2022-07-07 05:36:21)
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
+>> index 32a1e78..859faaa 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-wcd9385.dtsi
+>> @@ -5,6 +5,70 @@
+>>    * Copyright (c) 2022, The Linux Foundation. All rights reserved.
+>>    */
+>>
+>> +/* PINCTRL */
+>> +
+>> +&lpass_dmic01_clk {
+>> +       drive-strength = <8>;
+>> +       bias-disable;
+>> +};
+>> +
+>> +&lpass_dmic01_clk_sleep {
+>> +       drive-strength = <2>;
+>> +};
+>> +
+>> +&lpass_dmic01_data {
+>> +       bias-pull-down;
+>> +};
+>> +
+>> +&lpass_dmic23_clk {
+>> +       drive-strength = <8>;
+>> +       bias-disable;
+>> +};
+>> +
+>> +&lpass_dmic23_clk_sleep {
+>> +       drive-strength = <2>;
+>> +};
+>> +
+>> +&lpass_dmic23_data {
+>> +       bias-pull-down;
+>> +};
+>> +
+>> +&lpass_rx_swr_clk {
+>> +       drive-strength = <2>;
+>> +       slew-rate = <1>;
+>> +       bias-disable;
+>> +};
+>> +
+>> +&lpass_rx_swr_clk_sleep {
+>> +       bias-pull-down;
+>> +};
+>> +
+>> +&lpass_rx_swr_data {
+>> +       drive-strength = <2>;
+> I suspect this was discussed before, but why do we need to modify drive
+> strengths on pins that aren't in output mode? I assume either rx_swr or
+> tx_swr is unidirectional.
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/gpu/drm/panel/panel-edp.c | 1 +
- 1 file changed, 1 insertion(+)
+Actually this patch is just reorganization only. didn't do any 
+modification of already reviewed patches.
 
-diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-index fe3897b86665..30f69cd8f9ee 100644
---- a/drivers/gpu/drm/panel/panel-edp.c
-+++ b/drivers/gpu/drm/panel/panel-edp.c
-@@ -1845,6 +1845,7 @@ static const struct panel_delay delay_100_500_e200 = {
-  * Sort first by vendor, then by product ID.
-  */
- static const struct edp_panel_entry edp_panels[] = {
-+	EDP_PANEL_ENTRY('A', 'U', 'O', 0x1e9b, &delay_200_500_e50, "B133UAN02.1"),
- 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x405c, &auo_b116xak01.delay, "B116XAK01"),
- 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x615c, &delay_200_500_e50, "B116XAN06.1"),
- 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x8594, &delay_200_500_e50, "B133UAN01.0"),
--- 
-2.35.1
+Will test without drive strength again and post a fix patch post this 
+patch accepted if required.
 
+>
+>> +       slew-rate = <1>;
+>> +       bias-bus-hold;
+>> +};
+>> +
+>> +&lpass_rx_swr_data_sleep {
+>> +       bias-pull-down;
+>> +};
+>> +
+>> +&lpass_tx_swr_clk {
+>> +       drive-strength = <2>;
+>> +       slew-rate = <1>;
+>> +       bias-disable;
+>> +};
+>> +
+>> +&lpass_tx_swr_clk_sleep {
+>> +       bias-pull-down;
+>> +};
+>> +
+>> +&lpass_tx_swr_data {
+>> +       drive-strength = <2>;
+>> +       slew-rate = <1>;
+>> +       bias-bus-hold;
+>> +};
+>> +
+>>   &mi2s1_data0 {
+>>          drive-strength = <6>;
+>>          bias-disable;
