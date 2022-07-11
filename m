@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232294AbiGKKFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
+        id S234517AbiGKKFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234524AbiGKKDg (ORCPT
+        with ESMTP id S234483AbiGKKDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 06:03:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B650748EB7;
-        Mon, 11 Jul 2022 02:29:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9616948EA6;
+        Mon, 11 Jul 2022 02:29:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5355F6141D;
-        Mon, 11 Jul 2022 09:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C607C34115;
-        Mon, 11 Jul 2022 09:29:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4CD7612E8;
+        Mon, 11 Jul 2022 09:29:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 021A0C34115;
+        Mon, 11 Jul 2022 09:29:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531781;
-        bh=RfUoO/kK49NxXAgZqG2VhQS9b0PB98R1OjGwGJyKmy8=;
+        s=korg; t=1657531776;
+        bh=VEDEAuGYpp7Jizzi0f+s+J5j7QxYR9ToluTbgD9NrJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Du0LzbZ4k/N5rbFGyLMfgQgDiubnTOBYh450011xeUtAHvrUHzGrt51VUOiGtgmq
-         U5h+2tObRQ8/H9RFvFD+zVWxjeWFV5cX0dDg3XEicrRi8U3DMLKsAek3MsFgl2ZbuB
-         xYySAoJ2YSLEeK1Sm3e9w8SI975JZL7TK5HUjZHU=
+        b=q46REEw08bYod3pgcXBoUqlE//Lu17Z9fRUrHZI/FqErZXaw77nlMbbL8FWeCKGe8
+         9KhKwDijXs/gYctlrUTW3Y5he843wLSEXBk/3/G5P3MgMRV4OrX4AWmqngZiESStZh
+         lIqsTFCMPoYrYJHMIRw5zhsh0aZ4DE6riGaUj+sc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 230/230] selftests/net: fix section name when using xdp_dummy.o
-Date:   Mon, 11 Jul 2022 11:08:06 +0200
-Message-Id: <20220711090610.625380037@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 228/230] dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
+Date:   Mon, 11 Jul 2022 11:08:04 +0200
+Message-Id: <20220711090610.569137684@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,88 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit d28b25a62a47a8c8aa19bd543863aab6717e68c9 upstream.
+commit 615a4bfc426e11dba05c2cf343f9ac752fb381d2 upstream.
 
-Since commit 8fffa0e3451a ("selftests/bpf: Normalize XDP section names in
-selftests") the xdp_dummy.o's section name has changed to xdp. But some
-tests are still using "section xdp_dummy", which make the tests failed.
-Fix them by updating to the new section name.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
 
-Fixes: 8fffa0e3451a ("selftests/bpf: Normalize XDP section names in selftests")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/r/20220630062228.3453016-1-liuhangbin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Link: https://lore.kernel.org/r/20220605042723.17668-1-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/udpgro.sh       |    2 +-
- tools/testing/selftests/net/udpgro_bench.sh |    2 +-
- tools/testing/selftests/net/udpgro_fwd.sh   |    2 +-
- tools/testing/selftests/net/veth.sh         |    6 +++---
- 4 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/dma/ti/dma-crossbar.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/tools/testing/selftests/net/udpgro.sh
-+++ b/tools/testing/selftests/net/udpgro.sh
-@@ -34,7 +34,7 @@ cfg_veth() {
- 	ip -netns "${PEER_NS}" addr add dev veth1 192.168.1.1/24
- 	ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
- 	ip -netns "${PEER_NS}" link set dev veth1 up
--	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp_dummy
-+	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
- }
+--- a/drivers/dma/ti/dma-crossbar.c
++++ b/drivers/dma/ti/dma-crossbar.c
+@@ -245,6 +245,7 @@ static void *ti_dra7_xbar_route_allocate
+ 	if (dma_spec->args[0] >= xbar->xbar_requests) {
+ 		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
+ 			dma_spec->args[0]);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
  
- run_one() {
---- a/tools/testing/selftests/net/udpgro_bench.sh
-+++ b/tools/testing/selftests/net/udpgro_bench.sh
-@@ -34,7 +34,7 @@ run_one() {
- 	ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
- 	ip -netns "${PEER_NS}" link set dev veth1 up
+@@ -252,12 +253,14 @@ static void *ti_dra7_xbar_route_allocate
+ 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
+ 	if (!dma_spec->np) {
+ 		dev_err(&pdev->dev, "Can't get DMA master\n");
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
  
--	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp_dummy
-+	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
- 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
- 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx -t ${rx_args} -r &
+ 	map = kzalloc(sizeof(*map), GFP_KERNEL);
+ 	if (!map) {
+ 		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
  
---- a/tools/testing/selftests/net/udpgro_fwd.sh
-+++ b/tools/testing/selftests/net/udpgro_fwd.sh
-@@ -46,7 +46,7 @@ create_ns() {
- 		ip -n $BASE$ns addr add dev veth$ns $BM_NET_V4$ns/24
- 		ip -n $BASE$ns addr add dev veth$ns $BM_NET_V6$ns/64 nodad
- 	done
--	ip -n $NS_DST link set veth$DST xdp object ../bpf/xdp_dummy.o section xdp_dummy 2>/dev/null
-+	ip -n $NS_DST link set veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
- }
- 
- create_vxlan_endpoint() {
---- a/tools/testing/selftests/net/veth.sh
-+++ b/tools/testing/selftests/net/veth.sh
-@@ -289,14 +289,14 @@ if [ $CPUS -gt 1 ]; then
- 	ip netns exec $NS_SRC ethtool -L veth$SRC rx 1 tx 2 2>/dev/null
- 	printf "%-60s" "bad setting: XDP with RX nr less than TX"
- 	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
--		section xdp_dummy 2>/dev/null &&\
-+		section xdp 2>/dev/null &&\
- 		echo "fail - set operation successful ?!?" || echo " ok "
- 
- 	# the following tests will run with multiple channels active
- 	ip netns exec $NS_SRC ethtool -L veth$SRC rx 2
- 	ip netns exec $NS_DST ethtool -L veth$DST rx 2
- 	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
--		section xdp_dummy 2>/dev/null
-+		section xdp 2>/dev/null
- 	printf "%-60s" "bad setting: reducing RX nr below peer TX with XDP set"
- 	ip netns exec $NS_DST ethtool -L veth$DST rx 1 2>/dev/null &&\
- 		echo "fail - set operation successful ?!?" || echo " ok "
-@@ -311,7 +311,7 @@ if [ $CPUS -gt 2 ]; then
- 	chk_channels "setting invalid channels nr" $DST 2 2
- fi
- 
--ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp_dummy 2>/dev/null
-+ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
- chk_gro_flag "with xdp attached - gro flag" $DST on
- chk_gro_flag "        - peer gro flag" $SRC off
- chk_tso_flag "        - tso flag" $SRC off
+@@ -269,6 +272,7 @@ static void *ti_dra7_xbar_route_allocate
+ 		dev_err(&pdev->dev, "Run out of free DMA requests\n");
+ 		kfree(map);
+ 		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 	set_bit(map->xbar_out, xbar->dma_inuse);
 
 
