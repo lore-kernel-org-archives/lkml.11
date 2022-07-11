@@ -2,108 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C38C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:46:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03037C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230128AbiGKKqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
+        id S229781AbiGKKqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiGKKp4 (ORCPT
+        with ESMTP id S230000AbiGKKqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:45:56 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8D7EDB59
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:52:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657533158; x=1689069158;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3N262QoHq7zgv+1D1IpRmJMMCOTGj2506vH+/IAwPgk=;
-  b=iA0SfUDEsDLCpQSrOYdDTR3P+N9EjH7koASMW0m2BBnX+uweYEr39GmX
-   cbHQ/Eh2ASGM4ShzLDw9autz7hgefdWp8cWHbv2p/UL8pqEgBhT6Zx8H3
-   YvVxiYnJbfb+Hh/K5oVbY0NdaWNc4qnkXAlisF3Gp4Hyab1qp6wjhxf7q
-   zHQeEUe382ih2Wi+uB6XoxTTb9eTh2Zt9VnQgekE/PNbXu6b844g0XcpB
-   c/qwWzUcRdcAyAMYIHG/07d1Vn9xzAJswXP/djI5OV5jNIj0/uJPV3i9M
-   gKL9jIOehI+oIFBr4fvEBG6eL/xRi/fFcveqIKgMoNAjHP3wSqamF52F8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="310223441"
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="310223441"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 02:52:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="840953940"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 11 Jul 2022 02:52:19 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 85029400; Mon, 11 Jul 2022 12:52:26 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Takashi Iwai <tiwai@suse.de>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        patches@opensource.cirrus.com
-Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH v1 4/4] ALSA: hda: cs35l41: Consolidate selections under SND_HDA_SCODEC_CS35L41
-Date:   Mon, 11 Jul 2022 12:52:19 +0300
-Message-Id: <20220711095219.36915-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220711095219.36915-1-andriy.shevchenko@linux.intel.com>
-References: <20220711095219.36915-1-andriy.shevchenko@linux.intel.com>
+        Mon, 11 Jul 2022 06:46:02 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04135D59B;
+        Mon, 11 Jul 2022 02:52:45 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id 8A584E008C;
+        Mon, 11 Jul 2022 02:52:15 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id H9ibHYm_PBeJ; Mon, 11 Jul 2022 02:52:14 -0700 (PDT)
+Message-ID: <dda3847e74ddbcde86342210e44247973a24e5f6.camel@puri.sm>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
+        t=1657533134; bh=iLimf2jg+PrWCv8rSIAeBwdGcHhOvtI2YNGljf++jSo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=P/VgPJFzb1uFoAgpy92STrJj0cSHo9Cswi4+9iVaRkdzthFemZZaaJltiNeZtQWOP
+         Bu7+gjypW9rpE3xCXPHd+bnqe0FDOWdtkfkiicAjkuQ/ll4ZM1VvzJ6+EYdyOHKZyh
+         bcjzb4dSY1m3L1mHSHjGB8kd0QDuZHsj6ldRyfsxocPFN0Qq0BXrbdu0Nm0h4asfWv
+         qjCHxjdhzUwlRjF1zOBjQjRfNgicAk+YxE9jQ2QXjsUj9fquvVkzKwIRCPs/14nLEo
+         uxicwX624nUauMBMneWi5rQCPa/b+qplS5MTCzvNCCmlZ6Wfa4MnUdnRBn81QLhTns
+         ZK7tvXWi4bTWQ==
+Subject: Re: regulator: BD71837 PMIC resume during noirq phase?
+From:   Martin Kepplinger <martin.kepplinger@puri.sm>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     matti.vaittinen@fi.rohmeurope.com, lgirdwood@gmail.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Date:   Mon, 11 Jul 2022 11:52:10 +0200
+In-Reply-To: <Yqhf7/3B0l9+3dQH@sirena.org.uk>
+References: <573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm>
+         <YqhSXuHMR6kuFu/A@sirena.org.uk>
+         <8024d9e3b885941084740cb0fb2fc9117acdd069.camel@puri.sm>
+         <Yqhf7/3B0l9+3dQH@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Selections can be propagated via selections, while dependencies are not.
-Hence, consolidate selections under the SND_HDA_SCODEC_CS35L41 option.
+Am Dienstag, dem 14.06.2022 um 11:16 +0100 schrieb Mark Brown:
+> On Tue, Jun 14, 2022 at 11:57:18AM +0200, Martin Kepplinger wrote:
+> > Am Dienstag, dem 14.06.2022 um 10:18 +0100 schrieb Mark Brown:
+> 
+> > > Indeed - if a power domain is controlling regulators then I'd not
+> > > expect
+> > > things to go well if it tries to resume without interrupts, there
+> > > will
+> > > be some things that can be done purely with GPIOs but that's
+> > > depending
+> > > on the hardware having wired things up that way and the
+> > > operations
+> > > needed by the power domain mapping well onto what can be done
+> > > with
+> > > GPIOs.
+> > 
+> > and what's the danger when resuming power domains later?:
+> 
+> If there's a device that needs to early resume in a power domain that
+> needs to do something on resume then presumably this will mess up the
+> ordering.  You probably need a separate power domain type, or both
+> operations.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- sound/pci/hda/Kconfig | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+hi Mark, the followup to this would be my first try to fix this:
 
-diff --git a/sound/pci/hda/Kconfig b/sound/pci/hda/Kconfig
-index e86cf80bdf96..8b73a12d356f 100644
---- a/sound/pci/hda/Kconfig
-+++ b/sound/pci/hda/Kconfig
-@@ -93,16 +93,16 @@ config SND_HDA_PATCH_LOADER
- 
- config SND_HDA_SCODEC_CS35L41
- 	tristate
-+	select SND_HDA_GENERIC
-+	select REGMAP_IRQ
- 
- config SND_HDA_SCODEC_CS35L41_I2C
- 	tristate "Build CS35L41 HD-audio side codec support for I2C Bus"
- 	depends on I2C
- 	depends on ACPI || COMPILE_TEST
- 	depends on SND_SOC
--	select SND_HDA_GENERIC
- 	select SND_SOC_CS35L41_LIB
- 	select SND_HDA_SCODEC_CS35L41
--	select REGMAP_IRQ
- 	help
- 	  Say Y or M here to include CS35L41 I2C HD-audio side codec support
- 	  in snd-hda-intel driver, such as ALC287.
-@@ -115,10 +115,8 @@ config SND_HDA_SCODEC_CS35L41_SPI
- 	depends on SPI_MASTER
- 	depends on ACPI || COMPILE_TEST
- 	depends on SND_SOC
--	select SND_HDA_GENERIC
- 	select SND_SOC_CS35L41_LIB
- 	select SND_HDA_SCODEC_CS35L41
--	select REGMAP_IRQ
- 	help
- 	  Say Y or M here to include CS35L41 SPI HD-audio side codec support
- 	  in snd-hda-intel driver, such as ALC287.
--- 
-2.35.1
+https://lore.kernel.org/linux-arm-kernel/20220711094549.3445566-1-martin.kepplinger@puri.sm/T/#t
+
+thank you for you help so far,
+
+                             martin
 
