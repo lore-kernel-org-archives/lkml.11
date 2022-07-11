@@ -2,87 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456EDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbiGKHfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
+        id S230163AbiGKHfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbiGKHfN (ORCPT
+        with ESMTP id S230096AbiGKHf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:35:13 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87A7F1BEAF;
-        Mon, 11 Jul 2022 00:35:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Cj/Rb
-        6wa9GFxUQqhUdh2NDMpVy+s4rRoTrJKhdx+R5k=; b=Kaw7MUWjV/9FhP0wKMv1y
-        J7FdyTKnUHsOOrQAx6FUpGNRz9Vjljp4Pv0tL27WOa6KrI3fZLMZXmPVt2FGnHx2
-        dH5fGdkzMSMBedQRUdSovOj83dy9CVuPSmhSBFA2k7aJeBH2q05IVTFhGAn1ZfPh
-        Hyb8IkgCJ3TmrSIojgPr3o=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp1 (Coremail) with SMTP id GdxpCgDnPZGa0stioLW2Ng--.8571S4;
-        Mon, 11 Jul 2022 15:34:58 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com
-Cc:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH v3] proc/vmcore: fix potential memory leak in vmcore_init()
-Date:   Mon, 11 Jul 2022 15:34:49 +0800
-Message-Id: <20220711073449.2319585-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Jul 2022 03:35:26 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49D41BE8B
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zxI5Ju1zn3Hrr6mLV73xoE3t9N0u61rDH0mqVeKgZCY=; b=ZF8aIfKr9b2YLBkkHLIxZkEniy
+        suzNpZbhoOai42F1cMIVtEA8WxLfW9HP78e6XUwls3/sgevvyRY/591wcSwAUVuKMI+te/Rt4SFyE
+        Bj6Zc9QLG5L9iicV5Qjos6lZ9IRCcv83fkBPZlZ2JgLrA8Rq+Oseg4AMEOpgVFwtSeM12+9lFeDe7
+        OmxNNv0JQ2yWpwNaO5r0ApnYywRhNkkQrS6d+FsvF9BsO9GjgQPedCcRs0xFHKJVHHgaVrX5R8/pR
+        z2aHgNzMxiJ4jy6QD/E46VNNman1B10mkLvgQPQaGy9g1EUh76R9kCQCs6r9bSmrqPEmdsK/AdaFJ
+        wOtRTHNQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oAnwf-005lQL-OH; Mon, 11 Jul 2022 07:35:05 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 81821300110;
+        Mon, 11 Jul 2022 09:35:03 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 6C9832015BE8D; Mon, 11 Jul 2022 09:35:03 +0200 (CEST)
+Date:   Mon, 11 Jul 2022 09:35:03 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mingo@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/8] sched/fair: remove redundant cpu_cgrp_subsys->fork()
+Message-ID: <YsvSpyrJxNv7jsQz@hirez.programming.kicks-ass.net>
+References: <20220709151353.32883-1-zhouchengming@bytedance.com>
+ <20220709151353.32883-4-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgDnPZGa0stioLW2Ng--.8571S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKrWUtFyDCr1xAr1rCryUJrb_yoWkurb_uF
-        4UKr4xX3yrGa1fGr4UKryrJw42kr1j9rs8Xr1xCF9rJa4rKwsxWrZ7urZ3Ar9xJrsY9345
-        uw4FkFy29ry5KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREWrW3UUUUU==
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiQwg7jFc7ajRQVQAAsL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220709151353.32883-4-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-elfcorehdr_alloc() allocates a memory chunk for elfcorehdr_addr with
-kzalloc(). If is_vmcore_usable() returns false, elfcorehdr_addr is a
-predefined value. If parse_crash_elf_headers() occurs some error and
-returns a negetive value, the elfcorehdr_addr should be released with
-elfcorehdr_free().
+On Sat, Jul 09, 2022 at 11:13:48PM +0800, Chengming Zhou wrote:
+> We use cpu_cgrp_subsys->fork() to set task group for the new fair task
+> in cgroup_post_fork().
+> 
+> Since commit b1e8206582f9 ("sched: Fix yet more sched_fork() races")
+> has already set task group for the new fair task in sched_cgroup_fork(),
+> so cpu_cgrp_subsys->fork() can be removed.
+> 
+>   cgroup_can_fork()	--> pin parent's sched_task_group
+>   sched_cgroup_fork()
+>     __set_task_cpu	--> set task group
+>   cgroup_post_fork()
+>     ss->fork() := cpu_cgroup_fork()	--> set again
+> 
+> After this patch's change, task_change_group_fair() only need to
+> care about task cgroup migration, make the code much simplier.
 
-We can fix by calling elfcorehdr_free() when parse_crash_elf_headers()
-fails.
+This:
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- fs/proc/vmcore.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> This patch also move the task se depth setting to set_task_rq(), which
+> will set correct depth for the new task se in sched_cgroup_fork().
+> 
+> The se depth setting in attach_entity_cfs_rq() is removed since
+> set_task_rq() is a better place to do this when task moves across
+> CPUs/groups.
 
-diff --git a/fs/proc/vmcore.c b/fs/proc/vmcore.c
-index 4eaeb645e759..125efe63f281 100644
---- a/fs/proc/vmcore.c
-+++ b/fs/proc/vmcore.c
-@@ -1569,7 +1569,7 @@ static int __init vmcore_init(void)
- 	rc = parse_crash_elf_headers();
- 	if (rc) {
- 		pr_warn("Kdump: vmcore not initialized\n");
--		return rc;
-+		goto fail;
- 	}
- 	elfcorehdr_free(elfcorehdr_addr);
- 	elfcorehdr_addr = ELFCORE_ADDR_ERR;
-@@ -1578,6 +1578,9 @@ static int __init vmcore_init(void)
- 	if (proc_vmcore)
- 		proc_vmcore->size = vmcore_size;
- 	return 0;
-+fail:
-+	elfcorehdr_free(elfcorehdr_addr);
-+	return rc;
- }
- fs_initcall(vmcore_init);
- 
--- 
-2.25.1
+really should have been it's own patch. And this actually scares me. Did
+you test with priority inheritance bumping the task to FIFO while things
+change?
 
+This has nothing to do with fork().
