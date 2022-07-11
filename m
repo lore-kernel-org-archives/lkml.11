@@ -2,79 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA276C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADC8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbiGKJT2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        id S231709AbiGKJTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231759AbiGKJSi (ORCPT
+        with ESMTP id S231673AbiGKJSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:18:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BDE4D4D7;
-        Mon, 11 Jul 2022 02:11:54 -0700 (PDT)
+        Mon, 11 Jul 2022 05:18:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD4B12095;
+        Mon, 11 Jul 2022 02:11:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 969E3B80E79;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA15FB80E76;
+        Mon, 11 Jul 2022 09:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77686C341C0;
         Mon, 11 Jul 2022 09:11:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5807C34115;
-        Mon, 11 Jul 2022 09:11:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530712;
-        bh=LTvfCJiPIP5D7fDUsggvikSCbkMOiuS1IHVDXNZ+uSY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KyExAqNUZBw6W+k/sbqZJgsQ7BIBhl8hcz4phyrKqLKN2Zb1Db18nHZlWD/z156LD
-         HEOL2NUY1/uXWmELmU0oCxA6JleK+mQZA2vcVXOaOhEDu6RkaMM05yHiUWZ92pn9BG
-         yITg0pLLDYhTpk7wojf+zdjNYYytdFDAzqFliF5Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guiling Deng <greens9@163.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.10 13/55] fbdev: fbmem: Fix logo center image dx issue
-Date:   Mon, 11 Jul 2022 11:07:01 +0200
-Message-Id: <20220711090542.153048858@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
-References: <20220711090541.764895984@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657530713;
+        bh=zS87bKfiJIBHsso19uIT/c9zaNIHwuFgPFMQtBCi4wM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uccqbRKRyGtyqdtGwa8zsMcpTJbWNuT5AamvOMy8aozPi/cG0jpRz9IF/gOGPbdh4
+         0eOj9pMD2wM/aSU+cahwkGya44kyxI0OvLIHGK6rGDD6wCGHWnoSEcUHVN47QNW5XG
+         VdyWNPz6mDxC/1qgsigvNPxXTuo7VHH5LQwl7JYozR3EM7hxR8YclCZdpFHKBrkWLm
+         KwakGe5UPdS7eCIjsVumrB8YJM/hFb+IkFkeE1OApiHdab3wxme+fu8+XD4dUzbH19
+         QotTTwmIjkSqgUoK/uH4EaZYhgKSDL0ZZNvi/NhUjZdfKcOEvOeJn0kl41TqUxLFwc
+         A2Bv/l1cQIrZg==
+Received: from [213.208.244.172] (helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oApSJ-006ba9-Eb;
+        Mon, 11 Jul 2022 10:11:51 +0100
+Date:   Mon, 11 Jul 2022 10:11:51 +0100
+Message-ID: <87k08kko88.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] genirq: allow irq_set_chip_handler_name_locked() to take a const irq_chip
+In-Reply-To: <20220706151553.1580790-1-michael@walle.cc>
+References: <20220706151553.1580790-1-michael@walle.cc>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 213.208.244.172
+X-SA-Exim-Rcpt-To: michael@walle.cc, linus.walleij@linaro.org, tglx@linutronix.de, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guiling Deng <greens9@163.com>
+On Wed, 06 Jul 2022 16:15:52 +0100,
+Michael Walle <michael@walle.cc> wrote:
+> 
+> Similar to commit 393e1280f765 ("genirq: Allow irq_chip registration
+> functions to take a const irq_chip"), allow the
+> irq_set_chip_handler_name_locked() function to take a const irq_chip
+> argument.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+> Given this is the correct approach, can this go through the pinctrl tree?
+> Of not, do we need an immutable tag?
 
-commit 955f04766d4e6eb94bf3baa539e096808c74ebfb upstream.
+I'd prefer this sort of change went into the IRQ tree, as it
+potentially has a wide ranging effect, and that the rest of these
+changes went via the IRQ tree too. It makes it easy to take the branch
+down if something goes wrong.
 
-Image.dx gets wrong value because of missing '()'.
+Given that I already do carry a bunch of GPIO related patches, I'm
+happy to add that to the mix if Linus ack the second patch.
 
-If xres == logo->width and n == 1, image.dx = -16.
+The change itself looks good to me.
 
-Signed-off-by: Guiling Deng <greens9@163.com>
-Fixes: 3d8b1933eb1c ("fbdev: fbmem: add config option to center the bootup logo")
-Cc: stable@vger.kernel.org # v5.0+
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/video/fbdev/core/fbmem.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks,
 
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -513,7 +513,7 @@ static int fb_show_logo_line(struct fb_i
- 
- 		while (n && (n * (logo->width + 8) - 8 > xres))
- 			--n;
--		image.dx = (xres - n * (logo->width + 8) - 8) / 2;
-+		image.dx = (xres - (n * (logo->width + 8) - 8)) / 2;
- 		image.dy = y ?: (yres - logo->height) / 2;
- 	} else {
- 		image.dx = 0;
+	M.
 
-
+-- 
+Without deviation from the norm, progress is not possible.
