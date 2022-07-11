@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC32C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233992AbiGKJys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
+        id S234002AbiGKJyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234051AbiGKJyI (ORCPT
+        with ESMTP id S234147AbiGKJyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:54:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9ADAF743;
-        Mon, 11 Jul 2022 02:25:47 -0700 (PDT)
+        Mon, 11 Jul 2022 05:54:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C079BAF770;
+        Mon, 11 Jul 2022 02:25:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EF3061366;
-        Mon, 11 Jul 2022 09:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB2BC34115;
-        Mon, 11 Jul 2022 09:25:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8026BB80E6D;
+        Mon, 11 Jul 2022 09:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D00FFC34115;
+        Mon, 11 Jul 2022 09:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531546;
-        bh=y6KWV1l7vFa0AvPblk5Xk5IqSRITdwavbUj/jVWrbMo=;
+        s=korg; t=1657531549;
+        bh=AqEjWHgcoYJmR2Y2hTNYTlTBsAIkaFux81Wk/JVj7WM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IttRf0t12GDfEPitC9FLR2iXKOngwGS0p8NIqZCDHnCdz2EVAKQfBCWqbXWQS9WHj
-         wmrdQWrJrzWbW3KOinKn6SwzDOMZEp/VWJlSZWo3d2woXLERIuvTpNycBpTeU2u2ij
-         m92XUT3S35y/XPXX9YkeDMUgw70ZTQMXquzkNFXw=
+        b=TPokVt8jbM30eZNU3ugskrg/lFMRodmAoMMcevn+oQxd5ENIIbb6sc5jWv23vT1PY
+         8W3n+uQcYG9SCfEsANp6imIKH3y+uoehpg5F0kgVMldVa+M628xnm+RHk8N0kWJO1/
+         fe+xGjnpJQZGt1DhyM8/9xGXRobPHsi5UyQHw6FQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         "jason-jh.lin" <jason-jh.lin@mediatek.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 145/230] drm/mediatek: Remove the pointer of struct cmdq_client
-Date:   Mon, 11 Jul 2022 11:06:41 +0200
-Message-Id: <20220711090608.175503461@linuxfoundation.org>
+Subject: [PATCH 5.15 146/230] drm/mediatek: Detect CMDQ execution timeout
+Date:   Mon, 11 Jul 2022 11:06:42 +0200
+Message-Id: <20220711090608.203578148@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,127 +51,77 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 
-[ Upstream commit 563c9d4a5b117552150efbecbaf0877947e98a32 ]
+[ Upstream commit eaf80126aba6fd1754837eec91e4c8bbd58ae52e ]
 
-In mailbox rx_callback, it pass struct mbox_client to callback
-function, but it could not map back to mtk_drm_crtc instance
-because struct cmdq_client use a pointer to struct mbox_client:
-
-struct cmdq_client {
-	struct mbox_client client;
-	struct mbox_chan *chan;
-};
-
-struct mtk_drm_crtc {
-	/* client instance data */
-	struct cmdq_client *cmdq_client;
-};
-
-so remove the pointer of struct cmdq_client and let mtk_drm_crtc
-instance define cmdq_client as:
-
-struct mtk_drm_crtc {
-	/* client instance data */
-	struct cmdq_client cmdq_client;
-};
-
-and in rx_callback function, use struct mbox_client to get
-struct mtk_drm_crtc.
+CMDQ is used to update display register in vblank period, so
+it should be execute in next 2 vblank. One vblank interrupt
+before send message (occasionally) and one vblank interrupt
+after cmdq done. If it fail to execute in next 3 vblank,
+tiemout happen.
 
 Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_drm_crtc.c | 37 +++++++++++++------------
- 1 file changed, 20 insertions(+), 17 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_drm_crtc.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-index 369d3e68c0b6..e23e3224ac67 100644
+index e23e3224ac67..dad1f85ee315 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-@@ -52,7 +52,7 @@ struct mtk_drm_crtc {
- 	bool				pending_async_planes;
- 
+@@ -54,6 +54,7 @@ struct mtk_drm_crtc {
  #if IS_REACHABLE(CONFIG_MTK_CMDQ)
--	struct cmdq_client		*cmdq_client;
-+	struct cmdq_client		cmdq_client;
+ 	struct cmdq_client		cmdq_client;
  	u32				cmdq_event;
++	u32				cmdq_vblank_cnt;
  #endif
  
-@@ -472,19 +472,19 @@ static void mtk_drm_crtc_update_config(struct mtk_drm_crtc *mtk_crtc,
- 		mtk_mutex_release(mtk_crtc->mutex);
- 	}
- #if IS_REACHABLE(CONFIG_MTK_CMDQ)
--	if (mtk_crtc->cmdq_client) {
--		mbox_flush(mtk_crtc->cmdq_client->chan, 2000);
--		cmdq_handle = cmdq_pkt_create(mtk_crtc->cmdq_client, PAGE_SIZE);
-+	if (mtk_crtc->cmdq_client.chan) {
-+		mbox_flush(mtk_crtc->cmdq_client.chan, 2000);
-+		cmdq_handle = cmdq_pkt_create(&mtk_crtc->cmdq_client, PAGE_SIZE);
- 		cmdq_pkt_clear_event(cmdq_handle, mtk_crtc->cmdq_event);
- 		cmdq_pkt_wfe(cmdq_handle, mtk_crtc->cmdq_event, false);
- 		mtk_crtc_ddp_config(crtc, cmdq_handle);
- 		cmdq_pkt_finalize(cmdq_handle);
--		dma_sync_single_for_device(mtk_crtc->cmdq_client->chan->mbox->dev,
-+		dma_sync_single_for_device(mtk_crtc->cmdq_client.chan->mbox->dev,
+ 	struct device			*mmsys_dev;
+@@ -227,7 +228,10 @@ struct mtk_ddp_comp *mtk_drm_ddp_comp_for_plane(struct drm_crtc *crtc,
+ static void ddp_cmdq_cb(struct mbox_client *cl, void *mssg)
+ {
+ 	struct cmdq_cb_data *data = mssg;
++	struct cmdq_client *cmdq_cl = container_of(cl, struct cmdq_client, client);
++	struct mtk_drm_crtc *mtk_crtc = container_of(cmdq_cl, struct mtk_drm_crtc, cmdq_client);
+ 
++	mtk_crtc->cmdq_vblank_cnt = 0;
+ 	cmdq_pkt_destroy(data->pkt);
+ }
+ #endif
+@@ -483,6 +487,15 @@ static void mtk_drm_crtc_update_config(struct mtk_drm_crtc *mtk_crtc,
  					   cmdq_handle->pa_base,
  					   cmdq_handle->cmd_buf_size,
  					   DMA_TO_DEVICE);
--		mbox_send_message(mtk_crtc->cmdq_client->chan, cmdq_handle);
--		mbox_client_txdone(mtk_crtc->cmdq_client->chan, 0);
-+		mbox_send_message(mtk_crtc->cmdq_client.chan, cmdq_handle);
-+		mbox_client_txdone(mtk_crtc->cmdq_client.chan, 0);
++		/*
++		 * CMDQ command should execute in next 3 vblank.
++		 * One vblank interrupt before send message (occasionally)
++		 * and one vblank interrupt after cmdq done,
++		 * so it's timeout after 3 vblank interrupt.
++		 * If it fail to execute in next 3 vblank, timeout happen.
++		 */
++		mtk_crtc->cmdq_vblank_cnt = 3;
++
+ 		mbox_send_message(mtk_crtc->cmdq_client.chan, cmdq_handle);
+ 		mbox_client_txdone(mtk_crtc->cmdq_client.chan, 0);
  	}
- #endif
- 	mtk_crtc->config_updating = false;
-@@ -498,7 +498,7 @@ static void mtk_crtc_ddp_irq(void *data)
- 	struct mtk_drm_private *priv = crtc->dev->dev_private;
+@@ -499,11 +512,14 @@ static void mtk_crtc_ddp_irq(void *data)
  
  #if IS_REACHABLE(CONFIG_MTK_CMDQ)
--	if (!priv->data->shadow_register && !mtk_crtc->cmdq_client)
-+	if (!priv->data->shadow_register && !mtk_crtc->cmdq_client.chan)
+ 	if (!priv->data->shadow_register && !mtk_crtc->cmdq_client.chan)
++		mtk_crtc_ddp_config(crtc, NULL);
++	else if (mtk_crtc->cmdq_vblank_cnt > 0 && --mtk_crtc->cmdq_vblank_cnt == 0)
++		DRM_ERROR("mtk_crtc %d CMDQ execute command timeout!\n",
++			  drm_crtc_index(&mtk_crtc->base));
  #else
  	if (!priv->data->shadow_register)
- #endif
-@@ -838,17 +838,20 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
- 	mutex_init(&mtk_crtc->hw_lock);
+-#endif
+ 		mtk_crtc_ddp_config(crtc, NULL);
+-
++#endif
+ 	mtk_drm_finish_page_flip(mtk_crtc);
+ }
  
- #if IS_REACHABLE(CONFIG_MTK_CMDQ)
--	mtk_crtc->cmdq_client =
--			cmdq_mbox_create(mtk_crtc->mmsys_dev,
--					 drm_crtc_index(&mtk_crtc->base));
--	if (IS_ERR(mtk_crtc->cmdq_client)) {
-+	mtk_crtc->cmdq_client.client.dev = mtk_crtc->mmsys_dev;
-+	mtk_crtc->cmdq_client.client.tx_block = false;
-+	mtk_crtc->cmdq_client.client.knows_txdone = true;
-+	mtk_crtc->cmdq_client.client.rx_callback = ddp_cmdq_cb;
-+	mtk_crtc->cmdq_client.chan =
-+			mbox_request_channel(&mtk_crtc->cmdq_client.client,
-+					     drm_crtc_index(&mtk_crtc->base));
-+	if (IS_ERR(mtk_crtc->cmdq_client.chan)) {
- 		dev_dbg(dev, "mtk_crtc %d failed to create mailbox client, writing register by CPU now\n",
- 			drm_crtc_index(&mtk_crtc->base));
--		mtk_crtc->cmdq_client = NULL;
-+		mtk_crtc->cmdq_client.chan = NULL;
- 	}
- 
--	if (mtk_crtc->cmdq_client) {
--		mtk_crtc->cmdq_client->client.rx_callback = ddp_cmdq_cb;
-+	if (mtk_crtc->cmdq_client.chan) {
- 		ret = of_property_read_u32_index(priv->mutex_node,
- 						 "mediatek,gce-events",
- 						 drm_crtc_index(&mtk_crtc->base),
-@@ -856,8 +859,8 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
- 		if (ret) {
- 			dev_dbg(dev, "mtk_crtc %d failed to get mediatek,gce-events property\n",
- 				drm_crtc_index(&mtk_crtc->base));
--			cmdq_mbox_destroy(mtk_crtc->cmdq_client);
--			mtk_crtc->cmdq_client = NULL;
-+			mbox_free_channel(mtk_crtc->cmdq_client.chan);
-+			mtk_crtc->cmdq_client.chan = NULL;
- 		}
- 	}
- #endif
 -- 
 2.35.1
 
