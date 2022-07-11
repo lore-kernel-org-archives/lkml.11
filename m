@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C21B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232360AbiGKJ0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55496 "EHLO
+        id S232369AbiGKJ0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232402AbiGKJYi (ORCPT
+        with ESMTP id S232408AbiGKJYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6372A265;
-        Mon, 11 Jul 2022 02:15:03 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798AA2A427;
+        Mon, 11 Jul 2022 02:15:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6364B80956;
-        Mon, 11 Jul 2022 09:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CDE4C34115;
-        Mon, 11 Jul 2022 09:15:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D532F6123B;
+        Mon, 11 Jul 2022 09:15:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8FFEC341C0;
+        Mon, 11 Jul 2022 09:15:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530900;
-        bh=M8F7ClygEJ6IJ2pVBqWf2m2U8Tr8lvwUpI2W+Xuh+NU=;
+        s=korg; t=1657530903;
+        bh=Thsqa8+oXxSlU5z5RVlpc5ANmuoUcNe2Gohr70520l0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sS2WdEe5NOMyyvSFdh7FrOO+JvVNyMjNKq/XEOUWpboyMBXbqxzLGYwWe03MCynsN
-         otLlz5dI6sAj+VnwiNB/mPlH5OgtgVQJah5Bf29G3IemsbIbHBgMZy9QLa13HPaqJR
-         As1lxrZwQwkLC5org8g+D00GtaIyO+HyUfCo3GW4=
+        b=izkg/dP0IREvJoxSbtbPLGhy3rgx9JI0VU11q4eTPwd684LYCfOwtH8BvND2ZCIXW
+         gZU/Zh97egZvz7LAFjqtkBi0QpTtQrfgO5XgmF6smUJXAWAe1K+lmh2MWzV1AOOsiN
+         Ja8zqFl+wAT5USu0fiaGhg9rjMCo3lacbIllgKiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.18 024/112] can: mcp251xfd: mcp251xfd_register_get_dev_id(): use correct length to read dev_id
-Date:   Mon, 11 Jul 2022 11:06:24 +0200
-Message-Id: <20220711090550.245995783@linuxfoundation.org>
+Subject: [PATCH 5.18 025/112] can: mcp251xfd: mcp251xfd_register_get_dev_id(): fix endianness conversion
+Date:   Mon, 11 Jul 2022 11:06:25 +0200
+Message-Id: <20220711090550.274324178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -52,38 +52,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 0ff32bfa0e794ccc3601de7158b522bf736fa63c upstream.
+commit 1c0e78a287e3493e22bde8553d02f3b89177eaf7 upstream.
 
-The device ID register is 32 bits wide. The driver uses incorrectly
-the size of a pointer to a u32 to calculate the length of the SPI
-transfer. This results in a read of 2 registers on 64 bit platforms.
-This is no problem on the Linux side, as the RX buffer of the SPI
-transfer is large enough. In the mpc251xfd chip this results in the
-read of an undocumented register. So far no problems were observed.
+In mcp251xfd_register_get_dev_id() the device ID register is read with
+handcrafted SPI transfers. As all registers, this register is in
+little endian. Further it is not naturally aligned in struct
+mcp251xfd_map_buf_nocrc::data. However after the transfer the register
+content is converted from big endian to CPU endianness not taking care
+of being unaligned.
 
-Fix the length of the SPI transfer to read the device ID register
-only.
+Fix the conversion by converting from little endian to CPU endianness
+taking the unaligned source into account.
 
-Link: https://lore.kernel.org/all/20220616094914.244440-1-mkl@pengutronix.de
+Side note: So far the register content is 0x0 on all mcp251xfd
+compatible chips, and is only used for an informative printk.
+
+Link: https://lore.kernel.org/all/20220627092859.809042-1-mkl@pengutronix.de
 Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
-Reported-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 --- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
 +++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -1769,7 +1769,7 @@ mcp251xfd_register_get_dev_id(const stru
- 	xfer[0].len = sizeof(buf_tx->cmd);
- 	xfer[0].speed_hz = priv->spi_max_speed_hz_slow;
- 	xfer[1].rx_buf = buf_rx->data;
--	xfer[1].len = sizeof(dev_id);
-+	xfer[1].len = sizeof(*dev_id);
- 	xfer[1].speed_hz = priv->spi_max_speed_hz_fast;
+@@ -12,6 +12,7 @@
+ // Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
+ //
  
- 	mcp251xfd_spi_cmd_read_nocrc(&buf_tx->cmd, MCP251XFD_REG_DEVID);
++#include <asm/unaligned.h>
+ #include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/device.h>
+@@ -1778,7 +1779,7 @@ mcp251xfd_register_get_dev_id(const stru
+ 	if (err)
+ 		goto out_kfree_buf_tx;
+ 
+-	*dev_id = be32_to_cpup((__be32 *)buf_rx->data);
++	*dev_id = get_unaligned_le32(buf_rx->data);
+ 	*effective_speed_hz_slow = xfer[0].effective_speed_hz;
+ 	*effective_speed_hz_fast = xfer[1].effective_speed_hz;
+ 
 
 
