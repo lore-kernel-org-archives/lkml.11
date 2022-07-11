@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EDEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13718C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbiGKJ3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
+        id S231913AbiGKJ3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbiGKJ2c (ORCPT
+        with ESMTP id S231269AbiGKJ2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:28:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C0366B83;
-        Mon, 11 Jul 2022 02:15:59 -0700 (PDT)
+        Mon, 11 Jul 2022 05:28:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D15466BB5;
+        Mon, 11 Jul 2022 02:16:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55521B80E6D;
-        Mon, 11 Jul 2022 09:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF179C34115;
-        Mon, 11 Jul 2022 09:15:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 693286122D;
+        Mon, 11 Jul 2022 09:16:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DBCEC34115;
+        Mon, 11 Jul 2022 09:16:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530955;
-        bh=8xduzV9XPwv+MRJJNBuvjbGKAF/YIl6fxiUCeWx2Z4Q=;
+        s=korg; t=1657530960;
+        bh=Mk2mPfafefPzBg8D/s3U0LXolpcBRBnONqnf4t85Qdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FeNbjR8toCySRRLL6K6rn7EuTzIWbwEh7Dh8Hv0tz/BToehms2EJAPdFLxNy0fpHy
-         l5br1bn5kfsUzZvYO6k2V2/aUUzJguhGJDOLuAChxudbh5IT97ArOYsvZ+k9V4CpxA
-         EQRCLT/LqBb+dVytw+qjWQoC5aYGly0e0f4QHfbg=
+        b=gD/Kk6tFyP63Z/I5hIMsz1vKDCD9bLbRMuhI9aDDJ5jDwaTZog8IYZrblfsAKPZcc
+         J7pAclhKOQmGBgZCBy23VzQ4S672zCfNx1nWOMKxVQMrmm3VzpfSAK/KKNxKj1/TxE
+         3o+IxKwk5Nof8rkP4hyNr8CCzfZhxiq0n9xp//oQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 045/112] ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
-Date:   Mon, 11 Jul 2022 11:06:45 +0200
-Message-Id: <20220711090550.851832759@linuxfoundation.org>
+Subject: [PATCH 5.18 047/112] srcu: Tighten cleanup_srcu_struct() GP checks
+Date:   Mon, 11 Jul 2022 11:06:47 +0200
+Message-Id: <20220711090550.908046442@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,44 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit 34d2cd3fccced12b958b8848e3eff0ee4296764c ]
+[ Upstream commit 8ed00760203d8018bee042fbfe8e076579be2c2b ]
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+Currently, cleanup_srcu_struct() checks for a grace period in progress,
+but it does not check for a grace period that has not yet started but
+which might start at any time.  Such a situation could result in a
+use-after-free bug, so this commit adds a check for a grace period that
+is needed but not yet started to cleanup_srcu_struct().
 
-Fixes: d850f3e5d296 ("ARM: meson: Add SMP bringup code for Meson8 and Meson8b")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220512021611.47921-1-linmq006@gmail.com
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-meson/platsmp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/rcu/srcutree.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-meson/platsmp.c b/arch/arm/mach-meson/platsmp.c
-index 4b8ad728bb42..32ac60b89fdc 100644
---- a/arch/arm/mach-meson/platsmp.c
-+++ b/arch/arm/mach-meson/platsmp.c
-@@ -71,6 +71,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+index 6833d8887181..d30e4db04506 100644
+--- a/kernel/rcu/srcutree.c
++++ b/kernel/rcu/srcutree.c
+@@ -382,9 +382,11 @@ void cleanup_srcu_struct(struct srcu_struct *ssp)
+ 			return; /* Forgot srcu_barrier(), so just leak it! */
  	}
- 
- 	sram_base = of_iomap(node, 0);
-+	of_node_put(node);
- 	if (!sram_base) {
- 		pr_err("Couldn't map SRAM registers\n");
- 		return;
-@@ -91,6 +92,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ 	if (WARN_ON(rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)) != SRCU_STATE_IDLE) ||
++	    WARN_ON(rcu_seq_current(&ssp->srcu_gp_seq) != ssp->srcu_gp_seq_needed) ||
+ 	    WARN_ON(srcu_readers_active(ssp))) {
+-		pr_info("%s: Active srcu_struct %p state: %d\n",
+-			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)));
++		pr_info("%s: Active srcu_struct %p read state: %d gp state: %lu/%lu\n",
++			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)),
++			rcu_seq_current(&ssp->srcu_gp_seq), ssp->srcu_gp_seq_needed);
+ 		return; /* Caller forgot to stop doing call_srcu()? */
  	}
- 
- 	scu_base = of_iomap(node, 0);
-+	of_node_put(node);
- 	if (!scu_base) {
- 		pr_err("Couldn't map SCU registers\n");
- 		return;
+ 	free_percpu(ssp->sda);
 -- 
 2.35.1
 
