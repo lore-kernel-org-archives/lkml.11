@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42747C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED81C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234243AbiGKKAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46366 "EHLO
+        id S234273AbiGKKAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234096AbiGKJ7G (ORCPT
+        with ESMTP id S234277AbiGKJ7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:59:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6FE5B62A3;
-        Mon, 11 Jul 2022 02:27:38 -0700 (PDT)
+        Mon, 11 Jul 2022 05:59:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15FD624A7;
+        Mon, 11 Jul 2022 02:27:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AB5A61363;
-        Mon, 11 Jul 2022 09:27:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A302C34115;
-        Mon, 11 Jul 2022 09:27:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69D4B613F8;
+        Mon, 11 Jul 2022 09:27:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD29C34115;
+        Mon, 11 Jul 2022 09:27:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531656;
-        bh=XRosj7ZKB+v8fTnHvicj/hK4NALpuTjgSwVKyt/CFDY=;
+        s=korg; t=1657531653;
+        bh=wpauSRjKkxczRqOFAKR0G9QBSNrt+x6DlEL/bNnxU/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zDMJLN63ns+NP4Nz4avN0HG12Wyt9UH21kPlqXGGQvek/hGvguG84AwOiYZIbu76a
-         9ausZiifjCkuwXKfxTvSFP8XFGYmyIH0asUXsQmditQYw+0yCdzqvz+UOVYxyBF/mY
-         He9tXQMgqpM8a4/Rlvx7B9eqJg8Mv9vVybwG+dw8=
+        b=h/rL3QdQpqogNpHlkVkeJr9A22NpOL9+wytUBTQGbFNWi+j3x96wcYLQWrLGp8AeP
+         bgTeRwbFxUxX63XmE2CQL67Vy13NY6e0HRAe7pevomPemKwtP5bpHY5NOVY2f5snUx
+         qfYs4GvXIkYs6FetiSLFZNuw4Fpb2auRtBZ2BxHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 185/230] arm64: dts: imx8mp-evk: correct mmc pad settings
-Date:   Mon, 11 Jul 2022 11:07:21 +0200
-Message-Id: <20220711090609.357414901@linuxfoundation.org>
+Subject: [PATCH 5.15 184/230] ARM: mxs_defconfig: Enable the framebuffer
+Date:   Mon, 11 Jul 2022 11:07:20 +0200
+Message-Id: <20220711090609.329087746@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,65 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit 01785f1f156511c4f285786b4192245d4f476bf1 ]
+[ Upstream commit b10ef5f2ddb3a5a22ac0936c8d91a50ac5e55e77 ]
 
-According to RM bit layout, BIT3 and BIT0 are reserved.
-  8  7   6   5   4   3  2 1  0
- PE HYS PUE ODE FSEL X  DSE  X
+Currently, when booting Linux on a imx28-evk board there is
+no display activity.
 
-Not set reserved bit.
+Enable CONFIG_FB which is nowadays required for CONFIG_DRM_PANEL_LVDS,
+CONFIG_DRM_PANEL_SIMPLE, CONFIG_DRM_PANEL_SEIKO_43WVF1G,
+CONFIG_FB_MODE_HELPERS, CONFIG_BACKLIGHT_PWM, CONFIG_BACKLIGHT_GPIO,
+CONFIG_FRAMEBUFFER_CONSOLE, CONFIG_LOGO, CONFIG_FONTS, CONFIG_FONT_8x8
+and CONFIG_FONT_8x16.
 
-Fixes: 9e847693c6f3 ("arm64: dts: freescale: Add i.MX8MP EVK board support")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Based on commit c54467482ffd ("ARM: imx_v6_v7_defconfig: enable fb").
+
+Fixes: f611b1e7624c ("drm: Avoid circular dependencies for CONFIG_FB")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/configs/mxs_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index 7b99fad6e4d6..3c4369d6468c 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -377,7 +377,7 @@
- 
- 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
- 		fsl,pins = <
--			MX8MP_IOMUXC_SD2_RESET_B__GPIO2_IO19	0x41
-+			MX8MP_IOMUXC_SD2_RESET_B__GPIO2_IO19	0x40
- 		>;
- 	};
- 
-@@ -402,7 +402,7 @@
- 			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1	0x1d0
- 			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2	0x1d0
- 			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3	0x1d0
--			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT	0xc1
-+			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT	0xc0
- 		>;
- 	};
- 
-@@ -414,7 +414,7 @@
- 			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1	0x1d4
- 			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2	0x1d4
- 			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3	0x1d4
--			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc1
-+			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc0
- 		>;
- 	};
- 
-@@ -426,7 +426,7 @@
- 			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1	0x1d6
- 			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2	0x1d6
- 			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3	0x1d6
--			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc1
-+			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc0
- 		>;
- 	};
- 
+diff --git a/arch/arm/configs/mxs_defconfig b/arch/arm/configs/mxs_defconfig
+index ca32446b187f..f53086ddc48b 100644
+--- a/arch/arm/configs/mxs_defconfig
++++ b/arch/arm/configs/mxs_defconfig
+@@ -93,6 +93,7 @@ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+ CONFIG_DRM=y
+ CONFIG_DRM_PANEL_SEIKO_43WVF1G=y
+ CONFIG_DRM_MXSFB=y
++CONFIG_FB=y
+ CONFIG_FB_MODE_HELPERS=y
+ CONFIG_LCD_CLASS_DEVICE=y
+ CONFIG_BACKLIGHT_CLASS_DEVICE=y
 -- 
 2.35.1
 
