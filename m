@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:09:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiGKJJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
+        id S229863AbiGKJJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbiGKJIx (ORCPT
+        with ESMTP id S231154AbiGKJI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:08:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB31C237D7;
-        Mon, 11 Jul 2022 02:07:56 -0700 (PDT)
+        Mon, 11 Jul 2022 05:08:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA11B22BD7;
+        Mon, 11 Jul 2022 02:07:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 701CCB80E7A;
-        Mon, 11 Jul 2022 09:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93A17C341C0;
-        Mon, 11 Jul 2022 09:07:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6747E6118F;
+        Mon, 11 Jul 2022 09:07:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E7F7C34115;
+        Mon, 11 Jul 2022 09:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530474;
-        bh=eAlf2ThEJ0oh3s9MfqamQLqIhi0NIAtmAN9WqohRE7s=;
+        s=korg; t=1657530476;
+        bh=ZG6w6HKvEceL0MQx2SuxvYp351/gMcj+5D29fCM8eL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LitSIO2iQuiK8VsBtaD2VuAEkrxruJng/Op+1h9tOlEZ7zJel2LNKeOKwavPXJMOF
-         IM7XD3u+mtzsjM8dMgDeZpE+hxg+DL+LEWFWwdl8AdiV6KPRKEFCACQO4wv236jT0q
-         7HEhh6QJ0R5TJ5Cy+0+hiatIZysYlm7JrDG6TNvs=
+        b=dtrRazPmNc/O/L9LfUxzlVDtjcHf6VyHhqXWdfm7qqpqxi85f2cCIBv5v3pcofKPa
+         sDEug1kIWP0Y13IHMy4XoB4GzOWQMaaevQRVuHNqmk5mBpJwiQ4iYWmrTZq2yZJ8Is
+         E4Hie5WxxHCVipTTsTi1wuTkyFaEaf/0jfUm1XOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.14 17/17] dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
-Date:   Mon, 11 Jul 2022 11:06:42 +0200
-Message-Id: <20220711090536.776114629@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 4.14 02/17] mm/slub: add missing TID updates on slab deactivation
+Date:   Mon, 11 Jul 2022 11:06:27 +0200
+Message-Id: <20220711090536.325380578@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090536.245939953@linuxfoundation.org>
 References: <20220711090536.245939953@linuxfoundation.org>
@@ -49,55 +52,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jann Horn <jannh@google.com>
 
-commit 615a4bfc426e11dba05c2cf343f9ac752fb381d2 upstream.
+commit eeaa345e128515135ccb864c04482180c08e3259 upstream.
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it when not need anymore.
+The fastpath in slab_alloc_node() assumes that c->slab is stable as long as
+the TID stays the same. However, two places in __slab_alloc() currently
+don't update the TID when deactivating the CPU slab.
 
-Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Link: https://lore.kernel.org/r/20220605042723.17668-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+If multiple operations race the right way, this could lead to an object
+getting lost; or, in an even more unlikely situation, it could even lead to
+an object being freed onto the wrong slab's freelist, messing up the
+`inuse` counter and eventually causing a page to be freed to the page
+allocator while it still contains slab objects.
+
+(I haven't actually tested these cases though, this is just based on
+looking at the code. Writing testcases for this stuff seems like it'd be
+a pain...)
+
+The race leading to state inconsistency is (all operations on the same CPU
+and kmem_cache):
+
+ - task A: begin do_slab_free():
+    - read TID
+    - read pcpu freelist (==NULL)
+    - check `slab == c->slab` (true)
+ - [PREEMPT A->B]
+ - task B: begin slab_alloc_node():
+    - fastpath fails (`c->freelist` is NULL)
+    - enter __slab_alloc()
+    - slub_get_cpu_ptr() (disables preemption)
+    - enter ___slab_alloc()
+    - take local_lock_irqsave()
+    - read c->freelist as NULL
+    - get_freelist() returns NULL
+    - write `c->slab = NULL`
+    - drop local_unlock_irqrestore()
+    - goto new_slab
+    - slub_percpu_partial() is NULL
+    - get_partial() returns NULL
+    - slub_put_cpu_ptr() (enables preemption)
+ - [PREEMPT B->A]
+ - task A: finish do_slab_free():
+    - this_cpu_cmpxchg_double() succeeds()
+    - [CORRUPT STATE: c->slab==NULL, c->freelist!=NULL]
+
+>From there, the object on c->freelist will get lost if task B is allowed to
+continue from here: It will proceed to the retry_load_slab label,
+set c->slab, then jump to load_freelist, which clobbers c->freelist.
+
+But if we instead continue as follows, we get worse corruption:
+
+ - task A: run __slab_free() on object from other struct slab:
+    - CPU_PARTIAL_FREE case (slab was on no list, is now on pcpu partial)
+ - task A: run slab_alloc_node() with NUMA node constraint:
+    - fastpath fails (c->slab is NULL)
+    - call __slab_alloc()
+    - slub_get_cpu_ptr() (disables preemption)
+    - enter ___slab_alloc()
+    - c->slab is NULL: goto new_slab
+    - slub_percpu_partial() is non-NULL
+    - set c->slab to slub_percpu_partial(c)
+    - [CORRUPT STATE: c->slab points to slab-1, c->freelist has objects
+      from slab-2]
+    - goto redo
+    - node_match() fails
+    - goto deactivate_slab
+    - existing c->freelist is passed into deactivate_slab()
+    - inuse count of slab-1 is decremented to account for object from
+      slab-2
+
+At this point, the inuse count of slab-1 is 1 lower than it should be.
+This means that if we free all allocated objects in slab-1 except for one,
+SLUB will think that slab-1 is completely unused, and may free its page,
+leading to use-after-free.
+
+Fixes: c17dda40a6a4e ("slub: Separate out kmem_cache_cpu processing from deactivate_slab")
+Fixes: 03e404af26dc2 ("slub: fast release on full slab")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Christoph Lameter <cl@linux.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Link: https://lore.kernel.org/r/20220608182205.2945720-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/ti-dma-crossbar.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ mm/slub.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/dma/ti-dma-crossbar.c
-+++ b/drivers/dma/ti-dma-crossbar.c
-@@ -251,6 +251,7 @@ static void *ti_dra7_xbar_route_allocate
- 	if (dma_spec->args[0] >= xbar->xbar_requests) {
- 		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
- 			dma_spec->args[0]);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-EINVAL);
- 	}
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -2171,6 +2171,7 @@ redo:
  
-@@ -258,12 +259,14 @@ static void *ti_dra7_xbar_route_allocate
- 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
- 	if (!dma_spec->np) {
- 		dev_err(&pdev->dev, "Can't get DMA master\n");
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-EINVAL);
- 	}
+ 	c->page = NULL;
+ 	c->freelist = NULL;
++	c->tid = next_tid(c->tid);
+ }
  
- 	map = kzalloc(sizeof(*map), GFP_KERNEL);
- 	if (!map) {
- 		of_node_put(dma_spec->np);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENOMEM);
- 	}
+ /*
+@@ -2306,8 +2307,6 @@ static inline void flush_slab(struct kme
+ {
+ 	stat(s, CPUSLAB_FLUSH);
+ 	deactivate_slab(s, c->page, c->freelist, c);
+-
+-	c->tid = next_tid(c->tid);
+ }
  
-@@ -275,6 +278,7 @@ static void *ti_dra7_xbar_route_allocate
- 		dev_err(&pdev->dev, "Run out of free DMA requests\n");
- 		kfree(map);
- 		of_node_put(dma_spec->np);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENOMEM);
+ /*
+@@ -2592,6 +2591,7 @@ redo:
+ 
+ 	if (!freelist) {
+ 		c->page = NULL;
++		c->tid = next_tid(c->tid);
+ 		stat(s, DEACTIVATE_BYPASS);
+ 		goto new_slab;
  	}
- 	set_bit(map->xbar_out, xbar->dma_inuse);
 
 
