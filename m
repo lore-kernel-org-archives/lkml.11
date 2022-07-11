@@ -2,123 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E550AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD7EFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229899AbiGKUdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58034 "EHLO
+        id S229798AbiGKUeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiGKUdu (ORCPT
+        with ESMTP id S230437AbiGKUd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:33:50 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1905D33404;
-        Mon, 11 Jul 2022 13:33:49 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31cac89d8d6so61444227b3.2;
-        Mon, 11 Jul 2022 13:33:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=847p17DesiUPrAbTrGt+da4YJYmyj4ybBvLUVEuSIjY=;
-        b=J4WttHlaqvEgBfuXBOlq7Cn8H1LHHBEHnfD+usVNNf3XdpUKSGcz8IGIC0CH1Yfmol
-         kUpd0qMrcglCv7BVwhQ7brGk96fa5ovV5b6TzmWIVXjV4xgrpuznHRCgtQRSzXPr7E/J
-         OUS2TYH8ALc8D31qvjCclWzRy4E5MwvPQSsMuUve8EGSRLKpr6FS7ilsuaz2fPNiMnjg
-         FJrsIi8Yuu1Etq+XLcVJ0li4S7B1wVbV1xnFvRZhlWo4rS4foOG3zIEb5Xi1OzBdOI6s
-         Ksz0exapPlOZnUdUZ4jrnGSIvV/1pTKOzmXtNiZs/w3LY3lPGrlG7HVFdyUzmuOpLkDF
-         G5nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=847p17DesiUPrAbTrGt+da4YJYmyj4ybBvLUVEuSIjY=;
-        b=bY3/IWI/zLkJFl5xNRR1pweqAi544ETzwKyP25tAIQRS/lahDl6xH6m4Iht8ghY5FI
-         8RL3ZQLwuiCMGTeaAB05hms4/ToATwrLOLnh+g5B7qoq5lnDKjvN2HZYQdois1JEiRjA
-         ptA7IdeABzUuXqSwjOjBDcGA4RwKzBvivh+ElnV9wRWL6ljE5plN6WPjJbrIsKLbnQYT
-         3INexnYuzEVCSGfilINBPrLd8V1J1lfM66BXscbjmNCwDT7Ec18ZI19ZXNoP2/RVcaNq
-         BAyJ2vs6+NLHuuTJhM9AH4ArXskt25878Y4n20hNCG9WaZ5DiEZE9Xa//f6hvu44ZlY9
-         gOWg==
-X-Gm-Message-State: AJIora/eqMjjlWign45HJ79ABw/CqY7Vu+sIv87xF2CKbyr7ajOefMFD
-        f2iyE7O78U1vtiUjnSLeqXPieQv+URvOKRJRbiQ=
-X-Google-Smtp-Source: AGRyM1soa/b5CVtvIJwCZk3wxZrzaUqyUaH+jrfMwcncwn0dl8Hm8H2RvISAWcx5pab5/XocLBsGF/kqMjj8c3nfY18=
-X-Received: by 2002:a81:4bd7:0:b0:31c:91da:5a20 with SMTP id
- y206-20020a814bd7000000b0031c91da5a20mr23140384ywa.131.1657571628325; Mon, 11
- Jul 2022 13:33:48 -0700 (PDT)
+        Mon, 11 Jul 2022 16:33:57 -0400
+Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B6C4D171;
+        Mon, 11 Jul 2022 13:33:56 -0700 (PDT)
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.trvn.ru (Postfix) with ESMTPSA id ACBFA4185A;
+        Tue, 12 Jul 2022 01:33:50 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1657571631; bh=MaueoK+Vek+754sVEgpdzODSHjawfPvA50v4dhfN/Dw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hUyN2ykOv//CKv/tJeOSENlK89XZ7w6gIiozDhGnYV0lANmrH71OAaDBEouff89a3
+         OEQEQk/j8KCqXLvEZcewNpkvCuI6tlkfuHuPk3j96rP3ZQ0UkjPPokWlfR/iCrJacX
+         3H5HmgUiHArB3ktdg6qz5qQ3yju1zvj6fiRvlqGnu+mKzEzPgONgdK6ttTx0BZxBga
+         LLmbtSfxzI6whgbjSkevVcGkuhyXqeCxdBRKkSRsqk50Jx+DfQxZnVJUL3/Vgpaw9t
+         jRYNbbuJKsFHAcjpYq67RLsQm7E3vPFWg/ykfXRIORgHX/ZBojaJmoKjCt5ZunTz6A
+         nYAb/EN11BkPA==
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     thierry.reding@gmail.com, lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
+        masneyb@onstation.org, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Nikita Travkin <nikita@trvn.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v9 1/2] dt-bindings: pwm: Document clk based PWM controller
+Date:   Tue, 12 Jul 2022 01:33:39 +0500
+Message-Id: <20220711203340.648007-2-nikita@trvn.ru>
+In-Reply-To: <20220711203340.648007-1-nikita@trvn.ru>
+References: <20220711203340.648007-1-nikita@trvn.ru>
 MIME-Version: 1.0
-References: <20220711192113.3522664-1-horatiu.vultur@microchip.com>
- <20220711192113.3522664-3-horatiu.vultur@microchip.com> <CAHp75VdeZSP62qoOdQf=g4b7AheFd4=jNxfjMh-_T7Q1Zi=LbA@mail.gmail.com>
- <20220711202646.om65vrksyifvkfkw@soft-dev3-1.localhost> <CAHp75VeJgUFdFgBpG5avmKCn-CGNOJ6wZAhc0a4f2MHfLbvXmA@mail.gmail.com>
-In-Reply-To: <CAHp75VeJgUFdFgBpG5avmKCn-CGNOJ6wZAhc0a4f2MHfLbvXmA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 11 Jul 2022 22:33:11 +0200
-Message-ID: <CAHp75VdTUqP+Ho2cmeMiOwNtu_HhOMoo3cCUQ27vdPftcJ-xUA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] pinctrl: ocelot: Fix pincfg
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        kavyasree.kotagiri@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Michael Walle <michael@walle.cc>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 10:29 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Mon, Jul 11, 2022 at 10:23 PM Horatiu Vultur
-> <horatiu.vultur@microchip.com> wrote:
-> >
-> > The 07/11/2022 21:51, Andy Shevchenko wrote:
-> > >
-> > > On Mon, Jul 11, 2022 at 9:17 PM Horatiu Vultur
-> > > <horatiu.vultur@microchip.com> wrote:
-> > > >
-> > > > The blamed commit changed to use regmaps instead of __iomem. But it
-> > > > didn't update the register offsets to be at word offset, so it uses byte
-> > > > offset.
-> > > > Another issue with the same commit is that it has a limit of 32 registers
-> > > > which is incorrect. The sparx5 has 64 while lan966x has 77.
-> > >
-> > > ...
-> > >
-> > > > -static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
-> > > > +static struct regmap *ocelot_pinctrl_create_pincfg(struct ocelot_pinctrl *info,
-> > > > +                                                  struct platform_device *pdev)
-> > >
-> > > const?
-> > >
-> > > And I would leave pdev to be the first parameter, if there are no
-> > > other functions that have them like this.
-> >
-> > I will do that in the next version.
-> > Just for my understanding/knowledge why is this desire to have const or
-> > to keep the const?
->
-> For non-POD types it's a good coding practice to reduce surface of
-> attack, if any (the data will be located in the pages with RO flag
-> set, and attempt to write will give you a page fault or other
-> exception, it depends on architecture).
-> Also a common sense, if you don't change data (which is actually
-> initial configuration or so), then why shouldn't you use const?
-> Note, in cases when it's not initial data, but runtime stuff (like
-> really run time), const is obviously either can't or not needed to be
-> used.
+Add YAML devicetree binding for clk based PWM controller
 
-One more specifically for drivers (related to the first item above),
-it allows one to scope the point of failure in case of wrong
-configuration comes in. The device might misbehave badly because of
-some garbage somewhere. Also, the driver won't write data to that
-area, which is just a good preventive programming practice (but this I
-already implied by the second item above).
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+---
+Changes in v2:
+ - fix the file name.
+Changes in v4:
+ - Use generic node name in the dt bindings example.
+Changes in v5:
+ - make compatible required
+---
+ .../devicetree/bindings/pwm/clk-pwm.yaml      | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
 
-
+diff --git a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+new file mode 100644
+index 000000000000..ec1768291503
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/clk-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Clock based PWM controller
++
++maintainers:
++  - Nikita Travkin <nikita@trvn.ru>
++
++description: |
++  Some systems have clocks that can be exposed to external devices.
++  (e.g. by muxing them to GPIO pins)
++  It's often possible to control duty-cycle of such clocks which makes them
++  suitable for generating PWM signal.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: clk-pwm
++
++  clocks:
++    description: Clock used to generate the signal.
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++unevaluatedProperties: false
++
++required:
++  - compatible
++  - clocks
++
++examples:
++  - |
++    pwm {
++      compatible = "clk-pwm";
++      #pwm-cells = <2>;
++      clocks = <&gcc 0>;
++      pinctrl-names = "default";
++      pinctrl-0 = <&pwm_clk_flash_default>;
++    };
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.3
+
