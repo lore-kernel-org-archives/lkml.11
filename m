@@ -2,181 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3971FCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 04:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E1EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 04:47:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiGKEaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 00:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
+        id S229698AbiGKErT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 00:47:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbiGKEaO (ORCPT
+        with ESMTP id S229536AbiGKErQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 00:30:14 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6311901C;
-        Sun, 10 Jul 2022 21:30:07 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id h23so6780463ejj.12;
-        Sun, 10 Jul 2022 21:30:07 -0700 (PDT)
+        Mon, 11 Jul 2022 00:47:16 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107E05FB6
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 21:47:15 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id r17so3462576qtx.6
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 21:47:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oYyjBapI7Ol5ghwqsEsi6GKvHQk9dNKwshNrm1MBekA=;
-        b=RIJjqGzCfNlhD/70v6LwMYa0s/R2xFo5RVDVOx6F1CGLarPal0lwxbPMR9I7PJl6xz
-         5TB2wRFgDihYRAH+UAnw3r1i3D3NPgwxRHjA82+3oUGxJSeuO4A+MOl+WY3fWjQNrec0
-         wbh8OQsHX3+i9bhcnZmV6aHyjRr2AK7METCWENv71z4a/7VknZibizx3H/VpyacyFNfY
-         n5N+VUc/5EirLbiA1Vux++K6ZIdcPhE8myBvnj4BhZPp7c7ubAiErPASUnzKx734rjrO
-         IfLpgPXgh32FjWnZ1ZXhhvt9jyxhKU/4NPoc4sJZc+atCbuDKxc2jee7sgo8t4mOosPJ
-         FBVQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qKpfneDSj3EsL4GYiXg/kJBemuTg2dYhQqGiF/Pp+Pg=;
+        b=BQB468npOuu044E47CPGZ3iNMI1f3KiVwHA+oWQ9vd4PlAumQqjGCTUvQ6lWw2DtHu
+         er44+nShLZArTF1kTIaGvBs7xRxjyOxTqa8LXjv/3PDZDZOMLNbeYdGZdbNdeq6spFp6
+         qG81g0Cl0NVkFYupBB9lfWXZZFNIXnUcMCMitwv8bV2ovvBGCpcX+/oOaizCd6LLuIGo
+         7ZIfR56aFkXWepC19H7UqFbwJl4xizdiZEnpRPR+JcgQxXXrrz497/Xk5lQkNxdvVHND
+         Z0f4MA6gahDts/HJiXlg48/IcL2WWDFRjz3lMuwJjoX85XI8d2mK4q8oAB+7Hc7OpmV3
+         jp+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oYyjBapI7Ol5ghwqsEsi6GKvHQk9dNKwshNrm1MBekA=;
-        b=ptKVPN7VynepkZUTZNWwcejnGyu5sLe51uGAi/sz7Dfps4zDrt0HyWKa2xAYn7ZLuj
-         Lfwkw8sbMnZPbZAjvr0HGzTLbdJznX4uFAl4Lh/NVznZ5Di02TbTBOWKu+F0KENAzEUo
-         A4yjDMWRFokFUZDfxHQj7/ptFLlLZ3U1qIRK9v89nUEiBd6SgZh08hN0muCMlx1DZySq
-         9wf/WQDT8RtpsaZSlFqHUUjaFnT50KXIceTkZhHp5+lcuYK+zwq+PmKLi03FAzHDVFgu
-         0KH58Ruw/GPGmeh2q860LpR9f+bcUyvey+RuWFof7X79rinFyr/E3nZYL5Um8ZQsrG6f
-         JhGg==
-X-Gm-Message-State: AJIora+VTuivWDZig/8grZrsQJCdMQzrX945NMksV45S0OuPy3SGPQa4
-        gB5XxxWO9tUir0KBD8VHPA8=
-X-Google-Smtp-Source: AGRyM1tBsjHVOKf2envHi/oecZSomJvRCwVJM9BRJfdwLv3Yi8sUtsE3UkUVCACw5K7DDFClUw/q4Q==
-X-Received: by 2002:a17:907:16a2:b0:726:abbc:69bf with SMTP id hc34-20020a17090716a200b00726abbc69bfmr16517666ejc.363.1657513805976;
-        Sun, 10 Jul 2022 21:30:05 -0700 (PDT)
-Received: from localhost.localdomain (89-39-107-113.hosted-by-worldstream.net. [89.39.107.113])
-        by smtp.gmail.com with ESMTPSA id j17-20020a17090623f100b00726298147b1sm2203100ejg.161.2022.07.10.21.30.03
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qKpfneDSj3EsL4GYiXg/kJBemuTg2dYhQqGiF/Pp+Pg=;
+        b=yU/E1Pr1SbKLdq8PTkoeYgnh6gczrV62033ZlKlbEbaxSPVy6WdJMK7cXk7VNFdvvN
+         mxDCTm0Odrufl4PRmMoniOdYisqBDP+qE9mDpmD5bb1dwriLpChBvyNtz9+IsyQVXqpU
+         l4NTWE6dV+t0FesKNI4XbNkmJEAfvZiwrw2cAPXB7gP4y+Lxa1XaStt6vDpnLJGWJhJd
+         t8H0bMgAduA8HPsxlu4Fz5D71DNfGoJLs58y9Y9s8QtWmVDUyUG4erlEb9MLnnPNKgR5
+         /KfHegW/oODCeLlooApObBZ9O9L2HI3i7UfPica7wMI4sF439hRAL0E2skR3rH+0Q38x
+         QEog==
+X-Gm-Message-State: AJIora8LLfX8+fldQh0pfoJhSvC+3RNLLahJq3uBUyi8rbK3bWZZJ/QQ
+        DSQoGT5//CaJqc6XjvQ4SkiFzC0yYciv/g==
+X-Google-Smtp-Source: AGRyM1sYxidI+3BbtFCWuTDkRoh/Du2xJIO0FdrBGGFSm05CJh/3eqOK9ARxdpTogo2CKA3Kp9DV8A==
+X-Received: by 2002:ac8:5b85:0:b0:31c:b896:fb7d with SMTP id a5-20020ac85b85000000b0031cb896fb7dmr12444872qta.188.1657514833796;
+        Sun, 10 Jul 2022 21:47:13 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:1230:a22e:180:f963:1eff])
+        by smtp.gmail.com with ESMTPSA id cd13-20020a05622a418d00b0031bf5677d96sm4810873qtb.84.2022.07.10.21.47.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 21:30:05 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Tianshu Qiu <tian.shu.qiu@intel.com>,
-        Bingbu Cao <bingbu.cao@intel.com>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] media: i2c: ak7375: Add regulator management
-Date:   Mon, 11 Jul 2022 08:28:39 +0400
-Message-Id: <20220711042838.213351-4-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711042838.213351-1-y.oudjana@protonmail.com>
-References: <20220711042838.213351-1-y.oudjana@protonmail.com>
+        Sun, 10 Jul 2022 21:47:13 -0700 (PDT)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, David Gow <davidgow@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        Kees Cook <keescook@chromium.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH v2 0/5] lib/find: add find_nth_bit()
+Date:   Sun, 10 Jul 2022 21:47:06 -0700
+Message-Id: <20220711044711.466822-1-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+Kernel lacks for a function that searches for Nth bit in a bitmap.
+Usually people do it like this:
+        for_each_set_bit(bit, mask, size)
+                if (--n == 0)
+                        return bit;
 
-Make the driver get needed regulators on probe and enable/disable
-them on runtime PM callbacks.
+Which is not so elegant, and very slow.
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
----
- drivers/media/i2c/ak7375.c | 39 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+This series adds fast routines for this task, and applies them where
+appropriate.
 
-diff --git a/drivers/media/i2c/ak7375.c b/drivers/media/i2c/ak7375.c
-index 40b1a4aa846c..59d5cb00e3ba 100644
---- a/drivers/media/i2c/ak7375.c
-+++ b/drivers/media/i2c/ak7375.c
-@@ -6,6 +6,7 @@
- #include <linux/i2c.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-+#include <linux/regulator/consumer.h>
- #include <media/v4l2-ctrls.h>
- #include <media/v4l2-device.h>
- 
-@@ -23,17 +24,32 @@
-  */
- #define AK7375_CTRL_STEPS	64
- #define AK7375_CTRL_DELAY_US	1000
-+/*
-+ * The vcm takes around 3 ms to power on and start taking
-+ * I2C messages. This value was found experimentally due to
-+ * lack of documentation. 2 ms is added as a safety margin.
-+ */
-+#define AK7375_POWER_DELAY_US	5000
- 
- #define AK7375_REG_POSITION	0x0
- #define AK7375_REG_CONT		0x2
- #define AK7375_MODE_ACTIVE	0x0
- #define AK7375_MODE_STANDBY	0x40
- 
-+static const char * const ak7375_supply_names[] = {
-+	"vdd",
-+	"vio",
-+};
-+
-+#define AK7375_NUM_SUPPLIES ARRAY_SIZE(ak7375_supply_names)
-+
- /* ak7375 device structure */
- struct ak7375_device {
- 	struct v4l2_ctrl_handler ctrls_vcm;
- 	struct v4l2_subdev sd;
- 	struct v4l2_ctrl *focus;
-+	struct regulator_bulk_data supplies[AK7375_NUM_SUPPLIES];
-+
- 	/* active or standby mode */
- 	bool active;
- };
-@@ -132,6 +148,7 @@ static int ak7375_init_controls(struct ak7375_device *dev_vcm)
- static int ak7375_probe(struct i2c_client *client)
- {
- 	struct ak7375_device *ak7375_dev;
-+	int i;
- 	int ret;
- 
- 	ak7375_dev = devm_kzalloc(&client->dev, sizeof(*ak7375_dev),
-@@ -139,6 +156,17 @@ static int ak7375_probe(struct i2c_client *client)
- 	if (!ak7375_dev)
- 		return -ENOMEM;
- 
-+	for (i = 0; i < AK7375_NUM_SUPPLIES; i++)
-+		ak7375_dev->supplies[i].supply = ak7375_supply_names[i];
-+
-+	ret = devm_regulator_bulk_get(&client->dev, AK7375_NUM_SUPPLIES,
-+				      ak7375_dev->supplies);
-+	if (ret) {
-+		dev_err(&client->dev, "Failed to get regulators: %pe",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
- 	v4l2_i2c_subdev_init(&ak7375_dev->sd, client, &ak7375_ops);
- 	ak7375_dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
- 	ak7375_dev->sd.internal_ops = &ak7375_int_ops;
-@@ -210,6 +238,10 @@ static int __maybe_unused ak7375_vcm_suspend(struct device *dev)
- 	if (ret)
- 		dev_err(dev, "%s I2C failure: %d\n", __func__, ret);
- 
-+	ret = regulator_bulk_disable(AK7375_NUM_SUPPLIES, ak7375_dev->supplies);
-+	if (ret)
-+		return ret;
-+
- 	ak7375_dev->active = false;
- 
- 	return 0;
-@@ -230,6 +262,13 @@ static int __maybe_unused ak7375_vcm_resume(struct device *dev)
- 	if (ak7375_dev->active)
- 		return 0;
- 
-+	ret = regulator_bulk_enable(AK7375_NUM_SUPPLIES, ak7375_dev->supplies);
-+	if (ret)
-+		return ret;
-+
-+	/* Wait for vcm to become ready */
-+	usleep_range(AK7375_POWER_DELAY_US, AK7375_POWER_DELAY_US + 10);
-+
- 	ret = ak7375_i2c_write(ak7375_dev, AK7375_REG_CONT,
- 		AK7375_MODE_ACTIVE, 1);
- 	if (ret) {
+While here, move thin wrappers around find_bit() in nodemask.c to a
+corresponding header, and because nodemask.c is empty after that,
+remove it.
+
+v1: https://lore.kernel.org/lkml/20220706182300.70862-4-yury.norov@gmail.com/T/
+v2: - count Nth bit from 0 (was 1);
+    - use 'invert' trick in _find_nth_bit(), as in _find_next_bit();
+    - cleanup comments;
+    - fns() is kept inline - looking at __ffs() generic implementation,
+      I decided to keep it untouched.
+
+Yury Norov (5):
+  lib: add find_nth(,and,andnot)_bit()
+  lib/bitmap: add tests for find_nth_bit()
+  lib/bitmap: remove bitmap_ord_to_pos
+  cpumask: add cpumask_nth_{,and,andnot}
+  lib/nodemask: inline next_node_in() and node_random()
+
+ MAINTAINERS              |  1 -
+ include/linux/bitmap.h   |  1 -
+ include/linux/bitops.h   | 19 +++++++++
+ include/linux/cpumask.h  | 44 +++++++++++++++++++++
+ include/linux/find.h     | 83 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/nodemask.h | 27 ++++++++++---
+ lib/Makefile             |  2 +-
+ lib/bitmap.c             | 36 ++---------------
+ lib/cpumask.c            | 26 ++++++-------
+ lib/find_bit.c           | 20 ++++++++++
+ lib/find_bit_benchmark.c | 17 ++++++++
+ lib/nodemask.c           | 31 ---------------
+ lib/test_bitmap.c        | 36 ++++++++++++++++-
+ 13 files changed, 254 insertions(+), 89 deletions(-)
+ delete mode 100644 lib/nodemask.c
+
 -- 
-2.37.0
+2.34.1
 
