@@ -2,663 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7924FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 951F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232146AbiGKJZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S232166AbiGKJZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232180AbiGKJYN (ORCPT
+        with ESMTP id S232195AbiGKJYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317DD5C9F9;
-        Mon, 11 Jul 2022 02:14:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E5F4610A5;
-        Mon, 11 Jul 2022 09:14:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12DCBC34115;
-        Mon, 11 Jul 2022 09:14:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530845;
-        bh=4YkT1ZDU+2QEme55fsb4WXqr3G/hbOOfTPcF989QO/A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cD3mmp5rBJgEYPnk5XFf7XTQxWEwFZtcWpradJLtSXSOvvyvA87mFTsLH9Adn4L8I
-         MmHbWV7iYdZNLqQPBVLp2CHg9G6i79WEE1gA5nEZKLkNWYGksmTx4BsajETA9ajSXg
-         R5CkKvXxcBs7Y3kulVRO7Zlu1UzfmPOZ3mBkD6As=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org,
-        "stable@vger.kernel.org, linux-can@vger.kernel.org, Marc Kleine-Budde" 
-        <mkl@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>
-Subject: [PATCH 5.10 21/55] can: kvaser_usb: replace run-time checks with struct kvaser_usb_driver_info
-Date:   Mon, 11 Jul 2022 11:07:09 +0200
-Message-Id: <20220711090542.391847149@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
-References: <20220711090541.764895984@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 11 Jul 2022 05:24:15 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73BE5E309
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:14:11 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id n10so6149929wrc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:14:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=toTJieFv9f/pSHX/0n3XdcIK9rJ0wxvA9fZtkf2IMTU=;
+        b=rmqN/9K7W+rjXou0xRQVst21CLoD4meHcdq4UoisXooZHOETqScwd1+LGSflf4jK8T
+         JDNdBA99A6g5+pkL1lnmAYseWAv+UFcUUytorP9k2UWqLp+N7sGRhujdfqKr2ZNycYlx
+         pFCKL/LZtpoDnPTD39z4i0w+FMGmqGgcFaMYlKUFO3jpEZstOTG2uxhTD/VxWoB3bcH9
+         eX5t0cyEc8fOhQpaBfQgL+5mdYkFqCMM/zavTh+Jb0BBSzPczkmHG4QqCcsdSh3Kvqw+
+         3Y1+e/4LMJnBFhA3GVemzAOHMpQKJphT9BQZvclHoyPS4uAFj8OGhoMN2EZKB5q+6MT5
+         XEMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=toTJieFv9f/pSHX/0n3XdcIK9rJ0wxvA9fZtkf2IMTU=;
+        b=8ErZHhlO8nzkBDpK8U0rsDvoN3WOG0f3TfDsm1gx/gsynCHM/jkvnlqjWC6gxyP3MT
+         V/uKevJ8K8NOPzPC1ONINiPgnLpO/QvLnjaOnY36yqRE8niUJtfRN1RIIzrJwW5k0/pB
+         XbiqZFuWfVKUwb7pM+nAY4AZo0lGb7uUddzezzt1jYbsKIG773uZd4x4ytv1psfWABHW
+         hqqfjbhpvM2dHTcGY+pxmmw5F0NrNevgVI9y/tlvH0/1Xkp1mtd51fgWqn2p3CgVrM/X
+         5bkpUNxCPQK6Q5kd9CCF4GDNtvReIVx1N94Y2CIihNU43sEABUKA1reaC17DxfpkZiQj
+         oQMg==
+X-Gm-Message-State: AJIora8pGk1qi13f654ZRCyYpMbSL/JMm9IlXrFySnhPaO6j44yokjLI
+        m7ykhviUMQoK2CoKgUjyUxyK/Q==
+X-Google-Smtp-Source: AGRyM1uKnt27o24VXDAxHEF/Z1WFQnlsz18DorttQo+uJFB7N/f4MjHn3Nlow83bySlWLAIqNTjDzg==
+X-Received: by 2002:a05:6000:10c1:b0:21d:76e0:c6de with SMTP id b1-20020a05600010c100b0021d76e0c6demr15695289wrx.623.1657530849366;
+        Mon, 11 Jul 2022 02:14:09 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:c7c0:6823:f3ce:2447? ([2a05:6e02:1041:c10:c7c0:6823:f3ce:2447])
+        by smtp.googlemail.com with ESMTPSA id z15-20020a056000110f00b0021d6c7a9f50sm5511386wrw.41.2022.07.11.02.14.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jul 2022 02:14:08 -0700 (PDT)
+Message-ID: <e50842cf-0179-7b70-3925-dacb4ce728ea@linaro.org>
+Date:   Mon, 11 Jul 2022 11:14:06 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v1 25/33] ata/drivers/ahci_imx: Switch to new of thermal
+ API
+Content-Language: en-US
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Daniel Lezcano <daniel.lezcano@linexp.org>, rafael@kernel.org
+Cc:     rui.zhang@intel.com, khilman@baylibre.com, abailon@baylibre.com,
+        amitk@kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220710212423.681301-1-daniel.lezcano@linexp.org>
+ <20220710212423.681301-26-daniel.lezcano@linexp.org>
+ <a424890d-8647-48c5-68ab-742a95bb6865@opensource.wdc.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <a424890d-8647-48c5-68ab-742a95bb6865@opensource.wdc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jimmy Assarsson <extja@kvaser.com>
+On 11/07/2022 01:18, Damien Le Moal wrote:
+> On 7/11/22 06:24, Daniel Lezcano wrote:
+>> The thermal OF code has a new API allowing to migrate the OF
+>> initialization to a simpler approach.
+>>
+>> Use this new API.
+>>
+>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+>> ---
+>>   drivers/ata/ahci_imx.c | 15 ++++++++++-----
+>>   1 file changed, 10 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/ata/ahci_imx.c b/drivers/ata/ahci_imx.c
+>> index 79aa9f285312..5ad9a890e71a 100644
+>> --- a/drivers/ata/ahci_imx.c
+>> +++ b/drivers/ata/ahci_imx.c
+>> @@ -327,7 +327,7 @@ static int read_adc_sum(void *dev, u16 rtune_ctl_reg, void __iomem * mmio)
+>>   }
+>>   
+>>   /* SATA AHCI temperature monitor */
+>> -static int sata_ahci_read_temperature(void *dev, int *temp)
+>> +static int __sata_ahci_read_temperature(void *dev, int *temp)
+>>   {
+>>   	u16 mpll_test_reg, rtune_ctl_reg, dac_ctl_reg, read_sum;
+>>   	u32 str1, str2, str3, str4;
+>> @@ -416,6 +416,11 @@ static int sata_ahci_read_temperature(void *dev, int *temp)
+>>   	return 0;
+>>   }
+>>   
+>> +static int sata_ahci_read_temperature(struct thermal_zone_device *tz, int *temp)
+>> +{
+>> +	return __sata_ahci_read_temperature(tz->devdata, temp);
+>> +}
+>> +
+>>   static ssize_t sata_ahci_show_temp(struct device *dev,
+>>   				   struct device_attribute *da,
+>>   				   char *buf)
+>> @@ -423,14 +428,14 @@ static ssize_t sata_ahci_show_temp(struct device *dev,
+>>   	unsigned int temp = 0;
+>>   	int err;
+>>   
+>> -	err = sata_ahci_read_temperature(dev, &temp);
+>> +	err = __sata_ahci_read_temperature(dev, &temp);
+>>   	if (err < 0)
+>>   		return err;
+>>   
+>>   	return sprintf(buf, "%u\n", temp);
+>>   }
+> 
+> I do not see why the above changes are necessary. Please explain.
 
-commit 49f274c72357d2d74cba70b172cf369768909707 upstream.
+sata_ahci_read_temperature() is used by sata_ahci_show_temp() also.
 
-Unify and move compile-time known information into new struct
-kvaser_usb_driver_info, in favor of run-time checks.
+So in order to change the function prototype for the get_temp ops which 
+does not take a void* but a thermal_zone_device* structure, this 
+function wraps the call.
 
-All Kvaser USBcanII supports listen-only mode and error counter
-reporting.
+Do you prefer sata_ahci_read_temperature() becomes sata_ahci_get_temp() 
+and keep __sata_ahci_read_temperature() name untouched ?
 
-Link: https://lore.kernel.org/all/20220603083820.800246-2-extja@kvaser.com
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
-[mkl: move struct kvaser_usb_driver_info into kvaser_usb_core.c]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/can/usb/kvaser_usb/kvaser_usb.h      |   22 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c |  244 ++++++++++++-----------
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c |   24 +-
- 3 files changed, 155 insertions(+), 135 deletions(-)
-
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
-@@ -35,9 +35,9 @@
- #define KVASER_USB_RX_BUFFER_SIZE		3072
- #define KVASER_USB_MAX_NET_DEVICES		5
- 
--/* USB devices features */
--#define KVASER_USB_HAS_SILENT_MODE		BIT(0)
--#define KVASER_USB_HAS_TXRX_ERRORS		BIT(1)
-+/* Kvaser USB device quirks */
-+#define KVASER_USB_QUIRK_HAS_SILENT_MODE	BIT(0)
-+#define KVASER_USB_QUIRK_HAS_TXRX_ERRORS	BIT(1)
- 
- /* Device capabilities */
- #define KVASER_USB_CAP_BERR_CAP			0x01
-@@ -65,12 +65,7 @@ struct kvaser_usb_dev_card_data_hydra {
- struct kvaser_usb_dev_card_data {
- 	u32 ctrlmode_supported;
- 	u32 capabilities;
--	union {
--		struct {
--			enum kvaser_usb_leaf_family family;
--		} leaf;
--		struct kvaser_usb_dev_card_data_hydra hydra;
--	};
-+	struct kvaser_usb_dev_card_data_hydra hydra;
- };
- 
- /* Context for an outstanding, not yet ACKed, transmission */
-@@ -84,7 +79,7 @@ struct kvaser_usb {
- 	struct usb_device *udev;
- 	struct usb_interface *intf;
- 	struct kvaser_usb_net_priv *nets[KVASER_USB_MAX_NET_DEVICES];
--	const struct kvaser_usb_dev_ops *ops;
-+	const struct kvaser_usb_driver_info *driver_info;
- 	const struct kvaser_usb_dev_cfg *cfg;
- 
- 	struct usb_endpoint_descriptor *bulk_in, *bulk_out;
-@@ -166,6 +161,12 @@ struct kvaser_usb_dev_ops {
- 				  int *cmd_len, u16 transid);
- };
- 
-+struct kvaser_usb_driver_info {
-+	u32 quirks;
-+	enum kvaser_usb_leaf_family family;
-+	const struct kvaser_usb_dev_ops *ops;
-+};
-+
- struct kvaser_usb_dev_cfg {
- 	const struct can_clock clock;
- 	const unsigned int timestamp_freq;
-@@ -185,4 +186,5 @@ int kvaser_usb_send_cmd_async(struct kva
- 			      int len);
- 
- int kvaser_usb_can_rx_over_error(struct net_device *netdev);
-+
- #endif /* KVASER_USB_H */
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-@@ -79,104 +79,125 @@
- #define USB_ATI_MEMO_PRO_2HS_V2_PRODUCT_ID	269
- #define USB_HYBRID_PRO_CANLIN_PRODUCT_ID	270
- 
--static inline bool kvaser_is_leaf(const struct usb_device_id *id)
--{
--	return (id->idProduct >= USB_LEAF_DEVEL_PRODUCT_ID &&
--		id->idProduct <= USB_CAN_R_PRODUCT_ID) ||
--		(id->idProduct >= USB_LEAF_LITE_V2_PRODUCT_ID &&
--		 id->idProduct <= USB_MINI_PCIE_2HS_PRODUCT_ID);
--}
-+static const struct kvaser_usb_driver_info kvaser_usb_driver_info_hydra = {
-+	.quirks = 0,
-+	.ops = &kvaser_usb_hydra_dev_ops,
-+};
- 
--static inline bool kvaser_is_usbcan(const struct usb_device_id *id)
--{
--	return id->idProduct >= USB_USBCAN_REVB_PRODUCT_ID &&
--	       id->idProduct <= USB_MEMORATOR_PRODUCT_ID;
--}
-+static const struct kvaser_usb_driver_info kvaser_usb_driver_info_usbcan = {
-+	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS |
-+		  KVASER_USB_QUIRK_HAS_SILENT_MODE,
-+	.family = KVASER_USBCAN,
-+	.ops = &kvaser_usb_leaf_dev_ops,
-+};
- 
--static inline bool kvaser_is_hydra(const struct usb_device_id *id)
--{
--	return id->idProduct >= USB_BLACKBIRD_V2_PRODUCT_ID &&
--	       id->idProduct <= USB_HYBRID_PRO_CANLIN_PRODUCT_ID;
--}
-+static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf = {
-+	.quirks = 0,
-+	.family = KVASER_LEAF,
-+	.ops = &kvaser_usb_leaf_dev_ops,
-+};
-+
-+static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf_err = {
-+	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS,
-+	.family = KVASER_LEAF,
-+	.ops = &kvaser_usb_leaf_dev_ops,
-+};
-+
-+static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf_err_listen = {
-+	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS |
-+		  KVASER_USB_QUIRK_HAS_SILENT_MODE,
-+	.family = KVASER_LEAF,
-+	.ops = &kvaser_usb_leaf_dev_ops,
-+};
- 
- static const struct usb_device_id kvaser_usb_table[] = {
- 	/* Leaf USB product IDs */
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_DEVEL_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_PRODUCT_ID) },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_DEVEL_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_PRO_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_SPRO_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_PRO_LS_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_PRO_SWC_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_PRO_LIN_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_SPRO_LS_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_SPRO_SWC_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO2_DEVEL_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO2_HSHS_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_UPRO_HSHS_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_GI_PRODUCT_ID) },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_GI_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_PRO_OBDII_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS |
--			       KVASER_USB_HAS_SILENT_MODE },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err_listen },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO2_HSLS_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_CH_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_BLACKBIRD_SPRO_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_OEM_MERCURY_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_OEM_LEAF_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_CAN_R_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_V2_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_HS_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LIGHT_HS_V2_OEM_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_LIGHT_2HS_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_2HS_PRODUCT_ID) },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_V2_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_HS_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LIGHT_HS_V2_OEM_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_LIGHT_2HS_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_2HS_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
- 
- 	/* USBCANII USB product IDs */
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN2_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_usbcan },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_REVB_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_usbcan },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMORATOR_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_usbcan },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_VCI2_PRODUCT_ID),
--		.driver_info = KVASER_USB_HAS_TXRX_ERRORS },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_usbcan },
- 
- 	/* Minihydra USB product IDs */
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_BLACKBIRD_V2_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_PRO_5HS_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_PRO_5HS_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_LIGHT_4HS_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_PRO_HS_V2_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_PRO_2HS_V2_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_2HS_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_PRO_2HS_V2_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_HYBRID_CANLIN_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_ATI_USBCAN_PRO_2HS_V2_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_ATI_MEMO_PRO_2HS_V2_PRODUCT_ID) },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_HYBRID_PRO_CANLIN_PRODUCT_ID) },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_BLACKBIRD_V2_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_PRO_5HS_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_PRO_5HS_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_LIGHT_4HS_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_PRO_HS_V2_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_PRO_2HS_V2_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_2HS_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_PRO_2HS_V2_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_HYBRID_2CANLIN_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_ATI_USBCAN_PRO_2HS_V2_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_ATI_MEMO_PRO_2HS_V2_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_HYBRID_PRO_CANLIN_PRODUCT_ID),
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
- 	{ }
- };
- MODULE_DEVICE_TABLE(usb, kvaser_usb_table);
-@@ -267,6 +288,7 @@ int kvaser_usb_can_rx_over_error(struct
- static void kvaser_usb_read_bulk_callback(struct urb *urb)
- {
- 	struct kvaser_usb *dev = urb->context;
-+	const struct kvaser_usb_dev_ops *ops = dev->driver_info->ops;
- 	int err;
- 	unsigned int i;
- 
-@@ -283,8 +305,8 @@ static void kvaser_usb_read_bulk_callbac
- 		goto resubmit_urb;
- 	}
- 
--	dev->ops->dev_read_bulk_callback(dev, urb->transfer_buffer,
--					 urb->actual_length);
-+	ops->dev_read_bulk_callback(dev, urb->transfer_buffer,
-+				    urb->actual_length);
- 
- resubmit_urb:
- 	usb_fill_bulk_urb(urb, dev->udev,
-@@ -378,6 +400,7 @@ static int kvaser_usb_open(struct net_de
- {
- 	struct kvaser_usb_net_priv *priv = netdev_priv(netdev);
- 	struct kvaser_usb *dev = priv->dev;
-+	const struct kvaser_usb_dev_ops *ops = dev->driver_info->ops;
- 	int err;
- 
- 	err = open_candev(netdev);
-@@ -388,11 +411,11 @@ static int kvaser_usb_open(struct net_de
- 	if (err)
- 		goto error;
- 
--	err = dev->ops->dev_set_opt_mode(priv);
-+	err = ops->dev_set_opt_mode(priv);
- 	if (err)
- 		goto error;
- 
--	err = dev->ops->dev_start_chip(priv);
-+	err = ops->dev_start_chip(priv);
- 	if (err) {
- 		netdev_warn(netdev, "Cannot start device, error %d\n", err);
- 		goto error;
-@@ -449,22 +472,23 @@ static int kvaser_usb_close(struct net_d
- {
- 	struct kvaser_usb_net_priv *priv = netdev_priv(netdev);
- 	struct kvaser_usb *dev = priv->dev;
-+	const struct kvaser_usb_dev_ops *ops = dev->driver_info->ops;
- 	int err;
- 
- 	netif_stop_queue(netdev);
- 
--	err = dev->ops->dev_flush_queue(priv);
-+	err = ops->dev_flush_queue(priv);
- 	if (err)
- 		netdev_warn(netdev, "Cannot flush queue, error %d\n", err);
- 
--	if (dev->ops->dev_reset_chip) {
--		err = dev->ops->dev_reset_chip(dev, priv->channel);
-+	if (ops->dev_reset_chip) {
-+		err = ops->dev_reset_chip(dev, priv->channel);
- 		if (err)
- 			netdev_warn(netdev, "Cannot reset card, error %d\n",
- 				    err);
- 	}
- 
--	err = dev->ops->dev_stop_chip(priv);
-+	err = ops->dev_stop_chip(priv);
- 	if (err)
- 		netdev_warn(netdev, "Cannot stop device, error %d\n", err);
- 
-@@ -503,6 +527,7 @@ static netdev_tx_t kvaser_usb_start_xmit
- {
- 	struct kvaser_usb_net_priv *priv = netdev_priv(netdev);
- 	struct kvaser_usb *dev = priv->dev;
-+	const struct kvaser_usb_dev_ops *ops = dev->driver_info->ops;
- 	struct net_device_stats *stats = &netdev->stats;
- 	struct kvaser_usb_tx_urb_context *context = NULL;
- 	struct urb *urb;
-@@ -545,8 +570,8 @@ static netdev_tx_t kvaser_usb_start_xmit
- 		goto freeurb;
- 	}
- 
--	buf = dev->ops->dev_frame_to_cmd(priv, skb, &context->dlc, &cmd_len,
--					 context->echo_index);
-+	buf = ops->dev_frame_to_cmd(priv, skb, &context->dlc, &cmd_len,
-+				    context->echo_index);
- 	if (!buf) {
- 		stats->tx_dropped++;
- 		dev_kfree_skb(skb);
-@@ -630,15 +655,16 @@ static void kvaser_usb_remove_interfaces
- 	}
- }
- 
--static int kvaser_usb_init_one(struct kvaser_usb *dev,
--			       const struct usb_device_id *id, int channel)
-+static int kvaser_usb_init_one(struct kvaser_usb *dev, int channel)
- {
- 	struct net_device *netdev;
- 	struct kvaser_usb_net_priv *priv;
-+	const struct kvaser_usb_driver_info *driver_info = dev->driver_info;
-+	const struct kvaser_usb_dev_ops *ops = driver_info->ops;
- 	int err;
- 
--	if (dev->ops->dev_reset_chip) {
--		err = dev->ops->dev_reset_chip(dev, channel);
-+	if (ops->dev_reset_chip) {
-+		err = ops->dev_reset_chip(dev, channel);
- 		if (err)
- 			return err;
- 	}
-@@ -667,20 +693,19 @@ static int kvaser_usb_init_one(struct kv
- 	priv->can.state = CAN_STATE_STOPPED;
- 	priv->can.clock.freq = dev->cfg->clock.freq;
- 	priv->can.bittiming_const = dev->cfg->bittiming_const;
--	priv->can.do_set_bittiming = dev->ops->dev_set_bittiming;
--	priv->can.do_set_mode = dev->ops->dev_set_mode;
--	if ((id->driver_info & KVASER_USB_HAS_TXRX_ERRORS) ||
-+	priv->can.do_set_bittiming = ops->dev_set_bittiming;
-+	priv->can.do_set_mode = ops->dev_set_mode;
-+	if ((driver_info->quirks & KVASER_USB_QUIRK_HAS_TXRX_ERRORS) ||
- 	    (priv->dev->card_data.capabilities & KVASER_USB_CAP_BERR_CAP))
--		priv->can.do_get_berr_counter = dev->ops->dev_get_berr_counter;
--	if (id->driver_info & KVASER_USB_HAS_SILENT_MODE)
-+		priv->can.do_get_berr_counter = ops->dev_get_berr_counter;
-+	if (driver_info->quirks & KVASER_USB_QUIRK_HAS_SILENT_MODE)
- 		priv->can.ctrlmode_supported |= CAN_CTRLMODE_LISTENONLY;
- 
- 	priv->can.ctrlmode_supported |= dev->card_data.ctrlmode_supported;
- 
- 	if (priv->can.ctrlmode_supported & CAN_CTRLMODE_FD) {
- 		priv->can.data_bittiming_const = dev->cfg->data_bittiming_const;
--		priv->can.do_set_data_bittiming =
--					dev->ops->dev_set_data_bittiming;
-+		priv->can.do_set_data_bittiming = ops->dev_set_data_bittiming;
- 	}
- 
- 	netdev->flags |= IFF_ECHO;
-@@ -711,29 +736,22 @@ static int kvaser_usb_probe(struct usb_i
- 	struct kvaser_usb *dev;
- 	int err;
- 	int i;
-+	const struct kvaser_usb_driver_info *driver_info;
-+	const struct kvaser_usb_dev_ops *ops;
-+
-+	driver_info = (const struct kvaser_usb_driver_info *)id->driver_info;
-+	if (!driver_info)
-+		return -ENODEV;
- 
- 	dev = devm_kzalloc(&intf->dev, sizeof(*dev), GFP_KERNEL);
- 	if (!dev)
- 		return -ENOMEM;
- 
--	if (kvaser_is_leaf(id)) {
--		dev->card_data.leaf.family = KVASER_LEAF;
--		dev->ops = &kvaser_usb_leaf_dev_ops;
--	} else if (kvaser_is_usbcan(id)) {
--		dev->card_data.leaf.family = KVASER_USBCAN;
--		dev->ops = &kvaser_usb_leaf_dev_ops;
--	} else if (kvaser_is_hydra(id)) {
--		dev->ops = &kvaser_usb_hydra_dev_ops;
--	} else {
--		dev_err(&intf->dev,
--			"Product ID (%d) is not a supported Kvaser USB device\n",
--			id->idProduct);
--		return -ENODEV;
--	}
--
- 	dev->intf = intf;
-+	dev->driver_info = driver_info;
-+	ops = driver_info->ops;
- 
--	err = dev->ops->dev_setup_endpoints(dev);
-+	err = ops->dev_setup_endpoints(dev);
- 	if (err) {
- 		dev_err(&intf->dev, "Cannot get usb endpoint(s)");
- 		return err;
-@@ -747,22 +765,22 @@ static int kvaser_usb_probe(struct usb_i
- 
- 	dev->card_data.ctrlmode_supported = 0;
- 	dev->card_data.capabilities = 0;
--	err = dev->ops->dev_init_card(dev);
-+	err = ops->dev_init_card(dev);
- 	if (err) {
- 		dev_err(&intf->dev,
- 			"Failed to initialize card, error %d\n", err);
- 		return err;
- 	}
- 
--	err = dev->ops->dev_get_software_info(dev);
-+	err = ops->dev_get_software_info(dev);
- 	if (err) {
- 		dev_err(&intf->dev,
- 			"Cannot get software info, error %d\n", err);
- 		return err;
- 	}
- 
--	if (dev->ops->dev_get_software_details) {
--		err = dev->ops->dev_get_software_details(dev);
-+	if (ops->dev_get_software_details) {
-+		err = ops->dev_get_software_details(dev);
- 		if (err) {
- 			dev_err(&intf->dev,
- 				"Cannot get software details, error %d\n", err);
-@@ -780,14 +798,14 @@ static int kvaser_usb_probe(struct usb_i
- 
- 	dev_dbg(&intf->dev, "Max outstanding tx = %d URBs\n", dev->max_tx_urbs);
- 
--	err = dev->ops->dev_get_card_info(dev);
-+	err = ops->dev_get_card_info(dev);
- 	if (err) {
- 		dev_err(&intf->dev, "Cannot get card info, error %d\n", err);
- 		return err;
- 	}
- 
--	if (dev->ops->dev_get_capabilities) {
--		err = dev->ops->dev_get_capabilities(dev);
-+	if (ops->dev_get_capabilities) {
-+		err = ops->dev_get_capabilities(dev);
- 		if (err) {
- 			dev_err(&intf->dev,
- 				"Cannot get capabilities, error %d\n", err);
-@@ -797,7 +815,7 @@ static int kvaser_usb_probe(struct usb_i
- 	}
- 
- 	for (i = 0; i < dev->nchannels; i++) {
--		err = kvaser_usb_init_one(dev, id, i);
-+		err = kvaser_usb_init_one(dev, i);
- 		if (err) {
- 			kvaser_usb_remove_interfaces(dev);
- 			return err;
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -405,7 +405,7 @@ kvaser_usb_leaf_frame_to_cmd(const struc
- 				      sizeof(struct kvaser_cmd_tx_can);
- 		cmd->u.tx_can.channel = priv->channel;
- 
--		switch (dev->card_data.leaf.family) {
-+		switch (dev->driver_info->family) {
- 		case KVASER_LEAF:
- 			cmd_tx_can_flags = &cmd->u.tx_can.leaf.flags;
- 			break;
-@@ -551,7 +551,7 @@ static int kvaser_usb_leaf_get_software_
- 	if (err)
- 		return err;
- 
--	switch (dev->card_data.leaf.family) {
-+	switch (dev->driver_info->family) {
- 	case KVASER_LEAF:
- 		kvaser_usb_leaf_get_software_info_leaf(dev, &cmd.u.leaf.softinfo);
- 		break;
-@@ -598,7 +598,7 @@ static int kvaser_usb_leaf_get_card_info
- 
- 	dev->nchannels = cmd.u.cardinfo.nchannels;
- 	if (dev->nchannels > KVASER_USB_MAX_NET_DEVICES ||
--	    (dev->card_data.leaf.family == KVASER_USBCAN &&
-+	    (dev->driver_info->family == KVASER_USBCAN &&
- 	     dev->nchannels > MAX_USBCAN_NET_DEVICES))
- 		return -EINVAL;
- 
-@@ -734,7 +734,7 @@ kvaser_usb_leaf_rx_error_update_can_stat
- 	    new_state < CAN_STATE_BUS_OFF)
- 		priv->can.can_stats.restarts++;
- 
--	switch (dev->card_data.leaf.family) {
-+	switch (dev->driver_info->family) {
- 	case KVASER_LEAF:
- 		if (es->leaf.error_factor) {
- 			priv->can.can_stats.bus_error++;
-@@ -813,7 +813,7 @@ static void kvaser_usb_leaf_rx_error(con
- 		}
- 	}
- 
--	switch (dev->card_data.leaf.family) {
-+	switch (dev->driver_info->family) {
- 	case KVASER_LEAF:
- 		if (es->leaf.error_factor) {
- 			cf->can_id |= CAN_ERR_BUSERROR | CAN_ERR_PROT;
-@@ -1005,7 +1005,7 @@ static void kvaser_usb_leaf_rx_can_msg(c
- 	stats = &priv->netdev->stats;
- 
- 	if ((cmd->u.rx_can_header.flag & MSG_FLAG_ERROR_FRAME) &&
--	    (dev->card_data.leaf.family == KVASER_LEAF &&
-+	    (dev->driver_info->family == KVASER_LEAF &&
- 	     cmd->id == CMD_LEAF_LOG_MESSAGE)) {
- 		kvaser_usb_leaf_leaf_rx_error(dev, cmd);
- 		return;
-@@ -1021,7 +1021,7 @@ static void kvaser_usb_leaf_rx_can_msg(c
- 		return;
- 	}
- 
--	switch (dev->card_data.leaf.family) {
-+	switch (dev->driver_info->family) {
- 	case KVASER_LEAF:
- 		rx_data = cmd->u.leaf.rx_can.data;
- 		break;
-@@ -1036,7 +1036,7 @@ static void kvaser_usb_leaf_rx_can_msg(c
- 		return;
- 	}
- 
--	if (dev->card_data.leaf.family == KVASER_LEAF && cmd->id ==
-+	if (dev->driver_info->family == KVASER_LEAF && cmd->id ==
- 	    CMD_LEAF_LOG_MESSAGE) {
- 		cf->can_id = le32_to_cpu(cmd->u.leaf.log_message.id);
- 		if (cf->can_id & KVASER_EXTENDED_FRAME)
-@@ -1133,14 +1133,14 @@ static void kvaser_usb_leaf_handle_comma
- 		break;
- 
- 	case CMD_LEAF_LOG_MESSAGE:
--		if (dev->card_data.leaf.family != KVASER_LEAF)
-+		if (dev->driver_info->family != KVASER_LEAF)
- 			goto warn;
- 		kvaser_usb_leaf_rx_can_msg(dev, cmd);
- 		break;
- 
- 	case CMD_CHIP_STATE_EVENT:
- 	case CMD_CAN_ERROR_EVENT:
--		if (dev->card_data.leaf.family == KVASER_LEAF)
-+		if (dev->driver_info->family == KVASER_LEAF)
- 			kvaser_usb_leaf_leaf_rx_error(dev, cmd);
- 		else
- 			kvaser_usb_leaf_usbcan_rx_error(dev, cmd);
-@@ -1152,12 +1152,12 @@ static void kvaser_usb_leaf_handle_comma
- 
- 	/* Ignored commands */
- 	case CMD_USBCAN_CLOCK_OVERFLOW_EVENT:
--		if (dev->card_data.leaf.family != KVASER_USBCAN)
-+		if (dev->driver_info->family != KVASER_USBCAN)
- 			goto warn;
- 		break;
- 
- 	case CMD_FLUSH_QUEUE_REPLY:
--		if (dev->card_data.leaf.family != KVASER_LEAF)
-+		if (dev->driver_info->family != KVASER_LEAF)
- 			goto warn;
- 		break;
- 
+>>   
+>> -static const struct thermal_zone_of_device_ops fsl_sata_ahci_of_thermal_ops = {
+>> +static struct thermal_zone_device_ops fsl_sata_ahci_of_thermal_ops = {
+> 
+> Why remove the const ?
+> 
+>>   	.get_temp = sata_ahci_read_temperature,
+>>   };
+>>   
+>> @@ -1131,8 +1136,8 @@ static int imx_ahci_probe(struct platform_device *pdev)
+>>   			ret = PTR_ERR(hwmon_dev);
+>>   			goto disable_clk;
+>>   		}
+>> -		devm_thermal_zone_of_sensor_register(hwmon_dev, 0, hwmon_dev,
+>> -					     &fsl_sata_ahci_of_thermal_ops);
+>> +		devm_thermal_of_zone_register(hwmon_dev, 0, hwmon_dev,
+>> +					      &fsl_sata_ahci_of_thermal_ops);
+> 
+> This is the only change that seems necessary.
+> 
+>>   		dev_info(dev, "%s: sensor 'sata_ahci'\n", dev_name(hwmon_dev));
+>>   	}
+>>   
+> 
+> And it is hard to review a patch without the full series for context.
+> Please send all patches next time.
+> 
+> 
 
 
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
