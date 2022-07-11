@@ -2,113 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6317CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 164BCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbiGKQMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 12:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S231464AbiGKQN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiGKQMq (ORCPT
+        with ESMTP id S229594AbiGKQNZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 12:12:46 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA1379EE6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:12:46 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id fd6so6867540edb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:12:45 -0700 (PDT)
+        Mon, 11 Jul 2022 12:13:25 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE927A50F;
+        Mon, 11 Jul 2022 09:13:24 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id v21so2321492plo.0;
+        Mon, 11 Jul 2022 09:13:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EpUWA0CCK9VbBCJDoo4DsDsKj3ehCYJDBTp0s+uL7as=;
-        b=ixU/xMq7Hv7sYGK7x3fdtMTt6aasWztP+joaQKiF3Qoz8jom4Zbc/6yW2OaMtJkOni
-         QRGTqspiIYsKDwbpNgmJ05SE4tIR3oGEcMR0OpCFjW/x/t+QR2pLDk1XL1qU/cZ3VQjn
-         R+Rda0PCnymlDaO5mqJNz0TzmHAvame4MLDOw=
+        d=gmail.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=1BtirUFZlUNsNaJ0rGa4j2n8R2Nb+qFWRgftNDn7dlM=;
+        b=h2gP/eINh3df/khVpYyOKAFueaRwnze8whTPM4NWnJhXedhNVdiYw7q36eqbuk2+b2
+         x9yIbcmMZ07Xc7n7eTivCKkImfW2gbCrlNL7Va25RMwU9StsglbqTN88W1rLDjwueG2U
+         MA8Agg8kStw9PZ+SHWNSZHh5bL+8vfgdcGvT+aszFKSptbnsV42YwLIvz2NmhlfT6KWP
+         0psdwRlghGHK0zrh7XZehpiSD3xdWr7xD56y07PrqCexG4YVWeznvWxWcy6LHvIc8B/l
+         7kcJlwCMs9z53KdaK9c8p3mQ7Vrimb+0YNsRHZlO1N+d/Xv2hdgezVoi22iNgkExNUCr
+         poqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EpUWA0CCK9VbBCJDoo4DsDsKj3ehCYJDBTp0s+uL7as=;
-        b=epsYcoPiBKS/Or+OqagnJkAkGE76Aj3oszExBlixI3hpoPhyXozkhCvvwYajgxKU6O
-         MR+tEdq6u84DFQZkXhR5DdG6en7sez2GtOx4+vxvFHCQ0/NhwSajlZn+IuLx9OguqDkc
-         FFgcw47YqAJeYf6xkPm23o0oVaAoc/o0ek7aiL0Z18GfzsL92uEbH3VVjvX8IR0WEAT2
-         ibk9klI7cr8epmXaE0LgdOaAuhvP6nCgtI4vu4lep+fpHrszeQldj8wM4lh0352vM7Eq
-         HTSJXABqpsvykM9VnwZa94+EqWbLgHZy+pOLp3PrAjQNG2s8uGOb1nW1OmkrZ3yGRirH
-         Y7nw==
-X-Gm-Message-State: AJIora+QUt7VlkTBmKaLupCfIKhi55d/cmkeJxSYhUZg/UTklTuq4VHn
-        BzG41LPCmVVc+io8P2ru0cYnnb3dJm4NIgbAT/g=
-X-Google-Smtp-Source: AGRyM1uVpcUM41OpblJQTIvsGmVtDDcuQPOciOEKoJUMPYR5e5Dpo0ghf4YlwCWa+LMwnJ/cpPDI3A==
-X-Received: by 2002:a05:6402:b3b:b0:439:b0cc:d409 with SMTP id bo27-20020a0564020b3b00b00439b0ccd409mr25203008edb.325.1657555964411;
-        Mon, 11 Jul 2022 09:12:44 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id ks6-20020a170906f84600b0072ae8fb13e6sm2785363ejb.126.2022.07.11.09.12.42
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 09:12:43 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id v16so7629725wrd.13
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:12:42 -0700 (PDT)
-X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
- b13-20020adff90d000000b0020cde324d35mr17134813wrr.583.1657555961970; Mon, 11
- Jul 2022 09:12:41 -0700 (PDT)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=1BtirUFZlUNsNaJ0rGa4j2n8R2Nb+qFWRgftNDn7dlM=;
+        b=jJsmT/lqqHKfMe4j5FMz0qjOYmEnsiJA9yRc+EunXLnfEkoPcInborXMcFOzTAvxIY
+         QT2n6g2JVDJ/oRNexzYDH8AAqxNHnlZOn4Lpx5f0yIR9aHMSEsKjhKPxOISjcovSa1Bv
+         /BrPCONOIH+bSvwd6eP3JjwmmJVavwQiKv4gNWzGyMv5pW4SMJYXHIqUV+92q3AZjtpY
+         x1oPCs43ZuvDFcq7Yb7z3a4p0aYNE4KJiGlSTyV9qAKsbgJjZy7wdbgO+udkO8DSz+cb
+         PiD5OoCB9QuJz8gA/Cyj8cVtE6qHxuQWlzB8XwcNRA5CIeKcstPZdoFbfDK6LhnZy3sa
+         ZmtA==
+X-Gm-Message-State: AJIora++j08gyPt4itBy2O9UeS65tW/mLBzmjimK4B8hUIadC8nWorKu
+        ol8VQYQeYKCa23QX/+yRclY=
+X-Google-Smtp-Source: AGRyM1uGPEntwk/brrDrAanebOrOr3Lt4WdZYw78TD8cNiNnyXHKbxBrBweYKn9sc24tLdRLZ3CAOQ==
+X-Received: by 2002:a17:903:2452:b0:16c:18f4:7997 with SMTP id l18-20020a170903245200b0016c18f47997mr19363436pls.68.1657556003779;
+        Mon, 11 Jul 2022 09:13:23 -0700 (PDT)
+Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id h10-20020a170902f54a00b0016bdf0032b9sm4932804plf.110.2022.07.11.09.13.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 09:13:22 -0700 (PDT)
+References: <20220321053815.71316-1-schspa@gmail.com>
+ <YjhF/jWXY5L3I+DZ@linutronix.de>
+User-agent: mu4e 1.7.5; emacs 28.1
+From:   Schspa Shi <schspa@gmail.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     pmladek@suse.com, sergey.senozhatsky@gmail.com,
+        rostedt@goodmis.org, john.ogness@linutronix.de,
+        linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tglx@linutronix.de
+Subject: Re: [PATCH 5.10-rt] printk: fix suppressed message print when
+ reboot/panic
+Date:   Tue, 12 Jul 2022 00:05:51 +0800
+In-reply-to: <YjhF/jWXY5L3I+DZ@linutronix.de>
+Message-ID: <m2r12rocfd.fsf@gmail.com>
 MIME-Version: 1.0
-References: <1657555122-18605-1-git-send-email-quic_khsieh@quicinc.com>
- <CAD=FV=WC0XQqOyONddX37=ad8M4N2NHB5UTmDVZU5SEggLvFEA@mail.gmail.com> <9abb6a67-e7a5-a3dc-1bff-30e9d2922b84@quicinc.com>
-In-Reply-To: <9abb6a67-e7a5-a3dc-1bff-30e9d2922b84@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 11 Jul 2022 09:12:29 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VHC_mTya4ywa50_Af0uwt19rYDs9PyGfOh_AhRAJTEgA@mail.gmail.com>
-Message-ID: <CAD=FV=VHC_mTya4ywa50_Af0uwt19rYDs9PyGfOh_AhRAJTEgA@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dta: qcom: sc7280: delete vdda-1p2 and vdda-0p9
- from mdss_edp
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        quic_mkrishn@quicinc.com, quic_kalyant@quicinc.coml,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi guys:
 
-On Mon, Jul 11, 2022 at 9:10 AM Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
->
->
-> On 7/11/2022 9:02 AM, Doug Anderson wrote:
->
-> Hi,
->
-> On Mon, Jul 11, 2022 at 8:58 AM Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
->
-> Both vdda-1p2-supply and vdda-0p9-supply regulators are controlled
-> by dp combo phy. Therefore remove them from dp controller.
->
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 3 ---
->  1 file changed, 3 deletions(-)
->
-> You also need to remove it from
-> `arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi`.
->
-> arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi: vdda-1p2-supply = <&vdd_a_usbssdp_0_1p2>;
->
-> I did not see above line at sc7280-herobrine.dtsi at latest msm-next tree.
+   Do we need to add this to the rt stable tree?
+   The stable tree still have this issues.
 
-It's in the qcom tree...
-
-https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/tree/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi?h=for-next#n438
-
--Doug
+-- 
+BRs
+Schspa Shi
