@@ -2,71 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F59CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D445C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234137AbiGKJ75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
+        id S230123AbiGKKAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234250AbiGKJ6z (ORCPT
+        with ESMTP id S234211AbiGKJ7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:58:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C0EB628F;
-        Mon, 11 Jul 2022 02:27:35 -0700 (PDT)
+        Mon, 11 Jul 2022 05:59:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAA7B6290;
+        Mon, 11 Jul 2022 02:27:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E25D61372;
-        Mon, 11 Jul 2022 09:27:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4BCC341C0;
-        Mon, 11 Jul 2022 09:27:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657531639;
-        bh=+UJrGtjpka8nSRM77e2YQUJSg61eV0JzLk4848lxeJE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=MfE8LqQNYPDPYj35zNe/S4tOd01xxjfLIyzaJi0TUejoE4EsuDFhtQuhYbig7oEHI
-         uaO9PTIEhDARQXEP264/pjRuz5Xz2r52a3fZ6Hl3USlAbj6hzIbEFaB4Nw/8yhPHNt
-         qaoJCPhKHA3CZUJFqIBSDQFDYzQ2ewy7YNeU3YQRLqputkGAPL9rIeNfi6dSjCfspF
-         ReG106sk7j5xfiu4zC5+jKCgGZ0AoI8XHM9ZQZ2V5DqGBjd+cZNHr0WiAXETrPSuct
-         0B7pQPZrFa2u+Ix1IWCFdCLbX1uosdXsIudoa3+ogdeFI7WpJETnooOcLRQsB7T6XX
-         uckVuce4+HYeg==
-Message-ID: <e1d1b0d3-b6d3-db91-df9f-a06ef69d1834@kernel.org>
-Date:   Mon, 11 Jul 2022 11:27:14 +0200
+        by sin.source.kernel.org (Postfix) with ESMTPS id B477ECE1268;
+        Mon, 11 Jul 2022 09:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E774C34115;
+        Mon, 11 Jul 2022 09:27:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657531650;
+        bh=73Uh7vu2OsPbWICEJYHjM7Eli153prRiBAG3rtQxm8g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=r8svoC5bvpKyqWRQ47p0LXKJKTdNaA3PEnsjKhDpg7rdD+syy0T08eixgbRdBbE7v
+         Be9m8oIwukF5Y2jBQfvZT0l6076zy6oCzfDAkQAbLMWq77o269ras3bgBWEWvsGEqu
+         yBv5Z4c8oWXO6ITuP+Wtii4kjqqhC6CdYtwW9YY8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 183/230] arm64: dts: qcom: sdm845: use dispcc AHB clock for mdss node
+Date:   Mon, 11 Jul 2022 11:07:19 +0200
+Message-Id: <20220711090609.301392757@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
+References: <20220711090604.055883544@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v8 2/2] pwm: Add clock based PWM output driver
-Content-Language: en-US
-To:     Nikita Travkin <nikita@trvn.ru>, thierry.reding@gmail.com,
-        lee.jones@linaro.org
-Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
-        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-References: <20220711062330.4923-1-nikita@trvn.ru>
- <20220711062330.4923-3-nikita@trvn.ru>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220711062330.4923-3-nikita@trvn.ru>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/07/2022 08:23, Nikita Travkin wrote:
-> Some systems have clocks exposed to external devices. If the clock
-> controller supports duty-cycle configuration, such clocks can be used as
-> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
-> similar way and an "opposite" driver already exists (clk-pwm). Add a
-> driver that would enable pwm devices to be used via clk subsystem.
-> 
-> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
-> --
-> 
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Also not correct patch.
+[ Upstream commit 3ba500dee327e0261e728edec8a4f2f563d2760c ]
 
-Best regards,
-Krzysztof
+It was noticed that on sdm845 after an MDSS suspend/resume cycle the
+driver can not read HW_REV registers properly (they will return 0
+instead). Chaning the "iface" clock from <&gcc GCC_DISP_AHB_CLK> to
+<&dispcc DISP_CC_MDSS_AHB_CLK> fixes the issue.
+
+Fixes: 08c2a076d18f ("arm64: dts: qcom: sdm845: Add dpu to sdm845 dts file")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220531124735.1165582-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sdm845.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+index d20eacfc1017..ea7a272d267a 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+@@ -4147,7 +4147,7 @@
+ 
+ 			power-domains = <&dispcc MDSS_GDSC>;
+ 
+-			clocks = <&gcc GCC_DISP_AHB_CLK>,
++			clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
+ 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
+ 			clock-names = "iface", "core";
+ 
+-- 
+2.35.1
+
+
+
