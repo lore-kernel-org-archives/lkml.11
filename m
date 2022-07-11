@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E50C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231830AbiGKJVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
+        id S231989AbiGKJVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231803AbiGKJVE (ORCPT
+        with ESMTP id S231779AbiGKJVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:21:04 -0400
+        Mon, 11 Jul 2022 05:21:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51E922B05;
-        Mon, 11 Jul 2022 02:12:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9162B272;
+        Mon, 11 Jul 2022 02:12:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F0A9611F0;
-        Mon, 11 Jul 2022 09:12:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58187C34115;
-        Mon, 11 Jul 2022 09:12:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25A9B61188;
+        Mon, 11 Jul 2022 09:12:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BA33C34115;
+        Mon, 11 Jul 2022 09:12:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530770;
-        bh=crs/nf5VegItrTKaUF4eYcu4JKgieF9hoTiW/qwrm0E=;
+        s=korg; t=1657530773;
+        bh=5q/ing+ZFjHHIXvmreVU/uaobiUDzeN2y1kR0B3z56w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ts4JzfL2wM2/jE9NehJs9tB5i0XR9oYvxIcY7PRugMmGNZnPXEo1D4BODykbtrKq2
-         Ibf6EAVelSGdOkHsJVVirv1OfejL0UdbxPJedoomezorI9nNeOQ1KpPKv6qepeNSkH
-         mEhmA9yfW3sz6FILnZEF/e9S0k7mQduG00Q5OkM8=
+        b=CKMjjVFYLECO0FOKddIFWSecOEnvpB8xIJ0I1nQyvJ+3yVMrSzlV8ED2CfpUEK7pG
+         JURSyjs3u2TF2jXYeVKZnVYdcx/zmpbKun1onqDLWRCsdZ2wSdicW2JVYRRdrcd/71
+         olHnV/cubWPuZs3q66NDhsc+5geqHgUdjX1EM7ZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5.10 16/55] fbcon: Prevent that screen size is smaller than font size
-Date:   Mon, 11 Jul 2022 11:07:04 +0200
-Message-Id: <20220711090542.244840203@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 34/55] ARM: at91: pm: use proper compatible for sama5d2s rtc
+Date:   Mon, 11 Jul 2022 11:07:22 +0200
+Message-Id: <20220711090542.767387434@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -48,99 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-commit e64242caef18b4a5840b0e7a9bff37abd4f4f933 upstream.
+[ Upstream commit ddc980da8043779119acaca106c6d9b445c9b65b ]
 
-We need to prevent that users configure a screen size which is smaller than the
-currently selected font size. Otherwise rendering chars on the screen will
-access memory outside the graphics memory region.
+Use proper compatible strings for SAMA5D2's RTC IPs. This is necessary
+for configuring wakeup sources for ULP1 PM mode.
 
-This patch adds a new function fbcon_modechange_possible() which
-implements this check and which later may be extended with other checks
-if necessary.  The new function is called from the FBIOPUT_VSCREENINFO
-ioctl handler in fbmem.c, which will return -EINVAL if userspace asked
-for a too small screen size.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: stable@vger.kernel.org # v5.4+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d7484f5c6b3b ("ARM: at91: pm: configure wakeup sources for ULP1 mode")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220523092421.317345-2-claudiu.beznea@microchip.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbcon.c |   28 ++++++++++++++++++++++++++++
- drivers/video/fbdev/core/fbmem.c |    4 +++-
- include/linux/fbcon.h            |    4 ++++
- 3 files changed, 35 insertions(+), 1 deletion(-)
+ arch/arm/mach-at91/pm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2776,6 +2776,34 @@ void fbcon_update_vcs(struct fb_info *in
- }
- EXPORT_SYMBOL(fbcon_update_vcs);
+diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
+index 3f015cb6ec2b..6a68ff0466e0 100644
+--- a/arch/arm/mach-at91/pm.c
++++ b/arch/arm/mach-at91/pm.c
+@@ -104,7 +104,7 @@ static const struct wakeup_source_info ws_info[] = {
  
-+/* let fbcon check if it supports a new screen resolution */
-+int fbcon_modechange_possible(struct fb_info *info, struct fb_var_screeninfo *var)
-+{
-+	struct fbcon_ops *ops = info->fbcon_par;
-+	struct vc_data *vc;
-+	unsigned int i;
-+
-+	WARN_CONSOLE_UNLOCKED();
-+
-+	if (!ops)
-+		return 0;
-+
-+	/* prevent setting a screen size which is smaller than font size */
-+	for (i = first_fb_vc; i <= last_fb_vc; i++) {
-+		vc = vc_cons[i].d;
-+		if (!vc || vc->vc_mode != KD_TEXT ||
-+			   registered_fb[con2fb_map[i]] != info)
-+			continue;
-+
-+		if (vc->vc_font.width  > FBCON_SWAP(var->rotate, var->xres, var->yres) ||
-+		    vc->vc_font.height > FBCON_SWAP(var->rotate, var->yres, var->xres))
-+			return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(fbcon_modechange_possible);
-+
- int fbcon_mode_deleted(struct fb_info *info,
- 		       struct fb_videomode *mode)
- {
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1119,7 +1119,9 @@ static long do_fb_ioctl(struct fb_info *
- 			return -EFAULT;
- 		console_lock();
- 		lock_fb_info(info);
--		ret = fb_set_var(info, &var);
-+		ret = fbcon_modechange_possible(info, &var);
-+		if (!ret)
-+			ret = fb_set_var(info, &var);
- 		if (!ret)
- 			fbcon_update_vcs(info, var.activate & FB_ACTIVATE_ALL);
- 		unlock_fb_info(info);
---- a/include/linux/fbcon.h
-+++ b/include/linux/fbcon.h
-@@ -15,6 +15,8 @@ void fbcon_new_modelist(struct fb_info *
- void fbcon_get_requirement(struct fb_info *info,
- 			   struct fb_blit_caps *caps);
- void fbcon_fb_blanked(struct fb_info *info, int blank);
-+int  fbcon_modechange_possible(struct fb_info *info,
-+			       struct fb_var_screeninfo *var);
- void fbcon_update_vcs(struct fb_info *info, bool all);
- void fbcon_remap_all(struct fb_info *info);
- int fbcon_set_con2fb_map_ioctl(void __user *argp);
-@@ -33,6 +35,8 @@ static inline void fbcon_new_modelist(st
- static inline void fbcon_get_requirement(struct fb_info *info,
- 					 struct fb_blit_caps *caps) {}
- static inline void fbcon_fb_blanked(struct fb_info *info, int blank) {}
-+static inline int  fbcon_modechange_possible(struct fb_info *info,
-+				struct fb_var_screeninfo *var) { return 0; }
- static inline void fbcon_update_vcs(struct fb_info *info, bool all) {}
- static inline void fbcon_remap_all(struct fb_info *info) {}
- static inline int fbcon_set_con2fb_map_ioctl(void __user *argp) { return 0; }
+ static const struct of_device_id sama5d2_ws_ids[] = {
+ 	{ .compatible = "atmel,sama5d2-gem",		.data = &ws_info[0] },
+-	{ .compatible = "atmel,at91rm9200-rtc",		.data = &ws_info[1] },
++	{ .compatible = "atmel,sama5d2-rtc",		.data = &ws_info[1] },
+ 	{ .compatible = "atmel,sama5d3-udc",		.data = &ws_info[2] },
+ 	{ .compatible = "atmel,at91rm9200-ohci",	.data = &ws_info[2] },
+ 	{ .compatible = "usb-ohci",			.data = &ws_info[2] },
+-- 
+2.35.1
+
 
 
