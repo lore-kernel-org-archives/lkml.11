@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E3B3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B345EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233641AbiGKJrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49964 "EHLO
+        id S233561AbiGKJr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233599AbiGKJrI (ORCPT
+        with ESMTP id S233604AbiGKJrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:47:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8235B040;
-        Mon, 11 Jul 2022 02:23:01 -0700 (PDT)
+        Mon, 11 Jul 2022 05:47:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784CE67170;
+        Mon, 11 Jul 2022 02:23:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76D3C612FE;
-        Mon, 11 Jul 2022 09:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D97C34115;
-        Mon, 11 Jul 2022 09:22:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3D40B80E7E;
+        Mon, 11 Jul 2022 09:23:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F016C34115;
+        Mon, 11 Jul 2022 09:23:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531379;
-        bh=qA3BFqcQaxF/A7x7eR1efEtNeDX0omYnIc7NJ9zzW8Q=;
+        s=korg; t=1657531382;
+        bh=0m0GkOvnLvHQiu/2/bOsz32D+no02E3Q3SY9D2E6upk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f77AsYbBAgys2v7v4dKZmzAEH28Dc7G8cIGPiex/2XzbT6j8TXVVIYF9xJRVAcTB9
-         1bfCNXTuPA6EWGSh0k0AZoTwVi2GXrwvQnrzdQmO9i1IWNLRV5Ybh8yQ088Yk+U8zU
-         QyTIH9bPiKC8F3WerjYIdH5dEixmmEPzP5HJvDuc=
+        b=1pm+l9tgdBxWjvR9dghsnHS49H8NgHyi0x6j3l1p2okRfi3mTYqYo1+36QqXwK3YT
+         pip+PTafWSXSAv63iwsLSllfleWSziMUTm9p8lEbbFnIINMrc1AzwfVXHWY09gaK3W
+         1lSUzTVvwLygXnwlAXGCkL5/HH1CI7lFX2Ae/Zxc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org, Anup Patel <anup@brainfault.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/230] gfs2: Fix gfs2_file_buffered_write endless loop workaround
-Date:   Mon, 11 Jul 2022 11:05:39 +0200
-Message-Id: <20220711090606.428962510@linuxfoundation.org>
+Subject: [PATCH 5.15 048/230] RISC-V: defconfigs: Set CONFIG_FB=y, for FB console
+Date:   Mon, 11 Jul 2022 11:05:04 +0200
+Message-Id: <20220711090605.445561661@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,32 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-[ Upstream commit 46f3e0421ccb5474b5c006b0089b9dfd42534bb6 ]
+[ Upstream commit 3d12b634fe8206ea974c6061a3f3eea529ffbc48 ]
 
-Since commit 554c577cee95b, gfs2_file_buffered_write() can accidentally
-return a truncated iov_iter, which might confuse callers.  Fix that.
+We have CONFIG_FRAMEBUFFER_CONSOLE=y in the defconfigs, but that depends
+on CONFIG_FB so it's not actually getting set.  I'm assuming most users
+on real systems want a framebuffer console, so this enables CONFIG_FB to
+allow that to take effect.
 
-Fixes: 554c577cee95b ("gfs2: Prevent endless loops in gfs2_file_buffered_write")
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Fixes: 33c57c0d3c67 ("RISC-V: Add a basic defconfig")
+Reviewed-by: Anup Patel <anup@brainfault.org>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/file.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/configs/defconfig      | 1 +
+ arch/riscv/configs/rv32_defconfig | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index 60390f9dc31f..e93185d804e0 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -1086,6 +1086,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
- 	gfs2_holder_uninit(gh);
- 	if (statfs_gh)
- 		kfree(statfs_gh);
-+	from->count = orig_count - read;
- 	return read ? read : ret;
- }
- 
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index c252fd5706d2..f2a2f9c9ed49 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -76,6 +76,7 @@ CONFIG_DRM=m
+ CONFIG_DRM_RADEON=m
+ CONFIG_DRM_NOUVEAU=m
+ CONFIG_DRM_VIRTIO_GPU=m
++CONFIG_FB=y
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_USB=y
+ CONFIG_USB_XHCI_HCD=y
+diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+index 434ef5b64599..cdd113e7a291 100644
+--- a/arch/riscv/configs/rv32_defconfig
++++ b/arch/riscv/configs/rv32_defconfig
+@@ -71,6 +71,7 @@ CONFIG_POWER_RESET=y
+ CONFIG_DRM=y
+ CONFIG_DRM_RADEON=y
+ CONFIG_DRM_VIRTIO_GPU=y
++CONFIG_FB=y
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_USB=y
+ CONFIG_USB_XHCI_HCD=y
 -- 
 2.35.1
 
