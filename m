@@ -2,171 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B57BFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 139ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbiGKHDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
+        id S229744AbiGKHEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiGKHDH (ORCPT
+        with ESMTP id S229735AbiGKHET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:03:07 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7338F192A8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:03:06 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id b2so3689585plx.7
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vvcpBMBhsK4WThjIJ06GBib55a72jQWIvp45WwzhM0M=;
-        b=nVo8rx6VOOC28p9T/aKSRT17oSfJld+SgNKLaQjWe4lXHAxea0/9ZefGQSJAMHQrp/
-         dSHJkpNxq3Bb2zD532BR6aNt22z7Lt0+oSYhud365U9Qz68ryiRKugzYUwJjAxdnX7AT
-         Y7u/qvoq/y5cNHc56lg8GUiS/93nph1JCKeBA5SBnbMmj2c9eUxamuf/qdtsHfPpxXvA
-         u0Vhkb5LcjuYiKfEF5QIYG1ikfV6pLK0QHlCHwVvmS9DeU19pzTflNUj7T6XykIKuKcD
-         SuEA0g98a0qX+9h2G+0bWfU4naTGFPNyp9tmY/uz7qn3YJ6cE3vgvNPrSOOVru0AnhZK
-         eZhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vvcpBMBhsK4WThjIJ06GBib55a72jQWIvp45WwzhM0M=;
-        b=BcM50IBlNLENYUB+yaBKNNkCRWepaue4/JzyLWznVOghcGKmdmEFw2KDvVoPUxh6x7
-         W8xN4akfALMUWpnL+Hoq23ByR4pnzaG157fzl9xQqd/Ocoa8OEQM0yxYDQXj0jcGrq92
-         zfyP+o7nd8LDqzSM9ccXt/3rOxrR6dDrvbKpMpryoEq9ZAJMzfYg/d7bi2FSehZHkhXU
-         9yhjhAXkiYMOpsaw/Bw/42TNAEfUl3HXQQp0qeFLmi+yNRgyzVERZywrWAW+8g5YZDoH
-         s4fZYhOBXLkoVcg0TcMEAAH9NQUa11fnUWh0wRnyKLVBioeqagRn7as6XolRpH6Gbggm
-         6Uyg==
-X-Gm-Message-State: AJIora8R3siWix2EPvIYGGTRanfblCL54H21bupaUgBCtK4mrZ4sPLrz
-        Y0f59OFVcjIxLDUsFQ13Nz2wpMJCpog=
-X-Google-Smtp-Source: AGRyM1tkRMMSGieV9B+4jTa6gBCbgS/VOYk6R3OP4PWsI/ErIO73Qcxhm9Awn7/7FYSemvdlQPOzYw==
-X-Received: by 2002:a17:903:22cf:b0:16c:4145:75c5 with SMTP id y15-20020a17090322cf00b0016c414575c5mr5717431plg.127.1657522985449;
-        Mon, 11 Jul 2022 00:03:05 -0700 (PDT)
-Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
-        by smtp.gmail.com with ESMTPSA id ge16-20020a17090b0e1000b001efa4a1bb3esm3967305pjb.35.2022.07.11.00.03.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 00:03:04 -0700 (PDT)
-From:   Nadav Amit <nadav.amit@gmail.com>
-X-Google-Original-From: Nadav Amit
-To:     linux-kernel@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, Linux MM <linux-mm@kvack.org>,
-        Nadav Amit <namit@vmware.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>
-Subject: [PATCH v2] x86/mm/tlb: ignore f->new_tlb_gen when zero
-Date:   Sun, 10 Jul 2022 16:28:37 -0700
-Message-Id: <20220710232837.3618-1-namit@vmware.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Jul 2022 03:04:19 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D059C17580
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:04:18 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oAnSY-0002BA-5C; Mon, 11 Jul 2022 09:03:58 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oAnST-000GP7-Tb; Mon, 11 Jul 2022 09:03:53 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oAnSS-004Smc-Tl; Mon, 11 Jul 2022 09:03:52 +0200
+Date:   Mon, 11 Jul 2022 09:03:49 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Nikita Travkin <nikita@trvn.ru>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
+        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
+        masneyb@onstation.org, sean.anderson@seco.com,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH v7 2/2] pwm: Add clock based PWM output driver
+Message-ID: <20220711070349.udyej2qxj2hqyowz@pengutronix.de>
+References: <20220612132203.290726-1-nikita@trvn.ru>
+ <20220612132203.290726-3-nikita@trvn.ru>
+ <20220701075012.xpkcd5xk42frevyq@pengutronix.de>
+ <ef73636abfc6df26c249863e0288dc48@trvn.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="t4lh4agfmm7fyovv"
+Content-Disposition: inline
+In-Reply-To: <ef73636abfc6df26c249863e0288dc48@trvn.ru>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
 
-Commit aa44284960d5 ("x86/mm/tlb: Avoid reading mm_tlb_gen when
-possible") introduced an optimization of skipping the flush if the TLB
-generation that is flushed (as provided in flush_tlb_info) was already
-flushed.
+--t4lh4agfmm7fyovv
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-However, arch_tlbbatch_flush() does not provide any generation in
-flush_tlb_info. As a result, try_to_unmap_one() would not perform any
-TLB flushes.
+On Mon, Jul 11, 2022 at 10:55:09AM +0500, Nikita Travkin wrote:
+> Uwe Kleine-K=C3=B6nig =D0=BF=D0=B8=D1=81=D0=B0=D0=BB(=D0=B0) 01.07.2022 1=
+2:50:
+> > On Sun, Jun 12, 2022 at 06:22:03PM +0500, Nikita Travkin wrote:
+> >> Some systems have clocks exposed to external devices. If the clock
+> >> controller supports duty-cycle configuration, such clocks can be used =
+as
+> >> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
+> >> similar way and an "opposite" driver already exists (clk-pwm). Add a
+> >> driver that would enable pwm devices to be used via clk subsystem.
+> >>
+> >> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+> >> --
+> >>
+> >> Changes in v2:
+> >>  - Address Uwe's review comments:
+> >>    - Round set clk rate up
+> >>    - Add a description with limitations of the driver
+> >>    - Disable and unprepare clock before removing pwmchip
+> >> Changes in v3:
+> >>  - Use 64bit version of div round up
+> >>  - Address Uwe's review comments:
+> >>    - Reword the limitations to avoid incorrect claims
+> >>    - Move the clk_enabled flag assignment
+> >>    - Drop unnecessary statements
+> >> Changes in v5:
+> >>  - add missed returns
+> >> Changes in v6:
+> >>  - Unprepare the clock on error
+> >>  - Drop redundant limitations points
+> >> Changes in v7:
+> >>  - Rename some variables to be in line with common naming
+> >>
+> >> --
+> >> It seems like my mailserver wasn't able to send the last review
+> >> response to Uwe's so I'll repeat here that afaict clk.h has all the
+> >> methods stubbed out so compiling without HAVE_CLK is possible.
+> >> Sorry for a long delay with sending this since v6.
 
-Fix it by checking whether f->new_tlb_gen is nonzero. Zero value is
-anyhow is an invalid generation value. To avoid future confusions,
-introduce TLB_GENERATION_INVALID constant and use it properly. Add some
-assertions to check no partial flushes are done with
-TLB_GENERATION_INVALID or when f->mm is NULL, since this does not make
-any sense.
+FTR: The only problems I have with mail sending in this thread is to
+"devicetree@vger.kernel.or", I added a 'g' for this mail to that address
+:-) Otherwise if you diagnose to have problems with the pengutronix
+server accepting your mail, I'd like to hear about that.
 
-In addition, add the missing unlikely().
+> >> +	pcchip =3D devm_kzalloc(&pdev->dev, sizeof(*pcchip), GFP_KERNEL);
+> >> +	if (!pcchip)
+> >> +		return -ENOMEM;
+> >> +
+> >> +	pcchip->clk =3D devm_clk_get(&pdev->dev, NULL);
+> >=20
+> > You can use devm_clk_get_prepared() here and drop the clk_prepare()
+> > below and the clk_unprepare in .remove().
+>=20
+> Here I spent a bit of time trying to remember why I thought
+> I've already looked at this, but after figuring out that this
+> devm helper didn't even exist earlier (I only see it in clk-next)
+> I remembered considering a totally different thing (being
+> clk_disable_unprepare in the _remove, which doesn't play well)
+>=20
+> Given that this seems to be absent from 5.19-rc6, I'm afraid adding
+> it here will upset the 0day as well as possibly cause issues in case
+> both are taken for the same merge window...
 
-Fixes: aa44284960d5 ("x86/mm/tlb: Avoid reading mm_tlb_gen when possible")
-Reported-by: Hugh Dickins <hughd@google.com>
-Tested-by: Hugh Dickins <hughd@google.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Signed-off-by: Nadav Amit <namit@vmware.com>
+Pass --base with a sensible parameter to git-format-patch (or
+git-send-email) to make the 0day bots happy.
 
----
+> On the other hand it takes me quite a while to provide replies for
+> this series (the trend I'm not happy with) so maybe 3-4 weeks
+> will indeed pass for 5.20-rc1 to have it...
 
-v1 -> v2:
-* Introduce TLB_GENERATION_INVALID to clarify intent.
-* Leave the early return and do not "goto out".
-* Add some assertions to check and document in code the relationship
-  between TLB_GENERATION_INVALID and TLB_FLUSH_ALL.
----
- arch/x86/include/asm/tlbflush.h |  1 +
- arch/x86/mm/tlb.c               | 15 ++++++++++++---
- 2 files changed, 13 insertions(+), 3 deletions(-)
+It's not me who merges PWM patches but Thierry. I don't know his plans
+and if he would be willing to pick up a new driver for the next cycle.
+You might still get lucky with a fast next iteration.
 
-diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-index 4af5579c7ef7..cda3118f3b27 100644
---- a/arch/x86/include/asm/tlbflush.h
-+++ b/arch/x86/include/asm/tlbflush.h
-@@ -16,6 +16,7 @@
- void __flush_tlb_all(void);
- 
- #define TLB_FLUSH_ALL	-1UL
-+#define TLB_GENERATION_INVALID	0
- 
- void cr4_update_irqsoff(unsigned long set, unsigned long clear);
- unsigned long cr4_read_shadow(void);
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index d9314cc8b81f..0f346c51dd99 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -771,7 +771,8 @@ static void flush_tlb_func(void *info)
- 		return;
- 	}
- 
--	if (f->new_tlb_gen <= local_tlb_gen) {
-+	if (unlikely(f->new_tlb_gen != TLB_GENERATION_INVALID &&
-+		     f->new_tlb_gen <= local_tlb_gen)) {
- 		/*
- 		 * The TLB is already up to date in respect to f->new_tlb_gen.
- 		 * While the core might be still behind mm_tlb_gen, checking
-@@ -843,6 +844,12 @@ static void flush_tlb_func(void *info)
- 		/* Partial flush */
- 		unsigned long addr = f->start;
- 
-+		/* Partial flush cannot have invalid generations */
-+		VM_BUG_ON(f->new_tlb_gen == TLB_GENERATION_INVALID);
-+
-+		/* Partial flush must have valid mm */
-+		VM_BUG_ON(f->mm == NULL);
-+
- 		nr_invalidate = (f->end - f->start) >> f->stride_shift;
- 
- 		while (addr < f->end) {
-@@ -1045,7 +1052,8 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
- 		struct flush_tlb_info *info;
- 
- 		preempt_disable();
--		info = get_flush_tlb_info(NULL, start, end, 0, false, 0);
-+		info = get_flush_tlb_info(NULL, start, end, 0, false,
-+					  TLB_GENERATION_INVALID);
- 
- 		on_each_cpu(do_kernel_range_flush, info, 1);
- 
-@@ -1214,7 +1222,8 @@ void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
- 
- 	int cpu = get_cpu();
- 
--	info = get_flush_tlb_info(NULL, 0, TLB_FLUSH_ALL, 0, false, 0);
-+	info = get_flush_tlb_info(NULL, 0, TLB_FLUSH_ALL, 0, false,
-+				  TLB_GENERATION_INVALID);
- 	/*
- 	 * flush_tlb_multi() is not optimized for the common case in which only
- 	 * a local TLB flush is needed. Optimize this use-case by calling
--- 
-2.25.1
+If you want ignore the devm_clk_get_prepared() suggestion, we can still
+convert to that once both patches hit Linus Torvald's tree.
 
+> I think I will try to send a new version with just the comment
+> added shortly in case it's still not too late for the next merge
+> window and you can feel free to nack it if you think it already is :)
+
+I think the driver looks good otherwise, so I don't expect to have more
+feedback in the next round.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
+   |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--t4lh4agfmm7fyovv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLLy0sACgkQwfwUeK3K
+7AmGFQf+PDPISkxqvBE151Vnru2AG1kpl+mWuXiK0CEkc7RSktmlRobuljq9Vmqr
+nQlZbRL0UUgvnJzqCHHDhHyQYcSCrmRgjeUEClk6m8eVSfnPlhDDBbCO2OUG5ijq
+ZxJJYPhwVei81ubmdjUI+QEz+tFCC/G+09J2cui0poxDZjsTTx2wlnhqLpvfDLSC
+GFnXEr9fGgm00YIWkBTdl1NOWeeUw8XtfXEaJGklPcT5J6DcjrgZ3lNd6jmO8aXU
++aVtY3XINokCxHNIOM8syNzZfXjJooB6qhJRpFs2eOkZCPlGlUcnZZKvIoP22uHV
+/I4LRm2EqXinEfMUrLxjRgWHb1xwbA==
+=Ji7s
+-----END PGP SIGNATURE-----
+
+--t4lh4agfmm7fyovv--
