@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA07C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6910CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233049AbiGKJhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
+        id S233057AbiGKJhh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:37:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232986AbiGKJgn (ORCPT
+        with ESMTP id S232956AbiGKJg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:36:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC851261F;
-        Mon, 11 Jul 2022 02:19:08 -0700 (PDT)
+        Mon, 11 Jul 2022 05:36:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E576B1263D;
+        Mon, 11 Jul 2022 02:19:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B4836111F;
-        Mon, 11 Jul 2022 09:19:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34BE3C34115;
-        Mon, 11 Jul 2022 09:19:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93F47B80833;
+        Mon, 11 Jul 2022 09:19:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F225BC34115;
+        Mon, 11 Jul 2022 09:19:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531147;
-        bh=x7m0mhFzTw7bZfUJ5gPgtgFWPeIZ0MGHw9B9TK6gqyM=;
+        s=korg; t=1657531150;
+        bh=SbQjTmkrJEcRV6QDAy0fMtAN5mBYr4UruzKauaQHEWQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cTbqoFdsar8Ty4czdenutGtSOfvmWfvy9P5ciyQ85+xukHEJ3PF3E//QfRjruicUo
-         5ZkrdRuc9vncNh0PKT34ftqTkZwcXyLGgkHbG49NpLK01IHn2BCFZTDyMRk18RjbPk
-         jngJ7A+bmr2Eiz7lfk6nJIXLWUftfZ91Zk8DFdpE=
+        b=hnWobTUqrpUNoh4yIc7ZOAH1Csn45+4icUWx7/pwYtD9ozeufpTWafkPfdBz9n0FD
+         0QhYJ3YMKAs7l7gGWPUuomtIvpUn0RsDLEtwOZdtNcHgVGZi6VX45DHvROjELsQfFH
+         axJFG08r/krb4NEnre+BoNRNuoZ3Jl6t/9rl05Ho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Zhu <tony.zhu@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.18 112/112] dmaengine: idxd: force wq context cleanup on device disable path
-Date:   Mon, 11 Jul 2022 11:07:52 +0200
-Message-Id: <20220711090552.746712817@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Norbert Zulinski <norbertx.zulinski@intel.com>,
+        Jan Sokolowski <jan.sokolowski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 079/112] i40e: Fix VFs MAC Address change on VM
+Date:   Mon, 11 Jul 2022 11:07:19 +0200
+Message-Id: <20220711090551.814223026@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,47 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Norbert Zulinski <norbertx.zulinski@intel.com>
 
-commit 44c4237cf3436bda2b185ff728123651ad133f69 upstream.
+[ Upstream commit fed0d9f13266a22ce1fc9a97521ef9cdc6271a23 ]
 
-Testing shown that when a wq mode is setup to be dedicated and then torn
-down and reconfigured to shared, the wq configured end up being dedicated
-anyays. The root cause is when idxd_device_wqs_clear_state() gets called
-during idxd_driver removal, idxd_wq_disable_cleanup() does not get called
-vs when the wq driver is removed first. The check of wq state being
-"enabled" causes the cleanup to be bypassed. However, idxd_driver->remove()
-releases all wq drivers. So the wqs goes to "disabled" state and will never
-be "enabled". By that point, the driver has no idea if the wq was
-previously configured or clean. So force call idxd_wq_disable_cleanup() on
-all wqs always to make sure everything gets cleaned up.
+Clear VF MAC from parent PF and remove VF filter from VSI when both
+conditions are true:
+-VIRTCHNL_VF_OFFLOAD_USO is not used
+-VM MAC was not set from PF level
 
-Reported-by: Tony Zhu <tony.zhu@intel.com>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
-Fixes: 0dcfe41e9a4c ("dmanegine: idxd: cleanup all device related bits after disabling device")
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Link: https://lore.kernel.org/r/20220628230056.2527816-1-fenghua.yu@intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+It affects older version of IAVF and it allow them to change MAC
+Address on VM, newer IAVF won't change their behaviour.
+
+Previously it wasn't possible to change VF's MAC Address on VM
+because there is flag on IAVF driver that won't allow to
+change MAC Address if this address is given from PF driver.
+
+Fixes: 155f0ac2c96b ("iavf: allow permanent MAC address to change")
+Signed-off-by: Norbert Zulinski <norbertx.zulinski@intel.com>
+Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/device.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -698,10 +698,7 @@ static void idxd_device_wqs_clear_state(
- 	for (i = 0; i < idxd->max_wqs; i++) {
- 		struct idxd_wq *wq = idxd->wqs[i];
- 
--		if (wq->state == IDXD_WQ_ENABLED) {
--			idxd_wq_disable_cleanup(wq);
--			wq->state = IDXD_WQ_DISABLED;
--		}
-+		idxd_wq_disable_cleanup(wq);
- 		idxd_wq_device_reset_cleanup(wq);
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 033ea71763e3..86b0f21287dc 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -2147,6 +2147,10 @@ static int i40e_vc_get_vf_resources_msg(struct i40e_vf *vf, u8 *msg)
+ 		/* VFs only use TC 0 */
+ 		vfres->vsi_res[0].qset_handle
+ 					  = le16_to_cpu(vsi->info.qs_handle[0]);
++		if (!(vf->driver_caps & VIRTCHNL_VF_OFFLOAD_USO) && !vf->pf_set_mac) {
++			i40e_del_mac_filter(vsi, vf->default_lan_addr.addr);
++			eth_zero_addr(vf->default_lan_addr.addr);
++		}
+ 		ether_addr_copy(vfres->vsi_res[0].default_mac_addr,
+ 				vf->default_lan_addr.addr);
  	}
- }
+-- 
+2.35.1
+
 
 
