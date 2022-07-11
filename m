@@ -2,116 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF78CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 04:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6251DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 04:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbiGKEvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 00:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
+        id S229677AbiGKEvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 00:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiGKEvI (ORCPT
+        with ESMTP id S229526AbiGKEvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 00:51:08 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A868DEFC
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 21:51:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657515067; x=1689051067;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=DqKIxDYz90DbKyEN8RiUGyWSqywXB7jm80Wv2ZwVXRg=;
-  b=HX5gNqF5uKhN30ZQ1rDbUDAXBM0LkC3XaA1J1wufHa0Lp37yk/hrLWMY
-   18QdXP/r9MEKhOAKU5wZhpYP5J4uxQe8bEkcFruGG1mZVQXRFa3Zop8mB
-   WAnHFlVpKFIuMzDj1m8sSDQ+dShlKyA3V+1iYMWdAkgDN0w/6JwpA2p28
-   /tgt74HGr1rRSRzf2VH4opKPhNdMBuqUZNEONTk5HJnNDuUzrS9sygzQJ
-   DGx6vpAN2bavYvlnF7kBdAXUu+bFazEBV+MEtez6iCurhCIDdzH2m/s4n
-   Tx6tDxZOVkPUOzsXu6Q4cAybH2O4bLwxrzwEgnvk7xFc0m+dbUHTuCxds
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="264984380"
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="asc'?scan'208";a="264984380"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 21:51:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="asc'?scan'208";a="652305338"
-Received: from zhen-hp.sh.intel.com (HELO zhen-hp) ([10.239.159.108])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Jul 2022 21:51:03 -0700
-Date:   Mon, 11 Jul 2022 12:27:38 +0800
-From:   Zhenyu Wang <zhenyuw@linux.intel.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     tvrtko.ursulin@linux.intel.com, airlied@linux.ie,
-        intel-gfx@lists.freedesktop.org, joonas.lahtinen@linux.intel.com,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        linux-kernel@vger.kernel.org, jani.nikula@linux.intel.com,
-        dri-devel@lists.freedesktop.org, daniel@ffwll.ch,
-        rodrigo.vivi@intel.com, intel-gvt-dev@lists.freedesktop.org,
-        zhi.a.wang@intel.com
-Subject: Re: [PATCH 1/2] drm/i915/gvt: Fix kernel-doc
-Message-ID: <20220711042738.GS1089@zhen-hp.sh.intel.com>
-Reply-To: Zhenyu Wang <zhenyuw@linux.intel.com>
-References: <20220524083733.67148-1-jiapeng.chong@linux.alibaba.com>
- <20220524083733.67148-2-jiapeng.chong@linux.alibaba.com>
+        Mon, 11 Jul 2022 00:51:09 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFB8DF03;
+        Sun, 10 Jul 2022 21:51:07 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 26B4o0ZG024708;
+        Mon, 11 Jul 2022 13:50:00 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 26B4o0ZG024708
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1657515001;
+        bh=VOCHHLRHh1lLpKyixQ4sfkIWymDvLwbX+ywMi3wCVpo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rRCj0qF6u9icqqOx8T4cVX6F/su2ZFkjobBuMguq181E4wy2sYH0HhanvoFsvd6fN
+         eJ2sG8pSmdlUR7QZ8UDTaZlKX1CFiqBKxkfoKn7lfeGhPwX8FDYVD8WV6dKpJvLIAJ
+         ES1dh+vGUMsZotwHbhskX8RC0MTxJfyh0RmXMF9z/Dw/7qU1jOsULi7Xp2HNnMEq6v
+         AjiBKYV8IxPJycE6Ew5swXfpl3ww6RK/YalOrKYu2NNbQ6sGQiDPrI5gJqHGxa8HVb
+         o2UQT0aJgo3vNsppAgP9xvPHiD2FEDDhNHi9D2ZZMKMRt89GwcNregJ5GlxpZGyjiy
+         /UKJSQPWR7uqA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] Revert "scripts/mod/modpost.c: permit '.cranges' secton for sh64 architecture."
+Date:   Mon, 11 Jul 2022 13:49:41 +0900
+Message-Id: <20220711044942.122792-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="KZCIPwrNpw38UenM"
-Content-Disposition: inline
-In-Reply-To: <20220524083733.67148-2-jiapeng.chong@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This reverts commit 4d10c223baab8be8f717df3625cfece5be26dead.
 
---KZCIPwrNpw38UenM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Commit 37744feebc08 ("sh: remove sh5 support") removed the sh64 support
+entirely.
 
-On 2022.05.24 16:37:33 +0800, Jiapeng Chong wrote:
-> Fix the following W=3D1 kernel warnings:
->=20
-> drivers/gpu/drm/i915/gvt/handlers.c:3066: warning: expecting prototype
-> for intel_t_default_mmio_write(). Prototype was for
-> intel_vgpu_default_mmio_write() instead.
->=20
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/gpu/drm/i915/gvt/handlers.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/gpu/drm/i915/gvt/handlers.c b/drivers/gpu/drm/i915/g=
-vt/handlers.c
-> index beea5895e499..9c8dde079cb4 100644
-> --- a/drivers/gpu/drm/i915/gvt/handlers.c
-> +++ b/drivers/gpu/drm/i915/gvt/handlers.c
-> @@ -3052,7 +3052,7 @@ int intel_vgpu_default_mmio_read(struct intel_vgpu =
-*vgpu, unsigned int offset,
->  }
-> =20
->  /**
-> - * intel_t_default_mmio_write - default MMIO write handler
-> + * intel_vgpu_default_mmio_write() - default MMIO write handler
->   * @vgpu: a vGPU
->   * @offset: access offset
->   * @p_data: write data buffer
-> --=20
-> 2.20.1.7.g153144c
->=20
+Note:
+.cranges was only used for sh64 ever.
+Commit 211dc24b8744 ("Remove sh5 and sh64 support") in binutils-gdb
+already removed the relevant code.
 
-Sorry for late reply!
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+---
 
-Acked-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+Changes in v2:
+  - Mention that binutils-gdb also remove the .cranges code.
 
---KZCIPwrNpw38UenM
-Content-Type: application/pgp-signature; name="signature.asc"
+ scripts/mod/modpost.c | 1 -
+ 1 file changed, 1 deletion(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index ba7c5a8ad448..7735d095338c 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -753,7 +753,6 @@ static const char *const section_white_list[] =
+ {
+ 	".comment*",
+ 	".debug*",
+-	".cranges",		/* sh64 */
+ 	".zdebug*",		/* Compressed debug sections. */
+ 	".GCC.command.line",	/* record-gcc-switches */
+ 	".mdebug*",        /* alpha, score, mips etc. */
+-- 
+2.32.0
 
-iF0EARECAB0WIQTXuabgHDW6LPt9CICxBBozTXgYJwUCYsumugAKCRCxBBozTXgY
-J8OFAJ99A0M8ef8A4meD0FhvQGGNabZ8zQCgjjZsE5OL39TY+Gb+J5eLfXmRZTU=
-=cZ6P
------END PGP SIGNATURE-----
-
---KZCIPwrNpw38UenM--
