@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB1FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4949BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233042AbiGKJjw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
+        id S231431AbiGKJj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233133AbiGKJjJ (ORCPT
+        with ESMTP id S233190AbiGKJjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:39:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A8488CC4;
-        Mon, 11 Jul 2022 02:20:06 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0DA88776;
+        Mon, 11 Jul 2022 02:20:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42A9EB80DBA;
-        Mon, 11 Jul 2022 09:20:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AAF8C34115;
-        Mon, 11 Jul 2022 09:20:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B7424CE125D;
+        Mon, 11 Jul 2022 09:20:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C72BEC34115;
+        Mon, 11 Jul 2022 09:19:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531203;
-        bh=YCL1pHabrAZsQ+ypy3aShkbc+c0GHfrm4urN9vWFSIU=;
+        s=korg; t=1657531200;
+        bh=iUrCCyu6FmQeyI8wW+k15UMGbAoBl7LzosdxiG9JmyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oih/6MTOxrgR3j6Q8TuvyIv0LBattG8fTDiIeRBLgw4m/m0WSa3N2J/nkrepqN7Em
-         LK4fVYBKImVUIRxNYIiPZR3sde/AjTxwDPiAJKTZDHOMeUFP7+GFKzkMTpaKP6A5e8
-         1UsIouyGU4WBiv5/kRLKibeLOPyGdjqIwSQL8xsI=
+        b=CkamW7MFAnAPhP93X6vPieifCtw4j3sk8byVkmTb6KlM4qSKoTFiHsR54H/YYv9lh
+         ekab/iQN567b9fcKkkaz1QWn3xyk0mZ5SE3fN1KWSP1h4OZn+0YhY/0iiTK7lb3OZg
+         Svuhepw0K4VEOt+YPxkuHrEmD6bXEVtrwEu/ZqnE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Po-Hsu Lin <po-hsu.lin@canonical.com>
-Subject: [PATCH 5.15 003/230] Revert "selftests/bpf: Add test for bpf_timer overwriting crash"
-Date:   Mon, 11 Jul 2022 11:04:19 +0200
-Message-Id: <20220711090604.162280714@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Anand Jain <anand.jain@oracle.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 020/230] btrfs: rename btrfs_alloc_chunk to btrfs_create_chunk
+Date:   Mon, 11 Jul 2022 11:04:36 +0200
+Message-Id: <20220711090604.646648146@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -47,123 +51,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po-Hsu Lin <po-hsu.lin@canonical.com>
+From: Nikolay Borisov <nborisov@suse.com>
 
-This reverts commit b0028e1cc1faf2e5d88ad4065590aca90d650182 which is
-commit a7e75016a0753c24d6c995bc02501ae35368e333 upstream.
+[ Upstream commit f6f39f7a0add4e7fd120a709545b57586a1d0393 ]
 
-It will break the bpf self-tests build with:
-progs/timer_crash.c:8:19: error: field has incomplete type 'struct bpf_timer'
-        struct bpf_timer timer;
-                         ^
-/home/ubuntu/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_helper_defs.h:39:8:
-note: forward declaration of 'struct bpf_timer'
-struct bpf_timer;
-       ^
-1 error generated.
+The user facing function used to allocate new chunks is
+btrfs_chunk_alloc, unfortunately there is yet another similar sounding
+function - btrfs_alloc_chunk. This creates confusion, especially since
+the latter function can be considered "private" in the sense that it
+implements the first stage of chunk creation and as such is called by
+btrfs_chunk_alloc.
 
-This test can only be built with 5.17 and newer kernels.
+To avoid the awkwardness that comes with having similarly named but
+distinctly different in their purpose function rename btrfs_alloc_chunk
+to btrfs_create_chunk, given that the main purpose of this function is
+to orchestrate the whole process of allocating a chunk - reserving space
+into devices, deciding on characteristics of the stripe size and
+creating the in-memory structures.
 
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Nikolay Borisov <nborisov@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/timer_crash.c |   32 -----------
- tools/testing/selftests/bpf/progs/timer_crash.c      |   54 -------------------
- 2 files changed, 86 deletions(-)
- delete mode 100644 tools/testing/selftests/bpf/prog_tests/timer_crash.c
- delete mode 100644 tools/testing/selftests/bpf/progs/timer_crash.c
+ fs/btrfs/block-group.c |  6 +++---
+ fs/btrfs/volumes.c     | 10 +++++-----
+ fs/btrfs/volumes.h     |  2 +-
+ fs/btrfs/zoned.c       |  2 +-
+ 4 files changed, 10 insertions(+), 10 deletions(-)
 
---- a/tools/testing/selftests/bpf/prog_tests/timer_crash.c
-+++ /dev/null
-@@ -1,32 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include <test_progs.h>
--#include "timer_crash.skel.h"
--
--enum {
--	MODE_ARRAY,
--	MODE_HASH,
--};
--
--static void test_timer_crash_mode(int mode)
--{
--	struct timer_crash *skel;
--
--	skel = timer_crash__open_and_load();
--	if (!ASSERT_OK_PTR(skel, "timer_crash__open_and_load"))
--		return;
--	skel->bss->pid = getpid();
--	skel->bss->crash_map = mode;
--	if (!ASSERT_OK(timer_crash__attach(skel), "timer_crash__attach"))
--		goto end;
--	usleep(1);
--end:
--	timer_crash__destroy(skel);
--}
--
--void test_timer_crash(void)
--{
--	if (test__start_subtest("array"))
--		test_timer_crash_mode(MODE_ARRAY);
--	if (test__start_subtest("hash"))
--		test_timer_crash_mode(MODE_HASH);
--}
---- a/tools/testing/selftests/bpf/progs/timer_crash.c
-+++ /dev/null
-@@ -1,54 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--
--#include <vmlinux.h>
--#include <bpf/bpf_tracing.h>
--#include <bpf/bpf_helpers.h>
--
--struct map_elem {
--	struct bpf_timer timer;
--	struct bpf_spin_lock lock;
--};
--
--struct {
--	__uint(type, BPF_MAP_TYPE_ARRAY);
--	__uint(max_entries, 1);
--	__type(key, int);
--	__type(value, struct map_elem);
--} amap SEC(".maps");
--
--struct {
--	__uint(type, BPF_MAP_TYPE_HASH);
--	__uint(max_entries, 1);
--	__type(key, int);
--	__type(value, struct map_elem);
--} hmap SEC(".maps");
--
--int pid = 0;
--int crash_map = 0; /* 0 for amap, 1 for hmap */
--
--SEC("fentry/do_nanosleep")
--int sys_enter(void *ctx)
--{
--	struct map_elem *e, value = {};
--	void *map = crash_map ? (void *)&hmap : (void *)&amap;
--
--	if (bpf_get_current_task_btf()->tgid != pid)
--		return 0;
--
--	*(void **)&value = (void *)0xdeadcaf3;
--
--	bpf_map_update_elem(map, &(int){0}, &value, 0);
--	/* For array map, doing bpf_map_update_elem will do a
--	 * check_and_free_timer_in_array, which will trigger the crash if timer
--	 * pointer was overwritten, for hmap we need to use bpf_timer_cancel.
--	 */
--	if (crash_map == 1) {
--		e = bpf_map_lookup_elem(map, &(int){0});
--		if (!e)
--			return 0;
--		bpf_timer_cancel(&e->timer);
--	}
--	return 0;
--}
--
--char _license[] SEC("license") = "GPL";
+diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
+index 37418b183b07..aadc1203ad88 100644
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -3400,7 +3400,7 @@ static int do_chunk_alloc(struct btrfs_trans_handle *trans, u64 flags)
+ 	 */
+ 	check_system_chunk(trans, flags);
+ 
+-	bg = btrfs_alloc_chunk(trans, flags);
++	bg = btrfs_create_chunk(trans, flags);
+ 	if (IS_ERR(bg)) {
+ 		ret = PTR_ERR(bg);
+ 		goto out;
+@@ -3461,7 +3461,7 @@ static int do_chunk_alloc(struct btrfs_trans_handle *trans, u64 flags)
+ 		const u64 sys_flags = btrfs_system_alloc_profile(trans->fs_info);
+ 		struct btrfs_block_group *sys_bg;
+ 
+-		sys_bg = btrfs_alloc_chunk(trans, sys_flags);
++		sys_bg = btrfs_create_chunk(trans, sys_flags);
+ 		if (IS_ERR(sys_bg)) {
+ 			ret = PTR_ERR(sys_bg);
+ 			btrfs_abort_transaction(trans, ret);
+@@ -3754,7 +3754,7 @@ void check_system_chunk(struct btrfs_trans_handle *trans, u64 type)
+ 		 * could deadlock on an extent buffer since our caller may be
+ 		 * COWing an extent buffer from the chunk btree.
+ 		 */
+-		bg = btrfs_alloc_chunk(trans, flags);
++		bg = btrfs_create_chunk(trans, flags);
+ 		if (IS_ERR(bg)) {
+ 			ret = PTR_ERR(bg);
+ 		} else if (!(type & BTRFS_BLOCK_GROUP_SYSTEM)) {
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index 378e03a93e10..b75ce79a2540 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -3131,7 +3131,7 @@ int btrfs_remove_chunk(struct btrfs_trans_handle *trans, u64 chunk_offset)
+ 		const u64 sys_flags = btrfs_system_alloc_profile(fs_info);
+ 		struct btrfs_block_group *sys_bg;
+ 
+-		sys_bg = btrfs_alloc_chunk(trans, sys_flags);
++		sys_bg = btrfs_create_chunk(trans, sys_flags);
+ 		if (IS_ERR(sys_bg)) {
+ 			ret = PTR_ERR(sys_bg);
+ 			btrfs_abort_transaction(trans, ret);
+@@ -5010,7 +5010,7 @@ static void check_raid1c34_incompat_flag(struct btrfs_fs_info *info, u64 type)
+ }
+ 
+ /*
+- * Structure used internally for __btrfs_alloc_chunk() function.
++ * Structure used internally for btrfs_create_chunk() function.
+  * Wraps needed parameters.
+  */
+ struct alloc_chunk_ctl {
+@@ -5414,7 +5414,7 @@ static struct btrfs_block_group *create_chunk(struct btrfs_trans_handle *trans,
+ 	return block_group;
+ }
+ 
+-struct btrfs_block_group *btrfs_alloc_chunk(struct btrfs_trans_handle *trans,
++struct btrfs_block_group *btrfs_create_chunk(struct btrfs_trans_handle *trans,
+ 					    u64 type)
+ {
+ 	struct btrfs_fs_info *info = trans->fs_info;
+@@ -5615,12 +5615,12 @@ static noinline int init_first_rw_device(struct btrfs_trans_handle *trans)
+ 	 */
+ 
+ 	alloc_profile = btrfs_metadata_alloc_profile(fs_info);
+-	meta_bg = btrfs_alloc_chunk(trans, alloc_profile);
++	meta_bg = btrfs_create_chunk(trans, alloc_profile);
+ 	if (IS_ERR(meta_bg))
+ 		return PTR_ERR(meta_bg);
+ 
+ 	alloc_profile = btrfs_system_alloc_profile(fs_info);
+-	sys_bg = btrfs_alloc_chunk(trans, alloc_profile);
++	sys_bg = btrfs_create_chunk(trans, alloc_profile);
+ 	if (IS_ERR(sys_bg))
+ 		return PTR_ERR(sys_bg);
+ 
+diff --git a/fs/btrfs/volumes.h b/fs/btrfs/volumes.h
+index 4db10d071d67..d86a6f9f166c 100644
+--- a/fs/btrfs/volumes.h
++++ b/fs/btrfs/volumes.h
+@@ -454,7 +454,7 @@ int btrfs_get_io_geometry(struct btrfs_fs_info *fs_info, struct extent_map *map,
+ 			  struct btrfs_io_geometry *io_geom);
+ int btrfs_read_sys_array(struct btrfs_fs_info *fs_info);
+ int btrfs_read_chunk_tree(struct btrfs_fs_info *fs_info);
+-struct btrfs_block_group *btrfs_alloc_chunk(struct btrfs_trans_handle *trans,
++struct btrfs_block_group *btrfs_create_chunk(struct btrfs_trans_handle *trans,
+ 					    u64 type);
+ void btrfs_mapping_tree_free(struct extent_map_tree *tree);
+ blk_status_t btrfs_map_bio(struct btrfs_fs_info *fs_info, struct bio *bio,
+diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
+index 596b2148807d..3bc2f92cd197 100644
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -636,7 +636,7 @@ int btrfs_check_zoned_mode(struct btrfs_fs_info *fs_info)
+ 
+ 	/*
+ 	 * stripe_size is always aligned to BTRFS_STRIPE_LEN in
+-	 * __btrfs_alloc_chunk(). Since we want stripe_len == zone_size,
++	 * btrfs_create_chunk(). Since we want stripe_len == zone_size,
+ 	 * check the alignment here.
+ 	 */
+ 	if (!IS_ALIGNED(zone_size, BTRFS_STRIPE_LEN)) {
+-- 
+2.35.1
+
 
 
