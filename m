@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6938BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE8EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230363AbiGKJIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
+        id S229563AbiGKJIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiGKJH1 (ORCPT
+        with ESMTP id S231216AbiGKJHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:07:27 -0400
+        Mon, 11 Jul 2022 05:07:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C53237F7;
-        Mon, 11 Jul 2022 02:07:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9267522BD2;
+        Mon, 11 Jul 2022 02:07:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A37046118B;
-        Mon, 11 Jul 2022 09:07:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B74C1C34115;
-        Mon, 11 Jul 2022 09:07:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C956118B;
+        Mon, 11 Jul 2022 09:07:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9051EC341D1;
+        Mon, 11 Jul 2022 09:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530443;
-        bh=CJBE30fgZXe3monlOPi4HZcMFV3BbSj4yu2McIeje50=;
+        s=korg; t=1657530446;
+        bh=eAlf2ThEJ0oh3s9MfqamQLqIhi0NIAtmAN9WqohRE7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HNRQ8Tu33DMPl+ei8Onm3VdsTtjX0FobV0DYi8ejyi8Do8fg6837eKXihQHLGs5mt
-         +Cgq85OZJFDtUFToNPZa7des8tbjag53QPAqdWH42AfN6SynE2Qm4j5MNlFjFneZaV
-         +eisbcTUmzMIEMWrAjb725+04fYOd8W7z0bk1g1Y=
+        b=vkJmxqYPT8OURuzDPSXUnQCO/04vqwH58wQH1uzOyHzzB2S3vxR9pScY8fBBCLJig
+         WwIhCeG93d5RwdvE+T9EEhjAeOflF5uFdGnYZU3Cf1nJ0fdv/OhP5y2f+lTT+FNuWn
+         37fmVB7ienKJlf1CuiKlzJaIxKCYkh17JnuqPs6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
         Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.9 13/14] dmaengine: ti: Fix refcount leak in ti_dra7_xbar_route_allocate
-Date:   Mon, 11 Jul 2022 11:06:32 +0200
-Message-Id: <20220711090535.914709317@linuxfoundation.org>
+Subject: [PATCH 4.9 14/14] dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
+Date:   Mon, 11 Jul 2022 11:06:33 +0200
+Message-Id: <20220711090535.943227980@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090535.517697227@linuxfoundation.org>
 References: <20220711090535.517697227@linuxfoundation.org>
@@ -50,29 +51,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-commit c132fe78ad7b4ce8b5d49a501a15c29d08eeb23a upstream.
+commit 615a4bfc426e11dba05c2cf343f9ac752fb381d2 upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not needed anymore.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
 
-Add missing of_node_put() in to fix this.
-
-Fixes: ec9bfa1e1a79 ("dmaengine: ti-dma-crossbar: dra7: Use bitops instead of idr")
+Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605042723.17668-2-linmq006@gmail.com
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Link: https://lore.kernel.org/r/20220605042723.17668-1-linmq006@gmail.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/ti-dma-crossbar.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/dma/ti-dma-crossbar.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
 --- a/drivers/dma/ti-dma-crossbar.c
 +++ b/drivers/dma/ti-dma-crossbar.c
-@@ -274,6 +274,7 @@ static void *ti_dra7_xbar_route_allocate
- 		mutex_unlock(&xbar->mutex);
+@@ -251,6 +251,7 @@ static void *ti_dra7_xbar_route_allocate
+ 	if (dma_spec->args[0] >= xbar->xbar_requests) {
+ 		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
+ 			dma_spec->args[0]);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+@@ -258,12 +259,14 @@ static void *ti_dra7_xbar_route_allocate
+ 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
+ 	if (!dma_spec->np) {
+ 		dev_err(&pdev->dev, "Can't get DMA master\n");
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	map = kzalloc(sizeof(*map), GFP_KERNEL);
+ 	if (!map) {
+ 		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 
+@@ -275,6 +278,7 @@ static void *ti_dra7_xbar_route_allocate
  		dev_err(&pdev->dev, "Run out of free DMA requests\n");
  		kfree(map);
-+		of_node_put(dma_spec->np);
+ 		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
  		return ERR_PTR(-ENOMEM);
  	}
  	set_bit(map->xbar_out, xbar->dma_inuse);
