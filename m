@@ -2,136 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E934C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8A8CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231921AbiGKMnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
+        id S231942AbiGKMn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiGKMnf (ORCPT
+        with ESMTP id S231904AbiGKMnr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:43:35 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C520D1169;
-        Mon, 11 Jul 2022 05:43:32 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id sz17so8593527ejc.9;
-        Mon, 11 Jul 2022 05:43:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MFIWdw+oH2e7ggqN762X73Uvj4NmyoOD6YcZjg1c9UE=;
-        b=Y0ay2MOCK5HvKYZEU/KH0y+by57+m6lDt3X9vbaUWzTUupLzLgNsBzuxtNNWYiVmwL
-         +3c2sJ2W9nvK+fWuldPx7ig1Mq9gmF2wqfO/1VioA5g0SuggM/VDsimHz8WUneyv1afP
-         ImN0cB8MOqzG49ddkDoH1AOGuRHvpXs4H2v9tH+u++JoSsGWnEZwFGDzOkcD5Y+xVWif
-         j6L3jgd5gTMpl7QpCmk4Lef50fXgM2ad7dBlQzVsm9HWNYTHj58+bbw9VziaS7dY9oEu
-         52NkdqX7Q6V8vpyoe+Xn884MIvtcqidhh9SfgJBjrXv8+3RorU/o1Qpnde6YyBzxP+bn
-         J1oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MFIWdw+oH2e7ggqN762X73Uvj4NmyoOD6YcZjg1c9UE=;
-        b=aJvmEkPYpZVfFG2/FLH9l0X7vElfO5sBcUj00KtLBVMESFTOYGl57IKBNmReC43f5F
-         Jlh/wLm1gO/i6VGq0CTkmM0tMj4kPCDPP5r3vkVoCECcBfzf0grsWIwp/GWnqPenO7Q4
-         0pbyVKNATlCjgMXeaWQXrdPueRlftejgYNyGjUspk8WsXTsQEpOPRaoZ2T/ao75NHabX
-         VmNFtCLNoaypj2RSGHaok0IKVXz+uHbe5Mmq8q+12+hKcTwG6oSiajcW2k5+/e/DgHhv
-         P6JIjBRmZ+NZGSs58EHMlWoUfw1W9gNtNJodT4xIFFuWMDglx0hMA0t8ld9Nu1panfZA
-         O6mQ==
-X-Gm-Message-State: AJIora/ltptnUUsl+lG/G5e/P0xLzxjPB96q2pjjkToOdFojj8x/eIcc
-        4FeEhZK3yzGPN424laC07IE6JJmMqDLYHjZqWUk=
-X-Google-Smtp-Source: AGRyM1tRZv+S21P2yqAIdHMiGuopXuLzlIjQD0sqQyr34rlVtpnGhej3WMjCMcZ3IOICdyo3IrAtOCYIKQR+x2RreIs=
-X-Received: by 2002:a17:907:6d86:b0:72b:5ad6:6df1 with SMTP id
- sb6-20020a1709076d8600b0072b5ad66df1mr3957100ejc.264.1657543411346; Mon, 11
- Jul 2022 05:43:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220707182314.66610-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220707182314.66610-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CACRpkdbhDJq9bJKHM=1pq5+HrVasrT_WuqtAxGWFfnAXMWSr8g@mail.gmail.com> <CAMuHMdXqK7Snk6=+VNhq59SLgv-zRCgwrkABMtC5JOpX02fuVg@mail.gmail.com>
-In-Reply-To: <CAMuHMdXqK7Snk6=+VNhq59SLgv-zRCgwrkABMtC5JOpX02fuVg@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 11 Jul 2022 13:43:04 +0100
-Message-ID: <CA+V-a8uBk9iB08v65CbDQKyKr1jmd1jgvCTP69raxntoNUoU2w@mail.gmail.com>
-Subject: Re: [PATCH v8 5/6] dt-bindings: pinctrl: renesas,rzg2l-pinctrl:
- Document the properties to handle GPIO IRQ
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        Mon, 11 Jul 2022 08:43:47 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B7EDECB
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:43:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1657542507; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=Wj44IkAqMXaiKU22l0jln19+dFZUF2tU1v6Ac7YOgtpb7vvnuFcD34l08N0YVG5nbJN2R/+aYu0sMawgJiFRjkG5NTyizEg5zz82r2G5Fuavr9rJ7dAIm9Gk1uicehNvkJsl5Iu3r4UvzamBKsmZDQXDKHfZpaLKatzU4OGALH8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1657542507; h=Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=XcBY/Eq5IywNEBwnOGSytrIPNKZEd+GUxWkjesqgdhE=; 
+        b=BY4tqD/qFDF9rINfEZzxZKU+DaJNwKdHh1xD5Y+CVu4grzv+a9lvB9jhxgANvAy0p7xxK976w1KMBdDQhMhIIWYrqdY3GrmjDQfK4805g/qdEhPLEpuAkpWRFvkSC2ukCmVBB3pM0XMPR6G/X7TYFDG9NwL93CbGOiuxwQOVyGc=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=linux.beauty;
+        spf=pass  smtp.mailfrom=me@linux.beauty;
+        dmarc=pass header.from=<me@linux.beauty>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657542507;
+        s=zmail; d=linux.beauty; i=me@linux.beauty;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Reply-To;
+        bh=XcBY/Eq5IywNEBwnOGSytrIPNKZEd+GUxWkjesqgdhE=;
+        b=ZtcV/kLTYKL80lJw5yjgoMSBb4kqp2TEbTehtIGGwreBUCqr63ySryzpBf6w5IzY
+        AIKjzm5yLsYgY1zXvcUsf1xJM1Op5zu0c1+cIxJnWup9K6mr8+cTEzpHJXeu4g73b2Y
+        JWLicwjaA0FO8VmTqNcRBsP917DGU9KHhd+PIbmE=
+Received: from sh-lchen.ambarella.net (180.169.129.130 [180.169.129.130]) by mx.zohomail.com
+        with SMTPS id 1657542504796249.49555353239066; Mon, 11 Jul 2022 05:28:24 -0700 (PDT)
+From:   Li Chen <me@linux.beauty>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Frank Rowand <frowand.list@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Li Chen <lchen@ambarella.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH 3/4] arm64: mm: move memblock_clear_nomap after __add_pages
+Date:   Mon, 11 Jul 2022 20:24:53 +0800
+Message-Id: <20220711122459.13773-4-me@linux.beauty>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220711122459.13773-1-me@linux.beauty>
+References: <20220711122459.13773-1-me@linux.beauty>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert, Linus,
+From: Li Chen <lchen@ambarella.com>
 
-On Mon, Jul 11, 2022 at 12:51 PM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
->
-> Hi Linus,
->
-> On Mon, Jul 11, 2022 at 1:36 PM Linus Walleij <linus.walleij@linaro.org> wrote:
-> > On Thu, Jul 7, 2022 at 8:25 PM <prabhakar.csengg@gmail.com> wrote:
-> >
-> > > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > >
-> > > Document the required properties to handle GPIO IRQ.
-> > >
-> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > Reviewed-by: Rob Herring <robh@kernel.org>
-> >
-> > Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> >
-> > Is this already queued in Marc's branch targeted for next
-> > so I don't need to do anything with the pinctrl patches?
->
-> I don't know; I was wondering the same thing ;-)
->
-> The gitweb link in the bot email does not work:
->
->     Commit-ID:     35c37efd12733d8ddbdc11ab9c8dbcee472a487f
->     Gitweb:
-> https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/35c37efd12733d8ddbdc11ab9c8dbcee472a487f
->
-> The actual commit seems to exist in that repo, but using the web
-> interface, it is difficult to find out to which branch it belongs.
->
-This patch (and all the patches of this series) is part of
-irqchip-next branch [0].
+I'm trying to add struct page support to nomap reserved memory,
+and have skipped nomap bitmap_intersects check in fill_subsection_map,
+so just move memblock_clear_nomap after __add_pages.
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git/log/?h=irq/irqchip-next
+Signed-off-by: Li Chen <lchen@ambarella.com>
+Change-Id: I5e26fdc3f3e55b12f1acc1adb47fb262c4877ff3
+---
+ arch/arm64/mm/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Cheers,
-Prabhakar
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 6680689242df..2e7f503837e4 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -1537,10 +1537,10 @@ int arch_add_memory(int nid, u64 start, u64 size,
+ 			     size, params->pgprot, __pgd_pgtable_alloc,
+ 			     flags);
+ 
+-	memblock_clear_nomap(start, size);
+ 
+ 	ret = __add_pages(nid, start >> PAGE_SHIFT, size >> PAGE_SHIFT,
+ 			   params);
++	memblock_clear_nomap(start, size);
+ 	if (ret)
+ 		__remove_pgd_mapping(swapper_pg_dir,
+ 				     __phys_to_virt(start), size);
+-- 
+2.25.1
 
-> It is also not part of next-20220711.
->
-> Anyway, it's too late for me to take the pinctrl parts for v5.20 (saw
-> no ack from Marc before the bot emails), so if it finds a different
-> path upstream, I'm happy ;-)
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
