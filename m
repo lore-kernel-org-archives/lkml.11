@@ -2,111 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F44CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF342C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:25:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231631AbiGKMVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47158 "EHLO
+        id S231435AbiGKMZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230425AbiGKMVU (ORCPT
+        with ESMTP id S229637AbiGKMZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:21:20 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E16237DD
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:21:19 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id f73so8371873yba.10
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:21:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pUxrxpUjUFmLyDY1V3CLpLLNDP18yhbWZiMIrY81H5w=;
-        b=SwJWULW2UYS5nEUkB1Cob6FGI6aQytZXpEsqXW8W+LHXHOe7MAd1hc6xOfgSY/vfWO
-         tAMNZVzSf6QEvXL14yHwwWx6dTdhDQI667Nj9SFRUe9qOsA0ILvk8MT9LmhV2JAXwX5d
-         Jv7n4ntciIuR6aF/aYZp0AJmQiClt6q1Rtb6rZUH077pn73NAl9/vacboLq6C2G8Oxyv
-         E2aSuKX7XJDNavS0gTtVA3ExJ6gz7g3yAX3ijfzNJlA8bHqvnNXWz4jp88KArf9ki8/7
-         AmgxBqizt656+MeKfxXMYHuye6QbU01/4ukdIPvjrJJQXL+/RcCOYnhS0sMpuL1NPcXX
-         SeXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pUxrxpUjUFmLyDY1V3CLpLLNDP18yhbWZiMIrY81H5w=;
-        b=iDsXSHg9jmU/SpTGgrGnvVuDsGLQQAK41uJ3VCFvRtC3qxGu36Dw75jhBnPXVHL4GF
-         ne4OXRb0/qiaVfdBP97EsIOSOsaKc0y2KpmmG6Jv9dz0bolwDUNNWiaYmELCOQakS5Lp
-         JxufQSqCeuLC8d6jFqYMpifaMvpgV9EtBYAEl7crIFbmHsbLyBVttp5cT18JJ8usFvZs
-         T1b3kbAC+c2Zv6gxKBZYQyvgtueqJHXYJBuUfbQ1G11la2DZniuOka0zxyfjdXTfdQT0
-         0bLPyKyP+QPffqWWjQlvkU+6CpTCBB10of1fYIUHNhh75N9SdpmjG0JcnwMhtN+uhBrW
-         FX/Q==
-X-Gm-Message-State: AJIora+CZkJILzBPKk3dsa1K9peAdWOZbsgLGmMaP7sWHmSu5dJ+pZ5k
-        0kf0JzRLHz2lvwGoLDj75yQNJosO7ZRMQB6bA5bRgg==
-X-Google-Smtp-Source: AGRyM1tqEYOmvyScyatWwsrIE6YA5aA/tithH+KVOt3I+PnDl3LACHGSx/w5iqX6VeZ0ThP+lVoZlMjZdNgaVNmLqCE=
-X-Received: by 2002:a25:e00f:0:b0:66e:2aa9:82b1 with SMTP id
- x15-20020a25e00f000000b0066e2aa982b1mr16643367ybg.626.1657542078246; Mon, 11
- Jul 2022 05:21:18 -0700 (PDT)
+        Mon, 11 Jul 2022 08:25:10 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D58145046;
+        Mon, 11 Jul 2022 05:25:09 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2614266019FC;
+        Mon, 11 Jul 2022 13:25:07 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657542307;
+        bh=NaK1O1ALqqqYyyotd1Wb4JqV/Lt7Z/P9Hh/CnZJsMbY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Nr8dgLy3A9CaE1HpvbyhJOk8spxDst5WhwkXDS+mRbP56eiZukAsYRnxb1Vkj0qtE
+         XulesiWfB1A1KWqjMSfYClDGjD5cv9tbQm27GccCdtkKE+a4AHTqQ7NoLa5l44pc2O
+         K5rrxA1lWeXZQKD1KodjHQnsZtfaHlm5mL6Y1ObD3M7c2It9qnc3GFzQf+8PqbMNsr
+         xRJhSNQimQDzkk7qJC3+kn3eM2UhtuLx2utEBPPZorA5/fVF6GIzPMAqWcqHI0dt7A
+         EFrCqk1TO7kOE3KvgZDrXhsIFg+xLbEfM5RYU21uRWpaOYQ08ZlIETS6tc3Cq+y2vN
+         97holStZYfZBQ==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com,
+        chun-jie.chen@mediatek.com, weiyi.lu@mediatek.com,
+        mbrugger@suse.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, kernel@collabora.com,
+        nfraprado@collabora.com
+Subject: [PATCH 0/3] mtk-pm-domains: Use 'syscon' phandle for SCPSYS regmap
+Date:   Mon, 11 Jul 2022 14:25:00 +0200
+Message-Id: <20220711122503.286743-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220706112828.27278-1-pali@kernel.org> <20220706162111.GA145516-robh@kernel.org>
- <20220706162335.2eewgf7l3xghdjtr@pali> <CACRpkdYncdsVW8LysQ3--rOF-KUF6dkkPyX4tg4e10vn2K+8FQ@mail.gmail.com>
- <20220711121006.kjk44rubi5gpqycj@pali>
-In-Reply-To: <20220711121006.kjk44rubi5gpqycj@pali>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 11 Jul 2022 14:21:07 +0200
-Message-ID: <CACRpkdYQvqB7FzfQ4Yf2m-QFz_6inEFvMs_NjJmRg3BeA-O6Wg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: leds: register-bit-led: Add value property
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:10 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
-> On Monday 11 July 2022 14:06:50 Linus Walleij wrote:
-> > On Wed, Jul 6, 2022 at 6:23 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
-> > > On Wednesday 06 July 2022 10:21:11 Rob Herring wrote:
-> > > > On Wed, Jul 06, 2022 at 01:28:27PM +0200, Pali Roh=C3=A1r wrote:
-> > > > > Allow to define inverted logic (0 - enable LED, 1 - disable LED) =
-via value
-> > > > > property. This property name is already used by other syscon driv=
-ers, e.g.
-> > > > > syscon-reboot.
-> > > >
-> > > > Yes, but those are potentially multi-bit values. This is a single b=
-it
-> > > > value, and the only value that's ever needed is 0. Why not just use
-> > > > 'active-low' here?
-> > >
-> > > Just because to have uniform definitions across more syscon nodes.
-> >
-> > But what happens if he mask and value don't line up?
-> >
-> > mask =3D 0x10;
-> > value =3D 0x08;
->
-> Same what would happen in other drivers, no?
->
-> Only those value bits are take into account which are also sets in the ma=
-sk.
+After an attempt by MediaTek to upstream MT8186, MT8192 and MT8195
+devicetrees, Krzysztof brought up a discussion in which it emerged
+that the usage of a 'simple-mfd' device is not an optimal choice for
+a number of reasons [1].
 
-Two wrongs does not make one right. I.e. just because this bad
-pattern is used in other syscon drivers we do not need to repeat their
-mistakes. Also, in this case we can only specify one bit due to the
-way the enum is designed, other drivers may specify multiple bits.
+Reading that made me just write this simple code to stop nesting the
+SPM power-controller node inside of a "syscon", "simple-mfd" node,
+also allowing to move it outside of the main soc bus.
 
-This also becomes a bit confusing:
+[1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220704100028.19932-9-tinghan.shen@mediatek.com/
 
-+    enum:
-+      [ 0x0,
+AngeloGioacchino Del Regno (3):
+  dt-bindings: power: mediatek: Document phandle to SCPSYS syscon node
+  dt-bindings: power: mediatek: Update example to use phandle to syscon
+  soc: mediatek: pm-domains: Grab SCPSYS registers from phandle to
+    syscon
 
-What you do is add 0 at the beginning of the enum but that represent
-a low bit of any from 0-31. I just get confused, active-low is crystal clea=
-r.
+ .../power/mediatek,power-controller.yaml      | 130 +++++++++---------
+ drivers/soc/mediatek/mtk-pm-domains.c         |  16 ++-
+ 2 files changed, 77 insertions(+), 69 deletions(-)
 
-Yours,
-Linus Walleij
+-- 
+2.35.1
+
