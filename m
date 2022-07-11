@@ -2,76 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D61CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231332AbiGKKR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
+        id S230138AbiGKKSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiGKKRd (ORCPT
+        with ESMTP id S231352AbiGKKRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:17:33 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8102DD1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:35:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5niTOBa4euUKXSYVbbIy1iFQyx/tclGje0FJLckNlNo=; b=M5ksDxEnXbh+GvS/azSzCqewCT
-        j2FC9BhwrcSe4qadQSNab3wIKzMJUXK4WLFy2Ka/NfSG9sAGCRc3CbtUcyo3KgNgMxOA725Ia+68B
-        pfk3S41mFZs1A/9lu5jTOPD8Y8x3kTirfq11MYJbXc7IPv/wQN9Li6SYbuMlPGdC+OOPpMIcyY2lH
-        32e8S3l5E+LamWT6oTEL0mFQ0nGMPKzbecjJzKXrp1Umk+hdHs8OWm59qS2c+zUWAwjfG/OQs+9WV
-        wI1f2u7ZCrhsIOJ3jt2l2x+UpOZ9XL58NncqOoac2vzOa30xc4JbSeD6ZPYEtGaJDuAg9GdgpCUzV
-        JRFoyGIQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oApoi-002y68-23; Mon, 11 Jul 2022 09:35:15 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C0C0C3010ED;
-        Mon, 11 Jul 2022 11:34:57 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A57CA2025D0C3; Mon, 11 Jul 2022 11:34:57 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 11:34:57 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mike Stowell <mstowell@redhat.com>
-Subject: Re: [PATCH v3] locking/rtmutex: Limit # of lock stealing for non-RT
- waiters
-Message-ID: <YsvuwfeY/dSngl8c@hirez.programming.kicks-ass.net>
-References: <20220706135916.980580-1-longman@redhat.com>
+        Mon, 11 Jul 2022 06:17:40 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C27FC3AC8;
+        Mon, 11 Jul 2022 02:35:40 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 80BD9660198A;
+        Mon, 11 Jul 2022 10:35:38 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657532139;
+        bh=/pQoU97yz4hZOWkwVcb+ZiFvDCPudO0glpdakIglu9E=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=XbfSfqC0d0/CMCSy7PwUC1BrVijSWccHQPgI3Y1V8LRbLeDl/OQqQX9CSfEyeFQ7R
+         cBjNSizYFLsaWfhZwHFxuSZvKl8h1AVRnryTXxkgQ5H2DBwnyG6vM0W9L3EQnrspjC
+         SGYnFpmSBVfaQ/Uw30Rwm1A+eibVa0GE5befebxfFpi+QPbyZjpbSY09LtVoFjqYLx
+         MoVdNQc6leAw68bgo1aFgWd5gU3bz2dM4vwaHjyO10XXyFFX4LyUEtTMQ737TC+D0J
+         hVIuzRXAvi8j1HG/wr6k8vhSS5bcR5Xb/IaKa3OVPWtYCoueU8Mu0SgHQ1OgZl/tHo
+         7EQVKKZjJ6myg==
+Message-ID: <c0904c83-d264-41a7-3a3e-4253dfc36004@collabora.com>
+Date:   Mon, 11 Jul 2022 11:35:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706135916.980580-1-longman@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] Revert "dt-bindings: usb: mtk-xhci: Make all clocks
+ required"
+Content-Language: en-US
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kernel@collabora.com, Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-usb@vger.kernel.org
+References: <20220708192605.43351-1-nfraprado@collabora.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220708192605.43351-1-nfraprado@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 09:59:16AM -0400, Waiman Long wrote:
-> Commit 48eb3f4fcfd3 ("locking/rtmutex: Implement equal priority lock
-> stealing") allows unlimited number of lock stealing's for non-RT
-> tasks. That can lead to lock starvation of non-RT top waiter tasks if
-> there is a constant incoming stream of non-RT lockers. This can cause
-> rcu_preempt self-detected stall or even task lockup in PREEMPT_RT kernel.
-> For example,
+Il 08/07/22 21:26, Nícolas F. R. A. Prado ha scritto:
+> This reverts commit ebc4969ae125e65fdb563f66f4bfa7aec95f7eb4. That
+> commit was supposed to make the binding better reflect the MediaTek XHCI
+> hardware block by requiring all clocks to be present. But doing that
+> also causes too much noise in the devicetrees, since it requires
+> updating old MediaTek DTs to add clock handles for the fixed clocks, and
+> going forward every new clock added to the binding would require even
+> more updates.
 > 
-> [77107.424943] rcu: INFO: rcu_preempt self-detected stall on CPU
-> [ 1249.921363] INFO: task systemd:2178 blocked for more than 622 seconds.
+> The commit also didn't update the example to match the changes, causing
+> additional warnings.
 > 
-> Avoiding this problem and ensuring forward progress by limiting the
-> number of times that a lock can be stolen from each waiter. This patch
-> sets a threshold of 32. That number is arbitrary and can be changed
-> if needed.
+> Instead let's keep the clocks optional so that old devicetrees can keep
+> omitting the fixed clocks, and we'll just add the clocks as required on
+> new DTs.
 > 
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-Why not do the same thing we do for regular mutexes?
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
