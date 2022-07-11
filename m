@@ -2,111 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE847C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDDFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230170AbiGKNwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 09:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        id S230266AbiGKNwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 09:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbiGKNwE (ORCPT
+        with ESMTP id S229657AbiGKNwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 09:52:04 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AEB61D63
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:52:02 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id o18so4771074pgu.9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2QWFQ2C9WGXjYYYAgPGIAjeY5FYOxbTxL+i3z5rucXs=;
-        b=PCTezIifMZ8asZN/i9985ObaF+vgX0sE0tdwjafsZ2HSG4VhynbVjITywekdHcP7OO
-         8OWJnNHJHTzA1hPjW6gCEADyMr3Kxi2n0d+MKcteTNcuzzTU59StbVCVnfN8V9O/K/5i
-         R4QPRzN1t6YecEKIXMDDMa+zO2VfCZFe8bXC7Dq4RezKymrU4Ddt7ioMT6czDWB/9/NO
-         PihOIyIpGGeR6NJe3sKsZYnb/IFzjkZPgGqVslM/RCdvABaZWfz4m8A/wChpaLcYQJpl
-         K1nl5ZhKyX8JfOwJEb1koStun8jJScXxYB6doP9dWWO4DHFQHwMt3xAx/RHrBt+YaWf4
-         ogiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2QWFQ2C9WGXjYYYAgPGIAjeY5FYOxbTxL+i3z5rucXs=;
-        b=N2QrM3jtDDqon8sjQVZIscT7ndD20KGr6HYxHROwM8xtpsOo2/m/oAWGbKWrT3pLqv
-         rGEIuYe//5t53SWDPyDmUQSLPJuAoEZXP1ywhcXv2XNsATZSIqrNsy5EBfGNzyZLD4b4
-         vYZxgSCh5TSLLRkMqNRk2AIeA3DZOO0qOlONkXNCDrxdhD22ucdBJqwMxA0gQdfH8bZA
-         g6dj+Lh74+feRRuNNNMOa73c843lVqxjZPzYPY2Wl9cIyTpkzIil7cOvV2SRmy3n5MSL
-         LvD3dtf5Op564sbNhJg7+QzlQeJPB4K9mwn9uztRy3S/Kp0fopln8zAmPOTpw5cMaMw8
-         Ecsg==
-X-Gm-Message-State: AJIora9U150LkDpKRj78S3bMaz91Y2Q6Ij29euk9O8qjB3ELhxQ3YAQ0
-        37+luH/ym7a5rEcj7mKs3lptyNV4E1d5mPEPkp4Hrw==
-X-Google-Smtp-Source: AGRyM1uX1oZgFjnUS3kw1/kggtzktYcOrKLh0g2QMEvkUx0LfMVcZpYuvXN47IKfNcFCjhxbz0WN6LY9HmaQTvMN6Jo=
-X-Received: by 2002:a05:6a00:1a86:b0:52a:d419:9552 with SMTP id
- e6-20020a056a001a8600b0052ad4199552mr4374528pfv.70.1657547521902; Mon, 11 Jul
- 2022 06:52:01 -0700 (PDT)
+        Mon, 11 Jul 2022 09:52:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA3565C97B
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:52:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657547559;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SXxw8023X5Ng7EOWnmeS1q1VSSsbgfI4xN4bjScnx08=;
+        b=B5ojYFmUvcUPr4Ur9cvARWRSGY672n6DKk8cdycC2eRdoiDxjHi9iiMT3DT0Cw9nTo087w
+        zgp9KSxgbyCOcwihQwSvQRTMD8cUMbjwQGUdSYXNhhJaOH5Xh3eS6PxMzTysDbbMweDEy0
+        XO9ioo8oqEYG7KgfbZKZZJ/dqK59vHE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-632-TJYriBkXMFySrijOEM6Z1w-1; Mon, 11 Jul 2022 09:52:38 -0400
+X-MC-Unique: TJYriBkXMFySrijOEM6Z1w-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 555A938005C4;
+        Mon, 11 Jul 2022 13:52:38 +0000 (UTC)
+Received: from bfoster.redhat.com (unknown [10.22.32.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 22B8F18EA8;
+        Mon, 11 Jul 2022 13:52:38 +0000 (UTC)
+From:   Brian Foster <bfoster@redhat.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     ikent@redhat.com, onestero@redhat.com, willy@infradead.org
+Subject: [PATCH v2 2/4] idr: support optional id tagging
+Date:   Mon, 11 Jul 2022 09:52:35 -0400
+Message-Id: <20220711135237.173667-3-bfoster@redhat.com>
+In-Reply-To: <20220711135237.173667-1-bfoster@redhat.com>
+References: <20220711135237.173667-1-bfoster@redhat.com>
 MIME-Version: 1.0
-References: <20220511060521.465744-1-sumit.garg@linaro.org>
- <CAD=FV=WXoDvWuH=yjzCcqOZ5CeUtYun7C8zrtrBP4FC409GkqA@mail.gmail.com>
- <CAFA6WYPmFqCXk24J71tNO=5bJHgJRAOPFr7cGq8YYLR+MWBoPw@mail.gmail.com> <CAD=FV=WdMsqrsWzX=0RU5HJ1a0cy-pm4BwP47siLj=+eeEXUQA@mail.gmail.com>
-In-Reply-To: <CAD=FV=WdMsqrsWzX=0RU5HJ1a0cy-pm4BwP47siLj=+eeEXUQA@mail.gmail.com>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Mon, 11 Jul 2022 19:21:51 +0530
-Message-ID: <CAFA6WYP_C7fOkgNw8n0OAaT92fr4UdBnCqAn_du6BT_sQB2KzQ@mail.gmail.com>
-Subject: Re: [PATCH v3 0/2] arm64: Fix pending single-step debugging issues
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Will Deacon <will@kernel.org>, Wei Li <liwei391@huawei.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Jul 2022 at 19:17, Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Mon, Jul 11, 2022 at 5:44 AM Sumit Garg <sumit.garg@linaro.org> wrote:
-> >
-> > > I'll also note that I _think_ I remember that with Wei's series that
-> > > the gdb function "call" started working. I tried that here and it
-> > > didn't seem so happy. To keep things simple, I created a dummy
-> > > function in my kernel that looked like:
-> > >
-> > > void doug_test(void)
-> > > {
-> > >   pr_info("testing, 1 2 3\n");
-> > > }
-> > >
-> > > I broke into the debugger by echoing "g" to /proc/sysrq-trigger and
-> > > then tried "call doug_test()". I guess my printout actually printed
-> > > but it wasn't so happy after that. Seems like it somehow ended up
-> > > returning to a bogus address after the call which then caused a crash.
-> > >
-> >
-> > I am able to reproduce this issue on my setup as well. But it doesn't
-> > seem to be a regression caused by this patch-set over Wei's series. As
-> > I could reproduce this issue with v1 [1] patch-set as well which was
-> > just a forward port of pending patches from Wei's series to the latest
-> > upstream.
-> >
-> > Maybe it's a different regression caused by other changes? BTW, do you
-> > remember the kernel version you tested with Wei's series applied?
->
-> Sorry, I don't remember! :( I can't even be 100% sure that I'm
-> remembering correctly that I tested it back in the day, so it's
-> possible that it simply never worked...
+Certain idr users can benefit from generic tagging support of the
+underlying radix-tree (or xarray) data structure. For example, a
+readdir of the /proc root dir performs an inefficient walk of the
+pid namespace idr tree. This involves checking the entry of every
+allocated id for a group leader task association. Expose a simple,
+single tag interface for idr users to facilitate more efficient
+scans in situations like this.
 
-Okay, no worries. Let me see if I can come up with a separate fix for this.
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+---
+ include/linux/idr.h | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
--Sumit
+diff --git a/include/linux/idr.h b/include/linux/idr.h
+index a0dce14090a9..44e8bb287d0e 100644
+--- a/include/linux/idr.h
++++ b/include/linux/idr.h
+@@ -27,6 +27,7 @@ struct idr {
+  * to users.  Use tag 0 to track whether a node has free space below it.
+  */
+ #define IDR_FREE	0
++#define IDR_TAG		1
+ 
+ /* Set the IDR flag and the IDR_FREE tag */
+ #define IDR_RT_MARKER	(ROOT_IS_IDR | (__force gfp_t)			\
+@@ -174,6 +175,31 @@ static inline void idr_preload_end(void)
+ 	local_unlock(&radix_tree_preloads.lock);
+ }
+ 
++static inline void idr_set_tag(struct idr *idr, unsigned long id)
++{
++	radix_tree_tag_set(&idr->idr_rt, id - idr->idr_base, IDR_TAG);
++}
++
++static inline bool idr_get_tag(struct idr *idr, unsigned long id)
++{
++	return radix_tree_tag_get(&idr->idr_rt, id - idr->idr_base, IDR_TAG);
++}
++
++/*
++ * Find the next id with the internal tag set.
++ */
++static inline void *idr_get_next_tag(struct idr *idr, unsigned long id)
++{
++	unsigned int ret;
++	void *entry;
++
++	ret = radix_tree_gang_lookup_tag(&idr->idr_rt, &entry,
++					 id - idr->idr_base, 1, IDR_TAG);
++	if (ret != 1)
++		return NULL;
++	return entry;
++}
++
+ /**
+  * idr_for_each_entry() - Iterate over an IDR's elements of a given type.
+  * @idr: IDR handle.
+-- 
+2.35.3
 
->
-> -Doug
