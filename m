@@ -2,153 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E36C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiGKOQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36936 "EHLO
+        id S230431AbiGKOQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbiGKOQJ (ORCPT
+        with ESMTP id S229775AbiGKOQN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:16:09 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9C931347;
-        Mon, 11 Jul 2022 07:16:06 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LhQnK62X3zVfcD;
-        Mon, 11 Jul 2022 22:12:21 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Jul 2022 22:16:01 +0800
-Message-ID: <4852eba8-9fd0-6894-934c-ab89c0c7cea9@huawei.com>
-Date:   Mon, 11 Jul 2022 22:16:00 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v7 4/4] bpf, arm64: bpf trampoline for arm64
-Content-Language: en-US
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Will Deacon <will@kernel.org>, KP Singh <kpsingh@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        James Morse <james.morse@arm.com>,
-        Hou Tao <houtao1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>
-References: <20220708093032.1832755-1-xukuohai@huawei.com>
- <20220708093032.1832755-5-xukuohai@huawei.com> <YswQQG7CUoTXCbDa@myrica>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <YswQQG7CUoTXCbDa@myrica>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+        Mon, 11 Jul 2022 10:16:13 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393863C8D3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:16:12 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id AD7E0219BF;
+        Mon, 11 Jul 2022 14:16:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657548970; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bhu7mMfCBKSi34I+LiabL66xPJnTcxnPoeL1wKjwWMc=;
+        b=rwOP9zAyQZoAZZo3+B2W1bDCtmnqtq15H4SwEEM5Q+bWpfbkh53xtA4tXqa/6xRKlcwuip
+        b/FXW3j5RZBJ11vxGZ7BvWnseyGYOtz5fPfeYar2etzR/UzGe70AmQlAdBaFt8rTPNrC6E
+        inxU/pUnSuMhvfVoBLqyv3WkJg2RGfM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657548970;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bhu7mMfCBKSi34I+LiabL66xPJnTcxnPoeL1wKjwWMc=;
+        b=sv+CwfuBhWA3DW95no93xt4xFYAC9XVfN6rZ1H4zUwerAyGlTgVKJK51p2ZJOWIO1DWnQ/
+        ThFlhcqnNy83FjBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7007B13524;
+        Mon, 11 Jul 2022 14:16:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id q1G2GqowzGJpRAAAMHmgww
+        (envelope-from <tiwai@suse.de>); Mon, 11 Jul 2022 14:16:10 +0000
+Date:   Mon, 11 Jul 2022 16:16:10 +0200
+Message-ID: <875yk3spjp.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Meng Tang <tangmeng@uniontech.com>
+Cc:     perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, sbinding@opensource.cirrus.com,
+        kailang@realtek.com, tanureal@opensource.cirrus.com,
+        tcrawford@system76.com, wse@tuxedocomputers.com,
+        kai.heng.feng@canonical.com, andy.chi@canonical.com,
+        cam@neo-zeon.de, yong.wu@mediatek.com
+Subject: Re: [PATCH] ALSA: hda/realtek: Fix headset mic for Acer SF313-51
+In-Reply-To: <20220711081527.6254-1-tangmeng@uniontech.com>
+References: <20220711081527.6254-1-tangmeng@uniontech.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/11/2022 7:57 PM, Jean-Philippe Brucker wrote:
-> On Fri, Jul 08, 2022 at 05:30:32AM -0400, Xu Kuohai wrote:
->> +static void invoke_bpf_prog(struct jit_ctx *ctx, struct bpf_tramp_link *l,
->> +			    int args_off, int retval_off, int run_ctx_off,
->> +			    bool save_ret)
->> +{
->> +	u32 *branch;
->> +	u64 enter_prog;
->> +	u64 exit_prog;
->> +	u8 r0 = bpf2a64[BPF_REG_0];
->> +	struct bpf_prog *p = l->link.prog;
->> +	int cookie_off = offsetof(struct bpf_tramp_run_ctx, bpf_cookie);
->> +
->> +	if (p->aux->sleepable) {
->> +		enter_prog = (u64)__bpf_prog_enter_sleepable;
->> +		exit_prog = (u64)__bpf_prog_exit_sleepable;
->> +	} else {
->> +		enter_prog = (u64)__bpf_prog_enter;
->> +		exit_prog = (u64)__bpf_prog_exit;
->> +	}
->> +
->> +	if (l->cookie == 0) {
->> +		/* if cookie is zero, one instruction is enough to store it */
->> +		emit(A64_STR64I(A64_ZR, A64_SP, run_ctx_off + cookie_off), ctx);
->> +	} else {
->> +		emit_a64_mov_i64(A64_R(10), l->cookie, ctx);
->> +		emit(A64_STR64I(A64_R(10), A64_SP, run_ctx_off + cookie_off),
->> +		     ctx);
->> +	}
->> +
->> +	/* save p to callee saved register x19 to avoid loading p with mov_i64
->> +	 * each time.
->> +	 */
->> +	emit_addr_mov_i64(A64_R(19), (const u64)p, ctx);
->> +
->> +	/* arg1: prog */
->> +	emit(A64_MOV(1, A64_R(0), A64_R(19)), ctx);
->> +	/* arg2: &run_ctx */
->> +	emit(A64_ADD_I(1, A64_R(1), A64_SP, run_ctx_off), ctx);
->> +
->> +	emit_call(enter_prog, ctx);
->> +
->> +	/* if (__bpf_prog_enter(prog) == 0)
->> +	 *         goto skip_exec_of_prog;
->> +	 */
->> +	branch = ctx->image + ctx->idx;
->> +	emit(A64_NOP, ctx);
->> +
->> +	/* save return value to callee saved register x20 */
->> +	emit(A64_MOV(1, A64_R(20), A64_R(0)), ctx);
->> +
->> +	emit(A64_ADD_I(1, A64_R(0), A64_SP, args_off), ctx);
->> +	if (!p->jited)
->> +		emit_addr_mov_i64(A64_R(1), (const u64)p->insnsi, ctx);
->> +
->> +	emit_call((const u64)p->bpf_func, ctx);
->> +
->> +	/* store return value, which is held in r0 for JIT and in x0
->> +	 * for interpreter.
->> +	 */
->> +	if (save_ret)
->> +		emit(A64_STR64I(p->jited ? r0 : A64_R(0), A64_SP, retval_off),
->> +		     ctx);
+On Mon, 11 Jul 2022 10:15:27 +0200,
+Meng Tang wrote:
 > 
-> This should be only A64_R(0), not r0. r0 happens to equal A64_R(0) when
-> jitted due to the way build_epilogue() builds the function at the moment,
-> but we shouldn't rely on that.
+> The issue on Acer SWIFT SF313-51 is that headset microphone
+> doesn't work. The following quirk fixed headset microphone issue.
+> Note that the fixup of SF314-54/55 (ALC256_FIXUP_ACER_HEADSET_MIC)
+> was not successful on my SF313-51.
 > 
+> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 
-looks like I misunderstood something, will change it to:
+Thanks, applied now.
 
-/* store return value, which is held in x0 for interpreter and in
- * bpf register r0 for JIT, but r0 happens to equal x0 due to the
- * way build_epilogue() builds the JIT image.
- */
-if (save_ret)
-        emit(A64_STR64I(A64_R(0), A64_SP, retval_off), ctx);
 
-> Apart from that, for the series
-> 
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> 
-> .
+Takashi
