@@ -2,232 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9AFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A70C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231455AbiGKL3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
+        id S231470AbiGKL3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231373AbiGKL25 (ORCPT
+        with ESMTP id S231549AbiGKL3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:28:57 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1933126AEA
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:10:24 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id ez10so8172979ejc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zkANRKcZbCaKSgW3zgTNeMUMr8X2SBwRfvqFLff+8ZA=;
-        b=ZBgFbOgBqk32UIWTND6ietHkpJ9TJrOwwXtkzswaVpoU8cqklMCFk81fOuqvtO9b9+
-         193XC1MSSCbyeRCTelx7Em66ORq+FmDBSYBVSERNcNEchxozN6pHqlwerTuLzywh1PJ7
-         PPr5INbdvszlJtgdHO6XhLDVfxRYSD+EpLfYzREdWmvAqfTXb1AYuMVQyzz+UgfSKZsT
-         OipXrh2/XOdyT0NtEXhNWLcAzerxjK/m2z7jd3nRq6uX7U+n5jKV+w1Tq89vDB1ZQFIh
-         KjdKi2LPGjl7/fc3L/TZkwDsVRLWhTZ+cQonFNbttvBLHusUdIQosAAUe4FLvsRMbyrB
-         i/ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zkANRKcZbCaKSgW3zgTNeMUMr8X2SBwRfvqFLff+8ZA=;
-        b=R8StLp5tcSSWsAWWoy/6wPuc5eY0384lGamia7P8+XZ78Tvo9nqtMawKtHYx+88QXz
-         4h2Y0GzkeKlAl84ljXHbjE7K4kdsKMWJqZXAob5DDxWDKGu9+ljT5DVcu4nB5GU+ufPJ
-         38hMhetwU/OQmpxTWUpUkP5Eey5+n8WshXlRbDJbkeNAMD3Qx579xApLyIoIMZ7mO+2r
-         q6WXOshIRQOqdX2y8og8kldpnOepUL8e7Yu3xjrGCAFnA1RL0vA4Hl8Hv5bTQwxY/Zr5
-         ZMQe6Gl6ytL4u4xXuPnhdFqLSxdlFi8x7xF3SeA0MOkAIHT58mKKpczL2mcg66J5u6jo
-         TOtA==
-X-Gm-Message-State: AJIora/Djed4hTAaJjsoAAmuCYK88BHr7VBKQP4zSRqRne9MAu60XcOx
-        WMJ5iD283iEHkIVM2iqqIS2Hpg==
-X-Google-Smtp-Source: AGRyM1uSmvI2XhE/U0vJsp/yH6sycrVAD/rDP9hVX00y91ePkUQ92JzvhV0TAf2kqlLOX6iymV68bw==
-X-Received: by 2002:a17:907:6ea3:b0:726:ca39:5d98 with SMTP id sh35-20020a1709076ea300b00726ca395d98mr17992224ejc.400.1657537822607;
-        Mon, 11 Jul 2022 04:10:22 -0700 (PDT)
-Received: from linaro.org ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id gx16-20020a170906f1d000b0072b1bb3cc08sm2562448ejb.120.2022.07.11.04.10.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 04:10:22 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 14:10:19 +0300
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stefan Agner <stefan@agner.ch>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        Peng Fan <peng.fan@nxp.com>, Liu Ying <victor.liu@nxp.com>,
-        Shijie Qin <shijie.qin@nxp.com>, Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v8 01/15] dt-bindings: clk: imx: Add fsl,scu-clk yaml file
-Message-ID: <YswFG/JdjGC03rHU@linaro.org>
-References: <20220707125022.1156498-1-viorel.suman@oss.nxp.com>
- <20220707125022.1156498-2-viorel.suman@oss.nxp.com>
+        Mon, 11 Jul 2022 07:29:13 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F94831931;
+        Mon, 11 Jul 2022 04:11:16 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id E6B9D22100;
+        Mon, 11 Jul 2022 11:11:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657537874; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3Eg9VvSyO87wZPs1qkZ8b/C0Ac9yQ3/4PAshHpiUcDA=;
+        b=lVJB6KWFAAHNodIxGAw1AeZ/+BEhUPjnjCBTz6Lgpasfu+ZRfzeph8AuuVMEUtmmpOOnGa
+        vzzEaDLw/QOsPO/6BAA6S62FVfHi1OEIkiZXOqD/SXByy9HOUbb5WXX0aFOPoXXkLWaqQI
+        bBeiuC5Z9+i6K+snZRT19EZDSclrk5c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657537874;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3Eg9VvSyO87wZPs1qkZ8b/C0Ac9yQ3/4PAshHpiUcDA=;
+        b=fBRkxFTpHXdJWHBMzkRC9GhGsjozzJpFzvkqoeuaHX7J2GXB7FUr8D3GxtnjPTGWd4una+
+        Rs6ZFacKUuLhCsCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A72F713322;
+        Mon, 11 Jul 2022 11:11:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id KQfIJ1IFzGIdbAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Mon, 11 Jul 2022 11:11:14 +0000
+Message-ID: <43d75dce-988a-0a95-cb0a-0d0a7c81ca63@suse.de>
+Date:   Mon, 11 Jul 2022 13:11:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707125022.1156498-2-viorel.suman@oss.nxp.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 4/5] drm/modes: Add support for driver-specific named
+ modes
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1657301107.git.geert@linux-m68k.org>
+ <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
+ <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de>
+ <20220711093513.wilv6e6aqcuyg52w@houat>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220711093513.wilv6e6aqcuyg52w@houat>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------fZLfiuohfoRNFbm4jbfVP1DO"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-07-07 15:50:08, Viorel Suman (OSS) wrote:
-> From: Abel Vesa <abel.vesa@nxp.com>
->
-> In order to replace the fsl,scu txt file from bindings/arm/freescale,
-> we need to split it between the right subsystems. This patch documents
-> separately the 'clock' child node of the SCU main node.
->
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
-> Acked-by: Stephen Boyd <sboyd@kernel.org>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------fZLfiuohfoRNFbm4jbfVP1DO
+Content-Type: multipart/mixed; boundary="------------z0gLTlSOVm5fZzU01TQrIgZw";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Maxime Ripard <maxime@cerno.tech>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+ Hans de Goede <hdegoede@redhat.com>, dri-devel@lists.freedesktop.org,
+ linux-fbdev@vger.kernel.org, linux-m68k@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <43d75dce-988a-0a95-cb0a-0d0a7c81ca63@suse.de>
+Subject: Re: [PATCH 4/5] drm/modes: Add support for driver-specific named
+ modes
+References: <cover.1657301107.git.geert@linux-m68k.org>
+ <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
+ <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de>
+ <20220711093513.wilv6e6aqcuyg52w@houat>
+In-Reply-To: <20220711093513.wilv6e6aqcuyg52w@houat>
 
-Shawn, I'm assuming you're going to pick this up through your tree,
-right?
+--------------z0gLTlSOVm5fZzU01TQrIgZw
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-> ---
->  .../bindings/arm/freescale/fsl,scu.txt        | 31 -------------
->  .../bindings/clock/fsl,scu-clk.yaml           | 43 +++++++++++++++++++
->  2 files changed, 43 insertions(+), 31 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/clock/fsl,scu-clk.yaml
->
-> diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt b/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
-> index a87ec15e28d2..ef7f5222ac48 100644
-> --- a/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
-> +++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
-> @@ -79,29 +79,6 @@ Required properties:
->  			See detailed Resource ID list from:
->  			include/dt-bindings/firmware/imx/rsrc.h
->
-> -Clock bindings based on SCU Message Protocol
-> -------------------------------------------------------------
-> -
-> -This binding uses the common clock binding[1].
-> -
-> -Required properties:
-> -- compatible:		Should be one of:
-> -			  "fsl,imx8dxl-clk"
-> -			  "fsl,imx8qm-clk"
-> -			  "fsl,imx8qxp-clk"
-> -			followed by "fsl,scu-clk"
-> -- #clock-cells:		Should be 2.
-> -			Contains the Resource and Clock ID value.
-> -- clocks:		List of clock specifiers, must contain an entry for
-> -			each required entry in clock-names
-> -- clock-names:		Should include entries "xtal_32KHz", "xtal_24MHz"
-> -
-> -The clock consumer should specify the desired clock by having the clock
-> -ID in its "clocks" phandle cell.
-> -
-> -See the full list of clock IDs from:
-> -include/dt-bindings/clock/imx8qxp-clock.h
-> -
->  Pinctrl bindings based on SCU Message Protocol
->  ------------------------------------------------------------
->
-> @@ -127,7 +104,6 @@ Required properties for Pinctrl sub nodes:
->  			Please refer to i.MX8QXP Reference Manual for detailed
->  			CONFIG settings.
->
-> -[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
->  [2] Documentation/devicetree/bindings/power/power-domain.yaml
->  [3] Documentation/devicetree/bindings/pinctrl/fsl,imx-pinctrl.txt
->
-> @@ -208,11 +184,6 @@ firmware {
->  			  &lsio_mu1 1 3
->  			  &lsio_mu1 3 3>;
->
-> -		clk: clk {
-> -			compatible = "fsl,imx8qxp-clk", "fsl,scu-clk";
-> -			#clock-cells = <2>;
-> -		};
-> -
->  		iomuxc {
->  			compatible = "fsl,imx8qxp-iomuxc";
->
-> @@ -265,7 +236,5 @@ serial@5a060000 {
->  	...
->  	pinctrl-names = "default";
->  	pinctrl-0 = <&pinctrl_lpuart0>;
-> -	clocks = <&uart0_clk IMX_SC_R_UART_0 IMX_SC_PM_CLK_PER>;
-> -	clock-names = "ipg";
->  	power-domains = <&pd IMX_SC_R_UART_0>;
->  };
-> diff --git a/Documentation/devicetree/bindings/clock/fsl,scu-clk.yaml b/Documentation/devicetree/bindings/clock/fsl,scu-clk.yaml
-> new file mode 100644
-> index 000000000000..f2c48460a399
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/fsl,scu-clk.yaml
-> @@ -0,0 +1,43 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/fsl,scu-clk.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: i.MX SCU Client Device Node - Clock bindings based on SCU Message Protocol
-> +
-> +maintainers:
-> +  - Abel Vesa <abel.vesa@nxp.com>
-> +
-> +description: i.MX SCU Client Device Node
-> +  Client nodes are maintained as children of the relevant IMX-SCU device node.
-> +  This binding uses the common clock binding.
-> +  (Documentation/devicetree/bindings/clock/clock-bindings.txt)
-> +  The clock consumer should specify the desired clock by having the clock
-> +  ID in its "clocks" phandle cell. See the full list of clock IDs from
-> +  include/dt-bindings/clock/imx8qxp-clock.h
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - fsl,imx8dxl-clk
-> +          - fsl,imx8qm-clk
-> +          - fsl,imx8qxp-clk
-> +      - const: fsl,scu-clk
-> +
-> +  '#clock-cells':
-> +    const: 2
-> +
-> +required:
-> +  - compatible
-> +  - '#clock-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    clock-controller {
-> +        compatible = "fsl,imx8qxp-clk", "fsl,scu-clk";
-> +        #clock-cells = <2>;
-> +    };
-> --
-> 2.25.1
->
+SGkgTWF4aW1lDQoNCkFtIDExLjA3LjIyIHVtIDExOjM1IHNjaHJpZWIgTWF4aW1lIFJpcGFy
+ZDoNCj4gSGkgVGhvbWFzLA0KPiANCj4gT24gTW9uLCBKdWwgMTEsIDIwMjIgYXQgMTE6MDM6
+MzhBTSArMDIwMCwgVGhvbWFzIFppbW1lcm1hbm4gd3JvdGU6DQo+PiBBbSAwOC4wNy4yMiB1
+bSAyMDoyMSBzY2hyaWViIEdlZXJ0IFV5dHRlcmhvZXZlbjoNCj4+PiBUaGUgbW9kZSBwYXJz
+aW5nIGNvZGUgcmVjb2duaXplcyBuYW1lZCBtb2RlcyBvbmx5IGlmIHRoZXkgYXJlIGV4cGxp
+Y2l0bHkNCj4+PiBsaXN0ZWQgaW4gdGhlIGludGVybmFsIHdoaXRlbGlzdCwgd2hpY2ggaXMg
+Y3VycmVudGx5IGxpbWl0ZWQgdG8gIk5UU0MiDQo+Pj4gYW5kICJQQUwiLg0KPj4+DQo+Pj4g
+UHJvdmlkZSBhIG1lY2hhbmlzbSBmb3IgZHJpdmVycyB0byBvdmVycmlkZSB0aGlzIGxpc3Qg
+dG8gc3VwcG9ydCBjdXN0b20NCj4+PiBtb2RlIG5hbWVzLg0KPj4+DQo+Pj4gSWRlYWxseSwg
+dGhpcyBsaXN0IHNob3VsZCBqdXN0IGNvbWUgZnJvbSB0aGUgZHJpdmVyJ3MgYWN0dWFsIGxp
+c3Qgb2YNCj4+PiBtb2RlcywgYnV0IGNvbm5lY3Rvci0+cHJvYmVkX21vZGVzIGlzIG5vdCB5
+ZXQgcG9wdWxhdGVkIGF0IHRoZSB0aW1lIG9mDQo+Pj4gcGFyc2luZy4NCj4+DQo+PiBJJ3Zl
+IGxvb2tlZCBmb3IgY29kZSB0aGF0IHVzZXMgdGhlc2UgbmFtZXMsIGNvdWxkbid0IGZpbmQg
+YW55LiBIb3cgaXMgdGhpcw0KPj4gYmVpbmcgdXNlZCBpbiBwcmFjdGljZT8gRm9yIGV4YW1w
+bGUsIGlmIEkgc2F5ICJQQUwiIG9uIHRoZSBjb21tYW5kIGxpbmUsIGlzDQo+PiB0aGVyZSBE
+Uk0gY29kZSB0aGF0IGZpbGxzIGluIHRoZSBQQUwgbW9kZSBwYXJhbWV0ZXJzPw0KPiANCj4g
+V2UgaGF2ZSBzb21lIGNvZGUgdG8gZGVhbCB3aXRoIHRoaXMgaW4gc3VuNGk6DQo+IGh0dHBz
+Oi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L2xhdGVzdC9zb3VyY2UvZHJpdmVycy9ncHUv
+ZHJtL3N1bjRpL3N1bjRpX3R2LmMjTDI5Mg0KPiANCj4gSXQncyBhIGJpdCBvZmYgdG9waWMs
+IGJ1dCBmb3IgVFYgc3RhbmRhcmRzLCBJJ20gc3RpbGwgbm90IHN1cmUgd2hhdCB0aGUNCj4g
+YmVzdCBjb3Vyc2Ugb2YgYWN0aW9uIGlzLiBUaGVyZSdzIHNldmVyYWwgaW50ZXJhY3Rpb25z
+IHRoYXQgbWFrZSB0aGlzIGENCj4gYml0IHRyb3VibGVzb21lOg0KPiANCj4gICAgKiBTb21l
+IFRWIHN0YW5kYXJkcyBkaWZmZXIgYnkgdGhlaXIgbW9kZSAoaWUsIFBBTCB2cyBOU1RDKSwg
+YnV0IHNvbWUNCj4gICAgICBvdGhlciBkaWZmZXIgYnkgcGFyYW1ldGVycyB0aGF0IGFyZSBu
+b3QgcGFydCBvZiBkcm1fZGlzcGxheV9tb2RlDQo+ICAgICAgKE5UU0MgdnMgTlNUQy1KIHdo
+ZXJlIHRoZSBvbmx5IGRpZmZlcmVuY2UgaXMgdGhlIGJsYWNrIGFuZCBibGFua2luZw0KPiAg
+ICAgIHNpZ25hbCBsZXZlbHMgZm9yIGV4YW1wbGUpLg0KPiANCj4gICAgKiBUaGUgbW9kZSBu
+YW1lcyBhbGxvdyB0byBwcm92aWRlIGEgZmFpcmx5IGNvbnZlbmllbnQgd2F5IHRvIGFkZCB0
+aGF0DQo+ICAgICAgZXh0cmEgaW5mb3JtYXRpb24sIGJ1dCB0aGUgdXNlcnNwYWNlIGlzIGZy
+ZWUgdG8gY3JlYXRlIGl0cyBvd24gbW9kZQ0KPiAgICAgIGFuZCBtaWdodCBvbWl0IHRoZSBt
+b2RlIG5hbWUgZW50aXJlbHkuDQo+IA0KPiBTbyBpbiB0aGUgY29kZSBhYm92ZSwgaWYgdGhl
+IG5hbWUgaGFzIGJlZW4gcHJlc2VydmVkIHdlIG1hdGNoIGJ5IG5hbWUsDQo+IGJ1dCB3ZSBm
+YWxsIGJhY2sgdG8gbWF0Y2hpbmcgYnkgbW9kZSBpZiBpdCBoYXNuJ3QgYmVlbiwgd2hpY2gg
+aW4gdGhpcw0KPiBjYXNlIG1lYW5zIHRoYXQgd2UgaGF2ZSBubyB3YXkgdG8gZGlmZmVyZW50
+aWF0ZSBiZXR3ZWVuIE5UU0MsIE5UU0MtSiwNCj4gUEFMLU0gaW4gdGhpcyBjYXNlLg0KPiAN
+Cj4gV2UgaGF2ZSBzb21lIHBhdGNoZXMgZG93bnN0cmVhbSBmb3IgdGhlIFJhc3BiZXJyeVBp
+IHRoYXQgaGFzIHRoZSBUVg0KPiBzdGFuZGFyZCBhcyBhIHByb3BlcnR5LiBUaGVyZSdzIGEg
+ZmV3IGV4dHJhIGxvZ2ljIHJlcXVpcmVkIGZvciB0aGUNCj4gdXNlcnNwYWNlIChsaWtlIHNl
+dHRpbmcgdGhlIFBBTCBwcm9wZXJ0eSwgd2l0aCB0aGUgTlRTQyBtb2RlKSBzbyBJJ20gbm90
+DQo+IHN1cmUgaXQncyBwcmVmZXJhYmxlLg0KPiANCj4gT3Igd2UgY291bGQgZG8gc29tZXRo
+aW5nIGxpa2UgYSBwcm9wZXJ0eSB0byB0cnkgdGhhdCBzdGFuZGFyZCwgYW5kDQo+IGFub3Ro
+ZXIgdGhhdCByZXBvcnRzIHRoZSBvbmUgd2UgYWN0dWFsbHkgY2hvc2UuDQo+IA0KPj4gQW5k
+IGFub3RoZXIgcXVlc3Rpb24gSSBoYXZlIGlzIHdoZXRoZXIgdGhpcyB3aGl0ZWxpc3QgYmVs
+b25ncyBpbnRvIHRoZQ0KPj4gZHJpdmVyIGF0IGFsbC4gU3RhbmRhcmQgbW9kZXMgZXhpc3Qg
+aW5kZXBlbmRlbnQgZnJvbSBkcml2ZXJzIG9yIGhhcmR3YXJlLg0KPj4gU2hvdWxkbid0IHRo
+ZXJlIHNpbXBseSBiZSBhIGdsb2JhbCBsaXN0IG9mIGFsbCBwb3NzaWJsZSBtb2RlIG5hbWVz
+PyBEcml2ZXJzDQo+PiB3b3VsZCBmaWx0ZXIgb3V0IHRoZSB1bnN1cHBvcnRlZCBtb2RlcyBh
+bnl3YXkuDQo+IA0KPiBXZSBzaG91bGQgdG90YWxseSBkbyBzb21ldGhpbmcgbGlrZSB0aGF0
+LCB5ZWFoDQoNClRoYXQgc3VuIGNvZGUgYWxyZWFkeSBsb29rcyBsaWtlIHNvbWV0aWhuZyB0
+aGUgRFJNIGNvcmUvaGVscGVycyBzaG91bGQgDQpiZSBkb2luZy4gQW5kIGlmIHdlIHdhbnQg
+dG8gc3VwcG9ydCBuYW1lZCBtb2RlcyB3ZWxsLCB0aGVyZSdzIGEgbG9uZyANCmxpc3Qgb2Yg
+bW9kZXMgaW4gV2lraXBlZGlhLg0KDQogDQpodHRwczovL2VuLndpa2lwZWRpYS5vcmcvd2lr
+aS9WaWRlb19HcmFwaGljc19BcnJheSMvbWVkaWEvRmlsZTpWZWN0b3JfVmlkZW9fU3RhbmRh
+cmRzMi5zdmcNCg0KQmVzdCByZWdhcmRzDQpUaG9tYXMNCg0KPiANCj4gTWF4aW1lDQoNCi0t
+IA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0Ug
+U29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkg
+TsO8cm5iZXJnLCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOk
+ZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
+
+--------------z0gLTlSOVm5fZzU01TQrIgZw--
+
+--------------fZLfiuohfoRNFbm4jbfVP1DO
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmLMBVIFAwAAAAAACgkQlh/E3EQov+Bq
+mBAAz1d3IjNc8P8JDQAgAZE+ZRfqW1vHZ8fjlrS0Qbgw//N14aTNAIIn/5vCFcSKLxyfZwJDkFft
+WjH6nsqwTr5wx04At3JVALuhgpl0VnKSYUnQDQMsjV4MXb8pB8jK/B/rJt1YnpsreqmMdw7xNZlH
+RIRyShuQMwCUfTdoLVArNg95Kg78aWbaOekpcS959EW0V6jL2cQr0bH4Zoik57Coptt004IxF0Vo
+0OPHjf/If1fTHMnY+Ex735QILJEPw+Ns2EdMINSFJZFIMJAoAnqZxqMrjypR8jPusvvifDS9E++D
+Jtkdgl3UPivH9R1WFQhSzCf/nkrReAUrVuJDTqiz5wWc+g+gIJi12LNR8EeiQ2lQG/zamKDc4Nug
+jJRkVpxKC0v9F78rNQv8BugU3sbMiE3jKOIbIVt38r9S9IFOUwHiVDA3Ii5yVp38l7p5oZ/NmodW
+k6u02K9LktxqI3WkRgO70JaQNtVJt0ArhPFBEuoolU+s7do37YcBu1jk1MUmC/9FWcQ1b8zXaIYS
+LKY8K5vYpRGO4zgAA83efTnAnFt6cEwCQXEBf6yE7TQTJzHVf0Ojx2iaTCvFHAUTQb5bpr2R3W3c
+WKLWGuGI0AjDNT2Nm5r1zLiFz6F/yKpJXd2QWVWpaz64LaWnlLlmSXDxlxZFNeUcbIk04ShfmCkn
+48c=
+=jIZf
+-----END PGP SIGNATURE-----
+
+--------------fZLfiuohfoRNFbm4jbfVP1DO--
