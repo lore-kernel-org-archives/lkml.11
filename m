@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EB7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232598AbiGKJan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
+        id S232573AbiGKJay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232845AbiGKJ3p (ORCPT
+        with ESMTP id S232195AbiGKJ3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:29:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2652709AE;
-        Mon, 11 Jul 2022 02:16:38 -0700 (PDT)
+        Mon, 11 Jul 2022 05:29:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB7C70E65;
+        Mon, 11 Jul 2022 02:16:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0892761226;
-        Mon, 11 Jul 2022 09:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1615AC34115;
-        Mon, 11 Jul 2022 09:16:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7317DB80E84;
+        Mon, 11 Jul 2022 09:16:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1099C34115;
+        Mon, 11 Jul 2022 09:16:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530994;
-        bh=QjqgyLl0/S8E7GIf56Ex+JLVKwqnCTDYX7/NdJD+5yM=;
+        s=korg; t=1657530997;
+        bh=Z2/2u6TLOVitQk2RLbfwQpjOCKKEC9SNKDWAizoSSRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NUZuuIg/nGYZISMVaBmzESg0b27klzZflcUs99P7kLUbdXcA4f2QKlF1pQONZzrGg
-         ZJu/2kMGSEOzoyBYCN3fPQJ+w++HfMHDIavSNzb4WujHZS/LqwqYbqLaYd1VnpyRiE
-         BFiRT+vMo4QDcS73oxlNcrLHMfqGP91elxjARbO8=
+        b=YYRPts+2koqX74idH1nvIy9vvpmItEfs4zZeHTiT6nMVfVn7hFdO8OfT8WtGFEHwr
+         XrQn1H90jBLbs/4cCuY0ii+qaZxftaxrkszF6ThKL4YF2Brkh+2AR/CMLkQC79OhfI
+         AsImtNA/N2ATctkS6UbEGBApvuAI8xxkhYAR2C88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 058/112] arm64: dts: imx8mp-evk: correct the uart2 pinctl value
-Date:   Mon, 11 Jul 2022 11:06:58 +0200
-Message-Id: <20220711090551.219419939@linuxfoundation.org>
+Subject: [PATCH 5.18 059/112] arm64: dts: imx8mp-evk: correct gpio-led pad settings
+Date:   Mon, 11 Jul 2022 11:06:59 +0200
+Message-Id: <20220711090551.247481297@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -51,39 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sherry Sun <sherry.sun@nxp.com>
+From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit 2d4fb72b681205eed4553d8802632bd3270be3ba ]
+[ Upstream commit b838582ab8d5fb11b2c0275056a9f34e1d94fece ]
 
-According to the IOMUXC_SW_PAD_CTL_PAD_UART2_RXD/TXD register define in
-imx8mp RM, bit0 and bit3 are reserved, and the uart2 rx/tx pin should
-enable the pull up, so need to set bit8 to 1. The original pinctl value
-0x49 is incorrect and needs to be changed to 0x140, same as uart1 and
-uart3.
+0x19 is not a valid setting. According to RM bit layout,
+BIT3 and BIT0 are reserved.
+  8  7   6   5   4   3  2 1  0
+ PE HYS PUE ODE FSEL X  DSE  X
 
-Fixes: 9e847693c6f3 ("arm64: dts: freescale: Add i.MX8MP EVK board support")
-Reviewed-by: Haibo Chen <haibo.chen@nxp.com>
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Correct setting with PE PUE set, DSE set to 0.
+
+Fixes: 50d336b12f34 ("arm64: dts: imx8mp-evk: Add GPIO LED support")
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index f31cf778890d..4ba31fc5d0a5 100644
+index 4ba31fc5d0a5..4ff75c4cbddc 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
 +++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -506,8 +506,8 @@
+@@ -461,7 +461,7 @@
  
- 	pinctrl_uart2: uart2grp {
+ 	pinctrl_gpio_led: gpioledgrp {
  		fsl,pins = <
--			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX	0x49
--			MX8MP_IOMUXC_UART2_TXD__UART2_DCE_TX	0x49
-+			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX	0x140
-+			MX8MP_IOMUXC_UART2_TXD__UART2_DCE_TX	0x140
+-			MX8MP_IOMUXC_NAND_READY_B__GPIO3_IO16	0x19
++			MX8MP_IOMUXC_NAND_READY_B__GPIO3_IO16	0x140
  		>;
  	};
  
