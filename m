@@ -2,125 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E30C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 01:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F359C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 01:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiGKBuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 21:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47542 "EHLO
+        id S229561AbiGKBwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 21:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiGKBuJ (ORCPT
+        with ESMTP id S229470AbiGKBwA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 21:50:09 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933CB18371;
-        Sun, 10 Jul 2022 18:50:00 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lh6GD5bkyzkWbV;
-        Mon, 11 Jul 2022 09:47:48 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Jul 2022 09:49:57 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.66) by
- dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Jul 2022 09:49:57 +0800
-From:   Zheng Yejian <zhengyejian1@huawei.com>
-To:     <rostedt@goodmis.org>
-CC:     <linux-kernel@vger.kernel.org>, <mingo@redhat.com>,
-        <stable@vger.kernel.org>, <tom.zanussi@linux.intel.com>,
-        <trix@redhat.com>, <zhangjinhao2@huawei.com>,
-        <zhengyejian1@huawei.com>
-Subject: [PATCH v2] tracing/histograms: Fix memory leak problem
-Date:   Mon, 11 Jul 2022 09:47:31 +0800
-Message-ID: <20220711014731.69520-1-zhengyejian1@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220708210335.79a38356@gandalf.local.home>
-References: <20220708210335.79a38356@gandalf.local.home>
+        Sun, 10 Jul 2022 21:52:00 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05055175B9;
+        Sun, 10 Jul 2022 18:51:58 -0700 (PDT)
+Received: from [192.168.100.8] (unknown [223.106.33.172])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axf+I4gsti1ksWAA--.52029S3;
+        Mon, 11 Jul 2022 09:51:54 +0800 (CST)
+Message-ID: <c5d674f6-bc24-c3f4-ccf3-3e74bff011c7@loongson.cn>
+Date:   Mon, 11 Jul 2022 09:51:52 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] Documentation/translations/zh_CN/mm/page_owner.rst:
+ adjust some words
+To:     Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+Cc:     alexs@kernel.org, corbet@lwn.net, rppt@kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220708172351.20928-1-caoyixuan2019@email.szu.edu.cn>
+From:   YanTeng Si <siyanteng@loongson.cn>
+In-Reply-To: <20220708172351.20928-1-caoyixuan2019@email.szu.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Axf+I4gsti1ksWAA--.52029S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7CF4DZF17WFyfCF48CFy5XFb_yoW8CFyfpr
+        sF9a4xG3WFy3WF9a4fWw4xur18CF4xGF4UGFyUt345XFZ8A3s3KFyDKasFg3y7Gry8Xayj
+        qr4fCr4DAF909FJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkmb7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
+        vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
+        Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJV
+        W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG
+        8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
+        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij
+        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
+        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxU7GYLDUUUU
+X-CM-SenderInfo: pvl1t0pwhqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 46bbe5c671e06f070428b9be142cc4ee5cedebac.
 
-As commit 46bbe5c671e0 ("tracing: fix double free") said, the
-"double free" problem reported by clang static analyzer is:
-  > In parse_var_defs() if there is a problem allocating
-  > var_defs.expr, the earlier var_defs.name is freed.
-  > This free is duplicated by free_var_defs() which frees
-  > the rest of the list.
+在 2022/7/9 1:23, Yixuan Cao 写道:
+> I noticed that there are some Chinese words that can be more accurate.
+> So I fix them as follows.
+>
+> 首先，英文原文中的"release" 在这个语境下
+> 是物理页面“释放”的意思，而不是“发布”。
+> 其次，标准表的第一列和第二列，
+> 表达的是“长短键”的意思，第一列是“短键”，
+> 而第二列是“长键”。这样翻译或会更清晰一些。
+>
+> Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
 
-However, if there is a problem allocating N-th var_defs.expr:
-  + in parse_var_defs(), the freed 'earlier var_defs.name' is
-    actually the N-th var_defs.name;
-  + then in free_var_defs(), the names from 0th to (N-1)-th are freed;
+Acked-by: Yanteng Si<siyanteng@loongson.cn>
 
-                        IF ALLOCATING PROBLEM HAPPENED HERE!!! -+
-                                                                 \
-                                                                  |
-          0th           1th                 (N-1)-th      N-th    V
-          +-------------+-------------+-----+-------------+-----------
-var_defs: | name | expr | name | expr | ... | name | expr | name | ///
-          +-------------+-------------+-----+-------------+-----------
 
-These two frees don't act on same name, so there was no "double free"
-problem before. Conversely, after that commit, we get a "memory leak"
-problem because the above "N-th var_defs.name" is not freed.
+Thanks,
 
-If enable CONFIG_DEBUG_KMEMLEAK and inject a fault at where the N-th
-var_defs.expr allocated, then execute on shell like:
-  $ echo 'hist:key=call_site:val=$v1,$v2:v1=bytes_req,v2=bytes_alloc' > \
-/sys/kernel/debug/tracing/events/kmem/kmalloc/trigger
+Yanteng
 
-Then kmemleak reports:
-  unreferenced object 0xffff8fb100ef3518 (size 8):
-    comm "bash", pid 196, jiffies 4295681690 (age 28.538s)
-    hex dump (first 8 bytes):
-      76 31 00 00 b1 8f ff ff                          v1......
-    backtrace:
-      [<0000000038fe4895>] kstrdup+0x2d/0x60
-      [<00000000c99c049a>] event_hist_trigger_parse+0x206f/0x20e0
-      [<00000000ae70d2cc>] trigger_process_regex+0xc0/0x110
-      [<0000000066737a4c>] event_trigger_write+0x75/0xd0
-      [<000000007341e40c>] vfs_write+0xbb/0x2a0
-      [<0000000087fde4c2>] ksys_write+0x59/0xd0
-      [<00000000581e9cdf>] do_syscall_64+0x3a/0x80
-      [<00000000cf3b065c>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Cc: stable@vger.kernel.org
-Fixes: 46bbe5c671e0 ("tracing: fix double free")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
----
- kernel/trace/trace_events_hist.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-Changes since v1:
-- Assign 'NULL' after 'kfree' for safety as suggested by Steven
-- Rename commit title and add Suggested-by tag
-
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index 48e82e141d54..e87a46794079 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -4430,6 +4430,8 @@ static int parse_var_defs(struct hist_trigger_data *hist_data)
- 
- 			s = kstrdup(field_str, GFP_KERNEL);
- 			if (!s) {
-+				kfree(hist_data->attrs->var_defs.name[n_vars]);
-+				hist_data->attrs->var_defs.name[n_vars] = NULL;
- 				ret = -ENOMEM;
- 				goto free;
- 			}
--- 
-2.32.0
+> ---
+>   Documentation/translations/zh_CN/mm/page_owner.rst | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/Documentation/translations/zh_CN/mm/page_owner.rst b/Documentation/translations/zh_CN/mm/page_owner.rst
+> index 6514cb9e03da..b7f81d7a6589 100644
+> --- a/Documentation/translations/zh_CN/mm/page_owner.rst
+> +++ b/Documentation/translations/zh_CN/mm/page_owner.rst
+> @@ -156,22 +156,22 @@ page owner在默认情况下是禁用的。所以，如果你想使用它，你
+>   
+>     --sort的选项:
+>   
+> -	键		键长		描述
+> +	短键		长键		描述
+>   	p		pid		进程ID
+>   	tg		tgid		线程组ID
+>   	n		name		任务命令名称
+>   	st		stacktrace	页面分配的堆栈跟踪
+>   	T		txt		块的全文
+> -	ft		free_ts		页面发布时的时间戳
+> +	ft		free_ts		页面释放时的时间戳
+>   	at		alloc_ts	页面被分配时的时间戳
+>   	ator		allocator	页面的内存分配器
+>   
+>     --curl的选项:
+>   
+> -	键		键长		描述
+> +	短键		长键		描述
+>   	p		pid		进程ID
+>   	tg		tgid		线程组ID
+>   	n		name		任务命令名称
+> -	f		free		该页是否已经发布
+> +	f		free		该页是否已经释放
+>   	st		stacktrace	页面分配的堆栈跟踪
+>   	ator		allocator	页面的内存分配器
 
