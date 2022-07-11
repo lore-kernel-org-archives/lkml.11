@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D05AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE76C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233972AbiGKJws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        id S233692AbiGKJwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233270AbiGKJwB (ORCPT
+        with ESMTP id S233828AbiGKJwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:52:01 -0400
+        Mon, 11 Jul 2022 05:52:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF32ACEE5;
-        Mon, 11 Jul 2022 02:25:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71455ACEFD;
+        Mon, 11 Jul 2022 02:25:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F04706124E;
-        Mon, 11 Jul 2022 09:25:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9261C34115;
-        Mon, 11 Jul 2022 09:25:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A88D761137;
+        Mon, 11 Jul 2022 09:25:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B22F2C341CB;
+        Mon, 11 Jul 2022 09:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531510;
-        bh=9K04RVcc5+Of6dPmUZUF7MfhV/bdoktf5T5hjkB0ntw=;
+        s=korg; t=1657531513;
+        bh=V8hUALuVDDRIHZZs372a4TXfodfvKv8TCg8jcpNNJ58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXC9+49lgVNTgEhlxEohSlTfn5cog2wd29rOWzRTLSYtks6fzG3xWY98eg5xbQ9/J
-         E//BuVMT5nsJpvW7jJALjtX+i1CRJza+R9FJgXFqpFsaCuuWmcxNf83jeydohP4RU7
-         H+8dSmjwEam0cLaLUyYAp9ffsuz1LI85Jr9xt8oE=
+        b=E5KgUxLh9WgcuTf/zEdGWVhO3hAe82Q/mAT88Knz7RrgzePwqeVY0pNJIOI4S7xTQ
+         QM/Qr+eb2aF2wcLTLDEGXikO8Ju64K8YZ2NhgnJQScan59WlH5ut0MnfkLzKSQ96Ke
+         dmH2cZaeaR+9pX4CbTTMoTf3LUD+niqDq34Re4J4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Eric Yang <Eric.Yang2@amd.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Michael Strauss <michael.strauss@amd.com>,
+        Daniel Wheeler <Daniel.Wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 129/230] mm/memory-failure.c: fix race with changing page compound again
-Date:   Mon, 11 Jul 2022 11:06:25 +0200
-Message-Id: <20220711090607.725243061@linuxfoundation.org>
+Subject: [PATCH 5.15 092/230] drm/amd/display: Set min dcfclk if pipe count is 0
+Date:   Mon, 11 Jul 2022 11:05:48 +0200
+Message-Id: <20220711090606.682264786@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -55,105 +52,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Michael Strauss <michael.strauss@amd.com>
 
-[ Upstream commit 888af2701db79b9b27c7e37f9ede528a5ca53b76 ]
+[ Upstream commit bc204778b4032b336cb3bde85bea852d79e7e389 ]
 
-Patch series "A few fixup patches for memory failure", v2.
+[WHY]
+Clocks don't get recalculated in 0 stream/0 pipe configs,
+blocking S0i3 if dcfclk gets high enough
 
-This series contains a few patches to fix the race with changing page
-compound page, make non-LRU movable pages unhandlable and so on.  More
-details can be found in the respective changelogs.
+[HOW]
+Create DCN31 copy of DCN30 bandwidth validation func which
+doesn't entirely skip validation in 0 pipe scenarios
 
-There is a race window where we got the compound_head, the hugetlb page
-could be freed to buddy, or even changed to another compound page just
-before we try to get hwpoison page.  Think about the below race window:
+Override dcfclk to vlevel 0/min value during validation if pipe
+count is 0
 
-  CPU 1					  CPU 2
-  memory_failure_hugetlb
-  struct page *head = compound_head(p);
-					  hugetlb page might be freed to
-					  buddy, or even changed to another
-					  compound page.
-
-  get_hwpoison_page -- page is not what we want now...
-
-If this race happens, just bail out.  Also MF_MSG_DIFFERENT_PAGE_SIZE is
-introduced to record this event.
-
-[akpm@linux-foundation.org: s@/**@/*@, per Naoya Horiguchi]
-
-Link: https://lkml.kernel.org/r/20220312074613.4798-1-linmiaohe@huawei.com
-Link: https://lkml.kernel.org/r/20220312074613.4798-2-linmiaohe@huawei.com
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: Tony Luck <tony.luck@intel.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Yang Shi <shy828301@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
+Signed-off-by: Michael Strauss <michael.strauss@amd.com>
+Tested-by: Daniel Wheeler <Daniel.Wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mm.h      |  1 +
- include/ras/ras_event.h |  1 +
- mm/memory-failure.c     | 12 ++++++++++++
- 3 files changed, 14 insertions(+)
+ .../drm/amd/display/dc/dcn30/dcn30_resource.c |  2 +-
+ .../drm/amd/display/dc/dcn30/dcn30_resource.h |  7 +++
+ .../drm/amd/display/dc/dcn31/dcn31_resource.c | 63 ++++++++++++++++++-
+ 3 files changed, 70 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 85205adcdd0d..7a80a08eec84 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3167,6 +3167,7 @@ enum mf_action_page_type {
- 	MF_MSG_BUDDY_2ND,
- 	MF_MSG_DAX,
- 	MF_MSG_UNSPLIT_THP,
-+	MF_MSG_DIFFERENT_PAGE_SIZE,
- 	MF_MSG_UNKNOWN,
- };
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
+index 0294d0cc4759..735c92a5aa36 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
+@@ -1856,7 +1856,7 @@ static struct pipe_ctx *dcn30_find_split_pipe(
+ 	return pipe;
+ }
  
-diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
-index 0bdbc0d17d2f..cac13ff1d6eb 100644
---- a/include/ras/ras_event.h
-+++ b/include/ras/ras_event.h
-@@ -376,6 +376,7 @@ TRACE_EVENT(aer_event,
- 	EM ( MF_MSG_BUDDY_2ND, "free buddy page (2nd try)" )		\
- 	EM ( MF_MSG_DAX, "dax page" )					\
- 	EM ( MF_MSG_UNSPLIT_THP, "unsplit thp" )			\
-+	EM ( MF_MSG_DIFFERENT_PAGE_SIZE, "different page size" )	\
- 	EMe ( MF_MSG_UNKNOWN, "unknown page" )
+-static noinline bool dcn30_internal_validate_bw(
++noinline bool dcn30_internal_validate_bw(
+ 		struct dc *dc,
+ 		struct dc_state *context,
+ 		display_e2e_pipe_params_st *pipes,
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h
+index b754b89beadf..b92e4cc0232f 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h
++++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h
+@@ -55,6 +55,13 @@ unsigned int dcn30_calc_max_scaled_time(
  
- /*
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 5664bafd5e77..a4d70c21c146 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -741,6 +741,7 @@ static const char * const action_page_types[] = {
- 	[MF_MSG_BUDDY_2ND]		= "free buddy page (2nd try)",
- 	[MF_MSG_DAX]			= "dax page",
- 	[MF_MSG_UNSPLIT_THP]		= "unsplit thp",
-+	[MF_MSG_DIFFERENT_PAGE_SIZE]	= "different page size",
- 	[MF_MSG_UNKNOWN]		= "unknown page",
- };
+ bool dcn30_validate_bandwidth(struct dc *dc, struct dc_state *context,
+ 		bool fast_validate);
++bool dcn30_internal_validate_bw(
++		struct dc *dc,
++		struct dc_state *context,
++		display_e2e_pipe_params_st *pipes,
++		int *pipe_cnt_out,
++		int *vlevel_out,
++		bool fast_validate);
+ void dcn30_calculate_wm_and_dlg(
+ 		struct dc *dc, struct dc_state *context,
+ 		display_e2e_pipe_params_st *pipes,
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+index b60ab3cc0f11..7aadb35a3079 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+@@ -1664,6 +1664,15 @@ static void dcn31_calculate_wm_and_dlg_fp(
+ 	if (context->bw_ctx.dml.soc.min_dcfclk > dcfclk)
+ 		dcfclk = context->bw_ctx.dml.soc.min_dcfclk;
  
-@@ -1461,6 +1462,17 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
- 	}
- 
- 	lock_page(head);
-+
-+	/*
-+	 * The page could have changed compound pages due to race window.
-+	 * If this happens just bail out.
++	/* We don't recalculate clocks for 0 pipe configs, which can block
++	 * S0i3 as high clocks will block low power states
++	 * Override any clocks that can block S0i3 to min here
 +	 */
-+	if (!PageHuge(p) || compound_head(p) != head) {
-+		action_result(pfn, MF_MSG_DIFFERENT_PAGE_SIZE, MF_IGNORED);
-+		res = -EBUSY;
-+		goto out;
++	if (pipe_cnt == 0) {
++		context->bw_ctx.bw.dcn.clk.dcfclk_khz = dcfclk; // always should be vlevel 0
++		return;
 +	}
 +
- 	page_flags = head->flags;
+ 	pipes[0].clks_cfg.voltage = vlevel;
+ 	pipes[0].clks_cfg.dcfclk_mhz = dcfclk;
+ 	pipes[0].clks_cfg.socclk_mhz = context->bw_ctx.dml.soc.clock_limits[vlevel].socclk_mhz;
+@@ -1789,6 +1798,58 @@ static void dcn31_calculate_wm_and_dlg(
+ 	DC_FP_END();
+ }
  
- 	/*
++bool dcn31_validate_bandwidth(struct dc *dc,
++		struct dc_state *context,
++		bool fast_validate)
++{
++	bool out = false;
++
++	BW_VAL_TRACE_SETUP();
++
++	int vlevel = 0;
++	int pipe_cnt = 0;
++	display_e2e_pipe_params_st *pipes = kzalloc(dc->res_pool->pipe_count * sizeof(display_e2e_pipe_params_st), GFP_KERNEL);
++	DC_LOGGER_INIT(dc->ctx->logger);
++
++	BW_VAL_TRACE_COUNT();
++
++	out = dcn30_internal_validate_bw(dc, context, pipes, &pipe_cnt, &vlevel, fast_validate);
++
++	// Disable fast_validate to set min dcfclk in alculate_wm_and_dlg
++	if (pipe_cnt == 0)
++		fast_validate = false;
++
++	if (!out)
++		goto validate_fail;
++
++	BW_VAL_TRACE_END_VOLTAGE_LEVEL();
++
++	if (fast_validate) {
++		BW_VAL_TRACE_SKIP(fast);
++		goto validate_out;
++	}
++
++	dc->res_pool->funcs->calculate_wm_and_dlg(dc, context, pipes, pipe_cnt, vlevel);
++
++	BW_VAL_TRACE_END_WATERMARKS();
++
++	goto validate_out;
++
++validate_fail:
++	DC_LOG_WARNING("Mode Validation Warning: %s failed alidation.\n",
++		dml_get_status_message(context->bw_ctx.dml.vba.ValidationStatus[context->bw_ctx.dml.vba.soc.num_states]));
++
++	BW_VAL_TRACE_SKIP(fail);
++	out = false;
++
++validate_out:
++	kfree(pipes);
++
++	BW_VAL_TRACE_FINISH();
++
++	return out;
++}
++
+ static struct dc_cap_funcs cap_funcs = {
+ 	.get_dcc_compression_cap = dcn20_get_dcc_compression_cap
+ };
+@@ -1871,7 +1932,7 @@ static struct resource_funcs dcn31_res_pool_funcs = {
+ 	.link_encs_assign = link_enc_cfg_link_encs_assign,
+ 	.link_enc_unassign = link_enc_cfg_link_enc_unassign,
+ 	.panel_cntl_create = dcn31_panel_cntl_create,
+-	.validate_bandwidth = dcn30_validate_bandwidth,
++	.validate_bandwidth = dcn31_validate_bandwidth,
+ 	.calculate_wm_and_dlg = dcn31_calculate_wm_and_dlg,
+ 	.update_soc_for_wm_a = dcn31_update_soc_for_wm_a,
+ 	.populate_dml_pipes = dcn31_populate_dml_pipes_from_context,
 -- 
 2.35.1
 
