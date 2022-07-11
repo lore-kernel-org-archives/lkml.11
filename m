@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00617CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbiGKI4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
+        id S230314AbiGKI6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiGKI4P (ORCPT
+        with ESMTP id S229526AbiGKI5v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:56:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE54D12D06;
-        Mon, 11 Jul 2022 01:56:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 886CDB80E76;
-        Mon, 11 Jul 2022 08:56:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 347F0C34115;
-        Mon, 11 Jul 2022 08:56:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657529772;
-        bh=PpEE8mf3vOUTI7HZ52uDTZOLGpTTVD3SMaD4DBZ+kP4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iSNh0heq6z34LhARLgJLa9EHN+GWO1LwgtkBQj+4zD1t4Wd4LEUe1WlBQfiutwlY/
-         URg/uKFZPgKE1Hb9WV9PoRFKmzRwD5e+JSQdOCjM2kpoBGJ1meOtT9ksmcW5Ilf1U2
-         UoyPH+JcPNA9LJtcTk3cLhOgZ4V3PSs+6k9Tpy4z0HksOGJXlZGkrm1l22KuZgcHhZ
-         nHyAats6pfk/6wZ1KUroIYsxQT1fTvAinfT/ngj3DPSKIEFGfNfl9AaAplFJXL8h3o
-         NMmVMS7BclYWCoDjMvfwrSEUO60NZ0SeYNvU05/oI5R8jvTrL4B3tF0HAG7ZDi+SPh
-         KQfqfmEdx5+OA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oApD9-00069W-TU; Mon, 11 Jul 2022 10:56:12 +0200
-Date:   Mon, 11 Jul 2022 10:56:11 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: Add lost ranges for timer
-Message-ID: <Ysvlqw/+eMk5XLRY@hovoldconsulting.com>
-References: <20220707160858.3178771-1-bjorn.andersson@linaro.org>
+        Mon, 11 Jul 2022 04:57:51 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF861A042;
+        Mon, 11 Jul 2022 01:57:51 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 26B8vj7q052237;
+        Mon, 11 Jul 2022 03:57:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657529865;
+        bh=Q2llsh/2FKRNS8ubLOQgjDkJPI6SEWj033eHEtQSi+o=;
+        h=From:To:CC:Subject:Date;
+        b=oqqxE5cRFxDJNO1hvRPoOzjHp6XAiVTNkpYX7sZ7a8Rg+aCIQTpFSaaLzjVwvLp6i
+         2JHFhCOkaAplGD6Ojmd7Y/8V5TTUp4pWZJKBak00NkPQzWqygZ39/PvXtgk6kmInRA
+         OJW9E/EfHfiBqf8RwaPkB2iKT5GBqv8ia1nJOYEg=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 26B8vjfs126426
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 11 Jul 2022 03:57:45 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 11
+ Jul 2022 03:57:45 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 11 Jul 2022 03:57:45 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 26B8viha094120;
+        Mon, 11 Jul 2022 03:57:44 -0500
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+To:     <nm@ti.com>, <vigneshr@ti.com>, <devicetree@vger.kernel.org>
+CC:     <kristo@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <j-choudhary@ti.com>
+Subject: [PATCH v2 0/2] Enable SA2UL support on AM64X
+Date:   Mon, 11 Jul 2022 14:27:41 +0530
+Message-ID: <20220711085743.10128-1-j-choudhary@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707160858.3178771-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 09:08:58AM -0700, Bjorn Andersson wrote:
-> The timer node needs ranges specified to map the 1-cell children to the
-> 2-cell address range used in /soc. This addition never made it into the
-> patch that was posted and merged, so add it now.
-> 
-> Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> index 2bdb42c88311..37a4cd6f85b6 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> @@ -1667,6 +1667,7 @@ timer@17c20000 {
->  			reg = <0x0 0x17c20000 0x0 0x1000>;
->  			#address-cells = <1>;
->  			#size-cells = <1>;
-> +			ranges = <0 0 0 0x20000000>;
+This series enables sa2ul support for TI SoC AM64X.
+It is based on another series posted by Suman Anna:
+<https://lore.kernel.org/linux-arm-kernel/20210514210725.32720-1-s-anna@ti.com/>
 
-While addressing the current issue, this looks odd to me. Why not use a
-non-zero parent bus address here instead?
+rng node has been disabled due to its indirect access from OP-TEE.
 
-And please use hex notation consistently for the addresses.
+Since the sa2ul hardware is being used by OP-TEE as well,
+it should be requested using shared TI-SCI flag. So the flag
+has been changed from TI-SCI-EXCLUSIVE to TI-SCI-SHARED.
 
->  
->  			frame@17c21000 {
->  				frame-number = <0>;
+I have tried crypto tests on my local setup, and tcrypt and
+self-tests are passing.
 
-Johan
+Changes from v1:
+- disable rng node instead of dropping it
+
+Peter Ujfalusi (1):
+  arm64: dts: ti: k3-am64-main: Enable crypto accelerator
+
+Suman Anna (1):
+  arm64: dts: ti: k3-am64: Add SA2UL address space to Main CBASS ranges
+
+ arch/arm64/boot/dts/ti/k3-am64-main.dtsi | 20 ++++++++++++++++++++
+ arch/arm64/boot/dts/ti/k3-am64.dtsi      |  1 +
+ 2 files changed, 21 insertions(+)
+
+-- 
+2.17.1
+
