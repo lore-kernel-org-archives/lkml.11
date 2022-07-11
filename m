@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB527C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B00BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233938AbiGKJve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S233946AbiGKJvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233803AbiGKJuh (ORCPT
+        with ESMTP id S233806AbiGKJuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:50:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665E723150;
-        Mon, 11 Jul 2022 02:24:49 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C61F23BDE;
+        Mon, 11 Jul 2022 02:24:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C2961363;
-        Mon, 11 Jul 2022 09:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12865C34115;
-        Mon, 11 Jul 2022 09:24:47 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DC23ECE1257;
+        Mon, 11 Jul 2022 09:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7BF7C34115;
+        Mon, 11 Jul 2022 09:24:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531488;
-        bh=sU8MHd1BAT9pPPmpxJARHgNTc6LMa/2QtgH3sVlDSB8=;
+        s=korg; t=1657531491;
+        bh=Ogtk9ds9PUoZv1yHNlKP+Gp/qGJsLeUWAZAHVWnzl1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZJqGIbYlHnyo2Dn3Us2xjj2cjycwcaCndA+8VpJbngON6fGdT9lLtv8m4Ui8Esd0W
-         BM8tGTG2u6OqIZY1DRojTqupiBDws75g1u6IbcZrZ3dzyeGFeNxd6IjPHD5MNLS7ma
-         NIV8rQ0YnjnLcovf6w6EV9hZ0iHEqTQb3p6Nj+zM=
+        b=GSeXE8Mbi03DbJG58PrIk3rl6YxsVxa1JTXvzTCrpR3Vw7VpCInx416xpw0FM+Dn1
+         LJA0yFf/NC+bnqJld3XN8i++G4nA7jmMOLrdq3nPDWi+9i4+sHdZ2i0Ng1MIGa8Vge
+         ZteJFMHKy8fg2IqK4nJagkKuvtdt1u5fEyzM/DM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maurizio Avogadro <mavoga@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 122/230] ALSA: usb-audio: add mapping for MSI MAG X570S Torpedo MAX.
-Date:   Mon, 11 Jul 2022 11:06:18 +0200
-Message-Id: <20220711090607.526500681@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 123/230] tty: n_gsm: fix missing update of modem controls after DLCI open
+Date:   Mon, 11 Jul 2022 11:06:19 +0200
+Message-Id: <20220711090607.554714477@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,40 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maurizio Avogadro <mavoga@gmail.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 4ddef9c4d70aae0c9029bdec7c3f7f1c1c51ff8c ]
+[ Upstream commit 48473802506d2d6151f59e0e764932b33b53cb3b ]
 
-The USB audio device 0db0:a073 based on the Realtek ALC4080 chipset
-exposes all playback volume controls as "PCM". This makes
-distinguishing the individual functions hard.
-The mapping already adopted for device 0db0:419c based on the same
-chipset fixes the issue, apply it for this device too.
+Currently the peer is not informed about the initial state of the modem
+control lines after a new DLCI has been opened.
+Fix this by sending the initial modem control line states after DLCI open.
 
-Signed-off-by: Maurizio Avogadro <mavoga@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/Yl1ykPaGgsFf3SnW@ryzen
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220420101346.3315-1-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/mixer_maps.c | 4 ++++
+ drivers/tty/n_gsm.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/sound/usb/mixer_maps.c b/sound/usb/mixer_maps.c
-index 64fdca76b40e..997425ef0a29 100644
---- a/sound/usb/mixer_maps.c
-+++ b/sound/usb/mixer_maps.c
-@@ -586,6 +586,10 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
- 		.id = USB_ID(0x0db0, 0x419c),
- 		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
- 	},
-+	{	/* MSI MAG X570S Torpedo Max */
-+		.id = USB_ID(0x0db0, 0xa073),
-+		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
-+	},
- 	{	/* MSI TRX40 */
- 		.id = USB_ID(0x0db0, 0x543d),
- 		.map = trx40_mobo_map,
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index d3d5308daf35..c52d5e0d5c6f 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -371,6 +371,7 @@ static const u8 gsm_fcs8[256] = {
+ #define GOOD_FCS	0xCF
+ 
+ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
++static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
+ 
+ /**
+  *	gsm_fcs_add	-	update FCS
+@@ -1489,6 +1490,9 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 	dlci->state = DLCI_OPEN;
+ 	if (debug & 8)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
++	/* Send current modem state */
++	if (dlci->addr)
++		gsmtty_modem_update(dlci, 0);
+ 	wake_up(&dlci->gsm->event);
+ }
+ 
 -- 
 2.35.1
 
