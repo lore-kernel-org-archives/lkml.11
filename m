@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8811C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE1EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:10:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231272AbiGKJKJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        id S230264AbiGKJKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbiGKJJe (ORCPT
+        with ESMTP id S231154AbiGKJJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:09:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B967228705;
-        Mon, 11 Jul 2022 02:08:11 -0700 (PDT)
+        Mon, 11 Jul 2022 05:09:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AB428E29;
+        Mon, 11 Jul 2022 02:08:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBA36611A5;
-        Mon, 11 Jul 2022 09:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E7EC34115;
-        Mon, 11 Jul 2022 09:08:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B245F61183;
+        Mon, 11 Jul 2022 09:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDEDAC34115;
+        Mon, 11 Jul 2022 09:08:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530490;
-        bh=lYtXQwvRK4CFn7nBebGXd73gog73aQFaLKjhL0F+3Pc=;
+        s=korg; t=1657530493;
+        bh=ScC+AZ/Dw/P+jFHGC5l3wAydwM8lOs+uKFo0U/CGB5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q3fb1bwBCp9VGNkx/oOEns4Pg/BeKaEw//8SVWBTjtLyqUwz2ngxmSjFpDMkQr+4K
-         dJAjSOEMzRPzGFiZk5Q2j+mvS9XwQaw5VtOseRwsb0ciLTsBq3E3Qt/mzN1sNwS9s1
-         +vCeZgIX7pLvKLJ25/DdP/NJj1jbk/mf/mdZcN0E=
+        b=WN2uLwkBdX4jsuVCCbXsKB1FdN9Y5W7HVx6VQE0HwSovx6BZvOpzTdA3vLe2iq36M
+         PP2QztMvcNuUBRPisvZIf8YKSwMkj6QQhHmIF6p2cJZ+nUAP5WoHz3JQdNRqEZrv9W
+         S7/MtWwa9ob24bEGbap7bjhlNDCWiV3dfHHyWkBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Zhang, Bernice" <bernice.zhang@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Yian Chen <yian.chen@intel.com>,
-        Joerg Roedel <jroedel@suse.de>, Zhang@vger.kernel.org
-Subject: [PATCH 4.14 07/17] iommu/vt-d: Fix PCI bus rescan device hot add
-Date:   Mon, 11 Jul 2022 11:06:32 +0200
-Message-Id: <20220711090536.477219460@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 4.14 08/17] fbcon: Disallow setting font bigger than screen size
+Date:   Mon, 11 Jul 2022 11:06:33 +0200
+Message-Id: <20220711090536.507712550@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090536.245939953@linuxfoundation.org>
 References: <20220711090536.245939953@linuxfoundation.org>
@@ -50,57 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yian Chen <yian.chen@intel.com>
+From: Helge Deller <deller@gmx.de>
 
-commit 316f92a705a4c2bf4712135180d56f3cca09243a upstream.
+commit 65a01e601dbba8b7a51a2677811f70f783766682 upstream.
 
-Notifier calling chain uses priority to determine the execution
-order of the notifiers or listeners registered to the chain.
-PCI bus device hot add utilizes the notification mechanism.
+Prevent that users set a font size which is bigger than the physical screen.
+It's unlikely this may happen (because screens are usually much larger than the
+fonts and each font char is limited to 32x32 pixels), but it may happen on
+smaller screens/LCD displays.
 
-The current code sets low priority (INT_MIN) to Intel
-dmar_pci_bus_notifier and postpones DMAR decoding after adding
-new device into IOMMU. The result is that struct device pointer
-cannot be found in DRHD search for the new device's DMAR/IOMMU.
-Subsequently, the device is put under the "catch-all" IOMMU
-instead of the correct one. This could cause system hang when
-device TLB invalidation is sent to the wrong IOMMU. Invalidation
-timeout error and hard lockup have been observed and data
-inconsistency/crush may occur as well.
-
-This patch fixes the issue by setting a positive priority(1) for
-dmar_pci_bus_notifier while the priority of IOMMU bus notifier
-uses the default value(0), therefore DMAR decoding will be in
-advance of DRHD search for a new device to find the correct IOMMU.
-
-Following is a 2-step example that triggers the bug by simulating
-PCI device hot add behavior in Intel Sapphire Rapids server.
-
-echo 1 > /sys/bus/pci/devices/0000:6a:01.0/remove
-echo 1 > /sys/bus/pci/rescan
-
-Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
-Cc: stable@vger.kernel.org # v3.15+
-Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Yian Chen <yian.chen@intel.com>
-Link: https://lore.kernel.org/r/20220521002115.1624069-1-yian.chen@intel.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: stable@vger.kernel.org # v4.14+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/dmar.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbcon.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -374,7 +374,7 @@ static int dmar_pci_bus_notifier(struct
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -2445,6 +2445,11 @@ static int fbcon_set_font(struct vc_data
+ 	if (charcount != 256 && charcount != 512)
+ 		return -EINVAL;
  
- static struct notifier_block dmar_pci_bus_nb = {
- 	.notifier_call = dmar_pci_bus_notifier,
--	.priority = INT_MIN,
-+	.priority = 1,
- };
- 
- static struct dmar_drhd_unit *
++	/* font bigger than screen resolution ? */
++	if (w > FBCON_SWAP(info->var.rotate, info->var.xres, info->var.yres) ||
++	    h > FBCON_SWAP(info->var.rotate, info->var.yres, info->var.xres))
++		return -EINVAL;
++
+ 	/* Make sure drawing engine can handle the font */
+ 	if (!(info->pixmap.blit_x & (1 << (font->width - 1))) ||
+ 	    !(info->pixmap.blit_y & (1 << (font->height - 1))))
 
 
