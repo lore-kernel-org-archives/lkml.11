@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B26C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD317C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234329AbiGKKAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
+        id S234341AbiGKKA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234362AbiGKJ7Z (ORCPT
+        with ESMTP id S234363AbiGKJ7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:59:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B1FB6D9F;
-        Mon, 11 Jul 2022 02:27:48 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85DEB6DB1;
+        Mon, 11 Jul 2022 02:27:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 930FB61383;
-        Mon, 11 Jul 2022 09:27:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B695C34115;
-        Mon, 11 Jul 2022 09:27:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28645B80E89;
+        Mon, 11 Jul 2022 09:27:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74585C34115;
+        Mon, 11 Jul 2022 09:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531665;
-        bh=VSToU5cyn+2gNJ8tszJBMX7+ceNI777SKqz86CXfqlE=;
+        s=korg; t=1657531667;
+        bh=5s+Fgfq5iq8N3/TnZxgcKJQcxO0NV51qn95ZG79XstU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zcv9hozm4YPm4snn/lOXJzpHtMWPjgVaGnMVIQqUUgp0WNk+fbMPQ89XQCXqldi3g
-         0e5vUf2INuSfyWhFGF1c1VJ+wobvhZKl/swziztehWBLF7/5JddSl3+3tYowbKEtIY
-         H5zS4Lma1Y/DE1Sxk6ZC+4S4VgPazSWHTRo6icXU=
+        b=Ikk76yIHffizv0pe3wNn/MW2TF671S1OBxc6hKfBrbBc+yCcP6GWWhSK0cYgF8pVd
+         iTG540nchs3S8uHaJ3HO2/6Hkmo1Wr0eKUDrUp65jEUX72vFDqbvp54D58+9InGScI
+         irIk5q3ASspDVuCeIbiXQRKcEc5ENUOQjwGSnk+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 188/230] arm64: dts: imx8mp-evk: correct vbus pad settings
-Date:   Mon, 11 Jul 2022 11:07:24 +0200
-Message-Id: <20220711090609.440710078@linuxfoundation.org>
+Subject: [PATCH 5.15 189/230] arm64: dts: imx8mp-evk: correct eqos pad settings
+Date:   Mon, 11 Jul 2022 11:07:25 +0200
+Message-Id: <20220711090609.469016842@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -52,34 +52,61 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit e2c00820a99c55c9bb40642d5818a904a1e0d664 ]
+[ Upstream commit e6e1bc0ec9e8ad212fa46d8878a6e17cd31fdf7b ]
 
-0x19 is not a valid setting. According to RM bit layout, BIT3 and BIT0
-are reserved.
-  8  7   6   5   4   3  2 1  0
- PE HYS PUE ODE FSEL X  DSE  X
+According to RM bit layout, BIT3 and BIT0 are reserved.
+ 8  7   6   5   4   3  2 1  0
+PE HYS PUE ODE FSEL X  DSE  X
 
-Not set reserved bit.
+Although function is not broken, we should not set reserved bit.
 
-Fixes: 43da4f92a611 ("arm64: dts: imx8mp-evk: enable usb1 as host mode")
+Fixes: dc6d5dc89bad ("arm64: dts: imx8mp-evk: enable EQOS ethernet")
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 30 ++++++++++----------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index be3b01b5e159..c794e8662da8 100644
+index c794e8662da8..33664c217673 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
 +++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -390,7 +390,7 @@
- 
- 	pinctrl_usb1_vbus: usb1grp {
+@@ -285,21 +285,21 @@
+ &iomuxc {
+ 	pinctrl_eqos: eqosgrp {
  		fsl,pins = <
--			MX8MP_IOMUXC_GPIO1_IO14__USB2_OTG_PWR	0x19
-+			MX8MP_IOMUXC_GPIO1_IO14__USB2_OTG_PWR	0x10
+-			MX8MP_IOMUXC_ENET_MDC__ENET_QOS_MDC				0x3
+-			MX8MP_IOMUXC_ENET_MDIO__ENET_QOS_MDIO				0x3
+-			MX8MP_IOMUXC_ENET_RD0__ENET_QOS_RGMII_RD0			0x91
+-			MX8MP_IOMUXC_ENET_RD1__ENET_QOS_RGMII_RD1			0x91
+-			MX8MP_IOMUXC_ENET_RD2__ENET_QOS_RGMII_RD2			0x91
+-			MX8MP_IOMUXC_ENET_RD3__ENET_QOS_RGMII_RD3			0x91
+-			MX8MP_IOMUXC_ENET_RXC__CCM_ENET_QOS_CLOCK_GENERATE_RX_CLK	0x91
+-			MX8MP_IOMUXC_ENET_RX_CTL__ENET_QOS_RGMII_RX_CTL			0x91
+-			MX8MP_IOMUXC_ENET_TD0__ENET_QOS_RGMII_TD0			0x1f
+-			MX8MP_IOMUXC_ENET_TD1__ENET_QOS_RGMII_TD1			0x1f
+-			MX8MP_IOMUXC_ENET_TD2__ENET_QOS_RGMII_TD2			0x1f
+-			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3			0x1f
+-			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL			0x1f
+-			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x1f
+-			MX8MP_IOMUXC_SAI2_RXC__GPIO4_IO22				0x19
++			MX8MP_IOMUXC_ENET_MDC__ENET_QOS_MDC				0x2
++			MX8MP_IOMUXC_ENET_MDIO__ENET_QOS_MDIO				0x2
++			MX8MP_IOMUXC_ENET_RD0__ENET_QOS_RGMII_RD0			0x90
++			MX8MP_IOMUXC_ENET_RD1__ENET_QOS_RGMII_RD1			0x90
++			MX8MP_IOMUXC_ENET_RD2__ENET_QOS_RGMII_RD2			0x90
++			MX8MP_IOMUXC_ENET_RD3__ENET_QOS_RGMII_RD3			0x90
++			MX8MP_IOMUXC_ENET_RXC__CCM_ENET_QOS_CLOCK_GENERATE_RX_CLK	0x90
++			MX8MP_IOMUXC_ENET_RX_CTL__ENET_QOS_RGMII_RX_CTL			0x90
++			MX8MP_IOMUXC_ENET_TD0__ENET_QOS_RGMII_TD0			0x16
++			MX8MP_IOMUXC_ENET_TD1__ENET_QOS_RGMII_TD1			0x16
++			MX8MP_IOMUXC_ENET_TD2__ENET_QOS_RGMII_TD2			0x16
++			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3			0x16
++			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL			0x16
++			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x16
++			MX8MP_IOMUXC_SAI2_RXC__GPIO4_IO22				0x10
  		>;
  	};
  
