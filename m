@@ -2,174 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F102CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F6CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231157AbiGKLVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S231164AbiGKLWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbiGKLV2 (ORCPT
+        with ESMTP id S231138AbiGKLVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:21:28 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B20357DD;
-        Mon, 11 Jul 2022 03:46:10 -0700 (PDT)
+        Mon, 11 Jul 2022 07:21:46 -0400
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4404C5F9A8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:46:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657536370; x=1689072370;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=lcfLCl3VNDkumrnTQWJk8C/iVwOXh+schq6rF+gYOmI=;
-  b=NhazMX0/T6b4FhofLYK0UoWF+4qlyu5PXgKiZgFQV0SZkZhrbjxnkdbI
-   qeIe6PVGgOqovwFNTpLRsnhUiy83xQzPmRAAypCxO1XzeARne3flOfHLe
-   McvDkWJBpA6gNDiDQTbBWVxXmolxheUgISBdsTigzzDTZB2AFgkgx26SP
-   0nzzqkfTHA1CX1LlBFu2Uek6shnWojZVCfq/zMNesEiyb8mirCaGOfuD6
-   W5saRrONvpjOg1HrSCdExNcfDZG/gA9aC2MtTL0WppUuY1CNueHJapB5D
-   ttblHBOS6U/pxjzdHdkbDngCmy2DeDcRAK8nLyBc14Jk6m4DMtP9GJgcu
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="171854227"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Jul 2022 03:46:09 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Jul 2022 03:46:05 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Mon, 11 Jul 2022 03:46:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X8TJ3KHoxa/hvM4RiNNUi5F8ChTqtotYHRm6ST0XTl/P32Q0hA4zH7Hvoeonb78mx3fA2xMgTgri1lp8huRVpu0LoRiYDHUw614XzT7jhMLvlnxEftzDTL46ueIOH5iiL8miWWItyJnNikuCCS0Nd156zX68DwkNXkJqj2K/Dylt+xUmkDzZ6SIlmRRQyYarYupRhbWOfGm7hTOxxGqvhHu+/W/hM4Ak3EWfRGfl7fjwK4g2mjbGSgVFsPK9gnidNanu3GP2wb/r51Xl/+Ow0u2h34Uews3aOMWGrtbEKGkqImT/Ob7W9qd3+3ftMj9czff/y3TssmxH3/epE1v7Gw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lcfLCl3VNDkumrnTQWJk8C/iVwOXh+schq6rF+gYOmI=;
- b=VoadjDydxOL+QjxvEvTT7TRi9OnPVBlqDirEhIx7PmOFZB09V47es4aO2GgtwMcpLebrEzWl1HSuAy5rL0+gRZhJBkjC1znnoNUVCNM5FuRLPbyS/oUfBvVWcqnacIHMgoNeEWJtolYq4x3NP4sVuiwyRINNl+ZretQfEYq5C9+RQuvxPu3aA7Ez4dEJRu2VrUPtWRr8x8iB8u+WvumsOwqRqMHhspPX7iVghYCbc5VYMkHnOzOIRYm3PJo/9mGwigRcKMjdWN5fHhmsmLUYlrJJamUDqk4udWQ5/GqFOVHZr1OzJerK3T3N/wKWnWh/5rQ/BOne3zNTlW1cTGXBpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lcfLCl3VNDkumrnTQWJk8C/iVwOXh+schq6rF+gYOmI=;
- b=E558kd6713gdkV3bDq/RD12gNnw/ROBmBVhLQuQw5po0sVQpzae5XCaN3HST4eVaAg+lC2c7kZW0MJtC6U2yINoe/Tdeyc5evJ+HjZzYaSnY6KqLtRSLdQ9mFMveDlJ+OBcOJNiD50OGTc6hREJoUb0nHP31e3iZF32Hf370rIA=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by MN2PR11MB4368.namprd11.prod.outlook.com (2603:10b6:208:17b::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Mon, 11 Jul
- 2022 10:46:00 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::8d4a:1681:398d:9714]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::8d4a:1681:398d:9714%5]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
- 10:46:00 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <geert+renesas@glider.be>, <broonie@kernel.org>,
-        <Daire.McNamara@microchip.com>
-CC:     <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] spi: SPI_MICROCHIP_CORE should depend on
- SOC_MICROCHIP_POLARFIRE
-Thread-Topic: [PATCH] spi: SPI_MICROCHIP_CORE should depend on
- SOC_MICROCHIP_POLARFIRE
-Thread-Index: AQHYlRDscDs8Hw01AUS3IkiKDybfsa14+TKAgAADiIA=
-Date:   Mon, 11 Jul 2022 10:46:00 +0000
-Message-ID: <f297d979-4e30-e882-f9da-2e6401123617@microchip.com>
-References: <4e78693a87d6b83847056d22468c370e7232f390.1657529125.git.geert+renesas@glider.be>
- <373b74b4-657c-b6b7-9532-f6602d6b2a8e@microchip.com>
-In-Reply-To: <373b74b4-657c-b6b7-9532-f6602d6b2a8e@microchip.com>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4c845865-7b16-404b-2288-08da632a8b22
-x-ms-traffictypediagnostic: MN2PR11MB4368:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uW64XOwRlkbJpluoltMJwJVoSxMdC313eglhDET6bs/eKPjZD7MyaorJlKolfi4il+LoZC9DmSORHvoNT9kA+M7YYRVKC9q+5nWVg9ePCN4rg9AUlrHsBFbpsU8k3tfJ7wQ0fy6MTWQe+sPNtvVBH36hS8szgL9tSyiJd+pDp6YH4JykELn7isUzMDNw9rWDE94WWn3wbJzKzfMRD3KM33bJqttKYnhIw48nIYOazmuN044biOF61rDkGhWpWJNcgicxmLxs9iyZoOlZbgmkrfP5n3gZBKAuiGRy3sZcA5Tn6BSDGGP6Rv1/xlKQFTAoe81P/Qg8MtVyG1nOqOVJQC2uejLO8nUQD73b44CUEaVLmHPbKBSWgsOry6qGaMdCv6P6hsA3xLspd1kVC31MmFij3QBL7qNOVnOwpx433kWnQg2E12OOcNPlbc5qE35malBQuOM3pD7HRS+6fiYpxQGhiJFraTbsNZj+kcz3PIhrsrUnPdTao1tJo3p2IPXQ2PHOkeiXijOa1UCAvKlJns3tJrQx/TX1WhF3CqNiX9GU6S/ASPXfZYK5FJueTAJEIV7mrtvWP9Dxn55Rq/eMEC6sHnNIDiC4JF1dBTp2g2yNFwA2ikEE82McqDlppilX4AgSLVdwGMZBOjx3RBiEOvw4LQ8BPihP4oI7NFxBKtinQdjpYSPx3mmjbUDD5iC9bFsQuwS/8bGSAgSrRHjBaopyugWGhOWDSGjdFysI/NWJU+c2x6I3TKqsblnLFxnci7k3N+TtsYIYJ4VvShmSz9JzyK4hdeMbEcZrcLgEIgERJdjSN69AmrU13IccTb64ntFQpWaG/VvXfdO37nncgJIZ6FB/K7ZHF48XVWz/YArh7aXznWc4uBYlpv+Q6huxtIdxFqVH+HJFkVwt1aJ9qA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(366004)(39860400002)(136003)(396003)(8936002)(5660300002)(53546011)(6512007)(2906002)(41300700001)(122000001)(83380400001)(86362001)(478600001)(38100700002)(36756003)(71200400001)(110136005)(6486002)(966005)(91956017)(66476007)(66946007)(8676002)(6636002)(54906003)(4326008)(2616005)(186003)(66556008)(316002)(76116006)(66446008)(64756008)(6506007)(31686004)(26005)(38070700005)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RVkwMEY2UC81azJZald1N0phNFJMWkJvMlB4eG9vaUdoSE5qVE9YUUFMallk?=
- =?utf-8?B?YlBCZ2JzenZ2aWo2aXhxbXB4YnhMNitYNTlwNnloSjZUbEV5SFhqdkZTTk1B?=
- =?utf-8?B?bGl2eUsxSGk4ZjZiWTRBUng5SDZ1SnQ4aXcrajRUU0IyQTBjOFN3UGUyN2R6?=
- =?utf-8?B?RjY0Wm5CVEhNWXFMaUsyUjFldHY0dlJCT05LTGxzeU5YV3E1MkxRc2ZHSWNq?=
- =?utf-8?B?NVE0bFdxczBOaWMyTGkwbVlPbFBkN3pVN3kra3Y4Vlk1cjNIZWlLTDk2ZFQ4?=
- =?utf-8?B?V0Rhei8vZ0d3Y2hvOXg5emlWOHBpRzFhY2RoR3Iwb3VaOXU4UFAzcE9mbFhq?=
- =?utf-8?B?ZFpFSFZkQlI3ZjU5aS92eDBCR2I3emJ0WFZIdzkzSWxRNTlhcS9ZYjNtTXRL?=
- =?utf-8?B?UGd4amR6TFJnWnovL3BKTWlFSFBnd3NWMm5MWVBta2I5NzFGOUoyelczSVl2?=
- =?utf-8?B?S0tlWUZPTXR6RXZIU1NTWFdUSkZuZ1hqODhmZXZnemwwSmI3QlZkRVNDZUlY?=
- =?utf-8?B?eG4xSDBuNDFDMnRxYzNQcXdNSnI0OHJlaUphMmFFZDdpazcyQmtXZEdtdzFo?=
- =?utf-8?B?TVRmdXhLT09ZUmQzc2pseEFtd0loNFBZek5EYmhqZElNeWtNM24ydkg5bDJm?=
- =?utf-8?B?cisyaWo4SEpzUUZodXEvVUhJbkFseTBhaldBalNnZlBUWlZxdFJINzRpTHBG?=
- =?utf-8?B?OHJValBzUXNiby9BUjJ1emg3Z0IwWmw2R3Z5K3JxeGRHeXZNcDllU1hxS28w?=
- =?utf-8?B?MGlMVGlpVTNsaHZaN25tSXMwSk4wRWxCZUxMaU5KVXdwb1RyUnFDdnFEd2o0?=
- =?utf-8?B?WVJ2MlNGbXRMYWNyL01SZkt4K2RZNG9jYXdNUExSWFVFK1NTTUlsd2gvZnBu?=
- =?utf-8?B?aC9SSlFCWnNySEs3RWc4V3ZQTXFTa3U4TGFiaWVYbzVjelU4VmNGUjVJV1Zv?=
- =?utf-8?B?QVY0K0hyMXB2blZLNUNXRE42ajZHUDJCdmpHVUJzWDl5LzI5NXVwenZ6NkZt?=
- =?utf-8?B?L3pUZUozRlZGaS9nbS95MWNERVZOcklVV1F3ME53Y28wNVFUclRkQXJCOHZX?=
- =?utf-8?B?eVdrOGJrVi9DM2s4M28xZFp0dXJLa2FWMGxnVXJkRFVmZ3hkSFNjUG52Zjg5?=
- =?utf-8?B?VkNabFROR1ZUbHdFdzJ6ZzJPZEY3cU91Tm9WK3BaVTI4ZDNBdWdYMDBHOUJq?=
- =?utf-8?B?WHN4cFVYWk8vb2hEMmFtSEpNTHlIT3V0ZlgydzN5TURyTEdNd2RBMCtMSllo?=
- =?utf-8?B?OTYvUitlcEw2N3Y4ZlR1aHpqT3lTWlJLM2J4MTZIUzBLYjM1Wm9CUWNxZVZF?=
- =?utf-8?B?Y014QlhhYzZiVzU4ZG1pRGdidllXNkF1Y09uUHozOUFWSGFIblRPNlR1cWM1?=
- =?utf-8?B?UDM1NU8zbDZ4amlaZ1I1c29WWXNKcVUwWHFxdEc0YWwyZVpOc3VleXJpbkdv?=
- =?utf-8?B?SmkyWkVtWGtwSnhGU2gxeG9ZVTNaanNEMGFOMklpai96cVN3NzJwS1ltMEh4?=
- =?utf-8?B?YmVodjZWRmNOcDF0RzB3UFI5SjBBOEpxUW5NcUdJdjJuVDhQODJYaDRQalU0?=
- =?utf-8?B?N0lMOFhYdFcwcHdhS25tNEpOMEhYTDE1bEFhQStlOEgrZEZ1ZUlseXpwaFg3?=
- =?utf-8?B?UTBpdW1FbmRha2tIbms1eS90MWRvMmJ2cnRrUmYwY1BvKzZpRGF5VEt2SHk2?=
- =?utf-8?B?Z1BadnVZeFVvdTV3K0RrdUcrRFEvckZPU29rcGVZRlU5ZDdqOSt3NWVuKzhK?=
- =?utf-8?B?NGNTVzhIdFdIVW8vY2o4OFk0MnU2ZHdVeTQ5eDNKRUdmdXRpTFErQ0l4UEVr?=
- =?utf-8?B?T3Y2TWFlTlN2TDllblRxUUxSRDVtUC96QW13WldKK0hZVmtJZm04amtGVmUy?=
- =?utf-8?B?VnJrTTNwbXc0T1JqcW9Lb3lnckFyNDFLTkdqUXZKVnhsRG5hRWk1L1FBdjJI?=
- =?utf-8?B?c1d2dE5lYjdicURpK3lwYlc0cHgzb2tIYjZUU21XQk9hYVRWbGcwZWRhemZC?=
- =?utf-8?B?MFhIaFZkOHN1bU9XSnFZSzNhUVV3RmdFNURFaVZoNmQ5TTNPNUJBSmxqUDAz?=
- =?utf-8?B?Y2p5SERRNTlWSWxhanZtQ245K1NaUEdURWZmMW8rVTEyM2ZqbEhSanNJdG8w?=
- =?utf-8?Q?K3eRH4HOQbsXeMmFeSJA0oAp7?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2401489B0C692D48B1AEE4EAD888B778@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1657536390; x=1689072390;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=M38FathVBz+QDBZGXrRIt275IISeBfhxZNFV9WnBgzI=;
+  b=ZIfm9HYVD5sTPZY48dzz7HaGYVS2DGgKEk5X2u53ZvetbgSx9ZGp42v0
+   nn2teZoBSJKNnVLahqFvd/V1d2hc7reb6nLrECUIRVvJXufOVji3m7dvc
+   /oiUTkKNxWTQQiXtNApERAz3jjdx1j2roB8z6oi4VRpgQga0l2uL7XpmC
+   LOQs63HOcAaFy7cUbkQNxmg4v+zJut8UG+v4r0cFgPfDmnW9qb6VCtbKm
+   cu8s8oleH4X6QidIcNGASJglvkAuNvt+rdx6CBzlmY+mX+E4pPG8wiwus
+   VFmqiK7UrMayQC275ASwLGxOIhjOpptIPi6rZ5p+WgmI15n6Xr/M5ChGm
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,262,1650902400"; 
+   d="scan'208";a="206062171"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 11 Jul 2022 18:46:28 +0800
+IronPort-SDR: LyPXteM28wOwsKIA89neZZhgGjl0t6rr8MvIyEhl0PfvRLuagwLBJn77YRuoTKfUdNKrsln6R6
+ WehZ1eruJZj8eAexfTY9G273ip8BPBefBb5Rr7kGSfK50YpOYr0zhqJB8v5wY12zff1LjVs5/o
+ C18a9A1zstIokWjlv4ahGT27MfW61whPVw/wEkQZwB6+w0nFFAgm0nIP6KQNg+eGqu1Wj1pRDH
+ Ms6/Zyjhp2O+Cwr/e191252fG9G/8SJoA7WD0mNIzqDpLOkbil97rGolfSYu5CvjIhIFpO8FGg
+ uz+CRL9Ej84OH6IegkHuVo1+
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Jul 2022 03:03:27 -0700
+IronPort-SDR: O98aWuCFfvvs7Ud7Da6lFeRs4E+rAtCWFfsuucZd+0ifBRqRyQBOjxVFw/HWXjUtmhYqk5E+cZ
+ pOOfkwvjimEYlr+qBYWAw/q5heyj1I3qMc2XPiceEpmFrU9+mEeNkJcCv1lA4fycFhtrXqmhrv
+ kHwFqsZ6zScGtKgHx4G3M0AGyDVVWMiisbPx/o1xPliw3JJ9FF6ANBNwiJWGVqGe0Bn7Kryaei
+ II5WDLpR/NosrrrjgmZBhnUQ9wX0iBO5KuxGxvDcD5Uz0G/AukEHtrf033i5r1/qwAeF80Hqis
+ bY8=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Jul 2022 03:40:29 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LhL4q5FWGz1Rws7
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:40:27 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1657536026; x=1660128027; bh=M38FathVBz+QDBZGXrRIt275IISeBfhxZNF
+        V9WnBgzI=; b=Jq8yiythf4/NGMPDez5TDXQRmsRywCxgvudQsGMOmYsnKVsSgRw
+        Z4ASuw7usvOrTQKmaPKdWKF6TuTLFpxxEeOa6LGPkWFwal2t9Ftp2g6X1zVAH/Vf
+        icYZ6ZMn/S+DdP4FS0n6P1h7o5igMr45a8B/bUdts7FCCnSxCl6n8LdMRPZFkYzX
+        IOCwnB6HlRhrkluKixvZotg9Y8P5Z5MwHkQGLEYH2TlYfPYZFdopY6kOukm9SPHi
+        MSfHEEhn41NkWpbh+5tU9s8JMTXgsxx5iFx7xwwiFZ2REAmup3MUsSbWP3LCpZFA
+        oO4VfhLvJVEW9Wb6ZQS8VgdguaAlSHxUZuw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 5mv9HiMPJ9Lq for <linux-kernel@vger.kernel.org>;
+        Mon, 11 Jul 2022 03:40:26 -0700 (PDT)
+Received: from [10.225.163.114] (unknown [10.225.163.114])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LhL4m0m61z1RtVk;
+        Mon, 11 Jul 2022 03:40:23 -0700 (PDT)
+Message-ID: <62b801e8-66b6-0af7-b0c9-195823bf9f62@opensource.wdc.com>
+Date:   Mon, 11 Jul 2022 19:40:22 +0900
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c845865-7b16-404b-2288-08da632a8b22
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 10:46:00.0236
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jdXIEsTZCteAyEEGBgfHmz0jTskWqWS1/WfFyRA27+2R5wjFmTmJAE3eXkK1EpYbt5m83cWQCBNyb3p5SzigQmwEhPvJmLUylpgwt2l2Zws=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4368
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Christoph Hellwig <hch@lst.de>
+Cc:     joro@8bytes.org, will@kernel.org, jejb@linux.ibm.com,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+        iommu@lists.linux.dev, linux-scsi@vger.kernel.org,
+        linuxarm@huawei.com
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
+ <20220706134447.GA23753@lst.de> <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
+ <5fd4814a-81b1-0e71-58e0-57a747eb684e@huawei.com>
+ <6367a264-a3d3-8857-9b5a-2afcd25580cb@opensource.wdc.com>
+ <a415e4a1-72ce-53e1-437a-fc7e56e4b913@huawei.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <a415e4a1-72ce-53e1-437a-fc7e56e4b913@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMTEvMDcvMjAyMiAxMTozMywgQ29ub3IgRG9vbGV5IHdyb3RlOg0KPiBPbiAxMS8wNy8yMDIy
-IDA5OjQ1LCBHZWVydCBVeXR0ZXJob2V2ZW4gd3JvdGU6DQo+PiBFWFRFUk5BTCBFTUFJTDogRG8g
-bm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBrbm93IHRoZSBj
-b250ZW50IGlzIHNhZmUNCj4+DQo+PiBUaGUgTWljcm9jaGlwICJoYXJkIiBGUEdBIFNQSSBjb250
-cm9sbGVyIGlzIG9ubHkgcHJlc2VudCBvbiBNaWNyb2NoaXANCj4+IFBvbGFyRmlyZSBTb0NzLsKg
-IEhlbmNlIGFkZCBhIGRlcGVuZGVuY3kgb24gU09DX01JQ1JPQ0hJUF9QT0xBUkZJUkUsIHRvDQo+
-PiBwcmV2ZW50IGFza2luZyB0aGUgdXNlciBhYm91dCB0aGlzIGRyaXZlciB3aGVuIGNvbmZpZ3Vy
-aW5nIGEga2VybmVsDQo+PiB3aXRob3V0IE1pY3JvY2hpcCBQb2xhckZpcmUgU29DIHN1cHBvcnQu
-DQo+Pg0KPj4gRml4ZXM6IDlhYzhkMTc2OTRiNjZkNTQgKCJzcGk6IGFkZCBzdXBwb3J0IGZvciBt
-aWNyb2NoaXAgZnBnYSBzcGkgY29udHJvbGxlcnMiKQ0KPj4gU2lnbmVkLW9mZi1ieTogR2VlcnQg
-VXl0dGVyaG9ldmVuIDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4NCj4gDQo+IFVudGlsIEkgZ2V0
-IHRoZSAic29mdCIgdmVyc2lvbiBzb3J0ZWQsIG1ha2VzIHNlbnNlIHRvIG1lLg0KPiBSZXZpZXdl
-ZC1ieTogQ29ub3IgRG9vbGV5IDxjb25vci5kb29sZXlAbWljcm9jaGlwLmNvbT4NCg0KQWN0dWFs
-bHksIEkgd2FzIHRoaW5raW5nIGFib3V0IHdoeSB0aGUgInNvZnQiIHZlcnNpb24gd291bGQgY2hh
-bmdlDQphbnl0aGluZyBhbmQgSSByZWFsaXNlZCB0aGF0IHRoaXMgaXMgbm90IGNvcnJlY3QuDQoN
-CkkgcmVzY2luZCBteSBSLWIuDQoNCllvdSBjYW4gYWxzbyB1c2UgdGhpcyBvbiB0aGUgSGlGaXZl
-IFVubGVhc2hlZCBFeHBhbnNpb24gYm9hcmQgdmlhDQpjaGlwbGluazoNCmh0dHBzOi8vcmF3Lmdp
-dGh1YnVzZXJjb250ZW50LmNvbS9wb2xhcmZpcmUtc29jL3BvbGFyZmlyZS1zb2MtZG9jdW1lbnRh
-dGlvbi9tYXN0ZXIvYm9hcmRzL2xjLW1wZnMtZGV2LWtpdC9pbWFnZXMvdXBkYXRlZC1sYy1saWJl
-cm8tZGVzaWduLnBuZw0KDQpJIGhhdmUgbmV2ZXIgdHJpZWQgdGhpcyBzbyBJIGZvcmdvdCBhYm91
-dCBpdCwgYnV0IGp1c3QgYXMgdGhlIFBDSQ0Kcm9vdCBwb3J0IGlzIGFjY2Vzc2libGUsIHNvIGlz
-IHRoZSBTUEkuDQoNClNvcnJ5IQ0KDQoNCg==
+On 7/11/22 16:36, John Garry wrote:
+> On 11/07/2022 00:08, Damien Le Moal wrote:
+>>> Ah, I think that I misunderstood Damien's question. I thought he was
+>>> asking why not keep shost max_sectors at dma_max_mapping_size() and t=
+hen
+>>> init each sdev request queue max hw sectors at dma_opt_mapping_size()=
+.
+>> I was suggesting the reverse:)  Keep the device hard limit
+>> (max_hw_sectors) to the max dma mapping and set the soft limit
+>> (max_sectors) to the optimal dma mapping size.
+>=20
+> Sure, but as I mentioned below, I only see a small % of requests whose=20
+> mapping size exceeds max_sectors but that still causes a big performanc=
+e=20
+> hit. So that is why I want to set the hard limit as the optimal dma=20
+> mapping size.
+
+How can you possibly end-up with requests larger than max_sectors ? BIO
+split is done using this limit, right ? Or is it that request merging is
+allowed up to max_hw_sectors even if the resulting request size exceeds
+max_sectors ?
+
+>=20
+> Indeed, the IOMMU IOVA caching limit is already the same as default=20
+> max_sectors for the disks in my system - 128Kb for 4k page size.
+>=20
+>>
+>>> But he seems that you want to know why not have the request queue max
+>>> sectors at dma_opt_mapping_size(). The answer is related to meaning o=
+f
+>>> dma_opt_mapping_size(). If we get any mappings which exceed this size
+>>> then it can have a big dma mapping performance hit. So I set max hw
+>>> sectors at this =E2=80=98opt=E2=80=99 mapping size to ensure that we =
+get no mappings
+>>> which exceed this size. Indeed, I think max sectors is 128Kb today fo=
+r
+>>> my host, which would be same as dma_opt_mapping_size() value with an
+>>> IOMMU enabled. And I find that only a small % of request size may exc=
+eed
+>>> this 128kb size, but it still has a big performance impact.
+>>>
+>=20
+> Thanks,
+> John
+
+
+--=20
+Damien Le Moal
+Western Digital Research
