@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69041CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67622CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231802AbiGKJV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S231809AbiGKJVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231919AbiGKJUv (ORCPT
+        with ESMTP id S231792AbiGKJVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:20:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFBA558E0;
-        Mon, 11 Jul 2022 02:12:46 -0700 (PDT)
+        Mon, 11 Jul 2022 05:21:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6752317D;
+        Mon, 11 Jul 2022 02:12:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEEE16111F;
-        Mon, 11 Jul 2022 09:12:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4360C385A5;
-        Mon, 11 Jul 2022 09:12:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC1FB80E5E;
+        Mon, 11 Jul 2022 09:12:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B4C5C341CB;
+        Mon, 11 Jul 2022 09:12:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530765;
-        bh=83a72sjXNaJzb4ILacnxZowX5LjUNTxN6KSv30OSb0A=;
+        s=korg; t=1657530768;
+        bh=yY6ZmKGIUYpCOYL2TPYJ91ORRoU2do9IDRh0Y6n6gm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bLtvDCOmWiVpedQvrCiovvMocfsIRyCg47MtWfN6qEbnE/JnJJbWbbkB2+gUo3XBd
-         fXMG3toElnvVp9XCAurqAG8NUlqU9MWz2iY688TewwEk8vVu32lYYs2WaH8l4ymlTv
-         IM9DNgv7ZonuSmtUHAoIXa7Av8OHH/jaB5Y3PYF8=
+        b=VRnows2rf8PgORzojutjk8ffDlG7eFfltSmMbmi3eIl9QqV0pN6UEEJSPXtbswGX9
+         Xd/N5HaV37c4MTPGWAkeFbouLdvY3VViZdjbRUKUQ5tcxO+O0dD14Vlshw85JMNuwy
+         NM2jS9itgDnuSwSF4xEYep9FUHZfKruWThzYI670=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrei Lalaev <andrey.lalaev@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 32/55] pinctrl: sunxi: sunxi_pconf_set: use correct offset
-Date:   Mon, 11 Jul 2022 11:07:20 +0200
-Message-Id: <20220711090542.710329127@linuxfoundation.org>
+Subject: [PATCH 5.10 33/55] arm64: dts: qcom: msm8992-*: Fix vdd_lvs1_2-supply typo
+Date:   Mon, 11 Jul 2022 11:07:21 +0200
+Message-Id: <20220711090542.738739670@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -50,38 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrei Lalaev <andrey.lalaev@gmail.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit cd4c1e65a32afd003b08ad4aafe1e4d3e4e8e61b ]
+[ Upstream commit 5fb779558f1c97e2bf2794cb59553e569c38e2f9 ]
 
-Some Allwinner SoCs have 2 pinctrls (PIO and R_PIO).
-Previous implementation used absolute pin numbering and it was incorrect
-for R_PIO pinctrl.
-It's necessary to take into account the base pin number.
+"make dtbs_check" complains about the missing "-supply" suffix for
+vdd_lvs1_2 which is clearly a typo, originally introduced in the
+msm8994-smd-rpm.dtsi file and apparently later copied to
+msm8992-xiaomi-libra.dts:
 
-Fixes: 90be64e27621 ("pinctrl: sunxi: implement pin_config_set")
-Signed-off-by: Andrei Lalaev <andrey.lalaev@gmail.com>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Link: https://lore.kernel.org/r/20220525190423.410609-1-andrey.lalaev@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+msm8992-lg-bullhead-rev-10/101.dtb: pm8994-regulators: 'vdd_lvs1_2'
+does not match any of the regexes:
+  '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
+>From schema: regulator/qcom,smd-rpm-regulator.yaml
+
+msm8992-xiaomi-libra.dtb: pm8994-regulators: 'vdd_lvs1_2'
+does not match any of the regexes:
+  '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
+>From schema: regulator/qcom,smd-rpm-regulator.yaml
+
+Reported-by: Rob Herring <robh@kernel.org>
+Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
+Fixes: f3b2c99e73be ("arm64: dts: Enable onboard SDHCI on msm8992")
+Fixes: 0f5cdb31e850 ("arm64: dts: qcom: Add Xiaomi Libra (Mi 4C) device tree")
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220627135938.2901871-1-stephan.gerhold@kernkonzept.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-sunxi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts | 2 +-
+ arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-index be7f4f95f455..24c861434bf1 100644
---- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-@@ -544,6 +544,8 @@ static int sunxi_pconf_set(struct pinctrl_dev *pctldev, unsigned pin,
- 	struct sunxi_pinctrl *pctl = pinctrl_dev_get_drvdata(pctldev);
- 	int i;
+diff --git a/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts b/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts
+index cb82864a90ef..42f2b235011f 100644
+--- a/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts
++++ b/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts
+@@ -64,7 +64,7 @@
+ 		vdd_l17_29-supply = <&vreg_vph_pwr>;
+ 		vdd_l20_21-supply = <&vreg_vph_pwr>;
+ 		vdd_l25-supply = <&pm8994_s5>;
+-		vdd_lvs1_2 = <&pm8994_s4>;
++		vdd_lvs1_2-supply = <&pm8994_s4>;
  
-+	pin -= pctl->desc->pin_base;
-+
- 	for (i = 0; i < num_configs; i++) {
- 		enum pin_config_param param;
- 		unsigned long flags;
+ 		pm8994_s1: s1 {
+ 			regulator-min-microvolt = <800000>;
+diff --git a/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts b/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
+index 4f64ca3ea1ef..6ed2a9c01e8c 100644
+--- a/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
++++ b/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
+@@ -151,7 +151,7 @@
+ 		vdd_l17_29-supply = <&vreg_vph_pwr>;
+ 		vdd_l20_21-supply = <&vreg_vph_pwr>;
+ 		vdd_l25-supply = <&pm8994_s5>;
+-		vdd_lvs1_2 = <&pm8994_s4>;
++		vdd_lvs1_2-supply = <&pm8994_s4>;
+ 
+ 		pm8994_s1: s1 {
+ 			/* unused */
 -- 
 2.35.1
 
