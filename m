@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77969C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7568ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbiGKJiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52494 "EHLO
+        id S230379AbiGKJiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbiGKJhF (ORCPT
+        with ESMTP id S233020AbiGKJhI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:37:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EB51261D;
-        Mon, 11 Jul 2022 02:19:24 -0700 (PDT)
+        Mon, 11 Jul 2022 05:37:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041AD4E63E;
+        Mon, 11 Jul 2022 02:19:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 597636111F;
-        Mon, 11 Jul 2022 09:19:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A43CC385A9;
-        Mon, 11 Jul 2022 09:19:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0324B80E76;
+        Mon, 11 Jul 2022 09:19:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26579C34115;
+        Mon, 11 Jul 2022 09:19:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531163;
-        bh=bEHtYdEwJZX67YLc4RQfA/Z+TOjaYsEkyRE3U77hJK4=;
+        s=korg; t=1657531166;
+        bh=KCG/poZQs1m2qcMF8m1bdRnnCDWxrbakgTIoSY55yeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VkWdPQC81cY3vi420Sm3rBRVG+es1Oa0YfVEyPwKY3YcFqb6WPL1FS0HDt0krFSth
-         Golt/OTt/Pwx8ASnXhE4cPr173Y/qcTdJhj6JyNPZMBmJb8YsFimfzD76QRcLkpSDM
-         3/BLl6ndP6XlGyrNa/vGRNa7VziMa+SyJcpNhxks=
+        b=0gJP3LgHyX4OlS2bAUYbOyrXe+1vBAi91brCTAvq9+ucOQs+QoMepCZczhxl5NU//
+         /ef7I8DufqTxrQmDSYVYmT1NdyLDtzA2twODVDpJWG18viQshKTkURbJKTBafrp1z2
+         9s/+FL0140nBX71WGmdh2oaM1qhf/NFugHo8JaVU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Mihai Sain <mihai.sain@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 084/112] selftests: forwarding: fix error message in learning_test
-Date:   Mon, 11 Jul 2022 11:07:24 +0200
-Message-Id: <20220711090551.955625692@linuxfoundation.org>
+Subject: [PATCH 5.18 075/112] ARM: at91: fix soc detection for SAM9X60 SiPs
+Date:   Mon, 11 Jul 2022 11:07:15 +0200
+Message-Id: <20220711090551.700795977@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,36 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Mihai Sain <mihai.sain@microchip.com>
 
-[ Upstream commit 83844aacab2015da1dba1df0cc61fc4b4c4e8076 ]
+[ Upstream commit 35074df65a8d8c5328a83e2eea948f7bbc8e6e08 ]
 
-When packets are not received, they aren't received on $host1_if, so the
-message talking about the second host not receiving them is incorrect.
-Fix it.
+Fix SoC detection for SAM9X60 SiPs:
+SAM9X60D5M
+SAM9X60D1G
+SAM9X60D6K
 
-Fixes: d4deb01467ec ("selftests: forwarding: Add a test for FDB learning")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: af3a10513cd6 ("drivers: soc: atmel: add per soc id and version match masks")
+Signed-off-by: Mihai Sain <mihai.sain@microchip.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220616081344.1978664-1-claudiu.beznea@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/forwarding/lib.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/atmel/soc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 412e52e89071..063da0d53462 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -1187,7 +1187,7 @@ learning_test()
- 	tc -j -s filter show dev $host1_if ingress \
- 		| jq -e ".[] | select(.options.handle == 101) \
- 		| select(.options.actions[0].stats.packets == 1)" &> /dev/null
--	check_fail $? "Packet reached second host when should not"
-+	check_fail $? "Packet reached first host when should not"
- 
- 	$MZ $host1_if -c 1 -p 64 -a $mac -t ip -q
- 	sleep 1
+diff --git a/drivers/soc/atmel/soc.c b/drivers/soc/atmel/soc.c
+index b2d365ae0282..dae8a2e0f745 100644
+--- a/drivers/soc/atmel/soc.c
++++ b/drivers/soc/atmel/soc.c
+@@ -91,14 +91,14 @@ static const struct at91_soc socs[] __initconst = {
+ 	AT91_SOC(SAM9X60_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
+ 		 AT91_CIDR_VERSION_MASK, SAM9X60_EXID_MATCH,
+ 		 "sam9x60", "sam9x60"),
+-	AT91_SOC(SAM9X60_CIDR_MATCH, SAM9X60_D5M_EXID_MATCH,
+-		 AT91_CIDR_VERSION_MASK, SAM9X60_EXID_MATCH,
++	AT91_SOC(SAM9X60_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
++		 AT91_CIDR_VERSION_MASK, SAM9X60_D5M_EXID_MATCH,
+ 		 "sam9x60 64MiB DDR2 SiP", "sam9x60"),
+-	AT91_SOC(SAM9X60_CIDR_MATCH, SAM9X60_D1G_EXID_MATCH,
+-		 AT91_CIDR_VERSION_MASK, SAM9X60_EXID_MATCH,
++	AT91_SOC(SAM9X60_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
++		 AT91_CIDR_VERSION_MASK, SAM9X60_D1G_EXID_MATCH,
+ 		 "sam9x60 128MiB DDR2 SiP", "sam9x60"),
+-	AT91_SOC(SAM9X60_CIDR_MATCH, SAM9X60_D6K_EXID_MATCH,
+-		 AT91_CIDR_VERSION_MASK, SAM9X60_EXID_MATCH,
++	AT91_SOC(SAM9X60_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
++		 AT91_CIDR_VERSION_MASK, SAM9X60_D6K_EXID_MATCH,
+ 		 "sam9x60 8MiB SDRAM SiP", "sam9x60"),
+ #endif
+ #ifdef CONFIG_SOC_SAMA5
 -- 
 2.35.1
 
