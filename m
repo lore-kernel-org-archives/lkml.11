@@ -2,129 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B636C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 242BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbiGKLQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:16:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
+        id S230513AbiGKLQi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiGKLPq (ORCPT
+        with ESMTP id S230480AbiGKLQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:15:46 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668A552FC8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:35:45 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id r18so5669229edb.9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:35:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=17Ntu7u7zL0owgy2AXHqHsIDETCSIzpTPW2VE5tWiYs=;
-        b=QzlsXM01+eHeF1/SAU+u7zrD7f9xTS62efNCWfVZ6g/lSK+bWdoQdkr1DlYUGTNBNY
-         LKZlhAvyZfZBOIaXua+9MLaMo06cMSuJwff9w/EbvJbhOb0vfO+ptJOe/zKsjfYXAUt9
-         CNmLfpnBiRBl8EOBNSk7/T4Q/0nknjUoA4yAc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=17Ntu7u7zL0owgy2AXHqHsIDETCSIzpTPW2VE5tWiYs=;
-        b=SpzA+amCjwVhqI6Vzx7EYae4yRw3wLTZoexNY1InXbH1saNMsuT+sFmp+IEVP6nAPj
-         MN0vrPfHLkKhQ9yjZU7gXkPHAwWqFrqI6/EV6NukerY/SklXz2uvfnp6sSmO21sHVbwm
-         9KLmBX7R6GPOy7Qy0bcr/H9+TYDmPwVQ9YpK6vbyXyd1f653quMU5v2Qwp8RmtWm2x0B
-         tKCHemBUAGww4wMCnJEKiVq7Y/LdcoTGsotoTh5e8sZqPQKzoo+4NVszlgZae0YMBI3p
-         qbCUpSnSP3qrGPt2+iMecjnsyVK3QF6a+PPBEfsPwqWevHjsKof50WmR/YAedTqMhpdj
-         9ftw==
-X-Gm-Message-State: AJIora/UuUyW70JX9OPZLYKPQzsXHmbTdhJqQLoVwC+ONFgZoKhG80LN
-        blzT8oO6IFVLzE32i5EI1nPRSsPy/YtX69t+lrNGRw==
-X-Google-Smtp-Source: AGRyM1vWJDB6ChHbko8qaqB8zHCS7nZITLWnWRoVQjOYBOB1coargybjk1cKLA0Ef3tXyF2YAmAB0isyete1cUJQKZ0=
-X-Received: by 2002:a05:6402:4245:b0:43a:961a:583f with SMTP id
- g5-20020a056402424500b0043a961a583fmr23724564edb.374.1657535743970; Mon, 11
- Jul 2022 03:35:43 -0700 (PDT)
+        Mon, 11 Jul 2022 07:16:20 -0400
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2A86113C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1657535854; x=1689071854;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=l241aSfbDFRaiDAjISjeppEbmJl16Z4pyYiIsz0YFbE=;
+  b=VkV/KGMebLaeHup66sBVdBpwXYbpNKvEkIMQdBsXo9R4RqhkJ+w1XMKI
+   PJMizEWGVWs+DLUm3H5qtOiEt0gkyB9P9qFumZ4WfF5FFfgX0UZroE5UR
+   BLo0QMcPK2MRA5EAMkjMw5AYaTgE0o9kLbNz0FZN9Vd0vszWPJ41kz86l
+   I45c/TMb5m55qMbGAt1FKad9FEg7OsYP0wCsDcJAfbaLu2k2Gaj7Fhm85
+   zrs/V+es6FhiEsPuubjKyE6NU+InOuuSMjfm9dDoOp+CQUwXcNiFPkIIR
+   /WA6EGICYW57MBJEIgda803s9diyUNez2PNkOmLXNgVhtP0a7fb1/erMX
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,262,1650902400"; 
+   d="scan'208";a="206061598"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 11 Jul 2022 18:37:27 +0800
+IronPort-SDR: I07Sj9qOJ4r/Q+JE1CXT1BPpFMIE+Nhrt19LDeZKxJSlVQWerrnFRicTyWUHfy/nI3WuDldWQD
+ wfqRqn9Wnmeyvpm9gASk/kkxJICQFlZWogMOPJldYTOpurxBwNsRKoIBjk+ZARDmY3j3PNzl2K
+ DxAeQtM5QuEPRSDePJ/vgGKCDylZoDF6IUS1ipo+kS6mIH44vKg+m6T93ApMyzlfplSNuXG3CP
+ ade7kgVYwqK1w/xj57++JEoeqnS6ykiw+3rivEtBTQ3VPiRLFRRiVl5eJS/6rhnG1ZIB7SxhpR
+ MlZWUnO0Tf/zCDkg+3q2lfXQ
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Jul 2022 02:54:24 -0700
+IronPort-SDR: nNx6+4ztC7iBa7AgpsaNc8UxZC3japtZvzRpO7VUTO/dtX6JMjOjSHF0wFr5hMVMsvI/dgaQUu
+ k1DpAy4nIdnrxsDS2pYeBOa9l40H4suxjcfA789pfccEsWbHPFn4juf9/fDLQQISFcveRDnFmI
+ uxINPs4YfCpSZk4kYAfaTKlE6DiRaMF7ac9zPDFyB6DA8i8SKKimrTTu+kCoLOGmgwfwkr76Q6
+ bwI70lwXjo0JikfKKWboqHCuH+1hTLxn60rc7sAAgz51/WNiwGbNXLxYlj3R4IHZsgHTErQrBu
+ HTk=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Jul 2022 03:37:26 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LhL1K24m5z1Rws4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:37:25 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1657535844; x=1660127845; bh=l241aSfbDFRaiDAjISjeppEbmJl16Z4pyYi
+        Isz0YFbE=; b=uFBmKrHjttS09rjyYPK/rWRNlserCH7Fpv/TDJoTiwzYVmWloQi
+        PVIhIqnOgtRUKeM0+aoWSoNE2x+hQYZ140t4lw6a9KBBrffhcq5AZlBkMPgIJOab
+        bAHX7HEu1mq9Jjp1reN78LwIYAFuc62GQCf9yemrYf6QPmpLCYKLAIMEOKAWwI2t
+        OjLdP32uWdq3NI+QRrvd0OOEG8zRoOaRw3Wsf6X3RVxlqXpjsU+Sxll1OZ3DZocs
+        /gJyw0WDv6Gg8LEHgSKJi6ul5VEUDPy+3E5BkuaKjxrJV8D9E+G9PdSm/iNs/9Kc
+        8wezbkC9ewLap0M85vUvvLKqiK8DkY58aqg==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 7yUbzRbXRsfO for <linux-kernel@vger.kernel.org>;
+        Mon, 11 Jul 2022 03:37:24 -0700 (PDT)
+Received: from [10.225.163.114] (unknown [10.225.163.114])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LhL1F1m4vz1RtVk;
+        Mon, 11 Jul 2022 03:37:21 -0700 (PDT)
+Message-ID: <e8f91504-2b2d-76b9-cfe3-8f027824854f@opensource.wdc.com>
+Date:   Mon, 11 Jul 2022 19:37:19 +0900
 MIME-Version: 1.0
-References: <YrShFXRLtRt6T/j+@risky>
-In-Reply-To: <YrShFXRLtRt6T/j+@risky>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Mon, 11 Jul 2022 12:35:32 +0200
-Message-ID: <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
-Subject: Re: strange interaction between fuse + pidns
-To:     Tycho Andersen <tycho@tycho.pizza>
-Cc:     Eric Biederman <ebiederm@xmission.com>,
-        Christian Brauner <brauner@kernel.org>,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: multipart/mixed; boundary="00000000000039912305e3851d71"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 25/33] ata/drivers/ahci_imx: Switch to new of thermal
+ API
+Content-Language: en-US
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linexp.org>, rafael@kernel.org
+Cc:     rui.zhang@intel.com, khilman@baylibre.com, abailon@baylibre.com,
+        amitk@kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220710212423.681301-1-daniel.lezcano@linexp.org>
+ <20220710212423.681301-26-daniel.lezcano@linexp.org>
+ <a424890d-8647-48c5-68ab-742a95bb6865@opensource.wdc.com>
+ <e50842cf-0179-7b70-3925-dacb4ce728ea@linaro.org>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <e50842cf-0179-7b70-3925-dacb4ce728ea@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---00000000000039912305e3851d71
-Content-Type: text/plain; charset="UTF-8"
+On 7/11/22 18:14, Daniel Lezcano wrote:
+> On 11/07/2022 01:18, Damien Le Moal wrote:
+>> On 7/11/22 06:24, Daniel Lezcano wrote:
+>>> The thermal OF code has a new API allowing to migrate the OF
+>>> initialization to a simpler approach.
+>>>
+>>> Use this new API.
+>>>
+>>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+>>> ---
+>>>   drivers/ata/ahci_imx.c | 15 ++++++++++-----
+>>>   1 file changed, 10 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/ata/ahci_imx.c b/drivers/ata/ahci_imx.c
+>>> index 79aa9f285312..5ad9a890e71a 100644
+>>> --- a/drivers/ata/ahci_imx.c
+>>> +++ b/drivers/ata/ahci_imx.c
+>>> @@ -327,7 +327,7 @@ static int read_adc_sum(void *dev, u16 rtune_ctl_reg, void __iomem * mmio)
+>>>   }
+>>>   
+>>>   /* SATA AHCI temperature monitor */
+>>> -static int sata_ahci_read_temperature(void *dev, int *temp)
+>>> +static int __sata_ahci_read_temperature(void *dev, int *temp)
+>>>   {
+>>>   	u16 mpll_test_reg, rtune_ctl_reg, dac_ctl_reg, read_sum;
+>>>   	u32 str1, str2, str3, str4;
+>>> @@ -416,6 +416,11 @@ static int sata_ahci_read_temperature(void *dev, int *temp)
+>>>   	return 0;
+>>>   }
+>>>   
+>>> +static int sata_ahci_read_temperature(struct thermal_zone_device *tz, int *temp)
+>>> +{
+>>> +	return __sata_ahci_read_temperature(tz->devdata, temp);
+>>> +}
+>>> +
+>>>   static ssize_t sata_ahci_show_temp(struct device *dev,
+>>>   				   struct device_attribute *da,
+>>>   				   char *buf)
+>>> @@ -423,14 +428,14 @@ static ssize_t sata_ahci_show_temp(struct device *dev,
+>>>   	unsigned int temp = 0;
+>>>   	int err;
+>>>   
+>>> -	err = sata_ahci_read_temperature(dev, &temp);
+>>> +	err = __sata_ahci_read_temperature(dev, &temp);
+>>>   	if (err < 0)
+>>>   		return err;
+>>>   
+>>>   	return sprintf(buf, "%u\n", temp);
+>>>   }
+>>
+>> I do not see why the above changes are necessary. Please explain.
+> 
+> sata_ahci_read_temperature() is used by sata_ahci_show_temp() also.
+> 
+> So in order to change the function prototype for the get_temp ops which 
+> does not take a void* but a thermal_zone_device* structure, this 
+> function wraps the call.
+> 
+> Do you prefer sata_ahci_read_temperature() becomes sata_ahci_get_temp() 
+> and keep __sata_ahci_read_temperature() name untouched ?
 
-On Thu, 23 Jun 2022 at 19:21, Tycho Andersen <tycho@tycho.pizza> wrote:
+Understood. You can keep the name changes you have, but please add this
+explanation to the commit message.
 
->         /*
-> -        * Either request is already in userspace, or it was forced.
-> -        * Wait it out.
-> +        * Womp womp. We sent a request to userspace and now we're getting
-> +        * killed.
->          */
-> -       wait_event(req->waitq, test_bit(FR_FINISHED, &req->flags));
+> 
+>>>   
+>>> -static const struct thermal_zone_of_device_ops fsl_sata_ahci_of_thermal_ops = {
+>>> +static struct thermal_zone_device_ops fsl_sata_ahci_of_thermal_ops = {
+>>
+>> Why remove the const ?
+>>
+>>>   	.get_temp = sata_ahci_read_temperature,
+>>>   };
+>>>   
+>>> @@ -1131,8 +1136,8 @@ static int imx_ahci_probe(struct platform_device *pdev)
+>>>   			ret = PTR_ERR(hwmon_dev);
+>>>   			goto disable_clk;
+>>>   		}
+>>> -		devm_thermal_zone_of_sensor_register(hwmon_dev, 0, hwmon_dev,
+>>> -					     &fsl_sata_ahci_of_thermal_ops);
+>>> +		devm_thermal_of_zone_register(hwmon_dev, 0, hwmon_dev,
+>>> +					      &fsl_sata_ahci_of_thermal_ops);
+>>
+>> This is the only change that seems necessary.
+>>
+>>>   		dev_info(dev, "%s: sensor 'sata_ahci'\n", dev_name(hwmon_dev));
+>>>   	}
+>>>   
+>>
+>> And it is hard to review a patch without the full series for context.
+>> Please send all patches next time.
+>>
+>>
+> 
+> 
 
-You can't remove this, it's a crucial part of fuse request handling.
-Yes, it causes pain, but making *sent* requests killable is a lot more
-work.
 
-For one: need to duplicate caller's locking state (i_rwsem, ...) and
-move the request into a backround queue instead of just finishing it
-off immediately so that the shadow locking can be torn down when the
-reply actually arrives.  This affects a lot of requests.
-
-Or we could special case FUSE_FLUSH, which doesn't have any locking.
-
-The reason force=true is needed for FUSE_FLUSH is because it affects
-posix lock state.   Not waiting for the reply if the task is killed
-could have observable consequences, but my guess is that it's an
-uninteresting corner case and would not cause regressions in real
-life.
-
-Can you try the attached untested patch?
-
-Thanks,
-Miklos
-
---00000000000039912305e3851d71
-Content-Type: text/x-patch; charset="US-ASCII"; name="fuse-allow-flush-to-be-killed.patch"
-Content-Disposition: attachment; 
-	filename="fuse-allow-flush-to-be-killed.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l5gly66p0>
-X-Attachment-Id: f_l5gly66p0
-
-LS0tCiBmcy9mdXNlL2Rldi5jICAgIHwgICAgOSArKysrKysrKy0KIGZzL2Z1c2UvZmlsZS5jICAg
-fCAgICAxICsKIGZzL2Z1c2UvZnVzZV9pLmggfCAgICAxICsKIDMgZmlsZXMgY2hhbmdlZCwgMTAg
-aW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKLS0tIGEvZnMvZnVzZS9kZXYuYworKysgYi9m
-cy9mdXNlL2Rldi5jCkBAIC0zOTcsNiArMzk3LDEyIEBAIHN0YXRpYyB2b2lkIHJlcXVlc3Rfd2Fp
-dF9hbnN3ZXIoc3RydWN0IGYKIAkJCXJlcS0+b3V0LmguZXJyb3IgPSAtRUlOVFI7CiAJCQlyZXR1
-cm47CiAJCX0KKwkJaWYgKHJlcS0+YXJncy0+a2lsbGFibGUpIHsKKwkJCXJlcS0+b3V0LmguZXJy
-b3IgPSAtRUlOVFI7CisJCQkvKiBmdXNlX3JlcXVlc3RfZW5kKCkgd2lsbCBkcm9wIGZpbmFsIHJl
-ZiAqLworCQkJc3Bpbl91bmxvY2soJmZpcS0+bG9jayk7CisJCQlyZXR1cm47CisJCX0KIAkJc3Bp
-bl91bmxvY2soJmZpcS0+bG9jayk7CiAJfQogCkBAIC00OTQsNyArNTAwLDggQEAgc3NpemVfdCBm
-dXNlX3NpbXBsZV9yZXF1ZXN0KHN0cnVjdCBmdXNlXwogCQkJZnVzZV9mb3JjZV9jcmVkcyhyZXEp
-OwogCiAJCV9fc2V0X2JpdChGUl9XQUlUSU5HLCAmcmVxLT5mbGFncyk7Ci0JCV9fc2V0X2JpdChG
-Ul9GT1JDRSwgJnJlcS0+ZmxhZ3MpOworCQlpZiAoIWFyZ3MtPmtpbGxhYmxlKQorCQkJX19zZXRf
-Yml0KEZSX0ZPUkNFLCAmcmVxLT5mbGFncyk7CiAJfSBlbHNlIHsKIAkJV0FSTl9PTihhcmdzLT5u
-b2NyZWRzKTsKIAkJcmVxID0gZnVzZV9nZXRfcmVxKGZtLCBmYWxzZSk7Ci0tLSBhL2ZzL2Z1c2Uv
-ZmlsZS5jCisrKyBiL2ZzL2Z1c2UvZmlsZS5jCkBAIC01MDQsNiArNTA0LDcgQEAgc3RhdGljIGlu
-dCBmdXNlX2ZsdXNoKHN0cnVjdCBmaWxlICpmaWxlLAogCWFyZ3MuaW5fYXJnc1swXS5zaXplID0g
-c2l6ZW9mKGluYXJnKTsKIAlhcmdzLmluX2FyZ3NbMF0udmFsdWUgPSAmaW5hcmc7CiAJYXJncy5m
-b3JjZSA9IHRydWU7CisJYXJncy5raWxsYWJsZSA9IHRydWU7CiAKIAllcnIgPSBmdXNlX3NpbXBs
-ZV9yZXF1ZXN0KGZtLCAmYXJncyk7CiAJaWYgKGVyciA9PSAtRU5PU1lTKSB7Ci0tLSBhL2ZzL2Z1
-c2UvZnVzZV9pLmgKKysrIGIvZnMvZnVzZS9mdXNlX2kuaApAQCAtMjYxLDYgKzI2MSw3IEBAIHN0
-cnVjdCBmdXNlX2FyZ3MgewogCWJvb2wgcGFnZV96ZXJvaW5nOjE7CiAJYm9vbCBwYWdlX3JlcGxh
-Y2U6MTsKIAlib29sIG1heV9ibG9jazoxOworCWJvb2wga2lsbGFibGU6MTsKIAlzdHJ1Y3QgZnVz
-ZV9pbl9hcmcgaW5fYXJnc1szXTsKIAlzdHJ1Y3QgZnVzZV9hcmcgb3V0X2FyZ3NbMl07CiAJdm9p
-ZCAoKmVuZCkoc3RydWN0IGZ1c2VfbW91bnQgKmZtLCBzdHJ1Y3QgZnVzZV9hcmdzICphcmdzLCBp
-bnQgZXJyb3IpOwo=
---00000000000039912305e3851d71--
+-- 
+Damien Le Moal
+Western Digital Research
