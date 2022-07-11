@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9742C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233414AbiGKJpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38236 "EHLO
+        id S233462AbiGKJpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233467AbiGKJoM (ORCPT
+        with ESMTP id S233606AbiGKJo2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:44:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68580A4CB5;
-        Mon, 11 Jul 2022 02:21:56 -0700 (PDT)
+        Mon, 11 Jul 2022 05:44:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96043E75F;
+        Mon, 11 Jul 2022 02:22:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E27BFB80E6D;
-        Mon, 11 Jul 2022 09:21:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58ADBC34115;
-        Mon, 11 Jul 2022 09:21:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C96BB80D2C;
+        Mon, 11 Jul 2022 09:22:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D363C34115;
+        Mon, 11 Jul 2022 09:22:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531313;
-        bh=aHY4s6ThFh4WFR8QECkXyGEc/WgAC0zJmGhEJyrM++M=;
+        s=korg; t=1657531321;
+        bh=PyFmHW+SAkR6HsxRgSb5+k3Fe6DCWDzbWPlYeRLRIkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xvIl3+JXjmSfhiOnAqwimouaA75M/Jh7bU59y4fwQchgsA0FRV6ocypOq1tCKAjEW
-         gvD2c+PliGxfV/ZCbjQ9rgtpiAeIuNbx/REGSszZr+ur/STunPmO6qNMOb6+GZnw5J
-         B3KDwKUAs6BgUBuOofFv1UymaM0/obZ48d1lWsmI=
+        b=incqfgm8uuDIcTAMphNhFF6cJaJ1OE4ZuX3W4fw+UlaikdI5odC0UsWmzeCN0E2Ow
+         nDQ5pyjxaHlg5dHmus761hEMs2VYKyW8f+zbweEXnI7grBXd9bqP8z1amM6hUJFDxD
+         ZwLJjcTDUgyaZV35dtPysI2hvJHKyNDJRqZ6PHLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 061/230] s390/setup: preserve memory at OLDMEM_BASE and OLDMEM_SIZE
-Date:   Mon, 11 Jul 2022 11:05:17 +0200
-Message-Id: <20220711090605.807742798@linuxfoundation.org>
+Subject: [PATCH 5.15 046/230] bpf, arm64: Use emit_addr_mov_i64() for BPF_PSEUDO_FUNC
+Date:   Mon, 11 Jul 2022 11:05:02 +0200
+Message-Id: <20220711090605.389897644@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,38 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Egorenkov <egorenar@linux.ibm.com>
+From: Hou Tao <houtao1@huawei.com>
 
-[ Upstream commit 6b4b54c7ca347bcb4aa7a3cc01aa16e84ac7fbe4 ]
+[ Upstream commit e4a41c2c1fa916547e63440c73a51a5eb06247af ]
 
-We need to preserve the values at OLDMEM_BASE and OLDMEM_SIZE which are
-used by zgetdump in case when kdump crashes. In that case zgetdump will
-attempt to read OLDMEM_BASE and OLDMEM_SIZE in order to find out where
-the memory range [0 - OLDMEM_SIZE] belonging to the production kernel is.
+The following error is reported when running "./test_progs -t for_each"
+under arm64:
 
-Fixes: f1a546947431 ("s390/setup: don't reserve memory that occupied decompressor's head")
-Cc: stable@vger.kernel.org # 5.15+
-Signed-off-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Acked-by: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+  bpf_jit: multi-func JIT bug 58 != 56
+  [...]
+  JIT doesn't support bpf-to-bpf calls
+
+The root cause is the size of BPF_PSEUDO_FUNC instruction increases
+from 2 to 3 after the address of called bpf-function is settled and
+there are two bpf-to-bpf calls in test_pkt_access. The generated
+instructions are shown below:
+
+  0x48:  21 00 C0 D2    movz x1, #0x1, lsl #32
+  0x4c:  21 00 80 F2    movk x1, #0x1
+
+  0x48:  E1 3F C0 92    movn x1, #0x1ff, lsl #32
+  0x4c:  41 FE A2 F2    movk x1, #0x17f2, lsl #16
+  0x50:  81 70 9F F2    movk x1, #0xfb84
+
+Fixing it by using emit_addr_mov_i64() for BPF_PSEUDO_FUNC, so
+the size of jited image will not change.
+
+Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211231151018.3781550-1-houtao1@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kernel/setup.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/net/bpf_jit_comp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 2ebde341d057..36c1f31dfd66 100644
---- a/arch/s390/kernel/setup.c
-+++ b/arch/s390/kernel/setup.c
-@@ -798,6 +798,8 @@ static void __init check_initrd(void)
- static void __init reserve_kernel(void)
- {
- 	memblock_reserve(0, STARTUP_NORMAL_OFFSET);
-+	memblock_reserve(OLDMEM_BASE, sizeof(unsigned long));
-+	memblock_reserve(OLDMEM_SIZE, sizeof(unsigned long));
- 	memblock_reserve(__amode31_base, __eamode31 - __samode31);
- 	memblock_reserve(__pa(sclp_early_sccb), EXT_SCCB_READ_SCP);
- 	memblock_reserve(__pa(_stext), _end - _stext);
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 95439bbe5df8..4895b4d7e150 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -788,7 +788,10 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
+ 		u64 imm64;
+ 
+ 		imm64 = (u64)insn1.imm << 32 | (u32)imm;
+-		emit_a64_mov_i64(dst, imm64, ctx);
++		if (bpf_pseudo_func(insn))
++			emit_addr_mov_i64(dst, imm64, ctx);
++		else
++			emit_a64_mov_i64(dst, imm64, ctx);
+ 
+ 		return 1;
+ 	}
 -- 
 2.35.1
 
