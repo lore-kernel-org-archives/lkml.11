@@ -2,85 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F74C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E15FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbiGKP4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
+        id S231130AbiGKP4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230358AbiGKP4E (ORCPT
+        with ESMTP id S230358AbiGKP4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:56:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB502A263
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:56:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91B61B81031
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:56:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D788C34115;
-        Mon, 11 Jul 2022 15:55:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657554961;
-        bh=8HV9yZZGFBJidulDHDzfWS4Ajwr3bhBQMRksoe8XUHI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MDIxfWkN7FUIOBu2c4cTc5keVGVoKO2v+NQgGOoloxL6OwZ0VNankrbwYB3yBk7pk
-         TSFHe2oY+KK0YR7zfpizEhsXxn0wbAhNnNKmqyBCCaE8mncbW134UskBO4J8gmY/6L
-         2xHvfMTI7f3VV2PQM3arYmPQrV2zsKU2Y0LZd2umyPXMPPtdw2DsjmkMF6xU63sj8g
-         7djIbycrg4FC4RKZmUXtLnaeiOSHXpZh6p/Aoowqy+L41xsSyo1DNrwgEiWV/a52vO
-         5dekxUddpSXcHrEvl6jwjgYqJ4nWHmo8xjwF3GJVAyIenm0zM1heexVSuuykMWNGKk
-         AnxZ5mZxddM8A==
-Date:   Mon, 11 Jul 2022 16:55:56 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Alexandru Elisei <alexandru.elisei@arm.com>
-Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, judyhsiao@chromium.org
-Subject: Re: [PATCH] ASoC: rockchip: i2s: Fix NULL pointer dereference when
- pinctrl is not found
-Message-ID: <YsxIDCaMf0Z0BnxH@sirena.org.uk>
-References: <20220711130522.401551-1-alexandru.elisei@arm.com>
- <Yswkb6mvwUywOTLg@sirena.org.uk>
- <YswoOE/sP088lius@monolith.localdoman>
- <Ysw2mzhw4pyrxirc@sirena.org.uk>
- <Ysw+3Hg+GbDjXuTn@monolith.localdoman>
+        Mon, 11 Jul 2022 11:56:22 -0400
+X-Greylist: delayed 338 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Jul 2022 08:56:21 PDT
+Received: from gauss.telenet-ops.be (gauss.telenet-ops.be [IPv6:2a02:1800:120:4::f00:11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855D42B270
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:56:21 -0700 (PDT)
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by gauss.telenet-ops.be (Postfix) with ESMTPS id 4LhSyl2lCnz4x3QD
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:50:39 +0200 (CEST)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by xavier.telenet-ops.be with bizsmtp
+        id trqf270054C55Sk01rqf58; Mon, 11 Jul 2022 17:50:39 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oAvgE-0036x2-H5; Mon, 11 Jul 2022 17:50:38 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oAvgC-006shk-Vj; Mon, 11 Jul 2022 17:50:36 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Michael Schmitz <schmitzmic@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-fbdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 06/10] video: fbdev: atari: Remove unneeded casts to void *
+Date:   Mon, 11 Jul 2022 17:50:30 +0200
+Message-Id: <d1da8bf1b21759bcda39c572bc102c5a6380b1a8.1657554353.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1657554353.git.geert@linux-m68k.org>
+References: <cover.1657554353.git.geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tg1MdlMwJWKMRNAi"
-Content-Disposition: inline
-In-Reply-To: <Ysw+3Hg+GbDjXuTn@monolith.localdoman>
-X-Cookie: I am NOMAD!
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Arbitrary pointers can be passed to functions accepting "void *" without
+casting.
 
---tg1MdlMwJWKMRNAi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Remove the casts, as they make it impossible to validate types.
 
-On Mon, Jul 11, 2022 at 04:17:37PM +0100, Alexandru Elisei wrote:
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ drivers/video/fbdev/atafb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Do you want me to respin the patch with an abbreviated splat?
+diff --git a/drivers/video/fbdev/atafb.c b/drivers/video/fbdev/atafb.c
+index f20535ea3e549384..fbc333d5615df5d5 100644
+--- a/drivers/video/fbdev/atafb.c
++++ b/drivers/video/fbdev/atafb.c
+@@ -2599,14 +2599,14 @@ atafb_ioctl(struct fb_info *info, unsigned int cmd, unsigned long arg)
+ 	switch (cmd) {
+ #ifdef FBCMD_GET_CURRENTPAR
+ 	case FBCMD_GET_CURRENTPAR:
+-		if (copy_to_user((void *)arg, (void *)&current_par,
++		if (copy_to_user((void *)arg, &current_par,
+ 				 sizeof(struct atafb_par)))
+ 			return -EFAULT;
+ 		return 0;
+ #endif
+ #ifdef FBCMD_SET_CURRENTPAR
+ 	case FBCMD_SET_CURRENTPAR:
+-		if (copy_from_user((void *)&current_par, (void *)arg,
++		if (copy_from_user(&current_par, (void *)arg,
+ 				   sizeof(struct atafb_par)))
+ 			return -EFAULT;
+ 		ata_set_par(&current_par);
+-- 
+2.25.1
 
-It's fine, just leave this one.
-
---tg1MdlMwJWKMRNAi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEyBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLMSAsACgkQJNaLcl1U
-h9DfVAf3fsWaAiN9qpjwm1k+G3+bQFU/BeOTROHaL2wDeSqy50zlg6PJy+C8/DWW
-FLEDtXUo/3Y+fuC9hjkEhpElWej3xK292MXE0d3gkc+pZe3FQzOYn6JTNvOeUS3u
-MQIZKwXplY4jbXBYnDzt9JKl7Hc8ZdVYfngtQkOj/bJiU5IrqRQIrQpivaNi6Jpz
-wRNdd01A/z5Rk09lWCQz6uTg8XxLpI8pxrL3BL6Q0TjA5J8rIp8ki5UMYhkcmi78
-8tMo/IOyLGRLJCJij+wAilMpUZPIoAgexZhuSJlZyWyuHf0qWEFZSSK+z0g7Ybfn
-KE6lm2sRo6syEO4ln0OneVdgv/9a
-=vq9L
------END PGP SIGNATURE-----
-
---tg1MdlMwJWKMRNAi--
