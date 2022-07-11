@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 540FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A16CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiGKJmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38236 "EHLO
+        id S233007AbiGKJmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233143AbiGKJl1 (ORCPT
+        with ESMTP id S233011AbiGKJls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832AF90DB3;
-        Mon, 11 Jul 2022 02:20:57 -0700 (PDT)
+        Mon, 11 Jul 2022 05:41:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B72545D9;
+        Mon, 11 Jul 2022 02:21:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AABD612E8;
-        Mon, 11 Jul 2022 09:20:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC76FC34115;
-        Mon, 11 Jul 2022 09:20:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3387FCE1261;
+        Mon, 11 Jul 2022 09:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A6AC34115;
+        Mon, 11 Jul 2022 09:21:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531256;
-        bh=veREzOZlBf95QLXM5VTk9WLdU/1eFzIUtrtNp0cu6sM=;
+        s=korg; t=1657531261;
+        bh=lBs3T7xG3KVxzjM+1QQloaEKYvmThmvW7933opqJwKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=umh5QyddX7m1rvIQXZUvcMa392QykRcbZexjh6tPuYE2Pu5j71yvyy8745s6NrDDS
-         MI4ELhwoF1P9tLFeSu36DiMpbaNRflUkGsTkIBrvU0tTqhINiZKgtPaI1YdKzEmEhH
-         a/qfKRY3bIwi5B5Tx0Wwuhkt8PoOkBw3fpyI7JtE=
+        b=1QU51YLJm3m1bdgW91lMGvYT8CoFEtSZC3vLZJVmyT9he/km59diI2mOJnhdvLPMN
+         vIuM90mY4jcVmvcgeI08HouZYF6Q/K+rXxqSf/fHKorREbijObAfr4CuUvSzcXGa+Q
+         QXL1e4J1FU+Ce48IKtDBY4WuW60icNXkxNX25ODw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Seevalamuthu Mariappan <quic_seevalam@quicinc.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        =?UTF-8?q?Barnab=C3=A1s=20P=C5=91cze?= <pobrn@protonmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 038/230] ath11k: add hw_param for wakeup_mhi
-Date:   Mon, 11 Jul 2022 11:04:54 +0200
-Message-Id: <20220711090605.164478217@linuxfoundation.org>
+Subject: [PATCH 5.15 040/230] platform/x86: wmi: introduce helper to convert driver to WMI driver
+Date:   Mon, 11 Jul 2022 11:04:56 +0200
+Message-Id: <20220711090605.220579381@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,149 +50,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Seevalamuthu Mariappan <quic_seevalam@quicinc.com>
+From: Barnabás Pőcze <pobrn@protonmail.com>
 
-[ Upstream commit 081e2d6476e30399433b509684d5da4d1844e430 ]
+[ Upstream commit e7b2e33449e22fdbaa0247d96f31543affe6163d ]
 
-Wakeup mhi is needed before pci_read/write only for QCA6390 and WCN6855. Since
-wakeup & release mhi is enabled for all hardwares, below mhi assert is seen in
-QCN9074 when doing 'rmmod ath11k_pci':
+Introduce a helper function which wraps the appropriate
+`container_of()` macro invocation to convert
+a `struct device_driver` to `struct wmi_driver`.
 
-	Kernel panic - not syncing: dev_wake != 0
-	CPU: 2 PID: 13535 Comm: procd Not tainted 4.4.60 #1
-	Hardware name: Generic DT based system
-	[<80316dac>] (unwind_backtrace) from [<80313700>] (show_stack+0x10/0x14)
-	[<80313700>] (show_stack) from [<805135dc>] (dump_stack+0x7c/0x9c)
-	[<805135dc>] (dump_stack) from [<8032136c>] (panic+0x84/0x1f8)
-	[<8032136c>] (panic) from [<80549b24>] (mhi_pm_disable_transition+0x3b8/0x5b8)
-	[<80549b24>] (mhi_pm_disable_transition) from [<80549ddc>] (mhi_power_down+0xb8/0x100)
-	[<80549ddc>] (mhi_power_down) from [<7f5242b0>] (ath11k_mhi_op_status_cb+0x284/0x3ac [ath11k_pci])
-	[E][__mhi_device_get_sync] Did not enter M0 state, cur_state:RESET pm_state:SHUTDOWN Process
-	[E][__mhi_device_get_sync] Did not enter M0 state, cur_state:RESET pm_state:SHUTDOWN Process
-	[E][__mhi_device_get_sync] Did not enter M0 state, cur_state:RESET pm_state:SHUTDOWN Process
-	[<7f5242b0>] (ath11k_mhi_op_status_cb [ath11k_pci]) from [<7f524878>] (ath11k_mhi_stop+0x10/0x20 [ath11k_pci])
-	[<7f524878>] (ath11k_mhi_stop [ath11k_pci]) from [<7f525b94>] (ath11k_pci_power_down+0x54/0x90 [ath11k_pci])
-	[<7f525b94>] (ath11k_pci_power_down [ath11k_pci]) from [<8056b2a8>] (pci_device_shutdown+0x30/0x44)
-	[<8056b2a8>] (pci_device_shutdown) from [<805cfa0c>] (device_shutdown+0x124/0x174)
-	[<805cfa0c>] (device_shutdown) from [<8033aaa4>] (kernel_restart+0xc/0x50)
-	[<8033aaa4>] (kernel_restart) from [<8033ada8>] (SyS_reboot+0x178/0x1ec)
-	[<8033ada8>] (SyS_reboot) from [<80301b80>] (ret_fast_syscall+0x0/0x34)
-
-Hence, disable wakeup/release mhi using hw_param for other hardwares.
-
-Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01060-QCAHKSWPL_SILICONZ-1
-
-Fixes: a05bd8513335 ("ath11k: read and write registers below unwindowed address")
-Signed-off-by: Seevalamuthu Mariappan <quic_seevalam@quicinc.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1636702019-26142-1-git-send-email-quic_seevalam@quicinc.com
+Signed-off-by: Barnabás Pőcze <pobrn@protonmail.com>
+Link: https://lore.kernel.org/r/20210904175450.156801-27-pobrn@protonmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/core.c |  5 +++++
- drivers/net/wireless/ath/ath11k/hw.h   |  1 +
- drivers/net/wireless/ath/ath11k/pci.c  | 12 ++++++++----
- 3 files changed, 14 insertions(+), 4 deletions(-)
+ drivers/platform/x86/wmi.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 7dcf6b13f794..48b4151e13a3 100644
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -71,6 +71,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.supports_suspend = false,
- 		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
- 		.fix_l1ss = true,
-+		.wakeup_mhi = false,
- 	},
- 	{
- 		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -112,6 +113,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.supports_suspend = false,
- 		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
- 		.fix_l1ss = true,
-+		.wakeup_mhi = false,
- 	},
- 	{
- 		.name = "qca6390 hw2.0",
-@@ -152,6 +154,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.supports_suspend = true,
- 		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
- 		.fix_l1ss = true,
-+		.wakeup_mhi = true,
- 	},
- 	{
- 		.name = "qcn9074 hw1.0",
-@@ -190,6 +193,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.supports_suspend = false,
- 		.hal_desc_sz = sizeof(struct hal_rx_desc_qcn9074),
- 		.fix_l1ss = true,
-+		.wakeup_mhi = false,
- 	},
- 	{
- 		.name = "wcn6855 hw2.0",
-@@ -230,6 +234,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.supports_suspend = true,
- 		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
- 		.fix_l1ss = false,
-+		.wakeup_mhi = true,
- 	},
- };
- 
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 62f5978b3005..4fe051625edf 100644
---- a/drivers/net/wireless/ath/ath11k/hw.h
-+++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -163,6 +163,7 @@ struct ath11k_hw_params {
- 	bool supports_suspend;
- 	u32 hal_desc_sz;
- 	bool fix_l1ss;
-+	bool wakeup_mhi;
- };
- 
- struct ath11k_hw_ops {
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 353a2d669fcd..7d0be9388f89 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -182,7 +182,8 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
- 	/* for offset beyond BAR + 4K - 32, may
- 	 * need to wakeup MHI to access.
- 	 */
--	if (test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
-+	if (ab->hw_params.wakeup_mhi &&
-+	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
- 	    offset >= ACCESS_ALWAYS_OFF)
- 		mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
- 
-@@ -206,7 +207,8 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
- 		}
- 	}
- 
--	if (test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
-+	if (ab->hw_params.wakeup_mhi &&
-+	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
- 	    offset >= ACCESS_ALWAYS_OFF)
- 		mhi_device_put(ab_pci->mhi_ctrl->mhi_dev);
+diff --git a/drivers/platform/x86/wmi.c b/drivers/platform/x86/wmi.c
+index 1b65bb61ce88..9aeb1a009097 100644
+--- a/drivers/platform/x86/wmi.c
++++ b/drivers/platform/x86/wmi.c
+@@ -676,6 +676,11 @@ static struct wmi_device *dev_to_wdev(struct device *dev)
+ 	return container_of(dev, struct wmi_device, dev);
  }
-@@ -219,7 +221,8 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
- 	/* for offset beyond BAR + 4K - 32, may
- 	 * need to wakeup MHI to access.
- 	 */
--	if (test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
-+	if (ab->hw_params.wakeup_mhi &&
-+	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
- 	    offset >= ACCESS_ALWAYS_OFF)
- 		mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
  
-@@ -243,7 +246,8 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
- 		}
++static inline struct wmi_driver *drv_to_wdrv(struct device_driver *drv)
++{
++	return container_of(drv, struct wmi_driver, driver);
++}
++
+ /*
+  * sysfs interface
+  */
+@@ -794,8 +799,7 @@ static void wmi_dev_release(struct device *dev)
+ 
+ static int wmi_dev_match(struct device *dev, struct device_driver *driver)
+ {
+-	struct wmi_driver *wmi_driver =
+-		container_of(driver, struct wmi_driver, driver);
++	struct wmi_driver *wmi_driver = drv_to_wdrv(driver);
+ 	struct wmi_block *wblock = dev_to_wblock(dev);
+ 	const struct wmi_device_id *id = wmi_driver->id_table;
+ 
+@@ -892,8 +896,7 @@ static long wmi_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
  	}
  
--	if (test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
-+	if (ab->hw_params.wakeup_mhi &&
-+	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
- 	    offset >= ACCESS_ALWAYS_OFF)
- 		mhi_device_put(ab_pci->mhi_ctrl->mhi_dev);
+ 	/* let the driver do any filtering and do the call */
+-	wdriver = container_of(wblock->dev.dev.driver,
+-			       struct wmi_driver, driver);
++	wdriver = drv_to_wdrv(wblock->dev.dev.driver);
+ 	if (!try_module_get(wdriver->driver.owner)) {
+ 		ret = -EBUSY;
+ 		goto out_ioctl;
+@@ -926,8 +929,7 @@ static const struct file_operations wmi_fops = {
+ static int wmi_dev_probe(struct device *dev)
+ {
+ 	struct wmi_block *wblock = dev_to_wblock(dev);
+-	struct wmi_driver *wdriver =
+-		container_of(dev->driver, struct wmi_driver, driver);
++	struct wmi_driver *wdriver = drv_to_wdrv(dev->driver);
+ 	int ret = 0;
+ 	char *buf;
  
+@@ -990,8 +992,7 @@ static int wmi_dev_probe(struct device *dev)
+ static void wmi_dev_remove(struct device *dev)
+ {
+ 	struct wmi_block *wblock = dev_to_wblock(dev);
+-	struct wmi_driver *wdriver =
+-		container_of(dev->driver, struct wmi_driver, driver);
++	struct wmi_driver *wdriver = drv_to_wdrv(dev->driver);
+ 
+ 	if (wdriver->filter_callback) {
+ 		misc_deregister(&wblock->char_dev);
+@@ -1296,15 +1297,12 @@ static void acpi_wmi_notify_handler(acpi_handle handle, u32 event,
+ 
+ 	/* If a driver is bound, then notify the driver. */
+ 	if (wblock->dev.dev.driver) {
+-		struct wmi_driver *driver;
++		struct wmi_driver *driver = drv_to_wdrv(wblock->dev.dev.driver);
+ 		struct acpi_object_list input;
+ 		union acpi_object params[1];
+ 		struct acpi_buffer evdata = { ACPI_ALLOCATE_BUFFER, NULL };
+ 		acpi_status status;
+ 
+-		driver = container_of(wblock->dev.dev.driver,
+-				      struct wmi_driver, driver);
+-
+ 		input.count = 1;
+ 		input.pointer = params;
+ 		params[0].type = ACPI_TYPE_INTEGER;
 -- 
 2.35.1
 
