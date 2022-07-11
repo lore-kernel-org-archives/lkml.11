@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 245D1CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11200C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231676AbiGKJSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58860 "EHLO
+        id S230055AbiGKJSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbiGKJRZ (ORCPT
+        with ESMTP id S230365AbiGKJRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:17:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E7C48CAE;
-        Mon, 11 Jul 2022 02:11:26 -0700 (PDT)
+        Mon, 11 Jul 2022 05:17:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B30C4AD43;
+        Mon, 11 Jul 2022 02:11:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 075DD611E9;
-        Mon, 11 Jul 2022 09:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC3DC385A9;
-        Mon, 11 Jul 2022 09:11:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D6DEB80E7E;
+        Mon, 11 Jul 2022 09:11:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3C18C341C0;
+        Mon, 11 Jul 2022 09:11:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530685;
-        bh=UAloPygui7BXRMZl5jb5TSPhIEqwcaUK4m+sbscM76U=;
+        s=korg; t=1657530688;
+        bh=pbH4+/eifaogvlXXGDGFmEoG1UUw+Kn1yNbwrEJfSsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=shJWk1XUnWBGvWzO0NfVFOsQk2yskOj3SXltcTQFSHYs0X6ow9veeYuLbRh3t1ep5
-         B8VpdQVtU5fC1ZoMr+TaQjBTMiNWo0h7F8JAsUUQeTJVfSfcB6xShDS5+4CfGJoswR
-         15xwZIAJ8EFRzXUNVQHoyJd23/8834YproqZRqw4=
+        b=GgwD5iRrItoivj7ZaEG3P+B9S9zM5DeMLGKO1pZhVqQW2nzRW2uvHQDyvQQOrSFJ7
+         QSzZhwCgr05QdH1bQg32qF7qVlDpzh6fUQQ84feW9nRHpSB0Roobp2o9295ccBa182
+         v0t+XzV5Rg5u/kRoMYTDUjkcI+B2iEmiMtw12wBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Child <nnac123@linux.ibm.com>,
-        Brian King <brking@linux.vnet.ibm.com>,
-        Rick Lindsley <ricklind@us.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 24/38] ibmvnic: Properly dispose of all skbs during a failover.
-Date:   Mon, 11 Jul 2022 11:07:06 +0200
-Message-Id: <20220711090539.443682381@linuxfoundation.org>
+Subject: [PATCH 5.4 25/38] selftests: forwarding: fix flood_unicast_test when h2 supports IFF_UNICAST_FLT
+Date:   Mon, 11 Jul 2022 11:07:07 +0200
+Message-Id: <20220711090539.472540621@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -51,48 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rick Lindsley <ricklind@us.ibm.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 1b18f09d31cfa7148df15a7d5c5e0e86f105f7d1 ]
+[ Upstream commit b8e629b05f5d23f9649c901bef09fab8b0c2e4b9 ]
 
-During a reset, there may have been transmits in flight that are no
-longer valid and cannot be fulfilled.  Resetting and clearing the
-queues is insufficient; each skb also needs to be explicitly freed
-so that upper levels are not left waiting for confirmation of a
-transmit that will never happen.  If this happens frequently enough,
-the apparent backlog will cause TCP to begin "congestion control"
-unnecessarily, culminating in permanently decreased throughput.
+As mentioned in the blamed commit, flood_unicast_test() works by
+checking the match count on a tc filter placed on the receiving
+interface.
 
-Fixes: d7c0ef36bde03 ("ibmvnic: Free and re-allocate scrqs when tx/rx scrqs change")
-Tested-by: Nick Child <nnac123@linux.ibm.com>
-Reviewed-by: Brian King <brking@linux.vnet.ibm.com>
-Signed-off-by: Rick Lindsley <ricklind@us.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+But the second host interface (host2_if) has no interest in receiving a
+packet with MAC DA de:ad:be:ef:13:37, so its RX filter drops it even
+before the ingress tc filter gets to be executed. So we will incorrectly
+get the message "Packet was not flooded when should", when in fact, the
+packet was flooded as expected but dropped due to an unrelated reason,
+at some other layer on the receiving side.
+
+Force h2 to accept this packet by temporarily placing it in promiscuous
+mode. Alternatively we could either deliver to its MAC address or use
+tcpdump_start, but this has the fewest complications.
+
+This fixes the "flooding" test from bridge_vlan_aware.sh and
+bridge_vlan_unaware.sh, which calls flood_test from the lib.
+
+Fixes: 236dd50bf67a ("selftests: forwarding: Add a test for flooded traffic")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/testing/selftests/net/forwarding/lib.sh | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 34bf6f4eef4a..bc313d85fe13 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5022,6 +5022,15 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter)
- 			release_sub_crqs(adapter, 0);
- 			rc = init_sub_crqs(adapter);
- 		} else {
-+			/* no need to reinitialize completely, but we do
-+			 * need to clean up transmits that were in flight
-+			 * when we processed the reset.  Failure to do so
-+			 * will confound the upper layer, usually TCP, by
-+			 * creating the illusion of transmits that are
-+			 * awaiting completion.
-+			 */
-+			clean_tx_pools(adapter);
-+
- 			rc = reset_sub_crq_queues(adapter);
- 		}
- 	} else {
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index 85c587a03c8a..be977cd4bfe3 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -960,6 +960,7 @@ flood_test_do()
+ 
+ 	# Add an ACL on `host2_if` which will tell us whether the packet
+ 	# was flooded to it or not.
++	ip link set $host2_if promisc on
+ 	tc qdisc add dev $host2_if ingress
+ 	tc filter add dev $host2_if ingress protocol ip pref 1 handle 101 \
+ 		flower dst_mac $mac action drop
+@@ -977,6 +978,7 @@ flood_test_do()
+ 
+ 	tc filter del dev $host2_if ingress protocol ip pref 1 handle 101 flower
+ 	tc qdisc del dev $host2_if ingress
++	ip link set $host2_if promisc off
+ 
+ 	return $err
+ }
 -- 
 2.35.1
 
