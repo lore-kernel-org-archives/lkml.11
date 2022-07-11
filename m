@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94032CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbiGKJT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43112 "EHLO
+        id S231797AbiGKJUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231878AbiGKJTK (ORCPT
+        with ESMTP id S231893AbiGKJTM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:19:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1F84E87D;
+        Mon, 11 Jul 2022 05:19:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723BD4E86D;
         Mon, 11 Jul 2022 02:12:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15463611F0;
-        Mon, 11 Jul 2022 09:12:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21AF2C34115;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6A205CE125D;
         Mon, 11 Jul 2022 09:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69874C34115;
+        Mon, 11 Jul 2022 09:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530726;
-        bh=zmAKCFuifIgrl8xnK7nnzm4KnOms+s9J9t89VFFdE/g=;
+        s=korg; t=1657530723;
+        bh=9KilP7OB14MW6KxOfwyS+L8S9vkInApzgoS28Yry5UA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TXGjBDabfSuNUihUJaGrVGvedaUuK55BvIC8BALUcxgqWz8AKigfyDHSkXsLg6a52
-         Mrt0f0t4IdMTfPVZyYDGy0f2FMewvXuIneIAVZveaarwcHyM92zbZ8GxUd6mmOGKna
-         +3oh8V4wzbv0CE/qyRpF+xr/2K29yLzcuBX02eVM=
+        b=MPJ2hHNcSqZ2507Ov0ZZKZG/2Jwf+OvDAPGE2Yyssaz8hhCzFWxr/uvTjdV1fMaYo
+         xKr6cPb9UKq8TAmH0juir1RooieHtJcDfdq/MSiNNWZuva5REVPmnUecKUtroO/E/R
+         r9Fmmp+bbS026NxyA/ZPmL0B052MPKeAak6iJ3e8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuee K1r0a <liulin063@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 5.10 06/55] bpf: Fix incorrect verifier simulation around jmp32s jeq/jne
-Date:   Mon, 11 Jul 2022 11:06:54 +0200
-Message-Id: <20220711090541.951730942@linuxfoundation.org>
+        stable@vger.kernel.org, Rhett Aultman <rhett.aultman@samsara.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 05/55] can: gs_usb: gs_usb_open/close(): fix memory leak
+Date:   Mon, 11 Jul 2022 11:06:53 +0200
+Message-Id: <20220711090541.923831295@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -50,119 +48,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+From: Rhett Aultman <rhett.aultman@samsara.com>
 
-commit a12ca6277eca6aeeccf66e840c23a2b520e24c8f upstream.
+commit 2bda24ef95c0311ab93bda00db40486acf30bd0a upstream.
 
-Kuee reported a quirk in the jmp32's jeq/jne simulation, namely that the
-register value does not match expectations for the fall-through path. For
-example:
+The gs_usb driver appears to suffer from a malady common to many USB
+CAN adapter drivers in that it performs usb_alloc_coherent() to
+allocate a number of USB request blocks (URBs) for RX, and then later
+relies on usb_kill_anchored_urbs() to free them, but this doesn't
+actually free them. As a result, this may be leaking DMA memory that's
+been used by the driver.
 
-Before fix:
+This commit is an adaptation of the techniques found in the esd_usb2
+driver where a similar design pattern led to a memory leak. It
+explicitly frees the RX URBs and their DMA memory via a call to
+usb_free_coherent(). Since the RX URBs were allocated in the
+gs_can_open(), we remove them in gs_can_close() rather than in the
+disconnect function as was done in esd_usb2.
 
-  0: R1=ctx(off=0,imm=0) R10=fp0
-  0: (b7) r2 = 0                        ; R2_w=P0
-  1: (b7) r6 = 563                      ; R6_w=P563
-  2: (87) r2 = -r2                      ; R2_w=Pscalar()
-  3: (87) r2 = -r2                      ; R2_w=Pscalar()
-  4: (4c) w2 |= w6                      ; R2_w=Pscalar(umin=563,umax=4294967295,var_off=(0x233; 0xfffffdcc),s32_min=-2147483085) R6_w=P563
-  5: (56) if w2 != 0x8 goto pc+1        ; R2_w=P571  <--- [*]
-  6: (95) exit
-  R0 !read_ok
+For more information, see the 928150fad41b ("can: esd_usb2: fix memory
+leak").
 
-After fix:
-
-  0: R1=ctx(off=0,imm=0) R10=fp0
-  0: (b7) r2 = 0                        ; R2_w=P0
-  1: (b7) r6 = 563                      ; R6_w=P563
-  2: (87) r2 = -r2                      ; R2_w=Pscalar()
-  3: (87) r2 = -r2                      ; R2_w=Pscalar()
-  4: (4c) w2 |= w6                      ; R2_w=Pscalar(umin=563,umax=4294967295,var_off=(0x233; 0xfffffdcc),s32_min=-2147483085) R6_w=P563
-  5: (56) if w2 != 0x8 goto pc+1        ; R2_w=P8  <--- [*]
-  6: (95) exit
-  R0 !read_ok
-
-As can be seen on line 5 for the branch fall-through path in R2 [*] is that
-given condition w2 != 0x8 is false, verifier should conclude that r2 = 8 as
-upper 32 bit are known to be zero. However, verifier incorrectly concludes
-that r2 = 571 which is far off.
-
-The problem is it only marks false{true}_reg as known in the switch for JE/NE
-case, but at the end of the function, it uses {false,true}_{64,32}off to
-update {false,true}_reg->var_off and they still hold the prior value of
-{false,true}_reg->var_off before it got marked as known. The subsequent
-__reg_combine_32_into_64() then propagates this old var_off and derives new
-bounds. The information between min/max bounds on {false,true}_reg from
-setting the register to known const combined with the {false,true}_reg->var_off
-based on the old information then derives wrong register data.
-
-Fix it by detangling the BPF_JEQ/BPF_JNE cases and updating relevant
-{false,true}_{64,32}off tnums along with the register marking to known
-constant.
-
-Fixes: 3f50f132d840 ("bpf: Verifier, do explicit ALU32 bounds tracking")
-Reported-by: Kuee K1r0a <liulin063@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220701124727.11153-1-daniel@iogearbox.net
+Link: https://lore.kernel.org/all/alpine.DEB.2.22.394.2206031547001.1630869@thelappy
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Cc: stable@vger.kernel.org
+Signed-off-by: Rhett Aultman <rhett.aultman@samsara.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |   41 ++++++++++++++++++++++++-----------------
- 1 file changed, 24 insertions(+), 17 deletions(-)
+ drivers/net/can/usb/gs_usb.c |   23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -7512,26 +7512,33 @@ static void reg_set_min_max(struct bpf_r
- 		return;
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -184,6 +184,8 @@ struct gs_can {
  
- 	switch (opcode) {
-+	/* JEQ/JNE comparison doesn't change the register equivalence.
-+	 *
-+	 * r1 = r2;
-+	 * if (r1 == 42) goto label;
-+	 * ...
-+	 * label: // here both r1 and r2 are known to be 42.
-+	 *
-+	 * Hence when marking register as known preserve it's ID.
-+	 */
- 	case BPF_JEQ:
-+		if (is_jmp32) {
-+			__mark_reg32_known(true_reg, val32);
-+			true_32off = tnum_subreg(true_reg->var_off);
-+		} else {
-+			___mark_reg_known(true_reg, val);
-+			true_64off = true_reg->var_off;
-+		}
-+		break;
- 	case BPF_JNE:
--	{
--		struct bpf_reg_state *reg =
--			opcode == BPF_JEQ ? true_reg : false_reg;
--
--		/* JEQ/JNE comparison doesn't change the register equivalence.
--		 * r1 = r2;
--		 * if (r1 == 42) goto label;
--		 * ...
--		 * label: // here both r1 and r2 are known to be 42.
--		 *
--		 * Hence when marking register as known preserve it's ID.
--		 */
--		if (is_jmp32)
--			__mark_reg32_known(reg, val32);
--		else
--			___mark_reg_known(reg, val);
-+		if (is_jmp32) {
-+			__mark_reg32_known(false_reg, val32);
-+			false_32off = tnum_subreg(false_reg->var_off);
-+		} else {
-+			___mark_reg_known(false_reg, val);
-+			false_64off = false_reg->var_off;
-+		}
- 		break;
--	}
- 	case BPF_JSET:
- 		if (is_jmp32) {
- 			false_32off = tnum_and(false_32off, tnum_const(~val32));
+ 	struct usb_anchor tx_submitted;
+ 	atomic_t active_tx_urbs;
++	void *rxbuf[GS_MAX_RX_URBS];
++	dma_addr_t rxbuf_dma[GS_MAX_RX_URBS];
+ };
+ 
+ /* usb interface struct */
+@@ -592,6 +594,7 @@ static int gs_can_open(struct net_device
+ 		for (i = 0; i < GS_MAX_RX_URBS; i++) {
+ 			struct urb *urb;
+ 			u8 *buf;
++			dma_addr_t buf_dma;
+ 
+ 			/* alloc rx urb */
+ 			urb = usb_alloc_urb(0, GFP_KERNEL);
+@@ -602,7 +605,7 @@ static int gs_can_open(struct net_device
+ 			buf = usb_alloc_coherent(dev->udev,
+ 						 sizeof(struct gs_host_frame),
+ 						 GFP_KERNEL,
+-						 &urb->transfer_dma);
++						 &buf_dma);
+ 			if (!buf) {
+ 				netdev_err(netdev,
+ 					   "No memory left for USB buffer\n");
+@@ -610,6 +613,8 @@ static int gs_can_open(struct net_device
+ 				return -ENOMEM;
+ 			}
+ 
++			urb->transfer_dma = buf_dma;
++
+ 			/* fill, anchor, and submit rx urb */
+ 			usb_fill_bulk_urb(urb,
+ 					  dev->udev,
+@@ -633,10 +638,17 @@ static int gs_can_open(struct net_device
+ 					   rc);
+ 
+ 				usb_unanchor_urb(urb);
++				usb_free_coherent(dev->udev,
++						  sizeof(struct gs_host_frame),
++						  buf,
++						  buf_dma);
+ 				usb_free_urb(urb);
+ 				break;
+ 			}
+ 
++			dev->rxbuf[i] = buf;
++			dev->rxbuf_dma[i] = buf_dma;
++
+ 			/* Drop reference,
+ 			 * USB core will take care of freeing it
+ 			 */
+@@ -701,13 +713,20 @@ static int gs_can_close(struct net_devic
+ 	int rc;
+ 	struct gs_can *dev = netdev_priv(netdev);
+ 	struct gs_usb *parent = dev->parent;
++	unsigned int i;
+ 
+ 	netif_stop_queue(netdev);
+ 
+ 	/* Stop polling */
+ 	parent->active_channels--;
+-	if (!parent->active_channels)
++	if (!parent->active_channels) {
+ 		usb_kill_anchored_urbs(&parent->rx_submitted);
++		for (i = 0; i < GS_MAX_RX_URBS; i++)
++			usb_free_coherent(dev->udev,
++					  sizeof(struct gs_host_frame),
++					  dev->rxbuf[i],
++					  dev->rxbuf_dma[i]);
++	}
+ 
+ 	/* Stop sending URBs */
+ 	usb_kill_anchored_urbs(&dev->tx_submitted);
 
 
