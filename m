@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67CADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43DDCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiGKHdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
+        id S230159AbiGKHfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiGKHdv (ORCPT
+        with ESMTP id S229697AbiGKHfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:33:51 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7021A048;
-        Mon, 11 Jul 2022 00:33:50 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id o19-20020a05600c511300b003a2de48b4bbso3122336wms.5;
-        Mon, 11 Jul 2022 00:33:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bWprOYf0otpaMCejRz21ihN86ilpeml7m0pSz/Cp7s8=;
-        b=WlrrXGdzetMV5cQUjRQVZ4UUfZQuQEO0sVoH7Q1R2TstiH36jAhOwMrf6uh2s2T6nF
-         ucbLPY3b4i9YL2lTe3FxnG4xA/vlfJDR1dkrpazDIWh0MzwEF06iwtwFY2wft7s+0we/
-         hy3BapglXypxj/npsD0NcYf3ANWtqpb+qFIdp8F9azihcwfvGltC3r5RHlbCpmk0F54I
-         mXMO7VBs80IM+xZp5RnfCQiFKzfkIh7Tm9FzWRJxNDLNMiB0s2cEjHBpGRXzAsvuBBdS
-         HTISodY7APmoHFViHkyEk6J8XAv36C4SjnwhWURfgkuB/PydfhDsL/Og4cWUr2FiUB2U
-         xBLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bWprOYf0otpaMCejRz21ihN86ilpeml7m0pSz/Cp7s8=;
-        b=rTD/571bXqLUimTrh7dZZSHUYQo+nOSqKhjsrJZqc5msl6izecuWPb2BB5sQGQnsaX
-         0kiKim/luX01H24ivfctzFDmP/pxI9q14zMvqRpXIL2NP1d5WGiJZ/7nA6HnffmrPJXD
-         u4K1IR7ZMTpWtCHlRfkvWpW6ht5J0EsbwjizCZuXfV8Ee5Ad46NmwzC2+/jifyGjuQ5l
-         icQLKZzzD1/dLqt48cWh8aYJo2H4sxOb/WZiHBx/L1heqo6SP26bEG8mLxzdmXWAGi/o
-         H8MpfttHeUQfIwz6JkRD+qBJs5wtnLf/DqhGPquZmVHXdcUTeIrmSNvC/Pl5HbqpamG0
-         q1yQ==
-X-Gm-Message-State: AJIora/PJqkMfUjSdE/2rXM+KXWfnUoTyC7iixwngZYsm4hT/ripzq+F
-        Z+6lfva7FmzB9LwoVVlP6ko=
-X-Google-Smtp-Source: AGRyM1v6Vkcrf5r9GxjvaD2Yue1HGnL/WF2bLEdRhzZ2P3QzVd94oZ1AIp9iVlCBaqmq5hpo3bkD4Q==
-X-Received: by 2002:a05:600c:4f05:b0:3a1:67df:a116 with SMTP id l5-20020a05600c4f0500b003a167dfa116mr14653844wmq.103.1657524828807;
-        Mon, 11 Jul 2022 00:33:48 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.36.185])
-        by smtp.gmail.com with ESMTPSA id j16-20020adfff90000000b0021d76a1b0e3sm5155671wrr.6.2022.07.11.00.33.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 00:33:48 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH] HID: uclogic: Fix warning in uclogic_rdesc_template_apply
-Date:   Mon, 11 Jul 2022 09:33:37 +0200
-Message-Id: <20220711073337.337708-1-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Jul 2022 03:35:05 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528BC1A05C;
+        Mon, 11 Jul 2022 00:35:01 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=chengyou@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VIyDJnm_1657524897;
+Received: from 30.43.105.92(mailfrom:chengyou@linux.alibaba.com fp:SMTPD_---0VIyDJnm_1657524897)
+          by smtp.aliyun-inc.com;
+          Mon, 11 Jul 2022 15:34:58 +0800
+Message-ID: <670c57a2-6432-80c9-cdc0-496d836d7bf0@linux.alibaba.com>
+Date:   Mon, 11 Jul 2022 15:34:56 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] RDMA/erdma: Use the bitmap API to allocate bitmaps
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Kai Shen <kaishen@linux.alibaba.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <2764b6e204b32ef8c198a5efaf6c6bc4119f7665.1657301795.git.christophe.jaillet@wanadoo.fr>
+From:   Cheng Xu <chengyou@linux.alibaba.com>
+In-Reply-To: <2764b6e204b32ef8c198a5efaf6c6bc4119f7665.1657301795.git.christophe.jaillet@wanadoo.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Building with Sparse enabled prints this warning:
 
-    warning: incorrect type in assignment (different base types)
-        expected signed int x
-        got restricted __le32 [usertype]
 
-Cast the return value of cpu_to_le32() to fix the warning.
+On 7/9/22 1:37 AM, Christophe JAILLET wrote:
+> Use [devm_]bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+> 
+> It is less verbose and it improves the semantic.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/infiniband/hw/erdma/erdma_cmdq.c | 7 +++----
+>  drivers/infiniband/hw/erdma/erdma_main.c | 9 ++++-----
+>  2 files changed, 7 insertions(+), 9 deletions(-)
+> 
 
-Fixes: 08177f40bd00 ("HID: uclogic: merge hid-huion driver in hid-uclogic")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/hid/hid-uclogic-rdesc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Christophe,
 
-diff --git a/drivers/hid/hid-uclogic-rdesc.c b/drivers/hid/hid-uclogic-rdesc.c
-index 13f9ce73f1b1..9fe048729e51 100644
---- a/drivers/hid/hid-uclogic-rdesc.c
-+++ b/drivers/hid/hid-uclogic-rdesc.c
-@@ -1009,7 +1009,7 @@ __u8 *uclogic_rdesc_template_apply(const __u8 *template_ptr,
- 		if (memcmp(p, head, sizeof(head)) == 0 &&
- 		    p[sizeof(head)] < param_num) {
- 			v = param_list[p[sizeof(head)]];
--			put_unaligned(cpu_to_le32(v), (s32 *)p);
-+			put_unaligned((__force u32)cpu_to_le32(v), (s32 *)p);
- 			p += sizeof(head) + 1;
- 		} else {
- 			p++;
--- 
-2.25.1
+Thanks for your two patches of erdma.
 
+The erdma code your got is our first upstreaming code, so I would like to squash your
+changes into the relevant commit in our next patchset to make the commit history cleaner.
+
+BTW, the coding style in the patches is OK, but has a little differences with clang-format's
+result. I will use the format from clang-format to minimize manual adjustments.
+ 
+Thanks,
+Cheng Xu
+ 
+
+> diff --git a/drivers/infiniband/hw/erdma/erdma_cmdq.c b/drivers/infiniband/hw/erdma/erdma_cmdq.c
+> index 0cf5032d4b78..0489838d9717 100644
+> --- a/drivers/infiniband/hw/erdma/erdma_cmdq.c
+> +++ b/drivers/infiniband/hw/erdma/erdma_cmdq.c
+> @@ -78,10 +78,9 @@ static int erdma_cmdq_wait_res_init(struct erdma_dev *dev,
+>  		return -ENOMEM;
+>  
+>  	spin_lock_init(&cmdq->lock);
+> -	cmdq->comp_wait_bitmap =
+> -		devm_kcalloc(&dev->pdev->dev,
+> -			     BITS_TO_LONGS(cmdq->max_outstandings),
+> -			     sizeof(unsigned long), GFP_KERNEL);
+> +	cmdq->comp_wait_bitmap = devm_bitmap_zalloc(&dev->pdev->dev,
+> +						    cmdq->max_outstandings,
+> +						    GFP_KERNEL);
+>  	if (!cmdq->comp_wait_bitmap) {
+>  		devm_kfree(&dev->pdev->dev, cmdq->wait_pool);
+>  		return -ENOMEM;
+> diff --git a/drivers/infiniband/hw/erdma/erdma_main.c b/drivers/infiniband/hw/erdma/erdma_main.c
+> index 27484bea51d9..7e1e27acb404 100644
+> --- a/drivers/infiniband/hw/erdma/erdma_main.c
+> +++ b/drivers/infiniband/hw/erdma/erdma_main.c
+> @@ -423,9 +423,8 @@ static int erdma_res_cb_init(struct erdma_dev *dev)
+>  	for (i = 0; i < ERDMA_RES_CNT; i++) {
+>  		dev->res_cb[i].next_alloc_idx = 1;
+>  		spin_lock_init(&dev->res_cb[i].lock);
+> -		dev->res_cb[i].bitmap =
+> -			kcalloc(BITS_TO_LONGS(dev->res_cb[i].max_cap),
+> -				sizeof(unsigned long), GFP_KERNEL);
+> +		dev->res_cb[i].bitmap = bitmap_zalloc(dev->res_cb[i].max_cap,
+> +						      GFP_KERNEL);
+>  		/* We will free the memory in erdma_res_cb_free */
+>  		if (!dev->res_cb[i].bitmap)
+>  			goto err;
+> @@ -435,7 +434,7 @@ static int erdma_res_cb_init(struct erdma_dev *dev)
+>  
+>  err:
+>  	for (j = 0; j < i; j++)
+> -		kfree(dev->res_cb[j].bitmap);
+> +		bitmap_free(dev->res_cb[j].bitmap);
+>  
+>  	return -ENOMEM;
+>  }
+> @@ -445,7 +444,7 @@ static void erdma_res_cb_free(struct erdma_dev *dev)
+>  	int i;
+>  
+>  	for (i = 0; i < ERDMA_RES_CNT; i++)
+> -		kfree(dev->res_cb[i].bitmap);
+> +		bitmap_free(dev->res_cb[i].bitmap);
+>  }
+>  
+>  static const struct ib_device_ops erdma_device_ops = {
