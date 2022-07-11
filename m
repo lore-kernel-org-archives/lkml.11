@@ -2,175 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C8DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F3EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229957AbiGKH2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
+        id S229939AbiGKH3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiGKH2q (ORCPT
+        with ESMTP id S229478AbiGKH3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:28:46 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8039BA1A8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:28:45 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id z1so3748895plb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+189CxxcoXTJww1vvNRT20TPCnm9kCVhx1btF3TMXi8=;
-        b=k74DOFzNKkceSWgme9B9za4lw91QGrG2qroaIHb8gns+t7uTeteRvn4NBHF6QGCAz7
-         3PaEWSWLS9kbrum42fuA4GA6Tko9EfKdNPyTKFyn1UXvXVfw6Abh+Wyp9v/uWQbAAfjC
-         HHnYXgeP+D9JEx0OYFvlogJ2vUNGnqXtBqEUY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+189CxxcoXTJww1vvNRT20TPCnm9kCVhx1btF3TMXi8=;
-        b=iiJ5uTpHlIKZGw0gjyHJpf2qD7ZlHUVkRiQAUq3ooNZyU1cpZGVPBkUN2JJVUhD6Bz
-         oC8NzsDM8zXe9PSEEIIH/C+SBaC9dPgUz0ei3EcOreZNAtRrXR39w6jezn5G50x+oK3U
-         TCkglcxY2IS4kM7xQwrdREzyttjKPYq0kIUkQUYeThdnR0AMxgKfdb2c4vPL2UeHkKzs
-         Cv07/hCd2bMqeW9DGoFL3qsxFF4D5EyjLVxUtiRHg3hvYVouDQuxTEWLVrDszjqVFbRm
-         zM161cLquQUYKSWrJ78cKoacereNxSfdul05t1vEmwiVkqiELYOphafZNzCw+s93qobk
-         c2rQ==
-X-Gm-Message-State: AJIora+/iX0EysdIDVtOl7msMM/102aJdVZUuf0iGQ3Vqz3REPFu+JfA
-        /2s+mTCLMXos+DcR83ji6743uiSkmJ7H/A==
-X-Google-Smtp-Source: AGRyM1vvlzYjpioNK7owzTp0M9LAaXsvaxsc/kYBhI2lIuqlMsmMz4iD3WVH7/La8w+rtVzCIakaMw==
-X-Received: by 2002:a17:90b:4f85:b0:1f0:95d:c02b with SMTP id qe5-20020a17090b4f8500b001f0095dc02bmr14519392pjb.89.1657524524861;
-        Mon, 11 Jul 2022 00:28:44 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id z8-20020aa79e48000000b0051bc5f4df1csm4012839pfq.154.2022.07.11.00.28.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 00:28:44 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH v4 7/9] platform/chrome: cros_typec_switch: Register mode switches
-Date:   Mon, 11 Jul 2022 07:23:01 +0000
-Message-Id: <20220711072333.2064341-8-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
-In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
-References: <20220711072333.2064341-1-pmalani@chromium.org>
+        Mon, 11 Jul 2022 03:29:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C9D1572D
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:29:13 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oAnqi-0006ib-SU; Mon, 11 Jul 2022 09:28:56 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oAnqh-000GRm-QP; Mon, 11 Jul 2022 09:28:55 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oAnqh-004TFL-4x; Mon, 11 Jul 2022 09:28:55 +0200
+Date:   Mon, 11 Jul 2022 09:28:41 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Nikita Travkin <nikita@trvn.ru>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
+        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
+        masneyb@onstation.org, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH v8 2/2] pwm: Add clock based PWM output driver
+Message-ID: <20220711072841.vtdgjbtefzphhtb7@pengutronix.de>
+References: <20220711062330.4923-1-nikita@trvn.ru>
+ <20220711062330.4923-3-nikita@trvn.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ikxnmvrhzqbsjtde"
+Content-Disposition: inline
+In-Reply-To: <20220711062330.4923-3-nikita@trvn.ru>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register mode switch devices for Type C connectors, when they are
-specified by firmware. These control Type C configuration for any USB
-Type-C mode switches (sometimes known as "muxes") which are controlled
-by the Chrome EC.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+--ikxnmvrhzqbsjtde
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes since v3:
-- No changes.
+On Mon, Jul 11, 2022 at 11:23:30AM +0500, Nikita Travkin wrote:
+> Some systems have clocks exposed to external devices. If the clock
+> controller supports duty-cycle configuration, such clocks can be used as
+> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
+> similar way and an "opposite" driver already exists (clk-pwm). Add a
+> driver that would enable pwm devices to be used via clk subsystem.
+>=20
+> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
 
-Changes since v2:
-- Fixed missing "static" identifier.
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-Changes since v1:
-- No changes.
+Thanks
+Uwe
 
- drivers/platform/chrome/cros_typec_switch.c | 40 +++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
-index 7c01957a032d..024a2bb146b2 100644
---- a/drivers/platform/chrome/cros_typec_switch.c
-+++ b/drivers/platform/chrome/cros_typec_switch.c
-@@ -15,6 +15,7 @@
- #include <linux/platform_device.h>
- #include <linux/usb/typec_altmode.h>
- #include <linux/usb/typec_dp.h>
-+#include <linux/usb/typec_mux.h>
- #include <linux/usb/typec_retimer.h>
- 
- #define DRV_NAME "cros-typec-switch"
-@@ -22,6 +23,7 @@
- /* Handles and other relevant data required for each port's switches. */
- struct cros_typec_port {
- 	int port_num;
-+	struct typec_mux_dev *mode_switch;
- 	struct typec_retimer *retimer;
- 	struct cros_typec_switch_data *sdata;
- };
-@@ -147,6 +149,15 @@ static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int po
- 	return -ETIMEDOUT;
- }
- 
-+static int cros_typec_mode_switch_set(struct typec_mux_dev *mode_switch,
-+				      struct typec_mux_state *state)
-+{
-+	struct cros_typec_port *port = typec_mux_get_drvdata(mode_switch);
-+
-+	/* Mode switches have index 0. */
-+	return cros_typec_configure_mux(port->sdata, port->port_num, 0, state->mode, state->alt);
-+}
-+
- static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
- {
- 	struct cros_typec_port *port = typec_retimer_get_drvdata(retimer);
-@@ -163,9 +174,27 @@ static void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
- 		if (!sdata->ports[i])
- 			continue;
- 		typec_retimer_unregister(sdata->ports[i]->retimer);
-+		typec_mux_unregister(sdata->ports[i]->mode_switch);
- 	}
- }
- 
-+static int cros_typec_register_mode_switch(struct cros_typec_port *port,
-+					   struct fwnode_handle *fwnode)
-+{
-+	struct typec_mux_desc mode_switch_desc = {
-+		.fwnode = fwnode,
-+		.drvdata = port,
-+		.name = fwnode_get_name(fwnode),
-+		.set = cros_typec_mode_switch_set,
-+	};
-+
-+	port->mode_switch = typec_mux_register(port->sdata->dev, &mode_switch_desc);
-+	if (IS_ERR(port->mode_switch))
-+		return PTR_ERR(port->mode_switch);
-+
-+	return 0;
-+}
-+
- static int cros_typec_register_retimer(struct cros_typec_port *port, struct fwnode_handle *fwnode)
- {
- 	struct typec_retimer_desc retimer_desc = {
-@@ -235,6 +264,17 @@ static int cros_typec_register_switches(struct cros_typec_switch_data *sdata)
- 		}
- 
- 		dev_dbg(dev, "Retimer switch registered for index %llu\n", index);
-+
-+		if (!fwnode_property_read_bool(fwnode, "mode-switch"))
-+			continue;
-+
-+		ret = cros_typec_register_mode_switch(port, fwnode);
-+		if (ret) {
-+			dev_err(dev, "Mode switch register failed\n");
-+			goto err_switch;
-+		}
-+
-+		dev_dbg(dev, "Mode switch registered for index %llu\n", index);
- 	}
- 
- 	return 0;
--- 
-2.37.0.144.g8ac04bfd2-goog
+--ikxnmvrhzqbsjtde
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLL0SEACgkQwfwUeK3K
+7AkFAQf7B2/hjKRRsYekNT1WInfl0CTPzvlXJpWLpi3R1D8Lh2O6Ks12TczXBfoA
+cykJs7PBZ5DzhGwGQSqSvVhaBEar5V8RVdeNLblYMXmMKTPRH3aHd7NieOfllQBd
+ApOisebie2PUTJBt0bWeobVuO02dQtfi66F34GuzoMj4j7qNG9MRbTgiIaw7dAqs
+bqFvdOKQEX+/voGjeRDwACPyqtUYyvcIyR1eCCOkyuIK87w0kNa0OPJc9Qxg280v
+4NhE4Vktqp+ZImRgL6Fy1JDIY5Z8XHTT9NkTqAzozyZC1Zp/R5Tls0NUbYh+QzRJ
+XqNihElDHcts0eX4GLqwITFr27+rFw==
+=Gkns
+-----END PGP SIGNATURE-----
+
+--ikxnmvrhzqbsjtde--
