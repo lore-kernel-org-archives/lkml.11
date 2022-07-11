@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9662AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiGKJ25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        id S232489AbiGKJ3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232461AbiGKJ2T (ORCPT
+        with ESMTP id S231784AbiGKJ2a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:28:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A22166AF1;
+        Mon, 11 Jul 2022 05:28:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B43066AF8;
         Mon, 11 Jul 2022 02:15:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C600FCE1260;
-        Mon, 11 Jul 2022 09:15:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D75CDC34115;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 34307CE1256;
         Mon, 11 Jul 2022 09:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25DC5C341C0;
+        Mon, 11 Jul 2022 09:15:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530952;
-        bh=/sbOSX3Pnsxhpi+1YjZXiP7EM8K6cK3NsOE1FwYeRFI=;
+        s=korg; t=1657530949;
+        bh=K6jNGp2dUuNiWhAggovJ4j01QWBZArB13C35cE1qd8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MaxrDC+BrL36d47/jbDs+ajZ3SSgeCtpAxmOsv5D/XVui+7Yow35ffNB9wcrb2fYm
-         6ovIl5UIcleIAnBs703pFpZ8Dd6RiwFbHDoHvXzvbnfBag5nnTNRFpaon6nJVzl+mF
-         vdYQJS/zXee0m5uZP8Cy2vx+3SAJVK1FXBZ++yPY=
+        b=2sObBLVnxmLMeCVvKM+Pd9f810Bjmi+tHJTHfRIPvWZZDREILT8xn8ZaYrSAXasz8
+         80kKjhQhpKEOKUPTLCCOv7X8b8gsezPA7E8jDlVa1H3GXNvhiy6PzUyW4KP0uwuVMh
+         AJfYwdmJHoDyVfPYZaY5rQZSFRWIbLLg3f+tkyaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Marangi <ansuelsmth@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 044/112] net: dsa: qca8k: reset cpu port on MTU change
-Date:   Mon, 11 Jul 2022 11:06:44 +0200
-Message-Id: <20220711090550.823175937@linuxfoundation.org>
+        stable@vger.kernel.org, Sachin Sant <sachinp@linux.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 043/112] powerpc/powernv: delay rng platform device creation until later in boot
+Date:   Mon, 11 Jul 2022 11:06:43 +0200
+Message-Id: <20220711090550.795413187@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -48,71 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Marangi <ansuelsmth@gmail.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 386228c694bf1e7a7688e44412cb33500b0ac585 upstream.
+commit 887502826549caa7e4215fd9e628f48f14c0825a upstream.
 
-It was discovered that the Documentation lacks of a fundamental detail
-on how to correctly change the MAX_FRAME_SIZE of the switch.
+The platform device for the rng must be created much later in boot.
+Otherwise it tries to connect to a parent that doesn't yet exist,
+resulting in this splat:
 
-In fact if the MAX_FRAME_SIZE is changed while the cpu port is on, the
-switch panics and cease to send any packet. This cause the mgmt ethernet
-system to not receive any packet (the slow fallback still works) and
-makes the device not reachable. To recover from this a switch reset is
-required.
+  [    0.000478] kobject: '(null)' ((____ptrval____)): is not initialized, yet kobject_get() is being called.
+  [    0.002925] [c000000002a0fb30] [c00000000073b0bc] kobject_get+0x8c/0x100 (unreliable)
+  [    0.003071] [c000000002a0fba0] [c00000000087e464] device_add+0xf4/0xb00
+  [    0.003194] [c000000002a0fc80] [c000000000a7f6e4] of_device_add+0x64/0x80
+  [    0.003321] [c000000002a0fcb0] [c000000000a800d0] of_platform_device_create_pdata+0xd0/0x1b0
+  [    0.003476] [c000000002a0fd00] [c00000000201fa44] pnv_get_random_long_early+0x240/0x2e4
+  [    0.003623] [c000000002a0fe20] [c000000002060c38] random_init+0xc0/0x214
 
-To correctly handle this, turn off the cpu ports before changing the
-MAX_FRAME_SIZE and turn on again after the value is applied.
+This patch fixes the issue by doing the platform device creation inside
+of machine_subsys_initcall.
 
-Fixes: f58d2598cf70 ("net: dsa: qca8k: implement the port MTU callbacks")
+Fixes: f3eac426657d ("powerpc/powernv: wire up rng during setup_arch")
 Cc: stable@vger.kernel.org
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Link: https://lore.kernel.org/r/20220621151122.10220-1-ansuelsmth@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+[mpe: Change "of node" to "platform device" in change log]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220630121654.1939181-1-Jason@zx2c4.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/qca8k.c |   23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ arch/powerpc/platforms/powernv/rng.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -2372,7 +2372,7 @@ static int
- qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -176,12 +176,8 @@ static int __init pnv_get_random_long_ea
+ 		    NULL) != pnv_get_random_long_early)
+ 		return 0;
+ 
+-	for_each_compatible_node(dn, NULL, "ibm,power-rng") {
+-		if (rng_create(dn))
+-			continue;
+-		/* Create devices for hwrng driver */
+-		of_platform_device_create(dn, NULL, NULL);
+-	}
++	for_each_compatible_node(dn, NULL, "ibm,power-rng")
++		rng_create(dn);
+ 
+ 	if (!ppc_md.get_random_seed)
+ 		return 0;
+@@ -205,10 +201,18 @@ void __init pnv_rng_init(void)
+ 
+ static int __init pnv_rng_late_init(void)
  {
- 	struct qca8k_priv *priv = ds->priv;
--	int i, mtu = 0;
-+	int ret, i, mtu = 0;
- 
- 	priv->port_mtu[port] = new_mtu;
- 
-@@ -2380,8 +2380,27 @@ qca8k_port_change_mtu(struct dsa_switch
- 		if (priv->port_mtu[i] > mtu)
- 			mtu = priv->port_mtu[i];
- 
-+	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
-+	 * the switch panics.
-+	 * Turn off both cpu ports before applying the new value to prevent
-+	 * this.
-+	 */
-+	if (priv->port_sts[0].enabled)
-+		qca8k_port_set_status(priv, 0, 0);
++	struct device_node *dn;
+ 	unsigned long v;
 +
-+	if (priv->port_sts[6].enabled)
-+		qca8k_port_set_status(priv, 6, 0);
+ 	/* In case it wasn't called during init for some other reason. */
+ 	if (ppc_md.get_random_seed == pnv_get_random_long_early)
+ 		pnv_get_random_long_early(&v);
 +
- 	/* Include L2 header / FCS length */
--	return qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
-+	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
++	if (ppc_md.get_random_seed == powernv_get_random_long) {
++		for_each_compatible_node(dn, NULL, "ibm,power-rng")
++			of_platform_device_create(dn, NULL, NULL);
++	}
 +
-+	if (priv->port_sts[0].enabled)
-+		qca8k_port_set_status(priv, 0, 1);
-+
-+	if (priv->port_sts[6].enabled)
-+		qca8k_port_set_status(priv, 6, 1);
-+
-+	return ret;
+ 	return 0;
  }
- 
- static int
+ machine_subsys_initcall(powernv, pnv_rng_late_init);
 
 
