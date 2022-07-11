@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF42CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbiGKJUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        id S231506AbiGKJUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231893AbiGKJTM (ORCPT
+        with ESMTP id S231909AbiGKJTP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:19:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723BD4E86D;
-        Mon, 11 Jul 2022 02:12:07 -0700 (PDT)
+        Mon, 11 Jul 2022 05:19:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3614E852;
+        Mon, 11 Jul 2022 02:12:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6A205CE125D;
-        Mon, 11 Jul 2022 09:12:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69874C34115;
-        Mon, 11 Jul 2022 09:12:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2D76611E4;
+        Mon, 11 Jul 2022 09:12:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C91BEC34115;
+        Mon, 11 Jul 2022 09:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530723;
-        bh=9KilP7OB14MW6KxOfwyS+L8S9vkInApzgoS28Yry5UA=;
+        s=korg; t=1657530729;
+        bh=A8UtCcjwUYVFtYvgEA8CrQVCS5OqYaomFIh1ONkVOM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MPJ2hHNcSqZ2507Ov0ZZKZG/2Jwf+OvDAPGE2Yyssaz8hhCzFWxr/uvTjdV1fMaYo
-         xKr6cPb9UKq8TAmH0juir1RooieHtJcDfdq/MSiNNWZuva5REVPmnUecKUtroO/E/R
-         r9Fmmp+bbS026NxyA/ZPmL0B052MPKeAak6iJ3e8=
+        b=YrJiDhjIJR+MyzvMGAYvcguxA8GOcOO7akbCgMDbesZ+SJx/+VuVeXteDB+xn6ZoJ
+         Iw1ceVB8hVWsBoKY2P9pv7o5od0KORkVORFakdJEfEvMgXFD6Gl0pZkWP18iffvaHG
+         4tneLDIgCZFacRfs+x3jgT2WLgutAfjvAQvdexPg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rhett Aultman <rhett.aultman@samsara.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 05/55] can: gs_usb: gs_usb_open/close(): fix memory leak
-Date:   Mon, 11 Jul 2022 11:06:53 +0200
-Message-Id: <20220711090541.923831295@linuxfoundation.org>
+        stable@vger.kernel.org, Kuee K1r0a <liulin063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.10 07/55] bpf: Fix insufficient bounds propagation from adjust_scalar_min_max_vals
+Date:   Mon, 11 Jul 2022 11:06:55 +0200
+Message-Id: <20220711090541.979916069@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -48,113 +50,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rhett Aultman <rhett.aultman@samsara.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-commit 2bda24ef95c0311ab93bda00db40486acf30bd0a upstream.
+commit 3844d153a41adea718202c10ae91dc96b37453b5 upstream.
 
-The gs_usb driver appears to suffer from a malady common to many USB
-CAN adapter drivers in that it performs usb_alloc_coherent() to
-allocate a number of USB request blocks (URBs) for RX, and then later
-relies on usb_kill_anchored_urbs() to free them, but this doesn't
-actually free them. As a result, this may be leaking DMA memory that's
-been used by the driver.
+Kuee reported a corner case where the tnum becomes constant after the call
+to __reg_bound_offset(), but the register's bounds are not, that is, its
+min bounds are still not equal to the register's max bounds.
 
-This commit is an adaptation of the techniques found in the esd_usb2
-driver where a similar design pattern led to a memory leak. It
-explicitly frees the RX URBs and their DMA memory via a call to
-usb_free_coherent(). Since the RX URBs were allocated in the
-gs_can_open(), we remove them in gs_can_close() rather than in the
-disconnect function as was done in esd_usb2.
+This in turn allows to leak pointers through turning a pointer register as
+is into an unknown scalar via adjust_ptr_min_max_vals().
 
-For more information, see the 928150fad41b ("can: esd_usb2: fix memory
-leak").
+Before:
 
-Link: https://lore.kernel.org/all/alpine.DEB.2.22.394.2206031547001.1630869@thelappy
-Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
-Cc: stable@vger.kernel.org
-Signed-off-by: Rhett Aultman <rhett.aultman@samsara.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+  func#0 @0
+  0: R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  0: (b7) r0 = 1                        ; R0_w=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0))
+  1: (b7) r3 = 0                        ; R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0))
+  2: (87) r3 = -r3                      ; R3_w=scalar()
+  3: (87) r3 = -r3                      ; R3_w=scalar()
+  4: (47) r3 |= 32767                   ; R3_w=scalar(smin=-9223372036854743041,umin=32767,var_off=(0x7fff; 0xffffffffffff8000),s32_min=-2147450881)
+  5: (75) if r3 s>= 0x0 goto pc+1       ; R3_w=scalar(umin=9223372036854808575,var_off=(0x8000000000007fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  6: (95) exit
+
+  from 5 to 7: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  7: (d5) if r3 s<= 0x8000 goto pc+1    ; R3=scalar(umin=32769,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  8: (95) exit
+
+  from 7 to 9: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=32768,var_off=(0x7fff; 0x8000)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  9: (07) r3 += -32767                  ; R3_w=scalar(imm=0,umax=1,var_off=(0x0; 0x0))  <--- [*]
+  10: (95) exit
+
+What can be seen here is that R3=scalar(umin=32767,umax=32768,var_off=(0x7fff;
+0x8000)) after the operation R3 += -32767 results in a 'malformed' constant, that
+is, R3_w=scalar(imm=0,umax=1,var_off=(0x0; 0x0)). Intersecting with var_off has
+not been done at that point via __update_reg_bounds(), which would have improved
+the umax to be equal to umin.
+
+Refactor the tnum <> min/max bounds information flow into a reg_bounds_sync()
+helper and use it consistently everywhere. After the fix, bounds have been
+corrected to R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0)) and thus the register
+is regarded as a 'proper' constant scalar of 0.
+
+After:
+
+  func#0 @0
+  0: R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  0: (b7) r0 = 1                        ; R0_w=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0))
+  1: (b7) r3 = 0                        ; R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0))
+  2: (87) r3 = -r3                      ; R3_w=scalar()
+  3: (87) r3 = -r3                      ; R3_w=scalar()
+  4: (47) r3 |= 32767                   ; R3_w=scalar(smin=-9223372036854743041,umin=32767,var_off=(0x7fff; 0xffffffffffff8000),s32_min=-2147450881)
+  5: (75) if r3 s>= 0x0 goto pc+1       ; R3_w=scalar(umin=9223372036854808575,var_off=(0x8000000000007fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  6: (95) exit
+
+  from 5 to 7: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  7: (d5) if r3 s<= 0x8000 goto pc+1    ; R3=scalar(umin=32769,umax=9223372036854775807,var_off=(0x7fff; 0x7fffffffffff8000),s32_min=-2147450881,u32_min=32767)
+  8: (95) exit
+
+  from 7 to 9: R0=scalar(imm=1,umin=1,umax=1,var_off=(0x1; 0x0)) R1=ctx(off=0,imm=0,umax=0,var_off=(0x0; 0x0)) R3=scalar(umin=32767,umax=32768,var_off=(0x7fff; 0x8000)) R10=fp(off=0,imm=0,umax=0,var_off=(0x0; 0x0))
+  9: (07) r3 += -32767                  ; R3_w=scalar(imm=0,umax=0,var_off=(0x0; 0x0))  <--- [*]
+  10: (95) exit
+
+Fixes: b03c9f9fdc37 ("bpf/verifier: track signed and unsigned min/max values")
+Reported-by: Kuee K1r0a <liulin063@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220701124727.11153-2-daniel@iogearbox.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/gs_usb.c |   23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ kernel/bpf/verifier.c |   72 +++++++++++++++-----------------------------------
+ 1 file changed, 23 insertions(+), 49 deletions(-)
 
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -184,6 +184,8 @@ struct gs_can {
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1249,6 +1249,21 @@ static void __reg_bound_offset(struct bp
+ 	reg->var_off = tnum_or(tnum_clear_subreg(var64_off), var32_off);
+ }
  
- 	struct usb_anchor tx_submitted;
- 	atomic_t active_tx_urbs;
-+	void *rxbuf[GS_MAX_RX_URBS];
-+	dma_addr_t rxbuf_dma[GS_MAX_RX_URBS];
- };
- 
- /* usb interface struct */
-@@ -592,6 +594,7 @@ static int gs_can_open(struct net_device
- 		for (i = 0; i < GS_MAX_RX_URBS; i++) {
- 			struct urb *urb;
- 			u8 *buf;
-+			dma_addr_t buf_dma;
- 
- 			/* alloc rx urb */
- 			urb = usb_alloc_urb(0, GFP_KERNEL);
-@@ -602,7 +605,7 @@ static int gs_can_open(struct net_device
- 			buf = usb_alloc_coherent(dev->udev,
- 						 sizeof(struct gs_host_frame),
- 						 GFP_KERNEL,
--						 &urb->transfer_dma);
-+						 &buf_dma);
- 			if (!buf) {
- 				netdev_err(netdev,
- 					   "No memory left for USB buffer\n");
-@@ -610,6 +613,8 @@ static int gs_can_open(struct net_device
- 				return -ENOMEM;
- 			}
- 
-+			urb->transfer_dma = buf_dma;
++static void reg_bounds_sync(struct bpf_reg_state *reg)
++{
++	/* We might have learned new bounds from the var_off. */
++	__update_reg_bounds(reg);
++	/* We might have learned something about the sign bit. */
++	__reg_deduce_bounds(reg);
++	/* We might have learned some bits from the bounds. */
++	__reg_bound_offset(reg);
++	/* Intersecting with the old var_off might have improved our bounds
++	 * slightly, e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
++	 * then new var_off is (0; 0x7f...fc) which improves our umax.
++	 */
++	__update_reg_bounds(reg);
++}
 +
- 			/* fill, anchor, and submit rx urb */
- 			usb_fill_bulk_urb(urb,
- 					  dev->udev,
-@@ -633,10 +638,17 @@ static int gs_can_open(struct net_device
- 					   rc);
+ static bool __reg32_bound_s64(s32 a)
+ {
+ 	return a >= 0 && a <= S32_MAX;
+@@ -1290,16 +1305,8 @@ static void __reg_combine_32_into_64(str
+ 		 * so they do not impact tnum bounds calculation.
+ 		 */
+ 		__mark_reg64_unbounded(reg);
+-		__update_reg_bounds(reg);
+ 	}
+-
+-	/* Intersecting with the old var_off might have improved our bounds
+-	 * slightly.  e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
+-	 * then new var_off is (0; 0x7f...fc) which improves our umax.
+-	 */
+-	__reg_deduce_bounds(reg);
+-	__reg_bound_offset(reg);
+-	__update_reg_bounds(reg);
++	reg_bounds_sync(reg);
+ }
  
- 				usb_unanchor_urb(urb);
-+				usb_free_coherent(dev->udev,
-+						  sizeof(struct gs_host_frame),
-+						  buf,
-+						  buf_dma);
- 				usb_free_urb(urb);
- 				break;
+ static bool __reg64_bound_s32(s64 a)
+@@ -1315,7 +1322,6 @@ static bool __reg64_bound_u32(u64 a)
+ static void __reg_combine_64_into_32(struct bpf_reg_state *reg)
+ {
+ 	__mark_reg32_unbounded(reg);
+-
+ 	if (__reg64_bound_s32(reg->smin_value) && __reg64_bound_s32(reg->smax_value)) {
+ 		reg->s32_min_value = (s32)reg->smin_value;
+ 		reg->s32_max_value = (s32)reg->smax_value;
+@@ -1324,14 +1330,7 @@ static void __reg_combine_64_into_32(str
+ 		reg->u32_min_value = (u32)reg->umin_value;
+ 		reg->u32_max_value = (u32)reg->umax_value;
+ 	}
+-
+-	/* Intersecting with the old var_off might have improved our bounds
+-	 * slightly.  e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
+-	 * then new var_off is (0; 0x7f...fc) which improves our umax.
+-	 */
+-	__reg_deduce_bounds(reg);
+-	__reg_bound_offset(reg);
+-	__update_reg_bounds(reg);
++	reg_bounds_sync(reg);
+ }
+ 
+ /* Mark a register as having a completely unknown (scalar) value. */
+@@ -5230,9 +5229,7 @@ static void do_refine_retval_range(struc
+ 	ret_reg->s32_max_value = meta->msize_max_value;
+ 	ret_reg->smin_value = -MAX_ERRNO;
+ 	ret_reg->s32_min_value = -MAX_ERRNO;
+-	__reg_deduce_bounds(ret_reg);
+-	__reg_bound_offset(ret_reg);
+-	__update_reg_bounds(ret_reg);
++	reg_bounds_sync(ret_reg);
+ }
+ 
+ static int
+@@ -6197,11 +6194,7 @@ reject:
+ 
+ 	if (!check_reg_sane_offset(env, dst_reg, ptr_reg->type))
+ 		return -EINVAL;
+-
+-	__update_reg_bounds(dst_reg);
+-	__reg_deduce_bounds(dst_reg);
+-	__reg_bound_offset(dst_reg);
+-
++	reg_bounds_sync(dst_reg);
+ 	if (sanitize_check_bounds(env, insn, dst_reg) < 0)
+ 		return -EACCES;
+ 	if (sanitize_needed(opcode)) {
+@@ -6939,10 +6932,7 @@ static int adjust_scalar_min_max_vals(st
+ 	/* ALU32 ops are zero extended into 64bit register */
+ 	if (alu32)
+ 		zext_32_to_64(dst_reg);
+-
+-	__update_reg_bounds(dst_reg);
+-	__reg_deduce_bounds(dst_reg);
+-	__reg_bound_offset(dst_reg);
++	reg_bounds_sync(dst_reg);
+ 	return 0;
+ }
+ 
+@@ -7131,10 +7121,7 @@ static int check_alu_op(struct bpf_verif
+ 							 insn->dst_reg);
+ 				}
+ 				zext_32_to_64(dst_reg);
+-
+-				__update_reg_bounds(dst_reg);
+-				__reg_deduce_bounds(dst_reg);
+-				__reg_bound_offset(dst_reg);
++				reg_bounds_sync(dst_reg);
  			}
+ 		} else {
+ 			/* case: R = imm
+@@ -7693,21 +7680,8 @@ static void __reg_combine_min_max(struct
+ 							dst_reg->smax_value);
+ 	src_reg->var_off = dst_reg->var_off = tnum_intersect(src_reg->var_off,
+ 							     dst_reg->var_off);
+-	/* We might have learned new bounds from the var_off. */
+-	__update_reg_bounds(src_reg);
+-	__update_reg_bounds(dst_reg);
+-	/* We might have learned something about the sign bit. */
+-	__reg_deduce_bounds(src_reg);
+-	__reg_deduce_bounds(dst_reg);
+-	/* We might have learned some bits from the bounds. */
+-	__reg_bound_offset(src_reg);
+-	__reg_bound_offset(dst_reg);
+-	/* Intersecting with the old var_off might have improved our bounds
+-	 * slightly.  e.g. if umax was 0x7f...f and var_off was (0; 0xf...fc),
+-	 * then new var_off is (0; 0x7f...fc) which improves our umax.
+-	 */
+-	__update_reg_bounds(src_reg);
+-	__update_reg_bounds(dst_reg);
++	reg_bounds_sync(src_reg);
++	reg_bounds_sync(dst_reg);
+ }
  
-+			dev->rxbuf[i] = buf;
-+			dev->rxbuf_dma[i] = buf_dma;
-+
- 			/* Drop reference,
- 			 * USB core will take care of freeing it
- 			 */
-@@ -701,13 +713,20 @@ static int gs_can_close(struct net_devic
- 	int rc;
- 	struct gs_can *dev = netdev_priv(netdev);
- 	struct gs_usb *parent = dev->parent;
-+	unsigned int i;
- 
- 	netif_stop_queue(netdev);
- 
- 	/* Stop polling */
- 	parent->active_channels--;
--	if (!parent->active_channels)
-+	if (!parent->active_channels) {
- 		usb_kill_anchored_urbs(&parent->rx_submitted);
-+		for (i = 0; i < GS_MAX_RX_URBS; i++)
-+			usb_free_coherent(dev->udev,
-+					  sizeof(struct gs_host_frame),
-+					  dev->rxbuf[i],
-+					  dev->rxbuf_dma[i]);
-+	}
- 
- 	/* Stop sending URBs */
- 	usb_kill_anchored_urbs(&dev->tx_submitted);
+ static void reg_combine_min_max(struct bpf_reg_state *true_src,
 
 
