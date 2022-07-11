@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95770C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 215B9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234086AbiGKJz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
+        id S234095AbiGKJzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233499AbiGKJye (ORCPT
+        with ESMTP id S233725AbiGKJyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:54:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1D137F80;
-        Mon, 11 Jul 2022 02:26:04 -0700 (PDT)
+        Mon, 11 Jul 2022 05:54:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7387337F98;
+        Mon, 11 Jul 2022 02:26:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D0FE61372;
-        Mon, 11 Jul 2022 09:26:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABFC6C34115;
-        Mon, 11 Jul 2022 09:26:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6944461366;
+        Mon, 11 Jul 2022 09:26:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7646EC34115;
+        Mon, 11 Jul 2022 09:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531563;
-        bh=FhHAONEXImklSYVmbBubQLpn3WHQX79deib2O31UJn8=;
+        s=korg; t=1657531565;
+        bh=CN63vJ3BRAvBG+MdV3XQIgUNjYaxqwnfOtQObgAkbis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NjiOPkPg04hIsCh0rzajmLo8z8/ehrHIRkCE7lYCVxYXv5neNntPbafmqZ+T+CcxV
-         a7y45xS1NcrzCZUmIJb56phrh0A8N7AWCv1mWQQoOc9kKI2UNIHeiiN4sVv6lgX/zx
-         jEK48rqYAzsSQJk578WctVC9T+ukvpmmBaDyRADM=
+        b=zFgZPSVxnX6OoyJQIlDlkLR6FAbGDUKGRQOLbTQSdx4IYdOtdGa8O3lxKLbVXbdDG
+         iWimSKBKUJWUEIdv1Kg2WnRq/i5n3FzxnNKA0/qdRV7eSe38QZDlDdzeiv9dRqlcoZ
+         En4v7fhkdCoBYV7bQSjCusG3h4o8Yg7YVjMQe78M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 150/230] Bluetooth: btmtksdio: fix use-after-free at btmtksdio_recv_event
-Date:   Mon, 11 Jul 2022 11:06:46 +0200
-Message-Id: <20220711090608.316052083@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 151/230] io_uring: avoid io-wq -EAGAIN looping for !IOPOLL
+Date:   Mon, 11 Jul 2022 11:06:47 +0200
+Message-Id: <20220711090608.343538274@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,84 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit 0fab6361c4ba17d1b43a991bef4238a3c1754d35 ]
+[ Upstream commit e0deb6a025ae8c850dc8685be39fb27b06c88736 ]
 
-We should not access skb buffer data anymore after hci_recv_frame was
-called.
+If an opcode handler semi-reliably returns -EAGAIN, io_wq_submit_work()
+might continue busily hammer the same handler over and over again, which
+is not ideal. The -EAGAIN handling in question was put there only for
+IOPOLL, so restrict it to IOPOLL mode only where there is no other
+recourse than to retry as we cannot wait.
 
-[   39.634809] BUG: KASAN: use-after-free in btmtksdio_recv_event+0x1b0
-[   39.634855] Read of size 1 at addr ffffff80cf28a60d by task kworker
-[   39.634962] Call trace:
-[   39.634974]  dump_backtrace+0x0/0x3b8
-[   39.634999]  show_stack+0x20/0x2c
-[   39.635016]  dump_stack_lvl+0x60/0x78
-[   39.635040]  print_address_description+0x70/0x2f0
-[   39.635062]  kasan_report+0x154/0x194
-[   39.635079]  __asan_report_load1_noabort+0x44/0x50
-[   39.635099]  btmtksdio_recv_event+0x1b0/0x1c4
-[   39.635129]  btmtksdio_txrx_work+0x6cc/0xac4
-[   39.635157]  process_one_work+0x560/0xc5c
-[   39.635177]  worker_thread+0x7ec/0xcc0
-[   39.635195]  kthread+0x2d0/0x3d0
-[   39.635215]  ret_from_fork+0x10/0x20
-[   39.635247] Allocated by task 0:
-[   39.635260] (stack is not available)
-[   39.635281] Freed by task 2392:
-[   39.635295]  kasan_save_stack+0x38/0x68
-[   39.635319]  kasan_set_track+0x28/0x3c
-[   39.635338]  kasan_set_free_info+0x28/0x4c
-[   39.635357]  ____kasan_slab_free+0x104/0x150
-[   39.635374]  __kasan_slab_free+0x18/0x28
-[   39.635391]  slab_free_freelist_hook+0x114/0x248
-[   39.635410]  kfree+0xf8/0x2b4
-[   39.635427]  skb_free_head+0x58/0x98
-[   39.635447]  skb_release_data+0x2f4/0x410
-[   39.635464]  skb_release_all+0x50/0x60
-[   39.635481]  kfree_skb+0xc8/0x25c
-[   39.635498]  hci_event_packet+0x894/0xca4 [bluetooth]
-[   39.635721]  hci_rx_work+0x1c8/0x68c [bluetooth]
-[   39.635925]  process_one_work+0x560/0xc5c
-[   39.635951]  worker_thread+0x7ec/0xcc0
-[   39.635970]  kthread+0x2d0/0x3d0
-[   39.635990]  ret_from_fork+0x10/0x20
-[   39.636021] The buggy address belongs to the object at ffffff80cf28a600
-                which belongs to the cache kmalloc-512 of size 512
-[   39.636039] The buggy address is located 13 bytes inside of
-                512-byte region [ffffff80cf28a600, ffffff80cf28a800)
-
-Fixes: 9aebfd4a2200 ("Bluetooth: mediatek: add support for MediaTek MT7663S and MT7668S SDIO devices")
-Co-developed-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: def596e9557c9 ("io_uring: support for IO polling")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/f168b4f24181942f3614dd8ff648221736f572e6.1652433740.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btmtksdio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/io_uring.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index ff1f5dfbb6db..d66e4df171d2 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -331,6 +331,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
- {
- 	struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
- 	struct hci_event_hdr *hdr = (void *)skb->data;
-+	u8 evt = hdr->evt;
- 	int err;
- 
- 	/* Fix up the vendor event id with 0xff for vendor specific instead
-@@ -355,7 +356,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (err < 0)
- 		goto err_free_skb;
- 
--	if (hdr->evt == HCI_EV_VENDOR) {
-+	if (evt == HCI_EV_VENDOR) {
- 		if (test_and_clear_bit(BTMTKSDIO_TX_WAIT_VND_EVT,
- 				       &bdev->tx_state)) {
- 			/* Barrier to sync with other CPUs */
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 0c5dcda0b622..9bff14c5e2b2 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -6866,7 +6866,7 @@ static void io_wq_submit_work(struct io_wq_work *work)
+ 			 * forcing a sync submission from here, since we can't
+ 			 * wait for request slots on the block side.
+ 			 */
+-			if (ret != -EAGAIN)
++			if (ret != -EAGAIN || !(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 				break;
+ 			cond_resched();
+ 		} while (1);
 -- 
 2.35.1
 
