@@ -2,93 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D14E0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA588C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbiGKIcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
+        id S230208AbiGKIcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbiGKIcQ (ORCPT
+        with ESMTP id S230140AbiGKIca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:32:16 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F211F2DA
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:32:14 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id ADE4C227A0;
-        Mon, 11 Jul 2022 08:32:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1657528333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Mon, 11 Jul 2022 04:32:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E14621F61D
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657528347;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YoBpN1lvaI78X/r2NUb3VKRDnI51NNOYRbZMd29y4RQ=;
-        b=fuhsIEI3JBw5P6zU6Qz0+dis0c9M02cRQJpY64Z+7xlikuJkEzDebQvC2UAiclEdXpVFDX
-        PQ+uCwaw13j6UPDFbU3yMHkJZpE5gmquCJ7Tnn5ITca0FL0zthyLOu8M7oY3UHsU764+ju
-        smrA7K4kfi165Q8p4eFgvZNquUBGoCc=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        bh=M0PhMaVhgVmMUL6iKuE1xZ83zlO0I8KTf8X7DkJEHvo=;
+        b=cE6Cyo154gPfqV2oNSWZCJvbZNBHaRe86/WdB+c5QmO/7srPRlutXbwEfbCpir4m74Ty09
+        ycD4AIC+1wRDW/QTVaY2NeUPKTR1TEfXuEY7NK8IwO+OMJXA1xWZxivUaF3QhrgIVeEiSC
+        9Dn5+bOGiNm0Ss3EdZBuMj98LojWGeM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-267-8gpMUgCwOzeGFlvL8H0TJw-1; Mon, 11 Jul 2022 04:32:23 -0400
+X-MC-Unique: 8gpMUgCwOzeGFlvL8H0TJw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 625A42C171;
-        Mon, 11 Jul 2022 08:32:13 +0000 (UTC)
-Date:   Mon, 11 Jul 2022 10:32:13 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Chris Down <chris@chrisdown.name>, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
-Subject: Re: design: was: Re: [RFC PATCH v2] printk: console: Allow each
- console to have its own loglevel
-Message-ID: <YsvgDRQICB3nEc1l@alley>
-References: <YoeQLxhDeIk4VSmx@chrisdown.name>
- <YshL2M8VdIEONDdc@alley>
- <87o7xz5su4.fsf@jogness.linutronix.de>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F86880418F;
+        Mon, 11 Jul 2022 08:32:23 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 09AFF141511A;
+        Mon, 11 Jul 2022 08:32:22 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id E7A1D1C0151; Mon, 11 Jul 2022 10:32:21 +0200 (CEST)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Artem Savkov <asavkov@redhat.com>
+Subject: [RFC PATCH bpf-next 1/4] bpf: add a sysctl to enable destructive bpf helpers
+Date:   Mon, 11 Jul 2022 10:32:17 +0200
+Message-Id: <20220711083220.2175036-2-asavkov@redhat.com>
+In-Reply-To: <20220711083220.2175036-1-asavkov@redhat.com>
+References: <20220711083220.2175036-1-asavkov@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87o7xz5su4.fsf@jogness.linutronix.de>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-07-08 21:10:35, John Ogness wrote:
-> On 2022-07-08, Petr Mladek <pmladek@suse.com> wrote:
-> > The console-specific loglevel might be set by:
-> >
-> >   + "console=device,options/loglevel" kernel parameter at boot time
-> 
-> I ask if we avoid the use of "/loglevel" and instead use a generic
-> scheme of:
-> 
-> console=device,option,option,option
-> 
-> Of course, it would mean that the type of option would need to be
-> specified. Something like:
-> 
-> console=ttyS0,115200n8,loglevel=3
+Add a kernel.destructive_bpf_enabled sysctl knob to allow enabling bpf
+helpers that can be destructive to the system. One such helper,
+bpf_panic(), is added later in the series.
 
-I like this. It is longer but it makes the meaning very obvious.
+Signed-off-by: Artem Savkov <asavkov@redhat.com>
+---
+ include/linux/bpf.h  |  6 ++++++
+ kernel/bpf/syscall.c | 29 +++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
 
-I just think about using ':' instead of '=' to distinguish
-the assignment of outer 'console' vs the inner 'loglevel' parameters.
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 0edd7d2c0064..77972724bed7 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1641,6 +1641,7 @@ bpf_map_alloc_percpu(const struct bpf_map *map, size_t size, size_t align,
+ #endif
+ 
+ extern int sysctl_unprivileged_bpf_disabled;
++extern int sysctl_destructive_bpf_enabled;
+ 
+ static inline bool bpf_allow_ptr_leaks(void)
+ {
+@@ -1926,6 +1927,11 @@ static inline bool unprivileged_ebpf_enabled(void)
+ 	return !sysctl_unprivileged_bpf_disabled;
+ }
+ 
++static inline bool destructive_ebpf_enabled(void)
++{
++	return sysctl_destructive_bpf_enabled;
++}
++
+ #else /* !CONFIG_BPF_SYSCALL */
+ static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+ {
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 7d5af5b99f0d..1ce6541d90e1 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -57,6 +57,8 @@ static DEFINE_SPINLOCK(link_idr_lock);
+ int sysctl_unprivileged_bpf_disabled __read_mostly =
+ 	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
+ 
++int sysctl_destructive_bpf_enabled __read_mostly = 0;
++
+ static const struct bpf_map_ops * const bpf_map_types[] = {
+ #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
+ #define BPF_MAP_TYPE(_id, _ops) \
+@@ -5226,6 +5228,24 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+ 	return ret;
+ }
+ 
++static int bpf_destructive_handler(struct ctl_table *table, int write,
++				   void *buffer, size_t *lenp, loff_t *ppos)
++{
++	int ret, destructive_enable = *(int *)table->data;
++	struct ctl_table tmp = *table;
++
++	if (write && !capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
++	tmp.data = &destructive_enable;
++	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
++	if (write && !ret) {
++		*(int *)table->data = destructive_enable;
++	}
++
++	return ret;
++}
++
+ static struct ctl_table bpf_syscall_table[] = {
+ 	{
+ 		.procname	= "unprivileged_bpf_disabled",
+@@ -5236,6 +5256,15 @@ static struct ctl_table bpf_syscall_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= SYSCTL_TWO,
+ 	},
++	{
++		.procname	= "destructive_bpf_enabled",
++		.data		= &sysctl_destructive_bpf_enabled,
++		.maxlen		= sizeof(sysctl_destructive_bpf_enabled),
++		.mode		= 0644,
++		.proc_handler	= bpf_destructive_handler,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
+ 	{
+ 		.procname	= "bpf_stats_enabled",
+ 		.data		= &bpf_stats_enabled_key.key,
+-- 
+2.35.3
 
-It seems to be used in some cases, for example, for ca_keys, crashkernel,
-drm.edid_firmware, efi_fake_mem. Even earlyprintk uses it for
-bus:device.function.
-
-> The reason why I make such a request is because I would like to be able
-> to support disabling threading for certain consoles. Something like:
-> 
-> console=ttyS0,115200n8,nothread
-> 
-> or when we have atomic consoles that we can specify that they are always
-> used with a "sync" option:
-> 
-> console=ttyS0,115200n8,sync
-
-Good point.
-
-Best Regards,
-Petr
