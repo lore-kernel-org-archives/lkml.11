@@ -2,87 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD31CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 02:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D72DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 02:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbiGKCxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 22:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        id S229560AbiGKCzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 22:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiGKCxF (ORCPT
+        with ESMTP id S229463AbiGKCzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 22:53:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696A9183A8;
-        Sun, 10 Jul 2022 19:53:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F36E8610A5;
-        Mon, 11 Jul 2022 02:53:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07264C3411E;
-        Mon, 11 Jul 2022 02:53:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657507983;
-        bh=PCWoXAlR4NxLTHXg0LrKWX+ks7as6mmpDn6fX/LsNHU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hywFkzoAIkBPJDBfXVkvAObcMXd2FqviNCH/dD4P34ClqDPjfWp2U3b4k6HdRaw3P
-         Xbc/i/wrzaYBnlKavv9BCRAnZ1NganrvYxGA+mkgP3Ewy6L096MKjQWhO/QLEK8jxn
-         4Z/p3VldcMJSjcXWd3LrTbpyop020gD5uIlSSXXnr91QQeU11Y0BIZqIjDEmtcrDKO
-         8j9ule6Umk3yel3Le4oYzW6IRgEMq5PZB8NtR9uW8wOyacVgXD4lykuis40gHbaQ6+
-         Yb8vX0SzNMhb71rn5VTD3UQsnx5XcexEbDSefXz4DwKe5FYa3l0UT7cYpO6c1m9m4R
-         wCokhaeSl4Mgg==
-Date:   Mon, 11 Jul 2022 05:52:58 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Li zeming <zeming@nfschina.com>
-Cc:     dhowells@redhat.com, jmorris@namei.org, serge@hallyn.com,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@nfschina.com
-Subject: Re: [PATCH] keys/keyring: Fix typo in string
-Message-ID: <YsuQihEKR8DC+Pnm@kernel.org>
-References: <20220704025610.3834-1-zeming@nfschina.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220704025610.3834-1-zeming@nfschina.com>
+        Sun, 10 Jul 2022 22:55:03 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DD3183B2
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 19:55:01 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0ECD11A03BC;
+        Mon, 11 Jul 2022 04:55:00 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CB1D41A03B1;
+        Mon, 11 Jul 2022 04:54:59 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 4CF26180226C;
+        Mon, 11 Jul 2022 10:54:58 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_utils: Drop usage of __clk_get_name()
+Date:   Mon, 11 Jul 2022 10:39:50 +0800
+Message-Id: <1657507190-14546-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 10:56:10AM +0800, Li zeming wrote:
-> Remove the repeated ',' from string
-> 
-> Signed-off-by: Li zeming <zeming@nfschina.com>
-> ---
->  security/keys/keyring.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/security/keys/keyring.c b/security/keys/keyring.c
-> index 5e6a90760753..c6c47ca9b57d 100644
-> --- a/security/keys/keyring.c
-> +++ b/security/keys/keyring.c
-> @@ -460,7 +460,7 @@ static int keyring_read_iterator(const void *object, void *data)
->  	struct keyring_read_iterator_context *ctx = data;
->  	const struct key *key = keyring_ptr_to_key(object);
->  
-> -	kenter("{%s,%d},,{%zu/%zu}",
-> +	kenter("{%s,%d},{%zu/%zu}",
->  	       key->type->name, key->serial, ctx->count, ctx->buflen);
->  
->  	if (ctx->count >= ctx->buflen)
-> @@ -484,7 +484,7 @@ static long keyring_read(const struct key *keyring,
->  	struct keyring_read_iterator_context ctx;
->  	long ret;
->  
-> -	kenter("{%d},,%zu", key_serial(keyring), buflen);
-> +	kenter("{%d},%zu", key_serial(keyring), buflen);
->  
->  	if (buflen & (sizeof(key_serial_t) - 1))
->  		return -EINVAL;
-> -- 
-> 2.18.2
-> 
+Avoid build errors when CONFIG_COMMON_CLK is not set/enabled.
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+ERROR: modpost: "__clk_get_name" [sound/soc/fsl/snd-soc-fsl-utils.ko] undefined!
 
-BR, Jarkko
+Fixes: 7bad8125549c ("ASoC: fsl_utils: Add function to handle PLL clock source")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_utils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/fsl/fsl_utils.c b/sound/soc/fsl/fsl_utils.c
+index 3e969c7bc1c5..d0fc430f7033 100644
+--- a/sound/soc/fsl/fsl_utils.c
++++ b/sound/soc/fsl/fsl_utils.c
+@@ -147,7 +147,7 @@ void fsl_asoc_reparent_pll_clocks(struct device *dev, struct clk *clk,
+ 	if (reparent) {
+ 		ret = clk_set_parent(p, npll);
+ 		if (ret < 0)
+-			dev_warn(dev, "failed to set parent %s: %d\n", __clk_get_name(npll), ret);
++			dev_warn(dev, "failed to set parent:%d\n", ret);
+ 	}
+ }
+ EXPORT_SYMBOL(fsl_asoc_reparent_pll_clocks);
+-- 
+2.34.1
+
