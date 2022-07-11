@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 094C2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F09C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbiGKJvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        id S233842AbiGKJwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233809AbiGKJui (ORCPT
+        with ESMTP id S233843AbiGKJup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:50:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C50248FF;
-        Mon, 11 Jul 2022 02:24:57 -0700 (PDT)
+        Mon, 11 Jul 2022 05:50:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CCAB29830;
+        Mon, 11 Jul 2022 02:25:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E6B66112E;
-        Mon, 11 Jul 2022 09:24:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633D7C341C0;
-        Mon, 11 Jul 2022 09:24:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EE38B80E7A;
+        Mon, 11 Jul 2022 09:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F1DAC34115;
+        Mon, 11 Jul 2022 09:24:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531496;
-        bh=yZtrHS6oc+q1zJ4xFjTvui4hoYjxxt2NUH81KemFZrI=;
+        s=korg; t=1657531499;
+        bh=jLg70Q9nZHijQ04V8fPVGvO1b75QYGWIzu9gmbZ9Xr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sYT2OHsaeYfS9NUWDXqu8O/qxAN7rXGPM7/ujrxr+waDRqnpkUrosrtoJVvuhocn+
-         7W38AwrD/95Bb0R/aMj7KakiOzyV+3VdZjJ6W8pYB3NYg6ouG1ZokZRQ7wHZ1eXT++
-         Pe4DmHSFRpBdTKfJrvSk59tmh/faQbBjSImgwyQk=
+        b=OGg2gj4XzgitG/GO3LyXj39N1tFw364Ok67w5cnx+p4enDl45qvTIafk41NITHF8f
+         3ody7LDM1/vXk3XYW86x61aIRRp6ZoqhMvv3lSwSvLaivMOGIV9Wdb06a/MgeauAS1
+         6tpWhfXs+XcD/b90+UUsvul32ConanwhcRcycNDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Oliver Upton <oupton@google.com>,
+        syzbot+df6fbbd2ee39f21289ef@syzkaller.appspotmail.com,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/230] btrfs: zoned: use dedicated lock for data relocation
-Date:   Mon, 11 Jul 2022 11:06:21 +0200
-Message-Id: <20220711090607.610632602@linuxfoundation.org>
+Subject: [PATCH 5.15 126/230] KVM: Initialize debugfs_dentry when a VM is created to avoid NULL deref
+Date:   Mon, 11 Jul 2022 11:06:22 +0200
+Message-Id: <20220711090607.639773751@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,105 +52,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 5f0addf7b89085f8e0a2593faa419d6111612b9b ]
+[ Upstream commit 5c697c367a66307a5d943c3449421aff2aa3ca4a ]
 
-Currently, we use btrfs_inode_{lock,unlock}() to grant an exclusive
-writeback of the relocation data inode in
-btrfs_zoned_data_reloc_{lock,unlock}(). However, that can cause a deadlock
-in the following path.
+Initialize debugfs_entry to its semi-magical -ENOENT value when the VM
+is created.  KVM's teardown when VM creation fails is kludgy and calls
+kvm_uevent_notify_change() and kvm_destroy_vm_debugfs() even if KVM never
+attempted kvm_create_vm_debugfs().  Because debugfs_entry is zero
+initialized, the IS_ERR() checks pass and KVM derefs a NULL pointer.
 
-Thread A takes btrfs_inode_lock() and waits for metadata reservation by
-e.g, waiting for writeback:
+  BUG: kernel NULL pointer dereference, address: 0000000000000018
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 1068b1067 P4D 1068b1067 PUD 1068b0067 PMD 0
+  Oops: 0000 [#1] SMP
+  CPU: 0 PID: 871 Comm: repro Not tainted 5.18.0-rc1+ #825
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:__dentry_path+0x7b/0x130
+  Call Trace:
+   <TASK>
+   dentry_path_raw+0x42/0x70
+   kvm_uevent_notify_change.part.0+0x10c/0x200 [kvm]
+   kvm_put_kvm+0x63/0x2b0 [kvm]
+   kvm_dev_ioctl+0x43a/0x920 [kvm]
+   __x64_sys_ioctl+0x83/0xb0
+   do_syscall_64+0x31/0x50
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+  Modules linked in: kvm_intel kvm irqbypass
 
-prealloc_file_extent_cluster()
-  - btrfs_inode_lock(&inode->vfs_inode, 0);
-  - btrfs_prealloc_file_range()
-  ...
-    - btrfs_replace_file_extents()
-      - btrfs_start_transaction
-      ...
-        - btrfs_reserve_metadata_bytes()
-
-Thread B (e.g, doing a writeback work) needs to wait for the inode lock to
-continue writeback process:
-
-do_writepages
-  - btrfs_writepages
-    - extent_writpages
-      - btrfs_zoned_data_reloc_lock(BTRFS_I(inode));
-        - btrfs_inode_lock()
-
-The deadlock is caused by relying on the vfs_inode's lock. By using it, we
-introduced unnecessary exclusion of writeback and
-btrfs_prealloc_file_range(). Also, the lock at this point is useless as we
-don't have any dirty pages in the inode yet.
-
-Introduce fs_info->zoned_data_reloc_io_lock and use it for the exclusive
-writeback.
-
-Fixes: 35156d852762 ("btrfs: zoned: only allow one process to add pages to a relocation inode")
-CC: stable@vger.kernel.org # 5.16.x: 869f4cdc73f9: btrfs: zoned: encapsulate inode locking for zoned relocation
-CC: stable@vger.kernel.org # 5.16.x
-CC: stable@vger.kernel.org # 5.17
-Cc: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: a44a4cc1c969 ("KVM: Don't create VM debugfs files outside of the VM directory")
+Cc: stable@vger.kernel.org
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Oliver Upton <oupton@google.com>
+Reported-by: syzbot+df6fbbd2ee39f21289ef@syzkaller.appspotmail.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Oliver Upton <oupton@google.com>
+Message-Id: <20220415004622.2207751-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ctree.h   | 1 +
- fs/btrfs/disk-io.c | 1 +
- fs/btrfs/zoned.h   | 4 ++--
- 3 files changed, 4 insertions(+), 2 deletions(-)
+ virt/kvm/kvm_main.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
-index cc72d8981c47..d1838de0b39c 100644
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-@@ -1027,6 +1027,7 @@ struct btrfs_fs_info {
- 	 */
- 	spinlock_t relocation_bg_lock;
- 	u64 data_reloc_bg;
-+	struct mutex zoned_data_reloc_io_lock;
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 9134ae252d7c..9eac68ae291e 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -934,12 +934,6 @@ static int kvm_create_vm_debugfs(struct kvm *kvm, int fd)
+ 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
+ 				      kvm_vcpu_stats_header.num_desc;
  
- #ifdef CONFIG_BTRFS_FS_REF_VERIFY
- 	spinlock_t ref_verify_lock;
-diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
-index 233d894f6feb..909d19656316 100644
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -2914,6 +2914,7 @@ void btrfs_init_fs_info(struct btrfs_fs_info *fs_info)
- 	mutex_init(&fs_info->reloc_mutex);
- 	mutex_init(&fs_info->delalloc_root_mutex);
- 	mutex_init(&fs_info->zoned_meta_io_lock);
-+	mutex_init(&fs_info->zoned_data_reloc_io_lock);
- 	seqlock_init(&fs_info->profiles_lock);
+-	/*
+-	 * Force subsequent debugfs file creations to fail if the VM directory
+-	 * is not created.
+-	 */
+-	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
+-
+ 	if (!debugfs_initialized())
+ 		return 0;
  
- 	INIT_LIST_HEAD(&fs_info->dirty_cowonly_roots);
-diff --git a/fs/btrfs/zoned.h b/fs/btrfs/zoned.h
-index d680c3ee918a..3a826f7c2040 100644
---- a/fs/btrfs/zoned.h
-+++ b/fs/btrfs/zoned.h
-@@ -330,7 +330,7 @@ static inline void btrfs_zoned_data_reloc_lock(struct btrfs_inode *inode)
- 	struct btrfs_root *root = inode->root;
+@@ -1055,6 +1049,12 @@ static struct kvm *kvm_create_vm(unsigned long type)
  
- 	if (btrfs_is_data_reloc_root(root) && btrfs_is_zoned(root->fs_info))
--		btrfs_inode_lock(&inode->vfs_inode, 0);
-+		mutex_lock(&root->fs_info->zoned_data_reloc_io_lock);
- }
+ 	BUILD_BUG_ON(KVM_MEM_SLOTS_NUM > SHRT_MAX);
  
- static inline void btrfs_zoned_data_reloc_unlock(struct btrfs_inode *inode)
-@@ -338,7 +338,7 @@ static inline void btrfs_zoned_data_reloc_unlock(struct btrfs_inode *inode)
- 	struct btrfs_root *root = inode->root;
- 
- 	if (btrfs_is_data_reloc_root(root) && btrfs_is_zoned(root->fs_info))
--		btrfs_inode_unlock(&inode->vfs_inode, 0);
-+		mutex_unlock(&root->fs_info->zoned_data_reloc_io_lock);
- }
- 
- #endif
++	/*
++	 * Force subsequent debugfs file creations to fail if the VM directory
++	 * is not created (by kvm_create_vm_debugfs()).
++	 */
++	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
++
+ 	if (init_srcu_struct(&kvm->srcu))
+ 		goto out_err_no_srcu;
+ 	if (init_srcu_struct(&kvm->irq_srcu))
 -- 
 2.35.1
 
