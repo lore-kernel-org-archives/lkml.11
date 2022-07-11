@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42777C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231298AbiGKU0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        id S231687AbiGKU0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiGKUZ2 (ORCPT
+        with ESMTP id S230194AbiGKUZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:25:28 -0400
+        Mon, 11 Jul 2022 16:25:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3883E769;
-        Mon, 11 Jul 2022 13:25:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3F5422C0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24E8B61638;
-        Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94337C341E7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2179F61637
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412D8C36AE2;
         Mon, 11 Jul 2022 20:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657571123;
-        bh=Tb3n3/77/mwtYV5OZDyxgvvYQBkjH8JCjYZvi9rWx9c=;
+        bh=CrSqO3fSe6yf4vn/c0T/g27RToJEZxHW6YdBDF3Y6+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jP7DpuRIJz8Fxss/u3G7CD6q/E50x9Rz5zZWBy4PZfPUdbVTGtI7I6nu54fuePZg7
-         C5Dj/LESQVwPxC8mrbcw48R5DL776Sw4mBh2DRvLzdthRaMSyr38VykNWRuCwrMPIX
-         z4PpVnqGw6RC5CT2zbyj6CdDsz9LojiLMMncQljnFV+uxHmnIGdHiILTPM6Lvo14V3
-         ron1Hp0JcdMLYbtxstgvbjijZnDm4m8e8lwaLJM0Rfdoe+apqPbijrrIvfd3q9W0gg
-         Ojh+4pfZPYl27c1yM6NkEwvD52faFE1dg+E7mAAOyrMWwsjfTsPiZDXORXPLV+E2g/
-         eOPxAURtlab8Q==
+        b=XKbFDoARjJ3cHK5YZPFTNHu48QLFgCMqOjny9bdUSrRnxz6HZmXTILmOlYHKA3KqM
+         NA1k/DgDsUST9fkNs6t3u5e7QZe0H1hfogETNcnvDBPYEoBeECWsTdsHT6AePfUCr1
+         tNdZJTQ/HDwmxNZRHgZwg4nip4mirE475NWdcHK/FQOoVKt7WLYaC97VYN9Q2XLVho
+         eWSzGWEeZYJmGcX1lfhF5k1g/SNENEIC9kWRgvBlwvpJ0T0PAd9KA1PQXkvmLoAKpM
+         D/FNVi3pTp9IojpefVQY6G/H2IkgYI+BlK3Vziehzc3B99J/jtC2pnfsilltG03qZn
+         JDmOQHo11/6ZQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e92-SK;
+        id 1oAzy3-004e8u-R1;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
@@ -43,17 +43,13 @@ Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 27/32] docs: gpu: i915.rst: gt: add more kernel-doc markups
-Date:   Mon, 11 Jul 2022 21:25:12 +0100
-Message-Id: <f72fa9e642123591cf6ef367a3808b30a0951f22.1657565224.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 25/32] drm/i915: i915_deps: use a shorter title markup
+Date:   Mon, 11 Jul 2022 21:25:10 +0100
+Message-Id: <96fa00f5f2eff91926659e8367d61788e4385624.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
@@ -64,9 +60,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several documented GT kAPI that aren't currently part
-of the docs. Add them, as this allows identifying issues with
-badly-formatted tags.
+The DOC: tag waits for a one-line short title for the doc
+section. Using multiple lines will produce a weird output.
+So, add a shorter description for the title, while keeping
+the current content below it.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -74,70 +71,24 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- Documentation/gpu/i915.rst | 43 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/i915_deps.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
-index 2ad7941a79f2..afd8c0e3c689 100644
---- a/Documentation/gpu/i915.rst
-+++ b/Documentation/gpu/i915.rst
-@@ -149,7 +149,6 @@ Misc display functions
+diff --git a/drivers/gpu/drm/i915/i915_deps.c b/drivers/gpu/drm/i915/i915_deps.c
+index 297b8e4e42ee..df6af832e3f2 100644
+--- a/drivers/gpu/drm/i915/i915_deps.c
++++ b/drivers/gpu/drm/i915/i915_deps.c
+@@ -11,7 +11,9 @@
+ #include "i915_deps.h"
  
- .. kernel-doc:: drivers/gpu/drm/i915/display/skl_scaler.c
- 
--
- Plane Configuration
- -------------------
- 
-@@ -308,6 +307,48 @@ Multicast/Replicated (MCR) Registers
- .. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gt_mcr.c
-    :internal:
- 
-+GT engine
-+---------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_types.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_cs.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_pm.c
-+
-+GT context
-+----------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_context.h
-+
-+Graphics Translation Tables
-+---------------------------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_ggtt.c
-+
-+Other GT functionality
-+----------------------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gsc.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gtt.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gtt.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_migrate.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_mocs.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rc6.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_reset.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rps_types.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rps.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_sseu.c
-+
- Memory Management and Command Submission
- ========================================
- 
+ /**
+- * DOC: Set of utilities to dynamically collect dependencies into a
++ * DOC: Utilities to collect dependencies for GT migration code
++ *
++ * Set of utilities to dynamically collect dependencies into a
+  * structure which is fed into the GT migration code.
+  *
+  * Once we can do async unbinding, this is also needed to coalesce
 -- 
 2.36.1
 
