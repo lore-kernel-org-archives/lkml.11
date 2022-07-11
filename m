@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82EBEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E3EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231637AbiGKJhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53160 "EHLO
+        id S233089AbiGKJh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232795AbiGKJhE (ORCPT
+        with ESMTP id S232799AbiGKJhE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:37:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0451CB19;
-        Mon, 11 Jul 2022 02:19:21 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D76F4D4DE;
+        Mon, 11 Jul 2022 02:19:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8378B80833;
-        Mon, 11 Jul 2022 09:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2548DC34115;
-        Mon, 11 Jul 2022 09:19:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3C0D612B7;
+        Mon, 11 Jul 2022 09:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0D1AC34115;
+        Mon, 11 Jul 2022 09:19:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531158;
-        bh=bvGkvaKm/HFxpgZ8hSpuauZJCtQUmCt5n/fC96tnSJA=;
+        s=korg; t=1657531161;
+        bh=13USmbIN3HFkiw1i02GRSczp16nmyxwwPWc6C2ThZb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CmlgRU2TSl5Ny7w5i0Jo40piKmCFSa8xZjqVboYYS0yDy1hlE1H34Xwmkutd0nhAV
-         thEuHja524Yom/ABUZwe7my4zWUKGdY5auPtJKFbjH4ZTz6qzc0CU0gsTanJZlN01t
-         OOKGwTNRHl9tlAQiePEkG0T6DrTGBG24XY9sJDYw=
+        b=fOsG8kTSUWExCk95r5st4sNHLxcKgUT3wLjJhIvhtoI5SDS2Hj4kMa7Si9Ap1amn9
+         Mh7FwnfLgmsXeyKhkJgsLZQQkx+qqmJmWcNa6JH9Wa1gBrCY3rOIGX0dJQe2wQB9jM
+         ONVeoj1+U3M/llD/fAzLIa1wr60WXpVcYIPbl9Tw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Ido Schimmel <idosch@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 082/112] selftests: forwarding: fix flood_unicast_test when h2 supports IFF_UNICAST_FLT
-Date:   Mon, 11 Jul 2022 11:07:22 +0200
-Message-Id: <20220711090551.899811206@linuxfoundation.org>
+Subject: [PATCH 5.18 083/112] selftests: forwarding: fix learning_test when h1 supports IFF_UNICAST_FLT
+Date:   Mon, 11 Jul 2022 11:07:23 +0200
+Message-Id: <20220711090551.927835704@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -52,27 +52,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit b8e629b05f5d23f9649c901bef09fab8b0c2e4b9 ]
+[ Upstream commit 1a635d3e1c80626237fdae47a5545b6655d8d81c ]
 
-As mentioned in the blamed commit, flood_unicast_test() works by
-checking the match count on a tc filter placed on the receiving
-interface.
+The first host interface has by default no interest in receiving packets
+MAC DA de:ad:be:ef:13:37, so it might drop them before they hit the tc
+filter and this might confuse the selftest.
 
-But the second host interface (host2_if) has no interest in receiving a
-packet with MAC DA de:ad:be:ef:13:37, so its RX filter drops it even
-before the ingress tc filter gets to be executed. So we will incorrectly
-get the message "Packet was not flooded when should", when in fact, the
-packet was flooded as expected but dropped due to an unrelated reason,
-at some other layer on the receiving side.
+Enable promiscuous mode such that the filter properly counts received
+packets.
 
-Force h2 to accept this packet by temporarily placing it in promiscuous
-mode. Alternatively we could either deliver to its MAC address or use
-tcpdump_start, but this has the fewest complications.
-
-This fixes the "flooding" test from bridge_vlan_aware.sh and
-bridge_vlan_unaware.sh, which calls flood_test from the lib.
-
-Fixes: 236dd50bf67a ("selftests: forwarding: Add a test for flooded traffic")
+Fixes: d4deb01467ec ("selftests: forwarding: Add a test for FDB learning")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Tested-by: Ido Schimmel <idosch@nvidia.com>
@@ -83,25 +72,25 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 664b9ecaf228..823e5cef062d 100644
+index 823e5cef062d..412e52e89071 100644
 --- a/tools/testing/selftests/net/forwarding/lib.sh
 +++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -1242,6 +1242,7 @@ flood_test_do()
+@@ -1176,6 +1176,7 @@ learning_test()
+ 	# FDB entry was installed.
+ 	bridge link set dev $br_port1 flood off
  
- 	# Add an ACL on `host2_if` which will tell us whether the packet
- 	# was flooded to it or not.
-+	ip link set $host2_if promisc on
- 	tc qdisc add dev $host2_if ingress
- 	tc filter add dev $host2_if ingress protocol ip pref 1 handle 101 \
++	ip link set $host1_if promisc on
+ 	tc qdisc add dev $host1_if ingress
+ 	tc filter add dev $host1_if ingress protocol ip pref 1 handle 101 \
  		flower dst_mac $mac action drop
-@@ -1259,6 +1260,7 @@ flood_test_do()
+@@ -1225,6 +1226,7 @@ learning_test()
  
- 	tc filter del dev $host2_if ingress protocol ip pref 1 handle 101 flower
- 	tc qdisc del dev $host2_if ingress
-+	ip link set $host2_if promisc off
+ 	tc filter del dev $host1_if ingress protocol ip pref 1 handle 101 flower
+ 	tc qdisc del dev $host1_if ingress
++	ip link set $host1_if promisc off
  
- 	return $err
- }
+ 	bridge link set dev $br_port1 flood on
+ 
 -- 
 2.35.1
 
