@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6734FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4488C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbiGKJS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
+        id S231666AbiGKJS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231740AbiGKJSO (ORCPT
+        with ESMTP id S231576AbiGKJSO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:18:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F454C62E;
-        Mon, 11 Jul 2022 02:11:45 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406544C627;
+        Mon, 11 Jul 2022 02:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF326115B;
-        Mon, 11 Jul 2022 09:11:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC57FC34115;
-        Mon, 11 Jul 2022 09:11:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDC2AB80D2C;
+        Mon, 11 Jul 2022 09:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33788C34115;
+        Mon, 11 Jul 2022 09:11:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530704;
-        bh=i7dAol9ZDOUeNm+rfcVvLNLqnTH8aWKLgfXt6KaI0Z0=;
+        s=korg; t=1657530701;
+        bh=kH/LMdSo7S0gTaIOclHQb1ujmGBuyLz3OSUUA7GJ9CU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Il/vJWrMwFp2TYnujb1yukVlIQAoUKeD0RsM6Q5OIDDkoP6tx/6BVy+H2qshYxPfu
-         9Zo5j2e+tumVZxI/35FaXHN28EmaSUle2VWzkp7+/b1pngbLEa1SPWh1yuMLKvbEaG
-         Y3z9tBWgDEd46+OGEojUqtTGp96jMCZ00so3/8yI=
+        b=U1yCfZg5uLfpAou7QVS7/PWjc+L0cPQ4/WPHGHHO22xlP9KgV31leeHtVkn3iN6y3
+         IE79A0VMfHnx7XQUePWk0ULiRVjFwuLWK4Kw8zVDpR3R61nSUpIGeNt7IQ6aYS0uqs
+         PUB6EaCo1CV2O0AsI/lvdKTUXPPSqnw2VGbVT3ME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Brivio <sbrivio@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.10 10/55] netfilter: nft_set_pipapo: release elements in clone from abort path
-Date:   Mon, 11 Jul 2022 11:06:58 +0200
-Message-Id: <20220711090542.066014417@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 5.10 01/55] mm/slub: add missing TID updates on slab deactivation
+Date:   Mon, 11 Jul 2022 11:06:49 +0200
+Message-Id: <20220711090541.810064977@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,123 +54,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Jann Horn <jannh@google.com>
 
-commit 9827a0e6e23bf43003cd3d5b7fb11baf59a35e1e upstream.
+commit eeaa345e128515135ccb864c04482180c08e3259 upstream.
 
-New elements that reside in the clone are not released in case that the
-transaction is aborted.
+The fastpath in slab_alloc_node() assumes that c->slab is stable as long as
+the TID stays the same. However, two places in __slab_alloc() currently
+don't update the TID when deactivating the CPU slab.
 
-[16302.231754] ------------[ cut here ]------------
-[16302.231756] WARNING: CPU: 0 PID: 100509 at net/netfilter/nf_tables_api.c:1864 nf_tables_chain_destroy+0x26/0x127 [nf_tables]
-[...]
-[16302.231882] CPU: 0 PID: 100509 Comm: nft Tainted: G        W         5.19.0-rc3+ #155
-[...]
-[16302.231887] RIP: 0010:nf_tables_chain_destroy+0x26/0x127 [nf_tables]
-[16302.231899] Code: f3 fe ff ff 41 55 41 54 55 53 48 8b 6f 10 48 89 fb 48 c7 c7 82 96 d9 a0 8b 55 50 48 8b 75 58 e8 de f5 92 e0 83 7d 50 00 74 09 <0f> 0b 5b 5d 41 5c 41 5d c3 4c 8b 65 00 48 8b 7d 08 49 39 fc 74 05
-[...]
-[16302.231917] Call Trace:
-[16302.231919]  <TASK>
-[16302.231921]  __nf_tables_abort.cold+0x23/0x28 [nf_tables]
-[16302.231934]  nf_tables_abort+0x30/0x50 [nf_tables]
-[16302.231946]  nfnetlink_rcv_batch+0x41a/0x840 [nfnetlink]
-[16302.231952]  ? __nla_validate_parse+0x48/0x190
-[16302.231959]  nfnetlink_rcv+0x110/0x129 [nfnetlink]
-[16302.231963]  netlink_unicast+0x211/0x340
-[16302.231969]  netlink_sendmsg+0x21e/0x460
+If multiple operations race the right way, this could lead to an object
+getting lost; or, in an even more unlikely situation, it could even lead to
+an object being freed onto the wrong slab's freelist, messing up the
+`inuse` counter and eventually causing a page to be freed to the page
+allocator while it still contains slab objects.
 
-Add nft_set_pipapo_match_destroy() helper function to release the
-elements in the lookup tables.
+(I haven't actually tested these cases though, this is just based on
+looking at the code. Writing testcases for this stuff seems like it'd be
+a pain...)
 
-Stefano Brivio says: "We additionally look for elements pointers in the
-cloned matching data if priv->dirty is set, because that means that
-cloned data might point to additional elements we did not commit to the
-working copy yet (such as the abort path case, but perhaps not limited
-to it)."
+The race leading to state inconsistency is (all operations on the same CPU
+and kmem_cache):
 
-Fixes: 3c4287f62044 ("nf_tables: Add set type for arbitrary concatenation of ranges")
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+ - task A: begin do_slab_free():
+    - read TID
+    - read pcpu freelist (==NULL)
+    - check `slab == c->slab` (true)
+ - [PREEMPT A->B]
+ - task B: begin slab_alloc_node():
+    - fastpath fails (`c->freelist` is NULL)
+    - enter __slab_alloc()
+    - slub_get_cpu_ptr() (disables preemption)
+    - enter ___slab_alloc()
+    - take local_lock_irqsave()
+    - read c->freelist as NULL
+    - get_freelist() returns NULL
+    - write `c->slab = NULL`
+    - drop local_unlock_irqrestore()
+    - goto new_slab
+    - slub_percpu_partial() is NULL
+    - get_partial() returns NULL
+    - slub_put_cpu_ptr() (enables preemption)
+ - [PREEMPT B->A]
+ - task A: finish do_slab_free():
+    - this_cpu_cmpxchg_double() succeeds()
+    - [CORRUPT STATE: c->slab==NULL, c->freelist!=NULL]
+
+>From there, the object on c->freelist will get lost if task B is allowed to
+continue from here: It will proceed to the retry_load_slab label,
+set c->slab, then jump to load_freelist, which clobbers c->freelist.
+
+But if we instead continue as follows, we get worse corruption:
+
+ - task A: run __slab_free() on object from other struct slab:
+    - CPU_PARTIAL_FREE case (slab was on no list, is now on pcpu partial)
+ - task A: run slab_alloc_node() with NUMA node constraint:
+    - fastpath fails (c->slab is NULL)
+    - call __slab_alloc()
+    - slub_get_cpu_ptr() (disables preemption)
+    - enter ___slab_alloc()
+    - c->slab is NULL: goto new_slab
+    - slub_percpu_partial() is non-NULL
+    - set c->slab to slub_percpu_partial(c)
+    - [CORRUPT STATE: c->slab points to slab-1, c->freelist has objects
+      from slab-2]
+    - goto redo
+    - node_match() fails
+    - goto deactivate_slab
+    - existing c->freelist is passed into deactivate_slab()
+    - inuse count of slab-1 is decremented to account for object from
+      slab-2
+
+At this point, the inuse count of slab-1 is 1 lower than it should be.
+This means that if we free all allocated objects in slab-1 except for one,
+SLUB will think that slab-1 is completely unused, and may free its page,
+leading to use-after-free.
+
+Fixes: c17dda40a6a4e ("slub: Separate out kmem_cache_cpu processing from deactivate_slab")
+Fixes: 03e404af26dc2 ("slub: fast release on full slab")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Christoph Lameter <cl@linux.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Link: https://lore.kernel.org/r/20220608182205.2945720-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_set_pipapo.c |   48 ++++++++++++++++++++++++++++-------------
- 1 file changed, 33 insertions(+), 15 deletions(-)
+ mm/slub.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/netfilter/nft_set_pipapo.c
-+++ b/net/netfilter/nft_set_pipapo.c
-@@ -2121,6 +2121,32 @@ out_scratch:
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -2297,6 +2297,7 @@ redo:
+ 
+ 	c->page = NULL;
+ 	c->freelist = NULL;
++	c->tid = next_tid(c->tid);
  }
  
- /**
-+ * nft_set_pipapo_match_destroy() - Destroy elements from key mapping array
-+ * @set:	nftables API set representation
-+ * @m:		matching data pointing to key mapping array
-+ */
-+static void nft_set_pipapo_match_destroy(const struct nft_set *set,
-+					 struct nft_pipapo_match *m)
-+{
-+	struct nft_pipapo_field *f;
-+	int i, r;
-+
-+	for (i = 0, f = m->f; i < m->field_count - 1; i++, f++)
-+		;
-+
-+	for (r = 0; r < f->rules; r++) {
-+		struct nft_pipapo_elem *e;
-+
-+		if (r < f->rules - 1 && f->mt[r + 1].e == f->mt[r].e)
-+			continue;
-+
-+		e = f->mt[r].e;
-+
-+		nft_set_elem_destroy(set, e, true);
-+	}
-+}
-+
-+/**
-  * nft_pipapo_destroy() - Free private data for set and all committed elements
-  * @set:	nftables API set representation
-  */
-@@ -2128,26 +2154,13 @@ static void nft_pipapo_destroy(const str
+ /*
+@@ -2430,8 +2431,6 @@ static inline void flush_slab(struct kme
  {
- 	struct nft_pipapo *priv = nft_set_priv(set);
- 	struct nft_pipapo_match *m;
--	struct nft_pipapo_field *f;
--	int i, r, cpu;
-+	int cpu;
+ 	stat(s, CPUSLAB_FLUSH);
+ 	deactivate_slab(s, c->page, c->freelist, c);
+-
+-	c->tid = next_tid(c->tid);
+ }
  
- 	m = rcu_dereference_protected(priv->match, true);
- 	if (m) {
- 		rcu_barrier();
+ /*
+@@ -2717,6 +2716,7 @@ redo:
  
--		for (i = 0, f = m->f; i < m->field_count - 1; i++, f++)
--			;
--
--		for (r = 0; r < f->rules; r++) {
--			struct nft_pipapo_elem *e;
--
--			if (r < f->rules - 1 && f->mt[r + 1].e == f->mt[r].e)
--				continue;
--
--			e = f->mt[r].e;
--
--			nft_set_elem_destroy(set, e, true);
--		}
-+		nft_set_pipapo_match_destroy(set, m);
- 
- #ifdef NFT_PIPAPO_ALIGN
- 		free_percpu(m->scratch_aligned);
-@@ -2161,6 +2174,11 @@ static void nft_pipapo_destroy(const str
+ 	if (!freelist) {
+ 		c->page = NULL;
++		c->tid = next_tid(c->tid);
+ 		stat(s, DEACTIVATE_BYPASS);
+ 		goto new_slab;
  	}
- 
- 	if (priv->clone) {
-+		m = priv->clone;
-+
-+		if (priv->dirty)
-+			nft_set_pipapo_match_destroy(set, m);
-+
- #ifdef NFT_PIPAPO_ALIGN
- 		free_percpu(priv->clone->scratch_aligned);
- #endif
 
 
