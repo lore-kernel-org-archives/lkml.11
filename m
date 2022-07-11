@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4D6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233774AbiGKJuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
+        id S233772AbiGKJu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233853AbiGKJtV (ORCPT
+        with ESMTP id S233858AbiGKJtW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:49:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4088223BC3;
-        Mon, 11 Jul 2022 02:24:09 -0700 (PDT)
+        Mon, 11 Jul 2022 05:49:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F43124940;
+        Mon, 11 Jul 2022 02:24:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBBE8B80E8B;
-        Mon, 11 Jul 2022 09:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40E44C34115;
-        Mon, 11 Jul 2022 09:24:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17CA06124E;
+        Mon, 11 Jul 2022 09:24:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23856C341C8;
+        Mon, 11 Jul 2022 09:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531446;
-        bh=cHPd56qosha3JEpRvPuMYx+vO1CJT2wmAfE0skjLUpM=;
+        s=korg; t=1657531449;
+        bh=lRISEmsP/F7+HXwJ+1ZXXTgip6J9+k9Li3ei1iTB2z4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jf0MF/yOdV/4ElmbLPSCkLINZd/wXuJuucFSzJfqoAp2Jl4ws0XRHw/k3XRlPtYZD
-         DEMWVAXe2qqhlttSmtvv8AVLzvYm33o1A3nQjko/rYxZlF4tnzNZomMwhjh+jmn46/
-         cRlFDZ1LWxgXcBr23XIYR8VkEDxd1TggMbE2pLtM=
+        b=UZdOgsDN1Lft8HUd6fSo/jg/eVZnl8T/dWG9Bu+1TGLIPJrxMhJsBkKrAF6tI1t/0
+         p/Wxh19+lB6mQkGgUJmPqrlejZPTXcCutjlcnWkvwnBK5/d0A2h19v6iCbhofrzeM/
+         SaIL2rmrjS4J+/6sKLkmq6lXKKeBTMJue2yruKl0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Michael Neuling <mikey@neuling.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Hui Wang <hui.wang@canonical.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 108/230] powerpc/tm: Fix more userspace r13 corruption
-Date:   Mon, 11 Jul 2022 11:06:04 +0200
-Message-Id: <20220711090607.131735800@linuxfoundation.org>
+Subject: [PATCH 5.15 109/230] serial: sc16is7xx: Clear RS485 bits in the shutdown
+Date:   Mon, 11 Jul 2022 11:06:05 +0200
+Message-Id: <20220711090607.160112615@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,116 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Hui Wang <hui.wang@canonical.com>
 
-[ Upstream commit 9d71165d3934e607070c4e48458c0cf161b1baea ]
+[ Upstream commit 927728a34f11b5a27f4610bdb7068317d6fdc72a ]
 
-Commit cf13435b730a ("powerpc/tm: Fix userspace r13 corruption") fixes a
-problem in treclaim where a SLB miss can occur on the
-thread_struct->ckpt_regs while SCRATCH0 is live with the saved user r13
-value, clobbering it with the kernel r13 and ultimately resulting in
-kernel r13 being stored in ckpt_regs.
+We tested RS485 function on an EVB which has SC16IS752, after
+finishing the test, we started the RS232 function test, but found the
+RTS is still working in the RS485 mode.
 
-There is an equivalent problem in trechkpt where the user r13 value is
-loaded into r13 from chkpt_regs to be recheckpointed, but a SLB miss
-could occur on ckpt_regs accesses after that, which will result in r13
-being clobbered with a kernel value and that will get recheckpointed and
-then restored to user registers.
+That is because both startup and shutdown call port_update() to set
+the EFCR_REG, this will not clear the RS485 bits once the bits are set
+in the reconf_rs485(). To fix it, clear the RS485 bits in shutdown.
 
-The same memory page is accessed right before this critical window where
-a SLB miss could cause corruption, so hitting the bug requires the SLB
-entry be removed within a small window of instructions, which is
-possible if a SLB related MCE hits there. PAPR also permits the
-hypervisor to discard this SLB entry (because slb_shadow->persistent is
-only set to SLB_NUM_BOLTED) although it's not known whether any
-implementations would do this (KVM does not). So this is an extremely
-unlikely bug, only found by inspection.
-
-Fix this by also storing user r13 in a temporary location on the kernel
-stack and don't change the r13 register from kernel r13 until the RI=0
-critical section that does not fault.
-
-The SCRATCH0 change is not strictly part of the fix, it's only used in
-the RI=0 section so it does not have the same problem as the previous
-SCRATCH0 bug.
-
-Fixes: 98ae22e15b43 ("powerpc: Add helper functions for transactional memory context switching")
-Cc: stable@vger.kernel.org # v3.9+
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Acked-by: Michael Neuling <mikey@neuling.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220311024733.48926-1-npiggin@gmail.com
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Link: https://lore.kernel.org/r/20220308110042.108451-1-hui.wang@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/tm.S | 25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kernel/tm.S b/arch/powerpc/kernel/tm.S
-index 3beecc32940b..5a0f023a26e9 100644
---- a/arch/powerpc/kernel/tm.S
-+++ b/arch/powerpc/kernel/tm.S
-@@ -443,7 +443,8 @@ restore_gprs:
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 0ab788058fa2..e98aa7b97cc5 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1055,10 +1055,12 @@ static void sc16is7xx_shutdown(struct uart_port *port)
  
- 	REST_GPR(0, r7)				/* GPR0 */
- 	REST_GPRS(2, 4, r7)			/* GPR2-4 */
--	REST_GPRS(8, 31, r7)			/* GPR8-31 */
-+	REST_GPRS(8, 12, r7)			/* GPR8-12 */
-+	REST_GPRS(14, 31, r7)			/* GPR14-31 */
- 
- 	/* Load up PPR and DSCR here so we don't run with user values for long */
- 	mtspr	SPRN_DSCR, r5
-@@ -479,18 +480,24 @@ restore_gprs:
- 	REST_GPR(6, r7)
- 
- 	/*
--	 * Store r1 and r5 on the stack so that we can access them after we
--	 * clear MSR RI.
-+	 * Store user r1 and r5 and r13 on the stack (in the unused save
-+	 * areas / compiler reserved areas), so that we can access them after
-+	 * we clear MSR RI.
- 	 */
- 
- 	REST_GPR(5, r7)
- 	std	r5, -8(r1)
--	ld	r5, GPR1(r7)
-+	ld	r5, GPR13(r7)
- 	std	r5, -16(r1)
-+	ld	r5, GPR1(r7)
-+	std	r5, -24(r1)
- 
- 	REST_GPR(7, r7)
- 
--	/* Clear MSR RI since we are about to use SCRATCH0. EE is already off */
-+	/* Stash the stack pointer away for use after recheckpoint */
-+	std	r1, PACAR1(r13)
-+
-+	/* Clear MSR RI since we are about to clobber r13. EE is already off */
- 	li	r5, 0
- 	mtmsrd	r5, 1
- 
-@@ -501,9 +508,9 @@ restore_gprs:
- 	 * until we turn MSR RI back on.
- 	 */
- 
--	SET_SCRATCH0(r1)
- 	ld	r5, -8(r1)
--	ld	r1, -16(r1)
-+	ld	r13, -16(r1)
-+	ld	r1, -24(r1)
- 
- 	/* Commit register state as checkpointed state: */
- 	TRECHKPT
-@@ -519,9 +526,9 @@ restore_gprs:
- 	 */
- 
- 	GET_PACA(r13)
--	GET_SCRATCH0(r1)
-+	ld	r1, PACAR1(r13)
- 
--	/* R1 is restored, so we are recoverable again.  EE is still off */
-+	/* R13, R1 is restored, so we are recoverable again.  EE is still off */
- 	li	r4, MSR_RI
- 	mtmsrd	r4, 1
+ 	/* Disable all interrupts */
+ 	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, 0);
+-	/* Disable TX/RX */
++	/* Disable TX/RX, clear auto RS485 and RTS invert */
+ 	sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG,
+ 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
+-			      SC16IS7XX_EFCR_TXDISABLE_BIT,
++			      SC16IS7XX_EFCR_TXDISABLE_BIT |
++			      SC16IS7XX_EFCR_AUTO_RS485_BIT |
++			      SC16IS7XX_EFCR_RTS_INVERT_BIT,
+ 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
+ 			      SC16IS7XX_EFCR_TXDISABLE_BIT);
  
 -- 
 2.35.1
