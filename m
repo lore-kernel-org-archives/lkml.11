@@ -2,166 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00637CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D71CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:08:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231468AbiGKMI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
+        id S231561AbiGKMIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiGKMIX (ORCPT
+        with ESMTP id S231492AbiGKMI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:08:23 -0400
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E72A422DA;
-        Mon, 11 Jul 2022 05:08:20 -0700 (PDT)
-Received: by mail-qv1-f45.google.com with SMTP id l2so195822qvt.2;
-        Mon, 11 Jul 2022 05:08:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=autvjFUd9BwlA5CMi8F4/VEnOxd5KyEX6z2vFI+rQes=;
-        b=oqI0iuaF2H2wGh4NeYKOXQJur/+z7Kurz6FeQt10e7AzhB6y5YDkhTdH5Pq6jqFp8z
-         DjB/2Gue8X4XPKi0mY1cLspXoQhrCQScUynXJ67mrJ5Hl0qWsBbXQyJVXvyrDhy4jQza
-         Jzhs31nCeQZBSPDn1t4GyiesWVUapN9/5gkcCsTxs2sTWwdqL03IhfDTe90wjAMoixId
-         WXnOnKfk+eHnacx8ikS7WyJOLcoBGhf62HVLMc9ok2yVHG6FxAvaNhGPrprGgEfj7Tdq
-         wLfRCDs6kgM0hebuUCZ1j22XeofETq62UXQDBJkFmi4NrJP65ViCD7dcd6YZR+oxTa0w
-         r7/g==
-X-Gm-Message-State: AJIora8wcDxzAS2UmthzPHMu9+b0ky6Rfrl4l+gBdHKqRDUoGOExDXbS
-        cRCCAKpCJ+o5ULPWdT0w8xrDlIUF05H7EA==
-X-Google-Smtp-Source: AGRyM1vnORJM/tw2Zoj0iuIU/ZNQnkpGgvGguYGN/eEUpUKb38yF55p1zcQBUWdZLnFzo7s1yM3bPw==
-X-Received: by 2002:a05:6214:e87:b0:473:129e:224a with SMTP id hf7-20020a0562140e8700b00473129e224amr13093540qvb.29.1657541298877;
-        Mon, 11 Jul 2022 05:08:18 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id h129-20020a379e87000000b006b55df40976sm5911999qke.27.2022.07.11.05.08.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 05:08:18 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-31bf3656517so46180487b3.12;
-        Mon, 11 Jul 2022 05:08:18 -0700 (PDT)
-X-Received: by 2002:a81:9209:0:b0:31c:b1b7:b063 with SMTP id
- j9-20020a819209000000b0031cb1b7b063mr19178774ywg.383.1657541298151; Mon, 11
- Jul 2022 05:08:18 -0700 (PDT)
+        Mon, 11 Jul 2022 08:08:29 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2110.outbound.protection.outlook.com [40.107.220.110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6264245046;
+        Mon, 11 Jul 2022 05:08:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hOT0ZWhTd2HMNpviItGzusGAtFmN7ru3YtceEpq9aYKcJN35h0FKKie9M7xcdVZOnXjVhWNko7pU9/EhjV1KJHFezKFV7WWl23tozC5mmOFRCrZOsmz86G3+uZalkwAlBdc9ML8z8aQ8TFMrskx0RCqHuGHGzM79CMq0ugtdrQKSdSx4rFED/eGpRu9bJcFP+McDG606bCuC0B2cYrMyLxE4hPGlMEbFP0v+kvwrzWRpqDSpkv5bxk2auzizIlo1OjgzOoq6A4WuMmFVg2tmjZDUVDMWgfQ05k4b7rfxG2dwEyRK0Ayh3d77klEHrp79EDwB6cmZg9DBjBHSjT0TNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t/jS2/UZT4bHRkqCW/hjmeFyzj/muosh5gA1AzzmIsw=;
+ b=Ye9RF5nE/zE2LUgrZyIE2PxTRGYQdS+oGi+kfZtBt666iWnywB1zkS8OWz4DjuhK3vhuTr7F3FXbi+GpljfFpWY1djpK85k22cS2lIBS8fnLszpTav8mSh9fHJoOQgz1BcztDpFdonRfv5oAJo4rdAQ0oiUPI+CIVzCsaMpnsmUTjno/9uYFwL9GxU28u49RGPb7dHTfOx1OZYXB4XY4qkhj1bu69G0hyD2YHld70/zI8Jr5VBzV0BS1X9069a/f4OOS1dHjGw1gEoG0kMKbzfPj6wL6JRtLT83AIBsBS/YwjCIXK6D9WbhMZHHeE/495XQHwOBuoUoyh2UhLt3K+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cornelisnetworks.com; dmarc=pass action=none
+ header.from=cornelisnetworks.com; dkim=pass header.d=cornelisnetworks.com;
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cornelisnetworks.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t/jS2/UZT4bHRkqCW/hjmeFyzj/muosh5gA1AzzmIsw=;
+ b=Fsv02phgvzl2Stjr3vV2IxcqWiuzrTzwFmeKBccFQ0WW1Dsd3SG+hzoHE0OBzxAwgmka/fGwalhv6KWijvSM5ikjs3So++S3TA8u422Qjrx71w0yQBWKgfsEKv1qxl7w6WDNNeZYvhwIIKu29bQTv/CbNsRZh9Ib7F0G76J2zUJtTu3U5yK7b5GXvlFIaKnwV0VzXuK4nHgF9CUhKK1bQmjMLwO7BLA1PmeFbcmt8MvaVLmLKhhjNqwesExiYIGmGihVyVz0LF5dBW1DirPt5X2kXLs34x3UL6TLkbgTkl2ukzraDjeOpGNyfFPwf3pm9gfsCPg3RPGQe3ndBcW3tw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=cornelisnetworks.com;
+Received: from PH0PR01MB6439.prod.exchangelabs.com (2603:10b6:510:d::22) by
+ MN0PR01MB7804.prod.exchangelabs.com (2603:10b6:208:37f::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5417.26; Mon, 11 Jul 2022 12:08:24 +0000
+Received: from PH0PR01MB6439.prod.exchangelabs.com
+ ([fe80::4000:7ba9:d4a:c339]) by PH0PR01MB6439.prod.exchangelabs.com
+ ([fe80::4000:7ba9:d4a:c339%7]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
+ 12:08:24 +0000
+Message-ID: <e4084801-0295-84c1-1bc1-dbf94483d542@cornelisnetworks.com>
+Date:   Mon, 11 Jul 2022 08:08:21 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH] RDMA/qib: Use the bitmap API to allocate bitmaps
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <f7a8588447679e80a438b6188b0603c1a11ad877.1657300671.git.christophe.jaillet@wanadoo.fr>
+From:   Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+In-Reply-To: <f7a8588447679e80a438b6188b0603c1a11ad877.1657300671.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0070.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::15) To PH0PR01MB6439.prod.exchangelabs.com
+ (2603:10b6:510:d::22)
 MIME-Version: 1.0
-References: <cover.1657301107.git.geert@linux-m68k.org> <68923c8a129b6c2a70b570103679a1cf7876bbc2.1657301107.git.geert@linux-m68k.org>
- <ef2aada2-96e4-c2e4-645f-39bc9094e93a@suse.de> <20220711093513.wilv6e6aqcuyg52w@houat>
- <43d75dce-988a-0a95-cb0a-0d0a7c81ca63@suse.de> <20220711114206.sawqdl54ibuxsxp4@houat>
- <CAMuHMdXbFHWWQoryXihVsSrC5ZzHEV-YYR_eLvNmSAw8Y61TQg@mail.gmail.com> <20220711120243.v6lwoynqigle2aot@houat>
-In-Reply-To: <20220711120243.v6lwoynqigle2aot@houat>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 11 Jul 2022 14:08:06 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXhmf5TudQ6a1PUVV8KXff6JjgMmZOmOWVb2qW6eXF7Ow@mail.gmail.com>
-Message-ID: <CAMuHMdXhmf5TudQ6a1PUVV8KXff6JjgMmZOmOWVb2qW6eXF7Ow@mail.gmail.com>
-Subject: Re: [PATCH 4/5] drm/modes: Add support for driver-specific named modes
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hans de Goede <hdegoede@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7b1798f2-0372-41ca-21ee-08da63360e02
+X-MS-TrafficTypeDiagnostic: MN0PR01MB7804:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NA5lz/RLhpX1yErcJ+eXKL6CHpjIWM3t2xKqGLJ6LxhHuOI+AHwltLh57ZlnQUmSbhPuow3CX7spYYLXEHUVT0uoqnhdn3t/RV7y7OP97nW0JdkUi9q/WbBW3CCnRdmFB6+cjDrD2ByBajcLsuRHMoe5Of+o/b9/WTDuHFTLlrIr7AQojl4Z6ARfDT7jGxK+mlPHCTlbadetNqJbiz7NBkDcUAo4feekFuVS55N/pRXjENIM7xPm3k07Za3aUe078kiTBlbYC+abkRcF3ExhUEzxlAuQ/hi28mtWUSigwTCAIz85RFZVSqEB1ZYap2Vj/p+zCZke9k2AYwP2ggocSVmlfsIaL0nDvVtsirLcfJBfVvONBQOTuivkTc97+a6siOJQVa9NjVxA34sZ7va6j6EBqPqHqtxB5G4MrYMZFYz9g4BdaR0zbQC3vDfGkzmf9W9s7rXfzy5lWkPDne0hY7gbuOZLsWc686EMeOIlTEiEzawHmeeTYkxggbgb5ugUZpKT+Muc+iQZy5bRiOqgkUd3e/udoHvNdGkIfSsGQqjz9YXg0tEZzo6+FrgNikheGL71g/koxV8W9K+5DqdWehgNE869R2LGchDTjt4uc2DSZfuI2g1M3Vh66dGHdDV2HmOMKTYRXgC3gl2WZKa1BCp1OEES3jTPQisTPlBeBhrQJATbGvmZDNtyiSDJU+zBeqZ/o0YPpA5BP4uJGw7RvITgD994kmMtDv2dPUuELNmav936wQMflzi9iIOb4n+qtoi9k4o4RWRxku+BcWAMYCQd7Sai57mf4YWRpEY21CkcINDjxFwv7YHvstr3bmjex9wUF2JaBldfU/jU8F0vQeMRrtBAXCvIzwhhLU7NXq0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR01MB6439.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(366004)(396003)(39830400003)(346002)(66946007)(66476007)(66556008)(6512007)(86362001)(8676002)(186003)(6666004)(53546011)(52116002)(6506007)(478600001)(4326008)(26005)(31696002)(6486002)(2616005)(110136005)(41300700001)(38100700002)(316002)(38350700002)(5660300002)(2906002)(31686004)(36756003)(44832011)(83380400001)(8936002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SlYzZkwrNDBvcko2b0tRQnVYTGU1eFg3bmxMdHFVUnVDTDltT0p2UGxvUlpE?=
+ =?utf-8?B?aHU5KzNKeWV2MkM5empvZ28xZTFFallXc2NlQjljYm84cE9mdFBHMlRRUWtm?=
+ =?utf-8?B?djdBdDM3d1d1MjZycys4em9td0VQU2xBME1XRlZEUm1VR3gwaHlmdzY0ZmtL?=
+ =?utf-8?B?QmhvaytORTAxTWMwb3VabUVUZTBGcXlvVmdiTm9MZEVUTzNCTzF0U1N5QkQr?=
+ =?utf-8?B?VXp0Q04zcU5GWUIzRmJ3MkhrZEhCMFN3K01VTW13anREcjVDRnVQbkg3WXhl?=
+ =?utf-8?B?NFdjVkNyQUhaUjFydmxJV21SNERoVlNjQk9wbGREdE5PbWZ5ekdJZmo4RlZ0?=
+ =?utf-8?B?cDA0Y3UyZTJCVWM0K25ZUE9xbHg3ZEpJTFZIak1kR3hDVUZxRTE5ZFBXbXBr?=
+ =?utf-8?B?bkt3cTdzVE04V2Nvd29rZW92WllOSkJCV2d0WFQ2a2lJRFNSRUVjOUo5a2k4?=
+ =?utf-8?B?dFJrV0xJVzI0aTg2Sis5L2RsOGFEWWIxUElzRUZmaE5TQWhzR2hWaFRtZjFY?=
+ =?utf-8?B?YThWdXZ5YWNIbzlUNkFPaVBFeHRteU5RaU04QVpaM29yejFHSFJKYWd2cWg3?=
+ =?utf-8?B?Zjkrc1hBWnJTYSsvYVIrR1N6RHE5NjhyT3g5Mi9BcUJTVE9CdldaSFFlNG40?=
+ =?utf-8?B?S2JjWFhaUnVvZ29BS1JFcUVlL1pJRHFqSi9zdlAvOEd3VWxNOHphYmZYNEc1?=
+ =?utf-8?B?blljVnNPU29vdWhPb2U4blFMU1lVemluekVLemN3eHFaS1JrOFN0VmZVUFpE?=
+ =?utf-8?B?SE9WVEFrazdNOG02ZXQxR3l5VUxzb0llWElDUUJoalBKMU45aVpRa1Q3amww?=
+ =?utf-8?B?akxta0lHRFl4V3ZtUnJFNzFzNFV5aUUxanhGUDdISlNibUovWHJiYk1PY0dx?=
+ =?utf-8?B?RUM5aSs2UDdTM0pCYkxiR2ZBRHZrUmdzdFY4eERXbXdTVmxDSDVkelpMdmlE?=
+ =?utf-8?B?aGpacFczM2NhTW5EUEN1dVJHWHphaDJ3bUhMK3dkWnJlaHBpRG0ySzhpYTcx?=
+ =?utf-8?B?cDRta1c2Y0FweW8zRThKc1lUbFd6TXZvdUtKOVMzY1hEaDNqNlhXY2N1azkr?=
+ =?utf-8?B?NnNRUWJ5Q2xYUjhpYWhhWm9RYXA4enprSjEzN29sL2VwNXdGNkt6eUNYeEsy?=
+ =?utf-8?B?TEdDdWJVaUw3VmNNQnVDN25qcy9iMUtuSDFuSnBjeVFKRmxBd2pBNEZIdHhL?=
+ =?utf-8?B?eldhWTBtVmlweWRPRzVtRlNzYWRJTGVzVDNreG1kUkVoN0pBUlRXdzdta1JJ?=
+ =?utf-8?B?ZEd2VmxhcDVJVGRic1Z2ejgyQzhNNVJtaFJuUjJ5eVNxRmxtQjMrSXk1RUdo?=
+ =?utf-8?B?WVNLQzVBUUpCTTNTbCtKWmRrQWxhQWk5ZFh4NXJhZEVJL01qUHF4ZFY4U0dm?=
+ =?utf-8?B?cVovTnc4a0Y5a2FXN2FubzN3R1Vab3Z5Z3BobjRjMC8yYzZzVEtIcGtpZUlE?=
+ =?utf-8?B?Ui9PYXgzM21GSHk1eGtlLzRiOXBCL0VyUWsyOTFBa3pscnA1L0JwcWhibXgy?=
+ =?utf-8?B?ZXBCQVVDZ1dnQmc2dm4wVDU1WGRsVU9pcysyOVpLeWNDd2Z5YlNGRVNoUzhO?=
+ =?utf-8?B?cWo3amR4YXc1L0JWUGZ1VTgzc1hPYWNzZ1lFZGNlOEFOeE41Ukt1WXpTUFJr?=
+ =?utf-8?B?NUhDSFViRkdtRHN3c3JRV1FXMElheEJpcG5nYjJEYW0xWnd3cmZrOVJqejNv?=
+ =?utf-8?B?NFBTZzlPcWt2WVF3TXduQUxZUm51cWJkNnc1ajBrYVAzMFg2NGI3Uy9Rd040?=
+ =?utf-8?B?NmZuTTBDZWtVVTJyYlQ2MWpWWjJ1V3VZbTZTbVVUQTJKZEd3Z1ZDREI5STJT?=
+ =?utf-8?B?YjRqRmxId2locVA1VjcrUHllKzd6QlVRVHQyZndJWWd3cjNJTjlkdk1ndkNH?=
+ =?utf-8?B?OTFHQzdFOXl3MUJiNU1wblBPRnhJRUJCWXkzMmkxNjRRcmx6MmY0bUk2UUc0?=
+ =?utf-8?B?SzFiT2RzY3RuWkRhWmVkcTM0Sk43YnBkdmtMM0VCWnV6V0NZOHN1VVh4bXVs?=
+ =?utf-8?B?WFhpWjhISTB0Mytmdjh3YnRGWHNCVFNRSm51Q1ppY0dFS0lTNXVQRkJTWUZ6?=
+ =?utf-8?B?L1pEL2hhay9NdkFqV1Y4alFpSjRZSzFXczlWQzRORndJR01SQmdiSWY4N2Jx?=
+ =?utf-8?B?UkJ4WWpTMW9EUTc2alBOcFU2ZXFOTUpOb0txcmRWTlE4bldiKzJWQms2NUVU?=
+ =?utf-8?Q?6o47N2DTUv9HVgMQJHrIMVo=3D?=
+X-OriginatorOrg: cornelisnetworks.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b1798f2-0372-41ca-21ee-08da63360e02
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR01MB6439.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 12:08:24.2468
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4dbdb7da-74ee-4b45-8747-ef5ce5ebe68a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cDz4zLZ7j3ZX13Rhy5EMZMipr5BdlOLAsceFJDTq7lAbW0LbbkC+1CTCuSUnp+tfiZpkMJAtb2hZlipOeAab1JXfLeFE5P3Dk2i3ntSuRvJXowoh1yGdmRvDLZ/j7dQZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR01MB7804
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxime,
+On 7/8/22 1:20 PM, Christophe JAILLET wrote:
+> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+> 
+> It is less verbose and it improves the semantic.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/infiniband/hw/qib/qib_init.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/infiniband/hw/qib/qib_init.c b/drivers/infiniband/hw/qib/qib_init.c
+> index d1a72e89e297..45211008449f 100644
+> --- a/drivers/infiniband/hw/qib/qib_init.c
+> +++ b/drivers/infiniband/hw/qib/qib_init.c
+> @@ -1106,8 +1106,7 @@ struct qib_devdata *qib_alloc_devdata(struct pci_dev *pdev, size_t extra)
+>  	if (!qib_cpulist_count) {
+>  		u32 count = num_online_cpus();
+>  
+> -		qib_cpulist = kcalloc(BITS_TO_LONGS(count), sizeof(long),
+> -				      GFP_KERNEL);
+> +		qib_cpulist = bitmap_zalloc(count, GFP_KERNEL);
+>  		if (qib_cpulist)
+>  			qib_cpulist_count = count;
+>  	}
+> @@ -1279,7 +1278,7 @@ static void __exit qib_ib_cleanup(void)
+>  #endif
+>  
+>  	qib_cpulist_count = 0;
+> -	kfree(qib_cpulist);
+> +	bitmap_free(qib_cpulist);
+>  
+>  	WARN_ON(!xa_empty(&qib_dev_table));
+>  	qib_dev_cleanup();
 
-On Mon, Jul 11, 2022 at 2:02 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> On Mon, Jul 11, 2022 at 01:59:28PM +0200, Geert Uytterhoeven wrote:
-> > On Mon, Jul 11, 2022 at 1:42 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> > > On Mon, Jul 11, 2022 at 01:11:14PM +0200, Thomas Zimmermann wrote:
-> > > > Am 11.07.22 um 11:35 schrieb Maxime Ripard:
-> > > > > On Mon, Jul 11, 2022 at 11:03:38AM +0200, Thomas Zimmermann wrote:
-> > > > > > Am 08.07.22 um 20:21 schrieb Geert Uytterhoeven:
-> > > > > > > The mode parsing code recognizes named modes only if they are explicitly
-> > > > > > > listed in the internal whitelist, which is currently limited to "NTSC"
-> > > > > > > and "PAL".
-> > > > > > >
-> > > > > > > Provide a mechanism for drivers to override this list to support custom
-> > > > > > > mode names.
-> > > > > > >
-> > > > > > > Ideally, this list should just come from the driver's actual list of
-> > > > > > > modes, but connector->probed_modes is not yet populated at the time of
-> > > > > > > parsing.
-> > > > > >
-> > > > > > I've looked for code that uses these names, couldn't find any. How is this
-> > > > > > being used in practice? For example, if I say "PAL" on the command line, is
-> > > > > > there DRM code that fills in the PAL mode parameters?
-> > > > >
-> > > > > We have some code to deal with this in sun4i:
-> > > > > https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/sun4i/sun4i_tv.c#L292
-> > > > >
-> > > > > It's a bit off topic, but for TV standards, I'm still not sure what the
-> > > > > best course of action is. There's several interactions that make this a
-> > > > > bit troublesome:
-> > > > >
-> > > > >    * Some TV standards differ by their mode (ie, PAL vs NSTC), but some
-> > > > >      other differ by parameters that are not part of drm_display_mode
-> > > > >      (NTSC vs NSTC-J where the only difference is the black and blanking
-> > > > >      signal levels for example).
-> > > > >
-> > > > >    * The mode names allow to provide a fairly convenient way to add that
-> > > > >      extra information, but the userspace is free to create its own mode
-> > > > >      and might omit the mode name entirely.
-> > > > >
-> > > > > So in the code above, if the name has been preserved we match by name,
-> > > > > but we fall back to matching by mode if it hasn't been, which in this
-> > > > > case means that we have no way to differentiate between NTSC, NTSC-J,
-> > > > > PAL-M in this case.
-> > > > >
-> > > > > We have some patches downstream for the RaspberryPi that has the TV
-> > > > > standard as a property. There's a few extra logic required for the
-> > > > > userspace (like setting the PAL property, with the NTSC mode) so I'm not
-> > > > > sure it's preferable.
-> > > > >
-> > > > > Or we could do something like a property to try that standard, and
-> > > > > another that reports the one we actually chose.
-> > > > >
-> > > > > > And another question I have is whether this whitelist belongs into the
-> > > > > > driver at all. Standard modes exist independent from drivers or hardware.
-> > > > > > Shouldn't there simply be a global list of all possible mode names? Drivers
-> > > > > > would filter out the unsupported modes anyway.
-> > > > >
-> > > > > We should totally do something like that, yeah
-> > > >
-> > > > That sun code already looks like sometihng the DRM core/helpers should be
-> > > > doing. And if we want to support named modes well, there's a long list of
-> > > > modes in Wikipedia.
-> > > >
-> > > > https://en.wikipedia.org/wiki/Video_Graphics_Array#/media/File:Vector_Video_Standards2.svg
-> > >
-> > > Yeah, and NTSC is missing :)
-> >
-> > And that diagram is about the "digital" variant of PAL.
-> > If you go the analog route, the only fixed parts are vfreq/hfreq,
-> > number of lines, and synchronization. Other parameters like overscan
-> > can vary.  The actual dot clock can vary wildly: while there is an
-> > upper limit due to bandwidth limitations, you can come up with an
-> > almost infinite number of video modes that can be called PAL, which
-> > is one of the reasons why I don't want hardware-specific variants to
-> > end up in a global video mode database.
->
-> Do you have an example of what that would look like?
+Looks OK to me.
 
-You mean a PAL mode that does not use 768x576?
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/video/fbdev/amifb.c#n834
-(TAG_HIRES is replaced by the actual dot clock at runtime, as it
- depends on the crystal present on the mainboard).
-Amifb also supports 320x256, by doubling the dot clock, but that mode
-is not part of the database.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
