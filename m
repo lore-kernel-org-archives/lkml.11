@@ -2,93 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D677CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231315AbiGKOhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57350 "EHLO
+        id S231330AbiGKOht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbiGKOhA (ORCPT
+        with ESMTP id S229607AbiGKOhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:37:00 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B159765D7C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:36:59 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4F4B1596;
-        Mon, 11 Jul 2022 07:36:59 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E1FCB3F70D;
-        Mon, 11 Jul 2022 07:36:53 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 15:35:42 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
+        Mon, 11 Jul 2022 10:37:46 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF686714B
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:37:45 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id bk26so7264761wrb.11
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:37:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iJtfzfcC1AnsDV/pvGZu2fxxfQmMd6+WOUgRm2id0vA=;
+        b=I0e3YydFgfpoaHWWDRkccW6qtvLN35SFDD/+T6Zf3YSIMWNNV3Mff+f6Xw61zVX2cs
+         1uWFO47xJ8qdEm8xYURWHIZELaONyqchlS9wilP7b4oGmx9pxRIAyswMWZZvBk+smMZs
+         yt12KfMRmGjE7ITc9L9FP7FjpGG+tPFOdmowu1VcdHgpplgc5wTqflQTOes3qwN03qrq
+         eQVm0ExSbWAc4Rs5CMLNMlspn2+A8dO/qLPCZt/mPy0Zq5OQ1y8RZVetuvUzkDzMhtXK
+         UlvFSooupOa8nvx5j/W5rUWkIdPIT7Phoh0fet6WUybKhUPjpAePCaRIYdnqI4FifzE2
+         vNBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iJtfzfcC1AnsDV/pvGZu2fxxfQmMd6+WOUgRm2id0vA=;
+        b=O7ocByOwhxTVCcXNroMzjaWlhz+utahaN9j1wRSNNTr4Q3PGx8gxlxFI+5bI+/aVLR
+         xg6EDqdKVJCJTdh7f29RewXynDUPI8agmQzORxGjONQ9K0Vgr9yNchY5Xh4LsiRYG5kY
+         malKw0i4bS0hN8Siaqn5Ypw9wJyN0onhdtrRg1Iz7jB6s2zrT7ciBlvHEMdP0BNZYXSR
+         Ih0kq5Q1m7zaAjacxWrXqoE9seXSWt/Z5UIrWZr+xJDowYj2hF2hn04MS50/iLLLxs8k
+         Mxox4lwKNYZAF94lXIArVU2G9ILKParMkaQZJkKUuHTiPh7kBmpF/vRkb69PvGz82/2Q
+         CEyA==
+X-Gm-Message-State: AJIora9X9xNfaiKsrzDDj4Z7egH93FiK0XyFd1jnenUn/OtzTqUd+mfP
+        B6Wq5boO5V+Z4DeGsGnrwJaxWg==
+X-Google-Smtp-Source: AGRyM1t1yyqWZwS7XrcViX/JC5qBkc6Z05thqF1oYvTfe7VDmx7hhI7m+JnQqN9Z2J8tfLCknsoQtw==
+X-Received: by 2002:adf:f38f:0:b0:21d:66b5:21c with SMTP id m15-20020adff38f000000b0021d66b5021cmr16896532wro.144.1657550264039;
+        Mon, 11 Jul 2022 07:37:44 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id k5-20020a05600c1c8500b003974cb37a94sm10468691wms.22.2022.07.11.07.37.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 07:37:43 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 15:37:17 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Will Deacon <will@kernel.org>, KP Singh <kpsingh@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zong Li <zong.li@sifive.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>, Guo Ren <guoren@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Brice Goglin <Brice.Goglin@inria.fr>
-Subject: Re: [PATCH v3 1/2] arm64: topology: move store_cpu_topology() to
- shared code
-Message-ID: <20220711143542.nlq6a5nuh4nouomo@bogus>
-References: <20220709152354.2856586-1-mail@conchuod.ie>
- <20220709152354.2856586-2-mail@conchuod.ie>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: Re: [PATCH bpf-next v7 4/4] bpf, arm64: bpf trampoline for arm64
+Message-ID: <Ysw1nSxQUghvY/eY@myrica>
+References: <20220708093032.1832755-1-xukuohai@huawei.com>
+ <20220708093032.1832755-5-xukuohai@huawei.com>
+ <YswQQG7CUoTXCbDa@myrica>
+ <4852eba8-9fd0-6894-934c-ab89c0c7cea9@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220709152354.2856586-2-mail@conchuod.ie>
+In-Reply-To: <4852eba8-9fd0-6894-934c-ab89c0c7cea9@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 04:23:54PM +0100, Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
+On Mon, Jul 11, 2022 at 10:16:00PM +0800, Xu Kuohai wrote:
+> >> +	if (save_ret)
+> >> +		emit(A64_STR64I(p->jited ? r0 : A64_R(0), A64_SP, retval_off),
+> >> +		     ctx);
+> > 
+> > This should be only A64_R(0), not r0. r0 happens to equal A64_R(0) when
+> > jitted due to the way build_epilogue() builds the function at the moment,
+> > but we shouldn't rely on that.
+> > 
 > 
-> arm64's method of defining a default cpu topology requires only minimal
-> changes to apply to RISC-V also. The current arm64 implementation exits
-> early in a uniprocessor configuration by reading MPIDR & claiming that
-> uniprocessor can rely on the default values.
+> looks like I misunderstood something, will change it to:
 > 
-> This is appears to be a hangover from prior to '3102bc0e6ac7 ("arm64:
-> topology: Stop using MPIDR for topology information")', because the
-> current code just assigns default values for multiprocessor systems.
-> 
-> With the MPIDR references removed, store_cpu_topolgy() can be moved to
-> the common arch_topology code.
+> /* store return value, which is held in x0 for interpreter and in
+>  * bpf register r0 for JIT,
+
+It's simpler than that: in both cases the return value is in x0 because
+the function follows the procedure call standard. You could drop the
+comment to avoid confusion and only do the change to A64_R(0)
+
+Thanks,
+Jean
+
 >
-
-Looks good. FWIW,
-
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-
-> CC: stable@vger.kernel.org
-
-However, while I understand the reason why this is needed in stable trees
-for RISC-V, I am not sure if we want this for stable tree at-least on arm64.
-I leave that part to Greg and Will.
-
---
-Regards,
-Sudeep
+>
+>  but r0 happens to equal x0 due to the
+>  * way build_epilogue() builds the JIT image.
+>  */
+> if (save_ret)
+>         emit(A64_STR64I(A64_R(0), A64_SP, retval_off), ctx);
+> 
+> > Apart from that, for the series
+> > 
+> > Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > 
+> > .
