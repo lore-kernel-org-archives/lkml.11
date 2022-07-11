@@ -2,82 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8E8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E979FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230345AbiGKIf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39480 "EHLO
+        id S230079AbiGKIhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbiGKIfU (ORCPT
+        with ESMTP id S229666AbiGKIgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:35:20 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58F4E2FC
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:34:47 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 61485176B;
-        Mon, 11 Jul 2022 01:34:47 -0700 (PDT)
-Received: from [10.57.86.128] (unknown [10.57.86.128])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E70ED3F70D;
-        Mon, 11 Jul 2022 01:34:44 -0700 (PDT)
-Message-ID: <80b0362d-6ece-1da1-18c0-c1030fe4a303@arm.com>
-Date:   Mon, 11 Jul 2022 09:34:41 +0100
+        Mon, 11 Jul 2022 04:36:48 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A0712AB1;
+        Mon, 11 Jul 2022 01:36:27 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id h62so4958839ybb.11;
+        Mon, 11 Jul 2022 01:36:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/urHEMzh2bc5TwNR8Jg3HlbigYCzgoWwkXUrjrAfWC8=;
+        b=XGmSAiIGZxYQeqyvett+yhyFmsQZIVbGMwwau29NqEDDZPY0DoB9heByadkEGBc83p
+         l5oh2J4YHg2IziqPBXZiLKUyUW2PD9Xj6y9pN2AFk1LxWcDX29uChlfblfaMI6ChU+5a
+         eEAN+gV66aQ9r7TPYbU8Q4C6W5HmboykOURNxDgEhuAQQ0X/Rkr4nl4XNxVnKLaRuesi
+         2cJHC+XzmH6peK8BcO/O3VyhoyIMfRGnLAzFnbMPyCm/znRvt//8nJcWwP9NnXA9cLsn
+         rVhIt6dYM+jz4jtZU47j2c9u7Xiny4kcW5uLj6V9Z8QaoBzgWO78hSx27k0gIw5JpxK/
+         NgIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/urHEMzh2bc5TwNR8Jg3HlbigYCzgoWwkXUrjrAfWC8=;
+        b=XQNjZyRTi1brE0KeK19ifkfmD3xB0z7Q+hg7L8BD5Svh/f+B0xAcm/39mSAa1u7UC4
+         KjtPittk3EFjFkKx0bEnED2RRhnihHHTDX6vAcc506V+cCk32eFCGfZquhZvTk1A5aQu
+         urx9LLtahpCz9gw8y8A6WIUaa6YrsdNwpnkPA7t12CrK05h7OBonloo8w6oC/Mb0EKfz
+         mt6y9+x2Erf1mWqvtMIdXoI+lJmeEjFsDtPD34yXP9QiO+xqeT/L0mJ5JmRBPBLZdxbl
+         Tv+e6TUjlG0DUcrKi5DZfyK1d3yvGiR5i34kPjVxIb40CkavgbdLoDuTWydfy6Y6FxUk
+         roTw==
+X-Gm-Message-State: AJIora9kOiNb/OEGsTntGYrZiIPiNI/5ZNKeLlsVqzmpwzoZPyycMyPG
+        +XENCdNeOeS2HzhVcOKjB417d3mJHJtJMQGfVA8=
+X-Google-Smtp-Source: AGRyM1vzQAGVZ8apoNozUcEzZu+mjoPUu3+q9WkSyjYKuHvlYS46eciGCWtdJc855CKUdcMoEgpkfWpSFB+UmT0ASGk=
+X-Received: by 2002:a05:6902:c4:b0:64b:4677:331b with SMTP id
+ i4-20020a05690200c400b0064b4677331bmr15665437ybs.93.1657528586108; Mon, 11
+ Jul 2022 01:36:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v6] coresight: etm4x: avoid build failure with unrolled
- loops
-To:     Arnd Bergmann <arnd@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        David Laight <David.Laight@aculab.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, coresight@lists.linaro.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+References: <20220708195510.2951661-1-horatiu.vultur@microchip.com>
+ <20220708195510.2951661-3-horatiu.vultur@microchip.com> <YsiQhA9pHaX4s3R8@colin-ia-desktop>
+ <CAHp75Vc0EasS2Z3x=cgTv==osXprPU3Zkc-Q9DMf4BMz2p6oLw@mail.gmail.com> <20220711065547.drpgq466ueujkxah@soft-dev3-1.localhost>
+In-Reply-To: <20220711065547.drpgq466ueujkxah@soft-dev3-1.localhost>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Jul 2022 10:35:49 +0200
+Message-ID: <CAHp75VcOY-fHMvdoazB+STYxGNCJTmpxN9yMaAvQAcVUn7yL7g@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] pinctrl: ocelot: Fix pincfg
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>
-References: <20220708231520.3958391-1-ndesaulniers@google.com>
- <CAK8P3a0x2KJuCjupKuj6XAYUAeF47ZV4bWuEGUQFOcOK_Do2jA@mail.gmail.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <CAK8P3a0x2KJuCjupKuj6XAYUAeF47ZV4bWuEGUQFOcOK_Do2jA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Linus Walleij <linus.walleij@linaro.org>,
+        kavyasree.kotagiri@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Michael Walle <michael@walle.cc>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/07/2022 20:13, Arnd Bergmann wrote:
-> On Sat, Jul 9, 2022 at 1:15 AM Nick Desaulniers <ndesaulniers@google.com> wrote:
-> 
->>          ({                                                                      \
->>                  u64 __val;                                                      \
->>                                                                                  \
->> -               if (__builtin_constant_p((offset)))                             \
->> +               if (__is_constexpr((offset)))                                   \
->>                          __val = read_etm4x_sysreg_const_offset((offset));       \
->>                  else                                                            \
->>                          __val = etm4x_sysreg_read((offset), true, (_64bit));    \
->>
-> 
-> This is clearly better than the current version using
-> __builtin_constant_p(), but
-> I don't think it's safe in all cases, since there are expressions that
-> are constant
-> expressions to the compiler but are not valid input to the assembler.
-> 
-> I would prefer to see this fixed differently, but doing this one first is also
-> fine with me:
-> 
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> 
->          Arnd
+On Mon, Jul 11, 2022 at 8:51 AM Horatiu Vultur
+<horatiu.vultur@microchip.com> wrote:
+> The 07/09/2022 00:02, Andy Shevchenko wrote:
+> > On Fri, Jul 8, 2022 at 10:17 PM Colin Foster
+> > <colin.foster@in-advantage.com> wrote:
+> > > On Fri, Jul 08, 2022 at 09:55:10PM +0200, Horatiu Vultur wrote:
 
+Please, remove unneeded context when replying!
 
-Thanks, I have queued this.
+...
 
-Suzuki
+> > > > -             .max_register = 32,
+> > >
+> > > What happens in /sys/kernel/debug/regmap/*-pincfg/{range,registers} when
+> > > there's no max register?
+> >
+> > Good question!
+>
+> If .max_register is missing then I got the following:
+>
+> # cd /sys/kernel/debug/regmap/e2004064.pinctrl-pincfg/
+> # cat range
+> 0-0
+> # cat registers
+> 0: 00000005
+
+This is effectively a regression.
+
+> > > Should it be this?
+> > >
+> > > struct regmap_config regmap_config = {
+> > >     ...
+> > > };
+> > > regmap_config.max_register = info->desc->npins * regmap_config.reg_stride;
+> > >
+> > > >               .name = "pincfg",
+> > > >       };
+> >
+> > If regmap configuration may be const, I would prefer to have a
+> > hardcoded value and different configuration based on the chip, but if
+> > it's not feasible, then this could suffice.
+>
+> What about if we do something like:
+>
+> const struct regmap_config regmap_config = {
+>     ...
+>     .max_register = info->desc->npins * 4,
+>     ...
+> };
+>
+> This is based on what Colin suggested only that we keep the const.
+
+As long as it's const, I like it.
+
+-- 
+With Best Regards,
+Andy Shevchenko
