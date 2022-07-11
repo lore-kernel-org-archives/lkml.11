@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 370F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 650AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232566AbiGKJaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        id S232584AbiGKJaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232682AbiGKJ31 (ORCPT
+        with ESMTP id S232702AbiGKJ33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:29:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E136D56B;
-        Mon, 11 Jul 2022 02:16:27 -0700 (PDT)
+        Mon, 11 Jul 2022 05:29:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4C66D9F2;
+        Mon, 11 Jul 2022 02:16:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9419F61243;
-        Mon, 11 Jul 2022 09:16:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2061C34115;
-        Mon, 11 Jul 2022 09:16:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EB907CE125F;
+        Mon, 11 Jul 2022 09:16:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0150C341C0;
+        Mon, 11 Jul 2022 09:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530986;
-        bh=QpAJqreb6gSFTrZdxgUfc7154j1uRiyvfmEosIasGDs=;
+        s=korg; t=1657530983;
+        bh=wuFITWr7voOniBRlxupsTInvUgybpSVcKtHclsOVbcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MwB1bGutfVJab+Q0WGygxmi+bHbLCcWs42AAv9aLxbY/Oo+Q+rtqIHXD6uu0mxhWq
-         2qBNf2jmhiluwSdCFeV4PzzPL3MmsiOw1z9G3Ri6JeNpiZHcBiFlV3CKahqIL5LlDr
-         wJS/CzmVAzL5GhRqGxEQ2wQPVfjfmSiZNHyjQNw0=
+        b=gWY90zNy9CBfsXXLpaXJ8dPGY9/WFYNxFCXSdGqjT+nc+Nr24bbVicWHTeh5Fd63k
+         B1/E1TmQuxx/osPlT4v7+D7jVppGb3pBSpeey2wMaP592Qn24nN5pzPQeuCnWZGfN6
+         AcpMllXVCzymtQNoeguqCp/gVlEYLYNXNk3UMOV8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 055/112] arm64: dts: qcom: sdm845: use dispcc AHB clock for mdss node
-Date:   Mon, 11 Jul 2022 11:06:55 +0200
-Message-Id: <20220711090551.133270013@linuxfoundation.org>
+Subject: [PATCH 5.18 054/112] arm64: dts: qcom: msm8994: Fix CPU6/7 reg values
+Date:   Mon, 11 Jul 2022 11:06:54 +0200
+Message-Id: <20220711090551.105006997@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,37 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 3ba500dee327e0261e728edec8a4f2f563d2760c ]
+[ Upstream commit 47bf59c4755930f616dd90c8c6a85f40a6d347ea ]
 
-It was noticed that on sdm845 after an MDSS suspend/resume cycle the
-driver can not read HW_REV registers properly (they will return 0
-instead). Chaning the "iface" clock from <&gcc GCC_DISP_AHB_CLK> to
-<&dispcc DISP_CC_MDSS_AHB_CLK> fixes the issue.
+CPU6 and CPU7 were mistakengly pointing to CPU5 reg. Fix it.
 
-Fixes: 08c2a076d18f ("arm64: dts: qcom: sdm845: Add dpu to sdm845 dts file")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 02d8091bbca0 ("arm64: dts: qcom: msm8994: Add a proper CPU map")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220531124735.1165582-1-dmitry.baryshkov@linaro.org
+Link: https://lore.kernel.org/r/20220501184016.64138-1-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index b31bf62e8680..ad21cf465c98 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -4238,7 +4238,7 @@
- 
- 			power-domains = <&dispcc MDSS_GDSC>;
- 
--			clocks = <&gcc GCC_DISP_AHB_CLK>,
-+			clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
- 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
- 			clock-names = "iface", "core";
- 
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index b1e595cb4b90..6b76321288d0 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -93,7 +93,7 @@
+ 		CPU6: cpu@102 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a57";
+-			reg = <0x0 0x101>;
++			reg = <0x0 0x102>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2_1>;
+ 		};
+@@ -101,7 +101,7 @@
+ 		CPU7: cpu@103 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a57";
+-			reg = <0x0 0x101>;
++			reg = <0x0 0x103>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2_1>;
+ 		};
 -- 
 2.35.1
 
