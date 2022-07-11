@@ -2,92 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DAA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B942C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbiGKLSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58874 "EHLO
+        id S230256AbiGKLSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231179AbiGKLSP (ORCPT
+        with ESMTP id S229982AbiGKLST (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:18:15 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD69747A3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:40:32 -0700 (PDT)
-Received: from zn.tnic (p200300ea970ff601329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:f601:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 11 Jul 2022 07:18:19 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C796D2725
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:40:51 -0700 (PDT)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 964B31EC0518;
-        Mon, 11 Jul 2022 12:40:26 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1657536026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=DQveIvP21h/SanKF+N0Kr1ZyhDAmgYuWOYIW71suvFg=;
-        b=CnP+YTdQFXXeMz4yz7lRKZrtDOotgh/qmneigxkyjFPzRx22eIHesEikobYkfzhA0eFGHx
-        bgWLcABXTonqdCSQS/VeaNriU3qJ60lGziMlFEFviVrJ4ncqEsKyuMs/HXtUf2QXs9ucao
-        boRyB8MdlK+myKDMfvTxFNaK5ZPE7Hk=
-Date:   Mon, 11 Jul 2022 12:40:26 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Jan Beulich <jbeulich@suse.com>
-Cc:     Andrew Lutomirski <luto@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-Subject: Re: [PATCH] x86/PAT: have pat_enabled() properly reflect state when
- running on e.g. Xen
-Message-ID: <Ysv+Gh0Gk4+uGwrb@zn.tnic>
-References: <9385fa60-fa5d-f559-a137-6608408f88b0@suse.com>
- <YsRTAGI2PhfZ5V7M@zn.tnic>
- <016d281b-7e40-f1bd-66ee-c19c3cc56efe@suse.com>
- <YsRjX/U1XN8rq+8u@zn.tnic>
- <b7fa785b-cea3-3e05-c101-d6c7bd101ef3@suse.com>
- <YsW/3/fEuNYAuFwZ@zn.tnic>
- <bc13c66d-a885-e405-7b53-8cd7afdbecff@suse.com>
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id F0CE983FDE;
+        Mon, 11 Jul 2022 12:40:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1657536049;
+        bh=Y3VSNfDo1U4WELqZYyRvbjK9Z7Pojdt8Qu8UkXieSGw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=J9nFsjZlyIT4XLSdiWM/wHQj8KGLlUk+kKQ4ub3CvZ5AjbnECl0zQKxq/PlYGvlBe
+         IpNXRvwK5Mj0ihZBCdQ9V2WLl2pLOIJb/hckdKbMSAd2gWCgen2mKGnWFpHeJCHtIQ
+         QqxKur9DlC2JKzQpCDrBKRdwhtNcrdOh5nCxyGxkLFLQa6BDU0OHs0+3lOWnubdrPE
+         Q35yaxvM7W0H4VyPFshJfEY82IscZDQYvACAncr4bAb7NNlF/5QB1a0+99Pj6MDU0W
+         IfE8DyuaqTmqjBULRFsqIToqyx1CYlT00qbqHYAV5TvBgrHNJfNGDPbx9DmZziqM/6
+         pNitLQwDXQt9g==
+Message-ID: <3b4a1bec-24aa-da62-79ba-8438987299b3@denx.de>
+Date:   Mon, 11 Jul 2022 12:36:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <bc13c66d-a885-e405-7b53-8cd7afdbecff@suse.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] drm: mxsfb: DRM_MXSFB should depend on ARCH_MXS ||
+ ARCH_MXC
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Stefan Agner <stefan@agner.ch>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Lucas Stach <l.stach@pengutronix.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <379f49058c7455802302c42bfbf615aaf3400f2c.1657530040.git.geert+renesas@glider.be>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <379f49058c7455802302c42bfbf615aaf3400f2c.1657530040.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 08:38:44AM +0200, Jan Beulich wrote:
-> Well, right now the pvops hook for Xen swallows #GP anyway (wrongly
-> so imo, but any of my earlier pointing out of that has been left
-> unheard, despite even the code comments there saying "It may be worth
-> changing that").
+On 7/11/22 11:01, Geert Uytterhoeven wrote:
+> Freescale/NXP i.MX LCDIF and eLCDIF LCD controllers are only present on
+> Freescale/NXP i.MX SoCs.  Hence add a dependency on ARCH_MXS ||
+> ARCH_MXC, to prevent asking the user about this driver when configuring
+> a kernel without Freescale/NXP i.MX support.
+> 
+> Fixes: 45d59d704080cc0c ("drm: Add new driver for MXSFB controller")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Oh great. ;-\
+Is the Fixes tag really justified in this case ?
 
-> The point is therefore that after writing PAT, it would need reading
-> back. In which case it feels (slightly) more clean to me to avoid the
-> write attempt in the first place, when we know it's not going to work.
+Otherwise
 
-X86_FEATURE_XENPV check then.
-
-> If I may ask - doesn't this mean this patch, in its current shape, is
-> already a (small) step in that direction? In any event what you say
-> doesn't sound to me like a viable (backportable) route to addressing
-> the regression at hand.
-
-Backportable to where? To whatever tree has
-
-bdd8b6c98239 ("drm/i915: replace X86_FEATURE_PAT with pat_enabled()")
-
-? If it is that, then 5.17 and newer.
-
-Anyway, I don't mind it as long as you put the proper splitting out
-ontop and it all goes as a single patchset, with the minimal fix
-CC:stable and queued first.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Reviewed-by: Marek Vasut <marex@denx.de>
