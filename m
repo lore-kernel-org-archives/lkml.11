@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 370F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232552AbiGKJaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
+        id S232566AbiGKJaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232623AbiGKJ3V (ORCPT
+        with ESMTP id S232682AbiGKJ31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:29:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D183DBF4;
-        Mon, 11 Jul 2022 02:16:24 -0700 (PDT)
+        Mon, 11 Jul 2022 05:29:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E136D56B;
+        Mon, 11 Jul 2022 02:16:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5B99B80E6D;
-        Mon, 11 Jul 2022 09:16:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C74C34115;
-        Mon, 11 Jul 2022 09:16:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9419F61243;
+        Mon, 11 Jul 2022 09:16:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2061C34115;
+        Mon, 11 Jul 2022 09:16:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530980;
-        bh=ZW6FWAURDGv8mjytaJe/r3CiduGETujhMIKENOvBdaI=;
+        s=korg; t=1657530986;
+        bh=QpAJqreb6gSFTrZdxgUfc7154j1uRiyvfmEosIasGDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yyX69ruw9L/knYcLIOIbVz6Sn2P5LguTkBbWlOS9mw++5WTwdOWklWoyYlvP2Pj++
-         HwV9jIWcpZULsrvEBTZVou+QhnnjTyPXRVjyhrs2npU7iD9IgWRUSmqU+frVhBK2Wh
-         RwNzGX+ZAbiyDpDOBhCD/LD6qnrftefJ2BNNXPAY=
+        b=MwB1bGutfVJab+Q0WGygxmi+bHbLCcWs42AAv9aLxbY/Oo+Q+rtqIHXD6uu0mxhWq
+         2qBNf2jmhiluwSdCFeV4PzzPL3MmsiOw1z9G3Ri6JeNpiZHcBiFlV3CKahqIL5LlDr
+         wJS/CzmVAzL5GhRqGxEQ2wQPVfjfmSiZNHyjQNw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 053/112] arm64: dts: qcom: sm8450: fix interconnects property of UFS node
-Date:   Mon, 11 Jul 2022 11:06:53 +0200
-Message-Id: <20220711090551.077126740@linuxfoundation.org>
+Subject: [PATCH 5.18 055/112] arm64: dts: qcom: sdm845: use dispcc AHB clock for mdss node
+Date:   Mon, 11 Jul 2022 11:06:55 +0200
+Message-Id: <20220711090551.133270013@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -52,39 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit de9b3d9616078f1d1d0d51b01cdafa101733f935 ]
+[ Upstream commit 3ba500dee327e0261e728edec8a4f2f563d2760c ]
 
-All interconnect device tree nodes on sm8450 are 2-cells, however in
-UFS node they are handled as 1-cells, fix it.
+It was noticed that on sdm845 after an MDSS suspend/resume cycle the
+driver can not read HW_REV registers properly (they will return 0
+instead). Chaning the "iface" clock from <&gcc GCC_DISP_AHB_CLK> to
+<&dispcc DISP_CC_MDSS_AHB_CLK> fixes the issue.
 
-Fixes: aa2d0bf04a3c ("arm64: dts: qcom: sm8450: add interconnect nodes")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 08c2a076d18f ("arm64: dts: qcom: sdm845: Add dpu to sdm845 dts file")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220310221934.1560729-1-vladimir.zapolskiy@linaro.org
+Link: https://lore.kernel.org/r/20220531124735.1165582-1-dmitry.baryshkov@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sm8450.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sdm845.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-index e63b7b0458cf..7a14eb89e4ca 100644
---- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-@@ -1383,8 +1383,8 @@
+diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+index b31bf62e8680..ad21cf465c98 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+@@ -4238,7 +4238,7 @@
  
- 			iommus = <&apps_smmu 0xe0 0x0>;
+ 			power-domains = <&dispcc MDSS_GDSC>;
  
--			interconnects = <&aggre1_noc MASTER_UFS_MEM &mc_virt SLAVE_EBI1>,
--					<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_UFS_MEM_CFG>;
-+			interconnects = <&aggre1_noc MASTER_UFS_MEM 0 &mc_virt SLAVE_EBI1 0>,
-+					<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_UFS_MEM_CFG 0>;
- 			interconnect-names = "ufs-ddr", "cpu-ufs";
- 			clock-names =
- 				"core_clk",
+-			clocks = <&gcc GCC_DISP_AHB_CLK>,
++			clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
+ 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
+ 			clock-names = "iface", "core";
+ 
 -- 
 2.35.1
 
