@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E47BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFED6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbiGKJsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
+        id S233637AbiGKJsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbiGKJre (ORCPT
+        with ESMTP id S233625AbiGKJrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:47:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32173AB7C7;
-        Mon, 11 Jul 2022 02:23:12 -0700 (PDT)
+        Mon, 11 Jul 2022 05:47:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6C7AB7D2;
+        Mon, 11 Jul 2022 02:23:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72C9F61361;
-        Mon, 11 Jul 2022 09:23:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82633C341C0;
-        Mon, 11 Jul 2022 09:23:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CD4F6134C;
+        Mon, 11 Jul 2022 09:23:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46D2AC34115;
+        Mon, 11 Jul 2022 09:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531390;
-        bh=4g8ckDjMfPAgYHdj3FDaYCIvYJD0IeClaQPl02qoew0=;
+        s=korg; t=1657531393;
+        bh=WPtd9kgKbniwNf3BMQri7+fVEcYbfkFdC15EP5tNh+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QNR7l1tbj9larK66B+M7vfbCXFW8sBhho82T0uBREsLWLbi6HjsgsHmjJ+NzOKg9h
-         /izC0q6tN/rNNqg4pW0tsigY9KhTkr5/Tb/N39TVKzN7tlwIXxL1b428mAaWJIaapZ
-         pqRs53dm4odnpt3LejoawITx1FZaAarSvYwjy4RE=
+        b=XZWx9vhc/a5lpeYmXK14FzqM+dU4PaF/uzL/cW3o4ciQPl9KU5wa4EZRGIYKVqPf+
+         V9sw0E1R9FDPBMXppvlgkSpJV6HkI9CYaC8f0hSyfledhIIxYwxDWHUSHdmsCDebHa
+         1QvxqjkR5WnUvu0eNKoOCuzhigwRV0G3/dmXcP5M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
-        Anand Jain <anand.jain@oracle.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 086/230] btrfs: add a btrfs_get_dev_args_from_path helper
-Date:   Mon, 11 Jul 2022 11:05:42 +0200
-Message-Id: <20220711090606.512344336@linuxfoundation.org>
+Subject: [PATCH 5.15 049/230] net/mlx5e: Check action fwd/drop flag exists also for nic flows
+Date:   Mon, 11 Jul 2022 11:05:05 +0200
+Message-Id: <20220711090605.473699898@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,176 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Roi Dayan <roid@nvidia.com>
 
-[ Upstream commit faa775c41d655a4786e9d53cb075a77bb5a75f66 ]
+[ Upstream commit 6b50cf45b6a0e99f3cab848a72ecca8da56b7460 ]
 
-We are going to want to populate our device lookup args outside of any
-locks and then do the actual device lookup later, so add a helper to do
-this work and make btrfs_find_device_by_devspec() use this helper for
-now.
+The driver should add offloaded rules with either a fwd or drop action.
+The check existed in parsing fdb flows but not when parsing nic flows.
+Move the test into actions_match_supported() which is called for
+checking nic flows and fdb flows.
 
-Reviewed-by: Nikolay Borisov <nborisov@suse.com>
-Reviewed-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/volumes.c | 96 ++++++++++++++++++++++++++++++----------------
- fs/btrfs/volumes.h |  4 ++
- 2 files changed, 68 insertions(+), 32 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-index 53417a1c5402..8d09e6d442b2 100644
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -2361,45 +2361,81 @@ void btrfs_destroy_dev_replace_tgtdev(struct btrfs_device *tgtdev)
- 	btrfs_free_device(tgtdev);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 3aa8d0b83d10..fe52db591121 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -3305,6 +3305,12 @@ static bool actions_match_supported(struct mlx5e_priv *priv,
+ 	ct_flow = flow_flag_test(flow, CT) && !ct_clear;
+ 	actions = flow->attr->action;
  
--static struct btrfs_device *btrfs_find_device_by_path(
--		struct btrfs_fs_info *fs_info, const char *device_path)
-+/**
-+ * Populate args from device at path
-+ *
-+ * @fs_info:	the filesystem
-+ * @args:	the args to populate
-+ * @path:	the path to the device
-+ *
-+ * This will read the super block of the device at @path and populate @args with
-+ * the devid, fsid, and uuid.  This is meant to be used for ioctls that need to
-+ * lookup a device to operate on, but need to do it before we take any locks.
-+ * This properly handles the special case of "missing" that a user may pass in,
-+ * and does some basic sanity checks.  The caller must make sure that @path is
-+ * properly NUL terminated before calling in, and must call
-+ * btrfs_put_dev_args_from_path() in order to free up the temporary fsid and
-+ * uuid buffers.
-+ *
-+ * Return: 0 for success, -errno for failure
-+ */
-+int btrfs_get_dev_args_from_path(struct btrfs_fs_info *fs_info,
-+				 struct btrfs_dev_lookup_args *args,
-+				 const char *path)
- {
--	BTRFS_DEV_LOOKUP_ARGS(args);
--	int ret = 0;
- 	struct btrfs_super_block *disk_super;
- 	struct block_device *bdev;
--	struct btrfs_device *device;
-+	int ret;
- 
--	ret = btrfs_get_bdev_and_sb(device_path, FMODE_READ,
--				    fs_info->bdev_holder, 0, &bdev, &disk_super);
--	if (ret)
--		return ERR_PTR(ret);
-+	if (!path || !path[0])
-+		return -EINVAL;
-+	if (!strcmp(path, "missing")) {
-+		args->missing = true;
-+		return 0;
++	if (!(actions &
++	      (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_DROP))) {
++		NL_SET_ERR_MSG_MOD(extack, "Rule must have at least one forward/drop action");
++		return false;
 +	}
 +
-+	args->uuid = kzalloc(BTRFS_UUID_SIZE, GFP_KERNEL);
-+	args->fsid = kzalloc(BTRFS_FSID_SIZE, GFP_KERNEL);
-+	if (!args->uuid || !args->fsid) {
-+		btrfs_put_dev_args_from_path(args);
-+		return -ENOMEM;
-+	}
- 
--	args.devid = btrfs_stack_device_id(&disk_super->dev_item);
--	args.uuid = disk_super->dev_item.uuid;
-+	ret = btrfs_get_bdev_and_sb(path, FMODE_READ, fs_info->bdev_holder, 0,
-+				    &bdev, &disk_super);
-+	if (ret)
-+		return ret;
-+	args->devid = btrfs_stack_device_id(&disk_super->dev_item);
-+	memcpy(args->uuid, disk_super->dev_item.uuid, BTRFS_UUID_SIZE);
- 	if (btrfs_fs_incompat(fs_info, METADATA_UUID))
--		args.fsid = disk_super->metadata_uuid;
-+		memcpy(args->fsid, disk_super->metadata_uuid, BTRFS_FSID_SIZE);
- 	else
--		args.fsid = disk_super->fsid;
--
--	device = btrfs_find_device(fs_info->fs_devices, &args);
--
-+		memcpy(args->fsid, disk_super->fsid, BTRFS_FSID_SIZE);
- 	btrfs_release_disk_super(disk_super);
--	if (!device)
--		device = ERR_PTR(-ENOENT);
- 	blkdev_put(bdev, FMODE_READ);
--	return device;
-+	return 0;
- }
- 
- /*
-- * Lookup a device given by device id, or the path if the id is 0.
-+ * Only use this jointly with btrfs_get_dev_args_from_path() because we will
-+ * allocate our ->uuid and ->fsid pointers, everybody else uses local variables
-+ * that don't need to be freed.
-  */
-+void btrfs_put_dev_args_from_path(struct btrfs_dev_lookup_args *args)
-+{
-+	kfree(args->uuid);
-+	kfree(args->fsid);
-+	args->uuid = NULL;
-+	args->fsid = NULL;
-+}
-+
- struct btrfs_device *btrfs_find_device_by_devspec(
- 		struct btrfs_fs_info *fs_info, u64 devid,
- 		const char *device_path)
- {
- 	BTRFS_DEV_LOOKUP_ARGS(args);
- 	struct btrfs_device *device;
-+	int ret;
- 
- 	if (devid) {
- 		args.devid = devid;
-@@ -2409,18 +2445,14 @@ struct btrfs_device *btrfs_find_device_by_devspec(
- 		return device;
+ 	if (mlx5e_is_eswitch_flow(flow)) {
+ 		if (flow->attr->esw_attr->split_count && ct_flow &&
+ 		    !MLX5_CAP_GEN(flow->attr->esw_attr->in_mdev, reg_c_preserve)) {
+@@ -4207,13 +4213,6 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 		attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
  	}
  
--	if (!device_path || !device_path[0])
--		return ERR_PTR(-EINVAL);
--
--	if (strcmp(device_path, "missing") == 0) {
--		args.missing = true;
--		device = btrfs_find_device(fs_info->fs_devices, &args);
--		if (!device)
--			return ERR_PTR(-ENOENT);
--		return device;
+-	if (!(attr->action &
+-	      (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_DROP))) {
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "Rule must have at least one forward/drop action");
+-		return -EOPNOTSUPP;
 -	}
 -
--	return btrfs_find_device_by_path(fs_info, device_path);
-+	ret = btrfs_get_dev_args_from_path(fs_info, &args, device_path);
-+	if (ret)
-+		return ERR_PTR(ret);
-+	device = btrfs_find_device(fs_info->fs_devices, &args);
-+	btrfs_put_dev_args_from_path(&args);
-+	if (!device)
-+		return ERR_PTR(-ENOENT);
-+	return device;
- }
- 
- /*
-diff --git a/fs/btrfs/volumes.h b/fs/btrfs/volumes.h
-index f3b1380f45ad..d1df03f77e29 100644
---- a/fs/btrfs/volumes.h
-+++ b/fs/btrfs/volumes.h
-@@ -487,9 +487,13 @@ void btrfs_assign_next_active_device(struct btrfs_device *device,
- struct btrfs_device *btrfs_find_device_by_devspec(struct btrfs_fs_info *fs_info,
- 						  u64 devid,
- 						  const char *devpath);
-+int btrfs_get_dev_args_from_path(struct btrfs_fs_info *fs_info,
-+				 struct btrfs_dev_lookup_args *args,
-+				 const char *path);
- struct btrfs_device *btrfs_alloc_device(struct btrfs_fs_info *fs_info,
- 					const u64 *devid,
- 					const u8 *uuid);
-+void btrfs_put_dev_args_from_path(struct btrfs_dev_lookup_args *args);
- void btrfs_free_device(struct btrfs_device *device);
- int btrfs_rm_device(struct btrfs_fs_info *fs_info,
- 		    const char *device_path, u64 devid,
+ 	if (esw_attr->split_count > 0 && !mlx5_esw_has_fwd_fdb(priv->mdev)) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "current firmware doesn't support split rule for port mirroring");
 -- 
 2.35.1
 
