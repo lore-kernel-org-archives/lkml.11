@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED56CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbiGKJVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
+        id S231828AbiGKJVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231898AbiGKJUb (ORCPT
+        with ESMTP id S231899AbiGKJUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:20:31 -0400
+        Mon, 11 Jul 2022 05:20:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C44545C0;
-        Mon, 11 Jul 2022 02:12:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E91E545C5;
+        Mon, 11 Jul 2022 02:12:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFD17611F0;
-        Mon, 11 Jul 2022 09:12:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E03C34115;
-        Mon, 11 Jul 2022 09:12:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BED10611EA;
+        Mon, 11 Jul 2022 09:12:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C80C4C341C0;
+        Mon, 11 Jul 2022 09:12:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530751;
-        bh=pv8T9gUxJhcDfY1EK6DBaogYnmWJsFaGPg8dgKdd82o=;
+        s=korg; t=1657530754;
+        bh=Yw6CvDlaFnh/HUoADg5MBXYUAT5+p+xm/ldRU9fTv6c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g+ySHDxf7DT5lVRbevyXUiBCt+VKkF/UIR6Em26Cgn+626BqWbeUx+663BxT3AUz9
-         hTcmSjrPE2NX4t88MNo3Ggp+mapUyFSU+jG1CBkrre+68wNZyisSoWdtJSb/Gjvaw1
-         2TfXQWpaF/9ATncZm6GIYk5lYd6WGtZk/3uVMfag=
+        b=TfFzf+08JQPY7FlOTw67wuP6tK7FUqUc8EwKgmM2ULzXwXwQ4o6VaoP+UjSxE5soV
+         kgGkK/WeAGP0ZeRYyCIfOGW3XD0JEQkPKDtRGq/Se9y/OIiOMsC611RmCna0kBhc6x
+         2jvJNw84ai9IXqYeL9+Tfn1RIpGcApL0aVXJ+RgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 27/55] arm64: dts: qcom: msm8994: Fix CPU6/7 reg values
-Date:   Mon, 11 Jul 2022 11:07:15 +0200
-Message-Id: <20220711090542.565896031@linuxfoundation.org>
+Subject: [PATCH 5.10 28/55] arm64: dts: imx8mp-evk: correct mmc pad settings
+Date:   Mon, 11 Jul 2022 11:07:16 +0200
+Message-Id: <20220711090542.595260718@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -50,43 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit 47bf59c4755930f616dd90c8c6a85f40a6d347ea ]
+[ Upstream commit 01785f1f156511c4f285786b4192245d4f476bf1 ]
 
-CPU6 and CPU7 were mistakengly pointing to CPU5 reg. Fix it.
+According to RM bit layout, BIT3 and BIT0 are reserved.
+  8  7   6   5   4   3  2 1  0
+ PE HYS PUE ODE FSEL X  DSE  X
 
-Fixes: 02d8091bbca0 ("arm64: dts: qcom: msm8994: Add a proper CPU map")
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220501184016.64138-1-konrad.dybcio@somainline.org
+Not set reserved bit.
+
+Fixes: 9e847693c6f3 ("arm64: dts: freescale: Add i.MX8MP EVK board support")
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 297408b947ff..aeb5762566e9 100644
---- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -92,7 +92,7 @@
- 		CPU6: cpu@102 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a57";
--			reg = <0x0 0x101>;
-+			reg = <0x0 0x102>;
- 			enable-method = "psci";
- 			next-level-cache = <&L2_1>;
- 		};
-@@ -100,7 +100,7 @@
- 		CPU7: cpu@103 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a57";
--			reg = <0x0 0x101>;
-+			reg = <0x0 0x103>;
- 			enable-method = "psci";
- 			next-level-cache = <&L2_1>;
- 		};
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
+index c13b4a02d12f..64f0455e14f8 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
+@@ -161,7 +161,7 @@
+ 
+ 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
+ 		fsl,pins = <
+-			MX8MP_IOMUXC_SD2_RESET_B__GPIO2_IO19	0x41
++			MX8MP_IOMUXC_SD2_RESET_B__GPIO2_IO19	0x40
+ 		>;
+ 	};
+ 
+@@ -180,7 +180,7 @@
+ 			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1	0x1d0
+ 			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2	0x1d0
+ 			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3	0x1d0
+-			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT	0xc1
++			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT	0xc0
+ 		>;
+ 	};
+ 
+@@ -192,7 +192,7 @@
+ 			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1	0x1d4
+ 			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2	0x1d4
+ 			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3	0x1d4
+-			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc1
++			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc0
+ 		>;
+ 	};
+ 
+@@ -204,7 +204,7 @@
+ 			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1	0x1d6
+ 			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2	0x1d6
+ 			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3	0x1d6
+-			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc1
++			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT 0xc0
+ 		>;
+ 	};
+ 
 -- 
 2.35.1
 
