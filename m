@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A362C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231174AbiGKRq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 13:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
+        id S231237AbiGKRrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 13:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiGKRqr (ORCPT
+        with ESMTP id S230036AbiGKRqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 13:46:47 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F98C509FC
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:46:45 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id o3-20020a17090a744300b001ef8f7f3dddso5622440pjk.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:46:45 -0700 (PDT)
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1272AC69
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:46:46 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id r6so2615522plg.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:46:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YDh5YVCvGcySEdAssqtNk1GISfqzMGhm55Nr/hwr5wA=;
-        b=VKrPvmFHCte+ybcIGCeHbEr1nkOxUZuXHYKbPyClalUQRnUtRYiQPMbKs7VFU5pv3t
-         6B9RbI7HZfr0cExKC2Rr5FauJpdROREDktC8bopXp7TPTlJEwMoeVAFKhN9eoVgdAMwt
-         hd/JZRe72ROYBr30l9ePQ+Xfdv2KDIAgo2BnVnbKgqAHmROaj3UtEwLbM3p5BVq96iKh
-         H3fhMZyE33b7pcdhLGxXWvb+RDAAlL1P+LqxNHgQaa0Fdi5snAYPZwfF2cTQlzAyAoav
-         YhO2ubCffUa8wv6OxVo/TDJCtKxpdsiXTteySTCA2Vtb3tKcq4y8w5ZkeGIgcPiGtsXL
-         nIAg==
+        bh=vOTmDUkpz+mPbUuokk0QP2W08wgjCdIdsM+mPgDGou0=;
+        b=V3fp0VSk9gvbvNZrW10f40Ews5n1xiSMtpJLcvEJcjL4jfDI8R2TfjOjLurvL4a4Kq
+         asHseIaY3FLyAeWFMiKkq0kSBrv5HX+CVWLg2bcTMK6rqrTNY9ZaT/VnugE9FK6xBpZx
+         gQcwByn7AW4Y130Y5S7itIxIX36fnfT0Oc4UMjhaMyVK0ugJ6+vJ2UipWRSj0sjWCUUm
+         Z5HiKKnYAQDZ7BDFqjV9T5OOyPNvMNnMg/dA0L+ND0cf8DCb1TuPQgSofpxZG3h543tu
+         4Ln4NjBamXgFyUsiOGtTQsVl8lFrvfSHHlVbqN6VXz2N2850DfkpvZqP/QihGroIj8lQ
+         clmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YDh5YVCvGcySEdAssqtNk1GISfqzMGhm55Nr/hwr5wA=;
-        b=jkxlB3qP88Uw1coO/sKJ+oAMN/0XAeDa73Yk6KUOrT5GmkhSa+VCW0HEG4Iy0b3u62
-         6DU9U0JZ7uc34MBqsZqVMENRSNDsuaRS/9gRtnM2TfnQU+bvspTBeAEF69nEVDSHI0KA
-         TlJjCwHYhj2K1W0X6sdoAJMmq+e31RlncZ7VNfvrOiAUDZxdwWLaZGC1DLxDroyG5/M5
-         4eeNfUH+IK9iqp1L2n+vxoTCTuLtmv94cpEyO9rjNRHIg2AmiqbANRLNhTzVaykg7K7L
-         n5yVIWd2f+vcDXgQ4KnW6ZLEOEM2zO9qMVpIaqTN3aNLCEcsCUEsQb5jO1Hoyag8uUkL
-         gHsg==
-X-Gm-Message-State: AJIora9M9khkaFzFX615BaNbZVQPfmX+kSaUNAsvt9czmBj3CwFoqd59
-        +pwGgSOGlfhbGj1ym1o9MCpzI/c6L0/MUw==
-X-Google-Smtp-Source: AGRyM1uUdg0luGzLmisAjzt01bCPhHy3/uI8TPvejk8VYxoPSmO1DV6ej9sDbjQtr8T/9tuzYcmaIQ==
-X-Received: by 2002:a17:903:2683:b0:16b:f38b:16df with SMTP id jf3-20020a170903268300b0016bf38b16dfmr19945118plb.94.1657561604692;
-        Mon, 11 Jul 2022 10:46:44 -0700 (PDT)
+        bh=vOTmDUkpz+mPbUuokk0QP2W08wgjCdIdsM+mPgDGou0=;
+        b=sskKLpwgiDI0jvbbDS1M6rFaJ0jOr+2DIT4wlA2/1+6xnyWGW0w2Af+W0zlIswk3ym
+         0xQph2pr5LZzGk1XgMQmpTGA4VVVRA9w7RlMOru6hkmRW2PLOEr5zcYZ26TcdmWDVB8q
+         UYMFsvIzsL0js/kK/tniFmIojcsCda4xZ/uZt2gvKLZRshKd17tJa/hbEatRNu98vTjo
+         qKmBjILOE7j0p6ix5I9e3iSfMp2wGQ+3G0x0IQAy3rnStGvl3lpJGPRoRk4wKHSehOFw
+         spsJxySQTJ1TdG6S86jPI5Qo9f3tMz238aUqo4PePhPWsbWAOUWsXWJ9YMPenZnFYa9l
+         TfIw==
+X-Gm-Message-State: AJIora8XqJKtfqp1AxhRi30rKkxPvb4uzWrv5+0XwAP4TgODoNAhy/sn
+        ejrreH0n31So4Sovz7d6TPWi6n9SDNqsaA==
+X-Google-Smtp-Source: AGRyM1sK7JtXLDkoMbF7C0EBnsfOqSTLfT/Hz3fUBzvyeiD8bJ+TTXzlwwJKP5VkY0rN4NQcrJVdZw==
+X-Received: by 2002:a17:902:ef4f:b0:16b:8744:6c5f with SMTP id e15-20020a170902ef4f00b0016b87446c5fmr20376864plx.60.1657561605667;
+        Mon, 11 Jul 2022 10:46:45 -0700 (PDT)
 Received: from atishp.ba.rivosinc.com ([66.220.2.162])
-        by smtp.gmail.com with ESMTPSA id p10-20020a170902780a00b0016be9fa6807sm3236866pll.284.2022.07.11.10.46.43
+        by smtp.gmail.com with ESMTPSA id p10-20020a170902780a00b0016be9fa6807sm3236866pll.284.2022.07.11.10.46.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 10:46:44 -0700 (PDT)
+        Mon, 11 Jul 2022 10:46:45 -0700 (PDT)
 From:   Atish Patra <atishp@rivosinc.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <anup@brainfault.org>,
         Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
         Atish Patra <atishp@atishpatra.org>,
         Guo Ren <guoren@kernel.org>, linux-riscv@lists.infradead.org,
         Mark Rutland <mark.rutland@arm.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Will Deacon <will@kernel.org>
-Subject: [v3  2/5] RISC-V: Update user page mapping only once during start
-Date:   Mon, 11 Jul 2022 10:46:29 -0700
-Message-Id: <20220711174632.4186047-3-atishp@rivosinc.com>
+Subject: [v3  3/5] RISC-V: Fix SBI PMU calls for RV32
+Date:   Mon, 11 Jul 2022 10:46:30 -0700
+Message-Id: <20220711174632.4186047-4-atishp@rivosinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220711174632.4186047-1-atishp@rivosinc.com>
 References: <20220711174632.4186047-1-atishp@rivosinc.com>
@@ -71,47 +71,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, riscv_pmu_event_set_period updates the userpage mapping.
-However, the caller of riscv_pmu_event_set_period should update
-the userpage mapping because the counter can not be updated/started
-from set_period function in counter overflow path.
+Some of the SBI PMU calls does not pass 64bit arguments
+correctly and not under RV32 compile time flags. Currently,
+this doesn't create any incorrect results as RV64 ignores
+any value in the additional register and qemu doesn't support
+raw events.
 
-Invoke the perf_event_update_userpage at the caller so that it
-doesn't get invoked twice during counter start path.
+Fix those SBI calls in order to set correct values for RV32.
 
-Fixes: f5bfa23f576f ("RISC-V: Add a perf core library for pmu drivers")
+Fixes: e9991434596f ("RISC-V: Add perf platform driver based on SBI PMU extension")
 
-Reviewed-by: Anup Patel <anup@brainfault.org>
 Signed-off-by: Atish Patra <atishp@rivosinc.com>
 ---
- drivers/perf/riscv_pmu.c     | 1 -
- drivers/perf/riscv_pmu_sbi.c | 1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ drivers/perf/riscv_pmu_sbi.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/perf/riscv_pmu.c b/drivers/perf/riscv_pmu.c
-index b2b8d2074ed0..130b9f1a40e0 100644
---- a/drivers/perf/riscv_pmu.c
-+++ b/drivers/perf/riscv_pmu.c
-@@ -170,7 +170,6 @@ int riscv_pmu_event_set_period(struct perf_event *event)
- 		left = (max_period >> 1);
- 
- 	local64_set(&hwc->prev_count, (u64)-left);
--	perf_event_update_userpage(event);
- 
- 	return overflow;
- }
 diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
-index 0cb694b794ae..3735337a4cfb 100644
+index 3735337a4cfb..bae614c73b14 100644
 --- a/drivers/perf/riscv_pmu_sbi.c
 +++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -532,6 +532,7 @@ static inline void pmu_sbi_start_overflow_mask(struct riscv_pmu *pmu,
- 			sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, idx, 1,
- 				  flag, init_val, 0, 0);
- #endif
-+			perf_event_update_userpage(event);
- 		}
- 		ctr_ovf_mask = ctr_ovf_mask >> 1;
- 		idx++;
+@@ -274,8 +274,13 @@ static int pmu_sbi_ctr_get_idx(struct perf_event *event)
+ 		cflags |= SBI_PMU_CFG_FLAG_SET_UINH;
+ 
+ 	/* retrieve the available counter index */
++#if defined(CONFIG_32BIT)
++	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
++			cflags, hwc->event_base, hwc->config, hwc->config >> 32);
++#else
+ 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
+ 			cflags, hwc->event_base, hwc->config, 0);
++#endif
+ 	if (ret.error) {
+ 		pr_debug("Not able to find a counter for event %lx config %llx\n",
+ 			hwc->event_base, hwc->config);
+@@ -417,8 +422,13 @@ static void pmu_sbi_ctr_start(struct perf_event *event, u64 ival)
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	unsigned long flag = SBI_PMU_START_FLAG_SET_INIT_VALUE;
+ 
++#if defined(CONFIG_32BIT)
+ 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
+ 			1, flag, ival, ival >> 32, 0);
++#else
++	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
++			1, flag, ival, 0, 0);
++#endif
+ 	if (ret.error && (ret.error != SBI_ERR_ALREADY_STARTED))
+ 		pr_err("Starting counter idx %d failed with error %d\n",
+ 			hwc->idx, sbi_err_map_linux_errno(ret.error));
 -- 
 2.25.1
 
