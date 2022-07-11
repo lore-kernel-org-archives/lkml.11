@@ -2,75 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E91C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 02:36:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F08C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 02:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbiGKCgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 22:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
+        id S229570AbiGKChM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 22:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiGKCgU (ORCPT
+        with ESMTP id S229463AbiGKChJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 22:36:20 -0400
-Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7951018382
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 19:36:18 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id FZV00112;
-        Mon, 11 Jul 2022 10:36:12 +0800
-Received: from localhost.localdomain (10.200.104.82) by
- jtjnmail201609.home.langchao.com (10.100.2.9) with Microsoft SMTP Server id
- 15.1.2507.9; Mon, 11 Jul 2022 10:36:12 +0800
-From:   Deming Wang <wangdeming@inspur.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Deming Wang <wangdeming@inspur.com>
-Subject: [PATCH] mm/gup: Fix the format of hugepte_addr_end and gup_hugepte
-Date:   Mon, 4 Jul 2022 08:34:58 -0400
-Message-ID: <20220704123458.14583-1-wangdeming@inspur.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 10 Jul 2022 22:37:09 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9104918382;
+        Sun, 10 Jul 2022 19:37:08 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id e132so3601816pgc.5;
+        Sun, 10 Jul 2022 19:37:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KYXBxETadIY8kHIH11CVmyV2r8MLGFf+pAjzRc0P/V0=;
+        b=LfFh5qDPxy0SOn0Isaw+jHnkYNCuCN617lNenJpB51pa2M5S+zOEUEkoODtJ5DDi7X
+         7MonAZt7ztiE5I/+rULZaFjkFRTaIH9fzSoTfRZgxLrRm8vvoiL4CLeZduQWE4KL+eu5
+         ow3NZVXgzK2k5gtd4hbwCPNQ6XZpMv5Ftdz28oNofG529n3NOasdSmJeTaJ4xadNY3Y2
+         Mmm58XXss7PYjxFLykxhO4x9p1c7yIrjHBs1x7sZLX3xQl4EYwp8T0p3ClEjtiCWeL/T
+         aRYkyzp0sbq+/s39u3AZ8biyY7EIZZiJaN4zi43MAlQ+Q5FTSIwCELlqVCgXOVwX580e
+         OWBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KYXBxETadIY8kHIH11CVmyV2r8MLGFf+pAjzRc0P/V0=;
+        b=eY60vk2zJsQUNP2H7g7wOyGsJspi1oz3G8WXqeNH9EiO9AlNFMoJGtwOs7HG2NDRNA
+         UL6MhZmaCPwka4gVxQpTEoTiSpbDz9qBXdgFcNcTefeMfEx93QM1H8/TEnvY+qwc4AHX
+         6DDhO3eZbzsknc0KcNACgmM5anBS27AETbaKZ1I77xxDGI4KWRXB+kyfCvyZQMaVdlkP
+         ldvUYnwdSqbZ9DaTj2QWenG8EUnT241k/OwjKmieWIM3heIhfKt4Nx0MucA4NUE7L4z8
+         tzChrOWLomUNJXh3hP4R42UW+NfKJM90glywNgm+N+loDNlFVkP7JJIVVWTanp1irXi8
+         7uCw==
+X-Gm-Message-State: AJIora8sdNOpYD76Ei010XpfEEK20Fns0RtFA6N6Z2zZIiA3PeR9AGti
+        5TfWmSuhpFOcEnnKw0GWaCeguncb++E=
+X-Google-Smtp-Source: AGRyM1s3jOZyBXcl7FpSAa4vlr0D6Xr/DWu4brEpCTOOs3EEwx+BOV6LRFnvaknMEht6NbxVM483ng==
+X-Received: by 2002:a05:6a00:2188:b0:50c:ef4d:ef3b with SMTP id h8-20020a056a00218800b0050cef4def3bmr16056377pfi.83.1657507027978;
+        Sun, 10 Jul 2022 19:37:07 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id i8-20020a17090a138800b001ecbd9aa1a7sm3487069pja.1.2022.07.10.19.37.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Jul 2022 19:37:07 -0700 (PDT)
+Message-ID: <1a33e931-0bf2-4eed-cc7f-718fb49f6bde@gmail.com>
+Date:   Sun, 10 Jul 2022 19:37:05 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.200.104.82]
-tUid:   20227111036121ff2bfb9d32b3b82230700b216496aed
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.1
+Subject: Re: [PATCH v1 10/33] thermal/drivers/broadcom: Switch to new of API
+Content-Language: en-US
+To:     Daniel Lezcano <daniel.lezcano@linexp.org>,
+        daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     rui.zhang@intel.com, khilman@baylibre.com, abailon@baylibre.com,
+        amitk@kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220710212423.681301-1-daniel.lezcano@linexp.org>
+ <20220710212423.681301-11-daniel.lezcano@linexp.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220710212423.681301-11-daniel.lezcano@linexp.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Operators should be separated by spaces.
 
-Signed-off-by: Deming Wang <wangdeming@inspur.com>
----
- mm/gup.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 0fa09ac3cf2f..2fd09f0820a4 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -2522,7 +2522,7 @@ static int record_subpages(struct page *page, unsigned long addr,
- static unsigned long hugepte_addr_end(unsigned long addr, unsigned long end,
- 				      unsigned long sz)
- {
--	unsigned long __boundary = (addr + sz) & ~(sz-1);
-+	unsigned long __boundary = (addr + sz) & ~(sz - 1);
- 	return (__boundary - 1 < end - 1) ? __boundary : end;
- }
- 
-@@ -2536,7 +2536,7 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
- 	pte_t pte;
- 	int refs;
- 
--	pte_end = (addr + sz) & ~(sz-1);
-+	pte_end = (addr + sz) & ~(sz - 1);
- 	if (pte_end < end)
- 		end = pte_end;
- 
--- 
-2.27.0
+On 7/10/2022 2:24 PM, Daniel Lezcano wrote:
+> The thermal OF code has a new API allowing to migrate the OF
+> initialization to a simpler approach.
+> 
+> Use this new API.
+> 
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+> ---
+>   drivers/thermal/broadcom/bcm2711_thermal.c | 14 +++---
+>   drivers/thermal/broadcom/brcmstb_thermal.c | 20 ++++-----
 
+For these two above:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+
+and for the whole patch:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Any chance we can keep the struct thermal_zone_device_ops const though?
+--
+Florian
