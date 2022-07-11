@@ -2,174 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099F7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A56E2CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232160AbiGKM4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58454 "EHLO
+        id S232171AbiGKM4q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231407AbiGKM4b (ORCPT
+        with ESMTP id S232168AbiGKM4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:56:31 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4629D2BB03;
-        Mon, 11 Jul 2022 05:56:30 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id v12so6096243edc.10;
-        Mon, 11 Jul 2022 05:56:30 -0700 (PDT)
+        Mon, 11 Jul 2022 08:56:41 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367E9545F9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:56:39 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id x17so3689728qkh.11
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:56:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=xqiYcac4kjvK9KyWMTADB4nPOj16J3aqFw3fSaQHU2s=;
-        b=D60vK179GfL0CW7TTo/zvY1tKnXlZu2QJzzeiLfRqaUgh25JFtFQofkIuXHheYhAxr
-         KMLa+MlvNT4HvMTldeqvMW5DgXtgoib54d4NmpdHqYn2XkSrhE57ZKl10sbEGe5f+GYa
-         NxvpY1rbnD/fL2VxCIRBXOxEsaWnGiHvRmx3XRgzeVJ/NYC+ETphc2FL69PEzd3cV9pb
-         7OTi/hEXw9HO6RjXUGXevRcUH8N7uTkt/zv+RiQ08tpJ4zZi7s/FP/6DOtuyq5I7nBkk
-         7KbpDNBVuMz/kZ3Klyz8FixO0fmCnQLSzftsqJtMKfgfHKf6cF9cAJULxA+Z4nW6A2VN
-         1HVA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qDlFrz82XEV559hOxt/9KTdlawVN8UslB7cohDHmlKk=;
+        b=UGSIMFUIAjpBDWVNaLdfMacUu/FNYeJA/ajTQGHLFVW1PsgSlI9Msf9I4lRCrO4oxg
+         MlKNe8vitsaANDx5V1aZOKDe/FWJY7FMqnNo2WffF1BccvyuXYl0ljDiBtm2U7M6p3PY
+         Uv6g75BblWi8jZL/vU86KL/R82HQqpyHViaSMpPHCBJFy1tw3ImPFZr6Yhur5MNRpgwx
+         jFIln7OmJlAOp7lwI93AmGcIS24/HH1k+lh4t849Ktm3RgI36SgPSqrnNVX9MMJfU0MR
+         buHhUDsCZt9JXZ/j0aPHgaVGgj6y5cleY3xopEwmEd7PinxpbD6BNU+IuP+rvRCK9SvE
+         N2yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=xqiYcac4kjvK9KyWMTADB4nPOj16J3aqFw3fSaQHU2s=;
-        b=p0ivP0sFk+HGIs3+I1oNVNCikh/87ao2DOdcLZZwC/82QHWG3MTM5z6PD/6Oz/GzCi
-         YB4if66I9ib2p52s3dl6jsrBXKd1aQUl9QG6Eru4xZfIEuoZkHcu9JZAyMBSzeiwKXj/
-         7L5VHNXWwreYEs/intToyGncFS/Fn3tnN/srA3Sju0X04O6oX1THHBConj0npBXXNB3b
-         sxsSLhQ/AHdn0KpImCD62WcRSa0Y5jJI5QfeKVmMoCe1p9N9v8LZDs8c4r/9dP5NwOpo
-         e7tJjgRy9IZ6XGKax2MTmRs/o1ZSHyRwEsk0RSLV3fWQ9T0BOiUuu1GjNkUAMMocdp2Z
-         pdbQ==
-X-Gm-Message-State: AJIora9WJfn2VwpDuzqLQBvAP2ihqxXl7DNqMcSpr4vg0TllgoGAyp1b
-        r+Gu/gDoUpGXLbR/bdFRsDY=
-X-Google-Smtp-Source: AGRyM1steBmZK6pUZ6poaeHbH2Prq62ZvS22AqIXf7JWoPHh3Nn0MSJ+kSf6usvWedT/aZc27UKgaw==
-X-Received: by 2002:a05:6402:11d3:b0:43a:c43b:7ff9 with SMTP id j19-20020a05640211d300b0043ac43b7ff9mr15254891edw.130.1657544188835;
-        Mon, 11 Jul 2022 05:56:28 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c093:600::1:ac34])
-        by smtp.gmail.com with ESMTPSA id j11-20020a50ed0b000000b0043a6b86f024sm4250111eds.67.2022.07.11.05.56.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 05:56:28 -0700 (PDT)
-Message-ID: <0f54508f-e819-e367-84c2-7aa0d7767097@gmail.com>
-Date:   Mon, 11 Jul 2022 13:56:03 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qDlFrz82XEV559hOxt/9KTdlawVN8UslB7cohDHmlKk=;
+        b=fLROPMrFEEkqw8VEParxLARM3LF8QATIyUKIcWh3+DAEZVSKgsYItPUb6rOAK4lyCi
+         Y9GSMqQD7hc7kkE7bS3xfCOc0rj9govgOk9JvBbNvI8qZqmb9nxtwFI/1t95mGSYYHYx
+         44n4NIrmrBMnMs4jtXr8wAKFsIrk11Iq/xxVPHXiT/puOuHTdOnk+JsbAWoqCsLgL8wp
+         v2efbzynJkSO4zdYFSQRVVbRS3zZYe3Oq/quKE4/sc49e3FtamF5o5pLLfMWRmgMyEfw
+         FITGT4p14176OSZaOvEwwpeg12szVR6ihOOcSHUxuN7siPU+PTVAUQJK5Tr2tLfArRzA
+         9W4A==
+X-Gm-Message-State: AJIora+JpRk1P0mF9PemUSyqCodhIzqDL4MCuJv9IvWZO1OxMx07xGRN
+        tuSQPf9cLIn3cSBvffW8FcZal5JPW8Njz4Sgs9b8DA==
+X-Google-Smtp-Source: AGRyM1vyiLG3J4nejZR7X7psv05VMDKCUlQ7HErJz+5Ve+FWvo6yHgHVMzjp++8/sc8+P4BwkHsNGjkuwjt/BeRFF1Y=
+X-Received: by 2002:a05:620a:288c:b0:6b3:9d1:dbf1 with SMTP id
+ j12-20020a05620a288c00b006b309d1dbf1mr10943389qkp.593.1657544198360; Mon, 11
+ Jul 2022 05:56:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v4 00/27] io_uring zerocopy send
-Content-Language: en-US
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     David Ahern <dsahern@kernel.org>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1657194434.git.asml.silence@gmail.com>
- <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
- <bd9960ab-c9d8-8e5d-c347-8049cdf5708a@gmail.com>
-In-Reply-To: <bd9960ab-c9d8-8e5d-c347-8049cdf5708a@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220711104719.40939-1-robimarko@gmail.com> <20220711104719.40939-6-robimarko@gmail.com>
+ <CAA8EJppAdwuXQsvvy9+hT_-mzke5xOaDcTSM5ewjS_cPk3Q+oA@mail.gmail.com> <CAOX2RU6FMyzGGpnLtzRy=szjBSE+wcvbs+6z6ChZ5Z6g4-9Baw@mail.gmail.com>
+In-Reply-To: <CAOX2RU6FMyzGGpnLtzRy=szjBSE+wcvbs+6z6ChZ5Z6g4-9Baw@mail.gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Mon, 11 Jul 2022 15:56:27 +0300
+Message-ID: <CAA8EJpr=_ezgyQcLhfuswtkoRCr+kxxwqkaTYHMxCJ1xm7_avw@mail.gmail.com>
+Subject: Re: [PATCH 6/6] clk: qcom: apss-ipq-pll: add support for IPQ8074
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, sivaprak@codeaurora.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-clk@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/8/22 15:26, Pavel Begunkov wrote:
-> On 7/8/22 05:10, David Ahern wrote:
->> On 7/7/22 5:49 AM, Pavel Begunkov wrote:
->>> NOTE: Not be picked directly. After getting necessary acks, I'll be working
->>>        out merging with Jakub and Jens.
->>>
->>> The patchset implements io_uring zerocopy send. It works with both registered
->>> and normal buffers, mixing is allowed but not recommended. Apart from usual
->>> request completions, just as with MSG_ZEROCOPY, io_uring separately notifies
->>> the userspace when buffers are freed and can be reused (see API design below),
->>> which is delivered into io_uring's Completion Queue. Those "buffer-free"
->>> notifications are not necessarily per request, but the userspace has control
->>> over it and should explicitly attaching a number of requests to a single
->>> notification. The series also adds some internal optimisations when used with
->>> registered buffers like removing page referencing.
->>>
->>>  From the kernel networking perspective there are two main changes. The first
->>> one is passing ubuf_info into the network layer from io_uring (inside of an
->>> in kernel struct msghdr). This allows extra optimisations, e.g. ubuf_info
->>> caching on the io_uring side, but also helps to avoid cross-referencing
->>> and synchronisation problems. The second part is an optional optimisation
->>> removing page referencing for requests with registered buffers.
->>>
->>> Benchmarking with an optimised version of the selftest (see [1]), which sends
->>> a bunch of requests, waits for completions and repeats. "+ flush" column posts
->>> one additional "buffer-free" notification per request, and just "zc" doesn't
->>> post buffer notifications at all.
->>>
->>> NIC (requests / second):
->>> IO size | non-zc    | zc             | zc + flush
->>> 4000    | 495134    | 606420 (+22%)  | 558971 (+12%)
->>> 1500    | 551808    | 577116 (+4.5%) | 565803 (+2.5%)
->>> 1000    | 584677    | 592088 (+1.2%) | 560885 (-4%)
->>> 600     | 596292    | 598550 (+0.4%) | 555366 (-6.7%)
->>>
->>> dummy (requests / second):
->>> IO size | non-zc    | zc             | zc + flush
->>> 8000    | 1299916   | 2396600 (+84%) | 2224219 (+71%)
->>> 4000    | 1869230   | 2344146 (+25%) | 2170069 (+16%)
->>> 1200    | 2071617   | 2361960 (+14%) | 2203052 (+6%)
->>> 600     | 2106794   | 2381527 (+13%) | 2195295 (+4%)
->>>
->>> Previously it also brought a massive performance speedup compared to the
->>> msg_zerocopy tool (see [3]), which is probably not super interesting.
->>>
->>
->> can you add a comment that the above results are for UDP.
-> 
-> Oh, right, forgot to add it
-> 
-> 
->> You dropped comments about TCP testing; any progress there? If not, can
->> you relay any issues you are hitting?
-> 
-> Not really a problem, but for me it's bottle necked at NIC bandwidth
-> (~3GB/s) for both zc and non-zc and doesn't even nearly saturate a CPU.
-> Was actually benchmarked by my colleague quite a while ago, but can't
-> find numbers. Probably need to at least add localhost numbers or grab
-> a better server.
+On Mon, 11 Jul 2022 at 15:55, Robert Marko <robimarko@gmail.com> wrote:
+>
+> On Mon, 11 Jul 2022 at 14:51, Dmitry Baryshkov
+> <dmitry.baryshkov@linaro.org> wrote:
+> >
+> > On Mon, 11 Jul 2022 at 14:22, Robert Marko <robimarko@gmail.com> wrote:
+> > >
+> > > Add support for IPQ8074 since it uses the same PLL setup, however it does
+> > > not require the Alpha PLL to be reconfigured.
+> > >
+> > > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> > > ---
+> > >  drivers/clk/qcom/apss-ipq-pll.c | 5 ++++-
+> > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/clk/qcom/apss-ipq-pll.c b/drivers/clk/qcom/apss-ipq-pll.c
+> > > index bef7899ad0d6..acfb3ec4f142 100644
+> > > --- a/drivers/clk/qcom/apss-ipq-pll.c
+> > > +++ b/drivers/clk/qcom/apss-ipq-pll.c
+> > > @@ -55,6 +55,7 @@ static const struct regmap_config ipq_pll_regmap_config = {
+> > >  static int apss_ipq_pll_probe(struct platform_device *pdev)
+> > >  {
+> > >         struct device *dev = &pdev->dev;
+> > > +       struct device_node *node = dev->of_node;
+> > >         struct regmap *regmap;
+> > >         void __iomem *base;
+> > >         int ret;
+> > > @@ -67,7 +68,8 @@ static int apss_ipq_pll_probe(struct platform_device *pdev)
+> > >         if (IS_ERR(regmap))
+> > >                 return PTR_ERR(regmap);
+> > >
+> > > -       clk_alpha_pll_configure(&ipq_pll, regmap, &ipq_pll_config);
+> > > +       if (of_device_is_compatible(node, "qcom,ipq6018-a53pll"))
+> > > +               clk_alpha_pll_configure(&ipq_pll, regmap, &ipq_pll_config);
+> >
+> > I'd suggest having the 8074 config here too. It seems logical to me to
+> > make sure that the pll is configured correctly.
+>
+> Hi,
+>
+> I have reworked the driver to use match data so it can be easily provided,
+> However, I dont have it as the downstream QCA kernel does not
+> reconfigure the PLL, unlike IPQ6018.
+> I can probably read the registers from a running board and provide that?
 
-Testing localhost TCP with a hack (see below), it doesn't include
-refcounting optimisations I was testing UDP with and that will be
-sent afterwards. Numbers are in MB/s
+Yes, please try that.
 
-IO size | non-zc    | zc
-1200    | 4174      | 4148
-4096    | 7597      | 11228
-
-Because it's localhost, we also spend cycles here for the recv side.
-Using a real NIC 1200 bytes, zc is worse than non-zc ~5-10%, maybe the
-omitted optimisations will somewhat help. I don't consider it to be a
-blocker. but would be interesting to poke into later. One thing helping
-non-zc is that it squeezes a number of requests into a single page
-whenever zerocopy adds a new frag for every request.
-
-Can't say anything new for larger payloads, I'm still NIC-bound but
-looking at CPU utilisation zc doesn't drain as much cycles as non-zc.
-Also, I don't remember if mentioned before, but another catch is that
-with TCP it expects users to not be flushing notifications too much,
-because it forces it to allocate a new skb and lose a good chunk of
-benefits from using TCP.
+>
+> Regards,
+> Robert
+> >
+> > >
+> > >         ret = devm_clk_register_regmap(dev, &ipq_pll.clkr);
+> > >         if (ret)
+> > > @@ -79,6 +81,7 @@ static int apss_ipq_pll_probe(struct platform_device *pdev)
+> > >
+> > >  static const struct of_device_id apss_ipq_pll_match_table[] = {
+> > >         { .compatible = "qcom,ipq6018-a53pll" },
+> > > +       { .compatible = "qcom,ipq8074-a53pll" },
+> > >         { }
+> > >  };
+> > >  MODULE_DEVICE_TABLE(of, apss_ipq_pll_match_table);
+> > > --
+> > > 2.36.1
+> > >
+> >
+> >
+> > --
+> > With best wishes
+> > Dmitry
 
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1111adefd906..c4b781b2c3b1 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3218,9 +3218,7 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
-  /* Frags must be orphaned, even if refcounted, if skb might loop to rx path */
-  static inline int skb_orphan_frags_rx(struct sk_buff *skb, gfp_t gfp_mask)
-  {
--	if (likely(!skb_zcopy(skb)))
--		return 0;
--	return skb_copy_ubufs(skb, gfp_mask);
-+	return skb_orphan_frags(skb, gfp_mask);
-  }
 
 -- 
-Pavel Begunkov
+With best wishes
+Dmitry
