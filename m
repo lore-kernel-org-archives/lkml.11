@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EB5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbiGKJSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S231761AbiGKJSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231712AbiGKJSB (ORCPT
+        with ESMTP id S231728AbiGKJSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:18:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3C511C2C;
-        Mon, 11 Jul 2022 02:11:39 -0700 (PDT)
+        Mon, 11 Jul 2022 05:18:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4816E4B48F;
+        Mon, 11 Jul 2022 02:11:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 774DFB80D2C;
-        Mon, 11 Jul 2022 09:11:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE929C34115;
-        Mon, 11 Jul 2022 09:11:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8277E611E4;
+        Mon, 11 Jul 2022 09:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9058CC34115;
+        Mon, 11 Jul 2022 09:11:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530696;
-        bh=ZG3Rwy9JP7agOxmwR8S1bH1vQXy48ESdKQsRF6M9y7c=;
+        s=korg; t=1657530698;
+        bh=8xduzV9XPwv+MRJJNBuvjbGKAF/YIl6fxiUCeWx2Z4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vqeyddb/008She3tovImfeaz7cjO8Cp0fH6UbsDJnGmKhEmdBiPeIeHCjU1gEN212
-         4fa7NjQa4WZEynegkXHbdQWG0NPBKP9M+ZEceNMh0a7crofylRseWwIy094hDWYuuC
-         sZfo4htBXrCYXkCV6SbnzXH0TeE+8VhFyi40HXNc=
+        b=Fh7gVxJaKGoyx5oFIMmrO/RRfOk35vvtT+KYJ4ISeHh3GydNhqDJNnwsDe84ASsTL
+         5hSA18gWoVakZH92AJqoFEl32kss0fLjnUooxw/nKssCNvFUrwQrLHQM4QwQRxINDp
+         4Jnqbcu+WmQzKngrtA3D9IsJ4qwkc1shB2VhHDHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Satish Nagireddy <satish.nagireddy@getcruise.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@amd.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 28/38] i2c: cadence: Unregister the clk notifier in error path
-Date:   Mon, 11 Jul 2022 11:07:10 +0200
-Message-Id: <20220711090539.558704008@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 19/38] ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
+Date:   Mon, 11 Jul 2022 11:07:01 +0200
+Message-Id: <20220711090539.299572813@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -51,35 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Satish Nagireddy <satish.nagireddy@getcruise.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3501f0c663063513ad604fb1b3f06af637d3396d ]
+[ Upstream commit 34d2cd3fccced12b958b8848e3eff0ee4296764c ]
 
-This patch ensures that the clock notifier is unregistered
-when driver probe is returning error.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: df8eb5691c48 ("i2c: Add driver for Cadence I2C controller")
-Signed-off-by: Satish Nagireddy <satish.nagireddy@getcruise.com>
-Tested-by: Lars-Peter Clausen <lars@metafoo.de>
-Reviewed-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: d850f3e5d296 ("ARM: meson: Add SMP bringup code for Meson8 and Meson8b")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220512021611.47921-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-meson/platsmp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 8a3a0991bc1c..3a1bdc75275f 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -985,6 +985,7 @@ static int cdns_i2c_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/arch/arm/mach-meson/platsmp.c b/arch/arm/mach-meson/platsmp.c
+index 4b8ad728bb42..32ac60b89fdc 100644
+--- a/arch/arm/mach-meson/platsmp.c
++++ b/arch/arm/mach-meson/platsmp.c
+@@ -71,6 +71,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ 	}
  
- err_clk_dis:
-+	clk_notifier_unregister(id->clk, &id->clk_rate_change_nb);
- 	clk_disable_unprepare(id->clk);
- 	pm_runtime_set_suspended(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
+ 	sram_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!sram_base) {
+ 		pr_err("Couldn't map SRAM registers\n");
+ 		return;
+@@ -91,6 +92,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ 	}
+ 
+ 	scu_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!scu_base) {
+ 		pr_err("Couldn't map SCU registers\n");
+ 		return;
 -- 
 2.35.1
 
