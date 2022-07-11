@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE744C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbiGKJNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
+        id S229780AbiGKJNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231373AbiGKJMo (ORCPT
+        with ESMTP id S229953AbiGKJMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:12:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F472C11F;
-        Mon, 11 Jul 2022 02:09:27 -0700 (PDT)
+        Mon, 11 Jul 2022 05:12:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A962C64E;
+        Mon, 11 Jul 2022 02:09:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A008611CD;
-        Mon, 11 Jul 2022 09:09:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37ADAC34115;
-        Mon, 11 Jul 2022 09:09:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2063C61148;
+        Mon, 11 Jul 2022 09:09:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A30C34115;
+        Mon, 11 Jul 2022 09:09:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530566;
-        bh=Pzmd/zN1nIln9o0WDMVsAXhhz3zAUCufCzsOSJga0K8=;
+        s=korg; t=1657530569;
+        bh=y6X5oj2du+G17bRly/PCr2Z1anJaJ8LV5xkD5Zj3fhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jw0oS8WU511GRW3LlC++u8fWHpKeOAypOnAM8WphvwIrfDYQ+ajSVg/oyI+kmbtf2
-         sQs87o9wlaGTVaVYRfh+k28ACK7CQuSyBX4ly4CT3b7jfTKKcmjiZFSUDBx6CiPo/+
-         L8uxPRRnxYl1q2FCbQ3y6yxcQmVfNUbLmj8Z8YMQ=
+        b=E5sJ0Og32y7HHfyHfIFi1gwZ8efYLh5pnxBZzm0j9D338qQ9kD9UZEPyVDoRhQ63F
+         P33WyS5FbCIC43FkcQgviogdU+VafhPCudGJ/DERHNIDMC3ihYG7kcSytGJ4ovb+jV
+         u3BPd9khRYQM1MpSHZEhBtAb8LkdYJTMPiuFW+Qw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.19 31/31] dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
-Date:   Mon, 11 Jul 2022 11:07:10 +0200
-Message-Id: <20220711090538.765377355@linuxfoundation.org>
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 16/31] ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
+Date:   Mon, 11 Jul 2022 11:06:55 +0200
+Message-Id: <20220711090538.328749213@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090537.841305347@linuxfoundation.org>
 References: <20220711090537.841305347@linuxfoundation.org>
@@ -51,53 +52,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 615a4bfc426e11dba05c2cf343f9ac752fb381d2 upstream.
+[ Upstream commit 34d2cd3fccced12b958b8848e3eff0ee4296764c ]
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it when not need anymore.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
+Fixes: d850f3e5d296 ("ARM: meson: Add SMP bringup code for Meson8 and Meson8b")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Link: https://lore.kernel.org/r/20220605042723.17668-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220512021611.47921-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/ti/dma-crossbar.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/mach-meson/platsmp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/dma/ti/dma-crossbar.c
-+++ b/drivers/dma/ti/dma-crossbar.c
-@@ -251,6 +251,7 @@ static void *ti_dra7_xbar_route_allocate
- 	if (dma_spec->args[0] >= xbar->xbar_requests) {
- 		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
- 			dma_spec->args[0]);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-EINVAL);
+diff --git a/arch/arm/mach-meson/platsmp.c b/arch/arm/mach-meson/platsmp.c
+index cad7ee8f0d6b..75e16a2c3c81 100644
+--- a/arch/arm/mach-meson/platsmp.c
++++ b/arch/arm/mach-meson/platsmp.c
+@@ -81,6 +81,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
  	}
  
-@@ -258,12 +259,14 @@ static void *ti_dra7_xbar_route_allocate
- 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
- 	if (!dma_spec->np) {
- 		dev_err(&pdev->dev, "Can't get DMA master\n");
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-EINVAL);
+ 	sram_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!sram_base) {
+ 		pr_err("Couldn't map SRAM registers\n");
+ 		return;
+@@ -101,6 +102,7 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
  	}
  
- 	map = kzalloc(sizeof(*map), GFP_KERNEL);
- 	if (!map) {
- 		of_node_put(dma_spec->np);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-@@ -275,6 +278,7 @@ static void *ti_dra7_xbar_route_allocate
- 		dev_err(&pdev->dev, "Run out of free DMA requests\n");
- 		kfree(map);
- 		of_node_put(dma_spec->np);
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENOMEM);
- 	}
- 	set_bit(map->xbar_out, xbar->dma_inuse);
+ 	scu_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!scu_base) {
+ 		pr_err("Couldn't map SCU registers\n");
+ 		return;
+-- 
+2.35.1
+
 
 
