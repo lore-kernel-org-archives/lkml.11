@@ -2,204 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE76C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233692AbiGKJwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
+        id S233959AbiGKJxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233828AbiGKJwC (ORCPT
+        with ESMTP id S233878AbiGKJwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:52:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71455ACEFD;
-        Mon, 11 Jul 2022 02:25:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A88D761137;
-        Mon, 11 Jul 2022 09:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B22F2C341CB;
-        Mon, 11 Jul 2022 09:25:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531513;
-        bh=V8hUALuVDDRIHZZs372a4TXfodfvKv8TCg8jcpNNJ58=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E5KgUxLh9WgcuTf/zEdGWVhO3hAe82Q/mAT88Knz7RrgzePwqeVY0pNJIOI4S7xTQ
-         QM/Qr+eb2aF2wcLTLDEGXikO8Ju64K8YZ2NhgnJQScan59WlH5ut0MnfkLzKSQ96Ke
-         dmH2cZaeaR+9pX4CbTTMoTf3LUD+niqDq34Re4J4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Yang <Eric.Yang2@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Michael Strauss <michael.strauss@amd.com>,
-        Daniel Wheeler <Daniel.Wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 092/230] drm/amd/display: Set min dcfclk if pipe count is 0
-Date:   Mon, 11 Jul 2022 11:05:48 +0200
-Message-Id: <20220711090606.682264786@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
-References: <20220711090604.055883544@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 11 Jul 2022 05:52:25 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95E303AB0E;
+        Mon, 11 Jul 2022 02:25:15 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37F3315BF;
+        Mon, 11 Jul 2022 02:25:15 -0700 (PDT)
+Received: from [10.163.45.183] (unknown [10.163.45.183])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53DC93F73D;
+        Mon, 11 Jul 2022 02:25:12 -0700 (PDT)
+Message-ID: <d03e334a-ec7e-cd87-7f0b-ac7564266d3a@arm.com>
+Date:   Mon, 11 Jul 2022 14:55:12 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] perf/core: Add macros for possible
+ sysctl_perf_event_paranoid values
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>,
+        James Clark <james.clark@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-perf-users@vger.kernel.org
+References: <20220701063949.1769434-1-anshuman.khandual@arm.com>
+ <b9da8d22-6896-68a3-b4e5-e8fd7b82b711@arm.com>
+ <Ysgxzxl0N7+J8Vbt@worktop.programming.kicks-ass.net>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <Ysgxzxl0N7+J8Vbt@worktop.programming.kicks-ass.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Strauss <michael.strauss@amd.com>
-
-[ Upstream commit bc204778b4032b336cb3bde85bea852d79e7e389 ]
-
-[WHY]
-Clocks don't get recalculated in 0 stream/0 pipe configs,
-blocking S0i3 if dcfclk gets high enough
-
-[HOW]
-Create DCN31 copy of DCN30 bandwidth validation func which
-doesn't entirely skip validation in 0 pipe scenarios
-
-Override dcfclk to vlevel 0/min value during validation if pipe
-count is 0
-
-Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
-Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Signed-off-by: Michael Strauss <michael.strauss@amd.com>
-Tested-by: Daniel Wheeler <Daniel.Wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../drm/amd/display/dc/dcn30/dcn30_resource.c |  2 +-
- .../drm/amd/display/dc/dcn30/dcn30_resource.h |  7 +++
- .../drm/amd/display/dc/dcn31/dcn31_resource.c | 63 ++++++++++++++++++-
- 3 files changed, 70 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
-index 0294d0cc4759..735c92a5aa36 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
-@@ -1856,7 +1856,7 @@ static struct pipe_ctx *dcn30_find_split_pipe(
- 	return pipe;
- }
- 
--static noinline bool dcn30_internal_validate_bw(
-+noinline bool dcn30_internal_validate_bw(
- 		struct dc *dc,
- 		struct dc_state *context,
- 		display_e2e_pipe_params_st *pipes,
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h
-index b754b89beadf..b92e4cc0232f 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h
-+++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.h
-@@ -55,6 +55,13 @@ unsigned int dcn30_calc_max_scaled_time(
- 
- bool dcn30_validate_bandwidth(struct dc *dc, struct dc_state *context,
- 		bool fast_validate);
-+bool dcn30_internal_validate_bw(
-+		struct dc *dc,
-+		struct dc_state *context,
-+		display_e2e_pipe_params_st *pipes,
-+		int *pipe_cnt_out,
-+		int *vlevel_out,
-+		bool fast_validate);
- void dcn30_calculate_wm_and_dlg(
- 		struct dc *dc, struct dc_state *context,
- 		display_e2e_pipe_params_st *pipes,
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-index b60ab3cc0f11..7aadb35a3079 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-@@ -1664,6 +1664,15 @@ static void dcn31_calculate_wm_and_dlg_fp(
- 	if (context->bw_ctx.dml.soc.min_dcfclk > dcfclk)
- 		dcfclk = context->bw_ctx.dml.soc.min_dcfclk;
- 
-+	/* We don't recalculate clocks for 0 pipe configs, which can block
-+	 * S0i3 as high clocks will block low power states
-+	 * Override any clocks that can block S0i3 to min here
-+	 */
-+	if (pipe_cnt == 0) {
-+		context->bw_ctx.bw.dcn.clk.dcfclk_khz = dcfclk; // always should be vlevel 0
-+		return;
-+	}
-+
- 	pipes[0].clks_cfg.voltage = vlevel;
- 	pipes[0].clks_cfg.dcfclk_mhz = dcfclk;
- 	pipes[0].clks_cfg.socclk_mhz = context->bw_ctx.dml.soc.clock_limits[vlevel].socclk_mhz;
-@@ -1789,6 +1798,58 @@ static void dcn31_calculate_wm_and_dlg(
- 	DC_FP_END();
- }
- 
-+bool dcn31_validate_bandwidth(struct dc *dc,
-+		struct dc_state *context,
-+		bool fast_validate)
-+{
-+	bool out = false;
-+
-+	BW_VAL_TRACE_SETUP();
-+
-+	int vlevel = 0;
-+	int pipe_cnt = 0;
-+	display_e2e_pipe_params_st *pipes = kzalloc(dc->res_pool->pipe_count * sizeof(display_e2e_pipe_params_st), GFP_KERNEL);
-+	DC_LOGGER_INIT(dc->ctx->logger);
-+
-+	BW_VAL_TRACE_COUNT();
-+
-+	out = dcn30_internal_validate_bw(dc, context, pipes, &pipe_cnt, &vlevel, fast_validate);
-+
-+	// Disable fast_validate to set min dcfclk in alculate_wm_and_dlg
-+	if (pipe_cnt == 0)
-+		fast_validate = false;
-+
-+	if (!out)
-+		goto validate_fail;
-+
-+	BW_VAL_TRACE_END_VOLTAGE_LEVEL();
-+
-+	if (fast_validate) {
-+		BW_VAL_TRACE_SKIP(fast);
-+		goto validate_out;
-+	}
-+
-+	dc->res_pool->funcs->calculate_wm_and_dlg(dc, context, pipes, pipe_cnt, vlevel);
-+
-+	BW_VAL_TRACE_END_WATERMARKS();
-+
-+	goto validate_out;
-+
-+validate_fail:
-+	DC_LOG_WARNING("Mode Validation Warning: %s failed alidation.\n",
-+		dml_get_status_message(context->bw_ctx.dml.vba.ValidationStatus[context->bw_ctx.dml.vba.soc.num_states]));
-+
-+	BW_VAL_TRACE_SKIP(fail);
-+	out = false;
-+
-+validate_out:
-+	kfree(pipes);
-+
-+	BW_VAL_TRACE_FINISH();
-+
-+	return out;
-+}
-+
- static struct dc_cap_funcs cap_funcs = {
- 	.get_dcc_compression_cap = dcn20_get_dcc_compression_cap
- };
-@@ -1871,7 +1932,7 @@ static struct resource_funcs dcn31_res_pool_funcs = {
- 	.link_encs_assign = link_enc_cfg_link_encs_assign,
- 	.link_enc_unassign = link_enc_cfg_link_enc_unassign,
- 	.panel_cntl_create = dcn31_panel_cntl_create,
--	.validate_bandwidth = dcn30_validate_bandwidth,
-+	.validate_bandwidth = dcn31_validate_bandwidth,
- 	.calculate_wm_and_dlg = dcn31_calculate_wm_and_dlg,
- 	.update_soc_for_wm_a = dcn31_update_soc_for_wm_a,
- 	.populate_dml_pipes = dcn31_populate_dml_pipes_from_context,
--- 
-2.35.1
 
 
+On 7/8/22 19:01, Peter Zijlstra wrote:
+> On Fri, Jul 08, 2022 at 10:10:15AM +0100, James Clark wrote:
+>>
+>>
+>> On 01/07/2022 07:39, Anshuman Khandual wrote:
+>>> sysctl_perf_event_paranoid can have values from [-1, 0, 1, 2] which decides
+>>> on perf event restrictions for unprivileged users. But using them directly
+>>> makes it difficult to correlate exact restriction level they might impose.
+>>> This just adds macros for those numerical restriction values, making them
+>>> clear and improving readability.
+>>>
+>>> Cc: Peter Zijlstra <peterz@infradead.org>
+>>> Cc: Ingo Molnar <mingo@redhat.com>
+>>> Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+>>> Cc: Mark Rutland <mark.rutland@arm.com>
+>>> Cc: linux-perf-users@vger.kernel.org
+>>> Cc: linux-kernel@vger.kernel.org
+>>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>>> ---
+>>>  include/linux/perf_event.h | 22 ++++++++++++++++++----
+>>>  kernel/events/core.c       |  9 +--------
+>>>  kernel/kallsyms.c          |  3 ++-
+>>>  3 files changed, 21 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+>>> index da759560eec5..78156b9154df 100644
+>>> --- a/include/linux/perf_event.h
+>>> +++ b/include/linux/perf_event.h
+>>> @@ -1359,14 +1359,28 @@ int perf_event_max_stack_handler(struct ctl_table *table, int write,
+>>>  #define PERF_SECURITY_KERNEL		2
+>>>  #define PERF_SECURITY_TRACEPOINT	3
+>>>  
+>>> +/*
+>>> + * perf event paranoia level:
+>>> + *  -1 - not paranoid at all
+>>> + *   0 - disallow raw tracepoint access for unpriv
+>>> + *   1 - disallow cpu events for unpriv
+>>> + *   2 - disallow kernel profiling for unpriv
+>>> + */
+>>> +enum {
+>>> +	PERF_EVENT_DISALLOW_NONE	= -1,
+>>> +	PERF_EVENT_DISALLOW_TRACE,
+>>> +	PERF_EVENT_DISALLOW_CPU,
+>>> +	PERF_EVENT_DISALLOW_KERNEL
+>>> +};
+>>> +
+>>>  static inline int perf_is_paranoid(void)
+>>>  {
+>>> -	return sysctl_perf_event_paranoid > -1;
+>>> +	return sysctl_perf_event_paranoid > PERF_EVENT_DISALLOW_NONE;
+>>>  }
+>>>  
+>>
+>> Hi Anshuman,
+>>
+>> There are quite a few other instances of integers left in the tools code.
+>> If you search for perf_event_paranoid_check() and perf_event_paranoid()
+>> you will find them.
+>>
+>> I'm also wondering if it makes sense to return your new enum from all of
+>> the helper functions instead of an int and make it explicit that it's
+>> an instance of this new type? Although the compiler doesn't seem to warn
+>> about using integers so maybe it's not worth doing this.
+> 
+> so I don't see the point of all this; it's already wrapped in these
+> helper functions that have a descriptive name, why do we need more muck
+> on top?
 
+Enumerating [-1, 0, 1, 2] paranoid range values in kernel too, does not add
+much value as well ?
