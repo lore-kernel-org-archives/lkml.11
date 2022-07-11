@@ -2,311 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 931E6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BC3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbiGKWn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 18:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
+        id S229838AbiGKWsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 18:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbiGKWnx (ORCPT
+        with ESMTP id S229476AbiGKWr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 18:43:53 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A573206D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:43:52 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id r6so3241333plg.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:43:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yYIT4+JM9WjxzEKuVUw9xKwWpXL5bdh0tMvz2dYew/Q=;
-        b=UyunWXv4VEh8X/Ly622zEpTk0dS8yXYDVIHDP0gNLt3pgrRut7Dw6DCTIVIFsGyqRe
-         YuOk0xfTslV6WFp2YqFpM56Wm/sVrwjVdoXdTxe+QAxKwCj2dg6etcS6R06WJpA5+onM
-         X9LkVyXwoMq7ywuA3mKQp4HLthPPahPPwBn7/dDAmexGcFMss7HIiwK2J3qnqxMWi4bw
-         3bCD7k/PhPHpy6EUgXeac1DaXODcRGKnOjAdujuZnwoPttKHbxtezXgH5QuZRil+Augl
-         CrlNafLwSDsajPbrmzqIHg1gpyLWKHKOWZtSYRE0NJnQIi/cLv55EpDYXFEzj4DoszLR
-         goUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yYIT4+JM9WjxzEKuVUw9xKwWpXL5bdh0tMvz2dYew/Q=;
-        b=wSCOPqSLa4GQHJ2rtUN8VDDvrXMRL1Kwt57MKHMzJ/aK5FA7Z3Vt4Nvl6pcJUYNx0V
-         ZibKHwJ8t2e2KoLQIls5CJoraiLcIFX6AUb4H3HwUtq10Ax0mbVWhV6Gt8JHL608mtpu
-         8joLbSkF4NyYBF3dWVknCuBqoFsarR+eY+iDr1lxcg2ME4NmxL7KeCoHYDIzIFVOyWNc
-         vYgLjeEPEnfA0lAnuqd9I/aNDrlQsW4rnWukSFuWNQHN/OtgHHNWcJuD9MrvyLYYGQJA
-         l3D8Ts3o++A6JU1MKMYAR76VuvuL8+fzw2xeh7cNIVUaA1OivRanl9e69rEdRa+inNbb
-         7G0A==
-X-Gm-Message-State: AJIora+l0TQZ71MM1zaHJF0OJJ+IkV39lsv6ccqWVxH3IlCV7Pl3VlXV
-        fw79EELOSdZQnYXzekd/zeSTcQ==
-X-Google-Smtp-Source: AGRyM1vVN5RURJcRMZ2Tuwg7h//I5HmL/+RuSIUJuF7/v5XjO0+4xaCWMmb5vz0+LvdQ6mdHY8yRBg==
-X-Received: by 2002:a17:90a:fb8d:b0:1ef:8d22:35e with SMTP id cp13-20020a17090afb8d00b001ef8d22035emr649801pjb.229.1657579431565;
-        Mon, 11 Jul 2022 15:43:51 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id k1-20020a170902694100b0016a79b69f91sm5258935plt.26.2022.07.11.15.43.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 15:43:51 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 22:43:47 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paul Durrant <pdurrant@amazon.com>
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH v5] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info)
- sub-leaves, if present
-Message-ID: <YsynoyUb4zrMBhRU@google.com>
-References: <20220629130514.15780-1-pdurrant@amazon.com>
+        Mon, 11 Jul 2022 18:47:58 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AD11DA5B;
+        Mon, 11 Jul 2022 15:47:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=sVb8qI+Iy0WZdlOU+oxerSlvClQzfHKYxHE8YXk9e58=; b=rsrFIyjxmoIi1JK7GwRQ1fbpvN
+        nUfUOVKJ3rU7R707zHlbNUoEsmiWftZmgkmrV6tX4GwdOzPzy2j+eCWsyTHfsi3q5W6zwMlTAENCi
+        VMk0FDemCYS9Gj2vGHdMXFXw7oicN2djBNdOPmYBGcaKbiGvgy0JF821yMubcAd49uA0iPzV6+URj
+        Idp4jOqwqLqiHs32Q9VuKHinvX2+ybg65PYFvmGlakqpSZ6GpmmAapxfrV5VkuCMoYz0tEzu6CwcH
+        chXd7b5H9D7T9TiezBR/rzNCliG8fOY6WD/3OJYNmeMdFzMiQbT3bh/H7MWfN0YI3fc1BKiqpLzoy
+        iGJ2ZsFw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oB2Bf-006Lxj-SB; Mon, 11 Jul 2022 22:47:31 +0000
+Date:   Mon, 11 Jul 2022 23:47:31 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     ira.weiny@intel.com
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        "Li, Ming" <ming4.li@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V13.1] PCI/DOE: Add DOE mailbox support functions
+Message-ID: <Ysyog0OFUu+5MIxT@casper.infradead.org>
+References: <20220705154932.2141021-4-ira.weiny@intel.com>
+ <20220711222748.470340-1-ira.weiny@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220629130514.15780-1-pdurrant@amazon.com>
+In-Reply-To: <20220711222748.470340-1-ira.weiny@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022, Paul Durrant wrote:
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 88a3026ee163..abb0a39f60eb 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -638,6 +638,7 @@ struct kvm_vcpu_xen {
->  	struct hrtimer timer;
->  	int poll_evtchn;
->  	struct timer_list poll_timer;
-> +	u32 cpuid_tsc_info;
+On Mon, Jul 11, 2022 at 03:27:48PM -0700, ira.weiny@intel.com wrote:
+> +/**
+> + * struct pci_doe_mb - State for a single DOE mailbox
+> + *
+> + * This state is used to manage a single DOE mailbox capability.  All fields
+> + * should be considered opaque to the consumers and the structure passed into
+> + * the helpers below after being created by devm_pci_doe_create()
+> + *
+> + * @pdev: PCI device this mailbox belongs to
+> + * @cap_offset: Capability offset
+> + * @prots: Array of protocols supported (encoded as long values)
+> + * @wq: Wait queue for work item
+> + * @work_queue: Queue of pci_doe_work items
+> + * @flags: Bit array of PCI_DOE_FLAG_* flags
+> + *
+> + * Note: @prots can't be allocated with struct size because the number of
+> + * protocols is not known until after this structure is in use.  However, the
+> + * single discovery protocol is always required to query for the number of
+> + * protocols.
+> + */
 
-I would prefer to follow vcpu->arch.kvm_cpuid_base and capture the base CPUID
-function.  I have a hard time believing this will be the only case where KVM needs
-to query XEN CPUID leafs.  And cpuid_tsc_info is a confusing name given the helper
-kvm_xen_setup_tsc_info(); it's odd to see a "setup" helper immediately consume a
-variable with the same name.
+Can you add at least stub documentation in Documentation/PCI/doe.rst
+and include the kernel-doc from both pci-doe.c and pci-doe.h?
 
-It'll incur another CPUID lookup in the update path to check the limit, but again
-that should be a rare operation so it doesn't seem too onerous.
-
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 031678eff28e..29ed665c51db 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -3110,6 +3110,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
->  				   &vcpu->hv_clock.tsc_shift,
->  				   &vcpu->hv_clock.tsc_to_system_mul);
->  		vcpu->hw_tsc_khz = tgt_tsc_khz;
-> +		kvm_xen_setup_tsc_info(v);
-
-Any objection to s/setup/update?  KVM Xen uses "setup" for things like configuring
-the event channel using userspace input, whereas this is purely updating existing
-data structures.
-
->  	}
->  
->  	vcpu->hv_clock.tsc_timestamp = tsc_timestamp;
-> diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
-> index 610beba35907..c84424d5c8b6 100644
-> --- a/arch/x86/kvm/xen.c
-> +++ b/arch/x86/kvm/xen.c
-> @@ -10,6 +10,9 @@
->  #include "xen.h"
->  #include "hyperv.h"
->  #include "lapic.h"
-> +#include "cpuid.h"
-> +
-> +#include <asm/xen/cpuid.h>
->  
->  #include <linux/eventfd.h>
->  #include <linux/kvm_host.h>
-> @@ -1855,3 +1858,51 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
->  	if (kvm->arch.xen_hvm_config.msr)
->  		static_branch_slow_dec_deferred(&kvm_xen_enabled);
->  }
-> +
-> +void kvm_xen_after_set_cpuid(struct kvm_vcpu *vcpu)
+> +static int pci_doe_abort(struct pci_doe_mb *doe_mb)
 > +{
-> +	u32 base = 0;
-> +	u32 limit;
-> +	u32 function;
+> +	struct pci_dev *pdev = doe_mb->pdev;
+> +	int offset = doe_mb->cap_offset;
+> +	unsigned long timeout_jiffies;
 > +
-> +	vcpu->arch.xen.cpuid_tsc_info = 0;
-> +
-> +	for_each_possible_hypervisor_cpuid_base(function) {
-> +		struct kvm_cpuid_entry2 *entry = kvm_find_cpuid_entry(vcpu, function, 0);
-> +
-> +		if (entry &&
-> +		    entry->ebx == XEN_CPUID_SIGNATURE_EBX &&
-> +		    entry->ecx == XEN_CPUID_SIGNATURE_ECX &&
-> +		    entry->edx == XEN_CPUID_SIGNATURE_EDX) {
-> +			base = function;
-> +			limit = entry->eax;
-> +			break;
-> +		}
-> +	}
-> +	if (!base)
-> +		return;
+> +	pci_dbg(pdev, "[%x] Issuing Abort\n", offset);
 
-Rather than open code a variant of kvm_update_kvm_cpuid_base(), that helper can
-be tweaked to take a signature.  Along with a patch to provide a #define for Xen's
-signature as a string, this entire function becomes a one-liner.
-
-If the below looks ok (won't compile, needs prep patches), I'll test and post a
-proper mini-series.
-
----
- arch/x86/include/asm/kvm_host.h |  1 +
- arch/x86/kvm/cpuid.c            |  2 ++
- arch/x86/kvm/x86.c              |  1 +
- arch/x86/kvm/xen.c              | 30 ++++++++++++++++++++++++++++++
- arch/x86/kvm/xen.h              | 22 +++++++++++++++++++++-
- 5 files changed, 55 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index de5a149d0971..b2565d05fc86 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -638,6 +638,7 @@ struct kvm_vcpu_xen {
- 	struct hrtimer timer;
- 	int poll_evtchn;
- 	struct timer_list poll_timer;
-+	u32 cpuid_base;
- };
-
- struct kvm_vcpu_arch {
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 0abe3adc9ae3..54ed51799b8d 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -25,6 +25,7 @@
- #include "mmu.h"
- #include "trace.h"
- #include "pmu.h"
-+#include "xen.h"
-
- /*
-  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
-@@ -309,6 +310,7 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 	    __cr4_reserved_bits(guest_cpuid_has, vcpu);
-
- 	kvm_hv_set_cpuid(vcpu);
-+	kvm_xen_after_set_cpuid(vcpu);
-
- 	/* Invoke the vendor callback only after the above state is updated. */
- 	static_call(kvm_x86_vcpu_after_set_cpuid)(vcpu);
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 567d13405445..a624293c66c8 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3110,6 +3110,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
- 				   &vcpu->hv_clock.tsc_shift,
- 				   &vcpu->hv_clock.tsc_to_system_mul);
- 		vcpu->hw_tsc_khz = tgt_tsc_khz;
-+		kvm_xen_update_tsc_info(v);
- 	}
-
- 	vcpu->hv_clock.tsc_timestamp = tsc_timestamp;
-diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
-index 610beba35907..3fc0c194b813 100644
---- a/arch/x86/kvm/xen.c
-+++ b/arch/x86/kvm/xen.c
-@@ -10,6 +10,9 @@
- #include "xen.h"
- #include "hyperv.h"
- #include "lapic.h"
-+#include "cpuid.h"
-+
-+#include <asm/xen/cpuid.h>
-
- #include <linux/eventfd.h>
- #include <linux/kvm_host.h>
-@@ -1855,3 +1858,30 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
- 	if (kvm->arch.xen_hvm_config.msr)
- 		static_branch_slow_dec_deferred(&kvm_xen_enabled);
- }
-+
-+void kvm_xen_update_tsc_info(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_cpuid_entry2 *entry;
-+	u32 function;
-+
-+	if (!vcpu->arch.xen.cpuid_base)
-+		return;
-+
-+	entry = kvm_find_cpuid_entry(vcpu, vcpu->arch.xen.cpuid_base, 0);
-+	if (WARN_ON_ONCE(!entry))
-+		return;
-+
-+	function = vcpu->arch.xen.cpuid_base | XEN_CPUID_LEAF(3);
-+	if (function > entry->eax)
-+		return;
-+
-+	entry = kvm_find_cpuid_entry(vcpu, function, 1);
-+	if (entry) {
-+		entry->ecx = vcpu->arch.hv_clock.tsc_to_system_mul;
-+		entry->edx = vcpu->arch.hv_clock.tsc_shift;
-+	}
-+
-+	entry = kvm_find_cpuid_entry(vcpu, function, 2);
-+	if (entry)
-+		entry->eax = vcpu->arch.hw_tsc_khz;
-+}
-diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
-index 532a535a9e99..b8161b99b82a 100644
---- a/arch/x86/kvm/xen.h
-+++ b/arch/x86/kvm/xen.h
-@@ -9,9 +9,14 @@
- #ifndef __ARCH_X86_KVM_XEN_H__
- #define __ARCH_X86_KVM_XEN_H__
-
--#ifdef CONFIG_KVM_XEN
- #include <linux/jump_label_ratelimit.h>
-
-+#include <asm/xen/cpuid.h>
-+
-+#include "cpuid.h"
-+
-+#ifdef CONFIG_KVM_XEN
-+
- extern struct static_key_false_deferred kvm_xen_enabled;
-
- int __kvm_xen_has_interrupt(struct kvm_vcpu *vcpu);
-@@ -32,6 +37,13 @@ int kvm_xen_set_evtchn_fast(struct kvm_xen_evtchn *xe,
- int kvm_xen_setup_evtchn(struct kvm *kvm,
- 			 struct kvm_kernel_irq_routing_entry *e,
- 			 const struct kvm_irq_routing_entry *ue);
-+void kvm_xen_update_tsc_info(struct kvm_vcpu *vcpu);
-+
-+static inline void kvm_xen_after_set_cpuid(struct kvm_vcpu *vcpu)
-+{
-+	vcpu->arch.xen.cpuid_base =
-+		kvm_get_hypervisor_cpuid_base(vcpu, XEN_CPUID_SIGNATURE);
-+}
-
- static inline bool kvm_xen_msr_enabled(struct kvm *kvm)
- {
-@@ -135,6 +147,14 @@ static inline bool kvm_xen_timer_enabled(struct kvm_vcpu *vcpu)
- {
- 	return false;
- }
-+
-+static inline void kvm_xen_after_set_cpuid(struct kvm_vcpu *vcpu)
-+{
-+}
-+
-+static inline void kvm_xen_update_tsc_info(struct kvm_vcpu *vcpu)
-+{
-+}
- #endif
-
- int kvm_xen_hypercall(struct kvm_vcpu *vcpu);
-
-base-commit: b08b2f54c49d8f96a22107c444d500dff73ec2a6
---
+"Issuing DOE abort", perhaps?
 
