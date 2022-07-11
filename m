@@ -2,69 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DF3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232052AbiGKPAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
+        id S232024AbiGKPAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231931AbiGKPAA (ORCPT
+        with ESMTP id S232080AbiGKPAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:00:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635F967C9A;
-        Mon, 11 Jul 2022 07:59:27 -0700 (PDT)
+        Mon, 11 Jul 2022 11:00:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A357696F;
+        Mon, 11 Jul 2022 07:59:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA8C1B80FD4;
-        Mon, 11 Jul 2022 14:59:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB573C341C8;
-        Mon, 11 Jul 2022 14:59:23 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PZIa/k5w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1657551562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mxP/vEZ3Mr3qqDMMF3zIXJpuCmFeAsuQEXwXxV8Yffs=;
-        b=PZIa/k5wzyfIGju7PrzrizUwDtF5IVd9x9c/ABTM3Z/kHGHzu33q1x0jX60CQ5q5qCVGTi
-        skihAGqu92TU+ZJM2f7FgoVyMBT2YW/m9K8r1SSiC/s7FlviTqpcVCNhqjkLjv/v68jqvX
-        1YDOmZXWUfiLDHgb7mkU/mpFaklcqCk=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 085561c8 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 11 Jul 2022 14:59:21 +0000 (UTC)
-Date:   Mon, 11 Jul 2022 16:59:18 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 2/2] crypto: make the sha1 library optional
-Message-ID: <Ysw6xiuLmV4NuGsf@zx2c4.com>
-References: <20220709211849.210850-1-ebiggers@kernel.org>
- <20220709211849.210850-3-ebiggers@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9B5A61582;
+        Mon, 11 Jul 2022 14:59:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA62C34115;
+        Mon, 11 Jul 2022 14:59:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657551583;
+        bh=dxZGKngfKO1Un0ysAWdBwrkK8xmIWeIei9M7jEZdOHg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NGwk1jTuNGOtpzHLQ7/aldklQ4LAtQOSBbU+hNaaRFVKhRQBPEbIk14EDNRiubnXH
+         xc5ETYEeLmrbgkdEvLWPOVDBqn4kQpo9dUqZ2AuuGDBHBRuoV406k9kaI+KN867EdD
+         v/fMt8rcjQfkhnMy87zktIzILzf4T8zZtfCNwx7AuGJHfKvon8lXc+aR4cZqHbDV1M
+         M4ibjcxGLSNTqO1IDyudF9xbDd8hzsv4weSah2mk5lUhSYe4/RPJr/QeJIGZ+fp1xV
+         ocVMh/BCEFRW5dnbOmvsL8yvd9baP8OKXmjc9+jQE4YxWr/9w8Smsdqn/zf+5+szQ8
+         60nlq1Rbh9q7A==
+Date:   Mon, 11 Jul 2022 08:59:39 -0600
+From:   Keith Busch <kbusch@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Jens Axboe <axboe@kernel.dk>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@lst.de>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Subject: Re: Block: bio.c:1232:6: error: variable 'i' is used uninitialized
+ whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
+Message-ID: <Ysw627zSWSrEzrUZ@kbusch-mbp>
+References: <CA+G9fYtDr=tqPmM6f9aGQOfqkxUo-yP-kHBQG787D0Cj6oO-dg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220709211849.210850-3-ebiggers@kernel.org>
+In-Reply-To: <CA+G9fYtDr=tqPmM6f9aGQOfqkxUo-yP-kHBQG787D0Cj6oO-dg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 02:18:49PM -0700, Eric Biggers wrote:
-> From: Eric Biggers <ebiggers@google.com>
+On Mon, Jul 11, 2022 at 06:14:10PM +0530, Naresh Kamboju wrote:
+> Following regression found with clang i386 and x86 builds failed on
+> Linux next-20220711 tag. Please find the build error logs.
 > 
-> Since the Linux RNG no longer uses sha1_transform(), the SHA-1 library
-> is no longer needed unconditionally.  Make it possible to build the
-> Linux kernel without the SHA-1 library by putting it behind a kconfig
-> option, and selecting this new option from the kconfig options that gate
-> the remaining users: CRYPTO_SHA1 for crypto/sha1_generic.c, BPF for
-> kernel/bpf/core.c, and IPV6 for net/ipv6/addrconf.c.
-> 
-> Unfortunately, since BPF is selected by NET, for now this can only make
-> a difference for kernels built without networking support.
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
 
-Seems like a step in the right direction, thanks.
-
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Sorry, I needed to send a v2 of this patch. I didn't realize this was already
+merged (it doesn't appear in the block tree), though, so I'm not sure if I need
+send a fixup patch or the correct version now.
