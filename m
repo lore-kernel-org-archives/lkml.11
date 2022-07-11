@@ -2,111 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B78CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbiGKUbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
+        id S230241AbiGKUbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231727AbiGKUbC (ORCPT
+        with ESMTP id S232096AbiGKUbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:31:02 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97428E4C4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:28:53 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id p4so3659721wms.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:28:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3FYWLbFVIQR/VTDlKfK3KSN2+LTj7T2uVBiUoRPvBIo=;
-        b=N/SQpLi6+icPZLn38OToJuJjCZR+Upi3JsxZ2N2fCXyc8dfg12m+8g7Ys174O5H7Jh
-         GOXRoYGxEcz0x7Ui6aOjYeilzoDYvBeoMPnX87jF/YZRVQ5bw+Qrbn3W9JLivCrej9kW
-         U1/3tInIy4og8FAU/J+Ph8UxBXkdYhnlIp+VPclte0hCgYPPlJtdE6HL+fAhg4yZwl3w
-         Eu+wvIjKo+wgRD3ouhuPrW8sQRKwqTeli1pbmoF2xVqObsbXPOYC669Wsoq+dLFGjfIv
-         czFhba+KEK61c/DyBmXZzkn6jrkp5aEMHYImO/B9N/y7klgZB9KoJID5K0bPxHgh2TWn
-         D/wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3FYWLbFVIQR/VTDlKfK3KSN2+LTj7T2uVBiUoRPvBIo=;
-        b=06jAlVTJpUv4Lc0r8SQ1K5wsJSUVBCoYLhGD2cds4CHuS+MOfmDhP5Yr6LdPFgXphq
-         xP92szzQOwNVeIQxKEGXYrNsnGSHmAOddZU5YXy4puqf9EmGnAKaHmMj77xYvvbobhKM
-         FYiDYlaP9403nk70d/5U+u+c7kYLldXCZZTSlf+MFVGPscp3a55ET3vASYPkJdG7URID
-         7dV6ESJaSF1GGSGAcabSZ0MjT+EioS5X3/AVfPJQkpdDz7LVJAGCIn51DTXmx5YvMnnN
-         HY7twBoIZ25hUz3IzgRn3mxZSQLCAkXbVZso73pA4u+udVk9g2xoyMHEMVHbvulHZDjJ
-         7Ubw==
-X-Gm-Message-State: AJIora8/Sa8X0Ys7ae9cCNrcXxmOBSSBZwlU7roui2uDkbsboVX816n7
-        AMPBRVMtM/Q5HJ3EcSSxml3EW3PCcY9atw==
-X-Google-Smtp-Source: AGRyM1s/eAWJhE/CU/qLO+2sCXi61cTuiVovpFhSRnn6bA2/Ysn59YVIPeib9CFMCdlaIHjnRIVhsw==
-X-Received: by 2002:a05:600c:6004:b0:3a0:41db:aae with SMTP id az4-20020a05600c600400b003a041db0aaemr123120wmb.171.1657571331361;
-        Mon, 11 Jul 2022 13:28:51 -0700 (PDT)
-Received: from C02FT09GML7L.mynet ([2a01:4b00:87fe:f600:ac48:7ee1:86bb:5471])
-        by smtp.gmail.com with ESMTPSA id u3-20020a5d6da3000000b0021d66cf9547sm8269159wrs.0.2022.07.11.13.28.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Jul 2022 13:28:50 -0700 (PDT)
-From:   William Lam <william.lam@bytedance.com>
-Cc:     William Lam <william.lam@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] mm: compaction: include compound page count for scanning in pageblock isolation
-Date:   Mon, 11 Jul 2022 21:28:06 +0100
-Message-Id: <20220711202806.22296-1-william.lam@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Mon, 11 Jul 2022 16:31:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74D0187357
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:29:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657571390;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YA3t12kUx6TRUZ4J3klDSw0cDfONNOfIRji5CEtBg00=;
+        b=aSVQYCDgOqRXoI5BMjM5mED/Ng3eYSdShmHZPYEI/VgIBbmQX9eOJbfSMUmF1mDruGCGFP
+        dM1Fr1TCC109ulsuaznUFvOQksntF1tBFEn/5xVSYqSpuYoTxYmeibFrdo+NRtxd8WZhHd
+        O6o0ACNR/SRn3YnFiq57o/W/3/B3TSQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611-tGj4wBT0OT2vJjeuLyCFEA-1; Mon, 11 Jul 2022 16:29:47 -0400
+X-MC-Unique: tGj4wBT0OT2vJjeuLyCFEA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C4310101E985;
+        Mon, 11 Jul 2022 20:29:46 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 810D92166B26;
+        Mon, 11 Jul 2022 20:29:46 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 26BKTkAL005368;
+        Mon, 11 Jul 2022 16:29:46 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 26BKTjIX005364;
+        Mon, 11 Jul 2022 16:29:45 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Mon, 11 Jul 2022 16:29:45 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     Yu Kuai <yukuai1@huaweicloud.com>,
+        Mike Snitzer <msnitzer@redhat.com>
+cc:     agk@redhat.com, dm-devel@redhat.com, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yi.zhang@huawei.com
+Subject: Re: [PATCH] dm writecache: fix inaccurate reads/writes stats
+In-Reply-To: <20220706093146.1961598-1-yukuai1@huaweicloud.com>
+Message-ID: <alpine.LRH.2.02.2207111627260.5249@file01.intranet.prod.int.rdu2.redhat.com>
+References: <20220706093146.1961598-1-yukuai1@huaweicloud.com>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The number of scanned pages can be lower than the number of isolated
-pages when isolating mirgratable or free pageblock. The metric is being
-reported in trace event and also used in vmstat.
 
-This behaviour is confusing since currently the count for isolated pages
-takes account of compound page but not for the case of scanned pages.
-And given that the number of isolated pages(nr_taken) reported in
-mm_compaction_isolate_template trace event is on a single-page basis,
-the ambiguity when reporting the number of scanned pages can be removed
-by also including compound page count.
 
-Signed-off-by: William Lam <william.lam@bytedance.com>
----
- mm/compaction.c | 3 +++
- 1 file changed, 3 insertions(+)
+On Wed, 6 Jul 2022, Yu Kuai wrote:
 
-diff --git a/mm/compaction.c b/mm/compaction.c
-index 1f89b969c12b..1b51cf2d32b6 100644
---- a/mm/compaction.c
-+++ b/mm/compaction.c
-@@ -616,6 +616,7 @@ static unsigned long isolate_freepages_block(struct compact_control *cc,
- 			break;
- 		set_page_private(page, order);
- 
-+		nr_scanned += isolated - 1;
- 		total_isolated += isolated;
- 		cc->nr_freepages += isolated;
- 		list_add_tail(&page->lru, freelist);
-@@ -1101,6 +1102,7 @@ isolate_migratepages_block(struct compact_control *cc, unsigned long low_pfn,
- isolate_success_no_list:
- 		cc->nr_migratepages += compound_nr(page);
- 		nr_isolated += compound_nr(page);
-+		nr_scanned += compound_nr(page) - 1;
- 
- 		/*
- 		 * Avoid isolating too much unless this block is being
-@@ -1504,6 +1506,7 @@ fast_isolate_freepages(struct compact_control *cc)
- 			if (__isolate_free_page(page, order)) {
- 				set_page_private(page, order);
- 				nr_isolated = 1 << order;
-+				nr_scanned += nr_isolated - 1;
- 				cc->nr_freepages += nr_isolated;
- 				list_add_tail(&page->lru, &cc->freepages);
- 				count_compact_events(COMPACTISOLATED, nr_isolated);
--- 
-2.30.1 (Apple Git-130)
+> From: Yu Kuai <yukuai3@huawei.com>
+> 
+> Test procedures:
+> 
+> 1) format a dm writecache device with 4k blocksize.
+> 2) flush cache.
+> 3) cache 1G data through write.
+> 4) clear stats.
+> 5) read 2G data with bs=1m.
+> 6) read stats.
+> 
+> Expected result:
+> cache hit ratio is 50%.
+> 
+> Test result:
+> stats: 0, 1011345, 749201, 0, 263168, 262144, 0, 0, 0, 0, 0, 0, 0, 0
+> ratio is 99% (262144/263168)
+
+Hi
+
+Here I'm providing patches that change the dm-writecache counting from 
+requests to blocks.
+
+Mike, you can queue them for the next merge window.
+
+Mikulas
 
