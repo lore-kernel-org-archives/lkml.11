@@ -2,138 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 777BBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDD0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231204AbiGKRJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 13:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        id S230467AbiGKRMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 13:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiGKRJj (ORCPT
+        with ESMTP id S229477AbiGKRMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 13:09:39 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C18BE23BFF
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:09:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EEF7D16A3;
-        Mon, 11 Jul 2022 10:09:37 -0700 (PDT)
-Received: from ewhatever.cambridge.arm.com (ewhatever.cambridge.arm.com [10.1.197.1])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 718003F792;
-        Mon, 11 Jul 2022 10:09:36 -0700 (PDT)
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-To:     gregkh@linuxfoundation.org
-Cc:     mathieu.poirier@linaro.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, coresight@lists.linaro.org,
-        mike.leach@linaro.org, leo.yan@linaro.org,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: [GIT PULL] CoreSight changes for v5.20
-Date:   Mon, 11 Jul 2022 18:08:53 +0100
-Message-Id: <20220711170853.1136768-1-suzuki.poulose@arm.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 11 Jul 2022 13:12:50 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5297A33A29;
+        Mon, 11 Jul 2022 10:12:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657559569; x=1689095569;
+  h=from:to:cc:subject:date:message-id;
+  bh=Dva4WD3WS7cRqxq4sX7WSyArXpzF6zN4DWCsUqcI9bY=;
+  b=hzwuE+fhPnnIQy2ZeA9OwnXWztRCQd9huvdJkh0fddHr96pdF1/GKOXC
+   w8mY+fX14Vl2hleLC53ddYMqi87ovAUG2H9vj9CxK5mg+n9Snn/GucK1A
+   9wec7qMEpeNYD738x6aTGihrgOQz5xfrhAcKkHOfL1QBX4Xl5RFTjDmqj
+   51xDh6ZQaswVAgcggwTKvj7VNFycbYFNZcjGZupA4yHefPZfftTShvrMt
+   +EX9iiAlKz4fhwlX2f1WiulzPmP5oCCYrMEOqMvjYdgaFgwWBrdi0IRkg
+   oesG+aGrgo4sz7aj7061CCmjXxYC9jiu4i0Pf36xCaZNFCsfZPtLItciz
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="348697916"
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="348697916"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 10:12:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="652544221"
+Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
+  by fmsmga008.fm.intel.com with ESMTP; 11 Jul 2022 10:12:48 -0700
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+To:     linux-kselftest@vger.kernel.org, shuah@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@suse.de,
+        chang.seok.bae@intel.com
+Subject: [PATCH v2 0/2] selftests/x86: AMX-related test improvements
+Date:   Mon, 11 Jul 2022 10:03:28 -0700
+Message-Id: <20220711170330.27138-1-chang.seok.bae@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Sorry for the delay in this update.
 
-Please find the CoreSight updates for v5.20 below. Kindly consider pulling.
+Changes from v1:
+* Improve the skip message along with the changelog massage (Suah Khan).
+* Simplify the feature support check (Suah Khan).
 
-Thanks
-	Suzuki
+=== Cover Letter ===
+
+A couple of test updates are included:
+
+* With the STRICT_SIGALTSTACK_SIZE option [1,2], the kernel's altstack
+  check becomes stringent. The x86 sigaltstack test is ignorant about this.
+  Adjust the test now. This check was established [3] to ensure every AMX
+  task's altstack is sufficient (regardless of that option) [4].
+
+* The AMX test wrongly fails on non-AMX machines. Fix the code to skip the
+  test instead.
+
+The series is available in this repository:
+  git://github.com/intel/amx-linux.git selftest
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/Kconfig#n2432
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt#n5676
+[3] 3aac3ebea08f ("x86/signal: Implement sigaltstack size validation")
+[4] 4b7ca609a33d ("x86/signal: Use fpu::__state_user_size for sigalt stack validation")
+
+Chang S. Bae (2):
+  selftests/x86/signal: Adjust the test to the kernel's altstack check
+  selftests/x86/amx: Fix the test to avoid failure when AMX is
+    unavailable
+
+ tools/testing/selftests/x86/amx.c         | 31 ++++++++---------------
+ tools/testing/selftests/x86/sigaltstack.c | 14 +++++++++-
+ 2 files changed, 23 insertions(+), 22 deletions(-)
 
 
+base-commit: 32346491ddf24599decca06190ebca03ff9de7f8
+-- 
+2.17.1
 
-The following changes since commit a111daf0c53ae91e71fd2bfe7497862d14132e3e:
-
-  Linux 5.19-rc3 (2022-06-19 15:06:47 -0500)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/coresight/linux.git  tags/coresight-next-v5.20
-
-for you to fetch changes up to 4d45bc82df667ad9e9cb8361830e54fc1264e993:
-
-  coresight: etm4x: avoid build failure with unrolled loops (2022-07-11 09:22:35 +0100)
-
-----------------------------------------------------------------
-CoreSight self-hosted tracing changes for v5.20.
-
- - Fixes LOCKDEP warnings on module unload with configfs
- - Conversion of DT bindings to DT schema
- - Branch broadcast support for perf cs_etm
- - Etm4x driver fixes for build failures with Clang and unrolled loops
-
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-
-----------------------------------------------------------------
-Bagas Sanjaya (1):
-      Documentation: coresight: Escape coresight bindings file wildcard
-
-James Clark (4):
-      coresight: Add config flag to enable branch broadcast
-      Documentation: coresight: Turn numbered subsections into real subsections
-      Documentation: coresight: Link config options to existing documentation
-      Documentation: coresight: Expand branch broadcast documentation
-
-Mike Leach (2):
-      coresight: configfs: Fix unload of configurations on module exit
-      coresight: syscfg: Update load and unload operations
-
-Nick Desaulniers (1):
-      coresight: etm4x: avoid build failure with unrolled loops
-
-Rob Herring (3):
-      dt-bindings: arm: Rename Coresight filenames to match compatible
-      dt-bindings: arm: Convert CoreSight bindings to DT schema
-      dt-bindings: arm: Convert CoreSight CPU debug to DT schema
-
-Suzuki K Poulose (1):
-      coresight: Clear the connection field properly
-
- .../bindings/arm/arm,coresight-catu.yaml           | 101 ++++++
- .../bindings/arm/arm,coresight-cpu-debug.yaml      |  81 +++++
- .../{coresight-cti.yaml => arm,coresight-cti.yaml} |   5 +-
- .../bindings/arm/arm,coresight-dynamic-funnel.yaml | 126 +++++++
- .../arm/arm,coresight-dynamic-replicator.yaml      | 126 +++++++
- .../bindings/arm/arm,coresight-etb10.yaml          |  92 +++++
- .../devicetree/bindings/arm/arm,coresight-etm.yaml | 156 ++++++++
- .../bindings/arm/arm,coresight-static-funnel.yaml  |  90 +++++
- .../arm/arm,coresight-static-replicator.yaml       |  91 +++++
- .../devicetree/bindings/arm/arm,coresight-stm.yaml | 101 ++++++
- .../devicetree/bindings/arm/arm,coresight-tmc.yaml | 131 +++++++
- .../bindings/arm/arm,coresight-tpiu.yaml           |  91 +++++
- ...{ete.yaml => arm,embedded-trace-extension.yaml} |   3 +-
- .../{trbe.yaml => arm,trace-buffer-extension.yaml} |   2 +-
- .../bindings/arm/coresight-cpu-debug.txt           |  49 ---
- .../devicetree/bindings/arm/coresight.txt          | 402 ---------------------
- .../trace/coresight/coresight-etm4x-reference.rst  |  17 +-
- Documentation/trace/coresight/coresight.rst        |  58 ++-
- MAINTAINERS                                        |   8 +-
- drivers/hwtracing/coresight/coresight-config.h     |   2 +
- drivers/hwtracing/coresight/coresight-core.c       |   1 +
- drivers/hwtracing/coresight/coresight-etm-perf.c   |   2 +
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  14 +
- drivers/hwtracing/coresight/coresight-etm4x.h      |   3 +-
- drivers/hwtracing/coresight/coresight-syscfg.c     | 299 ++++++++++++---
- drivers/hwtracing/coresight/coresight-syscfg.h     |  13 +
- include/linux/coresight-pmu.h                      |   2 +
- 27 files changed, 1542 insertions(+), 524 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-catu.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml
- rename Documentation/devicetree/bindings/arm/{coresight-cti.yaml => arm,coresight-cti.yaml} (98%)
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-dynamic-funnel.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-dynamic-replicator.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etb10.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etm.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-static-funnel.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-static-replicator.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-stm.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tmc.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tpiu.yaml
- rename Documentation/devicetree/bindings/arm/{ete.yaml => arm,embedded-trace-extension.yaml} (95%)
- rename Documentation/devicetree/bindings/arm/{trbe.yaml => arm,trace-buffer-extension.yaml} (94%)
- delete mode 100644 Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
- delete mode 100644 Documentation/devicetree/bindings/arm/coresight.txt
