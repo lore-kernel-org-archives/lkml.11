@@ -2,120 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CEA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:09:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231154AbiGKRJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 13:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48402 "EHLO
+        id S230450AbiGKRJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 13:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230493AbiGKRJA (ORCPT
+        with ESMTP id S231140AbiGKRJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 13:09:00 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D914AB87C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:08:59 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id b2so4964453plx.7
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:08:59 -0700 (PDT)
+        Mon, 11 Jul 2022 13:09:03 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07EDB87C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:09:01 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id e16so5282540pfm.11
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:09:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DLoKLo9KSBBsl7M8MYAQa9UFt2d+Z+jamo38RKgFwFc=;
-        b=pe/wvJNzsULkC2DIkC2YSGo8Aywe6DTSXUvNo8Cwlb6e89OhWD8sP2VeTfGdHP15T6
-         B4xwVhigiFmbSzF9YFa1Nd4JCOArw5wjYUJvJwtXQ/jLavUEdYu9YuFvQVdH38qSniP7
-         OLH2J4sTAw6227Yd1gs9USM78S1FDmsaSdil3IS/Kvl5MQRGD3u/39SFc34qLesP0ZPd
-         QHSPF0KIjFSaApxsDu1YXwbgtSDoTVCQEnDYdxJAsBGToZUEPs7AmmG2890TqyC4Pnxt
-         jnnWxSvF40jqXQI+ozExHr+SNcCi7p+gIkkYcv3h8YNk+kT/CiIIRuupOefNls71dlDq
-         lAZg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=O+c4eS2Wz0xOsNrvUWfPx5RqPnJlgL0GzUaZVBfbEOY=;
+        b=oXG6TMI+mspLdUjU5KzrCW2UeS90aUF9+euG0J7yYpxsfVaAjaBamCa91I86piok4a
+         +wygfiApuqDh2L4zrfsev6peIpHaucwBY5YJD/amTshdDcafwlLuoiE9IBoyh39vw2Dw
+         Trr96zm3ZKH4z1i6Q2Z2WYSM/X3qWG3qBeIq6w9kS6ebJLofLmFYXLcWy/YIT/68uU9I
+         b+Zsy4RRi7cle1o+2Xae+YSjvP/LG5Co2eX3vr6dLCKvd7ARoafb4ddZljvPP/mv9d1u
+         riVaaJsacU78Qr4eue9LoszE8VgzPqZMzxosEPRa38zuc2OCA1k01Vshi/Uw6UjnINHt
+         ieXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DLoKLo9KSBBsl7M8MYAQa9UFt2d+Z+jamo38RKgFwFc=;
-        b=GRYliqwZLrJiwyw4JoIOSHmAEL8JxkhBhVWmYX3Ek2Aa+kYp0ggYyn55TxUrjieXwO
-         3RirIfqSlZ65usjhAPgyvpjexDhAni9GPlWQEnx4dPBDe9m3UHf8IOE2lCXJdgpZ/H0C
-         ReqmurdkyF/ohUJcYb9KsK4BFOhL6Xd3g9ZThsTpLkj7iU7eoEqWbgEpmyfiD/AR9Fzp
-         Ovt8//yAL0g+J+K0nc4yz67XkOndhfstQ4IZ6XUGtbm2mpBI47kAB1CxgeO001rmY3t2
-         SQOkHAJZYP1WYseKwYBi3ChvAoOArc2mtdl3SrkCFq2p2MRRpjrVxQts912pnCJfq2Rg
-         MNtw==
-X-Gm-Message-State: AJIora/4V+UYXiaYwGZdavXiwtB3w32AArftAmC7TpN5rmtmwRjo1xnS
-        eZBn7KXbJCJWvQoDWBlBqT8=
-X-Google-Smtp-Source: AGRyM1twnjsYSR7y1N5REE2JIK/yOFJApWP9Ch8JKj3yHyKCOAFQ1Zv8MqaHBGn7NAm+0fOvYxI26g==
-X-Received: by 2002:a17:90a:e7d1:b0:1f0:2304:f57f with SMTP id kb17-20020a17090ae7d100b001f02304f57fmr13069498pjb.133.1657559339369;
-        Mon, 11 Jul 2022 10:08:59 -0700 (PDT)
-Received: from strix-laptop.hitronhub.home ([123.110.9.95])
-        by smtp.googlemail.com with ESMTPSA id d16-20020a17090a115000b001efff0a4ca4sm5032581pje.51.2022.07.11.10.08.55
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=O+c4eS2Wz0xOsNrvUWfPx5RqPnJlgL0GzUaZVBfbEOY=;
+        b=GpOy0qgDv3U+CXAJRHCQeQpADczwHtwD4Ltbcci8yz2S2DIz4tILW9p5ZHh6pEMvOF
+         M7DuCK2PLGuDxU1y79/zoZVlRUSABIX1seKkdiIX01XHZTG5hRV0vf+d6bdNmFtIXxeY
+         GVFg00fM0UvAYOeJndQ2LjQ3VXzSlId+UAtnV70oPj1JQaFNgDpPURy4IeA0HEk2ztND
+         I90sJFLSV7GgzFGef00FgL9BzOM0aqZV87T0xpdAPc9mabdFx14x+tFJ9K7R7hzwSnyX
+         Fe7ujlIxqZW1iCD5tc29hJgbaQUL7sDShlbxYoohstTc0jryDg+C5vZ9HJAHxdtEOtN/
+         RbLg==
+X-Gm-Message-State: AJIora8rzoG0ybO+VXGlDXdoX8pxE+CvIsuL/tfBLp+OFqKJprpSndVB
+        C42PL/KeOenNdxr6A8GBjN2XNA==
+X-Google-Smtp-Source: AGRyM1tPVb2b4hh+Adr1CNzCQezGCd6/3eMvBzEbVsi6z5OusgNU4bsr1WwWbM8SX/dXLaR2t4l+hQ==
+X-Received: by 2002:a05:6a00:1911:b0:525:9ffe:cffc with SMTP id y17-20020a056a00191100b005259ffecffcmr19029527pfi.54.1657559340988;
+        Mon, 11 Jul 2022 10:09:00 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id im22-20020a170902bb1600b0016c37fe48casm4156792plb.193.2022.07.11.10.08.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 10:08:58 -0700 (PDT)
-From:   Chih-En Lin <shiyn.lin@gmail.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Borislav Petkov <bp@suse.de>, Don Zickus <dzickus@redhat.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        linux-kernel@vger.kernel.org,
-        asas1asas200 <asas1asas200@gmail.com>,
-        Huichun Feng <foxhoundsk.tw@gmail.com>,
-        Jim Huang <jserv@ccns.ncku.edu.tw>,
-        Chih-En Lin <shiyn.lin@gmail.com>
-Subject: [PATCH] tools: Upgrade atomic_set() to use WRITE_ONCE()
-Date:   Tue, 12 Jul 2022 01:08:51 +0800
-Message-Id: <20220711170851.72208-1-shiyn.lin@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Jul 2022 10:09:00 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 17:08:56 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Martin Fernandez <martin.fernandez@eclypsium.com>
+Cc:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        mingo@redhat.com, tglx@linutronix.de,
+        kirill.shutemov@linux.intel.com, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com
+Subject: Re: [PATCH v2] x86/cpuinfo: Clear X86_FEATURE_TME if TME/MKTME is
+ disabled by BIOS
+Message-ID: <YsxZKGxVUY61zPEt@google.com>
+References: <20220704142250.1512726-1-martin.fernandez@eclypsium.com>
+ <8d2a3175be8a3aff1d3fc535dd9ab6217cfe1e66.camel@intel.com>
+ <CAKgze5azQG1mnOASbpcrs9jTejdXGkXYmezz9bTKuWQoZp5EFg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgze5azQG1mnOASbpcrs9jTejdXGkXYmezz9bTKuWQoZp5EFg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the atomic operation in the tools directory is from the kernel
-source [1]. And from the commit [2], atomic_set() is at least
-WRITE_ONCE() in the kernel source. atomic_{read,set}() should be
-symmetry with {READ, WRITE}_ONCE() [3]. To be synchronous with the
-source, atomic_set() should use WRITE_ONCE() rather than plain access.
+On Tue, Jul 05, 2022, Martin Fernandez wrote:
+> On 7/5/22, Kai Huang <kai.huang@intel.com> wrote:
+> > On Mon, 2022-07-04 at 11:22 -0300, Martin Fernandez wrote:
+> >> Changelog since v1
+> >>
+> >> Clear the flag not only for BSP but for every cpu in the system.
 
-[1] commit da6d8567512d ("tools include: Add basic atomic.h implementation from the kernel sources")
-[2] commit 62e8a3258bda ("atomic, arch: Audit atomic_{read,set}()")
-[3] commit 6aa7de059173 ("locking/atomics: COCCINELLE/treewide: Convert trivial ACCESS_ONCE() patterns to READ_ONCE()/WRITE_ONCE()")
+...
 
-Signed-off-by: asas1asas200 <asas1asas200@gmail.com>
-Signed-off-by: Chih-En Lin <shiyn.lin@gmail.com>
+> >> ---
+> >>  arch/x86/kernel/cpu/intel.c | 1 +
+> >>  1 file changed, 1 insertion(+)
+> >>
+> >> diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+> >> index fd5dead8371c..17f23e23f911 100644
+> >> --- a/arch/x86/kernel/cpu/intel.c
+> >> +++ b/arch/x86/kernel/cpu/intel.c
+> >> @@ -570,6 +570,7 @@ static void detect_tme(struct cpuinfo_x86 *c)
+> >>
+> >>  	if (!TME_ACTIVATE_LOCKED(tme_activate) ||
+> >> !TME_ACTIVATE_ENABLED(tme_activate)) {
+> >>  		pr_info_once("x86/tme: not enabled by BIOS\n");
+> >> +		clear_cpu_cap(c, X86_FEATURE_TME);
+
+This misses the case where the TME_ACTIVATE_KEYID_BITS() is zero.  AFAICT, that's
+allowed, i.e. won't #GP on WRMSR.  TME_ACTIVATE_KEYID_BITS() can't be non-zero if
+TME_ACTIVATE_ENABLED() is false, but the reverse is allowed.
+
+> >>  		mktme_status = MKTME_DISABLED;
+> >>  		return;
+> >
+> > This code change itself looks good to me.
+> >
+> > But, TME actually supports bypassing TME encryption/decryption by setting 1
+> > to bit 31 to IA32_TME_ACTIVATE MSR.  See 'Table 4-2 IA32_TME_ACTIVATE MSR'
+> > in MKTME spec below:
+> >
+> > https://edc.intel.com/content/www/us/en/design/ipla/software-development-platforms/client/platforms/alder-lake-desktop/12th-generation-intel-core-processors-datasheet-volume-1-of-2/002/intel-multi-key-total-memory-encryption/
+> >
+> > When bit 31 is set, the TME is bypassed (no encryption/decryption for KeyID 0).
+> >
+> > So looks userspace also needs to check this if it wants to truly check
+> > whether "TME memory encryption" is active.
+> >
+> > But perhaps it's arguable whether we can also clear TME flag in this case.
+> 
+> Yep, that's what I thought.
+
+IMO, this entire function needs to be reworked to have a cohesive strategy for
+enumerting TME; not just enumerating to userspace, but internal to the kernel as
+well.
+
+E.g. forcing "mktme_status = MKTME_DISABLED" on an AP is nonsensical.  If an AP's
+basic MKTME enabling doesn't align with the BSP (activate, algorithm, and keyid0
+bypass settings match), then there's no way an AP is going to reach detect_tme().
+Any discrepancy in encryption for keyid0 will cause the AP will read garbage on
+wakeup, and barring a miracle, will triple fault and never call in.
+
+Conversely, if basic enabling matches but something else mismatches, e.g. an AP
+was configured with fewer keys, then forcing "mktme_status = MKTME_DISABLED" may
+be misleading as MKTME may be fully enabled and in use for keyid0, it just won't
+be used for keyid!=0.  But that's a moot point because as is, the kernel _never_
+uses keyid!=0.
+
+And this code is also bogus.  Just because the kernel doesn't know the encryption
+algorithm doesn't magically turn off encryption for keyid0.  Again, mktme_status
+confuses "memory is encrypted" with "MKTME is theoretically usable for keyid!=0".
+
+	tme_crypto_algs = TME_ACTIVATE_CRYPTO_ALGS(tme_activate);
+	if (!(tme_crypto_algs & TME_ACTIVATE_CRYPTO_AES_XTS_128)) {
+		pr_err("x86/mktme: No known encryption algorithm is supported: %#llx\n",
+				tme_crypto_algs);
+		mktme_status = MKTME_DISABLED;
+	}
+
+The mktme_status variable seems completely pointless.  It's not used anywhere
+except to detect that CPU0 vs. APs.
+
+
+Something like this seems like a sane approach.
+
 ---
- tools/arch/x86/include/asm/atomic.h    | 2 +-
- tools/include/asm-generic/atomic-gcc.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/arch/x86/include/asm/atomic.h b/tools/arch/x86/include/asm/atomic.h
-index 1f5e26aae9fc..4dcf4e9baecc 100644
---- a/tools/arch/x86/include/asm/atomic.h
-+++ b/tools/arch/x86/include/asm/atomic.h
-@@ -37,7 +37,7 @@ static inline int atomic_read(const atomic_t *v)
-  */
- static inline void atomic_set(atomic_t *v, int i)
- {
--	v->counter = i;
-+	WRITE_ONCE(v->counter, i);
- }
- 
- /**
-diff --git a/tools/include/asm-generic/atomic-gcc.h b/tools/include/asm-generic/atomic-gcc.h
-index 4c1966f7c77a..df84af8012e6 100644
---- a/tools/include/asm-generic/atomic-gcc.h
-+++ b/tools/include/asm-generic/atomic-gcc.h
-@@ -34,7 +34,7 @@ static inline int atomic_read(const atomic_t *v)
-  */
- static inline void atomic_set(atomic_t *v, int i)
- {
--        v->counter = i;
-+	WRITE_ONCE(v->counter, i);
- }
- 
- /**
--- 
-2.25.1
+#define MSR_IA32_TME_ACTIVATE		0x982
 
+/* Helpers to access TME_ACTIVATE MSR */
+#define TME_ACTIVATE_LOCKED(x)		(x & 0x1)
+#define TME_ACTIVATE_ENABLED(x)		(x & 0x2)
+
+#define TME_ACTIVATE_KEYID0_BYPASS(x)	(x & BIT(31))
+
+#define TME_ACTIVATE_POLICY(x)		((x >> 4) & 0xf)	/* Bits 7:4 */
+#define TME_ACTIVATE_POLICY_AES_XTS_128	0
+
+#define TME_ACTIVATE_KEYID_BITS(x)	((x >> 32) & 0xf)	/* Bits 35:32 */
+
+#define TME_ACTIVATE_CRYPTO_ALGS(x)	((x >> 48) & 0xffff)	/* Bits 63:48 */
+#define TME_ACTIVATE_CRYPTO_AES_XTS_128	1
+
+static int tme_keyid_bits_cpu0 = -1;
+static u64 tme_activate_cpu0;
+
+static void detect_tme(struct cpuinfo_x86 *c)
+{
+	u64 tme_activate, tme_policy, tme_crypto_algs;
+
+	rdmsrl(MSR_IA32_TME_ACTIVATE, tme_activate);
+
+	if (tme_keyid_bits_cpu0 >= 0) {
+		/* Broken BIOS? */
+		if (tme_activate != tme_activate_cpu0)
+			pr_err_once("x86/tme: configuration is inconsistent between CPUs\n");
+
+		/*
+		 * Proceed, stolen keyid bits still needed to be excluded from
+		 * x86_phys_bits.  The divergence is all but guaranteed to be
+		 * benign, else this CPU would have died during bringup.
+		 */
+		goto adjust_phys_bits;
+	}
+
+	tme_activate_cpu0 = tme_activate;
+
+	if (!TME_ACTIVATE_LOCKED(tme_activate) ||
+	    !TME_ACTIVATE_ENABLED(tme_activate))
+		tme_keyid_bits_cpu0 = 0;
+	else
+		tme_keyid_bits_cpu0 = TME_ACTIVATE_KEYID_BITS(tme_activate);
+
+	if (!tme_keyid_bits_cpu0) {
+		pr_info("x86/tme: not enabled by BIOS\n");
+		setup_clear_cpu_cap(X86_FEATURE_TME);
+		return;
+	}
+
+	pr_info("x86/tme: enabled by BIOS\n");
+
+	if (TME_ACTIVATE_KEYID0_BYPASS(tme_activate)) {
+		pr_info("x86/tme: KeyID=0 encryption bypass enabled\n");
+
+		/*
+		 * Clear the feature flag, memory for keyid0 isn't encrypted so
+		 * for all intents and purposes MKTME is unused.
+		 */
+		setup_clear_cpu_cap(X86_FEATURE_TME);
+		goto adjust_phys_bits;
+	}
+
+	tme_policy = TME_ACTIVATE_POLICY(tme_activate);
+	if (tme_policy != TME_ACTIVATE_POLICY_AES_XTS_128)
+		pr_warn("x86/tme: Unknown policy is active: %#llx\n", tme_policy);
+
+	tme_crypto_algs = TME_ACTIVATE_CRYPTO_ALGS(tme_activate);
+	if (!(tme_crypto_algs & TME_ACTIVATE_CRYPTO_AES_XTS_128))
+		pr_warn("x86/mktme: Unknown encryption algorithm is active: %#llx\n",
+			tme_crypto_algs);
+
+adjust_phys_bits:
+	/*
+	 * KeyID bits effectively lower the number of physical address bits.
+	 * Update cpuinfo_x86::x86_phys_bits accordingly.  Always use CPU0's
+	 * info for the adjustment.  If CPU0 steals more bits, then aligning
+	 * with CPU0 gives the highest chance of survival.  If CPU0 steals
+	 * fewer bits, adjusting this CPU's x86_phys_bits won't retroactively
+	 * fix all the calculations done using CPU0's information
+	 */
+	c->x86_phys_bits -= tme_keyid_bits_cpu0;
+}
