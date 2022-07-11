@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21835C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 602BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbiGKJZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        id S232198AbiGKJZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232245AbiGKJYW (ORCPT
+        with ESMTP id S232255AbiGKJYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815E65F99D;
-        Mon, 11 Jul 2022 02:14:16 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86B222BF8;
+        Mon, 11 Jul 2022 02:14:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16B2DB80DB7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 162A761140;
+        Mon, 11 Jul 2022 09:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20870C34115;
         Mon, 11 Jul 2022 09:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E87C341C0;
-        Mon, 11 Jul 2022 09:14:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530853;
-        bh=C9CpL1uqk2LoHSZnHIOaqzzatN/KTVTDNlcu9RpMB8Q=;
+        s=korg; t=1657530856;
+        bh=uGlEy0o9eAIMJ4xj6ANHll0AzmvXaid4kNNsamvBGuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YZZbVoQnahsc8HreE2HL8UD+Y7MZa0P44VUiFWAB3O1+pBpXoXcSLkHzo49Wc+y7W
-         dU8JnQgAr5LW44KT/0YyrJNUasZk3NL+D4owLh0kwvQ9fYZ8malPmxo+LZLfAnG1Zp
-         5CzUZNJ6ycH9FCm6qMp0i4m4lreqq7H6vf1awIEs=
+        b=m3KQpf0o26h5LxgTWSuOy3Wl/fEsvM7tBGOBCEniyqmrEOf6CPF0HqlFQqBaYaBcA
+         6JwjFpCNNQT//SZbgFtwQDOefzZ9zdCiS138ojFKM3o6GoUbvJ6Ax6M7o0KsGOjILN
+         SDT0IgzOteA5zWMcOqt85TWRv5JnomILLD35Bw3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5.10 14/55] fbmem: Check virtual screen sizes in fb_set_var()
-Date:   Mon, 11 Jul 2022 11:07:02 +0200
-Message-Id: <20220711090542.182649413@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 001/112] io_uring: fix provided buffer import
+Date:   Mon, 11 Jul 2022 11:06:01 +0200
+Message-Id: <20220711090549.589060946@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
-References: <20220711090541.764895984@linuxfoundation.org>
+In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
+References: <20220711090549.543317027@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,40 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Dylan Yudaken <dylany@fb.com>
 
-commit 6c11df58fd1ac0aefcb3b227f72769272b939e56 upstream.
+commit 09007af2b627f0f195c6c53c4829b285cc3990ec upstream.
 
-Verify that the fbdev or drm driver correctly adjusted the virtual
-screen sizes. On failure report the failing driver and reject the screen
-size change.
+io_import_iovec uses the s pointer, but this was changed immediately
+after the iovec was re-imported and so it was imported into the wrong
+place.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: stable@vger.kernel.org # v5.4+
+Change the ordering.
+
+Fixes: 2be2eb02e2f5 ("io_uring: ensure reads re-import for selected buffers")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220630132006.2825668-1-dylany@fb.com
+[axboe: ensure we don't half-import as well]
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbmem.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/io_uring.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1019,6 +1019,16 @@ fb_set_var(struct fb_info *info, struct
- 	if (ret)
- 		return ret;
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -3495,6 +3495,13 @@ static ssize_t io_iov_buffer_select(stru
+ 	return __io_iov_buffer_select(req, iov, issue_flags);
+ }
  
-+	/* verify that virtual resolution >= physical resolution */
-+	if (var->xres_virtual < var->xres ||
-+	    var->yres_virtual < var->yres) {
-+		pr_warn("WARNING: fbcon: Driver '%s' missed to adjust virtual screen size (%ux%u vs. %ux%u)\n",
-+			info->fix.id,
-+			var->xres_virtual, var->yres_virtual,
-+			var->xres, var->yres);
-+		return -EINVAL;
-+	}
++static inline bool io_do_buffer_select(struct io_kiocb *req)
++{
++	if (!(req->flags & REQ_F_BUFFER_SELECT))
++		return false;
++	return !(req->flags & REQ_F_BUFFER_SELECTED);
++}
 +
- 	if ((var->activate & FB_ACTIVATE_MASK) != FB_ACTIVATE_NOW)
- 		return 0;
+ static struct iovec *__io_import_iovec(int rw, struct io_kiocb *req,
+ 				       struct io_rw_state *s,
+ 				       unsigned int issue_flags)
+@@ -3854,18 +3861,19 @@ static int io_read(struct io_kiocb *req,
+ 		if (unlikely(ret < 0))
+ 			return ret;
+ 	} else {
++		rw = req->async_data;
++		s = &rw->s;
++
+ 		/*
+ 		 * Safe and required to re-import if we're using provided
+ 		 * buffers, as we dropped the selected one before retry.
+ 		 */
+-		if (req->flags & REQ_F_BUFFER_SELECT) {
++		if (io_do_buffer_select(req)) {
+ 			ret = io_import_iovec(READ, req, &iovec, s, issue_flags);
+ 			if (unlikely(ret < 0))
+ 				return ret;
+ 		}
  
+-		rw = req->async_data;
+-		s = &rw->s;
+ 		/*
+ 		 * We come here from an earlier attempt, restore our state to
+ 		 * match in case it doesn't. It's cheap enough that we don't
 
 
