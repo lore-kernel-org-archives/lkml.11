@@ -2,56 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6381CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC34C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231434AbiGKUZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
+        id S230481AbiGKUZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230154AbiGKUZ0 (ORCPT
+        with ESMTP id S230158AbiGKUZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:25:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC46E3C8C9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:25 -0700 (PDT)
+        Mon, 11 Jul 2022 16:25:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC153C8CC
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80904B81201
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 158BEC341C8;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2095861636
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41607C36AE5;
         Mon, 11 Jul 2022 20:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657571123;
-        bh=tkUHbDINZrB0LRuB/0As+bBah7qgv1F4QlCF0lnzznE=;
+        bh=65qOd5DFjDe/qVWtarr6Nxd+MxmQ6nZSdo6RdJ6BocM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YTaMqZwKwqcX1M2IOeieAncdbq7kSg1GjA1X84MJt7BXrblKHd40AM+itVbtD0f7r
-         mBvEKOa3Z+QLB7orbFKGXVjzqzZW1suVxGcnTz6n0G3DpcRfQBo9RwVNmDqKn3s71c
-         uU5vjORZU9psQNKRtImYJ3PZBN+dc98PIMJ/sv1gP9zQcKadrP6e8cMINYxV4NiV/V
-         KmsnWZ05XMVRmXFD/Q9+Gsu3asgrnez6UlGVz3Koh4vfO58SAQ+VZNbAGcmEsA4SlV
-         wdMdAwG809NQYuiIIIpBt4OgckKd3av0uM8qH6XL9nOIgGSOTovWVIIQlB4/XIOO71
-         dAdhQJcVeqaAQ==
+        b=P0iNmJBViO8cFrlyt+hSSoJiEKaJti4AaEzWE1zfZOf9bBxlEx2BcQJo0pd1Rzoua
+         WbiJxUyHnrIqA8UJVXb4njgcy1GuZoXQeUdHUtYw6T5fH37Z+71lH20Uah18puHdIT
+         Txg29te4cdt54sxj0n4a6P4X1qe68l++lmEaNniy35s1RHkV95X8z8VfrarF8MBFGL
+         T08x9jClqdQz7MeMoZHCD9emJx7rFSl/fm3Uy3V3chhL0E5GSeVDuqxixWvNf2bW5F
+         oIAENWDULV6bGtxCqLDvRtnKmG0D28JQyLS654yR0n+/qOQ1RmFG0TkHkpgYX8xBiA
+         goyt2XV3dXDMA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e7v-GQ;
+        id 1oAzy3-004e8r-QR;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jani Nikula" <jani.nikula@linux.intel.com>,
         "Lucas De Marchi" <lucas.demarchi@intel.com>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 10/32] drm/i915: i915_gpu_error.c: document dump_flags
-Date:   Mon, 11 Jul 2022 21:24:55 +0100
-Message-Id: <2e4749facda5c1761b9b5d6956d9eb937ea05573.1657565224.git.mchehab@kernel.org>
+Subject: [PATCH 24/32] drm/i915: i915_scatterlist.h: fix some kernel-doc markups
+Date:   Mon, 11 Jul 2022 21:25:09 +0100
+Message-Id: <a48b876cae63a31b562ddaaf1903d1a1715349b7.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
@@ -62,33 +60,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel-doc dump_flags parameter is missing at i915_capture_error_state().
-Document it.
+Building docs currently produces this warning:
 
-Fixes: a6f0f9cf330a ("drm/i915/guc: Plumb GuC-capture into gpu_coredump")
+	Documentation/foo/i915:159: ./drivers/gpu/drm/i915/i915_scatterlist.h:73: WARNING: Inline strong start-string without end-string.
+
+That's because @foo evaluates into **foo**, and placing anything
+after it without spaces cause Sphinx to warn and do the wrong
+thing.. So, replace them by a different Sphinx-compatible tag.
+
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/i915_gpu_error.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/i915_scatterlist.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/i915_gpu_error.c b/drivers/gpu/drm/i915/i915_gpu_error.c
-index 32e92651ef7c..faec4aebbc3d 100644
---- a/drivers/gpu/drm/i915/i915_gpu_error.c
-+++ b/drivers/gpu/drm/i915/i915_gpu_error.c
-@@ -2096,7 +2096,8 @@ void i915_error_state_store(struct i915_gpu_coredump *error)
-  * i915_capture_error_state - capture an error record for later analysis
-  * @gt: intel_gt which originated the hang
-  * @engine_mask: hung engines
-- *
-+ * @dump_flags: bitmap flags. When %CORE_DUMP_FLAG_IS_GUC_CAPTURE is used,
-+ * 	dump engine record registers and execlists.
+diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h b/drivers/gpu/drm/i915/i915_scatterlist.h
+index 2e112362e4f1..0c7ffcfaff5b 100644
+--- a/drivers/gpu/drm/i915/i915_scatterlist.h
++++ b/drivers/gpu/drm/i915/i915_scatterlist.h
+@@ -70,7 +70,7 @@ static inline struct scatterlist *____sg_next(struct scatterlist *sg)
   *
-  * Should be called when an error is detected (either a hang or an error
-  * interrupt) to capture error state from the time of the error.  Fills
+  * Description:
+  *   If the entry is the last, return NULL; otherwise, step to the next
+- *   element in the array (@sg@+1). If that's a chain pointer, follow it;
++ *   element in the array (``sg@+1``). If that's a chain pointer, follow it;
+  *   otherwise just return the pointer to the current element.
+  **/
+ static inline struct scatterlist *__sg_next(struct scatterlist *sg)
 -- 
 2.36.1
 
