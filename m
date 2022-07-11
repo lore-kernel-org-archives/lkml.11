@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C944BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 015DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231723AbiGKJWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        id S231901AbiGKJWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231859AbiGKJVe (ORCPT
+        with ESMTP id S231927AbiGKJVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:21:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7709E2B615;
-        Mon, 11 Jul 2022 02:13:01 -0700 (PDT)
+        Mon, 11 Jul 2022 05:21:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F8E2A97B;
+        Mon, 11 Jul 2022 02:13:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D1DBB80CEF;
-        Mon, 11 Jul 2022 09:13:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AC7AC34115;
-        Mon, 11 Jul 2022 09:12:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 583EECE1179;
+        Mon, 11 Jul 2022 09:13:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3781BC341C8;
+        Mon, 11 Jul 2022 09:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530778;
-        bh=jhc/ulTw10SoBS56aSkgurPUpyWUw86gbF4tzyLdDKc=;
+        s=korg; t=1657530781;
+        bh=QsAgcrn3JaM1/cl3jwrUuw5oVetSOCyWU9vP3p1d5M4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xtPbbOZ5MsR4AuTB3tW78G4VMNDlwqNzJ2MTGckELxTFF/i4zfCUrUfUdlAhopU2Y
-         w95Q6JbsPbCdqUx/iwWius/lOBrLPsHGBdTizriKwnLnUNkJfSAMvcgrGbjHRcDufO
-         ZrZEv5hvzmC4mRSBOqJIb0JZUje9CRxCAVrH/RDM=
+        b=CCaeFaDjQZpITrZMRXNAXyvDYof+HkSewvuWy2un0ClHdWUWQXgEg7KHWyoDBqdTt
+         l1FSIV6TgcBey2bJ8VP/N2HJKnT/XX1LPwA6OEeferE642AMnWm/bFw/Eery9c6Ukn
+         mqxK3djw6svkX1Z+PX+Ep2g6iuQyMHfRzI9T1mrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Eugen Hristev <eugen.hristev@microchip.com>,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 36/55] ARM: dts: at91: sam9x60ek: fix eeprom compatible and size
-Date:   Mon, 11 Jul 2022 11:07:24 +0200
-Message-Id: <20220711090542.825168485@linuxfoundation.org>
+Subject: [PATCH 5.10 37/55] ARM: dts: at91: sama5d2_icp: fix eeprom compatibles
+Date:   Mon, 11 Jul 2022 11:07:25 +0200
+Message-Id: <20220711090542.853593520@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -52,39 +52,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit f2cbbc3f926316ccf8ef9363d8a60c1110afc1c7 ]
+[ Upstream commit 416ce193d73a734ded6d09fe141017b38af1c567 ]
 
-The board has a microchip 24aa025e48 eeprom, which is a 2 Kbits memory,
-so it's compatible with at24c02 not at24c32.
-Also the size property is wrong, it's not 128 bytes, but 256 bytes.
-Thus removing and leaving it to the default (256).
+The eeprom memories on the board are microchip 24aa025e48, which are 2 Kbits
+and are compatible with at24c02 not at24c32.
 
-Fixes: 1e5f532c27371 ("ARM: dts: at91: sam9x60: add device tree for soc and board")
+Fixes: 68a95ef72cefe ("ARM: dts: at91: sama5d2-icp: add SAMA5D2-ICP")
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220607090455.80433-1-eugen.hristev@microchip.com
+Link: https://lore.kernel.org/r/20220607090455.80433-2-eugen.hristev@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91-sam9x60ek.dts | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm/boot/dts/at91-sama5d2_icp.dts | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/at91-sam9x60ek.dts b/arch/arm/boot/dts/at91-sam9x60ek.dts
-index b1068cca4228..fd8dc1183b3e 100644
---- a/arch/arm/boot/dts/at91-sam9x60ek.dts
-+++ b/arch/arm/boot/dts/at91-sam9x60ek.dts
-@@ -233,10 +233,9 @@
- 		status = "okay";
+diff --git a/arch/arm/boot/dts/at91-sama5d2_icp.dts b/arch/arm/boot/dts/at91-sama5d2_icp.dts
+index 308d472bd104..634411d13b4a 100644
+--- a/arch/arm/boot/dts/at91-sama5d2_icp.dts
++++ b/arch/arm/boot/dts/at91-sama5d2_icp.dts
+@@ -317,21 +317,21 @@
+ 	status = "okay";
  
- 		eeprom@53 {
--			compatible = "atmel,24c32";
-+			compatible = "atmel,24c02";
- 			reg = <0x53>;
- 			pagesize = <16>;
--			size = <128>;
- 			status = "okay";
- 		};
+ 	eeprom@50 {
+-		compatible = "atmel,24c32";
++		compatible = "atmel,24c02";
+ 		reg = <0x50>;
+ 		pagesize = <16>;
+ 		status = "okay";
  	};
+ 
+ 	eeprom@52 {
+-		compatible = "atmel,24c32";
++		compatible = "atmel,24c02";
+ 		reg = <0x52>;
+ 		pagesize = <16>;
+ 		status = "disabled";
+ 	};
+ 
+ 	eeprom@53 {
+-		compatible = "atmel,24c32";
++		compatible = "atmel,24c02";
+ 		reg = <0x53>;
+ 		pagesize = <16>;
+ 		status = "disabled";
 -- 
 2.35.1
 
