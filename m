@@ -2,110 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34D0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbiGKOrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
+        id S231436AbiGKOsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231704AbiGKOrT (ORCPT
+        with ESMTP id S231219AbiGKOso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:47:19 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BC16E882
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:47:15 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id bf13so4894058pgb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:47:15 -0700 (PDT)
+        Mon, 11 Jul 2022 10:48:44 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB3C5F55
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:48:40 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id v14so7337458wra.5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:48:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=4chYHKGMXvFRAL0720LnjWx1zElGjVyxHR36HOxWZ70=;
-        b=m36etuUJx0HQcE5/Pqbd+7RhmxNhM0wdYBGcdQB9kFYMZ8vl2+DHoICoYTNvO35rJu
-         uH+YoxZh4O4EvgzA0XJjwTK47tTew2Mp5yF1nPsrm+EjvolweI3zLx3I60tHIGl5ZfD5
-         VqUwnGXfYyq9JtwJ9RxEIDB7NGJxnIyNv5MQA6H/8QLjopH81hbDV8Oq4Rc34V0ZVqd9
-         VyvIY7Y/LRFwa3WFOzsFJI7ESh9YUVoUfp5VhFfU/yOgAmk+AS9UTD5GDbimOwGRZfeM
-         1OUjekj8gaOHnKrCeT9P1FoYq5nLhEFr7s5z/nsa7dAfDIrpunwl4dl2alsyJb9BYd00
-         GVcA==
+        bh=OeIwrghjWv1itdsEcBmUCDSZH1m4e3A3+aJ94H0DMKA=;
+        b=mi5bzmfy76j/A0JqIGs4L9rTEq0UWTfjTNwH3NpU3XTt27ad7yjuV7drDTaywqs6A+
+         4+PQPa4vsJKRy6zcuawPUL65Zf2/19jaUHFTHnDHJHoeYqW25gy1LmILfUYjWKW86eWD
+         FdIkLUsvTwlzo4+ghyC3YeigJia/vQ2OWjAv0x/qmIllC6gdLkN6JHZa70zbttJAJAfv
+         e9d7JAzmuIQlfoZFZpczZcL4OKiCrJGT8QxC7Ew3F+fgtuD6T9nlF+Qb1/zAgoj4rnQx
+         w7l9P5A7lTiEzPIA+YBAS9jO5qh1tsVoyq5mcISyDKbf1uPs08WSzfO8ZO+gwos0AU8D
+         l5JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=4chYHKGMXvFRAL0720LnjWx1zElGjVyxHR36HOxWZ70=;
-        b=Lg2QOGJTx/ZIrC/Eg+tHOhPO/slOef5YzlnRc3xicPMsyoBhJsBDHpqnmIu7ZEjzPJ
-         BxSh9Tc4JZpugM1GBGGTptWGTVal70biI8eUpe0WJON9zajhycMj3tyvD05WI0+nCfD5
-         /Tr1I8/z66VlfScjCgQ2TmNfF2GsJQdr1DxaIbXqWi9KOmygbksR8b2L51k3uhY/6yyC
-         rBhobxoO7tSHgtbl1F5AKz16NcZWfoqrITu5btV1r1dOPddH5FTuLQo1TgeJyH5XyveX
-         Iyui+uMZcMY47FNUw3UycQ8PBZmi/RAvcbelG8/9ILCle7dFzK/XiZScBqmRuk/2QBJG
-         S0EQ==
-X-Gm-Message-State: AJIora8x5+X7N0OZGIWkAdKMUMgY34hmmr8mNyqjn2K52fLraRgN7OoD
-        IewSkrJypaYWhjMJIS23sHZ+WA==
-X-Google-Smtp-Source: AGRyM1utSQECH7YtW8EID41EIDngA1PLq1OgACcwd3SKdmeAOLthVOoXe5oNFC+dWM+sqrKYYgJ9CQ==
-X-Received: by 2002:a63:d54c:0:b0:412:562e:6964 with SMTP id v12-20020a63d54c000000b00412562e6964mr16043982pgi.528.1657550835031;
-        Mon, 11 Jul 2022 07:47:15 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id q11-20020aa7982b000000b005289fad1bbesm5004033pfl.94.2022.07.11.07.47.14
+        bh=OeIwrghjWv1itdsEcBmUCDSZH1m4e3A3+aJ94H0DMKA=;
+        b=f9N09jtxqK0K2t+Vn4TUsf6HJLLwoaDcVicW16gbOXtWEw0qn1DmK58WnQDe6zRXjk
+         1+lPzHaQofktao98AkkyJ57qAWzX8hrLIlsXay1RDm2+cUkgGEYwTRpTPNkkhkTiAgAb
+         6EDm2TtudiU7sAhwKMydBuoWHKqNvbd/2iCYZ3HmwlrxwmAh7m0szYFnEtJt9x+QP8OT
+         Pb7eM1hZd0bUrglV+YeKZgkcXGx5GZ8D7RYHZ8USsKlumIJaTb1MSX2FJ9eH2yJ2kwsW
+         LUuRXR0TgNEx0nPayY5wHPmq4pntT+6qQ+XLU3p8FI+TJLsh3Arx/b6hI+AGhF1T2Dc7
+         FL5w==
+X-Gm-Message-State: AJIora84O7SaJ/veWL/XLkXahmu7m2OZrpa8JSv04kbaD3dH6sjknS0O
+        QvtKE/dqIE/Na8M14OXo6PMMmA==
+X-Google-Smtp-Source: AGRyM1vscC01dfCS/5xXseWFralreHKQW/CSj8vShH3qf6EqRgbWjqqNp17PAFhHjKV/myPWE6uc+g==
+X-Received: by 2002:a5d:6e5c:0:b0:21d:7ba1:3601 with SMTP id j28-20020a5d6e5c000000b0021d7ba13601mr17597477wrz.554.1657550918856;
+        Mon, 11 Jul 2022 07:48:38 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id b17-20020adff911000000b0021d819c8f6dsm5922653wrr.39.2022.07.11.07.48.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 07:47:14 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 14:47:11 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Yuan Yao <yuan.yao@linux.intel.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: Re: [PATCH v7 036/102] KVM: x86/mmu: Allow non-zero value for
- non-present SPTE
-Message-ID: <Ysw3778RNiEwuezX@google.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <f74b05eca8815744ce1ad672c66033101be7369c.1656366338.git.isaku.yamahata@intel.com>
- <20220708051847.prn254ukwvgkdl3c@yy-desk-7060>
- <YshNjy5RsxYuFxOo@google.com>
- <20220711070510.dm4am2miy5lcwlzq@yy-desk-7060>
+        Mon, 11 Jul 2022 07:48:38 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 15:48:13 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Will Deacon <will@kernel.org>, KP Singh <kpsingh@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: Re: [PATCH bpf-next v7 4/4] bpf, arm64: bpf trampoline for arm64
+Message-ID: <Ysw4LaMuNZQsoQXp@myrica>
+References: <20220708093032.1832755-1-xukuohai@huawei.com>
+ <20220708093032.1832755-5-xukuohai@huawei.com>
+ <YswQQG7CUoTXCbDa@myrica>
+ <4852eba8-9fd0-6894-934c-ab89c0c7cea9@huawei.com>
+ <Ysw1nSxQUghvY/eY@myrica>
+ <893b2d5f-16e9-0b1d-4ae6-8199e0f4ccf8@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220711070510.dm4am2miy5lcwlzq@yy-desk-7060>
+In-Reply-To: <893b2d5f-16e9-0b1d-4ae6-8199e0f4ccf8@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022, Yuan Yao wrote:
-> On Fri, Jul 08, 2022 at 03:30:23PM +0000, Sean Christopherson wrote:
-> > Please trim replies.
-> > > I'm not sure why skip this for TDX, arch.mmu_shadow_page_cache is
-> > > still used for allocating sp->spt which used to track the S-EPT in kvm
-> > > for tdx guest.  Anything I missed for this ?
-> >
-> > Shared EPTEs need to be initialized with SUPPRESS_VE=1, otherwise not-present
-> > EPT violations would be reflected into the guest by hardware as #VE exceptions.
-> > This is handled by initializing page allocations via kvm_init_shadow_page() during
-> > cache topup if shadow_nonpresent_value is non-zero.  In that case, telling the
-> > page allocation to zero-initialize the page would be wasted effort.
-> >
-> > The initialization is harmless for S-EPT entries because KVM's copy of the S-EPT
-> > isn't consumed by hardware, and because under the hood S-EPT entries should never
-> > #VE (I forget if this is enforced by hardware or if the TDX module sets SUPPRESS_VE).
+On Mon, Jul 11, 2022 at 10:40:42PM +0800, Xu Kuohai wrote:
+> On 7/11/2022 10:37 PM, Jean-Philippe Brucker wrote:
+> > On Mon, Jul 11, 2022 at 10:16:00PM +0800, Xu Kuohai wrote:
+> >>>> +	if (save_ret)
+> >>>> +		emit(A64_STR64I(p->jited ? r0 : A64_R(0), A64_SP, retval_off),
+> >>>> +		     ctx);
+> >>>
+> >>> This should be only A64_R(0), not r0. r0 happens to equal A64_R(0) when
+> >>> jitted due to the way build_epilogue() builds the function at the moment,
+> >>> but we shouldn't rely on that.
+> >>>
+> >>
+> >> looks like I misunderstood something, will change it to:
+> >>
+> >> /* store return value, which is held in x0 for interpreter and in
+> >>  * bpf register r0 for JIT,
+> > 
+> > It's simpler than that: in both cases the return value is in x0 because
+> > the function follows the procedure call standard. You could drop the
+> > comment to avoid confusion and only do the change to A64_R(0)
+> > 
 > 
-> Ah I see, you're right, thanks for the explanation! I think with
-> changes you suggested above the __GFP_ZERO can be removed from
-> mmu_shadow_page_cache for VMs which is_tdp_mmu_enabled() is true:
+> OK, will send v9 since v8 was just sent
 
-Yep.
+Right sorry about this, I could have been clearer
 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 8de26cbde295..0b412f3eb0c5 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -6483,8 +6483,8 @@ int kvm_mmu_create(struct kvm_vcpu *vcpu)
->  	vcpu->arch.mmu_page_header_cache.kmem_cache = mmu_page_header_cache;
->  	vcpu->arch.mmu_page_header_cache.gfp_zero = __GFP_ZERO;
-> 
-> -	if (!(tdp_enabled && shadow_nonpresent_value))
-> -		vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
-> +	if (!(is_tdp_mmu_enabled(vcpu->kvm))
-> +	    vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
-> 
->  	vcpu->arch.mmu = &vcpu->arch.root_mmu;
->  	vcpu->arch.walk_mmu = &vcpu->arch.root_mmu;
+Thanks,
+Jean
