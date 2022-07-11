@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51839C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB1FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233009AbiGKJju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
+        id S233042AbiGKJjw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233008AbiGKJif (ORCPT
+        with ESMTP id S233133AbiGKJjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:38:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E7287352;
-        Mon, 11 Jul 2022 02:19:58 -0700 (PDT)
+        Mon, 11 Jul 2022 05:39:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A8488CC4;
+        Mon, 11 Jul 2022 02:20:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A5CE612A3;
-        Mon, 11 Jul 2022 09:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13299C341C0;
-        Mon, 11 Jul 2022 09:19:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42A9EB80DBA;
+        Mon, 11 Jul 2022 09:20:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AAF8C34115;
+        Mon, 11 Jul 2022 09:20:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531197;
-        bh=+1rmFj3IQVm9APa8dq9DwcKW1nibTRw4FiU83hUaJz4=;
+        s=korg; t=1657531203;
+        bh=YCL1pHabrAZsQ+ypy3aShkbc+c0GHfrm4urN9vWFSIU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Pfg6VtC6OQPiezkyOCtGvEt0Q79uMMCbzzRcHNTIgTRds1Xla1b1b9QNTydh8qRZ
-         jq1ylpG9hS8I7V1D5uCNYi18SbzY+fV60ij00nCVEHshXFGwF39sjyAknnd48W85Oa
-         6R8hd5VZ0STorcbptXFKe/A2xCaPg9UodcaFI5Z8=
+        b=oih/6MTOxrgR3j6Q8TuvyIv0LBattG8fTDiIeRBLgw4m/m0WSa3N2J/nkrepqN7Em
+         LK4fVYBKImVUIRxNYIiPZR3sde/AjTxwDPiAJKTZDHOMeUFP7+GFKzkMTpaKP6A5e8
+         1UsIouyGU4WBiv5/kRLKibeLOPyGdjqIwSQL8xsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Hugues ANGUELKOV <hanguelkov@randorisec.fr>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 019/230] netfilter: nf_tables: stricter validation of element data
-Date:   Mon, 11 Jul 2022 11:04:35 +0200
-Message-Id: <20220711090604.618307892@linuxfoundation.org>
+        stable@vger.kernel.org, Po-Hsu Lin <po-hsu.lin@canonical.com>
+Subject: [PATCH 5.15 003/230] Revert "selftests/bpf: Add test for bpf_timer overwriting crash"
+Date:   Mon, 11 Jul 2022 11:04:19 +0200
+Message-Id: <20220711090604.162280714@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,44 +47,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Po-Hsu Lin <po-hsu.lin@canonical.com>
 
-commit 7e6bc1f6cabcd30aba0b11219d8e01b952eacbb6 upstream.
+This reverts commit b0028e1cc1faf2e5d88ad4065590aca90d650182 which is
+commit a7e75016a0753c24d6c995bc02501ae35368e333 upstream.
 
-Make sure element data type and length do not mismatch the one specified
-by the set declaration.
+It will break the bpf self-tests build with:
+progs/timer_crash.c:8:19: error: field has incomplete type 'struct bpf_timer'
+        struct bpf_timer timer;
+                         ^
+/home/ubuntu/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_helper_defs.h:39:8:
+note: forward declaration of 'struct bpf_timer'
+struct bpf_timer;
+       ^
+1 error generated.
 
-Fixes: 7d7402642eaf ("netfilter: nf_tables: variable sized set element keys / data")
-Reported-by: Hugues ANGUELKOV <hanguelkov@randorisec.fr>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+This test can only be built with 5.17 and newer kernels.
+
+Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/prog_tests/timer_crash.c |   32 -----------
+ tools/testing/selftests/bpf/progs/timer_crash.c      |   54 -------------------
+ 2 files changed, 86 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/prog_tests/timer_crash.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/timer_crash.c
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5118,13 +5118,20 @@ static int nft_setelem_parse_data(struct
- 				  struct nft_data *data,
- 				  struct nlattr *attr)
- {
-+	u32 dtype;
- 	int err;
- 
- 	err = nft_data_init(ctx, data, NFT_DATA_VALUE_MAXLEN, desc, attr);
- 	if (err < 0)
- 		return err;
- 
--	if (desc->type != NFT_DATA_VERDICT && desc->len != set->dlen) {
-+	if (set->dtype == NFT_DATA_VERDICT)
-+		dtype = NFT_DATA_VERDICT;
-+	else
-+		dtype = NFT_DATA_VALUE;
-+
-+	if (dtype != desc->type ||
-+	    set->dlen != desc->len) {
- 		nft_data_release(data, desc->type);
- 		return -EINVAL;
- 	}
+--- a/tools/testing/selftests/bpf/prog_tests/timer_crash.c
++++ /dev/null
+@@ -1,32 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-#include <test_progs.h>
+-#include "timer_crash.skel.h"
+-
+-enum {
+-	MODE_ARRAY,
+-	MODE_HASH,
+-};
+-
+-static void test_timer_crash_mode(int mode)
+-{
+-	struct timer_crash *skel;
+-
+-	skel = timer_crash__open_and_load();
+-	if (!ASSERT_OK_PTR(skel, "timer_crash__open_and_load"))
+-		return;
+-	skel->bss->pid = getpid();
+-	skel->bss->crash_map = mode;
+-	if (!ASSERT_OK(timer_crash__attach(skel), "timer_crash__attach"))
+-		goto end;
+-	usleep(1);
+-end:
+-	timer_crash__destroy(skel);
+-}
+-
+-void test_timer_crash(void)
+-{
+-	if (test__start_subtest("array"))
+-		test_timer_crash_mode(MODE_ARRAY);
+-	if (test__start_subtest("hash"))
+-		test_timer_crash_mode(MODE_HASH);
+-}
+--- a/tools/testing/selftests/bpf/progs/timer_crash.c
++++ /dev/null
+@@ -1,54 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-
+-#include <vmlinux.h>
+-#include <bpf/bpf_tracing.h>
+-#include <bpf/bpf_helpers.h>
+-
+-struct map_elem {
+-	struct bpf_timer timer;
+-	struct bpf_spin_lock lock;
+-};
+-
+-struct {
+-	__uint(type, BPF_MAP_TYPE_ARRAY);
+-	__uint(max_entries, 1);
+-	__type(key, int);
+-	__type(value, struct map_elem);
+-} amap SEC(".maps");
+-
+-struct {
+-	__uint(type, BPF_MAP_TYPE_HASH);
+-	__uint(max_entries, 1);
+-	__type(key, int);
+-	__type(value, struct map_elem);
+-} hmap SEC(".maps");
+-
+-int pid = 0;
+-int crash_map = 0; /* 0 for amap, 1 for hmap */
+-
+-SEC("fentry/do_nanosleep")
+-int sys_enter(void *ctx)
+-{
+-	struct map_elem *e, value = {};
+-	void *map = crash_map ? (void *)&hmap : (void *)&amap;
+-
+-	if (bpf_get_current_task_btf()->tgid != pid)
+-		return 0;
+-
+-	*(void **)&value = (void *)0xdeadcaf3;
+-
+-	bpf_map_update_elem(map, &(int){0}, &value, 0);
+-	/* For array map, doing bpf_map_update_elem will do a
+-	 * check_and_free_timer_in_array, which will trigger the crash if timer
+-	 * pointer was overwritten, for hmap we need to use bpf_timer_cancel.
+-	 */
+-	if (crash_map == 1) {
+-		e = bpf_map_lookup_elem(map, &(int){0});
+-		if (!e)
+-			return 0;
+-		bpf_timer_cancel(&e->timer);
+-	}
+-	return 0;
+-}
+-
+-char _license[] SEC("license") = "GPL";
 
 
