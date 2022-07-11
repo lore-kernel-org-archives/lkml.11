@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3359DCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 066BFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiGKJvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
+        id S233901AbiGKJvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiGKJuQ (ORCPT
+        with ESMTP id S233629AbiGKJuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:50:16 -0400
+        Mon, 11 Jul 2022 05:50:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ACA31224;
-        Mon, 11 Jul 2022 02:24:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EB8313A8;
+        Mon, 11 Jul 2022 02:24:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 699E16112E;
-        Mon, 11 Jul 2022 09:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C8DC34115;
-        Mon, 11 Jul 2022 09:24:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1450A61363;
+        Mon, 11 Jul 2022 09:24:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1870BC34115;
+        Mon, 11 Jul 2022 09:24:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531468;
-        bh=U0t7320AYDbcwwyLOZh9lTpswuXbCQhm6S7HxSJKKR0=;
+        s=korg; t=1657531474;
+        bh=T+y81cV5cT0q5eTK5Na8tcQR7hBNFKwry7g91mXTPIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FO4CnZ996AG2Sv7sveLFVeXtG86KHWUtMu4GotvLd5f3rdl8Rcdo1nfl1c8SnOhac
-         qMkvtsv4gdmqRXbA4rE9NBxWFlyfPVdbtmLqUAS4qTrgXxq4DWoU+MnVagWPvyHpnp
-         J1g14BXcvXWJQ8T94VeIuEakLjrbQZc6NcpY37zg=
+        b=dXqo6La95fcm2p+nxLgBf4SPgxq+GizeP4v1GTSwNbt++90mxv9rkjkWhqE5VKrqA
+         UzPGcv6C8CTbeH7uAeASwxcEGfUd96mFRMrdEuzCrLYibMMOGmse3dDh/B0lzkuEVl
+         QhovAVMp99/JSATf5fmvostrVwhabMLVoClusF8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Zhu <James.Zhu@amd.com>,
-        tiancyin <tianci.yin@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 116/230] drm/amd/vcn: fix an error msg on vcn 3.0
-Date:   Mon, 11 Jul 2022 11:06:12 +0200
-Message-Id: <20220711090607.357523545@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Oliver Upton <oupton@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 117/230] KVM: Dont create VM debugfs files outside of the VM directory
+Date:   Mon, 11 Jul 2022 11:06:13 +0200
+Message-Id: <20220711090607.384854767@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,38 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: tiancyin <tianci.yin@amd.com>
+From: Oliver Upton <oupton@google.com>
 
-[ Upstream commit 425d7a87e54ee358f580eaf10cf28dc95f7121c1 ]
+[ Upstream commit a44a4cc1c969afec97dbb2aedaf6f38eaa6253bb ]
 
-Some video card has more than one vcn instance, passing 0 to
-vcn_v3_0_pause_dpg_mode is incorrect.
+Unfortunately, there is no guarantee that KVM was able to instantiate a
+debugfs directory for a particular VM. To that end, KVM shouldn't even
+attempt to create new debugfs files in this case. If the specified
+parent dentry is NULL, debugfs_create_file() will instantiate files at
+the root of debugfs.
 
-Error msg:
-Register(1) [mmUVD_POWER_STATUS] failed to reach value
-0x00000001 != 0x00000002
+For arm64, it is possible to create the vgic-state file outside of a
+VM directory, the file is not cleaned up when a VM is destroyed.
+Nonetheless, the corresponding struct kvm is freed when the VM is
+destroyed.
 
-Reviewed-by: James Zhu <James.Zhu@amd.com>
-Signed-off-by: tiancyin <tianci.yin@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Nip the problem in the bud for all possible errant debugfs file
+creations by initializing kvm->debugfs_dentry to -ENOENT. In so doing,
+debugfs_create_file() will fail instead of creating the file in the root
+directory.
+
+Cc: stable@kernel.org
+Fixes: 929f45e32499 ("kvm: no need to check return value of debugfs_create functions")
+Signed-off-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220406235615.1447180-2-oupton@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ virt/kvm/kvm_main.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-index 6e56bef4fdf8..1310617f030f 100644
---- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-@@ -1511,7 +1511,7 @@ static int vcn_v3_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
- 	struct dpg_pause_state state = {.fw_based = VCN_DPG_STATE__UNPAUSE};
- 	uint32_t tmp;
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 99c591569815..9134ae252d7c 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -911,7 +911,7 @@ static void kvm_destroy_vm_debugfs(struct kvm *kvm)
+ 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
+ 				      kvm_vcpu_stats_header.num_desc;
  
--	vcn_v3_0_pause_dpg_mode(adev, 0, &state);
-+	vcn_v3_0_pause_dpg_mode(adev, inst_idx, &state);
+-	if (!kvm->debugfs_dentry)
++	if (IS_ERR(kvm->debugfs_dentry))
+ 		return;
  
- 	/* Wait for power status to be 1 */
- 	SOC15_WAIT_ON_RREG(VCN, inst_idx, mmUVD_POWER_STATUS, 1,
+ 	debugfs_remove_recursive(kvm->debugfs_dentry);
+@@ -934,6 +934,12 @@ static int kvm_create_vm_debugfs(struct kvm *kvm, int fd)
+ 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
+ 				      kvm_vcpu_stats_header.num_desc;
+ 
++	/*
++	 * Force subsequent debugfs file creations to fail if the VM directory
++	 * is not created.
++	 */
++	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
++
+ 	if (!debugfs_initialized())
+ 		return 0;
+ 
+@@ -5373,7 +5379,7 @@ static void kvm_uevent_notify_change(unsigned int type, struct kvm *kvm)
+ 	}
+ 	add_uevent_var(env, "PID=%d", kvm->userspace_pid);
+ 
+-	if (kvm->debugfs_dentry) {
++	if (!IS_ERR(kvm->debugfs_dentry)) {
+ 		char *tmp, *p = kmalloc(PATH_MAX, GFP_KERNEL_ACCOUNT);
+ 
+ 		if (p) {
 -- 
 2.35.1
 
