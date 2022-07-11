@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67622CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231809AbiGKJVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
+        id S231830AbiGKJVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231792AbiGKJVE (ORCPT
+        with ESMTP id S231803AbiGKJVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:21:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6752317D;
-        Mon, 11 Jul 2022 02:12:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51E922B05;
+        Mon, 11 Jul 2022 02:12:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC1FB80E5E;
-        Mon, 11 Jul 2022 09:12:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B4C5C341CB;
-        Mon, 11 Jul 2022 09:12:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F0A9611F0;
+        Mon, 11 Jul 2022 09:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58187C34115;
+        Mon, 11 Jul 2022 09:12:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530768;
-        bh=yY6ZmKGIUYpCOYL2TPYJ91ORRoU2do9IDRh0Y6n6gm8=;
+        s=korg; t=1657530770;
+        bh=crs/nf5VegItrTKaUF4eYcu4JKgieF9hoTiW/qwrm0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRnows2rf8PgORzojutjk8ffDlG7eFfltSmMbmi3eIl9QqV0pN6UEEJSPXtbswGX9
-         Xd/N5HaV37c4MTPGWAkeFbouLdvY3VViZdjbRUKUQ5tcxO+O0dD14Vlshw85JMNuwy
-         NM2jS9itgDnuSwSF4xEYep9FUHZfKruWThzYI670=
+        b=ts4JzfL2wM2/jE9NehJs9tB5i0XR9oYvxIcY7PRugMmGNZnPXEo1D4BODykbtrKq2
+         Ibf6EAVelSGdOkHsJVVirv1OfejL0UdbxPJedoomezorI9nNeOQ1KpPKv6qepeNSkH
+         mEhmA9yfW3sz6FILnZEF/e9S0k7mQduG00Q5OkM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 33/55] arm64: dts: qcom: msm8992-*: Fix vdd_lvs1_2-supply typo
-Date:   Mon, 11 Jul 2022 11:07:21 +0200
-Message-Id: <20220711090542.738739670@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 5.10 16/55] fbcon: Prevent that screen size is smaller than font size
+Date:   Mon, 11 Jul 2022 11:07:04 +0200
+Message-Id: <20220711090542.244840203@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -51,67 +48,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 5fb779558f1c97e2bf2794cb59553e569c38e2f9 ]
+commit e64242caef18b4a5840b0e7a9bff37abd4f4f933 upstream.
 
-"make dtbs_check" complains about the missing "-supply" suffix for
-vdd_lvs1_2 which is clearly a typo, originally introduced in the
-msm8994-smd-rpm.dtsi file and apparently later copied to
-msm8992-xiaomi-libra.dts:
+We need to prevent that users configure a screen size which is smaller than the
+currently selected font size. Otherwise rendering chars on the screen will
+access memory outside the graphics memory region.
 
-msm8992-lg-bullhead-rev-10/101.dtb: pm8994-regulators: 'vdd_lvs1_2'
-does not match any of the regexes:
-  '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
->From schema: regulator/qcom,smd-rpm-regulator.yaml
+This patch adds a new function fbcon_modechange_possible() which
+implements this check and which later may be extended with other checks
+if necessary.  The new function is called from the FBIOPUT_VSCREENINFO
+ioctl handler in fbmem.c, which will return -EINVAL if userspace asked
+for a too small screen size.
 
-msm8992-xiaomi-libra.dtb: pm8994-regulators: 'vdd_lvs1_2'
-does not match any of the regexes:
-  '.*-supply$', '^((s|l|lvs|5vs)[0-9]*)|(boost-bypass)|(bob)$', 'pinctrl-[0-9]+'
->From schema: regulator/qcom,smd-rpm-regulator.yaml
-
-Reported-by: Rob Herring <robh@kernel.org>
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-Fixes: f3b2c99e73be ("arm64: dts: Enable onboard SDHCI on msm8992")
-Fixes: 0f5cdb31e850 ("arm64: dts: qcom: Add Xiaomi Libra (Mi 4C) device tree")
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220627135938.2901871-1-stephan.gerhold@kernkonzept.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: stable@vger.kernel.org # v5.4+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts | 2 +-
- arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/core/fbcon.c |   28 ++++++++++++++++++++++++++++
+ drivers/video/fbdev/core/fbmem.c |    4 +++-
+ include/linux/fbcon.h            |    4 ++++
+ 3 files changed, 35 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts b/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts
-index cb82864a90ef..42f2b235011f 100644
---- a/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts
-+++ b/arch/arm64/boot/dts/qcom/msm8992-bullhead-rev-101.dts
-@@ -64,7 +64,7 @@
- 		vdd_l17_29-supply = <&vreg_vph_pwr>;
- 		vdd_l20_21-supply = <&vreg_vph_pwr>;
- 		vdd_l25-supply = <&pm8994_s5>;
--		vdd_lvs1_2 = <&pm8994_s4>;
-+		vdd_lvs1_2-supply = <&pm8994_s4>;
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -2776,6 +2776,34 @@ void fbcon_update_vcs(struct fb_info *in
+ }
+ EXPORT_SYMBOL(fbcon_update_vcs);
  
- 		pm8994_s1: s1 {
- 			regulator-min-microvolt = <800000>;
-diff --git a/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts b/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
-index 4f64ca3ea1ef..6ed2a9c01e8c 100644
---- a/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
-+++ b/arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts
-@@ -151,7 +151,7 @@
- 		vdd_l17_29-supply = <&vreg_vph_pwr>;
- 		vdd_l20_21-supply = <&vreg_vph_pwr>;
- 		vdd_l25-supply = <&pm8994_s5>;
--		vdd_lvs1_2 = <&pm8994_s4>;
-+		vdd_lvs1_2-supply = <&pm8994_s4>;
- 
- 		pm8994_s1: s1 {
- 			/* unused */
--- 
-2.35.1
-
++/* let fbcon check if it supports a new screen resolution */
++int fbcon_modechange_possible(struct fb_info *info, struct fb_var_screeninfo *var)
++{
++	struct fbcon_ops *ops = info->fbcon_par;
++	struct vc_data *vc;
++	unsigned int i;
++
++	WARN_CONSOLE_UNLOCKED();
++
++	if (!ops)
++		return 0;
++
++	/* prevent setting a screen size which is smaller than font size */
++	for (i = first_fb_vc; i <= last_fb_vc; i++) {
++		vc = vc_cons[i].d;
++		if (!vc || vc->vc_mode != KD_TEXT ||
++			   registered_fb[con2fb_map[i]] != info)
++			continue;
++
++		if (vc->vc_font.width  > FBCON_SWAP(var->rotate, var->xres, var->yres) ||
++		    vc->vc_font.height > FBCON_SWAP(var->rotate, var->yres, var->xres))
++			return -EINVAL;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(fbcon_modechange_possible);
++
+ int fbcon_mode_deleted(struct fb_info *info,
+ 		       struct fb_videomode *mode)
+ {
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1119,7 +1119,9 @@ static long do_fb_ioctl(struct fb_info *
+ 			return -EFAULT;
+ 		console_lock();
+ 		lock_fb_info(info);
+-		ret = fb_set_var(info, &var);
++		ret = fbcon_modechange_possible(info, &var);
++		if (!ret)
++			ret = fb_set_var(info, &var);
+ 		if (!ret)
+ 			fbcon_update_vcs(info, var.activate & FB_ACTIVATE_ALL);
+ 		unlock_fb_info(info);
+--- a/include/linux/fbcon.h
++++ b/include/linux/fbcon.h
+@@ -15,6 +15,8 @@ void fbcon_new_modelist(struct fb_info *
+ void fbcon_get_requirement(struct fb_info *info,
+ 			   struct fb_blit_caps *caps);
+ void fbcon_fb_blanked(struct fb_info *info, int blank);
++int  fbcon_modechange_possible(struct fb_info *info,
++			       struct fb_var_screeninfo *var);
+ void fbcon_update_vcs(struct fb_info *info, bool all);
+ void fbcon_remap_all(struct fb_info *info);
+ int fbcon_set_con2fb_map_ioctl(void __user *argp);
+@@ -33,6 +35,8 @@ static inline void fbcon_new_modelist(st
+ static inline void fbcon_get_requirement(struct fb_info *info,
+ 					 struct fb_blit_caps *caps) {}
+ static inline void fbcon_fb_blanked(struct fb_info *info, int blank) {}
++static inline int  fbcon_modechange_possible(struct fb_info *info,
++				struct fb_var_screeninfo *var) { return 0; }
+ static inline void fbcon_update_vcs(struct fb_info *info, bool all) {}
+ static inline void fbcon_remap_all(struct fb_info *info) {}
+ static inline int fbcon_set_con2fb_map_ioctl(void __user *argp) { return 0; }
 
 
