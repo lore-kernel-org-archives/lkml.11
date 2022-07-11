@@ -2,104 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C925C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32BD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiGKUV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
+        id S229937AbiGKUWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiGKUV6 (ORCPT
+        with ESMTP id S229437AbiGKUWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:21:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893C3275EF
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:21:57 -0700 (PDT)
+        Mon, 11 Jul 2022 16:22:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C3A2A712
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:22:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CFA5B81201
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:21:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93DACC34115;
-        Mon, 11 Jul 2022 20:21:54 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DjK+e1I6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1657570913;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eKHUD1ieT6ajZMW5LLFKvB//s7HOkz5t9N4D+wHx0eI=;
-        b=DjK+e1I6klbjFQTA2QYxJDD2ojxIntEnhVARJ21ZvM4SAX4bKVHpL10lCO5FnDDZTHwmw8
-        pX8fMCZ0810DyI5NJSj4qBq2oXBZCBMGufQjKfqP0z4GwwusX7jKrv95k1wkmIzPTBm4yM
-        crCxIN4Xsoe265wOpoM2uyZaL0DfIms=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 539d9e25 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 11 Jul 2022 20:21:49 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, ebiederm@xmission.com
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH v4] signal: break out of wait loops on kthread_stop()
-Date:   Mon, 11 Jul 2022 22:21:36 +0200
-Message-Id: <20220711202136.64458-1-Jason@zx2c4.com>
-In-Reply-To: <YsyFhfAunVfVQKci@zx2c4.com>
-References: <YsyFhfAunVfVQKci@zx2c4.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77E4E615F9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:22:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200BAC34115;
+        Mon, 11 Jul 2022 20:22:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1657570964;
+        bh=Lnilogmtmk06htoPTgTWDngldwLQW5JRjeP+dpcQyI0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=od93l4DVxhd/QwqZeCKEjqV/dJV7QPqE7/2LIg8Ogma2GA8l+YA/SlCwmJQ39P1gk
+         Ghyqm9DFSo0jALWMcbyuFIoDR1PElqS0PWOY6HkoZcMR0VuxHlW5w3qGF9hnQxVQmJ
+         ziF0t3uAuxbI4dBqd/SIu9DWMyUi6PdPybFgCgTk=
+Date:   Mon, 11 Jul 2022 13:22:43 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Sander Vanheule <sander@svanheule.net>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        elver@google.com, gregkh@linuxfoundation.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>, vschneid@redhat.com,
+        Yury Norov <yury.norov@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: [PATCH v4 0/5] cpumask: Fix invalid uniprocessor assumptions
+Message-Id: <20220711132243.76275f03800fc612589b3225@linux-foundation.org>
+In-Reply-To: <f58ee2c553ea8ae991454a8e195dcbd2821f794c.camel@svanheule.net>
+References: <cover.1656777646.git.sander@svanheule.net>
+        <20220702133840.943817a7694406a135bb48a9@linux-foundation.org>
+        <6a4ea3d21bfb4c692d257d3f38ba28c83f242dfc.camel@svanheule.net>
+        <20220703133921.6800bf1e7df3b00cb586a3c1@linux-foundation.org>
+        <f58ee2c553ea8ae991454a8e195dcbd2821f794c.camel@svanheule.net>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I was recently surprised to learn that msleep_interruptible(),
-wait_for_completion_interruptible_timeout(), and related functions
-simply hung when I called kthread_stop() on kthreads using them. The
-solution to fixing the case with msleep_interruptible() was more simply
-to move to schedule_timeout_interruptible(). Why?
+On Sun, 10 Jul 2022 08:51:08 +0200 Sander Vanheule <sander@svanheule.net> w=
+rote:
 
-The reason is that msleep_interruptible(), and many functions just like
-it, has a loop like this:
+> > > can I still send a v5 to move the last patch forward in the series, a=
+nd to
+> > > include Yury's tags?
+> >=20
+> > I already added Yury's ack.=A0 Please tell me the specific patch orderi=
+ng
+> > and I'll take care of that.
+> >=20
+>=20
+> The updated patch order should be:
+>    x86/cacheinfo: move shared cache map definitions
+>    cpumask: add UP optimised for_each_*_cpu versions
+>    cpumask: fix invalid uniprocessor mask assumption
+>    lib/test: introduce cpumask KUnit test suite
+>    cpumask: update cpumask_next_wrap() signature
+>=20
+> Reordering the patches on my tree didn't produce any conflicts.
 
-        while (timeout && !signal_pending(current))
-                timeout = schedule_timeout_interruptible(timeout);
-
-The call to kthread_stop() woke up the thread, so schedule_timeout_
-interruptible() returned early, but because signal_pending() returned
-true, it went back into another timeout, which was never woken up.
-
-This wait loop pattern is common to various pieces of code, and I
-suspect that the subtle misuse in a kthread that caused a deadlock in
-the code I looked at last week is also found elsewhere.
-
-So this commit causes signal_pending() to return true when
-kthread_stop() is called, by setting TIF_NOTIFY_SIGNAL.
-
-The same also probably applies to the similar kthread_park()
-functionality, but that can be addressed later, as its semantics are
-slightly different.
-
-Cc: Eric W. Biederman <ebiederm@xmission.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v3->v4:
-- Don't address park() for now.
-- Don't bother clearing the flag, since the task is about to be freed
-  anyway.
-
- kernel/kthread.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 3c677918d8f2..8888987f2b25 100644
---- a/kernel/kthread.c
-+++ b/kernel/kthread.c
-@@ -704,6 +704,7 @@ int kthread_stop(struct task_struct *k)
- 	kthread = to_kthread(k);
- 	set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
- 	kthread_unpark(k);
-+	test_and_set_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);
- 	wake_up_process(k);
- 	wait_for_completion(&kthread->exited);
- 	ret = kthread->result;
--- 
-2.35.1
-
+Got it, thanks.
