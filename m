@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 746B4CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC8F9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231986AbiGKU05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        id S231993AbiGKU1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230327AbiGKUZb (ORCPT
+        with ESMTP id S229870AbiGKUZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 16:25:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E89B50183;
-        Mon, 11 Jul 2022 13:25:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F334F6BF
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC0C6B81223;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAFB661654
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B23DC385A2;
         Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412B1C341DD;
-        Mon, 11 Jul 2022 20:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657571123;
-        bh=OSO6ejWnnUoc5otDMF/W0MkHHWHT3ycWD8ycMnZEBb0=;
+        s=k20201202; t=1657571125;
+        bh=Z/zKaJ2/Qaqra32Q4gdJ+PEw3L+fBQUgI3q77b7zbTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z1Pg+upYwFWFjLPEZvT4GDwufhDwhW95VBaCZK9Xb2t8xv3+E9qwZjc/vlgWLm6lp
-         kbL0bzUuafivfNQ/73KLxUmZ3jb51dHabYYyG1b9JBqHqfdYpoW+y8Sp1SaEigeBSM
-         bzpjzibRmkt22NDcZftWnyaZ3LK6h8FCO55fiN/qF4XnVedXv3hRrAp0TsVfTWwbuS
-         GvmVmmLZa9ghioKMISpM3Z67vNSGr0jm94wLsYU7H36/YsENjq7UNlkr+zjv5Jy7Du
-         Y80L2NFddxYLQGLeLqydyh0j5SceT4M1D5AkzseOhZwmo7l33oMFTwS/pitkTxExwM
-         ckASa52gqkLQw==
+        b=HTXP7vylzS9lKArjpe/PThnePwNYD3qp5T590vuzELwa+euMFYSQEQeeaONTuh5w3
+         7Ti+n8m4Tw9ovl8+k/EsIh21cUYQuydc3EFu4rj/bWtQ0ct5WYrxN12rNofo/qdAGk
+         5tMUyfachxWlI2yAWkzNIHcQJ++zl79lB9smMUh4+Ax6WOPAN8VW6pGjKJT2EPe5TP
+         ukNWHyQ7EL3tfEZ4JxMflB8dvSMj9vzh+iOC5N4bRHqbf1gPmqdA0m2g1R4F6KeifH
+         CpNSzdpoknmpgDjke3zXFZVYOsZHDU6fhQPCoffZ1MeiG/vt0Uyxcu/EUwT/co036A
+         YhlfsZU1/EzCA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e9B-Tk;
+        id 1oAzy3-004e8g-Oe;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
@@ -43,30 +43,26 @@ Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 29/32] docs: gpu: i915.rst: GVT: add more kernel-doc markups
-Date:   Mon, 11 Jul 2022 21:25:14 +0100
-Message-Id: <fc356e3a7b9cb51391afca3dad3ffb06dc0b5741.1657565224.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 21/32] drm/i915: dvo_sil164.c: use SPDX header
+Date:   Mon, 11 Jul 2022 21:25:06 +0100
+Message-Id: <33cc97fd489fdfbae420e907f7c1ceb79b633190.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several documented GVT kAPI that aren't currently part
-of the docs. Add them, as this allows identifying issues with
-badly-formatted tags.
+This file is licensed with MIT license.	Change its license text
+to use SPDX.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -74,61 +70,50 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- Documentation/gpu/i915.rst | 41 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ drivers/gpu/drm/i915/display/dvo_sil164.c | 32 +++++------------------
+ 1 file changed, 6 insertions(+), 26 deletions(-)
 
-diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
-index 70f2f4826eba..3ee121a0ea62 100644
---- a/Documentation/gpu/i915.rst
-+++ b/Documentation/gpu/i915.rst
-@@ -58,6 +58,47 @@ Intel GVT-g Host Support(vGPU device model)
- .. kernel-doc:: drivers/gpu/drm/i915/intel_gvt.c
-    :internal:
+diff --git a/drivers/gpu/drm/i915/display/dvo_sil164.c b/drivers/gpu/drm/i915/display/dvo_sil164.c
+index 0dfa0a0209ff..12974f7c9dc1 100644
+--- a/drivers/gpu/drm/i915/display/dvo_sil164.c
++++ b/drivers/gpu/drm/i915/display/dvo_sil164.c
+@@ -1,30 +1,10 @@
+-/**************************************************************************
++// SPDX-License-Identifier: MIT
  
-+Other Intel GVT-g interfaces
-+----------------------------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/gvt.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/aperture_gm.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/cfg_space.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/debugfs.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/display.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/edid.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/fb_decoder.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/firmware.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/gtt.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/handlers.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/interrupt.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/kvmgt.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/intel_gvt_mmio_table.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/mmio.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/mmio_context.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/opregion.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/page_track.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/scheduler.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gvt/vgpu.c
-+
- Workarounds
- -----------
+-Copyright © 2006 Dave Airlie
+-
+-All Rights Reserved.
+-
+-Permission is hereby granted, free of charge, to any person obtaining a
+-copy of this software and associated documentation files (the
+-"Software"), to deal in the Software without restriction, including
+-without limitation the rights to use, copy, modify, merge, publish,
+-distribute, sub license, and/or sell copies of the Software, and to
+-permit persons to whom the Software is furnished to do so, subject to
+-the following conditions:
+-
+-The above copyright notice and this permission notice (including the
+-next paragraph) shall be included in all copies or substantial portions
+-of the Software.
+-
+-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+-IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-
+-**************************************************************************/
++/*
++ * Copyright © 2006 Dave Airlie
++ *
++ * All Rights Reserved.
++ */
  
+ #include "intel_display_types.h"
+ #include "intel_dvo_dev.h"
 -- 
 2.36.1
 
