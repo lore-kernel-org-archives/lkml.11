@@ -2,214 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C5A0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 04:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 04:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbiGKErq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 00:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
+        id S229768AbiGKEsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 00:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbiGKErV (ORCPT
+        with ESMTP id S229779AbiGKEsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 00:47:21 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D5760CF
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 21:47:20 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id b2so523872qkk.3
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 21:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=INvUTYu9dairWJ/J98PrS85b9AuqfQWZLIuDZmgdIug=;
-        b=YaKowwfmmEcDAw8khKC4VVPEog0/+uU4H8CAy1j0FgHqSR9O2QCzFFd5uEf13z5XIo
-         3m2TviDjmax/vb/ztAi1FDg4qTC9UlSaU0JCb+1vwxCBCHttWpfh2xCsgiRlMHywfw2j
-         DWQrvlrQ151l7EhmHKdqTjPwSh6xCBm7C0S2cSX7aXY/nHMEFPB68ry2YhV0QhYXsq38
-         hdyBAduJHpfO0SpgX7Ro53uItDqvLACOrCGWAjmH1EmgPSo9g1afCaNTqbzleXBUqqjQ
-         VL0nEIsG36DdajEO67uDK6aKGLYfDENjGJGR3tyUC0laHGfzYc+0pJ1IiKmHCCNb3skV
-         KYtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=INvUTYu9dairWJ/J98PrS85b9AuqfQWZLIuDZmgdIug=;
-        b=feER4AHfHTNCEtLzg02VzEIejk4fT35ezjitp+RyJZCM3VU80W3tdB61hPX2hoOYMK
-         nuw+cbg88Ygh1znyr+2eqgPseKG+ZsIJTl2+nWhDxmuKYmMUS0h0wqE3/yMvh4pTmVl1
-         at2ITSpSjuSVmBo6ulzXyl5t4Ycha7HpvgXGsrSJzewEiWbfJ/jjphx65vKNkEiAME4b
-         gJANak1pCVMTT0Jr0URUgPYQ3GzmQdlaiWi2uV7dhY8xtTziVaFGIuG4Go8GcARrx00M
-         MhJwCe4qIfWQDe0ch9mZKtT6qWmfr6kgzRGZl5Mjn3N43boUmLxiPsLAFd23hKP46oif
-         Z5HQ==
-X-Gm-Message-State: AJIora/UyBBBqQy/GCVULBeABuwyrNQDEh49WAIImzNLC3810LuxPjmP
-        8vKRKwEP4Fjw+q2GQoA+uEMm8LofbQvq3A==
-X-Google-Smtp-Source: AGRyM1uhBWsCKUmq9aDc1F1otrdss8jIzZiRjquWwL0Ewzd4Viza65MG7AjCdPZ5uUgUUBzgQluFxA==
-X-Received: by 2002:a05:620a:1e5:b0:6b5:55d5:5ce3 with SMTP id x5-20020a05620a01e500b006b555d55ce3mr10018006qkn.640.1657514839230;
-        Sun, 10 Jul 2022 21:47:19 -0700 (PDT)
-Received: from localhost ([2601:4c1:c100:1230:a22e:180:f963:1eff])
-        by smtp.gmail.com with ESMTPSA id f20-20020a05620a409400b006b5840f3eefsm2475579qko.130.2022.07.10.21.47.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 21:47:18 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, David Gow <davidgow@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        Kees Cook <keescook@chromium.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 5/5] lib/nodemask: inline next_node_in() and node_random()
-Date:   Sun, 10 Jul 2022 21:47:11 -0700
-Message-Id: <20220711044711.466822-6-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220711044711.466822-1-yury.norov@gmail.com>
-References: <20220711044711.466822-1-yury.norov@gmail.com>
+        Mon, 11 Jul 2022 00:48:04 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF0E1900F;
+        Sun, 10 Jul 2022 21:47:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657514878; x=1689050878;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=MjNTYLGdvhEIt8nnujq9JqluQ/hMJx3/KNyjN4wrhg8=;
+  b=LR2lBk1SC9wzmVE/6izMsOqYEJwjhYEN+45dqOiPysDb7I6vbapJT2wi
+   BwJCD9bKmLsGhip0A+Z49QcTvNJ0886Ycudu1t2Z7JJ9aaw6KeD5y4HBX
+   jAXrKujxgVa3MVqurXic6LUQN8dNziDs57r0njAzOieczW3bqJo1Eh5ut
+   qRknzprfCVFlJLBvm++nbZn9YoPtKyQUzCugXKXmG+xAIW6QIpFNzNhJF
+   SIejrc/8bg99IBxSbkfaJG1FIrxtO58KKV+S/MfIPnr2ES+IRZtTk5fg0
+   rdzp5wJ8HQ1MuK1IR1Qc9paBULOzn0U9LzQdv3xVbrESioE1pHItG9Q+8
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="282125172"
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="asc'?scan'208";a="282125172"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 21:47:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="asc'?scan'208";a="598910490"
+Received: from zhen-hp.sh.intel.com (HELO zhen-hp) ([10.239.159.108])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Jul 2022 21:47:54 -0700
+Date:   Mon, 11 Jul 2022 12:24:30 +0800
+From:   Zhenyu Wang <zhenyuw@linux.intel.com>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        intel-gfx@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Zhi Wang <zhi.a.wang@intel.com>
+Subject: Re: [PATCH] drm/i915/gvt: fix typo in comment
+Message-ID: <20220711042430.GR1089@zhen-hp.sh.intel.com>
+Reply-To: Zhenyu Wang <zhenyuw@linux.intel.com>
+References: <20220521111145.81697-49-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="+dH9khzwljbvYE07"
+Content-Disposition: inline
+In-Reply-To: <20220521111145.81697-49-Julia.Lawall@inria.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The functions are pretty thin wrappers around find_bit engine, and
-keeping them in c-file prevents compiler from small_const_nbits()
-optimization, which must take place for all systems with MAX_NUMNODES
-less than BITS_PER_LONG (default is 16 for me).
 
-Moving them in header file doesn't blow up the kernel size:
-add/remove: 1/2 grow/shrink: 9/5 up/down: 968/-88 (880)
+--+dH9khzwljbvYE07
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- MAINTAINERS              |  1 -
- include/linux/nodemask.h | 27 ++++++++++++++++++++++-----
- lib/Makefile             |  2 +-
- lib/nodemask.c           | 30 ------------------------------
- 4 files changed, 23 insertions(+), 37 deletions(-)
- delete mode 100644 lib/nodemask.c
+On 2022.05.21 13:10:59 +0200, Julia Lawall wrote:
+> Spelling mistake (triple letters) in comment.
+> Detected with the help of Coccinelle.
+>=20
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+>=20
+> ---
+>  drivers/gpu/drm/i915/gvt/gtt.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/i915/gvt/gtt.c b/drivers/gpu/drm/i915/gvt/gt=
+t.c
+> index 9c5cc2800975..c919f14c4fcb 100644
+> --- a/drivers/gpu/drm/i915/gvt/gtt.c
+> +++ b/drivers/gpu/drm/i915/gvt/gtt.c
+> @@ -2341,7 +2341,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgp=
+u *vgpu, unsigned int off,
+>  			gvt_vgpu_err("fail to populate guest ggtt entry\n");
+>  			/* guest driver may read/write the entry when partial
+>  			 * update the entry in this situation p2m will fail
+> -			 * settting the shadow entry to point to a scratch page
+> +			 * setting the shadow entry to point to a scratch page
+>  			 */
+>  			ops->set_pfn(&m, gvt->gtt.scratch_mfn);
+>  		} else
+>=20
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7c0b8f28aa25..19c8d0ef1177 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3540,7 +3540,6 @@ F:	lib/bitmap.c
- F:	lib/cpumask.c
- F:	lib/find_bit.c
- F:	lib/find_bit_benchmark.c
--F:	lib/nodemask.c
- F:	lib/test_bitmap.c
- F:	tools/include/linux/bitmap.h
- F:	tools/include/linux/find.h
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index 0f233b76c9ce..48ebe4007955 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -94,6 +94,7 @@
- #include <linux/bitmap.h>
- #include <linux/minmax.h>
- #include <linux/numa.h>
-+#include <linux/random.h>
- 
- typedef struct { DECLARE_BITMAP(bits, MAX_NUMNODES); } nodemask_t;
- extern nodemask_t _unused_nodemask_arg_;
-@@ -276,7 +277,14 @@ static inline unsigned int __next_node(int n, const nodemask_t *srcp)
-  * the first node in src if needed.  Returns MAX_NUMNODES if src is empty.
-  */
- #define next_node_in(n, src) __next_node_in((n), &(src))
--unsigned int __next_node_in(int node, const nodemask_t *srcp);
-+static inline unsigned int __next_node_in(int node, const nodemask_t *srcp)
-+{
-+	unsigned int ret = __next_node(node, srcp);
-+
-+	if (ret == MAX_NUMNODES)
-+		ret = __first_node(srcp);
-+	return ret;
-+}
- 
- static inline void init_nodemask_of_node(nodemask_t *mask, int node)
- {
-@@ -493,14 +501,23 @@ static inline int num_node_state(enum node_states state)
- 
- #endif
- 
-+/*
-+ * Return the bit number of a random bit set in the nodemask.
-+ * (returns NUMA_NO_NODE if nodemask is empty)
-+ */
-+static inline int node_random(const nodemask_t *maskp)
-+{
- #if defined(CONFIG_NUMA) && (MAX_NUMNODES > 1)
--extern int node_random(const nodemask_t *maskp);
-+	int w, bit = NUMA_NO_NODE;
-+
-+	w = nodes_weight(*maskp);
-+	if (w)
-+		bit = find_nth_bit(maskp->bits, MAX_NUMNODES, get_random_int() % w);
-+	return bit;
- #else
--static inline int node_random(const nodemask_t *mask)
--{
- 	return 0;
--}
- #endif
-+}
- 
- #define node_online_map 	node_states[N_ONLINE]
- #define node_possible_map 	node_states[N_POSSIBLE]
-diff --git a/lib/Makefile b/lib/Makefile
-index f99bf61f8bbc..731cea0342d1 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -33,7 +33,7 @@ lib-y := ctype.o string.o vsprintf.o cmdline.o \
- 	 flex_proportions.o ratelimit.o show_mem.o \
- 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
- 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
--	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \
-+	 nmi_backtrace.o win_minmax.o memcat_p.o \
- 	 buildid.o
- 
- lib-$(CONFIG_PRINTK) += dump_stack.o
-diff --git a/lib/nodemask.c b/lib/nodemask.c
-deleted file mode 100644
-index 7dad4ce8ff59..000000000000
---- a/lib/nodemask.c
-+++ /dev/null
-@@ -1,30 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include <linux/nodemask.h>
--#include <linux/module.h>
--#include <linux/random.h>
--
--unsigned int __next_node_in(int node, const nodemask_t *srcp)
--{
--	unsigned int ret = __next_node(node, srcp);
--
--	if (ret == MAX_NUMNODES)
--		ret = __first_node(srcp);
--	return ret;
--}
--EXPORT_SYMBOL(__next_node_in);
--
--#ifdef CONFIG_NUMA
--/*
-- * Return the bit number of a random bit set in the nodemask.
-- * (returns NUMA_NO_NODE if nodemask is empty)
-- */
--int node_random(const nodemask_t *maskp)
--{
--	int w, bit = NUMA_NO_NODE;
--
--	w = nodes_weight(*maskp);
--	if (w)
--		bit = find_nth_bit(maskp->bits, MAX_NUMNODES, get_random_int() % w);
--	return bit;
--}
--#endif
--- 
-2.34.1
+Sorry for late reply!
 
+Acked-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+
+
+--+dH9khzwljbvYE07
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EARECAB0WIQTXuabgHDW6LPt9CICxBBozTXgYJwUCYsul9QAKCRCxBBozTXgY
+J9ExAJ4niV+SwtyX80S7SJNTbxCAfj8fXgCfXvmZBkMeJzbCX9v2ScqDY08D2io=
+=hUis
+-----END PGP SIGNATURE-----
+
+--+dH9khzwljbvYE07--
