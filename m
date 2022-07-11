@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E40ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbiGKL4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
+        id S229931AbiGKL5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiGKL43 (ORCPT
+        with ESMTP id S229456AbiGKL5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:56:29 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0328932B8E
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:56:26 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id y4so5917249edc.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:56:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7PtfrXO1muPciH2j8bRjfuNDfP1Fsd4zwF2waXvYN50=;
-        b=onJg3HN0oCrv0W9dCJRxiNKQyqV0TFr8Dfwdc6eY989ZSl6ci0/0AY2iXw2m4ibjeH
-         0OjAJXtJYm1FPVegXDX5Gvdh4tEDG9PMMK1MDRnVw65gG+UOrFGa3r1PCKFWXz8IbDYe
-         Xku+4mbYsI6U+HV+o47l+gFl9fNlAO6fHYzIDhVkLTrUDpTKWGOD2F39yTxbpEPZt1cX
-         tdb791uUZvPSSo2YwpY0j6fB5gOzUhdEKV6AN0W/hgPp3G4883XWlecmnuyaatZdpHtm
-         wQasHxidD1d0T9fW9LYURrF4UtYTzcXoBU0MbwlIJxf5D+0e8v9Qb1ZMzBG/rU74QlxC
-         VFcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7PtfrXO1muPciH2j8bRjfuNDfP1Fsd4zwF2waXvYN50=;
-        b=4Vln3uqRaa7BbPro+sCRIi/MEqXPFJ2xMPV+roeHcjs+muRkYNckiO+mJW8Et45eQL
-         UeSA8sKNzn3R4Vt3xw3xb/vjKpx5eUnJy1aOU70tXvLNvkW+Ustl7a08P7TKZ+jJedbL
-         ZeV9WbEVbR81jbzFKQID+7uDIfJ+kGNv8oPCqLrRCmKMqRfNAd5tcPGIZSuPhZ9hNzCR
-         M9iVCdDXeN7zYzmb4+ud87iHUjMZ1b3Qyj8LjqWiWb0fvZqNJC4CtxRUO2HAyid3VO//
-         BRMDJITm2ySIRUAdHcMSvNNFdmJ3O1MgxkrBtKJ8Ai8FNYwovHZcE98+yXiKjE+BUAec
-         v+8A==
-X-Gm-Message-State: AJIora/nmXKbuKwFLgGJf907n+d6w4wBaTIcy36SiU/mSej9Yldo1kwY
-        fbTP8QYNni3QQX2XDgqtKk4BpIxUgYwE6Q==
-X-Google-Smtp-Source: AGRyM1vMfIA4XQ6ZtFet6Vbj8aoaBP0vzK/gnYP4nB46mV88UIvfjrpml3nHPraiPFFSJbxez3fkQw==
-X-Received: by 2002:aa7:d389:0:b0:43a:56c0:c863 with SMTP id x9-20020aa7d389000000b0043a56c0c863mr24055139edq.373.1657540585360;
-        Mon, 11 Jul 2022 04:56:25 -0700 (PDT)
-Received: from localhost.localdomain ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id z9-20020a170906270900b00722e50dab2csm2594932ejc.109.2022.07.11.04.56.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 04:56:24 -0700 (PDT)
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Mike Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     NXP Linux Team <linux-imx@nxp.com>, linux-clk@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] clk: imx: Updates for v5.20
-Date:   Mon, 11 Jul 2022 14:55:42 +0300
-Message-Id: <20220711115542.1015136-1-abel.vesa@linaro.org>
-X-Mailer: git-send-email 2.34.3
+        Mon, 11 Jul 2022 07:57:22 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB58132B89
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 04:57:21 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 7ACDF20218;
+        Mon, 11 Jul 2022 11:57:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657540640; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iYcatKEW+q5bW/vlzXGidwV/BBFqHQS6h0HqRIuS6jU=;
+        b=DN4t8sIucnIOzugkoQH9rK/FPjuKnU0HeQ/OfnRMiFpDY6Vm1Pe39PbJZ6EbIz+HhEkK9r
+        4O6vXhLEkPs+XVMuJ6vrBdXEMTA5ee7WxGTb5Rr6YImIm+IZeGWLpJv2/EfOpyUXgNYssF
+        889jYDZomWzNMIfuIM99JGYKagE1xQk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657540640;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iYcatKEW+q5bW/vlzXGidwV/BBFqHQS6h0HqRIuS6jU=;
+        b=536qo3gCx/uMV19ozGqyCwKX69wdlnOTYQwDsbWS+Zx9FS29sxJ/DNHIzUpp8wVae7jgBF
+        TSWbsCyCW2379bBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4A15913524;
+        Mon, 11 Jul 2022 11:57:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Vm8CESAQzGJFAwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Mon, 11 Jul 2022 11:57:20 +0000
+Date:   Mon, 11 Jul 2022 13:57:18 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Huang Ying <ying.huang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
+Subject: Re: [PATCH -V2 2/7] migrate_pages(): remove unnecessary
+ list_safe_reset_next()
+Message-ID: <YswQHnppYkMq54ZT@localhost.localdomain>
+References: <20220711084948.274787-1-ying.huang@intel.com>
+ <20220711084948.274787-3-ying.huang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711084948.274787-3-ying.huang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+On Mon, Jul 11, 2022 at 04:49:43PM +0800, Huang Ying wrote:
+> Before commit b5bade978e9b ("mm: migrate: fix the return value of
+> migrate_pages()"), the tail pages of THP will be put in the "from"
+> list directly.  So one of the loop cursors (page2) needs to be reset,
+> as is done in try_split_thp() via list_safe_reset_next().  But after
+> the commit, the tail pages of THP will be put in a dedicated
+> list (thp_split_pages).  That is, the "from" list will not be changed
+> during splitting.  So, it's unnecessary to call list_safe_reset_next()
+> anymore.
+> 
+> This is a code cleanup, no functionality changes are expected.
+> 
+> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Cc: Zi Yan <ziy@nvidia.com>
+> Cc: Yang Shi <shy828301@gmail.com>
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
 
-are available in the Git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/abelvesa/linux.git/ tags/clk-imx-5.20
-
-for you to fetch changes up to c196175acdd3ab06114bde2955971bc7282f2b85:
-
-  clk: imx: clk-fracn-gppll: Add more freq config for video pll (2022-06-16 17:28:59 +0300)
-
-----------------------------------------------------------------
-i.MX clock changes for 5.20
-
-- Correct adc1, nic_media and edma1's parents for i.MX93
-- Fix rdiv, mfd values, the return rate in recalc_rate and add more
-  frequencies in the table for fracn-gppll
-
-----------------------------------------------------------------
-Haibo Chen (1):
-      clk: imx93: use adc_root as the parent clock of adc1
-
-Jacky Bai (1):
-      clk: imx93: Correct the edma1's parent clock
-
-Liu Ying (1):
-      clk: imx: clk-fracn-gppll: Return rate in rate table properly in ->recalc_rate()
-
-Peng Fan (4):
-      clk: imx93: correct nic_media parent
-      clk: imx: clk-fracn-gppll: fix mfd value
-      clk: imx: clk-fracn-gppll: correct rdiv
-      clk: imx: clk-fracn-gppll: Add more freq config for video pll
-
- drivers/clk/imx/clk-fracn-gppll.c | 36 +++++++++++++++++++++---------------
- drivers/clk/imx/clk-imx93.c       |  6 +++---
- 2 files changed, 24 insertions(+), 18 deletions(-)
+-- 
+Oscar Salvador
+SUSE Labs
