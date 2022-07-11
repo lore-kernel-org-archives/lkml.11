@@ -2,144 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AD7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C066FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiGKIdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
+        id S230255AbiGKIeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiGKIci (ORCPT
+        with ESMTP id S230252AbiGKIdl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:32:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF1A11F61D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:32:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657528354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YEy+JbF4/MHQmoWPD6TNS3XHUSO00yIucme0xMgXZWk=;
-        b=WyNR1nNmvAZYom/NAZ6kt+MC8bdHsNPTNmD65NCeQ1zsgfIEC6PJ0jMNiw0fX8+r5CxSUO
-        PEPq4RZR/Y4nSwlQOycFVke7s8vQ5UnhQ7hv2NkTNPx1I+4s2a83wQVabpDKkiUmU8p2bh
-        2dnHmPAn0xsjkOcfWNPyIBuCjH//wl0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-584-C_R0PKqGPtiBMFNB8fnwxA-1; Mon, 11 Jul 2022 04:32:23 -0400
-X-MC-Unique: C_R0PKqGPtiBMFNB8fnwxA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3097C80029D;
-        Mon, 11 Jul 2022 08:32:23 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 097E01121314;
-        Mon, 11 Jul 2022 08:32:22 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id F1F241C0258; Mon, 11 Jul 2022 10:32:21 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Artem Savkov <asavkov@redhat.com>
-Subject: [RFC PATCH bpf-next 2/4] bpf: add BPF_F_DESTRUCTIVE flag for BPF_PROG_LOAD
-Date:   Mon, 11 Jul 2022 10:32:18 +0200
-Message-Id: <20220711083220.2175036-3-asavkov@redhat.com>
-In-Reply-To: <20220711083220.2175036-1-asavkov@redhat.com>
-References: <20220711083220.2175036-1-asavkov@redhat.com>
+        Mon, 11 Jul 2022 04:33:41 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63342124E
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:33:06 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id 6so7575777ybc.8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:33:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iVyuPPd4JS7DK+cdBbaLOh3fYIbgdPf73eEb1h+UQN8=;
+        b=q0M52SkDM75AJrAPNvYIbmGuS6dUjHy4NCOmQjKKfinbsvVFAu2dCMY+vlur7Bo5I3
+         wjFz16T7LRF308SFWAkRkCpQKfgJtgABgYuE4WXVkG1pKka9/653/Zc6LhNwMVEqZEe9
+         2OFQD9TiXV9naJdagdAfi3UgKybWwtjsBkIZpsEzjpzhGaiHk6EwZ+fM3tu5Cl7f5lSF
+         CCqZDBQslBOxRH++aB681UlW9vpMN/AzGonSGqjy1u9BoMHa1xXDkzjRAZrORub4O6S5
+         eKRdPwABF+mLy1G1XG6fdVX+zVDlYdn9lIxJyyVZV5PL63jpGuYKjiaaHZpFzRFcfTvX
+         XqRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iVyuPPd4JS7DK+cdBbaLOh3fYIbgdPf73eEb1h+UQN8=;
+        b=NMkFuY8d0RPcnnzERPn0GTdYggqY9YO0TvhtaXAk1TbPQTwNzplXpvYSTEGDj0o7v2
+         qhCzB7vE8mpv08u2aPhUO3n8bCcCgT8biQMK6cWqMkgutuWaCCj79RAJRp+7zMXFdlew
+         QyYLMnRPu5SBDSuSf8ytzOPH6/zl/Xl0zA3xLn2+CAdDW6lWy+sV98RGWeMBxBExkJ3C
+         bqYBO0zMe5XC99mtAUGaMLvD50vBGAwlFPxw3adYKYkEtmr/JvA1MQSKjjtE1gDbK0xr
+         r16EL+pZU0XI048DSuuo4P7DAETM+TxQLS5noeENB35rP0RpHNVQbrhf4ZGB8r6Z5cPS
+         TvrQ==
+X-Gm-Message-State: AJIora/ESAQ7dX8vnNZaUFVB7XT+Rrdr6ikD+4/5NWGFLW/CUNJCAjNR
+        dShOw/82Tl2C0Mb/HIAJQSKee+bzWiPFQMvxhBq2RQ==
+X-Google-Smtp-Source: AGRyM1s0qx+LpwHJQ6qrX8OZQRJYw7IvTpEMihynzP8Jj2RurCYHautXi5k77p5X40nQps4/xHse5VtsSthmh11Z14I=
+X-Received: by 2002:a25:fe04:0:b0:66e:1f8a:8e89 with SMTP id
+ k4-20020a25fe04000000b0066e1f8a8e89mr16500920ybe.514.1657528385869; Mon, 11
+ Jul 2022 01:33:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+References: <cover.1656583541.git.hakan.jansson@infineon.com> <3591c206eeccdacb8b4e702494d799792b752661.1656583541.git.hakan.jansson@infineon.com>
+In-Reply-To: <3591c206eeccdacb8b4e702494d799792b752661.1656583541.git.hakan.jansson@infineon.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 11 Jul 2022 10:32:54 +0200
+Message-ID: <CACRpkdYcpdDphKXHY46BEth3fruLfUyc9dsf7t4Y70_FSrCrmg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] dt-bindings: net: broadcom-bluetooth: Add
+ conditional constraints
+To:     Hakan Jansson <hakan.jansson@infineon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a BPF_F_DESTRUCTIVE will be required to be supplied to
-BPF_PROG_LOAD for programs to utilize destructive helpers such as
-bpf_panic().
+On Thu, Jun 30, 2022 at 2:46 PM Hakan Jansson
+<hakan.jansson@infineon.com> wrote:
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- include/linux/bpf.h            | 1 +
- include/uapi/linux/bpf.h       | 6 ++++++
- kernel/bpf/syscall.c           | 4 +++-
- tools/include/uapi/linux/bpf.h | 6 ++++++
- 4 files changed, 16 insertions(+), 1 deletion(-)
+> Add conditional constraint to make property "reset-gpios" available only
+> for compatible devices acually having the reset pin.
+>
+> Make property "brcm,requires-autobaud-mode" depend on property
+> "shutdown-gpios" as the shutdown pin is required to enter autobaud mode.
+>
+> I looked at all compatible devices and compiled the matrix below before
+> formulating the conditional constraint. This was a pure paper exercise and
+> no verification testing has been performed.
+>
+>                                 d
+>                                 e
+>                                 v h
+>                                 i o
+>                                 c s
+>                             s   e t
+>                             h   - -
+>                             u   w w       v
+>                             t r a a     v d
+>                             d e k k     b d
+>                             o s e e     a i
+>                             w e u u     t o
+>                             n t p p     - -
+>                             - - - -     s s
+>                             g g g g     u u
+>                             p p p p t   p p
+>                             i i i i x l p p
+>                             o o o o c p l l
+>                             s s s s o o y y
+>     ---------------------------------------
+>     brcm,bcm20702a1         X X X X X X X X
+>     brcm,bcm4329-bt         X X X X X X X X
+>     brcm,bcm4330-bt         X X X X X X X X
+>     brcm,bcm4334-bt         X - X X X X X X
+>     brcm,bcm43438-bt        X - X X X X X X
+>     brcm,bcm4345c5          X - X X X X X X
+>     brcm,bcm43540-bt        X - X X X X X X
+>     brcm,bcm4335a0          X - X X X X X X
+>     brcm,bcm4349-bt         X - X X X X X X
+>     infineon,cyw55572-bt    X - X X X X X X
+>
+> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 77972724bed7..43c008e3587a 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1041,6 +1041,7 @@ struct bpf_prog_aux {
- 	bool sleepable;
- 	bool tail_call_reachable;
- 	bool xdp_has_frags;
-+	bool destructive;
- 	bool use_bpf_prog_pack;
- 	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
- 	const struct btf_type *attach_func_proto;
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index e81362891596..4423874b5da4 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1121,6 +1121,12 @@ enum bpf_link_type {
-  */
- #define BPF_F_XDP_HAS_FRAGS	(1U << 5)
- 
-+/* If BPF_F_DESTRUCTIVE is used in BPF_PROG_LOAD command, the loaded program
-+ * will be able to perform destructive operations such as calling bpf_panic()
-+ * helper.
-+ */
-+#define BPF_F_DESTRUCTIVE	(1U << 6)
-+
- /* link_create.kprobe_multi.flags used in LINK_CREATE command for
-  * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
-  */
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 1ce6541d90e1..779feac2dc7d 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2449,7 +2449,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
- 				 BPF_F_TEST_STATE_FREQ |
- 				 BPF_F_SLEEPABLE |
- 				 BPF_F_TEST_RND_HI32 |
--				 BPF_F_XDP_HAS_FRAGS))
-+				 BPF_F_XDP_HAS_FRAGS |
-+				 BPF_F_DESTRUCTIVE))
- 		return -EINVAL;
- 
- 	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&
-@@ -2536,6 +2537,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
- 	prog->aux->offload_requested = !!attr->prog_ifindex;
- 	prog->aux->sleepable = attr->prog_flags & BPF_F_SLEEPABLE;
- 	prog->aux->xdp_has_frags = attr->prog_flags & BPF_F_XDP_HAS_FRAGS;
-+	prog->aux->destructive = attr->prog_flags & BPF_F_DESTRUCTIVE;
- 
- 	err = security_bpf_prog_alloc(prog->aux);
- 	if (err)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index e81362891596..4423874b5da4 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1121,6 +1121,12 @@ enum bpf_link_type {
-  */
- #define BPF_F_XDP_HAS_FRAGS	(1U << 5)
- 
-+/* If BPF_F_DESTRUCTIVE is used in BPF_PROG_LOAD command, the loaded program
-+ * will be able to perform destructive operations such as calling bpf_panic()
-+ * helper.
-+ */
-+#define BPF_F_DESTRUCTIVE	(1U << 6)
-+
- /* link_create.kprobe_multi.flags used in LINK_CREATE command for
-  * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
-  */
--- 
-2.35.3
+A job well done!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+Yours,
+Linus Walleij
