@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F94CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E6DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232244AbiGKJdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
+        id S232622AbiGKJdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232268AbiGKJcp (ORCPT
+        with ESMTP id S232548AbiGKJcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:32:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FDA978216;
-        Mon, 11 Jul 2022 02:17:34 -0700 (PDT)
+        Mon, 11 Jul 2022 05:32:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F1978DC7;
+        Mon, 11 Jul 2022 02:17:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3E5861227;
-        Mon, 11 Jul 2022 09:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5AB1C34115;
-        Mon, 11 Jul 2022 09:17:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52440612AF;
+        Mon, 11 Jul 2022 09:17:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F14C34115;
+        Mon, 11 Jul 2022 09:17:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531053;
-        bh=SKoJobLuXWL5FRX92QKZJyelch0U0Zzj/8c/a3u1sTk=;
+        s=korg; t=1657531055;
+        bh=7glkkp0LLer/1vOu19Ra/fd2zYttlhPNl2QaoAA/NUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XT3B5120QJweKUh2APK5Kw4i1qYi5ETHd85UOdUFIYW6mOCHhi/UFyzxdKfmcKBu2
-         RkWhLhNhKFlRvKf5xHL4f3CaJd906T/26tzxjqKaX7n1TE5i587pJH7U2dKnWZpns7
-         Irw+Lrn3HGM0JEbE0ZG+VUBHv2NiDabfrwCeV2DQ=
+        b=JQYINLdC49PaaQWu24jYBLLNQn1xZh5sWqPAJ1qcnvGqInoq+P1wIc2M/6RhVl+qr
+         h0zuxGVzCmohiY3NEYHDIQS2xaeEnj4EFEWaGhpwitHjOro/ggE6fiGkXIrpIACgKw
+         AULyfDN9jnkMzihEphu9kfTZJdwIMxAmyQUdgIlA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 5.18 039/112] memregion: Fix memregion_free() fallback definition
-Date:   Mon, 11 Jul 2022 11:06:39 +0200
-Message-Id: <20220711090550.682502815@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.18 040/112] video: of_display_timing.h: include errno.h
+Date:   Mon, 11 Jul 2022 11:06:40 +0200
+Message-Id: <20220711090550.711265777@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -49,39 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Hsin-Yi Wang <hsinyi@chromium.org>
 
-commit f50974eee5c4a5de1e4f1a3d873099f170df25f8 upstream.
+commit 3663a2fb325b8782524f3edb0ae32d6faa615109 upstream.
 
-In the CONFIG_MEMREGION=n case, memregion_free() is meant to be a static
-inline. 0day reports:
+If CONFIG_OF is not enabled, default of_get_display_timing() returns an
+errno, so include the header.
 
-    In file included from drivers/cxl/core/port.c:4:
-    include/linux/memregion.h:19:6: warning: no previous prototype for
-    function 'memregion_free' [-Wmissing-prototypes]
-
-Mark memregion_free() static.
-
-Fixes: 33dd70752cd7 ("lib: Uplevel the pmem "region" ida to a global allocator")
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Alison Schofield <alison.schofield@intel.com>
-Link: https://lore.kernel.org/r/165601455171.4042645.3350844271068713515.stgit@dwillia2-xfh
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 422b67e0b31a ("videomode: provide dummy inline functions for !CONFIG_OF")
+Suggested-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/memregion.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/video/of_display_timing.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/include/linux/memregion.h
-+++ b/include/linux/memregion.h
-@@ -16,7 +16,7 @@ static inline int memregion_alloc(gfp_t
- {
- 	return -ENOMEM;
- }
--void memregion_free(int id)
-+static inline void memregion_free(int id)
- {
- }
- #endif
+--- a/include/video/of_display_timing.h
++++ b/include/video/of_display_timing.h
+@@ -8,6 +8,8 @@
+ #ifndef __LINUX_OF_DISPLAY_TIMING_H
+ #define __LINUX_OF_DISPLAY_TIMING_H
+ 
++#include <linux/errno.h>
++
+ struct device_node;
+ struct display_timing;
+ struct display_timings;
 
 
