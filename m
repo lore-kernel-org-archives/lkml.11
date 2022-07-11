@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F04FBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A47FCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbiGKKjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51288 "EHLO
+        id S230111AbiGKKj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbiGKKix (ORCPT
+        with ESMTP id S229880AbiGKKiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:38:53 -0400
+        Mon, 11 Jul 2022 06:38:55 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A554810CA;
-        Mon, 11 Jul 2022 02:48:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BA6CD7;
+        Mon, 11 Jul 2022 02:48:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657532916; x=1689068916;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=EWVlALmZQRKxWTh4UARRNBiWOQPnVe4j5/nTY9L0Grk=;
-  b=EobBulsy6cbd9l5yFn0o4cJZQqKw0ik8eywbegNWO58oBK7l+txlpCzb
-   cNsf85VM1eGuIgnHj3ERCFNlvgN6iw+2URn4PRG6hz5Ugrx3TQz/RTyZK
-   sbq/WB7Ioq9JVwXPTViwjFwmfb7IfjNllvCgW2sG94wNaL41ElqGKmnl1
-   Y=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  t=1657532918; x=1689068918;
+  h=from:to:cc:subject:date:message-id;
+  bh=XNpGAN6ezgnWWNpEkvoePXiBCkJQ/b1DrSY6oaSTC4E=;
+  b=tcWQ8pUIaNh4HtywVRLwMH95AMQ2x5ihWn0X7rY+sfXm7UmnBrdwVJ8S
+   oQW6BHaoL8jTGr2dua6NDzsaykhD5jilb8fWVfGW0yAgJ885nubBPJ+gy
+   1e/NrFGdqAgQ80SfDTfE9jtZF3gdqRF07Pm8Y5Uq5WWKSg91kjIo6k8RT
+   M=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
   by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 02:48:35 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 02:48:34 -0700
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 02:48:33 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 15:18:08 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 15:18:05 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 2E8993E53; Mon, 11 Jul 2022 15:18:05 +0530 (IST)
+        id 30AED3E43; Mon, 11 Jul 2022 15:18:04 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
@@ -45,38 +44,91 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
         bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
         quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
-Subject: [PATCH v5 10/10] drm/msm/disp/dpu1: check for crtc enable rather than crtc active to release shared resources
-Date:   Mon, 11 Jul 2022 15:18:00 +0530
-Message-Id: <1657532880-12897-12-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [PATCH v5 00/10] Add PSR support for eDP
+Date:   Mon, 11 Jul 2022 15:17:49 +0530
+Message-Id: <1657532880-12897-1-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657532880-12897-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1657532880-12897-1-git-send-email-quic_vpolimer@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to KMS documentation, The driver must not release any shared
-resources if active is set to false but enable still true.
+Changes in v2:
+  - Use dp bridge to set psr entry/exit instead of dpu_enocder.
+  - Don't modify whitespaces.
+  - Set self refresh aware from atomic_check.
+  - Set self refresh aware only if psr is supported.
+  - Provide a stub for msm_dp_display_set_psr.
+  - Move dp functions to bridge code.
 
-Fixes: ccc862b957c6 ("drm/msm/dpu: Fix reservation failures in modeset")
+Changes in v3:
+  - Change callback names to reflect atomic interfaces.
+  - Move bridge callback change to separate patch as suggested by Dmitry.
+  - Remove psr function declaration from msm_drv.h.
+  - Set self_refresh_aware flag only if psr is supported.
+  - Modify the variable names to simpler form.
+  - Define bit fields for PSR settings.
+  - Add comments explaining the steps to enter/exit psr.
+  - Change DRM_INFO to drm_dbg_db. 
+
+Changes in v4:
+  - Move the get crtc functions to drm_atomic.
+  - Add atomic functions for DP bridge too.
+  - Add ternary operator to choose eDP or DP ops.
+  - Return true/false instead of 1/0.
+  - mode_valid missing in the eDP bridge ops.
+  - Move the functions to get crtc into drm_atomic.c.
+  - Fix compilation issues.
+  - Remove dpu_assign_crtc and get crtc from drm_enc instead of dpu_enc.
+  - Check for crtc state enable while reserving resources.
+
+Changes in v5:
+  - Move the mode_valid changes into a different patch.
+  - Complete psr_op_comp only when isr is set.
+  - Move the DP atomic callback changes to a different patch.
+  - Get crtc from drm connector state crtc.
+  - Move to separate patch for check for crtc state enable while
+reserving resources.
+
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
 Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 726acc9..10dd4ba 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -593,7 +593,7 @@ static int dpu_encoder_virt_atomic_check(
- 		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
- 			dpu_rm_release(global_state, drm_enc);
- 
--			if (!crtc_state->active_changed || crtc_state->active)
-+			if (!crtc_state->active_changed || crtc_state->enable)
- 				ret = dpu_rm_reserve(&dpu_kms->rm, global_state,
- 						drm_enc, crtc_state, topology);
- 		}
+Vinod Polimera (10):
+  drm/msm/disp/dpu1: clear dpu_assign_crtc and get crtc from connector
+    state instead of dpu_enc
+  drm: add helper functions to retrieve old and new crtc
+  drm/msm/dp: use atomic callbacks for DP bridge ops
+  drm/msm/dp: Add basic PSR support for eDP
+  drm/msm/dp: use the eDP bridge ops to validate eDP modes
+  drm/bridge: use atomic enable/disable callbacks for panel bridge
+  drm/bridge: add psr support for panel bridge callbacks
+  drm/msm/disp/dpu1: use atomic enable/disable callbacks for encoder
+    functions
+  drm/msm/disp/dpu1: add PSR support for eDP interface in dpu driver
+  drm/msm/disp/dpu1: check for crtc enable rather than crtc active to
+    release shared resources
+
+ drivers/gpu/drm/bridge/panel.c              |  68 ++++++++--
+ drivers/gpu/drm/drm_atomic.c                |  60 +++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  17 ++-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c |  55 +++++---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |   8 --
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c     |   2 +-
+ drivers/gpu/drm/msm/dp/dp_catalog.c         |  81 ++++++++++++
+ drivers/gpu/drm/msm/dp/dp_catalog.h         |   4 +
+ drivers/gpu/drm/msm/dp/dp_ctrl.c            |  73 +++++++++++
+ drivers/gpu/drm/msm/dp/dp_ctrl.h            |   3 +
+ drivers/gpu/drm/msm/dp/dp_display.c         |  31 +++--
+ drivers/gpu/drm/msm/dp/dp_display.h         |   2 +
+ drivers/gpu/drm/msm/dp/dp_drm.c             | 187 ++++++++++++++++++++++++++--
+ drivers/gpu/drm/msm/dp/dp_drm.h             |   9 +-
+ drivers/gpu/drm/msm/dp/dp_link.c            |  36 ++++++
+ drivers/gpu/drm/msm/dp/dp_panel.c           |  22 ++++
+ drivers/gpu/drm/msm/dp/dp_panel.h           |   6 +
+ drivers/gpu/drm/msm/dp/dp_reg.h             |  27 ++++
+ include/drm/drm_atomic.h                    |   7 ++
+ 19 files changed, 634 insertions(+), 64 deletions(-)
+
 -- 
 2.7.4
 
