@@ -2,243 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 404B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 398E9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbiGKLOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54014 "EHLO
+        id S230491AbiGKLPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiGKLOd (ORCPT
+        with ESMTP id S230304AbiGKLOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:14:33 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F49528A3;
-        Mon, 11 Jul 2022 03:31:36 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 9-20020a1c0209000000b003a2dfdebe47so1947647wmc.3;
-        Mon, 11 Jul 2022 03:31:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y6nO1L8s7IyD/npCLQlL4keFwQMorziso5OVidifAQ8=;
-        b=dxD9QOzlUqFSTlsHGgDPturxgPDNV0CByPxlFK1dCqdFRHPEOCW8Ahc0uVZ0dTMF3M
-         Am4tgZB3ouvj8kCDQtH6O1Dy9Z902BaosZDNgJ7P8BHfQgpjrBiZG2/5KGps4dkwiEvA
-         H6rpe3LTLjNLaaI2vRnD2EFHnMOb0Iy6Z4372meteNby5gHP1DwAj0SoGIFtG69/ys97
-         0Up3ddn8eemznlMo09XNCmBptMJ1Wguwvh3u3UHnsTxsA89KQ5hdi/YnfDQlwCZbD1vw
-         a/SfcdDQ3VE7dWrxzjbkDDANbNYzbjsdAGJQFwInvKADp+FjSpvTtiy1stlMyV0UpzKg
-         G+cg==
+        Mon, 11 Jul 2022 07:14:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C284725C73
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:33:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657535587;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7SouKYlMkWzuBqZN4rXZnGRyOzkCR8tKbjyAs7q8HvU=;
+        b=YSOhjSUUsfQf4RZJ9KhA4xJFNPrpZchme5VaNhCX3QntJyTvLnOzuLHCqHUt+8I4Mg1HMQ
+        yLywTyost7vWKQfXXNnUJ93aXAntJGxgvHAN8de3ivsZP5tM+pt4ShNzcpHVuezofbaaDs
+        a6tAKRs41F97li3IhI5pJj9Gp5WJtwo=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-25-0TTnxUPUPxaUzSJk2g7nOA-1; Mon, 11 Jul 2022 06:33:06 -0400
+X-MC-Unique: 0TTnxUPUPxaUzSJk2g7nOA-1
+Received: by mail-qv1-f69.google.com with SMTP id e1-20020ad44181000000b00472f8ad6e71so36037qvp.20
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:33:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y6nO1L8s7IyD/npCLQlL4keFwQMorziso5OVidifAQ8=;
-        b=m9KfFbCs8e8gmMThxvHMwBUdfv7kHyf2XAd1n5ZCV5Vml4qMgN5OTk5HKt+t/kLIzl
-         xfr1dr8j9/+LzpJ5YfjW/FhmSvloHHrGfXKA9n7pIUAERVPHYeb2oCl3eMsBAkofJ3sf
-         vZC+8s+TuzyqZHv095sMjf67eoyjn1AP1mCw+64duPqypxmZQJAOJpej1nJGtrajhr7n
-         5kS8lTQPVvkG94ELfwHgjmahA+lIrdvXJ8zXQMNltslSsVXGCIKYrb6NegVXRCtBhC20
-         3Awlb0gulcYTKc2ki0qz0domBawJ/wmNtcaqAjES0MF8akyAj+x7WytylHIhryjzhMMZ
-         R4Cw==
-X-Gm-Message-State: AJIora+zk1UBwUmf4kZNbIjlN7a1Hqjq3njpMpt+qqOrU6EVMlPUmY4Y
-        teaF8IAqFRb7a9o4HtZo6dhNgDm0pfJ9wg==
-X-Google-Smtp-Source: AGRyM1ttWu5MZXSycXeMb3rTeyWab15Ra7b9fv6uNceRN4kZtLFwv9X/zPGDis1hGFl4tFt+L8xJkA==
-X-Received: by 2002:a7b:c354:0:b0:39c:6753:21f8 with SMTP id l20-20020a7bc354000000b0039c675321f8mr15456738wmj.113.1657535494570;
-        Mon, 11 Jul 2022 03:31:34 -0700 (PDT)
-Received: from localhost.localdomain (62-170-35.netrun.cytanet.com.cy. [62.228.170.35])
-        by smtp.gmail.com with ESMTPSA id ay38-20020a05600c1e2600b003a2cf1ba9e2sm6473204wmb.6.2022.07.11.03.31.33
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=7SouKYlMkWzuBqZN4rXZnGRyOzkCR8tKbjyAs7q8HvU=;
+        b=kEzmrCTh7VrWD/M1ITVlqbPoiLWqtogZ9mmbj7CcRrAzuStkbz82IQaqRJWmTjTZH5
+         4PzsZkZ5LCs3zsmZlU60x4GJ7K1B1jlxt/VKg5uJSqsmDdK/wiXi68atFcSH1m5ZsY1S
+         PdI/sVtrtSp1ayLeJMvAEXBdWml/H9PouNeKPTqE+Y7xykiPykc0dRnYVbQmQTqN3UIz
+         4kegtjoAv1dLbQIIZl+i9kumCJK+r+qGo3StENfyZ15gSNS+BPvk8OPz5hPyxVKs50H4
+         S1PtACrMB7nuIqQuts3jOaSjv6EFdRd0oGDnHCzWrrQX3oG6l/z5OJmerfUbQL8AB4fS
+         Poww==
+X-Gm-Message-State: AJIora9RcxunPIQzm//G+aexLim34xdTTQpTpdbwQiLgQDIqojZockaj
+        236xwONc8jb8NbragJT4Od8tSdlUgliLgCuo6EeTp1frDc7HpxRillWd3+C+F2KFXRpOXZc3TpU
+        pSFV1fJVT70b0stdIHlZ0ZpHd
+X-Received: by 2002:a05:620a:248b:b0:6af:4f9b:b0b3 with SMTP id i11-20020a05620a248b00b006af4f9bb0b3mr10744904qkn.408.1657535586047;
+        Mon, 11 Jul 2022 03:33:06 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sVs/FGj4fU/SHmbL6FO7aKqyMJktULJSdpAV9Q8sEhXC5/1g0kdZI7wuRnJVLLrBO2Fvn7aw==
+X-Received: by 2002:a05:620a:248b:b0:6af:4f9b:b0b3 with SMTP id i11-20020a05620a248b00b006af4f9bb0b3mr10744892qkn.408.1657535585813;
+        Mon, 11 Jul 2022 03:33:05 -0700 (PDT)
+Received: from [192.168.1.3] (68-20-15-154.lightspeed.rlghnc.sbcglobal.net. [68.20.15.154])
+        by smtp.gmail.com with ESMTPSA id w22-20020ac87e96000000b0031eb5648b86sm2016792qtj.41.2022.07.11.03.33.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 03:31:34 -0700 (PDT)
-From:   Maxim Devaev <mdevaev@gmail.com>
-To:     linux-usb@vger.kernel.org
-Cc:     mdevaev@gmail.com, stern@rowland.harvard.edu,
-        gregkh@linuxfoundation.org, corbet@lwn.net, balbi@kernel.org,
-        caihuoqing@baidu.com, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v5] usb: gadget: f_mass_storage: forced_eject attribute
-Date:   Mon, 11 Jul 2022 13:29:57 +0300
-Message-Id: <20220711102956.19642-1-mdevaev@gmail.com>
-X-Mailer: git-send-email 2.37.0
+        Mon, 11 Jul 2022 03:33:05 -0700 (PDT)
+Message-ID: <5268baed1650b4cba32978ad32d14a5ef00539f2.camel@redhat.com>
+Subject: Re: [GIT PULL] nfsd changes for 5.18
+From:   Jeff Layton <jlayton@redhat.com>
+To:     Chuck Lever III <chuck.lever@oracle.com>,
+        Igor Mammedov <imammedo@redhat.com>
+Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Ondrej Valousek <ondrej.valousek.xm@renesas.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bruce Fields <bfields@fieldses.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 11 Jul 2022 06:33:04 -0400
+In-Reply-To: <B62B3A57-A8F7-478B-BBAB-785D0C2EE51C@oracle.com>
+References: <EF97E1F5-B70F-4F9F-AC6D-7B48336AE3E5@oracle.com>
+         <20220710124344.36dfd857@redhat.com>
+         <B62B3A57-A8F7-478B-BBAB-785D0C2EE51C@oracle.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It allows to reset prevent_medium_removal flag and "eject" the image.
-This can be useful to free the drive from a hunging host or if the host
-continues to use the drive even after unmounting (Linux does this).
-It's also a bit like using an unfolded paperclip on an optical drive.
+On Sun, 2022-07-10 at 16:42 +0000, Chuck Lever III wrote:
+>=20
+> > On Jul 10, 2022, at 6:43 AM, Igor Mammedov <imammedo@redhat.com> wrote:
+> >=20
+> > On Mon, 21 Mar 2022 14:12:31 +0000
+> > Chuck Lever III <chuck.lever@oracle.com> wrote:
+> >=20
+> > couldn't find offender patch on ML so replying here
+>=20
+> Probably:
+>=20
+> https://lore.kernel.org/linux-nfs/AEC24099-5BC9-49C8-B759-920824F23F3C@or=
+acle.com/
+>=20
+>=20
+> > > Hi Linus-
+> > >=20
+> > > The following changes since commit 7e57714cd0ad2d5bb90e50b5096a0e671d=
+ec1ef3:
+> > >=20
+> > > Linux 5.17-rc6 (2022-02-27 14:36:33 -0800)
+> > >=20
+> > > are available in the Git repository at:
+> > >=20
+> > > git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git tags/nfsd=
+-5.18
+> > >=20
+> > > for you to fetch changes up to 4fc5f5346592cdc91689455d83885b0af65d71=
+b8:
+> > >=20
+> > > nfsd: fix using the correct variable for sizeof() (2022-03-20 12:49:3=
+8 -0400)
+> > >=20
+> > > ----------------------------------------------------------------
+> > > New features:
+> > > - NFSv3 support in NFSD is now always built
+> > > - Added NFSD support for the NFSv4 birth-time file attribute
+> > [...]
+> >=20
+> > > Ondrej Valousek (1):
+> > > nfsd: Add support for the birth time attribute
+>=20
+> Thank you for the report, Igor.
+>=20
+>=20
+> > This patch regressed clients that support TIME_CREATE attribute.
+> > Starting with this patch client might think that server supports
+> > TIME_CREATE and start sending this attribute in its requests.
+>=20
+> Indeed, e377a3e698fb ("nfsd: Add support for the birth time
+> attribute") does not include a change to nfsd4_decode_fattr4()
+> that decodes the birth time attribute.
+>=20
+> I don't immediately see another storage protocol stack in our
+> kernel that supports a client setting the birth time, so NFSD
+> might have to ignore the client-provided value.
+>=20
 
-Previously, the undocumented method of sending SIGUSR1 to a special
-"file-storage" kernel thread could be used for these purposes,
-but when using multiple storages there was no way to distinguish
-one from the other, so we had to send a signal to everyone.
+Cephfs allows this. My thinking at the time that I implemented it was
+that it should be settable for backup purposes, but this was possibly a
+mistake. On most filesystems, the btime seems to be equivalent to inode
+creation time and is read-only.
 
-Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Maxim Devaev <mdevaev@gmail.com>
----
- v4 -> v5: A more detailed description of the commit
- v3 -> v4: Added comment for fsg_store_forced_eject() internals
- v2 -> v3: Improved spelling
- v1 -> v2: Added documentation for the ABI and sysfs
+>=20
+> > However kernel on server side (since this patch and to
+> > current master) upon getting such request will return EINVAL.
+> > (my guess is that TIME_CREATE not being decoded properly and
+> > that messes up request parsing).
+>=20
+> I'll send a quick-and-dirty fix your way as we explore the
+> question of whether NFSD needs to ignore the birth time value
+> in this case.
+>=20
+>=20
+> > End result is unusable mount (unless it's treated as readonly).
+>=20
+> That seems odd, and not clear whether that's a client or server
+> problem. I hope that will clear up once the server deals with
+> the time_create attribute appropriately.
+>=20
+>=20
+> > Reproduces with current master (HEAD at e5524c2a1fc40) and MacOS
+> > client (Big Sur or newest Monterey).
+> >=20
+> > server is typical setup exporting files from XFS (Fedora36)
+> >=20
+> > #  rpcdebug -m nfsd -s all
+> >=20
+> > on client:
+> >=20
+> > % mount -t nfs -o vers=3D4,rw,nfc,sec=3Dsys testnas:/mnt  ~/test
+> > % touch ~/test/fff
+> >     touch: test/fff: Invalid argument
+> >=20
+> > server logs:
+> >=20
+> > nfsd: fh_compose(exp fd:00/128 fff, ino=3D0)
+> > NFSD: nfsd4_open filename  op_openowner 0000000000000000
+> >=20
+> > Here is a request the touch generates:
+> >        Network File System, Ops(6): PUTFH, SAVEFH, OPEN, GETATTR, RESTO=
+REFH, GETATTR
+> >            [Program Version: 4]
+> >            [V4 Procedure: COMPOUND (1)]
+> >            Tag: create
+> >            minorversion: 0
+> >            Operations (count: 6): PUTFH, SAVEFH, OPEN, GETATTR, RESTORE=
+FH, GETATTR
+> >                Opcode: PUTFH (22)
+> >                Opcode: SAVEFH (32)
+> >                Opcode: OPEN (18)
+> >                    seqid: 0x00000004
+> >                    share_access: OPEN4_SHARE_ACCESS_BOTH (3)
+> >                    share_deny: OPEN4_SHARE_DENY_NONE (0)
+> >                    clientid: 0xba93c9620aec46ea
+> >                    owner: <DATA>
+> >                    Open Type: OPEN4_CREATE (1)
+> >                        Create Mode: UNCHECKED4 (0)
+> >                        Attr mask: 0x00040002 (Mode, Time_Create)
+> >                            reco_attr: Mode (33)
+> >                            reco_attr: Time_Create (50)
+> >                    Claim Type: CLAIM_NULL (0)
+> >                        Name: fff
+> >=20
+> >        [...]
+> >=20
+> > when trying to copy file via GUI (Finder) it goes a different route
+> > but ends up with error anyway and with leftover 0-length file on server
+> > with messed up permissions, i.e.
+>=20
+> The current NFSv4 OPEN(CREATE) code path is still not right. Fixing
+> the TIME_CREATE problem should make this symptom go away for now,
+> but eventually that path will need to be restructured so that it
+> cannot leave a turd if the whole create process was not able to
+> complete.
+>=20
+>=20
+> > open/create without Time_Create succeeds but followup
+> > setattr with Time_Create fails EINVAL.
+> >=20
+> >        Network File System, Ops(3): PUTFH, SETATTR, GETATTR
+> >            [Program Version: 4]
+> >            [V4 Procedure: COMPOUND (1)]
+> >            Tag: setattr
+> >            minorversion: 0
+> >            Operations (count: 3): PUTFH, SETATTR, GETATTR
+> >                Opcode: PUTFH (22)
+> >                Opcode: SETATTR (34)
+> >                    StateID
+> >                    Attr mask: 0x00450002 (Mode, Time_Access_Set, Time_C=
+reate, Time_Modify_Set)
+> >                        reco_attr: Mode (33)
+> >                        reco_attr: Time_Access_Set (48)
+> >                        reco_attr: Time_Create (50)
+> >                        reco_attr: Time_Modify_Set (54)
+> >                Opcode: GETATTR (9)
+> >            [Main Opcode: SETATTR (34)]
+> >=20
+> > [...]
+> > > --
+> > > Chuck Lever
+>=20
+> --
+> Chuck Lever
+>=20
+>=20
+>=20
 
- .../testing/configfs-usb-gadget-mass-storage  |  6 +++++
- Documentation/usb/gadget-testing.rst          |  6 +++++
- Documentation/usb/mass-storage.rst            |  9 +++++++
- drivers/usb/gadget/function/f_mass_storage.c  | 25 +++++++++++++++++++
- drivers/usb/gadget/function/storage_common.c  | 15 +++++++++++
- drivers/usb/gadget/function/storage_common.h  |  2 ++
- 6 files changed, 63 insertions(+)
-
-diff --git a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
-index c86b63a7bb43..d899adb57e81 100644
---- a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
-+++ b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
-@@ -32,4 +32,10 @@ Description:
- 				being a CD-ROM.
- 		nofua		Flag specifying that FUA flag
- 				in SCSI WRITE(10,12)
-+		forced_eject	This write-only file is useful only when
-+				the function is active. It causes the backing
-+				file to be forcibly detached from the LUN,
-+				regardless of whether the host has allowed it.
-+				Any non-zero number of bytes written will
-+				result in ejection.
- 		===========	==============================================
-diff --git a/Documentation/usb/gadget-testing.rst b/Documentation/usb/gadget-testing.rst
-index c18113077889..15624c4fe633 100644
---- a/Documentation/usb/gadget-testing.rst
-+++ b/Documentation/usb/gadget-testing.rst
-@@ -333,6 +333,12 @@ In each lun directory there are the following attribute files:
- 			being a CD-ROM.
- 	nofua		Flag specifying that FUA flag
- 			in SCSI WRITE(10,12)
-+	forced_eject	This write-only file is useful only when
-+			the function is active. It causes the backing
-+			file to be forcibly detached from the LUN,
-+			regardless of whether the host has allowed it.
-+			Any non-zero number of bytes written will
-+			result in ejection.
- 	=============== ==============================================
- 
- Testing the MASS STORAGE function
-diff --git a/Documentation/usb/mass-storage.rst b/Documentation/usb/mass-storage.rst
-index d181b47c3cb6..f399ec631599 100644
---- a/Documentation/usb/mass-storage.rst
-+++ b/Documentation/usb/mass-storage.rst
-@@ -181,6 +181,15 @@ sysfs entries
-     Reflects the state of nofua flag for given logical unit.  It can
-     be read and written.
- 
-+  - forced_eject
-+
-+    When written into, it causes the backing file to be forcibly
-+    detached from the LUN, regardless of whether the host has allowed
-+    it.  The content doesn't matter, any non-zero number of bytes
-+    written will result in ejection.
-+
-+    Can not be read.
-+
-   Other then those, as usual, the values of module parameters can be
-   read from /sys/module/g_mass_storage/parameters/* files.
- 
-diff --git a/drivers/usb/gadget/function/f_mass_storage.c b/drivers/usb/gadget/function/f_mass_storage.c
-index 6ad669dde41c..00cac2a38178 100644
---- a/drivers/usb/gadget/function/f_mass_storage.c
-+++ b/drivers/usb/gadget/function/f_mass_storage.c
-@@ -2520,10 +2520,21 @@ static ssize_t file_store(struct device *dev, struct device_attribute *attr,
- 	return fsg_store_file(curlun, filesem, buf, count);
- }
- 
-+static ssize_t forced_eject_store(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf, size_t count)
-+{
-+	struct fsg_lun		*curlun = fsg_lun_from_dev(dev);
-+	struct rw_semaphore	*filesem = dev_get_drvdata(dev);
-+
-+	return fsg_store_forced_eject(curlun, filesem, buf, count);
-+}
-+
- static DEVICE_ATTR_RW(nofua);
- /* mode wil be set in fsg_lun_attr_is_visible() */
- static DEVICE_ATTR(ro, 0, ro_show, ro_store);
- static DEVICE_ATTR(file, 0, file_show, file_store);
-+static DEVICE_ATTR_WO(forced_eject);
- 
- /****************************** FSG COMMON ******************************/
- 
-@@ -2677,6 +2688,7 @@ static struct attribute *fsg_lun_dev_attrs[] = {
- 	&dev_attr_ro.attr,
- 	&dev_attr_file.attr,
- 	&dev_attr_nofua.attr,
-+	&dev_attr_forced_eject.attr,
- 	NULL
- };
- 
-@@ -3090,6 +3102,18 @@ static ssize_t fsg_lun_opts_inquiry_string_store(struct config_item *item,
- 
- CONFIGFS_ATTR(fsg_lun_opts_, inquiry_string);
- 
-+static ssize_t fsg_lun_opts_forced_eject_store(struct config_item *item,
-+					       const char *page, size_t len)
-+{
-+	struct fsg_lun_opts *opts = to_fsg_lun_opts(item);
-+	struct fsg_opts *fsg_opts = to_fsg_opts(opts->group.cg_item.ci_parent);
-+
-+	return fsg_store_forced_eject(opts->lun, &fsg_opts->common->filesem,
-+				      page, len);
-+}
-+
-+CONFIGFS_ATTR_WO(fsg_lun_opts_, forced_eject);
-+
- static struct configfs_attribute *fsg_lun_attrs[] = {
- 	&fsg_lun_opts_attr_file,
- 	&fsg_lun_opts_attr_ro,
-@@ -3097,6 +3121,7 @@ static struct configfs_attribute *fsg_lun_attrs[] = {
- 	&fsg_lun_opts_attr_cdrom,
- 	&fsg_lun_opts_attr_nofua,
- 	&fsg_lun_opts_attr_inquiry_string,
-+	&fsg_lun_opts_attr_forced_eject,
- 	NULL,
- };
- 
-diff --git a/drivers/usb/gadget/function/storage_common.c b/drivers/usb/gadget/function/storage_common.c
-index b859a158a414..03035dbbe97b 100644
---- a/drivers/usb/gadget/function/storage_common.c
-+++ b/drivers/usb/gadget/function/storage_common.c
-@@ -519,4 +519,19 @@ ssize_t fsg_store_inquiry_string(struct fsg_lun *curlun, const char *buf,
- }
- EXPORT_SYMBOL_GPL(fsg_store_inquiry_string);
- 
-+ssize_t fsg_store_forced_eject(struct fsg_lun *curlun, struct rw_semaphore *filesem,
-+			       const char *buf, size_t count)
-+{
-+	int ret;
-+
-+	/*
-+	 * Forcibly detach the backing file from the LUN
-+	 * regardless of whether the host has allowed it.
-+	 */
-+	curlun->prevent_medium_removal = 0;
-+	ret = fsg_store_file(curlun, filesem, "", 0);
-+	return ret < 0 ? ret : count;
-+}
-+EXPORT_SYMBOL_GPL(fsg_store_forced_eject);
-+
- MODULE_LICENSE("GPL");
-diff --git a/drivers/usb/gadget/function/storage_common.h b/drivers/usb/gadget/function/storage_common.h
-index bdeb1e233fc9..0a544a82cbf8 100644
---- a/drivers/usb/gadget/function/storage_common.h
-+++ b/drivers/usb/gadget/function/storage_common.h
-@@ -219,5 +219,7 @@ ssize_t fsg_store_removable(struct fsg_lun *curlun, const char *buf,
- 			    size_t count);
- ssize_t fsg_store_inquiry_string(struct fsg_lun *curlun, const char *buf,
- 				 size_t count);
-+ssize_t fsg_store_forced_eject(struct fsg_lun *curlun, struct rw_semaphore *filesem,
-+			       const char *buf, size_t count);
- 
- #endif /* USB_STORAGE_COMMON_H */
--- 
-2.37.0
+--=20
+Jeff Layton <jlayton@redhat.com>
 
