@@ -2,139 +2,365 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10099C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 01:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9BBAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 01:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbiGKBaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 21:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
+        id S229671AbiGKBbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 21:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiGKBaD (ORCPT
+        with ESMTP id S229477AbiGKBbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 21:30:03 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020018.outbound.protection.outlook.com [52.101.61.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B666F646D;
-        Sun, 10 Jul 2022 18:30:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lIhCckIEuo882b7sIcnMMKSSQ1DurMjh0s4nDiFKPE08OvFn3HLuSagmeRnKT1AmT5bl5t8Y+XnL6zgQWIY86dogRFewspPJADP3y66tLYsgXuwQX2UxJZHod0w8ktt45E5AZVgNBDFPF+I1EawwuIs9oGPlkB9hqHdaQxX6YUP0M+b7UyzyaccSI7Yf6VAw/ZT5YSRwLnjz286Alx1hgGxpr0SEzMxx+0iqeNjWq/u8S85MJFDa5sgPlF9VOUUK4ayR7PSeIMrkfYPYaWbRYf/ajln+pIO+HIuIHseh8UmSMad7CfLusFG6ll1MInSzaICuMhvssikqa/l7EH9FrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZKDFVQacE8K9KmklC4hYqrpANb5xBeEym9Hi0q6HNWw=;
- b=WM/0jBgNyJV48TGGneBc3fphvsGwPm9D12AfWBKuhQ98rtNiWZRzvfaHoDV2wZfxC+rhFNsMF6fBSMxLvZzJ11DqhjSMfG6G+IhT6sOoHWS8bP57g/JDtyQWCtdna/j6mFpX/dsylewPVQ8M9vQSy6zDUFr0pYpP3RlH66qr4h42DYjeDG+F3XbTWXOI0ptnymTH1sWqcCZLuODVc0MWcB5/96w9+4NsRPpEnX4UsJmAtCHjQIaA0Lm9lED2NmfQ0c7BUI92I3Tec/Qj32BTOI01fe9T1INRdFvsXHM62ZtLiU+5GMdoGvqc+Qk02b+XO1cyg30UEg1m9KgUh5H2dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZKDFVQacE8K9KmklC4hYqrpANb5xBeEym9Hi0q6HNWw=;
- b=P1PwZlY6RT0J4AaoGOzrk9TNYyTxU/NBRrv9909IMiSddC4mjrJftbmdTiik4MLKONVWi2xlr9JkD8iUrMUOdS70k6lWciO9uyARLf6bBWiiAV/8noDldLdlOoPXBRUaNlXJWu6FaHTU63Ad04x3IA5EtXhDiuXdBqUxQ2zEdyk=
-Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
- (2603:10b6:805:107::9) by SJ0PR21MB1886.namprd21.prod.outlook.com
- (2603:10b6:a03:299::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.4; Mon, 11 Jul
- 2022 01:14:09 +0000
-Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
- ([fe80::59ea:cdde:5229:d4f0]) by SN6PR2101MB1327.namprd21.prod.outlook.com
- ([fe80::59ea:cdde:5229:d4f0%7]) with mapi id 15.20.5458.003; Mon, 11 Jul 2022
- 01:14:09 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Long Li <longli@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [Patch v4 05/12] net: mana: Set the DMA device max segment size
-Thread-Topic: [Patch v4 05/12] net: mana: Set the DMA device max segment size
-Thread-Index: AQHYgSXZYMrx24u81kKJp7vYJYUL5K121q5Q
-Date:   Mon, 11 Jul 2022 01:14:09 +0000
-Message-ID: <SN6PR2101MB1327D402FCCB24994DAB8D8FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
-References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
- <1655345240-26411-6-git-send-email-longli@linuxonhyperv.com>
-In-Reply-To: <1655345240-26411-6-git-send-email-longli@linuxonhyperv.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=705c6180-2949-44c0-997d-5dad64f269da;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-09T23:34:52Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: db456cb6-b00d-40e4-0886-08da62daa888
-x-ms-traffictypediagnostic: SJ0PR21MB1886:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 59ddHbvQbx51Vn/vzdW5JzghcMcTEw3ea7gN//ANTPt2n+Wp1SQBN/qfdh0F6KlW5A5CmmOBZ2dwzDFgjmwbIYfYstFpyK74rJiu46NCtKDyDoGbkswHjmz798rv8SD97I/tTShNTr4riEbN9ykg5abevmf3KoGYWJx6fDxFoVeeFPajVgS8qBmBzB4YhhbvaRZpugqVsUzfvLCjbhh5ArGeJp+u/ajP3xzXoK/waKX1KmzrqJfBoKwfPjrNH8EkG+JB2W6Q3cFPK8wJ1Gz/mkg2ExNydGScAReZwJ4mjRs6rOiP6jP90+eX0p45rNyPl2f6UcPv0laGpHXJ+hYCKqWBNfqPr2SBCYD+8h4wyJoZYDfQ4k1HjCbboRSNYknj2H3AIBUFLn0XONhITvGe4r+ZZTxdRx17PVk0tv+0kBKhoSgEwA7YN5h4FIu80+0gG0CT8HML8+6ESD3Lq1paAC5fMW+Y4wURv4K75Rc9EMTArNuAUVUMKNflRaeEAqQlasMIJYOXLqfyDjy9R0g74POsutPsy5Dwu9x8w7z6e2BG5s14mavK3EENFTp3Op79Yufcm+Kzqyy+8GKomxaARTV6aBaH0FAdB9kdX+layWIEny3di4+no0712B+zvmwl1ti6dKL0M/7gwEMYVeB3o6TicORyUsb9QTDanrBJG1M0UcG5pdN1vOfmc2bkJ93YWnEFQgJkNEWyItfDFE2tHWuTe0Dg4FvY11wyqqfB8zCI1a0tW9ct11SdsMVuQtkqcw3t0eogI/l2ZkEa4leSWYaP0PXdn1Afs10Jo8qAKHPHZJ2nFgPy+Xsvw/LQsd85TrqNexGGXm1Vi1aVDX/lwTjiR4nHSe6vD8NE2m/LwlZblAafdAJ9oPxlg3CuN3jV
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR2101MB1327.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(346002)(136003)(396003)(39860400002)(451199009)(33656002)(186003)(26005)(7696005)(6506007)(9686003)(8990500004)(82950400001)(38100700002)(38070700005)(122000001)(86362001)(921005)(82960400001)(55016003)(558084003)(54906003)(110136005)(6636002)(478600001)(8936002)(52536014)(316002)(7416002)(66556008)(66946007)(66476007)(76116006)(66446008)(64756008)(4326008)(8676002)(2906002)(41300700001)(5660300002)(71200400001)(10290500003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?umNkx8jmiQRL4hr/Js04044E9nUDBWxJdatSz8mCbgSwWdxBOI/eHrYbr8cz?=
- =?us-ascii?Q?B8uIDWxaPgCz6kAVtBKJGiFdysR2RXSXOGawcDrzBrxxM9Fkef5A+Ozu4A90?=
- =?us-ascii?Q?66et6bvvG4mZ6wYQIuEtWvafJgHTgYbmT6cp27ffohEWV+T0q3+LkDxwbiFR?=
- =?us-ascii?Q?NZ92cevNXe1ARr1Bt76530n9QZp5dohz+hM1kzxQKfokvW1S6Yl0fk+I1r2V?=
- =?us-ascii?Q?LuxcpqOfkTbiGEhcDT6s8RuRe1KUe3L+6BhJfAnnHRnNcrrYnuSM1+B9AILz?=
- =?us-ascii?Q?XrEKw9iwharoHgKqxTcdzDYe4y9PecrYYbGe/wJH3p6rhMbyBgNTQKEeDZ7v?=
- =?us-ascii?Q?Xn65UDTVxluvwS2x8lQj1+j5I+a/hcs7WUFlX/8xGsWu/d3VzmBFk3fjAju9?=
- =?us-ascii?Q?PahSsR3tlHqgVaYc/Vx1wkROt22ll218F1g0TbiloBSlQnwss1SUndLVHKm+?=
- =?us-ascii?Q?UfKEHQiN9slfxxUzu2LvQ0gm728tO18ahWlxT4tp4L+ucJonsugBMqUu2kFT?=
- =?us-ascii?Q?ZcQHnEuUFtg2qoGvI1cj688PiJTeUntB1ZRQoUL3H+Terru0t91h3gX0Ixwu?=
- =?us-ascii?Q?GQlac73ovlAAv0iI/YVbcltCwQtRUuRb43j6UBGnTFxM2UoQ04gyEMWZ3rab?=
- =?us-ascii?Q?+r8txJ49ErCKW9Yt5qt/mAh2iUG0qE8/63CBQxjp10jR4i6+rWBDmAAWfxti?=
- =?us-ascii?Q?gjdEFG3dS5y33qJKch6EitoFShOpWYKLeQVW7L8d4++qMyY+amAi4T8k+Q6w?=
- =?us-ascii?Q?je7IuLLCFK+i3Iz2qTCpZbhGQRgk3p7CxqFNLnARs/0+rrtl0vK2ludEqQH+?=
- =?us-ascii?Q?DQQIAoVPc8+Takjq8rxNSeg8m3YH0KoVnDVAr4PU8knYmvtF99uvADy40Esy?=
- =?us-ascii?Q?MfpKO+KyphCGJVyqxMz6V/tCzVEG3jzeOuot6XVAFO31hbbVGwRQGXJedzys?=
- =?us-ascii?Q?CTS7/Hhd38vqyki+w0GfwAmamQyiHww5tzE1F4fKRTOSJvtA7tvTGguDpqOW?=
- =?us-ascii?Q?/4oVdmV4zrEDgBKzTYwbIFWnv1IE7eHZlM9a70Bt5u3/AnufYviihsLh2Vpp?=
- =?us-ascii?Q?ycH1znwrtgm5d5S1Y9Oi4KbMZ8A34Kh9j0KE3XmhaFGmC5hUbmxzP8JIBvJZ?=
- =?us-ascii?Q?bZIwAtKvaU/HuHAeSZweOBbiErXao2nqs6793kL5TMYMmJU4bxN9WjEnVSqL?=
- =?us-ascii?Q?zGMvf82suUAHlB4/bM4YsCZ/tc8xE+sXoTMNMIytM7mJgy9R3kg1bcYpHxVM?=
- =?us-ascii?Q?QJKHkDXLFbDYK/zDf3WsYXuhHeaGfp3DTuA114XMxcfmkN3+gNxWG40M1o01?=
- =?us-ascii?Q?2jmBT5l9hDhqbcvHasE2ME6JofzTVF5MCvTlzGaIOLf2Yql6/iicLUAOpoMA?=
- =?us-ascii?Q?dcXwBXri06o/d2IiP86GwELYrHFGHlZEAhT0m/9IF5qMUckav27McfDbvORe?=
- =?us-ascii?Q?1EfiQ64G7uT4JSXUwbDPHSMkLBEf2rGzmpi92FjSyXOo+Xb2UTtbQ7xYGKmx?=
- =?us-ascii?Q?OTyC545xcXCoF1WXZ40Ae7uDWyX5SM/EgGh6R0tW3ekc8rhZevqVd6T8sUCv?=
- =?us-ascii?Q?c7XnwCpXNXtxr9r458aGzSK/oo9mRLh6jWWsZ2Ip?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR2101MB1327.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db456cb6-b00d-40e4-0886-08da62daa888
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 01:14:09.5913
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: WNYKgQHmMWhUrzWxJB9xKRSSarYtVcRdsPzRpWIG+HnukI1Uv6AoUlBbdMGjBcVuPu3v5g+SMENHvSe02izfyw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR21MB1886
+        Sun, 10 Jul 2022 21:31:34 -0400
+Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id E7F84165BF;
+        Sun, 10 Jul 2022 18:31:30 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [218.12.16.13])
+        by mail-app4 (Coremail) with SMTP id cS_KCgDnIfxgfctie5I1AA--.29416S2;
+        Mon, 11 Jul 2022 09:31:20 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org, pabeni@redhat.com
+Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v6] net: rose: fix null-ptr-deref caused by rose_kill_by_neigh
+Date:   Mon, 11 Jul 2022 09:31:11 +0800
+Message-Id: <20220711013111.33183-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgDnIfxgfctie5I1AA--.29416S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3ZF1xuw1kAF45WrWrCFWUCFg_yoWkJFyUpF
+        nIkay3Gr4Utw4qqF4DJanrZw4YqFn2yry3Gr109FyIyF1UGrWYva4ktFW5Cr1xXFZ8JFyY
+        gF1xW3yIyrsFyw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+        vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
+        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
+        xKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAF
+        wI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgMIAVZdtanBoQAKs1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: longli@linuxonhyperv.com <longli@linuxonhyperv.com>
-> Sent: Wednesday, June 15, 2022 7:07 PM
-> ...
-> From: Ajay Sharma <sharmaajay@microsoft.com>
->=20
-> MANA hardware doesn't have any restrictions on the DMA segment size, set =
-it
-> to the max allowed value.
->=20
-> Signed-off-by: Ajay Sharma <sharmaajay@microsoft.com>
-> Signed-off-by: Long Li <longli@microsoft.com>
+When the link layer connection is broken, the rose->neighbour is
+set to null. But rose->neighbour could be used by rose_connection()
+and rose_release() later, because there is no synchronization among
+them. As a result, the null-ptr-deref bugs will happen.
 
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
+One of the null-ptr-deref bugs is shown below:
+
+    (thread 1)                  |        (thread 2)
+                                |  rose_connect
+rose_kill_by_neigh              |    lock_sock(sk)
+  spin_lock_bh(&rose_list_lock) |    if (!rose->neighbour)
+  rose->neighbour = NULL;//(1)  |
+                                |    rose->neighbour->use++;//(2)
+
+The rose->neighbour is set to null in position (1) and dereferenced
+in position (2).
+
+The KASAN report triggered by POC is shown below:
+
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+...
+RIP: 0010:rose_connect+0x6c2/0xf30
+RSP: 0018:ffff88800ab47d60 EFLAGS: 00000206
+RAX: 0000000000000005 RBX: 000000000000002a RCX: 0000000000000000
+RDX: ffff88800ab38000 RSI: ffff88800ab47e48 RDI: ffff88800ab38309
+RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffed1001567062
+R10: dfffe91001567063 R11: 1ffff11001567061 R12: 1ffff11000d17cd0
+R13: ffff8880068be680 R14: 0000000000000002 R15: 1ffff11000d17cd0
+...
+Call Trace:
+  <TASK>
+  ? __local_bh_enable_ip+0x54/0x80
+  ? selinux_netlbl_socket_connect+0x26/0x30
+  ? rose_bind+0x5b0/0x5b0
+  __sys_connect+0x216/0x280
+  __x64_sys_connect+0x71/0x80
+  do_syscall_64+0x43/0x90
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+This patch adds lock_sock() in rose_kill_by_neigh() in order to
+synchronize with rose_connect() and rose_release(). Then, changing
+type of 'neighbour->use' from unsigned short to atomic_t in order to
+mitigate race conditions caused by holding different socket lock while
+updating 'neighbour->use'.
+
+Meanwhile, this patch adds sock_hold() protected by rose_list_lock
+that could synchronize with rose_remove_socket() in order to mitigate
+UAF bug caused by lock_sock() we add.
+
+What's more, there is no need using rose_neigh_list_lock to protect
+rose_kill_by_neigh(). Because we have already used rose_neigh_list_lock
+to protect the state change of rose_neigh in rose_link_failed(), which
+is well synchronized.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+Changes in v6:
+  - Change sk_for_each() to sk_for_each_safe().
+  - Change type of 'neighbour->use' from unsigned short to atomic_t.
+
+ include/net/rose.h    |  2 +-
+ net/rose/af_rose.c    | 19 +++++++++++++------
+ net/rose/rose_in.c    | 12 ++++++------
+ net/rose/rose_route.c | 24 ++++++++++++------------
+ net/rose/rose_timer.c |  2 +-
+ 5 files changed, 33 insertions(+), 26 deletions(-)
+
+diff --git a/include/net/rose.h b/include/net/rose.h
+index 0f0a4ce0fee..d5ddebc556d 100644
+--- a/include/net/rose.h
++++ b/include/net/rose.h
+@@ -95,7 +95,7 @@ struct rose_neigh {
+ 	ax25_cb			*ax25;
+ 	struct net_device		*dev;
+ 	unsigned short		count;
+-	unsigned short		use;
++	atomic_t		use;
+ 	unsigned int		number;
+ 	char			restarted;
+ 	char			dce_mode;
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index bf2d986a6bc..54e7b76c4f3 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -163,16 +163,23 @@ static void rose_remove_socket(struct sock *sk)
+ void rose_kill_by_neigh(struct rose_neigh *neigh)
+ {
+ 	struct sock *s;
++	struct hlist_node *tmp;
+ 
+ 	spin_lock_bh(&rose_list_lock);
+-	sk_for_each(s, &rose_list) {
++	sk_for_each_safe(s, tmp, &rose_list) {
+ 		struct rose_sock *rose = rose_sk(s);
+ 
++		sock_hold(s);
++		spin_unlock_bh(&rose_list_lock);
++		lock_sock(s);
+ 		if (rose->neighbour == neigh) {
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+-			rose->neighbour->use--;
++			atomic_dec(&rose->neighbour->use);
+ 			rose->neighbour = NULL;
+ 		}
++		release_sock(s);
++		sock_put(s);
++		spin_lock_bh(&rose_list_lock);
+ 	}
+ 	spin_unlock_bh(&rose_list_lock);
+ }
+@@ -191,7 +198,7 @@ static void rose_kill_by_device(struct net_device *dev)
+ 		if (rose->device == dev) {
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+ 			if (rose->neighbour)
+-				rose->neighbour->use--;
++				atomic_dec(&rose->neighbour->use);
+ 			rose->device = NULL;
+ 		}
+ 	}
+@@ -618,7 +625,7 @@ static int rose_release(struct socket *sock)
+ 		break;
+ 
+ 	case ROSE_STATE_2:
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		release_sock(sk);
+ 		rose_disconnect(sk, 0, -1, -1);
+ 		lock_sock(sk);
+@@ -819,7 +826,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 
+ 	rose->state = ROSE_STATE_1;
+ 
+-	rose->neighbour->use++;
++	atomic_inc(&rose->neighbour->use);
+ 
+ 	rose_write_internal(sk, ROSE_CALL_REQUEST);
+ 	rose_start_heartbeat(sk);
+@@ -1019,7 +1026,7 @@ int rose_rx_call_request(struct sk_buff *skb, struct net_device *dev, struct ros
+ 	make_rose->device        = dev;
+ 	make_rose->facilities    = facilities;
+ 
+-	make_rose->neighbour->use++;
++	atomic_inc(&make_rose->neighbour->use);
+ 
+ 	if (rose_sk(sk)->defer) {
+ 		make_rose->state = ROSE_STATE_5;
+diff --git a/net/rose/rose_in.c b/net/rose/rose_in.c
+index 4d67f36dce1..86168f29943 100644
+--- a/net/rose/rose_in.c
++++ b/net/rose/rose_in.c
+@@ -56,7 +56,7 @@ static int rose_state1_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, ECONNREFUSED, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	default:
+@@ -79,12 +79,12 @@ static int rose_state2_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	case ROSE_CLEAR_CONFIRMATION:
+ 		rose_disconnect(sk, 0, -1, -1);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	default:
+@@ -120,7 +120,7 @@ static int rose_state3_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	case ROSE_RR:
+@@ -233,7 +233,7 @@ static int rose_state4_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	default:
+@@ -253,7 +253,7 @@ static int rose_state5_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	if (frametype == ROSE_CLEAR_REQUEST) {
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose_sk(sk)->neighbour->use--;
++		atomic_dec(&rose_sk(sk)->neighbour->use);
+ 	}
+ 
+ 	return 0;
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index eb0b8197ac8..8be00a44540 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -93,7 +93,7 @@ static int __must_check rose_add_node(struct rose_route_struct *rose_route,
+ 		rose_neigh->ax25      = NULL;
+ 		rose_neigh->dev       = dev;
+ 		rose_neigh->count     = 0;
+-		rose_neigh->use       = 0;
++		atomic_set(&rose_neigh->use, 0);
+ 		rose_neigh->dce_mode  = 0;
+ 		rose_neigh->loopback  = 0;
+ 		rose_neigh->number    = rose_neigh_no++;
+@@ -263,10 +263,10 @@ static void rose_remove_route(struct rose_route *rose_route)
+ 	struct rose_route *s;
+ 
+ 	if (rose_route->neigh1 != NULL)
+-		rose_route->neigh1->use--;
++		atomic_dec(&rose_route->neigh1->use);
+ 
+ 	if (rose_route->neigh2 != NULL)
+-		rose_route->neigh2->use--;
++		atomic_dec(&rose_route->neigh2->use);
+ 
+ 	if ((s = rose_route_list) == rose_route) {
+ 		rose_route_list = rose_route->next;
+@@ -331,7 +331,7 @@ static int rose_del_node(struct rose_route_struct *rose_route,
+ 		if (rose_node->neighbour[i] == rose_neigh) {
+ 			rose_neigh->count--;
+ 
+-			if (rose_neigh->count == 0 && rose_neigh->use == 0)
++			if (rose_neigh->count == 0 && atomic_read(&rose_neigh->use) == 0)
+ 				rose_remove_neigh(rose_neigh);
+ 
+ 			rose_node->count--;
+@@ -381,7 +381,7 @@ void rose_add_loopback_neigh(void)
+ 	sn->ax25      = NULL;
+ 	sn->dev       = NULL;
+ 	sn->count     = 0;
+-	sn->use       = 0;
++	atomic_set(&sn->use, 0);
+ 	sn->dce_mode  = 1;
+ 	sn->loopback  = 1;
+ 	sn->number    = rose_neigh_no++;
+@@ -573,7 +573,7 @@ static int rose_clear_routes(void)
+ 		s          = rose_neigh;
+ 		rose_neigh = rose_neigh->next;
+ 
+-		if (s->use == 0 && !s->loopback) {
++		if (atomic_read(&s->use) == 0 && !s->loopback) {
+ 			s->count = 0;
+ 			rose_remove_neigh(s);
+ 		}
+@@ -789,13 +789,13 @@ static void rose_del_route_by_neigh(struct rose_neigh *rose_neigh)
+ 		}
+ 
+ 		if (rose_route->neigh1 == rose_neigh) {
+-			rose_route->neigh1->use--;
++			atomic_dec(&rose_route->neigh1->use);
+ 			rose_route->neigh1 = NULL;
+ 			rose_transmit_clear_request(rose_route->neigh2, rose_route->lci2, ROSE_OUT_OF_ORDER, 0);
+ 		}
+ 
+ 		if (rose_route->neigh2 == rose_neigh) {
+-			rose_route->neigh2->use--;
++			atomic_dec(&rose_route->neigh2->use);
+ 			rose_route->neigh2 = NULL;
+ 			rose_transmit_clear_request(rose_route->neigh1, rose_route->lci1, ROSE_OUT_OF_ORDER, 0);
+ 		}
+@@ -924,7 +924,7 @@ int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
+ 			rose_clear_queues(sk);
+ 			rose->cause	 = ROSE_NETWORK_CONGESTION;
+ 			rose->diagnostic = 0;
+-			rose->neighbour->use--;
++			atomic_dec(&rose->neighbour->use);
+ 			rose->neighbour	 = NULL;
+ 			rose->lci	 = 0;
+ 			rose->state	 = ROSE_STATE_0;
+@@ -1067,8 +1067,8 @@ int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
+ 	rose_route->lci2      = new_lci;
+ 	rose_route->neigh2    = new_neigh;
+ 
+-	rose_route->neigh1->use++;
+-	rose_route->neigh2->use++;
++	atomic_inc(&rose_route->neigh1->use);
++	atomic_inc(&rose_route->neigh2->use);
+ 
+ 	rose_route->next = rose_route_list;
+ 	rose_route_list  = rose_route;
+@@ -1195,7 +1195,7 @@ static int rose_neigh_show(struct seq_file *seq, void *v)
+ 			   (rose_neigh->loopback) ? "RSLOOP-0" : ax2asc(buf, &rose_neigh->callsign),
+ 			   rose_neigh->dev ? rose_neigh->dev->name : "???",
+ 			   rose_neigh->count,
+-			   rose_neigh->use,
++			   atomic_read(&rose_neigh->use),
+ 			   (rose_neigh->dce_mode) ? "DCE" : "DTE",
+ 			   (rose_neigh->restarted) ? "yes" : "no",
+ 			   ax25_display_timer(&rose_neigh->t0timer) / HZ,
+diff --git a/net/rose/rose_timer.c b/net/rose/rose_timer.c
+index f06ddbed3fe..9dfd4eae5d5 100644
+--- a/net/rose/rose_timer.c
++++ b/net/rose/rose_timer.c
+@@ -171,7 +171,7 @@ static void rose_timer_expiry(struct timer_list *t)
+ 		break;
+ 
+ 	case ROSE_STATE_2:	/* T3 */
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		rose_disconnect(sk, ETIMEDOUT, -1, -1);
+ 		break;
+ 
+-- 
+2.17.1
+
