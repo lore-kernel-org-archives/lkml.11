@@ -2,322 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0D7CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbiGKIhm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45952 "EHLO
+        id S230370AbiGKIhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbiGKIhZ (ORCPT
+        with ESMTP id S230285AbiGKIh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:37:25 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413E913CD2;
-        Mon, 11 Jul 2022 01:37:22 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26B7gPv6013255;
-        Mon, 11 Jul 2022 08:37:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=P9z575zVdvY2nr2mvCgubEEkBU6RoJhAsBiZpmBLPB0=;
- b=JbpxktKxTm6IDG4vZfpE5NtWZgUgocYyWa1GB20M2OttxoTXZgRtxDfe8HIsuVxu340D
- W7S/WpF8xGXfy5denOyWTr5p21dsBngyG80vfRdNNvv1lxTfHAwOuIAI20cO5k2Iip5K
- LG7k5FRB09c87vg3ZUKPc94xADCTNRHKQh2qO36cB8dFXDnL1QjfjOpqbBRLTjwSxUna
- hn20vZ26Y+NlC0+XXx3OJRwcUqHnipksOGZbmd3ETlPyJfIgPj1oYYPvudm+Be1iQZ0S
- VopvyFfb6Uo0ZRcFoR/WhCWSBsbenynFxCMBBOgOIshovwr5OL2/SdDEji1uj12Xb3Hy uQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h82jx5mun-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jul 2022 08:37:22 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26B8YlVB029325;
-        Mon, 11 Jul 2022 08:37:21 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h82jx5mtu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Jul 2022 04:37:26 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2804813D13
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:37:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657528645; x=1689064645;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=g9SmQ8wfGwhk0MsY3t3oS2JR1R4VILZNOmqok5xSlNY=;
+  b=EZb3W+4nEmgopYEtK1FNpBNrQLItnt+mPgVWG2An2evBimvdfiLjaqXh
+   RRzfRkabXDues4lbLI0sb1SBWkmQ3C7N66qUDOQygN/QZn5l+dGMpM3wW
+   egq17j4L7AxaDKBKB3XtKBsuYT2D6E07I4fdxuIONIg3rsN/FrjdvJjga
+   pXLzaviiCNghS8iINLKoYoe2dMwFbd4MAXH200BpwjO/pf+6+0Eg4MIK6
+   oCKyyAuWRz4k7gKwsnnTUTNpUBzyX+abnwRVS3QsPpKv+YOhWNEFmY3rB
+   tHuxzDOTG2ofOZRpXT/kx4JXjNrbTb4Ya+ew2YeTk54E1K5Ul/7ugxUCV
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="370917816"
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="370917816"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 01:37:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="621988207"
+Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 11 Jul 2022 01:37:22 -0700
+Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAouv-0000cz-Sp;
         Mon, 11 Jul 2022 08:37:21 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26B8bJVE001880;
-        Mon, 11 Jul 2022 08:37:19 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3h71a8htx1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jul 2022 08:37:18 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26B8bPm932309734
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 11 Jul 2022 08:37:25 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8CB04A4051;
-        Mon, 11 Jul 2022 08:37:15 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BB34AA4040;
-        Mon, 11 Jul 2022 08:37:12 +0000 (GMT)
-Received: from li-c6ac47cc-293c-11b2-a85c-d421c8e4747b.ibm.com.com (unknown [9.171.7.160])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 11 Jul 2022 08:37:12 +0000 (GMT)
-From:   Pierre Morel <pmorel@linux.ibm.com>
-To:     kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, pmorel@linux.ibm.com,
-        wintera@linux.ibm.com, seiden@linux.ibm.com, nrb@linux.ibm.com,
-        scgl@linux.ibm.com
-Subject: [PATCH v12 0/3] s390x: KVM: CPU Topology
-Date:   Mon, 11 Jul 2022 10:41:45 +0200
-Message-Id: <20220711084148.25017-1-pmorel@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
+Date:   Mon, 11 Jul 2022 16:36:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Chen Lin <chen45464546@163.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [linux-stable-rc:linux-5.15.y 7889/8235]
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c:1325:23: warning: result of
+ comparison of constant 65536 with expression of type 'u16' (aka 'unsigned
+ short') is always true
+Message-ID: <202207111644.LOc31cfI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 5_kEtq6d4QCqngumZk1I7gTEtyIijhFr
-X-Proofpoint-ORIG-GUID: xETyMzb3icHTceXkYLFpoqglHQ--Beae
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-11_13,2022-07-08_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- phishscore=0 mlxlogscore=999 suspectscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 impostorscore=0 adultscore=0 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207110036
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+head:   eb18ccd146339b58faa47c1837f1b61ba05a1acf
+commit: fcba12a4308143f1f1dcb0face8b3ffb51edcc5c [7889/8235] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
+config: arm64-randconfig-r003-20220710 (https://download.01.org/0day-ci/archive/20220711/202207111644.LOc31cfI-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6ce63e267aab79ca87bf63453d34dd3909ab978d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=fcba12a4308143f1f1dcb0face8b3ffb51edcc5c
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc linux-5.15.y
+        git checkout fcba12a4308143f1f1dcb0face8b3ffb51edcc5c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mediatek/
 
-This new spin suppress the check for real cpu migration and
-modify the checking of valid function code inside the interception
-of the STSI instruction.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-The series provides:
-0- Modification of the ipte lock handling to use KVM instead of the
-   vcpu as an argument because ipte lock work on SCA which is uniq
-   per KVM structure and common to all vCPUs.
-1- interception of the STSI instruction forwarding the CPU topology
-2- interpretation of the PTF instruction
-3- a KVM capability for the userland hypervisor to ask KVM to 
-   setup PTF interpretation.
-4- KVM ioctl to get and set the MTCR bit of the SCA in order to
-   migrate this bit during a migration.
+All warnings (new ones prefixed by >>):
 
-
-0- Foreword
-
-The S390 CPU topology is reported using two instructions:
-- PTF, to get information if the CPU topology did change since last
-  PTF instruction or a subsystem reset.
-- STSI, to get the topology information, consisting of the topology
-  of the CPU inside the sockets, of the sockets inside the books etc.
-
-The PTF(2) instruction report a change if the STSI(15.1.2) instruction
-will report a difference with the last STSI(15.1.2) instruction*.
-With the SIE interpretation, the PTF(2) instruction will report a
-change to the guest if the host sets the SCA.MTCR bit.
-
-*The STSI(15.1.2) instruction reports:
-- The cores address within a socket
-- The polarization of the cores
-- The CPU type of the cores
-- If the cores are dedicated or not
-
-We decided to implement the CPU topology for S390 in several steps:
-
-- first we report CPU hotplug
-
-In future development we will provide:
-
-- modification of the CPU mask inside sockets
-- handling of shared CPUs
-- reporting of the CPU Type
-- reporting of the polarization
+>> drivers/net/ethernet/mediatek/mtk_eth_soc.c:1325:23: warning: result of comparison of constant 65536 with expression of type 'u16' (aka 'unsigned short') is always true [-Wtautological-constant-out-of-range-compare]
+                   if (ring->frag_size <= PAGE_SIZE)
+                       ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~
+   drivers/net/ethernet/mediatek/mtk_eth_soc.c:1742:23: warning: result of comparison of constant 65536 with expression of type 'u16' (aka 'unsigned short') is always true [-Wtautological-constant-out-of-range-compare]
+                   if (ring->frag_size <= PAGE_SIZE)
+                       ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~
+   2 warnings generated.
 
 
-1- Interception of STSI
+vim +1325 drivers/net/ethernet/mediatek/mtk_eth_soc.c
 
-To provide Topology information to the guest through the STSI
-instruction, we forward STSI with Function Code 15 to the
-userland hypervisor which will take care to provide the right
-information to the guest.
-
-To let the guest use both the PTF instruction  to check if a topology
-change occurred and sthe STSI_15.x.x instruction we add a new KVM
-capability to enable the topology facility.
-
-2- Interpretation of PTF with FC(2)
-
-The PTF instruction reports a topology change if there is any change
-with a previous STSI(15.1.2) SYSIB.
-
-Changes inside a STSI(15.1.2) SYSIB occur if CPU bits are set or clear
-inside the CPU Topology List Entry CPU mask field, which happens with
-changes in CPU polarization, dedication, CPU types and adding or
-removing CPUs in a socket.
-
-Considering that the KVM guests currently only supports:
-- horizontal polarization
-- type 3 (Linux) CPU
-
-And that we decide to support only:
-- dedicated CPUs on the host
-- pinned vCPUs on the guest
-
-the creation of vCPU will is the only trigger to set the MTCR bit for
-a guest.
-
-The reporting to the guest is done using the Multiprocessor
-Topology-Change-Report (MTCR) bit of the utility entry of the guest's
-SCA which will be cleared during the interpretation of PTF.
-
-Regards,
-Pierre
-
-Pierre Morel (3):
-  KVM: s390: Cleanup ipte lock access and SIIF facility checks
-  KVM: s390: guest support for topology function
-  KVM: s390: resetting the Topology-Change-Report
-
- Documentation/virt/kvm/api.rst   | 25 +++++++++
- arch/s390/include/asm/kvm_host.h | 18 +++++-
- arch/s390/include/uapi/asm/kvm.h |  1 +
- arch/s390/kvm/gaccess.c          | 96 ++++++++++++++++----------------
- arch/s390/kvm/gaccess.h          |  6 +-
- arch/s390/kvm/kvm-s390.c         | 87 +++++++++++++++++++++++++++++
- arch/s390/kvm/priv.c             | 28 +++++++---
- arch/s390/kvm/vsie.c             |  8 +++
- include/uapi/linux/kvm.h         |  1 +
- 9 files changed, 209 insertions(+), 61 deletions(-)
+  1277	
+  1278	static int mtk_poll_rx(struct napi_struct *napi, int budget,
+  1279			       struct mtk_eth *eth)
+  1280	{
+  1281		struct dim_sample dim_sample = {};
+  1282		struct mtk_rx_ring *ring;
+  1283		int idx;
+  1284		struct sk_buff *skb;
+  1285		u8 *data, *new_data;
+  1286		struct mtk_rx_dma *rxd, trxd;
+  1287		int done = 0, bytes = 0;
+  1288	
+  1289		while (done < budget) {
+  1290			struct net_device *netdev;
+  1291			unsigned int pktlen;
+  1292			dma_addr_t dma_addr;
+  1293			u32 hash;
+  1294			int mac;
+  1295	
+  1296			ring = mtk_get_rx_ring(eth);
+  1297			if (unlikely(!ring))
+  1298				goto rx_done;
+  1299	
+  1300			idx = NEXT_DESP_IDX(ring->calc_idx, ring->dma_size);
+  1301			rxd = &ring->dma[idx];
+  1302			data = ring->data[idx];
+  1303	
+  1304			if (!mtk_rx_get_desc(&trxd, rxd))
+  1305				break;
+  1306	
+  1307			/* find out which mac the packet come from. values start at 1 */
+  1308			if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) ||
+  1309			    (trxd.rxd4 & RX_DMA_SPECIAL_TAG))
+  1310				mac = 0;
+  1311			else
+  1312				mac = ((trxd.rxd4 >> RX_DMA_FPORT_SHIFT) &
+  1313				       RX_DMA_FPORT_MASK) - 1;
+  1314	
+  1315			if (unlikely(mac < 0 || mac >= MTK_MAC_COUNT ||
+  1316				     !eth->netdev[mac]))
+  1317				goto release_desc;
+  1318	
+  1319			netdev = eth->netdev[mac];
+  1320	
+  1321			if (unlikely(test_bit(MTK_RESETTING, &eth->state)))
+  1322				goto release_desc;
+  1323	
+  1324			/* alloc new buffer */
+> 1325			if (ring->frag_size <= PAGE_SIZE)
+  1326				new_data = napi_alloc_frag(ring->frag_size);
+  1327			else
+  1328				new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
+  1329			if (unlikely(!new_data)) {
+  1330				netdev->stats.rx_dropped++;
+  1331				goto release_desc;
+  1332			}
+  1333			dma_addr = dma_map_single(eth->dev,
+  1334						  new_data + NET_SKB_PAD +
+  1335						  eth->ip_align,
+  1336						  ring->buf_size,
+  1337						  DMA_FROM_DEVICE);
+  1338			if (unlikely(dma_mapping_error(eth->dev, dma_addr))) {
+  1339				skb_free_frag(new_data);
+  1340				netdev->stats.rx_dropped++;
+  1341				goto release_desc;
+  1342			}
+  1343	
+  1344			dma_unmap_single(eth->dev, trxd.rxd1,
+  1345					 ring->buf_size, DMA_FROM_DEVICE);
+  1346	
+  1347			/* receive data */
+  1348			skb = build_skb(data, ring->frag_size);
+  1349			if (unlikely(!skb)) {
+  1350				skb_free_frag(data);
+  1351				netdev->stats.rx_dropped++;
+  1352				goto skip_rx;
+  1353			}
+  1354			skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
+  1355	
+  1356			pktlen = RX_DMA_GET_PLEN0(trxd.rxd2);
+  1357			skb->dev = netdev;
+  1358			skb_put(skb, pktlen);
+  1359			if (trxd.rxd4 & eth->rx_dma_l4_valid)
+  1360				skb->ip_summed = CHECKSUM_UNNECESSARY;
+  1361			else
+  1362				skb_checksum_none_assert(skb);
+  1363			skb->protocol = eth_type_trans(skb, netdev);
+  1364			bytes += pktlen;
+  1365	
+  1366			hash = trxd.rxd4 & MTK_RXD4_FOE_ENTRY;
+  1367			if (hash != MTK_RXD4_FOE_ENTRY) {
+  1368				hash = jhash_1word(hash, 0);
+  1369				skb_set_hash(skb, hash, PKT_HASH_TYPE_L4);
+  1370			}
+  1371	
+  1372			if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
+  1373			    (trxd.rxd2 & RX_DMA_VTAG))
+  1374				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+  1375						       RX_DMA_VID(trxd.rxd3));
+  1376			skb_record_rx_queue(skb, 0);
+  1377			napi_gro_receive(napi, skb);
+  1378	
+  1379	skip_rx:
+  1380			ring->data[idx] = new_data;
+  1381			rxd->rxd1 = (unsigned int)dma_addr;
+  1382	
+  1383	release_desc:
+  1384			if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
+  1385				rxd->rxd2 = RX_DMA_LSO;
+  1386			else
+  1387				rxd->rxd2 = RX_DMA_PLEN0(ring->buf_size);
+  1388	
+  1389			ring->calc_idx = idx;
+  1390	
+  1391			done++;
+  1392		}
+  1393	
+  1394	rx_done:
+  1395		if (done) {
+  1396			/* make sure that all changes to the dma ring are flushed before
+  1397			 * we continue
+  1398			 */
+  1399			wmb();
+  1400			mtk_update_rx_cpu_idx(eth);
+  1401		}
+  1402	
+  1403		eth->rx_packets += done;
+  1404		eth->rx_bytes += bytes;
+  1405		dim_update_sample(eth->rx_events, eth->rx_packets, eth->rx_bytes,
+  1406				  &dim_sample);
+  1407		net_dim(&eth->rx_dim, dim_sample);
+  1408	
+  1409		return done;
+  1410	}
+  1411	
 
 -- 
-2.31.1
-
-Changelog:
-
-from v11 to v12
-
-- protect sca pointer
-  (Janis)
-
-- check for user_stsi before returning information
-  to userland
-  (Janis)
-
-- check for protected virtualization
-  (Pierre)
-
-from v10 to v11
-
-- access mctr with interlocked access instead of ipte_lock
-  (Janis)
-
-- set mctr in kvm_arch_vcpu_destroy
-  (Nico)
-
-- better function documentation
-  (Claudio)
-
-- use a single function to set and clear
-  (Janosch)
-
-- Use u8 as API data
-  (David, Janis)
-
-- Check KVM_CAP_S390_USER_STSI before returning
-  data to userspace
-  (Nico)
-
-from v9 to v10
-
-- Suppression of the check on real CPU migration
-  (Christian)
-
-- Changed the check on fc in handle_stsi
-  (David)
-
-from v8 to v9
-
-- bug correction in kvm_s390_topology_changed
-  (Heiko)
-
-- simplification for ipte_lock/unlock to use kvm
-  as arg instead of vcpu and test on sclp.has_siif
-  instead of the SIE ECA_SII.
-  (David)
-
-- use of a single value for reporting if the
-  topology changed instead of a structure
-  (David)
-
-from v7 to v8
-
-- implement reset handling
-  (Janosch)
-
-- change the way to check if the topology changed
-  (Nico, Heiko)
-
-from v6 to v7
-
-- rebase
-
-from v5 to v6
-
-- make the subject more accurate
-  (Claudio)
-
-- Change the kvm_s390_set_mtcr() function to have vcpu in the name
-  (Janosch)
-
-- Replace the checks on ECB_PTF wit the check of facility 11
-  (Janosch)
-
-- modify kvm_arch_vcpu_load, move the check in a function in
-  the header file
-  (Janosh)
-
-- No magical number replace the "new cpu value" of -1 with a define
-  (Janosch)
-
-- Make the checks for STSI validity clearer
-  (Janosch)
-
-from v4 tp v5
-
-- modify the way KVM_CAP is tested to be OK with vsie
-  (David)
-
-from v3 to v4
-
-- squatch both patches
-  (David)
-
-- Added Documentation
-  (David)
-
-- Modified the detection for new vCPUs
-  (Pierre)
-
-from v2 to v3
-
-- use PTF interpretation
-  (Christian)
-
-- optimize arch_update_cpu_topology using PTF
-  (Pierre)
-
-from v1 to v2:
-
-- Add a KVM capability to let QEMU know we support PTF and STSI 15
-  (David)
-
-- check KVM facility 11 before accepting STSI fc 15
-  (David)
-
-- handle all we can in userland
-  (David)
-
-- add tracing to STSI fc 15
-  (Connie)
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
