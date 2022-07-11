@@ -2,54 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A99DFCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbiGKNkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 09:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
+        id S230259AbiGKNls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 09:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiGKNkF (ORCPT
+        with ESMTP id S229456AbiGKNlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 09:40:05 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B1641D18
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:40:04 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 7943968AA6; Mon, 11 Jul 2022 15:40:00 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 15:40:00 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Ben Dooks <ben.dooks@sifive.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, iommu@lists.linux-foundation.org,
-        Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
- initialised
-Message-ID: <20220711134000.GA18865@lst.de>
-References: <20220708170811.270589-1-ben.dooks@sifive.com> <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com> <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com> <e6c43ef0-870b-5fe6-141e-0a3d566b030e@arm.com> <20220711102134.GB4639@lst.de> <4fa8b709-c883-54dc-c302-20c9e55ae93a@sifive.com> <20220711103921.GA6542@lst.de> <43426798-44df-c2c7-1f46-0b79201cb620@sifive.com> <ac4944b8-5d15-4761-6315-7dba6eaee0e7@arm.com> <265d7b6b-a0a4-ecaf-10bd-15e1ea416a06@sifive.com>
+        Mon, 11 Jul 2022 09:41:46 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E67A4D4CB;
+        Mon, 11 Jul 2022 06:41:46 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31bf3656517so48914067b3.12;
+        Mon, 11 Jul 2022 06:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sdwpzHws2jwe9e9bTdjMo364Spj9w7i0w60w+KBGqzo=;
+        b=fr4fWushiyeFwkSE3Elj1GJcVBKEkH9TYQXwt6wz4kbsYFKBJI//8iBtjTkvh5m1td
+         lY7TfolHcZmJ1dz6rDPtdUYujjlmqX8ciG2fNQFd6hLW4eyu6FDKmhH2pkRUHFKE2cyb
+         VcpAzYU5hrNR9Se+wAlsoJT68cGW/HkJfwHyRGy4EyXLKfDxzpAviP/RMPn3mk8PQHkJ
+         fzYAho6X6h0SaNwiRPu1MB7smEYPPCAQj+9wCvOJG2yKAW4hOVeubiw84h25f62ViSY3
+         jX8Sblb4eOdlN4bvdVBGvcccQVyr96nWK5fH5xIEcqkV28GBuVvCEnGA17epZDLIdr5I
+         vZuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sdwpzHws2jwe9e9bTdjMo364Spj9w7i0w60w+KBGqzo=;
+        b=wWZW+V7Zsh/7lRYxYwu8gokQbVT7gpvg9wMWskr24Si1LRGkCKi3/p+VOW8pF2oiMs
+         LGVvYiIjIHg99c8HSYGaYtsaO6DvKdEte1al/C+bYX86JBxgfOq91P3MQXLijr7G7iZG
+         aeehT8S8ZT4bHnxzPFLvBh1fNk7QO8H6gsBWmkIyDQ4Hz1ZtyTIgbmWuhzkGfdnI8+X6
+         sZQLEDkKKfRapJG/trv4FrtVtx0Tam4bkTwQuDq68YLecpuVZnbC9JeaqJJOghMY+TfJ
+         D43TlAh6SRWb8rmomoGav/1F/Uv01ZhrudkM3tAIMGdjQTKz7cRBNLprBNxBq4SrECpj
+         tByA==
+X-Gm-Message-State: AJIora/TSI0NGsWPf6tO2Uwt5LJEx4gv7w2R91DVabJDPfdenJc4aC9r
+        is0A7APo3Oo4kB1lGHPVQTKkcUkwrMZFUrmmVbE=
+X-Google-Smtp-Source: AGRyM1tI/w/ZyWN7kdnWCxqnewu9nCeJj2Kvs5+rlCAMnMcXkfOmVTzc/oG13/3jVJYvAQaO4QiD90BliyiLgVIU1gw=
+X-Received: by 2002:a81:4986:0:b0:31d:388b:d08d with SMTP id
+ w128-20020a814986000000b0031d388bd08dmr14590130ywa.185.1657546905261; Mon, 11
+ Jul 2022 06:41:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <265d7b6b-a0a4-ecaf-10bd-15e1ea416a06@sifive.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+References: <20220711112900.61363-1-shreeya.patel@collabora.com>
+ <20220711112900.61363-3-shreeya.patel@collabora.com> <CAHp75Vf3NDsep5_819=e8yrna_AGh5cew=fs+hHe1q8LCa-PyA@mail.gmail.com>
+ <c90e7334-5921-886b-2f9c-869fb55216ca@collabora.com>
+In-Reply-To: <c90e7334-5921-886b-2f9c-869fb55216ca@collabora.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Jul 2022 15:41:08 +0200
+Message-ID: <CAHp75Vf=FOt+N6azar5gifvig8FL4sS3LX1kO8CzNCh2yOk-DQ@mail.gmail.com>
+Subject: Re: [PATCH v7 2/2] iio: light: Add support for ltrf216a sensor
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, Zhigang.Shi@liteon.com,
+        krisman@collabora.com, linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Collabora Kernel ML <kernel@collabora.com>,
+        alvaro.soliverez@collabora.com, dmitry.osipenko@collabora.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 01:54:11PM +0100, Ben Dooks wrote:
-> I need to go back and check through what we did to get some that worked
-> for us, and then come back and try and make some idea of how that is
-> best done with upstream kernel.
->
-> It might be possible for the PCIe controller to do some sort of very
-> simple IOMMU for the case where we might have somehow an PCI device
-> added to the system, but that is a very rare use-case I expect and
-> if someone does it they can do the effort of updating the PCIe code
-> and everything else that goes with it.
+On Mon, Jul 11, 2022 at 3:39 PM Shreeya Patel
+<shreeya.patel@collabora.com> wrote:
+> On 11/07/22 18:36, Andy Shevchenko wrote:
+> > On Mon, Jul 11, 2022 at 1:30 PM Shreeya Patel
 
-Unfortunately there also are plenty of PCIe devices with addressing
-limitation even if the PCIe spec explicitly forbits that.  40, 44 or
-48 bit limitations seems to be more common than 32-bits, though.
+Please, remove unneeded context when replying!
+
+...
+
+> >> +static const struct regmap_config ltrf216a_regmap_config = {
+> >> +       .name = LTRF216A_DRV_NAME,
+> >> +       .reg_bits = 8,
+> >> +       .val_bits = 8,
+> >> +       .max_register = LTRF216A_MAX_REG,
+> > Why do you use regmap locking? What for?
+>
+> Why do we want to skip the internal locking if it doesn't bring any
+> benefits?
+
+Can you elaborate on the "no benefits" part, please?
+
+-- 
+With Best Regards,
+Andy Shevchenko
