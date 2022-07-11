@@ -2,158 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E47CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27EC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbiGKU1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
+        id S231252AbiGKU31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiGKUZk (ORCPT
+        with ESMTP id S231890AbiGKU3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:25:40 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A974D812;
-        Mon, 11 Jul 2022 13:25:27 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0771B5C0130;
-        Mon, 11 Jul 2022 16:25:25 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 11 Jul 2022 16:25:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1657571125; x=1657657525; bh=kNzIp30Qm/
-        z7d269z2/7uprxKlfk1b3Xh9kIgnDKL3w=; b=jdSmgR3nMHSEZedXM5Yb9S/a66
-        VWyn4EdjuZc6tTPaLqq1KzPMJQt9mT7jXaIPKzyuDBHBY6lHP3385uKfUG3eRZsA
-        7qIELLk4Y5sJE87O8iuD9v1dTyPAuUSHkBvorFw63UzEYHCv7HAkvciUKq4c6tKa
-        6SfOVYVEHu9uCOAMmxkqjJcDMkSQqmnZ7qLMsH2Flrw1ssXzzjjG6tzm4wrBc4p8
-        PzlFxlxCztZjot7Qnv3Fpxyc6IizHrp7RX6GuBEl/nMvp63pJaby8lN6JAKITDYY
-        kPt7nhnjsOvdL9COeX9wqq08xW+JB1f9J3qfQxfj7EtsRMLJoblB8gCJ2e2A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1657571125; x=1657657525; bh=kNzIp30Qm/z7d269z2/7uprxKlfk
-        1b3Xh9kIgnDKL3w=; b=k5rCBC2IsD779cvf/It1Nxc+98YUYsRPuKokoHQXcS+h
-        119XRyia2VNbLP+m6impbKEn7Y20/n52qOwE3vYr3ZEoA3kGJRH24QDNbV6Miylt
-        QTDKd9meOrUNyGchCPM4pZEBlJ6L7hS88+ou5zO0bH1AQEsbsQ9BpXE97WCddBpF
-        qu5tCMZWuyvQQxqrnUY/k8urkbZxdv/295w61YNmUTlA1n13JqIdxMUIlIrpVNHd
-        rnWYqBzWT9ZoJOSGaqnKCrn6OQuTlcbgskf9G0MXoumnpgIpwMozDdC3IoX+CWBN
-        dZXJ/o1Evg65WevBCatMrVtpgIMDfWCM415S+Lf3fw==
-X-ME-Sender: <xms:NIfMYsr3CJXdzuXI0q7WglfUM3zszE9cKM5ehjBkHNQ5xrGtoqSvkw>
-    <xme:NIfMYioZn2W1EMkm0PDjOPFb_SoFp1CSC4rzSfSn1Ptxj5YxI_Yxiivnf29tWaiEw
-    Y1au1oj16yyecHiGKU>
-X-ME-Received: <xmr:NIfMYhPLccsl49jduEzW5uowsbGtEU2rOQg5KC_KvIMH2lMLWjeBWPTW>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejfedgudeglecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvhigt
-    hhhoucetnhguvghrshgvnhcuoehthigthhhosehthigthhhordhpihiiiigrqeenucggtf
-    frrghtthgvrhhnpeeutedttefgjeefffehffffkeejueevieefudelgeejuddtfeffteek
-    lefhleelteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehthigthhhosehthigthhhordhpihiiiigr
-X-ME-Proxy: <xmx:NIfMYj71TdBzJ5iwFd9PaWaNtD3KVzbpVZUwnoPKHEmcY4EeDdCA7g>
-    <xmx:NIfMYr7j8tC0EctlhFIX00r8-x3VqnbqPt1d8UEGIZopCvnGILkG9A>
-    <xmx:NIfMYjhIFmj4HoQr7wWuP9-xQebg0SQQNekhGMvmuUmRXtxN4hgL0A>
-    <xmx:NYfMYu298dFgWEiyHHgz4RnXZlQqtVPNXhXdaY1Azc4fq4xTPvpdrg>
-Feedback-ID: i21f147d5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 11 Jul 2022 16:25:23 -0400 (EDT)
-Date:   Mon, 11 Jul 2022 14:25:21 -0600
-From:   Tycho Andersen <tycho@tycho.pizza>
-To:     Miklos Szeredi <miklos@szeredi.hu>,
-        Eric Biederman <ebiederm@xmission.com>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: strange interaction between fuse + pidns
-Message-ID: <YsyHMVLuT5U6mm+I@netflix>
-References: <YrShFXRLtRt6T/j+@risky>
- <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
- <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
+        Mon, 11 Jul 2022 16:29:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2B887F66;
+        Mon, 11 Jul 2022 13:27:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 415226162A;
+        Mon, 11 Jul 2022 20:26:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91B1CC341CE;
+        Mon, 11 Jul 2022 20:26:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657571214;
+        bh=yppWtMlpzGxhTVCbUitFL8uc/Qbx8CgTBfd7qCKLRQA=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=Qin4VdXGfP4lSvhaVW9agm6dNAbmCuEsi8tD/yw3yjAp402r3CMwbBj/GDujIDNSo
+         /49UbqPjkcCNyFcfGuELL5UzCZVdGgMzaI6+HQj9y43oGLpTbT06yx2/eoaxVATVlP
+         I8Ly2O9fE6fBgHK3bG5ekdNhnUI3meXc6DiyvUUHk3c5a1o7ILjgvyPi9zVfAxO/pb
+         5c3bUwDMsJLEVxsky74vVIMuETCS7huTqEr3FEVBINGfmUelBNfwZCnfZWAL4koeul
+         54EVWIWPBJHpf2FryCzxkxQPopx5NJybNX7GgGK3rztQm6McnrIGr76Hen9Dp+WbVw
+         7CWgEq5jJpz/g==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220505101433.1575096-5-gengcixi@gmail.com>
+References: <20220505101433.1575096-1-gengcixi@gmail.com> <20220505101433.1575096-5-gengcixi@gmail.com>
+Subject: Re: [PATCH v5 4/4] clk: sprd: Add clocks support for UMS512
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+To:     Cixi Geng <gengcixi@gmail.com>, baolin.wang7@gmail.com,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        mturquette@baylibre.com, orsonzhai@gmail.com, robh+dt@kernel.org,
+        zhang.lyra@gmail.com
+Date:   Mon, 11 Jul 2022 13:26:52 -0700
+User-Agent: alot/0.10
+Message-Id: <20220711202654.91B1CC341CE@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+Quoting Cixi Geng (2022-05-05 03:14:33)
+> diff --git a/drivers/clk/sprd/ums512-clk.c b/drivers/clk/sprd/ums512-clk.c
+> new file mode 100644
+> index 000000000000..53ed58de61cd
+> --- /dev/null
+> +++ b/drivers/clk/sprd/ums512-clk.c
+> @@ -0,0 +1,2199 @@
+> +// SPDX-License-Identifier: GPL
 
-On Mon, Jul 11, 2022 at 03:59:15PM +0200, Miklos Szeredi wrote:
-> On Mon, 11 Jul 2022 at 12:35, Miklos Szeredi <miklos@szeredi.hu> wrote:
-> >
-> > Can you try the attached untested patch?
-> 
-> Updated patch to avoid use after free on req->args.
-> 
-> Still mostly untested.
+Please pick an appropriate license.
 
-Thanks, when I applied your patch, I still ended up with tasks stuck
-waiting with a SIGKILL pending. So I looked into that and came up with
-the patch below. With both your patch and mine, my testcase exits
-cleanly.
+WARNING: 'SPDX-License-Identifier: GPL' is not supported in LICENSES/...
+#49: FILE: drivers/clk/sprd/ums512-clk.c:1:
++// SPDX-License-Identifier: GPL
 
-Eric (or Christian, or anyone), can you comment on the patch below? I
-have no idea what this will break. Maybe instead a better approach is
-some additional special case in __send_signal_locked()?
+> +/*
+> + * Unisoc UMS512 clock driver
+> + *
+> + * Copyright (C) 2022 Unisoc, Inc.
+> + * Author: Xiaolong Zhang <xiaolong.zhang@unisoc.com>
+> + */
+> +
+> +#include <linux/clk-provider.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +
+> +#include <dt-bindings/clock/sprd,ums512-clk.h>
+> +
+> +#include "common.h"
+> +#include "composite.h"
+> +#include "div.h"
+> +#include "gate.h"
+> +#include "mux.h"
+> +#include "pll.h"
+> +
+> +#define UMS512_MUX_FLAG        \
+> +       (CLK_GET_RATE_NOCACHE | CLK_SET_RATE_NO_REPARENT)
 
-Tycho
+Why do we need nocache?
 
-From b7ea26adcf3546be5745063cc86658acb5ed37e9 Mon Sep 17 00:00:00 2001
-From: Tycho Andersen <tycho@tycho.pizza>
-Date: Mon, 11 Jul 2022 11:26:58 -0600
-Subject: [PATCH] sched: __fatal_signal_pending() should also check shared
- signals
+> +
+> +/* pll gate clock */
+> +/* some pll clocks configure CLK_IGNORE_UNUSED because hw dvfs does not =
+call
+> + * clock interface. hw dvfs can not gate the pll clock.
+> + */
+> +static CLK_FIXED_FACTOR_FW_NAME(clk_26m_aud, "clk-26m-aud", "ext-26m", 1=
+, 1, 0);
+[...]
+> +       .hw_clks        =3D &ums512_pmu_gate_hws,
+> +};
+> +
+> +/* pll clock at g0 */
+> +static const u64 itable_dpll0[7] =3D {6, 0, 0,
 
-The wait_* code uses signal_pending_state() to test whether a thread has
-been interrupted, which ultimately uses __fatal_signal_pending() to detect
-if there is a fatal signal.
+Please put space after '{' and before '}'
 
-When a pid ns dies, in zap_pid_ns_processes() it does:
+> +                       1173000000ULL, 1475000000ULL,
+> +                       1855000000ULL, 1866000000ULL};
+> +
+[...]
+> +
+> +static int ums512_clk_probe(struct platform_device *pdev)
+> +{
+> +       const struct sprd_clk_desc *desc;
+> +
+> +       desc =3D device_get_match_data(&pdev->dev);
+> +       if (!desc)
+> +               return -ENODEV;
+> +
+> +       sprd_clk_regmap_init(pdev, desc);
 
-    group_send_sig_info(SIGKILL, SEND_SIG_PRIV, task, PIDTYPE_MAX);
+Check for error please
 
-for all the tasks in the pid ns. That calls through:
-
-    group_send_sig_info() ->
-      do_send_sig_info() ->
-        send_signal_locked() ->
-          __send_signal_locked()
-
-which does:
-
-    pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
-
-which puts sigkill in the set of shared signals, but not the individual
-pending ones. If tasks are stuck in a killable wait (e.g. a fuse flush
-operation), they won't see this shared signal, and will hang forever, since
-TIF_SIGPENDING is set, but the fatal signal can't be detected.
-
-Signed-off-by: Tycho Andersen <tycho@tycho.pizza>
----
- include/linux/sched/signal.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
-index cafbe03eed01..a033ccb0a729 100644
---- a/include/linux/sched/signal.h
-+++ b/include/linux/sched/signal.h
-@@ -402,7 +402,8 @@ static inline int signal_pending(struct task_struct *p)
- 
- static inline int __fatal_signal_pending(struct task_struct *p)
- {
--	return unlikely(sigismember(&p->pending.signal, SIGKILL));
-+	return unlikely(sigismember(&p->pending.signal, SIGKILL) ||
-+			sigismember(&p->signal->shared_pending.signal, SIGKILL));
- }
- 
- static inline int fatal_signal_pending(struct task_struct *p)
-
-base-commit: 32346491ddf24599decca06190ebca03ff9de7f8
--- 
-2.34.1
-
+> +
+> +       return sprd_clk_probe(&pdev->dev, desc->hw_clks);
+> +}
+> +
