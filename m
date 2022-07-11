@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 052D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C82C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232120AbiGKJXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        id S231974AbiGKJXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiGKJXC (ORCPT
+        with ESMTP id S231970AbiGKJXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:23:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD47A476;
-        Mon, 11 Jul 2022 02:13:42 -0700 (PDT)
+        Mon, 11 Jul 2022 05:23:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67736DFAE;
+        Mon, 11 Jul 2022 02:13:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A498FB80956;
-        Mon, 11 Jul 2022 09:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05CCEC34115;
-        Mon, 11 Jul 2022 09:13:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63143610A5;
+        Mon, 11 Jul 2022 09:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F4AAC341C0;
+        Mon, 11 Jul 2022 09:13:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530820;
-        bh=4HuBC4Aelr4BrBgOj2FNmFO2kAE/C4SeM865M3gGYNQ=;
+        s=korg; t=1657530825;
+        bh=Vo2NXTuIGeYUCBior9n3TDY/890hy6VDpp8UtFAEbMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n0fRBkfy6tjCYzo+BCgN6p3J4hpgPMZi6rCZHJohSGGjOwtFn8S00EbSQOOYiQf59
-         O+cOvsYmUZo625gIHL1bG5dhUpvTCT8kHjoCyYTWE+aWud/dreCypyQeiEu2n909gL
-         WrDnzVial3D6teIiUXq1wphdGK7b4nF3F/a1hdoI=
+        b=uU3HMqJlMcDbSW+nsQbyhPXcJBzE0rmGRnP5wpPUx+t3i4ZyiDWcBLOdVGSwrz6Vb
+         T38zy5CeTRohT8XLJ8AdK9vzCEmH0UY5mT0o5wrbCAhdebLOBolLR49fcJ1bLDjYtA
+         FK3uOMQ7MqaKmXFS+Zy+GbLf+XwYpDO3exAW2k2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.10 50/55] dt-bindings: dma: allwinner,sun50i-a64-dma: Fix min/max typo
-Date:   Mon, 11 Jul 2022 11:07:38 +0200
-Message-Id: <20220711090543.229756210@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.10 52/55] dmaengine: pl330: Fix lockdep warning about non-static key
+Date:   Mon, 11 Jul 2022 11:07:40 +0200
+Message-Id: <20220711090543.286819317@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -48,34 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-commit 607a48c78e6b427b0b684d24e61c19e846ad65d6 upstream.
+commit b64b3b2f1d81f83519582e1feee87d77f51f5f17 upstream.
 
-The conditional block for variants with a second clock should have set
-minItems, not maxItems, which was already 2. Since clock-names requires
-two items, this typo should not have caused any problems.
+The DEFINE_SPINLOCK() macro shouldn't be used for dynamically allocated
+spinlocks. The lockdep warns about this and disables locking validator.
+Fix the warning by making lock static.
 
-Fixes: edd14218bd66 ("dt-bindings: dmaengine: Convert Allwinner A31 and A64 DMA to a schema")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220702031903.21703-1-samuel@sholland.org
+ INFO: trying to register non-static key.
+ The code is fine but needs lockdep annotation, or maybe
+ you didn't initialize this object before use?
+ turning off the locking correctness validator.
+ Hardware name: Radxa ROCK Pi 4C (DT)
+ Call trace:
+  dump_backtrace.part.0+0xcc/0xe0
+  show_stack+0x18/0x6c
+  dump_stack_lvl+0x8c/0xb8
+  dump_stack+0x18/0x34
+  register_lock_class+0x4a8/0x4cc
+  __lock_acquire+0x78/0x20cc
+  lock_acquire.part.0+0xe0/0x230
+  lock_acquire+0x68/0x84
+  _raw_spin_lock_irqsave+0x84/0xc4
+  add_desc+0x44/0xc0
+  pl330_get_desc+0x15c/0x1d0
+  pl330_prep_dma_cyclic+0x100/0x270
+  snd_dmaengine_pcm_trigger+0xec/0x1c0
+  dmaengine_pcm_trigger+0x18/0x24
+  ...
+
+Fixes: e588710311ee ("dmaengine: pl330: fix descriptor allocation fail")
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Link: https://lore.kernel.org/r/20220520181432.149904-1-dmitry.osipenko@collabora.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/dma/allwinner,sun50i-a64-dma.yaml |    2 +-
+ drivers/dma/pl330.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/dma/allwinner,sun50i-a64-dma.yaml
-+++ b/Documentation/devicetree/bindings/dma/allwinner,sun50i-a64-dma.yaml
-@@ -61,7 +61,7 @@ if:
- then:
-   properties:
-     clocks:
--      maxItems: 2
-+      minItems: 2
+--- a/drivers/dma/pl330.c
++++ b/drivers/dma/pl330.c
+@@ -2591,7 +2591,7 @@ static struct dma_pl330_desc *pl330_get_
  
-   required:
-     - clock-names
+ 	/* If the DMAC pool is empty, alloc new */
+ 	if (!desc) {
+-		DEFINE_SPINLOCK(lock);
++		static DEFINE_SPINLOCK(lock);
+ 		LIST_HEAD(pool);
+ 
+ 		if (!add_desc(&pool, &lock, GFP_ATOMIC, 1))
 
 
