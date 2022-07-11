@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F64C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232047AbiGKJWf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
+        id S231857AbiGKJWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232012AbiGKJV5 (ORCPT
+        with ESMTP id S231410AbiGKJWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:21:57 -0400
+        Mon, 11 Jul 2022 05:22:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A696A5925E;
-        Mon, 11 Jul 2022 02:13:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D472958857;
+        Mon, 11 Jul 2022 02:13:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DA15B80C69;
-        Mon, 11 Jul 2022 09:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E1CCC34115;
-        Mon, 11 Jul 2022 09:13:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F04D4B80956;
+        Mon, 11 Jul 2022 09:13:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FF8C34115;
+        Mon, 11 Jul 2022 09:13:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530789;
-        bh=/PA375MgRFKqGCoyHk5O+DJmD8t1VvU0w48L065Ejd8=;
+        s=korg; t=1657530792;
+        bh=YrRwYmcXX/z0GPkMaX6PigJqriWJlEvvzwSbzp2X574=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XudkG12Wxon6kdTdy4uzGWE+DR2idV/IUgFvCsMbj8Nn3NtztUiXIWvZC5OMzMISS
-         6xelNP+FFQBEekup1+70hqRhX3owV/91QqBq9I242qfevR7eh81PHXnAWE3q1d+Sij
-         xbYrBWsRyr/zOkZNqTPtkpVPq2R0ShItMkQWUQGU=
+        b=CyxYqph4CPcT9oOFw5K49EJ1CuMcOqnTTyrA9O8COz70AsJosZwOBPZYReH1mMgih
+         kWDOOrEiHLKkHGII5QvZi3UXpiOnFw1gdCcYwKPhJnkpzTfiz5hH05T//ivyii8GmQ
+         rRucPrlvO8Ol9ZprP4fpU8IejFIRhzepP4Fzlpe0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Child <nnac123@linux.ibm.com>,
-        Brian King <brking@linux.vnet.ibm.com>,
-        Rick Lindsley <ricklind@us.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 40/55] ibmvnic: Properly dispose of all skbs during a failover.
-Date:   Mon, 11 Jul 2022 11:07:28 +0200
-Message-Id: <20220711090542.940872889@linuxfoundation.org>
+Subject: [PATCH 5.10 41/55] selftests: forwarding: fix flood_unicast_test when h2 supports IFF_UNICAST_FLT
+Date:   Mon, 11 Jul 2022 11:07:29 +0200
+Message-Id: <20220711090542.969293073@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -51,48 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rick Lindsley <ricklind@us.ibm.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 1b18f09d31cfa7148df15a7d5c5e0e86f105f7d1 ]
+[ Upstream commit b8e629b05f5d23f9649c901bef09fab8b0c2e4b9 ]
 
-During a reset, there may have been transmits in flight that are no
-longer valid and cannot be fulfilled.  Resetting and clearing the
-queues is insufficient; each skb also needs to be explicitly freed
-so that upper levels are not left waiting for confirmation of a
-transmit that will never happen.  If this happens frequently enough,
-the apparent backlog will cause TCP to begin "congestion control"
-unnecessarily, culminating in permanently decreased throughput.
+As mentioned in the blamed commit, flood_unicast_test() works by
+checking the match count on a tc filter placed on the receiving
+interface.
 
-Fixes: d7c0ef36bde03 ("ibmvnic: Free and re-allocate scrqs when tx/rx scrqs change")
-Tested-by: Nick Child <nnac123@linux.ibm.com>
-Reviewed-by: Brian King <brking@linux.vnet.ibm.com>
-Signed-off-by: Rick Lindsley <ricklind@us.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+But the second host interface (host2_if) has no interest in receiving a
+packet with MAC DA de:ad:be:ef:13:37, so its RX filter drops it even
+before the ingress tc filter gets to be executed. So we will incorrectly
+get the message "Packet was not flooded when should", when in fact, the
+packet was flooded as expected but dropped due to an unrelated reason,
+at some other layer on the receiving side.
+
+Force h2 to accept this packet by temporarily placing it in promiscuous
+mode. Alternatively we could either deliver to its MAC address or use
+tcpdump_start, but this has the fewest complications.
+
+This fixes the "flooding" test from bridge_vlan_aware.sh and
+bridge_vlan_unaware.sh, which calls flood_test from the lib.
+
+Fixes: 236dd50bf67a ("selftests: forwarding: Add a test for flooded traffic")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/testing/selftests/net/forwarding/lib.sh | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 61fb2a092451..7fe2e47dc83d 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5228,6 +5228,15 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
- 			release_sub_crqs(adapter, 0);
- 			rc = init_sub_crqs(adapter);
- 		} else {
-+			/* no need to reinitialize completely, but we do
-+			 * need to clean up transmits that were in flight
-+			 * when we processed the reset.  Failure to do so
-+			 * will confound the upper layer, usually TCP, by
-+			 * creating the illusion of transmits that are
-+			 * awaiting completion.
-+			 */
-+			clean_tx_pools(adapter);
-+
- 			rc = reset_sub_crq_queues(adapter);
- 		}
- 	} else {
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index be6fa808d219..094a1104e49d 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -1129,6 +1129,7 @@ flood_test_do()
+ 
+ 	# Add an ACL on `host2_if` which will tell us whether the packet
+ 	# was flooded to it or not.
++	ip link set $host2_if promisc on
+ 	tc qdisc add dev $host2_if ingress
+ 	tc filter add dev $host2_if ingress protocol ip pref 1 handle 101 \
+ 		flower dst_mac $mac action drop
+@@ -1146,6 +1147,7 @@ flood_test_do()
+ 
+ 	tc filter del dev $host2_if ingress protocol ip pref 1 handle 101 flower
+ 	tc qdisc del dev $host2_if ingress
++	ip link set $host2_if promisc off
+ 
+ 	return $err
+ }
 -- 
 2.35.1
 
