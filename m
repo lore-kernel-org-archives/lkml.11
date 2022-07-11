@@ -2,137 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99691C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F88FCCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbiGKIf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:35:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
+        id S230200AbiGKIfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230204AbiGKIeo (ORCPT
+        with ESMTP id S230219AbiGKIfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:34:44 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2047.outbound.protection.outlook.com [40.107.20.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA7C11A3D;
-        Mon, 11 Jul 2022 01:33:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XAChumpId1QdHL1Va6skyeNrUuXzMqGXNyEMS4t5utt1UJG4h/vyLLN/Ujcy4Ck/2/pdzwhBTuSDfw+DBIp2XHkgqZYLgPR9DP1KwcHjwsaXYA4iPSKZuFZSykodH2nS7ntZE9wuwhHG490Nys56Esvq20rGfwVmEkZUaDEworuBZitBBQZJrnkflZLsvYbWV6F9D/+sggdWgjzBYFgPh6ESKlSwLS6UOmDycXArgzOs4J/MMu9+9+VCO0fdr042w4gEV0vdSRaa6VkIGH8ed5VxdNQY0EFlnHXuhod0aFmh7sc3P1hHJOkPlHfRughHZLQ6lRVDjGwKvxlNNAQ1qQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m6Ksshg9ZDzKe3YWaG6ZWXEFCt0CAZ+e23FYgsbS97Y=;
- b=S+PwMTT4J5MpFGIJLXdZogpt+rtZnhSR/i3ouHCo1WMBxsoH+Wmrk3qWyIfUxv34TIg1BZzwHEWzDzIwBmxCdUx+5zH9A4Fyo78MXyWquVOHM9dyh1yibMsfAO3NxcTI25nJm+1m2fNEIGonb2bPLwsPOP1azV9apW0BBp+MahNDoUboWG9PEK2XDfFq5PSAYh9+VXIGg5fECUVvZy8cKeOPX28Q/MZMUdCQcwDBCom5zUtCEneaSJDCT68B/xngt3cNegypc0wpfe/oHWP1AMD7Up3H6UfYbD4bPXH8/m8pJ3LuIV+2Kv8OS2BeAq1znDkeHrN9IAowwPeI6nHXyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m6Ksshg9ZDzKe3YWaG6ZWXEFCt0CAZ+e23FYgsbS97Y=;
- b=HDURP4sI0Qr/KcBr7sjKh4qaBdCIN8kDFDlAziyEYn9WoSshTz9MTs7ynfVpV3XR6usMqQC82n5uCW2K5c2VALglcrbYhMSGVQ/2kP3U2ViGG0xy5LMc7RgQZ0walITcuz0aqGcK6ITHhdAT+kWFniN8AiyYxgZTMRCpn0oUbU8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB8412.eurprd04.prod.outlook.com (2603:10a6:10:24d::9)
- by AM6PR0402MB3640.eurprd04.prod.outlook.com (2603:10a6:209:1f::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Mon, 11 Jul
- 2022 08:33:54 +0000
-Received: from DB9PR04MB8412.eurprd04.prod.outlook.com
- ([fe80::1c1b:6695:20d7:fd10]) by DB9PR04MB8412.eurprd04.prod.outlook.com
- ([fe80::1c1b:6695:20d7:fd10%6]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
- 08:33:54 +0000
-From:   Jacky Bai <ping.bai@nxp.com>
-To:     linus.walleij@linaro.org, aisheng.dong@nxp.com, festevam@gmail.com,
-        shawnguo@kernel.org, stefan@agner.ch
-Cc:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH v2] MAINTAINERS: Update freescale pin controllers maintainer
-Date:   Mon, 11 Jul 2022 16:35:28 +0800
-Message-Id: <20220711083528.27710-1-ping.bai@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: PU1PR01CA0006.apcprd01.prod.exchangelabs.com
- (2603:1096:803:15::18) To DB9PR04MB8412.eurprd04.prod.outlook.com
- (2603:10a6:10:24d::9)
+        Mon, 11 Jul 2022 04:35:16 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933EF1F2EB
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:34:41 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-31caffa4a45so41698007b3.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:34:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QdbaAV5FK76Uc2eirkQA2yHXVOboe6L8Bk5p4Quu1Fc=;
+        b=U1zIMqgVXWpxUf+MgxIN2kElsyLm53b1G9tMIQjlu27E0ToE7Dc6bZh/dd4NL18TEo
+         oOiOjkCkyA0+hJxX54Q3Yg15DnaPCWwjraCSy5EDkgrpXR4c5Ji8VaHJd9dbusCmIbwC
+         ixf/thwjLfiiFeVBLiJNfLlwTGjvfmHku6tw4/Jjy2D1Ku7l4yUGsSA/IwfcELTRhxqo
+         lwCqwtAtsiiLOOS31p69ViXQwR1ElWQIVyKWRxgrsElQcHvRdRaT5rAJuTA+SJt9lncR
+         WJbQKC7kZ4FkPZUFwHrdrML63FxfqlIE/gqiFFgcbt7PJP5JYUpaUyRi1ee3z8tcGbTg
+         T3KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QdbaAV5FK76Uc2eirkQA2yHXVOboe6L8Bk5p4Quu1Fc=;
+        b=N1hCO0AOW4i3SyivbtBL7cfr1SHp6RI7c9uVYMraO7IVUfaw9nzbZjwPlYEQzsS1sd
+         4rPpBU8xoVQaKjNJgalr1dsIcLwLXhpOQmDUxzFNjKXrN8AU1L2HHmlssA2NpQaBYJGb
+         KwsgSqGodM/C76oEEFsNOvUrIK3CrFzjCv9BrWjiCuhWAA/hSTAWrIa/SBPaddVFKwBi
+         a8xGhR3BKi9l1X88coro0FAKtUgh5Gmwd1HDaP4xTMh6DfAQPkDWgfHjbUOZFUHk4zsN
+         3mxhjyzF53qUIj5/8bmQlnDQqTvDnQkkuyu5QMc14h0YJBs2gS7O30dQEcovNdQahtZM
+         4pkw==
+X-Gm-Message-State: AJIora8/YfPhA3+Wp+XsYg2Po+bR6P2Pycx2DwHg2RNL7whJShmx5gAX
+        pr3eACrnrdp9RhKwCUwFb3qQQ13n8E3V1VVQ2zylQg==
+X-Google-Smtp-Source: AGRyM1v2gWdKpSi1APBbZfuBwCnT5kbKZ3VCWH6h/oSBTVy+KlcaafOxwYR6NVtPsb8r6FrPyS9sUg76wAF1b27C3xY=
+X-Received: by 2002:a0d:f801:0:b0:31d:851:96b8 with SMTP id
+ i1-20020a0df801000000b0031d085196b8mr18316942ywf.448.1657528480835; Mon, 11
+ Jul 2022 01:34:40 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8f55122d-81d6-4829-0d37-08da631816b2
-X-MS-TrafficTypeDiagnostic: AM6PR0402MB3640:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2Q2xU2OimmAm4YrlMqmo7cxLpcB/96TAXwe9sugxhLS9CFU93KNof2oxU5dxQK/Uf+sC6AOsf5udHR8FJxNedmdGj0b8wDdwe/si933GdvGkLjhURFMwhFzZsjtja5ZXBmJIvjtlhvV9sWiImLMEynpdTCEF2xrkVz9VMMuGzlkKkL3XfkxgoCNfuGDcEBATcn/QfZha9mPruKyuOCEO8AVEw5GYn7/UnUR/Sv2JiXQDxgMZYY9cgDmJJierCguPq2VLfIABy/UPNJVsu6bT3yB88aE24WnPmfpgCF6bCwBQL+KKYsJu1GwvwDJ2oszPHnQ6/+CsEzxz25eB6oVcn8HXtSNPPJZ3QvA60DCqWXmQO8kRYxiLr4wyyE+h0n1ueb9Ie0EGEXwFKf3uUHkuxNFZybq8/ASIEVdcZd5SudUTgAZs+6NWRygOJWDiNuDNG3oT8bBkhd+wau7R9d8Q8JG1UKaMRWPrGrobdR+Jmu02ZFy8n4QRHTltNV2skQxePCTNCFI2aR7Kv8moSWgFYL3axlf4JOla68TBSVKe3TyPj/Kpgk3vMMntJI3P1ZCg+lXmEZJ3uee9V54uuhxQeG8yto1dkTnnA0FbWYmnSU6lBuQxRHuuPWHybdoLzezI1r2c6GloWmmgUMMJRZ4H3pGzAv+91E9EFDW4Gt9iD9aGsDMlxrwpJyRooOMSbxPcmCC4nhaZgIhw7qKN5gHrVD++DlYjNToSDSxGNksvU5BHkPCu73n9m2Kd+/ovZhshbjiI6dvU6CvRJQufqqLpnBoS9NeCBzNHEbPV7xyLhsIujOLHEpgnR/C3hKgK3KVb
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8412.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(136003)(346002)(39860400002)(366004)(66476007)(8676002)(66946007)(4326008)(66556008)(6666004)(36756003)(83380400001)(316002)(478600001)(4744005)(41300700001)(6486002)(5660300002)(6512007)(52116002)(6506007)(2616005)(2906002)(8936002)(186003)(1076003)(26005)(86362001)(38100700002)(38350700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OzS31b7V1O/wGhrMVuqaZmGe+0yZOpoimZ5EGCVTERyP1c9e7Ck6drnTIQYF?=
- =?us-ascii?Q?5D/Us8Jlp0xSx/sPrIF+1rosdW1xWHbqapvSH0wL/XnfnRjafRoM5Xjg4oaP?=
- =?us-ascii?Q?EnCaK8THp8iQDCPB48uZWhOpwuN6GucOgoaqOv/nZTKZEot5OgpTN3VxQwfb?=
- =?us-ascii?Q?/G8p60eujYIU6QrYZxlSFyGXfthbJNksT7Rx6yKJ4jWVs+cdsh/ePTUxPY6L?=
- =?us-ascii?Q?MBMxoPVLzRQvOdfTaVouqLLURFnqNAD1IjfZ2d0ci1HpYQ4s/7DQayflYOr5?=
- =?us-ascii?Q?9w21zzuWPhxeHhbfU9jYhpZ/cPtTog0qa4wt3boZND0K792uRDViyIzILYXo?=
- =?us-ascii?Q?VCiesiRFKo1Z+ey9BSuYSGgsQlRpwcRzigrNIqn1xX9AS1q8LIrFRwb32SId?=
- =?us-ascii?Q?DseVyWz+vtwzLHHACN/hJ0/7Hd0oexwDAaMnTft7R4R1HNvI74MIpJrc8AvL?=
- =?us-ascii?Q?mDwKn29pKpDyO4Fy4yI0NiyxMvWPrvmY/X953X2WCf8ByP+DGrOgeXHUVqt1?=
- =?us-ascii?Q?QOjOckWLVwzbGkPP5p98AMCyVqsrn54mL+0RUSfp3gFHq/6Vo+0Ws1cSXikt?=
- =?us-ascii?Q?PXBQblzjfsmfoiODaxwBLPkIOTtvF2SxT5fao2Z5i2/vnRSSj6GNMejbh+U6?=
- =?us-ascii?Q?iLju53AB/MLEtT4AHYBadtAJC8laL5DpSyklYNn0SCY9tvvcCEwDzueNAkKy?=
- =?us-ascii?Q?Lfu8E8bntWvXfwLaocJ9piepu5FKi+F5C7JI8xHVvA+J081Z/7e9RtOQ0V/K?=
- =?us-ascii?Q?r8ExwOI2zdhQR1yI/hKRfT8J+nFS73QsMF+R8SR0wEMhoeWwpeVIvmqTYQwz?=
- =?us-ascii?Q?r8r2tOjuS05x8rS0RQU7kObUhDMEGteLl6xtIjT8m9/PgMIRMz36GzQ7AtCW?=
- =?us-ascii?Q?ED6+YdAK2GUwdt32GXEZ2rnOb6F5+yDsD1Mowr/eQtTDyMZWnwB8HpEgejR8?=
- =?us-ascii?Q?IpYbrWgSfwm2RynnD+2v363x+fPfoZp0PGKRx5jCSszDWJCwinllQ3PPDvCs?=
- =?us-ascii?Q?9AjQNZUj/kkoZc6IIH1//OuxV07799LOSIiyB1dEk8XL94EsxxxlmBx9pC+t?=
- =?us-ascii?Q?Lc+lFDa5Bn2zRNZG8kEqPwdwjFgyXem3kf+8A0pp/bYBQ5XfbcMKNrRMqYUZ?=
- =?us-ascii?Q?FUz3hUywFvpkJNwcxjf5AkKYyrbnAl5gRvbNY80dBLTLPUJblYCwUwoTYxAl?=
- =?us-ascii?Q?hWuB4oP5EV0pYss09kdhsn10cKbcF8XEPsxlDhlMVtSLyRJhfP3xwvdlzpAX?=
- =?us-ascii?Q?zNs91xBkTtmF83rMCO6mSa5jL6oXaws4a9l4rAdoERwdo1Yx7rXSLpzJuhGR?=
- =?us-ascii?Q?O3O/qGFtonGFe4ziKERM7K0r0jBV6hmF6oub09hKouWnSquM6UEiAbvKZ7aX?=
- =?us-ascii?Q?8mkFEDYBitbUXCArVt/DUKjEtCcdTOxHKnefvTQjznOqnJ3HQbozcTeSlMO5?=
- =?us-ascii?Q?vh+yb8aj1vE4ELbORcYdxEtCQ1vq5BPDDalcqE71JOnCxN7d3em9kOXhGmXv?=
- =?us-ascii?Q?cUGmDIwAQ4Y+JW+Hk3ndp0VnK7W9qAMNn66Ltz4Iw8k9snuqEZW7+JMAMiJY?=
- =?us-ascii?Q?DLafbWsP7yslA6CkdGlw6MDvmpxrF4fW1FgiBHkd?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f55122d-81d6-4829-0d37-08da631816b2
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8412.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 08:33:54.1384
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VBvsnExOsFDoExL/ZjmGBfLSiLcNCh5JFcUH8xX/n4Nncf7SaxNi5TsGfbVSH7ne2UOVX4aBs+bOY4ORkv1EYg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3640
+References: <cover.1656583541.git.hakan.jansson@infineon.com> <c0ac87d9f7072de6ad8ea7c9d306eacfbb4ef2c9.1656583541.git.hakan.jansson@infineon.com>
+In-Reply-To: <c0ac87d9f7072de6ad8ea7c9d306eacfbb4ef2c9.1656583541.git.hakan.jansson@infineon.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 11 Jul 2022 10:34:29 +0200
+Message-ID: <CACRpkdbOWdNyywooNdr-O-fpksVAwaxOn4Qr9c+oZp0Z8DqCwA@mail.gmail.com>
+Subject: Re: [PATCH v2 5/5] Bluetooth: hci_bcm: Increase host baudrate for
+ CYW55572 in autobaud mode
+To:     Hakan Jansson <hakan.jansson@infineon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as co-maintainer of freescale pin controllers driver.
-As Stefan is no longer working on NXP pin controller, so remove
-Stefan from the list as suggested by him.
+On Thu, Jun 30, 2022 at 2:55 PM Hakan Jansson
+<hakan.jansson@infineon.com> wrote:
 
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Acked-by: Stefan Agner <stefan@agner.ch>
----
- - v2 changes:
-   remove Stefan from the list as suggested by him
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Add device specific data for max baudrate in autobaud mode. This allows the
+> host to use a baudrate higher than "init speed" when loading FW in autobaud
+> mode.
+>
+> The device specific max baudrate in autobaud mode for CYW55572 is set to
+> 921600 bps. Devices without device specific max baudrate in autobaud mode
+> will use init speed as before. If no device specific init speed has been
+> specified, it will default to the bcm_proto default 115200 bps.
+>
+> The increased baud rate improves FW load time. The exact load time will
+> depend on the specific system and FW being used. As a rough indication,
+> the FW load time dropped from ~9s @ 115.2kbps to ~1.7s @ 921.6kbps in one
+> test.
+>
+> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d6d879cb0afd..f4c964d36daf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15556,7 +15556,7 @@ PIN CONTROLLER - FREESCALE
- M:	Dong Aisheng <aisheng.dong@nxp.com>
- M:	Fabio Estevam <festevam@gmail.com>
- M:	Shawn Guo <shawnguo@kernel.org>
--M:	Stefan Agner <stefan@agner.ch>
-+M:	Jacky Bai <ping.bai@nxp.com>
- R:	Pengutronix Kernel Team <kernel@pengutronix.de>
- L:	linux-gpio@vger.kernel.org
- S:	Maintained
--- 
-2.25.1
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+Yours,
+Linus Walleij
