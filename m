@@ -2,96 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D842BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F36D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 18:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiGKS46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 14:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40362 "EHLO
+        id S230093AbiGKS5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 14:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiGKS4z (ORCPT
+        with ESMTP id S229618AbiGKS52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 14:56:55 -0400
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CAA286E9;
-        Mon, 11 Jul 2022 11:56:53 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id v14so8202844wra.5;
-        Mon, 11 Jul 2022 11:56:53 -0700 (PDT)
+        Mon, 11 Jul 2022 14:57:28 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DBC4286E9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 11:57:27 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id a20so3550514ilk.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 11:57:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5Fgbmw4uDNZm6f7Vc/Bsq7a4PLO0LnPjodqYsQmzIdk=;
+        b=A/DvD9KRP9krYQo+DRJrHbiJB7xiDCRxuT6mthX0PxWijJdEFZlpbC5xlM0pbb1RX5
+         bAxQ+2Y5FIUFC5NBWJPgveogalEmJ0jrcfj2jG3GjMI/CiI2IGWxi4ghl/ouDprBCUbB
+         aeXqe4LalLkPFtcC3QO1+dltzSduinsbaTP0Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KfynU0ONiT7u475l+/1mcod2Mte8wQCqPX/XFpyPGaI=;
-        b=InaMixG2s2edf71K+Cng4fG/iq6LGdU68qclDEk8V4wyjxfEUAdE600O5LXkIgcK5N
-         k1G2EOdYhak6trtqU9Vykh5Nfux4EJxJYPlQExOO3oSxKabNKuvnFuCTz68JmRSND3eH
-         p73Z4tqv5212GJguDaMByRMsvbGcmTsnGjpA8VMVUZGaeYT5Wit7dO6jSKnVMKPhZuiw
-         RfhtTSRjDhFQ6liz3+BzKjKJC7U64dc5XsH3dJwS3fvc4V09d7rVobeQB+bmfHTWGSe7
-         kx8bk5zfgKcS9yDY6nk7PXfnGr9Heb5Bpx/Q1476IzkH5ESuLTjcaMXcRM1BP5RT5uak
-         VLTQ==
-X-Gm-Message-State: AJIora8sW4o390mQW/idNICWbYiA/zP+A1ObgCjETtKqt6ipqTI1Ozhg
-        sZ2WWWQnXjjX45TNi7VbdaGPgJVl6KE=
-X-Google-Smtp-Source: AGRyM1sZ+MEU9/ctQbiVEb+E4IvUgo/f3lmZ4jaZf3VeHLufT2UTzEHC0tZWu9HEnPzIpgyzzJ7jsw==
-X-Received: by 2002:a05:6000:887:b0:21d:4fca:44fc with SMTP id ca7-20020a056000088700b0021d4fca44fcmr18746416wrb.495.1657565812270;
-        Mon, 11 Jul 2022 11:56:52 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id m22-20020a7bcb96000000b003a2cf5eb900sm4931754wmi.40.2022.07.11.11.56.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 11:56:52 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 18:56:40 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Michael Kelley <mikelley@microsoft.com>, corbet@lwn.net
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, corbet@lwn.net,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] Documentation: hyperv: Add basic info on Hyper-V
- enlightenments
-Message-ID: <20220711185640.px4bwf4ldqqqw5ij@liuwe-devbox-debian-v2>
-References: <1657561704-12631-1-git-send-email-mikelley@microsoft.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5Fgbmw4uDNZm6f7Vc/Bsq7a4PLO0LnPjodqYsQmzIdk=;
+        b=yZ4+5yaDE7dGgaP5+A2pSQyIIURk+yNh0TXjpHd61I4ruXWIixzqnOOVgckLnD7KGU
+         W3JvaPx7krLOHiL/VwHoDBKLSa1q/N3gL/3gIeguag8qCBZTC5YNcZbaOmqpUlqbhcpV
+         Df0nrft9VMezOpP6zOOwTkgtNkOVfyi3RCdgKGuY3m0BeDKKUyG33znGeF36psdSgRuK
+         O7soxycJ+X1UIstqmbvEjhUZWPm6lbAONomPL/n7cs6sAl1O4D/T2FTfKytL7aDHdHo2
+         fKIzAK+aNnFxai4A37/qyBwWi+G7zre6I2gqLVY9/ozeRBcplvg94p6+PQ0+LSdyacPv
+         dDwg==
+X-Gm-Message-State: AJIora+WT5+saagVdjspNZuHtfLXhx2A4/DYADBrveNAB1ftnVirM7Ze
+        KJk6jn9qY4Z0rGe221fK3r4huuSiGfS1MA==
+X-Google-Smtp-Source: AGRyM1sVZES2YR3faa48MS8RCvVxvUPsXZ7hq7rtSzKygK6KwbhLBUysi45Zwayp9AWIjHCgI4/JpA==
+X-Received: by 2002:a05:6e02:11a2:b0:2dc:3cef:d430 with SMTP id 2-20020a056e0211a200b002dc3cefd430mr10246851ilj.279.1657565846695;
+        Mon, 11 Jul 2022 11:57:26 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id p25-20020a02b899000000b0033de67b2ae3sm3230063jam.122.2022.07.11.11.57.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jul 2022 11:57:26 -0700 (PDT)
+Subject: Re: [GIT PULL] Linux Media vimc update for 5.20-rc1
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <7e719640-80e6-b3ab-751a-156b8e74d87b@linuxfoundation.org>
+ <20220709111450.12e1dd61@sal.lan>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <28dbdf2b-3960-16c7-ff5e-30ea112e3f5e@linuxfoundation.org>
+Date:   Mon, 11 Jul 2022 12:57:25 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657561704-12631-1-git-send-email-mikelley@microsoft.com>
+In-Reply-To: <20220709111450.12e1dd61@sal.lan>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 10:48:21AM -0700, Michael Kelley wrote:
-> This documentation is a high level overview to explain the basics
-> of Linux running as a guest on Hyper-V. The intent is to document
-> the forest, not the trees. The Hyper-V Top Level Functional Spec
-> provides conceptual material and API details for the core Hyper-V
-> hypervisor, and this documentation provides additional info on
-> how that functionality is applied to Linux. Also, there's no
-> public documentation on VMbus or the VMbus synthetic devices, so
-> this documentation helps fill that gap at a conceptual level. This
-> documentation is not API-level documentation, which can be seen
-> in the code and associated comments.
+On 7/9/22 4:14 AM, Mauro Carvalho Chehab wrote:
+> Hi Shuah,
 > 
-> More topics will be added in future patches, including:
+> Em Thu, 7 Jul 2022 10:28:37 -0600
+> Shuah Khan <skhan@linuxfoundation.org> escreveu:
 > 
-> * Miscellaneous synthetic devices like KVP, timesync, VSS, etc.
-> * Virtual PCI support
-> * Isolated/Confidential VMs
-> * UIO driver
+>> Hi Mauro,
+>>
+>> Please pull the following vimc update for Linux 5.20-rc1.
+>>
+>> This vimc update Linux Media 5.20-rc1 consists of enhancement and
+>> cleanup patches:
+>>
+>> - add lens to vimc driver and links it with sensors using ancillary
+>>     links.
+>> - add documentation for lens
+>> - changes to make the code readable and maintainable.
+>>
+>> diff is attached.
 > 
-> If you think I'm missing a topic that fits into the overall
-> approach as described, feel free to suggest text, or let me
-> know and I can add it to my list.
+> Please also send the patches individually to the media ML, as reviews
+> happen using them.
 > 
-> Changes in v2:
-> * Updated clocks.rst to use section hierarchy that matches
->   overview.rst and vmbus.rst [Wei Liu]
-> 
-> Michael Kelley (3):
->   Documentation: hyperv: Add overview of Hyper-V enlightenments
->   Documentation: hyperv: Add overview of VMbus
->   Documentation: hyperv: Add overview of clocks and timers
 
-Content-wise all patches look good to me.
+These are already on the linux-media mailing list and have been reviewed.
 
-Jonathan, let me know how you would like to handle this series. I'm
-happy to carry them in hyperv-next.
-
-Thanks,
-Wei.
+thanks,
+-- Shuah
