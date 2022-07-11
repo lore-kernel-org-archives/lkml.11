@@ -2,147 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A56E2CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD83C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbiGKM4q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
+        id S230151AbiGKM5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232168AbiGKM4l (ORCPT
+        with ESMTP id S230014AbiGKM5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:56:41 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367E9545F9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:56:39 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id x17so3689728qkh.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:56:39 -0700 (PDT)
+        Mon, 11 Jul 2022 08:57:32 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934802F653;
+        Mon, 11 Jul 2022 05:57:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qDlFrz82XEV559hOxt/9KTdlawVN8UslB7cohDHmlKk=;
-        b=UGSIMFUIAjpBDWVNaLdfMacUu/FNYeJA/ajTQGHLFVW1PsgSlI9Msf9I4lRCrO4oxg
-         MlKNe8vitsaANDx5V1aZOKDe/FWJY7FMqnNo2WffF1BccvyuXYl0ljDiBtm2U7M6p3PY
-         Uv6g75BblWi8jZL/vU86KL/R82HQqpyHViaSMpPHCBJFy1tw3ImPFZr6Yhur5MNRpgwx
-         jFIln7OmJlAOp7lwI93AmGcIS24/HH1k+lh4t849Ktm3RgI36SgPSqrnNVX9MMJfU0MR
-         buHhUDsCZt9JXZ/j0aPHgaVGgj6y5cleY3xopEwmEd7PinxpbD6BNU+IuP+rvRCK9SvE
-         N2yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qDlFrz82XEV559hOxt/9KTdlawVN8UslB7cohDHmlKk=;
-        b=fLROPMrFEEkqw8VEParxLARM3LF8QATIyUKIcWh3+DAEZVSKgsYItPUb6rOAK4lyCi
-         Y9GSMqQD7hc7kkE7bS3xfCOc0rj9govgOk9JvBbNvI8qZqmb9nxtwFI/1t95mGSYYHYx
-         44n4NIrmrBMnMs4jtXr8wAKFsIrk11Iq/xxVPHXiT/puOuHTdOnk+JsbAWoqCsLgL8wp
-         v2efbzynJkSO4zdYFSQRVVbRS3zZYe3Oq/quKE4/sc49e3FtamF5o5pLLfMWRmgMyEfw
-         FITGT4p14176OSZaOvEwwpeg12szVR6ihOOcSHUxuN7siPU+PTVAUQJK5Tr2tLfArRzA
-         9W4A==
-X-Gm-Message-State: AJIora+JpRk1P0mF9PemUSyqCodhIzqDL4MCuJv9IvWZO1OxMx07xGRN
-        tuSQPf9cLIn3cSBvffW8FcZal5JPW8Njz4Sgs9b8DA==
-X-Google-Smtp-Source: AGRyM1vyiLG3J4nejZR7X7psv05VMDKCUlQ7HErJz+5Ve+FWvo6yHgHVMzjp++8/sc8+P4BwkHsNGjkuwjt/BeRFF1Y=
-X-Received: by 2002:a05:620a:288c:b0:6b3:9d1:dbf1 with SMTP id
- j12-20020a05620a288c00b006b309d1dbf1mr10943389qkp.593.1657544198360; Mon, 11
- Jul 2022 05:56:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220711104719.40939-1-robimarko@gmail.com> <20220711104719.40939-6-robimarko@gmail.com>
- <CAA8EJppAdwuXQsvvy9+hT_-mzke5xOaDcTSM5ewjS_cPk3Q+oA@mail.gmail.com> <CAOX2RU6FMyzGGpnLtzRy=szjBSE+wcvbs+6z6ChZ5Z6g4-9Baw@mail.gmail.com>
-In-Reply-To: <CAOX2RU6FMyzGGpnLtzRy=szjBSE+wcvbs+6z6ChZ5Z6g4-9Baw@mail.gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Mon, 11 Jul 2022 15:56:27 +0300
-Message-ID: <CAA8EJpr=_ezgyQcLhfuswtkoRCr+kxxwqkaTYHMxCJ1xm7_avw@mail.gmail.com>
-Subject: Re: [PATCH 6/6] clk: qcom: apss-ipq-pll: add support for IPQ8074
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, sivaprak@codeaurora.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-clk@vger.kernel.org,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657544251; x=1689080251;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=KsFiQHyjx5NlgP+E+RS1mYW0ZKxPau0DGLSLb95PgII=;
+  b=BFsK7N2/5mCsEy6tAzs2kZabcIxsfATIr26S/sQmgUQfGgrU71Gh/+pr
+   2olGq2b+FeXjymn1KPsKmilMbVp0kNyA5QLmE9ndBR54DAoNAq0N7F2hH
+   EPqDunz4KW7px/kOkUd4eBOH2pbKgwMG1/+8WQ6Oi2ZaPfl+FYWbB97KA
+   k=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 05:57:31 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 05:57:29 -0700
+X-QCInternal: smtphost
+Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 18:27:11 +0530
+Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
+        id 387493E4A; Mon, 11 Jul 2022 18:27:07 +0530 (IST)
+From:   Vinod Polimera <quic_vpolimer@quicinc.com>
+To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        dianders@chromium.org, swboyd@chromium.org,
+        quic_kalyant@quicinc.com, dmitry.baryshkov@linaro.org,
+        quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
+        bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
+Subject: [PATCH v6 06/10] drm/bridge: use atomic enable/disable callbacks for panel bridge
+Date:   Mon, 11 Jul 2022 18:27:00 +0530
+Message-Id: <1657544224-10680-7-git-send-email-quic_vpolimer@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
+References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Jul 2022 at 15:55, Robert Marko <robimarko@gmail.com> wrote:
->
-> On Mon, 11 Jul 2022 at 14:51, Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
-> >
-> > On Mon, 11 Jul 2022 at 14:22, Robert Marko <robimarko@gmail.com> wrote:
-> > >
-> > > Add support for IPQ8074 since it uses the same PLL setup, however it does
-> > > not require the Alpha PLL to be reconfigured.
-> > >
-> > > Signed-off-by: Robert Marko <robimarko@gmail.com>
-> > > ---
-> > >  drivers/clk/qcom/apss-ipq-pll.c | 5 ++++-
-> > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/clk/qcom/apss-ipq-pll.c b/drivers/clk/qcom/apss-ipq-pll.c
-> > > index bef7899ad0d6..acfb3ec4f142 100644
-> > > --- a/drivers/clk/qcom/apss-ipq-pll.c
-> > > +++ b/drivers/clk/qcom/apss-ipq-pll.c
-> > > @@ -55,6 +55,7 @@ static const struct regmap_config ipq_pll_regmap_config = {
-> > >  static int apss_ipq_pll_probe(struct platform_device *pdev)
-> > >  {
-> > >         struct device *dev = &pdev->dev;
-> > > +       struct device_node *node = dev->of_node;
-> > >         struct regmap *regmap;
-> > >         void __iomem *base;
-> > >         int ret;
-> > > @@ -67,7 +68,8 @@ static int apss_ipq_pll_probe(struct platform_device *pdev)
-> > >         if (IS_ERR(regmap))
-> > >                 return PTR_ERR(regmap);
-> > >
-> > > -       clk_alpha_pll_configure(&ipq_pll, regmap, &ipq_pll_config);
-> > > +       if (of_device_is_compatible(node, "qcom,ipq6018-a53pll"))
-> > > +               clk_alpha_pll_configure(&ipq_pll, regmap, &ipq_pll_config);
-> >
-> > I'd suggest having the 8074 config here too. It seems logical to me to
-> > make sure that the pll is configured correctly.
->
-> Hi,
->
-> I have reworked the driver to use match data so it can be easily provided,
-> However, I dont have it as the downstream QCA kernel does not
-> reconfigure the PLL, unlike IPQ6018.
-> I can probably read the registers from a running board and provide that?
+Use atomic variants for panel bridge callback functions such that
+certain states like self-refresh can be accessed as part of
+enable/disable sequence.
 
-Yes, please try that.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+---
+ drivers/gpu/drm/bridge/panel.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
->
-> Regards,
-> Robert
-> >
-> > >
-> > >         ret = devm_clk_register_regmap(dev, &ipq_pll.clkr);
-> > >         if (ret)
-> > > @@ -79,6 +81,7 @@ static int apss_ipq_pll_probe(struct platform_device *pdev)
-> > >
-> > >  static const struct of_device_id apss_ipq_pll_match_table[] = {
-> > >         { .compatible = "qcom,ipq6018-a53pll" },
-> > > +       { .compatible = "qcom,ipq8074-a53pll" },
-> > >         { }
-> > >  };
-> > >  MODULE_DEVICE_TABLE(of, apss_ipq_pll_match_table);
-> > > --
-> > > 2.36.1
-> > >
-> >
-> >
-> > --
-> > With best wishes
-> > Dmitry
-
-
-
+diff --git a/drivers/gpu/drm/bridge/panel.c b/drivers/gpu/drm/bridge/panel.c
+index 0ee563e..eeb9546 100644
+--- a/drivers/gpu/drm/bridge/panel.c
++++ b/drivers/gpu/drm/bridge/panel.c
+@@ -108,28 +108,32 @@ static void panel_bridge_detach(struct drm_bridge *bridge)
+ 		drm_connector_cleanup(connector);
+ }
+ 
+-static void panel_bridge_pre_enable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_pre_enable(struct drm_bridge *bridge,
++				struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+ 
+ 	drm_panel_prepare(panel_bridge->panel);
+ }
+ 
+-static void panel_bridge_enable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_enable(struct drm_bridge *bridge,
++				struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+ 
+ 	drm_panel_enable(panel_bridge->panel);
+ }
+ 
+-static void panel_bridge_disable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_disable(struct drm_bridge *bridge,
++				struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+ 
+ 	drm_panel_disable(panel_bridge->panel);
+ }
+ 
+-static void panel_bridge_post_disable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_post_disable(struct drm_bridge *bridge,
++				struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+ 
+@@ -158,10 +162,10 @@ static void panel_bridge_debugfs_init(struct drm_bridge *bridge,
+ static const struct drm_bridge_funcs panel_bridge_bridge_funcs = {
+ 	.attach = panel_bridge_attach,
+ 	.detach = panel_bridge_detach,
+-	.pre_enable = panel_bridge_pre_enable,
+-	.enable = panel_bridge_enable,
+-	.disable = panel_bridge_disable,
+-	.post_disable = panel_bridge_post_disable,
++	.atomic_pre_enable = panel_bridge_atomic_pre_enable,
++	.atomic_enable = panel_bridge_atomic_enable,
++	.atomic_disable = panel_bridge_atomic_disable,
++	.atomic_post_disable = panel_bridge_atomic_post_disable,
+ 	.get_modes = panel_bridge_get_modes,
+ 	.atomic_reset = drm_atomic_helper_bridge_reset,
+ 	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
 -- 
-With best wishes
-Dmitry
+2.7.4
+
