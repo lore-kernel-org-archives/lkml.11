@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFBECCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:17:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19501C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231642AbiGKJRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
+        id S231571AbiGKJRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230365AbiGKJPv (ORCPT
+        with ESMTP id S230497AbiGKJQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:15:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E353F332;
-        Mon, 11 Jul 2022 02:11:01 -0700 (PDT)
+        Mon, 11 Jul 2022 05:16:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE50B402D3;
+        Mon, 11 Jul 2022 02:11:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FECCB80E76;
-        Mon, 11 Jul 2022 09:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0543CC34115;
-        Mon, 11 Jul 2022 09:10:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B565B611E4;
+        Mon, 11 Jul 2022 09:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C19C341C8;
+        Mon, 11 Jul 2022 09:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530658;
-        bh=lh7AYL4Z8YvuRd3eo1vbbmlhCCo0hOo/6FSah1I1Stk=;
+        s=korg; t=1657530661;
+        bh=NbA28TAuTrYYXJwoVDSHTqYmT/Qw5wS2/4IKKLTHgKQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ttCFD4c1a39pDJZTyf2efmbF+298BJi+ya9f9hUXfLVv/W9h88iGk+AJ+IlA7j9ST
-         tTn+L3F2cs7SYenZpLSoJEtJnqToGbxn7qHFMAL+UXOZ0qkN8Qtr4/wQS2pC8dW0Ka
-         mzEz02yvb32zMH+uShWzgB2lGopM2ecJtlyTRxmk=
+        b=tM0QHUO9JcwG5tph6jByehwLFBPWc+0sn/9sw760NelnSEwjC7jtpYlCEZDSCdznD
+         64skqtpIb7al/AZoD2t87T9YUeyhetol1v40OrLdm3idbZDfsDCFBATSR+2MJIwZ6i
+         DqelGZnXx9Tfe0r4BwMwY9QhZrjud+qfn5d+BH84=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable <stable@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 5.4 32/38] misc: rtsx_usb: set return value in rsp_buf alloc err path
-Date:   Mon, 11 Jul 2022 11:07:14 +0200
-Message-Id: <20220711090539.674421302@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.4 33/38] dt-bindings: dma: allwinner,sun50i-a64-dma: Fix min/max typo
+Date:   Mon, 11 Jul 2022 11:07:15 +0200
+Message-Id: <20220711090539.702563238@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -49,50 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 2cd37c2e72449a7add6da1183d20a6247d6db111 upstream.
+commit 607a48c78e6b427b0b684d24e61c19e846ad65d6 upstream.
 
-Set return value in rsp_buf alloc error path before going to
-error handling.
+The conditional block for variants with a second clock should have set
+minItems, not maxItems, which was already 2. Since clock-names requires
+two items, this typo should not have caused any problems.
 
-drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!ucr->rsp_buf)
-               ^~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
-           if (!ucr->rsp_buf)
-           ^~~~~~~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-
-Fixes: 3776c7855985 ("misc: rtsx_usb: use separate command and response buffers")
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220701165352.15687-1-skhan@linuxfoundation.org
+Fixes: edd14218bd66 ("dt-bindings: dmaengine: Convert Allwinner A31 and A64 DMA to a schema")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220702031903.21703-1-samuel@sholland.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/dma/allwinner,sun50i-a64-dma.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -636,8 +636,10 @@ static int rtsx_usb_probe(struct usb_int
- 		return -ENOMEM;
+--- a/Documentation/devicetree/bindings/dma/allwinner,sun50i-a64-dma.yaml
++++ b/Documentation/devicetree/bindings/dma/allwinner,sun50i-a64-dma.yaml
+@@ -58,7 +58,7 @@ if:
+ then:
+   properties:
+     clocks:
+-      maxItems: 2
++      minItems: 2
  
- 	ucr->rsp_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
--	if (!ucr->rsp_buf)
-+	if (!ucr->rsp_buf) {
-+		ret = -ENOMEM;
- 		goto out_free_cmd_buf;
-+	}
- 
- 	usb_set_intfdata(intf, ucr);
- 
+   required:
+     - clock-names
 
 
