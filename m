@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE97BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233405AbiGKJno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        id S233417AbiGKJny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231600AbiGKJnH (ORCPT
+        with ESMTP id S233338AbiGKJnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:43:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4C1550AA;
-        Mon, 11 Jul 2022 02:21:34 -0700 (PDT)
+        Mon, 11 Jul 2022 05:43:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6FE564DA;
+        Mon, 11 Jul 2022 02:21:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7133161227;
-        Mon, 11 Jul 2022 09:21:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C81C34115;
-        Mon, 11 Jul 2022 09:21:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21080612F3;
+        Mon, 11 Jul 2022 09:21:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A55AC341C0;
+        Mon, 11 Jul 2022 09:21:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531291;
-        bh=CNgEGQnfprJQCxT+8dhucvFWX3tVxae3uRH/wYz4l+4=;
+        s=korg; t=1657531294;
+        bh=rbnbSKlh3AoMb2BtRVeYiLLfeO9YqkXAZXJhdq/+F7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ugG8VoqaQ+IhhRq1aHbqG9Uxsw8e+OFu5N3cdjUaOaNnKzny3vujKpECh4yKrUxF
-         dIC8nuZfCXFFt3qgB0GlKHCcffyeZZESWLYDrXmjTz/lphQ8A7ICZMWxItfTo0/MJk
-         1lffCPdD6kspFIq+KIZROnEmXmBhImNQFlk94LFg=
+        b=DN7skezbO4gJff3jCjbswR69nmDknt/vkuiPn2LIxLbyR0wKorKhollStzKo043d1
+         FK8k1HK8aNSVuXJtoixdKSauTcyPzKcjGPzvungIWDgsunRL6/L+vfTCm1V8Wzu3D9
+         edU69JsxI/LDcVz0WaHqQgyfYnz7G/mgB8PVLNDM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Deren Wu <deren.wu@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 045/230] mt76: mt7921: fix a possible race enabling/disabling runtime-pm
-Date:   Mon, 11 Jul 2022 11:05:01 +0200
-Message-Id: <20220711090605.362189585@linuxfoundation.org>
+        stable@vger.kernel.org, Derek Fang <derek.fang@realtek.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 054/230] ASoC: rt5682: Re-detect the combo jack after resuming
+Date:   Mon, 11 Jul 2022 11:05:10 +0200
+Message-Id: <20220711090605.612820760@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,80 +49,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Derek Fang <derek.fang@realtek.com>
 
-[ Upstream commit d430dffbe9dd30759f3c64b65bf85b0245c8d8ab ]
+[ Upstream commit 2cd9b0ef82d936623d789bb3fbb6fcf52c500367 ]
 
-Fix a possible race enabling/disabling runtime-pm between
-mt7921_pm_set() and mt7921_poll_rx() since mt7921_pm_wake_work()
-always schedules rx-napi callback and it will trigger
-mt7921_pm_power_save_work routine putting chip to in low-power state
-during mt7921_pm_set processing.
+Sometimes, end-users change the jack type under suspending,
+so it needs to re-detect the combo jack type after resuming to
+avoid any unexpected behaviors.
 
-Suggested-by: Deren Wu <deren.wu@mediatek.com>
-Tested-by: Deren Wu <deren.wu@mediatek.com>
-Fixes: 1d8efc741df8 ("mt76: mt7921: introduce Runtime PM support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/0f3e075a2033dc05f09dab4059e5be8cbdccc239.1640094847.git.lorenzo@kernel.org
+Signed-off-by: Derek Fang <derek.fang@realtek.com>
+Link: https://lore.kernel.org/r/20211109095450.12950-2-derek.fang@realtek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76_connac_mac.c |  3 ---
- drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c  | 12 +++++++++---
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ sound/soc/codecs/rt5682-i2c.c |  1 +
+ sound/soc/codecs/rt5682.c     | 23 ++++++++++++++++++++---
+ sound/soc/codecs/rt5682.h     |  1 +
+ 3 files changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mac.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mac.c
-index af43bcb54578..306e9eaea917 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mac.c
-@@ -7,9 +7,6 @@ int mt76_connac_pm_wake(struct mt76_phy *phy, struct mt76_connac_pm *pm)
- {
- 	struct mt76_dev *dev = phy->dev;
- 
--	if (!pm->enable)
--		return 0;
--
- 	if (mt76_is_usb(dev))
- 		return 0;
- 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-index 82fb2585f413..b9f25599227d 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-@@ -276,7 +276,7 @@ mt7921_pm_set(void *data, u64 val)
- 	struct mt7921_dev *dev = data;
- 	struct mt76_connac_pm *pm = &dev->pm;
- 
--	mt7921_mutex_acquire(dev);
-+	mutex_lock(&dev->mt76.mutex);
- 
- 	if (val == pm->enable)
- 		goto out;
-@@ -285,7 +285,11 @@ mt7921_pm_set(void *data, u64 val)
- 		pm->stats.last_wake_event = jiffies;
- 		pm->stats.last_doze_event = jiffies;
+diff --git a/sound/soc/codecs/rt5682-i2c.c b/sound/soc/codecs/rt5682-i2c.c
+index b9d5d7a0975b..b17c14b8b36e 100644
+--- a/sound/soc/codecs/rt5682-i2c.c
++++ b/sound/soc/codecs/rt5682-i2c.c
+@@ -196,6 +196,7 @@ static int rt5682_i2c_probe(struct i2c_client *i2c,
  	}
--	pm->enable = val;
-+	/* make sure the chip is awake here and ps_work is scheduled
-+	 * just at end of the this routine.
-+	 */
-+	pm->enable = false;
-+	mt76_connac_pm_wake(&dev->mphy, pm);
  
- 	ieee80211_iterate_active_interfaces(mt76_hw(dev),
- 					    IEEE80211_IFACE_ITER_RESUME_ALL,
-@@ -293,8 +297,10 @@ mt7921_pm_set(void *data, u64 val)
+ 	mutex_init(&rt5682->calibrate_mutex);
++	mutex_init(&rt5682->jdet_mutex);
+ 	rt5682_calibrate(rt5682);
  
- 	mt76_connac_mcu_set_deep_sleep(&dev->mt76, pm->ds_enable);
+ 	rt5682_apply_patch_list(rt5682, &i2c->dev);
+diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
+index 949b5638db29..d470b9189768 100644
+--- a/sound/soc/codecs/rt5682.c
++++ b/sound/soc/codecs/rt5682.c
+@@ -49,6 +49,7 @@ static const struct reg_sequence patch_list[] = {
+ 	{RT5682_CHARGE_PUMP_1, 0x0210},
+ 	{RT5682_HP_LOGIC_CTRL_2, 0x0007},
+ 	{RT5682_SAR_IL_CMD_2, 0xac00},
++	{RT5682_CBJ_CTRL_7, 0x0104},
+ };
  
-+	pm->enable = val;
-+	mt76_connac_power_save_sched(&dev->mphy, pm);
- out:
--	mt7921_mutex_release(dev);
-+	mutex_unlock(&dev->mt76.mutex);
+ void rt5682_apply_patch_list(struct rt5682_priv *rt5682, struct device *dev)
+@@ -943,6 +944,10 @@ int rt5682_headset_detect(struct snd_soc_component *component, int jack_insert)
+ 		snd_soc_component_update_bits(component,
+ 			RT5682_HP_CHARGE_PUMP_1,
+ 			RT5682_OSW_L_MASK | RT5682_OSW_R_MASK, 0);
++		rt5682_enable_push_button_irq(component, false);
++		snd_soc_component_update_bits(component, RT5682_CBJ_CTRL_1,
++			RT5682_TRIG_JD_MASK, RT5682_TRIG_JD_LOW);
++		usleep_range(55000, 60000);
+ 		snd_soc_component_update_bits(component, RT5682_CBJ_CTRL_1,
+ 			RT5682_TRIG_JD_MASK, RT5682_TRIG_JD_HIGH);
+ 
+@@ -1099,6 +1104,7 @@ void rt5682_jack_detect_handler(struct work_struct *work)
+ 		return;
+ 	}
+ 
++	mutex_lock(&rt5682->jdet_mutex);
+ 	mutex_lock(&rt5682->calibrate_mutex);
+ 
+ 	val = snd_soc_component_read(rt5682->component, RT5682_AJD1_CTRL)
+@@ -1172,6 +1178,7 @@ void rt5682_jack_detect_handler(struct work_struct *work)
+ 	}
+ 
+ 	mutex_unlock(&rt5682->calibrate_mutex);
++	mutex_unlock(&rt5682->jdet_mutex);
+ }
+ EXPORT_SYMBOL_GPL(rt5682_jack_detect_handler);
+ 
+@@ -1521,6 +1528,7 @@ static int rt5682_hp_event(struct snd_soc_dapm_widget *w,
+ {
+ 	struct snd_soc_component *component =
+ 		snd_soc_dapm_to_component(w->dapm);
++	struct rt5682_priv *rt5682 = snd_soc_component_get_drvdata(component);
+ 
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+@@ -1532,12 +1540,17 @@ static int rt5682_hp_event(struct snd_soc_dapm_widget *w,
+ 			RT5682_DEPOP_1, 0x60, 0x60);
+ 		snd_soc_component_update_bits(component,
+ 			RT5682_DAC_ADC_DIG_VOL1, 0x00c0, 0x0080);
++
++		mutex_lock(&rt5682->jdet_mutex);
++
+ 		snd_soc_component_update_bits(component, RT5682_HP_CTRL_2,
+ 			RT5682_HP_C2_DAC_L_EN | RT5682_HP_C2_DAC_R_EN,
+ 			RT5682_HP_C2_DAC_L_EN | RT5682_HP_C2_DAC_R_EN);
+ 		usleep_range(5000, 10000);
+ 		snd_soc_component_update_bits(component, RT5682_CHARGE_PUMP_1,
+ 			RT5682_CP_SW_SIZE_MASK, RT5682_CP_SW_SIZE_L);
++
++		mutex_unlock(&rt5682->jdet_mutex);
+ 		break;
+ 
+ 	case SND_SOC_DAPM_POST_PMD:
+@@ -2969,7 +2982,7 @@ static int rt5682_suspend(struct snd_soc_component *component)
+ 
+ 	cancel_delayed_work_sync(&rt5682->jack_detect_work);
+ 	cancel_delayed_work_sync(&rt5682->jd_check_work);
+-	if (rt5682->hs_jack && rt5682->jack_type == SND_JACK_HEADSET) {
++	if (rt5682->hs_jack && (rt5682->jack_type & SND_JACK_HEADSET) == SND_JACK_HEADSET) {
+ 		val = snd_soc_component_read(component,
+ 				RT5682_CBJ_CTRL_2) & RT5682_JACK_TYPE_MASK;
+ 
+@@ -3000,6 +3013,8 @@ static int rt5682_suspend(struct snd_soc_component *component)
+ 		snd_soc_component_update_bits(component, RT5682_SAR_IL_CMD_1,
+ 			RT5682_SAR_BUTT_DET_MASK | RT5682_SAR_BUTDET_MODE_MASK,
+ 			RT5682_SAR_BUTT_DET_EN | RT5682_SAR_BUTDET_POW_SAV);
++		snd_soc_component_update_bits(component, RT5682_HP_CHARGE_PUMP_1,
++			RT5682_OSW_L_MASK | RT5682_OSW_R_MASK, 0);
+ 	}
+ 
+ 	regcache_cache_only(rt5682->regmap, true);
+@@ -3017,10 +3032,11 @@ static int rt5682_resume(struct snd_soc_component *component)
+ 	regcache_cache_only(rt5682->regmap, false);
+ 	regcache_sync(rt5682->regmap);
+ 
+-	if (rt5682->hs_jack && rt5682->jack_type == SND_JACK_HEADSET) {
++	if (rt5682->hs_jack && (rt5682->jack_type & SND_JACK_HEADSET) == SND_JACK_HEADSET) {
+ 		snd_soc_component_update_bits(component, RT5682_SAR_IL_CMD_1,
+ 			RT5682_SAR_BUTDET_MODE_MASK | RT5682_SAR_SEL_MB1_MB2_MASK,
+ 			RT5682_SAR_BUTDET_POW_NORM | RT5682_SAR_SEL_MB1_MB2_AUTO);
++		usleep_range(5000, 6000);
+ 		snd_soc_component_update_bits(component, RT5682_CBJ_CTRL_1,
+ 			RT5682_MB1_PATH_MASK | RT5682_MB2_PATH_MASK,
+ 			RT5682_CTRL_MB1_FSM | RT5682_CTRL_MB2_FSM);
+@@ -3028,8 +3044,9 @@ static int rt5682_resume(struct snd_soc_component *component)
+ 			RT5682_PWR_CBJ, RT5682_PWR_CBJ);
+ 	}
+ 
++	rt5682->jack_type = 0;
+ 	mod_delayed_work(system_power_efficient_wq,
+-		&rt5682->jack_detect_work, msecs_to_jiffies(250));
++		&rt5682->jack_detect_work, msecs_to_jiffies(0));
  
  	return 0;
  }
+diff --git a/sound/soc/codecs/rt5682.h b/sound/soc/codecs/rt5682.h
+index 8e3244a62c16..f866d207d1bd 100644
+--- a/sound/soc/codecs/rt5682.h
++++ b/sound/soc/codecs/rt5682.h
+@@ -1462,6 +1462,7 @@ struct rt5682_priv {
+ 
+ 	int jack_type;
+ 	int irq_work_delay_time;
++	struct mutex jdet_mutex;
+ };
+ 
+ extern const char *rt5682_supply_names[RT5682_NUM_SUPPLIES];
 -- 
 2.35.1
 
