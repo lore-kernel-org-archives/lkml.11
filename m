@@ -2,142 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9806C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28703C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiGKHZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
+        id S230143AbiGKH0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiGKHZp (ORCPT
+        with ESMTP id S229944AbiGKH0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:25:45 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE1013FB1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:25:45 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so7481418pjo.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:25:45 -0700 (PDT)
+        Mon, 11 Jul 2022 03:26:16 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F7217AA3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:26:15 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id i128-20020a1c3b86000000b003a2ce31b4f8so4479814wma.1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G4zksFMUl75dVs5Pjq0iM/EMwPszh5Co7nc8XI1GOhs=;
-        b=IEN1LCM5zf9fZ7Qk08bWt9IDa0Crk6nzfQCotGqrc0uJNhcNPoquj3E9BllvyZaGh9
-         eGFiEHy+PzH6iCO9M44fm5sNX6UmCWxQQ4uCvLyUWV7qbecXW9sf87487Os8xk/Oj10M
-         D3WxilsHS1OOU934G5LFezt+V0ON6llaZh3sM=
+        d=sifive.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=t/PqRBXDv8XnbGqXCKFv3DtaQWbjJ/k2C/kwgKRLS8c=;
+        b=SCFXq1nfYobOAwlRKYd50zeNz2wJyny1c0M+7nes2JxU4njk6mzBs9jEeFDN4PuYet
+         Ave52lUzwL0R4iw+kc066bJkVLCtBFI1toXwXn7f6Un+YuX3ZsAuy+4LgRmdIqOxz2tS
+         jkVznlF7REbbg7PR+xCkNW0HVzeEe03KeNo2vyiqndvITucQgxRrPZjzGii724sx8R1y
+         kSVmIJ2mbKQqbLKcAvQom3qhm7ljLUQaCB9ikKPJ6Eip5iUc3oAS8orX/LdLLlKWL5sW
+         /f5Rp3DJPSbxuRGjkYjSQ5fSl1oKbaEjkxO7rXB2dWT8v2ScYmTNV5ssj5qa7Ehb8tBV
+         kwVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G4zksFMUl75dVs5Pjq0iM/EMwPszh5Co7nc8XI1GOhs=;
-        b=ZRkm3llJvQVMBgGwDYIcgMP6V8TISD04ZydfvFDCglTo1XjNJaovGHrSV3a/uwOxrA
-         bpQ7crogcu+hWHQ4euMbR0gMApiiSKXZw0XS74Z9HQ7ey5rjrkzsfBRa1mTXg3ma6wS8
-         TuDp35eL5H+5K3ebVd5KSIfC8+DZFv9PGpA9eIHJ04vQtIcl4dpXIdI7P1+L99nejrkY
-         JQPbeNG2am5oWpAns5Ys6g3Rcma4DEHE9LFQrH2kJCXVvvAiBYk80cAO/W5u9ohd8FVQ
-         ToOn3YKHPskKkCS8SDIzfAZ/HcWgJOfcSc9ZruhDYXJOESyj1pG8J2Y+cSfZRiaKMvIn
-         215Q==
-X-Gm-Message-State: AJIora9sPfBDw/tNocyV1emQuOai6//HVzEZ6bezmvvt++Lqisax5M85
-        lp4oIrSp/taM7mfU52zKDqFJ7uKwfemdGA==
-X-Google-Smtp-Source: AGRyM1uU1hJ8LwZ7cO9JNfbmNoCYrstU4XPCCUFD4FYNuUV581UTkznx+Y27/SCWZUdDqxYRZs7b2A==
-X-Received: by 2002:a17:903:28e:b0:16a:3bea:11eb with SMTP id j14-20020a170903028e00b0016a3bea11ebmr16914760plr.154.1657524344434;
-        Mon, 11 Jul 2022 00:25:44 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id z8-20020aa79e48000000b0051bc5f4df1csm4012839pfq.154.2022.07.11.00.25.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 00:25:44 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH v4 3/9] platform/chrome: Add Type-C mux set command definitions
-Date:   Mon, 11 Jul 2022 07:22:57 +0000
-Message-Id: <20220711072333.2064341-4-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
-In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
-References: <20220711072333.2064341-1-pmalani@chromium.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=t/PqRBXDv8XnbGqXCKFv3DtaQWbjJ/k2C/kwgKRLS8c=;
+        b=k3mFcpznm+J0+D8BIsG216pIy2iSgDSwGdmvoqiZFNrW/rELP5LIMLA4eSke3ARXxF
+         +YVZ4DJL6H5TN1Pj6ly9d4ZZgVTBqsxBy2jM2e33i3CMxO/trcrnsU761SNdgFnNsg03
+         F5bReRgscXV/GG/A0KpjQTj/hSUumW9sXQDbnAj7Xbh3qdvQ5NEs1nmHjaupO/Vhzv/s
+         +e7ojSQvCp5Qw8A8e4Lo8eBju9L9MZUt24zysDeYjGh9f+zzDAayvW5XBuKimjaaSuPK
+         F7O6ED3IHdu4MWypVtNaMTWuqU8VJeaIuIyariqnV2Axi3tiklurVPR257Bgp0DubmlV
+         1ZsA==
+X-Gm-Message-State: AJIora+EydHU9FScbYq3EIeol41BZkOjhW32Itdw8RPQ0zsTDQJqiRet
+        MFrKUcOJwmgQnBQrHlXPsfEgEA==
+X-Google-Smtp-Source: AGRyM1uNu4zxhtyxybrkVox/XEc9FSkT3LpZkh5+naANwfdc/8jbNfqrSS/S31sCE69W6rNsJP1ySw==
+X-Received: by 2002:a7b:cbcb:0:b0:3a2:e899:7dc9 with SMTP id n11-20020a7bcbcb000000b003a2e8997dc9mr3200161wmi.82.1657524373754;
+        Mon, 11 Jul 2022 00:26:13 -0700 (PDT)
+Received: from [10.35.4.171] ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id j30-20020a05600c1c1e00b003a02de5de80sm9103140wms.4.2022.07.11.00.26.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jul 2022 00:26:13 -0700 (PDT)
+Message-ID: <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com>
+Date:   Mon, 11 Jul 2022 08:26:12 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
+ initialised
+Content-Language: en-GB
+To:     Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, iommu@lists.linux-foundation.org
+Cc:     Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>
+References: <20220708170811.270589-1-ben.dooks@sifive.com>
+ <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com>
+From:   Ben Dooks <ben.dooks@sifive.com>
+In-Reply-To: <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Copy EC header definitions for the USB Type-C Mux control command from
-the EC code base. Also pull in "TBT_UFP_REPLY" definitions, since that
-is the prior entry in the enum.
+On 08/07/2022 21:32, Robin Murphy wrote:
+> On 2022-07-08 18:08, Ben Dooks wrote:
+>> If the io_tlb_default_mem is used by a device that then gets used
+>> by the swiotlb code, the spinlock warning is triggered causing a
+>> lot of stack-trace.
+> 
+> Hang on, how have we got as far as trying to allocate out of an 
+> uninitialised SWIOTLB at all? That seems like either something's gone 
+> more fundamentally wrong or we're missing a proper check somewhere. I 
+> don't think papering over it like this is right.
+> 
+> Thanks,
+> Robin
+We have a system where we have no DMA capable memory in the 32bit
+window, which means even if we initialise swiotlb we don't have
+any dma capable memory. The code says go use an IOMMU but we don't
+have one of those either (and all peripherals are capable of DMA
+from any of the memory, so there shouldn't be the need for one)
 
-These headers are already present in the EC code base. [1]
+Is there any other way of fixing this DMA allocation issue?
 
-[1] https://chromium.googlesource.com/chromiumos/platform/ec/+/b80f85a94a423273c1638ef7b662c56931a138dd/include/ec_commands.h
+I added this fix as swiotlb prints an error but also causes
+an annoying stack backtrace.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
-
-Changes since v3:
-- No changes.
-
-Changes since v2:
-- No changes.
-
-Changes since v1:
-- No changes.
-
- include/linux/platform_data/cros_ec_commands.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
-index 8cfa8cfca77e..a3945c5e7f50 100644
---- a/include/linux/platform_data/cros_ec_commands.h
-+++ b/include/linux/platform_data/cros_ec_commands.h
-@@ -5722,8 +5722,21 @@ enum typec_control_command {
- 	TYPEC_CONTROL_COMMAND_EXIT_MODES,
- 	TYPEC_CONTROL_COMMAND_CLEAR_EVENTS,
- 	TYPEC_CONTROL_COMMAND_ENTER_MODE,
-+	TYPEC_CONTROL_COMMAND_TBT_UFP_REPLY,
-+	TYPEC_CONTROL_COMMAND_USB_MUX_SET,
- };
- 
-+/* Replies the AP may specify to the TBT EnterMode command as a UFP */
-+enum typec_tbt_ufp_reply {
-+	TYPEC_TBT_UFP_REPLY_NAK,
-+	TYPEC_TBT_UFP_REPLY_ACK,
-+};
-+
-+struct typec_usb_mux_set {
-+	uint8_t mux_index;	/* Index of the mux to set in the chain */
-+	uint8_t mux_flags;	/* USB_PD_MUX_*-encoded USB mux state to set */
-+} __ec_align1;
-+
- struct ec_params_typec_control {
- 	uint8_t port;
- 	uint8_t command;	/* enum typec_control_command */
-@@ -5737,6 +5750,8 @@ struct ec_params_typec_control {
- 	union {
- 		uint32_t clear_events_mask;
- 		uint8_t mode_to_enter;      /* enum typec_mode */
-+		uint8_t tbt_ufp_reply;      /* enum typec_tbt_ufp_reply */
-+		struct typec_usb_mux_set mux_params;
- 		uint8_t placeholder[128];
- 	};
- } __ec_align1;
-@@ -5815,6 +5830,9 @@ enum tcpc_cc_polarity {
- #define PD_STATUS_EVENT_SOP_DISC_DONE		BIT(0)
- #define PD_STATUS_EVENT_SOP_PRIME_DISC_DONE	BIT(1)
- #define PD_STATUS_EVENT_HARD_RESET		BIT(2)
-+#define PD_STATUS_EVENT_DISCONNECTED		BIT(3)
-+#define PD_STATUS_EVENT_MUX_0_SET_DONE		BIT(4)
-+#define PD_STATUS_EVENT_MUX_1_SET_DONE		BIT(5)
- 
- struct ec_params_typec_status {
- 	uint8_t port;
--- 
-2.37.0.144.g8ac04bfd2-goog
+> 
+>> Fix this by making the structure's lock initialised at build time.
+>>
+>> Avoids the following BUG trigger:
+>>
+>> [    3.046401] BUG: spinlock bad magic on CPU#3, kworker/u8:0/7
+>> [    3.046689]  lock: io_tlb_default_mem+0x30/0x60, .magic: 00000000, 
+>> .owner: <none>/-1, .owner_cpu: 0
+>> [    3.047217] CPU: 3 PID: 7 Comm: kworker/u8:0 Not tainted 
+>> 5.17.0-00056-g1e9bac738084-dirty #310
+>> [    3.048363] Workqueue: events_unbound deferred_probe_work_func
+>> [    3.048892] Call Trace:
+>> [    3.049224] [<ffffffff800048aa>] dump_backtrace+0x1c/0x24
+>> [    3.049576] [<ffffffff805c5f74>] show_stack+0x2c/0x38
+>> [    3.049898] [<ffffffff805cade2>] dump_stack_lvl+0x40/0x58
+>> [    3.050216] [<ffffffff805cae0e>] dump_stack+0x14/0x1c
+>> [    3.050460] [<ffffffff805c69f6>] spin_dump+0x62/0x6e
+>> [    3.050681] [<ffffffff8004e000>] do_raw_spin_lock+0xb0/0xd0
+>> [    3.050934] [<ffffffff805d5b58>] _raw_spin_lock_irqsave+0x20/0x2c
+>> [    3.051157] [<ffffffff80067e38>] swiotlb_tbl_map_single+0xce/0x3da
+>> [    3.051372] [<ffffffff80068320>] swiotlb_map+0x3a/0x15c
+>> [    3.051668] [<ffffffff80065a56>] dma_map_page_attrs+0x76/0x162
+>> [    3.051975] [<ffffffff8031d542>] dw_pcie_host_init+0x326/0x3f2
+>>
+>> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+>> ---
+>>   kernel/dma/swiotlb.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>> index cb50f8d38360..a707a944c39a 100644
+>> --- a/kernel/dma/swiotlb.c
+>> +++ b/kernel/dma/swiotlb.c
+>> @@ -65,7 +65,7 @@
+>>   static bool swiotlb_force_bounce;
+>>   static bool swiotlb_force_disable;
+>> -struct io_tlb_mem io_tlb_default_mem;
+>> +struct io_tlb_mem io_tlb_default_mem = { .lock = 
+>> __SPIN_LOCK_UNLOCKED(io_tlb_default_mem.lock) } ;
+>>   phys_addr_t swiotlb_unencrypted_base;
 
