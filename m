@@ -2,171 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiGKUKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
+        id S230088AbiGKULU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiGKUKo (ORCPT
+        with ESMTP id S229618AbiGKULS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:10:44 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121DBDE80
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:10:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657570243; x=1689106243;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=11JzeC5bV8G9x9/tbK6G+Unrxq9Y53txcJlahYMwkAw=;
-  b=QqTlwf75JOVjs2suCXPastHoiZ/EwYhd/mQxnjod/yVS/Yy21fHE/Lmk
-   EN8XRbca+eLcwqJHf7SkSCOnoPU2poBuLmOGPi7PtOb7uILO/GbmLhV8M
-   yfUxb/UNIsf+AhU4dPNx+ravHv5PrwfjvA4JuWQMOpwmaeMSdCg3WJ2ST
-   XX/Sj1wR2guKemxOxgbzaFF3LHY8/jWRYJxdhAIKnx1tuxUPkVgN8KRwh
-   O167wZGwyoowxLclRJQojxoPACHGxYe8qENSIaOSCbMGS8DUzdxhIyfbR
-   ahp574is6RmaaXK+IHT22zMsKjB0dKLdi4zBwGuVUA7yHxGahs89Qx8uy
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="285887860"
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="285887860"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 13:10:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="737221720"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 11 Jul 2022 13:10:40 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oAzjs-0001Bz-9e;
-        Mon, 11 Jul 2022 20:10:40 +0000
-Date:   Tue, 12 Jul 2022 04:09:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [linux-stable-rc:linux-4.19.y 2019/3297]
- include/linux/sunrpc/xdr.h:512:17: error: comparison is always false due to
- limited range of data type
-Message-ID: <202207120459.h567EtWi-lkp@intel.com>
+        Mon, 11 Jul 2022 16:11:18 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05132A72E;
+        Mon, 11 Jul 2022 13:11:17 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id l11so1168182qvu.13;
+        Mon, 11 Jul 2022 13:11:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y7SHA/z8BOa8wh+UPK+wnNg27Xa7/eY8+Vpvp2gYlkk=;
+        b=XjhGErLQpeUic9yY27h96GD0jf40eQ8ShJnFm1QdMvY+d69KFUrkoNCJic0i/T3uO8
+         lfRPX6akik2lQGF+nhy2QSS+SD+NQ+W3x3qnUXgoOqP/zDNTVVqNJam2K7mHqXwexMet
+         LCBvR6zrambhoEuABXGe6XFxlnfC5tL1PpckYPim499odDVcwrbz8FxLkf5n9SdUeqBB
+         Ohg5dt7v1RQ5PQVi6vK0hvd0wYyP4EsL/t7l6OFqI1vr90UUyvMS1BkdWPgEO/RXTm9Y
+         KxFrg49JUEhEWUdnsgXCFsEGEv+7AwRrfdjYBiCrjWZhM4fvFVRn8WLZoHQXTZ+DrBey
+         q1fQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y7SHA/z8BOa8wh+UPK+wnNg27Xa7/eY8+Vpvp2gYlkk=;
+        b=YRh1eWc+ngS8i5uoCVojCOSo1lGOE8t3BGcFTJoJAbHFQ+gyY/KmsXMY+1nlpr6nzM
+         cf3oSqTijvTs0XBQMsj8psgy1ctxtn73X2m6oLdb1DfI+LZWPgeGD4KNxx62Q2zwbhCf
+         OQqXOaK7KSx16bEGEORb/lZuCM24O3+woD2so1orNYhG1fawYYNkwIjTkDHvdGm2EtCh
+         PqJ/fXlf8sxgsU7DT08ZLgTPhuUdNcQ8yRYKDW7Jy8EmAKIsDGY4NgPpu3mrbn5iJ1ZR
+         DmAEAEh7s+cJm5+zJCf0M1+K9duz9lrdvhlROj58ORd45TOLlOXAboE5UWVOzzQZzU8b
+         Pm4g==
+X-Gm-Message-State: AJIora9z277aVLZyu8Fc7rCKFMPQwi53LS64c18wH1wcGymE0mIgg8ff
+        IOKeP0jve0OeTVtqXhLKawptKBV7wgqK7Fsldomm0gF4FGs=
+X-Google-Smtp-Source: AGRyM1uZtS85BzP3kwXmdYKyYAZ/KlQV8Yf28ztSF22Fz9gHtnceKubKIOXnsT90Qr4ubtZ6GmitYC2XvgNtmds0AGE=
+X-Received: by 2002:a0c:8c89:0:b0:470:9ab6:bb27 with SMTP id
+ p9-20020a0c8c89000000b004709ab6bb27mr15074994qvb.118.1657570277109; Mon, 11
+ Jul 2022 13:11:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220704212402.1715182-1-robimarko@gmail.com> <20220704212402.1715182-9-robimarko@gmail.com>
+ <CACRpkdaAb14TGF0atvbB8NHygsRGNCKJCf_S2gOzvvTxxDEeRA@mail.gmail.com>
+In-Reply-To: <CACRpkdaAb14TGF0atvbB8NHygsRGNCKJCf_S2gOzvvTxxDEeRA@mail.gmail.com>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Mon, 11 Jul 2022 22:11:06 +0200
+Message-ID: <CAOX2RU6xNRipZT7mFa1oCdJkMY_=R73p__zhHFzVuf7APSLEtg@mail.gmail.com>
+Subject: Re: [PATCH v6 09/12] pinctrl: qcom-pmic-gpio: add support for PMP8074
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        lee.jones@linaro.org, Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, lgirdwood@gmail.com,
+        Mark Brown <broonie@kernel.org>, jic23@kernel.org,
+        lars@metafoo.de, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dan,
+On Mon, 11 Jul 2022 at 13:56, Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> On Mon, Jul 4, 2022 at 11:24 PM Robert Marko <robimarko@gmail.com> wrote:
+>
+> > PMP8074 has 12 GPIO-s with holes on GPIO1 and GPIO12.
+> >
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+>
+> Since there are no compile-time dependencies I expect to pick
+> the pinctrl-related patches separately to the pinctrl tree on next
+> v7 iteration.
 
-FYI, the error/warning still remains.
+Great, I will send that out tonight as Mark picked the regulator
+changes.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-head:   72d6154340a122052ef914485fa4176f1c50464d
-commit: 3a2789e8ccb4a3e2a631f6817a2d3bb98b8c4fd8 [2019/3297] NFSD: prevent integer overflow on 32 bit systems
-config: sparc64-randconfig-r026-20220710 (https://download.01.org/0day-ci/archive/20220712/202207120459.h567EtWi-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=3a2789e8ccb4a3e2a631f6817a2d3bb98b8c4fd8
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-4.19.y
-        git checkout 3a2789e8ccb4a3e2a631f6817a2d3bb98b8c4fd8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sparc64 SHELL=/bin/bash arch/sparc/kernel/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/sunrpc/sched.h:19,
-                    from include/linux/sunrpc/auth.h:15,
-                    from include/linux/nfs_fs.h:31,
-                    from arch/sparc/kernel/sys_sparc32.c:25:
-   include/linux/sunrpc/xdr.h: In function 'xdr_stream_decode_uint32_array':
->> include/linux/sunrpc/xdr.h:512:17: error: comparison is always false due to limited range of data type [-Werror=type-limits]
-     512 |         if (len > SIZE_MAX / sizeof(*p))
-         |                 ^
-   In file included from include/linux/ethtool.h:17,
-                    from include/linux/netdevice.h:41,
-                    from include/net/sock.h:51,
-                    from include/linux/tcp.h:23,
-                    from include/linux/ipv6.h:87,
-                    from include/net/ipv6.h:16,
-                    from include/linux/sunrpc/clnt.h:28,
-                    from include/linux/nfs_fs.h:32,
-                    from arch/sparc/kernel/sys_sparc32.c:25:
-   include/linux/compat.h: In function 'put_compat_sigset':
-   include/linux/compat.h:495:58: error: this statement may fall through [-Werror=implicit-fallthrough=]
-     495 |         case 4: v.sig[7] = (set->sig[3] >> 32); v.sig[6] = set->sig[3];
-         |                                                 ~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compat.h:496:9: note: here
-     496 |         case 3: v.sig[5] = (set->sig[2] >> 32); v.sig[4] = set->sig[2];
-         |         ^~~~
-   include/linux/compat.h:496:58: error: this statement may fall through [-Werror=implicit-fallthrough=]
-     496 |         case 3: v.sig[5] = (set->sig[2] >> 32); v.sig[4] = set->sig[2];
-         |                                                 ~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compat.h:497:9: note: here
-     497 |         case 2: v.sig[3] = (set->sig[1] >> 32); v.sig[2] = set->sig[1];
-         |         ^~~~
-   include/linux/compat.h:497:58: error: this statement may fall through [-Werror=implicit-fallthrough=]
-     497 |         case 2: v.sig[3] = (set->sig[1] >> 32); v.sig[2] = set->sig[1];
-         |                                                 ~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compat.h:498:9: note: here
-     498 |         case 1: v.sig[1] = (set->sig[0] >> 32); v.sig[0] = set->sig[0];
-         |         ^~~~
-   cc1: all warnings being treated as errors
-
-
-vim +512 include/linux/sunrpc/xdr.h
-
-   490	
-   491	/**
-   492	 * xdr_stream_decode_uint32_array - Decode variable length array of integers
-   493	 * @xdr: pointer to xdr_stream
-   494	 * @array: location to store the integer array or NULL
-   495	 * @array_size: number of elements to store
-   496	 *
-   497	 * Return values:
-   498	 *   On success, returns number of elements stored in @array
-   499	 *   %-EBADMSG on XDR buffer overflow
-   500	 *   %-EMSGSIZE if the size of the array exceeds @array_size
-   501	 */
-   502	static inline ssize_t
-   503	xdr_stream_decode_uint32_array(struct xdr_stream *xdr,
-   504			__u32 *array, size_t array_size)
-   505	{
-   506		__be32 *p;
-   507		__u32 len;
-   508		ssize_t retval;
-   509	
-   510		if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
-   511			return -EBADMSG;
- > 512		if (len > SIZE_MAX / sizeof(*p))
-   513			return -EBADMSG;
-   514		p = xdr_inline_decode(xdr, len * sizeof(*p));
-   515		if (unlikely(!p))
-   516			return -EBADMSG;
-   517		if (array == NULL)
-   518			return len;
-   519		if (len <= array_size) {
-   520			if (len < array_size)
-   521				memset(array+len, 0, (array_size-len)*sizeof(*array));
-   522			array_size = len;
-   523			retval = len;
-   524		} else
-   525			retval = -EMSGSIZE;
-   526		for (; array_size > 0; p++, array++, array_size--)
-   527			*array = be32_to_cpup(p);
-   528		return retval;
-   529	}
-   530	#endif /* __KERNEL__ */
-   531	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Robert
+>
+> Yours,
+> Linus Walleij
