@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874D4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92428C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231392AbiGKJPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58858 "EHLO
+        id S231463AbiGKJPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbiGKJOD (ORCPT
+        with ESMTP id S231504AbiGKJOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:14:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84ADA3204E;
-        Mon, 11 Jul 2022 02:10:05 -0700 (PDT)
+        Mon, 11 Jul 2022 05:14:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE80326E0;
+        Mon, 11 Jul 2022 02:10:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3968B80E79;
-        Mon, 11 Jul 2022 09:10:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F89C34115;
-        Mon, 11 Jul 2022 09:10:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AAE69CE1178;
+        Mon, 11 Jul 2022 09:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82DCC34115;
+        Mon, 11 Jul 2022 09:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530602;
-        bh=lDnrGg8XCrWs/U/ZDqKOXJWJ3M8ICXOK/64L4R+o3h0=;
+        s=korg; t=1657530608;
+        bh=K6jNGp2dUuNiWhAggovJ4j01QWBZArB13C35cE1qd8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dOPbot7d6CBUC5M2rKKN2/QaMuSgdChoqvYjgzUIHXf7H7nisId7U50mdg0J2qTGi
-         f53d3taAv0OWhNSAS3G/aci0MwH8rplQoKhCCftdvJH1roBk6EedaTbmn1nKGcl47S
-         FoZrAC1PkorKpIlAiSgPhaBnGFABm63he84+GLgY=
+        b=Lxj8b5UlxBgIaTxTDGYvYZd5gwW1REwOfKxxlrN4cED3u8rTfoLBx8NSYno3Vbf/2
+         F92ewx1stECF1xputwu8kusYrKt885kSE1D7T7yLsebARjmL6+XEm98/EwRQorHoSO
+         y/AGxlPGQseE2glU7Mm8FMuqfX0NEcrpN5lJyhJo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5.4 12/38] fbcon: Prevent that screen size is smaller than font size
-Date:   Mon, 11 Jul 2022 11:06:54 +0200
-Message-Id: <20220711090539.090838502@linuxfoundation.org>
+        stable@vger.kernel.org, Sachin Sant <sachinp@linux.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.4 14/38] powerpc/powernv: delay rng platform device creation until later in boot
+Date:   Mon, 11 Jul 2022 11:06:56 +0200
+Message-Id: <20220711090539.150343511@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -48,99 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit e64242caef18b4a5840b0e7a9bff37abd4f4f933 upstream.
+commit 887502826549caa7e4215fd9e628f48f14c0825a upstream.
 
-We need to prevent that users configure a screen size which is smaller than the
-currently selected font size. Otherwise rendering chars on the screen will
-access memory outside the graphics memory region.
+The platform device for the rng must be created much later in boot.
+Otherwise it tries to connect to a parent that doesn't yet exist,
+resulting in this splat:
 
-This patch adds a new function fbcon_modechange_possible() which
-implements this check and which later may be extended with other checks
-if necessary.  The new function is called from the FBIOPUT_VSCREENINFO
-ioctl handler in fbmem.c, which will return -EINVAL if userspace asked
-for a too small screen size.
+  [    0.000478] kobject: '(null)' ((____ptrval____)): is not initialized, yet kobject_get() is being called.
+  [    0.002925] [c000000002a0fb30] [c00000000073b0bc] kobject_get+0x8c/0x100 (unreliable)
+  [    0.003071] [c000000002a0fba0] [c00000000087e464] device_add+0xf4/0xb00
+  [    0.003194] [c000000002a0fc80] [c000000000a7f6e4] of_device_add+0x64/0x80
+  [    0.003321] [c000000002a0fcb0] [c000000000a800d0] of_platform_device_create_pdata+0xd0/0x1b0
+  [    0.003476] [c000000002a0fd00] [c00000000201fa44] pnv_get_random_long_early+0x240/0x2e4
+  [    0.003623] [c000000002a0fe20] [c000000002060c38] random_init+0xc0/0x214
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: stable@vger.kernel.org # v5.4+
+This patch fixes the issue by doing the platform device creation inside
+of machine_subsys_initcall.
+
+Fixes: f3eac426657d ("powerpc/powernv: wire up rng during setup_arch")
+Cc: stable@vger.kernel.org
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+[mpe: Change "of node" to "platform device" in change log]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220630121654.1939181-1-Jason@zx2c4.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbcon.c |   28 ++++++++++++++++++++++++++++
- drivers/video/fbdev/core/fbmem.c |    4 +++-
- include/linux/fbcon.h            |    4 ++++
- 3 files changed, 35 insertions(+), 1 deletion(-)
+ arch/powerpc/platforms/powernv/rng.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2761,6 +2761,34 @@ void fbcon_update_vcs(struct fb_info *in
- }
- EXPORT_SYMBOL(fbcon_update_vcs);
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -176,12 +176,8 @@ static int __init pnv_get_random_long_ea
+ 		    NULL) != pnv_get_random_long_early)
+ 		return 0;
  
-+/* let fbcon check if it supports a new screen resolution */
-+int fbcon_modechange_possible(struct fb_info *info, struct fb_var_screeninfo *var)
-+{
-+	struct fbcon_ops *ops = info->fbcon_par;
-+	struct vc_data *vc;
-+	unsigned int i;
+-	for_each_compatible_node(dn, NULL, "ibm,power-rng") {
+-		if (rng_create(dn))
+-			continue;
+-		/* Create devices for hwrng driver */
+-		of_platform_device_create(dn, NULL, NULL);
+-	}
++	for_each_compatible_node(dn, NULL, "ibm,power-rng")
++		rng_create(dn);
+ 
+ 	if (!ppc_md.get_random_seed)
+ 		return 0;
+@@ -205,10 +201,18 @@ void __init pnv_rng_init(void)
+ 
+ static int __init pnv_rng_late_init(void)
+ {
++	struct device_node *dn;
+ 	unsigned long v;
 +
-+	WARN_CONSOLE_UNLOCKED();
+ 	/* In case it wasn't called during init for some other reason. */
+ 	if (ppc_md.get_random_seed == pnv_get_random_long_early)
+ 		pnv_get_random_long_early(&v);
 +
-+	if (!ops)
-+		return 0;
-+
-+	/* prevent setting a screen size which is smaller than font size */
-+	for (i = first_fb_vc; i <= last_fb_vc; i++) {
-+		vc = vc_cons[i].d;
-+		if (!vc || vc->vc_mode != KD_TEXT ||
-+			   registered_fb[con2fb_map[i]] != info)
-+			continue;
-+
-+		if (vc->vc_font.width  > FBCON_SWAP(var->rotate, var->xres, var->yres) ||
-+		    vc->vc_font.height > FBCON_SWAP(var->rotate, var->yres, var->xres))
-+			return -EINVAL;
++	if (ppc_md.get_random_seed == powernv_get_random_long) {
++		for_each_compatible_node(dn, NULL, "ibm,power-rng")
++			of_platform_device_create(dn, NULL, NULL);
 +	}
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(fbcon_modechange_possible);
-+
- int fbcon_mode_deleted(struct fb_info *info,
- 		       struct fb_videomode *mode)
- {
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1114,7 +1114,9 @@ static long do_fb_ioctl(struct fb_info *
- 			return -EFAULT;
- 		console_lock();
- 		lock_fb_info(info);
--		ret = fb_set_var(info, &var);
-+		ret = fbcon_modechange_possible(info, &var);
-+		if (!ret)
-+			ret = fb_set_var(info, &var);
- 		if (!ret)
- 			fbcon_update_vcs(info, var.activate & FB_ACTIVATE_ALL);
- 		unlock_fb_info(info);
---- a/include/linux/fbcon.h
-+++ b/include/linux/fbcon.h
-@@ -15,6 +15,8 @@ void fbcon_new_modelist(struct fb_info *
- void fbcon_get_requirement(struct fb_info *info,
- 			   struct fb_blit_caps *caps);
- void fbcon_fb_blanked(struct fb_info *info, int blank);
-+int  fbcon_modechange_possible(struct fb_info *info,
-+			       struct fb_var_screeninfo *var);
- void fbcon_update_vcs(struct fb_info *info, bool all);
- void fbcon_remap_all(struct fb_info *info);
- int fbcon_set_con2fb_map_ioctl(void __user *argp);
-@@ -33,6 +35,8 @@ static inline void fbcon_new_modelist(st
- static inline void fbcon_get_requirement(struct fb_info *info,
- 					 struct fb_blit_caps *caps) {}
- static inline void fbcon_fb_blanked(struct fb_info *info, int blank) {}
-+static inline int  fbcon_modechange_possible(struct fb_info *info,
-+				struct fb_var_screeninfo *var) { return 0; }
- static inline void fbcon_update_vcs(struct fb_info *info, bool all) {}
- static inline void fbcon_remap_all(struct fb_info *info) {}
- static inline int fbcon_set_con2fb_map_ioctl(void __user *argp) { return 0; }
+ 	return 0;
+ }
+ machine_subsys_initcall(powernv, pnv_rng_late_init);
 
 
